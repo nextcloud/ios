@@ -1,0 +1,49 @@
+/* Navigation bar buttons */
+"Cancel" = "ביטול";
+"Done" = "סיום";
+
+/* Default title */
+"Photos" = "תמונות";
+
+/* No. of selected */
+"%@ Photo Selected" = "נבחרה תמונה %@";
+"%@ Photos Selected" = "נבחרו %@ תמונות";
+"%@ Video Selected" = "נבחר וידאו %@";
+"%@ Videos Selected" = "נבחרו %@ סרטוני וידאו";
+"%@ Items Selected" = "נבחרו %@ פריטים";
+
+/* Grid view footer */
+"%@ Photos" = "%@ תמונות";
+"%@ Videos" = "%@ סרטוני וידאו";
+"%@ Photos, %@ Videos" = "%1$@ תמונות, %2$@ סרטוני וידאו";
+
+/* Assets index */
+"%@ of %@" = "%1$@ מ-%2$@";
+
+/* Messages if privacy is not granted */
+"This app does not have access to your photos or videos." = "לאפליקציה הזו אין גישה לתמונות ולסרטוני הוידאו שלך.";
+"You can enable access in Privacy Settings." = "באפשרותך לאפשר גישה בהגדרות הפרטיות.";
+
+/* Messages if no assets */
+"No Photos or Videos" = "אין תמונות או סרטוני וידאו";
+
+/* The parameter will be replaced by the device model name */
+"You can take photos and videos using the camera, or sync photos and videos onto your %@\nusing iTunes." = "באפשרותך לצלם תמונות ולהקליט וידאו בעזרת המצלמה או לסנכרן תמונות וסרטוני וידאו עם %@\nבאמצעות ב-iTunes.";
+"You can sync photos and videos onto your %@ using iTunes." = "באפשרותך לסנכרן תמונות וסרטוני וידאו עם %@ באמצעות iTunes.";
+
+/* Accessibility labels */
+"Play" = "הפעלה";
+"Select" = "בחר";
+"Deselect" = "בטלו את הבחירה";
+
+/* Video duration spell out */
+"hours" = "שעות";
+"hour" = "שעה";
+"minutes" = "דקות";
+"minute" = "דקה";
+"seconds" = "שניות";
+"second" = "שנייה";
+
+/* Error message of playing stream video */
+"Cannot Play Stream Video" = "Cannot Play Stream Video";
+"OK" = "OK";

@@ -1,0 +1,23 @@
+{
+  "images" : [
+    {
+      "idiom" : "universal",
+      "scale" : "1x",
+      "filename" : "MenuOrderByFileNameNextcloud.png"
+    },
+    {
+      "idiom" : "universal",
+      "filename" : "MenuOrderByFileNameNextcloud@2x.png",
+      "scale" : "2x"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "3x",
+      "filename" : "MenuOrderByFileNameNextcloud@3x.png"
+    }
+  ],
+  "info" : {
+    "version" : 1,
+    "author" : "xcode"
+  }
+}

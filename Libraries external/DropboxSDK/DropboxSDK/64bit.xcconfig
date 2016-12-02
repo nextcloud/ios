@@ -1,0 +1,9 @@
+//
+//  64bit.xcconfig
+//  DropboxSDK
+//
+//  Created by brian on 9/23/13.
+//
+//
+ARCHS = arm64 x86_64
+IPHONEOS_DEPLOYMENT_TARGET=7.0

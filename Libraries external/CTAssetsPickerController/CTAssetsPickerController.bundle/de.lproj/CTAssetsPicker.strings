@@ -1,0 +1,49 @@
+/* Navigation bar buttons */
+"Cancel" = "Abbrechen";
+"Done" = "Fertig";
+
+/* Default title */
+"Photos" = "Fotos";
+
+/* No. of selected */
+"%@ Photo Selected" = "%@ Foto ausgewählt";
+"%@ Photos Selected" = "%@ Fotos ausgewählt";
+"%@ Video Selected" = "%@ Video ausgewählt";
+"%@ Videos Selected" = "%@ Videos ausgewählt";
+"%@ Items Selected" = "%@ Objekte ausgewählt";
+
+/* Grid view footer */
+"%@ Photos" = "%@ Fotos";
+"%@ Videos" = "%@ Videos";
+"%@ Photos, %@ Videos" = "%1$@ Fotos, %2$@ Videos";
+
+/* Assets index */
+"%@ of %@" = "%1$@ von %2$@";
+
+/* Messages if privacy is not granted */
+"This app does not have access to your photos or videos." = "Diese App darf nicht auf Ihr Fotoalbum zugreifen.";
+"You can enable access in Privacy Settings." = "Sie können den Zugriff in den Datenschutz Einstellungen erlauben.";
+
+/* Messages if no assets */
+"No Photos or Videos" = "Keine Fotos oder Videos vorhanden";
+
+/* The parameter will be replaced by the device model name */
+"You can take photos and videos using the camera, or sync photos and videos onto your %@\nusing iTunes." = "Sie können Fotos oder Videos mit der Kamera aufnehmen oder Ihr %@\nmit iTunes synchronisieren.";
+"You can sync photos and videos onto your %@ using iTunes." = "Sie können Fotos und Videos mit iTunes auf Ihr %@ synchronisieren.";
+
+/* Accessibility labels */
+"Play" = "Wiedergeben";
+"Select" = "Wählen Sie";
+"Deselect" = "Markierung entfernen";
+
+/* Video duration spell out */
+"hours" = "Stunden";
+"hour" = "Stunde";
+"minutes" = "Minuten";
+"minute" = "Minute";
+"seconds" = "Sekunden";
+"second" = "Sekunde";
+
+/* Error message of playing stream video */
+"Cannot Play Stream Video" = "Video kann nicht wiedergegeben werden";
+"OK" = "OK";
