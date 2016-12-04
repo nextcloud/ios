@@ -213,7 +213,9 @@
         
         if ([error code] != NSURLErrorServerCertificateUntrusted) {
             
-            alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_error_", nil) message:NSLocalizedStringFromTable(@"_not_possible_connect_to_server_", @"Error", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
+            NSString *message = [NSString stringWithFormat:@"%@ Error %lu", NSLocalizedStringFromTable(@"_not_possible_connect_to_server_", @"Error", nil), error.code];
+            
+            alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_error_", nil) message:message delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
             [alertView show];
         }
     }

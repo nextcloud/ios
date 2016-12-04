@@ -387,7 +387,6 @@
 
 - (void)refreshControlTarget
 {
-    // Carico la Folder
     [self readFolderWithForced:YES];
     
     // Actuate `Peek` feedback (weak boom)
