@@ -11,7 +11,7 @@ Check out [nextcloud.com](https://nextcloud.com) and follow us on [@nextclouders
 
 If you want to [contribute](https://nextcloud.com/contribute/), you are very welcome: 
 
-- on our IRC channels #nextcloud & #nextcloud-mobile irc://#nextcloud-mobile@freenode.net (on freenode) and 
+- on our IRC channels #nextcloud and #nextcloud-mobile (on freenode)
 - our forum at https://help.nextcloud.com
 
 Please read the [Code of Conduct](https://nextcloud.com/community/code-of-conduct/). This document offers some guidance to ensure Nextcloud participants can cooperate effectively in a positive and inspiring atmosphere, and to explain how together we can strengthen and support each other.
