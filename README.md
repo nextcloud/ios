@@ -7,7 +7,7 @@
 [![irc](https://img.shields.io/badge/IRC-%23nextcloud%20on%20freenode-orange.svg)](https://webchat.freenode.net/?channels=nextcloud)
 [![irc](https://img.shields.io/badge/IRC-%23nextcloud--mobile%20on%20freenode-blue.svg)](https://webchat.freenode.net/?channels=nextcloud-mobile)
 
-Check out https://nextcloud.com and follow us on https://twitter.com/nextclouders
+Check out [nextcloud.com](https://nextcloud.com) and follow us on [@nextclouders](https://twitter.com/nextclouders) and [NextcloudiOS](https://twitter.com/NextcloudiOS)
 
 If you want to [contribute](https://nextcloud.com/contribute/), you are very welcome: 
 
@@ -22,6 +22,6 @@ if you want to join the Github organization just let us know and we’ll add you
 Fork this repository and contribute back using pull requests to the master branch! More info coming.
 Easy starting points are also reviewing [pull requests](https://github.com/nextcloud/ios/pulls) and working on [starter issue](https://github.com/nextcloud/ios/issues?q=is%3Aopen+is%3Aissue+label%3A%22starter+issue%22) - we're working on adding those, of course!
 
-**License:** [GPLv3](https://github.com/nextcloud/android/blob/master/LICENSE.txt) with [iOS store exception](https://github.com/nextcloud/ios/blob/master/COPYING.iOS).
+**License:** [GPLv3](https://github.com/nextcloud/android/blob/master/LICENSE.txt) with [Apple app store exception](https://github.com/nextcloud/ios/blob/master/COPYING.iOS).
 
 
