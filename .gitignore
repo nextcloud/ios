@@ -18,6 +18,7 @@ iOSClient/Crypto Cloud.entitlements
 iOSClient/LaunchScreen.xib
 iOSClient/Networking/DB*.*
 iOSClient/InfoPlist/InfoCryptoCloud.plist
+iOSClient/InfoPlist/InfoNextcloud.plist
 Share Ext/Share Ext.entitlements
 
 ########### OSX ###########
