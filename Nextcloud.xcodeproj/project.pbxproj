@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AB96FE1F1DF484B5005A1F1F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AB96FE1E1DF484B5005A1F1F /* LaunchScreen.storyboard */; };
 		F70A630B1D5B3467004E2AA5 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63061D5B3467004E2AA5 /* libcrypto.a */; };
 		F70A630F1D5B3467004E2AA5 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63071D5B3467004E2AA5 /* libssl.a */; };
 		F714526D1DC1523B0006A5D4 /* libMagicalRecord.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F7B61E9B1DC13C20009E938F /* libMagicalRecord.a */; };
@@ -476,7 +477,6 @@
 		F77D49A91DC238E500CDC568 /* loading@2x.gif in Resources */ = {isa = PBXBuildFile; fileRef = F77D49A71DC238E500CDC568 /* loading@2x.gif */; };
 		F78088EA1DD3A1DB005C5A7C /* cryptocloud.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = F78088E51DD3A1DB005C5A7C /* cryptocloud.xcdatamodeld */; };
 		F78088EB1DD3A1DB005C5A7C /* cryptocloud.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = F78088E51DD3A1DB005C5A7C /* cryptocloud.xcdatamodeld */; };
-		F78BFED41D3111B800E513CF /* LaunchScreenNextcloud.xib in Resources */ = {isa = PBXBuildFile; fileRef = F78BFECA1D3111B800E513CF /* LaunchScreenNextcloud.xib */; };
 		F78BFEE11D31126B00E513CF /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F78BFEDE1D31126B00E513CF /* MainInterface.storyboard */; };
 		F7994B781D5B854C008525D9 /* TableCertificates+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F7994B741D5B854C008525D9 /* TableCertificates+CoreDataProperties.m */; };
 		F7994B7A1D5B854C008525D9 /* TableCertificates+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F7994B741D5B854C008525D9 /* TableCertificates+CoreDataProperties.m */; };
@@ -631,6 +631,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		AB96FE1E1DF484B5005A1F1F /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		F70211F41BAC56E9003FC03E /* CCCellMain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCCellMain.h; sourceTree = "<group>"; };
 		F70211F51BAC56E9003FC03E /* CCCellMain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCCellMain.m; sourceTree = "<group>"; };
 		F70211F61BAC56E9003FC03E /* CCCellMain.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CCCellMain.xib; sourceTree = "<group>"; };
@@ -1284,7 +1285,6 @@
 		F78316861C0CB3CA00C43975 /* CCShareUserOC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCShareUserOC.h; sourceTree = "<group>"; };
 		F78316871C0CB3CA00C43975 /* CCShareUserOC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCShareUserOC.m; sourceTree = "<group>"; };
 		F787E5581BC503ED00AFBFE1 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
-		F78BFECA1D3111B800E513CF /* LaunchScreenNextcloud.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LaunchScreenNextcloud.xib; sourceTree = "<group>"; };
 		F78BFEDE1D31126B00E513CF /* MainInterface.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = MainInterface.storyboard; sourceTree = "<group>"; };
 		F78F6FAE1CC8CCB700F4EA25 /* CCSection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCSection.h; sourceTree = "<group>"; };
 		F78F6FAF1CC8CCB700F4EA25 /* CCSection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCSection.m; sourceTree = "<group>"; };
@@ -3027,7 +3027,7 @@
 			isa = PBXGroup;
 			children = (
 				F75CDBF51DF063AD00116AD0 /* .gitignore */,
-				F78BFECA1D3111B800E513CF /* LaunchScreenNextcloud.xib */,
+				AB96FE1E1DF484B5005A1F1F /* LaunchScreen.storyboard */,
 				F7145A2E1D12E62B00CAFEEC /* Nextcloud.entitlements */,
 				F77D49A71DC238E500CDC568 /* loading@2x.gif */,
 				F76344751BF259A800188725 /* synchronized.gif */,
@@ -3285,6 +3285,7 @@
 				F77B0EEF1D118A16002130FE /* UIBarButtonItemArrowLeft.png in Resources */,
 				F77B0EF01D118A16002130FE /* ZSSh4@2x.png in Resources */,
 				F77B0EF11D118A16002130FE /* Raleway-SemiBold.ttf in Resources */,
+				AB96FE1F1DF484B5005A1F1F /* LaunchScreen.storyboard in Resources */,
 				F77D49A91DC238E500CDC568 /* loading@2x.gif in Resources */,
 				F77B0EF21D118A16002130FE /* ZSSunderline.png in Resources */,
 				F77B0EF31D118A16002130FE /* VideoOverlay@3x.png in Resources */,
@@ -3303,7 +3304,6 @@
 				F77B0F011D118A16002130FE /* UIBarButtonItemArrowRight.png in Resources */,
 				F7676A7B1D5CB2A400DF734C /* icon-error@2x.png in Resources */,
 				F77B0F021D118A16002130FE /* Raleway-Thin.ttf in Resources */,
-				F78BFED41D3111B800E513CF /* LaunchScreenNextcloud.xib in Resources */,
 				F77B0F031D118A16002130FE /* ImageSelectedSmallOff.png in Resources */,
 				F77B0F041D118A16002130FE /* ZSSoutdent@2x.png in Resources */,
 				F77B0F051D118A16002130FE /* ZSSindent.png in Resources */,

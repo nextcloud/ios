@@ -151,7 +151,7 @@ static SecCertificateRef SecTrustGetLeafCertificate(SecTrustRef trust)
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
     
-        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title message:NSLocalizedString(@"_connect_server_anyway_", nil)  preferredStyle:UIAlertControllerStyleActionSheet];
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title message:NSLocalizedString(@"_connect_server_anyway_", nil)  preferredStyle:UIAlertControllerStyleAlert];
     
         [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_yes_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
                                                            
@@ -166,10 +166,6 @@ static SecCertificateRef SecTrustGetLeafCertificate(SecTrustRef trust)
             if([self.delegate respondsToSelector:@selector(trustedCerticateDenied)])
                 [self.delegate trustedCerticateDenied];
         }]];
-        
-        alertController.popoverPresentationController.sourceView = viewController.view;
-        alertController.popoverPresentationController.sourceRect = viewController.view.bounds;
-        alertController.popoverPresentationController.permittedArrowDirections = UIPopoverArrowDirectionAny;
         
         [viewController presentViewController:alertController animated:YES completion:nil];
     });
