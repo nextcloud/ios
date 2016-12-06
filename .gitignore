@@ -8,7 +8,7 @@
 #                                                                       #
 #########################################################################
 
-############ Various settings
+############ Various settings ############
 xcuserdata/
 README.md
 Documentation/
@@ -28,3 +28,4 @@ Share Ext/Share Ext.entitlements
 .DS_Store
 .AppleDouble
 .LSOverride
+
