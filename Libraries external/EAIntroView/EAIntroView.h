@@ -9,6 +9,11 @@
 
 #define EA_EMPTY_PROPERTY 9999.f
 
+#define SKIP_BTN_DEFAULT_WIDTH 100.f
+#define SKIP_BTN_DEFAULT_HEIGHT 40.f
+#define PAGE_CTRL_DEFAULT_HEIGHT 36.f
+
+
 enum EAIntroViewTags {
     kTitleLabelTag = 1,
     kDescLabelTag,
@@ -73,9 +78,9 @@ typedef NS_ENUM(NSUInteger, EAViewAlignment) {
 
 @property (nonatomic, strong) EARestrictedScrollView *scrollView;
 @property (nonatomic, assign) BOOL scrollingEnabled;
-@property (nonatomic, strong) NSArray *pages;
+@property (nonatomic, strong) NSArray<EAIntroPage *> *pages;
 
-- (id)initWithFrame:(CGRect)frame andPages:(NSArray *)pagesArray;
+- (id)initWithFrame:(CGRect)frame andPages:(NSArray<EAIntroPage *> *)pagesArray;
 
 - (void)showFullscreen;
 - (void)showFullscreenWithAnimateDuration:(CGFloat)duration;

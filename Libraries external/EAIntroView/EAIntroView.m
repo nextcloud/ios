@@ -12,8 +12,8 @@
 @property (nonatomic, strong) UIImageView *pageBgBack;
 @property (nonatomic, strong) UIImageView *pageBgFront;
 
-@property (nonatomic, strong) NSMutableArray *footerConstraints;
-@property (nonatomic, strong) NSMutableArray *titleViewConstraints;
+@property (nonatomic, strong) NSMutableArray<NSLayoutConstraint *> *footerConstraints;
+@property (nonatomic, strong) NSMutableArray<NSLayoutConstraint *> *titleViewConstraints;
 
 @property (nonatomic, assign) BOOL skipped;
 
@@ -49,7 +49,7 @@
     return self;
 }
 
-- (id)initWithFrame:(CGRect)frame andPages:(NSArray *)pagesArray {
+- (id)initWithFrame:(CGRect)frame andPages:(NSArray<EAIntroPage *> *)pagesArray {
     self = [super initWithFrame:frame];
     if (self) {
         [self applyDefaultsToSelfDuringInitializationWithFrame:self.frame pages:pagesArray];
@@ -59,7 +59,7 @@
 
 #pragma mark - Private
 
-- (void)applyDefaultsToSelfDuringInitializationWithFrame:(CGRect)frame pages:(NSArray *)pagesArray {
+- (void)applyDefaultsToSelfDuringInitializationWithFrame:(CGRect)frame pages:(NSArray<EAIntroPage *> *)pagesArray {
     self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     self.swipeToExit = YES;
     self.easeOutCrossDisolves = YES;
@@ -69,7 +69,7 @@
     self.backgroundColor = [UIColor blackColor];
     _scrollingEnabled = YES;
     _titleViewY = 20.f;
-    _pageControlY = 50.f;
+    _pageControlY = 70.f;
     _skipButtonY = EA_EMPTY_PROPERTY;
     _skipButtonSideMargin = 10.f;
     _skipButtonAlignment = EAViewAlignmentRight;
@@ -196,22 +196,6 @@
         if ([(id)self.delegate respondsToSelector:@selector(intro:pageAppeared:withIndex:)]) {
             [self.delegate intro:self pageAppeared:_pages[currentPageIndex] withIndex:currentPageIndex];
         }
-    }
-}
-
--(void)willMoveToSuperview:(UIView *)newSuperview {
-    [super willMoveToSuperview:newSuperview];
-    if (self.superview == nil && newSuperview != nil) {
-        // Add observer for device orientation:
-        [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(deviceOrientationDidChange:)
-                                                     name:UIDeviceOrientationDidChangeNotification
-                                                   object:nil];
-    } else if (self.superview != nil && newSuperview == nil) {
-        // Remove observer for rotation
-        [[NSNotificationCenter defaultCenter] removeObserver:self];
-        [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
     }
 }
 
@@ -537,9 +521,13 @@
         [self removeConstraints:self.footerConstraints];
         [self.footerConstraints removeAllObjects];
     }
+
+    CGFloat pageControlHeight = self.pageControl.frame.size.height > 0 ? self.pageControl.frame.size.height : PAGE_CTRL_DEFAULT_HEIGHT;
+    CGFloat skipButtonWidth = self.skipButton.frame.size.width > 0 ? self.skipButton.frame.size.width : SKIP_BTN_DEFAULT_WIDTH;
+    CGFloat skipButtonHeight = self.skipButton.frame.size.height > 0 ? self.skipButton.frame.size.height : SKIP_BTN_DEFAULT_HEIGHT;
     
     NSDictionary *views = @{@"pageControl" : self.pageControl, @"skipButton" : self.skipButton};
-    NSDictionary *metrics = @{@"pageControlBottomPadding" : @(self.pageControlY - self.pageControl.frame.size.height), @"pageControlHeight" : @(self.pageControl.frame.size.height), @"skipButtonBottomPadding" : @(self.skipButtonY - self.skipButton.frame.size.height), @"skipButtonSideMargin" : @(self.skipButtonSideMargin), @"skipButtonWidth" : @(self.skipButton.frame.size.width)};
+    NSDictionary *metrics = @{@"pageControlBottomPadding" : @(self.pageControlY - pageControlHeight), @"pageControlHeight" : @(pageControlHeight), @"skipButtonBottomPadding" : @(self.skipButtonY - skipButtonHeight), @"skipButtonSideMargin" : @(self.skipButtonSideMargin), @"skipButtonWidth" : @(skipButtonWidth)};
     
     [self.footerConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-[pageControl]-|" options:NSLayoutFormatAlignAllCenterX metrics:metrics views:views]];
     [self.footerConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[pageControl(pageControlHeight)]-pageControlBottomPadding@250-|" options:NSLayoutFormatAlignAllBottom metrics:metrics views:views]];
@@ -670,9 +658,11 @@ CGFloat easeOutValue(CGFloat value) {
     }
 }
 
-#pragma mark - Notifications
+#pragma mark - UIView lifecycle calls
 
-- (void)deviceOrientationDidChange:(NSNotification *)notification {
+- (void)layoutSubviews {
+    [super layoutSubviews];
+
     // Get amount of pages:
     NSInteger numberOfPages = _pages.count;
     
@@ -734,7 +724,7 @@ CGFloat easeOutValue(CGFloat value) {
     _scrollingEnabled = scrollingEnabled;
 }
 
-- (void)setPages:(NSArray *)pages {
+- (void)setPages:(NSArray<EAIntroPage *> *)pages {
     _pages = [pages copy];
     [self.scrollView removeFromSuperview];
     self.scrollView = nil;
