@@ -84,6 +84,10 @@
 		F7229B391DF7187F00E8C4E7 /* InfoCryptoCloud.plist in Resources */ = {isa = PBXBuildFile; fileRef = F7229B361DF7187F00E8C4E7 /* InfoCryptoCloud.plist */; };
 		F7229B3A1DF7187F00E8C4E7 /* InfoNextcloud.plist in Resources */ = {isa = PBXBuildFile; fileRef = F7229B371DF7187F00E8C4E7 /* InfoNextcloud.plist */; };
 		F7229B3B1DF7187F00E8C4E7 /* InfoNextcloud.plist in Resources */ = {isa = PBXBuildFile; fileRef = F7229B371DF7187F00E8C4E7 /* InfoNextcloud.plist */; };
+		F7229B471DF71BA800E8C4E7 /* ChangeLog in Resources */ = {isa = PBXBuildFile; fileRef = F7229B461DF71BA800E8C4E7 /* ChangeLog */; };
+		F7229B481DF71BA800E8C4E7 /* ChangeLog in Resources */ = {isa = PBXBuildFile; fileRef = F7229B461DF71BA800E8C4E7 /* ChangeLog */; };
+		F7229B4A1DF71BB300E8C4E7 /* AUTHORS in Resources */ = {isa = PBXBuildFile; fileRef = F7229B491DF71BB300E8C4E7 /* AUTHORS */; };
+		F7229B4B1DF71BB300E8C4E7 /* AUTHORS in Resources */ = {isa = PBXBuildFile; fileRef = F7229B491DF71BB300E8C4E7 /* AUTHORS */; };
 		F72764651DB8FE2A002334CD /* CCSynchronization.m in Sources */ = {isa = PBXBuildFile; fileRef = F72764631DB8FE2A002334CD /* CCSynchronization.m */; };
 		F72C63891DC14B0400FA5ED5 /* libMagicalRecord.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F7B61E9B1DC13C20009E938F /* libMagicalRecord.a */; };
 		F732BA061D76CE1500E9878B /* CCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F732BA041D76CE1500E9878B /* CCNetworking.m */; };
@@ -1013,6 +1017,8 @@
 		F72137301BAFF0920012B613 /* CCTemplates.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCTemplates.m; sourceTree = "<group>"; };
 		F7229B361DF7187F00E8C4E7 /* InfoCryptoCloud.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = InfoCryptoCloud.plist; sourceTree = "<group>"; };
 		F7229B371DF7187F00E8C4E7 /* InfoNextcloud.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = InfoNextcloud.plist; sourceTree = "<group>"; };
+		F7229B461DF71BA800E8C4E7 /* ChangeLog */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ChangeLog; sourceTree = SOURCE_ROOT; };
+		F7229B491DF71BB300E8C4E7 /* AUTHORS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AUTHORS; sourceTree = SOURCE_ROOT; };
 		F722CEE41A40361A00C40606 /* OFL.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = OFL.txt; sourceTree = "<group>"; };
 		F722CEE51A40361A00C40606 /* Raleway-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Raleway-Bold.ttf"; sourceTree = "<group>"; };
 		F722CEE61A40361A00C40606 /* Raleway-ExtraBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Raleway-ExtraBold.ttf"; sourceTree = "<group>"; };
@@ -3042,6 +3048,8 @@
 			isa = PBXGroup;
 			children = (
 				F75CDBF51DF063AD00116AD0 /* .gitignore */,
+				F7229B461DF71BA800E8C4E7 /* ChangeLog */,
+				F7229B491DF71BB300E8C4E7 /* AUTHORS */,
 				F78BFECA1D3111B800E513CF /* LaunchScreenNextcloud.xib */,
 				F7145A2E1D12E62B00CAFEEC /* Nextcloud.entitlements */,
 				F77D49A71DC238E500CDC568 /* loading@2x.gif */,
@@ -3277,12 +3285,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				F7145A191D12E3B700CAFEEC /* Nextcloud.xcassets in Resources */,
+				F7229B481DF71BA800E8C4E7 /* ChangeLog in Resources */,
 				F78BFEE11D31126B00E513CF /* MainInterface.storyboard in Resources */,
 				F7DCA1C81D32BD4100E48D39 /* Share Ext Nextcloud.entitlements in Resources */,
 				F7145A1A1D12E3B700CAFEEC /* Images.xcassets in Resources */,
 				F7145A1C1D12E3B700CAFEEC /* CCMove.storyboard in Resources */,
 				F7229B3B1DF7187F00E8C4E7 /* InfoNextcloud.plist in Resources */,
 				F7145A1D1D12E3B700CAFEEC /* BKPasscodeView.strings in Resources */,
+				F7229B4B1DF71BB300E8C4E7 /* AUTHORS in Resources */,
 				F7145A211D12E3B700CAFEEC /* Error.strings in Resources */,
 				F7229B391DF7187F00E8C4E7 /* InfoCryptoCloud.plist in Resources */,
 				F7145A231D12E3B700CAFEEC /* Localizable.strings in Resources */,
@@ -3404,6 +3414,7 @@
 				F77B0F4E1D118A16002130FE /* Reader-Thumbs@2x.png in Resources */,
 				F77B0F4F1D118A16002130FE /* ZSSquicklink.png in Resources */,
 				F77B0F511D118A16002130FE /* ZSSh2.png in Resources */,
+				F7229B471DF71BA800E8C4E7 /* ChangeLog in Resources */,
 				F77B0F531D118A16002130FE /* ZSSbold.png in Resources */,
 				F77B0F541D118A16002130FE /* Reader-Button-N.png in Resources */,
 				F77B0F551D118A16002130FE /* Error.strings in Resources */,
@@ -3434,6 +3445,7 @@
 				F77B0F6E1D118A16002130FE /* ZSShorizontalrule@2x.png in Resources */,
 				F77B0F6F1D118A16002130FE /* ZSSforcejustify.png in Resources */,
 				F77B0F711D118A16002130FE /* Raleway-Bold.ttf in Resources */,
+				F7229B4A1DF71BB300E8C4E7 /* AUTHORS in Resources */,
 				F77B0F721D118A16002130FE /* PlayButtonOverlayLarge@2x.png in Resources */,
 				F77B0F731D118A16002130FE /* ImageSelectedSmallOn@3x.png in Resources */,
 				F77B0F741D118A16002130FE /* ZSSunorderedlist@2x.png in Resources */,

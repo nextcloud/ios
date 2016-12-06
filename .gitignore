@@ -11,6 +11,7 @@
 ############ Various settings
 xcuserdata/
 README.md
+Documentation/
 
 ############ CRYPTO CLOUD #################
 Crypto Cloud.xcodeproj
