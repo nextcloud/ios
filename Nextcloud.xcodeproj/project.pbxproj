@@ -80,19 +80,11 @@
 		F7145A241D12E3B700CAFEEC /* CCCellShareExt.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7296A621C8880C9001A7809 /* CCCellShareExt.xib */; };
 		F71E68001DC1F792003BA52B /* libownCloudiOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F71E67FC1DC1F76F003BA52B /* libownCloudiOS.a */; };
 		F71E68021DC1F79D003BA52B /* libownCloudiOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F71E67FC1DC1F76F003BA52B /* libownCloudiOS.a */; };
-		F7229B381DF7187F00E8C4E7 /* InfoCryptoCloud.plist in Resources */ = {isa = PBXBuildFile; fileRef = F7229B361DF7187F00E8C4E7 /* InfoCryptoCloud.plist */; };
-		F7229B391DF7187F00E8C4E7 /* InfoCryptoCloud.plist in Resources */ = {isa = PBXBuildFile; fileRef = F7229B361DF7187F00E8C4E7 /* InfoCryptoCloud.plist */; };
-		F7229B3A1DF7187F00E8C4E7 /* InfoNextcloud.plist in Resources */ = {isa = PBXBuildFile; fileRef = F7229B371DF7187F00E8C4E7 /* InfoNextcloud.plist */; };
 		F7229B3B1DF7187F00E8C4E7 /* InfoNextcloud.plist in Resources */ = {isa = PBXBuildFile; fileRef = F7229B371DF7187F00E8C4E7 /* InfoNextcloud.plist */; };
-		F7229B471DF71BA800E8C4E7 /* ChangeLog in Resources */ = {isa = PBXBuildFile; fileRef = F7229B461DF71BA800E8C4E7 /* ChangeLog */; };
-		F7229B481DF71BA800E8C4E7 /* ChangeLog in Resources */ = {isa = PBXBuildFile; fileRef = F7229B461DF71BA800E8C4E7 /* ChangeLog */; };
-		F7229B4A1DF71BB300E8C4E7 /* AUTHORS in Resources */ = {isa = PBXBuildFile; fileRef = F7229B491DF71BB300E8C4E7 /* AUTHORS */; };
-		F7229B4B1DF71BB300E8C4E7 /* AUTHORS in Resources */ = {isa = PBXBuildFile; fileRef = F7229B491DF71BB300E8C4E7 /* AUTHORS */; };
 		F72764651DB8FE2A002334CD /* CCSynchronization.m in Sources */ = {isa = PBXBuildFile; fileRef = F72764631DB8FE2A002334CD /* CCSynchronization.m */; };
 		F72C63891DC14B0400FA5ED5 /* libMagicalRecord.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F7B61E9B1DC13C20009E938F /* libMagicalRecord.a */; };
 		F732BA061D76CE1500E9878B /* CCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F732BA041D76CE1500E9878B /* CCNetworking.m */; };
 		F732BA0B1D76DBA500E9878B /* CCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F732BA041D76CE1500E9878B /* CCNetworking.m */; };
-		F73CCDD71DC13776007E38D8 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F73CCD801DC13775007E38D8 /* Info.plist */; };
 		F73CCDD91DC13776007E38D8 /* XLFormBaseCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCD841DC13775007E38D8 /* XLFormBaseCell.m */; };
 		F73CCDDB1DC13776007E38D8 /* XLFormButtonCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCD861DC13775007E38D8 /* XLFormButtonCell.m */; };
 		F73CCDDD1DC13776007E38D8 /* XLFormCheckCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCD881DC13775007E38D8 /* XLFormCheckCell.m */; };
@@ -131,7 +123,6 @@
 		F73CCE1F1DC13776007E38D8 /* XLForm.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCDD41DC13776007E38D8 /* XLForm.m */; };
 		F73CCE211DC13776007E38D8 /* XLForm.bundle in Resources */ = {isa = PBXBuildFile; fileRef = F73CCDD51DC13776007E38D8 /* XLForm.bundle */; };
 		F73CCE261DC13788007E38D8 /* UIScrollView+EmptyDataSet.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCE241DC13788007E38D8 /* UIScrollView+EmptyDataSet.m */; };
-		F73CCE2C1DC13798007E38D8 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F73CCE281DC13798007E38D8 /* Info.plist */; };
 		F73CCE301DC13798007E38D8 /* UICKeyChainStore.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCE2A1DC13798007E38D8 /* UICKeyChainStore.m */; };
 		F73CCE321DC13798007E38D8 /* UICKeyChainStore.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCE2A1DC13798007E38D8 /* UICKeyChainStore.m */; };
 		F749E4E91DC1FB38009BA2FD /* Share Ext Nextcloud.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = F7CE8AFB1DC1F8D8009CAE48 /* Share Ext Nextcloud.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -143,7 +134,6 @@
 		F7659A271DC0B726004860C4 /* EAIntroPage.m in Sources */ = {isa = PBXBuildFile; fileRef = F7659A231DC0B726004860C4 /* EAIntroPage.m */; };
 		F7659A291DC0B726004860C4 /* EAIntroView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7659A251DC0B726004860C4 /* EAIntroView.m */; };
 		F7659A2E1DC0B72F004860C4 /* EARestrictedScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7659A2C1DC0B72F004860C4 /* EARestrictedScrollView.m */; };
-		F7659A351DC0B737004860C4 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F7659A301DC0B737004860C4 /* Info.plist */; };
 		F7659A371DC0B737004860C4 /* iRate.bundle in Resources */ = {isa = PBXBuildFile; fileRef = F7659A311DC0B737004860C4 /* iRate.bundle */; };
 		F7659A391DC0B737004860C4 /* iRate.m in Sources */ = {isa = PBXBuildFile; fileRef = F7659A331DC0B737004860C4 /* iRate.m */; };
 		F7659A581DC0B760004860C4 /* NSIndexPath+PSTCollectionViewAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = F7659A3C1DC0B760004860C4 /* NSIndexPath+PSTCollectionViewAdditions.m */; };
@@ -3285,16 +3275,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				F7145A191D12E3B700CAFEEC /* Nextcloud.xcassets in Resources */,
-				F7229B481DF71BA800E8C4E7 /* ChangeLog in Resources */,
 				F78BFEE11D31126B00E513CF /* MainInterface.storyboard in Resources */,
 				F7DCA1C81D32BD4100E48D39 /* Share Ext Nextcloud.entitlements in Resources */,
 				F7145A1A1D12E3B700CAFEEC /* Images.xcassets in Resources */,
 				F7145A1C1D12E3B700CAFEEC /* CCMove.storyboard in Resources */,
 				F7229B3B1DF7187F00E8C4E7 /* InfoNextcloud.plist in Resources */,
 				F7145A1D1D12E3B700CAFEEC /* BKPasscodeView.strings in Resources */,
-				F7229B4B1DF71BB300E8C4E7 /* AUTHORS in Resources */,
 				F7145A211D12E3B700CAFEEC /* Error.strings in Resources */,
-				F7229B391DF7187F00E8C4E7 /* InfoCryptoCloud.plist in Resources */,
 				F7145A231D12E3B700CAFEEC /* Localizable.strings in Resources */,
 				F7145A241D12E3B700CAFEEC /* CCCellShareExt.xib in Resources */,
 			);
@@ -3371,7 +3358,6 @@
 				F7676A7D1D5CB2A400DF734C /* icon-info.png in Resources */,
 				F77B0F281D118A16002130FE /* Main.storyboard in Resources */,
 				F77B0F291D118A16002130FE /* ZSSleftjustify.png in Resources */,
-				F7229B381DF7187F00E8C4E7 /* InfoCryptoCloud.plist in Resources */,
 				F77B0F2A1D118A16002130FE /* ImageSelectedSmallOff@3x.png in Resources */,
 				F77B0F2B1D118A16002130FE /* ZSSclearstyle@2x.png in Resources */,
 				F77B0F2C1D118A16002130FE /* ZSSlink.png in Resources */,
@@ -3380,7 +3366,6 @@
 				F77B0F2F1D118A16002130FE /* CCMove.storyboard in Resources */,
 				F77B0F301D118A16002130FE /* PlayButtonOverlayLargeTap.png in Resources */,
 				F77B0F311D118A16002130FE /* Reader-Thumbs.png in Resources */,
-				F73CCDD71DC13776007E38D8 /* Info.plist in Resources */,
 				F7659A371DC0B737004860C4 /* iRate.bundle in Resources */,
 				F77B0F321D118A16002130FE /* ZSSkeyboard@2x.png in Resources */,
 				F77B0F331D118A16002130FE /* ImageSelectedOn@2x.png in Resources */,
@@ -3401,9 +3386,7 @@
 				F77B0F411D118A16002130FE /* ZSStextcolor@2x.png in Resources */,
 				F77B0F421D118A16002130FE /* ImageSelectedOn.png in Resources */,
 				F77B0F431D118A16002130FE /* Raleway-ExtraBold.ttf in Resources */,
-				F73CCE2C1DC13798007E38D8 /* Info.plist in Resources */,
 				F77B0F441D118A16002130FE /* Reader-Button-N@2x.png in Resources */,
-				F7229B3A1DF7187F00E8C4E7 /* InfoNextcloud.plist in Resources */,
 				F77B0F461D118A16002130FE /* Reader-Button-H@2x.png in Resources */,
 				F77B0F471D118A16002130FE /* ZSSbgcolor@2x.png in Resources */,
 				F77B0F481D118A16002130FE /* synchronized.gif in Resources */,
@@ -3414,7 +3397,6 @@
 				F77B0F4E1D118A16002130FE /* Reader-Thumbs@2x.png in Resources */,
 				F77B0F4F1D118A16002130FE /* ZSSquicklink.png in Resources */,
 				F77B0F511D118A16002130FE /* ZSSh2.png in Resources */,
-				F7229B471DF71BA800E8C4E7 /* ChangeLog in Resources */,
 				F77B0F531D118A16002130FE /* ZSSbold.png in Resources */,
 				F77B0F541D118A16002130FE /* Reader-Button-N.png in Resources */,
 				F77B0F551D118A16002130FE /* Error.strings in Resources */,
@@ -3433,7 +3415,6 @@
 				F77B0F621D118A16002130FE /* ZSSunorderedlist.png in Resources */,
 				F77B0F631D118A16002130FE /* Localizable.strings in Resources */,
 				F77B0F641D118A16002130FE /* ZSSh4.png in Resources */,
-				F7659A351DC0B737004860C4 /* Info.plist in Resources */,
 				F77B0F651D118A16002130FE /* Raleway-Heavy.ttf in Resources */,
 				F77B0F661D118A16002130FE /* ImageSelectedOff@2x.png in Resources */,
 				F77B0F671D118A16002130FE /* InfoPlist.strings in Resources */,
@@ -3445,7 +3426,6 @@
 				F77B0F6E1D118A16002130FE /* ZSShorizontalrule@2x.png in Resources */,
 				F77B0F6F1D118A16002130FE /* ZSSforcejustify.png in Resources */,
 				F77B0F711D118A16002130FE /* Raleway-Bold.ttf in Resources */,
-				F7229B4A1DF71BB300E8C4E7 /* AUTHORS in Resources */,
 				F77B0F721D118A16002130FE /* PlayButtonOverlayLarge@2x.png in Resources */,
 				F77B0F731D118A16002130FE /* ImageSelectedSmallOn@3x.png in Resources */,
 				F77B0F741D118A16002130FE /* ZSSunorderedlist@2x.png in Resources */,
