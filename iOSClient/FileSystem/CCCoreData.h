@@ -100,7 +100,7 @@
 
 // ===== Metadata =====
 
-+ (void)addMetadata:(CCMetadata *)metadata activeAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl typeCloud:(NSString *)typeCloud overwrite:(BOOL)overwrite context:(NSManagedObjectContext *)context;
++ (void)addMetadata:(CCMetadata *)metadata activeAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl typeCloud:(NSString *)typeCloud context:(NSManagedObjectContext *)context;
 + (void)deleteMetadataWithPredicate:(NSPredicate *)predicate;
 + (void)moveMetadata:(NSString *)fileName directoryID:(NSString *)directoryID directoryIDTo:(NSString *)directoryIDTo activeAccount:(NSString *)activeAccount;
 + (void)updateMetadata:(CCMetadata *)metadata predicate:(NSPredicate *)predicate activeAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl typeCloud:(NSString *)typeCloud context:(NSManagedObjectContext *)context;
@@ -120,7 +120,6 @@
 
 + (NSArray *)getRecordsTableMetadataPhotosCameraUpload:(NSString *)serverUrl activeAccount:(NSString *)activeAccount;
 
-+ (void)updateMetadataRev:(NSString *)rev fileID:(NSString *)fileID activeAccount:(NSString *)activeAccount;
 + (void)changeRevFileIDDB:(NSString *)revFileID revTo:(NSString *)revTo activeAccount:(NSString *)activeAccount;
 
 // ===== Directory =====
@@ -158,7 +157,7 @@
 
 // ===== LocalFile =====
 
-+ (void)addLocalFile:(CCMetadata *)metadata updateRev:(NSString *)updateRev activeAccount:(NSString *)activeAccount;
++ (void)addLocalFile:(CCMetadata *)metadata activeAccount:(NSString *)activeAccount;
 + (void)addFavorite:(NSString *)fileID activeAccount:(NSString *)activeAccount;
 
 + (void)deleteLocalFileWithPredicate:(NSPredicate *)predicate;
@@ -192,7 +191,7 @@
 
 // ===== File System =====
 
-+ (BOOL)downloadFile:(CCMetadata *)metadata rev:(NSString *)rev directoryUser:(NSString *)directoryUser activeAccount:(NSString *)activeAccount;
++ (BOOL)downloadFile:(CCMetadata *)metadata directoryUser:(NSString *)directoryUser activeAccount:(NSString *)activeAccount;
 + (void)downloadFilePlist:(CCMetadata *)metadata activeAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl typeCloud:(NSString *)typeCloud directoryUser:(NSString *)directoryUser;
 + (void)deleteFile:(CCMetadata *)metadata serverUrl:(NSString *)serverUrl directoryUser:(NSString *)directoryUser typeCloud:(NSString *)typeCloud activeAccount:(NSString *)activeAccount;
 

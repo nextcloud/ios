@@ -770,7 +770,7 @@
         // DATA
         if ([CCUtility isCryptoString:fileName] || [CCUtility isFileNotCryptated:fileName]) {
             
-            [CCCoreData downloadFile:metadata rev:rev directoryUser:_directoryUser activeAccount:_activeAccount];
+            [CCCoreData downloadFile:metadata directoryUser:_directoryUser activeAccount:_activeAccount];
         }
         
         // download File Success
@@ -938,7 +938,7 @@
         metadata.typeCloud = _typeCloud;
         metadata.typeFile = metadataTypeFile_unknown;
         
-        [CCCoreData addMetadata:metadata activeAccount:_activeAccount activeUrl:_activeUrl typeCloud:_typeCloud overwrite:YES context:_context];
+        [CCCoreData addMetadata:metadata activeAccount:_activeAccount activeUrl:_activeUrl typeCloud:_typeCloud context:_context];
         
         [self uploadURLSession:fileName fileNamePrint:metadata.fileNamePrint serverUrl:serverUrl directoryID:metadata.directoryID sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist parentRev:parentRev selector:selector];
     }
@@ -969,7 +969,7 @@
             metadata.typeCloud = _typeCloud;
             metadata.typeFile = metadataTypeFile_template;
             
-            [CCCoreData addMetadata:metadata activeAccount:_activeAccount activeUrl:_activeUrl typeCloud:_typeCloud overwrite:YES context:_context];
+            [CCCoreData addMetadata:metadata activeAccount:_activeAccount activeUrl:_activeUrl typeCloud:_typeCloud context:_context];
             
             // DATA
             [self uploadURLSession:fileNameCrypto fileNamePrint:fileName serverUrl:serverUrl directoryID:metadata.directoryID sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist parentRev:parentRev selector:selector];
@@ -1070,7 +1070,7 @@
                     if ([metadata.typeFile isEqualToString:metadataTypeFile_image] || [metadata.typeFile isEqualToString:metadataTypeFile_video])
                         [crypto addPlistImage:[NSString stringWithFormat:@"%@/%@", _directoryUser, [fileNameCrypto stringByAppendingString:@".plist"]] fileNamePathImage:[NSTemporaryDirectory() stringByAppendingString:uploadID]];
                     
-                    [CCCoreData addMetadata:metadata activeAccount:_activeAccount activeUrl:_activeUrl typeCloud:_typeCloud overwrite:YES context:_context];
+                    [CCCoreData addMetadata:metadata activeAccount:_activeAccount activeUrl:_activeUrl typeCloud:_typeCloud context:_context];
                     
                     // DATA
                     [self uploadURLSession:fileNameCrypto fileNamePrint:fileName serverUrl:serverUrl directoryID:metadata.directoryID sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist parentRev:parentRev selector:selector];
@@ -1097,7 +1097,7 @@
                 if ([metadata.typeFile isEqualToString:metadataTypeFile_image] || [metadata.typeFile isEqualToString:metadataTypeFile_video])
                     [crypto addPlistImage:[NSString stringWithFormat:@"%@/%@", _directoryUser, [fileNameCrypto stringByAppendingString:@".plist"]] fileNamePathImage:[NSTemporaryDirectory() stringByAppendingString:uploadID]];
                 
-                [CCCoreData addMetadata:metadata activeAccount:_activeAccount activeUrl:_activeUrl typeCloud:_typeCloud overwrite:YES context:_context];
+                [CCCoreData addMetadata:metadata activeAccount:_activeAccount activeUrl:_activeUrl typeCloud:_typeCloud context:_context];
                 
                 // DATA
                 [self uploadURLSession:fileNameCrypto fileNamePrint:fileName serverUrl:serverUrl directoryID:metadata.directoryID sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist parentRev:parentRev selector:selector];
@@ -1155,7 +1155,7 @@
                 // -- Go to Upload --
                 [CCGraphics createNewImageFrom:metadata.fileNamePrint directoryUser:_directoryUser fileNameTo:metadata.fileID fileNamePrint:metadata.fileNamePrint size:@"m" imageForUpload:YES typeFile:metadata.typeFile writePreview:YES optimizedFileName:NO];
                 
-                [CCCoreData addMetadata:metadata activeAccount:_activeAccount activeUrl:_activeUrl typeCloud:_typeCloud overwrite:YES context:_context];
+                [CCCoreData addMetadata:metadata activeAccount:_activeAccount activeUrl:_activeUrl typeCloud:_typeCloud context:_context];
                 
                 [self uploadURLSession:fileName fileNamePrint:fileName serverUrl:serverUrl directoryID:metadata.directoryID sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist parentRev:parentRev selector:selector];
             }];
@@ -1176,7 +1176,7 @@
             // -- Go to upload --
             [CCGraphics createNewImageFrom:metadata.fileNamePrint directoryUser:_directoryUser fileNameTo:metadata.fileID fileNamePrint:metadata.fileNamePrint size:@"m" imageForUpload:YES typeFile:metadata.typeFile writePreview:YES optimizedFileName:NO];
             
-            [CCCoreData addMetadata:metadata activeAccount:_activeAccount activeUrl:_activeUrl typeCloud:_typeCloud overwrite:YES context:_context];
+            [CCCoreData addMetadata:metadata activeAccount:_activeAccount activeUrl:_activeUrl typeCloud:_typeCloud context:_context];
             
             [self uploadURLSession:fileName fileNamePrint:fileName serverUrl:serverUrl directoryID:metadata.directoryID sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist parentRev:parentRev selector:selector];
         }
@@ -1489,7 +1489,7 @@
         
         // Local
         if (metadata.directory == NO)
-            [CCCoreData addLocalFile:metadata updateRev:nil activeAccount:_activeAccount];
+            [CCCoreData addLocalFile:metadata activeAccount:_activeAccount];
         
         // EXIF
         if ([metadata.typeFile isEqualToString:metadataTypeFile_image])

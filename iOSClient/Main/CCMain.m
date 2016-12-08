@@ -1669,7 +1669,7 @@
                 
                 [CCCoreData updateMetadata:metadataDB predicate:[NSPredicate predicateWithFormat:@"(sessionID == %@) AND (account == %@)", sessionID, app.activeAccount] activeAccount:app.activeAccount activeUrl:app.activeUrl typeCloud:app.typeCloud context:nil];
                 
-                [CCCoreData addLocalFile:metadataDB updateRev:nil activeAccount:app.activeAccount];
+                [CCCoreData addLocalFile:metadataDB activeAccount:app.activeAccount];
                 
                 [CCGraphics createNewImageFrom:metadata.fileID directoryUser:app.directoryUser fileNameTo:metadata.fileID fileNamePrint:metadata.fileNamePrint size:@"m" imageForUpload:NO typeFile:metadata.typeFile writePreview:YES optimizedFileName:[CCUtility getOptimizedPhoto]];
                 
@@ -1702,7 +1702,7 @@
         */
         
         // end test, insert in CoreData
-        [CCCoreData addMetadata:metadata activeAccount:app.activeAccount activeUrl:app.activeUrl typeCloud:app.typeCloud overwrite:YES context:nil];
+        [CCCoreData addMetadata:metadata activeAccount:app.activeAccount activeUrl:app.activeUrl typeCloud:app.typeCloud context:nil];
     }
     
     // read plist

@@ -606,34 +606,26 @@
 #pragma mark ===== Metadata =====
 #pragma --------------------------------------------------------------------------------------------
 
-+ (void)addMetadata:(CCMetadata *)metadata activeAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl typeCloud:(NSString *)typeCloud overwrite:(BOOL)overwrite context:(NSManagedObjectContext *)context
++ (void)addMetadata:(CCMetadata *)metadata activeAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl typeCloud:(NSString *)typeCloud context:(NSManagedObjectContext *)context
 {
     if (context == nil)
         context = [NSManagedObjectContext MR_context];
 
-    TableMetadata *record = [TableMetadata MR_findFirstWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileName == %@) AND (directoryID == %@)", activeAccount, metadata.fileName, metadata.directoryID] inContext:context];
-        
-    if (!record)
-        record = [TableMetadata MR_createEntityInContext:context];
-    else {
-        if (!overwrite)
-            return;
-        
-        NSLog(@"[LOG] Filename exists update Metadata for %@", metadata.fileName);
-    }
-    
-    // cancelliamo i fileID (BUG 2.10)
+    // remove all fileID (BUG 2.10)
     NSArray *records = [TableMetadata MR_findAllWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileID == %@)", activeAccount, metadata.fileID] inContext:context];
     for(TableMetadata *record in records)
         [record MR_deleteEntityInContext:context];
     
+    // create new record Metadata
+    TableMetadata *record = [TableMetadata MR_createEntityInContext:context];
+
+    // set default value
     metadata.sessionTaskIdentifier = taskIdentifierDone;
     metadata.sessionTaskIdentifierPlist = taskIdentifierDone;
-    
-    [self insertMetadataInEntity:metadata recordMetadata:record activeAccount:activeAccount activeUrl:activeUrl typeCloud:typeCloud];
-    
-    // setta la data di creazione del record
     [record setValue:[NSDate date] forKey:@"dateRecord"];
+
+    // Insert metdata -> entity
+    [self insertMetadataInEntity:metadata recordMetadata:record activeAccount:activeAccount activeUrl:activeUrl typeCloud:typeCloud];
     
     // Aggiorniamo la data nella directory (ottimizzazione v 2.10)
     [self setDateReadDirectoryID:metadata.directoryID activeAccount:activeAccount];
@@ -832,23 +824,6 @@
 + (NSArray *)getTableMetadataUploadWWanAccount:(NSString *)activeAccount
 {
     return [self getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (session == %@) AND ((sessionTaskIdentifier != %i) OR (sessionTaskIdentifierPlist != %i))", activeAccount, upload_session_wwan, taskIdentifierDone, taskIdentifierDone] context:nil];
-}
-
-+ (void)updateMetadataRev:(NSString *)rev fileID:(NSString *)fileID activeAccount:(NSString *)activeAccount
-{
-    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
-    NSPredicate *predicate;
-    
-    // Metadata
-    predicate = [NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, activeAccount];
-    TableMetadata *recordMetadata = [TableMetadata MR_findFirstWithPredicate:predicate inContext:context];
-    
-    if (recordMetadata) {
-        
-        recordMetadata.rev = rev;
-        
-        [context MR_saveToPersistentStoreAndWait];
-    }
 }
 
 + (void)changeRevFileIDDB:(NSString *)revFileID revTo:(NSString *)revTo activeAccount:(NSString *)activeAccount
@@ -1299,7 +1274,7 @@
 #pragma mark ===== LocalFile =====
 #pragma --------------------------------------------------------------------------------------------
 
-+ (void)addLocalFile:(CCMetadata *)metadata updateRev:(NSString *)updateRev activeAccount:(NSString *)activeAccount
++ (void)addLocalFile:(CCMetadata *)metadata activeAccount:(NSString *)activeAccount
 {
     [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
         
@@ -1329,10 +1304,7 @@
         record.favorite = [NSNumber numberWithBool:favorite];
         record.fileName = metadata.fileName;
         record.fileNamePrint = metadata.fileNamePrint;
-        if (updateRev)
-            record.rev = updateRev;
-        else
-            record.rev = metadata.rev;
+        record.rev = metadata.rev;
         record.size = [NSNumber numberWithLong:metadata.size];
     }];
 }
@@ -1403,7 +1375,7 @@
         
         } else {
         
-            [self addLocalFile:metadata updateRev:nil activeAccount:activeAccount];
+            [self addLocalFile:metadata activeAccount:activeAccount];
         }
     }];
 }
@@ -1778,7 +1750,7 @@
 #pragma mark ===== File System =====
 #pragma --------------------------------------------------------------------------------------------
 
-+ (BOOL)downloadFile:(CCMetadata *)metadata rev:(NSString *)rev directoryUser:(NSString *)directoryUser activeAccount:(NSString *)activeAccount
++ (BOOL)downloadFile:(CCMetadata *)metadata directoryUser:(NSString *)directoryUser activeAccount:(NSString *)activeAccount
 {
     CCCrypto *crypto = [[CCCrypto alloc] init];
     
@@ -1791,11 +1763,7 @@
     // ------------------------------------------ COREDATA -------------------------------------------
     
     // add/update Table Local File
-    [self addLocalFile:metadata updateRev:rev activeAccount:activeAccount];
-    
-    // update Table Metadate : rev if changed
-    if (![metadata.rev isEqualToString:rev])
-        [self updateMetadataRev:rev fileID:metadata.fileID activeAccount:activeAccount];
+    [self addLocalFile:metadata activeAccount:activeAccount];
     
     // EXIF
     if ([metadata.typeFile isEqualToString:metadataTypeFile_image])

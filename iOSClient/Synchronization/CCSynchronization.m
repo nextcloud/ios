@@ -307,7 +307,7 @@
                 selector = selectorLoadPlist;
             }
         
-            [CCCoreData addMetadata:metadata activeAccount:app.activeAccount activeUrl:serverUrl typeCloud:app.typeCloud overwrite:NO context:nil];
+            [CCCoreData addMetadata:metadata activeAccount:app.activeAccount activeUrl:serverUrl typeCloud:app.typeCloud context:nil];
         
             CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
             
