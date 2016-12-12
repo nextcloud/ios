@@ -69,11 +69,11 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>00300</string>
+	<string>00301</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<true/>
 	<key>ITSEncryptionExportComplianceCode</key>
-	<string>00000000000</string>
+	<string>00000</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>dbapi-1</string>

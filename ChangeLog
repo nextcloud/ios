@@ -2,14 +2,28 @@
 
 	* Version 2.14 00015 released.
 
-	* New features:
-		* Control if file exists in 'manual' upload. (Marino Faggiana)
-		* Add main-menu item : Folders on top.  (Marino Faggiana)
+		* New features:
+			* Control if file exists in 'manual' upload. (Marino Faggiana)
+			* Add main-menu item : Folders on top.  (Marino Faggiana)
 		
-	* Bug fixes:
-		* Improved (create new class) Synchronization folders. (Marino Faggiana)
-		* Improved 'Upload all camera photos/videos' bugfix if error block all, automatic default overwrite file if exists. (marino Faggiana)
-		* Detect Wi-Fi on automatic upload, problem database context. (Marino Faggiana)
-		* View on Control Center. (Marino Faggiana)
+		* Bug fixes:
+			* Improved (create new class) Synchronization folders. (Marino Faggiana)
+			* Improved 'Upload all camera photos/videos' bugfix if error block all, automatic default overwrite file if exists. (marino Faggiana)
+			* Detect Wi-Fi on automatic upload, problem database context. (Marino Faggiana)
+			* View on Control Center. (Marino Faggiana)
+
+
+	* Version 2.15 00301 released.
+
+		* Improvement:
+			* Improvement system for managed Synchronized. (Marino Faggiana)
+			* Improvement Control Center. (Marino Faggiana)
+			* Improvement system I/O for upload/download file, thumbnails and command to cloud. (Marino Faggiana)
+			* Improvement Automatic upload and full upload photos/videos. (Marino Faggiana)
+			* Remove limit to manual  upload. (Marino Faggiana)
+		
+		* Bug fixes:
+			* Bugfix detect geolocation image. (Marino Faggiana)
+		
 
 
