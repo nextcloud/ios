@@ -76,6 +76,10 @@ class CCloadItemData: NSObject {
                                          
                                                 filesName.append(fileName)
                                             }
+                                            
+                                        } else {
+                                         
+                                            print("Error image NULL")
                                         }
                                     }
                                     
