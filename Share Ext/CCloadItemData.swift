@@ -98,14 +98,17 @@ class CCloadItemData: NSObject {
                                                 
                                                 if let _attr = attr {
                                                     if _attr.fileSize() > 0 {
+                                                        
                                                         filesName.append(fileName)
                                                     }
                                                 }
                                                 
                                             } catch let error as NSError {
+                                                
                                                 print("Error: \(error.localizedDescription)")
                                             }                                            
                                         } catch let error as NSError {
+                                            
                                             print("Cannot copy file: \(error.localizedDescription)")
                                         }
                                     }
