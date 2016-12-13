@@ -30,7 +30,7 @@ class CCloadItemData: NSObject {
     {
         var filesName: [String] = []
         var conuter = 0
-        let hud = CCHud(view: vc.view)
+        let hud = CCHud(view: vc.view)!
                 
         if let inputItems : [NSExtensionItem] = extensionContext.inputItems as? [NSExtensionItem] {
             
@@ -51,7 +51,7 @@ class CCloadItemData: NSObject {
                         
                         if current.hasItemConformingToTypeIdentifier(kUTTypeItem as String) {
                             
-                            hud?.visibleIndeterminateHud()
+                            hud.visibleIndeterminateHud()
                             
                             current.loadItem(forTypeIdentifier: kUTTypeItem as String, options: nil, completionHandler: {(item, error) -> Void in
                                 
@@ -152,13 +152,13 @@ class CCloadItemData: NSObject {
                                     if index + 1 == attachments.count {
                                         
                                         vc.performSelector(onMainThread: #selector(vc.reloadData), with:filesName, waitUntilDone: false)
-                                        hud?.performSelector(onMainThread: #selector(CCHud.hideHud), with: nil, waitUntilDone: false)
+                                        hud.performSelector(onMainThread: #selector(CCHud.hideHud), with: nil, waitUntilDone: false)
                                     }
                                     
                                 } else {
                                     
                                     print("ERROR: \(error)")
-                                    hud?.performSelector(onMainThread: #selector(CCHud.hideHud), with: nil, waitUntilDone: false)
+                                    hud.performSelector(onMainThread: #selector(CCHud.hideHud), with: nil, waitUntilDone: false)
                                 }
                             })
                             
