@@ -24,26 +24,6 @@
 import UIKit
 import MobileCoreServices
 
-fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
-  switch (lhs, rhs) {
-  case let (l?, r?):
-    return l < r
-  case (nil, _?):
-    return true
-  default:
-    return false
-  }
-}
-
-fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
-  switch (lhs, rhs) {
-  case let (l?, r?):
-    return l > r
-  default:
-    return rhs < lhs
-  }
-}
-
 class CCloadItemData: NSObject {
     
     func loadFiles(_ directoryUser: String, extensionContext: NSExtensionContext, vc: ShareViewController)
@@ -85,9 +65,9 @@ class CCloadItemData: NSObject {
                                         
                                         print("item as UIImage")
                                         
-                                        let pngImageData = UIImagePNGRepresentation(image)
+                                        let pngImageData : Data? = UIImagePNGRepresentation(image)
                                         
-                                        if pngImageData?.count > 0 {
+                                        if pngImageData != nil {
                                         
                                             let fileName = "\(dateFormatter.string(from: Date()))\(conuter).png"
                                             let filenamePath = directoryUser + "/" + fileName
@@ -168,7 +148,7 @@ class CCloadItemData: NSObject {
                                         }
                                     }
                                     
-                                    if index+1 == attachments.count {
+                                    if index + 1 == attachments.count {
                                         
                                         vc.performSelector(onMainThread: #selector(vc.reloadData), with:filesName, waitUntilDone: false)
                                         hud?.performSelector(onMainThread: #selector(CCHud.hideHud), with: nil, waitUntilDone: false)
