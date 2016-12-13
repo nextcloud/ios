@@ -79,7 +79,7 @@ class CCloadItemData: NSObject {
                                             
                                         } else {
                                          
-                                            print("Error image NULL")
+                                            print("Error image nil")
                                         }
                                     }
                                     
