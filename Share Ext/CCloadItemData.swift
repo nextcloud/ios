@@ -83,11 +83,8 @@ class CCloadItemData: NSObject {
                                         
                                         print("item as url: \(item)")
                                         
-                                        var fileName = url.lastPathComponent;
-                                        let pathExtention = URL(fileURLWithPath: fileName).pathExtension
-                                        
-                                        fileName = "\(dateFormatter.string(from: Date()))\(conuter).\(pathExtention)"
-                                        
+                                        let pathExtention = URL(fileURLWithPath: url.lastPathComponent).pathExtension
+                                        let fileName = "\(dateFormatter.string(from: Date()))\(conuter).\(pathExtention)"
                                         let filenamePath = directoryUser + "/" + fileName
                                         
                                         do {
@@ -121,8 +118,8 @@ class CCloadItemData: NSObject {
                                         
                                             let description = current.description
                                         
-                                            var fullNameArr = description.components(separatedBy: "\"")
-                                            var fileExtArr = fullNameArr[1].components(separatedBy: ".")
+                                            let fullNameArr = description.components(separatedBy: "\"")
+                                            let fileExtArr = fullNameArr[1].components(separatedBy: ".")
                                             let pathExtention = (fileExtArr[fileExtArr.count-1]).uppercased()
                                         
                                             let fileName = "\(dateFormatter.string(from: Date()))\(conuter).\(pathExtention)"
