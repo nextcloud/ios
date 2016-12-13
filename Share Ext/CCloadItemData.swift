@@ -65,14 +65,12 @@ class CCloadItemData: NSObject {
                                         
                                         print("item as UIImage")
                                         
-                                        let pngImageData : Data? = UIImagePNGRepresentation(image)
-                                        
-                                        if pngImageData != nil {
+                                        if let pngImageData = UIImagePNGRepresentation(image) {
                                         
                                             let fileName = "\(dateFormatter.string(from: Date()))\(conuter).png"
                                             let filenamePath = directoryUser + "/" + fileName
                                         
-                                            let result = (try? pngImageData!.write(to: URL(fileURLWithPath: filenamePath), options: [.atomic])) != nil
+                                            let result = (try? pngImageData.write(to: URL(fileURLWithPath: filenamePath), options: [.atomic])) != nil
                                         
                                             if result {
                                          
