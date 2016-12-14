@@ -127,6 +127,10 @@
     _netQueueUploadWWan.name = @"it.twsweb.cryptocloud.queueUploadWWan";
     _netQueueUploadWWan.maxConcurrentOperationCount = maxConcurrentOperationDownloadUpload;
     
+    _netQueueUploadCameraAllPhoto = [[NSOperationQueue alloc] init];
+    _netQueueUploadCameraAllPhoto.name = @"it.twsweb.cryptocloud.queueUploadCameraAllPhoto";
+    _netQueueUploadCameraAllPhoto.maxConcurrentOperationCount = 1;
+    
 #ifdef CC
     // Inizialize DBSession for Dropbox
     NSString *appKey = appKeyCryptoCloud;
@@ -682,6 +686,8 @@
     _queueNumUpload = [[CCCoreData getTableMetadataUploadAccount:self.activeAccount] count];
     _queueNumUploadWWan = [[CCCoreData getTableMetadataUploadWWanAccount:self.activeAccount] count];
     
+    _queueNumUploadCameraAllPhoto = 0;
+    
     // Clear list folder in Synchronization
     [self.listFolderSynchronization removeAllObjects];
         
@@ -771,10 +777,27 @@
         if ([app.typeCloud isEqualToString:typeCloudDropbox])
             if (((DBnetworking *)operation).isExecuting == NO) _queueNumUploadWWan++;
 #endif
+     }
+
+    // netQueueUploadCameraAllPhoto
+    for (NSOperation *operation in [app.netQueueUploadCameraAllPhoto operations]) {
+        
+        /*** NEXTCLOUD OWNCLOUD ***/
+        
+        if ([app.typeCloud isEqualToString:typeCloudOwnCloud] || [app.typeCloud isEqualToString:typeCloudNextcloud])
+            if (((OCnetworking *)operation).isExecuting == NO) _queueNumUploadCameraAllPhoto++;
+        
+#ifdef CC
+        
+        /*** DROPBOX ***/
+        
+        if ([app.typeCloud isEqualToString:typeCloudDropbox])
+            if (((DBnetworking *)operation).isExecuting == NO) _queueNumUploadCameraAllPhoto++;
+#endif
     }
-    
+
     // Total
-    NSUInteger total = _queueNunDownload + _queueNumDownloadWWan + _queueNumUpload + _queueNumUploadWWan;
+    NSUInteger total = _queueNunDownload + _queueNumDownloadWWan + _queueNumUpload + _queueNumUploadWWan + _queueNumUploadCameraAllPhoto;
     
     [UIApplication sharedApplication].applicationIconBadgeNumber = total;
     
@@ -998,6 +1021,7 @@
     [_netQueueDownloadWWan cancelAllOperations];
     [_netQueueUpload cancelAllOperations];
     [_netQueueUploadWWan cancelAllOperations];
+    [_netQueueUploadCameraAllPhoto cancelAllOperations];
     
     [self performSelector:@selector(updateApplicationIconBadgeNumber) withObject:nil afterDelay:0.5];
 }
@@ -1209,25 +1233,8 @@
 
 - (void)dropCameraUploadAllPhoto
 {
-    // remove queue upload for : selectorUploadCameraAllPhoto
-    for (NSOperation *operation in [self.netQueueUpload operations]) {
-        
-        /*** NEXTCLOUD OWNCLOUD ***/
-        
-        if ([app.typeCloud isEqualToString:typeCloudOwnCloud] || [app.typeCloud isEqualToString:typeCloudNextcloud])
-            if ([((OCnetworking *)operation).metadataNet.selector isEqualToString:selectorUploadCameraAllPhoto])
-                [operation cancel];
-        
-#ifdef CC
-        
-        /*** DROPBOX ***/
-        
-        if ([app.typeCloud isEqualToString:typeCloudDropbox])
-            if ([((DBnetworking *)operation).metadataNet.selector isEqualToString:selectorUploadCameraAllPhoto])
-                [operation cancel];
-#endif
-    }
-
+    [_netQueueUploadCameraAllPhoto cancelAllOperations];
+    
     [CCCoreData deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (session != NULL) AND (session != '') AND ((sessionSelector == %@))", self.activeAccount, selectorUploadCameraAllPhoto]];
     
     [CCCoreData setCameraUploadFullPhotosActiveAccount:NO activeAccount:app.activeAccount];
@@ -1345,8 +1352,8 @@
 - (void)upgrade
 {
 #ifdef DEBUG
-    [CCCoreData flushTableGPS];
-    [CCCoreData setGeoInformationLocalNull];
+   // [CCCoreData flushTableGPS];
+   // [CCCoreData setGeoInformationLocalNull];
 #endif
     
     NSString *actualVersion = [CCUtility getVersionCryptoCloud];

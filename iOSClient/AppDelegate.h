@@ -89,8 +89,9 @@
 @property (nonatomic, strong) NSOperationQueue *netQueueDownloadWWan;
 @property (nonatomic, strong) NSOperationQueue *netQueueUpload;
 @property (nonatomic, strong) NSOperationQueue *netQueueUploadWWan;
+@property (nonatomic, strong) NSOperationQueue *netQueueUploadCameraAllPhoto;
 
-@property NSUInteger queueNunDownload, queueNumDownloadWWan, queueNumUpload, queueNumUploadWWan;
+@property NSUInteger queueNunDownload, queueNumDownloadWWan, queueNumUpload, queueNumUploadWWan, queueNumUploadCameraAllPhoto;
 
 // Networking 
 @property (nonatomic, copy) void (^backgroundSessionCompletionHandler)(void);

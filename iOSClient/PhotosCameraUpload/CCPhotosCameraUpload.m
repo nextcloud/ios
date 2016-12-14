@@ -1261,7 +1261,9 @@
         metadataNet.taskStatus = taskStatusResume;
         
         // Select type of queue
-        if ([session containsString:@"wwan"])
+        if (assetsFull)
+            queue = app.netQueueUploadCameraAllPhoto;
+        else if ([session containsString:@"wwan"])
             queue = app.netQueueUploadWWan;
         else
             queue = app.netQueueUpload;
