@@ -189,7 +189,7 @@ extern NSString *const BKPasscodeKeychainServiceName;
 
 #define maxConcurrentOperation 10
 #define maxConcurrentOperationDownloadUpload 10
-
+#define maxConcurrentOperationUploadCameraAllPhoto 1
 
 // Error
 #define CCErrorTaskNil -9999

@@ -129,7 +129,7 @@
     
     _netQueueUploadCameraAllPhoto = [[NSOperationQueue alloc] init];
     _netQueueUploadCameraAllPhoto.name = @"it.twsweb.cryptocloud.queueUploadCameraAllPhoto";
-    _netQueueUploadCameraAllPhoto.maxConcurrentOperationCount = 1;
+    _netQueueUploadCameraAllPhoto.maxConcurrentOperationCount = maxConcurrentOperationUploadCameraAllPhoto;
     
 #ifdef CC
     // Inizialize DBSession for Dropbox
