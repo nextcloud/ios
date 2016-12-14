@@ -691,21 +691,6 @@
     }
 }
 
-+ (void)updateMetadataCameraUploadWithDirectoryID:(NSString *)directoryID activeAccount:(NSString *)activeAccount
-{
-    [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
-        
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (sessionCameraUpload == 1)", activeAccount];
-        NSArray *records = [TableMetadata MR_findAllWithPredicate:predicate inContext:localContext];
-    
-        for (TableMetadata *record in records)
-            record.directoryID = directoryID;
-        
-        // Aggiorniamo la data nella directory (ottimizzazione v 2.10)
-        [self setDateReadDirectoryID:directoryID activeAccount:activeAccount];
-    }];
-}
-
 + (void)setMetadataSession:(NSString *)session sessionError:(NSString *)sessionError sessionSelector:(NSString *)sessionSelector sessionSelectorPost:(NSString *)sessionSelectorPost sessionTaskIdentifier:(NSInteger)sessionTaskIdentifier sessionTaskIdentifierPlist:(NSInteger)sessionTaskIdentifierPlist predicate:(NSPredicate *)predicate context:(NSManagedObjectContext *)context
 {
     if (context == nil)

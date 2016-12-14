@@ -2225,10 +2225,7 @@
 {
     [_hud hideHud];
     
-    NSString *directoryIDReturn = [CCCoreData addDirectory:[NSString stringWithFormat:@"%@/%@", metadataNet.serverUrl, metadataNet.fileName] date:[NSDate date] permissions:nil activeAccount:app.activeAccount];
-    
-    if ([metadataNet.options isEqualToString:@"folderCameraUpload"] && directoryIDReturn)
-        [CCCoreData updateMetadataCameraUploadWithDirectoryID:directoryIDReturn activeAccount:app.activeAccount];
+    [CCCoreData addDirectory:[NSString stringWithFormat:@"%@/%@", metadataNet.serverUrl, metadataNet.fileName] date:[NSDate date] permissions:nil activeAccount:app.activeAccount];
     
     // Load Folder or the Datasource
     if ([metadataNet.selectorPost isEqualToString:selectorReadFolderForced]) {
