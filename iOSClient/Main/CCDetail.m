@@ -807,6 +807,10 @@
 {
     NSString *fileID = [[notification.userInfo allKeys] objectAtIndex:0];
     //NSDate *date = [[notification.userInfo allValues] objectAtIndex:0];
+ 
+    // test [Chrash V 1.14,15]
+    if (self.indexNowVisible >= [self.photos count])
+        return;
     
     dispatch_async(dispatch_get_main_queue(), ^{
         
