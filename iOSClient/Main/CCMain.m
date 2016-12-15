@@ -4956,9 +4956,6 @@
     if ([typeCell isEqualToString:@"CellMain"]) cell.backgroundColor = [UIColor whiteColor];
     if ([typeCell isEqualToString:@"CellMainTransfer"]) cell.backgroundColor = COLOR_TRANSFER_BACKGROUND;
     
-    // salviamo il riferimento alla Cell
-    cell.directoryIDFileName = [metadata.directoryID stringByAppendingString:metadata.fileName];
-    
     // ----------------------------------------------------------------------------------------------------------
     // DEFAULT
     // ----------------------------------------------------------------------------------------------------------

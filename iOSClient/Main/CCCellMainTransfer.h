@@ -39,13 +39,11 @@
 @property(nonatomic, weak) IBOutlet UIButton *reloadTaskButton;
 @property(nonatomic, weak) IBOutlet UIButton *stopTaskButton;
 
-
 //Last position of the scroll of the swipe
 @property (nonatomic, assign) CGFloat lastContentOffset;
 
 //Index path of the cell swipe gesture ocured
 @property (nonatomic, strong) NSIndexPath *indexPath;
 
-@property (nonatomic, strong) NSString* directoryIDFileName;
 
 @end

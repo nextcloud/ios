@@ -42,6 +42,4 @@
 //Index path of the cell swipe gesture ocured
 @property (nonatomic, strong) NSIndexPath *indexPath;
 
-@property (nonatomic, strong) NSString* directoryIDFileName;
-
 @end
