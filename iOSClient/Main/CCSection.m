@@ -149,7 +149,8 @@
             [sectionDataSource.sectionArrayRow setObject:metadatas forKey:dataSection];
         }
 
-        [dictionaryFileIDMetadataForIndexPath setObject:metadata forKey:metadata.fileID];
+        if (metadata && [metadata.fileID length] > 0)
+            [dictionaryFileIDMetadataForIndexPath setObject:metadata forKey:metadata.fileID];
     }
     
     /*
