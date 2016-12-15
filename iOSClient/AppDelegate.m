@@ -1240,7 +1240,7 @@
     [CCCoreData setCameraUploadFullPhotosActiveAccount:NO activeAccount:app.activeAccount];
     
     // Update icon badge number
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 3.0 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         [self updateApplicationIconBadgeNumber];
     });
 }
@@ -1250,7 +1250,8 @@
 #pragma --------------------------------------------------------------------------------------------
 
 #ifdef CC
-- (void)sessionDidReceiveAuthorizationFailure:(DBSession*)session userId:(NSString *)userId {
+- (void)sessionDidReceiveAuthorizationFailure:(DBSession*)session userId:(NSString *)userId
+{
     
     [[NSNotificationCenter defaultCenter] postNotificationName:@"messageLoginIncorrect" object:nil];
 }

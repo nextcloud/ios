@@ -1133,8 +1133,12 @@
     [[UIApplication sharedApplication] setIdleTimerDisabled: YES];
         
     if (!_hud) _hud = [[CCHud alloc] initWithView:[[[UIApplication sharedApplication] delegate] window]];
-    [_hud visibleHudTitle:NSLocalizedString(@"_create_full_upload_", nil) mode:MBProgressHUDModeIndeterminate color:nil];
-        
+    
+    if (assetsFull)
+        [_hud visibleHudTitle:NSLocalizedString(@"_create_full_upload_", nil) mode:MBProgressHUDModeIndeterminate color:nil];
+    else
+        [_hud visibleHudTitle:nil mode:MBProgressHUDModeIndeterminate color:nil];
+    
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.01 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
         
         if (assetsFull)
@@ -1163,7 +1167,7 @@
     BOOL createSubfolders = [CCCoreData getCameraUploadCreateSubfolderActiveAccount:app.activeAccount];
     
     for (ALAsset *asset in newItemsToUpload) {
-            
+        
         NSURL *url = [asset valueForProperty:@"ALAssetPropertyAssetURL"];
         PHFetchResult *fetchResult = [PHAsset fetchAssetsWithALAssetURLs:@[url] options:nil];
         PHAsset *asset = [fetchResult firstObject];
@@ -1192,7 +1196,7 @@
             
             if(![self createFolder:[NSString stringWithFormat:@"%@/%@", folderCameraUpload, dateSubFolder]]) {
                 
-                [_hud hideHud];
+                [self endLoadingAssets];
                 
                 if (assetsFull) {
                     
@@ -1200,12 +1204,6 @@
                     
                     [app dropCameraUploadAllPhoto];
                 }
-                
-                // Enable idle timer
-                [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
-
-                // START new request : initStateCameraUpload
-                _AutomaticCameraUploadInProgress = NO;
                 
                 return;
             }
@@ -1272,16 +1270,11 @@
         [app addNetworkingOperationQueue:queue delegate:app.activeMain metadataNet:metadataNet oneByOne:YES];
     }
     
-    [_hud hideHud];
-    
-    // Enable idle timer
-    [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
+    // end loading
+    [self endLoadingAssets];
     
     // Update icon badge number
     [app updateApplicationIconBadgeNumber];
-    
-    // START new request : initStateCameraUpload
-    _AutomaticCameraUploadInProgress = NO;
 }
 
 - (BOOL)createFolder:(NSString *)folderPathName
@@ -1317,6 +1310,20 @@
     }
     
     return NO;
+}
+
+-(void)endLoadingAssets
+{
+    [_hud hideHud];
+    
+    // START new request : initStateCameraUpload
+    _AutomaticCameraUploadInProgress = NO;
+    
+    // Enable idle timer
+    [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
+
+    // START new request : initStateCameraUpload
+    _AutomaticCameraUploadInProgress = NO;
 }
 
 @end
