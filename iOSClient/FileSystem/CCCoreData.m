@@ -77,7 +77,6 @@
     NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
 
     TableAccount *record = [TableAccount MR_findFirstByAttribute:@"account" withValue:account inContext:context];
-        
     [record MR_deleteEntityInContext:context];
     
     [context MR_saveToPersistentStoreAndWait];
@@ -612,9 +611,8 @@
         context = [NSManagedObjectContext MR_context];
 
     // remove all fileID (BUG 2.10)
-    NSArray *records = [TableMetadata MR_findAllWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileID == %@)", activeAccount, metadata.fileID] inContext:context];
-    for(TableMetadata *record in records)
-        [record MR_deleteEntityInContext:context];
+    [TableMetadata MR_deleteAllMatchingPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileID == %@)", activeAccount, metadata.fileID] inContext:context];
+    [context MR_saveToPersistentStoreAndWait];
     
     // create new record Metadata
     TableMetadata *record = [TableMetadata MR_createEntityInContext:context];
@@ -920,10 +918,7 @@
 {
     [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
 
-        NSArray *records = [TableDirectory MR_findAllWithPredicate:predicate inContext:localContext];
-        
-        for(TableDirectory *record in records)
-            [record MR_deleteEntityInContext:localContext];
+        [TableDirectory MR_deleteAllMatchingPredicate:predicate inContext:localContext];
     }];
 }
 
@@ -1310,10 +1305,7 @@
 {
     [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
         
-        NSArray *records = [TableLocalFile MR_findAllWithPredicate:predicate inContext:localContext];
-        
-        for(TableLocalFile *record in records)
-            [record MR_deleteEntityInContext:localContext];
+        [TableLocalFile MR_deleteAllMatchingPredicate:predicate inContext:localContext];
     }];
 }
 
@@ -1610,14 +1602,10 @@
 + (void)removeAllShareActiveAccount:(NSString *)activeAccount sharesLink:(NSMutableDictionary *)sharesLink sharesUserAndGroup:(NSMutableDictionary *)sharesUserAndGroup
 {
     NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
-
-    NSArray *records = [TableShare MR_findAllWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@)", activeAccount] inContext:context];
     
-    for (TableShare *record in records)
-        [record MR_deleteEntityInContext:context];
-    
+    [TableShare MR_deleteAllMatchingPredicate:[NSPredicate predicateWithFormat:@"account == %@", activeAccount] inContext:context];
     [context MR_saveToPersistentStoreAndWait];
-    
+
     [sharesLink removeAllObjects];
     [sharesUserAndGroup removeAllObjects];
 }
@@ -1974,9 +1962,7 @@
     
     if (account) {
         
-        NSArray *records = [TableDirectory MR_findAllWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@)", account] inContext:context];
-        for(TableDirectory *record in records)
-            [record MR_deleteEntityInContext:context];
+        [TableDirectory MR_deleteAllMatchingPredicate:[NSPredicate predicateWithFormat:@"(account == %@)", account] inContext:context];
         
     } else {
         
@@ -1991,10 +1977,8 @@
     NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
     
     if (account) {
-        NSArray *records = [TableLocalFile MR_findAllWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@)", account] inContext:context];
         
-        for(TableLocalFile *record in records)
-            [record MR_deleteEntityInContext:context];
+        [TableLocalFile MR_deleteAllMatchingPredicate:[NSPredicate predicateWithFormat:@"(account == %@)", account] inContext:context];
         
     } else {
         
@@ -2009,11 +1993,9 @@
     NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
     
     if (account) {
-        NSArray *records = [TableMetadata MR_findAllWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@)", account] inContext:context];
         
-        for(TableMetadata *record in records)
-            [record MR_deleteEntityInContext:context];
-                
+        [TableMetadata MR_deleteAllMatchingPredicate:[NSPredicate predicateWithFormat:@"(account == %@)", account] inContext:context];
+        
     } else {
         
         [TableMetadata MR_truncateAllInContext:context];
