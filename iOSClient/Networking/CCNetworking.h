@@ -61,7 +61,7 @@
 - (void)downloadFile:(CCMetadata *)metadata serverUrl:(NSString *)serverUrl downloadData:(BOOL)downloadData downloadPlist:(BOOL)downloadPlist selector:(NSString *)selector selectorPost:(NSString *)selectorPost session:(NSString *)session taskStatus:(NSInteger)taskStatus delegate:(id)delegate;
 
 // Upload
-- (void)uploadFileFromAsset:(PHAsset *)asset serverUrl:(NSString *)serverUrl cryptated:(BOOL)cryptated session:(NSString *)session taskStatus:(NSInteger)taskStatus selector:(NSString *)selector selectorPost:(NSString *)selectorPost parentRev:(NSString *)parentRev errorCode:(NSInteger)errorCode delegate:(id)delegate;
+- (void)uploadFileFromAssetLocalIdentifier:(NSString *)localIdentifier serverUrl:(NSString *)serverUrl cryptated:(BOOL)cryptated session:(NSString *)session taskStatus:(NSInteger)taskStatus selector:(NSString *)selector selectorPost:(NSString *)selectorPost parentRev:(NSString *)parentRev errorCode:(NSInteger)errorCode delegate:(id)delegate;
 - (void)uploadFile:(NSString *)fileName serverUrl:(NSString *)serverUrl cryptated:(BOOL)cryptated onlyPlist:(BOOL)onlyPlist session:(NSString *)session taskStatus:(NSInteger)taskStatus selector:(NSString *)selector selectorPost:(NSString *)selectorPost parentRev:(NSString *)parentRev errorCode:(NSInteger)errorCode delegate:(id)delegate;
 - (void)uploadTemplate:(NSString *)fileNamePrint fileNameCrypto:(NSString *)fileNameCrypto serverUrl:(NSString *)serverUrl session:(NSString *)session taskStatus:(NSInteger)taskStatus selector:(NSString *)selector selectorPost:(NSString *)selectorPost parentRev:(NSString *)parentRev errorCode:(NSInteger)errorCode delegate:(id)delegate;
 - (void)uploadFileMetadata:(CCMetadata *)metadata taskStatus:(NSInteger)taskStatus;

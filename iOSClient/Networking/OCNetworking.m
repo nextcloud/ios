@@ -215,7 +215,7 @@
 
 - (void)uploadAsset
 {
-    [[CCNetworking sharedNetworking] uploadFileFromAsset:_metadataNet.asset serverUrl:_metadataNet.serverUrl cryptated:_metadataNet.cryptated session:_metadataNet.session taskStatus:_metadataNet.taskStatus selector:_metadataNet.selector selectorPost:_metadataNet.selectorPost parentRev:nil errorCode:_metadataNet.errorCode delegate:self];
+    [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:_metadataNet.assetLocalItentifier serverUrl:_metadataNet.serverUrl cryptated:_metadataNet.cryptated session:_metadataNet.session taskStatus:_metadataNet.taskStatus selector:_metadataNet.selector selectorPost:_metadataNet.selectorPost parentRev:nil errorCode:_metadataNet.errorCode delegate:self];
     
     if (!_oneByOne)
         [self complete];

@@ -195,6 +195,7 @@ extern NSString *const BKPasscodeKeychainServiceName;
 #define CCErrorTaskNil -9999
 #define CCErrorTaskDownloadNotFound -9998
 #define CCErrorFileUploadNotFound -9997
+#define CCErrorInternalError -9996
 
 // Metadata ed ID
 #define uploadSessionID @"ID_UPLOAD_"

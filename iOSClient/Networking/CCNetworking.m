@@ -788,10 +788,19 @@
 #pragma mark =====  Upload =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)uploadFileFromAsset:(PHAsset *)asset serverUrl:(NSString *)serverUrl cryptated:(BOOL)cryptated session:(NSString *)session taskStatus:(NSInteger)taskStatus selector:(NSString *)selector selectorPost:(NSString *)selectorPost parentRev:(NSString *)parentRev errorCode:(NSInteger)errorCode delegate:(id)delegate
+- (void)uploadFileFromAssetLocalIdentifier:(NSString *)localIdentifier serverUrl:(NSString *)serverUrl cryptated:(BOOL)cryptated session:(NSString *)session taskStatus:(NSInteger)taskStatus selector:(NSString *)selector selectorPost:(NSString *)selectorPost parentRev:(NSString *)parentRev errorCode:(NSInteger)errorCode delegate:(id)delegate
 {
+    PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[localIdentifier] options:nil];
+    
+    if (!result.count) {
+        
+        if ([delegate respondsToSelector:@selector(uploadFileFailure:serverUrl:selector:message:errorCode:)])
+            [delegate uploadFileFailure:nil serverUrl:serverUrl selector:selector message:@"Internal error" errorCode:CCErrorInternalError];
+        return;
+    }
+    
+    PHAsset *asset = result[0];
     PHAssetMediaType assetMediaType = asset.mediaType;
-    NSString *localIdentifier = asset.localIdentifier;
     NSDate *assetDate = asset.creationDate;
     __block NSError *error = nil;
     

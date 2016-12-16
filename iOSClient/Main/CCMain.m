@@ -1454,7 +1454,7 @@
             if ([app.typeCloud isEqualToString:typeCloudDropbox]) {
                 
                 metadataNet.action = actionUploadAsset;
-                metadataNet.asset = asset;
+                metadataNet.assetLocalItentifier = asset.localIdentifier;
                 metadataNet.cryptated = cryptated;
                 metadataNet.errorCode = 0;
                 metadataNet.fileName = fileNameUpload;
@@ -1475,7 +1475,7 @@
             if ([app.typeCloud isEqualToString:typeCloudNextcloud] || [app.typeCloud isEqualToString:typeCloudOwnCloud]) {
             
                 metadataNet.action = actionReadFile;
-                metadataNet.asset = asset;
+                metadataNet.assetLocalItentifier = asset.localIdentifier;
                 metadataNet.cryptated = cryptated;
                 metadataNet.fileName = fileNameUpload;
                 metadataNet.session = session;
