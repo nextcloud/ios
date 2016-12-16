@@ -36,7 +36,6 @@
     if (([app.typeCloud isEqualToString:typeCloudNextcloud] || [app.typeCloud isEqualToString:typeCloudOwnCloud])&& app.activeAccount) {
         self.baseUrl.text = app.activeUrl;
         self.user.text = app.activeUser;
-        self.password.text = app.activePassword;
     }
     
     [self.baseUrl setDelegate:self];
