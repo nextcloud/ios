@@ -222,11 +222,14 @@
 - (void)verifyChangeMedatas:(NSArray *)allRecordMetadatas serverUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID account:(NSString *)account synchronization:(BOOL)synchronization
 {
     NSMutableArray *metadatas = [[NSMutableArray alloc] init];
-    TableAccount *recordAccount = [CCCoreData getActiveAccount];
     
     for (CCMetadata *metadata in allRecordMetadatas) {
         
         BOOL changeRev = NO;
+        
+        // change account
+        if ([metadata.account isEqualToString:account] == NO)
+            return;
         
         // no dir
         if (metadata.directory)
@@ -245,7 +248,7 @@
                 changeRev = YES;
         }
         
-        if (changeRev && [recordAccount.account isEqualToString:account]) {
+        if (changeRev) {
             
             if ([metadata.type isEqualToString:metadataType_file]) {
                 
@@ -261,6 +264,7 @@
             }
             
             [metadatas addObject:metadata];
+            
         }
     }
     
