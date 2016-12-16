@@ -51,6 +51,7 @@
 "_save_exit_"               = "Do you want to exit without saving?";
 "_video_"                   = "Video";
 "_overwrite_"               = "Overwrite";
+"_transfers_in_queue_"      = "Tranfers in progress, please wait ...";
 
 // App
 
