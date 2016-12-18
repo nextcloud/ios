@@ -108,27 +108,27 @@
     
     // Operation Queue OC-DB Networking
     _netQueue = [[NSOperationQueue alloc] init];
-    _netQueue.name = @"it.twsweb.cryptocloud.queue";
+    _netQueue.name = netQueueName;
     _netQueue.maxConcurrentOperationCount = maxConcurrentOperation;
    
     _netQueueDownload = [[NSOperationQueue alloc] init];
-    _netQueueDownload.name = @"it.twsweb.cryptocloud.queueDownload";
+    _netQueueDownload.name = netQueueDownloadName;
     _netQueueDownload.maxConcurrentOperationCount = maxConcurrentOperationDownloadUpload;
 
     _netQueueDownloadWWan = [[NSOperationQueue alloc] init];
-    _netQueueDownloadWWan.name = @"it.twsweb.cryptocloud.queueDownloadWWan";
+    _netQueueDownloadWWan.name = netQueueDownloadWWanName;
     _netQueueDownloadWWan.maxConcurrentOperationCount = maxConcurrentOperationDownloadUpload;
     
     _netQueueUpload = [[NSOperationQueue alloc] init];
-    _netQueueUpload.name = @"it.twsweb.cryptocloud.queueUpload";
+    _netQueueUpload.name = netQueueUploadName;
     _netQueueUpload.maxConcurrentOperationCount = maxConcurrentOperationDownloadUpload;
     
     _netQueueUploadWWan = [[NSOperationQueue alloc] init];
-    _netQueueUploadWWan.name = @"it.twsweb.cryptocloud.queueUploadWWan";
+    _netQueueUploadWWan.name = netQueueUploadWWanName;
     _netQueueUploadWWan.maxConcurrentOperationCount = maxConcurrentOperationDownloadUpload;
     
     _netQueueUploadCameraAllPhoto = [[NSOperationQueue alloc] init];
-    _netQueueUploadCameraAllPhoto.name = @"it.twsweb.cryptocloud.queueUploadCameraAllPhoto";
+    _netQueueUploadCameraAllPhoto.name = netQueueUploadCameraAllPhotoName;
     _netQueueUploadCameraAllPhoto.maxConcurrentOperationCount = maxConcurrentOperationUploadCameraAllPhoto;
     
 #ifdef CC
@@ -1096,11 +1096,20 @@
     return NO;
 }
 
-- (void)startUpload
+- (void)loadTableUploadQueue:(NSString *)queueName numeRecors:(NSUInteger)numRecords
 {
-    NSArray *metadatasNet = [CCCoreData getTableUploadFromAccount:self.activeAccount queueName:@"it.twsweb.cryptocloud.queueUploadCameraAllPhoto" numRecords:(maxConcurrentOperationUploadCameraAllPhoto - [_netQueueUploadCameraAllPhoto operationCount]) context:nil];
+    NSOperationQueue *netQueue;
     
+    if ([queueName isEqualToString:netQueueUploadName]) netQueue = _netQueueUpload;
+    else if ([queueName isEqualToString:netQueueUploadWWanName]) netQueue = _netQueueUploadWWan;
+    else if ([queueName isEqualToString:netQueueUploadCameraAllPhotoName]) netQueue = _netQueueUploadCameraAllPhoto;
+
+    NSArray *metadatasNet = [CCCoreData getTableUploadFromAccount:self.activeAccount queueName:queueName numRecords:numRecords context:nil];
     
+    // Add Network queue
+
+    for (CCMetadataNet *metadataNet in metadatasNet)
+        [self addNetworkingOperationQueue:netQueue delegate:app.activeMain metadataNet:metadataNet oneByOne:YES];
 }
 
 - (void)verifyDownloadUploadInProgress

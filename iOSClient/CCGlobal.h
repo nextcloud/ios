@@ -187,6 +187,14 @@ extern NSString *const BKPasscodeKeychainServiceName;
 
 #define timerVerifySession 15.0
 
+#define netQueueName                     @"it.twsweb.cryptocloud.queue"
+#define netQueueDownloadName             @"it.twsweb.cryptocloud.queueDownload"
+#define netQueueDownloadWWanName         @"it.twsweb.cryptocloud.queueDownloadWWan"
+#define netQueueUploadName               @"it.twsweb.cryptocloud.queueUpload"
+#define netQueueUploadWWanName           @"it.twsweb.cryptocloud.queueUploadWWan"
+#define netQueueUploadCameraAllPhotoName @"it.twsweb.cryptocloud.queueUploadCameraAllPhoto"
+
+
 #define maxConcurrentOperation 10
 #define maxConcurrentOperationDownloadUpload 10
 #define maxConcurrentOperationUploadCameraAllPhoto 1

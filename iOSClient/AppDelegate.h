@@ -182,6 +182,7 @@
 // Operation Networking
 - (void)cancelAllOperations;
 - (void)addNetworkingOperationQueue:(NSOperationQueue *)netQueue delegate:(id)delegate metadataNet:(CCMetadataNet *)metadataNet oneByOne:(BOOL)oneByOne;
+- (void)loadTableUploadQueue:(NSString *)queueName numeRecors:(NSUInteger)numRecords;
 - (BOOL)verifyExistsFileName:(NSString *)fileName withSelector:(NSString *)selector inOperationsQueue:(NSOperationQueue *)queue;
 
 - (void)dropCameraUploadAllPhoto;

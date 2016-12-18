@@ -1266,12 +1266,16 @@
         else
             queue = app.netQueueUpload;
         
-        [CCCoreData addUpload:metadataNet activeAccount:app.activeAccount context:nil];
-        
-        // Add Network queue
-        //[app addNetworkingOperationQueue:queue delegate:app.activeMain metadataNet:metadataNet oneByOne:YES];
+        if (assetsFull)
+            [CCCoreData addUpload:metadataNet activeAccount:app.activeAccount context:nil];
+        else
+            [app addNetworkingOperationQueue:queue delegate:app.activeMain metadataNet:metadataNet oneByOne:YES];
     }
     
+    // start for AssetsFull
+    if (assetsFull)
+        [app loadTableUploadQueue:netQueueUploadCameraAllPhotoName numeRecors:(maxConcurrentOperationUploadCameraAllPhoto - [app.netQueueUploadCameraAllPhoto operationCount])];
+        
     // end loading
     [self endLoadingAssets];
     
