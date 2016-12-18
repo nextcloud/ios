@@ -26,6 +26,7 @@
 #import "AppDelegate.h"
 #import "CCGraphics.h"
 #import "CCCertificate.h"
+#import "NSString+Encode.h"
 
 #ifdef CC
 #import "CCSharedDBSession.h"
@@ -741,9 +742,9 @@
 - (void)share
 {
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    
+        
     [communication setCredentialsWithUser:_activeUser andPassword:_activePassword];
-    [communication shareFileOrFolderByServer:[_activeUrl stringByAppendingString:@"/"] andFileOrFolderPath:_metadataNet.fileName andPassword:_metadataNet.password onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *token, NSString *redirectedServer) {
+    [communication shareFileOrFolderByServer:[_activeUrl stringByAppendingString:@"/"] andFileOrFolderPath:[_metadataNet.fileName encodeString:NSUTF8StringEncoding] andPassword:[_metadataNet.password encodeString:NSUTF8StringEncoding] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *token, NSString *redirectedServer) {
         
         [self readShareServer];
         
@@ -772,7 +773,7 @@
     
     [communication setCredentialsWithUser:_activeUser andPassword:_activePassword];
     
-    [communication shareWith:_metadataNet.share shareeType:_metadataNet.shareeType inServer:[_activeUrl stringByAppendingString:@"/"] andFileOrFolderPath:_metadataNet.fileName andPermissions:_metadataNet.sharePermission onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+    [communication shareWith:_metadataNet.share shareeType:_metadataNet.shareeType inServer:[_activeUrl stringByAppendingString:@"/"] andFileOrFolderPath:[_metadataNet.fileName encodeString:NSUTF8StringEncoding] andPermissions:_metadataNet.sharePermission onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
         [self readShareServer];
                 
@@ -798,7 +799,7 @@
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     
     [communication setCredentialsWithUser:_activeUser andPassword:_activePassword];
-    [communication updateShare:[_metadataNet.share intValue] ofServerPath:[_activeUrl stringByAppendingString:@"/"] withPasswordProtect:_metadataNet.password andExpirationTime:_metadataNet.expirationTime andPermissions:_metadataNet.sharePermission onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+    [communication updateShare:[_metadataNet.share intValue] ofServerPath:[_activeUrl stringByAppendingString:@"/"] withPasswordProtect:[_metadataNet.password encodeString:NSUTF8StringEncoding] andExpirationTime:_metadataNet.expirationTime andPermissions:_metadataNet.sharePermission onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
         [self readShareServer];
         
@@ -856,10 +857,6 @@
     }];
 }
 
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark =====  Server =====
-#pragma --------------------------------------------------------------------------------------------
-
 - (void)getUserAndGroup
 {
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
@@ -888,6 +885,10 @@
         [self complete];
     }];
 }
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark =====  Server =====
+#pragma --------------------------------------------------------------------------------------------
 
 - (void)getFeaturesSupportedByServer
 {
