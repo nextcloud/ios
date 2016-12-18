@@ -1265,9 +1265,11 @@
             queue = app.netQueueUploadWWan;
         else
             queue = app.netQueueUpload;
-            
+        
+        [CCCoreData addUpload:metadataNet activeAccount:app.activeAccount context:nil];
+        
         // Add Network queue
-        [app addNetworkingOperationQueue:queue delegate:app.activeMain metadataNet:metadataNet oneByOne:YES];
+        //[app addNetworkingOperationQueue:queue delegate:app.activeMain metadataNet:metadataNet oneByOne:YES];
     }
     
     // end loading

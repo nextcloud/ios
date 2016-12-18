@@ -126,6 +126,10 @@
 		F73CCE301DC13798007E38D8 /* UICKeyChainStore.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCE2A1DC13798007E38D8 /* UICKeyChainStore.m */; };
 		F73CCE321DC13798007E38D8 /* UICKeyChainStore.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCE2A1DC13798007E38D8 /* UICKeyChainStore.m */; };
 		F749E4E91DC1FB38009BA2FD /* Share Ext Nextcloud.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = F7CE8AFB1DC1F8D8009CAE48 /* Share Ext Nextcloud.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		F74EF41D1E06C627009A6222 /* TableUpload+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F74EF41A1E06C627009A6222 /* TableUpload+CoreDataClass.m */; };
+		F74EF41E1E06C627009A6222 /* TableUpload+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F74EF41A1E06C627009A6222 /* TableUpload+CoreDataClass.m */; };
+		F74EF41F1E06C627009A6222 /* TableUpload+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F74EF41C1E06C627009A6222 /* TableUpload+CoreDataProperties.m */; };
+		F74EF4201E06C627009A6222 /* TableUpload+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F74EF41C1E06C627009A6222 /* TableUpload+CoreDataProperties.m */; };
 		F750374D1DBFA91A008FB480 /* ALView+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F75037441DBFA91A008FB480 /* ALView+PureLayout.m */; };
 		F750374F1DBFA91A008FB480 /* NSArray+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F75037461DBFA91A008FB480 /* NSArray+PureLayout.m */; };
 		F75037511DBFA91A008FB480 /* NSLayoutConstraint+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F75037481DBFA91A008FB480 /* NSLayoutConstraint+PureLayout.m */; };
@@ -1122,6 +1126,10 @@
 		F744BE961BEBB31E004FFF66 /* ImagesIntro.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = ImagesIntro.xcassets; sourceTree = "<group>"; };
 		F74D3DBD1BAC1941000BAE4B /* OCNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCNetworking.h; sourceTree = "<group>"; };
 		F74D3DBE1BAC1941000BAE4B /* OCNetworking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCNetworking.m; sourceTree = "<group>"; };
+		F74EF4191E06C627009A6222 /* TableUpload+CoreDataClass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableUpload+CoreDataClass.h"; sourceTree = "<group>"; };
+		F74EF41A1E06C627009A6222 /* TableUpload+CoreDataClass.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableUpload+CoreDataClass.m"; sourceTree = "<group>"; };
+		F74EF41B1E06C627009A6222 /* TableUpload+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableUpload+CoreDataProperties.h"; sourceTree = "<group>"; };
+		F74EF41C1E06C627009A6222 /* TableUpload+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableUpload+CoreDataProperties.m"; sourceTree = "<group>"; };
 		F75037431DBFA91A008FB480 /* ALView+PureLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ALView+PureLayout.h"; sourceTree = "<group>"; };
 		F75037441DBFA91A008FB480 /* ALView+PureLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "ALView+PureLayout.m"; sourceTree = "<group>"; };
 		F75037451DBFA91A008FB480 /* NSArray+PureLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+PureLayout.h"; sourceTree = "<group>"; };
@@ -1348,6 +1356,7 @@
 		F7BE6E2C1D2D5C3B00106933 /* CCQuickActions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCQuickActions.m; sourceTree = "<group>"; };
 		F7BF1B3F1D51E893000854F6 /* CCLoginNCOC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCLoginNCOC.h; sourceTree = "<group>"; };
 		F7BF1B401D51E893000854F6 /* CCLoginNCOC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCLoginNCOC.m; sourceTree = "<group>"; };
+		F7BFA4541E0693EE0010E44C /* cryptocloud 5.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "cryptocloud 5.xcdatamodel"; sourceTree = "<group>"; };
 		F7BFCCBE1B68C21900548E76 /* CCManageAsset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCManageAsset.h; sourceTree = "<group>"; };
 		F7BFCCBF1B68C21900548E76 /* CCManageAsset.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCManageAsset.m; sourceTree = "<group>"; };
 		F7BFCCC01B68C21900548E76 /* CCManageLocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCManageLocation.h; sourceTree = "<group>"; };
@@ -2698,6 +2707,10 @@
 		F77F86401B4ABF6D009F0A10 /* Table */ = {
 			isa = PBXGroup;
 			children = (
+				F74EF4191E06C627009A6222 /* TableUpload+CoreDataClass.h */,
+				F74EF41A1E06C627009A6222 /* TableUpload+CoreDataClass.m */,
+				F74EF41B1E06C627009A6222 /* TableUpload+CoreDataProperties.h */,
+				F74EF41C1E06C627009A6222 /* TableUpload+CoreDataProperties.m */,
 				F7994B731D5B854C008525D9 /* TableCertificates+CoreDataProperties.h */,
 				F7994B741D5B854C008525D9 /* TableCertificates+CoreDataProperties.m */,
 				F7994B751D5B854C008525D9 /* TableCertificates.h */,
@@ -3522,6 +3535,7 @@
 				F71459E11D12E3B700CAFEEC /* CCHud.m in Sources */,
 				F71459E21D12E3B700CAFEEC /* TableAccount+CoreDataProperties.m in Sources */,
 				F71459E41D12E3B700CAFEEC /* RNDecryptor.m in Sources */,
+				F74EF41E1E06C627009A6222 /* TableUpload+CoreDataClass.m in Sources */,
 				F71459E61D12E3B700CAFEEC /* NYXImagesHelper.m in Sources */,
 				F71459E91D12E3B700CAFEEC /* UIImage+Enhancing.m in Sources */,
 				F71459EA1D12E3B700CAFEEC /* CCCellShareExt.m in Sources */,
@@ -3545,6 +3559,7 @@
 				F71459FF1D12E3B700CAFEEC /* RNCryptor.m in Sources */,
 				F7145A001D12E3B700CAFEEC /* CCGlobal.m in Sources */,
 				F7145A011D12E3B700CAFEEC /* UIImage+Blurring.m in Sources */,
+				F74EF4201E06C627009A6222 /* TableUpload+CoreDataProperties.m in Sources */,
 				F7145A021D12E3B700CAFEEC /* BKTouchIDManager.m in Sources */,
 				F7145A041D12E3B700CAFEEC /* CCloadItemData.swift in Sources */,
 				F7145A081D12E3B700CAFEEC /* PPCollectionViewCell.m in Sources */,
@@ -3591,6 +3606,7 @@
 				F7659A681DC0B760004860C4 /* PSTCollectionViewUpdateItem.m in Sources */,
 				F77B0E071D118A16002130FE /* ioapi.c in Sources */,
 				F77B0E0D1D118A16002130FE /* CCSecurityOptions.m in Sources */,
+				F74EF41F1E06C627009A6222 /* TableUpload+CoreDataProperties.m in Sources */,
 				F73CCDF11DC13776007E38D8 /* XLFormStepCounterCell.m in Sources */,
 				F73CCE1F1DC13776007E38D8 /* XLForm.m in Sources */,
 				F77B0E0E1D118A16002130FE /* REMenuItemView.m in Sources */,
@@ -3729,6 +3745,7 @@
 				F77B0E831D118A16002130FE /* TableLocalFile.m in Sources */,
 				F77B0E851D118A16002130FE /* MWTapDetectingView.m in Sources */,
 				F75037511DBFA91A008FB480 /* NSLayoutConstraint+PureLayout.m in Sources */,
+				F74EF41D1E06C627009A6222 /* TableUpload+CoreDataClass.m in Sources */,
 				F73CCE151DC13776007E38D8 /* XLFormRowNavigationAccessoryView.m in Sources */,
 				F73CCDFB1DC13776007E38D8 /* XLFormOptionsViewController.m in Sources */,
 				F77B0E871D118A16002130FE /* NSData+Base64.m in Sources */,
@@ -4226,12 +4243,13 @@
 		F78088E51DD3A1DB005C5A7C /* cryptocloud.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				F7BFA4541E0693EE0010E44C /* cryptocloud 5.xcdatamodel */,
 				F78088E61DD3A1DB005C5A7C /* cryptocloud 2.xcdatamodel */,
 				F78088E71DD3A1DB005C5A7C /* cryptocloud 3.xcdatamodel */,
 				F78088E81DD3A1DB005C5A7C /* cryptocloud 4.xcdatamodel */,
 				F78088E91DD3A1DB005C5A7C /* cryptocloud.xcdatamodel */,
 			);
-			currentVersion = F78088E81DD3A1DB005C5A7C /* cryptocloud 4.xcdatamodel */;
+			currentVersion = F7BFA4541E0693EE0010E44C /* cryptocloud 5.xcdatamodel */;
 			path = cryptocloud.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

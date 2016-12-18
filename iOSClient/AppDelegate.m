@@ -1096,6 +1096,13 @@
     return NO;
 }
 
+- (void)startUpload
+{
+    NSArray *metadatasNet = [CCCoreData getTableUploadFromAccount:self.activeAccount queueName:@"it.twsweb.cryptocloud.queueUploadCameraAllPhoto" numRecords:(maxConcurrentOperationUploadCameraAllPhoto - [_netQueueUploadCameraAllPhoto operationCount]) context:nil];
+    
+    
+}
+
 - (void)verifyDownloadUploadInProgress
 {
     BOOL callVerifyDownload = NO;

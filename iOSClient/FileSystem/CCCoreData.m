@@ -1470,6 +1470,77 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Upload =====
+#pragma --------------------------------------------------------------------------------------------
+
++ (void)addUpload:(CCMetadataNet *)metadataNet activeAccount:(NSString *)activeAccount context:(NSManagedObjectContext *)context
+{
+    TableUpload *record;
+    
+    if (context == nil)
+        context = [NSManagedObjectContext MR_context];
+    
+    
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (fileName == %@) AND (serverUrl == %@)", activeAccount, metadataNet.fileName, metadataNet.serverUrl];
+    record = [TableUpload MR_findFirstWithPredicate:predicate inContext:context];
+    
+    if (record) {
+        
+        // removed
+        
+    } else {
+    
+        record = [TableUpload MR_createEntityInContext:context];
+        
+        record.account = activeAccount;
+        record.assetLocalItentifier = metadataNet.assetLocalItentifier;
+        record.date = [NSDate date];
+        record.fileName = metadataNet.fileName;
+        record.queueName = metadataNet.queue.name;
+        record.selector = metadataNet.selector;
+        record.selectorPost = metadataNet.selectorPost;
+        record.serverUrl = metadataNet.serverUrl;
+        record.session = metadataNet.session;
+    }
+    
+    [context MR_saveToPersistentStoreAndWait];
+}
+
++ (NSArray *)getTableUploadFromAccount:(NSString *)activeAccount queueName:(NSString *)queueName numRecords:(NSUInteger)numRecords context:(NSManagedObjectContext *)context
+{
+    if (numRecords == 0)
+        return nil;
+    
+    NSMutableArray *metadatasNet = [[NSMutableArray alloc] init];
+    NSUInteger counter = 0;
+    
+    if (context == nil)
+        context = [NSManagedObjectContext MR_context];
+    
+    NSPredicate *peopleFilter = [NSPredicate predicateWithFormat:@"(account == %@) AND (queueName == %@) AND (startUpload == 0)", activeAccount, queueName, taskIdentifierDone];
+    NSArray *records = [TableUpload MR_findAllWithPredicate:peopleFilter];
+    
+    for (TableUpload *record in records) {
+        
+        CCMetadataNet *metadataNet = [[CCMetadataNet alloc] init];
+        
+        metadataNet.assetLocalItentifier = record.assetLocalItentifier;
+        metadataNet.fileName = record.fileName;
+        metadataNet.selector = record.selector;
+        metadataNet.selectorPost = record.selectorPost;
+        metadataNet.serverUrl = record.serverUrl;
+        metadataNet.session = record.session;
+        
+        [metadatasNet addObject:metadataNet];
+        
+        if (++counter == numRecords)
+            break;
+    }
+    
+    return metadatasNet;
+}
+
+#pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== GPS =====
 #pragma --------------------------------------------------------------------------------------------
 

@@ -40,6 +40,7 @@
 #import "TableLocalFile.h"
 #import "TableGPS.h"
 #import "TableShare.h"
+#import "TableUpload+CoreDataClass.h"
 
 @interface CCCoreData : NSObject
 
@@ -174,6 +175,11 @@
 + (NSArray *)getGeoInformationLocalFromFileID:(NSString *)fileID activeAccount:(NSString *)activeAccount;
 + (void)setGeoInformationLocalFromFileID:(NSString *)fileID exifDate:(NSDate *)exifDate exifLatitude:(NSString *)exifLatitude exifLongitude:(NSString *)exifLongitude activeAccount:(NSString *)activeAccount;
 + (void)setGeoInformationLocalNull;
+
+// ===== Upload =====
+
++ (void)addUpload:(CCMetadataNet *)metadataNet activeAccount:(NSString *)activeAccount context:(NSManagedObjectContext *)context;
++ (NSArray *)getTableUploadFromAccount:(NSString *)activeAccount queueName:(NSString *)queueName numRecords:(NSUInteger)numRecords context:(NSManagedObjectContext *)context;
 
 // ===== GPS =====
 
