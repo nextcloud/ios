@@ -1468,6 +1468,7 @@
                 metadataNet.cryptated = cryptated;
                 metadataNet.errorCode = 0;
                 metadataNet.fileName = fileNameUpload;
+                metadataNet.priority = NSOperationQueuePriorityVeryHigh;
                 metadataNet.selector = selectorUploadFile;
                 metadataNet.selectorPost = nil;
                 metadataNet.session = session;
@@ -1488,6 +1489,7 @@
                 metadataNet.assetLocalItentifier = asset.localIdentifier;
                 metadataNet.cryptated = cryptated;
                 metadataNet.fileName = fileNameUpload;
+                metadataNet.priority = NSOperationQueuePriorityVeryHigh;
                 metadataNet.session = session;
                 metadataNet.selector = selectorReadFileUploadFile;
                 metadataNet.serverUrl = serverUrl;
