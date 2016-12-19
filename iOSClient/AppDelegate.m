@@ -1063,7 +1063,7 @@
         NSUInteger count = [TableMetadata MR_countOfEntitiesWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (sessionSelector == %@) AND ((sessionTaskIdentifier == %i) OR (sessionTaskIdentifierPlist == %i))", app.activeAccount, selectorUploadAutomaticAll,taskIdentifierError, taskIdentifierError]];
         
         if (count >= 10) {
-            [app messageNotification:@"Troppi errori, invio sospeso" description:@"" visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeError];
+            [app messageNotification:@"Troppi errori, invio sospeso scrivere messaggio" description:@"" visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeError];
             
             return;
         }
