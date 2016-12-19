@@ -1103,14 +1103,16 @@
         newItemsToUpload = [manageAsset getCameraRollNewItemsWithDatePhoto:databaseDatePhoto dateVideo:databaseDateVideo];
     }
     
-    // News Assets ? && Verify if blocked Table Automatic Upload
+    // News Assets ? && Verify if blocked Table Automatic Upload -> Autostart
     if ([newItemsToUpload count] == 0) {
     
-        if ([app verifyExistsInQueue:app.netQueueUpload selector:selectorUploadAutomatic] || [app verifyExistsInQueue:app.netQueueUploadWWan selector:selectorUploadAutomatic])
-            [app loadTableAutomaticUploadForSelector:selectorUploadAutomatic];
+        if ([CCCoreData countTableAutomaticUploadForAccount:app.activeAccount selector:selectorUploadAutomatic])
+            if ([app verifyExistsInQueue:app.netQueueUpload selector:selectorUploadAutomatic] == NO && [app verifyExistsInQueue:app.netQueueUploadWWan selector:selectorUploadAutomatic] == NO)
+                [app loadTableAutomaticUploadForSelector:selectorUploadAutomatic];
         
-        if ([app verifyExistsInQueue:app.netQueueUpload selector:selectorUploadAutomaticAll])
-            [app loadTableAutomaticUploadForSelector:selectorUploadAutomaticAll];
+        if ([CCCoreData countTableAutomaticUploadForAccount:app.activeAccount selector:selectorUploadAutomaticAll])
+            if ([app verifyExistsInQueue:app.netQueueUpload selector:selectorUploadAutomaticAll] == NO)
+                [app loadTableAutomaticUploadForSelector:selectorUploadAutomaticAll];
         
         return;
     }
