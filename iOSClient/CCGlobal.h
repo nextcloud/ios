@@ -151,7 +151,7 @@ extern NSString *const BKPasscodeKeychainServiceName;
 #define k_share_link_middle_part_url_before_version_8   @"public.php?service=files&t="
 #define k_share_link_middle_part_url_after_version_8    @"index.php/s/"
 
-//Constants to identify the different permissions of a file
+// Constants to identify the different permissions of a file
 #define k_permission_shared @"S"
 #define k_permission_can_share @"R"
 #define k_permission_mounted @"M"
@@ -162,7 +162,7 @@ extern NSString *const BKPasscodeKeychainServiceName;
 #define k_permission_can_rename @"N"
 #define k_permission_can_move @"V"
 
-// session
+// Session
 #define download_session                @"it.twsweb.download.session"
 #define download_session_foreground     @"it.twsweb.download.sessionforeground"
 #define download_session_wwan           @"it.twsweb.download.sessionwwan"
@@ -187,17 +187,17 @@ extern NSString *const BKPasscodeKeychainServiceName;
 
 #define timerVerifySession 15.0
 
-#define netQueueName                     @"it.twsweb.cryptocloud.queue"
-#define netQueueDownloadName             @"it.twsweb.cryptocloud.queueDownload"
-#define netQueueDownloadWWanName         @"it.twsweb.cryptocloud.queueDownloadWWan"
-#define netQueueUploadName               @"it.twsweb.cryptocloud.queueUpload"
-#define netQueueUploadWWanName           @"it.twsweb.cryptocloud.queueUploadWWan"
-#define netQueueUploadCameraAllPhotoName @"it.twsweb.cryptocloud.queueUploadCameraAllPhoto"
-
+// OperationQueue
+#define netQueueName                    @"it.twsweb.cryptocloud.queue"
+#define netQueueDownloadName            @"it.twsweb.cryptocloud.queueDownload"
+#define netQueueDownloadWWanName        @"it.twsweb.cryptocloud.queueDownloadWWan"
+#define netQueueUploadName              @"it.twsweb.cryptocloud.queueUpload"
+#define netQueueUploadWWanName          @"it.twsweb.cryptocloud.queueUploadWWan"
+#define netQueueUploadCameraName        @"it.twsweb.cryptocloud.queueUploadCamera"
 
 #define maxConcurrentOperation 10
 #define maxConcurrentOperationDownloadUpload 10
-#define maxConcurrentOperationUploadCameraAllPhoto 1
+#define maxConcurrentOperationUploadCamera 1
 
 // Error
 #define CCErrorTaskNil -9999

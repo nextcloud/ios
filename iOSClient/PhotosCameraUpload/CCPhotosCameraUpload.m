@@ -1249,9 +1249,11 @@
         if (assetsFull) {
             metadataNet.selector = selectorUploadCameraAllPhoto;
             metadataNet.selectorPost = selectorUploadRemovePhoto;
+            metadataNet.priority = NSOperationQueuePriorityLow;
         } else {
             metadataNet.selector = selectorUploadCameraSnapshot;
             metadataNet.selectorPost = nil;
+            metadataNet.priority = NSOperationQueuePriorityHigh;
         }
         metadataNet.fileName = fileNameUpload;
         metadataNet.serverUrl = serverUrl;
@@ -1260,22 +1262,21 @@
         
         // Select type of queue
         if (assetsFull)
-            queue = app.netQueueUploadCameraAllPhoto;
+            queue = app.netQueueUploadCamera;
         else if ([session containsString:@"wwan"])
             queue = app.netQueueUploadWWan;
         else
             queue = app.netQueueUpload;
         
-        if (assetsFull)
-            [CCCoreData addUpload:metadataNet activeAccount:app.activeAccount context:nil];
-        else
-            [app addNetworkingOperationQueue:queue delegate:app.activeMain metadataNet:metadataNet oneByOne:YES];
+        [CCCoreData addUpload:metadataNet activeAccount:app.activeAccount context:nil];
     }
     
-    // start for AssetsFull
+    // start upload
     if (assetsFull)
-        [app loadTableUploadQueue:netQueueUploadCameraAllPhotoName numeRecors:(maxConcurrentOperationUploadCameraAllPhoto - [app.netQueueUploadCameraAllPhoto operationCount])];
-        
+        [app loadTableAutomaticUploadForSelector:selectorUploadCameraAllPhoto numeRecors:(maxConcurrentOperationUploadCamera - [app.netQueueUploadCamera operationCount])];
+    else
+        [app loadTableAutomaticUploadForSelector:selectorUploadCameraSnapshot numeRecors:(maxConcurrentOperationUploadCamera - [app.netQueueUploadCamera operationCount])];
+
     // end loading
     [self endLoadingAssets];
     

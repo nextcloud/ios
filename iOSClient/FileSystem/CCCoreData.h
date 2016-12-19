@@ -40,7 +40,7 @@
 #import "TableLocalFile.h"
 #import "TableGPS.h"
 #import "TableShare.h"
-#import "TableUpload+CoreDataClass.h"
+#import "TableAutomaticUpload+CoreDataClass.h"
 
 @interface CCCoreData : NSObject
 
@@ -179,7 +179,7 @@
 // ===== Upload =====
 
 + (void)addUpload:(CCMetadataNet *)metadataNet activeAccount:(NSString *)activeAccount context:(NSManagedObjectContext *)context;
-+ (NSArray *)getTableUploadFromAccount:(NSString *)activeAccount queueName:(NSString *)queueName numRecords:(NSUInteger)numRecords context:(NSManagedObjectContext *)context;
++ (NSArray *)getTableUploadFromAccount:(NSString *)activeAccount selector:(NSString *)selector numRecords:(NSUInteger)numRecords context:(NSManagedObjectContext *)context;
 
 // ===== GPS =====
 

@@ -127,9 +127,9 @@
     _netQueueUploadWWan.name = netQueueUploadWWanName;
     _netQueueUploadWWan.maxConcurrentOperationCount = maxConcurrentOperationDownloadUpload;
     
-    _netQueueUploadCameraAllPhoto = [[NSOperationQueue alloc] init];
-    _netQueueUploadCameraAllPhoto.name = netQueueUploadCameraAllPhotoName;
-    _netQueueUploadCameraAllPhoto.maxConcurrentOperationCount = maxConcurrentOperationUploadCameraAllPhoto;
+    _netQueueUploadCamera = [[NSOperationQueue alloc] init];
+    _netQueueUploadCamera.name = netQueueUploadCameraName;
+    _netQueueUploadCamera.maxConcurrentOperationCount = maxConcurrentOperationUploadCamera;
     
 #ifdef CC
     // Inizialize DBSession for Dropbox
@@ -686,7 +686,7 @@
     _queueNumUpload = [[CCCoreData getTableMetadataUploadAccount:self.activeAccount] count];
     _queueNumUploadWWan = [[CCCoreData getTableMetadataUploadWWanAccount:self.activeAccount] count];
     
-    _queueNumUploadCameraAllPhoto = 0;
+    _queueNumUploadCamera = 0;
     
     // Clear list folder in Synchronization
     [self.listFolderSynchronization removeAllObjects];
@@ -780,12 +780,12 @@
      }
 
     // netQueueUploadCameraAllPhoto
-    for (NSOperation *operation in [app.netQueueUploadCameraAllPhoto operations]) {
+    for (NSOperation *operation in [app.netQueueUploadCamera operations]) {
         
         /*** NEXTCLOUD OWNCLOUD ***/
         
         if ([app.typeCloud isEqualToString:typeCloudOwnCloud] || [app.typeCloud isEqualToString:typeCloudNextcloud])
-            if (((OCnetworking *)operation).isExecuting == NO) _queueNumUploadCameraAllPhoto++;
+            if (((OCnetworking *)operation).isExecuting == NO) _queueNumUploadCamera++;
         
 #ifdef CC
         
@@ -797,7 +797,7 @@
     }
 
     // Total
-    NSUInteger total = _queueNunDownload + _queueNumDownloadWWan + _queueNumUpload + _queueNumUploadWWan + _queueNumUploadCameraAllPhoto;
+    NSUInteger total = _queueNunDownload + _queueNumDownloadWWan + _queueNumUpload + _queueNumUploadWWan + _queueNumUploadCamera;
     
     [UIApplication sharedApplication].applicationIconBadgeNumber = total;
     
@@ -1021,7 +1021,7 @@
     [_netQueueDownloadWWan cancelAllOperations];
     [_netQueueUpload cancelAllOperations];
     [_netQueueUploadWWan cancelAllOperations];
-    [_netQueueUploadCameraAllPhoto cancelAllOperations];
+    [_netQueueUploadCamera cancelAllOperations];
     
     [self performSelector:@selector(updateApplicationIconBadgeNumber) withObject:nil afterDelay:0.5];
 }
@@ -1096,20 +1096,14 @@
     return NO;
 }
 
-- (void)loadTableUploadQueue:(NSString *)queueName numeRecors:(NSUInteger)numRecords
+- (void)loadTableAutomaticUploadForSelector:(NSString *)selector numeRecors:(NSUInteger)numRecords
 {
-    NSOperationQueue *netQueue;
-    
-    if ([queueName isEqualToString:netQueueUploadName]) netQueue = _netQueueUpload;
-    else if ([queueName isEqualToString:netQueueUploadWWanName]) netQueue = _netQueueUploadWWan;
-    else if ([queueName isEqualToString:netQueueUploadCameraAllPhotoName]) netQueue = _netQueueUploadCameraAllPhoto;
-
-    NSArray *metadatasNet = [CCCoreData getTableUploadFromAccount:self.activeAccount queueName:queueName numRecords:numRecords context:nil];
+    NSArray *metadatasNet = [CCCoreData getTableUploadFromAccount:self.activeAccount selector:selector numRecords:numRecords context:nil];
     
     // Add Network queue
 
     for (CCMetadataNet *metadataNet in metadatasNet)
-        [self addNetworkingOperationQueue:netQueue delegate:app.activeMain metadataNet:metadataNet oneByOne:YES];
+        [self addNetworkingOperationQueue:self.netQueueUploadCamera delegate:app.activeMain metadataNet:metadataNet oneByOne:YES];
 }
 
 - (void)verifyDownloadUploadInProgress
@@ -1249,7 +1243,7 @@
 
 - (void)dropCameraUploadAllPhoto
 {
-    [_netQueueUploadCameraAllPhoto cancelAllOperations];
+    [_netQueueUploadCamera cancelAllOperations];
     
     [CCCoreData deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (session != NULL) AND (session != '') AND ((sessionSelector == %@))", self.activeAccount, selectorUploadCameraAllPhoto]];
     

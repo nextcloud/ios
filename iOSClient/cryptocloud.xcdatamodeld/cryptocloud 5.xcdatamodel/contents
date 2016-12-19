@@ -27,6 +27,18 @@
         <attribute name="url" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="user" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
+    <entity name="TableAutomaticUpload" representedClassName="TableAutomaticUpload" syncable="YES">
+        <attribute name="account" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="assetLocalItentifier" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="fileName" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="priority" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="selector" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="selectorPost" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="serverUrl" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="session" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="startUpload" optional="YES" attributeType="Boolean" defaultValueString="-1" usesScalarValueType="NO" syncable="YES"/>
+    </entity>
     <entity name="TableCertificates" representedClassName="TableCertificates" syncable="YES">
         <attribute name="certificateLocation" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="dateRecord" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
@@ -111,18 +123,6 @@
         <attribute name="shareLink" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="shareUserAndGroup" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
-    <entity name="TableUpload" representedClassName="TableUpload" syncable="YES">
-        <attribute name="account" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="assetLocalItentifier" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
-        <attribute name="fileName" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="queueName" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="selector" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="selectorPost" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="serverUrl" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="session" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="startUpload" optional="YES" attributeType="Boolean" defaultValueString="-1" usesScalarValueType="NO" syncable="YES"/>
-    </entity>
     <elements>
         <element name="TableAccount" positionX="-6174" positionY="153" width="171" height="420"/>
         <element name="TableCertificates" positionX="-5976" positionY="297" width="128" height="75"/>
@@ -131,6 +131,6 @@
         <element name="TableLocalFile" positionX="-5472" positionY="153" width="135" height="225"/>
         <element name="TableMetadata" positionX="-5949" positionY="162" width="162" height="525"/>
         <element name="TableShare" positionX="-5976" positionY="297" width="128" height="135"/>
-        <element name="TableUpload" positionX="-5967" positionY="306" width="128" height="195"/>
+        <element name="TableAutomaticUpload" positionX="-5967" positionY="306" width="128" height="195"/>
     </elements>
 </model>

@@ -1,8 +1,8 @@
 //
-//  TableUpload+CoreDataClass.h
+//  TableAutomaticUpload+CoreDataClass.h
 //  Nextcloud
 //
-//  Created by Marino Faggiana on 18/12/16.
+//  Created by Marino Faggiana on 19/12/16.
 //  Copyright © 2016 TWS. All rights reserved.
 //
 
@@ -11,10 +11,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface TableUpload : NSManagedObject
+@interface TableAutomaticUpload : NSManagedObject
 
 @end
 
 NS_ASSUME_NONNULL_END
 
-#import "TableUpload+CoreDataProperties.h"
+#import "TableAutomaticUpload+CoreDataProperties.h"

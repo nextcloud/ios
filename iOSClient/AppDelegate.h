@@ -89,9 +89,9 @@
 @property (nonatomic, strong) NSOperationQueue *netQueueDownloadWWan;
 @property (nonatomic, strong) NSOperationQueue *netQueueUpload;
 @property (nonatomic, strong) NSOperationQueue *netQueueUploadWWan;
-@property (nonatomic, strong) NSOperationQueue *netQueueUploadCameraAllPhoto;
+@property (nonatomic, strong) NSOperationQueue *netQueueUploadCamera;
 
-@property NSUInteger queueNunDownload, queueNumDownloadWWan, queueNumUpload, queueNumUploadWWan, queueNumUploadCameraAllPhoto;
+@property NSUInteger queueNunDownload, queueNumDownloadWWan, queueNumUpload, queueNumUploadWWan, queueNumUploadCamera;
 
 // Networking 
 @property (nonatomic, copy) void (^backgroundSessionCompletionHandler)(void);
@@ -182,7 +182,7 @@
 // Operation Networking
 - (void)cancelAllOperations;
 - (void)addNetworkingOperationQueue:(NSOperationQueue *)netQueue delegate:(id)delegate metadataNet:(CCMetadataNet *)metadataNet oneByOne:(BOOL)oneByOne;
-- (void)loadTableUploadQueue:(NSString *)queueName numeRecors:(NSUInteger)numRecords;
+- (void)loadTableAutomaticUploadForSelector:(NSString *)selector numeRecors:(NSUInteger)numRecords;
 - (BOOL)verifyExistsFileName:(NSString *)fileName withSelector:(NSString *)selector inOperationsQueue:(NSOperationQueue *)queue;
 
 - (void)dropCameraUploadAllPhoto;

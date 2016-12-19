@@ -126,10 +126,6 @@
 		F73CCE301DC13798007E38D8 /* UICKeyChainStore.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCE2A1DC13798007E38D8 /* UICKeyChainStore.m */; };
 		F73CCE321DC13798007E38D8 /* UICKeyChainStore.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCE2A1DC13798007E38D8 /* UICKeyChainStore.m */; };
 		F749E4E91DC1FB38009BA2FD /* Share Ext Nextcloud.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = F7CE8AFB1DC1F8D8009CAE48 /* Share Ext Nextcloud.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		F74EF41D1E06C627009A6222 /* TableUpload+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F74EF41A1E06C627009A6222 /* TableUpload+CoreDataClass.m */; };
-		F74EF41E1E06C627009A6222 /* TableUpload+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F74EF41A1E06C627009A6222 /* TableUpload+CoreDataClass.m */; };
-		F74EF41F1E06C627009A6222 /* TableUpload+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F74EF41C1E06C627009A6222 /* TableUpload+CoreDataProperties.m */; };
-		F74EF4201E06C627009A6222 /* TableUpload+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F74EF41C1E06C627009A6222 /* TableUpload+CoreDataProperties.m */; };
 		F750374D1DBFA91A008FB480 /* ALView+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F75037441DBFA91A008FB480 /* ALView+PureLayout.m */; };
 		F750374F1DBFA91A008FB480 /* NSArray+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F75037461DBFA91A008FB480 /* NSArray+PureLayout.m */; };
 		F75037511DBFA91A008FB480 /* NSLayoutConstraint+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F75037481DBFA91A008FB480 /* NSLayoutConstraint+PureLayout.m */; };
@@ -160,6 +156,10 @@
 		F7676A7F1D5CB2A400DF734C /* icon-info@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F7676A751D5CB2A400DF734C /* icon-info@2x.png */; };
 		F7676A811D5CB2A400DF734C /* icon-success.png in Resources */ = {isa = PBXBuildFile; fileRef = F7676A761D5CB2A400DF734C /* icon-success.png */; };
 		F7676A831D5CB2A400DF734C /* icon-success@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F7676A771D5CB2A400DF734C /* icon-success@2x.png */; };
+		F771CD5E1E07F6620066F76D /* TableAutomaticUpload+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F771CD5B1E07F6620066F76D /* TableAutomaticUpload+CoreDataClass.m */; };
+		F771CD5F1E07F6620066F76D /* TableAutomaticUpload+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F771CD5B1E07F6620066F76D /* TableAutomaticUpload+CoreDataClass.m */; };
+		F771CD601E07F6620066F76D /* TableAutomaticUpload+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F771CD5D1E07F6620066F76D /* TableAutomaticUpload+CoreDataProperties.m */; };
+		F771CD611E07F6620066F76D /* TableAutomaticUpload+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F771CD5D1E07F6620066F76D /* TableAutomaticUpload+CoreDataProperties.m */; };
 		F77B0DF01D118A16002130FE /* UIImage+Resizing.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04CA1C889184008DAB36 /* UIImage+Resizing.m */; };
 		F77B0DF21D118A16002130FE /* CCUploadFromOtherUpp.m in Sources */ = {isa = PBXBuildFile; fileRef = F7956FCA1B4886E60085DEA3 /* CCUploadFromOtherUpp.m */; };
 		F77B0DF41D118A16002130FE /* CCMain.m in Sources */ = {isa = PBXBuildFile; fileRef = F70211FB1BAC56E9003FC03E /* CCMain.m */; };
@@ -1126,10 +1126,6 @@
 		F744BE961BEBB31E004FFF66 /* ImagesIntro.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = ImagesIntro.xcassets; sourceTree = "<group>"; };
 		F74D3DBD1BAC1941000BAE4B /* OCNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCNetworking.h; sourceTree = "<group>"; };
 		F74D3DBE1BAC1941000BAE4B /* OCNetworking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCNetworking.m; sourceTree = "<group>"; };
-		F74EF4191E06C627009A6222 /* TableUpload+CoreDataClass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableUpload+CoreDataClass.h"; sourceTree = "<group>"; };
-		F74EF41A1E06C627009A6222 /* TableUpload+CoreDataClass.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableUpload+CoreDataClass.m"; sourceTree = "<group>"; };
-		F74EF41B1E06C627009A6222 /* TableUpload+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableUpload+CoreDataProperties.h"; sourceTree = "<group>"; };
-		F74EF41C1E06C627009A6222 /* TableUpload+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableUpload+CoreDataProperties.m"; sourceTree = "<group>"; };
 		F75037431DBFA91A008FB480 /* ALView+PureLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ALView+PureLayout.h"; sourceTree = "<group>"; };
 		F75037441DBFA91A008FB480 /* ALView+PureLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "ALView+PureLayout.m"; sourceTree = "<group>"; };
 		F75037451DBFA91A008FB480 /* NSArray+PureLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+PureLayout.h"; sourceTree = "<group>"; };
@@ -1276,6 +1272,10 @@
 		F76C3B841C6388BC00DC4301 /* CCGraphics.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCGraphics.m; sourceTree = "<group>"; };
 		F76C3B871C638A4C00DC4301 /* CCError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCError.h; sourceTree = "<group>"; };
 		F76C3B881C638A4C00DC4301 /* CCError.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCError.m; sourceTree = "<group>"; };
+		F771CD5A1E07F6620066F76D /* TableAutomaticUpload+CoreDataClass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableAutomaticUpload+CoreDataClass.h"; sourceTree = "<group>"; };
+		F771CD5B1E07F6620066F76D /* TableAutomaticUpload+CoreDataClass.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableAutomaticUpload+CoreDataClass.m"; sourceTree = "<group>"; };
+		F771CD5C1E07F6620066F76D /* TableAutomaticUpload+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableAutomaticUpload+CoreDataProperties.h"; sourceTree = "<group>"; };
+		F771CD5D1E07F6620066F76D /* TableAutomaticUpload+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableAutomaticUpload+CoreDataProperties.m"; sourceTree = "<group>"; };
 		F776B0CB1BEA22F00081EFBA /* CCManageSynchronizations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCManageSynchronizations.h; sourceTree = "<group>"; };
 		F776B0CC1BEA22F00081EFBA /* CCManageSynchronizations.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCManageSynchronizations.m; sourceTree = "<group>"; };
 		F777F0301C29717F00CE81CB /* PHAsset+Utility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "PHAsset+Utility.h"; sourceTree = "<group>"; };
@@ -2707,10 +2707,10 @@
 		F77F86401B4ABF6D009F0A10 /* Table */ = {
 			isa = PBXGroup;
 			children = (
-				F74EF4191E06C627009A6222 /* TableUpload+CoreDataClass.h */,
-				F74EF41A1E06C627009A6222 /* TableUpload+CoreDataClass.m */,
-				F74EF41B1E06C627009A6222 /* TableUpload+CoreDataProperties.h */,
-				F74EF41C1E06C627009A6222 /* TableUpload+CoreDataProperties.m */,
+				F771CD5A1E07F6620066F76D /* TableAutomaticUpload+CoreDataClass.h */,
+				F771CD5B1E07F6620066F76D /* TableAutomaticUpload+CoreDataClass.m */,
+				F771CD5C1E07F6620066F76D /* TableAutomaticUpload+CoreDataProperties.h */,
+				F771CD5D1E07F6620066F76D /* TableAutomaticUpload+CoreDataProperties.m */,
 				F7994B731D5B854C008525D9 /* TableCertificates+CoreDataProperties.h */,
 				F7994B741D5B854C008525D9 /* TableCertificates+CoreDataProperties.m */,
 				F7994B751D5B854C008525D9 /* TableCertificates.h */,
@@ -3510,6 +3510,7 @@
 				F71459C31D12E3B700CAFEEC /* UIImage+Filtering.m in Sources */,
 				F71459C41D12E3B700CAFEEC /* UIImage+Saving.m in Sources */,
 				F71459C51D12E3B700CAFEEC /* UIImage+Rotating.m in Sources */,
+				F771CD611E07F6620066F76D /* TableAutomaticUpload+CoreDataProperties.m in Sources */,
 				F71459C61D12E3B700CAFEEC /* CCMetadata.m in Sources */,
 				F71459C81D12E3B700CAFEEC /* TableLocalFile.m in Sources */,
 				F71459C91D12E3B700CAFEEC /* OCNetworking.m in Sources */,
@@ -3519,6 +3520,7 @@
 				F71459CF1D12E3B700CAFEEC /* BKPasscodeLockScreenManager.m in Sources */,
 				F71459D11D12E3B700CAFEEC /* BKPasscodeInputView.m in Sources */,
 				F71459D21D12E3B700CAFEEC /* CCUtility.m in Sources */,
+				F771CD5F1E07F6620066F76D /* TableAutomaticUpload+CoreDataClass.m in Sources */,
 				F71459D31D12E3B700CAFEEC /* CCBKPasscode.m in Sources */,
 				F71459D51D12E3B700CAFEEC /* MBProgressHUD.m in Sources */,
 				F71459D61D12E3B700CAFEEC /* TableShare+CoreDataProperties.m in Sources */,
@@ -3535,7 +3537,6 @@
 				F71459E11D12E3B700CAFEEC /* CCHud.m in Sources */,
 				F71459E21D12E3B700CAFEEC /* TableAccount+CoreDataProperties.m in Sources */,
 				F71459E41D12E3B700CAFEEC /* RNDecryptor.m in Sources */,
-				F74EF41E1E06C627009A6222 /* TableUpload+CoreDataClass.m in Sources */,
 				F71459E61D12E3B700CAFEEC /* NYXImagesHelper.m in Sources */,
 				F71459E91D12E3B700CAFEEC /* UIImage+Enhancing.m in Sources */,
 				F71459EA1D12E3B700CAFEEC /* CCCellShareExt.m in Sources */,
@@ -3559,7 +3560,6 @@
 				F71459FF1D12E3B700CAFEEC /* RNCryptor.m in Sources */,
 				F7145A001D12E3B700CAFEEC /* CCGlobal.m in Sources */,
 				F7145A011D12E3B700CAFEEC /* UIImage+Blurring.m in Sources */,
-				F74EF4201E06C627009A6222 /* TableUpload+CoreDataProperties.m in Sources */,
 				F7145A021D12E3B700CAFEEC /* BKTouchIDManager.m in Sources */,
 				F7145A041D12E3B700CAFEEC /* CCloadItemData.swift in Sources */,
 				F7145A081D12E3B700CAFEEC /* PPCollectionViewCell.m in Sources */,
@@ -3587,6 +3587,7 @@
 				F73CCDED1DC13776007E38D8 /* XLFormSelectorCell.m in Sources */,
 				F7F06E931DBFACC600099AE9 /* NSNumberFormatter+CTAssetsPickerController.m in Sources */,
 				F77B0DF71D118A16002130FE /* UIXToolbarView.m in Sources */,
+				F771CD601E07F6620066F76D /* TableAutomaticUpload+CoreDataProperties.m in Sources */,
 				F77B0DF91D118A16002130FE /* TableMetadata.m in Sources */,
 				F77B0DFB1D118A16002130FE /* NYXProgressiveImageView.m in Sources */,
 				F7994B781D5B854C008525D9 /* TableCertificates+CoreDataProperties.m in Sources */,
@@ -3606,7 +3607,6 @@
 				F7659A681DC0B760004860C4 /* PSTCollectionViewUpdateItem.m in Sources */,
 				F77B0E071D118A16002130FE /* ioapi.c in Sources */,
 				F77B0E0D1D118A16002130FE /* CCSecurityOptions.m in Sources */,
-				F74EF41F1E06C627009A6222 /* TableUpload+CoreDataProperties.m in Sources */,
 				F73CCDF11DC13776007E38D8 /* XLFormStepCounterCell.m in Sources */,
 				F73CCE1F1DC13776007E38D8 /* XLForm.m in Sources */,
 				F77B0E0E1D118A16002130FE /* REMenuItemView.m in Sources */,
@@ -3745,7 +3745,6 @@
 				F77B0E831D118A16002130FE /* TableLocalFile.m in Sources */,
 				F77B0E851D118A16002130FE /* MWTapDetectingView.m in Sources */,
 				F75037511DBFA91A008FB480 /* NSLayoutConstraint+PureLayout.m in Sources */,
-				F74EF41D1E06C627009A6222 /* TableUpload+CoreDataClass.m in Sources */,
 				F73CCE151DC13776007E38D8 /* XLFormRowNavigationAccessoryView.m in Sources */,
 				F73CCDFB1DC13776007E38D8 /* XLFormOptionsViewController.m in Sources */,
 				F77B0E871D118A16002130FE /* NSData+Base64.m in Sources */,
@@ -3837,6 +3836,7 @@
 				F77B0ECF1D118A16002130FE /* CYRToken.m in Sources */,
 				F7F06EB11DBFACC600099AE9 /* CTAssetsGridView.m in Sources */,
 				F7D6A0931D82DBFA0045AD1A /* CCControlCenterCell.m in Sources */,
+				F771CD5E1E07F6620066F76D /* TableAutomaticUpload+CoreDataClass.m in Sources */,
 				F77B0ED11D118A16002130FE /* Acknowledgements.m in Sources */,
 				F77B0ED31D118A16002130FE /* PPImageScrollingCellView.m in Sources */,
 				F77B0ED41D118A16002130FE /* LMMediaPlayerHelper.m in Sources */,
