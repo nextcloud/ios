@@ -1470,7 +1470,7 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Upload =====
+#pragma mark ===== Automatic Upload =====
 #pragma --------------------------------------------------------------------------------------------
 
 + (void)addTableAutomaticUpload:(CCMetadataNet *)metadataNet activeAccount:(NSString *)activeAccount context:(NSManagedObjectContext *)context
@@ -1491,12 +1491,12 @@
         record.assetLocalItentifier = metadataNet.assetLocalItentifier;
         record.date = [NSDate date];
         record.fileName = metadataNet.fileName;
+        record.isExecuting = [NSNumber numberWithBool:NO];
         record.selector = metadataNet.selector;
         record.selectorPost = metadataNet.selectorPost;
         record.serverUrl = metadataNet.serverUrl;
         record.session = metadataNet.session;
         record.priority = [NSNumber numberWithLong:metadataNet.priority];
-        record.startUpload = [NSNumber numberWithBool:NO];
         
         [context MR_saveToPersistentStoreAndWait];
     }
@@ -1513,7 +1513,7 @@
     if (context == nil)
         context = [NSManagedObjectContext MR_context];
     
-    NSArray *records = [TableAutomaticUpload MR_findAllWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (selector == %@) AND (startUpload == 0)", activeAccount, selector]];
+    NSArray *records = [TableAutomaticUpload MR_findAllWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (selector == %@) AND (isExecuting == 0)", activeAccount, selector]];
     
     for (TableAutomaticUpload *record in records) {
         
@@ -1540,17 +1540,33 @@
 
 + (NSUInteger)countTableAutomaticUploadForAccount:(NSString *)activeAccount
 {
-    NSUInteger count = [TableAutomaticUpload MR_countOfEntitiesWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (startUpload == 0)", activeAccount]];
+    NSUInteger count = [TableAutomaticUpload MR_countOfEntitiesWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (isExecuting == 0)", activeAccount]];
     
     return count;
 }
 
-+ (void)deleteTableAutomaticUploadFromAccount:(NSString *)activeAccount fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl selector:(NSString*)selector context:(NSManagedObjectContext *)context
++ (void)setTableAutomaticUploadIfExecutingForAccount:(NSString *)activeAccount fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl selector:(NSString*)selector context:(NSManagedObjectContext *)context
 {
     if (context == nil)
         context = [NSManagedObjectContext MR_context];
     
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (fileName == %@) AND (serverUrl == %@)", activeAccount, fileName, serverUrl];
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (fileName == %@) AND (serverUrl == %@) AND (selector == %@)", activeAccount, fileName, serverUrl, selector];
+    TableAutomaticUpload *record = [TableAutomaticUpload MR_findFirstWithPredicate:predicate inContext:context];
+    
+    if (record) {
+        
+        record.isExecuting = [NSNumber numberWithBool:YES];
+        
+        [context MR_saveToPersistentStoreAndWait];
+    }
+}
+
++ (void)deleteTableAutomaticUploadForAccount:(NSString *)activeAccount fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl selector:(NSString*)selector context:(NSManagedObjectContext *)context
+{
+    if (context == nil)
+        context = [NSManagedObjectContext MR_context];
+    
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (fileName == %@) AND (serverUrl == %@) AND (selector == %@)", activeAccount, fileName, serverUrl, selector];
     [TableAutomaticUpload MR_deleteAllMatchingPredicate:predicate inContext:context];
     
     [context MR_saveToPersistentStoreAndWait];
@@ -1564,9 +1580,7 @@
 {
     NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
         
-    TableGPS *record;
-        
-    record = [TableGPS MR_findFirstWithPredicate:[NSPredicate predicateWithFormat:@"(latitude == %@) AND (longitude == %@)", latitude, longitude] inContext:context];
+    TableGPS *record = [TableGPS MR_findFirstWithPredicate:[NSPredicate predicateWithFormat:@"(latitude == %@) AND (longitude == %@)", latitude, longitude] inContext:context];
         
     if (!record) {
         record = [TableGPS MR_createEntityInContext:context];

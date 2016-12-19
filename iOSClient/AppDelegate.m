@@ -1073,16 +1073,15 @@
 - (void)loadTableAutomaticUploadForSelector:(NSString *)selector
 {
     // Verify num error if selectorUploadCameraAllPhoto
-    
     if([selector isEqualToString:selectorUploadCameraAllPhoto]) {
     
-        NSUInteger count = [TableAutomaticUpload MR_countOfEntitiesWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (sessionSelector == %@) AND ((sessionTaskIdentifier == %i) OR (sessionTaskIdentifierPlist == %i))", app.activeAccount, selectorUploadCameraAllPhoto,taskIdentifierError, taskIdentifierError]];
+        NSUInteger count = [TableMetadata MR_countOfEntitiesWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (sessionSelector == %@) AND ((sessionTaskIdentifier == %i) OR (sessionTaskIdentifierPlist == %i))", app.activeAccount, selectorUploadCameraAllPhoto,taskIdentifierError, taskIdentifierError]];
         
         if (count >= 10) {
             [app messageNotification:@"Troppi errori, invio sospeso" description:@"" visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeError];
+            
+            return;
         }
-        
-        return;
     }
     
     // Add Network queue

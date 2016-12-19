@@ -18,11 +18,11 @@
 @dynamic assetLocalItentifier;
 @dynamic date;
 @dynamic fileName;
+@dynamic isExecuting;
+@dynamic priority;
 @dynamic selector;
 @dynamic selectorPost;
 @dynamic serverUrl;
 @dynamic session;
-@dynamic startUpload;
-@dynamic priority;
 
 @end

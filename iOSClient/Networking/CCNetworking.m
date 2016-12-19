@@ -1358,6 +1358,10 @@
         NSLog(@"[LOG] Upload file %@ - %@ TaskIdentifier %lu", fileName,fileNamePrint, (unsigned long)uploadTask.taskIdentifier);
     }
 
+    // Automatic upload set YES isExecuting
+    if([selector isEqualToString:selectorUploadCameraSnapshot] || [selector isEqualToString:selectorUploadCameraAllPhoto])
+        [CCCoreData setTableAutomaticUploadIfExecutingForAccount:_activeAccount fileName:fileNamePrint serverUrl:serverUrl selector:selector context:_context];
+    
     dispatch_async(dispatch_get_main_queue(), ^{
         
         // refresh main

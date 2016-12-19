@@ -1397,7 +1397,7 @@
     // Automatic upload
     if([selector isEqualToString:selectorUploadCameraSnapshot] || [selector isEqualToString:selectorUploadCameraAllPhoto]) {
         
-        [CCCoreData deleteTableAutomaticUploadFromAccount:app.activeAccount fileName:metadata.fileNamePrint serverUrl:serverUrl selector:selector context:nil];
+        [CCCoreData deleteTableAutomaticUploadForAccount:app.activeAccount fileName:metadata.fileNamePrint serverUrl:serverUrl selector:selector context:nil];
         [app loadTableAutomaticUploadForSelector:selector];
     }
     
@@ -1411,7 +1411,7 @@
     // Automatic upload
     if([selector isEqualToString:selectorUploadCameraSnapshot] || [selector isEqualToString:selectorUploadCameraAllPhoto]) {
         
-        [CCCoreData deleteTableAutomaticUploadFromAccount:app.activeAccount fileName:metadata.fileNamePrint serverUrl:serverUrl selector:selector context:nil];
+        [CCCoreData deleteTableAutomaticUploadForAccount:app.activeAccount fileName:metadata.fileNamePrint serverUrl:serverUrl selector:selector context:nil];
         [app loadTableAutomaticUploadForSelector:selector];
     }
     
