@@ -308,9 +308,7 @@
 // L'applicazione terminerà
 //
 - (void)applicationWillTerminate:(UIApplication *)application
-{
-    [self dropCameraUploadAllPhoto];
-    
+{    
     [MagicalRecord cleanUp];
 
     NSLog(@"[LOG] bye bye, Crypto Cloud !");
@@ -1241,16 +1239,15 @@
         [_activeMain getDataSourceWithReloadTableView:metadata.directoryID fileID:nil selector:nil];
 }
 
-- (void)dropCameraUploadAllPhoto
+- (void)dropAutomaticUploadWithSelector:(NSString *)selector
 {
-    [_netQueueUploadCamera cancelAllOperations];
+    //[_netQueueUploadCamera cancelAllOperations];
     
-    [CCCoreData deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (session != NULL) AND (session != '') AND ((sessionSelector == %@))", self.activeAccount, selectorUploadCameraAllPhoto]];
-    
-    [CCCoreData setCameraUploadFullPhotosActiveAccount:NO activeAccount:app.activeAccount];
+    [CCCoreData flushTableAutomaticUploadAccount:self.activeAccount selector:selector];
+    //[CCCoreData deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (session != NULL) AND (session != '') AND ((sessionSelector == %@))", self.activeAccount, selector]];
     
     // Update icon badge number
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 3.0 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1.0 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         [self updateApplicationIconBadgeNumber];
     });
 }

@@ -37,7 +37,7 @@
         <attribute name="selectorPost" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="serverUrl" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="session" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="startUpload" optional="YES" attributeType="Boolean" defaultValueString="-1" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="startUpload" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="NO" syncable="YES"/>
     </entity>
     <entity name="TableCertificates" representedClassName="TableCertificates" syncable="YES">
         <attribute name="certificateLocation" optional="YES" attributeType="String" syncable="YES"/>

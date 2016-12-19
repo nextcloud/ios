@@ -1116,12 +1116,8 @@
     if(![self createFolder:folderPathName]) {
         
         // Full Upload ?
-        if (assetsFull) {
-                
+        if (assetsFull)
             [app messageNotification:@"_error_" description:NSLocalizedStringFromTable(@"_not_possible_create_folder_", @"Error", nil) visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeInfo];
-                
-            [app dropCameraUploadAllPhoto];
-        }
         
         // START new request : initStateCameraUpload
         _AutomaticCameraUploadInProgress = NO;
@@ -1198,12 +1194,8 @@
                 
                 [self endLoadingAssets];
                 
-                if (assetsFull) {
-                    
+                if (assetsFull)
                     [app messageNotification:@"_error_" description:@"_error_createsubfolders_upload_" visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeInfo];
-                    
-                    [app dropCameraUploadAllPhoto];
-                }
                 
                 return;
             }

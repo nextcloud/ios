@@ -1480,7 +1480,6 @@
     if (context == nil)
         context = [NSManagedObjectContext MR_context];
     
-    
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (fileName == %@) AND (serverUrl == %@)", activeAccount, metadataNet.fileName, metadataNet.serverUrl];
     record = [TableAutomaticUpload MR_findFirstWithPredicate:predicate inContext:context];
     
@@ -1497,6 +1496,7 @@
         record.serverUrl = metadataNet.serverUrl;
         record.session = metadataNet.session;
         record.priority = [NSNumber numberWithLong:metadataNet.priority];
+        record.startUpload = [NSNumber numberWithBool:NO];
         
         [context MR_saveToPersistentStoreAndWait];
     }
@@ -1513,7 +1513,7 @@
     if (context == nil)
         context = [NSManagedObjectContext MR_context];
     
-    NSPredicate *peopleFilter = [NSPredicate predicateWithFormat:@"(account == %@) AND (selector == %@) AND (startUpload == 0)", activeAccount, selector, taskIdentifierDone];
+    NSPredicate *peopleFilter = [NSPredicate predicateWithFormat:@"(account == %@) AND (selector == %@) AND (startUpload == 0)", activeAccount, selector];
     NSArray *records = [TableAutomaticUpload MR_findAllWithPredicate:peopleFilter];
     
     for (TableAutomaticUpload *record in records) {
@@ -2024,6 +2024,20 @@
     }
 }
 
++ (void)flushTableAutomaticUploadAccount:(NSString *)account selector:(NSString *)selector
+{
+    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
+    
+    if (account && selector)
+        [TableAutomaticUpload MR_deleteAllMatchingPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (selector == %@)", account, selector] inContext:context];
+    else if (account && !selector )
+        [TableAutomaticUpload MR_deleteAllMatchingPredicate:[NSPredicate predicateWithFormat:@"(account == %@)", account] inContext:context];
+    else
+        [TableAutomaticUpload MR_truncateAllInContext:context];
+    
+    [context MR_saveToPersistentStoreAndWait];
+}
+
 + (void)flushTableDirectoryAccount:(NSString *)account
 {
     NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
@@ -2086,7 +2100,7 @@
     NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
     
     [TableAccount MR_truncateAllInContext:context];
-    
+    [TableAutomaticUpload MR_truncateAllInContext:context];
     [TableCertificates MR_truncateAllInContext:context];
     [TableDirectory MR_truncateAllInContext:context];
     [TableGPS MR_truncateAllInContext:context];

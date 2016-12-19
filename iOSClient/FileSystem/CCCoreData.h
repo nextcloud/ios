@@ -212,6 +212,7 @@
 
 //+ (void)verifyVersionCoreData;
 
++ (void)flushTableAutomaticUploadAccount:(NSString *)account selector:(NSString *)selector;
 + (void)flushTableDirectoryAccount:(NSString *)account;
 + (void)flushTableLocalFileAccount:(NSString *)account;
 + (void)flushTableMetadataAccount:(NSString *)account;

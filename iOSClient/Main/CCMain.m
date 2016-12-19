@@ -1395,8 +1395,9 @@
             NSArray *records = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (sessionSelector == %@) AND ((sessionTaskIdentifier == %i) OR (sessionTaskIdentifierPlist == %i))", app.activeAccount, selectorUploadCameraAllPhoto,taskIdentifierError, taskIdentifierError] context:nil];
             
             // fatal error(s)
-            if ([records count] >= 10 || errorCode == NSURLErrorNotConnectedToInternet)
-                [app dropCameraUploadAllPhoto];
+            if ([records count] >= 10 || errorCode == NSURLErrorNotConnectedToInternet) {
+                //[app dropCameraUploadAllPhoto];
+            }
         }
     }
     

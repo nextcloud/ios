@@ -232,9 +232,10 @@
             
             [CCCoreData setCameraUploadDatePhoto:NULL];
             [CCCoreData setCameraUploadDateVideo:NULL];
-            
-            // remove queue upload
-            [[CCNetworking sharedNetworking] settingSessionsDownload:NO upload:YES taskStatus:taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
+
+            // remove
+            [app dropAutomaticUploadWithSelector:selectorUploadCameraSnapshot];
+            [app dropAutomaticUploadWithSelector:selectorUploadCameraAllPhoto];
         }
         
         // Initialize Camera Upload
@@ -281,7 +282,8 @@
             
         } else {
             
-            [app dropCameraUploadAllPhoto];
+            [app dropAutomaticUploadWithSelector:selectorUploadCameraAllPhoto];
+            [CCCoreData setCameraUploadFullPhotosActiveAccount:NO activeAccount:app.activeAccount];
         }
     }
 

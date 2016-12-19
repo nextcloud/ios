@@ -185,7 +185,7 @@
 - (void)loadTableAutomaticUploadForSelector:(NSString *)selector numeRecors:(NSUInteger)numRecords;
 - (BOOL)verifyExistsFileName:(NSString *)fileName withSelector:(NSString *)selector inOperationsQueue:(NSOperationQueue *)queue;
 
-- (void)dropCameraUploadAllPhoto;
+- (void)dropAutomaticUploadWithSelector:(NSString *)selector;
 
 @end
 
