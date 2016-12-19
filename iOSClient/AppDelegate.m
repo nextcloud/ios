@@ -1223,10 +1223,7 @@
 
 - (void)dropAutomaticUploadWithSelector:(NSString *)selector
 {
-    //[_netQueueUploadCamera cancelAllOperations];
-    
     [CCCoreData flushTableAutomaticUploadAccount:self.activeAccount selector:selector];
-    //[CCCoreData deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (session != NULL) AND (session != '') AND ((sessionSelector == %@))", self.activeAccount, selector]];
     
     // Update icon badge number
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1.0 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{

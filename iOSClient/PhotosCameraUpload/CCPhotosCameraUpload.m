@@ -1103,7 +1103,7 @@
         newItemsToUpload = [manageAsset getCameraRollNewItemsWithDatePhoto:databaseDatePhoto dateVideo:databaseDateVideo];
     }
     
-    // News Assets ? && Verify if blocked Table Automatic Upload -> Autostart
+    // News Assets ? if no verify if blocked Table Automatic Upload -> Autostart
     if ([newItemsToUpload count] == 0) {
     
         if ([CCCoreData countTableAutomaticUploadForAccount:app.activeAccount selector:selectorUploadAutomatic])
@@ -1113,6 +1113,8 @@
         if ([CCCoreData countTableAutomaticUploadForAccount:app.activeAccount selector:selectorUploadAutomaticAll])
             if ([app verifyExistsInQueue:app.netQueueUpload selector:selectorUploadAutomaticAll] == NO)
                 [app loadTableAutomaticUploadForSelector:selectorUploadAutomaticAll];
+
+//TODO: TODO : Add message log if in queue only ifExecuting
         
         return;
     }
