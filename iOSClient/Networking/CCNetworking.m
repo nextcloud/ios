@@ -1358,7 +1358,7 @@
         NSLog(@"[LOG] Upload file %@ - %@ TaskIdentifier %lu", fileName,fileNamePrint, (unsigned long)uploadTask.taskIdentifier);
     }
 
-    // Automatic upload set YES isExecuting
+    // Automatic upload
     if([selector isEqualToString:selectorUploadAutomatic] || [selector isEqualToString:selectorUploadAutomaticAll])
         [CCCoreData deleteTableAutomaticUploadForAccount:_activeAccount fileName:fileNamePrint serverUrl:serverUrl selector:selector context:_context];
             
