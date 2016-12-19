@@ -18,7 +18,6 @@
 @dynamic assetLocalItentifier;
 @dynamic date;
 @dynamic fileName;
-@dynamic isExecuting;
 @dynamic priority;
 @dynamic selector;
 @dynamic selectorPost;

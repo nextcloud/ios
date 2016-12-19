@@ -1071,9 +1071,9 @@
     
     // Add Network queue
     
-    NSArray *metadatasNet = [CCCoreData getTableAutomaticUploadForAccount:self.activeAccount selector:selector numRecords:maxConcurrentAutomaticUpload context:nil];
+    CCMetadataNet *metadataNet = [CCCoreData getTableAutomaticUploadForAccount:self.activeAccount selector:selector context:nil];
     
-    for (CCMetadataNet *metadataNet in metadatasNet) {
+    if (metadataNet) {
         
         NSOperationQueue *queue;
         

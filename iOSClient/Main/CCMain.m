@@ -1395,25 +1395,17 @@
     }
     
     // Automatic upload
-    if([selector isEqualToString:selectorUploadAutomatic] || [selector isEqualToString:selectorUploadAutomaticAll]) {
-        
-        [CCCoreData deleteTableAutomaticUploadForAccount:app.activeAccount fileName:metadata.fileNamePrint serverUrl:serverUrl selector:selector context:nil];
+    if([selector isEqualToString:selectorUploadAutomatic] || [selector isEqualToString:selectorUploadAutomaticAll])
         [app loadTableAutomaticUploadForSelector:selector];
-    }
     
     [self getDataSourceWithReloadTableView:[CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:app.activeAccount] fileID:nil selector:selector];
 }
 
 - (void)uploadFileSuccess:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost
 {
-    CCMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, app.activeAccount] context:nil];
-    
     // Automatic upload
-    if([selector isEqualToString:selectorUploadAutomatic] || [selector isEqualToString:selectorUploadAutomaticAll]) {
-        
-        [CCCoreData deleteTableAutomaticUploadForAccount:app.activeAccount fileName:metadata.fileNamePrint serverUrl:serverUrl selector:selector context:nil];
+    if([selector isEqualToString:selectorUploadAutomatic] || [selector isEqualToString:selectorUploadAutomaticAll])
         [app loadTableAutomaticUploadForSelector:selector];
-    }
     
     if ([selectorPost isEqualToString:selectorReadFolderForced] ) {
             

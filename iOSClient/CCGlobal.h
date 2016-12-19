@@ -197,8 +197,6 @@ extern NSString *const BKPasscodeKeychainServiceName;
 #define maxConcurrentOperation 10
 #define maxConcurrentOperationDownloadUpload 10
 
-#define maxConcurrentAutomaticUpload 1
-
 // Error
 #define CCErrorTaskNil -9999
 #define CCErrorTaskDownloadNotFound -9998

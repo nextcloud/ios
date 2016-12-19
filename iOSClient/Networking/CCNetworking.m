@@ -1360,8 +1360,8 @@
 
     // Automatic upload set YES isExecuting
     if([selector isEqualToString:selectorUploadAutomatic] || [selector isEqualToString:selectorUploadAutomaticAll])
-        [CCCoreData setTableAutomaticUploadIfExecutingForAccount:_activeAccount fileName:fileNamePrint serverUrl:serverUrl selector:selector context:_context];
-    
+        [CCCoreData deleteTableAutomaticUploadForAccount:_activeAccount fileName:fileNamePrint serverUrl:serverUrl selector:selector context:_context];
+            
     dispatch_async(dispatch_get_main_queue(), ^{
         
         // refresh main
