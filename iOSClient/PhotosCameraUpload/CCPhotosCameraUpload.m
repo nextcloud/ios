@@ -1263,7 +1263,7 @@
         metadataNet.session = session;
         metadataNet.taskStatus = taskStatusResume;
         
-        [CCCoreData addTableAutomaticUpload:metadataNet activeAccount:app.activeAccount context:nil];
+        [CCCoreData addTableAutomaticUpload:metadataNet account:app.activeAccount context:nil];
     }
     
     // start upload

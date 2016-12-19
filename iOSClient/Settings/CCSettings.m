@@ -737,6 +737,7 @@
             [[NSURLCache sharedURLCache] setMemoryCapacity:0];
             [[NSURLCache sharedURLCache] setDiskCapacity:0];
             
+            [CCCoreData flushTableAutomaticUploadAccount:app.activeAccount selector:nil];
             [CCCoreData flushTableDirectoryAccount:app.activeAccount];
             [CCCoreData flushTableLocalFileAccount:app.activeAccount];
             [CCCoreData flushTableMetadataAccount:app.activeAccount];

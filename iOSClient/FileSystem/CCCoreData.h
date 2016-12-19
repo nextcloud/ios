@@ -176,13 +176,13 @@
 + (void)setGeoInformationLocalFromFileID:(NSString *)fileID exifDate:(NSDate *)exifDate exifLatitude:(NSString *)exifLatitude exifLongitude:(NSString *)exifLongitude activeAccount:(NSString *)activeAccount;
 + (void)setGeoInformationLocalNull;
 
-// ===== Upload =====
+// ===== Automatic Upload =====
 
-+ (void)addTableAutomaticUpload:(CCMetadataNet *)metadataNet activeAccount:(NSString *)activeAccount context:(NSManagedObjectContext *)context;
-+ (NSArray *)getTableAutomaticUploadForAccount:(NSString *)activeAccount selector:(NSString *)selector numRecords:(NSUInteger)numRecords context:(NSManagedObjectContext *)context;
-+ (NSUInteger)countTableAutomaticUploadForAccount:(NSString *)activeAccount selector:(NSString *)selector;
-+ (void)setTableAutomaticUploadIfExecutingForAccount:(NSString *)activeAccount fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl selector:(NSString*)selector context:(NSManagedObjectContext *)context;
-+ (void)deleteTableAutomaticUploadForAccount:(NSString *)activeAccount fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl selector:(NSString*)selector context:(NSManagedObjectContext *)context;
++ (void)addTableAutomaticUpload:(CCMetadataNet *)metadataNet account:(NSString *)account context:(NSManagedObjectContext *)context;
++ (NSArray *)getTableAutomaticUploadForAccount:(NSString *)account selector:(NSString *)selector numRecords:(NSUInteger)numRecords context:(NSManagedObjectContext *)context;
++ (NSUInteger)countTableAutomaticUploadForAccount:(NSString *)account selector:(NSString *)selector;
++ (void)setTableAutomaticUploadIfExecutingForAccount:(NSString *)account fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl selector:(NSString*)selector context:(NSManagedObjectContext *)context;
++ (void)deleteTableAutomaticUploadForAccount:(NSString *)account fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl selector:(NSString*)selector context:(NSManagedObjectContext *)context;
 
 // ===== GPS =====
 
