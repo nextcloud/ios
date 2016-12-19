@@ -1395,7 +1395,7 @@
     }
     
     // Automatic upload
-    if([selector isEqualToString:selectorUploadCameraSnapshot] || [selector isEqualToString:selectorUploadCameraAllPhoto]) {
+    if([selector isEqualToString:selectorUploadAutomatic] || [selector isEqualToString:selectorUploadAutomaticAll]) {
         
         [CCCoreData deleteTableAutomaticUploadForAccount:app.activeAccount fileName:metadata.fileNamePrint serverUrl:serverUrl selector:selector context:nil];
         [app loadTableAutomaticUploadForSelector:selector];
@@ -1409,7 +1409,7 @@
     CCMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, app.activeAccount] context:nil];
     
     // Automatic upload
-    if([selector isEqualToString:selectorUploadCameraSnapshot] || [selector isEqualToString:selectorUploadCameraAllPhoto]) {
+    if([selector isEqualToString:selectorUploadAutomatic] || [selector isEqualToString:selectorUploadAutomaticAll]) {
         
         [CCCoreData deleteTableAutomaticUploadForAccount:app.activeAccount fileName:metadata.fileNamePrint serverUrl:serverUrl selector:selector context:nil];
         [app loadTableAutomaticUploadForSelector:selector];
@@ -3191,7 +3191,7 @@
     if (app.reSelectMenu.isOpen || app.reMainMenu.isOpen)
         return;
     
-    if ([app.netQueue operationCount] > 0 || [app.netQueueDownload operationCount] > 0 || [app.netQueueDownloadWWan operationCount] > 0 || [app.netQueueUpload operationCount] > 0 || [app.netQueueUploadWWan operationCount] > 0 || [CCCoreData countTableAutomaticUploadForAccount:app.activeAccount] > 0) {
+    if ([app.netQueue operationCount] > 0 || [app.netQueueDownload operationCount] > 0 || [app.netQueueDownloadWWan operationCount] > 0 || [app.netQueueUpload operationCount] > 0 || [app.netQueueUploadWWan operationCount] > 0 || [CCCoreData countTableAutomaticUploadForAccount:app.activeAccount selector:nil] > 0) {
         
         [app messageNotification:@"_transfers_in_queue_" description:nil visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeInfo];
         return;

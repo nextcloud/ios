@@ -182,7 +182,6 @@
 - (void)cancelAllOperations;
 - (void)addNetworkingOperationQueue:(NSOperationQueue *)netQueue delegate:(id)delegate metadataNet:(CCMetadataNet *)metadataNet oneByOne:(BOOL)oneByOne;
 - (void)loadTableAutomaticUploadForSelector:(NSString *)selector;
-- (BOOL)verifyExistsFileName:(NSString *)fileName withSelector:(NSString *)selector inOperationsQueue:(NSOperationQueue *)queue;
 
 - (void)dropAutomaticUploadWithSelector:(NSString *)selector;
 

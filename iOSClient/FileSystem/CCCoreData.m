@@ -1538,11 +1538,12 @@
     return metadatasNet;
 }
 
-+ (NSUInteger)countTableAutomaticUploadForAccount:(NSString *)activeAccount
++ (NSUInteger)countTableAutomaticUploadForAccount:(NSString *)activeAccount selector:(NSString *)selector
 {
-    NSUInteger count = [TableAutomaticUpload MR_countOfEntitiesWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (isExecuting == 0)", activeAccount]];
-    
-    return count;
+    if (selector)
+        return [TableAutomaticUpload MR_countOfEntitiesWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (isExecuting == 0) AND (selector == %@)", activeAccount, selector]];
+    else
+        return [TableAutomaticUpload MR_countOfEntitiesWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (isExecuting == 0)", activeAccount]];
 }
 
 + (void)setTableAutomaticUploadIfExecutingForAccount:(NSString *)activeAccount fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl selector:(NSString*)selector context:(NSManagedObjectContext *)context

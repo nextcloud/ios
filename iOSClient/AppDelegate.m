@@ -248,7 +248,15 @@
 //
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
-    
+    // Verify if load new asset for Automatic Upload
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 3.0 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        
+        if ([self verifyExistsInQueue:_netQueueUpload selector:selectorUploadAutomatic] || [self verifyExistsInQueue:_netQueueUploadWWan selector:selectorUploadAutomatic])
+            [self loadTableAutomaticUploadForSelector:selectorUploadAutomatic];
+        
+        if ([self verifyExistsInQueue:_netQueueUpload selector:selectorUploadAutomaticAll])
+            [self loadTableAutomaticUploadForSelector:selectorUploadAutomaticAll];
+    });
 }
 
 //
@@ -772,7 +780,7 @@
      }
 
     // Total
-    NSUInteger total = _queueNunDownload + _queueNumDownloadWWan + _queueNumUpload + _queueNumUploadWWan + [CCCoreData countTableAutomaticUploadForAccount:self.activeAccount];
+    NSUInteger total = _queueNunDownload + _queueNumDownloadWWan + _queueNumUpload + _queueNumUploadWWan + [CCCoreData countTableAutomaticUploadForAccount:self.activeAccount selector:nil];
     
     [UIApplication sharedApplication].applicationIconBadgeNumber = total;
     
@@ -1005,21 +1013,6 @@
     id operation;
     BOOL activityIndicator = NO;
     
-    // Verify if already exists in queue but not in selectorUploadCameraAllPhoto
-    if ((metadataNet.fileName || metadataNet.metadata.fileName) && ![metadataNet.selector isEqualToString:selectorUploadCameraAllPhoto]) {
-        
-        NSString *fileName;
-        
-        if (metadataNet.fileName)
-            fileName = metadataNet.fileName;
-        
-        if (metadataNet.metadata.fileName)
-            fileName = metadataNet.metadata.fileName;
-        
-        if ([self verifyExistsFileName:fileName withSelector:metadataNet.selector inOperationsQueue:netQueue])
-            return;
-    }
-    
     // Activity Indicator
     if (netQueue == _netQueue)
         activityIndicator = YES;
@@ -1042,14 +1035,14 @@
     [netQueue addOperation:operation];
 }
 
-- (BOOL)verifyExistsFileName:(NSString *)fileName withSelector:(NSString *)selector inOperationsQueue:(NSOperationQueue *)queue
+- (BOOL)verifyExistsInQueue:(NSOperationQueue *)queue selector:(NSString *)selector
 {
     /*** NEXTCLOUD OWNCLOUD ***/
     
     if ([app.typeCloud isEqualToString:typeCloudOwnCloud] || [app.typeCloud isEqualToString:typeCloudNextcloud]) {
         
         for (OCnetworking *operation in [queue operations])
-            if ([operation.metadataNet.selector isEqualToString:selector] && ([operation.metadataNet.fileName isEqualToString:fileName] || [operation.metadataNet.metadata.fileName isEqualToString:fileName]))
+            if ([operation.metadataNet.selector isEqualToString:selector])
                 return YES;
     }
     
@@ -1060,9 +1053,8 @@
     if ([app.typeCloud isEqualToString:typeCloudDropbox]) {
         
         for (DBnetworking *operation in [queue operations])
-            if ([operation.metadataNet.selector isEqualToString:selector] && ([operation.metadataNet.fileName isEqualToString:fileName] || [operation.metadataNet.metadata.fileName isEqualToString:fileName]))
+            if ([operation.metadataNet.selector isEqualToString:selector])
                 return YES;
-
     }
     
 #endif
@@ -1072,10 +1064,11 @@
 
 - (void)loadTableAutomaticUploadForSelector:(NSString *)selector
 {
-    // Verify num error if selectorUploadCameraAllPhoto
-    if([selector isEqualToString:selectorUploadCameraAllPhoto]) {
+    // Verify num error if selectorUploadAutomaticAll
     
-        NSUInteger count = [TableMetadata MR_countOfEntitiesWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (sessionSelector == %@) AND ((sessionTaskIdentifier == %i) OR (sessionTaskIdentifierPlist == %i))", app.activeAccount, selectorUploadCameraAllPhoto,taskIdentifierError, taskIdentifierError]];
+    if([selector isEqualToString:selectorUploadAutomaticAll]) {
+    
+        NSUInteger count = [TableMetadata MR_countOfEntitiesWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (sessionSelector == %@) AND ((sessionTaskIdentifier == %i) OR (sessionTaskIdentifierPlist == %i))", app.activeAccount, selectorUploadAutomaticAll,taskIdentifierError, taskIdentifierError]];
         
         if (count >= 10) {
             [app messageNotification:@"Troppi errori, invio sospeso" description:@"" visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeError];
@@ -1086,7 +1079,7 @@
     
     // Add Network queue
     
-    NSArray *metadatasNet = [CCCoreData getTableAutomaticUploadForAccount:self.activeAccount selector:selector numRecords:1 context:nil];
+    NSArray *metadatasNet = [CCCoreData getTableAutomaticUploadForAccount:self.activeAccount selector:selector numRecords:maxConcurrentAutomaticUpload context:nil];
     
     for (CCMetadataNet *metadataNet in metadatasNet) {
         

@@ -234,8 +234,8 @@
             [CCCoreData setCameraUploadDateVideo:NULL];
 
             // remove
-            [app dropAutomaticUploadWithSelector:selectorUploadCameraSnapshot];
-            [app dropAutomaticUploadWithSelector:selectorUploadCameraAllPhoto];
+            [app dropAutomaticUploadWithSelector:selectorUploadAutomatic];
+            [app dropAutomaticUploadWithSelector:selectorUploadAutomaticAll];
         }
         
         // Initialize Camera Upload
@@ -282,7 +282,7 @@
             
         } else {
             
-            [app dropAutomaticUploadWithSelector:selectorUploadCameraAllPhoto];
+            [app dropAutomaticUploadWithSelector:selectorUploadAutomaticAll];
             [CCCoreData setCameraUploadFullPhotosActiveAccount:NO activeAccount:app.activeAccount];
         }
     }

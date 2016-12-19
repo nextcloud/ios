@@ -197,6 +197,8 @@ extern NSString *const BKPasscodeKeychainServiceName;
 #define maxConcurrentOperation 10
 #define maxConcurrentOperationDownloadUpload 10
 
+#define maxConcurrentAutomaticUpload 1
+
 // Error
 #define CCErrorTaskNil -9999
 #define CCErrorTaskDownloadNotFound -9998
@@ -243,8 +245,8 @@ extern NSString *const BKPasscodeKeychainServiceName;
 #define selectorSynchronizedFolder      @"synchronizedFolder"
 #define selectorUnshare                 @"unshare"
 #define selectorUpdateShare             @"updateShare"
-#define selectorUploadCameraAllPhoto    @"uploadCameraAllPhoto"
-#define selectorUploadCameraSnapshot    @"uploadCameraSnapshot"
+#define selectorUploadAutomatic         @"uploadAutomatic"
+#define selectorUploadAutomaticAll      @"uploadAutomaticAll"
 #define selectorUploadFile              @"uploadFile"
 #define selectorUploadFileCrypto        @"uploadFileCrypto"
 #define selectorUploadFilePlist         @"uploadFilePlist"

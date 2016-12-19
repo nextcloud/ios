@@ -1238,11 +1238,11 @@
         metadataNet.action = actionUploadAsset;
         metadataNet.assetLocalItentifier = asset.localIdentifier;
         if (assetsFull) {
-            metadataNet.selector = selectorUploadCameraAllPhoto;
+            metadataNet.selector = selectorUploadAutomaticAll;
             metadataNet.selectorPost = selectorUploadRemovePhoto;
             metadataNet.priority = NSOperationQueuePriorityLow;
         } else {
-            metadataNet.selector = selectorUploadCameraSnapshot;
+            metadataNet.selector = selectorUploadAutomatic;
             metadataNet.selectorPost = nil;
             metadataNet.priority = NSOperationQueuePriorityHigh;
         }
@@ -1256,9 +1256,9 @@
     
     // start upload
     if (assetsFull)
-        [app loadTableAutomaticUploadForSelector:selectorUploadCameraAllPhoto];
+        [app loadTableAutomaticUploadForSelector:selectorUploadAutomaticAll];
     else
-        [app loadTableAutomaticUploadForSelector:selectorUploadCameraSnapshot];
+        [app loadTableAutomaticUploadForSelector:selectorUploadAutomatic];
 
     // end loading
     [self endLoadingAssets];

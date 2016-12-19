@@ -817,7 +817,7 @@
     if (assetMediaType == PHAssetMediaTypeVideo) {
         
         // Automatic Upload video encrypted ?
-        if ([selector isEqualToString:selectorUploadCameraSnapshot] || [selector isEqualToString:selectorUploadCameraAllPhoto])
+        if ([selector isEqualToString:selectorUploadAutomatic] || [selector isEqualToString:selectorUploadAutomaticAll])
             cryptated = [CCCoreData getCameraUploadCryptatedVideoActiveAccount:_activeAccount];
         
         @autoreleasepool {
@@ -860,7 +860,7 @@
     if (assetMediaType == PHAssetMediaTypeImage) {
     
         // Automatic Upload photo encrypted ?
-        if ([selector isEqualToString:selectorUploadCameraSnapshot] || [selector isEqualToString:selectorUploadCameraAllPhoto])
+        if ([selector isEqualToString:selectorUploadAutomatic] || [selector isEqualToString:selectorUploadAutomaticAll])
             cryptated = [CCCoreData getCameraUploadCryptatedPhotoActiveAccount:_activeAccount];
 
         @autoreleasepool {
@@ -991,7 +991,7 @@
         
             NSString *fileNameForCrypto;
         
-            if ([selector isEqualToString:selectorUploadCameraSnapshot] || [selector isEqualToString:selectorUploadCameraAllPhoto])
+            if ([selector isEqualToString:selectorUploadAutomatic] || [selector isEqualToString:selectorUploadAutomaticAll])
                 fileNameForCrypto = [NSString stringWithFormat:@"%@%@", assetTemplateFileName, assetDate];
             else
                 fileNameForCrypto = fileName;
@@ -1055,8 +1055,8 @@
                     
                     dispatch_async(dispatch_get_main_queue(), ^{
                         
-                        // Change Asset Data only for snapshot photo
-                        if ([selector isEqualToString:selectorUploadCameraSnapshot])
+                        // Change Asset Data only for automatic upload
+                        if ([selector isEqualToString:selectorUploadAutomatic])
                             [CCCoreData setCameraUploadDateAssetType:assetMediaType assetDate:assetDate activeAccount:_activeAccount];
                         
                         // Error for uploadFileFailure
@@ -1143,8 +1143,8 @@
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
                     
-                    // Change Asset Data only for snapshot photo
-                    if ([selector isEqualToString:selectorUploadCameraSnapshot])
+                    // Change Asset Data only for automatic upload
+                    if ([selector isEqualToString:selectorUploadAutomatic])
                         [CCCoreData setCameraUploadDateAssetType:assetMediaType assetDate:assetDate activeAccount:_activeAccount];
                 
                     // Error for uploadFileFailure
@@ -1351,15 +1351,15 @@
         
         [CCCoreData setMetadataSession:session sessionError:@"" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:sessionTaskIdentifier sessionTaskIdentifierPlist:sessionTaskIdentifierPlist predicate:[NSPredicate predicateWithFormat:@"(sessionID == %@) AND (account == %@)", sessionID, _activeAccount] context:_context];
         
-        // Change Asset Data only for snapshot photo 
-        if ([selector isEqualToString:selectorUploadCameraSnapshot])
+        // Change Asset Data only for Automatic Upload
+        if ([selector isEqualToString:selectorUploadAutomatic])
             [CCCoreData setCameraUploadDateAssetType:assetMediaType assetDate:assetDate activeAccount:_activeAccount];
         
         NSLog(@"[LOG] Upload file %@ - %@ TaskIdentifier %lu", fileName,fileNamePrint, (unsigned long)uploadTask.taskIdentifier);
     }
 
     // Automatic upload set YES isExecuting
-    if([selector isEqualToString:selectorUploadCameraSnapshot] || [selector isEqualToString:selectorUploadCameraAllPhoto])
+    if([selector isEqualToString:selectorUploadAutomatic] || [selector isEqualToString:selectorUploadAutomaticAll])
         [CCCoreData setTableAutomaticUploadIfExecutingForAccount:_activeAccount fileName:fileNamePrint serverUrl:serverUrl selector:selector context:_context];
     
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -1516,8 +1516,8 @@
         if ([CCUtility getUploadAndRemovePhoto] || [metadata.sessionSelectorPost isEqualToString:selectorUploadRemovePhoto])
             [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadata.fileID] error:nil];
         
-        // Copy photo or video in the photo album
-        if ([metadata.localIdentifier length] > 0 && [CCCoreData getCameraUploadSaveAlbumActiveAccount:_activeAccount] && ([metadata.sessionSelector isEqualToString:selectorUploadCameraSnapshot] || [metadata.sessionSelector isEqualToString:selectorUploadCameraAllPhoto])) {
+        // Copy photo or video in the photo album for automatic upload
+        if ([metadata.localIdentifier length] > 0 && [CCCoreData getCameraUploadSaveAlbumActiveAccount:_activeAccount] && [metadata.sessionSelector isEqualToString:selectorUploadAutomatic]) {
             
             PHAsset *asset;
             PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[metadata.localIdentifier] options:nil];

@@ -180,7 +180,7 @@
 
 + (void)addTableAutomaticUpload:(CCMetadataNet *)metadataNet activeAccount:(NSString *)activeAccount context:(NSManagedObjectContext *)context;
 + (NSArray *)getTableAutomaticUploadForAccount:(NSString *)activeAccount selector:(NSString *)selector numRecords:(NSUInteger)numRecords context:(NSManagedObjectContext *)context;
-+ (NSUInteger)countTableAutomaticUploadForAccount:(NSString *)activeAccount;
++ (NSUInteger)countTableAutomaticUploadForAccount:(NSString *)activeAccount selector:(NSString *)selector;
 + (void)setTableAutomaticUploadIfExecutingForAccount:(NSString *)activeAccount fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl selector:(NSString*)selector context:(NSManagedObjectContext *)context;
 + (void)deleteTableAutomaticUploadForAccount:(NSString *)activeAccount fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl selector:(NSString*)selector context:(NSManagedObjectContext *)context;
 
