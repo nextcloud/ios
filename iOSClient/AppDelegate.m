@@ -248,15 +248,7 @@
 //
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
-    // Verify if load new asset for Automatic Upload
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 3.0 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        
-        if ([self verifyExistsInQueue:_netQueueUpload selector:selectorUploadAutomatic] || [self verifyExistsInQueue:_netQueueUploadWWan selector:selectorUploadAutomatic])
-            [self loadTableAutomaticUploadForSelector:selectorUploadAutomatic];
-        
-        if ([self verifyExistsInQueue:_netQueueUpload selector:selectorUploadAutomaticAll])
-            [self loadTableAutomaticUploadForSelector:selectorUploadAutomaticAll];
-    });
+
 }
 
 //

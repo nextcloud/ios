@@ -1103,9 +1103,17 @@
         newItemsToUpload = [manageAsset getCameraRollNewItemsWithDatePhoto:databaseDatePhoto dateVideo:databaseDateVideo];
     }
     
-    // News Assets ?
-    if ([newItemsToUpload count] == 0)
+    // News Assets ? && Verify if blocked Table Automatic Upload
+    if ([newItemsToUpload count] == 0) {
+    
+        if ([app verifyExistsInQueue:app.netQueueUpload selector:selectorUploadAutomatic] || [app verifyExistsInQueue:app.netQueueUploadWWan selector:selectorUploadAutomatic])
+            [app loadTableAutomaticUploadForSelector:selectorUploadAutomatic];
+        
+        if ([app verifyExistsInQueue:app.netQueueUpload selector:selectorUploadAutomaticAll])
+            [app loadTableAutomaticUploadForSelector:selectorUploadAutomaticAll];
+        
         return;
+    }
     
     // STOP new request : initStateCameraUpload
     _AutomaticCameraUploadInProgress = YES;
