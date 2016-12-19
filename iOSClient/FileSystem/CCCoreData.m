@@ -1513,20 +1513,21 @@
     if (context == nil)
         context = [NSManagedObjectContext MR_context];
     
-    NSPredicate *peopleFilter = [NSPredicate predicateWithFormat:@"(account == %@) AND (selector == %@) AND (startUpload == 0)", activeAccount, selector];
-    NSArray *records = [TableAutomaticUpload MR_findAllWithPredicate:peopleFilter];
+    NSArray *records = [TableAutomaticUpload MR_findAllWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (selector == %@) AND (startUpload == 0)", activeAccount, selector]];
     
     for (TableAutomaticUpload *record in records) {
         
         CCMetadataNet *metadataNet = [[CCMetadataNet alloc] init];
         
+        metadataNet.action = actionUploadAsset;                             // Default
         metadataNet.assetLocalItentifier = record.assetLocalItentifier;
         metadataNet.fileName = record.fileName;
+        metadataNet.priority = [record.priority longValue];
         metadataNet.selector = record.selector;
         metadataNet.selectorPost = record.selectorPost;
         metadataNet.serverUrl = record.serverUrl;
         metadataNet.session = record.session;
-        metadataNet.priority = [record.priority longValue];
+        metadataNet.taskStatus = taskStatusResume;                          // Default
         
         [metadatasNet addObject:metadataNet];
         
