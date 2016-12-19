@@ -1378,27 +1378,27 @@
 
 - (void)uploadFileFailure:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode
 {
+    CCMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, app.activeAccount] context:nil];
+    
+    // Read File test do not exists
     if (errorCode == CCErrorFileUploadNotFound) {
        
         // reUpload
-        CCMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, app.activeAccount] context:nil];
         if (metadata)
             [[CCNetworking sharedNetworking] uploadFileMetadata:metadata taskStatus:taskStatusResume];
     }
+    
+    // Print error
     else if (errorCode != kCFURLErrorCancelled && errorCode != 403) {
         
         [app messageNotification:@"_upload_file_" description:message visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeError];
+    }
+    
+    // Automatic upload
+    if([selector isEqualToString:selectorUploadCameraSnapshot] || [selector isEqualToString:selectorUploadCameraAllPhoto]) {
         
-        // Check errors for selectorUploadCameraAllPhoto
-        if ([selector isEqualToString:selectorUploadCameraAllPhoto]) {
-            
-            NSArray *records = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (sessionSelector == %@) AND ((sessionTaskIdentifier == %i) OR (sessionTaskIdentifierPlist == %i))", app.activeAccount, selectorUploadCameraAllPhoto,taskIdentifierError, taskIdentifierError] context:nil];
-            
-            // fatal error(s)
-            if ([records count] >= 10 || errorCode == NSURLErrorNotConnectedToInternet) {
-                //[app dropCameraUploadAllPhoto];
-            }
-        }
+        [CCCoreData deleteTableAutomaticUploadFromAccount:app.activeAccount fileName:metadata.fileNamePrint serverUrl:serverUrl selector:selector context:nil];
+        [app loadTableAutomaticUploadForSelector:selector];
     }
     
     [self getDataSourceWithReloadTableView:[CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:app.activeAccount] fileID:nil selector:selector];

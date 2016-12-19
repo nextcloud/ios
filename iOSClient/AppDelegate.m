@@ -1072,11 +1072,23 @@
 
 - (void)loadTableAutomaticUploadForSelector:(NSString *)selector
 {
-    NSUInteger numRecords = 1;
-    NSArray *metadatasNet = [CCCoreData getTableAutomaticUploadForAccount:self.activeAccount selector:selector numRecords:numRecords context:nil];
+    // Verify num error if selectorUploadCameraAllPhoto
+    
+    if([selector isEqualToString:selectorUploadCameraAllPhoto]) {
+    
+        NSUInteger count = [TableAutomaticUpload MR_countOfEntitiesWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (sessionSelector == %@) AND ((sessionTaskIdentifier == %i) OR (sessionTaskIdentifierPlist == %i))", app.activeAccount, selectorUploadCameraAllPhoto,taskIdentifierError, taskIdentifierError]];
+        
+        if (count >= 10) {
+            [app messageNotification:@"Troppi errori, invio sospeso" description:@"" visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeError];
+        }
+        
+        return;
+    }
     
     // Add Network queue
-
+    
+    NSArray *metadatasNet = [CCCoreData getTableAutomaticUploadForAccount:self.activeAccount selector:selector numRecords:1 context:nil];
+    
     for (CCMetadataNet *metadataNet in metadatasNet) {
         
         NSOperationQueue *queue;
