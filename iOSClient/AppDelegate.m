@@ -127,10 +127,6 @@
     _netQueueUploadWWan.name = netQueueUploadWWanName;
     _netQueueUploadWWan.maxConcurrentOperationCount = maxConcurrentOperationDownloadUpload;
     
-    _netQueueUploadCamera = [[NSOperationQueue alloc] init];
-    _netQueueUploadCamera.name = netQueueUploadCameraName;
-    _netQueueUploadCamera.maxConcurrentOperationCount = maxConcurrentOperationUploadCamera;
-    
 #ifdef CC
     // Inizialize DBSession for Dropbox
     NSString *appKey = appKeyCryptoCloud;
@@ -683,9 +679,7 @@
     
     _queueNumUpload = [[CCCoreData getTableMetadataUploadAccount:self.activeAccount] count];
     _queueNumUploadWWan = [[CCCoreData getTableMetadataUploadWWanAccount:self.activeAccount] count];
-    
-    _queueNumUploadCamera = 0;
-    
+        
     // Clear list folder in Synchronization
     [self.listFolderSynchronization removeAllObjects];
         
@@ -777,25 +771,8 @@
 #endif
      }
 
-    // netQueueUploadCameraAllPhoto
-    for (NSOperation *operation in [app.netQueueUploadCamera operations]) {
-        
-        /*** NEXTCLOUD OWNCLOUD ***/
-        
-        if ([app.typeCloud isEqualToString:typeCloudOwnCloud] || [app.typeCloud isEqualToString:typeCloudNextcloud])
-            if (((OCnetworking *)operation).isExecuting == NO) _queueNumUploadCamera++;
-        
-#ifdef CC
-        
-        /*** DROPBOX ***/
-        
-        if ([app.typeCloud isEqualToString:typeCloudDropbox])
-            if (((DBnetworking *)operation).isExecuting == NO) _queueNumUploadCameraAllPhoto++;
-#endif
-    }
-
     // Total
-    NSUInteger total = _queueNunDownload + _queueNumDownloadWWan + _queueNumUpload + _queueNumUploadWWan + _queueNumUploadCamera;
+    NSUInteger total = _queueNunDownload + _queueNumDownloadWWan + _queueNumUpload + _queueNumUploadWWan + [CCCoreData countTableAutomaticUploadForAccount:self.activeAccount];
     
     [UIApplication sharedApplication].applicationIconBadgeNumber = total;
     
@@ -1019,7 +996,6 @@
     [_netQueueDownloadWWan cancelAllOperations];
     [_netQueueUpload cancelAllOperations];
     [_netQueueUploadWWan cancelAllOperations];
-    [_netQueueUploadCamera cancelAllOperations];
     
     [self performSelector:@selector(updateApplicationIconBadgeNumber) withObject:nil afterDelay:0.5];
 }
@@ -1094,14 +1070,24 @@
     return NO;
 }
 
-- (void)loadTableAutomaticUploadForSelector:(NSString *)selector numeRecors:(NSUInteger)numRecords
+- (void)loadTableAutomaticUploadForSelector:(NSString *)selector
 {
-    NSArray *metadatasNet = [CCCoreData getTableUploadFromAccount:self.activeAccount selector:selector numRecords:numRecords context:nil];
+    NSUInteger numRecords = 1;
+    NSArray *metadatasNet = [CCCoreData getTableAutomaticUploadForAccount:self.activeAccount selector:selector numRecords:numRecords context:nil];
     
     // Add Network queue
 
-    for (CCMetadataNet *metadataNet in metadatasNet)
-        [self addNetworkingOperationQueue:self.netQueueUploadCamera delegate:app.activeMain metadataNet:metadataNet oneByOne:YES];
+    for (CCMetadataNet *metadataNet in metadatasNet) {
+        
+        NSOperationQueue *queue;
+        
+        if ([metadataNet.session containsString:@"wwan"])
+            queue = app.netQueueUploadWWan;
+        else
+            queue = app.netQueueUpload;
+        
+        [self addNetworkingOperationQueue:queue delegate:app.activeMain metadataNet:metadataNet oneByOne:YES];
+    }
 }
 
 - (void)verifyDownloadUploadInProgress

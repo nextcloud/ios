@@ -1473,7 +1473,7 @@
 #pragma mark ===== Upload =====
 #pragma --------------------------------------------------------------------------------------------
 
-+ (void)addUpload:(CCMetadataNet *)metadataNet activeAccount:(NSString *)activeAccount context:(NSManagedObjectContext *)context
++ (void)addTableAutomaticUpload:(CCMetadataNet *)metadataNet activeAccount:(NSString *)activeAccount context:(NSManagedObjectContext *)context
 {
     TableAutomaticUpload *record;
     
@@ -1502,7 +1502,7 @@
     }
 }
 
-+ (NSArray *)getTableUploadFromAccount:(NSString *)activeAccount selector:(NSString *)selector numRecords:(NSUInteger)numRecords context:(NSManagedObjectContext *)context
++ (NSArray *)getTableAutomaticUploadForAccount:(NSString *)activeAccount selector:(NSString *)selector numRecords:(NSUInteger)numRecords context:(NSManagedObjectContext *)context
 {
     if (numRecords == 0)
         return nil;
@@ -1536,6 +1536,24 @@
     }
     
     return metadatasNet;
+}
+
++ (NSUInteger)countTableAutomaticUploadForAccount:(NSString *)activeAccount
+{
+    NSUInteger count = [TableAutomaticUpload MR_countOfEntitiesWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (startUpload == 0)", activeAccount]];
+    
+    return count;
+}
+
++ (void)deleteTableAutomaticUploadFromAccount:(NSString *)activeAccount fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl selector:(NSString*)selector context:(NSManagedObjectContext *)context
+{
+    if (context == nil)
+        context = [NSManagedObjectContext MR_context];
+    
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (fileName == %@) AND (serverUrl == %@)", activeAccount, fileName, serverUrl];
+    [TableAutomaticUpload MR_deleteAllMatchingPredicate:predicate inContext:context];
+    
+    [context MR_saveToPersistentStoreAndWait];
 }
 
 #pragma --------------------------------------------------------------------------------------------

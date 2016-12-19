@@ -1209,7 +1209,6 @@
         PHAssetMediaType assetMediaType = asset.mediaType;
         NSString *session;
         NSString *fileNameUpload = [CCUtility createFileNameFromAsset:asset];
-        NSOperationQueue *queue;
         
         // Select type of session
         if (assetsFull) {
@@ -1252,22 +1251,14 @@
         metadataNet.session = session;
         metadataNet.taskStatus = taskStatusResume;
         
-        // Select type of queue
-        if (assetsFull)
-            queue = app.netQueueUploadCamera;
-        else if ([session containsString:@"wwan"])
-            queue = app.netQueueUploadWWan;
-        else
-            queue = app.netQueueUpload;
-        
-        [CCCoreData addUpload:metadataNet activeAccount:app.activeAccount context:nil];
+        [CCCoreData addTableAutomaticUpload:metadataNet activeAccount:app.activeAccount context:nil];
     }
     
     // start upload
     if (assetsFull)
-        [app loadTableAutomaticUploadForSelector:selectorUploadCameraAllPhoto numeRecors:(maxConcurrentOperationUploadCamera - [app.netQueueUploadCamera operationCount])];
+        [app loadTableAutomaticUploadForSelector:selectorUploadCameraAllPhoto];
     else
-        [app loadTableAutomaticUploadForSelector:selectorUploadCameraSnapshot numeRecors:(maxConcurrentOperationUploadCamera - [app.netQueueUploadCamera operationCount])];
+        [app loadTableAutomaticUploadForSelector:selectorUploadCameraSnapshot];
 
     // end loading
     [self endLoadingAssets];

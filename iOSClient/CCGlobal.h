@@ -193,11 +193,9 @@ extern NSString *const BKPasscodeKeychainServiceName;
 #define netQueueDownloadWWanName        @"it.twsweb.cryptocloud.queueDownloadWWan"
 #define netQueueUploadName              @"it.twsweb.cryptocloud.queueUpload"
 #define netQueueUploadWWanName          @"it.twsweb.cryptocloud.queueUploadWWan"
-#define netQueueUploadCameraName        @"it.twsweb.cryptocloud.queueUploadCamera"
 
 #define maxConcurrentOperation 10
 #define maxConcurrentOperationDownloadUpload 10
-#define maxConcurrentOperationUploadCamera 1
 
 // Error
 #define CCErrorTaskNil -9999
