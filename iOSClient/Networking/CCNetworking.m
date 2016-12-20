@@ -1056,8 +1056,8 @@
                     dispatch_async(dispatch_get_main_queue(), ^{
                         
                         // Change Asset Data only for automatic upload
-                        if ([selector isEqualToString:selectorUploadAutomatic])
-                            [CCCoreData setCameraUploadDateAssetType:assetMediaType assetDate:assetDate activeAccount:_activeAccount];
+                        //if ([selector isEqualToString:selectorUploadAutomatic])
+                        //    [CCCoreData setCameraUploadDateAssetType:assetMediaType assetDate:assetDate activeAccount:_activeAccount];
                         
                         // Error for uploadFileFailure
                         if ([[self getDelegate:uploadID] respondsToSelector:@selector(uploadFileFailure:serverUrl:selector:message:errorCode:)])
@@ -1144,8 +1144,8 @@
                 dispatch_async(dispatch_get_main_queue(), ^{
                     
                     // Change Asset Data only for automatic upload
-                    if ([selector isEqualToString:selectorUploadAutomatic])
-                        [CCCoreData setCameraUploadDateAssetType:assetMediaType assetDate:assetDate activeAccount:_activeAccount];
+                    //if ([selector isEqualToString:selectorUploadAutomatic])
+                    //    [CCCoreData setCameraUploadDateAssetType:assetMediaType assetDate:assetDate activeAccount:_activeAccount];
                 
                     // Error for uploadFileFailure
                     if ([[self getDelegate:uploadID] respondsToSelector:@selector(uploadFileFailure:serverUrl:selector:message:errorCode:)])
@@ -1352,8 +1352,8 @@
         [CCCoreData setMetadataSession:session sessionError:@"" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:sessionTaskIdentifier sessionTaskIdentifierPlist:sessionTaskIdentifierPlist predicate:[NSPredicate predicateWithFormat:@"(sessionID == %@) AND (account == %@)", sessionID, _activeAccount] context:_context];
         
         // Change Asset Data only for Automatic Upload
-        if ([selector isEqualToString:selectorUploadAutomatic])
-            [CCCoreData setCameraUploadDateAssetType:assetMediaType assetDate:assetDate activeAccount:_activeAccount];
+        //if ([selector isEqualToString:selectorUploadAutomatic])
+        //    [CCCoreData setCameraUploadDateAssetType:assetMediaType assetDate:assetDate activeAccount:_activeAccount];
         
         NSLog(@"[LOG] Upload file %@ - %@ TaskIdentifier %lu", fileName,fileNamePrint, (unsigned long)uploadTask.taskIdentifier);
     }

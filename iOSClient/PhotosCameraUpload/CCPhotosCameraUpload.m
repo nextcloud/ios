@@ -1252,6 +1252,10 @@
         metadataNet.taskStatus = taskStatusResume;
         
         [CCCoreData addTableAutomaticUpload:metadataNet account:app.activeAccount context:nil];
+        
+        // Upldate Camera Upload data  
+        if ([metadataNet.selector isEqualToString:selectorUploadAutomatic])
+            [CCCoreData setCameraUploadDateAssetType:assetMediaType assetDate:assetDate activeAccount:app.activeAccount];
     }
     
     // start upload
