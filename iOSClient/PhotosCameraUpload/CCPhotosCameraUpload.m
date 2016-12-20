@@ -1104,20 +1104,8 @@
     }
     
     // News Assets ? if no verify if blocked Table Automatic Upload -> Autostart
-    if ([newItemsToUpload count] == 0) {
-    
-        if ([CCCoreData countTableAutomaticUploadForAccount:app.activeAccount selector:selectorUploadAutomatic])
-            if ([app verifyExistsInQueue:app.netQueueUpload selector:selectorUploadAutomatic] == NO && [app verifyExistsInQueue:app.netQueueUploadWWan selector:selectorUploadAutomatic] == NO)
-                [app loadTableAutomaticUploadForSelector:selectorUploadAutomatic];
-        
-        if ([CCCoreData countTableAutomaticUploadForAccount:app.activeAccount selector:selectorUploadAutomaticAll])
-            if ([app verifyExistsInQueue:app.netQueueUpload selector:selectorUploadAutomaticAll] == NO)
-                [app loadTableAutomaticUploadForSelector:selectorUploadAutomaticAll];
-
-//TODO: TODO : Add message log if in queue only ifExecuting
-        
+    if ([newItemsToUpload count] == 0)
         return;
-    }
     
     // STOP new request : initStateCameraUpload
     _AutomaticCameraUploadInProgress = YES;
