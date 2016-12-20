@@ -52,6 +52,7 @@
 "_video_"                   = "Video";
 "_overwrite_"               = "Overwrite";
 "_transfers_in_queue_"      = "Tranfers in progress, please wait ...";
+"_too_errors_automatic_all_"= "Too many errors, go to Control Center to verify the problem";
 
 // App
 

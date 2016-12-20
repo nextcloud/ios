@@ -1064,7 +1064,7 @@
         
         if (count >= 10) {
             
-            [app messageNotification:@"_error_" description:NSLocalizedStringFromTable(@"_too_errors_uploadautomatic_all_", @"Error", nil) visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeError];
+            [app messageNotification:@"_error_" description:@"_too_errors_automatic_all_" visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeError];
             
             return;
         }
