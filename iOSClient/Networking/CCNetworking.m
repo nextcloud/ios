@@ -902,14 +902,6 @@
     [self upload:fileNameCrypto serverUrl:serverUrl cryptated:YES template:YES onlyPlist:NO assetTemplateFileName:fileNamePrint assetDate:nil assetMediaType:PHAssetMediaTypeUnknown localIdentifier:nil session:session taskStatus:taskStatus selector:selector selectorPost:selectorPost parentRev:parentRev errorCode:errorCode delegate:delegate];
 }
 
-/*
- localIdentifier        :
- 
- session                : upload_session / upload_session_foreground / upload_session_wwan
- delegate               : id caller for return success/failure  
- 
-*/
-
 - (void)upload:(NSString *)fileName serverUrl:(NSString *)serverUrl cryptated:(BOOL)cryptated template:(BOOL)template onlyPlist:(BOOL)onlyPlist assetTemplateFileName:(NSString *)assetTemplateFileName assetDate:(NSDate *)assetDate assetMediaType:(PHAssetMediaType)assetMediaType localIdentifier:(NSString *)localIdentifier session:(NSString *)session taskStatus:(NSInteger)taskStatus selector:(NSString *)selector selectorPost:(NSString *)selectorPost parentRev:(NSString *)parentRev errorCode:(NSInteger)errorCode delegate:(id)delegate
 {
     NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:_activeAccount];
