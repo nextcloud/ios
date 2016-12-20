@@ -181,7 +181,6 @@
 + (void)addTableAutomaticUpload:(CCMetadataNet *)metadataNet account:(NSString *)account context:(NSManagedObjectContext *)context;
 + (CCMetadataNet *)getTableAutomaticUploadForAccount:(NSString *)account selector:(NSString *)selector context:(NSManagedObjectContext *)context;
 + (NSUInteger)countTableAutomaticUploadForAccount:(NSString *)account selector:(NSString *)selector;
-+ (void)deleteTableAutomaticUploadForAccount:(NSString *)account fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl selector:(NSString*)selector context:(NSManagedObjectContext *)context;
 
 // ===== GPS =====
 

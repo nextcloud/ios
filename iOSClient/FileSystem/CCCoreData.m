@@ -1502,7 +1502,7 @@
     if (context == nil)
         context = [NSManagedObjectContext MR_context];
     
-    TableAutomaticUpload *record = [TableAutomaticUpload MR_findFirstWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (selector == %@)", account, selector]];
+    TableAutomaticUpload *record = [TableAutomaticUpload MR_findFirstWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (selector == %@)", account, selector] inContext:context];
     
     if (record) {
     
@@ -1518,6 +1518,9 @@
         metadataNet.session = record.session;
         metadataNet.taskStatus = taskStatusResume;                          // Default
         
+        [record MR_deleteEntityInContext:context];                          // Remove record
+        [context MR_saveToPersistentStoreAndWait];
+
         return metadataNet;
     }
     
@@ -1530,17 +1533,6 @@
         return [TableAutomaticUpload MR_countOfEntitiesWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (selector == %@)", account, selector]];
     else
         return [TableAutomaticUpload MR_countOfEntitiesWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@)", account]];
-}
-
-+ (void)deleteTableAutomaticUploadForAccount:(NSString *)account fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl selector:(NSString*)selector context:(NSManagedObjectContext *)context
-{
-    if (context == nil)
-        context = [NSManagedObjectContext MR_context];
-    
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (fileName == %@) AND (serverUrl == %@) AND (selector == %@)", account, fileName, serverUrl, selector];
-    [TableAutomaticUpload MR_deleteAllMatchingPredicate:predicate inContext:context];
-    
-    [context MR_saveToPersistentStoreAndWait];
 }
 
 #pragma --------------------------------------------------------------------------------------------
