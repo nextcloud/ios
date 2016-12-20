@@ -319,6 +319,10 @@
         // Initializations
         [app applicationInitialized];
         
+        // restart Automatic Upload
+        [app loadTableAutomaticUploadForSelector:selectorUploadAutomatic];
+        [app loadTableAutomaticUploadForSelector:selectorUploadAutomaticAll];
+        
     } else {
         
         // reload datasource
@@ -1378,11 +1382,15 @@
 
 - (void)uploadFileFailure:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    CCMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, app.activeAccount] context:nil];
-    
+    // Automatic upload
+    if([selector isEqualToString:selectorUploadAutomatic] || [selector isEqualToString:selectorUploadAutomaticAll])
+        [app loadTableAutomaticUploadForSelector:selector];
+
     // Read File test do not exists
     if (errorCode == CCErrorFileUploadNotFound) {
        
+        CCMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, app.activeAccount] context:nil];
+        
         // reUpload
         if (metadata)
             [[CCNetworking sharedNetworking] uploadFileMetadata:metadata taskStatus:taskStatusResume];
@@ -1393,10 +1401,6 @@
         
         [app messageNotification:@"_upload_file_" description:message visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeError];
     }
-    
-    // Automatic upload
-    if([selector isEqualToString:selectorUploadAutomatic] || [selector isEqualToString:selectorUploadAutomaticAll])
-        [app loadTableAutomaticUploadForSelector:selector];
     
     [self getDataSourceWithReloadTableView:[CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:app.activeAccount] fileID:nil selector:selector];
 }
