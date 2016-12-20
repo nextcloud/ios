@@ -5462,6 +5462,11 @@
     if (_metadata.directory) [self performSegueDirectoryWithControlPasscode:true];
 }
 
+- (void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(nonnull NSIndexPath *)indexPath
+{
+    [self setTitleNOAnimation];
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Synchronize Cell =====
 #pragma --------------------------------------------------------------------------------------------
