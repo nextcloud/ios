@@ -1063,7 +1063,7 @@
 {
     // Verify num error if selectorUploadAutomaticAll
     
-    if([selector isEqualToString:selectorUploadAutomaticAll]) {
+    if ([selector isEqualToString:selectorUploadAutomaticAll]) {
     
         NSUInteger count = [TableMetadata MR_countOfEntitiesWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (sessionSelector == %@) AND ((sessionTaskIdentifier == %i) OR (sessionTaskIdentifierPlist == %i))", app.activeAccount, selectorUploadAutomaticAll,taskIdentifierError, taskIdentifierError]];
         
