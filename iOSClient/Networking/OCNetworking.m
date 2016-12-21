@@ -323,32 +323,32 @@
     [communication setCredentialsWithUser:_activeUser andPassword:_activePassword];
     [communication readFolder:_metadataNet.serverUrl withUserSessionToken:nil onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token) {
         
+        NSMutableArray *metadatas = [[NSMutableArray alloc] init];
+        
+        // directory [0]
+        OCFileDto *itemDtoDirectory = [items objectAtIndex:0];
+        NSString *permissions = itemDtoDirectory.permissions;
+        NSString *rev = itemDtoDirectory.etag;
+        NSDate *date = [NSDate dateWithTimeIntervalSince1970:itemDtoDirectory.date];
+            
+        NSString *directoryID = [CCCoreData addDirectory:_metadataNet.serverUrl date:date permissions:permissions activeAccount:_metadataNet.account];
+            
+        NSString *cameraFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:_metadataNet.account];
+        NSString *cameraFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:_metadataNet.account activeUrl:_activeUrl typeCloud:_typeCloud];
+        NSString *directoryUser = [CCUtility getDirectoryActiveUser:_activeUser activeUrl:_activeUrl];
+        
+        // Update metadataNet.directoryID
+        _metadataNet.directoryID = directoryID;
+        
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-            
-            NSMutableArray *metadatas = [[NSMutableArray alloc] init];
-        
-            // directory [0]
-            OCFileDto *itemDtoDirectory = [items objectAtIndex:0];
-            NSString *permissions = itemDtoDirectory.permissions;
-            NSString *rev = itemDtoDirectory.etag;
-            NSDate *date = [NSDate dateWithTimeIntervalSince1970:itemDtoDirectory.date];
-            
-            NSString *directoryID = [CCCoreData addDirectory:_metadataNet.serverUrl date:date permissions:permissions activeAccount:_metadataNet.account];
-            
-            NSString *cameraFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:_metadataNet.account];
-            NSString *cameraFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:_metadataNet.account activeUrl:_activeUrl typeCloud:_typeCloud];
-            NSString *directoryUser = [CCUtility getDirectoryActiveUser:_activeUser activeUrl:_activeUrl];
-        
-            // Update metadataNet.directoryID
-            _metadataNet.directoryID = directoryID;
-            
+
             NSArray *itemsSortedArray = [items sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
                 
                 NSString *first = [(OCFileDto*)a fileName];
                 NSString *second = [(OCFileDto*)b fileName];
                 return [[first lowercaseString] compare:[second lowercaseString]];
             }];
-            
+        
             for (NSUInteger i=1; i < [itemsSortedArray count]; i++) {
                 
                 OCFileDto *itemDto = [itemsSortedArray objectAtIndex:i];
