@@ -319,26 +319,10 @@
         // Initializations
         [app applicationInitialized];
         
-        // restart Automatic Upload
-        [app loadTableAutomaticUploadForSelector:selectorUploadAutomatic];
-        [app loadTableAutomaticUploadForSelector:selectorUploadAutomaticAll];
-        
         // message TestFlight
         if (app.isRunningTestFlight) {
             
-            NSString *messageDebug;
-            
             [app messageNotification:@"_info_" description:@"This version is beta and only fot TestFlight, send report at ios@nextcloud.com" visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeInfo];
-            
-            NSMutableArray *metadatasNet = [app verifyExistsInQueuesUploadSelector:selectorUploadAutomaticAll];
-            CCMetadataNet *metadataNet = [CCCoreData getTableAutomaticUploadForAccount:app.activeAccount selector:selectorUploadAutomaticAll delete:NO context:nil];
-            
-            if ([metadatasNet count] > 0) {
-                
-                messageDebug = [NSString stringWithFormat:@"DEBUG UploadAutomaticAll : %lu - %@", (unsigned long)[metadatasNet count], metadataNet];
-                
-                [app messageNotification:@"_info_" description:messageDebug visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeInfo];
-            }
         }
         
     } else {

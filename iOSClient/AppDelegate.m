@@ -392,9 +392,22 @@
 
 - (void)verifyProcess
 {
-    // Verify Synchronized Folder
-    NSMutableArray *metadatasNet = [self verifyExistsInQueuesUploadSelector:selectorDownloadSynchronized];
+    // Not in background
     
+    if ([[UIApplication sharedApplication] applicationState] != UIApplicationStateBackground) {
+    
+        // Verify Synchronized Folder
+        NSMutableArray *metadatasNet = [self verifyExistsInQueuesUploadSelector:selectorDownloadSynchronized];
+    
+        if ([CCCoreData countTableAutomaticUploadForAccount:self.activeAccount selector:selectorUploadAutomatic] > 0)
+            if ([[self verifyExistsInQueuesUploadSelector:selectorUploadAutomatic] count] == 0)
+                [app loadTableAutomaticUploadForSelector:selectorUploadAutomatic];
+    
+        if ([CCCoreData countTableAutomaticUploadForAccount:self.activeAccount selector:selectorUploadAutomaticAll] > 0)
+            if ([[self verifyExistsInQueuesUploadSelector:selectorUploadAutomaticAll] count] == 0)
+                [app loadTableAutomaticUploadForSelector:selectorUploadAutomaticAll];
+
+    }
     //NSLog(@"5 sec. %lu", (unsigned long)[metadatasNet count]);
 }
 
@@ -1058,11 +1071,11 @@
         
         for (OCnetworking *operation in [self.netQueueUpload operations])
             if ([operation.metadataNet.selector isEqualToString:selector])
-                [metadatasNet addObject:operation.metadataNet];
+                [metadatasNet addObject:[operation.metadataNet copy]];
         
         for (OCnetworking *operation in [self.netQueueUploadWWan operations])
             if ([operation.metadataNet.selector isEqualToString:selector])
-                [metadatasNet addObject:operation.metadataNet];
+                [metadatasNet addObject:[operation.metadataNet copy]];
     }
     
 #ifdef CC
@@ -1093,6 +1106,12 @@
     
         NSUInteger count = [TableMetadata MR_countOfEntitiesWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (sessionSelector == %@) AND ((sessionTaskIdentifier == %i) OR (sessionTaskIdentifierPlist == %i))", app.activeAccount, selectorUploadAutomaticAll,taskIdentifierError, taskIdentifierError]];
         
+        /*
+        TableMetadata *record = [TableMetadata MR_findFirstWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (sessionSelector == %@) AND ((sessionTaskIdentifier == %i) OR (sessionTaskIdentifierPlist == %i))", app.activeAccount, selectorUploadAutomaticAll,taskIdentifierError, taskIdentifierError]];
+        
+        CCMetadata *metadata = [CCCoreData insertEntityInMetadata:record];
+        */
+        
         if (count >= 10) {
             
             [app messageNotification:@"_error_" description:@"_too_errors_automatic_all_" visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeError];
@@ -1103,7 +1122,7 @@
     
     // Add Network queue
     
-    CCMetadataNet *metadataNet = [CCCoreData getTableAutomaticUploadForAccount:self.activeAccount selector:selector delete:YES context:nil];
+    CCMetadataNet *metadataNet = [CCCoreData getTableAutomaticUploadForAccount:self.activeAccount selector:selector context:nil];
     
     if (metadataNet) {
         

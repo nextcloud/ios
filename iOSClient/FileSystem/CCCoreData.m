@@ -614,6 +614,10 @@
     [TableMetadata MR_deleteAllMatchingPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileID == %@)", activeAccount, metadata.fileID] inContext:context];
     [context MR_saveToPersistentStoreAndWait];
     
+    // remove record if exists
+    [TableMetadata MR_deleteAllMatchingPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileName == %@) AND (directoryID == %@)", activeAccount, metadata.fileName, metadata.directoryID] inContext:context];
+    [context MR_saveToPersistentStoreAndWait];
+    
     // create new record Metadata
     TableMetadata *record = [TableMetadata MR_createEntityInContext:context];
 
@@ -1497,7 +1501,7 @@
     [context MR_saveToPersistentStoreAndWait];
 }
 
-+ (CCMetadataNet *)getTableAutomaticUploadForAccount:(NSString *)account selector:(NSString *)selector delete:(BOOL)delete context:(NSManagedObjectContext *)context
++ (CCMetadataNet *)getTableAutomaticUploadForAccount:(NSString *)account selector:(NSString *)selector context:(NSManagedObjectContext *)context
 {
     if (context == nil)
         context = [NSManagedObjectContext MR_context];
@@ -1518,11 +1522,8 @@
         metadataNet.session = record.session;
         metadataNet.taskStatus = taskStatusResume;                          // Default
         
-        if (delete) {                                                       // Remove record
-            
-            [record MR_deleteEntityInContext:context];
-            [context MR_saveToPersistentStoreAndWait];
-        }
+        [record MR_deleteEntityInContext:context];                          // Remove record
+        [context MR_saveToPersistentStoreAndWait];
         
         return metadataNet;
     }
