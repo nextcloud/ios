@@ -1519,6 +1519,7 @@
         metadataNet.taskStatus = taskStatusResume;                          // Default
         
         if (delete) {                                                       // Remove record
+            
             [record MR_deleteEntityInContext:context];
             [context MR_saveToPersistentStoreAndWait];
         }

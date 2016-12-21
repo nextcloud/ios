@@ -392,12 +392,10 @@
 
 - (void)verifyProcess
 {
-    NSMutableArray *metadatasNet = [self verifyExistsInQueuesUploadSelector:selectorUploadAutomaticAll];
+    // Verify Synchronized Folder
+    NSMutableArray *metadatasNet = [self verifyExistsInQueuesUploadSelector:selectorDownloadSynchronized];
     
-    NSLog(@"5 sec. %lu", [metadatasNet count]);
-    
-    
-    
+    //NSLog(@"5 sec. %lu", (unsigned long)[metadatasNet count]);
 }
 
 #pragma --------------------------------------------------------------------------------------------

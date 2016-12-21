@@ -335,7 +335,7 @@
             
             if ([metadatasNet count] > 0) {
                 
-                messageDebug = [NSString stringWithFormat:@"DEBUG UploadAutomaticAll : %lu - %@", [metadatasNet count], metadataNet];
+                messageDebug = [NSString stringWithFormat:@"DEBUG UploadAutomaticAll : %lu - %@", (unsigned long)[metadatasNet count], metadataNet];
                 
                 [app messageNotification:@"_info_" description:messageDebug visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeInfo];
             }

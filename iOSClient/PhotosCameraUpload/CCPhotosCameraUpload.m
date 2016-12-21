@@ -1211,15 +1211,12 @@
         NSString *fileNameUpload = [CCUtility createFileNameFromAsset:asset];
         
         // Select type of session
-        if (assetsFull) {
-            session = upload_session;
-        } else {
-            if (assetMediaType == PHAssetMediaTypeImage && [CCCoreData getCameraUploadWWanPhotoActiveAccount:app.activeAccount] == NO) session = upload_session;
-            if (assetMediaType == PHAssetMediaTypeVideo && [CCCoreData getCameraUploadWWanVideoActiveAccount:app.activeAccount] == NO) session = upload_session;
-            if (assetMediaType == PHAssetMediaTypeImage && [CCCoreData getCameraUploadWWanPhotoActiveAccount:app.activeAccount]) session = upload_session_wwan;
-            if (assetMediaType == PHAssetMediaTypeVideo && [CCCoreData getCameraUploadWWanVideoActiveAccount:app.activeAccount]) session = upload_session_wwan;
-        }
         
+        if (assetMediaType == PHAssetMediaTypeImage && [CCCoreData getCameraUploadWWanPhotoActiveAccount:app.activeAccount] == NO) session = upload_session;
+        if (assetMediaType == PHAssetMediaTypeVideo && [CCCoreData getCameraUploadWWanVideoActiveAccount:app.activeAccount] == NO) session = upload_session;
+        if (assetMediaType == PHAssetMediaTypeImage && [CCCoreData getCameraUploadWWanPhotoActiveAccount:app.activeAccount]) session = upload_session_wwan;
+        if (assetMediaType == PHAssetMediaTypeVideo && [CCCoreData getCameraUploadWWanVideoActiveAccount:app.activeAccount]) session = upload_session_wwan;
+
         NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
         
         [formatter setDateFormat:@"yyyy"];
