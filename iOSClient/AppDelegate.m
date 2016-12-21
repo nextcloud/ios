@@ -87,6 +87,11 @@
     [MagicalRecord setLoggingLevel:MagicalRecordLoggingLevelOff];
 #endif
     
+    //
+    NSURL *receiptURL = [[NSBundle mainBundle] appStoreReceiptURL];
+    NSString *receiptURLString = [receiptURL path];
+    _isRunningTestFlight =  ([receiptURLString rangeOfString:@"sandboxReceipt"].location != NSNotFound);
+    
     // Verify upgrade
     [self upgrade];
     

@@ -52,6 +52,9 @@
 @interface AppDelegate : UIResponder <UIApplicationDelegate, BKPasscodeLockScreenManagerDelegate, BKPasscodeViewControllerDelegate, LMMediaPlayerViewDelegate, TWMessageBarStyleSheet>
 #endif
 
+// For debug
+@property BOOL isRunningTestFlight;
+
 // For LMMediaPlayerView
 @property (strong, nonatomic) UIWindow *window;
 

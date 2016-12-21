@@ -323,6 +323,10 @@
         [app loadTableAutomaticUploadForSelector:selectorUploadAutomatic];
         [app loadTableAutomaticUploadForSelector:selectorUploadAutomaticAll];
         
+        // message TestFlight
+        if (app.isRunningTestFlight)
+            [app messageNotification:@"_info_" description:@"This version is beta and only fot TestFlight, send report at ios@nextcloud.com" visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeInfo];
+        
     } else {
         
         // reload datasource
