@@ -1497,7 +1497,7 @@
     [context MR_saveToPersistentStoreAndWait];
 }
 
-+ (CCMetadataNet *)getTableAutomaticUploadForAccount:(NSString *)account selector:(NSString *)selector context:(NSManagedObjectContext *)context
++ (CCMetadataNet *)getTableAutomaticUploadForAccount:(NSString *)account selector:(NSString *)selector delete:(BOOL)delete context:(NSManagedObjectContext *)context
 {
     if (context == nil)
         context = [NSManagedObjectContext MR_context];
@@ -1518,9 +1518,11 @@
         metadataNet.session = record.session;
         metadataNet.taskStatus = taskStatusResume;                          // Default
         
-        [record MR_deleteEntityInContext:context];                          // Remove record
-        [context MR_saveToPersistentStoreAndWait];
-
+        if (delete) {                                                       // Remove record
+            [record MR_deleteEntityInContext:context];
+            [context MR_saveToPersistentStoreAndWait];
+        }
+        
         return metadataNet;
     }
     

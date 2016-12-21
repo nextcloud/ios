@@ -88,7 +88,7 @@
     [MagicalRecord setLoggingLevel:MagicalRecordLoggingLevelOff];
 #endif
     
-    //
+    // Test Flight
     NSURL *receiptURL = [[NSBundle mainBundle] appStoreReceiptURL];
     NSString *receiptURLString = [receiptURL path];
     _isRunningTestFlight =  ([receiptURLString rangeOfString:@"sandboxReceipt"].location != NSNotFound);
@@ -245,7 +245,10 @@
         if (shortcutItem)
             [self handleShortCutItem:shortcutItem];
     }
-        
+    
+    // Start timer Verify Process
+    self.timerVerifyProcess = [NSTimer scheduledTimerWithTimeInterval:5.0 target:self selector:@selector(verifyProcess) userInfo:nil repeats:YES];
+    
     return YES;
 }
 
@@ -381,8 +384,22 @@
     
     // Initialize Camera Upload
     //[[NSNotificationCenter defaultCenter] postNotificationName:@"initStateCameraUpload" object:@{@"afterDelay": @(2)}];
-
 }
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Verify Process =====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)verifyProcess
+{
+    NSMutableArray *metadatasNet = [self verifyExistsInQueuesUploadSelector:selectorUploadAutomaticAll];
+    
+    NSLog(@"5 sec. %lu", [metadatasNet count]);
+    
+    
+    
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Setting Active Account =====
 #pragma --------------------------------------------------------------------------------------------
@@ -1033,15 +1050,21 @@
     [netQueue addOperation:operation];
 }
 
-- (BOOL)verifyExistsInQueue:(NSOperationQueue *)queue selector:(NSString *)selector
+- (NSMutableArray *)verifyExistsInQueuesUploadSelector:(NSString *)selector
 {
+    NSMutableArray *metadatasNet = [[NSMutableArray alloc] init];
+    
     /*** NEXTCLOUD OWNCLOUD ***/
     
     if ([app.typeCloud isEqualToString:typeCloudOwnCloud] || [app.typeCloud isEqualToString:typeCloudNextcloud]) {
         
-        for (OCnetworking *operation in [queue operations])
+        for (OCnetworking *operation in [self.netQueueUpload operations])
             if ([operation.metadataNet.selector isEqualToString:selector])
-                return YES;
+                [metadatasNet addObject:operation.metadataNet];
+        
+        for (OCnetworking *operation in [self.netQueueUploadWWan operations])
+            if ([operation.metadataNet.selector isEqualToString:selector])
+                [metadatasNet addObject:operation.metadataNet];
     }
     
 #ifdef CC
@@ -1050,14 +1073,18 @@
     
     if ([app.typeCloud isEqualToString:typeCloudDropbox]) {
         
-        for (DBnetworking *operation in [queue operations])
+        for (DBnetworking *operation in [self.netQueueUpload operations])
             if ([operation.metadataNet.selector isEqualToString:selector])
-                return YES;
+                [metadatasNet addObject:operation.metadataNet];
+        
+        for (DBnetworking *operation in [self.netQueueUploadWWan operations])
+            if ([operation.metadataNet.selector isEqualToString:selector])
+                [metadatasNet addObject:operation.metadataNet];
     }
     
 #endif
     
-    return NO;
+    return metadatasNet;
 }
 
 - (void)loadTableAutomaticUploadForSelector:(NSString *)selector
@@ -1078,7 +1105,7 @@
     
     // Add Network queue
     
-    CCMetadataNet *metadataNet = [CCCoreData getTableAutomaticUploadForAccount:self.activeAccount selector:selector context:nil];
+    CCMetadataNet *metadataNet = [CCCoreData getTableAutomaticUploadForAccount:self.activeAccount selector:selector delete:YES context:nil];
     
     if (metadataNet) {
         

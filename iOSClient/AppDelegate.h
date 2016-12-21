@@ -55,6 +55,9 @@
 // For debug
 @property BOOL isRunningTestFlight;
 
+// Timer 5 sec.
+@property (nonatomic, strong) NSTimer *timerVerifyProcess;
+
 // For LMMediaPlayerView
 @property (strong, nonatomic) UIWindow *window;
 
@@ -184,7 +187,7 @@
 // Operation Networking
 - (void)cancelAllOperations;
 - (void)addNetworkingOperationQueue:(NSOperationQueue *)netQueue delegate:(id)delegate metadataNet:(CCMetadataNet *)metadataNet oneByOne:(BOOL)oneByOne;
-- (BOOL)verifyExistsInQueue:(NSOperationQueue *)queue selector:(NSString *)selector;
+- (NSMutableArray *)verifyExistsInQueuesUploadSelector:(NSString *)selector;
 - (void)loadTableAutomaticUploadForSelector:(NSString *)selector;
 
 - (void)dropAutomaticUploadWithSelector:(NSString *)selector;
