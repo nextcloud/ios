@@ -29,6 +29,7 @@
 @interface CCSynchronization : NSObject
 
 @property (nonatomic, strong) CCHud *hud;
+@property (nonatomic, strong) NSMutableOrderedSet *synchronizationServerUrlInProgress;
 
 + (CCSynchronization *)sharedSynchronization;
 

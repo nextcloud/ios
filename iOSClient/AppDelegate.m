@@ -162,7 +162,6 @@
     self.listProgressMetadata = [[NSMutableDictionary alloc] init];
     self.listChangeTask = [[NSMutableDictionary alloc] init];
     self.listMainVC = [[NSMutableDictionary alloc] init];
-    self.listFolderSynchronization = [[NSMutableArray alloc] init];
     
     // Player audio
     self.player = [LMMediaPlayerView sharedPlayerView];
@@ -402,6 +401,27 @@
 {
     // BACKGROND & FOREGROUND
     
+    /* Disactive Graphics Animation Synchronization Folders */
+    
+    NSMutableOrderedSet *serversUrlDownload = [[NSMutableOrderedSet alloc] init];
+    NSMutableArray *metadatasNet = [self verifyExistsInQueuesDownloadSelector:selectorDownloadSynchronized];
+    for (CCMetadataNet *metadataNet in metadatasNet)
+        [serversUrlDownload addObject:metadataNet.serverUrl];
+    
+    NSMutableOrderedSet *synchronizationServerUrlInProgressTemp = [[NSMutableOrderedSet alloc] initWithOrderedSet:[CCSynchronization sharedSynchronization].synchronizationServerUrlInProgress copyItems:YES];
+    for (NSString *serverUrl in synchronizationServerUrlInProgressTemp) {
+        
+        if ([serversUrlDownload containsObject:serverUrl] == NO) {
+            
+            NSString *serverUrlSynchronized = [CCUtility deletingLastPathComponentFromServerUrl:serverUrl];
+            CCMain *viewController = [app.listMainVC objectForKey:serverUrlSynchronized];
+            if (viewController)
+                [viewController synchronizedFolderGraphicsCell:nil serverUrl:serverUrl animation:NO];
+            
+            // remove
+            [[CCSynchronization sharedSynchronization].synchronizationServerUrlInProgress removeObject:serversUrlDownload];
+        }
+    }
     
     // ONLY BACKGROUND
     
@@ -720,34 +740,22 @@
     
     _queueNumUpload = [[CCCoreData getTableMetadataUploadAccount:self.activeAccount] count];
     _queueNumUploadWWan = [[CCCoreData getTableMetadataUploadWWanAccount:self.activeAccount] count];
-        
-    // Clear list folder in Synchronization
-    [self.listFolderSynchronization removeAllObjects];
-        
+    
     // netQueueDownload
     for (NSOperation *operation in [app.netQueueDownload operations]) {
         
         /*** NEXTCLOUD OWNCLOUD ***/
         
-        if ([app.typeCloud isEqualToString:typeCloudOwnCloud] || [app.typeCloud isEqualToString:typeCloudNextcloud]) {
-            
+        if ([app.typeCloud isEqualToString:typeCloudOwnCloud] || [app.typeCloud isEqualToString:typeCloudNextcloud])
             if (((OCnetworking *)operation).isExecuting == NO) _queueNunDownload++;
-            
-            if ([((OCnetworking *)operation).metadataNet.selector isEqualToString:selectorDownloadSynchronized])
-                [_listFolderSynchronization addObject:((OCnetworking *)operation).metadataNet.serverUrl];
-        }
         
 #ifdef CC
         
         /*** DROPBOX ***/
 
-        if ([app.typeCloud isEqualToString:typeCloudDropbox]) {
-            
+        if ([app.typeCloud isEqualToString:typeCloudDropbox])
             if (((DBnetworking *)operation).isExecuting == NO) _queueNunDownload++;
-            
-            if ([((DBnetworking *)operation).metadataNet.selector isEqualToString:selectorDownloadSynchronized])
-                [_listFolderSynchronization addObject:((DBnetworking *)operation).metadataNet.serverUrl];
-        }
+
 #endif
     }
     
@@ -756,25 +764,16 @@
         
         /*** NEXTCLOUD OWNCLOUD ***/
         
-        if ([app.typeCloud isEqualToString:typeCloudOwnCloud] || [app.typeCloud isEqualToString:typeCloudNextcloud]) {
-            
+        if ([app.typeCloud isEqualToString:typeCloudOwnCloud] || [app.typeCloud isEqualToString:typeCloudNextcloud])
             if (((OCnetworking *)operation).isExecuting == NO) _queueNumDownloadWWan++;
-            
-            if ([((OCnetworking *)operation).metadataNet.selector isEqualToString:selectorDownloadSynchronized])
-                [_listFolderSynchronization addObject:((OCnetworking *)operation).metadataNet.serverUrl];
-        }
         
 #ifdef CC
         
         /*** DROPBOX ***/
         
-        if ([app.typeCloud isEqualToString:typeCloudDropbox]) {
-            
+        if ([app.typeCloud isEqualToString:typeCloudDropbox])
             if (((DBnetworking *)operation).isExecuting == NO) _queueNumDownloadWWan++;
-            
-            if ([((DBnetworking *)operation).metadataNet.selector isEqualToString:selectorDownloadSynchronized])
-                [_listFolderSynchronization addObject:((DBnetworking *)operation).metadataNet.serverUrl];
-        }
+
 #endif
     }
     

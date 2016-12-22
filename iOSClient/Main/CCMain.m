@@ -1151,15 +1151,6 @@
     // Synchronize
     if ([selector isEqualToString:selectorDownloadSynchronized]) {
         
-        NSString *serverUrlSynchronized = [CCUtility deletingLastPathComponentFromServerUrl:serverUrl];
-        CCMain *viewController = [app.listMainVC objectForKey:serverUrlSynchronized];
-        if (viewController) {
-            
-            [app updateApplicationIconBadgeNumber];
-            
-            [viewController synchronizedFolderGraphicsCell:nil serverUrl:serverUrl cryptated:NO];
-        }
-        
         [self getDataSourceWithReloadTableView:metadata.directoryID fileID:metadata.fileID selector:selector];
     }
     
@@ -5019,14 +5010,6 @@
         
         lunghezzaFile = @" ";
         
-        // ----------------------------------------------------------------------------------------------------------
-        // Synchronize
-        // ----------------------------------------------------------------------------------------------------------
-        
-        NSString *synchronizedServerUrl = [CCUtility stringAppendServerUrl:_localServerUrl addServerUrl:metadata.fileNameData];
-        if ([CCCoreData isSynchronizedDirectory:synchronizedServerUrl activeAccount:app.activeAccount])
-            [self synchronizedFolderGraphicsCell:cell serverUrl:synchronizedServerUrl cryptated:metadata.cryptated];
-
     } else {
     
         // è un file
@@ -5473,8 +5456,10 @@
 #pragma mark ===== Synchronize Cell =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)synchronizedFolderGraphicsCell:(CCCellMainTransfer *)cell serverUrl:(NSString *)serverUrl cryptated:(BOOL)cryptated
+- (void)synchronizedFolderGraphicsCell:(CCCellMainTransfer *)cell serverUrl:(NSString *)serverUrl animation:(BOOL)animation
 {
+    BOOL cryptated = NO;
+    
     if (!cell)
         for (NSString* fileID in _sectionDataSource.allRecordsDataSource) {
         
@@ -5494,7 +5479,7 @@
     if (!cell)
         return;
     
-    if ([app.listFolderSynchronization containsObject:serverUrl]) {
+    if (animation) {
         
         NSURL *myURL;
         

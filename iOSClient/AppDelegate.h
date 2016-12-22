@@ -140,9 +140,6 @@
 // List Change Task
 @property (nonatomic, retain) NSMutableDictionary *listChangeTask;
 
-// List folder in Synchronization mode
-@property (nonatomic, retain) NSMutableArray *listFolderSynchronization;
-
 // Player Audio
 @property (nonatomic, strong) LMMediaPlayerView *player;
 

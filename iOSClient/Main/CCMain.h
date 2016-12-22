@@ -82,7 +82,6 @@
 
 @property (nonatomic, weak) CCShareOC* shareOC;
 
-
 @property (nonatomic, weak) CCDetail *detailViewController;
 
 @property (nonatomic, weak) CCLoginNCOC *loginVC;
@@ -106,7 +105,7 @@
 - (void)requestSharedByServer;
 - (void)requestServerInformation;
 
-- (void)synchronizedFolderGraphicsCell:(CCCellMainTransfer *)cell serverUrl:(NSString *)serverUrl cryptated:(BOOL)cryptated;
+- (void)synchronizedFolderGraphicsCell:(CCCellMainTransfer *)cell serverUrl:(NSString *)serverUrl animation:(BOOL)animation;
 
 - (void)clearDateReadDataSource:(NSNotification *)notification;
 

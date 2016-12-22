@@ -42,6 +42,7 @@
         if (!sharedSynchronization) {
             
             sharedSynchronization = [[CCSynchronization alloc] init];
+            sharedSynchronization.synchronizationServerUrlInProgress = [[NSMutableOrderedSet alloc] init];
         }
         return sharedSynchronization;
     }
@@ -268,7 +269,6 @@
             }
             
             [metadatas addObject:metadata];
-            
         }
     }
     
@@ -333,13 +333,30 @@
                 [app addNetworkingOperationQueue:app.netQueueDownloadWWan delegate:app.activeMain metadataNet:metadataNet oneByOne:YES];
             else
                 [app addNetworkingOperationQueue:app.netQueueDownload delegate:app.activeMain metadataNet:metadataNet oneByOne:YES];
-                        
+            
+            // Insert serverUrl for check animation
+            [[CCSynchronization sharedSynchronization].synchronizationServerUrlInProgress addObject:serverUrl];
         }
     
+        /* Active Graphics Animation Synchronization Folders */
+        
+        for(NSString *serverUrl in [CCSynchronization sharedSynchronization].synchronizationServerUrlInProgress) {
+            
+            NSString *serverUrlSynchronized = [CCUtility deletingLastPathComponentFromServerUrl:serverUrl];
+            CCMain *viewController = [app.listMainVC objectForKey:serverUrlSynchronized];
+            if (viewController)
+                [viewController synchronizedFolderGraphicsCell:nil serverUrl:serverUrl animation:YES];
+        }
+         
         [app.activeMain getDataSourceWithReloadTableView:directoryID fileID:nil selector:nil];
         
         [_hud hideHud];
     });
+}
+
+- (void)cellAnimation
+{
+    
 }
 
 @end
