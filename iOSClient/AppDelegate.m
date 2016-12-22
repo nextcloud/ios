@@ -257,7 +257,12 @@
 //
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
-
+    // Verify queue Upload Automatic + All
+    if ([CCCoreData countTableAutomaticUploadForAccount:self.activeAccount selector:selectorUploadAutomatic] > 0)
+        [app loadTableAutomaticUploadForSelector:selectorUploadAutomatic];
+    
+    if ([CCCoreData countTableAutomaticUploadForAccount:self.activeAccount selector:selectorUploadAutomaticAll] > 0)
+        [app loadTableAutomaticUploadForSelector:selectorUploadAutomaticAll];
 }
 
 //
@@ -398,11 +403,7 @@
         NSMutableArray *metadatasNet = [self verifyExistsInQueuesUploadSelector:selectorDownloadSynchronized];
         NSLog(@"5 sec. %lu", (unsigned long)[metadatasNet count]);
 
-        if ([CCCoreData countTableAutomaticUploadForAccount:self.activeAccount selector:selectorUploadAutomatic] > 0)
-            [app loadTableAutomaticUploadForSelector:selectorUploadAutomatic];
-    
-        if ([CCCoreData countTableAutomaticUploadForAccount:self.activeAccount selector:selectorUploadAutomaticAll] > 0)
-            [app loadTableAutomaticUploadForSelector:selectorUploadAutomaticAll];
+        
 
     }
 }
