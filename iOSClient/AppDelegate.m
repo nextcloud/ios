@@ -1195,7 +1195,6 @@
     /*
     Task
     */
-    
     if ([task isKindOfClass:[NSURLSessionDownloadTask class]])
         app.sessionDateLastDownloadTasks = [NSDate date];
 
