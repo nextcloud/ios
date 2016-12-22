@@ -38,6 +38,6 @@
 
 - (void)verifyChangeMedatas:(NSArray *)allRecordMetadatas serverUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID account:(NSString *)account synchronization:(BOOL)synchronization;
 
-- (BOOL)synchronizationAnimationWithViewController:(BOOL)callViewController;
+- (BOOL)synchronizationAnimationDirectory:(NSArray *)directory callViewController:(BOOL)callViewController;
 
 @end

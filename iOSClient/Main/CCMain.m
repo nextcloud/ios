@@ -5017,7 +5017,7 @@
         NSString *synchronizedServerUrl = [CCUtility stringAppendServerUrl:_localServerUrl addServerUrl:metadata.fileNameData];
         if ([CCCoreData isSynchronizedDirectory:synchronizedServerUrl activeAccount:app.activeAccount]) {
             
-            if ([[CCSynchronization sharedSynchronization] synchronizationAnimationWithViewController:NO]) {
+            if ([[CCSynchronization sharedSynchronization] synchronizationAnimationDirectory:[[NSArray alloc] initWithObjects:synchronizedServerUrl, nil] callViewController:NO]) {
                 
                 NSURL *myURL;
                 
@@ -5488,7 +5488,9 @@
         
         CCMetadata *recordMetadata = [_sectionDataSource.allRecordsDataSource objectForKey:fileID];
         
-        if (recordMetadata.directory == NO) continue;
+        if (recordMetadata.directory == NO)
+            continue;
+        
         if ([[CCUtility stringAppendServerUrl:_localServerUrl addServerUrl:recordMetadata.fileNameData] isEqualToString:serverUrl]) {
             
             NSIndexPath *indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:recordMetadata.fileID];
@@ -5506,15 +5508,19 @@
         
         NSURL *myURL;
         
-        if (cryptated) myURL = [[NSBundle mainBundle] URLForResource: @"synchronizedcrypto" withExtension:@"gif"];
-        else myURL = [[NSBundle mainBundle] URLForResource: @"synchronized" withExtension:@"gif"];
+        if (cryptated)
+            myURL = [[NSBundle mainBundle] URLForResource: @"synchronizedcrypto" withExtension:@"gif"];
+        else
+            myURL = [[NSBundle mainBundle] URLForResource: @"synchronized" withExtension:@"gif"];
         
         cell.synchronizedImageView.image = [UIImage animatedImageWithAnimatedGIFURL:myURL];
         
     } else {
         
-        if (cryptated) cell.synchronizedImageView.image = [UIImage imageNamed:image_synchronizedcrypto];
-        else cell.synchronizedImageView.image = [UIImage imageNamed:image_synchronized];
+        if (cryptated)
+            cell.synchronizedImageView.image = [UIImage imageNamed:image_synchronizedcrypto];
+        else
+            cell.synchronizedImageView.image = [UIImage imageNamed:image_synchronized];
     }
 }
 

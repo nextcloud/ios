@@ -334,41 +334,43 @@
                 [app addNetworkingOperationQueue:app.netQueueDownload delegate:app.activeMain metadataNet:metadataNet oneByOne:YES];
         }
     
-        [[CCSynchronization sharedSynchronization] synchronizationAnimationWithViewController:nil];
-         
+        [[CCSynchronization sharedSynchronization] synchronizationAnimationDirectory:[[NSArray alloc] initWithObjects:serverUrl, nil] callViewController:YES];
+        
         [app.activeMain getDataSourceWithReloadTableView:directoryID fileID:nil selector:nil];
         
         [_hud hideHud];
     });
 }
 
-/* Graphics Animation Synchronization Folders */
+// Graphics Animation Synchronization Folders 
 
-- (BOOL)synchronizationAnimationWithViewController:(BOOL)callViewController
+- (BOOL)synchronizationAnimationDirectory:(NSArray *)directory callViewController:(BOOL)callViewController
 {
-    NSMutableOrderedSet *serversUrlInDownload = [[NSMutableOrderedSet alloc] init];
-    
-    NSMutableArray *metadatasNet = [app verifyExistsInQueuesDownloadSelector:selectorDownloadSynchronized];
-    
-    for (CCMetadataNet *metadataNet in metadatasNet)
-        [serversUrlInDownload addObject:metadataNet.serverUrl];
-    
-    /* Animation ON/OFF */
-    NSArray *synchronizedDirectory = [CCCoreData getSynchronizedDirectoryActiveAccount:app.activeAccount];
-    for (TableDirectory *record in synchronizedDirectory) {
+    if ([directory count] > 0) {
         
-        NSString *serverUrl = record.serverUrl;
-        BOOL animation = [serversUrlInDownload containsObject:serverUrl];
+        NSMutableOrderedSet *serversUrlInDownload = [[NSMutableOrderedSet alloc] init];
+    
+        NSMutableArray *metadatasNet = [app verifyExistsInQueuesDownloadSelector:selectorDownloadSynchronized];
+    
+        for (CCMetadataNet *metadataNet in metadatasNet)
+            [serversUrlInDownload addObject:metadataNet.serverUrl];
+    
+        /* Animation ON/OFF */
+    
+        for (TableDirectory *record in directory) {
         
-        if (callViewController) {
-            NSString *serverUrlSynchronized = [CCUtility deletingLastPathComponentFromServerUrl:serverUrl];
-            CCMain *viewController = [app.listMainVC objectForKey:serverUrlSynchronized];
-            if (viewController)
-                [viewController synchronizedFolderGraphicsServerUrl:serverUrl animation:animation];
-        } else
-            return animation;
+            NSString *serverUrl = record.serverUrl;
+            BOOL animation = [serversUrlInDownload containsObject:serverUrl];
+        
+            if (callViewController) {
+                NSString *serverUrlSynchronized = [CCUtility deletingLastPathComponentFromServerUrl:serverUrl];
+                CCMain *viewController = [app.listMainVC objectForKey:serverUrlSynchronized];
+                if (viewController)
+                    [viewController synchronizedFolderGraphicsServerUrl:serverUrl animation:animation];
+            } else
+                return animation;
+        }
     }
-    
     return NO;
 }
 

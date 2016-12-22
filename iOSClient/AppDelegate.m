@@ -402,7 +402,7 @@
 // BACKGROND & FOREGROUND
     
     /* Active/Disactive Graphics Animation Synchronization Folders */
-    [[CCSynchronization sharedSynchronization] synchronizationAnimationWithViewController:YES];
+    [[CCSynchronization sharedSynchronization] synchronizationAnimationDirectory:[CCCoreData getSynchronizedDirectoryActiveAccount:app.activeAccount] callViewController:YES];
 
 // ONLY BACKGROUND
     
