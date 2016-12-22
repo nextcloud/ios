@@ -260,7 +260,6 @@
     // After 5 sec. for wait load app.activeMain start if exists in Table Automatic Upload + All
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5.0 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         
-        // Verify queue Upload Automatic + All
         if ([CCCoreData countTableAutomaticUploadForAccount:self.activeAccount selector:selectorUploadAutomatic] > 0)
             [app loadTableAutomaticUploadForSelector:selectorUploadAutomatic];
     
