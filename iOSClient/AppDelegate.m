@@ -257,12 +257,16 @@
 //
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
-    // Verify queue Upload Automatic + All
-    if ([CCCoreData countTableAutomaticUploadForAccount:self.activeAccount selector:selectorUploadAutomatic] > 0)
-        [app loadTableAutomaticUploadForSelector:selectorUploadAutomatic];
+    // After 5 sec. for wait load app.activeMain start if exists in Table Automatic Upload + All
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5.0 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        
+        // Verify queue Upload Automatic + All
+        if ([CCCoreData countTableAutomaticUploadForAccount:self.activeAccount selector:selectorUploadAutomatic] > 0)
+            [app loadTableAutomaticUploadForSelector:selectorUploadAutomatic];
     
-    if ([CCCoreData countTableAutomaticUploadForAccount:self.activeAccount selector:selectorUploadAutomaticAll] > 0)
-        [app loadTableAutomaticUploadForSelector:selectorUploadAutomaticAll];
+        if ([CCCoreData countTableAutomaticUploadForAccount:self.activeAccount selector:selectorUploadAutomaticAll] > 0)
+            [app loadTableAutomaticUploadForSelector:selectorUploadAutomaticAll];
+    });
 }
 
 //
@@ -392,19 +396,24 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Verify Process [ONLY FOREGROUND] =====
+#pragma mark ===== Verify Process =====
 #pragma --------------------------------------------------------------------------------------------
 
 - (void)verifyProcess
 {
-    if ([[UIApplication sharedApplication] applicationState] != UIApplicationStateBackground) {
+    // BACKGROND & FOREGROUND
+    
+    
+    // ONLY BACKGROUND
+    if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
     
         // Verify Synchronized Folder
         NSMutableArray *metadatasNet = [self verifyExistsInQueuesUploadSelector:selectorDownloadSynchronized];
         NSLog(@"5 sec. %lu", (unsigned long)[metadatasNet count]);
 
-        
-
+    } else {
+    // ONLY FOREFROUND
+    
     }
 }
 
@@ -1106,11 +1115,10 @@
     
         NSUInteger count = [TableMetadata MR_countOfEntitiesWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (sessionSelector == %@) AND ((sessionTaskIdentifier == %i) OR (sessionTaskIdentifierPlist == %i))", app.activeAccount, selectorUploadAutomaticAll,taskIdentifierError, taskIdentifierError]];
         
-        /*
-        TableMetadata *record = [TableMetadata MR_findFirstWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (sessionSelector == %@) AND ((sessionTaskIdentifier == %i) OR (sessionTaskIdentifierPlist == %i))", app.activeAccount, selectorUploadAutomaticAll,taskIdentifierError, taskIdentifierError]];
-        
-        CCMetadata *metadata = [CCCoreData insertEntityInMetadata:record];
-        */
+#ifdef DEBUG
+        NSArray *records = [[NSArray alloc] init];
+        records = [TableMetadata MR_findAllWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (sessionSelector == %@) AND ((sessionTaskIdentifier == %i) OR (sessionTaskIdentifierPlist == %i))", app.activeAccount, selectorUploadAutomaticAll,taskIdentifierError, taskIdentifierError]];
+#endif
         
         if (count >= 10) {
             
