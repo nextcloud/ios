@@ -394,7 +394,7 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Verify Process =====
+#pragma mark ===== Verify Process 5 seconds =====
 #pragma --------------------------------------------------------------------------------------------
 
 - (void)verifyProcess
@@ -408,10 +408,7 @@
     
     if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
     
-        // Verify Synchronized Folder
-        NSMutableArray *metadatasNet = [self verifyExistsInQueuesUploadSelector:selectorDownloadSynchronized];
-        NSLog(@"5 sec. %lu", (unsigned long)[metadatasNet count]);
-
+       
     } else {
 
 // ONLY FOREFROUND
