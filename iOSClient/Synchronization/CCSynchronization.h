@@ -25,11 +25,11 @@
 
 #import "CCMetadata.h"
 #import "CCHud.h"
+#import "CCCellMain.h"
 
 @interface CCSynchronization : NSObject
 
 @property (nonatomic, strong) CCHud *hud;
-@property (nonatomic, strong) NSMutableOrderedSet *synchronizationServerUrlInProgress;
 
 + (CCSynchronization *)sharedSynchronization;
 
@@ -37,5 +37,7 @@
 - (void)synchronizationFolder:(NSString *)serverUrl;
 
 - (void)verifyChangeMedatas:(NSArray *)allRecordMetadatas serverUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID account:(NSString *)account synchronization:(BOOL)synchronization;
+
+- (BOOL)synchronizationAnimationWithViewController:(BOOL)callViewController;
 
 @end

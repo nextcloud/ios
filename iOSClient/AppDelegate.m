@@ -399,31 +399,12 @@
 
 - (void)verifyProcess
 {
-    // BACKGROND & FOREGROUND
+// BACKGROND & FOREGROUND
     
-    /* Disactive Graphics Animation Synchronization Folders */
-    
-    NSMutableOrderedSet *serversUrlDownload = [[NSMutableOrderedSet alloc] init];
-    NSMutableArray *metadatasNet = [self verifyExistsInQueuesDownloadSelector:selectorDownloadSynchronized];
-    for (CCMetadataNet *metadataNet in metadatasNet)
-        [serversUrlDownload addObject:metadataNet.serverUrl];
-    
-    NSMutableOrderedSet *synchronizationServerUrlInProgressTemp = [[NSMutableOrderedSet alloc] initWithOrderedSet:[CCSynchronization sharedSynchronization].synchronizationServerUrlInProgress copyItems:YES];
-    for (NSString *serverUrl in synchronizationServerUrlInProgressTemp) {
-        
-        if ([serversUrlDownload containsObject:serverUrl] == NO) {
-            
-            NSString *serverUrlSynchronized = [CCUtility deletingLastPathComponentFromServerUrl:serverUrl];
-            CCMain *viewController = [app.listMainVC objectForKey:serverUrlSynchronized];
-            if (viewController)
-                [viewController synchronizedFolderGraphicsCell:nil serverUrl:serverUrl animation:NO];
-            
-            // remove
-            [[CCSynchronization sharedSynchronization].synchronizationServerUrlInProgress removeObject:serversUrlDownload];
-        }
-    }
-    
-    // ONLY BACKGROUND
+    /* Active/Disactive Graphics Animation Synchronization Folders */
+    [[CCSynchronization sharedSynchronization] synchronizationAnimationWithViewController:YES];
+
+// ONLY BACKGROUND
     
     if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
     
@@ -432,8 +413,8 @@
         NSLog(@"5 sec. %lu", (unsigned long)[metadatasNet count]);
 
     } else {
-        
-    // ONLY FOREFROUND
+
+// ONLY FOREFROUND
     
     }
 }

@@ -86,7 +86,6 @@
 
 @property (nonatomic, weak) CCLoginNCOC *loginVC;
 
-
 - (void)createFolderCameraUpload;
 - (void)createFolder:(NSString *)fileNameFolder folderCameraUpload:(BOOL)folderCameraUpload;
 - (void)readFolderWithForced:(BOOL)forced;
@@ -105,7 +104,7 @@
 - (void)requestSharedByServer;
 - (void)requestServerInformation;
 
-- (void)synchronizedFolderGraphicsCell:(CCCellMainTransfer *)cell serverUrl:(NSString *)serverUrl animation:(BOOL)animation;
+- (void)synchronizedFolderGraphicsServerUrl:(NSString *)serverUrl animation:(BOOL)animation;
 
 - (void)clearDateReadDataSource:(NSNotification *)notification;
 

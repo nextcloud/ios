@@ -5010,6 +5010,29 @@
         
         lunghezzaFile = @" ";
         
+        // ----------------------------------------------------------------------------------------------------------
+        // Synchronize
+        // ----------------------------------------------------------------------------------------------------------
+        
+        NSString *synchronizedServerUrl = [CCUtility stringAppendServerUrl:_localServerUrl addServerUrl:metadata.fileNameData];
+        if ([CCCoreData isSynchronizedDirectory:synchronizedServerUrl activeAccount:app.activeAccount]) {
+            
+            if ([[CCSynchronization sharedSynchronization] synchronizationAnimationWithViewController:NO]) {
+                
+                NSURL *myURL;
+                
+                if (metadata.cryptated) myURL = [[NSBundle mainBundle] URLForResource: @"synchronizedcrypto" withExtension:@"gif"];
+                else myURL = [[NSBundle mainBundle] URLForResource: @"synchronized" withExtension:@"gif"];
+                
+                cell.synchronizedImageView.image = [UIImage animatedImageWithAnimatedGIFURL:myURL];
+                
+            } else {
+                
+                if (metadata.cryptated) cell.synchronizedImageView.image = [UIImage imageNamed:image_synchronizedcrypto];
+                else cell.synchronizedImageView.image = [UIImage imageNamed:image_synchronized];
+            }
+        }
+
     } else {
     
         // è un file
@@ -5456,25 +5479,25 @@
 #pragma mark ===== Synchronize Cell =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)synchronizedFolderGraphicsCell:(CCCellMainTransfer *)cell serverUrl:(NSString *)serverUrl animation:(BOOL)animation
+- (void)synchronizedFolderGraphicsServerUrl:(NSString *)serverUrl animation:(BOOL)animation
 {
     BOOL cryptated = NO;
+    CCCellMain *cell;
     
-    if (!cell)
-        for (NSString* fileID in _sectionDataSource.allRecordsDataSource) {
+    for (NSString* fileID in _sectionDataSource.allRecordsDataSource) {
         
-            CCMetadata *recordMetadata = [_sectionDataSource.allRecordsDataSource objectForKey:fileID];
+        CCMetadata *recordMetadata = [_sectionDataSource.allRecordsDataSource objectForKey:fileID];
         
-            if (recordMetadata.directory == NO) continue;
-            if ([[CCUtility stringAppendServerUrl:_localServerUrl addServerUrl:recordMetadata.fileNameData] isEqualToString:serverUrl]) {
+        if (recordMetadata.directory == NO) continue;
+        if ([[CCUtility stringAppendServerUrl:_localServerUrl addServerUrl:recordMetadata.fileNameData] isEqualToString:serverUrl]) {
             
-                NSIndexPath *indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:recordMetadata.fileID];
-                cell = (CCCellMainTransfer *)[self.tableView cellForRowAtIndexPath:indexPath];
-                cryptated = recordMetadata.cryptated;
+            NSIndexPath *indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:recordMetadata.fileID];
+            cell = (CCCellMain *)[self.tableView cellForRowAtIndexPath:indexPath];
+            cryptated = recordMetadata.cryptated;
                 
-                break;
-            }
+            break;
         }
+    }
 
     if (!cell)
         return;
