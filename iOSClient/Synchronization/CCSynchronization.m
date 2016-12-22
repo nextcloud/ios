@@ -56,6 +56,10 @@
     if ([app.activeAccount length] == 0)
         return;
 
+    // verify is sync is in progress selectorDownloadSynchronized
+    if ([[app verifyExistsInQueuesDownloadSelector:selectorDownloadSynchronized] count] > 0)
+        return;
+    
     NSArray *directories = [CCCoreData getSynchronizedDirectoryActiveAccount:app.activeAccount];
     
     for (TableDirectory *directory in directories) {

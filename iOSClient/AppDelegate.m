@@ -404,6 +404,7 @@
     
     
     // ONLY BACKGROUND
+    
     if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
     
         // Verify Synchronized Folder
@@ -411,6 +412,7 @@
         NSLog(@"5 sec. %lu", (unsigned long)[metadatasNet count]);
 
     } else {
+        
     // ONLY FOREFROUND
     
     }
@@ -1064,6 +1066,43 @@
     [operation setQueuePriority:metadataNet.priority];
     
     [netQueue addOperation:operation];
+}
+
+- (NSMutableArray *)verifyExistsInQueuesDownloadSelector:(NSString *)selector
+{
+    NSMutableArray *metadatasNet = [[NSMutableArray alloc] init];
+    
+    /*** NEXTCLOUD OWNCLOUD ***/
+    
+    if ([app.typeCloud isEqualToString:typeCloudOwnCloud] || [app.typeCloud isEqualToString:typeCloudNextcloud]) {
+        
+        for (OCnetworking *operation in [self.netQueueDownload operations])
+            if ([operation.metadataNet.selector isEqualToString:selector])
+                [metadatasNet addObject:[operation.metadataNet copy]];
+        
+        for (OCnetworking *operation in [self.netQueueDownloadWWan operations])
+            if ([operation.metadataNet.selector isEqualToString:selector])
+                [metadatasNet addObject:[operation.metadataNet copy]];
+    }
+    
+#ifdef CC
+    
+    /*** DROPBOX ***/
+    
+    if ([app.typeCloud isEqualToString:typeCloudDropbox]) {
+        
+        for (DBnetworking *operation in [self.netQueueDownload operations])
+            if ([operation.metadataNet.selector isEqualToString:selector])
+                [metadatasNet addObject:operation.metadataNet];
+        
+        for (DBnetworking *operation in [self.netQueueDownloadWWan operations])
+            if ([operation.metadataNet.selector isEqualToString:selector])
+                [metadatasNet addObject:operation.metadataNet];
+    }
+    
+#endif
+    
+    return metadatasNet;
 }
 
 - (NSMutableArray *)verifyExistsInQueuesUploadSelector:(NSString *)selector

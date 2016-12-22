@@ -187,7 +187,10 @@
 // Operation Networking
 - (void)cancelAllOperations;
 - (void)addNetworkingOperationQueue:(NSOperationQueue *)netQueue delegate:(id)delegate metadataNet:(CCMetadataNet *)metadataNet oneByOne:(BOOL)oneByOne;
+
+- (NSMutableArray *)verifyExistsInQueuesDownloadSelector:(NSString *)selector;
 - (NSMutableArray *)verifyExistsInQueuesUploadSelector:(NSString *)selector;
+
 - (void)loadTableAutomaticUploadForSelector:(NSString *)selector;
 
 - (void)dropAutomaticUploadWithSelector:(NSString *)selector;
