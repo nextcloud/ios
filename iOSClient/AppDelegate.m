@@ -402,7 +402,13 @@
 // BACKGROND & FOREGROUND
     
     /* Active/Disactive Graphics Animation Synchronization Folders */
-    [[CCSynchronization sharedSynchronization] synchronizationAnimationDirectory:[CCCoreData getSynchronizedDirectoryActiveAccount:app.activeAccount] callViewController:YES];
+    NSArray *records = [CCCoreData getSynchronizedDirectoryActiveAccount:app.activeAccount];
+    NSMutableArray *directory = [[NSMutableArray alloc] init];
+    for (TableDirectory *record in records)
+        [directory addObject:record.serverUrl];
+    
+    if ([directory count] > 0)
+        [[CCSynchronization sharedSynchronization] synchronizationAnimationDirectory:directory callViewController:YES];
 
 // ONLY BACKGROUND
     

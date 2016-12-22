@@ -346,31 +346,29 @@
 
 - (BOOL)synchronizationAnimationDirectory:(NSArray *)directory callViewController:(BOOL)callViewController
 {
-    if ([directory count] > 0) {
+    NSMutableOrderedSet *serversUrlInDownload = [[NSMutableOrderedSet alloc] init];
+    
+    NSMutableArray *metadatasNet = [app verifyExistsInQueuesDownloadSelector:selectorDownloadSynchronized];
+    
+    for (CCMetadataNet *metadataNet in metadatasNet)
+        [serversUrlInDownload addObject:metadataNet.serverUrl];
+    
+    /* Animation ON/OFF */
+    
+    for (NSString *serverUrl in directory) {
         
-        NSMutableOrderedSet *serversUrlInDownload = [[NSMutableOrderedSet alloc] init];
-    
-        NSMutableArray *metadatasNet = [app verifyExistsInQueuesDownloadSelector:selectorDownloadSynchronized];
-    
-        for (CCMetadataNet *metadataNet in metadatasNet)
-            [serversUrlInDownload addObject:metadataNet.serverUrl];
-    
-        /* Animation ON/OFF */
-    
-        for (TableDirectory *record in directory) {
+        BOOL animation = [serversUrlInDownload containsObject:serverUrl];
         
-            NSString *serverUrl = record.serverUrl;
-            BOOL animation = [serversUrlInDownload containsObject:serverUrl];
-        
-            if (callViewController) {
-                NSString *serverUrlSynchronized = [CCUtility deletingLastPathComponentFromServerUrl:serverUrl];
-                CCMain *viewController = [app.listMainVC objectForKey:serverUrlSynchronized];
-                if (viewController)
-                    [viewController synchronizedFolderGraphicsServerUrl:serverUrl animation:animation];
-            } else
-                return animation;
-        }
+        if (callViewController) {
+            
+            NSString *serverUrlSynchronized = [CCUtility deletingLastPathComponentFromServerUrl:serverUrl];
+            CCMain *viewController = [app.listMainVC objectForKey:serverUrlSynchronized];
+            if (viewController)
+                [viewController synchronizedFolderGraphicsServerUrl:serverUrl animation:animation];
+        } else
+            return animation;
     }
+    
     return NO;
 }
 
