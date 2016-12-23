@@ -52,9 +52,6 @@
 @interface AppDelegate : UIResponder <UIApplicationDelegate, BKPasscodeLockScreenManagerDelegate, BKPasscodeViewControllerDelegate, LMMediaPlayerViewDelegate, TWMessageBarStyleSheet>
 #endif
 
-// For debug
-@property BOOL isRunningTestFlight;
-
 // Timer 5 sec.
 @property (nonatomic, strong) NSTimer *timerVerifyProcess;
 
