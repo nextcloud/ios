@@ -342,10 +342,14 @@
     });
 }
 
-// Graphics Animation Synchronization Folders 
+// Graphics Animation Synchronization Folders
+//
+// User return BOOL animation for 1 directory only
+//
 
 - (BOOL)synchronizationAnimationDirectory:(NSArray *)directory callViewController:(BOOL)callViewController
 {
+    BOOL animation = NO;
     NSMutableOrderedSet *serversUrlInDownload = [[NSMutableOrderedSet alloc] init];
     
     NSMutableArray *metadatasNet = [app verifyExistsInQueuesDownloadSelector:selectorDownloadSynchronized];
@@ -357,7 +361,7 @@
     
     for (NSString *serverUrl in directory) {
         
-        BOOL animation = [serversUrlInDownload containsObject:serverUrl];
+        animation = [serversUrlInDownload containsObject:serverUrl];
         
         if (callViewController) {
             
@@ -365,11 +369,10 @@
             CCMain *viewController = [app.listMainVC objectForKey:serverUrlSynchronized];
             if (viewController)
                 [viewController synchronizedFolderGraphicsServerUrl:serverUrl animation:animation];
-        } else
-            return animation;
+        }
     }
     
-    return NO;
+    return animation;
 }
 
 @end
