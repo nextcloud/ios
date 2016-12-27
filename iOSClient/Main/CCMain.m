@@ -621,9 +621,20 @@
 #pragma mark ===== Document Picker =====
 #pragma --------------------------------------------------------------------------------------------
 
+- (void)documentMenuWasCancelled:(UIDocumentMenuViewController *)documentMenu
+{
+    NSLog(@"Cancelled");
+}
+
 - (void)documentPickerWasCancelled:(UIDocumentPickerViewController *)controller
 {
     NSLog(@"Cancelled");
+}
+
+- (void)documentMenu:(UIDocumentMenuViewController *)documentMenu didPickDocumentPicker:(UIDocumentPickerViewController *)documentPicker
+{
+    documentPicker.delegate = self;
+    [self presentViewController:documentPicker animated:YES completion:nil];
 }
 
 - (void)documentPicker:(UIDocumentPickerViewController *)controller didPickDocumentAtURL:(NSURL *)url
@@ -643,7 +654,7 @@
                 
                 if ([data writeToFile:fileNamePath options:NSDataWritingAtomic error:&error]) {
                     
-                    // Upload File 
+                    // Upload File
                     [[CCNetworking sharedNetworking] uploadFile:fileName serverUrl:self.localServerUrl cryptated:_isPickerCriptate onlyPlist:NO session:upload_session taskStatus:taskStatusResume selector:nil selectorPost:nil parentRev:nil errorCode:0 delegate:nil];
                     
                 } else {
@@ -661,14 +672,12 @@
 
 - (void)openImportDocumentPicker
 {
-    UIDocumentPickerViewController *documentPicker = [[UIDocumentPickerViewController alloc] initWithDocumentTypes:@[@"public.data"] inMode:UIDocumentPickerModeImport];
+    UIDocumentMenuViewController *documentProviderMenu = [[UIDocumentMenuViewController alloc] initWithDocumentTypes:@[@"public.data"] inMode:UIDocumentPickerModeImport];
+    documentProviderMenu.modalPresentationStyle = UIModalPresentationFormSheet;
     
-    documentPicker.delegate = self;
-    documentPicker.modalPresentationStyle = UIModalPresentationFormSheet;
-    
-    [self presentViewController:documentPicker animated:YES completion:nil];
+    documentProviderMenu.delegate = self;
+    [self presentViewController:documentProviderMenu animated:YES completion:nil];
 }
-
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Assets Picker =====
