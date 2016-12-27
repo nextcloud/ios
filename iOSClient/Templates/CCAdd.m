@@ -68,24 +68,26 @@
         case 0:
             if (row == 0) { nameLabel = (UILabel *)[cell viewWithTag:100]; nameLabel.text = NSLocalizedString(@"_add_folder_", nil); }
             if (row == 1) { nameLabel = (UILabel *)[cell viewWithTag:101]; nameLabel.text = NSLocalizedString(@"_add_photos_videos_", nil); }
+            if (row == 2) { nameLabel = (UILabel *)[cell viewWithTag:102]; nameLabel.text = NSLocalizedString(@"_add_photos_videos_", nil); }
             break;
         case 1:
-            if (row == 0) { nameLabel = (UILabel *)[cell viewWithTag:102]; nameLabel.text = NSLocalizedString(@"_add_folder_encryptated_", nil); }
-            if (row == 1) { nameLabel = (UILabel *)[cell viewWithTag:103]; nameLabel.text = NSLocalizedString(@"_add_encrypted_photo_video_", nil); }
+            if (row == 0) { nameLabel = (UILabel *)[cell viewWithTag:200]; nameLabel.text = NSLocalizedString(@"_add_folder_encryptated_", nil); }
+            if (row == 1) { nameLabel = (UILabel *)[cell viewWithTag:201]; nameLabel.text = NSLocalizedString(@"_add_encrypted_photo_video_", nil); }
+            if (row == 2) { nameLabel = (UILabel *)[cell viewWithTag:202]; nameLabel.text = NSLocalizedString(@"_add_encrypted_photo_video_", nil); }
             break;
         case 2:
-            if (row == 0) { nameLabel = (UILabel *)[cell viewWithTag:108]; nameLabel.text = NSLocalizedString(@"_add_notes_", nil); }
-            if (row == 1) { nameLabel = (UILabel *)[cell viewWithTag:107]; nameLabel.text = NSLocalizedString(@"_add_web_account_", nil); }
+            if (row == 0) { nameLabel = (UILabel *)[cell viewWithTag:300]; nameLabel.text = NSLocalizedString(@"_add_notes_", nil); }
+            if (row == 1) { nameLabel = (UILabel *)[cell viewWithTag:301]; nameLabel.text = NSLocalizedString(@"_add_web_account_", nil); }
             break;
         case 3:
-            if (row == 0) { nameLabel = (UILabel *)[cell viewWithTag:104]; nameLabel.text = NSLocalizedString(@"_add_credit_card_", nil); }
-            if (row == 1) { nameLabel = (UILabel *)[cell viewWithTag:105]; nameLabel.text = NSLocalizedString(@"_add_atm_", nil); }
-            if (row == 2) { nameLabel = (UILabel *)[cell viewWithTag:106]; nameLabel.text = NSLocalizedString(@"_add_bank_account_", nil); }
+            if (row == 0) { nameLabel = (UILabel *)[cell viewWithTag:400]; nameLabel.text = NSLocalizedString(@"_add_credit_card_", nil); }
+            if (row == 1) { nameLabel = (UILabel *)[cell viewWithTag:401]; nameLabel.text = NSLocalizedString(@"_add_atm_", nil); }
+            if (row == 2) { nameLabel = (UILabel *)[cell viewWithTag:402]; nameLabel.text = NSLocalizedString(@"_add_bank_account_", nil); }
             break;
         case 4:
-            if (row == 0) { nameLabel = (UILabel *)[cell viewWithTag:109]; nameLabel.text = NSLocalizedString(@"_add_driving_license_", nil); }
-            if (row == 1) { nameLabel = (UILabel *)[cell viewWithTag:110]; nameLabel.text = NSLocalizedString(@"_add_id_card_", nil); }
-            if (row == 2) { nameLabel = (UILabel *)[cell viewWithTag:111]; nameLabel.text = NSLocalizedString(@"_add_passport_", nil); }
+            if (row == 0) { nameLabel = (UILabel *)[cell viewWithTag:500]; nameLabel.text = NSLocalizedString(@"_add_driving_license_", nil); }
+            if (row == 1) { nameLabel = (UILabel *)[cell viewWithTag:501]; nameLabel.text = NSLocalizedString(@"_add_id_card_", nil); }
+            if (row == 2) { nameLabel = (UILabel *)[cell viewWithTag:502]; nameLabel.text = NSLocalizedString(@"_add_passport_", nil); }
             break;
     }
     
@@ -101,24 +103,34 @@
         case 0:
             if (row == 0) {
                 [self dismissViewControllerAnimated:YES completion:^{
-                    [_delegate returnCreate:returnCreaCartellaChiaro];
+                    [_delegate returnCreate:returnCreateFolderPlain];
                 }];
             }
             if (row == 1) {
                 [self dismissViewControllerAnimated:YES completion:^{
-                    [_delegate returnCreate:returnCreaFotoVideoChiaro];
+                    [_delegate returnCreate:returnCreateFotoVideoPlain];
+                }];
+            }
+            if (row == 2) {
+                [self dismissViewControllerAnimated:YES completion:^{
+                    [_delegate returnCreate:returnCreateFilePlain];
                 }];
             }
             break;
         case 1: 
             if (row == 0) {
                 [self dismissViewControllerAnimated:YES completion:^{
-                    [_delegate returnCreate:returnCreaCartellaCriptata];
+                    [_delegate returnCreate:returnCreateFolderEncrypted];
                 }];
             }
             if (row == 1) {
                 [self dismissViewControllerAnimated:YES completion:^{
-                    [_delegate returnCreate:returnCreaFotoVideoCriptato];
+                    [_delegate returnCreate:returnCreateFotoVideoEncrypted];
+                }];
+            }
+            if (row == 2) {
+                [self dismissViewControllerAnimated:YES completion:^{
+                    [_delegate returnCreate:returnCreateFileEncrypted];
                 }];
             }
             break;

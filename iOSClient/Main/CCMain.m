@@ -618,6 +618,40 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Document Picker =====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)documentPickerWasCancelled:(UIDocumentPickerViewController *)controller
+{
+    NSLog(@"Cancelled");
+}
+
+- (void)documentPicker:(UIDocumentPickerViewController *)controller didPickDocumentAtURL:(NSURL *)url
+{
+    if (controller.documentPickerMode == UIDocumentPickerModeImport) {
+        
+        NSString *alertMessage = [NSString stringWithFormat:@"Successfully imported %@", [url lastPathComponent]];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Import" message:alertMessage preferredStyle:UIAlertControllerStyleAlert];
+            [alertController addAction:[UIAlertAction actionWithTitle:@"Ok" style:UIAlertActionStyleDefault handler:nil]];
+            [self presentViewController:alertController animated:YES completion:nil];
+        });
+    }
+}
+
+- (void)openImportDocumentPicker
+{
+    UIDocumentPickerViewController *documentPicker = [[UIDocumentPickerViewController alloc] initWithDocumentTypes:@[@"public.image"] inMode:UIDocumentPickerModeImport];
+    
+    documentPicker.delegate = self;
+    documentPicker.modalPresentationStyle = UIModalPresentationFormSheet;
+    
+    [self presentViewController:documentPicker animated:YES completion:nil];
+}
+
+
+#pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Assets Picker =====
 #pragma --------------------------------------------------------------------------------------------
 
@@ -811,21 +845,33 @@
     _numTaskUploadInProgress =  [[CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (session CONTAINS 'upload') AND ((sessionTaskIdentifier >= 0) OR (sessionTaskIdentifierPlist >= 0))", app.activeAccount] context:nil] count];
     
     switch (type) {
-        case returnCreaCartellaChiaro: {
+            
+        /* PLAIN */
+        case returnCreateFolderPlain: {
             UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_create_folder_",nil) message:nil delegate:self cancelButtonTitle:NSLocalizedString(@"_cancel_",nil) otherButtonTitles:NSLocalizedString(@"_save_", nil), nil];
             [alertView setAlertViewStyle:UIAlertViewStylePlainTextInput];
             alertView.tag = alertCreateFolder;
             [alertView show];
         }
             break;
-        case returnCreaFotoVideoChiaro: {
+        case returnCreateFotoVideoPlain: {
             
             _isPickerCriptate = false;
             
             [self openAssetsPickerController];
         }
             break;
-        case returnCreaCartellaCriptata: {
+        case returnCreateFilePlain: {
+            
+            _isPickerCriptate = false;
+            
+            [self openImportDocumentPicker];
+        }
+            break;
+            
+            
+        /* ENCRYPTED */
+        case returnCreateFolderEncrypted: {
             
             UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_create_folder_",nil) message:nil delegate:self cancelButtonTitle:NSLocalizedString(@"_cancel_",nil) otherButtonTitles:NSLocalizedString(@"_save_", nil), nil];
             [alertView setAlertViewStyle:UIAlertViewStylePlainTextInput];
@@ -833,13 +879,30 @@
             [alertView show];
         }
             break;
-        case returnCreaFotoVideoCriptato: {
+        case returnCreateFotoVideoEncrypted: {
             
             _isPickerCriptate = true;
             
             [self openAssetsPickerController];
         }
             break;
+        case returnCreateFileEncrypted: {
+            
+            _isPickerCriptate = true;
+            
+            [self openImportDocumentPicker];
+        }
+            break;
+    
+        /* UTILITY */
+        case returnNote:
+            [self openModel:@"note" isNew:true];
+            break;
+        case returnAccountWeb:
+            [self openModel:@"accountweb" isNew:true];
+            break;
+            
+         /* BANK */
         case returnCartaDiCredito:
             [self openModel:@"cartadicredito" isNew:true];
             break;
@@ -849,12 +912,8 @@
         case returnContoCorrente:
             [self openModel:@"contocorrente" isNew:true];
             break;
-        case returnAccountWeb:
-            [self openModel:@"accountweb" isNew:true];
-            break;
-        case returnNote:
-            [self openModel:@"note" isNew:true];
-            break;
+       
+        /* DOCUMENT */
         case returnPatenteGuida:
             [self openModel:@"patenteguida" isNew:true];
             break;

@@ -81,6 +81,7 @@
 		F71E68001DC1F792003BA52B /* libownCloudiOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F71E67FC1DC1F76F003BA52B /* libownCloudiOS.a */; };
 		F71E68021DC1F79D003BA52B /* libownCloudiOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F71E67FC1DC1F76F003BA52B /* libownCloudiOS.a */; };
 		F7229B3B1DF7187F00E8C4E7 /* InfoNextcloud.plist in Resources */ = {isa = PBXBuildFile; fileRef = F7229B371DF7187F00E8C4E7 /* InfoNextcloud.plist */; };
+		F725437C1E12A44A009BF4C2 /* CCSection.m in Sources */ = {isa = PBXBuildFile; fileRef = F78F6FAF1CC8CCB700F4EA25 /* CCSection.m */; };
 		F72764651DB8FE2A002334CD /* CCSynchronization.m in Sources */ = {isa = PBXBuildFile; fileRef = F72764631DB8FE2A002334CD /* CCSynchronization.m */; };
 		F72C63891DC14B0400FA5ED5 /* libMagicalRecord.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F7B61E9B1DC13C20009E938F /* libMagicalRecord.a */; };
 		F732BA061D76CE1500E9878B /* CCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F732BA041D76CE1500E9878B /* CCNetworking.m */; };
@@ -3353,6 +3354,11 @@
 				TargetAttributes = {
 					F71459B41D12E3B700CAFEEC = {
 						DevelopmentTeam = 6JLRKY9ZV7;
+						SystemCapabilities = {
+							com.apple.iCloud = {
+								enabled = 0;
+							};
+						};
 					};
 					F74344111E1264ED001CC831 = {
 						CreatedOnToolsVersion = 8.2.1;
@@ -3376,6 +3382,11 @@
 					};
 					F77B0DEB1D118A16002130FE = {
 						DevelopmentTeam = 6JLRKY9ZV7;
+						SystemCapabilities = {
+							com.apple.iCloud = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -3807,6 +3818,7 @@
 				F743446D1E127E4E001CC831 /* TableLocalFile.m in Sources */,
 				F743447A1E127EA6001CC831 /* CCGraphics.m in Sources */,
 				F743448C1E128010001CC831 /* CCCrypto.m in Sources */,
+				F725437C1E12A44A009BF4C2 /* CCSection.m in Sources */,
 				F74344651E127DE9001CC831 /* CCNetworking.m in Sources */,
 				F74344641E127DE6001CC831 /* OCNetworking.m in Sources */,
 				F743445B1E127D3B001CC831 /* BKPasscodeDummyViewController.m in Sources */,
