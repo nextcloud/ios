@@ -130,6 +130,62 @@
 		F74344251E1264EE001CC831 /* FileProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74344241E1264EE001CC831 /* FileProvider.swift */; };
 		F74344291E1264EE001CC831 /* PickerFileProvider.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = F74344201E1264EE001CC831 /* PickerFileProvider.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		F743442C1E1264EE001CC831 /* Picker.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = F74344121E1264ED001CC831 /* Picker.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		F743444A1E126B4D001CC831 /* CCMove.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D02A471C5F9E4400D6F972 /* CCMove.m */; };
+		F743444B1E126B69001CC831 /* CCMove.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7D02A481C5F9E4400D6F972 /* CCMove.storyboard */; };
+		F74344541E1277D8001CC831 /* libownCloudiOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F71E67FC1DC1F76F003BA52B /* libownCloudiOS.a */; };
+		F74344551E1277E2001CC831 /* libMagicalRecord.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F7B61E9B1DC13C20009E938F /* libMagicalRecord.a */; };
+		F74344561E12784A001CC831 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63061D5B3467004E2AA5 /* libcrypto.a */; };
+		F74344591E12786C001CC831 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63071D5B3467004E2AA5 /* libssl.a */; };
+		F743445B1E127D3B001CC831 /* BKPasscodeDummyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02C01C889183008DAB36 /* BKPasscodeDummyViewController.m */; };
+		F743445C1E127D3D001CC831 /* BKPasscodeField.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02C21C889183008DAB36 /* BKPasscodeField.m */; };
+		F743445D1E127D40001CC831 /* BKPasscodeInputView.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02C41C889183008DAB36 /* BKPasscodeInputView.m */; };
+		F743445E1E127D44001CC831 /* BKPasscodeLockScreenManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02C61C889183008DAB36 /* BKPasscodeLockScreenManager.m */; };
+		F743445F1E127D4B001CC831 /* BKPasscodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02C91C889183008DAB36 /* BKPasscodeViewController.m */; };
+		F74344601E127D4D001CC831 /* BKShiftingView.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02CB1C889183008DAB36 /* BKShiftingView.m */; };
+		F74344611E127D51001CC831 /* BKTouchIDManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02CD1C889183008DAB36 /* BKTouchIDManager.m */; };
+		F74344621E127D54001CC831 /* BKTouchIDSwitchView.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02CF1C889183008DAB36 /* BKTouchIDSwitchView.m */; };
+		F74344631E127D79001CC831 /* CCBKPasscode.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FE125D1BAC03FB0041924B /* CCBKPasscode.m */; };
+		F74344641E127DE6001CC831 /* OCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F74D3DBE1BAC1941000BAE4B /* OCNetworking.m */; };
+		F74344651E127DE9001CC831 /* CCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F732BA041D76CE1500E9878B /* CCNetworking.m */; };
+		F74344661E127E35001CC831 /* CCCoreData.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B81D801C64E77F006D02DF /* CCCoreData.m */; };
+		F74344671E127E38001CC831 /* CCMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = F7C8C1731B482A920048180E /* CCMetadata.m */; };
+		F74344681E127E3F001CC831 /* TableAutomaticUpload+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F771CD5B1E07F6620066F76D /* TableAutomaticUpload+CoreDataClass.m */; };
+		F74344691E127E42001CC831 /* TableAutomaticUpload+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F771CD5D1E07F6620066F76D /* TableAutomaticUpload+CoreDataProperties.m */; };
+		F743446A1E127E45001CC831 /* TableCertificates+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F7994B741D5B854C008525D9 /* TableCertificates+CoreDataProperties.m */; };
+		F743446B1E127E49001CC831 /* TableCertificates.m in Sources */ = {isa = PBXBuildFile; fileRef = F7994B761D5B854C008525D9 /* TableCertificates.m */; };
+		F743446C1E127E4B001CC831 /* TableLocalFile+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B446451C4D29E300DBCC11 /* TableLocalFile+CoreDataProperties.m */; };
+		F743446D1E127E4E001CC831 /* TableLocalFile.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B446471C4D29E300DBCC11 /* TableLocalFile.m */; };
+		F743446E1E127E51001CC831 /* TableGPS+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B446491C4D29E300DBCC11 /* TableGPS+CoreDataProperties.m */; };
+		F743446F1E127E53001CC831 /* TableGPS.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B4464B1C4D29E300DBCC11 /* TableGPS.m */; };
+		F74344701E127E56001CC831 /* TableDirectory+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B4464D1C4D29E300DBCC11 /* TableDirectory+CoreDataProperties.m */; };
+		F74344711E127E59001CC831 /* TableMetadata+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B446511C4D29E300DBCC11 /* TableMetadata+CoreDataProperties.m */; };
+		F74344721E127E5B001CC831 /* TableMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B446531C4D29E300DBCC11 /* TableMetadata.m */; };
+		F74344731E127E5E001CC831 /* TableAccount+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B446551C4D29E300DBCC11 /* TableAccount+CoreDataProperties.m */; };
+		F74344741E127E60001CC831 /* TableAccount.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B446571C4D29E300DBCC11 /* TableAccount.m */; };
+		F74344751E127E64001CC831 /* TableShare+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F7EC9CCC1C4FA803008122B5 /* TableShare+CoreDataProperties.m */; };
+		F74344761E127E67001CC831 /* TableShare.m in Sources */ = {isa = PBXBuildFile; fileRef = F7EC9CCE1C4FA803008122B5 /* TableShare.m */; };
+		F74344771E127E88001CC831 /* TableDirectory.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B4464F1C4D29E300DBCC11 /* TableDirectory.m */; };
+		F74344781E127E9E001CC831 /* CCExifGeo.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A54C351C6267B500E2C8BF /* CCExifGeo.m */; };
+		F74344791E127EA1001CC831 /* CCError.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B881C638A4C00DC4301 /* CCError.m */; };
+		F743447A1E127EA6001CC831 /* CCGraphics.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B841C6388BC00DC4301 /* CCGraphics.m */; };
+		F743447B1E127EAC001CC831 /* CCUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = F7053E3D1C639DF500741EA5 /* CCUtility.m */; };
+		F743447C1E127EB2001CC831 /* NSString+TruncateToWidth.m in Sources */ = {isa = PBXBuildFile; fileRef = F73049B91CB567F000C7C320 /* NSString+TruncateToWidth.m */; };
+		F743447D1E127ECB001CC831 /* AESCrypt.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02AB1C889183008DAB36 /* AESCrypt.m */; };
+		F743447E1E127ECE001CC831 /* NSData+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02AD1C889183008DAB36 /* NSData+Base64.m */; };
+		F743447F1E127ED1001CC831 /* NSData+CommonCrypto.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02AF1C889183008DAB36 /* NSData+CommonCrypto.m */; };
+		F74344801E127ED3001CC831 /* NSString+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02B11C889183008DAB36 /* NSString+Base64.m */; };
+		F74344811E127F49001CC831 /* AFViewShaker.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02B41C889183008DAB36 /* AFViewShaker.m */; };
+		F74344821E127F68001CC831 /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04841C889183008DAB36 /* MBProgressHUD.m */; };
+		F74344831E127F80001CC831 /* RNCryptor.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F05351C889184008DAB36 /* RNCryptor.m */; };
+		F74344841E127F84001CC831 /* RNCryptorEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F05371C889184008DAB36 /* RNCryptorEngine.m */; };
+		F74344851E127F86001CC831 /* RNDecryptor.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F05391C889184008DAB36 /* RNDecryptor.m */; };
+		F74344861E127F89001CC831 /* RNEncryptor.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F053B1C889184008DAB36 /* RNEncryptor.m */; };
+		F74344871E127F95001CC831 /* UICKeyChainStore.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCE2A1DC13798007E38D8 /* UICKeyChainStore.m */; };
+		F74344881E127F9C001CC831 /* UIImage+animatedGIF.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F05581C889184008DAB36 /* UIImage+animatedGIF.m */; };
+		F74344891E127FC3001CC831 /* CCGlobal.m in Sources */ = {isa = PBXBuildFile; fileRef = F7C8C1911B482CEA0048180E /* CCGlobal.m */; };
+		F743448A1E127FF2001CC831 /* CCHud.m in Sources */ = {isa = PBXBuildFile; fileRef = F7514EDB1C7B1336008F3338 /* CCHud.m */; };
+		F743448B1E12800D001CC831 /* CCCertificate.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F801011D98205A007537BC /* CCCertificate.m */; };
+		F743448C1E128010001CC831 /* CCCrypto.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FE125F1BAC03FB0041924B /* CCCrypto.m */; };
 		F749E4E91DC1FB38009BA2FD /* Share Ext Nextcloud.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = F7CE8AFB1DC1F8D8009CAE48 /* Share Ext Nextcloud.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		F750374D1DBFA91A008FB480 /* ALView+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F75037441DBFA91A008FB480 /* ALView+PureLayout.m */; };
 		F750374F1DBFA91A008FB480 /* NSArray+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F75037461DBFA91A008FB480 /* NSArray+PureLayout.m */; };
@@ -1149,6 +1205,7 @@
 		F74344231E1264EE001CC831 /* PickerFileProvider.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PickerFileProvider.entitlements; sourceTree = "<group>"; };
 		F74344241E1264EE001CC831 /* FileProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileProvider.swift; sourceTree = "<group>"; };
 		F74344261E1264EE001CC831 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F74344521E126D06001CC831 /* Picker-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Picker-Bridging-Header.h"; sourceTree = "<group>"; };
 		F743B2C31C95BBE8006F5B4A /* CCShareInfoCMOC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCShareInfoCMOC.h; sourceTree = "<group>"; };
 		F743B2C41C95BBE8006F5B4A /* CCShareInfoCMOC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCShareInfoCMOC.m; sourceTree = "<group>"; };
 		F744BE921BEBB2EE004FFF66 /* CCIntro.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCIntro.h; sourceTree = "<group>"; };
@@ -1552,6 +1609,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F74344591E12786C001CC831 /* libssl.a in Frameworks */,
+				F74344541E1277D8001CC831 /* libownCloudiOS.a in Frameworks */,
+				F74344551E1277E2001CC831 /* libMagicalRecord.a in Frameworks */,
+				F74344561E12784A001CC831 /* libcrypto.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2542,6 +2603,7 @@
 			isa = PBXGroup;
 			children = (
 				F74344161E1264EE001CC831 /* DocumentPickerViewController.swift */,
+				F74344521E126D06001CC831 /* Picker-Bridging-Header.h */,
 				F74344181E1264EE001CC831 /* MainInterface.storyboard */,
 				F743441B1E1264EE001CC831 /* Info.plist */,
 				F74344141E1264EE001CC831 /* Supporting Files */,
@@ -3449,6 +3511,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F743441A1E1264EE001CC831 /* MainInterface.storyboard in Resources */,
+				F743444B1E126B69001CC831 /* CCMove.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3735,7 +3798,58 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F743446C1E127E4B001CC831 /* TableLocalFile+CoreDataProperties.m in Sources */,
+				F743445F1E127D4B001CC831 /* BKPasscodeViewController.m in Sources */,
+				F74344611E127D51001CC831 /* BKTouchIDManager.m in Sources */,
+				F743446A1E127E45001CC831 /* TableCertificates+CoreDataProperties.m in Sources */,
+				F74344801E127ED3001CC831 /* NSString+Base64.m in Sources */,
+				F74344621E127D54001CC831 /* BKTouchIDSwitchView.m in Sources */,
+				F743446D1E127E4E001CC831 /* TableLocalFile.m in Sources */,
+				F743447A1E127EA6001CC831 /* CCGraphics.m in Sources */,
+				F743448C1E128010001CC831 /* CCCrypto.m in Sources */,
+				F74344651E127DE9001CC831 /* CCNetworking.m in Sources */,
+				F74344641E127DE6001CC831 /* OCNetworking.m in Sources */,
+				F743445B1E127D3B001CC831 /* BKPasscodeDummyViewController.m in Sources */,
+				F743446B1E127E49001CC831 /* TableCertificates.m in Sources */,
+				F743445D1E127D40001CC831 /* BKPasscodeInputView.m in Sources */,
+				F74344821E127F68001CC831 /* MBProgressHUD.m in Sources */,
+				F74344721E127E5B001CC831 /* TableMetadata.m in Sources */,
+				F74344681E127E3F001CC831 /* TableAutomaticUpload+CoreDataClass.m in Sources */,
+				F743444A1E126B4D001CC831 /* CCMove.m in Sources */,
+				F74344741E127E60001CC831 /* TableAccount.m in Sources */,
+				F74344771E127E88001CC831 /* TableDirectory.m in Sources */,
+				F74344711E127E59001CC831 /* TableMetadata+CoreDataProperties.m in Sources */,
+				F743448B1E12800D001CC831 /* CCCertificate.m in Sources */,
+				F743447D1E127ECB001CC831 /* AESCrypt.m in Sources */,
+				F743447E1E127ECE001CC831 /* NSData+Base64.m in Sources */,
+				F74344671E127E38001CC831 /* CCMetadata.m in Sources */,
+				F74344701E127E56001CC831 /* TableDirectory+CoreDataProperties.m in Sources */,
+				F74344781E127E9E001CC831 /* CCExifGeo.m in Sources */,
 				F74344171E1264EE001CC831 /* DocumentPickerViewController.swift in Sources */,
+				F74344811E127F49001CC831 /* AFViewShaker.m in Sources */,
+				F74344791E127EA1001CC831 /* CCError.m in Sources */,
+				F743446E1E127E51001CC831 /* TableGPS+CoreDataProperties.m in Sources */,
+				F743447B1E127EAC001CC831 /* CCUtility.m in Sources */,
+				F74344761E127E67001CC831 /* TableShare.m in Sources */,
+				F74344871E127F95001CC831 /* UICKeyChainStore.m in Sources */,
+				F74344751E127E64001CC831 /* TableShare+CoreDataProperties.m in Sources */,
+				F743447F1E127ED1001CC831 /* NSData+CommonCrypto.m in Sources */,
+				F74344891E127FC3001CC831 /* CCGlobal.m in Sources */,
+				F74344841E127F84001CC831 /* RNCryptorEngine.m in Sources */,
+				F74344851E127F86001CC831 /* RNDecryptor.m in Sources */,
+				F74344691E127E42001CC831 /* TableAutomaticUpload+CoreDataProperties.m in Sources */,
+				F74344881E127F9C001CC831 /* UIImage+animatedGIF.m in Sources */,
+				F743448A1E127FF2001CC831 /* CCHud.m in Sources */,
+				F74344861E127F89001CC831 /* RNEncryptor.m in Sources */,
+				F743445C1E127D3D001CC831 /* BKPasscodeField.m in Sources */,
+				F743446F1E127E53001CC831 /* TableGPS.m in Sources */,
+				F743445E1E127D44001CC831 /* BKPasscodeLockScreenManager.m in Sources */,
+				F74344631E127D79001CC831 /* CCBKPasscode.m in Sources */,
+				F74344661E127E35001CC831 /* CCCoreData.m in Sources */,
+				F743447C1E127EB2001CC831 /* NSString+TruncateToWidth.m in Sources */,
+				F74344731E127E5E001CC831 /* TableAccount+CoreDataProperties.m in Sources */,
+				F74344601E127D4D001CC831 /* BKShiftingView.m in Sources */,
+				F74344831E127F80001CC831 /* RNCryptor.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4229,19 +4343,28 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CODE_SIGN_ENTITLEMENTS = Picker/Picker.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
+				GCC_PREFIX_HEADER = "$(SRCROOT)/iOSClient/CryptoCloud.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"SHARE_IN=1",
+					"DEBUG=1",
+					"NC=1",
+				);
+				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
 				INFOPLIST_FILE = Picker/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				LIBRARY_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
 				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.Nextcloud.Picker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OBJC_BRIDGING_HEADER = "Picker/Picker-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -4252,18 +4375,26 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CODE_SIGN_ENTITLEMENTS = Picker/Picker.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
+				GCC_PREFIX_HEADER = "$(SRCROOT)/iOSClient/CryptoCloud.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"SHARE_IN=1",
+					"NC=1",
+				);
+				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
 				INFOPLIST_FILE = Picker/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				LIBRARY_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
 				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.Nextcloud.Picker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "Picker/Picker-Bridging-Header.h";
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -4282,6 +4413,7 @@
 				INFOPLIST_FILE = PickerFileProvider/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.Nextcloud.PickerFileProvider;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -4305,6 +4437,7 @@
 				INFOPLIST_FILE = PickerFileProvider/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.Nextcloud.PickerFileProvider;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
