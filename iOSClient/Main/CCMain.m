@@ -630,19 +630,38 @@
 {
     if (controller.documentPickerMode == UIDocumentPickerModeImport) {
         
-        NSString *alertMessage = [NSString stringWithFormat:@"Successfully imported %@", [url lastPathComponent]];
+        NSFileCoordinator *coordinator = [[NSFileCoordinator alloc] initWithFilePresenter:nil];
+        __block NSError *error;
         
-        dispatch_async(dispatch_get_main_queue(), ^{
-            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Import" message:alertMessage preferredStyle:UIAlertControllerStyleAlert];
-            [alertController addAction:[UIAlertAction actionWithTitle:@"Ok" style:UIAlertActionStyleDefault handler:nil]];
-            [self presentViewController:alertController animated:YES completion:nil];
-        });
+        [coordinator coordinateReadingItemAtURL:url options:0 error:&error byAccessor:^(NSURL *newURL) {
+            
+            NSString *fileName = [url lastPathComponent];
+            NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", app.directoryUser, fileName];
+            NSData *data = [NSData dataWithContentsOfURL:newURL];
+            
+            if (data && error == nil) {
+                
+                if ([data writeToFile:fileNamePath options:NSDataWritingAtomic error:&error]) {
+                    
+                    // Upload File 
+                    [[CCNetworking sharedNetworking] uploadFile:fileName serverUrl:self.localServerUrl cryptated:_isPickerCriptate onlyPlist:NO session:upload_session taskStatus:taskStatusResume selector:nil selectorPost:nil parentRev:nil errorCode:0 delegate:nil];
+                    
+                } else {
+                    
+                    [app messageNotification:@"_error_" description:error.description visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeError];
+                }
+                
+            } else {
+                
+                [app messageNotification:@"_error_" description:@"_read_file_error_" visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeError];
+            }
+        }];
     }
 }
 
 - (void)openImportDocumentPicker
 {
-    UIDocumentPickerViewController *documentPicker = [[UIDocumentPickerViewController alloc] initWithDocumentTypes:@[@"public.image"] inMode:UIDocumentPickerModeImport];
+    UIDocumentPickerViewController *documentPicker = [[UIDocumentPickerViewController alloc] initWithDocumentTypes:@[@"public.data"] inMode:UIDocumentPickerModeImport];
     
     documentPicker.delegate = self;
     documentPicker.modalPresentationStyle = UIModalPresentationFormSheet;
