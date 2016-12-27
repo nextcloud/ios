@@ -10,6 +10,9 @@ import UIKit
 
 class DocumentPickerViewController: UIDocumentPickerExtensionViewController {
 
+    // MARK: - IBOutlets
+    @IBOutlet weak var tableView: UITableView!
+    
     @IBAction func openDocument(_ sender: AnyObject?) {
         let documentURL = self.documentStorageURL!.appendingPathComponent("Untitled.txt")
         
