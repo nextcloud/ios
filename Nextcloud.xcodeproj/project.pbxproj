@@ -596,6 +596,7 @@
 		F7F801031D98205A007537BC /* CCCertificate.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F801011D98205A007537BC /* CCCertificate.m */; };
 		F7F801051D98205A007537BC /* CCCertificate.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F801011D98205A007537BC /* CCCertificate.m */; };
 		F7FC7D561DC1F93800BB2C6A /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = F7FC7D551DC1F93800BB2C6A /* libz.tbd */; };
+		F7FC88FA1E140558006D0506 /* cryptocloud.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = F78088E51DD3A1DB005C5A7C /* cryptocloud.xcdatamodeld */; };
 		F7FCFFD81D70798C000E6E29 /* CCPeekPop.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7FCFFD61D70798C000E6E29 /* CCPeekPop.storyboard */; };
 		F7FCFFE01D707B83000E6E29 /* CCPeekPop.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FCFFDE1D707B83000E6E29 /* CCPeekPop.m */; };
 /* End PBXBuildFile section */
@@ -3365,6 +3366,9 @@
 						DevelopmentTeam = 6JLRKY9ZV7;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
+							};
 							com.apple.Keychain = {
 								enabled = 1;
 							};
@@ -3855,6 +3859,7 @@
 				F74344861E127F89001CC831 /* RNEncryptor.m in Sources */,
 				F743445C1E127D3D001CC831 /* BKPasscodeField.m in Sources */,
 				F743446F1E127E53001CC831 /* TableGPS.m in Sources */,
+				F7FC88FA1E140558006D0506 /* cryptocloud.xcdatamodeld in Sources */,
 				F743445E1E127D44001CC831 /* BKPasscodeLockScreenManager.m in Sources */,
 				F74344631E127D79001CC831 /* CCBKPasscode.m in Sources */,
 				F74344661E127E35001CC831 /* CCCoreData.m in Sources */,

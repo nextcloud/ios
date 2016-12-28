@@ -8,16 +8,69 @@
 
 import UIKit
 
-class DocumentPickerViewController: UIDocumentPickerExtensionViewController {
-
+class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCNetworkingDelegate {
+    
     // MARK: - Properties
-    var metadata : CCMetadata!
+    
+    var metadata : CCMetadata?
     var sectionDataSource = [CCSectionDataSource]()
+    let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: capabilitiesGroups)
+    
+    var activeAccount : String?
+    var activeUrl : String?
+    var activeUser : String?
+    var activePassword : String?
+    var activeUID : String?
+    var activeAccessToken : String?
+    var directoryUser : String?
+    var typeCloud : String?
+    var serverUrl : String?
+    
+    var localServerUrl : String?
+    
+    lazy var networkingOperationQueue : OperationQueue = {
+        
+        var queue = OperationQueue()
+        queue.name = "it.twsweb.cryptocloud.queue"
+        queue.maxConcurrentOperationCount = 1
+        
+        return queue
+    }()
     
     // MARK: - IBOutlets
+    
     @IBOutlet weak var tableView: UITableView!
     
     // MARK: - View Life Cycle
+    
+    override func viewDidLoad() {
+        
+        let pathDB = dirGroup?.appendingPathComponent(appDatabase).appendingPathComponent("cryptocloud")
+        
+        MagicalRecord.setupCoreDataStackWithAutoMigratingSqliteStore(at: pathDB!)
+        MagicalRecord.setLoggingLevel(MagicalRecordLoggingLevel.off)
+        
+        if let record = CCCoreData.getActiveAccount() {
+            
+            activeAccount = record.account!
+            activePassword = record.password!
+            activeUrl = record.url!
+            typeCloud = record.typeCloud!
+            
+            localServerUrl = CCUtility.getHomeServerUrlActiveUrl(activeUrl!, typeCloud: typeCloud!)
+            
+        } else {
+            
+            // Close return nil
+            dismissGrantingAccess(to: nil)
+            
+            return
+        }
+        
+        CCNetworking.shared().settingDelegate(self)
+    }
+    
+    
     override func viewWillAppear(_ animated: Bool) {
         
         super.viewWillAppear(animated)
@@ -51,31 +104,4 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController {
         // TODO: present a view controller appropriate for picker mode here
     }
     */
-    
-    static func appGroupContainerURL() -> URL? {
-        
-        let fileManager = FileManager.default
-        guard let groupURL = fileManager
-            .containerURL(forSecurityApplicationGroupIdentifier: capabilitiesGroups) else {
-                return nil
-        }
-        
-        let storagePathUrl = groupURL.appendingPathComponent("File Provider Storage")
-        let storagePath = storagePathUrl.path
-        
-        if !fileManager.fileExists(atPath: storagePath) {
-            do {
-                try fileManager.createDirectory(atPath: storagePath,
-                                                withIntermediateDirectories: false,
-                                                attributes: nil)
-            } catch let error {
-                print("error creating filepath: \(error)")
-                return nil
-            }
-        }
-        
-        return storagePathUrl
-    }
-
-
 }
