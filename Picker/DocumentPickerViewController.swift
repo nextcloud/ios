@@ -5,6 +5,21 @@
 //  Created by Marino Faggiana on 27/12/16.
 //  Copyright © 2016 TWS. All rights reserved.
 //
+//  Author Marino Faggiana <m.faggiana@twsweb.it>
+//
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
 
 import UIKit
 
@@ -46,6 +61,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
     override func viewDidLoad() {
         
         let pathDB = dirGroup?.appendingPathComponent(appDatabase).appendingPathComponent("cryptocloud")
+        print(pathDB!)
         
         MagicalRecord.setupCoreDataStackWithAutoMigratingSqliteStore(at: pathDB!)
         MagicalRecord.setLoggingLevel(MagicalRecordLoggingLevel.off)
@@ -61,12 +77,12 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
             
         } else {
             
-            // Close return nil
+            // Close error no account return nil
             
             let deadlineTime = DispatchTime.now() + 0.1
             DispatchQueue.main.asyncAfter(deadline: deadlineTime) {
                 
-                let alert = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: NSLocalizedString("_message_", comment: ""), preferredStyle: .alert)
+                let alert = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: NSLocalizedString("_no_active_account_", comment: ""), preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default) { action in
                     self.dismissGrantingAccess(to: nil)
                 })
