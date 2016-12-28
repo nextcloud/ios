@@ -62,8 +62,13 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         } else {
             
             // Close return nil
-            dismissGrantingAccess(to: nil)
-            
+            let deadlineTime = DispatchTime.now() + 0.1
+            DispatchQueue.main.asyncAfter(deadline: deadlineTime) {
+                
+                print("Error close")
+                self.dismissGrantingAccess(to: nil)
+            }
+
             return
         }
         
@@ -75,19 +80,12 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         
         super.viewWillAppear(animated)
         
-        /*
-        NSPredicate(format: "(account == %@) AND (directoryID == %@)", , "33")
+        let directoryID : String? = CCCoreData.getDirectoryID(fromServerUrl: localServerUrl!, activeAccount: activeAccount!)
+        let predicate = NSPredicate(format: "(account == %@) AND (directoryID == %@)", activeAccount!, directoryID!)
         
-        let recordsTableMetadata = CCCoreData.getTableMetadata(with: "(account == %@) AND (directoryID == %@)", fieldOrder: <#T##String!#>, ascending: <#T##Bool#>)
-        */
+        let recordsTableMetadata = CCCoreData.getTableMetadata(with: predicate, fieldOrder: CCUtility.getOrderSettings()!, ascending: CCUtility.getAscendingSettings())
         
-        /*
- 
-        NSArray *recordsTableMetadata = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@)", app.activeAccount, directoryID] fieldOrder:[CCUtility getOrderSettings] ascending:[CCUtility getAscendingSettings]];
- 
-         _sectionDataSource = [CCSection creataDataSourseSectionTableMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:_directoryGroupBy replaceDateToExifDate:NO activeAccount:app.activeAccount];
- 
-         */
+        sectionDataSource = [CCSection.creataDataSourseSectionTableMetadata(recordsTableMetadata, listProgressMetadata: nil, groupByField: "none", replaceDateToExifDate: false, activeAccount: activeAccount)]
         
         tableView.reloadData()
     }
@@ -105,3 +103,26 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
     }
     */
 }
+
+/*
+// MARK: - UITableViewDataSource
+extension DocumentPickerViewController: UITableViewDataSource {
+    
+    // MARK: - CellIdentifiers
+    fileprivate enum CellIdentifier: String {
+        case NoteCell = "noteCell"
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return notes.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: CellIdentifier.NoteCell.rawValue, for: indexPath)
+        let note = notes[(indexPath as NSIndexPath).row]
+        cell.textLabel?.text = note.title
+        return cell
+    }
+}
+*/
+
