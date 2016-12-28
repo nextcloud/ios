@@ -62,11 +62,16 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         } else {
             
             // Close return nil
+            
             let deadlineTime = DispatchTime.now() + 0.1
             DispatchQueue.main.asyncAfter(deadline: deadlineTime) {
                 
-                print("Error close")
-                self.dismissGrantingAccess(to: nil)
+                let alert = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: NSLocalizedString("_message_", comment: ""), preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default) { action in
+                    self.dismissGrantingAccess(to: nil)
+                })
+                
+                self.present(alert, animated: true, completion: nil)
             }
 
             return
@@ -74,7 +79,6 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         
         CCNetworking.shared().settingDelegate(self)
     }
-    
     
     override func viewWillAppear(_ animated: Bool) {
         
