@@ -108,14 +108,19 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
     }
 }
 
+// MARK: - Class UITableViewCell
+
+class recordMetadataCell: UITableViewCell {
+    
+    @IBOutlet weak var fileImageView: UIImageView!
+}
+
 // MARK: - UITableViewDataSource
+
 extension DocumentPickerViewController: UITableViewDataSource {
     
-    // MARK: - CellIdentifiers
-    fileprivate enum CellIdentifier: String {
-        case Cell = "Cell"
-    }
-    
+    // MARK: - View Life Cycle
+
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
         return recordsTableMetadata.count
@@ -123,7 +128,7 @@ extension DocumentPickerViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let cell = tableView.dequeueReusableCell(withIdentifier: CellIdentifier.Cell.rawValue, for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! recordMetadataCell
         
         let record = recordsTableMetadata[(indexPath as NSIndexPath).row]
         
