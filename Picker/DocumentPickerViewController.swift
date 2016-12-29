@@ -71,8 +71,10 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
             activeAccount = record.account!
             activePassword = record.password!
             activeUrl = record.url!
+            activeUser = record.user!
             typeCloud = record.typeCloud!
             localServerUrl = CCUtility.getHomeServerUrlActiveUrl(activeUrl!, typeCloud: typeCloud!)
+            directoryUser = CCUtility.getDirectoryActiveUser(activeUser!, activeUrl: activeUrl!)
             
         } else {
             
@@ -130,10 +132,20 @@ extension DocumentPickerViewController: UITableViewDataSource {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! recordMetadataCell
         
-        let record = recordsTableMetadata[(indexPath as NSIndexPath).row]
+        let recordMetadata = recordsTableMetadata[(indexPath as NSIndexPath).row]
+        
+        let filePath = directoryUser!+"/"+recordMetadata.fileID!+".ico"
+        
+        if (FileManager.default.fileExists(atPath: filePath)) {
+            
+            cell.fileImageView.image = UIImage(contentsOfFile: directoryUser!+"/"+recordMetadata.fileID!+".ico")
+            
+        } else {
+            
+        }
         
         //let note = notes[(indexPath as NSIndexPath).row]
-        cell.textLabel?.text = record.fileName
+        //cell.textLabel?.text = record.fileName
         return cell
     }
 }
