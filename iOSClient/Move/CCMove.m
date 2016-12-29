@@ -142,7 +142,20 @@
 
 - (IBAction)create:(UIBarButtonItem *)sender
 {
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_create_folder_",nil) message:@"" preferredStyle:UIAlertControllerStyleAlert];
     
+    [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+        //textField.placeholder = NSLocalizedString(@"LoginPlaceholder", @"Login");
+    }];
+    
+    [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_save_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        [self createFolder:alertController.textFields.firstObject.text];
+    }]];
+    
+    [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+    }]];
+    
+    [self presentViewController:alertController animated:YES completion:nil];
 }
 
 // MARK: - BKPasscodeViewController
@@ -273,7 +286,14 @@
 {
     [_hud hideHud];
 
-    self.move.enabled = NO;    
+    self.move.enabled = NO;
+    
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_",nil) message:message preferredStyle:UIAlertControllerStyleAlert];
+    
+    [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+    }]];
+    
+    [self presentViewController:alertController animated:YES completion:nil];
 }
 
 - (void)readFolderSuccess:(CCMetadataNet *)metadataNet permissions:(NSString *)permissions rev:(NSString *)rev metadatas:(NSArray *)metadatas
@@ -350,8 +370,12 @@
 {
     [_hud hideHud];
     
-    //if (message)
-    //    [app messageNotification:@"_create_folder_" description:message visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeError];
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_",nil) message:message preferredStyle:UIAlertControllerStyleAlert];
+    
+    [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+    }]];
+    
+    [self presentViewController:alertController animated:YES completion:nil];
 }
 
 - (void)createFolderSuccess:(CCMetadataNet *)metadataNet
