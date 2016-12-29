@@ -44,9 +44,7 @@
 
 @implementation CCMove
 
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== View =====
-#pragma --------------------------------------------------------------------------------------------
+// MARK: - View
 
 - (void)viewDidLoad
 {
@@ -81,6 +79,7 @@
     self.tableView.tableFooterView = [UIView new];
 
     [self.cancel setTitle:NSLocalizedString(@"_cancel_", nil)];
+    [self.create setTitle:NSLocalizedString(@"_create_folder_", nil)];
 
     if (![self.localServerUrl length]) {
         
@@ -110,21 +109,10 @@
     self.navigationController.toolbar.tintColor = self.tintColor;
     
     // read folder
-    [_hud visibleIndeterminateHud];
-    
-    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:activeAccount];
-    
-    metadataNet.action = actionReadFolder;
-    metadataNet.serverUrl = self.localServerUrl;
-    metadataNet.selector = selectorReadFolder;
-    metadataNet.date = nil;
-    
-    [self addNetworkingQueue:metadataNet];
+    [self readFolder];
 }
 
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark == alertView ==
-#pragma --------------------------------------------------------------------------------------------
+// MARK: - alertView
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
@@ -136,9 +124,7 @@
     }
 }
 
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark == IBAction ==
-#pragma --------------------------------------------------------------------------------------------
+// MARK: - IBAction
 
 - (IBAction)cancel:(UIBarButtonItem *)sender
 {
@@ -154,9 +140,25 @@
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark == BKPasscodeViewController ==
-#pragma --------------------------------------------------------------------------------------------
+- (IBAction)create:(UIBarButtonItem *)sender
+{
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_create_folder_",nil) message:@"" preferredStyle:UIAlertControllerStyleAlert];
+    
+    [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+        //textField.placeholder = NSLocalizedString(@"LoginPlaceholder", @"Login");
+    }];
+    
+    [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_save_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        [self createFolder:alertController.textFields.firstObject.text];
+    }]];
+    
+    [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+    }]];
+    
+    [self presentViewController:alertController animated:YES completion:nil];
+}
+
+// MARK: - BKPasscodeViewController
 
 - (void)passcodeViewController:(CCBKPasscode *)aViewController didFinishWithPasscode:(NSString *)aPasscode
 {
@@ -217,9 +219,7 @@
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ======================= NetWorking ==================================
-#pragma --------------------------------------------------------------------------------------------
+// MARK: - NetWorking
 
 - (void)dropboxFailure
 {
@@ -261,6 +261,8 @@
     
 }
 
+// MARK: - Download File
+
 - (void)downloadFileSuccess:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost
 {
     if ([selector isEqualToString:selectorLoadPlist]) {
@@ -278,11 +280,20 @@
     self.move.enabled = NO;
 }
 
+// MARK: - Read Folder
+
 - (void)readFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
     [_hud hideHud];
 
-    self.move.enabled = NO;    
+    self.move.enabled = NO;
+    
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_",nil) message:message preferredStyle:UIAlertControllerStyleAlert];
+    
+    [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+    }]];
+    
+    [self presentViewController:alertController animated:YES completion:nil];
 }
 
 - (void)readFolderSuccess:(CCMetadataNet *)metadataNet permissions:(NSString *)permissions rev:(NSString *)rev metadatas:(NSArray *)metadatas
@@ -338,9 +349,64 @@
     [_hud hideHud];
 }
 
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark == Table ==
-#pragma --------------------------------------------------------------------------------------------
+- (void)readFolder
+{
+    // read folder
+    [_hud visibleIndeterminateHud];
+    
+    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:activeAccount];
+    
+    metadataNet.action = actionReadFolder;
+    metadataNet.serverUrl = self.localServerUrl;
+    metadataNet.selector = selectorReadFolder;
+    metadataNet.date = nil;
+    
+    [self addNetworkingQueue:metadataNet];
+}
+
+// MARK: - Create Folder
+
+- (void)createFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+{
+    [_hud hideHud];
+    
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_",nil) message:message preferredStyle:UIAlertControllerStyleAlert];
+    
+    [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+    }]];
+    
+    [self presentViewController:alertController animated:YES completion:nil];
+}
+
+- (void)createFolderSuccess:(CCMetadataNet *)metadataNet
+{
+    [_hud hideHud];
+    
+    [CCCoreData addDirectory:[NSString stringWithFormat:@"%@/%@", metadataNet.serverUrl, metadataNet.fileName] date:[NSDate date] permissions:nil activeAccount:activeAccount];
+    
+    // Load Folder or the Datasource
+    [self readFolder];
+}
+
+- (void)createFolder:(NSString *)fileNameFolder
+{
+    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:activeAccount];
+    
+    fileNameFolder = [CCUtility clearFile:fileNameFolder];
+    if (![fileNameFolder length]) return;
+    
+    metadataNet.action = actionCreateFolder;
+    metadataNet.fileName = fileNameFolder;
+    metadataNet.selector = selectorCreateFolder;
+    metadataNet.selectorPost = selectorReadFolderForced;
+    metadataNet.serverUrl = _localServerUrl;
+    
+    [self addNetworkingQueue:metadataNet];
+    
+    [_hud visibleIndeterminateHud];
+}
+
+// MARK: - Table
 
 - (void)reloadTable
 {
@@ -400,9 +466,7 @@
     [self performSegueDirectoryWithControlPasscode:YES];
 }
 
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark == Navigation ==
-#pragma --------------------------------------------------------------------------------------------
+// MARK: - Navigation
 
 - (void)performSegueDirectoryWithControlPasscode:(BOOL)controlPasscode
 {
