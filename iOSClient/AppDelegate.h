@@ -171,9 +171,6 @@
 // initializations 
 - (void)applicationInitialized;
 
-// Task
-//- (void)changeTask:(CCMetadata *)metadata;
-
 - (void)messageNotification:(NSString *)title description:(NSString *)description visible:(BOOL)visible delay:(NSTimeInterval)delay type:(TWMessageBarMessageType)type;
 - (void)updateApplicationIconBadgeNumber;
 - (BOOL)handleShortCutItem:(UIApplicationShortcutItem *)shortcutItem;
