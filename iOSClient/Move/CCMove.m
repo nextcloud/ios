@@ -79,6 +79,7 @@
     self.tableView.tableFooterView = [UIView new];
 
     [self.cancel setTitle:NSLocalizedString(@"_cancel_", nil)];
+    [self.create setTitle:NSLocalizedString(@"_create_folder_", nil)];
 
     if (![self.localServerUrl length]) {
         
@@ -139,6 +140,10 @@
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
+- (IBAction)create:(UIBarButtonItem *)sender
+{
+    
+}
 
 // MARK: - BKPasscodeViewController
 

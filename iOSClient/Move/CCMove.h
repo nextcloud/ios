@@ -61,8 +61,9 @@
 @property (nonatomic, strong) UIColor *tintColor;
 @property (nonatomic, strong) UIColor *tintColorTitle;
 
-@property (nonatomic, weak) UIBarButtonItem *cancel;
-@property (nonatomic, weak) UIBarButtonItem *move;
+@property (nonatomic, weak) IBOutlet UIBarButtonItem *cancel;
+@property (nonatomic, weak) IBOutlet UIBarButtonItem *move;
+@property (nonatomic, weak) IBOutlet UIBarButtonItem *create;
 
 @end
 
