@@ -31,6 +31,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
     
     var metadata : CCMetadata?
     var recordsTableMetadata : [TableMetadata]?
+    var titleFolder : String?
     
     var activeAccount : String?
     var activeUrl : String?
@@ -77,6 +78,10 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
             if (localServerUrl == nil) {
             
                 localServerUrl = CCUtility.getHomeServerUrlActiveUrl(activeUrl!, typeCloud: typeCloud!)
+                
+            } else {
+                
+                self.navigationItem.title = titleFolder
             }
             
         } else {
@@ -231,6 +236,7 @@ extension DocumentPickerViewController: UITableViewDataSource {
         let nextViewController = self.storyboard?.instantiateViewController(withIdentifier: "DocumentPickerViewController") as! DocumentPickerViewController
         
         nextViewController.localServerUrl = CCUtility.stringAppendServerUrl(localServerUrl!, addServerUrl: recordTableMetadata!.fileName)
+        nextViewController.titleFolder = recordTableMetadata?.fileNamePrint
         
         self.navigationController?.pushViewController(nextViewController, animated: true)
         
