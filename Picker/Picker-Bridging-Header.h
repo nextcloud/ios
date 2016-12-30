@@ -7,8 +7,9 @@
 
 #import "TableAccount.h"
 #import "CCCoreData.h"
+#import "CCGlobal.h"
+
 
 #import "CCHud.h"
 #import "CCMove.h"
 #import "CCSection.h"
-#import "CCGlobal.h"

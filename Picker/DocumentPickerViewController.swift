@@ -95,6 +95,9 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         }
         
         CCNetworking.shared().settingDelegate(self)
+        
+        // COLOR_SEPARATOR_TABLE
+        self.tableView.separatorColor = UIColor(colorLiteralRed: 153.0/255.0, green: 153.0/255.0, blue: 153.0/255.0, alpha: 0.2)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -110,11 +113,14 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
     }
 }
 
-// MARK: - Class UITableViewCell
+// MARK: - UITableViewDelegate
 
-class recordMetadataCell: UITableViewCell {
-    
-    @IBOutlet weak var fileImageView: UIImageView!
+extension DocumentPickerViewController: UITableViewDelegate {
+
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        
+         return 60
+    }
 }
 
 // MARK: - UITableViewDataSource
@@ -125,10 +131,12 @@ extension DocumentPickerViewController: UITableViewDataSource {
         
         return recordsTableMetadata.count
     }
-    
+        
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! recordMetadataCell
+        
+        cell.separatorInset = UIEdgeInsetsMake(0, 60, 0, 0)
         
         let recordMetadata = recordsTableMetadata[(indexPath as NSIndexPath).row]
         let metadata = CCCoreData.insertEntity(in: recordMetadata)!
@@ -145,7 +153,18 @@ extension DocumentPickerViewController: UITableViewDataSource {
             cell.fileImageView.image = UIImage(named: metadata.iconName!)
         }
         
+        // File Name
+        cell.FileName.text = metadata.fileNamePrint!
+        
         return cell
     }
+}
+
+// MARK: - Class UITableViewCell
+
+class recordMetadataCell: UITableViewCell {
+    
+    @IBOutlet weak var fileImageView: UIImageView!
+    @IBOutlet weak var FileName : UILabel!
 }
 
