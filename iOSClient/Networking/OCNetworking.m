@@ -125,7 +125,7 @@
 
 - (void)poolNetworking
 {
-#ifndef SHARE_IN
+#ifndef EXTENSION
     // Animation network
     if (_activityIndicator) {
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -145,7 +145,7 @@
 
 - (void)complete
 {
-#ifndef SHARE_IN
+#ifndef EXTENSION
     // Animation network
     if (_activityIndicator) {
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
@@ -332,7 +332,7 @@
         // Check items > 0
         if ([items count] == 0) {
             
-#ifndef SHARE_IN
+#ifndef EXTENSION
             [app messageNotification:@"Server error" description:@"Read Folder WebDAV : [items NULL] please fix" visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeError];
 #endif
 
@@ -378,7 +378,7 @@
                 
                 // ----- BUG #942 ---------
                 if ([itemDto.etag length] == 0) {
-#ifndef SHARE_IN
+#ifndef EXTENSION
                     [app messageNotification:@"Server error" description:@"Metadata etag absent, record excluded, please fix" visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeError];
 #endif
                     continue;
@@ -655,7 +655,7 @@
         // BUG 1038
         if ([items count] == 0) {
        
-#ifndef SHARE_IN
+#ifndef EXTENSION
             [app messageNotification:@"Server error" description:@"Read File WebDAV : [items NULL] please fix" visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeError];
 #endif
         }
@@ -720,7 +720,7 @@
 
 - (NSMutableDictionary *)getShareID
 {
-#ifndef SHARE_IN
+#ifndef EXTENSION
     return app.sharesID;
 #endif
     return [NSMutableDictionary new];
@@ -846,7 +846,7 @@
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
-#ifndef SHARE_IN
+#ifndef EXTENSION
         [app messageNotification:@"_error_" description:[CCError manageErrorOC:response.statusCode error:error] visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeError];
 #endif
         
@@ -881,7 +881,7 @@
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
-#ifndef SHARE_IN
+#ifndef EXTENSION
         [app messageNotification:@"_error_" description:[CCError manageErrorOC:response.statusCode error:error] visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeError];
 #endif
         

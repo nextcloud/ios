@@ -41,7 +41,7 @@ extern NSString *const urlBaseUploadDB;
 
 extern NSString *const BKPasscodeKeychainServiceName;
 
-#ifndef SHARE_IN
+#ifndef EXTENSION
 
 //AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
 #define app ((AppDelegate *)[[UIApplication sharedApplication] delegate])

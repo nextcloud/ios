@@ -341,7 +341,7 @@
         });
     }
 
-#ifndef SHARE_IN
+#ifndef EXTENSION
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
         [app updateApplicationIconBadgeNumber];
     });
@@ -677,7 +677,7 @@
         
         if (_currentProgressMetadata) {
  
-#ifndef SHARE_IN
+#ifndef EXTENSION
             // Control Center
             [app.controlCenter progressTask:_currentProgressMetadata.fileID serverUrl:serverUrl cryptated:_currentProgressMetadata.cryptated progress:progress];
         
@@ -723,7 +723,7 @@
 
 - (void)downloadFileSuccessFailure:(NSString *)fileName fileID:(NSString *)fileID rev:(NSString *)rev date:(NSDate *)date serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorCode:(NSInteger)errorCode
 {
-#ifndef SHARE_IN
+#ifndef EXTENSION
     if (fileID)
         [app.listProgressMetadata removeObjectForKey:fileID];
 #endif
@@ -1224,7 +1224,7 @@
         
         NSLog(@"[LOG] Error reUploadBackground, file not found.");
         
-#ifndef SHARE_IN
+#ifndef EXTENSION
         UIAlertView * alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_error_", nil) message:NSLocalizedString(@"_no_reuploadfile_", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
         [alertView show];
 #endif
@@ -1392,7 +1392,7 @@
         
         if (_currentProgressMetadata) {
             
-#ifndef SHARE_IN
+#ifndef EXTENSION
             // Control Center
             [app.controlCenter progressTask:_currentProgressMetadata.fileID serverUrl:serverUrl cryptated:_currentProgressMetadata.cryptated progress:progress];
 #endif
@@ -1410,7 +1410,7 @@
     // ERRORE
     if (errorCode != 0) {
         
-#ifndef SHARE_IN
+#ifndef EXTENSION
         if (sessionID)
             [app.listProgressMetadata removeObjectForKey:sessionID];
 #endif
@@ -1464,7 +1464,7 @@
     // ALL TASK DONE (PLAIN/CRYPTO)
     if (metadata.sessionTaskIdentifier == taskIdentifierDone && metadata.sessionTaskIdentifierPlist == taskIdentifierDone) {
         
-#ifndef SHARE_IN
+#ifndef EXTENSION
         if (sessionID)
             [app.listProgressMetadata removeObjectForKey:sessionID];
 #endif
@@ -1720,7 +1720,7 @@
 
 - (void)readFileVerifyUpload:(NSString *)fileName fileNamePrint:(NSString *)fileNamePrint serverUrl:(NSString *)serverUrl
 {
-#ifndef SHARE_IN
+#ifndef EXTENSION
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:_activeAccount];
     
     metadataNet.action = actionReadFile;
@@ -1856,7 +1856,7 @@
     
     if (version == 1) {
         
-#ifdef SHARE_IN
+#ifdef EXTENSION
         MPOAuthCredentialConcreteStore *mpoAuth = [[[CCSharedDBSession sharedDBSession] dBSession] credentialStoreForUserId:_activeUID];
 #else
         MPOAuthCredentialConcreteStore *mpoAuth = [[DBSession sharedSession] credentialStoreForUserId:_activeUID];

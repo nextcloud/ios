@@ -23,7 +23,7 @@
 
 #import "CCMove.h"
 
-#ifndef SHARE_IN
+#ifndef EXTENSION
 #import "AppDelegate.h"
 #endif
 

@@ -225,7 +225,7 @@
     if (move)
         [[NSFileManager defaultManager] moveItemAtPath:fromPath toPath:toPath error:nil];
 
-#ifndef SHARE_IN
+#ifndef EXTENSION
     if (image && fileID)
         [app.icoImagesCache setObject:image forKey:fileID];
 #endif

@@ -4304,7 +4304,7 @@
 				GCC_PREFIX_HEADER = "$(SRCROOT)/iOSClient/CryptoCloud.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
-					"SHARE_IN=1",
+					"EXTENSION=1",
 					"NC=1",
 				);
 				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
@@ -4344,7 +4344,7 @@
 				GCC_PREFIX_HEADER = "$(SRCROOT)/iOSClient/CryptoCloud.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
-					"SHARE_IN=1",
+					"EXTENSION=1",
 					"NC=1",
 				);
 				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
@@ -4379,7 +4379,7 @@
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
 				GCC_PREFIX_HEADER = "$(SRCROOT)/iOSClient/CryptoCloud.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					"SHARE_IN=1",
+					"EXTENSION=1",
 					"DEBUG=1",
 					"NC=1",
 				);
@@ -4412,7 +4412,7 @@
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
 				GCC_PREFIX_HEADER = "$(SRCROOT)/iOSClient/CryptoCloud.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					"SHARE_IN=1",
+					"EXTENSION=1",
 					"NC=1",
 				);
 				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";

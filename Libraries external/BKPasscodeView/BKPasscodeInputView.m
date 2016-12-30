@@ -276,7 +276,7 @@
 
 - (CGFloat)labelPasscodeSpace
 {
-#ifdef SHARE_IN
+#ifdef EXTENSION
     return (self.frame.size.width < self.frame.size.height) ? kLabelPasscodeSpacePortrait : kLabelPasscodeSpaceLandscape;
 #else
     return UIInterfaceOrientationIsPortrait([[UIApplication sharedApplication] statusBarOrientation]) ? kLabelPasscodeSpacePortrait : kLabelPasscodeSpaceLandscape;
