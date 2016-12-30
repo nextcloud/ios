@@ -27,9 +27,10 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
     
     // MARK: - Properties
     
+    var provider : providerSession?
+    
     var metadata : CCMetadata?
     var recordsTableMetadata : [TableMetadata]?
-    let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: capabilitiesGroups)
     
     var activeAccount : String?
     var activeUrl : String?
@@ -60,11 +61,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
     
     override func viewDidLoad() {
         
-        let pathDB = dirGroup?.appendingPathComponent(appDatabase).appendingPathComponent("cryptocloud")
-        print(pathDB!)
-        
-        MagicalRecord.setupCoreDataStackWithAutoMigratingSqliteStore(at: pathDB!)
-        MagicalRecord.setLoggingLevel(MagicalRecordLoggingLevel.off)
+        provider = providerSession.sharedInstance
         
         if let record = CCCoreData.getActiveAccount() {
             
@@ -188,3 +185,26 @@ class recordMetadataCell: UITableViewCell {
     @IBOutlet weak var FileName : UILabel!
 }
 
+// MARK: - Class providerSession
+
+class providerSession {
+    
+    class var sharedInstance : providerSession {
+        
+        struct Static {
+            
+            static let instance = providerSession()
+        }
+        
+        return Static.instance
+    }
+    
+    private init() {
+    
+        let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: capabilitiesGroups)
+        let pathDB = dirGroup?.appendingPathComponent(appDatabase).appendingPathComponent("cryptocloud")
+        
+        MagicalRecord.setupCoreDataStackWithAutoMigratingSqliteStore(at: pathDB!)
+        MagicalRecord.setLoggingLevel(MagicalRecordLoggingLevel.off)
+    }
+}
