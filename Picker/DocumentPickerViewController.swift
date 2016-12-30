@@ -97,7 +97,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
             return
         }
         
-        // init Object
+        //  MARK: - init Object
         CCNetworking.shared().settingDelegate(self)
         hud = CCHud.init(view: self.navigationController?.view)
         
@@ -106,6 +106,8 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         
         readFolder()
     }
+    
+    //  MARK: - Read folder
     
     func readFolder() {
         
