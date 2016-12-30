@@ -121,8 +121,6 @@ class recordMetadataCell: UITableViewCell {
 
 extension DocumentPickerViewController: UITableViewDataSource {
     
-    // MARK: - View Life Cycle
-
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
         return recordsTableMetadata.count
@@ -133,19 +131,20 @@ extension DocumentPickerViewController: UITableViewDataSource {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! recordMetadataCell
         
         let recordMetadata = recordsTableMetadata[(indexPath as NSIndexPath).row]
+        let metadata = CCCoreData.insertEntity(in: recordMetadata)!
         
-        let filePath = directoryUser!+"/"+recordMetadata.fileID!+".ico"
+        // File Image View
+        let filePath = directoryUser!+"/"+metadata.fileID!+".ico"
         
         if (FileManager.default.fileExists(atPath: filePath)) {
             
-            cell.fileImageView.image = UIImage(contentsOfFile: directoryUser!+"/"+recordMetadata.fileID!+".ico")
+            cell.fileImageView.image = UIImage(contentsOfFile: filePath)
             
         } else {
             
+            cell.fileImageView.image = UIImage(named: metadata.iconName!)
         }
         
-        //let note = notes[(indexPath as NSIndexPath).row]
-        //cell.textLabel?.text = record.fileName
         return cell
     }
 }

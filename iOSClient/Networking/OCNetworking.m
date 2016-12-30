@@ -329,6 +329,24 @@
         
         NSMutableArray *metadatas = [[NSMutableArray alloc] init];
         
+        // Check items > 0
+        if ([items count] == 0) {
+            
+#ifndef SHARE_IN
+            [app messageNotification:@"Server error" description:@"Read Folder WebDAV : [items NULL] please fix" visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeError];
+#endif
+
+            dispatch_async(dispatch_get_main_queue(), ^{
+                
+                if ([self.delegate respondsToSelector:@selector(readFolderSuccess:permissions:rev:metadatas:)])
+                    [self.delegate readFolderSuccess:_metadataNet permissions:@"" rev:@"" metadatas:metadatas];
+            });
+
+            [self complete];
+            
+            return;
+        }
+
         // directory [0]
         OCFileDto *itemDtoDirectory = [items objectAtIndex:0];
         NSString *permissions = itemDtoDirectory.permissions;
@@ -638,7 +656,7 @@
         if ([items count] == 0) {
        
 #ifndef SHARE_IN
-            [app messageNotification:@"Server error" description:@"readFile, items NULL, please fix" visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeError];
+            [app messageNotification:@"Server error" description:@"Read File WebDAV : [items NULL] please fix" visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeError];
 #endif
         }
         
