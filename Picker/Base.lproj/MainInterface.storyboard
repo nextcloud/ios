@@ -13,7 +13,7 @@
         <!--Document Picker View Controller-->
         <scene sceneID="Q8I-MS-tKG">
             <objects>
-                <viewController id="J6p-g8-CHO" customClass="DocumentPickerViewController" customModule="Picker" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="DocumentPickerViewController" id="J6p-g8-CHO" customClass="DocumentPickerViewController" customModule="Picker" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="hST-wJ-eYy"/>
                         <viewControllerLayoutGuide type="bottom" id="UQD-kz-Mfv"/>

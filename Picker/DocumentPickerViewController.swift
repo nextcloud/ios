@@ -28,7 +28,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
     // MARK: - Properties
     
     var metadata : CCMetadata?
-    var recordsTableMetadata = [TableMetadata]()
+    var recordsTableMetadata : [TableMetadata]?
     let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: capabilitiesGroups)
     
     var activeAccount : String?
@@ -73,8 +73,12 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
             activeUrl = record.url!
             activeUser = record.user!
             typeCloud = record.typeCloud!
-            localServerUrl = CCUtility.getHomeServerUrlActiveUrl(activeUrl!, typeCloud: typeCloud!)
             directoryUser = CCUtility.getDirectoryActiveUser(activeUser!, activeUrl: activeUrl!)
+            
+            if (localServerUrl == nil) {
+            
+                localServerUrl = CCUtility.getHomeServerUrlActiveUrl(activeUrl!, typeCloud: typeCloud!)
+            }
             
         } else {
             
@@ -107,8 +111,8 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         let directoryID : String? = CCCoreData.getDirectoryID(fromServerUrl: localServerUrl!, activeAccount: activeAccount!)
         let predicate = NSPredicate(format: "(account == %@) AND (directoryID == %@)", activeAccount!, directoryID!)
         
-        recordsTableMetadata = CCCoreData.getTableMetadata(with: predicate, fieldOrder: CCUtility.getOrderSettings()!, ascending: CCUtility.getAscendingSettings()) as! [TableMetadata]
-        
+        recordsTableMetadata = CCCoreData.getTableMetadata(with: predicate, fieldOrder: CCUtility.getOrderSettings()!, ascending: CCUtility.getAscendingSettings()) as? [TableMetadata]
+                
         tableView.reloadData()
     }
 }
@@ -129,7 +133,11 @@ extension DocumentPickerViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-        return recordsTableMetadata.count
+        if (recordsTableMetadata == nil) {
+            return 0
+        } else {
+            return recordsTableMetadata!.count
+        }
     }
         
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -138,8 +146,8 @@ extension DocumentPickerViewController: UITableViewDataSource {
         
         cell.separatorInset = UIEdgeInsetsMake(0, 60, 0, 0)
         
-        let recordMetadata = recordsTableMetadata[(indexPath as NSIndexPath).row]
-        let metadata = CCCoreData.insertEntity(in: recordMetadata)!
+        let recordTableMetadata = recordsTableMetadata?[(indexPath as NSIndexPath).row]
+        let metadata = CCCoreData.insertEntity(in: recordTableMetadata)!
         
         // File Image View
         let filePath = directoryUser!+"/"+metadata.fileID!+".ico"
@@ -157,6 +165,18 @@ extension DocumentPickerViewController: UITableViewDataSource {
         cell.FileName.text = metadata.fileNamePrint!
         
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        let recordTableMetadata = recordsTableMetadata?[(indexPath as NSIndexPath).row]
+        
+        let nextViewController = self.storyboard?.instantiateViewController(withIdentifier: "DocumentPickerViewController") as! DocumentPickerViewController
+        
+        nextViewController.localServerUrl = CCUtility.stringAppendServerUrl(localServerUrl!, addServerUrl: recordTableMetadata!.fileName)
+        
+        self.navigationController?.pushViewController(nextViewController, animated: true)
+        
     }
 }
 
