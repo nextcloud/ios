@@ -23,7 +23,7 @@
 
 import UIKit
 
-class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCNetworkingDelegate {
+class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCNetworkingDelegate, OCNetworkingDelegate {
     
     // MARK: - Properties
     
@@ -52,6 +52,8 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         
         return queue
     }()
+    
+    var hud : CCHud!
     
     // MARK: - IBOutlets
     
@@ -95,23 +97,79 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
             return
         }
         
+        // init Object
         CCNetworking.shared().settingDelegate(self)
+        hud = CCHud.init(view: self.navigationController?.view)
         
         // COLOR_SEPARATOR_TABLE
         self.tableView.separatorColor = UIColor(colorLiteralRed: 153.0/255.0, green: 153.0/255.0, blue: 153.0/255.0, alpha: 0.2)
+        
+        readFolder()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
+    func readFolder() {
         
-        super.viewWillAppear(animated)
+        let metadataNet = CCMetadataNet()
         
-        let directoryID : String? = CCCoreData.getDirectoryID(fromServerUrl: localServerUrl!, activeAccount: activeAccount!)
-        let predicate = NSPredicate(format: "(account == %@) AND (directoryID == %@)", activeAccount!, directoryID!)
+        metadataNet.action = actionReadFolder
+        metadataNet.serverUrl = self.localServerUrl;
+        metadataNet.selector = selectorReadFolder;
+        metadataNet.date = nil;
         
-        recordsTableMetadata = CCCoreData.getTableMetadata(with: predicate, fieldOrder: CCUtility.getOrderSettings()!, ascending: CCUtility.getAscendingSettings()) as? [TableMetadata]
-                
-        tableView.reloadData()
+        let oc : OCnetworking = OCnetworking.init(delegate: self, metadataNet: metadataNet, withUser:activeUser , withPassword: activePassword, withUrl: activeUrl, withTypeCloud: typeCloud, oneByOne: true, activityIndicator: false)
+        networkingOperationQueue.addOperation(oc)
+        
+        hud.visibleIndeterminateHud()
     }
+    
+    func readFolderFailure(_ metadataNet: CCMetadataNet!, message: String!, errorCode: Int) {
+        
+        hud.hideHud()
+        
+        print ("error")
+    }
+    
+    func readFolderSuccess(_ metadataNet: CCMetadataNet!, permissions: String!, rev: String!, metadatas: [Any]!) {
+        
+        // remove all record
+        let predicate = NSPredicate(format: "(account == %@) AND (directoryID == %@) AND ((session == NULL) OR (session == ''))", activeAccount!, metadataNet.directoryID)
+        CCCoreData.deleteMetadata(with: predicate)
+        
+        for metadata in metadatas as! [CCMetadata] {
+            
+            // do not insert crypto file
+            if CCUtility.isCryptoString(metadata.fileName) {
+                continue
+            }
+            
+            // plist + crypto = completed ?
+            if CCUtility.isCryptoPlistString(metadata.fileName) && metadata.directory == false {
+                
+                var isCryptoComplete = false
+                
+                for completeMetadata in metadatas as! [CCMetadata] {
+                    if completeMetadata.fileName == CCUtility.trasformedFileNamePlist(inCrypto: metadata.fileName) {
+                        isCryptoComplete = true
+                    }
+                }
+
+                if isCryptoComplete == false {
+                    continue
+                }
+            }
+            
+            // Add record
+            CCCoreData.add(metadata, activeAccount: activeAccount, activeUrl: activeUrl, typeCloud: typeCloud, context: nil)
+        }
+        
+        // Get Datasource
+        recordsTableMetadata = CCCoreData.getTableMetadata(with: NSPredicate(format: "(account == %@) AND (directoryID == %@)", activeAccount!, metadataNet.directoryID), fieldOrder: CCUtility.getOrderSettings()!, ascending: CCUtility.getAscendingSettings()) as? [TableMetadata]
+        
+        tableView.reloadData()
+        
+        hud.hideHud()
+    }
+    
 }
 
 // MARK: - UITableViewDelegate
