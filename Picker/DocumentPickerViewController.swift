@@ -73,11 +73,11 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
             activeUrl = record.url!
             activeUser = record.user!
             typeCloud = record.typeCloud!
-            directoryUser = CCUtility.getDirectoryActiveUser(activeUser!, activeUrl: activeUrl!)
+            directoryUser = CCUtility.getDirectoryActiveUser(activeUser, activeUrl: activeUrl)
             
             if (localServerUrl == nil) {
             
-                localServerUrl = CCUtility.getHomeServerUrlActiveUrl(activeUrl!, typeCloud: typeCloud!)
+                localServerUrl = CCUtility.getHomeServerUrlActiveUrl(activeUrl, typeCloud: typeCloud)
                 
             } else {
                 
@@ -120,9 +120,8 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         
         metadataNet.account = activeAccount
         metadataNet.action = actionReadFolder
-        metadataNet.serverUrl = self.localServerUrl;
-        metadataNet.selector = selectorReadFolder;
-        metadataNet.date = nil;
+        metadataNet.serverUrl = self.localServerUrl
+        metadataNet.selector = selectorReadFolder
         
         let ocNetworking : OCnetworking = OCnetworking.init(delegate: self, metadataNet: metadataNet, withUser: activeUser, withPassword: activePassword, withUrl: activeUrl, withTypeCloud: typeCloud, oneByOne: true, activityIndicator: false)
         networkingOperationQueue.addOperation(ocNetworking)
@@ -134,7 +133,12 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         
         hud.hideHud()
         
-        print ("error")
+        let alert = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default) { action in
+            self.dismissGrantingAccess(to: nil)
+        })
+        
+        self.present(alert, animated: true, completion: nil)
     }
     
     func readFolderSuccess(_ metadataNet: CCMetadataNet!, permissions: String!, rev: String!, metadatas: [Any]!) {
@@ -171,13 +175,12 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         }
         
         // Get Datasource
-        recordsTableMetadata = CCCoreData.getTableMetadata(with: NSPredicate(format: "(account == %@) AND (directoryID == %@)", activeAccount!, metadataNet.directoryID), fieldOrder: CCUtility.getOrderSettings()!, ascending: CCUtility.getAscendingSettings()) as? [TableMetadata]
+        recordsTableMetadata = CCCoreData.getTableMetadata(with: NSPredicate(format: "(account == %@) AND (directoryID == %@)", activeAccount!, metadataNet.directoryID), fieldOrder: CCUtility.getOrderSettings(), ascending: CCUtility.getAscendingSettings()) as? [TableMetadata]
         
         tableView.reloadData()
         
         hud.hideHud()
     }
-    
 }
 
 // MARK: - UITableViewDelegate
@@ -213,7 +216,7 @@ extension DocumentPickerViewController: UITableViewDataSource {
         let metadata = CCCoreData.insertEntity(in: recordTableMetadata)!
         
         // File Image View
-        let filePath = directoryUser!+"/"+metadata.fileID!+".ico"
+        let filePath = directoryUser!+"/"+metadata.fileID+".ico"
         
         if (FileManager.default.fileExists(atPath: filePath)) {
             
@@ -225,7 +228,7 @@ extension DocumentPickerViewController: UITableViewDataSource {
         }
         
         // File Name
-        cell.FileName.text = metadata.fileNamePrint!
+        cell.FileName.text = metadata.fileNamePrint
         
         return cell
     }
