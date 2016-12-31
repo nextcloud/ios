@@ -118,13 +118,14 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         
         let metadataNet = CCMetadataNet()
         
+        metadataNet.account = activeAccount
         metadataNet.action = actionReadFolder
         metadataNet.serverUrl = self.localServerUrl;
         metadataNet.selector = selectorReadFolder;
         metadataNet.date = nil;
         
-        let oc : OCnetworking = OCnetworking.init(delegate: self, metadataNet: metadataNet, withUser:activeUser , withPassword: activePassword, withUrl: activeUrl, withTypeCloud: typeCloud, oneByOne: true, activityIndicator: false)
-        networkingOperationQueue.addOperation(oc)
+        let ocNetworking : OCnetworking = OCnetworking.init(delegate: self, metadataNet: metadataNet, withUser: activeUser, withPassword: activePassword, withUrl: activeUrl, withTypeCloud: typeCloud, oneByOne: true, activityIndicator: false)
+        networkingOperationQueue.addOperation(ocNetworking)
         
         hud.visibleIndeterminateHud()
     }
