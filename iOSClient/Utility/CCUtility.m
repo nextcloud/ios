@@ -634,6 +634,15 @@
     return [pather substringToIndex: [pather length] - 1];
 }
 
++ (NSString *)returnFileNamePathFromFileName:(NSString *)metadataFileName serverUrl:(NSString *)serverUrl activeUrl:(NSString *)activeUrl typeCloud:(NSString *)typeCloud
+{
+    NSString *fileName = [NSString stringWithFormat:@"%@/%@", [serverUrl stringByReplacingOccurrencesOfString:[CCUtility getHomeServerUrlActiveUrl:activeUrl typeCloud:typeCloud] withString:@""], metadataFileName];
+    
+    if ([fileName hasPrefix:@"/"]) fileName = [fileName substringFromIndex:1];
+    
+    return fileName;
+}
+
 + (void)sendMailEncryptPass:(NSString *)recipient validateEmail:(BOOL)validateEmail form:(id)form
 {
     BOOL error = NO;

@@ -1171,7 +1171,7 @@
     /*** NEXTCLOUD OWNCLOUD ***/
     
     if ([metadata.typeCloud isEqualToString:typeCloudOwnCloud] || [metadata.typeCloud isEqualToString:typeCloudNextcloud])
-        metadataNet.fileName = [self returnFileNamePathFromFileName:metadata.fileName serverUrl:_localServerUrl];
+        metadataNet.fileName = [CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:_localServerUrl activeUrl:app.activeUrl typeCloud:app.typeCloud];
     
     metadataNet.fileNameLocal = metadata.fileID;
     metadataNet.fileNamePrint = metadata.fileNamePrint;
@@ -2890,7 +2890,7 @@
         
         metadataNet.action = actionShare;
         metadataNet.fileID = metadata.fileID;
-        metadataNet.fileName = [self returnFileNamePathFromFileName:metadata.fileName serverUrl:serverUrl];
+        metadataNet.fileName = [CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:serverUrl activeUrl:app.activeUrl typeCloud:app.typeCloud];
         metadataNet.fileNamePrint = metadata.fileNamePrint;
         metadataNet.password = password;
         metadataNet.selector = selectorShare;
@@ -3033,7 +3033,7 @@
     metadataNet.action = actionShareWith;
     metadataNet.fileID = metadata.fileID;
     metadataNet.directoryID = directoryID;
-    metadataNet.fileName = [self returnFileNamePathFromFileName:metadata.fileName serverUrl:serverUrl];
+    metadataNet.fileName = [CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:serverUrl activeUrl:app.activeUrl typeCloud:app.typeCloud];
     metadataNet.fileNamePrint = metadata.fileNamePrint;
     metadataNet.serverUrl = serverUrl;
     metadataNet.selector = selectorShare;
@@ -3089,15 +3089,6 @@
         [vc setModalPresentationStyle:UIModalPresentationFormSheet];
         [self presentViewController:vc animated:YES completion:nil];
     }
-}
-
-- (NSString *)returnFileNamePathFromFileName:(NSString *)metadataFileName serverUrl:(NSString *)serverUrl
-{
-    NSString *fileName = [NSString stringWithFormat:@"%@/%@", [serverUrl stringByReplacingOccurrencesOfString:[CCUtility getHomeServerUrlActiveUrl:app.activeUrl typeCloud:app.typeCloud] withString:@""], metadataFileName];
-    
-    if ([fileName hasPrefix:@"/"]) fileName = [fileName substringFromIndex:1];
-    
-    return fileName;
 }
 
 #pragma --------------------------------------------------------------------------------------------

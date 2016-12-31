@@ -145,10 +145,13 @@
 + (void)removeAllFileID_UPLOAD_ActiveUser:(NSString *)activeUser activeUrl:(NSString *)activeUrl;
 
 + (NSString *)deletingLastPathComponentFromServerUrl:(NSString *)serverUrl;
++ (NSString *)returnFileNamePathFromFileName:(NSString *)metadataFileName serverUrl:(NSString *)serverUrl activeUrl:(NSString *)activeUrl typeCloud:(NSString *)typeCloud;
 
 + (void)sendMailEncryptPass:(NSString *)recipient validateEmail:(BOOL)validateEmail form:(id)form;
 
 + (NSString *)localizableBrand:(NSString *)localize table:(NSString *)table;
+
+
 
 // ===== CCMetadata =====
 

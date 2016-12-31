@@ -116,9 +116,8 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
     
     func readFolder() {
         
-        let metadataNet = CCMetadataNet()
-        
-        metadataNet.account = activeAccount
+        let metadataNet = CCMetadataNet.init(account: activeAccount)!
+
         metadataNet.action = actionReadFolder
         metadataNet.serverUrl = self.localServerUrl
         metadataNet.selector = selectorReadFolder
@@ -181,6 +180,33 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         
         hud.hideHud()
     }
+    
+    //  MARK: - Download Thumbnail
+
+    func downloadThumbnail(_ metadata : CCMetadata) {
+    
+        let metadataNet = CCMetadataNet.init(account: activeAccount)!
+        
+        metadataNet.action = actionDownloadThumbnail
+        metadataNet.fileID = metadata.fileID
+        
+        //let fileName =
+        
+        
+        
+
+
+        metadataNet.fileNameLocal = metadata.fileID;
+        metadataNet.fileNamePrint = metadata.fileNamePrint;
+        metadataNet.options = "m";
+        metadataNet.selector = selectorDownloadThumbnail;
+        metadataNet.serverUrl = self.localServerUrl
+
+        let ocNetworking : OCnetworking = OCnetworking.init(delegate: self, metadataNet: metadataNet, withUser: activeUser, withPassword: activePassword, withUrl: activeUrl, withTypeCloud: typeCloud, oneByOne: true, activityIndicator: false)
+        networkingOperationQueue.addOperation(ocNetworking)
+        
+        hud.visibleIndeterminateHud()
+    }
 }
 
 // MARK: - UITableViewDelegate
@@ -216,7 +242,7 @@ extension DocumentPickerViewController: UITableViewDataSource {
         let metadata = CCCoreData.insertEntity(in: recordTableMetadata)!
         
         // File Image View
-        let filePath = directoryUser!+"/"+metadata.fileID+".ico"
+        let filePath = directoryUser! + "/" + metadata.fileID + ".ico"
         
         if (FileManager.default.fileExists(atPath: filePath)) {
             
