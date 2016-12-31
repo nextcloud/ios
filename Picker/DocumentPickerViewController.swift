@@ -144,7 +144,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
     func readFolderSuccess(_ metadataNet: CCMetadataNet!, permissions: String!, rev: String!, metadatas: [Any]!) {
         
         // remove all record
-        let predicate = NSPredicate(format: "(account == %@) AND (directoryID == %@) AND ((session == NULL) OR (session == ''))", activeAccount!, metadataNet.directoryID)
+        let predicate = NSPredicate(format: "(account == '\(activeAccount!)') AND (directoryID == '\(metadataNet.directoryID!)') AND ((session == NULL) OR (session == ''))")
         CCCoreData.deleteMetadata(with: predicate)
         
         for metadata in metadatas as! [CCMetadata] {
@@ -175,7 +175,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         }
         
         // Get Datasource
-        recordsTableMetadata = CCCoreData.getTableMetadata(with: NSPredicate(format: "(account == %@) AND (directoryID == %@)", activeAccount!, metadataNet.directoryID), fieldOrder: CCUtility.getOrderSettings(), ascending: CCUtility.getAscendingSettings()) as? [TableMetadata]
+        recordsTableMetadata = CCCoreData.getTableMetadata(with: NSPredicate(format: "(account == '\(activeAccount!)') AND (directoryID == '\(metadataNet.directoryID!)')"), fieldOrder: CCUtility.getOrderSettings(), ascending: CCUtility.getAscendingSettings()) as? [TableMetadata]
         
         tableView.reloadData()
         
