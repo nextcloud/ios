@@ -119,7 +119,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         let metadataNet = CCMetadataNet.init(account: activeAccount)!
 
         metadataNet.action = actionReadFolder
-        metadataNet.serverUrl = self.localServerUrl
+        metadataNet.serverUrl = localServerUrl
         metadataNet.selector = selectorReadFolder
         
         let ocNetworking : OCnetworking = OCnetworking.init(delegate: self, metadataNet: metadataNet, withUser: activeUser, withPassword: activePassword, withUrl: activeUrl, withTypeCloud: typeCloud, oneByOne: true, activityIndicator: false)
@@ -189,18 +189,12 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         
         metadataNet.action = actionDownloadThumbnail
         metadataNet.fileID = metadata.fileID
-        
-        //let fileName =
-        
-        
-        
-
-
+        metadataNet.fileName = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: localServerUrl, activeUrl: activeUrl, typeCloud: typeCloud)
         metadataNet.fileNameLocal = metadata.fileID;
         metadataNet.fileNamePrint = metadata.fileNamePrint;
         metadataNet.options = "m";
         metadataNet.selector = selectorDownloadThumbnail;
-        metadataNet.serverUrl = self.localServerUrl
+        metadataNet.serverUrl = localServerUrl
 
         let ocNetworking : OCnetworking = OCnetworking.init(delegate: self, metadataNet: metadataNet, withUser: activeUser, withPassword: activePassword, withUrl: activeUrl, withTypeCloud: typeCloud, oneByOne: true, activityIndicator: false)
         networkingOperationQueue.addOperation(ocNetworking)
