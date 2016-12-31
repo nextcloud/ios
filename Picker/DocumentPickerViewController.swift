@@ -48,7 +48,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
     lazy var networkingOperationQueue : OperationQueue = {
         
         var queue = OperationQueue()
-        queue.name = "it.twsweb.cryptocloud.queue"
+        queue.name = netQueueName
         queue.maxConcurrentOperationCount = 1
         
         return queue

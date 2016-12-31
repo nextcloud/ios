@@ -119,7 +119,7 @@
     _hud = [[CCHud alloc] initWithView:self.navigationController.view];
     
     _networkingOperationQueue = [[NSOperationQueue alloc] init];
-    _networkingOperationQueue.name = @"it.twsweb.cryptocloud.queue";
+    _networkingOperationQueue.name = netQueueName;
     _networkingOperationQueue.maxConcurrentOperationCount = 1;
     
     [[CCNetworking sharedNetworking] settingDelegate:self];
