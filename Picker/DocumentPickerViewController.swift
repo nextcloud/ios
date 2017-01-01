@@ -172,6 +172,24 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
             
             // Add record
             CCCoreData.add(metadata, activeAccount: activeAccount, activeUrl: activeUrl, typeCloud: typeCloud, context: nil)
+            
+            // if plist do not exists, download it
+            if CCUtility.isCryptoPlistString(metadata.fileName) && FileManager.default.fileExists(atPath: "\(directoryUser!)/\(metadata.fileName!)") == false {
+                
+                let metadataNet = CCMetadataNet.init(account: activeAccount)!
+                
+                metadataNet.action = actionDownloadFile
+                metadataNet.metadata = metadata
+                metadataNet.downloadData = false
+                metadataNet.downloadPlist = true
+                metadataNet.selector = selectorLoadPlist
+                metadataNet.serverUrl = localServerUrl
+                metadataNet.session = download_session_foreground
+                metadataNet.taskStatus = Int(taskStatusResume)
+                
+                let ocNetworking : OCnetworking = OCnetworking.init(delegate: self, metadataNet: metadataNet, withUser: activeUser, withPassword: activePassword, withUrl: activeUrl, withTypeCloud: typeCloud, oneByOne: true, activityIndicator: false)
+                networkingOperationQueue.addOperation(ocNetworking)
+            }
         }
         
         // Get Datasource
@@ -182,6 +200,24 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         hud.hideHud()
     }
     
+    //  MARK: - Download
+    
+    func downloadFileFailure(_ fileID: String!, serverUrl: String!, selector: String!, message: String!, errorCode: Int) {
+        
+        NSLog("[LOG] Download Error \(fileID) \(message) (error \(errorCode))");
+    }
+
+    func downloadFileSuccess(_ fileID: String!, serverUrl: String!, selector: String!, selectorPost: String!) {
+        
+        if selector == selectorLoadPlist {
+            
+            let metadata = CCCoreData.getMetadataWithPreficate(NSPredicate(format: "(account == '\(activeAccount!)') AND (fileID == '\(fileID!)')"), context: nil)
+            CCCoreData.downloadFilePlist(metadata, activeAccount: activeAccount, activeUrl: activeUrl, typeCloud: typeCloud, directoryUser: directoryUser)
+            
+            tableView.reloadData()
+        }
+    }
+ 
     //  MARK: - Download Thumbnail
 
     func downloadThumbnailFailure(_ metadataNet: CCMetadataNet!, message: String!, errorCode: Int) {
