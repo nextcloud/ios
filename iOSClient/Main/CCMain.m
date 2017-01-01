@@ -5438,7 +5438,8 @@
     UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
     
     // se non può essere selezionata deseleziona
-    if ([cell isEditing] == NO) [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    if ([cell isEditing] == NO)
+        [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
     // se siamo in modalità editing impostiamo il titolo dei selezioati e usciamo subito
     if (self.tableView.editing) {
