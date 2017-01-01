@@ -44,12 +44,13 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
     var serverUrl : String?
     
     var localServerUrl : String?
+    var thumbnailInLoading = [String: IndexPath]()
     
     lazy var networkingOperationQueue : OperationQueue = {
         
         var queue = OperationQueue()
         queue.name = netQueueName
-        queue.maxConcurrentOperationCount = 1
+        queue.maxConcurrentOperationCount = 10
         
         return queue
     }()
@@ -183,6 +184,26 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
     
     //  MARK: - Download Thumbnail
 
+    func downloadThumbnailFailure(_ metadataNet: CCMetadataNet!, message: String!, errorCode: Int) {
+        
+        NSLog("[LOG] Thumbnail Error \(metadataNet.fileName) \(message) (error \(errorCode))");
+    }
+    
+    func downloadThumbnailSuccess(_ metadataNet: CCMetadataNet!) {
+        
+        if let indexPath = thumbnailInLoading[metadataNet.fileID] {
+
+            let path = "\(directoryUser!)/\(metadataNet.fileID!).ico"
+            
+            if FileManager.default.fileExists(atPath: path) {
+                
+                if let cell = tableView.cellForRow(at: indexPath) as? recordMetadataCell {
+                    cell.fileImageView.image = UIImage(contentsOfFile: path)
+                }
+            }
+        }
+    }
+    
     func downloadThumbnail(_ metadata : CCMetadata) {
     
         let metadataNet = CCMetadataNet.init(account: activeAccount)!
@@ -198,8 +219,6 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
 
         let ocNetworking : OCnetworking = OCnetworking.init(delegate: self, metadataNet: metadataNet, withUser: activeUser, withPassword: activePassword, withUrl: activeUrl, withTypeCloud: typeCloud, oneByOne: true, activityIndicator: false)
         networkingOperationQueue.addOperation(ocNetworking)
-        
-        hud.visibleIndeterminateHud()
     }
 }
 
@@ -245,6 +264,11 @@ extension DocumentPickerViewController: UITableViewDataSource {
         } else {
             
             cell.fileImageView.image = UIImage(named: metadata.iconName!)
+            
+            if metadata.thumbnailExists && metadata.directory == false {
+                downloadThumbnail(metadata)
+                thumbnailInLoading[metadata.fileID] = indexPath
+            }
         }
         
         // File Name
