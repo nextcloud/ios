@@ -316,7 +316,7 @@ extension DocumentPickerViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         let recordTableMetadata = recordsTableMetadata?[(indexPath as NSIndexPath).row]
-        var dir : String? = recordTableMetadata?.fileName
+        var dir : String! = recordTableMetadata!.fileName
 
         let nextViewController = self.storyboard?.instantiateViewController(withIdentifier: "DocumentPickerViewController") as! DocumentPickerViewController
         
