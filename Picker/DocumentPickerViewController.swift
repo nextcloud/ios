@@ -316,14 +316,18 @@ extension DocumentPickerViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         let recordTableMetadata = recordsTableMetadata?[(indexPath as NSIndexPath).row]
-        
+        var dir : String? = recordTableMetadata?.fileName
+
         let nextViewController = self.storyboard?.instantiateViewController(withIdentifier: "DocumentPickerViewController") as! DocumentPickerViewController
         
-        nextViewController.localServerUrl = CCUtility.stringAppendServerUrl(localServerUrl!, addServerUrl: recordTableMetadata!.fileName)
+        if recordTableMetadata?.cryptated == 1 {
+            dir = CCUtility.trasformedFileNamePlist(inCrypto: recordTableMetadata!.fileName)
+        }
+        
+        nextViewController.localServerUrl = CCUtility.stringAppendServerUrl(localServerUrl!, addServerUrl: dir)
         nextViewController.titleFolder = recordTableMetadata?.fileNamePrint
         
         self.navigationController?.pushViewController(nextViewController, animated: true)
-        
     }
 }
 
