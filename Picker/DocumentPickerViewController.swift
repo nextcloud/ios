@@ -122,11 +122,11 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         // COLOR_SEPARATOR_TABLE
         self.tableView.separatorColor = UIColor(colorLiteralRed: 153.0/255.0, green: 153.0/255.0, blue: 153.0/255.0, alpha: 0.2)
         
-        // (save) type of presentation -> pass variable for pushViewController
-        if self.mode == nil {
-            self.mode = documentPickerMode
+        // (save) mode of presentation -> pass variable for pushViewController
+        if mode == nil {
+            mode = documentPickerMode
         } else {
-            prepareForPresentation(in: self.mode!)
+            prepareForPresentation(in: mode!)
         }
         
         readFolder()
@@ -204,7 +204,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
             }
             
             // Only Directory ?
-            if (documentPickerMode == .moveToService || documentPickerMode == .exportToService) && metadata.directory == false {
+            if (mode == .moveToService || mode == .exportToService) && metadata.directory == false {
                 
                 continue
             }
@@ -402,7 +402,7 @@ extension DocumentPickerViewController {
             return
         }
         
-        switch documentPickerMode {
+        switch mode! {
             
         case .moveToService, .exportToService:
             
