@@ -36,7 +36,8 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         return fileCoordinator
         
     }()
-    
+    var mode : UIDocumentPickerMode?
+
     var metadata : CCMetadata?
     var recordsTableMetadata : [TableMetadata]?
     var titleFolder : String?
@@ -120,6 +121,13 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         
         // COLOR_SEPARATOR_TABLE
         self.tableView.separatorColor = UIColor(colorLiteralRed: 153.0/255.0, green: 153.0/255.0, blue: 153.0/255.0, alpha: 0.2)
+        
+        // (save) type of presentation -> pass variable for pushViewController
+        if self.mode == nil {
+            self.mode = documentPickerMode
+        } else {
+            prepareForPresentation(in: self.mode!)
+        }
         
         readFolder()
     }
@@ -340,11 +348,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         
         hud.hideHud()
         
-        //let metadata = CCCoreData.getMetadataWithPreficate(NSPredicate(format: "(account == '\(activeAccount!)') AND (fileID == '\(fileID!)')"), context: nil)
-
-        let destinationURL = URL(string: "file://\(directoryUser!)/\(fileID!)".addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!)
-        
-        dismissGrantingAccess(to: destinationURL)
+        dismissGrantingAccess(to: originalURL)
     }
     
     //  MARK: - Download Thumbnail
@@ -557,6 +561,7 @@ extension DocumentPickerViewController: UITableViewDataSource {
                 dir = CCUtility.trasformedFileNamePlist(inCrypto: recordTableMetadata!.fileName)
             }
         
+            nextViewController.mode = self.mode
             nextViewController.localServerUrl = CCUtility.stringAppendServerUrl(localServerUrl!, addServerUrl: dir)
             nextViewController.titleFolder = recordTableMetadata?.fileNamePrint
         
