@@ -113,6 +113,26 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         readFolder()
     }
     
+    // MARK: - Overridden Instance Methods
+    override func prepareForPresentation(in mode: UIDocumentPickerMode) {
+        
+        switch mode {
+        case .exportToService:
+            //Show confirmation button
+            print("Document Picker Mode : exportToService")
+        case .moveToService:
+            //Show confirmation button
+            print("Document Picker Mode : moveToService")
+        case .open:
+            //Show file list
+            print("Document Picker Mode : open")
+        case .import:
+            //Show file list
+            print("Document Picker Mode : import")
+        }
+    }
+
+    
     //  MARK: - Read folder
     
     func readFolder() {
@@ -240,30 +260,30 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         
         switch selector {
             
-            case selectorLoadFileView :
+        case selectorLoadFileView :
                 
-                do {
+            do {
+                
+                try FileManager.default.moveItem(atPath: "\(directoryUser!)/\(fileID!)", toPath: "\(directoryUser!)/\(metadata!.fileNamePrint!)")
                     
-                    try FileManager.default.moveItem(atPath: "\(directoryUser!)/\(fileID!)", toPath: "\(directoryUser!)/\(metadata!.fileNamePrint!)")
-                    
-                } catch let error as NSError {
+            } catch let error as NSError {
         
-                    print(error)
-                }
+                print(error)
+            }
                 
-                let url = URL(string: "file://\(directoryUser!)/\(metadata!.fileNamePrint!)".addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!)
-                self.dismissGrantingAccess(to: url)
-                
-                break
+            let url = URL(string: "file://\(directoryUser!)/\(metadata!.fileNamePrint!)".addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!)
+            self.dismissGrantingAccess(to: url)
             
-            case selectorLoadPlist :
+        case selectorLoadPlist :
             
-                CCCoreData.downloadFilePlist(metadata, activeAccount: activeAccount, activeUrl: activeUrl, typeCloud: typeCloud, directoryUser: directoryUser)
-                tableView.reloadData()
+            CCCoreData.downloadFilePlist(metadata, activeAccount: activeAccount, activeUrl: activeUrl, typeCloud: typeCloud, directoryUser: directoryUser)
+            tableView.reloadData()
             
-            default :
-
-                break
+        default :
+            
+            print("selector : \(selector!)")
+            tableView.reloadData()
+            
         }
     }
  
