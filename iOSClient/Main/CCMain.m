@@ -1100,10 +1100,10 @@
     if ([app.typeCloud isEqualToString:typeCloudOwnCloud] || [app.typeCloud isEqualToString:typeCloudNextcloud]) {
         
         metadataNet.action = actionGetFeaturesSuppServer;
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
         
         metadataNet.action = actionGetCapabilities;
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
     }
 }
 
@@ -1180,7 +1180,7 @@
     metadataNet.selector = selectorDownloadThumbnail;
     metadataNet.serverUrl = _localServerUrl;
     
-    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1445,7 +1445,7 @@
             metadataNet.session = download_session_foreground;
             metadataNet.taskStatus = taskStatusResume;
             
-            [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+            [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
         }
     }
 }
@@ -1546,9 +1546,9 @@
                 metadataNet.taskStatus = taskStatusResume;
                 
                 if ([metadataNet.session containsString:@"wwan"])
-                    [app addNetworkingOperationQueue:app.netQueueUploadWWan delegate:self metadataNet:metadataNet oneByOne:YES];
+                    [app addNetworkingOperationQueue:app.netQueueUploadWWan delegate:self metadataNet:metadataNet];
                 else
-                    [app addNetworkingOperationQueue:app.netQueueUpload delegate:self metadataNet:metadataNet oneByOne:YES];
+                    [app addNetworkingOperationQueue:app.netQueueUpload delegate:self metadataNet:metadataNet];
             }
             
             /*** NEXTCLOUD OWNCLOUD ***/
@@ -1564,7 +1564,7 @@
                 metadataNet.selector = selectorReadFileUploadFile;
                 metadataNet.serverUrl = serverUrl;
                 
-                [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+                [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
             }
         }
     }
@@ -1589,9 +1589,9 @@
             metadataNet.taskStatus = taskStatusResume;
             
             if ([metadataNet.session containsString:@"wwan"])
-                [app addNetworkingOperationQueue:app.netQueueUploadWWan delegate:self metadataNet:metadataNet oneByOne:YES];
+                [app addNetworkingOperationQueue:app.netQueueUploadWWan delegate:self metadataNet:metadataNet];
             else
-                [app addNetworkingOperationQueue:app.netQueueUpload delegate:self metadataNet:metadataNet oneByOne:YES];
+                [app addNetworkingOperationQueue:app.netQueueUpload delegate:self metadataNet:metadataNet];
             
         } else {
             
@@ -1599,7 +1599,7 @@
             if (metadataNet.errorRetry < 3) {
                 
                 // Retry read file
-                [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+                [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
                 
             } else {
                 
@@ -1640,9 +1640,9 @@
         metadataNet.taskStatus = taskStatusResume;
         
         if ([metadataNet.session containsString:@"wwan"])
-            [app addNetworkingOperationQueue:app.netQueueUploadWWan delegate:self metadataNet:metadataNet oneByOne:YES];
+            [app addNetworkingOperationQueue:app.netQueueUploadWWan delegate:self metadataNet:metadataNet];
         else
-            [app addNetworkingOperationQueue:app.netQueueUpload delegate:self metadataNet:metadataNet oneByOne:YES];
+            [app addNetworkingOperationQueue:app.netQueueUpload delegate:self metadataNet:metadataNet];
     }
 }
 
@@ -1658,7 +1658,7 @@
     metadataNet.selector = selectorReadFileFolder;
     metadataNet.serverUrl = [CCCoreData getServerUrlFromDirectoryID:_localDirectoryID activeAccount:app.activeAccount];
 
-    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1834,7 +1834,7 @@
         metadataNet.selector = selectorReadFolder;
         metadataNet.serverUrl = [CCCoreData getServerUrlFromDirectoryID:_localDirectoryID activeAccount:app.activeAccount];
 
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
         
     } else {
         
@@ -1929,14 +1929,14 @@
         metadataNet.selector = selectorDeleteCrypto;
             
         [_queueSelector addObject:metadataNet.selector];
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
         
         // plist
         metadataNet.fileName = metadata.fileName;
         metadataNet.selector = selectorDeletePlist;
             
         [_queueSelector addObject:metadataNet.selector];
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
             
     } else {
             
@@ -1952,7 +1952,7 @@
         metadataNet.serverUrl = _localServerUrl;
         
         [_queueSelector addObject:metadataNet.selector];
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
     }
         
     [_hud visibleHudTitle:[NSString stringWithFormat:NSLocalizedString(@"_delete_file_n_", nil), ofFile - numFile + 1, ofFile] mode:MBProgressHUDModeIndeterminate color:nil];
@@ -2045,7 +2045,7 @@
         metadataNet.serverUrl = _localServerUrl;
         metadataNet.serverUrlTo = _localServerUrl;
         
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
         
     } else {
         
@@ -2079,7 +2079,7 @@
         
         if ([CCCoreData isFavorite:metadata.fileID activeAccount:app.activeAccount]) metadataNet.selectorPost = selectorAddFavorite;
         
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
         
         // delete file in filesystem
         [CCCoreData deleteFile:metadata serverUrl:_localServerUrl directoryUser:app.directoryUser typeCloud:app.typeCloud activeAccount:app.activeAccount];
@@ -2108,7 +2108,7 @@
         
         if ([CCCoreData isFavorite:metadata.fileID activeAccount:app.activeAccount]) metadataNet.selectorPost = selectorAddFavorite;
         
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
     }
 }
 
@@ -2215,7 +2215,7 @@
             
             [_queueSelector addObject:metadataNet.selector];
             
-            [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+            [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
         }
         
         // cyptated
@@ -2239,7 +2239,7 @@
             metadataNet.selector = selectorMoveCrypto;
             
             [_queueSelector addObject:metadataNet.selector];
-            [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+            [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
             
             // plist
             metadataNet.fileName = metadata.fileName;
@@ -2247,7 +2247,7 @@
             metadataNet.selector = selectorMovePlist;
             
             [_queueSelector addObject:metadataNet.selector];
-            [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+            [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
         }
         
         [_hud visibleHudTitle:[NSString stringWithFormat:NSLocalizedString(@"_move_file_n_", nil), _numSelectedMetadatas - [_selectedMetadatas count] + 1, _numSelectedMetadatas] mode:MBProgressHUDModeIndeterminate color:nil];
@@ -2334,7 +2334,7 @@
     metadataNet.selector = selectorCreateFolder;
     metadataNet.selectorPost = selectorReadFolderForced;
     
-    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
     
     if (!folderCameraUpload)
         [_hud visibleHudTitle:NSLocalizedString(@"_create_folder_", nil) mode:MBProgressHUDModeIndeterminate color:nil];
@@ -2362,7 +2362,7 @@
     metadataNet.selector = selectorCreateFolder;
     metadataNet.serverUrl = _localServerUrl;
     
-    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
     
     // upload plist file
     metadataNet.action = actionUploadOnlyPlist;
@@ -2373,7 +2373,7 @@
     metadataNet.session = upload_session_foreground;
     metadataNet.taskStatus = taskStatusResume;
     
-    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
     
     [_hud visibleHudTitle:NSLocalizedString(@"_create_folder_", nil) mode:MBProgressHUDModeIndeterminate color:nil];
 }
@@ -2407,7 +2407,7 @@
         metadataNet.serverUrl = _localServerUrl;
         metadataNet.serverUrlTo = _localServerUrl;
         
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
         
         //-------------------------- DELETE -------------------------------------------//
         
@@ -2419,7 +2419,7 @@
         metadataNet.selector = selectorDeletePlist;
         metadataNet.selectorPost = selectorReadFolderForced;
         
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
         
     } else {
                 
@@ -2443,7 +2443,7 @@
         metadataNet.serverUrl = _localServerUrl;
         metadataNet.serverUrlTo = _localServerUrl;
         
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
         
         //-------------------------- UPLOAD -------------------------------------------//
         
@@ -2455,7 +2455,7 @@
         metadataNet.session = upload_session_foreground;
         metadataNet.taskStatus = taskStatusResume;
         
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
     }
 }
 
@@ -2841,7 +2841,7 @@
     
     metadataNet.action = actionReadShareServer;
 
-    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
 }
 
 - (void)shareFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
@@ -2896,7 +2896,7 @@
         metadataNet.selector = selectorShare;
         metadataNet.serverUrl = serverUrl;
         
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
     }
 
     /*** DROPBOX ***/
@@ -2919,7 +2919,7 @@
             metadataNet.action = actionShare;
             metadataNet.selector = selectorShare;
             
-            [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+            [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
         }
     }
     
@@ -2965,7 +2965,7 @@
     metadataNet.serverUrl = serverUrl;
     metadataNet.share = share;
    
-    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
     
     [_hud visibleHudTitle:NSLocalizedString(@"_updating_sharing_", nil) mode:MBProgressHUDModeIndeterminate color:nil];
 }
@@ -2987,7 +2987,7 @@
         metadataNet.share = share;
         metadataNet.sharePermission = permission;
         
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
     }
 
     [_hud visibleHudTitle:NSLocalizedString(@"_updating_sharing_", nil) mode:MBProgressHUDModeIndeterminate color:nil];
@@ -3020,7 +3020,7 @@
         metadataNet.options = find;
         metadataNet.selector = selectorGetUserAndGroup;
         
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
     }
     
     [_hud visibleIndeterminateHud];
@@ -3041,7 +3041,7 @@
     metadataNet.shareeType = shareeType;
     metadataNet.sharePermission = permission;
 
-    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
     
     [_hud visibleHudTitle:NSLocalizedString(@"_creating_sharing_", nil) mode:MBProgressHUDModeIndeterminate color:nil];
 }
@@ -3057,7 +3057,7 @@
     metadataNet.selector = selectorOpenWindowShare;
     metadataNet.serverUrl = serverUrl;
     
-    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
     
     [_hud visibleIndeterminateHud];
 }

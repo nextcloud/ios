@@ -1729,7 +1729,7 @@
     metadataNet.serverUrl = serverUrl;
     metadataNet.selector = selectorReadFileVerifyUpload;
 
-    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
 #else
     NSLog(@"[LOG] Function not available for extension.");
 #endif

@@ -1019,7 +1019,7 @@
     [self performSelector:@selector(updateApplicationIconBadgeNumber) withObject:nil afterDelay:0.5];
 }
 
-- (void)addNetworkingOperationQueue:(NSOperationQueue *)netQueue delegate:(id)delegate metadataNet:(CCMetadataNet *)metadataNet oneByOne:(BOOL)oneByOne
+- (void)addNetworkingOperationQueue:(NSOperationQueue *)netQueue delegate:(id)delegate metadataNet:(CCMetadataNet *)metadataNet
 {
     id operation;
     BOOL activityIndicator = NO;
@@ -1031,14 +1031,14 @@
     /*** NEXTCLOUD OWNCLOUD ***/
     
     if ([_typeCloud isEqualToString:typeCloudOwnCloud] || [_typeCloud isEqualToString:typeCloudNextcloud])
-        operation = [[OCnetworking alloc] initWithDelegate:delegate metadataNet:metadataNet withUser:_activeUser withPassword:_activePassword withUrl:_activeUrl withTypeCloud:_typeCloud oneByOne:oneByOne activityIndicator:activityIndicator];
+        operation = [[OCnetworking alloc] initWithDelegate:delegate metadataNet:metadataNet withUser:_activeUser withPassword:_activePassword withUrl:_activeUrl withTypeCloud:_typeCloud activityIndicator:activityIndicator];
     
 #ifdef CC
     
     /*** DROPBOX ***/
     
     if ([_typeCloud isEqualToString:typeCloudDropbox])
-        operation = [[DBnetworking alloc] initWithDelegate:delegate metadataNet:metadataNet withUser:_activeUser withPassword:_activePassword withUrl:_activeUrl withActiveUID:_activeUID withActiveAccessToken:_activeAccessToken oneByOne:oneByOne activityIndicator:activityIndicator];
+        operation = [[DBnetworking alloc] initWithDelegate:delegate metadataNet:metadataNet withUser:_activeUser withPassword:_activePassword withUrl:_activeUrl withActiveUID:_activeUID withActiveAccessToken:_activeAccessToken activityIndicator:activityIndicator];
 #endif
     
     [operation setQueuePriority:metadataNet.priority];
@@ -1156,7 +1156,7 @@
         else
             queue = app.netQueueUpload;
         
-        [self addNetworkingOperationQueue:queue delegate:app.activeMain metadataNet:metadataNet oneByOne:YES];
+        [self addNetworkingOperationQueue:queue delegate:app.activeMain metadataNet:metadataNet];
     }
 }
 

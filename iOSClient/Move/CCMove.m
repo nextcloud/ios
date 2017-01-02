@@ -240,7 +240,7 @@
     
     if ([typeCloud isEqualToString:typeCloudOwnCloud] || [typeCloud isEqualToString:typeCloudNextcloud]) {
         
-        OCnetworking *operation = [[OCnetworking alloc] initWithDelegate:self metadataNet:metadataNet withUser:activeUser withPassword:activePassword withUrl:activeUrl withTypeCloud:typeCloud oneByOne:YES activityIndicator:NO];
+        OCnetworking *operation = [[OCnetworking alloc] initWithDelegate:self metadataNet:metadataNet withUser:activeUser withPassword:activePassword withUrl:activeUrl withTypeCloud:typeCloud activityIndicator:NO];
         
         _networkingOperationQueue.maxConcurrentOperationCount = maxConcurrentOperation;
         [_networkingOperationQueue addOperation:operation];
@@ -252,7 +252,7 @@
 
     if ([typeCloud isEqualToString:typeCloudDropbox]) {
         
-        DBnetworking *operation = [[DBnetworking alloc] initWithDelegate:self metadataNet:metadataNet withUser:activeUser withPassword:activePassword withUrl:activeUrl withActiveUID:activeUID withActiveAccessToken:activeAccessToken oneByOne:YES activityIndicator:NO];
+        DBnetworking *operation = [[DBnetworking alloc] initWithDelegate:self metadataNet:metadataNet withUser:activeUser withPassword:activePassword withUrl:activeUrl withActiveUID:activeUID withActiveAccessToken:activeAccessToken activityIndicator:NO];
         
         _networkingOperationQueue.maxConcurrentOperationCount = maxConcurrentOperation;
         [_networkingOperationQueue addOperation:operation];

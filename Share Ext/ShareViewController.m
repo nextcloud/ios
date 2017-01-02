@@ -369,14 +369,14 @@
     /*** NEXTCLOUD OWNCLOUD ***/
     
     if ([_typeCloud isEqualToString:typeCloudOwnCloud] || [_typeCloud isEqualToString:typeCloudNextcloud])
-        operation = [[OCnetworking alloc] initWithDelegate:self metadataNet:metadataNet withUser:_activeUser withPassword:_activePassword withUrl:_activeUrl withTypeCloud:_typeCloud oneByOne:YES activityIndicator:NO];
+        operation = [[OCnetworking alloc] initWithDelegate:self metadataNet:metadataNet withUser:_activeUser withPassword:_activePassword withUrl:_activeUrl withTypeCloud:_typeCloud activityIndicator:NO];
     
 #ifdef CC
     
     /*** DROPBOX ***/
 
     if ([_typeCloud isEqualToString:typeCloudDropbox])
-        operation = [[DBnetworking alloc] initWithDelegate:self metadataNet:metadataNet withUser:_activeUser withPassword:_activePassword withUrl:_activeUrl withActiveUID:_activeUID withActiveAccessToken:_activeAccessToken oneByOne:YES activityIndicator:NO];
+        operation = [[DBnetworking alloc] initWithDelegate:self metadataNet:metadataNet withUser:_activeUser withPassword:_activePassword withUrl:_activeUrl withActiveUID:_activeUID withActiveAccessToken:_activeAccessToken activityIndicator:NO];
 #endif
     
     [operation setQueuePriority:metadataNet.priority];

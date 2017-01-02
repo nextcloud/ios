@@ -73,7 +73,7 @@
         metadataNet.selector = selectorSynchronizedFolder;
         metadataNet.serverUrl = directory.serverUrl;
         
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
     }
 }
 
@@ -101,7 +101,7 @@
         metadataNet.selector = selectorReadFolder;
         metadataNet.serverUrl = serverUrl;
         
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
     }
 }
 
@@ -329,9 +329,9 @@
             metadataNet.taskStatus = taskStatusResume;
 
             if ([session containsString:@"wwan"])
-                [app addNetworkingOperationQueue:app.netQueueDownloadWWan delegate:app.activeMain metadataNet:metadataNet oneByOne:YES];
+                [app addNetworkingOperationQueue:app.netQueueDownloadWWan delegate:app.activeMain metadataNet:metadataNet];
             else
-                [app addNetworkingOperationQueue:app.netQueueDownload delegate:app.activeMain metadataNet:metadataNet oneByOne:YES];
+                [app addNetworkingOperationQueue:app.netQueueDownload delegate:app.activeMain metadataNet:metadataNet];
         }
     
         [[CCSynchronization sharedSynchronization] synchronizationAnimationDirectory:[[NSArray alloc] initWithObjects:serverUrl, nil] callViewController:YES];

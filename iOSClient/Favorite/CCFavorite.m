@@ -343,7 +343,7 @@
         metadataNet.selector = selectorReadFileFavorite;
         metadataNet.priority = NSOperationQueuePriorityVeryLow;
         
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
     }
 }
 
