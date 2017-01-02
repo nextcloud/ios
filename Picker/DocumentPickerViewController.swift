@@ -187,7 +187,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
                 metadataNet.session = download_session_foreground
                 metadataNet.taskStatus = Int(taskStatusResume)
                 
-                let ocNetworking : OCnetworking = OCnetworking.init(delegate: self, metadataNet: metadataNet, withUser: activeUser, withPassword: activePassword, withUrl: activeUrl, withTypeCloud: typeCloud, oneByOne: true, activityIndicator: false)
+                let ocNetworking : OCnetworking = OCnetworking.init(delegate: self, metadataNet: metadataNet, withUser: activeUser, withPassword: activePassword, withUrl: activeUrl, withTypeCloud: typeCloud, oneByOne: false, activityIndicator: false)
                 networkingOperationQueue.addOperation(ocNetworking)
             }
         }
@@ -253,7 +253,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         metadataNet.selector = selectorDownloadThumbnail;
         metadataNet.serverUrl = localServerUrl
 
-        let ocNetworking : OCnetworking = OCnetworking.init(delegate: self, metadataNet: metadataNet, withUser: activeUser, withPassword: activePassword, withUrl: activeUrl, withTypeCloud: typeCloud, oneByOne: true, activityIndicator: false)
+        let ocNetworking : OCnetworking = OCnetworking.init(delegate: self, metadataNet: metadataNet, withUser: activeUser, withPassword: activePassword, withUrl: activeUrl, withTypeCloud: typeCloud, oneByOne: false, activityIndicator: false)
         networkingOperationQueue.addOperation(ocNetworking)
     }
 }
@@ -319,8 +319,9 @@ extension DocumentPickerViewController: UITableViewDataSource {
 
         tableView.deselectRow(at: indexPath, animated: true)
         
-        if recordTableMetadata?.cryptated == 0 {
+        if recordTableMetadata!.directory == 0 {
             
+            // Download file
             
         } else {
             
