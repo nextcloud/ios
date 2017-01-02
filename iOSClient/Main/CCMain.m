@@ -1445,7 +1445,7 @@
             metadataNet.session = download_session_foreground;
             metadataNet.taskStatus = taskStatusResume;
             
-            [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:NO];
+            [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
         }
     }
 }

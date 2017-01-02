@@ -191,7 +191,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
                 metadataNet.session = download_session_foreground
                 metadataNet.taskStatus = Int(taskStatusResume)
                 
-                let ocNetworking : OCnetworking = OCnetworking.init(delegate: self, metadataNet: metadataNet, withUser: activeUser, withPassword: activePassword, withUrl: activeUrl, withTypeCloud: typeCloud, oneByOne: false, activityIndicator: false)
+                let ocNetworking : OCnetworking = OCnetworking.init(delegate: self, metadataNet: metadataNet, withUser: activeUser, withPassword: activePassword, withUrl: activeUrl, withTypeCloud: typeCloud, oneByOne: true, activityIndicator: false)
                 networkingOperationQueue.addOperation(ocNetworking)
             }
         }
@@ -206,38 +206,59 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
     
     //  MARK: - Download
     
+    func progressTask(_ fileID: String!, serverUrl: String!, cryptated: Bool, progress: Float) {
+        
+        hud.progress(progress)
+    }
+    
+    func cancelTransfer() {
+        
+        networkingOperationQueue.cancelAllOperations()
+    }
+    
     func downloadFileFailure(_ fileID: String!, serverUrl: String!, selector: String!, message: String!, errorCode: Int) {
         
         hud.hideHud()
         
-        if selector == selectorLoadFileView {
+        if selector == selectorLoadFileView && errorCode != -999 {
             
             let alert = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: message, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default) { action in
-                self.dismissGrantingAccess(to: nil)
+                //self.dismissGrantingAccess(to: nil)
+                NSLog("[LOG] Download Error \(fileID) \(message) (error \(errorCode))");
             })
             
             self.present(alert, animated: true, completion: nil)
         }
-        
-        NSLog("[LOG] Download Error \(fileID) \(message) (error \(errorCode))");
     }
 
     func downloadFileSuccess(_ fileID: String!, serverUrl: String!, selector: String!, selectorPost: String!) {
         
         hud.hideHud()
         
+        let metadata = CCCoreData.getMetadataWithPreficate(NSPredicate(format: "(account == '\(activeAccount!)') AND (fileID == '\(fileID!)')"), context: nil)
+        
         switch selector {
             
             case selectorLoadFileView :
-            
+                
+                do {
+                    
+                    try FileManager.default.moveItem(atPath: "\(directoryUser!)/\(fileID!)", toPath: "\(directoryUser!)/\(metadata!.fileNamePrint!)")
+                    
+                } catch let error as NSError {
+        
+                    print(error)
+                }
+                
+                let url = URL(string: "file://\(directoryUser!)/\(metadata!.fileNamePrint!)".addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!)
+                self.dismissGrantingAccess(to: url)
+                
                 break
             
             case selectorLoadPlist :
             
-                let metadata = CCCoreData.getMetadataWithPreficate(NSPredicate(format: "(account == '\(activeAccount!)') AND (fileID == '\(fileID!)')"), context: nil)
                 CCCoreData.downloadFilePlist(metadata, activeAccount: activeAccount, activeUrl: activeUrl, typeCloud: typeCloud, directoryUser: directoryUser)
-            
                 tableView.reloadData()
             
             default :
@@ -282,7 +303,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         metadataNet.selector = selectorDownloadThumbnail;
         metadataNet.serverUrl = localServerUrl
 
-        let ocNetworking : OCnetworking = OCnetworking.init(delegate: self, metadataNet: metadataNet, withUser: activeUser, withPassword: activePassword, withUrl: activeUrl, withTypeCloud: typeCloud, oneByOne: false, activityIndicator: false)
+        let ocNetworking : OCnetworking = OCnetworking.init(delegate: self, metadataNet: metadataNet, withUser: activeUser, withPassword: activePassword, withUrl: activeUrl, withTypeCloud: typeCloud, oneByOne: true, activityIndicator: false)
         networkingOperationQueue.addOperation(ocNetworking)
     }
 }
@@ -293,7 +314,7 @@ extension DocumentPickerViewController: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         
-         return 60
+         return 50
     }
 }
 
@@ -365,6 +386,7 @@ extension DocumentPickerViewController: UITableViewDataSource {
                 // Download file
                 let metadataNet = CCMetadataNet.init(account: activeAccount)!
             
+                metadataNet.action = actionDownloadFile
                 metadataNet.downloadData = true
                 metadataNet.downloadPlist = false
                 metadataNet.metadata = metadata
@@ -375,6 +397,9 @@ extension DocumentPickerViewController: UITableViewDataSource {
             
                 let ocNetworking : OCnetworking = OCnetworking.init(delegate: self, metadataNet: metadataNet, withUser: activeUser, withPassword: activePassword, withUrl: activeUrl, withTypeCloud: typeCloud, oneByOne: true, activityIndicator: false)
                 networkingOperationQueue.addOperation(ocNetworking)
+                
+                hud.visibleHudTitle(NSLocalizedString("_loading_", comment: ""), mode: MBProgressHUDMode.determinateHorizontalBar, color: self.navigationController?.view.tintColor)
+                hud.addButtonCancel(withTarget: self, selector: "cancelTransfer")
             }
             
         } else {
