@@ -151,6 +151,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
             
             // do not insert crypto file
             if CCUtility.isCryptoString(metadata.fileName) {
+                
                 continue
             }
             
@@ -160,12 +161,15 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
                 var isCryptoComplete = false
                 
                 for completeMetadata in metadatas as! [CCMetadata] {
+                    
                     if completeMetadata.fileName == CCUtility.trasformedFileNamePlist(inCrypto: metadata.fileName) {
+                        
                         isCryptoComplete = true
                     }
                 }
 
                 if isCryptoComplete == false {
+                    
                     continue
                 }
             }
@@ -193,7 +197,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         }
         
         // Get Datasource
-        recordsTableMetadata = CCCoreData.getTableMetadata(with: NSPredicate(format: "(account == '\(activeAccount!)') AND (directoryID == '\(metadataNet.directoryID!)')"), fieldOrder: CCUtility.getOrderSettings(), ascending: CCUtility.getAscendingSettings()) as? [TableMetadata]
+        recordsTableMetadata = CCCoreData.getTableMetadata(with: NSPredicate(format: "(account == '\(activeAccount!)') AND (directoryID == '\(metadataNet.directoryID!)')"), fieldOrder: "fileName", ascending: true) as? [TableMetadata]
         
         tableView.reloadData()
         
@@ -204,17 +208,41 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
     
     func downloadFileFailure(_ fileID: String!, serverUrl: String!, selector: String!, message: String!, errorCode: Int) {
         
+        hud.hideHud()
+        
+        if selector == selectorLoadFileView {
+            
+            let alert = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: message, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default) { action in
+                self.dismissGrantingAccess(to: nil)
+            })
+            
+            self.present(alert, animated: true, completion: nil)
+        }
+        
         NSLog("[LOG] Download Error \(fileID) \(message) (error \(errorCode))");
     }
 
     func downloadFileSuccess(_ fileID: String!, serverUrl: String!, selector: String!, selectorPost: String!) {
         
-        if selector == selectorLoadPlist {
+        hud.hideHud()
+        
+        switch selector {
             
-            let metadata = CCCoreData.getMetadataWithPreficate(NSPredicate(format: "(account == '\(activeAccount!)') AND (fileID == '\(fileID!)')"), context: nil)
-            CCCoreData.downloadFilePlist(metadata, activeAccount: activeAccount, activeUrl: activeUrl, typeCloud: typeCloud, directoryUser: directoryUser)
+            case selectorLoadFileView :
             
-            tableView.reloadData()
+                break
+            
+            case selectorLoadPlist :
+            
+                let metadata = CCCoreData.getMetadataWithPreficate(NSPredicate(format: "(account == '\(activeAccount!)') AND (fileID == '\(fileID!)')"), context: nil)
+                CCCoreData.downloadFilePlist(metadata, activeAccount: activeAccount, activeUrl: activeUrl, typeCloud: typeCloud, directoryUser: directoryUser)
+            
+                tableView.reloadData()
+            
+            default :
+
+                break
         }
     }
  
@@ -234,6 +262,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
             if FileManager.default.fileExists(atPath: path) {
                 
                 if let cell = tableView.cellForRow(at: indexPath) as? recordMetadataCell {
+                    
                     cell.fileImageView.image = UIImage(contentsOfFile: path)
                 }
             }
@@ -275,8 +304,11 @@ extension DocumentPickerViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
         if (recordsTableMetadata == nil) {
+            
             return 0
+            
         } else {
+            
             return recordsTableMetadata!.count
         }
     }
@@ -291,9 +323,9 @@ extension DocumentPickerViewController: UITableViewDataSource {
         let metadata = CCCoreData.insertEntity(in: recordTableMetadata)!
         
         // File Image View
-        let filePath = directoryUser! + "/" + metadata.fileID + ".ico"
+        let filePath = "\(directoryUser!)/\(metadata.fileID!).ico"
         
-        if (FileManager.default.fileExists(atPath: filePath)) {
+        if FileManager.default.fileExists(atPath: filePath) {
             
             cell.fileImageView.image = UIImage(contentsOfFile: filePath)
             
@@ -302,6 +334,7 @@ extension DocumentPickerViewController: UITableViewDataSource {
             cell.fileImageView.image = UIImage(named: metadata.iconName!)
             
             if metadata.thumbnailExists && metadata.directory == false {
+                
                 downloadThumbnail(metadata)
                 thumbnailInLoading[metadata.fileID] = indexPath
             }
@@ -321,7 +354,28 @@ extension DocumentPickerViewController: UITableViewDataSource {
         
         if recordTableMetadata!.directory == 0 {
             
-            // Download file
+            let metadata = CCCoreData.insertEntity(in: recordTableMetadata)!
+            
+            if FileManager.default.fileExists(atPath: "\(directoryUser!)/\(metadata.fileID!)") {
+                
+                downloadFileSuccess(metadata.fileID!, serverUrl: localServerUrl!, selector: selectorLoadFileView, selectorPost: nil)
+                
+            } else {
+            
+                // Download file
+                let metadataNet = CCMetadataNet.init(account: activeAccount)!
+            
+                metadataNet.downloadData = true
+                metadataNet.downloadPlist = false
+                metadataNet.metadata = metadata
+                metadataNet.selector = selectorLoadFileView
+                metadataNet.serverUrl = localServerUrl
+                metadataNet.session = download_session_foreground
+                metadataNet.taskStatus = Int(taskStatusResume)
+            
+                let ocNetworking : OCnetworking = OCnetworking.init(delegate: self, metadataNet: metadataNet, withUser: activeUser, withPassword: activePassword, withUrl: activeUrl, withTypeCloud: typeCloud, oneByOne: true, activityIndicator: false)
+                networkingOperationQueue.addOperation(ocNetworking)
+            }
             
         } else {
             
@@ -329,6 +383,7 @@ extension DocumentPickerViewController: UITableViewDataSource {
             let nextViewController = self.storyboard?.instantiateViewController(withIdentifier: "DocumentPickerViewController") as! DocumentPickerViewController
         
             if recordTableMetadata?.cryptated == 1 {
+                
                 dir = CCUtility.trasformedFileNamePlist(inCrypto: recordTableMetadata!.fileName)
             }
         
