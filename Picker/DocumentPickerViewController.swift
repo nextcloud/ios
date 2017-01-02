@@ -195,6 +195,12 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
                 continue
             }
             
+            // Only Directory ?
+            if (documentPickerMode == .moveToService || documentPickerMode == .exportToService) && metadata.directory == false {
+                
+                continue
+            }
+            
             // plist + crypto = completed ?
             if CCUtility.isCryptoPlistString(metadata.fileName) && metadata.directory == false {
                 
@@ -244,7 +250,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         hud.hideHud()
     }
     
-    //  MARK: - Download
+    //  MARK: - Download / Upload
     
     func progressTask(_ fileID: String!, serverUrl: String!, cryptated: Bool, progress: Float) {
         
@@ -255,7 +261,9 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         
         networkingOperationQueue.cancelAllOperations()
     }
-    
+
+    //  MARK: - Download
+
     func downloadFileFailure(_ fileID: String!, serverUrl: String!, selector: String!, message: String!, errorCode: Int) {
         
         hud.hideHud()
@@ -307,6 +315,38 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         }
     }
  
+    //  MARK: - Upload
+    
+    func uploadFileFailure(_ fileID: String!, serverUrl: String!, selector: String!, message: String!, errorCode: Int) {
+        
+        hud.hideHud()
+        
+        // remove file
+        CCCoreData.deleteMetadata(with: NSPredicate(format: "(account == '\(activeAccount!)') AND (fileID == '\(fileID!)')"))
+        
+        if errorCode != -999 {
+            
+            let alert = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: message, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default) { action in
+                //self.dismissGrantingAccess(to: nil)
+                NSLog("[LOG] Download Error \(fileID) \(message) (error \(errorCode))");
+            })
+            
+            self.present(alert, animated: true, completion: nil)
+        }
+    }
+    
+    func uploadFileSuccess(_ fileID: String!, serverUrl: String!, selector: String!, selectorPost: String!) {
+        
+        hud.hideHud()
+        
+        //let metadata = CCCoreData.getMetadataWithPreficate(NSPredicate(format: "(account == '\(activeAccount!)') AND (fileID == '\(fileID!)')"), context: nil)
+
+        let destinationURL = URL(string: "file://\(directoryUser!)/\(fileID!)".addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!)
+        
+        dismissGrantingAccess(to: destinationURL)
+    }
+    
     //  MARK: - Download Thumbnail
 
     func downloadThumbnailFailure(_ metadataNet: CCMetadataNet!, message: String!, errorCode: Int) {
@@ -362,23 +402,50 @@ extension DocumentPickerViewController {
             
         case .moveToService, .exportToService:
             
-            let fileName = sourceURL.deletingPathExtension().lastPathComponent
+            let fileName = sourceURL.lastPathComponent
             
-            /*
-            guard let destinationURL = Note.fileUrlForDocumentNamed(fileName) else {
+            guard let destinationURL = URL(string: "file://\(directoryUser!)/\(fileName)".addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!) else {
+                
                 return
             }
-            
+
             fileCoordinator.coordinate(readingItemAt: sourceURL, options: .withoutChanges, error: nil, byAccessor: { [weak self] newURL in
+                
+                // Remove destination file
                 do {
-                    try FileManager.default.copyItem(at: sourceURL, to: destinationURL)
-                    self?.dismissGrantingAccess(to: destinationURL)
+                    
+                    try FileManager.default.removeItem(at: destinationURL)
+                    
                 } catch _ {
+                    
+                    print("file do not exists")
+                }
+                
+                do {
+                    
+                    try FileManager.default.copyItem(at: sourceURL, to: destinationURL)
+                    
+                    // Upload fileName to Cloud
+                    
+                    let metadataNet = CCMetadataNet.init(account: self!.activeAccount)!
+                    
+                    metadataNet.action = actionUploadFile
+                    metadataNet.cryptated = false
+                    metadataNet.fileName = fileName
+                    metadataNet.fileNamePrint = fileName
+                    metadataNet.serverUrl = self!.localServerUrl
+                    metadataNet.session = upload_session_foreground
+                    metadataNet.taskStatus = Int(taskStatusResume)
+                    
+                    let ocNetworking : OCnetworking = OCnetworking.init(delegate: self!, metadataNet: metadataNet, withUser: self!.activeUser, withPassword: self!.activePassword, withUrl: self!.activeUrl, withTypeCloud: self!.typeCloud, activityIndicator: false)
+                    self!.networkingOperationQueue.addOperation(ocNetworking)
+                    
+                } catch _ {
+                    
                     print("error copying file")
                 }
             })
-            */
-            
+        
         default:
             dismiss(animated: true, completion: nil)
         }
