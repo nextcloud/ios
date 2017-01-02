@@ -27,7 +27,15 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
     
     // MARK: - Properties
     
-    var provider : providerSession?
+    var providerDB : providerSessionDB?
+    
+    lazy var fileCoordinator: NSFileCoordinator = {
+    
+        let fileCoordinator = NSFileCoordinator()
+        fileCoordinator.purposeIdentifier = self.providerIdentifier
+        return fileCoordinator
+        
+    }()
     
     var metadata : CCMetadata?
     var recordsTableMetadata : [TableMetadata]?
@@ -61,11 +69,14 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
     
     @IBOutlet weak var tableView: UITableView!
     
+    @IBOutlet weak var toolBar: UIToolbar!
+    @IBOutlet weak var saveButton: UIBarButtonItem!
+    
     // MARK: - View Life Cycle
     
     override func viewDidLoad() {
         
-        provider = providerSession.sharedInstance
+        providerDB = providerSessionDB.sharedInstance
         
         if let record = CCCoreData.getActiveAccount() {
             
@@ -114,25 +125,34 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
     }
     
     // MARK: - Overridden Instance Methods
+    
     override func prepareForPresentation(in mode: UIDocumentPickerMode) {
         
         switch mode {
+            
         case .exportToService:
-            //Show confirmation button
+            
             print("Document Picker Mode : exportToService")
+            saveButton.title = "Save in this position"
+            
         case .moveToService:
+            
             //Show confirmation button
             print("Document Picker Mode : moveToService")
+            saveButton.title = "Save in this position"
+            
         case .open:
-            //Show file list
+            
             print("Document Picker Mode : open")
+            saveButton.tintColor = UIColor.clear
+            
         case .import:
-            //Show file list
+            
             print("Document Picker Mode : import")
+            saveButton.tintColor = UIColor.clear
         }
     }
 
-    
     //  MARK: - Read folder
     
     func readFolder() {
@@ -328,6 +348,44 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
     }
 }
 
+// MARK: - IBActions
+
+extension DocumentPickerViewController {
+    
+    @IBAction func saveButtonTapped(_ sender: AnyObject) {
+        
+        guard let sourceURL = originalURL else {
+            return
+        }
+        
+        switch documentPickerMode {
+            
+        case .moveToService, .exportToService:
+            
+            let fileName = sourceURL.deletingPathExtension().lastPathComponent
+            
+            /*
+            guard let destinationURL = Note.fileUrlForDocumentNamed(fileName) else {
+                return
+            }
+            
+            fileCoordinator.coordinate(readingItemAt: sourceURL, options: .withoutChanges, error: nil, byAccessor: { [weak self] newURL in
+                do {
+                    try FileManager.default.copyItem(at: sourceURL, to: destinationURL)
+                    self?.dismissGrantingAccess(to: destinationURL)
+                } catch _ {
+                    print("error copying file")
+                }
+            })
+            */
+            
+        default:
+            dismiss(animated: true, completion: nil)
+        }
+    }
+}
+
+
 // MARK: - UITableViewDelegate
 
 extension DocumentPickerViewController: UITableViewDelegate {
@@ -450,13 +508,13 @@ class recordMetadataCell: UITableViewCell {
 
 // MARK: - Class providerSession
 
-class providerSession {
+class providerSessionDB {
     
-    class var sharedInstance : providerSession {
+    class var sharedInstance : providerSessionDB {
         
         struct Static {
             
-            static let instance = providerSession()
+            static let instance = providerSessionDB()
         }
         
         return Static.instance

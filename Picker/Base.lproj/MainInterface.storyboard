@@ -23,14 +23,14 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="vA7-yc-aM1">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="623"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="Cell" rowHeight="50" id="0H6-U8-fd4" userLabel="Cell" customClass="recordMetadataCell" customModule="Picker" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="28" width="375" height="50"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="0H6-U8-fd4" id="44X-Sr-gc0">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="49.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="49"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Wk9-rb-4yv">
@@ -64,17 +64,32 @@
                                     <outlet property="delegate" destination="J6p-g8-CHO" id="wBq-lQ-Kon"/>
                                 </connections>
                             </tableView>
+                            <toolbar clearsContextBeforeDrawing="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="kOP-Rg-Mvb">
+                                <rect key="frame" x="0.0" y="623" width="375" height="44"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                <items>
+                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="Wcn-Rh-qba"/>
+                                    <barButtonItem title="Item" id="LlY-NF-IiS" userLabel="Save">
+                                        <connections>
+                                            <action selector="saveButtonTapped:" destination="J6p-g8-CHO" id="oZp-Hv-neh"/>
+                                        </connections>
+                                    </barButtonItem>
+                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="xmG-u1-O7D"/>
+                                </items>
+                            </toolbar>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstAttribute="trailing" secondItem="vA7-yc-aM1" secondAttribute="trailing" id="36a-TC-Qul"/>
                             <constraint firstItem="vA7-yc-aM1" firstAttribute="top" secondItem="Vdh-Gp-eV6" secondAttribute="top" id="B3X-Ni-wvz"/>
                             <constraint firstItem="vA7-yc-aM1" firstAttribute="leading" secondItem="Vdh-Gp-eV6" secondAttribute="leading" id="S3f-mR-ElS"/>
-                            <constraint firstItem="vA7-yc-aM1" firstAttribute="bottom" secondItem="UQD-kz-Mfv" secondAttribute="top" id="wSm-cl-ClV"/>
+                            <constraint firstItem="vA7-yc-aM1" firstAttribute="bottom" secondItem="UQD-kz-Mfv" secondAttribute="top" constant="-44" id="wSm-cl-ClV"/>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="saveButton" destination="LlY-NF-IiS" id="Vh2-iV-omb"/>
                         <outlet property="tableView" destination="vA7-yc-aM1" id="nuO-LH-LFc"/>
+                        <outlet property="toolBar" destination="kOP-Rg-Mvb" id="lu3-pV-yxw"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="UoZ-ya-W3e" userLabel="First Responder" sceneMemberID="firstResponder"/>
