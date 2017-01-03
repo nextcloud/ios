@@ -437,6 +437,7 @@ extension DocumentPickerViewController {
             } catch _ {
                 print("file do not exists")
             }
+            
             do {
                 try FileManager.default.copyItem(at: sourceURL, to: destinationURLDirectoryUser)
             } catch _ {
@@ -446,7 +447,6 @@ extension DocumentPickerViewController {
 
             fileCoordinator.coordinate(readingItemAt: sourceURL, options: .withoutChanges, error: nil, byAccessor: { [weak self] newURL in
                 
-                // Remove destination file
                 do {
                     try FileManager.default.removeItem(at: (self?.destinationURL)!)
                 } catch _ {
@@ -487,8 +487,7 @@ extension DocumentPickerViewController {
     
     func appGroupContainerURL() -> URL? {
         
-        let fileManager = FileManager.default
-        guard let groupURL = fileManager
+        guard let groupURL = FileManager.default
             .containerURL(forSecurityApplicationGroupIdentifier: capabilitiesGroups) else {
                 return nil
         }
@@ -496,11 +495,9 @@ extension DocumentPickerViewController {
         let storagePathUrl = groupURL.appendingPathComponent("File Provider Storage")
         let storagePath = storagePathUrl.path
         
-        if !fileManager.fileExists(atPath: storagePath) {
+        if !FileManager.default.fileExists(atPath: storagePath) {
             do {
-                try fileManager.createDirectory(atPath: storagePath,
-                                                withIntermediateDirectories: false,
-                                                attributes: nil)
+                try FileManager.default.createDirectory(atPath: storagePath, withIntermediateDirectories: false, attributes: nil)
             } catch let error {
                 print("error creating filepath: \(error)")
                 return nil
@@ -509,9 +506,7 @@ extension DocumentPickerViewController {
         
         return storagePathUrl
     }
-
 }
-
 
 // MARK: - UITableViewDelegate
 
