@@ -142,7 +142,6 @@
 
 + (void)moveFileAtPath:(NSString *)atPath toPath:(NSString *)toPath;
 + (void)copyFileAtPath:(NSString *)atPath toPath:(NSString *)toPath;
-+ (void)createSymbolicLinkAtURL:(NSURL *)atURL destinationURL:( NSURL *)destinationURL;
 + (void)removeAllFileID_UPLOAD_ActiveUser:(NSString *)activeUser activeUrl:(NSString *)activeUrl;
 
 + (NSString *)deletingLastPathComponentFromServerUrl:(NSString *)serverUrl;

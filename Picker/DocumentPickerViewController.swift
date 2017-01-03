@@ -57,6 +57,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
     
     var localServerUrl : String?
     var thumbnailInLoading = [String: IndexPath]()
+    var destinationURL : URL?
     
     lazy var networkingOperationQueue : OperationQueue = {
         
@@ -362,9 +363,8 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
     func uploadFileSuccess(_ fileID: String!, serverUrl: String!, selector: String!, selectorPost: String!) {
         
         hud.hideHud()
-        let url = URL(string: "file://\(directoryUser!)/\(fileID!)".addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!)
         
-        dismissGrantingAccess(to: nil)
+        dismissGrantingAccess(to: self.destinationURL)
     }
     
     //  MARK: - Download Thumbnail
@@ -424,8 +424,23 @@ extension DocumentPickerViewController {
             
             let fileName = sourceURL.lastPathComponent
             
-            guard let destinationURL = URL(string: "file://\(directoryUser!)/\(fileName)".addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!) else {
+            guard let destinationURLDirectoryUser = URL(string: "file://\(directoryUser!)/\(fileName)".addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!) else {
                 
+                return
+            }
+            
+            self.destinationURL = appGroupContainerURL()?.appendingPathComponent(fileName)
+            
+            // copy sourceURL on DirectoryUser
+            do {
+                try FileManager.default.removeItem(at: destinationURLDirectoryUser)
+            } catch _ {
+                print("file do not exists")
+            }
+            do {
+                try FileManager.default.copyItem(at: sourceURL, to: destinationURLDirectoryUser)
+            } catch _ {
+                print("file do not exists")
                 return
             }
 
@@ -433,17 +448,13 @@ extension DocumentPickerViewController {
                 
                 // Remove destination file
                 do {
-                    
-                    try FileManager.default.removeItem(at: destinationURL)
-                    
+                    try FileManager.default.removeItem(at: (self?.destinationURL)!)
                 } catch _ {
-                    
                     print("file do not exists")
                 }
                 
                 do {
-                    
-                    try FileManager.default.copyItem(at: sourceURL, to: destinationURL)
+                    try FileManager.default.copyItem(at: sourceURL, to: (self?.destinationURL)!)
                     
                     // Upload fileName to Cloud
                     
@@ -473,6 +484,32 @@ extension DocumentPickerViewController {
             dismiss(animated: true, completion: nil)
         }
     }
+    
+    func appGroupContainerURL() -> URL? {
+        
+        let fileManager = FileManager.default
+        guard let groupURL = fileManager
+            .containerURL(forSecurityApplicationGroupIdentifier: capabilitiesGroups) else {
+                return nil
+        }
+        
+        let storagePathUrl = groupURL.appendingPathComponent("File Provider Storage")
+        let storagePath = storagePathUrl.path
+        
+        if !fileManager.fileExists(atPath: storagePath) {
+            do {
+                try fileManager.createDirectory(atPath: storagePath,
+                                                withIntermediateDirectories: false,
+                                                attributes: nil)
+            } catch let error {
+                print("error creating filepath: \(error)")
+                return nil
+            }
+        }
+        
+        return storagePathUrl
+    }
+
 }
 
 
