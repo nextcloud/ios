@@ -159,6 +159,7 @@
             [self saveIcoWithFileID:fileNameTo image:scaleImage writeToFile:[NSTemporaryDirectory() stringByAppendingString:fileNameTo] copy:NO move:NO fromPath:nil toPath:nil];
             
             // if it is preview for Upload then trasform it in gray scale
+            //TODO: Crash with swift
             scaleImage = [scaleImage grayscale];
             [self saveIcoWithFileID:fileNameTo image:scaleImage writeToFile:[NSString stringWithFormat:@"%@/%@.ico", directoryUser, fileNameTo] copy:NO move:NO fromPath:nil toPath:nil];
             

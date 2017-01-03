@@ -36,7 +36,9 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         return fileCoordinator
         
     }()
-    var mode : UIDocumentPickerMode?
+    
+    var parameterMode : UIDocumentPickerMode?
+    var parameterOriginalURL: URL?
 
     var metadata : CCMetadata?
     var recordsTableMetadata : [TableMetadata]?
@@ -123,10 +125,8 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         self.tableView.separatorColor = UIColor(colorLiteralRed: 153.0/255.0, green: 153.0/255.0, blue: 153.0/255.0, alpha: 0.2)
         
         // (save) mode of presentation -> pass variable for pushViewController
-        if mode == nil {
-            mode = documentPickerMode
-        } else {
-            prepareForPresentation(in: mode!)
+        if parameterMode != nil {
+            prepareForPresentation(in: parameterMode!)
         }
         
         readFolder()
@@ -135,6 +135,14 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
     // MARK: - Overridden Instance Methods
     
     override func prepareForPresentation(in mode: UIDocumentPickerMode) {
+        
+        if parameterMode == nil {
+            parameterMode = mode
+        }
+        
+        if parameterOriginalURL == nil && originalURL != nil {
+            parameterOriginalURL = originalURL
+        }
         
         switch mode {
             
@@ -204,7 +212,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
             }
             
             // Only Directory ?
-            if (mode == .moveToService || mode == .exportToService) && metadata.directory == false {
+            if (parameterMode == .moveToService || parameterMode == .exportToService) && metadata.directory == false {
                 
                 continue
             }
@@ -348,7 +356,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         
         hud.hideHud()
         
-        dismissGrantingAccess(to: originalURL)
+        dismissGrantingAccess(to: parameterOriginalURL)
     }
     
     //  MARK: - Download Thumbnail
@@ -398,11 +406,11 @@ extension DocumentPickerViewController {
     
     @IBAction func saveButtonTapped(_ sender: AnyObject) {
         
-        guard let sourceURL = originalURL else {
+        guard let sourceURL = parameterOriginalURL else {
             return
         }
         
-        switch mode! {
+        switch parameterMode! {
             
         case .moveToService, .exportToService:
             
@@ -443,6 +451,9 @@ extension DocumentPickerViewController {
                     
                     let ocNetworking : OCnetworking = OCnetworking.init(delegate: self!, metadataNet: metadataNet, withUser: self!.activeUser, withPassword: self!.activePassword, withUrl: self!.activeUrl, withTypeCloud: self!.typeCloud, activityIndicator: false)
                     self!.networkingOperationQueue.addOperation(ocNetworking)
+                    
+                    self!.hud.visibleHudTitle(NSLocalizedString("_uploading_", comment: ""), mode: MBProgressHUDMode.determinateHorizontalBar, color: self!.navigationController?.view.tintColor)
+                    self!.hud.addButtonCancel(withTarget: self, selector: "cancelTransfer")
                     
                 } catch _ {
                     
@@ -561,7 +572,8 @@ extension DocumentPickerViewController: UITableViewDataSource {
                 dir = CCUtility.trasformedFileNamePlist(inCrypto: recordTableMetadata!.fileName)
             }
         
-            nextViewController.mode = self.mode
+            nextViewController.parameterMode = parameterMode
+            nextViewController.parameterOriginalURL = parameterOriginalURL
             nextViewController.localServerUrl = CCUtility.stringAppendServerUrl(localServerUrl!, addServerUrl: dir)
             nextViewController.titleFolder = recordTableMetadata?.fileNamePrint
         
