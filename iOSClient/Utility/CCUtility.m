@@ -609,6 +609,12 @@
     }
 }
 
++ (void)createSymbolicLinkAtURL:(NSURL *)atURL destinationURL:( NSURL *)destinationURL
+{
+    [[NSFileManager defaultManager] removeItemAtURL:destinationURL error:nil];
+    [[NSFileManager defaultManager] createSymbolicLinkAtURL:atURL withDestinationURL:destinationURL error:nil];
+}
+
 + (void)removeAllFileID_UPLOAD_ActiveUser:(NSString *)activeUser activeUrl:(NSString *)activeUrl
 {
     NSString *file;

@@ -32,14 +32,15 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
     lazy var fileCoordinator: NSFileCoordinator = {
     
         let fileCoordinator = NSFileCoordinator()
-        fileCoordinator.purposeIdentifier = self.providerIdentifier
+        fileCoordinator.purposeIdentifier = self.parameterProviderIdentifier
         return fileCoordinator
         
     }()
     
     var parameterMode : UIDocumentPickerMode?
     var parameterOriginalURL: URL?
-
+    var parameterProviderIdentifier: String!
+    
     var metadata : CCMetadata?
     var recordsTableMetadata : [TableMetadata]?
     var titleFolder : String?
@@ -136,6 +137,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
     
     override func prepareForPresentation(in mode: UIDocumentPickerMode) {
         
+        // ------------------> Settings parameter ----------------
         if parameterMode == nil {
             parameterMode = mode
         }
@@ -143,6 +145,11 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         if parameterOriginalURL == nil && originalURL != nil {
             parameterOriginalURL = originalURL
         }
+        
+        if parameterProviderIdentifier == nil {
+            parameterProviderIdentifier = providerIdentifier
+        }
+        // -------------------------------------------------------
         
         switch mode {
             
@@ -355,8 +362,9 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
     func uploadFileSuccess(_ fileID: String!, serverUrl: String!, selector: String!, selectorPost: String!) {
         
         hud.hideHud()
+        let url = URL(string: "file://\(directoryUser!)/\(fileID!)".addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!)
         
-        dismissGrantingAccess(to: parameterOriginalURL)
+        dismissGrantingAccess(to: nil)
     }
     
     //  MARK: - Download Thumbnail
@@ -574,6 +582,7 @@ extension DocumentPickerViewController: UITableViewDataSource {
         
             nextViewController.parameterMode = parameterMode
             nextViewController.parameterOriginalURL = parameterOriginalURL
+            nextViewController.parameterProviderIdentifier = parameterProviderIdentifier
             nextViewController.localServerUrl = CCUtility.stringAppendServerUrl(localServerUrl!, addServerUrl: dir)
             nextViewController.titleFolder = recordTableMetadata?.fileNamePrint
         
