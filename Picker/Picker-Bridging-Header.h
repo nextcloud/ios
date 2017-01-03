@@ -9,3 +9,5 @@
 #import "CCCoreData.h"
 #import "CCGlobal.h"
 #import "CCHud.h"
+#import "BKPasscodeViewController.h"
+#import "CCBKPasscode.h"

@@ -23,7 +23,7 @@
 
 import UIKit
 
-class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCNetworkingDelegate, OCNetworkingDelegate {
+class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCNetworkingDelegate, OCNetworkingDelegate, BKPasscodeViewControllerDelegate {
     
     // MARK: - Properties
     
@@ -59,6 +59,9 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
     var thumbnailInLoading = [String: IndexPath]()
     var destinationURL : URL?
     
+    var failedAttempts : UInt?
+    var lockUntilDate : Date?
+    
     lazy var networkingOperationQueue : OperationQueue = {
         
         var queue = OperationQueue()
@@ -73,7 +76,6 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
     // MARK: - IBOutlets
     
     @IBOutlet weak var tableView: UITableView!
-    
     @IBOutlet weak var toolBar: UIToolbar!
     @IBOutlet weak var saveButton: UIBarButtonItem!
     
@@ -132,6 +134,15 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         }
         
         readFolder()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        
+        super.viewWillAppear(animated)
+        
+        if CCUtility.getBlockCode().characters.count > 0 && CCUtility.getOnlyLockDir() == false {
+            openBKPasscode()
+        }
     }
     
     // MARK: - Overridden Instance Methods
@@ -431,7 +442,7 @@ extension DocumentPickerViewController {
             
             self.destinationURL = appGroupContainerURL()?.appendingPathComponent(fileName)
             
-            // copy sourceURL on DirectoryUser
+            // copy sourceURL on directoryUser
             do {
                 try FileManager.default.removeItem(at: destinationURLDirectoryUser)
             } catch _ {
@@ -505,6 +516,72 @@ extension DocumentPickerViewController {
         }
         
         return storagePathUrl
+    }
+    
+    func openBKPasscode() {
+        
+        let viewController = CCBKPasscode.init()
+        
+        viewController.delegate = self
+        viewController.type = BKPasscodeViewControllerCheckPasscodeType
+        viewController.inputViewTitlePassword = true
+        
+        if CCUtility.getSimplyBlockCode() {
+            
+            viewController.passcodeStyle = BKPasscodeInputViewNumericPasscodeStyle
+            viewController.passcodeInputView.maximumLength = 6
+            
+        } else {
+            
+            viewController.passcodeStyle = BKPasscodeInputViewNormalPasscodeStyle
+            viewController.passcodeInputView.maximumLength = 64
+        }
+        
+        let touchIDManager = BKTouchIDManager.init(keychainServiceName: BKPasscodeKeychainServiceName)
+        touchIDManager?.promptText = NSLocalizedString("_scan_fingerprint_", comment: "")
+        viewController.touchIDManager = touchIDManager
+        
+#if CC
+        viewController.title = "Crypto Cloud"
+#endif
+
+#if NC
+        viewController.title = "Nextcloud"
+#endif
+        
+        viewController.navigationItem.leftBarButtonItem = UIBarButtonItem.init(barButtonSystemItem: UIBarButtonSystemItem.cancel, target: self, action: #selector(passcodeViewCloseButtonPressed(sender:)))
+        viewController.navigationItem.leftBarButtonItem?.tintColor = UIColor(colorLiteralRed: 241.0/255.0, green: 90.0/255.0, blue: 34.0/255.0, alpha: 1.0) // COLOR_ENCRYPTED
+        
+        let navController = UINavigationController.init(rootViewController: viewController)
+        self.present(navController, animated: true, completion: nil)
+    }
+
+    func passcodeViewControllerNumber(ofFailedAttempts aViewController: BKPasscodeViewController!) -> UInt {
+        return 0
+    }
+    
+    func passcodeViewControllerLock(untilDate aViewController: BKPasscodeViewController!) -> Date! {
+        return nil
+    }
+    
+    func passcodeViewCloseButtonPressed(sender :Any) {
+        dismiss(animated: true, completion: {
+            self.dismissGrantingAccess(to: nil)
+        })
+    }
+    
+    func passcodeViewController(_ aViewController: BKPasscodeViewController!, authenticatePasscode aPasscode: String!, resultHandler aResultHandler: ((Bool) -> Void)!) {
+        if aPasscode == CCUtility.getBlockCode() {
+            lockUntilDate = nil
+            failedAttempts = 0
+            aResultHandler(true)
+        } else {
+            aResultHandler(false)
+        }
+    }
+    
+    public func passcodeViewController(_ aViewController: BKPasscodeViewController!, didFinishWithPasscode aPasscode: String!) {
+        aViewController.dismiss(animated: true, completion: nil)
     }
 }
 
