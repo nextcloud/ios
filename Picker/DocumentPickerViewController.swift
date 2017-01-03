@@ -40,7 +40,8 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
     var parameterMode : UIDocumentPickerMode?
     var parameterOriginalURL: URL?
     var parameterProviderIdentifier: String!
-    
+    var parameterPasscodeCorrect: Bool? = false
+
     var metadata : CCMetadata?
     var recordsTableMetadata : [TableMetadata]?
     var titleFolder : String?
@@ -140,7 +141,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         
         super.viewWillAppear(animated)
         
-        if CCUtility.getBlockCode().characters.count > 0 && CCUtility.getOnlyLockDir() == false {
+        if CCUtility.getBlockCode().characters.count > 0 && CCUtility.getOnlyLockDir() == false && parameterPasscodeCorrect == false {
             openBKPasscode()
         }
     }
@@ -581,6 +582,7 @@ extension DocumentPickerViewController {
     }
     
     public func passcodeViewController(_ aViewController: BKPasscodeViewController!, didFinishWithPasscode aPasscode: String!) {
+        parameterPasscodeCorrect = true
         aViewController.dismiss(animated: true, completion: nil)
     }
 }
@@ -692,6 +694,7 @@ extension DocumentPickerViewController: UITableViewDataSource {
             nextViewController.parameterMode = parameterMode
             nextViewController.parameterOriginalURL = parameterOriginalURL
             nextViewController.parameterProviderIdentifier = parameterProviderIdentifier
+            nextViewController.parameterPasscodeCorrect = parameterPasscodeCorrect
             nextViewController.localServerUrl = CCUtility.stringAppendServerUrl(localServerUrl!, addServerUrl: dir)
             nextViewController.titleFolder = recordTableMetadata?.fileNamePrint
         
