@@ -735,6 +735,12 @@
     item.image = [UIImage imageNamed:image_tabBarFile];
     item.selectedImage = [UIImage imageNamed:image_tabBarFile];
     
+    /*
+    item.enabled = false;
+    item.image = nil;
+    item.title = nil;
+    */
+    
     // Favorite - Local
     item = [tabBarController.tabBar.items objectAtIndex:TabBarApplicationIndexFavorite];
     if (app.isLocalStorage) {
@@ -758,6 +764,7 @@
     [item setTitle:NSLocalizedString(@"_settings_", nil)];
     item.image = [UIImage imageNamed:image_tabBarSettings];
     item.selectedImage = [UIImage imageNamed:image_tabBarSettings];
+    
 }
 
 - (BOOL)plusButton:(BOOL)visible
@@ -775,21 +782,30 @@
         button.tag = 99;
         button.frame = CGRectMake(0.0, 0.0, buttonImage.size.width, buttonImage.size.height);
         [button setBackgroundImage:buttonImage forState:UIControlStateNormal];
-        
+        [button setBackgroundImage:buttonImage forState:UIControlStateHighlighted];
+        [button addTarget:self action:@selector(handleTouchTabbarCenter:) forControlEvents:UIControlEventTouchUpInside];
+
+        button.autoresizingMask = UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleTopMargin;
+
         CGFloat heightDifference = buttonImage.size.height - tabBarController.tabBar.frame.size.height;
-        if (heightDifference < 0)
+        if (heightDifference < 0) {
             button.center = tabBarController.tabBar.center;
-        else {
+        } else {
             CGPoint center = tabBarController.tabBar.center;
-            center.y = center.y - 24;//- heightDifference/2.0;
+            center.y = center.y - 15;
             button.center = center;
         }
-        
+
         [tabBarController.view addSubview:button];
     }
     
     if (buttonPlus) return true;
     else return false;
+}
+
+- (void)handleTouchTabbarCenter:(id)sender
+{
+    
 }
 
 - (void)updateApplicationIconBadgeNumber
