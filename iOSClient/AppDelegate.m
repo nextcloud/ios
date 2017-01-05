@@ -217,10 +217,13 @@
     [self.window setTintColor:COLOR_BRAND];
     
     UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
+    UITabBarController *tabBarController = [splitViewController.viewControllers firstObject];
     UINavigationController *navigationController = [splitViewController.viewControllers lastObject];
-    
+
     navigationController.topViewController.navigationItem.leftBarButtonItem = splitViewController.displayModeButtonItem;
     splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeAllVisible;
+    
+    // Settings TabBar
     
     // passcode
     [[BKPasscodeLockScreenManager sharedManager] setDelegate:self];
