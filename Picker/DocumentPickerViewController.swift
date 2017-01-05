@@ -62,8 +62,9 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
     var thumbnailInLoading = [String: IndexPath]()
     var destinationURL : URL?
     
-    var failedAttempts : UInt?
-    var lockUntilDate : Date?
+    var passcodeFailedAttempts : UInt = 0
+    var passcodeLockUntilDate : Date? = nil
+    var passcodeIsPush: Bool? = false
     
     lazy var networkingOperationQueue : OperationQueue = {
         
@@ -159,8 +160,16 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         super.viewWillAppear(animated)
         
         if CCUtility.getBlockCode().characters.count > 0 && CCUtility.getOnlyLockDir() == false && parameterPasscodeCorrect == false {
-            openBKPasscode()
+            openBKPasscode("Nextcloud")
         }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        
+        // remove all networking operation
+        networkingOperationQueue.cancelAllOperations()
+        
+        super.viewWillDisappear(animated)
     }
     
     // MARK: - Overridden Instance Methods
@@ -305,6 +314,46 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         hud.hideHud()
     }
     
+    //  MARK: - Download Thumbnail
+    
+    func downloadThumbnailFailure(_ metadataNet: CCMetadataNet!, message: String!, errorCode: Int) {
+        
+        NSLog("[LOG] Thumbnail Error \(metadataNet.fileName) \(message) (error \(errorCode))");
+    }
+    
+    func downloadThumbnailSuccess(_ metadataNet: CCMetadataNet!) {
+        
+        if let indexPath = thumbnailInLoading[metadataNet.fileID] {
+            
+            let path = "\(directoryUser!)/\(metadataNet.fileID!).ico"
+            
+            if FileManager.default.fileExists(atPath: path) {
+                
+                if let cell = tableView.cellForRow(at: indexPath) as? recordMetadataCell {
+                    
+                    cell.fileImageView.image = UIImage(contentsOfFile: path)
+                }
+            }
+        }
+    }
+    
+    func downloadThumbnail(_ metadata : CCMetadata) {
+        
+        let metadataNet = CCMetadataNet.init(account: activeAccount)!
+        
+        metadataNet.action = actionDownloadThumbnail
+        metadataNet.fileID = metadata.fileID
+        metadataNet.fileName = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: localServerUrl, activeUrl: activeUrl, typeCloud: typeCloud)
+        metadataNet.fileNameLocal = metadata.fileID;
+        metadataNet.fileNamePrint = metadata.fileNamePrint;
+        metadataNet.options = "m";
+        metadataNet.selector = selectorDownloadThumbnail;
+        metadataNet.serverUrl = localServerUrl
+        
+        let ocNetworking : OCnetworking = OCnetworking.init(delegate: self, metadataNet: metadataNet, withUser: activeUser, withPassword: activePassword, withUrl: activeUrl, withTypeCloud: typeCloud, activityIndicator: false)
+        networkingOperationQueue.addOperation(ocNetworking)
+    }
+
     //  MARK: - Download / Upload
     
     func progressTask(_ fileID: String!, serverUrl: String!, cryptated: Bool, progress: Float) {
@@ -395,46 +444,6 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         hud.hideHud()
         
         dismissGrantingAccess(to: self.destinationURL)
-    }
-    
-    //  MARK: - Download Thumbnail
-
-    func downloadThumbnailFailure(_ metadataNet: CCMetadataNet!, message: String!, errorCode: Int) {
-        
-        NSLog("[LOG] Thumbnail Error \(metadataNet.fileName) \(message) (error \(errorCode))");
-    }
-    
-    func downloadThumbnailSuccess(_ metadataNet: CCMetadataNet!) {
-        
-        if let indexPath = thumbnailInLoading[metadataNet.fileID] {
-
-            let path = "\(directoryUser!)/\(metadataNet.fileID!).ico"
-            
-            if FileManager.default.fileExists(atPath: path) {
-                
-                if let cell = tableView.cellForRow(at: indexPath) as? recordMetadataCell {
-                    
-                    cell.fileImageView.image = UIImage(contentsOfFile: path)
-                }
-            }
-        }
-    }
-    
-    func downloadThumbnail(_ metadata : CCMetadata) {
-    
-        let metadataNet = CCMetadataNet.init(account: activeAccount)!
-        
-        metadataNet.action = actionDownloadThumbnail
-        metadataNet.fileID = metadata.fileID
-        metadataNet.fileName = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: localServerUrl, activeUrl: activeUrl, typeCloud: typeCloud)
-        metadataNet.fileNameLocal = metadata.fileID;
-        metadataNet.fileNamePrint = metadata.fileNamePrint;
-        metadataNet.options = "m";
-        metadataNet.selector = selectorDownloadThumbnail;
-        metadataNet.serverUrl = localServerUrl
-
-        let ocNetworking : OCnetworking = OCnetworking.init(delegate: self, metadataNet: metadataNet, withUser: activeUser, withPassword: activePassword, withUrl: activeUrl, withTypeCloud: typeCloud, activityIndicator: false)
-        networkingOperationQueue.addOperation(ocNetworking)
     }
 }
 
@@ -550,7 +559,9 @@ extension DocumentPickerViewController {
         return storagePathUrl
     }
     
-    func openBKPasscode() {
+    // MARK: - Passcode
+    
+    func openBKPasscode(_ title : String) {
         
         let viewController = CCBKPasscode.init()
         
@@ -572,15 +583,7 @@ extension DocumentPickerViewController {
         let touchIDManager = BKTouchIDManager.init(keychainServiceName: BKPasscodeKeychainServiceName)
         touchIDManager?.promptText = NSLocalizedString("_scan_fingerprint_", comment: "")
         viewController.touchIDManager = touchIDManager
-        
-#if CC
-        viewController.title = "Crypto Cloud"
-#endif
-
-#if NC
-        viewController.title = "Nextcloud"
-#endif
-        
+        viewController.title = title
         viewController.navigationItem.leftBarButtonItem = UIBarButtonItem.init(barButtonSystemItem: UIBarButtonSystemItem.cancel, target: self, action: #selector(passcodeViewCloseButtonPressed(sender:)))
         viewController.navigationItem.leftBarButtonItem?.tintColor = colorEncrypted
         
@@ -589,23 +592,43 @@ extension DocumentPickerViewController {
     }
 
     func passcodeViewControllerNumber(ofFailedAttempts aViewController: BKPasscodeViewController!) -> UInt {
-        return 0
+        
+        return passcodeFailedAttempts
     }
     
     func passcodeViewControllerLock(untilDate aViewController: BKPasscodeViewController!) -> Date! {
-        return nil
+        
+        return passcodeLockUntilDate
     }
     
-    func passcodeViewCloseButtonPressed(sender :Any) {
-        dismiss(animated: true, completion: {
-            self.dismissGrantingAccess(to: nil)
-        })
+    func passcodeViewControllerDidFailAttempt(_ aViewController: BKPasscodeViewController!) {
+        
+        passcodeFailedAttempts += 1
+        
+        if passcodeFailedAttempts > 5 {
+            
+            var timeInterval: TimeInterval = 60
+            
+            if passcodeFailedAttempts > 6 {
+                
+                let multiplier = passcodeFailedAttempts - 6
+                
+                timeInterval = TimeInterval(5 * 60 * multiplier)
+                
+                if timeInterval > 3600 * 24 {
+                    timeInterval = 3600 * 24
+                }
+            }
+            
+            passcodeLockUntilDate = Date.init(timeIntervalSinceNow: timeInterval)
+        }
     }
     
     func passcodeViewController(_ aViewController: BKPasscodeViewController!, authenticatePasscode aPasscode: String!, resultHandler aResultHandler: ((Bool) -> Void)!) {
+        
         if aPasscode == CCUtility.getBlockCode() {
-            lockUntilDate = nil
-            failedAttempts = 0
+            passcodeLockUntilDate = nil
+            passcodeFailedAttempts = 0
             aResultHandler(true)
         } else {
             aResultHandler(false)
@@ -613,8 +636,16 @@ extension DocumentPickerViewController {
     }
     
     public func passcodeViewController(_ aViewController: BKPasscodeViewController!, didFinishWithPasscode aPasscode: String!) {
+        
         parameterPasscodeCorrect = true
         aViewController.dismiss(animated: true, completion: nil)
+    }
+    
+    func passcodeViewCloseButtonPressed(sender :Any) {
+        
+        dismiss(animated: true, completion: {
+            self.dismissGrantingAccess(to: nil)
+        })
     }
 }
 
