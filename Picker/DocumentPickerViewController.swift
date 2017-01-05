@@ -158,8 +158,13 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
     override func viewWillAppear(_ animated: Bool) {
         
         super.viewWillAppear(animated)
+    
+        // String is nil or empty
+        guard let passcode = CCUtility.getBlockCode(), !passcode.isEmpty else {
+            return
+        }
         
-        if CCUtility.getBlockCode().characters.count > 0 && CCUtility.getOnlyLockDir() == false && parameterPasscodeCorrect == false {
+        if CCUtility.getOnlyLockDir() == false && parameterPasscodeCorrect == false {
             openBKPasscode("Nextcloud")
         }
     }
@@ -713,6 +718,11 @@ extension DocumentPickerViewController: UITableViewDataSource {
         let recordTableMetadata = recordsTableMetadata?[(indexPath as NSIndexPath).row]
 
         tableView.deselectRow(at: indexPath, animated: true)
+        
+        // Error passcode ?
+        if (recordTableMetadata?.errorPasscode == 1) {
+            return
+        }
         
         if recordTableMetadata!.directory == 0 {
             
