@@ -23,7 +23,7 @@
 "_folder_contents_nochanged_"           = "The folder contents have not changed";
 "_images_invalid_converted_"            = "The image is invalid and cannot be converted to a thumbnail";
 "_method_not_expected_"                 = "Request method not expected";
-"_reauthenticate_user_"                 = "Access expired, plase re-authenticate the user";
+"_reauthenticate_user_"                 = "Access expired, please re-authenticate the user";
 "_server_error_retry_"                  = "Server error, retry the request";
 "_too_many_files_"                      = "Too many files would be involved in this operation to complete successfully";
 "_too_many_request_"                    = "Rate limit is reached - too many requests were send";
