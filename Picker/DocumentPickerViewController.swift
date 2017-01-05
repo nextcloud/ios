@@ -139,12 +139,15 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         
         // Encrypted mode
         encryptedButton.image = UIImage(named:image_shareExtEncrypt)?.withRenderingMode(.automatic)
-        
+
+        // Color Button
         if parameterEncrypted == true {
             encryptedButton.tintColor = UIColor(colorLiteralRed: 241.0/255.0, green: 90.0/255.0, blue: 34.0/255.0, alpha: 1)
         } else {
             encryptedButton.tintColor = self.view.tintColor
+            
         }
+        saveButton.tintColor = encryptedButton.tintColor
         
         readFolder()
     }
@@ -181,23 +184,25 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         case .exportToService:
             
             print("Document Picker Mode : exportToService")
-            saveButton.title = "Save in this position"
+            saveButton.title = NSLocalizedString("_save_document_picker_", comment: "") // Save in this position
             
         case .moveToService:
             
             //Show confirmation button
             print("Document Picker Mode : moveToService")
-            saveButton.title = "Save in this position"
+            saveButton.title = NSLocalizedString("_save_document_picker_", comment: "") // Save in this position
             
         case .open:
             
             print("Document Picker Mode : open")
             saveButton.tintColor = UIColor.clear
+            encryptedButton.tintColor = UIColor.clear
             
         case .import:
             
             print("Document Picker Mode : import")
             saveButton.tintColor = UIColor.clear
+            encryptedButton.tintColor = UIColor.clear
         }
     }
 
@@ -445,7 +450,8 @@ extension DocumentPickerViewController {
         } else {
             encryptedButton.tintColor = self.view.tintColor
         }
-
+        
+        saveButton.tintColor = encryptedButton.tintColor
     }
     
     @IBAction func saveButtonTapped(_ sender: AnyObject) {
