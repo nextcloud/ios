@@ -41,6 +41,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
     var parameterOriginalURL: URL?
     var parameterProviderIdentifier: String!
     var parameterPasscodeCorrect: Bool? = false
+    var parameterEncrypted: Bool? = false
 
     var metadata : CCMetadata?
     var recordsTableMetadata : [TableMetadata]?
@@ -79,7 +80,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var toolBar: UIToolbar!
     @IBOutlet weak var saveButton: UIBarButtonItem!
-    @IBOutlet weak var encryptButton: UIBarButtonItem!
+    @IBOutlet weak var encryptedButton: UIBarButtonItem!
 
     
     // MARK: - View Life Cycle
@@ -136,9 +137,14 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
             prepareForPresentation(in: parameterMode!)
         }
         
-        //
-        //UIImage *icon = [[UIImage imageNamed:image_shareExtEncrypt] imageWithRenderingMode:UIImageRenderingModeAutomatic];
-        encryptButton.image = UIImage(named:image_shareExtEncrypt)?.withRenderingMode(.automatic)
+        // Encrypted mode
+        encryptedButton.image = UIImage(named:image_shareExtEncrypt)?.withRenderingMode(.automatic)
+        
+        if parameterEncrypted == true {
+            encryptedButton.tintColor = UIColor(colorLiteralRed: 241.0/255.0, green: 90.0/255.0, blue: 34.0/255.0, alpha: 1)
+        } else {
+            encryptedButton.tintColor = self.view.tintColor
+        }
         
         readFolder()
     }
@@ -430,6 +436,18 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
 
 extension DocumentPickerViewController {
     
+    @IBAction func encryptedButtonTapped(_ sender: AnyObject) {
+
+        parameterEncrypted = !parameterEncrypted!
+        
+        if parameterEncrypted == true {
+            encryptedButton.tintColor = UIColor(colorLiteralRed: 241.0/255.0, green: 90.0/255.0, blue: 34.0/255.0, alpha: 1)
+        } else {
+            encryptedButton.tintColor = self.view.tintColor
+        }
+
+    }
+    
     @IBAction func saveButtonTapped(_ sender: AnyObject) {
         
         guard let sourceURL = parameterOriginalURL else {
@@ -479,7 +497,7 @@ extension DocumentPickerViewController {
                     let metadataNet = CCMetadataNet.init(account: self!.activeAccount)!
                     
                     metadataNet.action = actionUploadFile
-                    metadataNet.cryptated = false
+                    metadataNet.cryptated = self!.parameterEncrypted!
                     metadataNet.fileName = fileName
                     metadataNet.fileNamePrint = fileName
                     metadataNet.serverUrl = self!.localServerUrl
@@ -701,6 +719,7 @@ extension DocumentPickerViewController: UITableViewDataSource {
             nextViewController.parameterOriginalURL = parameterOriginalURL
             nextViewController.parameterProviderIdentifier = parameterProviderIdentifier
             nextViewController.parameterPasscodeCorrect = parameterPasscodeCorrect
+            nextViewController.parameterEncrypted = parameterEncrypted
             nextViewController.localServerUrl = CCUtility.stringAppendServerUrl(localServerUrl!, addServerUrl: dir)
             nextViewController.titleFolder = recordTableMetadata?.fileNamePrint
         
