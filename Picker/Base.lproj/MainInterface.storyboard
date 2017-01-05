@@ -30,7 +30,7 @@
                                         <rect key="frame" x="0.0" y="28" width="375" height="50"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="0H6-U8-fd4" id="44X-Sr-gc0">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="49.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="49"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Wk9-rb-4yv">
@@ -69,6 +69,7 @@
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                 <items>
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="Wcn-Rh-qba"/>
+                                    <barButtonItem image="image_shareExtEncrypt" id="5yO-2s-n3Y" userLabel="Encrypt"/>
                                     <barButtonItem title="title" id="LlY-NF-IiS" userLabel="Save">
                                         <connections>
                                             <action selector="saveButtonTapped:" destination="J6p-g8-CHO" id="oZp-Hv-neh"/>
@@ -87,6 +88,7 @@
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="encryptButton" destination="5yO-2s-n3Y" id="oHZ-7B-nci"/>
                         <outlet property="saveButton" destination="LlY-NF-IiS" id="Vh2-iV-omb"/>
                         <outlet property="tableView" destination="vA7-yc-aM1" id="nuO-LH-LFc"/>
                         <outlet property="toolBar" destination="kOP-Rg-Mvb" id="lu3-pV-yxw"/>
@@ -97,4 +99,7 @@
             <point key="canvasLocation" x="120.8" y="141.67916041979012"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="image_shareExtEncrypt" width="16" height="16"/>
+    </resources>
 </document>

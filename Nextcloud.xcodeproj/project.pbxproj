@@ -1502,12 +1502,6 @@
 		F7EC9CCE1C4FA803008122B5 /* TableShare.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TableShare.m; sourceTree = "<group>"; };
 		F7EF0CAC1D9E95EC00A9D15E /* CCSharedDBSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = CCSharedDBSession.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		F7EF0CAD1D9E95F400A9D15E /* CCSharedDBSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = CCSharedDBSession.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		F7F052841DA5382D006F5E69 /* cs */ = {isa = PBXFileReference; lastKnownFileType = text; name = cs; path = cs.lproj/TTOpenInAppActivityLocalizable.string; sourceTree = "<group>"; };
-		F7F052851DA5382D006F5E69 /* cs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs; path = cs.lproj/BKPasscodeView.strings; sourceTree = "<group>"; };
-		F7F052861DA5382D006F5E69 /* cs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs; path = cs.lproj/Localizable.strings; sourceTree = "<group>"; };
-		F7F052871DA5382D006F5E69 /* cs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs; path = cs.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		F7F052881DA5382E006F5E69 /* cs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs; path = cs.lproj/Intro.strings; sourceTree = "<group>"; };
-		F7F052891DA5382E006F5E69 /* cs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs; path = cs.lproj/Error.strings; sourceTree = "<group>"; };
 		F7F0617A1BAACDD300846525 /* CryptoCloud.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CryptoCloud.pch; sourceTree = "<group>"; };
 		F7F06E2B1DBFACC600099AE9 /* CTAssetsPageViewController+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CTAssetsPageViewController+Internal.h"; sourceTree = "<group>"; };
 		F7F06E2C1DBFACC600099AE9 /* CTAssetsPickerController+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CTAssetsPickerController+Internal.h"; sourceTree = "<group>"; };
@@ -3409,7 +3403,6 @@
 				it,
 				fr,
 				de,
-				cs,
 				Base,
 			);
 			mainGroup = F7F67B9F1A24D27800EE80DA;
@@ -4194,7 +4187,6 @@
 				F7151A861D477A5400E6AF45 /* it */,
 				F7818A101D99480E00CD5029 /* fr */,
 				F7D96F0B1D99498600A587A5 /* de */,
-				F7F052851DA5382D006F5E69 /* cs */,
 			);
 			name = BKPasscodeView.strings;
 			sourceTree = "<group>";
@@ -4215,7 +4207,6 @@
 				F7151A891D477A5500E6AF45 /* it */,
 				F7818A131D99480F00CD5029 /* fr */,
 				F7D96F0E1D99498700A587A5 /* de */,
-				F7F052881DA5382E006F5E69 /* cs */,
 			);
 			name = Intro.strings;
 			sourceTree = "<group>";
@@ -4228,7 +4219,6 @@
 				F7151A8A1D477A5500E6AF45 /* it */,
 				F7818A141D99480F00CD5029 /* fr */,
 				F7D96F0F1D99498700A587A5 /* de */,
-				F7F052891DA5382E006F5E69 /* cs */,
 			);
 			name = Error.strings;
 			sourceTree = "<group>";
@@ -4241,7 +4231,6 @@
 				F7151A851D477A5400E6AF45 /* it */,
 				F7818A0F1D99480E00CD5029 /* fr */,
 				F7D96F0A1D99498600A587A5 /* de */,
-				F7F052841DA5382D006F5E69 /* cs */,
 			);
 			name = TTOpenInAppActivityLocalizable.string;
 			sourceTree = "<group>";
@@ -4254,7 +4243,6 @@
 				F7151A881D477A5400E6AF45 /* it */,
 				F7818A121D99480F00CD5029 /* fr */,
 				F7D96F0D1D99498600A587A5 /* de */,
-				F7F052871DA5382D006F5E69 /* cs */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -4267,7 +4255,6 @@
 				F7151A871D477A5400E6AF45 /* it */,
 				F7818A111D99480E00CD5029 /* fr */,
 				F7D96F0C1D99498600A587A5 /* de */,
-				F7F052861DA5382D006F5E69 /* cs */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";

@@ -79,6 +79,8 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var toolBar: UIToolbar!
     @IBOutlet weak var saveButton: UIBarButtonItem!
+    @IBOutlet weak var encryptButton: UIBarButtonItem!
+
     
     // MARK: - View Life Cycle
     
@@ -133,6 +135,10 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         if parameterMode != nil {
             prepareForPresentation(in: parameterMode!)
         }
+        
+        //
+        //UIImage *icon = [[UIImage imageNamed:image_shareExtEncrypt] imageWithRenderingMode:UIImageRenderingModeAutomatic];
+        encryptButton.image = UIImage(named:image_shareExtEncrypt)?.withRenderingMode(.automatic)
         
         readFolder()
     }
