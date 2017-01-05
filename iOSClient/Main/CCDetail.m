@@ -95,6 +95,8 @@
         self.tabBarController.tabBar.hidden = YES;
         self.tabBarController.tabBar.translucent = YES;
     }
+    
+    [app plusButton:false];
 }
 
 - (void)viewDidAppear:(BOOL)animated

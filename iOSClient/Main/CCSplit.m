@@ -70,8 +70,11 @@
     }
 }
 
+
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
 {
+    BOOL buttonPlus = [app plusButton:false];
+    
     [coordinator animateAlongsideTransition:nil completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
         
         if (self.view.frame.size.width == ([[UIScreen mainScreen] bounds].size.width*([[UIScreen mainScreen] bounds].size.width<[[UIScreen mainScreen] bounds].size.height))+([[UIScreen mainScreen] bounds].size.height*([[UIScreen mainScreen] bounds].size.width>[[UIScreen mainScreen] bounds].size.height))) {
@@ -82,6 +85,9 @@
             
             // Landscape
         }
+        
+        if (buttonPlus)
+            [app plusButton:true];
     }];
     
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];

@@ -199,6 +199,9 @@
     [self createReSelectMenu];
     if (_isSelectedMode) [self setUINavigationBarSeleziona];
     else [self setUINavigationBarDefault];
+    
+    // Plus Button
+    [app plusButton:true];
 }
 
 // E' arrivato

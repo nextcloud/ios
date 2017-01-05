@@ -175,6 +175,9 @@
 - (void)updateApplicationIconBadgeNumber;
 - (BOOL)handleShortCutItem:(UIApplicationShortcutItem *)shortcutItem;
 
+- (BOOL)isVisiblePlusButton;
+- (BOOL)plusButton:(BOOL)visible;
+
 // Operation Networking
 - (void)cancelAllOperations;
 - (void)addNetworkingOperationQueue:(NSOperationQueue *)netQueue delegate:(id)delegate metadataNet:(CCMetadataNet *)metadataNet;
