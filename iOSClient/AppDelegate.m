@@ -224,6 +224,7 @@
     splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeAllVisible;
     
     // Settings TabBar
+    [self createTabBarController:tabBarController];
     
     // passcode
     [[BKPasscodeLockScreenManager sharedManager] setDelegate:self];
@@ -811,6 +812,64 @@
         else
             [tbItem setBadgeValue:nil];
     }
+}
+
+- (void)createTabBarController:(UITabBarController *)tabBarController
+{
+    UITabBarItem *item;
+    
+    [CCAspect aspectTabBar:tabBarController.tabBar hidden:NO];
+    
+    // File
+    item = [tabBarController.tabBar.items objectAtIndex:TabBarApplicationIndexFile];
+    [item setTitle:NSLocalizedString(@"_home_", nil)];
+    item.image = [UIImage imageNamed:image_tabBarFile];
+    item.selectedImage = [UIImage imageNamed:image_tabBarFile];
+    
+    // Favorite - Local
+    item = [tabBarController.tabBar.items objectAtIndex:TabBarApplicationIndexFavorite];
+    if (app.isLocalStorage) {
+        [item setTitle:NSLocalizedString(@"_local_storage_", nil)];
+        item.image = [UIImage imageNamed:image_tabBarLocal];
+        item.selectedImage = [UIImage imageNamed:image_tabBarLocal];
+    } else {
+        [item setTitle:NSLocalizedString(@"_favorites_", nil)];
+        item.image = [UIImage imageNamed:image_tabBarFavorite];
+        item.selectedImage = [UIImage imageNamed:image_tabBarFavorite];
+    }
+    
+    // Photos
+    item = [tabBarController.tabBar.items objectAtIndex:TabBarApplicationIndexPhotos];
+    [item setTitle:NSLocalizedString(@"_photo_camera_", nil)];
+    item.image = [UIImage imageNamed:image_tabBarPhotos];
+    item.selectedImage = [UIImage imageNamed:image_tabBarPhotos];
+    
+    // Settings
+    item = [tabBarController.tabBar.items objectAtIndex:TabBarApplicationIndexSettings];
+    [item setTitle:NSLocalizedString(@"_settings_", nil)];
+    item.image = [UIImage imageNamed:image_tabBarSettings];
+    item.selectedImage = [UIImage imageNamed:image_tabBarSettings];
+    
+    /*
+    UIImage *buttonImage = [UIImage imageNamed:image_brandNavigationController];
+    
+    UIButton* button = [UIButton buttonWithType:UIButtonTypeCustom];
+    button.frame = CGRectMake(0.0, 0.0, buttonImage.size.width, buttonImage.size.height);
+    [button setBackgroundImage:buttonImage forState:UIControlStateNormal];
+    //[button setBackgroundImage:highlightImage forState:UIControlStateHighlighted];
+    
+    CGFloat heightDifference = buttonImage.size.height - tabBarController.tabBar.frame.size.height;
+    if (heightDifference < 0)
+        button.center = tabBarController.tabBar.center;
+    else
+    {
+        CGPoint center = tabBarController.tabBar.center;
+        center.y = center.y - heightDifference/2.0;
+        button.center = center;
+    }
+    
+    [tabBarController.view addSubview:button];
+    */ 
 }
 
 #pragma --------------------------------------------------------------------------------------------

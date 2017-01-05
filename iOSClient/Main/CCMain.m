@@ -197,7 +197,6 @@
     // Menu e Bar
     [self createReMainMenu];
     [self createReSelectMenu];
-    [self setUITabBarDefault];
     if (_isSelectedMode) [self setUINavigationBarSeleziona];
     else [self setUINavigationBarDefault];
 }
@@ -506,43 +505,6 @@
         [self.tableView setBackgroundView:nil];
         self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
     }
-}
-
-- (void)setUITabBarDefault
-{
-    UITabBarItem *item;
-    
-    [CCAspect aspectTabBar:self.tabBarController.tabBar hidden:NO];
-    
-    // File
-    item = [self.tabBarController.tabBar.items objectAtIndex:TabBarApplicationIndexFile];
-    [item setTitle:NSLocalizedString(@"_home_", nil)];
-    item.image = [UIImage imageNamed:image_tabBarFile];
-    item.selectedImage = [UIImage imageNamed:image_tabBarFile];
-    
-    // Favorite - Local
-    item = [self.tabBarController.tabBar.items objectAtIndex:TabBarApplicationIndexFavorite];
-    if (app.isLocalStorage) {
-        [item setTitle:NSLocalizedString(@"_local_storage_", nil)];
-        item.image = [UIImage imageNamed:image_tabBarLocal];
-        item.selectedImage = [UIImage imageNamed:image_tabBarLocal];
-    } else {
-        [item setTitle:NSLocalizedString(@"_favorites_", nil)];
-        item.image = [UIImage imageNamed:image_tabBarFavorite];
-        item.selectedImage = [UIImage imageNamed:image_tabBarFavorite];
-    }
-    
-    // Photos
-    item = [self.tabBarController.tabBar.items objectAtIndex:TabBarApplicationIndexPhotos];
-    [item setTitle:NSLocalizedString(@"_photo_camera_", nil)];
-    item.image = [UIImage imageNamed:image_tabBarPhotos];
-    item.selectedImage = [UIImage imageNamed:image_tabBarPhotos];
-
-    // Settings
-    item = [self.tabBarController.tabBar.items objectAtIndex:TabBarApplicationIndexSettings];
-    [item setTitle:NSLocalizedString(@"_settings_", nil)];
-    item.image = [UIImage imageNamed:image_tabBarSettings];
-    item.selectedImage = [UIImage imageNamed:image_tabBarSettings];
 }
 
 - (void)setUINavigationBarDefault
