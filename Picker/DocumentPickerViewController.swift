@@ -21,6 +21,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+
 import UIKit
 
 class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCNetworkingDelegate, OCNetworkingDelegate, BKPasscodeViewControllerDelegate {
@@ -73,6 +74,8 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         return queue
     }()
     
+    let colorEncrypted = UIColor(colorLiteralRed: 241.0/255.0, green: 90.0/255.0, blue: 34.0/255.0, alpha: 1)
+    
     var hud : CCHud!
     
     // MARK: - IBOutlets
@@ -82,7 +85,6 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
     @IBOutlet weak var saveButton: UIBarButtonItem!
     @IBOutlet weak var encryptedButton: UIBarButtonItem!
 
-    
     // MARK: - View Life Cycle
     
     override func viewDidLoad() {
@@ -142,7 +144,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
 
         // Color Button
         if parameterEncrypted == true {
-            encryptedButton.tintColor = UIColor(colorLiteralRed: 241.0/255.0, green: 90.0/255.0, blue: 34.0/255.0, alpha: 1)
+            encryptedButton.tintColor = colorEncrypted
         } else {
             encryptedButton.tintColor = self.view.tintColor
             
@@ -325,7 +327,6 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
             
             let alert = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: message, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default) { action in
-                //self.dismissGrantingAccess(to: nil)
                 NSLog("[LOG] Download Error \(fileID) \(message) (error \(errorCode))");
             })
             
@@ -446,7 +447,7 @@ extension DocumentPickerViewController {
         parameterEncrypted = !parameterEncrypted!
         
         if parameterEncrypted == true {
-            encryptedButton.tintColor = UIColor(colorLiteralRed: 241.0/255.0, green: 90.0/255.0, blue: 34.0/255.0, alpha: 1)
+            encryptedButton.tintColor = colorEncrypted
         } else {
             encryptedButton.tintColor = self.view.tintColor
         }
@@ -581,7 +582,7 @@ extension DocumentPickerViewController {
 #endif
         
         viewController.navigationItem.leftBarButtonItem = UIBarButtonItem.init(barButtonSystemItem: UIBarButtonSystemItem.cancel, target: self, action: #selector(passcodeViewCloseButtonPressed(sender:)))
-        viewController.navigationItem.leftBarButtonItem?.tintColor = UIColor(colorLiteralRed: 241.0/255.0, green: 90.0/255.0, blue: 34.0/255.0, alpha: 1.0) // COLOR_ENCRYPTED
+        viewController.navigationItem.leftBarButtonItem?.tintColor = colorEncrypted
         
         let navController = UINavigationController.init(rootViewController: viewController)
         self.present(navController, animated: true, completion: nil)
