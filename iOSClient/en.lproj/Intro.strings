@@ -57,7 +57,7 @@
 
 "_intro_191_00_"    = "New options for sharing files or folders.";
 "_intro_191_01_"    = "SHARE";
-"_intro_191_02_"    = "Now you can share a file or folder and remove the share, for accounts ownCloud in addition you can protect sharing with password and if you wanted you can assign expiration date.";
+"_intro_191_02_"    = "Now you can share a file or folder and remove the share. For ownCloud accounts you can protect sharing with password and assign expiration date.";
 "_intro_191_03_"    = "HOW TO";
 "_intro_191_04_"    = "Swipe on the file or folder to share, choose 'More' and select option : Share. (Sharing is not activated on encrypted files or folders).";
 "_intro_191_05_"    = "SETTINGS";
@@ -101,7 +101,7 @@
 "_intro_196_19_"    = "CHANGE PERMISSION [ONLY OWNCLOUD]";
 "_intro_196_20_"    = "In sharing your resources you can: \n\n1) Tap to delete the user/group \n\n2) Tap to change the permissions to him established";
 "_intro_196_21_"    = "PERMISSION AND INFORMATION [ONLY OWNCLOUD]";
-"_intro_196_22_"    = "Here's what the mask to change the permissions, below you will see some information";
+"_intro_196_22_"    = "Here is the mask to change permissions. Below you will see some information";
 
 // Intro 1.97
 
