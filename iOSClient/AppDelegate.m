@@ -225,7 +225,6 @@
     
     // Settings TabBar
     [self createTabBarController];
-    [self plusButton:true];
     
     // passcode
     [[BKPasscodeLockScreenManager sharedManager] setDelegate:self];
@@ -723,6 +722,7 @@
 - (void)createTabBarController
 {
     UITabBarItem *item;
+    NSLayoutConstraint *constraint;
     
     UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
     UITabBarController *tabBarController = [splitViewController.viewControllers firstObject];
@@ -765,39 +765,43 @@
     item.image = [UIImage imageNamed:image_tabBarSettings];
     item.selectedImage = [UIImage imageNamed:image_tabBarSettings];
     
+    // Plus Button
+    UIImage *buttonImage = [UIImage imageNamed:@"Plus"];
+    UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
+    button.tag = 99;
+    button.frame = CGRectMake(0.0, 0.0, buttonImage.size.width, buttonImage.size.height);
+    [button setBackgroundImage:buttonImage forState:UIControlStateNormal];
+    [button setBackgroundImage:buttonImage forState:UIControlStateHighlighted];
+    [button addTarget:self action:@selector(handleTouchTabbarCenter:) forControlEvents:UIControlEventTouchUpInside];
+    
+    [button setTranslatesAutoresizingMaskIntoConstraints:NO];
+    [tabBarController.view addSubview:button];
+    
+    constraint =[NSLayoutConstraint constraintWithItem:button attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:tabBarController.view attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0];
+    
+    [tabBarController.view addConstraint:constraint];
+    
+    constraint =[NSLayoutConstraint constraintWithItem:button attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:tabBarController.view attribute:NSLayoutAttributeBottom multiplier:1.0 constant:-5];
+    
+    [tabBarController.view addConstraint:constraint];
 }
 
-- (void)plusButton:(BOOL)visible
+- (void)plusButtonVisibile:(BOOL)visible
 {
     UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
     UITabBarController *tabBarController = [splitViewController.viewControllers firstObject];
     
     UIButton *buttonPlus = [tabBarController.view viewWithTag:99];
-    if (buttonPlus)
-            [buttonPlus removeFromSuperview];
+    if (buttonPlus) {
 
-    if (visible) {
+        if (visible) {
+            
+            buttonPlus.hidden = false;
         
-        NSLayoutConstraint *constraint;
-        
-        UIImage *buttonImage = [UIImage imageNamed:@"Plus"];
-        UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
-        button.tag = 99;
-        button.frame = CGRectMake(0.0, 0.0, buttonImage.size.width, buttonImage.size.height);
-        [button setBackgroundImage:buttonImage forState:UIControlStateNormal];
-        [button setBackgroundImage:buttonImage forState:UIControlStateHighlighted];
-        [button addTarget:self action:@selector(handleTouchTabbarCenter:) forControlEvents:UIControlEventTouchUpInside];
-
-        [button setTranslatesAutoresizingMaskIntoConstraints:NO];
-        [tabBarController.view addSubview:button];
-
-        constraint =[NSLayoutConstraint constraintWithItem:button attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:tabBarController.view attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0];
-        
-        [tabBarController.view addConstraint:constraint];
-        
-        constraint =[NSLayoutConstraint constraintWithItem:button attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:tabBarController.view attribute:NSLayoutAttributeBottom multiplier:1.0 constant:-5];
-        
-        [tabBarController.view addConstraint:constraint];
+        } else {
+            
+            buttonPlus.hidden = true;
+        }
     }
 }
 

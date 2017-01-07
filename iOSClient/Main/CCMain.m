@@ -201,7 +201,7 @@
     else [self setUINavigationBarDefault];
     
     // Plus Button
-    [app plusButton:true];
+    [app plusButtonVisibile:true];
 }
 
 // E' arrivato
