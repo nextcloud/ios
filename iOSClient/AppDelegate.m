@@ -735,12 +735,6 @@
     item.image = [UIImage imageNamed:image_tabBarFile];
     item.selectedImage = [UIImage imageNamed:image_tabBarFile];
     
-    /*
-    item.enabled = false;
-    item.image = nil;
-    item.title = nil;
-    */
-    
     // Favorite - Local
     item = [tabBarController.tabBar.items objectAtIndex:TabBarApplicationIndexFavorite];
     if (app.isLocalStorage) {
@@ -752,6 +746,12 @@
         item.image = [UIImage imageNamed:image_tabBarFavorite];
         item.selectedImage = [UIImage imageNamed:image_tabBarFavorite];
     }
+    
+    // Hide (PLUS)
+    item = [tabBarController.tabBar.items objectAtIndex:TabBarApplicationIndexHide];
+    item.title = nil;
+    item.image = nil;
+    item.enabled = false;
     
     // Photos
     item = [tabBarController.tabBar.items objectAtIndex:TabBarApplicationIndexPhotos];
@@ -805,7 +805,7 @@
 
 - (void)handleTouchTabbarCenter:(id)sender
 {
-    AHKActionSheet *actionSheet = [[AHKActionSheet alloc] initWithView:self.window.rootViewController.view title:@""];
+    AHKActionSheet *actionSheet = [[AHKActionSheet alloc] initWithView:self.window.rootViewController.view title:nil];
     
     [actionSheet addButtonWithTitle:NSLocalizedString(@"Info", nil)
                               image:[UIImage imageNamed:@"passcode"]

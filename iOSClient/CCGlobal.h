@@ -300,8 +300,9 @@ extern NSString *const BKPasscodeKeychainServiceName;
 
 #define TabBarApplicationIndexFile      0
 #define TabBarApplicationIndexFavorite  1
-#define TabBarApplicationIndexPhotos    2
-#define TabBarApplicationIndexSettings  3
+#define TabBarApplicationIndexHide      2
+#define TabBarApplicationIndexPhotos    3
+#define TabBarApplicationIndexSettings  4
 
 @interface CCAspect : NSObject
 
