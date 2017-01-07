@@ -175,7 +175,6 @@
 - (void)updateApplicationIconBadgeNumber;
 - (BOOL)handleShortCutItem:(UIApplicationShortcutItem *)shortcutItem;
 
-- (BOOL)isVisiblePlusButton;
 - (BOOL)plusButton:(BOOL)visible;
 
 // Operation Networking
