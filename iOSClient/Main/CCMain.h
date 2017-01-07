@@ -86,6 +86,7 @@
 
 @property (nonatomic, weak) CCLoginNCOC *loginVC;
 
+- (void)addActionTable;
 - (void)returnCreate:(NSInteger)type;
 
 - (void)createFolderCameraUpload;

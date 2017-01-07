@@ -805,6 +805,10 @@
 
 - (void)handleTouchTabbarCenter:(id)sender
 {
+    if (_activeMain)
+        [_activeMain addActionTable];
+    
+    /*
     AHKActionSheet *actionSheet = [[AHKActionSheet alloc] initWithView:self.window.rootViewController.view title:nil];
     
     [actionSheet addButtonWithTitle:NSLocalizedString(@"Info", nil)
@@ -825,6 +829,7 @@
     
       
     [actionSheet show];
+    */
 }
 
 - (void)updateApplicationIconBadgeNumber

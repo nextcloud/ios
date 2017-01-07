@@ -514,10 +514,12 @@
 {
     [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar hidden:NO];
     
+    /*
     // +
     UIBarButtonItem *buttonAdd = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addActionTable)];
     buttonAdd.tintColor = COLOR_BRAND;
     buttonAdd.enabled = true;
+    */
     
     // =
     UIImage *icon = [UIImage imageNamed:image_more];
@@ -526,7 +528,9 @@
     
     // <
     self.navigationController.navigationBar.hidden = NO;
-    self.navigationItem.rightBarButtonItems = [[NSArray alloc] initWithObjects:buttonAdd, buttonMore, nil];
+    //self.navigationItem.rightBarButtonItems = [[NSArray alloc] initWithObjects:buttonAdd, buttonMore, nil];
+    self.navigationItem.rightBarButtonItems = [[NSArray alloc] initWithObjects:buttonMore, nil];
+
     self.navigationItem.leftBarButtonItem = nil;
     
     // close Menu
