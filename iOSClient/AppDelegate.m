@@ -767,7 +767,7 @@
     
 }
 
-- (BOOL)plusButton:(BOOL)visible
+- (void)plusButton:(BOOL)visible
 {
     UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
     UITabBarController *tabBarController = [splitViewController.viewControllers firstObject];
@@ -775,8 +775,11 @@
     UIButton *buttonPlus = [tabBarController.view viewWithTag:99];
     if (buttonPlus)
             [buttonPlus removeFromSuperview];
-    
+
     if (visible) {
+        
+        NSLayoutConstraint *constraint;
+        
         UIImage *buttonImage = [UIImage imageNamed:@"Plus"];
         UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
         button.tag = 99;
@@ -785,22 +788,17 @@
         [button setBackgroundImage:buttonImage forState:UIControlStateHighlighted];
         [button addTarget:self action:@selector(handleTouchTabbarCenter:) forControlEvents:UIControlEventTouchUpInside];
 
-        button.autoresizingMask = UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleTopMargin;
-
-        CGFloat heightDifference = buttonImage.size.height - tabBarController.tabBar.frame.size.height;
-        if (heightDifference < 0) {
-            button.center = tabBarController.tabBar.center;
-        } else {
-            CGPoint center = tabBarController.tabBar.center;
-            center.y = center.y - 15;
-            button.center = center;
-        }
-
+        [button setTranslatesAutoresizingMaskIntoConstraints:NO];
         [tabBarController.view addSubview:button];
+
+        constraint =[NSLayoutConstraint constraintWithItem:button attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:tabBarController.view attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0];
+        
+        [tabBarController.view addConstraint:constraint];
+        
+        constraint =[NSLayoutConstraint constraintWithItem:button attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:tabBarController.view attribute:NSLayoutAttributeBottom multiplier:1 constant:-10];
+        
+        [tabBarController.view addConstraint:constraint];
     }
-    
-    if (buttonPlus) return true;
-    else return false;
 }
 
 - (void)handleTouchTabbarCenter:(id)sender
