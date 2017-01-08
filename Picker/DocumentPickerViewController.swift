@@ -135,11 +135,6 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         // COLOR_SEPARATOR_TABLE
         self.tableView.separatorColor = UIColor(colorLiteralRed: 153.0/255.0, green: 153.0/255.0, blue: 153.0/255.0, alpha: 0.2)
         
-        // (save) mode of presentation -> pass variable for pushViewController
-        if parameterMode != nil {
-            prepareForPresentation(in: parameterMode!)
-        }
-        
         // Encrypted mode
         encryptedButton.image = UIImage(named:image_shareExtEncrypt)?.withRenderingMode(.automatic)
 
@@ -159,6 +154,9 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         
         super.viewWillAppear(animated)
     
+        // (save) mode of presentation -> pass variable for pushViewController
+        prepareForPresentation(in: parameterMode!)
+        
         // String is nil or empty
         guard let passcode = CCUtility.getBlockCode(), !passcode.isEmpty else {
             return
@@ -186,6 +184,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
             parameterMode = mode
         }
         
+        // Variable for exportToService or moveToService
         if parameterOriginalURL == nil && originalURL != nil {
             parameterOriginalURL = originalURL
         }
