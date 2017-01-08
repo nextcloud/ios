@@ -38,35 +38,36 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         
     }()
     
-    var parameterMode : UIDocumentPickerMode?
+    var parameterMode: UIDocumentPickerMode?
     var parameterOriginalURL: URL?
     var parameterProviderIdentifier: String!
     var parameterPasscodeCorrect: Bool? = false
     var parameterEncrypted: Bool? = false
 
-    var metadata : CCMetadata?
-    var recordsTableMetadata : [TableMetadata]?
-    var titleFolder : String?
+    var metadata: CCMetadata?
+    var recordsTableMetadata: [TableMetadata]?
+    var titleFolder: String?
     
-    var activeAccount : String?
-    var activeUrl : String?
-    var activeUser : String?
-    var activePassword : String?
-    var activeUID : String?
-    var activeAccessToken : String?
-    var directoryUser : String?
-    var typeCloud : String?
-    var serverUrl : String?
+    var activeAccount: String?
+    var activeUrl: String?
+    var activeUser: String?
+    var activePassword: String?
+    var activeUID: String?
+    var activeAccessToken: String?
+    var directoryUser: String?
+    var typeCloud: String?
+    var serverUrl: String?
     
-    var localServerUrl : String?
+    var localServerUrl: String?
     var thumbnailInLoading = [String: IndexPath]()
-    var destinationURL : URL?
+    var destinationURL: URL?
     
-    var passcodeFailedAttempts : UInt = 0
-    var passcodeLockUntilDate : Date? = nil
+    var passcodeFailedAttempts: UInt = 0
+    var passcodeLockUntilDate: Date? = nil
     var passcodeIsPush: Bool? = false
+    var serverUrlPush: String?
     
-    lazy var networkingOperationQueue : OperationQueue = {
+    lazy var networkingOperationQueue: OperationQueue = {
         
         var queue = OperationQueue()
         queue.name = netQueueName
@@ -643,6 +644,10 @@ extension DocumentPickerViewController {
         
         parameterPasscodeCorrect = true
         aViewController.dismiss(animated: true, completion: nil)
+        
+        if passcodeIsPush! {
+            performSegue()
+        }
     }
     
     func passcodeViewCloseButtonPressed(sender :Any) {
@@ -723,13 +728,13 @@ extension DocumentPickerViewController: UITableViewDataSource {
             return
         }
         
+        self.metadata = CCCoreData.insertEntity(in: recordTableMetadata)!
+
         if recordTableMetadata!.directory == 0 {
             
-            let metadata = CCCoreData.insertEntity(in: recordTableMetadata)!
-            
-            if FileManager.default.fileExists(atPath: "\(directoryUser!)/\(metadata.fileID!)") {
+            if FileManager.default.fileExists(atPath: "\(directoryUser!)/\(self.metadata?.fileID!)") {
                 
-                downloadFileSuccess(metadata.fileID!, serverUrl: localServerUrl!, selector: selectorLoadFileView, selectorPost: nil)
+                downloadFileSuccess(self.metadata?.fileID!, serverUrl: localServerUrl!, selector: selectorLoadFileView, selectorPost: nil)
                 
             } else {
             
@@ -754,26 +759,50 @@ extension DocumentPickerViewController: UITableViewDataSource {
             
         } else {
             
-            var dir : String! = recordTableMetadata!.fileName
-            let nextViewController = self.storyboard?.instantiateViewController(withIdentifier: "DocumentPickerViewController") as! DocumentPickerViewController
-        
-            if recordTableMetadata?.cryptated == 1 {
+            var dir : String! = self.metadata?.fileName!
+            
+            if (self.metadata?.cryptated)! {
                 
-                dir = CCUtility.trasformedFileNamePlist(inCrypto: recordTableMetadata!.fileName)
+                dir = CCUtility.trasformedFileNamePlist(inCrypto: self.metadata?.fileName)
             }
-        
-            nextViewController.parameterMode = parameterMode
-            nextViewController.parameterOriginalURL = parameterOriginalURL
-            nextViewController.parameterProviderIdentifier = parameterProviderIdentifier
-            nextViewController.parameterPasscodeCorrect = parameterPasscodeCorrect
-            nextViewController.parameterEncrypted = parameterEncrypted
-            nextViewController.localServerUrl = CCUtility.stringAppendServerUrl(localServerUrl!, addServerUrl: dir)
-            nextViewController.titleFolder = recordTableMetadata?.fileNamePrint
-        
-            self.navigationController?.pushViewController(nextViewController, animated: true)
+            
+            serverUrlPush = CCUtility.stringAppendServerUrl(localServerUrl!, addServerUrl: dir)
+
+            var passcode: String? = CCUtility.getBlockCode()
+            if passcode == nil {
+                passcode = ""
+            }
+            
+            if CCCoreData.isDirectoryLock(serverUrlPush, activeAccount: activeAccount) && (passcode?.characters.count)! > 0 {
+                
+                self.passcodeIsPush = true
+                openBKPasscode(serverUrlPush!)
+                
+            } else {
+            
+                performSegue()
+            }
         }
     }
+    
+    func performSegue() {
+        
+        let nextViewController = self.storyboard?.instantiateViewController(withIdentifier: "DocumentPickerViewController") as! DocumentPickerViewController
+        
+        nextViewController.parameterMode = parameterMode
+        nextViewController.parameterOriginalURL = parameterOriginalURL
+        nextViewController.parameterProviderIdentifier = parameterProviderIdentifier
+        nextViewController.parameterPasscodeCorrect = parameterPasscodeCorrect
+        nextViewController.parameterEncrypted = parameterEncrypted
+        nextViewController.localServerUrl = serverUrlPush
+        nextViewController.titleFolder = self.metadata?.fileNamePrint
+        
+        self.navigationController?.pushViewController(nextViewController, animated: true)
+    }
+
 }
+
+
 
 // MARK: - Class UITableViewCell
 
