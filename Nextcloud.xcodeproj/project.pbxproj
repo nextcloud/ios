@@ -3059,13 +3059,6 @@
 			path = Create;
 			sourceTree = "<group>";
 		};
-		F7ECBA711E23A251003E6328 /* Add */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Add;
-			sourceTree = "<group>";
-		};
 		F7F06E291DBFACC600099AE9 /* CTAssetsPickerController */ = {
 			isa = PBXGroup;
 			children = (
@@ -3187,7 +3180,6 @@
 				F78088E51DD3A1DB005C5A7C /* cryptocloud.xcdatamodeld */,
 				F7F67BB81A24D27800EE80DA /* Images.xcassets */,
 				F7596C771D128FC80092A6B8 /* Nextcloud.xcassets */,
-				F7ECBA711E23A251003E6328 /* Add */,
 				F70211F31BAC56E9003FC03E /* Main */,
 				F7ECBA6B1E239DCD003E6328 /* Create */,
 				F7AB19C41BAF01A60027D7BA /* Favorite */,
