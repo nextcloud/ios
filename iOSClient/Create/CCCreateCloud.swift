@@ -29,10 +29,30 @@ class CreateMenu: NSObject {
         
         let actionSheet = AHKActionSheet.init(view: view, title: nil)
         
-        actionSheet?.addButton(withTitle: "Crea cartella", image: UIImage(named: "folder"), type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
+        actionSheet?.blurRadius = 1.0
+        actionSheet?.buttonHeight = 50.0
+        actionSheet?.cancelButtonHeight = 50.0
+        actionSheet?.selectedBackgroundColor = UIColor(colorLiteralRed: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 0.1)
+        actionSheet?.buttonTextAttributes = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 17)!, NSForegroundColorAttributeName:UIColor(colorLiteralRed: 65.0/255.0, green: 64.0/255.0, blue: 66.0/255.0, alpha: 1.0)]
+        actionSheet?.cryptoButtonTextAttributes = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 17)!, NSForegroundColorAttributeName:UIColor(colorLiteralRed: 241.0/255.0, green: 90.0/255.0, blue: 34.0/255.0, alpha: 1.0)]
+        actionSheet?.separatorColor = UIColor(colorLiteralRed: 153.0/255.0, green: 153.0/255.0, blue: 153.0/255.0, alpha: 0.2)
+        actionSheet?.cancelButtonTitle = NSLocalizedString("_cancel_", comment: "")
+
+        actionSheet?.addButton(withTitle: "Create a new folder", image: UIImage(named: "folder"), type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
             NSLog("Share tapped")
         })
         
+        actionSheet?.addButton(withTitle: "Upload photos and videos", image: UIImage(named: "photo"), type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
+            NSLog("Share tapped")
+        })
+        
+        actionSheet?.addButton(withTitle: "Upload a file", image: UIImage(named: "importCloud"), type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
+            NSLog("Share tapped")
+        })
+        
+        actionSheet?.addButton(withTitle: "Upload Encrypted file", image: UIImage(named: "actionSheetLock"), type: AHKActionSheetButtonType.crypto, handler: {(AHKActionSheet) -> Void in
+            NSLog("Share tapped")
+        })
         
         actionSheet?.show()
     }
