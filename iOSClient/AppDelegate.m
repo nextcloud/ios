@@ -809,8 +809,12 @@
 
 - (void)handleTouchTabbarCenter:(id)sender
 {
-    if (_activeMain)
-        [_activeMain addActionTable];
+    //if (_activeMain)
+    //    [_activeMain addActionTable];
+    
+    CreateMenu *menu = [[CreateMenu alloc] init];
+    
+    [menu createMenuPlainWithView:self.window.rootViewController.view];
     
     /*
     AHKActionSheet *actionSheet = [[AHKActionSheet alloc] initWithView:self.window.rootViewController.view title:nil];

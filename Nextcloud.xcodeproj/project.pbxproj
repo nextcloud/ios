@@ -552,9 +552,6 @@
 		F7BF1B431D51E893000854F6 /* CCLoginNCOC.m in Sources */ = {isa = PBXBuildFile; fileRef = F7BF1B401D51E893000854F6 /* CCLoginNCOC.m */; };
 		F7CE28851D1ACFA70025783C /* CCProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CE28801D1ACFA70025783C /* CCProgressView.m */; };
 		F7CE28881D1ACFA70025783C /* UINavigationController+CCProgress.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CE28821D1ACFA70025783C /* UINavigationController+CCProgress.m */; };
-		F7D154241E23923900202FD9 /* CCAdd.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7D154231E23923900202FD9 /* CCAdd.swift */; };
-		F7D154251E23923900202FD9 /* CCAdd.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7D154231E23923900202FD9 /* CCAdd.swift */; };
-		F7D154261E23923900202FD9 /* CCAdd.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7D154231E23923900202FD9 /* CCAdd.swift */; };
 		F7D2677C1E157053005ACB7E /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7F67BB81A24D27800EE80DA /* Images.xcassets */; };
 		F7D267871E157057005ACB7E /* Nextcloud.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7596C771D128FC80092A6B8 /* Nextcloud.xcassets */; };
 		F7D6A0911D82DBFA0045AD1A /* CCControlCenter.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D6A08A1D82DBFA0045AD1A /* CCControlCenter.m */; };
@@ -562,6 +559,9 @@
 		F7D6A0951D82DBFA0045AD1A /* CCControlCenterCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7D6A08D1D82DBFA0045AD1A /* CCControlCenterCell.xib */; };
 		F7D6A0971D82DBFA0045AD1A /* CCMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D6A08F1D82DBFA0045AD1A /* CCMenu.m */; };
 		F7DCA1C81D32BD4100E48D39 /* Share Ext Nextcloud.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = F7DCA1B81D32BD4100E48D39 /* Share Ext Nextcloud.entitlements */; };
+		F7ECBA6D1E239DCD003E6328 /* CCCreateCloud.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7ECBA6C1E239DCD003E6328 /* CCCreateCloud.swift */; };
+		F7ECBA751E23A251003E6328 /* CCAdd.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7ECBA721E23A251003E6328 /* CCAdd.swift */; };
+		F7ECBA761E23A251003E6328 /* CCCreateCloud.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7ECBA731E23A251003E6328 /* CCCreateCloud.swift */; };
 		F7EF0CAF1D9E95F400A9D15E /* CCSharedDBSession.m in Sources */ = {isa = PBXBuildFile; fileRef = F7EF0CAD1D9E95F400A9D15E /* CCSharedDBSession.m */; };
 		F7F06E8D1DBFACC600099AE9 /* NSBundle+CTAssetsPickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F06E2E1DBFACC600099AE9 /* NSBundle+CTAssetsPickerController.m */; };
 		F7F06E8F1DBFACC600099AE9 /* NSDateFormatter+CTAssetsPickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F06E301DBFACC600099AE9 /* NSDateFormatter+CTAssetsPickerController.m */; };
@@ -1483,7 +1483,6 @@
 		F7D02A481C5F9E4400D6F972 /* CCMove.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = CCMove.storyboard; sourceTree = "<group>"; };
 		F7D0E65E1BC5042E008D989A /* CCDetail.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCDetail.h; sourceTree = "<group>"; };
 		F7D0E65F1BC5042E008D989A /* CCDetail.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCDetail.m; sourceTree = "<group>"; };
-		F7D154231E23923900202FD9 /* CCAdd.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CCAdd.swift; sourceTree = "<group>"; };
 		F7D154271E2392A300202FD9 /* Nextcloud-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Nextcloud-Bridging-Header.h"; sourceTree = "<group>"; };
 		F7D6A0891D82DBFA0045AD1A /* CCControlCenter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCControlCenter.h; sourceTree = "<group>"; };
 		F7D6A08A1D82DBFA0045AD1A /* CCControlCenter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCControlCenter.m; sourceTree = "<group>"; };
@@ -1505,6 +1504,10 @@
 		F7EC9CCC1C4FA803008122B5 /* TableShare+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableShare+CoreDataProperties.m"; sourceTree = "<group>"; };
 		F7EC9CCD1C4FA803008122B5 /* TableShare.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableShare.h; sourceTree = "<group>"; };
 		F7EC9CCE1C4FA803008122B5 /* TableShare.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TableShare.m; sourceTree = "<group>"; };
+		F7ECBA6C1E239DCD003E6328 /* CCCreateCloud.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CCCreateCloud.swift; sourceTree = "<group>"; };
+		F7ECBA721E23A251003E6328 /* CCAdd.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CCAdd.swift; sourceTree = "<group>"; };
+		F7ECBA731E23A251003E6328 /* CCCreateCloud.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CCCreateCloud.swift; sourceTree = "<group>"; };
+		F7ECBA741E23A251003E6328 /* Nextcloud-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Nextcloud-Bridging-Header.h"; sourceTree = "<group>"; };
 		F7EF0CAC1D9E95EC00A9D15E /* CCSharedDBSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = CCSharedDBSession.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		F7EF0CAD1D9E95F400A9D15E /* CCSharedDBSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = CCSharedDBSession.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		F7F0617A1BAACDD300846525 /* CryptoCloud.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CryptoCloud.pch; sourceTree = "<group>"; };
@@ -3027,14 +3030,6 @@
 			path = "UINavigationController+CCProgress";
 			sourceTree = "<group>";
 		};
-		F7D154171E2391AF00202FD9 /* Add */ = {
-			isa = PBXGroup;
-			children = (
-				F7D154231E23923900202FD9 /* CCAdd.swift */,
-			);
-			path = Add;
-			sourceTree = "<group>";
-		};
 		F7D6A0881D82DBFA0045AD1A /* MenuAccount+ControlCenter */ = {
 			isa = PBXGroup;
 			children = (
@@ -3059,6 +3054,24 @@
 				F7C8C1731B482A920048180E /* CCMetadata.m */,
 			);
 			path = FileSystem;
+			sourceTree = "<group>";
+		};
+		F7ECBA6B1E239DCD003E6328 /* Create */ = {
+			isa = PBXGroup;
+			children = (
+				F7ECBA6C1E239DCD003E6328 /* CCCreateCloud.swift */,
+			);
+			path = Create;
+			sourceTree = "<group>";
+		};
+		F7ECBA711E23A251003E6328 /* Add */ = {
+			isa = PBXGroup;
+			children = (
+				F7ECBA721E23A251003E6328 /* CCAdd.swift */,
+				F7ECBA731E23A251003E6328 /* CCCreateCloud.swift */,
+				F7ECBA741E23A251003E6328 /* Nextcloud-Bridging-Header.h */,
+			);
+			path = Add;
 			sourceTree = "<group>";
 		};
 		F7F06E291DBFACC600099AE9 /* CTAssetsPickerController */ = {
@@ -3182,8 +3195,9 @@
 				F78088E51DD3A1DB005C5A7C /* cryptocloud.xcdatamodeld */,
 				F7F67BB81A24D27800EE80DA /* Images.xcassets */,
 				F7596C771D128FC80092A6B8 /* Nextcloud.xcassets */,
+				F7ECBA711E23A251003E6328 /* Add */,
 				F70211F31BAC56E9003FC03E /* Main */,
-				F7D154171E2391AF00202FD9 /* Add */,
+				F7ECBA6B1E239DCD003E6328 /* Create */,
 				F7AB19C41BAF01A60027D7BA /* Favorite */,
 				F7E95CEC1AC40BA40060D08E /* FileSystem */,
 				F744BE911BEBB2EE004FFF66 /* Intro */,
@@ -3804,7 +3818,6 @@
 				F71459F01D12E3B700CAFEEC /* NSString+Base64.m in Sources */,
 				F7EF0CAF1D9E95F400A9D15E /* CCSharedDBSession.m in Sources */,
 				F71459F11D12E3B700CAFEEC /* CCMove.m in Sources */,
-				F7D154251E23923900202FD9 /* CCAdd.swift in Sources */,
 				F71459F31D12E3B700CAFEEC /* UIImage+Resizing.m in Sources */,
 				F71459F41D12E3B700CAFEEC /* BKPasscodeViewController.m in Sources */,
 				F71459F51D12E3B700CAFEEC /* BKShiftingView.m in Sources */,
@@ -3879,7 +3892,6 @@
 				F74344861E127F89001CC831 /* RNEncryptor.m in Sources */,
 				F743445C1E127D3D001CC831 /* BKPasscodeField.m in Sources */,
 				F743446F1E127E53001CC831 /* TableGPS.m in Sources */,
-				F7D154261E23923900202FD9 /* CCAdd.swift in Sources */,
 				F7FC88FA1E140558006D0506 /* cryptocloud.xcdatamodeld in Sources */,
 				F743445E1E127D44001CC831 /* BKPasscodeLockScreenManager.m in Sources */,
 				F74344631E127D79001CC831 /* CCBKPasscode.m in Sources */,
@@ -3972,6 +3984,7 @@
 				F7F06E9B1DBFACC600099AE9 /* UICollectionView+CTAssetsPickerController.m in Sources */,
 				F77B0E2D1D118A16002130FE /* CYRTextView.m in Sources */,
 				F77B0E2E1D118A16002130FE /* MWPhotoBrowser.m in Sources */,
+				F7ECBA751E23A251003E6328 /* CCAdd.swift in Sources */,
 				F77B0E2F1D118A16002130FE /* LMMediaItemStreamingCache.m in Sources */,
 				F73CCDE51DC13776007E38D8 /* XLFormInlineSelectorCell.m in Sources */,
 				F77B0E301D118A16002130FE /* CCHud.m in Sources */,
@@ -3979,6 +3992,7 @@
 				F77B0E321D118A16002130FE /* HRCgUtil.m in Sources */,
 				F7F06EB71DBFACC600099AE9 /* CTAssetsGridViewFooter.m in Sources */,
 				F77B0E331D118A16002130FE /* CCCellFavorite.m in Sources */,
+				F7ECBA761E23A251003E6328 /* CCCreateCloud.swift in Sources */,
 				F7F06EB91DBFACC600099AE9 /* CTAssetsGridViewLayout.m in Sources */,
 				F77B0E341D118A16002130FE /* TableAccount+CoreDataProperties.m in Sources */,
 				F77B0E351D118A16002130FE /* NYXImagesHelper.m in Sources */,
@@ -4012,7 +4026,6 @@
 				F7F801031D98205A007537BC /* CCCertificate.m in Sources */,
 				F7CE28881D1ACFA70025783C /* UINavigationController+CCProgress.m in Sources */,
 				F77B0E4E1D118A16002130FE /* TableDirectory.m in Sources */,
-				F7D154241E23923900202FD9 /* CCAdd.swift in Sources */,
 				F77B0E4F1D118A16002130FE /* CCManageCameraUpload.m in Sources */,
 				F77B0E511D118A16002130FE /* UIImage+Filtering.m in Sources */,
 				F73CCDEB1DC13776007E38D8 /* XLFormSegmentedCell.m in Sources */,
@@ -4158,6 +4171,7 @@
 				F77B0EC61D118A16002130FE /* CCCellMain.m in Sources */,
 				F77B0EC71D118A16002130FE /* AESCrypt.m in Sources */,
 				F73CCE091DC13776007E38D8 /* NSObject+XLFormAdditions.m in Sources */,
+				F7ECBA6D1E239DCD003E6328 /* CCCreateCloud.swift in Sources */,
 				F77B0ECB1D118A16002130FE /* HRBrightnessCursor.m in Sources */,
 				F77B0ECC1D118A16002130FE /* UIImage+Masking.m in Sources */,
 				F77B0ECE1D118A16002130FE /* NSData+CommonCrypto.m in Sources */,
