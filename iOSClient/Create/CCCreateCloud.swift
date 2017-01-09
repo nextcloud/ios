@@ -35,14 +35,14 @@ class CreateMenu: NSObject {
         let actionSheet = AHKActionSheet.init(view: view, title: nil)
         
         actionSheet?.animationDuration = 0.2
+        actionSheet?.cancelOnTapEmptyAreaEnabled = 1
+        actionSheet?.automaticallyTintButtonImages = 0
         
         actionSheet?.blurRadius = 0.0
         actionSheet?.blurTintColor = UIColor(white: 0.0, alpha: 0.50)
         
         actionSheet?.buttonHeight = 50.0
         actionSheet?.cancelButtonHeight = 50.0
-        
-        actionSheet?.automaticallyTintButtonImages = 0
         
         actionSheet?.selectedBackgroundColor = UIColor(colorLiteralRed: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 0.1)
         actionSheet?.separatorColor = UIColor(colorLiteralRed: 153.0/255.0, green: 153.0/255.0, blue: 153.0/255.0, alpha: 0.2)
@@ -78,6 +78,7 @@ class CreateMenu: NSObject {
         let actionSheet = AHKActionSheet.init(view: view, title: nil)
         
         actionSheet?.animationDuration = 0.2
+        actionSheet?.cancelOnTapEmptyAreaEnabled = 1
         
         actionSheet?.blurRadius = 0.0
         actionSheet?.blurTintColor = UIColor(white: 0.0, alpha: 0.50)
@@ -119,6 +120,7 @@ class CreateMenu: NSObject {
         let actionSheet = AHKActionSheet.init(view: view, title: nil)
         
         actionSheet?.animationDuration = 0.2
+        actionSheet?.cancelOnTapEmptyAreaEnabled = 1
         
         actionSheet?.blurRadius = 0.0
         actionSheet?.blurTintColor = UIColor(white: 0.0, alpha: 0.50)

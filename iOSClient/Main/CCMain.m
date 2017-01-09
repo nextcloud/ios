@@ -4228,11 +4228,11 @@
         AHKActionSheet *actionSheet = [[AHKActionSheet alloc] initWithView:self.view title:nil];
         
         actionSheet.animationDuration = 0.2;
-        
+        actionSheet.cancelOnTapEmptyAreaEnabled = @(YES);
+        actionSheet.automaticallyTintButtonImages = @(NO);
+
         actionSheet.blurRadius = 0.0f;
         actionSheet.blurTintColor = [UIColor colorWithWhite:0.0f alpha:0.50f];
-        
-        actionSheet.automaticallyTintButtonImages = 0;
         
         actionSheet.buttonHeight = 50.0;
         actionSheet.cancelButtonHeight = 50.0f;
@@ -4368,11 +4368,11 @@
         AHKActionSheet *actionSheet = [[AHKActionSheet alloc] initWithView:self.view title:nil];
         
         actionSheet.animationDuration = 0.2;
+        actionSheet.cancelOnTapEmptyAreaEnabled = @(YES);
+        actionSheet.automaticallyTintButtonImages = @(NO);
         
         actionSheet.blurRadius = 0.0f;
         actionSheet.blurTintColor = [UIColor colorWithWhite:0.0f alpha:0.50f];
-
-        actionSheet.automaticallyTintButtonImages = 0;
         
         actionSheet.buttonHeight = 50.0;
         actionSheet.cancelButtonHeight = 50.0f;
@@ -4508,11 +4508,11 @@
         AHKActionSheet *actionSheet = [[AHKActionSheet alloc] initWithView:self.view title:nil];
      
         actionSheet.animationDuration = 0.2;
+        actionSheet.cancelOnTapEmptyAreaEnabled = @(YES);
+        actionSheet.automaticallyTintButtonImages = @(NO);
         
         actionSheet.blurRadius = 0.0f;
         actionSheet.blurTintColor = [UIColor colorWithWhite:0.0f alpha:0.50f];
-
-        actionSheet.automaticallyTintButtonImages = 0;
         
         actionSheet.buttonHeight = 50.0;
         actionSheet.cancelButtonHeight = 50.0f;
