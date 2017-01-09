@@ -95,10 +95,6 @@ class CreateMenu: NSObject {
         
         actionSheet?.cancelButtonTitle = NSLocalizedString("_cancel_", comment: "")
         
-        actionSheet?.addButton(withTitle: NSLocalizedString("Upload Template", comment: ""), image: UIImage(named: "template"), type: AHKActionSheetButtonType.encrypted, handler: {(AHKActionSheet) -> Void in
-            self.createMenuTemplate(view: view)
-        })
-        
         actionSheet?.addButton(withTitle: "Create a new folder", image: UIImage(named: "foldercrypto"), type: AHKActionSheetButtonType.encrypted, handler: {(AHKActionSheet) -> Void in
             appDelegate.activeMain.returnCreate(Int(returnCreateFolderEncrypted))
         })
@@ -109,6 +105,10 @@ class CreateMenu: NSObject {
         
         actionSheet?.addButton(withTitle: "Upload a file", image: UIImage(named: "importCloudCrypto"), type: AHKActionSheetButtonType.encrypted, handler: {(AHKActionSheet) -> Void in
             appDelegate.activeMain.returnCreate(Int(returnCreateFileEncrypted))
+        })
+
+        actionSheet?.addButton(withTitle: NSLocalizedString("Upload Template", comment: ""), image: UIImage(named: "template"), type: AHKActionSheetButtonType.encrypted, handler: {(AHKActionSheet) -> Void in
+            self.createMenuTemplate(view: view)
         })
 
         actionSheet?.show()
