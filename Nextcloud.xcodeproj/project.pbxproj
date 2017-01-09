@@ -4379,10 +4379,7 @@
 				INFOPLIST_FILE = Picker/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				LIBRARY_SEARCH_PATHS = (
-					"\"$(PROJECT_DIR)/Libraries external\"/**",
-					"$(PROJECT_DIR)/Libraries\\ external/openssl",
-				);
+				LIBRARY_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
 				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.Nextcloud.Picker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -4414,10 +4411,7 @@
 				INFOPLIST_FILE = Picker/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				LIBRARY_SEARCH_PATHS = (
-					"\"$(PROJECT_DIR)/Libraries external\"/**",
-					"$(PROJECT_DIR)/Libraries\\ external/openssl",
-				);
+				LIBRARY_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
 				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.Nextcloud.Picker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
