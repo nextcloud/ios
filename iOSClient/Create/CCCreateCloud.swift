@@ -25,6 +25,10 @@ import Foundation
 
 class CreateMenu: NSObject {
     
+    let fontButton = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 14)!, NSForegroundColorAttributeName:UIColor(colorLiteralRed: 65.0/255.0, green: 64.0/255.0, blue: 66.0/255.0, alpha: 1.0)]
+    let fontEncrypted = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 14)!, NSForegroundColorAttributeName:UIColor(colorLiteralRed: 241.0/255.0, green: 90.0/255.0, blue: 34.0/255.0, alpha: 1.0)]
+    let fontCancel = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 16)!, NSForegroundColorAttributeName:UIColor(colorLiteralRed: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)]
+    
     func createMenuPlain(view : UIView) {
         
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -43,9 +47,9 @@ class CreateMenu: NSObject {
         actionSheet?.selectedBackgroundColor = UIColor(colorLiteralRed: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 0.1)
         actionSheet?.separatorColor = UIColor(colorLiteralRed: 153.0/255.0, green: 153.0/255.0, blue: 153.0/255.0, alpha: 0.2)
 
-        actionSheet?.buttonTextAttributes = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 17)!, NSForegroundColorAttributeName:UIColor(colorLiteralRed: 65.0/255.0, green: 64.0/255.0, blue: 66.0/255.0, alpha: 1.0)]
-        actionSheet?.encryptedButtonTextAttributes = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 17)!, NSForegroundColorAttributeName:UIColor(colorLiteralRed: 241.0/255.0, green: 90.0/255.0, blue: 34.0/255.0, alpha: 1.0)]
-        actionSheet?.cancelButtonTextAttributes = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 17)!, NSForegroundColorAttributeName:UIColor(colorLiteralRed: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)]
+        actionSheet?.buttonTextAttributes = fontButton
+        actionSheet?.encryptedButtonTextAttributes = fontEncrypted
+        actionSheet?.cancelButtonTextAttributes = fontCancel
         
         actionSheet?.cancelButtonTitle = NSLocalizedString("_cancel_", comment: "")
 
@@ -84,9 +88,9 @@ class CreateMenu: NSObject {
         actionSheet?.selectedBackgroundColor = UIColor(colorLiteralRed: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 0.1)
         actionSheet?.separatorColor = UIColor(colorLiteralRed: 153.0/255.0, green: 153.0/255.0, blue: 153.0/255.0, alpha: 0.2)
 
-        actionSheet?.buttonTextAttributes = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 17)!, NSForegroundColorAttributeName:UIColor(colorLiteralRed: 65.0/255.0, green: 64.0/255.0, blue: 66.0/255.0, alpha: 1.0)]
-        actionSheet?.encryptedButtonTextAttributes = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 17)!, NSForegroundColorAttributeName:UIColor(colorLiteralRed: 241.0/255.0, green: 90.0/255.0, blue: 34.0/255.0, alpha: 1.0)]
-         actionSheet?.cancelButtonTextAttributes = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 17)!, NSForegroundColorAttributeName:UIColor(colorLiteralRed: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)]
+        actionSheet?.buttonTextAttributes = fontButton
+        actionSheet?.encryptedButtonTextAttributes = fontEncrypted
+        actionSheet?.cancelButtonTextAttributes = fontCancel
         
         actionSheet?.cancelButtonTitle = NSLocalizedString("_cancel_", comment: "")
         
@@ -125,9 +129,9 @@ class CreateMenu: NSObject {
         actionSheet?.selectedBackgroundColor = UIColor(colorLiteralRed: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 0.1)
         actionSheet?.separatorColor = UIColor(colorLiteralRed: 153.0/255.0, green: 153.0/255.0, blue: 153.0/255.0, alpha: 0.2)
 
-        actionSheet?.buttonTextAttributes = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 17)!, NSForegroundColorAttributeName:UIColor(colorLiteralRed: 65.0/255.0, green: 64.0/255.0, blue: 66.0/255.0, alpha: 1.0)]
-        actionSheet?.encryptedButtonTextAttributes = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 17)!, NSForegroundColorAttributeName:UIColor(colorLiteralRed: 241.0/255.0, green: 90.0/255.0, blue: 34.0/255.0, alpha: 1.0)]
-         actionSheet?.cancelButtonTextAttributes = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 17)!, NSForegroundColorAttributeName:UIColor(colorLiteralRed: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)]
+        actionSheet?.buttonTextAttributes = fontButton
+        actionSheet?.encryptedButtonTextAttributes = fontEncrypted
+        actionSheet?.cancelButtonTextAttributes = fontCancel
         
         actionSheet?.cancelButtonTitle = NSLocalizedString("_cancel_", comment: "")
         
