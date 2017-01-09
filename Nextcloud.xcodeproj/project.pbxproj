@@ -560,8 +560,6 @@
 		F7D6A0971D82DBFA0045AD1A /* CCMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D6A08F1D82DBFA0045AD1A /* CCMenu.m */; };
 		F7DCA1C81D32BD4100E48D39 /* Share Ext Nextcloud.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = F7DCA1B81D32BD4100E48D39 /* Share Ext Nextcloud.entitlements */; };
 		F7ECBA6D1E239DCD003E6328 /* CCCreateCloud.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7ECBA6C1E239DCD003E6328 /* CCCreateCloud.swift */; };
-		F7ECBA751E23A251003E6328 /* CCAdd.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7ECBA721E23A251003E6328 /* CCAdd.swift */; };
-		F7ECBA761E23A251003E6328 /* CCCreateCloud.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7ECBA731E23A251003E6328 /* CCCreateCloud.swift */; };
 		F7EF0CAF1D9E95F400A9D15E /* CCSharedDBSession.m in Sources */ = {isa = PBXBuildFile; fileRef = F7EF0CAD1D9E95F400A9D15E /* CCSharedDBSession.m */; };
 		F7F06E8D1DBFACC600099AE9 /* NSBundle+CTAssetsPickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F06E2E1DBFACC600099AE9 /* NSBundle+CTAssetsPickerController.m */; };
 		F7F06E8F1DBFACC600099AE9 /* NSDateFormatter+CTAssetsPickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F06E301DBFACC600099AE9 /* NSDateFormatter+CTAssetsPickerController.m */; };
@@ -1505,9 +1503,6 @@
 		F7EC9CCD1C4FA803008122B5 /* TableShare.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableShare.h; sourceTree = "<group>"; };
 		F7EC9CCE1C4FA803008122B5 /* TableShare.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TableShare.m; sourceTree = "<group>"; };
 		F7ECBA6C1E239DCD003E6328 /* CCCreateCloud.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CCCreateCloud.swift; sourceTree = "<group>"; };
-		F7ECBA721E23A251003E6328 /* CCAdd.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CCAdd.swift; sourceTree = "<group>"; };
-		F7ECBA731E23A251003E6328 /* CCCreateCloud.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CCCreateCloud.swift; sourceTree = "<group>"; };
-		F7ECBA741E23A251003E6328 /* Nextcloud-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Nextcloud-Bridging-Header.h"; sourceTree = "<group>"; };
 		F7EF0CAC1D9E95EC00A9D15E /* CCSharedDBSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = CCSharedDBSession.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		F7EF0CAD1D9E95F400A9D15E /* CCSharedDBSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = CCSharedDBSession.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		F7F0617A1BAACDD300846525 /* CryptoCloud.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CryptoCloud.pch; sourceTree = "<group>"; };
@@ -3067,9 +3062,6 @@
 		F7ECBA711E23A251003E6328 /* Add */ = {
 			isa = PBXGroup;
 			children = (
-				F7ECBA721E23A251003E6328 /* CCAdd.swift */,
-				F7ECBA731E23A251003E6328 /* CCCreateCloud.swift */,
-				F7ECBA741E23A251003E6328 /* Nextcloud-Bridging-Header.h */,
 			);
 			path = Add;
 			sourceTree = "<group>";
@@ -3984,7 +3976,6 @@
 				F7F06E9B1DBFACC600099AE9 /* UICollectionView+CTAssetsPickerController.m in Sources */,
 				F77B0E2D1D118A16002130FE /* CYRTextView.m in Sources */,
 				F77B0E2E1D118A16002130FE /* MWPhotoBrowser.m in Sources */,
-				F7ECBA751E23A251003E6328 /* CCAdd.swift in Sources */,
 				F77B0E2F1D118A16002130FE /* LMMediaItemStreamingCache.m in Sources */,
 				F73CCDE51DC13776007E38D8 /* XLFormInlineSelectorCell.m in Sources */,
 				F77B0E301D118A16002130FE /* CCHud.m in Sources */,
@@ -3992,7 +3983,6 @@
 				F77B0E321D118A16002130FE /* HRCgUtil.m in Sources */,
 				F7F06EB71DBFACC600099AE9 /* CTAssetsGridViewFooter.m in Sources */,
 				F77B0E331D118A16002130FE /* CCCellFavorite.m in Sources */,
-				F7ECBA761E23A251003E6328 /* CCCreateCloud.swift in Sources */,
 				F7F06EB91DBFACC600099AE9 /* CTAssetsGridViewLayout.m in Sources */,
 				F77B0E341D118A16002130FE /* TableAccount+CoreDataProperties.m in Sources */,
 				F77B0E351D118A16002130FE /* NYXImagesHelper.m in Sources */,
