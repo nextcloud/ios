@@ -4232,6 +4232,8 @@
         actionSheet.blurRadius = 0.0f;
         actionSheet.blurTintColor = [UIColor colorWithWhite:0.0f alpha:0.50f];
         
+        actionSheet.automaticallyTintButtonImages = 0;
+        
         actionSheet.buttonHeight = 50.0;
         actionSheet.cancelButtonHeight = 50.0f;
         
@@ -4370,6 +4372,8 @@
         actionSheet.blurRadius = 0.0f;
         actionSheet.blurTintColor = [UIColor colorWithWhite:0.0f alpha:0.50f];
 
+        actionSheet.automaticallyTintButtonImages = 0;
+        
         actionSheet.buttonHeight = 50.0;
         actionSheet.cancelButtonHeight = 50.0f;
         
@@ -4508,6 +4512,8 @@
         actionSheet.blurRadius = 0.0f;
         actionSheet.blurTintColor = [UIColor colorWithWhite:0.0f alpha:0.50f];
 
+        actionSheet.automaticallyTintButtonImages = 0;
+        
         actionSheet.buttonHeight = 50.0;
         actionSheet.cancelButtonHeight = 50.0f;
         
