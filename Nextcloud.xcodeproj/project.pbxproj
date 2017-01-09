@@ -552,6 +552,9 @@
 		F7BF1B431D51E893000854F6 /* CCLoginNCOC.m in Sources */ = {isa = PBXBuildFile; fileRef = F7BF1B401D51E893000854F6 /* CCLoginNCOC.m */; };
 		F7CE28851D1ACFA70025783C /* CCProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CE28801D1ACFA70025783C /* CCProgressView.m */; };
 		F7CE28881D1ACFA70025783C /* UINavigationController+CCProgress.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CE28821D1ACFA70025783C /* UINavigationController+CCProgress.m */; };
+		F7D154241E23923900202FD9 /* CCAdd.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7D154231E23923900202FD9 /* CCAdd.swift */; };
+		F7D154251E23923900202FD9 /* CCAdd.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7D154231E23923900202FD9 /* CCAdd.swift */; };
+		F7D154261E23923900202FD9 /* CCAdd.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7D154231E23923900202FD9 /* CCAdd.swift */; };
 		F7D2677C1E157053005ACB7E /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7F67BB81A24D27800EE80DA /* Images.xcassets */; };
 		F7D267871E157057005ACB7E /* Nextcloud.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7596C771D128FC80092A6B8 /* Nextcloud.xcassets */; };
 		F7D6A0911D82DBFA0045AD1A /* CCControlCenter.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D6A08A1D82DBFA0045AD1A /* CCControlCenter.m */; };
@@ -1480,6 +1483,8 @@
 		F7D02A481C5F9E4400D6F972 /* CCMove.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = CCMove.storyboard; sourceTree = "<group>"; };
 		F7D0E65E1BC5042E008D989A /* CCDetail.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCDetail.h; sourceTree = "<group>"; };
 		F7D0E65F1BC5042E008D989A /* CCDetail.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCDetail.m; sourceTree = "<group>"; };
+		F7D154231E23923900202FD9 /* CCAdd.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CCAdd.swift; sourceTree = "<group>"; };
+		F7D154271E2392A300202FD9 /* Nextcloud-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Nextcloud-Bridging-Header.h"; sourceTree = "<group>"; };
 		F7D6A0891D82DBFA0045AD1A /* CCControlCenter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCControlCenter.h; sourceTree = "<group>"; };
 		F7D6A08A1D82DBFA0045AD1A /* CCControlCenter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCControlCenter.m; sourceTree = "<group>"; };
 		F7D6A08B1D82DBFA0045AD1A /* CCControlCenterCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCControlCenterCell.h; sourceTree = "<group>"; };
@@ -3022,6 +3027,14 @@
 			path = "UINavigationController+CCProgress";
 			sourceTree = "<group>";
 		};
+		F7D154171E2391AF00202FD9 /* Add */ = {
+			isa = PBXGroup;
+			children = (
+				F7D154231E23923900202FD9 /* CCAdd.swift */,
+			);
+			path = Add;
+			sourceTree = "<group>";
+		};
 		F7D6A0881D82DBFA0045AD1A /* MenuAccount+ControlCenter */ = {
 			isa = PBXGroup;
 			children = (
@@ -3170,6 +3183,7 @@
 				F7F67BB81A24D27800EE80DA /* Images.xcassets */,
 				F7596C771D128FC80092A6B8 /* Nextcloud.xcassets */,
 				F70211F31BAC56E9003FC03E /* Main */,
+				F7D154171E2391AF00202FD9 /* Add */,
 				F7AB19C41BAF01A60027D7BA /* Favorite */,
 				F7E95CEC1AC40BA40060D08E /* FileSystem */,
 				F744BE911BEBB2EE004FFF66 /* Intro */,
@@ -3196,6 +3210,7 @@
 		F7F67BAB1A24D27800EE80DA /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				F7D154271E2392A300202FD9 /* Nextcloud-Bridging-Header.h */,
 				F75CDBF51DF063AD00116AD0 /* .gitignore */,
 				F7229B461DF71BA800E8C4E7 /* ChangeLog */,
 				F7229B491DF71BB300E8C4E7 /* AUTHORS */,
@@ -3385,6 +3400,7 @@
 					};
 					F77B0DEB1D118A16002130FE = {
 						DevelopmentTeam = 6JLRKY9ZV7;
+						LastSwiftMigration = 0820;
 						SystemCapabilities = {
 							com.apple.iCloud = {
 								enabled = 1;
@@ -3788,6 +3804,7 @@
 				F71459F01D12E3B700CAFEEC /* NSString+Base64.m in Sources */,
 				F7EF0CAF1D9E95F400A9D15E /* CCSharedDBSession.m in Sources */,
 				F71459F11D12E3B700CAFEEC /* CCMove.m in Sources */,
+				F7D154251E23923900202FD9 /* CCAdd.swift in Sources */,
 				F71459F31D12E3B700CAFEEC /* UIImage+Resizing.m in Sources */,
 				F71459F41D12E3B700CAFEEC /* BKPasscodeViewController.m in Sources */,
 				F71459F51D12E3B700CAFEEC /* BKShiftingView.m in Sources */,
@@ -3862,6 +3879,7 @@
 				F74344861E127F89001CC831 /* RNEncryptor.m in Sources */,
 				F743445C1E127D3D001CC831 /* BKPasscodeField.m in Sources */,
 				F743446F1E127E53001CC831 /* TableGPS.m in Sources */,
+				F7D154261E23923900202FD9 /* CCAdd.swift in Sources */,
 				F7FC88FA1E140558006D0506 /* cryptocloud.xcdatamodeld in Sources */,
 				F743445E1E127D44001CC831 /* BKPasscodeLockScreenManager.m in Sources */,
 				F74344631E127D79001CC831 /* CCBKPasscode.m in Sources */,
@@ -3994,6 +4012,7 @@
 				F7F801031D98205A007537BC /* CCCertificate.m in Sources */,
 				F7CE28881D1ACFA70025783C /* UINavigationController+CCProgress.m in Sources */,
 				F77B0E4E1D118A16002130FE /* TableDirectory.m in Sources */,
+				F7D154241E23923900202FD9 /* CCAdd.swift in Sources */,
 				F77B0E4F1D118A16002130FE /* CCManageCameraUpload.m in Sources */,
 				F77B0E511D118A16002130FE /* UIImage+Filtering.m in Sources */,
 				F73CCDEB1DC13776007E38D8 /* XLFormSegmentedCell.m in Sources */,
@@ -4481,6 +4500,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIconNextcloud;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = iOSClient/Nextcloud.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -4506,6 +4526,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "it.twsweb.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "iOSClient/Nextcloud-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USE_HEADERMAP = YES;
@@ -4519,6 +4541,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIconNextcloud;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = iOSClient/Nextcloud.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -4545,6 +4568,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "it.twsweb.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "iOSClient/Nextcloud-Bridging-Header.h";
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USE_HEADERMAP = YES;

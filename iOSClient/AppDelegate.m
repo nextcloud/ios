@@ -38,6 +38,8 @@
 #import "CCMain.h"
 #import "CCDetail.h"
 
+#import "Nextcloud-Swift.h"
+
 @interface AppDelegate ()
 {
     
