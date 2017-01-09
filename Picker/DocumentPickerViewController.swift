@@ -566,7 +566,7 @@ extension DocumentPickerViewController {
     
     // MARK: - Passcode
     
-    func openBKPasscode(_ title : String) {
+    func openBKPasscode(_ title : String?) {
         
         let viewController = CCBKPasscode.init()
         
@@ -790,7 +790,7 @@ extension DocumentPickerViewController: UITableViewDataSource {
             if CCCoreData.isDirectoryLock(serverUrlPush, activeAccount: activeAccount) && (passcode?.characters.count)! > 0 {
                 
                 self.passcodeIsPush = true
-                openBKPasscode((self.metadata?.fileNamePrint)!)
+                openBKPasscode(self.metadata?.fileNamePrint)
                 
             } else {
             
