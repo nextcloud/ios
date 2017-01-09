@@ -809,35 +809,9 @@
 
 - (void)handleTouchTabbarCenter:(id)sender
 {
-    //if (_activeMain)
-    //    [_activeMain addActionTable];
-    
     CreateMenu *menu = [[CreateMenu alloc] init];
     
     [menu createMenuPlainWithView:self.window.rootViewController.view];
-    
-    /*
-    AHKActionSheet *actionSheet = [[AHKActionSheet alloc] initWithView:self.window.rootViewController.view title:nil];
-    
-    [actionSheet addButtonWithTitle:NSLocalizedString(@"Info", nil)
-                              image:[UIImage imageNamed:@"passcode"]
-                               type:AHKActionSheetButtonTypeDefault
-                            handler:^(AHKActionSheet *as) {
-                                if (_activeMain)
-                                    [_activeMain returnCreate:returnCreateFolderPlain];
-                            }];
-    
-    [actionSheet addButtonWithTitle:NSLocalizedString(@"Add to Favorites", nil)
-                              image:[UIImage imageNamed:@"password"]
-                               type:AHKActionSheetButtonTypeDefault
-                            handler:^(AHKActionSheet *as) {
-                                if (_activeMain)
-                                    [_activeMain returnCreate:returnCreateFotoVideoPlain];
-                            }];
-    
-      
-    [actionSheet show];
-    */
 }
 
 - (void)updateApplicationIconBadgeNumber

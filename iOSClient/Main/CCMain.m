@@ -514,13 +514,6 @@
 {
     [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar hidden:NO];
     
-    /*
-    // +
-    UIBarButtonItem *buttonAdd = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addActionTable)];
-    buttonAdd.tintColor = COLOR_BRAND;
-    buttonAdd.enabled = true;
-    */
-    
     // =
     UIImage *icon = [UIImage imageNamed:image_more];
     UIBarButtonItem *buttonMore = [[UIBarButtonItem alloc] initWithImage:icon style:UIBarButtonItemStylePlain target:self action:@selector(toggleReMainMenu)];
@@ -569,21 +562,6 @@
 - (void)cancelSelect
 {
     [self tableViewSelect:NO];
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Navigation Controller =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)addActionTable
-{
-    UINavigationController *navigationController = [[UIStoryboard storyboardWithName:@"Add" bundle:nil] instantiateViewControllerWithIdentifier:@"CCAddNC"];
-    
-    CCAdd *viewController = (CCAdd *)navigationController.topViewController;
-    viewController.delegate = self;
-    
-    [navigationController setModalPresentationStyle:UIModalPresentationFormSheet];
-    [self presentViewController:navigationController animated:YES completion:nil];
 }
 
 #pragma --------------------------------------------------------------------------------------------
