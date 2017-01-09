@@ -32,8 +32,8 @@ class CreateMenu: NSObject {
         
         actionSheet?.animationDuration = 0.2
         actionSheet?.blurRadius = 1.0
-        actionSheet?.buttonHeight = 40.0
-        actionSheet?.cancelButtonHeight = 30.0
+        actionSheet?.buttonHeight = 50.0
+        actionSheet?.cancelButtonHeight = 50.0
         actionSheet?.selectedBackgroundColor = UIColor(colorLiteralRed: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 0.1)
         actionSheet?.buttonTextAttributes = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 17)!, NSForegroundColorAttributeName:UIColor(colorLiteralRed: 65.0/255.0, green: 64.0/255.0, blue: 66.0/255.0, alpha: 1.0)]
         actionSheet?.encryptedButtonTextAttributes = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 17)!, NSForegroundColorAttributeName:UIColor(colorLiteralRed: 241.0/255.0, green: 90.0/255.0, blue: 34.0/255.0, alpha: 1.0)]
@@ -52,7 +52,7 @@ class CreateMenu: NSObject {
             appDelegate.activeMain.returnCreate(Int(returnCreateFilePlain))
         })
         
-        actionSheet?.addButton(withTitle: "Upload Encrypted file", image: UIImage(named: "actionSheetLock"), type: AHKActionSheetButtonType.encrypted, handler: {(AHKActionSheet) -> Void in
+        actionSheet?.addButton(withTitle: "Upload Encrypted mode", image: UIImage(named: "actionSheetLock"), type: AHKActionSheetButtonType.encrypted, handler: {(AHKActionSheet) -> Void in
             self.createMenuEncrypted(view: view)
         })
         
@@ -66,13 +66,17 @@ class CreateMenu: NSObject {
         
         actionSheet?.animationDuration = 0.2
         actionSheet?.blurRadius = 1.0
-        actionSheet?.buttonHeight = 40.0
-        actionSheet?.cancelButtonHeight = 30.0
+        actionSheet?.buttonHeight = 50.0
+        actionSheet?.cancelButtonHeight = 50.0
         actionSheet?.selectedBackgroundColor = UIColor(colorLiteralRed: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 0.1)
         actionSheet?.buttonTextAttributes = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 17)!, NSForegroundColorAttributeName:UIColor(colorLiteralRed: 65.0/255.0, green: 64.0/255.0, blue: 66.0/255.0, alpha: 1.0)]
         actionSheet?.encryptedButtonTextAttributes = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 17)!, NSForegroundColorAttributeName:UIColor(colorLiteralRed: 241.0/255.0, green: 90.0/255.0, blue: 34.0/255.0, alpha: 1.0)]
         actionSheet?.separatorColor = UIColor(colorLiteralRed: 153.0/255.0, green: 153.0/255.0, blue: 153.0/255.0, alpha: 0.2)
         actionSheet?.cancelButtonTitle = NSLocalizedString("_cancel_", comment: "")
+        
+        actionSheet?.addButton(withTitle: NSLocalizedString("Upload Template", comment: ""), image: UIImage(named: "template"), type: AHKActionSheetButtonType.encrypted, handler: {(AHKActionSheet) -> Void in
+            self.createMenuTemplate(view: view)
+        })
         
         actionSheet?.addButton(withTitle: "Create a new folder", image: UIImage(named: "foldercrypto"), type: AHKActionSheetButtonType.encrypted, handler: {(AHKActionSheet) -> Void in
             appDelegate.activeMain.returnCreate(Int(returnCreateFolderEncrypted))
@@ -85,6 +89,24 @@ class CreateMenu: NSObject {
         actionSheet?.addButton(withTitle: "Upload a file", image: UIImage(named: "importCloudCrypto"), type: AHKActionSheetButtonType.encrypted, handler: {(AHKActionSheet) -> Void in
             appDelegate.activeMain.returnCreate(Int(returnCreateFileEncrypted))
         })
+
+        actionSheet?.show()
+    }
+
+    func createMenuTemplate(view : UIView) {
+        
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        let actionSheet = AHKActionSheet.init(view: view, title: nil)
+        
+        actionSheet?.animationDuration = 0.2
+        actionSheet?.blurRadius = 1.0
+        actionSheet?.buttonHeight = 50.0
+        actionSheet?.cancelButtonHeight = 50.0
+        actionSheet?.selectedBackgroundColor = UIColor(colorLiteralRed: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 0.1)
+        actionSheet?.buttonTextAttributes = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 17)!, NSForegroundColorAttributeName:UIColor(colorLiteralRed: 65.0/255.0, green: 64.0/255.0, blue: 66.0/255.0, alpha: 1.0)]
+        actionSheet?.encryptedButtonTextAttributes = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 17)!, NSForegroundColorAttributeName:UIColor(colorLiteralRed: 241.0/255.0, green: 90.0/255.0, blue: 34.0/255.0, alpha: 1.0)]
+        actionSheet?.separatorColor = UIColor(colorLiteralRed: 153.0/255.0, green: 153.0/255.0, blue: 153.0/255.0, alpha: 0.2)
+        actionSheet?.cancelButtonTitle = NSLocalizedString("_cancel_", comment: "")
         
         actionSheet?.addButton(withTitle: NSLocalizedString("_add_notes_", comment: ""), image: UIImage(named: "note"), type: AHKActionSheetButtonType.encrypted, handler: {(AHKActionSheet) -> Void in
             appDelegate.activeMain.returnCreate(Int(returnNote))
