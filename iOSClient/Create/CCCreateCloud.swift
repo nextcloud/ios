@@ -32,8 +32,8 @@ class CreateMenu: NSObject {
         
         actionSheet?.animationDuration = 0.2
         actionSheet?.blurRadius = 1.0
-        actionSheet?.buttonHeight = 50.0
-        actionSheet?.cancelButtonHeight = 50.0
+        actionSheet?.buttonHeight = 40.0
+        actionSheet?.cancelButtonHeight = 30.0
         actionSheet?.selectedBackgroundColor = UIColor(colorLiteralRed: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 0.1)
         actionSheet?.buttonTextAttributes = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 17)!, NSForegroundColorAttributeName:UIColor(colorLiteralRed: 65.0/255.0, green: 64.0/255.0, blue: 66.0/255.0, alpha: 1.0)]
         actionSheet?.encryptedButtonTextAttributes = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 17)!, NSForegroundColorAttributeName:UIColor(colorLiteralRed: 241.0/255.0, green: 90.0/255.0, blue: 34.0/255.0, alpha: 1.0)]
@@ -66,8 +66,8 @@ class CreateMenu: NSObject {
         
         actionSheet?.animationDuration = 0.2
         actionSheet?.blurRadius = 1.0
-        actionSheet?.buttonHeight = 50.0
-        actionSheet?.cancelButtonHeight = 50.0
+        actionSheet?.buttonHeight = 40.0
+        actionSheet?.cancelButtonHeight = 30.0
         actionSheet?.selectedBackgroundColor = UIColor(colorLiteralRed: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 0.1)
         actionSheet?.buttonTextAttributes = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 17)!, NSForegroundColorAttributeName:UIColor(colorLiteralRed: 65.0/255.0, green: 64.0/255.0, blue: 66.0/255.0, alpha: 1.0)]
         actionSheet?.encryptedButtonTextAttributes = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 17)!, NSForegroundColorAttributeName:UIColor(colorLiteralRed: 241.0/255.0, green: 90.0/255.0, blue: 34.0/255.0, alpha: 1.0)]
@@ -84,6 +84,38 @@ class CreateMenu: NSObject {
         
         actionSheet?.addButton(withTitle: "Upload a file", image: UIImage(named: "importCloudCrypto"), type: AHKActionSheetButtonType.encrypted, handler: {(AHKActionSheet) -> Void in
             appDelegate.activeMain.returnCreate(Int(returnCreateFileEncrypted))
+        })
+        
+        actionSheet?.addButton(withTitle: NSLocalizedString("_add_notes_", comment: ""), image: UIImage(named: "note"), type: AHKActionSheetButtonType.encrypted, handler: {(AHKActionSheet) -> Void in
+            appDelegate.activeMain.returnCreate(Int(returnNote))
+        })
+        
+        actionSheet?.addButton(withTitle: NSLocalizedString("_add_web_account_", comment: ""), image: UIImage(named: "baseurl"), type: AHKActionSheetButtonType.encrypted, handler: {(AHKActionSheet) -> Void in
+            appDelegate.activeMain.returnCreate(Int(returnAccountWeb))
+        })
+        
+        actionSheet?.addButton(withTitle: NSLocalizedString("_add_credit_card_", comment: ""), image: UIImage(named: "cartadicredito"), type: AHKActionSheetButtonType.encrypted, handler: {(AHKActionSheet) -> Void in
+            appDelegate.activeMain.returnCreate(Int(returnCartaDiCredito))
+        })
+        
+        actionSheet?.addButton(withTitle: NSLocalizedString("_add_atm_", comment: ""), image: UIImage(named: "bancomat"), type: AHKActionSheetButtonType.encrypted, handler: {(AHKActionSheet) -> Void in
+            appDelegate.activeMain.returnCreate(Int(returnBancomat))
+        })
+        
+        actionSheet?.addButton(withTitle: NSLocalizedString("_add_bank_account_", comment: ""), image: UIImage(named: "contocorrente"), type: AHKActionSheetButtonType.encrypted, handler: {(AHKActionSheet) -> Void in
+            appDelegate.activeMain.returnCreate(Int(returnContoCorrente))
+        })
+        
+        actionSheet?.addButton(withTitle: NSLocalizedString("_add_driving_license_", comment: ""), image: UIImage(named: "patenteguida"), type: AHKActionSheetButtonType.encrypted, handler: {(AHKActionSheet) -> Void in
+            appDelegate.activeMain.returnCreate(Int(returnPatenteGuida))
+        })
+        
+        actionSheet?.addButton(withTitle: NSLocalizedString("_add_id_card_", comment: ""), image: UIImage(named: "cartaidentita"), type: AHKActionSheetButtonType.encrypted, handler: {(AHKActionSheet) -> Void in
+            appDelegate.activeMain.returnCreate(Int(returnCartaIdentita))
+        })
+        
+        actionSheet?.addButton(withTitle: NSLocalizedString("_add_passport_", comment: ""), image: UIImage(named: "passaporto"), type: AHKActionSheetButtonType.encrypted, handler: {(AHKActionSheet) -> Void in
+            appDelegate.activeMain.returnCreate(Int(returnPassaporto))
         })
         
         actionSheet?.show()

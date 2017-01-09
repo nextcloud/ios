@@ -282,7 +282,6 @@
 		F77B0E441D118A16002130FE /* CCIntro.m in Sources */ = {isa = PBXBuildFile; fileRef = F744BE931BEBB2EE004FFF66 /* CCIntro.m */; };
 		F77B0E451D118A16002130FE /* ReaderThumbRender.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0ECE1C889317008DAB36 /* ReaderThumbRender.m */; };
 		F77B0E461D118A16002130FE /* BKPasscodeLockScreenManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02C61C889183008DAB36 /* BKPasscodeLockScreenManager.m */; };
-		F77B0E471D118A16002130FE /* CCAdd.m in Sources */ = {isa = PBXBuildFile; fileRef = F72137201BAFF0920012B613 /* CCAdd.m */; };
 		F77B0E481D118A16002130FE /* CCCrypto.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FE125F1BAC03FB0041924B /* CCCrypto.m */; };
 		F77B0E491D118A16002130FE /* UIImage+Saving.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04CE1C889184008DAB36 /* UIImage+Saving.m */; };
 		F77B0E4C1D118A16002130FE /* CCDetail.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D0E65F1BC5042E008D989A /* CCDetail.m */; };
@@ -437,7 +436,6 @@
 		F77B0F231D118A16002130FE /* ZSSh3.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0D9D1C889300008DAB36 /* ZSSh3.png */; };
 		F77B0F241D118A16002130FE /* Reader-Button-H.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0EA41C889317008DAB36 /* Reader-Button-H.png */; };
 		F77B0F251D118A16002130FE /* ZSSh1.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0D991C889300008DAB36 /* ZSSh1.png */; };
-		F77B0F261D118A16002130FE /* Add.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F721371C1BAFF0920012B613 /* Add.storyboard */; };
 		F77B0F271D118A16002130FE /* ImageSelectedSmallOn.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0C721C8892DF008DAB36 /* ImageSelectedSmallOn.png */; };
 		F77B0F281D118A16002130FE /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F787E5581BC503ED00AFBFE1 /* Main.storyboard */; };
 		F77B0F291D118A16002130FE /* ZSSleftjustify.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DB11C889300008DAB36 /* ZSSleftjustify.png */; };
@@ -1073,11 +1071,8 @@
 		F71E67F61DC1F76F003BA52B /* ownCloud iOS library.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "ownCloud iOS library.xcodeproj"; path = "Libraries external/OCCommunicationLib/ownCloud iOS library.xcodeproj"; sourceTree = SOURCE_ROOT; };
 		F71EDBFC1C4B93ED00265D0C /* JBroken.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JBroken.h; sourceTree = "<group>"; };
 		F71EDBFD1C4B93ED00265D0C /* JBroken.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JBroken.m; sourceTree = "<group>"; };
-		F721371C1BAFF0920012B613 /* Add.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Add.storyboard; sourceTree = "<group>"; };
 		F721371D1BAFF0920012B613 /* CCAccountWeb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCAccountWeb.h; sourceTree = "<group>"; };
 		F721371E1BAFF0920012B613 /* CCAccountWeb.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCAccountWeb.m; sourceTree = "<group>"; };
-		F721371F1BAFF0920012B613 /* CCAdd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCAdd.h; sourceTree = "<group>"; };
-		F72137201BAFF0920012B613 /* CCAdd.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCAdd.m; sourceTree = "<group>"; };
 		F72137211BAFF0920012B613 /* CCBancomat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCBancomat.h; sourceTree = "<group>"; };
 		F72137221BAFF0920012B613 /* CCBancomat.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCBancomat.m; sourceTree = "<group>"; };
 		F72137231BAFF0920012B613 /* CCCartaDiCredito.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCCartaDiCredito.h; sourceTree = "<group>"; };
@@ -2336,9 +2331,6 @@
 			children = (
 				F721371D1BAFF0920012B613 /* CCAccountWeb.h */,
 				F721371E1BAFF0920012B613 /* CCAccountWeb.m */,
-				F721371F1BAFF0920012B613 /* CCAdd.h */,
-				F72137201BAFF0920012B613 /* CCAdd.m */,
-				F721371C1BAFF0920012B613 /* Add.storyboard */,
 				F72137211BAFF0920012B613 /* CCBancomat.h */,
 				F72137221BAFF0920012B613 /* CCBancomat.m */,
 				F72137231BAFF0920012B613 /* CCCartaDiCredito.h */,
@@ -3620,7 +3612,6 @@
 				F77B0F231D118A16002130FE /* ZSSh3.png in Resources */,
 				F77B0F241D118A16002130FE /* Reader-Button-H.png in Resources */,
 				F77B0F251D118A16002130FE /* ZSSh1.png in Resources */,
-				F77B0F261D118A16002130FE /* Add.storyboard in Resources */,
 				F77B0F271D118A16002130FE /* ImageSelectedSmallOn.png in Resources */,
 				F7676A7D1D5CB2A400DF734C /* icon-info.png in Resources */,
 				F77B0F281D118A16002130FE /* Main.storyboard in Resources */,
@@ -3995,7 +3986,6 @@
 				F77B0E441D118A16002130FE /* CCIntro.m in Sources */,
 				F77B0E451D118A16002130FE /* ReaderThumbRender.m in Sources */,
 				F77B0E461D118A16002130FE /* BKPasscodeLockScreenManager.m in Sources */,
-				F77B0E471D118A16002130FE /* CCAdd.m in Sources */,
 				F77B0E481D118A16002130FE /* CCCrypto.m in Sources */,
 				F7D6A0911D82DBFA0045AD1A /* CCControlCenter.m in Sources */,
 				F7659A6A1DC0B760004860C4 /* PSTGridLayoutInfo.m in Sources */,
