@@ -4228,9 +4228,13 @@
         AHKActionSheet *actionSheet = [[AHKActionSheet alloc] initWithView:self.view title:nil];
         
         actionSheet.animationDuration = 0.2;
-        actionSheet.blurRadius = 1.0f;
+        
+        actionSheet.blurRadius = 0.0f;
+        actionSheet.blurTintColor = [UIColor colorWithWhite:0.0f alpha:0.50f];
+        
         actionSheet.buttonHeight = 50.0;
         actionSheet.cancelButtonHeight = 50.0f;
+        
         actionSheet.selectedBackgroundColor = COLOR_SELECT_BACKGROUND;
         actionSheet.encryptedButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:17], NSForegroundColorAttributeName:COLOR_ENCRYPTED };
         actionSheet.buttonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:17], NSForegroundColorAttributeName:COLOR_GRAY };
@@ -4359,9 +4363,13 @@
         AHKActionSheet *actionSheet = [[AHKActionSheet alloc] initWithView:self.view title:nil];
         
         actionSheet.animationDuration = 0.2;
-        actionSheet.blurRadius = 1.0f;
+        
+        actionSheet.blurRadius = 0.0f;
+        actionSheet.blurTintColor = [UIColor colorWithWhite:0.0f alpha:0.50f];
+
         actionSheet.buttonHeight = 50.0;
         actionSheet.cancelButtonHeight = 50.0f;
+        
         actionSheet.selectedBackgroundColor = COLOR_SELECT_BACKGROUND;
         actionSheet.encryptedButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:17], NSForegroundColorAttributeName:COLOR_ENCRYPTED };
         actionSheet.buttonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:17], NSForegroundColorAttributeName:COLOR_GRAY };
@@ -4490,9 +4498,13 @@
         AHKActionSheet *actionSheet = [[AHKActionSheet alloc] initWithView:self.view title:nil];
      
         actionSheet.animationDuration = 0.2;
-        actionSheet.blurRadius = 1.0f;
+        
+        actionSheet.blurRadius = 0.0f;
+        actionSheet.blurTintColor = [UIColor colorWithWhite:0.0f alpha:0.50f];
+
         actionSheet.buttonHeight = 50.0;
         actionSheet.cancelButtonHeight = 50.0f;
+        
         actionSheet.selectedBackgroundColor = COLOR_SELECT_BACKGROUND;
         actionSheet.encryptedButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:17], NSForegroundColorAttributeName:COLOR_ENCRYPTED };
         actionSheet.buttonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:17], NSForegroundColorAttributeName:COLOR_GRAY };

@@ -31,9 +31,13 @@ class CreateMenu: NSObject {
         let actionSheet = AHKActionSheet.init(view: view, title: nil)
         
         actionSheet?.animationDuration = 0.2
-        actionSheet?.blurRadius = 1.0
+        
+        actionSheet?.blurRadius = 0.0
+        actionSheet?.blurTintColor = UIColor(white: 0.0, alpha: 0.50)
+        
         actionSheet?.buttonHeight = 50.0
         actionSheet?.cancelButtonHeight = 50.0
+        
         actionSheet?.selectedBackgroundColor = UIColor(colorLiteralRed: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 0.1)
         actionSheet?.buttonTextAttributes = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 17)!, NSForegroundColorAttributeName:UIColor(colorLiteralRed: 65.0/255.0, green: 64.0/255.0, blue: 66.0/255.0, alpha: 1.0)]
         actionSheet?.encryptedButtonTextAttributes = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 17)!, NSForegroundColorAttributeName:UIColor(colorLiteralRed: 241.0/255.0, green: 90.0/255.0, blue: 34.0/255.0, alpha: 1.0)]
@@ -65,9 +69,13 @@ class CreateMenu: NSObject {
         let actionSheet = AHKActionSheet.init(view: view, title: nil)
         
         actionSheet?.animationDuration = 0.2
-        actionSheet?.blurRadius = 1.0
+        
+        actionSheet?.blurRadius = 0.0
+        actionSheet?.blurTintColor = UIColor(white: 0.0, alpha: 0.50)
+
         actionSheet?.buttonHeight = 50.0
         actionSheet?.cancelButtonHeight = 50.0
+        
         actionSheet?.selectedBackgroundColor = UIColor(colorLiteralRed: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 0.1)
         actionSheet?.buttonTextAttributes = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 17)!, NSForegroundColorAttributeName:UIColor(colorLiteralRed: 65.0/255.0, green: 64.0/255.0, blue: 66.0/255.0, alpha: 1.0)]
         actionSheet?.encryptedButtonTextAttributes = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 17)!, NSForegroundColorAttributeName:UIColor(colorLiteralRed: 241.0/255.0, green: 90.0/255.0, blue: 34.0/255.0, alpha: 1.0)]
@@ -99,9 +107,13 @@ class CreateMenu: NSObject {
         let actionSheet = AHKActionSheet.init(view: view, title: nil)
         
         actionSheet?.animationDuration = 0.2
-        actionSheet?.blurRadius = 1.0
+        
+        actionSheet?.blurRadius = 0.0
+        actionSheet?.blurTintColor = UIColor(white: 0.0, alpha: 0.50)
+
         actionSheet?.buttonHeight = 50.0
         actionSheet?.cancelButtonHeight = 50.0
+        
         actionSheet?.selectedBackgroundColor = UIColor(colorLiteralRed: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 0.1)
         actionSheet?.buttonTextAttributes = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 17)!, NSForegroundColorAttributeName:UIColor(colorLiteralRed: 65.0/255.0, green: 64.0/255.0, blue: 66.0/255.0, alpha: 1.0)]
         actionSheet?.encryptedButtonTextAttributes = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 17)!, NSForegroundColorAttributeName:UIColor(colorLiteralRed: 241.0/255.0, green: 90.0/255.0, blue: 34.0/255.0, alpha: 1.0)]
