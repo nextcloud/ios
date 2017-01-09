@@ -27,6 +27,7 @@ class CreateMenu: NSObject {
     
     func createMenuPlain(view : UIView) {
         
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
         let actionSheet = AHKActionSheet.init(view: view, title: nil)
         
         actionSheet?.blurRadius = 1.0
@@ -39,15 +40,15 @@ class CreateMenu: NSObject {
         actionSheet?.cancelButtonTitle = NSLocalizedString("_cancel_", comment: "")
 
         actionSheet?.addButton(withTitle: "Create a new folder", image: UIImage(named: "folder"), type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
-            NSLog("Share tapped")
+            appDelegate.activeMain.returnCreate(Int(returnCreateFolderPlain))
         })
         
         actionSheet?.addButton(withTitle: "Upload photos and videos", image: UIImage(named: "photo"), type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
-            NSLog("Share tapped")
+            appDelegate.activeMain.returnCreate(Int(returnCreateFotoVideoPlain))
         })
         
         actionSheet?.addButton(withTitle: "Upload a file", image: UIImage(named: "importCloud"), type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
-            NSLog("Share tapped")
+            appDelegate.activeMain.returnCreate(Int(returnCreateFilePlain))
         })
         
         actionSheet?.addButton(withTitle: "Upload Encrypted file", image: UIImage(named: "actionSheetLock"), type: AHKActionSheetButtonType.crypto, handler: {(AHKActionSheet) -> Void in
