@@ -30,7 +30,7 @@
                                         <rect key="frame" x="0.0" y="28" width="375" height="50"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="0H6-U8-fd4" id="44X-Sr-gc0">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="49.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="49"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Wk9-rb-4yv">
@@ -47,15 +47,25 @@
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="t6N-LC-3jL" userLabel="Status Image View">
+                                                    <rect key="frame" x="37" y="32" width="15" height="15"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="15" id="J4K-CX-e72"/>
+                                                        <constraint firstAttribute="width" constant="15" id="Vzz-zd-Yzw"/>
+                                                    </constraints>
+                                                </imageView>
                                             </subviews>
                                             <constraints>
+                                                <constraint firstItem="t6N-LC-3jL" firstAttribute="top" secondItem="44X-Sr-gc0" secondAttribute="topMargin" constant="24" id="4Nk-TB-5YW"/>
                                                 <constraint firstItem="Wk9-rb-4yv" firstAttribute="leading" secondItem="44X-Sr-gc0" secondAttribute="leadingMargin" constant="2" id="JC3-NE-SK8"/>
+                                                <constraint firstItem="t6N-LC-3jL" firstAttribute="leading" secondItem="44X-Sr-gc0" secondAttribute="leadingMargin" constant="29" id="RMx-hy-3YJ"/>
                                                 <constraint firstItem="Wk9-rb-4yv" firstAttribute="centerY" secondItem="44X-Sr-gc0" secondAttribute="centerY" id="cFG-TN-r8I"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                         <connections>
-                                            <outlet property="FileName" destination="xDF-xa-qvc" id="6wi-ij-Q1o"/>
+                                            <outlet property="StatusImageView" destination="t6N-LC-3jL" id="PG8-b8-lRJ"/>
                                             <outlet property="fileImageView" destination="Wk9-rb-4yv" id="K2a-JK-zkR"/>
+                                            <outlet property="fileName" destination="xDF-xa-qvc" id="i9u-Bj-qoo"/>
                                         </connections>
                                     </tableViewCell>
                                 </prototypes>

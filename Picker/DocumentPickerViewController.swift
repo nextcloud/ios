@@ -645,7 +645,7 @@ extension DocumentPickerViewController {
         parameterPasscodeCorrect = true
         aViewController.dismiss(animated: true, completion: nil)
         
-        if passcodeIsPush! {
+        if self.passcodeIsPush == true {
             performSegue()
         }
     }
@@ -653,7 +653,9 @@ extension DocumentPickerViewController {
     func passcodeViewCloseButtonPressed(sender :Any) {
         
         dismiss(animated: true, completion: {
-            self.dismissGrantingAccess(to: nil)
+            if self.passcodeIsPush == false {
+                self.dismissGrantingAccess(to: nil)
+            }
         })
     }
 }
@@ -712,7 +714,19 @@ extension DocumentPickerViewController: UITableViewDataSource {
         }
         
         // File Name
-        cell.FileName.text = metadata.fileNamePrint
+        cell.fileName.text = metadata.fileNamePrint
+        
+        // Status Image View
+        let lockServerUrl = CCUtility.stringAppendServerUrl(localServerUrl!, addServerUrl: metadata.fileNameData)
+        
+        var passcode: String? = CCUtility.getBlockCode()
+        if passcode == nil {
+            passcode = ""
+        }
+        
+        if metadata.directory && CCCoreData.isDirectoryLock(lockServerUrl, activeAccount: activeAccount) && (passcode?.characters.count)! > 0 {
+            cell.StatusImageView.image = UIImage(named: image_passcode)
+        }
         
         return cell
     }
@@ -776,7 +790,7 @@ extension DocumentPickerViewController: UITableViewDataSource {
             if CCCoreData.isDirectoryLock(serverUrlPush, activeAccount: activeAccount) && (passcode?.characters.count)! > 0 {
                 
                 self.passcodeIsPush = true
-                openBKPasscode(serverUrlPush!)
+                openBKPasscode((self.metadata?.fileNamePrint)!)
                 
             } else {
             
@@ -809,7 +823,8 @@ extension DocumentPickerViewController: UITableViewDataSource {
 class recordMetadataCell: UITableViewCell {
     
     @IBOutlet weak var fileImageView: UIImageView!
-    @IBOutlet weak var FileName : UILabel!
+    @IBOutlet weak var StatusImageView: UIImageView!
+    @IBOutlet weak var fileName : UILabel!
 }
 
 // MARK: - Class providerSession
