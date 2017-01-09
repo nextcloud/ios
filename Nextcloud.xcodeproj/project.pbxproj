@@ -1608,9 +1608,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F74344591E12786C001CC831 /* libssl.a in Frameworks */,
 				F74344541E1277D8001CC831 /* libownCloudiOS.a in Frameworks */,
 				F74344551E1277E2001CC831 /* libMagicalRecord.a in Frameworks */,
+				F74344591E12786C001CC831 /* libssl.a in Frameworks */,
 				F74344561E12784A001CC831 /* libcrypto.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4379,7 +4379,10 @@
 				INFOPLIST_FILE = Picker/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				LIBRARY_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
+				LIBRARY_SEARCH_PATHS = (
+					"\"$(PROJECT_DIR)/Libraries external\"/**",
+					"$(PROJECT_DIR)/Libraries\\ external/openssl",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.Nextcloud.Picker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -4411,7 +4414,10 @@
 				INFOPLIST_FILE = Picker/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				LIBRARY_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
+				LIBRARY_SEARCH_PATHS = (
+					"\"$(PROJECT_DIR)/Libraries external\"/**",
+					"$(PROJECT_DIR)/Libraries\\ external/openssl",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.Nextcloud.Picker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
