@@ -4253,7 +4253,7 @@
         actionSheet.buttonHeight = 50.0;
         actionSheet.cancelButtonHeight = 50.0f;
         actionSheet.selectedBackgroundColor = COLOR_SELECT_BACKGROUND;
-        actionSheet.cryptoButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:17], NSForegroundColorAttributeName:COLOR_ENCRYPTED };
+        actionSheet.encryptedButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:17], NSForegroundColorAttributeName:COLOR_ENCRYPTED };
         actionSheet.buttonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:17], NSForegroundColorAttributeName:COLOR_GRAY };
         actionSheet.separatorColor = COLOR_SEPARATOR_TABLE;
         actionSheet.cancelButtonTitle = NSLocalizedString(@"_cancel_",nil);
@@ -4305,7 +4305,7 @@
             
             [actionSheet addButtonWithTitle:titoloCriptaDecripta
                                       image:[UIImage imageNamed:image_actionSheetCrypto]
-                                       type:AHKActionSheetButtonTypeCrypto
+                                       type:AHKActionSheetButtonTypeEncrypted
                                     handler:^(AHKActionSheet *as) {
                                         
                                         // close swipe
@@ -4319,7 +4319,7 @@
             
             [actionSheet addButtonWithTitle:titoloLock
                                       image:[UIImage imageNamed:image_actionSheetLock]
-                                       type:AHKActionSheetButtonTypeCrypto
+                                       type:AHKActionSheetButtonTypeEncrypted
                                     handler:^(AHKActionSheet *as) {
                                         
                                         // close swipe
@@ -4383,7 +4383,7 @@
         actionSheet.buttonHeight = 50.0;
         actionSheet.cancelButtonHeight = 50.0f;
         actionSheet.selectedBackgroundColor = COLOR_SELECT_BACKGROUND;
-        actionSheet.cryptoButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:17], NSForegroundColorAttributeName:COLOR_ENCRYPTED };
+        actionSheet.encryptedButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:17], NSForegroundColorAttributeName:COLOR_ENCRYPTED };
         actionSheet.buttonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:17], NSForegroundColorAttributeName:COLOR_GRAY };
         actionSheet.separatorColor = COLOR_SEPARATOR_TABLE;
         actionSheet.cancelButtonTitle = NSLocalizedString(@"_cancel_",nil);
@@ -4463,7 +4463,7 @@
 
         [actionSheet addButtonWithTitle:titoloCriptaDecripta
                                   image:[UIImage imageNamed:image_actionSheetCrypto]
-                                   type:AHKActionSheetButtonTypeCrypto
+                                   type:AHKActionSheetButtonTypeEncrypted
                                 handler:^(AHKActionSheet *as) {
                                     
                                     // close swipe
@@ -4513,7 +4513,7 @@
         actionSheet.buttonHeight = 50.0;
         actionSheet.cancelButtonHeight = 50.0f;
         actionSheet.selectedBackgroundColor = COLOR_SELECT_BACKGROUND;
-        actionSheet.cryptoButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:17], NSForegroundColorAttributeName:COLOR_ENCRYPTED };
+        actionSheet.encryptedButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:17], NSForegroundColorAttributeName:COLOR_ENCRYPTED };
         actionSheet.buttonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:17], NSForegroundColorAttributeName:COLOR_GRAY };
         actionSheet.separatorColor = COLOR_SEPARATOR_TABLE;
         actionSheet.cancelButtonTitle = NSLocalizedString(@"_cancel_",nil);

@@ -12,7 +12,7 @@ typedef NS_ENUM(NSInteger, AHKActionSheetButtonType) {
     AHKActionSheetButtonTypeDefault = 0,
 	AHKActionSheetButtonTypeDisabled,
     AHKActionSheetButtonTypeDestructive,
-    AHKActionSheetButtonTypeCrypto
+    AHKActionSheetButtonTypeEncrypted
 };
 
 @class AHKActionSheet;
@@ -54,7 +54,7 @@ typedef void(^AHKActionSheetHandler)(AHKActionSheet *actionSheet);
 @property (copy, nonatomic) NSDictionary *buttonTextAttributes UI_APPEARANCE_SELECTOR;
 @property (copy, nonatomic) NSDictionary *disabledButtonTextAttributes UI_APPEARANCE_SELECTOR;
 @property (copy, nonatomic) NSDictionary *destructiveButtonTextAttributes UI_APPEARANCE_SELECTOR;
-@property (copy, nonatomic) NSDictionary *cryptoButtonTextAttributes UI_APPEARANCE_SELECTOR;
+@property (copy, nonatomic) NSDictionary *encryptedButtonTextAttributes UI_APPEARANCE_SELECTOR;
 @property (copy, nonatomic) NSDictionary *cancelButtonTextAttributes UI_APPEARANCE_SELECTOR;
 /// Duration of the show/dismiss animations. Defaults to 0.5.
 @property (nonatomic) NSTimeInterval animationDuration UI_APPEARANCE_SELECTOR;
@@ -75,8 +75,7 @@ typedef void(^AHKActionSheetHandler)(AHKActionSheet *actionSheet);
 @property (strong, nonatomic) UIView *headerView;
 /// Window visible before the actionSheet was presented.
 @property (weak, nonatomic, readonly) UIWindow *previousKeyWindow;
-
-///TWS
+/// View actionSheet was presented.
 @property (nonatomic, weak) UIView *view;
 
 /**
@@ -90,6 +89,16 @@ typedef void(^AHKActionSheetHandler)(AHKActionSheet *actionSheet);
  */
 - (instancetype)initWithTitle:(NSString *)title;
 
+/**
+ *  Initializes the action sheet with a specified view and title. `headerView` can be used if a string is insufficient for the title; set `title` as `nil` in this case.
+ *
+ *  It's the designated initializer.
+ *
+ *  @param view
+ *  @param title A string to display in the title area, above the buttons.
+ *
+ *  @return A newly initialized action sheet.
+ */
 - (instancetype)initWithView:(UIView *)view title:(NSString *)title;
 
 /**

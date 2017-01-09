@@ -46,7 +46,6 @@
     return !self.viewAlreadyAppear;
 }
 
-//TWS
 #if __IPHONE_OS_VERSION_MAX_ALLOWED < 90000
 - (NSUInteger)supportedInterfaceOrientations
 #else

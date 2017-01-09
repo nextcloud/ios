@@ -416,7 +416,7 @@
     actionSheet.buttonHeight = 50.0;
     actionSheet.cancelButtonHeight = 50.0f;
     actionSheet.selectedBackgroundColor = COLOR_SELECT_BACKGROUND;
-    actionSheet.cryptoButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:17], NSForegroundColorAttributeName:COLOR_BRAND };
+    actionSheet.encryptedButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:17], NSForegroundColorAttributeName:COLOR_BRAND };
     actionSheet.buttonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:17], NSForegroundColorAttributeName:COLOR_GRAY };
     actionSheet.separatorColor = COLOR_SEPARATOR_TABLE;
     actionSheet.cancelButtonTitle = NSLocalizedString(@"_cancel_",nil);
