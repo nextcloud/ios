@@ -4249,6 +4249,7 @@
         
         AHKActionSheet *actionSheet = [[AHKActionSheet alloc] initWithView:self.view title:nil];
         
+        actionSheet.animationDuration = 0.2;
         actionSheet.blurRadius = 1.0f;
         actionSheet.buttonHeight = 50.0;
         actionSheet.cancelButtonHeight = 50.0f;
@@ -4379,6 +4380,7 @@
         
         AHKActionSheet *actionSheet = [[AHKActionSheet alloc] initWithView:self.view title:nil];
         
+        actionSheet.animationDuration = 0.2;
         actionSheet.blurRadius = 1.0f;
         actionSheet.buttonHeight = 50.0;
         actionSheet.cancelButtonHeight = 50.0f;
@@ -4509,6 +4511,7 @@
      
         AHKActionSheet *actionSheet = [[AHKActionSheet alloc] initWithView:self.view title:nil];
      
+        actionSheet.animationDuration = 0.2;
         actionSheet.blurRadius = 1.0f;
         actionSheet.buttonHeight = 50.0;
         actionSheet.cancelButtonHeight = 50.0f;
