@@ -119,7 +119,7 @@
     if (buttonIndex == 1) {
         NSString *nome = [alertView textFieldAtIndex:0].text;
         if ([nome length]) {
-            nome = [NSString stringWithFormat:@"%@/%@", self.localServerUrl, [CCUtility clearFile:nome]];
+            nome = [NSString stringWithFormat:@"%@/%@", self.localServerUrl, [CCUtility removeForbiddenCharacters:nome]];
         }
     }
 }
@@ -392,7 +392,7 @@
 {
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:activeAccount];
     
-    fileNameFolder = [CCUtility clearFile:fileNameFolder];
+    fileNameFolder = [CCUtility removeForbiddenCharacters:fileNameFolder];
     if (![fileNameFolder length]) return;
     
     metadataNet.action = actionCreateFolder;

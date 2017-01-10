@@ -126,7 +126,7 @@
 + (NSString *)dateDiff:(NSDate *) convertedDate;
 + (NSString *)transformedSize:(double)value;
 
-+ (NSString *)clearFile:(NSString *)nomeFile;
++ (NSString *)removeForbiddenCharacters:(NSString *)fileName;
 + (NSString *)stringAppendServerUrl:(NSString *)serverUrl addServerUrl:(NSString *)addServerUrl;
 
 + (NSString *)createID;

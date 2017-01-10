@@ -1972,7 +1972,7 @@
     NSString *fileNameTo, *newTitleTo;
     CCCrypto *crypto = [[CCCrypto alloc] init];
     
-    fileNameTo = [CCUtility clearFile:fileName];
+    fileNameTo = [CCUtility removeForbiddenCharacters:fileName];
     if (![fileNameTo length]) return;
     
     if ([metadata.fileNamePrint isEqualToString:fileNameTo]) return;
@@ -2268,7 +2268,7 @@
 {
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
     
-    fileNameFolder = [CCUtility clearFile:fileNameFolder];
+    fileNameFolder = [CCUtility removeForbiddenCharacters:fileNameFolder];
     if (![fileNameFolder length]) return;
     
     if (folderCameraUpload) metadataNet.serverUrl = [CCCoreData getCameraUploadFolderPathActiveAccount:app.activeAccount activeUrl:app.activeUrl typeCloud:app.typeCloud];
@@ -2293,7 +2293,7 @@
     CCCrypto *crypto = [[CCCrypto alloc] init];
     NSString *fileNamePlist;
     
-    fileNameFolder = [CCUtility clearFile:fileNameFolder];
+    fileNameFolder = [CCUtility removeForbiddenCharacters:fileNameFolder];
     if (![fileNameFolder length]) return;
     
     NSString *title = [AESCrypt encrypt:fileNameFolder password:[crypto getKeyPasscode:[CCUtility getUUID]]];

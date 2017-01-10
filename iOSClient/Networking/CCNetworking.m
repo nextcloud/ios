@@ -434,7 +434,7 @@
             NSDictionary *fields = [httpResponse allHeaderFields];
             
             if (errorCode == 0) {
-                rev = [CCUtility clearFile:[fields objectForKey:@"OC-ETag"]];
+                rev = [CCUtility removeForbiddenCharacters:[fields objectForKey:@"OC-ETag"]];
                 date = [dateFormatter dateFromString:[fields objectForKey:@"Date"]];
             }
         }
@@ -478,8 +478,8 @@
             NSDictionary *fields = [httpResponse allHeaderFields];
             
             if (errorCode == 0) {
-                fileID = [CCUtility clearFile:[fields objectForKey:@"OC-FileId"]];
-                rev = [CCUtility clearFile:[fields objectForKey:@"OC-ETag"]];
+                fileID = [CCUtility removeForbiddenCharacters:[fields objectForKey:@"OC-FileId"]];
+                rev = [CCUtility removeForbiddenCharacters:[fields objectForKey:@"OC-ETag"]];
                 date = [dateFormatter dateFromString:[fields objectForKey:@"Date"]];
             }
         }
