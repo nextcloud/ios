@@ -194,16 +194,16 @@ class CreateFormUpload: XLFormViewController {
     
     func initializeForm() {
         
-        let form : XLFormDescriptor = XLFormDescriptor(title: "Dates") as XLFormDescriptor
-        
+        let form : XLFormDescriptor = XLFormDescriptor() as XLFormDescriptor
+        form.rowNavigationOptions = XLFormRowNavigationOptions.stopDisableRow
+
         var section : XLFormSectionDescriptor
         var row : XLFormRowDescriptor
 
-        section = XLFormSectionDescriptor.formSection(withTitle: "Inline Dates") as XLFormSectionDescriptor
+        section = XLFormSectionDescriptor.formSection() as XLFormSectionDescriptor
         form.addFormSection(section)
         
-        // TextFieldAndTextView
-        row = XLFormRowDescriptor(tag: "TextFieldAndTextView", rowType: XLFormRowDescriptorTypeButton, title: "Text Fields")
+        row = XLFormRowDescriptor(tag: "TextFieldAndTextView", rowType: XLFormRowDescriptorTypeName, title: "File name")
         section.addFormRow(row)
         
         self.form = form
