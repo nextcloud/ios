@@ -127,7 +127,7 @@
 + (NSString *)transformedSize:(double)value;
 
 + (NSString *)clearFile:(NSString *)nomeFile;
-+ (NSString*)stringAppendServerUrl:(NSString *)serverUrl addServerUrl:(NSString *)addServerUrl;
++ (NSString *)stringAppendServerUrl:(NSString *)serverUrl addServerUrl:(NSString *)addServerUrl;
 
 + (NSString *)createID;
 + (NSString *)createFileNameFromAsset:(PHAsset *)asset;

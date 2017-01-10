@@ -415,12 +415,10 @@
     return [NSString stringWithFormat:@"%4.2f %@",value, [tokens objectAtIndex:multiplyFactor]];
 }
 
-// Replace NSUTF8StringEncoding and remove do not forbidden characters
+// Remove do not forbidden characters
 + (NSString *)clearFile:(NSString *)nomeFile
 {
     NSArray *arrayForbiddenCharacters = [NSArray arrayWithObjects:@"\\",@"<",@">",@":",@"\"",@"|",@"?",@"*",@"/", nil];
-    
-    nomeFile = [nomeFile stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     
     for (NSString *currentCharacter in arrayForbiddenCharacters) {
         nomeFile = [nomeFile stringByReplacingOccurrencesOfString:currentCharacter withString:@""];

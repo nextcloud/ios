@@ -357,7 +357,7 @@
             for (NSUInteger i=1; i < [itemsSortedArray count]; i++) {
                 
                 OCFileDto *itemDto = [itemsSortedArray objectAtIndex:i];
-                itemDto.fileName = [CCUtility clearFile:itemDto.fileName];
+                itemDto.fileName = [itemDto.fileName stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
                 
                 // ----- BUG #942 ---------
                 if ([itemDto.etag length] == 0) {
@@ -624,6 +624,7 @@
             
             OCFileDto *itemDto = [items objectAtIndex:0];
             itemDto.fileName = _metadataNet.fileName;
+            
             NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:_metadataNet.serverUrl activeAccount:_metadataNet.account];
             NSString *cameraFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:_metadataNet.account];
             NSString *cameraFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:_metadataNet.account activeUrl:_activeUrl typeCloud:_typeCloud];
