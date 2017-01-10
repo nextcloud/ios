@@ -182,6 +182,33 @@ class CreateMenuAdd: NSObject {
 
 class CreateFormUpload: XLFormViewController {
     
+    required init(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        self.initializeForm()
+    }
+    
+    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+        self.initializeForm()
+    }
+    
+    func initializeForm() {
+        
+        let form : XLFormDescriptor = XLFormDescriptor(title: "Dates") as XLFormDescriptor
+        
+        var section : XLFormSectionDescriptor
+        var row : XLFormRowDescriptor
+
+        section = XLFormSectionDescriptor.formSection(withTitle: "Inline Dates") as XLFormSectionDescriptor
+        form.addFormSection(section)
+        
+        // TextFieldAndTextView
+        row = XLFormRowDescriptor(tag: "TextFieldAndTextView", rowType: XLFormRowDescriptorTypeButton, title: "Text Fields")
+        section.addFormRow(row)
+        
+        self.form = form
+    }
+
 }
 
 

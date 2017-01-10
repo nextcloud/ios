@@ -27,6 +27,8 @@
 #import "CCPhotosCameraUpload.h"
 #import "CCSynchronization.h"
 
+#import "Nextcloud-Swift.h"
+
 #pragma GCC diagnostic ignored "-Wundeclared-selector"
 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
 
@@ -695,7 +697,11 @@
 {
     [picker dismissViewControllerAnimated:YES completion:^{
         
-        [self uploadFileAsset:assets serverUrl:_localServerUrl cryptated:_isPickerCriptate session:upload_session];
+        CreateFormUpload *menuAdd = [[CreateFormUpload alloc] init];
+        
+        [self presentViewController:menuAdd animated:YES completion:nil];
+        
+        //[self uploadFileAsset:assets serverUrl:_localServerUrl cryptated:_isPickerCriptate session:upload_session];
     }];
 }
 

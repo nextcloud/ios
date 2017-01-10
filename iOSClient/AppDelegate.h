@@ -44,9 +44,6 @@
 #import "CCPhotosCameraUpload.h"
 #import "CCFavorite.h"
 
-// Swift
-#import "Nextcloud-Bridging-Header.h"
-
 #ifdef CC
 @interface AppDelegate : UIResponder <UIApplicationDelegate, BKPasscodeLockScreenManagerDelegate, BKPasscodeViewControllerDelegate, DBRestClientDelegate, LMMediaPlayerViewDelegate, TWMessageBarStyleSheet>
 #endif
