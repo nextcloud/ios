@@ -638,9 +638,11 @@
 #ifdef DEBUG
     
     CreateFormUpload *form = [[CreateFormUpload alloc] init:_titleMain];
-    //form.destinationFolder = @"x";
+    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:form];
     
-    [self presentViewController:form animated:YES completion:nil];
+    //navController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+
+    [self presentViewController:navController animated:YES completion:nil];
 
     return;
 #endif

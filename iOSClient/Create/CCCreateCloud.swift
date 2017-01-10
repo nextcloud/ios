@@ -187,8 +187,26 @@ class CreateFormUpload: XLFormViewController {
     convenience init(_ destionationFolder : String?) {
         
         self.init()
-        self.destinationFolder = destionationFolder
+        
+        if destionationFolder == nil || destionationFolder?.isEmpty == true {
+            self.destinationFolder = "/" //NSLocalizedString("_root_", comment: "")
+        } else {
+            self.destinationFolder = destionationFolder
+        }
+    
         self.initializeForm()
+    }
+    
+    override func viewDidLoad() {
+
+        super.viewDidLoad()
+        
+        let cancelButton : UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: UIBarButtonItemStyle.plain, target: self, action: #selector(cancel))
+        
+        let saveButton : UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_save_", comment: ""), style: UIBarButtonItemStyle.plain, target: self, action: #selector(save))
+        
+        self.navigationItem.leftBarButtonItem = cancelButton
+        self.navigationItem.rightBarButtonItem = saveButton
     }
     
     func initializeForm() {
@@ -199,7 +217,7 @@ class CreateFormUpload: XLFormViewController {
         var section : XLFormSectionDescriptor
         var row : XLFormRowDescriptor
 
-        section = XLFormSectionDescriptor.formSection() as XLFormSectionDescriptor
+        section = XLFormSectionDescriptor.formSection(withTitle: "_destination_folder_") as XLFormSectionDescriptor
         form.addFormSection(section)
         
         row = XLFormRowDescriptor(tag: "ButtonDestinationFolder", rowType: XLFormRowDescriptorTypeButton, title: self.destinationFolder)
@@ -209,12 +227,22 @@ class CreateFormUpload: XLFormViewController {
         section = XLFormSectionDescriptor.formSection() as XLFormSectionDescriptor
         form.addFormSection(section)
         
+        section = XLFormSectionDescriptor.formSection() as XLFormSectionDescriptor
+        form.addFormSection(section)
+        
         row = XLFormRowDescriptor(tag: "TextFieldAndTextView", rowType: XLFormRowDescriptorTypeName, title: "File name")
         section.addFormRow(row)
         
         self.form = form
     }
+    
+    func save() {
+        
+    }
 
+    func cancel() {
+        
+    }
 }
 
 
