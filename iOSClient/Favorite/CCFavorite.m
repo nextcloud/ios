@@ -432,6 +432,7 @@
         
     [actionSheet addButtonWithTitle:NSLocalizedString(@"_open_in_", nil)
                               image:[UIImage imageNamed:image_actionSheetOpenIn]
+                    backgroundColor:[UIColor whiteColor]
                                type:AHKActionSheetButtonTypeDefault
                             handler:^(AHKActionSheet *as) {
                                 [self performSelector:@selector(openWith:) withObject:self.metadata afterDelay:0.1];

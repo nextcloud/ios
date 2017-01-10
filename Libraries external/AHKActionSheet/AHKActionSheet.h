@@ -114,7 +114,7 @@ typedef void(^AHKActionSheetHandler)(AHKActionSheet *actionSheet);
  *  @param image   The image to display on the left of the title.
  *  @param handler A completion handler block to execute when a dismissal animation (after the user tapped on the button) has finished.
  */
-- (void)addButtonWithTitle:(NSString *)title image:(UIImage *)image type:(AHKActionSheetButtonType)type handler:(AHKActionSheetHandler)handler;
+- (void)addButtonWithTitle:(NSString *)title image:(UIImage *)image backgroundColor:(UIColor *)backgroundColor type:(AHKActionSheetButtonType)type handler:(AHKActionSheetHandler)handler;
 
 /// Displays the action sheet.
 - (void)show;
