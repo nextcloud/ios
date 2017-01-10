@@ -23,7 +23,9 @@
 
 import Foundation
 
-class CreateMenu: NSObject {
+// MARK: - CreateMenuAdd
+
+class CreateMenuAdd: NSObject {
     
     let fontButton = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 14)!, NSForegroundColorAttributeName:UIColor(colorLiteralRed: 65.0/255.0, green: 64.0/255.0, blue: 66.0/255.0, alpha: 1.0)]
     let fontEncrypted = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 14)!, NSForegroundColorAttributeName:UIColor(colorLiteralRed: 241.0/255.0, green: 90.0/255.0, blue: 34.0/255.0, alpha: 1.0)]
@@ -175,3 +177,11 @@ class CreateMenu: NSObject {
     }
 
 }
+
+// MARK: - CreateFormUpload
+
+class CreateFormUpload: XLFormViewController {
+    
+}
+
+

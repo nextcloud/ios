@@ -809,9 +809,9 @@
 
 - (void)handleTouchTabbarCenter:(id)sender
 {
-    CreateMenu *menu = [[CreateMenu alloc] init];
+    CreateMenuAdd *menuAdd = [[CreateMenuAdd alloc] init];
     
-    [menu createMenuPlainWithView:self.window.rootViewController.view];
+    [menuAdd createMenuPlainWithView:self.window.rootViewController.view];
 }
 
 - (void)updateApplicationIconBadgeNumber

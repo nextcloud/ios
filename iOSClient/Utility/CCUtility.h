@@ -155,8 +155,6 @@
 
 + (NSString *)localizableBrand:(NSString *)localize table:(NSString *)table;
 
-
-
 // ===== CCMetadata =====
 
 #ifdef CC
