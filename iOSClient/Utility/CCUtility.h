@@ -84,6 +84,8 @@
 
 + (void)setDirectoryOnTop:(BOOL)directoryOnTop;
 
++ (void)setFileNameMask:(NSString *)fileNameMask;
+
 // GET
 
 + (NSString *)getKeyChainPasscodeForUUID:(NSString *)uuid;
@@ -118,6 +120,8 @@
 + (NSString *)getHint;
 
 + (BOOL)getDirectoryOnTop;
+
++ (NSString *)getFileNameMask;
 
 // ===== Varius =====
 

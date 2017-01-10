@@ -190,6 +190,11 @@
     [UICKeyChainStore setString:sDirectoryOnTop forKey:@"directoryOnTop" service:serviceShareKeyChain];
 }
 
++ (void)setFileNameMask:(NSString *)fileNameMask
+{
+    [UICKeyChainStore setString:fileNameMask forKey:@"fileNameMask" service:serviceShareKeyChain];
+}
+
 #pragma ------------------------------ GET
 
 + (NSString *)getKeyChainPasscodeForUUID:(NSString *)uuid
@@ -354,6 +359,16 @@
 + (BOOL)getDirectoryOnTop
 {
     return [[UICKeyChainStore stringForKey:@"directoryOnTop" service:serviceShareKeyChain] boolValue];
+}
+
++ (NSString *)getFileNameMask
+{
+    NSString *mask = [UICKeyChainStore stringForKey:@"fileNameMask" service:serviceShareKeyChain];
+    
+    if (mask == nil)
+        mask = @"";
+        
+    return mask;
 }
 
 #pragma --------------------------------------------------------------------------------------------
