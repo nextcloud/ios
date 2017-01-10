@@ -224,10 +224,15 @@ class CreateFormUpload: XLFormViewController {
         row.cellConfig.setObject(UIImage(named: image_settingsManagePhotos)!, forKey: "imageView.image" as NSCopying)
         section.addFormRow(row)
         
-        section = XLFormSectionDescriptor.formSection() as XLFormSectionDescriptor
+        section = XLFormSectionDescriptor.formSection(withTitle: "A") as XLFormSectionDescriptor
         form.addFormSection(section)
         
-        section = XLFormSectionDescriptor.formSection() as XLFormSectionDescriptor
+        row = XLFormRowDescriptor(tag: "FolderPhoto", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: "Save in Pfoto folder")
+        section.addFormRow(row)
+        row = XLFormRowDescriptor(tag: "der", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: "Subloder")
+        section.addFormRow(row)
+
+        section = XLFormSectionDescriptor.formSection(withTitle: "B") as XLFormSectionDescriptor
         form.addFormSection(section)
         
         row = XLFormRowDescriptor(tag: "TextFieldAndTextView", rowType: XLFormRowDescriptorTypeName, title: "File name")
