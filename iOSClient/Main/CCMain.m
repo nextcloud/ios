@@ -634,6 +634,17 @@
 
 - (void)openAssetsPickerController
 {
+    
+#ifdef DEBUG
+    
+    CreateFormUpload *form = [[CreateFormUpload alloc] init:_titleMain];
+    //form.destinationFolder = @"x";
+    
+    [self presentViewController:form animated:YES completion:nil];
+
+    return;
+#endif
+    
     CTAssetSelectionLabel *assetSelectionLabel = [CTAssetSelectionLabel appearance];
     assetSelectionLabel.borderWidth = 1.0;
     assetSelectionLabel.borderColor = COLOR_BRAND;
@@ -697,11 +708,7 @@
 {
     [picker dismissViewControllerAnimated:YES completion:^{
         
-        CreateFormUpload *menuAdd = [[CreateFormUpload alloc] init];
-        
-        [self presentViewController:menuAdd animated:YES completion:nil];
-        
-        //[self uploadFileAsset:assets serverUrl:_localServerUrl cryptated:_isPickerCriptate session:upload_session];
+        [self uploadFileAsset:assets serverUrl:_localServerUrl cryptated:_isPickerCriptate session:upload_session];
     }];
 }
 

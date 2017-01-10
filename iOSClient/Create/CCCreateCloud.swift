@@ -182,13 +182,12 @@ class CreateMenuAdd: NSObject {
 
 class CreateFormUpload: XLFormViewController {
     
-    required init(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-        self.initializeForm()
-    }
+    var destinationFolder : String?
     
-    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
-        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+    convenience init(_ destionationFolder : String?) {
+        
+        self.init()
+        self.destinationFolder = destionationFolder
         self.initializeForm()
     }
     
@@ -200,6 +199,13 @@ class CreateFormUpload: XLFormViewController {
         var section : XLFormSectionDescriptor
         var row : XLFormRowDescriptor
 
+        section = XLFormSectionDescriptor.formSection() as XLFormSectionDescriptor
+        form.addFormSection(section)
+        
+        row = XLFormRowDescriptor(tag: "ButtonDestinationFolder", rowType: XLFormRowDescriptorTypeButton, title: self.destinationFolder)
+        row.cellConfig.setObject(UIImage(named: image_settingsManagePhotos)!, forKey: "imageView.image" as NSCopying)
+        section.addFormRow(row)
+        
         section = XLFormSectionDescriptor.formSection() as XLFormSectionDescriptor
         form.addFormSection(section)
         
