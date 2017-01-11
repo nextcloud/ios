@@ -1379,6 +1379,11 @@
         [CCCoreData setGeoInformationLocalNull];
     }
     
+    if (([actualVersion compare:@"2.17" options:NSNumericSearch] == NSOrderedAscending)) {
+        
+        [CCCoreData clearAllDateReadDirectory];
+        [CCCoreData flushTableMetadataAccount:nil];
+    }
 }
 
 @end
