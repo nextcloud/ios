@@ -38,6 +38,8 @@
 #import "CCMain.h"
 #import "CCDetail.h"
 
+#import "Nextcloud-Swift.h"
+
 @interface AppDelegate ()
 {
     
@@ -217,10 +219,14 @@
     [self.window setTintColor:COLOR_BRAND];
     
     UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
+    //UITabBarController *tabBarController = [splitViewController.viewControllers firstObject];
     UINavigationController *navigationController = [splitViewController.viewControllers lastObject];
-    
+
     navigationController.topViewController.navigationItem.leftBarButtonItem = splitViewController.displayModeButtonItem;
     splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeAllVisible;
+    
+    // Settings TabBar
+    [self createTabBarController];
     
     // passcode
     [[BKPasscodeLockScreenManager sharedManager] setDelegate:self];
@@ -711,6 +717,103 @@
     return iconImage;
 }
 
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== TabBarController =====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)createTabBarController
+{
+    UITabBarItem *item;
+    NSLayoutConstraint *constraint;
+    
+    UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
+    UITabBarController *tabBarController = [splitViewController.viewControllers firstObject];
+    
+    [CCAspect aspectTabBar:tabBarController.tabBar hidden:NO];
+    
+    // File
+    item = [tabBarController.tabBar.items objectAtIndex:TabBarApplicationIndexFile];
+    [item setTitle:NSLocalizedString(@"_home_", nil)];
+    item.image = [UIImage imageNamed:image_tabBarFile];
+    item.selectedImage = [UIImage imageNamed:image_tabBarFile];
+    
+    // Favorite - Local
+    item = [tabBarController.tabBar.items objectAtIndex:TabBarApplicationIndexFavorite];
+    if (app.isLocalStorage) {
+        [item setTitle:NSLocalizedString(@"_local_storage_", nil)];
+        item.image = [UIImage imageNamed:image_tabBarLocal];
+        item.selectedImage = [UIImage imageNamed:image_tabBarLocal];
+    } else {
+        [item setTitle:NSLocalizedString(@"_favorites_", nil)];
+        item.image = [UIImage imageNamed:image_tabBarFavorite];
+        item.selectedImage = [UIImage imageNamed:image_tabBarFavorite];
+    }
+    
+    // Hide (PLUS)
+    item = [tabBarController.tabBar.items objectAtIndex:TabBarApplicationIndexHide];
+    item.title = nil;
+    item.image = nil;
+    item.enabled = false;
+    
+    // Photos
+    item = [tabBarController.tabBar.items objectAtIndex:TabBarApplicationIndexPhotos];
+    [item setTitle:NSLocalizedString(@"_photo_camera_", nil)];
+    item.image = [UIImage imageNamed:image_tabBarPhotos];
+    item.selectedImage = [UIImage imageNamed:image_tabBarPhotos];
+    
+    // Settings
+    item = [tabBarController.tabBar.items objectAtIndex:TabBarApplicationIndexSettings];
+    [item setTitle:NSLocalizedString(@"_settings_", nil)];
+    item.image = [UIImage imageNamed:image_tabBarSettings];
+    item.selectedImage = [UIImage imageNamed:image_tabBarSettings];
+    
+    // Plus Button
+    UIImage *buttonImage = [UIImage imageNamed:@"Plus"];
+    UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
+    button.tag = 99;
+    button.frame = CGRectMake(0.0, 0.0, buttonImage.size.width, buttonImage.size.height);
+    [button setBackgroundImage:buttonImage forState:UIControlStateNormal];
+    [button setBackgroundImage:buttonImage forState:UIControlStateHighlighted];
+    [button addTarget:self action:@selector(handleTouchTabbarCenter:) forControlEvents:UIControlEventTouchUpInside];
+    
+    [button setTranslatesAutoresizingMaskIntoConstraints:NO];
+    [tabBarController.view addSubview:button];
+    
+    constraint =[NSLayoutConstraint constraintWithItem:button attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:tabBarController.view attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0];
+    
+    [tabBarController.view addConstraint:constraint];
+    
+    constraint =[NSLayoutConstraint constraintWithItem:button attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:tabBarController.view attribute:NSLayoutAttributeBottom multiplier:1.0 constant:-5];
+    
+    [tabBarController.view addConstraint:constraint];
+}
+
+- (void)plusButtonVisibile:(BOOL)visible
+{
+    UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
+    UITabBarController *tabBarController = [splitViewController.viewControllers firstObject];
+    
+    UIButton *buttonPlus = [tabBarController.view viewWithTag:99];
+    if (buttonPlus) {
+
+        if (visible) {
+            
+            buttonPlus.hidden = false;
+        
+        } else {
+            
+            buttonPlus.hidden = true;
+        }
+    }
+}
+
+- (void)handleTouchTabbarCenter:(id)sender
+{
+    CreateMenuAdd *menuAdd = [[CreateMenuAdd alloc] init];
+    
+    [menuAdd createMenuPlainWithView:self.window.rootViewController.view];
+}
+
 - (void)updateApplicationIconBadgeNumber
 {
     // Core Data
@@ -731,10 +834,10 @@
 #ifdef CC
         
         /*** DROPBOX ***/
-
+        
         if ([app.typeCloud isEqualToString:typeCloudDropbox])
             if (((DBnetworking *)operation).isExecuting == NO) _queueNunDownload++;
-
+        
 #endif
     }
     
@@ -752,7 +855,7 @@
         
         if ([app.typeCloud isEqualToString:typeCloudDropbox])
             if (((DBnetworking *)operation).isExecuting == NO) _queueNumDownloadWWan++;
-
+        
 #endif
     }
     
@@ -788,8 +891,8 @@
         if ([app.typeCloud isEqualToString:typeCloudDropbox])
             if (((DBnetworking *)operation).isExecuting == NO) _queueNumUploadWWan++;
 #endif
-     }
-
+    }
+    
     // Total
     NSUInteger total = _queueNunDownload + _queueNumDownloadWWan + _queueNumUpload + _queueNumUploadWWan + [CCCoreData countTableAutomaticUploadForAccount:self.activeAccount selector:nil];
     
@@ -1019,7 +1122,7 @@
     [self performSelector:@selector(updateApplicationIconBadgeNumber) withObject:nil afterDelay:0.5];
 }
 
-- (void)addNetworkingOperationQueue:(NSOperationQueue *)netQueue delegate:(id)delegate metadataNet:(CCMetadataNet *)metadataNet oneByOne:(BOOL)oneByOne
+- (void)addNetworkingOperationQueue:(NSOperationQueue *)netQueue delegate:(id)delegate metadataNet:(CCMetadataNet *)metadataNet
 {
     id operation;
     BOOL activityIndicator = NO;
@@ -1031,14 +1134,14 @@
     /*** NEXTCLOUD OWNCLOUD ***/
     
     if ([_typeCloud isEqualToString:typeCloudOwnCloud] || [_typeCloud isEqualToString:typeCloudNextcloud])
-        operation = [[OCnetworking alloc] initWithDelegate:delegate metadataNet:metadataNet withUser:_activeUser withPassword:_activePassword withUrl:_activeUrl withTypeCloud:_typeCloud oneByOne:oneByOne activityIndicator:activityIndicator];
+        operation = [[OCnetworking alloc] initWithDelegate:delegate metadataNet:metadataNet withUser:_activeUser withPassword:_activePassword withUrl:_activeUrl withTypeCloud:_typeCloud activityIndicator:activityIndicator];
     
 #ifdef CC
     
     /*** DROPBOX ***/
     
     if ([_typeCloud isEqualToString:typeCloudDropbox])
-        operation = [[DBnetworking alloc] initWithDelegate:delegate metadataNet:metadataNet withUser:_activeUser withPassword:_activePassword withUrl:_activeUrl withActiveUID:_activeUID withActiveAccessToken:_activeAccessToken oneByOne:oneByOne activityIndicator:activityIndicator];
+        operation = [[DBnetworking alloc] initWithDelegate:delegate metadataNet:metadataNet withUser:_activeUser withPassword:_activePassword withUrl:_activeUrl withActiveUID:_activeUID withActiveAccessToken:_activeAccessToken activityIndicator:activityIndicator];
 #endif
     
     [operation setQueuePriority:metadataNet.priority];
@@ -1156,7 +1259,7 @@
         else
             queue = app.netQueueUpload;
         
-        [self addNetworkingOperationQueue:queue delegate:app.activeMain metadataNet:metadataNet oneByOne:YES];
+        [self addNetworkingOperationQueue:queue delegate:app.activeMain metadataNet:metadataNet];
     }
 }
 

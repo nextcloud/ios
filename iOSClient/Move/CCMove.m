@@ -23,7 +23,7 @@
 
 #import "CCMove.h"
 
-#ifndef SHARE_IN
+#ifndef EXTENSION
 #import "AppDelegate.h"
 #endif
 
@@ -119,7 +119,7 @@
     if (buttonIndex == 1) {
         NSString *nome = [alertView textFieldAtIndex:0].text;
         if ([nome length]) {
-            nome = [NSString stringWithFormat:@"%@/%@", self.localServerUrl, [CCUtility clearFile:nome]];
+            nome = [NSString stringWithFormat:@"%@/%@", self.localServerUrl, [CCUtility removeForbiddenCharacters:nome]];
         }
     }
 }
@@ -240,7 +240,7 @@
     
     if ([typeCloud isEqualToString:typeCloudOwnCloud] || [typeCloud isEqualToString:typeCloudNextcloud]) {
         
-        OCnetworking *operation = [[OCnetworking alloc] initWithDelegate:self metadataNet:metadataNet withUser:activeUser withPassword:activePassword withUrl:activeUrl withTypeCloud:typeCloud oneByOne:YES activityIndicator:NO];
+        OCnetworking *operation = [[OCnetworking alloc] initWithDelegate:self metadataNet:metadataNet withUser:activeUser withPassword:activePassword withUrl:activeUrl withTypeCloud:typeCloud activityIndicator:NO];
         
         _networkingOperationQueue.maxConcurrentOperationCount = maxConcurrentOperation;
         [_networkingOperationQueue addOperation:operation];
@@ -252,7 +252,7 @@
 
     if ([typeCloud isEqualToString:typeCloudDropbox]) {
         
-        DBnetworking *operation = [[DBnetworking alloc] initWithDelegate:self metadataNet:metadataNet withUser:activeUser withPassword:activePassword withUrl:activeUrl withActiveUID:activeUID withActiveAccessToken:activeAccessToken oneByOne:YES activityIndicator:NO];
+        DBnetworking *operation = [[DBnetworking alloc] initWithDelegate:self metadataNet:metadataNet withUser:activeUser withPassword:activePassword withUrl:activeUrl withActiveUID:activeUID withActiveAccessToken:activeAccessToken activityIndicator:NO];
         
         _networkingOperationQueue.maxConcurrentOperationCount = maxConcurrentOperation;
         [_networkingOperationQueue addOperation:operation];

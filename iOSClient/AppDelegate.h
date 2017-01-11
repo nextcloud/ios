@@ -175,9 +175,11 @@
 - (void)updateApplicationIconBadgeNumber;
 - (BOOL)handleShortCutItem:(UIApplicationShortcutItem *)shortcutItem;
 
+- (void)plusButtonVisibile:(BOOL)visible;
+
 // Operation Networking
 - (void)cancelAllOperations;
-- (void)addNetworkingOperationQueue:(NSOperationQueue *)netQueue delegate:(id)delegate metadataNet:(CCMetadataNet *)metadataNet oneByOne:(BOOL)oneByOne;
+- (void)addNetworkingOperationQueue:(NSOperationQueue *)netQueue delegate:(id)delegate metadataNet:(CCMetadataNet *)metadataNet;
 
 - (NSMutableArray *)verifyExistsInQueuesDownloadSelector:(NSString *)selector;
 - (NSMutableArray *)verifyExistsInQueuesUploadSelector:(NSString *)selector;

@@ -124,7 +124,7 @@
     metadataNet.selector = selectorDownloadThumbnail;
     metadataNet.serverUrl = app.serverUrl;
     
-    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
 }
 
 - (NSString *)returnFileNamePathFromFileName:(NSString *)metadataFileName serverUrl:(NSString *)serverUrl

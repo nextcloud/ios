@@ -343,7 +343,7 @@
         metadataNet.selector = selectorReadFileFavorite;
         metadataNet.priority = NSOperationQueuePriorityVeryLow;
         
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
     }
 }
 
@@ -411,13 +411,24 @@
     [self setEditing:NO animated:YES];
     
     AHKActionSheet *actionSheet = [[AHKActionSheet alloc] initWithView:self.view title:nil];
-        
-    actionSheet.blurRadius = 1.0f;
+    
+    actionSheet.animationDuration = 0.2;
+    actionSheet.cancelOnTapEmptyAreaEnabled = @(YES);
+    actionSheet.automaticallyTintButtonImages = @(NO);
+    
+    actionSheet.blurRadius = 0.0f;
+    actionSheet.blurTintColor = [UIColor colorWithWhite:0.0f alpha:0.50f];
+    
     actionSheet.buttonHeight = 50.0;
     actionSheet.cancelButtonHeight = 50.0f;
+    actionSheet.separatorHeight = 30.0f;
+    
     actionSheet.selectedBackgroundColor = COLOR_SELECT_BACKGROUND;
-    actionSheet.cryptoButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:17], NSForegroundColorAttributeName:COLOR_BRAND };
-    actionSheet.buttonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:17], NSForegroundColorAttributeName:COLOR_GRAY };
+
+    actionSheet.encryptedButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:14], NSForegroundColorAttributeName:COLOR_ENCRYPTED };
+    actionSheet.buttonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:14], NSForegroundColorAttributeName:COLOR_GRAY };
+    actionSheet.cancelButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:COLOR_BRAND };
+
     actionSheet.separatorColor = COLOR_SEPARATOR_TABLE;
     actionSheet.cancelButtonTitle = NSLocalizedString(@"_cancel_",nil);
 
@@ -432,6 +443,8 @@
         
     [actionSheet addButtonWithTitle:NSLocalizedString(@"_open_in_", nil)
                               image:[UIImage imageNamed:image_actionSheetOpenIn]
+                    backgroundColor:[UIColor whiteColor]
+                             height: 50.0
                                type:AHKActionSheetButtonTypeDefault
                             handler:^(AHKActionSheet *as) {
                                 [self performSelector:@selector(openWith:) withObject:self.metadata afterDelay:0.1];

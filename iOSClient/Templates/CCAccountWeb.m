@@ -191,7 +191,7 @@
         metadataNet.session = upload_session_foreground;
         metadataNet.taskStatus = taskStatusResume;
         
-        [app addNetworkingOperationQueue:app.netQueue delegate:self.delegate metadataNet:metadataNet oneByOne:YES];
+        [app addNetworkingOperationQueue:app.netQueue delegate:self.delegate metadataNet:metadataNet];
         
         [self dismissViewControllerAnimated:YES completion:nil];
     }

@@ -45,7 +45,7 @@ static BKPasscodeLockScreenManager *_sharedManager;
     }
     
     // get the main window
-#ifndef SHARE_IN
+#ifndef EXTENSION
     self.mainWindow = [[UIApplication sharedApplication] keyWindow];
 
     // dismiss keyboard before showing lock screen

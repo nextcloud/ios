@@ -200,7 +200,7 @@
         metadataNet.taskStatus = taskStatusResume;
         
         // 2
-        [app addNetworkingOperationQueue:app.netQueue delegate:self.delegate metadataNet:metadataNet oneByOne:YES];
+        [app addNetworkingOperationQueue:app.netQueue delegate:self.delegate metadataNet:metadataNet];
         
         [self dismissViewControllerAnimated:YES completion:nil];
     }

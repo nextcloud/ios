@@ -31,18 +31,16 @@
 #define image_launchscreen                      @"nextcloudlaunchscreen"
 #endif
 
-#define image_actionSheetOpenIn                 @"actionSheetOpenIn"
-#define image_actionSheetRename                 @"actionSheetRename"
-#define image_actionSheetMove                   @"actionSheetMove"
+#define image_actionSheetRename                 @"renameNextcloud"
+#define image_actionSheetMove                   @"moveNextcloud"
 #define image_actionSheetCrypto                 @"actionSheetCrypto"
 #define image_actionSheetLock                   @"actionSheetLock"
-#define image_actionSheetShare                  @"actionSheetShare"
-#define image_actionSheetSynchronized           @"actionSheetSynchronized"
-#define image_actionSheetReload                 @"actionSheetReload"
-#define image_actionSheetOpenIn                 @"actionSheetOpenIn"
-#define image_actionSheetShare                  @"actionSheetShare"
-#define image_actionSheetFavorite               @"actionSheetFavorite"
-#define image_actionSheetLocal                  @"actionSheetLocal"
+#define image_actionSheetShare                  @"shareNextcloud"
+#define image_actionSheetSynchronized           @"SynchronizedNextcloud"
+#define image_actionSheetReload                 @"reloadNextcloud"
+#define image_actionSheetOpenIn                 @"openInNextcloud"
+#define image_actionSheetFavorite               @"favoriteNextcloud"
+#define image_actionSheetLocal                  @"localStorageNextcloud"
 
 #ifdef CC
 #define image_activeCameraUpload_en             @"activeCameraUpload_en"

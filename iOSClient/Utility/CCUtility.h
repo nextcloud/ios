@@ -84,6 +84,8 @@
 
 + (void)setDirectoryOnTop:(BOOL)directoryOnTop;
 
++ (void)setFileNameMask:(NSString *)fileNameMask;
+
 // GET
 
 + (NSString *)getKeyChainPasscodeForUUID:(NSString *)uuid;
@@ -119,6 +121,8 @@
 
 + (BOOL)getDirectoryOnTop;
 
++ (NSString *)getFileNameMask;
+
 // ===== Varius =====
 
 + (NSString *)getUserAgent:(NSString *)typeCloud;
@@ -126,8 +130,8 @@
 + (NSString *)dateDiff:(NSDate *) convertedDate;
 + (NSString *)transformedSize:(double)value;
 
-+ (NSString *)clearFile:(NSString *)nomeFile;
-+ (NSString*)stringAppendServerUrl:(NSString *)serverUrl addServerUrl:(NSString *)addServerUrl;
++ (NSString *)removeForbiddenCharacters:(NSString *)fileName;
++ (NSString *)stringAppendServerUrl:(NSString *)serverUrl addServerUrl:(NSString *)addServerUrl;
 
 + (NSString *)createID;
 + (NSString *)createFileNameFromAsset:(PHAsset *)asset;
@@ -145,6 +149,7 @@
 + (void)removeAllFileID_UPLOAD_ActiveUser:(NSString *)activeUser activeUrl:(NSString *)activeUrl;
 
 + (NSString *)deletingLastPathComponentFromServerUrl:(NSString *)serverUrl;
++ (NSString *)returnFileNamePathFromFileName:(NSString *)metadataFileName serverUrl:(NSString *)serverUrl activeUrl:(NSString *)activeUrl typeCloud:(NSString *)typeCloud;
 
 + (void)sendMailEncryptPass:(NSString *)recipient validateEmail:(BOOL)validateEmail form:(id)form;
 

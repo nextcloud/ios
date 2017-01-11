@@ -190,6 +190,11 @@
     [UICKeyChainStore setString:sDirectoryOnTop forKey:@"directoryOnTop" service:serviceShareKeyChain];
 }
 
++ (void)setFileNameMask:(NSString *)fileNameMask
+{
+    [UICKeyChainStore setString:fileNameMask forKey:@"fileNameMask" service:serviceShareKeyChain];
+}
+
 #pragma ------------------------------ GET
 
 + (NSString *)getKeyChainPasscodeForUUID:(NSString *)uuid
@@ -356,6 +361,16 @@
     return [[UICKeyChainStore stringForKey:@"directoryOnTop" service:serviceShareKeyChain] boolValue];
 }
 
++ (NSString *)getFileNameMask
+{
+    NSString *mask = [UICKeyChainStore stringForKey:@"fileNameMask" service:serviceShareKeyChain];
+    
+    if (mask == nil)
+        mask = @"";
+        
+    return mask;
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Varius =====
 #pragma --------------------------------------------------------------------------------------------
@@ -415,18 +430,16 @@
     return [NSString stringWithFormat:@"%4.2f %@",value, [tokens objectAtIndex:multiplyFactor]];
 }
 
-// Replace NSUTF8StringEncoding and remove do not forbidden characters
-+ (NSString *)clearFile:(NSString *)nomeFile
+// Remove do not forbidden characters
++ (NSString *)removeForbiddenCharacters:(NSString *)fileName
 {
     NSArray *arrayForbiddenCharacters = [NSArray arrayWithObjects:@"\\",@"<",@">",@":",@"\"",@"|",@"?",@"*",@"/", nil];
     
-    nomeFile = [nomeFile stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    
     for (NSString *currentCharacter in arrayForbiddenCharacters) {
-        nomeFile = [nomeFile stringByReplacingOccurrencesOfString:currentCharacter withString:@""];
+        fileName = [fileName stringByReplacingOccurrencesOfString:currentCharacter withString:@""];
     }
     
-    return nomeFile;
+    return fileName;
 }
 
 + (NSString*)stringAppendServerUrl:(NSString *)serverUrl addServerUrl:(NSString *)addServerUrl
@@ -509,7 +522,7 @@
         if ([baseUrl hasPrefix:@"http://"]) baseUrl = [baseUrl substringFromIndex:7];
         
         dirUserBaseUrl = [NSString stringWithFormat:@"%@-%@", user, baseUrl];
-        dirUserBaseUrl = [[self clearFile:dirUserBaseUrl] lowercaseString];
+        dirUserBaseUrl = [[self removeForbiddenCharacters:dirUserBaseUrl] lowercaseString];
     } else return @"";
     
     dirApplicationUserGroup = [[dirGroup URLByAppendingPathComponent:appApplicationSupport] path];
@@ -534,7 +547,7 @@
         if ([baseUrl hasPrefix:@"http://"]) baseUrl = [baseUrl substringFromIndex:7];
         
         dirUserBaseUrl = [NSString stringWithFormat:@"%@-%@", user, baseUrl];
-        dirUserBaseUrl = [[self clearFile:dirUserBaseUrl] lowercaseString];
+        dirUserBaseUrl = [[self removeForbiddenCharacters:dirUserBaseUrl] lowercaseString];
     } else return @"";
     
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES);
@@ -634,6 +647,15 @@
     return [pather substringToIndex: [pather length] - 1];
 }
 
++ (NSString *)returnFileNamePathFromFileName:(NSString *)metadataFileName serverUrl:(NSString *)serverUrl activeUrl:(NSString *)activeUrl typeCloud:(NSString *)typeCloud
+{
+    NSString *fileName = [NSString stringWithFormat:@"%@/%@", [serverUrl stringByReplacingOccurrencesOfString:[CCUtility getHomeServerUrlActiveUrl:activeUrl typeCloud:typeCloud] withString:@""], metadataFileName];
+    
+    if ([fileName hasPrefix:@"/"]) fileName = [fileName substringFromIndex:1];
+    
+    return fileName;
+}
+
 + (void)sendMailEncryptPass:(NSString *)recipient validateEmail:(BOOL)validateEmail form:(id)form
 {
     BOOL error = NO;
@@ -708,9 +730,9 @@
     metadata.errorPasscode = NO;
     metadata.fileID = dbMetadata.rev;
     metadata.directoryID = directoryID;
-    metadata.fileName = [CCUtility clearFile:dbMetadata.filename];
+    metadata.fileName = [CCUtility removeForbiddenCharacters:dbMetadata.filename];
     metadata.fileNameData = [CCUtility trasformedFileNamePlistInCrypto:metadata.fileName];
-    metadata.fileNamePrint = [CCUtility clearFile:fileNamePrint];
+    metadata.fileNamePrint = [CCUtility removeForbiddenCharacters:fileNamePrint];
     metadata.iconName = @"";
     metadata.model = @"";
     metadata.nameCurrentDevice = [CCUtility getNameCurrentDevice];
@@ -761,9 +783,9 @@
     metadata.errorPasscode = false;
     metadata.fileID = itemDto.ocId;
     metadata.directoryID = directoryID;
-    metadata.fileName = [CCUtility clearFile:itemDto.fileName];
+    metadata.fileName = [CCUtility removeForbiddenCharacters:itemDto.fileName];
     metadata.fileNameData = [CCUtility trasformedFileNamePlistInCrypto:metadata.fileName];
-    metadata.fileNamePrint = [CCUtility clearFile:fileNamePrint];
+    metadata.fileNamePrint = [CCUtility removeForbiddenCharacters:fileNamePrint];
     metadata.iconName = @"";
     metadata.model = @"";
     metadata.nameCurrentDevice = [CCUtility getNameCurrentDevice];

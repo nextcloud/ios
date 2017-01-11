@@ -95,6 +95,9 @@
         self.tabBarController.tabBar.hidden = YES;
         self.tabBarController.tabBar.translucent = YES;
     }
+    
+    if (self.splitViewController.isCollapsed)
+        [app plusButtonVisibile:false];
 }
 
 - (void)viewDidAppear:(BOOL)animated

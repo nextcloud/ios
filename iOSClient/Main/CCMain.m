@@ -27,6 +27,8 @@
 #import "CCPhotosCameraUpload.h"
 #import "CCSynchronization.h"
 
+#import "Nextcloud-Swift.h"
+
 #pragma GCC diagnostic ignored "-Wundeclared-selector"
 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
 
@@ -197,9 +199,11 @@
     // Menu e Bar
     [self createReMainMenu];
     [self createReSelectMenu];
-    [self setUITabBarDefault];
     if (_isSelectedMode) [self setUINavigationBarSeleziona];
     else [self setUINavigationBarDefault];
+    
+    // Plus Button
+    [app plusButtonVisibile:true];
 }
 
 // E' arrivato
@@ -508,51 +512,9 @@
     }
 }
 
-- (void)setUITabBarDefault
-{
-    UITabBarItem *item;
-    
-    [CCAspect aspectTabBar:self.tabBarController.tabBar hidden:NO];
-    
-    // File
-    item = [self.tabBarController.tabBar.items objectAtIndex:TabBarApplicationIndexFile];
-    [item setTitle:NSLocalizedString(@"_home_", nil)];
-    item.image = [UIImage imageNamed:image_tabBarFile];
-    item.selectedImage = [UIImage imageNamed:image_tabBarFile];
-    
-    // Favorite - Local
-    item = [self.tabBarController.tabBar.items objectAtIndex:TabBarApplicationIndexFavorite];
-    if (app.isLocalStorage) {
-        [item setTitle:NSLocalizedString(@"_local_storage_", nil)];
-        item.image = [UIImage imageNamed:image_tabBarLocal];
-        item.selectedImage = [UIImage imageNamed:image_tabBarLocal];
-    } else {
-        [item setTitle:NSLocalizedString(@"_favorites_", nil)];
-        item.image = [UIImage imageNamed:image_tabBarFavorite];
-        item.selectedImage = [UIImage imageNamed:image_tabBarFavorite];
-    }
-    
-    // Photos
-    item = [self.tabBarController.tabBar.items objectAtIndex:TabBarApplicationIndexPhotos];
-    [item setTitle:NSLocalizedString(@"_photo_camera_", nil)];
-    item.image = [UIImage imageNamed:image_tabBarPhotos];
-    item.selectedImage = [UIImage imageNamed:image_tabBarPhotos];
-
-    // Settings
-    item = [self.tabBarController.tabBar.items objectAtIndex:TabBarApplicationIndexSettings];
-    [item setTitle:NSLocalizedString(@"_settings_", nil)];
-    item.image = [UIImage imageNamed:image_tabBarSettings];
-    item.selectedImage = [UIImage imageNamed:image_tabBarSettings];
-}
-
 - (void)setUINavigationBarDefault
 {
     [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar hidden:NO];
-    
-    // +
-    UIBarButtonItem *buttonAdd = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addActionTable)];
-    buttonAdd.tintColor = COLOR_BRAND;
-    buttonAdd.enabled = true;
     
     // =
     UIImage *icon = [UIImage imageNamed:image_more];
@@ -561,7 +523,9 @@
     
     // <
     self.navigationController.navigationBar.hidden = NO;
-    self.navigationItem.rightBarButtonItems = [[NSArray alloc] initWithObjects:buttonAdd, buttonMore, nil];
+    //self.navigationItem.rightBarButtonItems = [[NSArray alloc] initWithObjects:buttonAdd, buttonMore, nil];
+    self.navigationItem.rightBarButtonItems = [[NSArray alloc] initWithObjects:buttonMore, nil];
+
     self.navigationItem.leftBarButtonItem = nil;
     
     // close Menu
@@ -603,18 +567,65 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Navigation Controller =====
+#pragma mark ===== Document Picker =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)addActionTable
+- (void)documentMenuWasCancelled:(UIDocumentMenuViewController *)documentMenu
 {
-    UINavigationController *navigationController = [[UIStoryboard storyboardWithName:@"Add" bundle:nil] instantiateViewControllerWithIdentifier:@"CCAddNC"];
+    NSLog(@"Cancelled");
+}
+
+- (void)documentPickerWasCancelled:(UIDocumentPickerViewController *)controller
+{
+    NSLog(@"Cancelled");
+}
+
+- (void)documentMenu:(UIDocumentMenuViewController *)documentMenu didPickDocumentPicker:(UIDocumentPickerViewController *)documentPicker
+{
+    documentPicker.delegate = self;
+    [self presentViewController:documentPicker animated:YES completion:nil];
+}
+
+- (void)documentPicker:(UIDocumentPickerViewController *)controller didPickDocumentAtURL:(NSURL *)url
+{
+    if (controller.documentPickerMode == UIDocumentPickerModeImport) {
+        
+        NSFileCoordinator *coordinator = [[NSFileCoordinator alloc] initWithFilePresenter:nil];
+        __block NSError *error;
+        
+        [coordinator coordinateReadingItemAtURL:url options:0 error:&error byAccessor:^(NSURL *newURL) {
+            
+            NSString *fileName = [url lastPathComponent];
+            NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", app.directoryUser, fileName];
+            NSData *data = [NSData dataWithContentsOfURL:newURL];
+            
+            if (data && error == nil) {
+                
+                if ([data writeToFile:fileNamePath options:NSDataWritingAtomic error:&error]) {
+                    
+                    // Upload File
+                    [[CCNetworking sharedNetworking] uploadFile:fileName serverUrl:self.localServerUrl cryptated:_isPickerCriptate onlyPlist:NO session:upload_session taskStatus:taskStatusResume selector:nil selectorPost:nil parentRev:nil errorCode:0 delegate:nil];
+                    
+                } else {
+                    
+                    [app messageNotification:@"_error_" description:error.description visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeError];
+                }
+                
+            } else {
+                
+                [app messageNotification:@"_error_" description:@"_read_file_error_" visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeError];
+            }
+        }];
+    }
+}
+
+- (void)openImportDocumentPicker
+{
+    UIDocumentMenuViewController *documentProviderMenu = [[UIDocumentMenuViewController alloc] initWithDocumentTypes:@[@"public.data"] inMode:UIDocumentPickerModeImport];
+    documentProviderMenu.modalPresentationStyle = UIModalPresentationFormSheet;
     
-    CCAdd *viewController = (CCAdd *)navigationController.topViewController;
-    viewController.delegate = self;
-    
-    [navigationController setModalPresentationStyle:UIModalPresentationFormSheet];
-    [self presentViewController:navigationController animated:YES completion:nil];
+    documentProviderMenu.delegate = self;
+    [self presentViewController:documentProviderMenu animated:YES completion:nil];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -623,6 +634,19 @@
 
 - (void)openAssetsPickerController
 {
+    
+#ifdef DEBUG
+    
+    CreateFormUpload *form = [[CreateFormUpload alloc] init:_titleMain];
+    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:form];
+    
+    //navController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+
+    [self presentViewController:navController animated:YES completion:nil];
+
+    return;
+#endif
+    
     CTAssetSelectionLabel *assetSelectionLabel = [CTAssetSelectionLabel appearance];
     assetSelectionLabel.borderWidth = 1.0;
     assetSelectionLabel.borderColor = COLOR_BRAND;
@@ -811,21 +835,33 @@
     _numTaskUploadInProgress =  [[CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (session CONTAINS 'upload') AND ((sessionTaskIdentifier >= 0) OR (sessionTaskIdentifierPlist >= 0))", app.activeAccount] context:nil] count];
     
     switch (type) {
-        case returnCreaCartellaChiaro: {
+            
+        /* PLAIN */
+        case returnCreateFolderPlain: {
             UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_create_folder_",nil) message:nil delegate:self cancelButtonTitle:NSLocalizedString(@"_cancel_",nil) otherButtonTitles:NSLocalizedString(@"_save_", nil), nil];
             [alertView setAlertViewStyle:UIAlertViewStylePlainTextInput];
             alertView.tag = alertCreateFolder;
             [alertView show];
         }
             break;
-        case returnCreaFotoVideoChiaro: {
+        case returnCreateFotoVideoPlain: {
             
             _isPickerCriptate = false;
             
             [self openAssetsPickerController];
         }
             break;
-        case returnCreaCartellaCriptata: {
+        case returnCreateFilePlain: {
+            
+            _isPickerCriptate = false;
+            
+            [self openImportDocumentPicker];
+        }
+            break;
+            
+            
+        /* ENCRYPTED */
+        case returnCreateFolderEncrypted: {
             
             UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_create_folder_",nil) message:nil delegate:self cancelButtonTitle:NSLocalizedString(@"_cancel_",nil) otherButtonTitles:NSLocalizedString(@"_save_", nil), nil];
             [alertView setAlertViewStyle:UIAlertViewStylePlainTextInput];
@@ -833,13 +869,30 @@
             [alertView show];
         }
             break;
-        case returnCreaFotoVideoCriptato: {
+        case returnCreateFotoVideoEncrypted: {
             
             _isPickerCriptate = true;
             
             [self openAssetsPickerController];
         }
             break;
+        case returnCreateFileEncrypted: {
+            
+            _isPickerCriptate = true;
+            
+            [self openImportDocumentPicker];
+        }
+            break;
+    
+        /* UTILITY */
+        case returnNote:
+            [self openModel:@"note" isNew:true];
+            break;
+        case returnAccountWeb:
+            [self openModel:@"accountweb" isNew:true];
+            break;
+            
+         /* BANK */
         case returnCartaDiCredito:
             [self openModel:@"cartadicredito" isNew:true];
             break;
@@ -849,12 +902,8 @@
         case returnContoCorrente:
             [self openModel:@"contocorrente" isNew:true];
             break;
-        case returnAccountWeb:
-            [self openModel:@"accountweb" isNew:true];
-            break;
-        case returnNote:
-            [self openModel:@"note" isNew:true];
-            break;
+       
+        /* DOCUMENT */
         case returnPatenteGuida:
             [self openModel:@"patenteguida" isNew:true];
             break;
@@ -1013,10 +1062,10 @@
     if ([app.typeCloud isEqualToString:typeCloudOwnCloud] || [app.typeCloud isEqualToString:typeCloudNextcloud]) {
         
         metadataNet.action = actionGetFeaturesSuppServer;
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
         
         metadataNet.action = actionGetCapabilities;
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
     }
 }
 
@@ -1084,7 +1133,7 @@
     /*** NEXTCLOUD OWNCLOUD ***/
     
     if ([metadata.typeCloud isEqualToString:typeCloudOwnCloud] || [metadata.typeCloud isEqualToString:typeCloudNextcloud])
-        metadataNet.fileName = [self returnFileNamePathFromFileName:metadata.fileName serverUrl:_localServerUrl];
+        metadataNet.fileName = [CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:_localServerUrl activeUrl:app.activeUrl typeCloud:app.typeCloud];
     
     metadataNet.fileNameLocal = metadata.fileID;
     metadataNet.fileNamePrint = metadata.fileNamePrint;
@@ -1093,7 +1142,7 @@
     metadataNet.selector = selectorDownloadThumbnail;
     metadataNet.serverUrl = _localServerUrl;
     
-    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1358,7 +1407,7 @@
             metadataNet.session = download_session_foreground;
             metadataNet.taskStatus = taskStatusResume;
             
-            [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+            [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
         }
     }
 }
@@ -1459,9 +1508,9 @@
                 metadataNet.taskStatus = taskStatusResume;
                 
                 if ([metadataNet.session containsString:@"wwan"])
-                    [app addNetworkingOperationQueue:app.netQueueUploadWWan delegate:self metadataNet:metadataNet oneByOne:YES];
+                    [app addNetworkingOperationQueue:app.netQueueUploadWWan delegate:self metadataNet:metadataNet];
                 else
-                    [app addNetworkingOperationQueue:app.netQueueUpload delegate:self metadataNet:metadataNet oneByOne:YES];
+                    [app addNetworkingOperationQueue:app.netQueueUpload delegate:self metadataNet:metadataNet];
             }
             
             /*** NEXTCLOUD OWNCLOUD ***/
@@ -1477,7 +1526,7 @@
                 metadataNet.selector = selectorReadFileUploadFile;
                 metadataNet.serverUrl = serverUrl;
                 
-                [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+                [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
             }
         }
     }
@@ -1502,9 +1551,9 @@
             metadataNet.taskStatus = taskStatusResume;
             
             if ([metadataNet.session containsString:@"wwan"])
-                [app addNetworkingOperationQueue:app.netQueueUploadWWan delegate:self metadataNet:metadataNet oneByOne:YES];
+                [app addNetworkingOperationQueue:app.netQueueUploadWWan delegate:self metadataNet:metadataNet];
             else
-                [app addNetworkingOperationQueue:app.netQueueUpload delegate:self metadataNet:metadataNet oneByOne:YES];
+                [app addNetworkingOperationQueue:app.netQueueUpload delegate:self metadataNet:metadataNet];
             
         } else {
             
@@ -1512,7 +1561,7 @@
             if (metadataNet.errorRetry < 3) {
                 
                 // Retry read file
-                [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+                [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
                 
             } else {
                 
@@ -1553,9 +1602,9 @@
         metadataNet.taskStatus = taskStatusResume;
         
         if ([metadataNet.session containsString:@"wwan"])
-            [app addNetworkingOperationQueue:app.netQueueUploadWWan delegate:self metadataNet:metadataNet oneByOne:YES];
+            [app addNetworkingOperationQueue:app.netQueueUploadWWan delegate:self metadataNet:metadataNet];
         else
-            [app addNetworkingOperationQueue:app.netQueueUpload delegate:self metadataNet:metadataNet oneByOne:YES];
+            [app addNetworkingOperationQueue:app.netQueueUpload delegate:self metadataNet:metadataNet];
     }
 }
 
@@ -1571,7 +1620,7 @@
     metadataNet.selector = selectorReadFileFolder;
     metadataNet.serverUrl = [CCCoreData getServerUrlFromDirectoryID:_localDirectoryID activeAccount:app.activeAccount];
 
-    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1747,7 +1796,7 @@
         metadataNet.selector = selectorReadFolder;
         metadataNet.serverUrl = [CCCoreData getServerUrlFromDirectoryID:_localDirectoryID activeAccount:app.activeAccount];
 
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
         
     } else {
         
@@ -1842,14 +1891,14 @@
         metadataNet.selector = selectorDeleteCrypto;
             
         [_queueSelector addObject:metadataNet.selector];
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
         
         // plist
         metadataNet.fileName = metadata.fileName;
         metadataNet.selector = selectorDeletePlist;
             
         [_queueSelector addObject:metadataNet.selector];
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
             
     } else {
             
@@ -1865,7 +1914,7 @@
         metadataNet.serverUrl = _localServerUrl;
         
         [_queueSelector addObject:metadataNet.selector];
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
     }
         
     [_hud visibleHudTitle:[NSString stringWithFormat:NSLocalizedString(@"_delete_file_n_", nil), ofFile - numFile + 1, ofFile] mode:MBProgressHUDModeIndeterminate color:nil];
@@ -1938,7 +1987,7 @@
     NSString *fileNameTo, *newTitleTo;
     CCCrypto *crypto = [[CCCrypto alloc] init];
     
-    fileNameTo = [CCUtility clearFile:fileName];
+    fileNameTo = [CCUtility removeForbiddenCharacters:fileName];
     if (![fileNameTo length]) return;
     
     if ([metadata.fileNamePrint isEqualToString:fileNameTo]) return;
@@ -1958,7 +2007,7 @@
         metadataNet.serverUrl = _localServerUrl;
         metadataNet.serverUrlTo = _localServerUrl;
         
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
         
     } else {
         
@@ -1992,7 +2041,7 @@
         
         if ([CCCoreData isFavorite:metadata.fileID activeAccount:app.activeAccount]) metadataNet.selectorPost = selectorAddFavorite;
         
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
         
         // delete file in filesystem
         [CCCoreData deleteFile:metadata serverUrl:_localServerUrl directoryUser:app.directoryUser typeCloud:app.typeCloud activeAccount:app.activeAccount];
@@ -2021,7 +2070,7 @@
         
         if ([CCCoreData isFavorite:metadata.fileID activeAccount:app.activeAccount]) metadataNet.selectorPost = selectorAddFavorite;
         
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
     }
 }
 
@@ -2128,7 +2177,7 @@
             
             [_queueSelector addObject:metadataNet.selector];
             
-            [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+            [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
         }
         
         // cyptated
@@ -2152,7 +2201,7 @@
             metadataNet.selector = selectorMoveCrypto;
             
             [_queueSelector addObject:metadataNet.selector];
-            [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+            [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
             
             // plist
             metadataNet.fileName = metadata.fileName;
@@ -2160,7 +2209,7 @@
             metadataNet.selector = selectorMovePlist;
             
             [_queueSelector addObject:metadataNet.selector];
-            [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+            [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
         }
         
         [_hud visibleHudTitle:[NSString stringWithFormat:NSLocalizedString(@"_move_file_n_", nil), _numSelectedMetadatas - [_selectedMetadatas count] + 1, _numSelectedMetadatas] mode:MBProgressHUDModeIndeterminate color:nil];
@@ -2234,7 +2283,7 @@
 {
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
     
-    fileNameFolder = [CCUtility clearFile:fileNameFolder];
+    fileNameFolder = [CCUtility removeForbiddenCharacters:fileNameFolder];
     if (![fileNameFolder length]) return;
     
     if (folderCameraUpload) metadataNet.serverUrl = [CCCoreData getCameraUploadFolderPathActiveAccount:app.activeAccount activeUrl:app.activeUrl typeCloud:app.typeCloud];
@@ -2247,7 +2296,7 @@
     metadataNet.selector = selectorCreateFolder;
     metadataNet.selectorPost = selectorReadFolderForced;
     
-    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
     
     if (!folderCameraUpload)
         [_hud visibleHudTitle:NSLocalizedString(@"_create_folder_", nil) mode:MBProgressHUDModeIndeterminate color:nil];
@@ -2259,7 +2308,7 @@
     CCCrypto *crypto = [[CCCrypto alloc] init];
     NSString *fileNamePlist;
     
-    fileNameFolder = [CCUtility clearFile:fileNameFolder];
+    fileNameFolder = [CCUtility removeForbiddenCharacters:fileNameFolder];
     if (![fileNameFolder length]) return;
     
     NSString *title = [AESCrypt encrypt:fileNameFolder password:[crypto getKeyPasscode:[CCUtility getUUID]]];
@@ -2275,7 +2324,7 @@
     metadataNet.selector = selectorCreateFolder;
     metadataNet.serverUrl = _localServerUrl;
     
-    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
     
     // upload plist file
     metadataNet.action = actionUploadOnlyPlist;
@@ -2286,7 +2335,7 @@
     metadataNet.session = upload_session_foreground;
     metadataNet.taskStatus = taskStatusResume;
     
-    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
     
     [_hud visibleHudTitle:NSLocalizedString(@"_create_folder_", nil) mode:MBProgressHUDModeIndeterminate color:nil];
 }
@@ -2320,7 +2369,7 @@
         metadataNet.serverUrl = _localServerUrl;
         metadataNet.serverUrlTo = _localServerUrl;
         
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
         
         //-------------------------- DELETE -------------------------------------------//
         
@@ -2332,7 +2381,7 @@
         metadataNet.selector = selectorDeletePlist;
         metadataNet.selectorPost = selectorReadFolderForced;
         
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
         
     } else {
                 
@@ -2356,7 +2405,7 @@
         metadataNet.serverUrl = _localServerUrl;
         metadataNet.serverUrlTo = _localServerUrl;
         
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
         
         //-------------------------- UPLOAD -------------------------------------------//
         
@@ -2368,7 +2417,7 @@
         metadataNet.session = upload_session_foreground;
         metadataNet.taskStatus = taskStatusResume;
         
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
     }
 }
 
@@ -2754,7 +2803,7 @@
     
     metadataNet.action = actionReadShareServer;
 
-    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
 }
 
 - (void)shareFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
@@ -2803,13 +2852,13 @@
         
         metadataNet.action = actionShare;
         metadataNet.fileID = metadata.fileID;
-        metadataNet.fileName = [self returnFileNamePathFromFileName:metadata.fileName serverUrl:serverUrl];
+        metadataNet.fileName = [CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:serverUrl activeUrl:app.activeUrl typeCloud:app.typeCloud];
         metadataNet.fileNamePrint = metadata.fileNamePrint;
         metadataNet.password = password;
         metadataNet.selector = selectorShare;
         metadataNet.serverUrl = serverUrl;
         
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
     }
 
     /*** DROPBOX ***/
@@ -2832,7 +2881,7 @@
             metadataNet.action = actionShare;
             metadataNet.selector = selectorShare;
             
-            [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+            [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
         }
     }
     
@@ -2878,7 +2927,7 @@
     metadataNet.serverUrl = serverUrl;
     metadataNet.share = share;
    
-    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
     
     [_hud visibleHudTitle:NSLocalizedString(@"_updating_sharing_", nil) mode:MBProgressHUDModeIndeterminate color:nil];
 }
@@ -2900,7 +2949,7 @@
         metadataNet.share = share;
         metadataNet.sharePermission = permission;
         
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
     }
 
     [_hud visibleHudTitle:NSLocalizedString(@"_updating_sharing_", nil) mode:MBProgressHUDModeIndeterminate color:nil];
@@ -2933,7 +2982,7 @@
         metadataNet.options = find;
         metadataNet.selector = selectorGetUserAndGroup;
         
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
     }
     
     [_hud visibleIndeterminateHud];
@@ -2946,7 +2995,7 @@
     metadataNet.action = actionShareWith;
     metadataNet.fileID = metadata.fileID;
     metadataNet.directoryID = directoryID;
-    metadataNet.fileName = [self returnFileNamePathFromFileName:metadata.fileName serverUrl:serverUrl];
+    metadataNet.fileName = [CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:serverUrl activeUrl:app.activeUrl typeCloud:app.typeCloud];
     metadataNet.fileNamePrint = metadata.fileNamePrint;
     metadataNet.serverUrl = serverUrl;
     metadataNet.selector = selectorShare;
@@ -2954,7 +3003,7 @@
     metadataNet.shareeType = shareeType;
     metadataNet.sharePermission = permission;
 
-    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
     
     [_hud visibleHudTitle:NSLocalizedString(@"_creating_sharing_", nil) mode:MBProgressHUDModeIndeterminate color:nil];
 }
@@ -2970,7 +3019,7 @@
     metadataNet.selector = selectorOpenWindowShare;
     metadataNet.serverUrl = serverUrl;
     
-    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
     
     [_hud visibleIndeterminateHud];
 }
@@ -3002,15 +3051,6 @@
         [vc setModalPresentationStyle:UIModalPresentationFormSheet];
         [self presentViewController:vc animated:YES completion:nil];
     }
-}
-
-- (NSString *)returnFileNamePathFromFileName:(NSString *)metadataFileName serverUrl:(NSString *)serverUrl
-{
-    NSString *fileName = [NSString stringWithFormat:@"%@/%@", [serverUrl stringByReplacingOccurrencesOfString:[CCUtility getHomeServerUrlActiveUrl:app.activeUrl typeCloud:app.typeCloud] withString:@""], metadataFileName];
-    
-    if ([fileName hasPrefix:@"/"]) fileName = [fileName substringFromIndex:1];
-    
-    return fileName;
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -4202,12 +4242,23 @@
         
         AHKActionSheet *actionSheet = [[AHKActionSheet alloc] initWithView:self.view title:nil];
         
-        actionSheet.blurRadius = 1.0f;
+        actionSheet.animationDuration = 0.2;
+        actionSheet.cancelOnTapEmptyAreaEnabled = @(YES);
+        actionSheet.automaticallyTintButtonImages = @(NO);
+
+        actionSheet.blurRadius = 0.0f;
+        actionSheet.blurTintColor = [UIColor colorWithWhite:0.0f alpha:0.50f];
+        
         actionSheet.buttonHeight = 50.0;
         actionSheet.cancelButtonHeight = 50.0f;
+        actionSheet.separatorHeight = 30.0f;
+        
         actionSheet.selectedBackgroundColor = COLOR_SELECT_BACKGROUND;
-        actionSheet.cryptoButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:17], NSForegroundColorAttributeName:COLOR_ENCRYPTED };
-        actionSheet.buttonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:17], NSForegroundColorAttributeName:COLOR_GRAY };
+        
+        actionSheet.encryptedButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:14], NSForegroundColorAttributeName:COLOR_ENCRYPTED };
+        actionSheet.buttonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:14], NSForegroundColorAttributeName:COLOR_GRAY };
+        actionSheet.cancelButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:COLOR_BRAND };
+
         actionSheet.separatorColor = COLOR_SEPARATOR_TABLE;
         actionSheet.cancelButtonTitle = NSLocalizedString(@"_cancel_",nil);
 
@@ -4224,6 +4275,8 @@
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_rename_", nil)
                                       image:[UIImage imageNamed:image_actionSheetRename]
+                            backgroundColor:[UIColor whiteColor]
+                                     height: 50.0
                                        type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
                                    
@@ -4244,6 +4297,8 @@
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_move_", nil)
                                       image:[UIImage imageNamed:image_actionSheetMove]
+                            backgroundColor:[UIColor whiteColor]
+                                     height: 50.0
                                        type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
                                         
@@ -4258,7 +4313,9 @@
             
             [actionSheet addButtonWithTitle:titoloCriptaDecripta
                                       image:[UIImage imageNamed:image_actionSheetCrypto]
-                                       type:AHKActionSheetButtonTypeCrypto
+                            backgroundColor:[UIColor whiteColor]
+                                     height: 50.0
+                                       type:AHKActionSheetButtonTypeEncrypted
                                     handler:^(AHKActionSheet *as) {
                                         
                                         // close swipe
@@ -4272,7 +4329,9 @@
             
             [actionSheet addButtonWithTitle:titoloLock
                                       image:[UIImage imageNamed:image_actionSheetLock]
-                                       type:AHKActionSheetButtonTypeCrypto
+                            backgroundColor:[UIColor whiteColor]
+                                     height: 50.0
+                                       type:AHKActionSheetButtonTypeEncrypted
                                     handler:^(AHKActionSheet *as) {
                                         
                                         // close swipe
@@ -4286,6 +4345,8 @@
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_share_", nil)
                                       image:[UIImage imageNamed:image_actionSheetShare]
+                            backgroundColor:[UIColor whiteColor]
+                                     height: 50.0
                                        type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
                                         
@@ -4301,6 +4362,8 @@
         
             [actionSheet addButtonWithTitle:titoloSynchronized
                                       image:[UIImage imageNamed:image_actionSheetSynchronized]
+                            backgroundColor:[UIColor whiteColor]
+                                     height: 50.0
                                        type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
                                         
@@ -4332,12 +4395,23 @@
         
         AHKActionSheet *actionSheet = [[AHKActionSheet alloc] initWithView:self.view title:nil];
         
-        actionSheet.blurRadius = 1.0f;
+        actionSheet.animationDuration = 0.2;
+        actionSheet.cancelOnTapEmptyAreaEnabled = @(YES);
+        actionSheet.automaticallyTintButtonImages = @(NO);
+        
+        actionSheet.blurRadius = 0.0f;
+        actionSheet.blurTintColor = [UIColor colorWithWhite:0.0f alpha:0.50f];
+        
         actionSheet.buttonHeight = 50.0;
         actionSheet.cancelButtonHeight = 50.0f;
+        actionSheet.separatorHeight = 30.0f;
+        
         actionSheet.selectedBackgroundColor = COLOR_SELECT_BACKGROUND;
-        actionSheet.cryptoButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:17], NSForegroundColorAttributeName:COLOR_ENCRYPTED };
-        actionSheet.buttonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:17], NSForegroundColorAttributeName:COLOR_GRAY };
+        
+        actionSheet.encryptedButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:14], NSForegroundColorAttributeName:COLOR_ENCRYPTED };
+        actionSheet.buttonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:14], NSForegroundColorAttributeName:COLOR_GRAY };
+        actionSheet.cancelButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:COLOR_BRAND };
+        
         actionSheet.separatorColor = COLOR_SEPARATOR_TABLE;
         actionSheet.cancelButtonTitle = NSLocalizedString(@"_cancel_",nil);
         
@@ -4352,6 +4426,8 @@
 
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_rename_", nil)
                                   image:[UIImage imageNamed:image_actionSheetRename]
+                        backgroundColor:[UIColor whiteColor]
+                                 height: 50.0
                                    type:AHKActionSheetButtonTypeDefault
                                 handler:^(AHKActionSheet *as) {
                                     
@@ -4369,6 +4445,8 @@
         
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_move_", nil)
                                   image:[UIImage imageNamed:image_actionSheetMove]
+                        backgroundColor:[UIColor whiteColor]
+                                 height: 50.0
                                    type:AHKActionSheetButtonTypeDefault
                                 handler:^(AHKActionSheet *as) {
                                     
@@ -4380,6 +4458,8 @@
         
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_reload_", nil)
                                   image:[UIImage imageNamed:image_actionSheetReload]
+                        backgroundColor:[UIColor whiteColor]
+                                 height: 50.0
                                    type:AHKActionSheetButtonTypeDefault
                                 handler:^(AHKActionSheet *as) {
                                     
@@ -4391,6 +4471,8 @@
         
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_open_in_", nil)
                                   image:[UIImage imageNamed:image_actionSheetOpenIn]
+                        backgroundColor:[UIColor whiteColor]
+                                 height: 50.0
                                    type:AHKActionSheetButtonTypeDefault
                                 handler:^(AHKActionSheet *as) {
                                     
@@ -4404,6 +4486,8 @@
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_share_", nil)
                                       image:[UIImage imageNamed:image_actionSheetShare]
+                            backgroundColor:[UIColor whiteColor]
+                                     height: 50.0
                                        type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
                                         
@@ -4416,7 +4500,9 @@
 
         [actionSheet addButtonWithTitle:titoloCriptaDecripta
                                   image:[UIImage imageNamed:image_actionSheetCrypto]
-                                   type:AHKActionSheetButtonTypeCrypto
+                        backgroundColor:[UIColor whiteColor]
+                                 height: 50.0
+                                   type:AHKActionSheetButtonTypeEncrypted
                                 handler:^(AHKActionSheet *as) {
                                     
                                     // close swipe
@@ -4427,6 +4513,8 @@
         
         [actionSheet addButtonWithTitle:titoloPreferiti
                                   image:[UIImage imageNamed:image_actionSheetFavorite]
+                        backgroundColor:[UIColor whiteColor]
+                                 height: 50.0
                                    type:AHKActionSheetButtonTypeDefault
                                 handler:^(AHKActionSheet *as) {
                                     
@@ -4442,6 +4530,8 @@
 
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_add_local_", nil)
                                   image:[UIImage imageNamed:image_actionSheetLocal]
+                        backgroundColor:[UIColor whiteColor]
+                                 height: 50.0
                                    type:AHKActionSheetButtonTypeDefault
                                 handler:^(AHKActionSheet *as) {
                                     
@@ -4462,12 +4552,23 @@
      
         AHKActionSheet *actionSheet = [[AHKActionSheet alloc] initWithView:self.view title:nil];
      
-        actionSheet.blurRadius = 1.0f;
+        actionSheet.animationDuration = 0.2;
+        actionSheet.cancelOnTapEmptyAreaEnabled = @(YES);
+        actionSheet.automaticallyTintButtonImages = @(NO);
+        
+        actionSheet.blurRadius = 0.0f;
+        actionSheet.blurTintColor = [UIColor colorWithWhite:0.0f alpha:0.50f];
+        
         actionSheet.buttonHeight = 50.0;
         actionSheet.cancelButtonHeight = 50.0f;
+        actionSheet.separatorHeight = 30.0f;
+        
         actionSheet.selectedBackgroundColor = COLOR_SELECT_BACKGROUND;
-        actionSheet.cryptoButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:17], NSForegroundColorAttributeName:COLOR_ENCRYPTED };
-        actionSheet.buttonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:17], NSForegroundColorAttributeName:COLOR_GRAY };
+        
+        actionSheet.encryptedButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:14], NSForegroundColorAttributeName:COLOR_ENCRYPTED };
+        actionSheet.buttonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:14], NSForegroundColorAttributeName:COLOR_GRAY };
+        actionSheet.cancelButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:COLOR_BRAND };
+        
         actionSheet.separatorColor = COLOR_SEPARATOR_TABLE;
         actionSheet.cancelButtonTitle = NSLocalizedString(@"_cancel_",nil);
 
@@ -4480,6 +4581,8 @@
         
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_rename_", nil)
                                       image:[UIImage imageNamed:image_actionSheetRename]
+                            backgroundColor:[UIColor whiteColor]
+                                     height: 50.0
                                        type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
                                     
@@ -4498,6 +4601,8 @@
         
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_move_", nil)
                                   image:[UIImage imageNamed:image_actionSheetMove]
+                        backgroundColor:[UIColor whiteColor]
+                                 height: 50.0
                                    type:AHKActionSheetButtonTypeDefault
                                 handler:^(AHKActionSheet *as) {
                                     
@@ -4509,6 +4614,8 @@
 
         [actionSheet addButtonWithTitle:titoloPreferiti
                                   image:[UIImage imageNamed:image_actionSheetFavorite]
+                        backgroundColor:[UIColor whiteColor]
+                                 height: 50.0
                                    type:AHKActionSheetButtonTypeDefault
                                 handler:^(AHKActionSheet *as) {
                                     
@@ -4523,6 +4630,8 @@
 
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_add_local_", nil)
                                   image:[UIImage imageNamed:image_actionSheetLocal]
+                        backgroundColor:[UIColor whiteColor]
+                                 height: 50.0
                                    type:AHKActionSheetButtonTypeDefault
                                 handler:^(AHKActionSheet *as) {
                                     
@@ -5360,7 +5469,8 @@
     UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
     
     // se non può essere selezionata deseleziona
-    if ([cell isEditing] == NO) [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    if ([cell isEditing] == NO)
+        [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
     // se siamo in modalità editing impostiamo il titolo dei selezioati e usciamo subito
     if (self.tableView.editing) {

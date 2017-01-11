@@ -490,14 +490,14 @@
         metadataNet.selector = selectorDeleteCrypto;
         
         [_queueMetadatas addObject:metadataNet.selector];
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
         
         // plist
         metadataNet.fileName = metadata.fileName;
         metadataNet.selector = selectorDeletePlist;
         
         [_queueMetadatas addObject:metadataNet.selector];
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
         
     } else  {
         
@@ -511,7 +511,7 @@
         metadataNet.serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:app.activeAccount];
         
         [_queueMetadatas addObject:metadataNet.selector];
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet oneByOne:YES];
+        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
     }
     
     [_hud visibleHudTitle:[NSString stringWithFormat:NSLocalizedString(@"_delete_file_n_", nil), ofFile - numFile + 1, ofFile] mode:MBProgressHUDModeIndeterminate color:nil];
@@ -1286,7 +1286,7 @@
         
         NSError *error;
         
-        ocNet = [[OCnetworking alloc] initWithDelegate:self metadataNet:nil withUser:app.activeUser withPassword:app.activePassword withUrl:app.activeUrl withTypeCloud:app.typeCloud oneByOne:YES activityIndicator:NO];
+        ocNet = [[OCnetworking alloc] initWithDelegate:self metadataNet:nil withUser:app.activeUser withPassword:app.activePassword withUrl:app.activeUrl withTypeCloud:app.typeCloud activityIndicator:NO];
     
         error = [ocNet readFileSync:folderPathName];
         if(!error)

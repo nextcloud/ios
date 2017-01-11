@@ -383,7 +383,7 @@ typedef enum : NSUInteger {
         return NO;
     }
     
-#ifndef SHARE_IN
+#ifndef EXTENSION
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateInactive) {
         return NO;
     }
@@ -563,7 +563,7 @@ typedef enum : NSUInteger {
     CGRect keyboardRect = [notification.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
 
 /*
-#ifdef SHARE_IN
+#ifdef EXTENSION
     self.keyboardHeight = CGRectGetHeight(keyboardRect);
 #else
     UIInterfaceOrientation statusBarOrientation = [[UIApplication sharedApplication] statusBarOrientation];

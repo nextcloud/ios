@@ -41,7 +41,7 @@ extern NSString *const urlBaseUploadDB;
 
 extern NSString *const BKPasscodeKeychainServiceName;
 
-#ifndef SHARE_IN
+#ifndef EXTENSION
 
 //AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
 #define app ((AppDelegate *)[[UIApplication sharedApplication] delegate])
@@ -117,18 +117,20 @@ extern NSString *const BKPasscodeKeychainServiceName;
 #define MaxGroupBySessionUploadDatasource 50
 #define MaxGroupBySessionDownloadDatasource 50
 
-#define returnCreaCartellaChiaro 0
-#define returnCreaFotoVideoChiaro 1
-#define returnCreaCartellaCriptata 2
-#define returnCreaFotoVideoCriptato 3
-#define returnCartaDiCredito 4
-#define returnBancomat 5
-#define returnContoCorrente 6
-#define returnAccountWeb 7
-#define returnNote 8
-#define returnPatenteGuida 9
-#define returnCartaIdentita 10
-#define returnPassaporto 11
+#define returnCreateFolderPlain 0
+#define returnCreateFotoVideoPlain 1
+#define returnCreateFilePlain 2
+#define returnCreateFolderEncrypted 3
+#define returnCreateFotoVideoEncrypted 4
+#define returnCreateFileEncrypted 5
+#define returnCartaDiCredito 6
+#define returnBancomat 7
+#define returnContoCorrente 8
+#define returnAccountWeb 9
+#define returnNote 10
+#define returnPatenteGuida 11
+#define returnCartaIdentita 12
+#define returnPassaporto 13
 
 #define RalewayBold(s) [UIFont fontWithName:@"Raleway-Bold" size:s]
 #define RalewayExtraBold(s) [UIFont fontWithName:@"Raleway-ExtraBold" size:s]
@@ -298,8 +300,9 @@ extern NSString *const BKPasscodeKeychainServiceName;
 
 #define TabBarApplicationIndexFile      0
 #define TabBarApplicationIndexFavorite  1
-#define TabBarApplicationIndexPhotos    2
-#define TabBarApplicationIndexSettings  3
+#define TabBarApplicationIndexHide      2
+#define TabBarApplicationIndexPhotos    3
+#define TabBarApplicationIndexSettings  4
 
 @interface CCAspect : NSObject
 

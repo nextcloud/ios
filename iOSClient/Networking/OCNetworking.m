@@ -44,14 +44,13 @@
     NSURLSessionDownloadTask *_downloadTask;
     NSURLSessionUploadTask *_uploadTask;
     
-    BOOL _oneByOne;
     BOOL _activityIndicator;
 }
 @end
 
 @implementation OCnetworking
 
-- (id)initWithDelegate:(id <OCNetworkingDelegate>)delegate metadataNet:(CCMetadataNet *)metadataNet withUser:(NSString *)withUser withPassword:(NSString *)withPassword withUrl:(NSString *)withUrl withTypeCloud:(NSString *)withTypeCloud oneByOne:(BOOL)oneByOne activityIndicator:(BOOL)activityIndicator
+- (id)initWithDelegate:(id <OCNetworkingDelegate>)delegate metadataNet:(CCMetadataNet *)metadataNet withUser:(NSString *)withUser withPassword:(NSString *)withPassword withUrl:(NSString *)withUrl withTypeCloud:(NSString *)withTypeCloud activityIndicator:(BOOL)activityIndicator
 {
     self = [super init];
     
@@ -67,7 +66,6 @@
         _activeUrl = withUrl;
         _typeCloud = withTypeCloud;
         
-        _oneByOne = oneByOne;
         _activityIndicator = activityIndicator;
     }
     
@@ -125,7 +123,7 @@
 
 - (void)poolNetworking
 {
-#ifndef SHARE_IN
+#ifndef EXTENSION
     // Animation network
     if (_activityIndicator) {
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -145,7 +143,7 @@
 
 - (void)complete
 {
-#ifndef SHARE_IN
+#ifndef EXTENSION
     // Animation network
     if (_activityIndicator) {
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
@@ -165,9 +163,6 @@
 - (void)downloadFile
 {
     [[CCNetworking sharedNetworking] downloadFile:_metadataNet.metadata serverUrl:_metadataNet.serverUrl downloadData:_metadataNet.downloadData downloadPlist:_metadataNet.downloadPlist selector:_metadataNet.selector selectorPost:_metadataNet.selectorPost session:_metadataNet.session taskStatus:_metadataNet.taskStatus delegate:self];
-    
-    if (!_oneByOne)
-        [self complete];
 }
 
 - (void)downloadTaskSave:(NSURLSessionDownloadTask *)downloadTask
@@ -201,33 +196,21 @@
 - (void)uploadFile
 {
     [[CCNetworking sharedNetworking] uploadFile:_metadataNet.fileName serverUrl:_metadataNet.serverUrl cryptated:_metadataNet.cryptated onlyPlist:NO session:_metadataNet.session taskStatus:_metadataNet.taskStatus selector:_metadataNet.selector selectorPost:_metadataNet.selectorPost parentRev:nil errorCode:_metadataNet.errorCode delegate:self];
-    
-    if (!_oneByOne)
-        [self complete];
 }
 
 - (void)uploadOnlyPlist
 {
     [[CCNetworking sharedNetworking] uploadFile:_metadataNet.fileName serverUrl:_metadataNet.serverUrl cryptated:YES onlyPlist:YES session:_metadataNet.session taskStatus:_metadataNet.taskStatus selector:_metadataNet.selector selectorPost:_metadataNet.selectorPost parentRev:nil errorCode:_metadataNet.errorCode delegate:self];
-    
-    if (!_oneByOne)
-        [self complete];
 }
 
 - (void)uploadAsset
 {
     [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:_metadataNet.assetLocalItentifier serverUrl:_metadataNet.serverUrl cryptated:_metadataNet.cryptated session:_metadataNet.session taskStatus:_metadataNet.taskStatus selector:_metadataNet.selector selectorPost:_metadataNet.selectorPost parentRev:nil errorCode:_metadataNet.errorCode delegate:self];
-    
-    if (!_oneByOne)
-        [self complete];
 }
 
 - (void)uploadTemplate
 {
     [[CCNetworking sharedNetworking] uploadTemplate:_metadataNet.fileNamePrint fileNameCrypto:_metadataNet.fileName serverUrl:_metadataNet.serverUrl session:_metadataNet.session taskStatus:_metadataNet.taskStatus selector:_metadataNet.selector selectorPost:_metadataNet.selectorPost parentRev:nil errorCode:_metadataNet.errorCode delegate:self];
-    
-    if (!_oneByOne)
-        [self complete];
 }
 
 - (void)uploadTaskSave:(NSURLSessionUploadTask *)uploadTask
@@ -374,11 +357,11 @@
             for (NSUInteger i=1; i < [itemsSortedArray count]; i++) {
                 
                 OCFileDto *itemDto = [itemsSortedArray objectAtIndex:i];
-                itemDto.fileName = [CCUtility clearFile:itemDto.fileName];
+                itemDto.fileName = [itemDto.fileName stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
                 
                 // ----- BUG #942 ---------
                 if ([itemDto.etag length] == 0) {
-#ifndef SHARE_IN
+#ifndef EXTENSION
                     [app messageNotification:@"Server error" description:@"Metadata etag absent, record excluded, please fix" visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeError];
 #endif
                     continue;
@@ -641,6 +624,7 @@
             
             OCFileDto *itemDto = [items objectAtIndex:0];
             itemDto.fileName = _metadataNet.fileName;
+            
             NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:_metadataNet.serverUrl activeAccount:_metadataNet.account];
             NSString *cameraFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:_metadataNet.account];
             NSString *cameraFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:_metadataNet.account activeUrl:_activeUrl typeCloud:_typeCloud];
@@ -720,7 +704,7 @@
 
 - (NSMutableDictionary *)getShareID
 {
-#ifndef SHARE_IN
+#ifndef EXTENSION
     return app.sharesID;
 #endif
     return [NSMutableDictionary new];
@@ -743,8 +727,11 @@
         
         if ([recordAccount.account isEqualToString:_metadataNet.account]) {
         
-            for (OCSharedDto *item in items)
+            for (OCSharedDto *item in items) {
+                
+                item.path = [item.path stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
                 [[self getShareID] setObject:item forKey:[@(item.idRemoteShared) stringValue]];
+            }
             
             if ([_metadataNet.selector isEqual:selectorOpenWindowShare]) openWindow = YES;
             
@@ -846,7 +833,7 @@
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
-#ifndef SHARE_IN
+#ifndef EXTENSION
         [app messageNotification:@"_error_" description:[CCError manageErrorOC:response.statusCode error:error] visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeError];
 #endif
         
@@ -881,7 +868,7 @@
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
-#ifndef SHARE_IN
+#ifndef EXTENSION
         [app messageNotification:@"_error_" description:[CCError manageErrorOC:response.statusCode error:error] visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeError];
 #endif
         

@@ -81,6 +81,7 @@
 		F71E68001DC1F792003BA52B /* libownCloudiOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F71E67FC1DC1F76F003BA52B /* libownCloudiOS.a */; };
 		F71E68021DC1F79D003BA52B /* libownCloudiOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F71E67FC1DC1F76F003BA52B /* libownCloudiOS.a */; };
 		F7229B3B1DF7187F00E8C4E7 /* InfoNextcloud.plist in Resources */ = {isa = PBXBuildFile; fileRef = F7229B371DF7187F00E8C4E7 /* InfoNextcloud.plist */; };
+		F725437C1E12A44A009BF4C2 /* CCSection.m in Sources */ = {isa = PBXBuildFile; fileRef = F78F6FAF1CC8CCB700F4EA25 /* CCSection.m */; };
 		F72764651DB8FE2A002334CD /* CCSynchronization.m in Sources */ = {isa = PBXBuildFile; fileRef = F72764631DB8FE2A002334CD /* CCSynchronization.m */; };
 		F72C63891DC14B0400FA5ED5 /* libMagicalRecord.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F7B61E9B1DC13C20009E938F /* libMagicalRecord.a */; };
 		F732BA061D76CE1500E9878B /* CCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F732BA041D76CE1500E9878B /* CCNetworking.m */; };
@@ -125,6 +126,67 @@
 		F73CCE261DC13788007E38D8 /* UIScrollView+EmptyDataSet.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCE241DC13788007E38D8 /* UIScrollView+EmptyDataSet.m */; };
 		F73CCE301DC13798007E38D8 /* UICKeyChainStore.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCE2A1DC13798007E38D8 /* UICKeyChainStore.m */; };
 		F73CCE321DC13798007E38D8 /* UICKeyChainStore.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCE2A1DC13798007E38D8 /* UICKeyChainStore.m */; };
+		F74344171E1264EE001CC831 /* DocumentPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74344161E1264EE001CC831 /* DocumentPickerViewController.swift */; };
+		F743441A1E1264EE001CC831 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F74344181E1264EE001CC831 /* MainInterface.storyboard */; };
+		F74344251E1264EE001CC831 /* FileProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74344241E1264EE001CC831 /* FileProvider.swift */; };
+		F743444A1E126B4D001CC831 /* CCMove.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D02A471C5F9E4400D6F972 /* CCMove.m */; };
+		F743444B1E126B69001CC831 /* CCMove.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7D02A481C5F9E4400D6F972 /* CCMove.storyboard */; };
+		F74344541E1277D8001CC831 /* libownCloudiOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F71E67FC1DC1F76F003BA52B /* libownCloudiOS.a */; };
+		F74344551E1277E2001CC831 /* libMagicalRecord.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F7B61E9B1DC13C20009E938F /* libMagicalRecord.a */; };
+		F74344561E12784A001CC831 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63061D5B3467004E2AA5 /* libcrypto.a */; };
+		F74344591E12786C001CC831 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63071D5B3467004E2AA5 /* libssl.a */; };
+		F743445B1E127D3B001CC831 /* BKPasscodeDummyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02C01C889183008DAB36 /* BKPasscodeDummyViewController.m */; };
+		F743445C1E127D3D001CC831 /* BKPasscodeField.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02C21C889183008DAB36 /* BKPasscodeField.m */; };
+		F743445D1E127D40001CC831 /* BKPasscodeInputView.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02C41C889183008DAB36 /* BKPasscodeInputView.m */; };
+		F743445E1E127D44001CC831 /* BKPasscodeLockScreenManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02C61C889183008DAB36 /* BKPasscodeLockScreenManager.m */; };
+		F743445F1E127D4B001CC831 /* BKPasscodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02C91C889183008DAB36 /* BKPasscodeViewController.m */; };
+		F74344601E127D4D001CC831 /* BKShiftingView.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02CB1C889183008DAB36 /* BKShiftingView.m */; };
+		F74344611E127D51001CC831 /* BKTouchIDManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02CD1C889183008DAB36 /* BKTouchIDManager.m */; };
+		F74344621E127D54001CC831 /* BKTouchIDSwitchView.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02CF1C889183008DAB36 /* BKTouchIDSwitchView.m */; };
+		F74344631E127D79001CC831 /* CCBKPasscode.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FE125D1BAC03FB0041924B /* CCBKPasscode.m */; };
+		F74344641E127DE6001CC831 /* OCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F74D3DBE1BAC1941000BAE4B /* OCNetworking.m */; };
+		F74344651E127DE9001CC831 /* CCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F732BA041D76CE1500E9878B /* CCNetworking.m */; };
+		F74344661E127E35001CC831 /* CCCoreData.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B81D801C64E77F006D02DF /* CCCoreData.m */; };
+		F74344671E127E38001CC831 /* CCMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = F7C8C1731B482A920048180E /* CCMetadata.m */; };
+		F74344681E127E3F001CC831 /* TableAutomaticUpload+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F771CD5B1E07F6620066F76D /* TableAutomaticUpload+CoreDataClass.m */; };
+		F74344691E127E42001CC831 /* TableAutomaticUpload+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F771CD5D1E07F6620066F76D /* TableAutomaticUpload+CoreDataProperties.m */; };
+		F743446A1E127E45001CC831 /* TableCertificates+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F7994B741D5B854C008525D9 /* TableCertificates+CoreDataProperties.m */; };
+		F743446B1E127E49001CC831 /* TableCertificates.m in Sources */ = {isa = PBXBuildFile; fileRef = F7994B761D5B854C008525D9 /* TableCertificates.m */; };
+		F743446C1E127E4B001CC831 /* TableLocalFile+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B446451C4D29E300DBCC11 /* TableLocalFile+CoreDataProperties.m */; };
+		F743446D1E127E4E001CC831 /* TableLocalFile.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B446471C4D29E300DBCC11 /* TableLocalFile.m */; };
+		F743446E1E127E51001CC831 /* TableGPS+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B446491C4D29E300DBCC11 /* TableGPS+CoreDataProperties.m */; };
+		F743446F1E127E53001CC831 /* TableGPS.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B4464B1C4D29E300DBCC11 /* TableGPS.m */; };
+		F74344701E127E56001CC831 /* TableDirectory+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B4464D1C4D29E300DBCC11 /* TableDirectory+CoreDataProperties.m */; };
+		F74344711E127E59001CC831 /* TableMetadata+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B446511C4D29E300DBCC11 /* TableMetadata+CoreDataProperties.m */; };
+		F74344721E127E5B001CC831 /* TableMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B446531C4D29E300DBCC11 /* TableMetadata.m */; };
+		F74344731E127E5E001CC831 /* TableAccount+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B446551C4D29E300DBCC11 /* TableAccount+CoreDataProperties.m */; };
+		F74344741E127E60001CC831 /* TableAccount.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B446571C4D29E300DBCC11 /* TableAccount.m */; };
+		F74344751E127E64001CC831 /* TableShare+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F7EC9CCC1C4FA803008122B5 /* TableShare+CoreDataProperties.m */; };
+		F74344761E127E67001CC831 /* TableShare.m in Sources */ = {isa = PBXBuildFile; fileRef = F7EC9CCE1C4FA803008122B5 /* TableShare.m */; };
+		F74344771E127E88001CC831 /* TableDirectory.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B4464F1C4D29E300DBCC11 /* TableDirectory.m */; };
+		F74344781E127E9E001CC831 /* CCExifGeo.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A54C351C6267B500E2C8BF /* CCExifGeo.m */; };
+		F74344791E127EA1001CC831 /* CCError.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B881C638A4C00DC4301 /* CCError.m */; };
+		F743447A1E127EA6001CC831 /* CCGraphics.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B841C6388BC00DC4301 /* CCGraphics.m */; };
+		F743447B1E127EAC001CC831 /* CCUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = F7053E3D1C639DF500741EA5 /* CCUtility.m */; };
+		F743447C1E127EB2001CC831 /* NSString+TruncateToWidth.m in Sources */ = {isa = PBXBuildFile; fileRef = F73049B91CB567F000C7C320 /* NSString+TruncateToWidth.m */; };
+		F743447D1E127ECB001CC831 /* AESCrypt.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02AB1C889183008DAB36 /* AESCrypt.m */; };
+		F743447E1E127ECE001CC831 /* NSData+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02AD1C889183008DAB36 /* NSData+Base64.m */; };
+		F743447F1E127ED1001CC831 /* NSData+CommonCrypto.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02AF1C889183008DAB36 /* NSData+CommonCrypto.m */; };
+		F74344801E127ED3001CC831 /* NSString+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02B11C889183008DAB36 /* NSString+Base64.m */; };
+		F74344811E127F49001CC831 /* AFViewShaker.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02B41C889183008DAB36 /* AFViewShaker.m */; };
+		F74344821E127F68001CC831 /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04841C889183008DAB36 /* MBProgressHUD.m */; };
+		F74344831E127F80001CC831 /* RNCryptor.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F05351C889184008DAB36 /* RNCryptor.m */; };
+		F74344841E127F84001CC831 /* RNCryptorEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F05371C889184008DAB36 /* RNCryptorEngine.m */; };
+		F74344851E127F86001CC831 /* RNDecryptor.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F05391C889184008DAB36 /* RNDecryptor.m */; };
+		F74344861E127F89001CC831 /* RNEncryptor.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F053B1C889184008DAB36 /* RNEncryptor.m */; };
+		F74344871E127F95001CC831 /* UICKeyChainStore.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCE2A1DC13798007E38D8 /* UICKeyChainStore.m */; };
+		F74344881E127F9C001CC831 /* UIImage+animatedGIF.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F05581C889184008DAB36 /* UIImage+animatedGIF.m */; };
+		F74344891E127FC3001CC831 /* CCGlobal.m in Sources */ = {isa = PBXBuildFile; fileRef = F7C8C1911B482CEA0048180E /* CCGlobal.m */; };
+		F743448A1E127FF2001CC831 /* CCHud.m in Sources */ = {isa = PBXBuildFile; fileRef = F7514EDB1C7B1336008F3338 /* CCHud.m */; };
+		F743448B1E12800D001CC831 /* CCCertificate.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F801011D98205A007537BC /* CCCertificate.m */; };
+		F743448C1E128010001CC831 /* CCCrypto.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FE125F1BAC03FB0041924B /* CCCrypto.m */; };
+		F74344921E128EB0001CC831 /* Picker.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = F74344901E128E8F001CC831 /* Picker.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		F74344931E128EB4001CC831 /* PickerFileProvider.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = F74344911E128E96001CC831 /* PickerFileProvider.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		F749E4E91DC1FB38009BA2FD /* Share Ext Nextcloud.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = F7CE8AFB1DC1F8D8009CAE48 /* Share Ext Nextcloud.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		F750374D1DBFA91A008FB480 /* ALView+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F75037441DBFA91A008FB480 /* ALView+PureLayout.m */; };
 		F750374F1DBFA91A008FB480 /* NSArray+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F75037461DBFA91A008FB480 /* NSArray+PureLayout.m */; };
@@ -220,7 +282,6 @@
 		F77B0E441D118A16002130FE /* CCIntro.m in Sources */ = {isa = PBXBuildFile; fileRef = F744BE931BEBB2EE004FFF66 /* CCIntro.m */; };
 		F77B0E451D118A16002130FE /* ReaderThumbRender.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0ECE1C889317008DAB36 /* ReaderThumbRender.m */; };
 		F77B0E461D118A16002130FE /* BKPasscodeLockScreenManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02C61C889183008DAB36 /* BKPasscodeLockScreenManager.m */; };
-		F77B0E471D118A16002130FE /* CCAdd.m in Sources */ = {isa = PBXBuildFile; fileRef = F72137201BAFF0920012B613 /* CCAdd.m */; };
 		F77B0E481D118A16002130FE /* CCCrypto.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FE125F1BAC03FB0041924B /* CCCrypto.m */; };
 		F77B0E491D118A16002130FE /* UIImage+Saving.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04CE1C889184008DAB36 /* UIImage+Saving.m */; };
 		F77B0E4C1D118A16002130FE /* CCDetail.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D0E65F1BC5042E008D989A /* CCDetail.m */; };
@@ -375,7 +436,6 @@
 		F77B0F231D118A16002130FE /* ZSSh3.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0D9D1C889300008DAB36 /* ZSSh3.png */; };
 		F77B0F241D118A16002130FE /* Reader-Button-H.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0EA41C889317008DAB36 /* Reader-Button-H.png */; };
 		F77B0F251D118A16002130FE /* ZSSh1.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0D991C889300008DAB36 /* ZSSh1.png */; };
-		F77B0F261D118A16002130FE /* Add.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F721371C1BAFF0920012B613 /* Add.storyboard */; };
 		F77B0F271D118A16002130FE /* ImageSelectedSmallOn.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0C721C8892DF008DAB36 /* ImageSelectedSmallOn.png */; };
 		F77B0F281D118A16002130FE /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F787E5581BC503ED00AFBFE1 /* Main.storyboard */; };
 		F77B0F291D118A16002130FE /* ZSSleftjustify.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DB11C889300008DAB36 /* ZSSleftjustify.png */; };
@@ -490,11 +550,14 @@
 		F7BF1B431D51E893000854F6 /* CCLoginNCOC.m in Sources */ = {isa = PBXBuildFile; fileRef = F7BF1B401D51E893000854F6 /* CCLoginNCOC.m */; };
 		F7CE28851D1ACFA70025783C /* CCProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CE28801D1ACFA70025783C /* CCProgressView.m */; };
 		F7CE28881D1ACFA70025783C /* UINavigationController+CCProgress.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CE28821D1ACFA70025783C /* UINavigationController+CCProgress.m */; };
+		F7D2677C1E157053005ACB7E /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7F67BB81A24D27800EE80DA /* Images.xcassets */; };
+		F7D267871E157057005ACB7E /* Nextcloud.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7596C771D128FC80092A6B8 /* Nextcloud.xcassets */; };
 		F7D6A0911D82DBFA0045AD1A /* CCControlCenter.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D6A08A1D82DBFA0045AD1A /* CCControlCenter.m */; };
 		F7D6A0931D82DBFA0045AD1A /* CCControlCenterCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D6A08C1D82DBFA0045AD1A /* CCControlCenterCell.m */; };
 		F7D6A0951D82DBFA0045AD1A /* CCControlCenterCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7D6A08D1D82DBFA0045AD1A /* CCControlCenterCell.xib */; };
 		F7D6A0971D82DBFA0045AD1A /* CCMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D6A08F1D82DBFA0045AD1A /* CCMenu.m */; };
 		F7DCA1C81D32BD4100E48D39 /* Share Ext Nextcloud.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = F7DCA1B81D32BD4100E48D39 /* Share Ext Nextcloud.entitlements */; };
+		F7ECBA6D1E239DCD003E6328 /* CCCreateCloud.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7ECBA6C1E239DCD003E6328 /* CCCreateCloud.swift */; };
 		F7EF0CAF1D9E95F400A9D15E /* CCSharedDBSession.m in Sources */ = {isa = PBXBuildFile; fileRef = F7EF0CAD1D9E95F400A9D15E /* CCSharedDBSession.m */; };
 		F7F06E8D1DBFACC600099AE9 /* NSBundle+CTAssetsPickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F06E2E1DBFACC600099AE9 /* NSBundle+CTAssetsPickerController.m */; };
 		F7F06E8F1DBFACC600099AE9 /* NSDateFormatter+CTAssetsPickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F06E301DBFACC600099AE9 /* NSDateFormatter+CTAssetsPickerController.m */; };
@@ -534,6 +597,10 @@
 		F7F801031D98205A007537BC /* CCCertificate.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F801011D98205A007537BC /* CCCertificate.m */; };
 		F7F801051D98205A007537BC /* CCCertificate.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F801011D98205A007537BC /* CCCertificate.m */; };
 		F7FC7D561DC1F93800BB2C6A /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = F7FC7D551DC1F93800BB2C6A /* libz.tbd */; };
+		F7FC88FA1E140558006D0506 /* cryptocloud.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = F78088E51DD3A1DB005C5A7C /* cryptocloud.xcdatamodeld */; };
+		F7FC88FB1E141A34006D0506 /* BKPasscodeView.strings in Resources */ = {isa = PBXBuildFile; fileRef = F72B60911A24F00B004EF66F /* BKPasscodeView.strings */; };
+		F7FC88FC1E141A39006D0506 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7E70DE91A24DE4100E1B66A /* Localizable.strings */; };
+		F7FC88FD1E141A3F006D0506 /* Error.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7B381BF1C074E3E004693F8 /* Error.strings */; };
 		F7FCFFD81D70798C000E6E29 /* CCPeekPop.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7FCFFD61D70798C000E6E29 /* CCPeekPop.storyboard */; };
 		F7FCFFE01D707B83000E6E29 /* CCPeekPop.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FCFFDE1D707B83000E6E29 /* CCPeekPop.m */; };
 /* End PBXBuildFile section */
@@ -559,6 +626,20 @@
 			proxyType = 2;
 			remoteGlobalIDString = EA7CC8A7183E11E600B6A4B4;
 			remoteInfo = "ownCloud iOS libraryTests";
+		};
+		F74344271E1264EE001CC831 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F7F67BA01A24D27800EE80DA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F743441F1E1264EE001CC831;
+			remoteInfo = PickerFileProvider;
+		};
+		F743442A1E1264EE001CC831 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F7F67BA01A24D27800EE80DA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F74344111E1264ED001CC831;
+			remoteInfo = Picker;
 		};
 		F7B61E921DC13C20009E938F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -625,6 +706,8 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
+				F74344921E128EB0001CC831 /* Picker.appex in Embed App Extensions */,
+				F74344931E128EB4001CC831 /* PickerFileProvider.appex in Embed App Extensions */,
 				F749E4E91DC1FB38009BA2FD /* Share Ext Nextcloud.appex in Embed App Extensions */,
 			);
 			name = "Embed App Extensions";
@@ -988,11 +1071,8 @@
 		F71E67F61DC1F76F003BA52B /* ownCloud iOS library.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "ownCloud iOS library.xcodeproj"; path = "Libraries external/OCCommunicationLib/ownCloud iOS library.xcodeproj"; sourceTree = SOURCE_ROOT; };
 		F71EDBFC1C4B93ED00265D0C /* JBroken.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JBroken.h; sourceTree = "<group>"; };
 		F71EDBFD1C4B93ED00265D0C /* JBroken.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JBroken.m; sourceTree = "<group>"; };
-		F721371C1BAFF0920012B613 /* Add.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Add.storyboard; sourceTree = "<group>"; };
 		F721371D1BAFF0920012B613 /* CCAccountWeb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCAccountWeb.h; sourceTree = "<group>"; };
 		F721371E1BAFF0920012B613 /* CCAccountWeb.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCAccountWeb.m; sourceTree = "<group>"; };
-		F721371F1BAFF0920012B613 /* CCAdd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCAdd.h; sourceTree = "<group>"; };
-		F72137201BAFF0920012B613 /* CCAdd.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCAdd.m; sourceTree = "<group>"; };
 		F72137211BAFF0920012B613 /* CCBancomat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCBancomat.h; sourceTree = "<group>"; };
 		F72137221BAFF0920012B613 /* CCBancomat.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCBancomat.m; sourceTree = "<group>"; };
 		F72137231BAFF0920012B613 /* CCCartaDiCredito.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCCartaDiCredito.h; sourceTree = "<group>"; };
@@ -1119,6 +1199,16 @@
 		F73CCE281DC13798007E38D8 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F73CCE291DC13798007E38D8 /* UICKeyChainStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICKeyChainStore.h; sourceTree = "<group>"; };
 		F73CCE2A1DC13798007E38D8 /* UICKeyChainStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UICKeyChainStore.m; sourceTree = "<group>"; };
+		F74344151E1264EE001CC831 /* Picker.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Picker.entitlements; sourceTree = "<group>"; };
+		F74344161E1264EE001CC831 /* DocumentPickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentPickerViewController.swift; sourceTree = "<group>"; };
+		F74344191E1264EE001CC831 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
+		F743441B1E1264EE001CC831 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F74344231E1264EE001CC831 /* PickerFileProvider.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PickerFileProvider.entitlements; sourceTree = "<group>"; };
+		F74344241E1264EE001CC831 /* FileProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileProvider.swift; sourceTree = "<group>"; };
+		F74344261E1264EE001CC831 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F74344521E126D06001CC831 /* Picker-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Picker-Bridging-Header.h"; sourceTree = "<group>"; };
+		F74344901E128E8F001CC831 /* Picker.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = Picker.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		F74344911E128E96001CC831 /* PickerFileProvider.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = PickerFileProvider.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		F743B2C31C95BBE8006F5B4A /* CCShareInfoCMOC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCShareInfoCMOC.h; sourceTree = "<group>"; };
 		F743B2C41C95BBE8006F5B4A /* CCShareInfoCMOC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCShareInfoCMOC.m; sourceTree = "<group>"; };
 		F744BE921BEBB2EE004FFF66 /* CCIntro.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCIntro.h; sourceTree = "<group>"; };
@@ -1386,6 +1476,7 @@
 		F7D02A481C5F9E4400D6F972 /* CCMove.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = CCMove.storyboard; sourceTree = "<group>"; };
 		F7D0E65E1BC5042E008D989A /* CCDetail.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCDetail.h; sourceTree = "<group>"; };
 		F7D0E65F1BC5042E008D989A /* CCDetail.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCDetail.m; sourceTree = "<group>"; };
+		F7D154271E2392A300202FD9 /* Nextcloud-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Nextcloud-Bridging-Header.h"; sourceTree = "<group>"; };
 		F7D6A0891D82DBFA0045AD1A /* CCControlCenter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCControlCenter.h; sourceTree = "<group>"; };
 		F7D6A08A1D82DBFA0045AD1A /* CCControlCenter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCControlCenter.m; sourceTree = "<group>"; };
 		F7D6A08B1D82DBFA0045AD1A /* CCControlCenterCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCControlCenterCell.h; sourceTree = "<group>"; };
@@ -1406,6 +1497,7 @@
 		F7EC9CCC1C4FA803008122B5 /* TableShare+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableShare+CoreDataProperties.m"; sourceTree = "<group>"; };
 		F7EC9CCD1C4FA803008122B5 /* TableShare.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableShare.h; sourceTree = "<group>"; };
 		F7EC9CCE1C4FA803008122B5 /* TableShare.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TableShare.m; sourceTree = "<group>"; };
+		F7ECBA6C1E239DCD003E6328 /* CCCreateCloud.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CCCreateCloud.swift; sourceTree = "<group>"; };
 		F7EF0CAC1D9E95EC00A9D15E /* CCSharedDBSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = CCSharedDBSession.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		F7EF0CAD1D9E95F400A9D15E /* CCSharedDBSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = CCSharedDBSession.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		F7F0617A1BAACDD300846525 /* CryptoCloud.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CryptoCloud.pch; sourceTree = "<group>"; };
@@ -1509,6 +1601,24 @@
 				F72C63891DC14B0400FA5ED5 /* libMagicalRecord.a in Frameworks */,
 				F70A630F1D5B3467004E2AA5 /* libssl.a in Frameworks */,
 				F70A630B1D5B3467004E2AA5 /* libcrypto.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F743440F1E1264ED001CC831 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F74344541E1277D8001CC831 /* libownCloudiOS.a in Frameworks */,
+				F74344551E1277E2001CC831 /* libMagicalRecord.a in Frameworks */,
+				F74344591E12786C001CC831 /* libssl.a in Frameworks */,
+				F74344561E12784A001CC831 /* libcrypto.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F743441D1E1264EE001CC831 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2221,9 +2331,6 @@
 			children = (
 				F721371D1BAFF0920012B613 /* CCAccountWeb.h */,
 				F721371E1BAFF0920012B613 /* CCAccountWeb.m */,
-				F721371F1BAFF0920012B613 /* CCAdd.h */,
-				F72137201BAFF0920012B613 /* CCAdd.m */,
-				F721371C1BAFF0920012B613 /* Add.storyboard */,
 				F72137211BAFF0920012B613 /* CCBancomat.h */,
 				F72137221BAFF0920012B613 /* CCBancomat.m */,
 				F72137231BAFF0920012B613 /* CCCartaDiCredito.h */,
@@ -2486,6 +2593,44 @@
 				F73CCE2A1DC13798007E38D8 /* UICKeyChainStore.m */,
 			);
 			path = UICKeyChainStore;
+			sourceTree = "<group>";
+		};
+		F74344131E1264EE001CC831 /* Picker */ = {
+			isa = PBXGroup;
+			children = (
+				F74344161E1264EE001CC831 /* DocumentPickerViewController.swift */,
+				F74344521E126D06001CC831 /* Picker-Bridging-Header.h */,
+				F74344181E1264EE001CC831 /* MainInterface.storyboard */,
+				F743441B1E1264EE001CC831 /* Info.plist */,
+				F74344141E1264EE001CC831 /* Supporting Files */,
+			);
+			path = Picker;
+			sourceTree = "<group>";
+		};
+		F74344141E1264EE001CC831 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				F74344151E1264EE001CC831 /* Picker.entitlements */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		F74344211E1264EE001CC831 /* PickerFileProvider */ = {
+			isa = PBXGroup;
+			children = (
+				F74344241E1264EE001CC831 /* FileProvider.swift */,
+				F74344261E1264EE001CC831 /* Info.plist */,
+				F74344221E1264EE001CC831 /* Supporting Files */,
+			);
+			path = PickerFileProvider;
+			sourceTree = "<group>";
+		};
+		F74344221E1264EE001CC831 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				F74344231E1264EE001CC831 /* PickerFileProvider.entitlements */,
+			);
+			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
 		F744BE911BEBB2EE004FFF66 /* Intro */ = {
@@ -2898,6 +3043,14 @@
 			path = FileSystem;
 			sourceTree = "<group>";
 		};
+		F7ECBA6B1E239DCD003E6328 /* Create */ = {
+			isa = PBXGroup;
+			children = (
+				F7ECBA6C1E239DCD003E6328 /* CCCreateCloud.swift */,
+			);
+			path = Create;
+			sourceTree = "<group>";
+		};
 		F7F06E291DBFACC600099AE9 /* CTAssetsPickerController */ = {
 			isa = PBXGroup;
 			children = (
@@ -2998,6 +3151,8 @@
 				F7F67BAA1A24D27800EE80DA /* iOSClient */,
 				F7F67BAB1A24D27800EE80DA /* Supporting Files */,
 				F7C0F46D1C8880540059EC54 /* Share Ext */,
+				F74344131E1264EE001CC831 /* Picker */,
+				F74344211E1264EE001CC831 /* PickerFileProvider */,
 				F7FC7D651DC1F98700BB2C6A /* Products */,
 				F7FC7D541DC1F93700BB2C6A /* Frameworks */,
 			);
@@ -3018,6 +3173,7 @@
 				F7F67BB81A24D27800EE80DA /* Images.xcassets */,
 				F7596C771D128FC80092A6B8 /* Nextcloud.xcassets */,
 				F70211F31BAC56E9003FC03E /* Main */,
+				F7ECBA6B1E239DCD003E6328 /* Create */,
 				F7AB19C41BAF01A60027D7BA /* Favorite */,
 				F7E95CEC1AC40BA40060D08E /* FileSystem */,
 				F744BE911BEBB2EE004FFF66 /* Intro */,
@@ -3044,6 +3200,7 @@
 		F7F67BAB1A24D27800EE80DA /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				F7D154271E2392A300202FD9 /* Nextcloud-Bridging-Header.h */,
 				F75CDBF51DF063AD00116AD0 /* .gitignore */,
 				F7229B461DF71BA800E8C4E7 /* ChangeLog */,
 				F7229B491DF71BB300E8C4E7 /* AUTHORS */,
@@ -3085,6 +3242,8 @@
 			children = (
 				F7CE8AFA1DC1F8D8009CAE48 /* Nextcloud.app */,
 				F7CE8AFB1DC1F8D8009CAE48 /* Share Ext Nextcloud.appex */,
+				F74344901E128E8F001CC831 /* Picker.appex */,
+				F74344911E128E96001CC831 /* PickerFileProvider.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -3132,6 +3291,40 @@
 			productReference = F7CE8AFB1DC1F8D8009CAE48 /* Share Ext Nextcloud.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
+		F74344111E1264ED001CC831 /* Picker */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F743443C1E1264EE001CC831 /* Build configuration list for PBXNativeTarget "Picker" */;
+			buildPhases = (
+				F743440E1E1264ED001CC831 /* Sources */,
+				F743440F1E1264ED001CC831 /* Frameworks */,
+				F74344101E1264ED001CC831 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Picker;
+			productName = Picker;
+			productReference = F74344901E128E8F001CC831 /* Picker.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		F743441F1E1264EE001CC831 /* PickerFileProvider */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F743443B1E1264EE001CC831 /* Build configuration list for PBXNativeTarget "PickerFileProvider" */;
+			buildPhases = (
+				F743441C1E1264EE001CC831 /* Sources */,
+				F743441D1E1264EE001CC831 /* Frameworks */,
+				F743441E1E1264EE001CC831 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PickerFileProvider;
+			productName = PickerFileProvider;
+			productReference = F74344911E128E96001CC831 /* PickerFileProvider.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		F77B0DEB1D118A16002130FE /* Nextcloud */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = F77B0F9A1D118A16002130FE /* Build configuration list for PBXNativeTarget "Nextcloud" */;
@@ -3146,6 +3339,8 @@
 			);
 			dependencies = (
 				F7145A321D12E65F00CAFEEC /* PBXTargetDependency */,
+				F74344281E1264EE001CC831 /* PBXTargetDependency */,
+				F743442B1E1264EE001CC831 /* PBXTargetDependency */,
 			);
 			name = Nextcloud;
 			productName = "Crypto Cloud";
@@ -3158,15 +3353,49 @@
 		F7F67BA01A24D27800EE80DA /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 0720;
+				LastSwiftUpdateCheck = 0820;
 				LastUpgradeCheck = 0800;
 				ORGANIZATIONNAME = TWS;
 				TargetAttributes = {
 					F71459B41D12E3B700CAFEEC = {
 						DevelopmentTeam = 6JLRKY9ZV7;
+						SystemCapabilities = {
+							com.apple.iCloud = {
+								enabled = 0;
+							};
+						};
+					};
+					F74344111E1264ED001CC831 = {
+						CreatedOnToolsVersion = 8.2.1;
+						DevelopmentTeam = 6JLRKY9ZV7;
+						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
+							};
+							com.apple.Keychain = {
+								enabled = 1;
+							};
+						};
+					};
+					F743441F1E1264EE001CC831 = {
+						CreatedOnToolsVersion = 8.2.1;
+						DevelopmentTeam = 6JLRKY9ZV7;
+						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.Keychain = {
+								enabled = 1;
+							};
+						};
 					};
 					F77B0DEB1D118A16002130FE = {
 						DevelopmentTeam = 6JLRKY9ZV7;
+						LastSwiftMigration = 0820;
+						SystemCapabilities = {
+							com.apple.iCloud = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -3198,6 +3427,8 @@
 			targets = (
 				F77B0DEB1D118A16002130FE /* Nextcloud */,
 				F71459B41D12E3B700CAFEEC /* Share Ext Nextcloud */,
+				F74344111E1264ED001CC831 /* Picker */,
+				F743441F1E1264EE001CC831 /* PickerFileProvider */,
 			);
 		};
 /* End PBXProject section */
@@ -3293,6 +3524,27 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F74344101E1264ED001CC831 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F7D267871E157057005ACB7E /* Nextcloud.xcassets in Resources */,
+				F7FC88FD1E141A3F006D0506 /* Error.strings in Resources */,
+				F7FC88FB1E141A34006D0506 /* BKPasscodeView.strings in Resources */,
+				F7FC88FC1E141A39006D0506 /* Localizable.strings in Resources */,
+				F7D2677C1E157053005ACB7E /* Images.xcassets in Resources */,
+				F743441A1E1264EE001CC831 /* MainInterface.storyboard in Resources */,
+				F743444B1E126B69001CC831 /* CCMove.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F743441E1E1264EE001CC831 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F77B0EE91D118A16002130FE /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -3359,7 +3611,6 @@
 				F77B0F231D118A16002130FE /* ZSSh3.png in Resources */,
 				F77B0F241D118A16002130FE /* Reader-Button-H.png in Resources */,
 				F77B0F251D118A16002130FE /* ZSSh1.png in Resources */,
-				F77B0F261D118A16002130FE /* Add.storyboard in Resources */,
 				F77B0F271D118A16002130FE /* ImageSelectedSmallOn.png in Resources */,
 				F7676A7D1D5CB2A400DF734C /* icon-info.png in Resources */,
 				F77B0F281D118A16002130FE /* Main.storyboard in Resources */,
@@ -3565,6 +3816,75 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F743440E1E1264ED001CC831 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F743446C1E127E4B001CC831 /* TableLocalFile+CoreDataProperties.m in Sources */,
+				F743445F1E127D4B001CC831 /* BKPasscodeViewController.m in Sources */,
+				F74344611E127D51001CC831 /* BKTouchIDManager.m in Sources */,
+				F743446A1E127E45001CC831 /* TableCertificates+CoreDataProperties.m in Sources */,
+				F74344801E127ED3001CC831 /* NSString+Base64.m in Sources */,
+				F74344621E127D54001CC831 /* BKTouchIDSwitchView.m in Sources */,
+				F743446D1E127E4E001CC831 /* TableLocalFile.m in Sources */,
+				F743447A1E127EA6001CC831 /* CCGraphics.m in Sources */,
+				F743448C1E128010001CC831 /* CCCrypto.m in Sources */,
+				F725437C1E12A44A009BF4C2 /* CCSection.m in Sources */,
+				F74344651E127DE9001CC831 /* CCNetworking.m in Sources */,
+				F74344641E127DE6001CC831 /* OCNetworking.m in Sources */,
+				F743445B1E127D3B001CC831 /* BKPasscodeDummyViewController.m in Sources */,
+				F743446B1E127E49001CC831 /* TableCertificates.m in Sources */,
+				F743445D1E127D40001CC831 /* BKPasscodeInputView.m in Sources */,
+				F74344821E127F68001CC831 /* MBProgressHUD.m in Sources */,
+				F74344721E127E5B001CC831 /* TableMetadata.m in Sources */,
+				F74344681E127E3F001CC831 /* TableAutomaticUpload+CoreDataClass.m in Sources */,
+				F743444A1E126B4D001CC831 /* CCMove.m in Sources */,
+				F74344741E127E60001CC831 /* TableAccount.m in Sources */,
+				F74344771E127E88001CC831 /* TableDirectory.m in Sources */,
+				F74344711E127E59001CC831 /* TableMetadata+CoreDataProperties.m in Sources */,
+				F743448B1E12800D001CC831 /* CCCertificate.m in Sources */,
+				F743447D1E127ECB001CC831 /* AESCrypt.m in Sources */,
+				F743447E1E127ECE001CC831 /* NSData+Base64.m in Sources */,
+				F74344671E127E38001CC831 /* CCMetadata.m in Sources */,
+				F74344701E127E56001CC831 /* TableDirectory+CoreDataProperties.m in Sources */,
+				F74344781E127E9E001CC831 /* CCExifGeo.m in Sources */,
+				F74344171E1264EE001CC831 /* DocumentPickerViewController.swift in Sources */,
+				F74344811E127F49001CC831 /* AFViewShaker.m in Sources */,
+				F74344791E127EA1001CC831 /* CCError.m in Sources */,
+				F743446E1E127E51001CC831 /* TableGPS+CoreDataProperties.m in Sources */,
+				F743447B1E127EAC001CC831 /* CCUtility.m in Sources */,
+				F74344761E127E67001CC831 /* TableShare.m in Sources */,
+				F74344871E127F95001CC831 /* UICKeyChainStore.m in Sources */,
+				F74344751E127E64001CC831 /* TableShare+CoreDataProperties.m in Sources */,
+				F743447F1E127ED1001CC831 /* NSData+CommonCrypto.m in Sources */,
+				F74344891E127FC3001CC831 /* CCGlobal.m in Sources */,
+				F74344841E127F84001CC831 /* RNCryptorEngine.m in Sources */,
+				F74344851E127F86001CC831 /* RNDecryptor.m in Sources */,
+				F74344691E127E42001CC831 /* TableAutomaticUpload+CoreDataProperties.m in Sources */,
+				F74344881E127F9C001CC831 /* UIImage+animatedGIF.m in Sources */,
+				F743448A1E127FF2001CC831 /* CCHud.m in Sources */,
+				F74344861E127F89001CC831 /* RNEncryptor.m in Sources */,
+				F743445C1E127D3D001CC831 /* BKPasscodeField.m in Sources */,
+				F743446F1E127E53001CC831 /* TableGPS.m in Sources */,
+				F7FC88FA1E140558006D0506 /* cryptocloud.xcdatamodeld in Sources */,
+				F743445E1E127D44001CC831 /* BKPasscodeLockScreenManager.m in Sources */,
+				F74344631E127D79001CC831 /* CCBKPasscode.m in Sources */,
+				F74344661E127E35001CC831 /* CCCoreData.m in Sources */,
+				F743447C1E127EB2001CC831 /* NSString+TruncateToWidth.m in Sources */,
+				F74344731E127E5E001CC831 /* TableAccount+CoreDataProperties.m in Sources */,
+				F74344601E127D4D001CC831 /* BKShiftingView.m in Sources */,
+				F74344831E127F80001CC831 /* RNCryptor.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F743441C1E1264EE001CC831 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F74344251E1264EE001CC831 /* FileProvider.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F77B0DEF1D118A16002130FE /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -3665,7 +3985,6 @@
 				F77B0E441D118A16002130FE /* CCIntro.m in Sources */,
 				F77B0E451D118A16002130FE /* ReaderThumbRender.m in Sources */,
 				F77B0E461D118A16002130FE /* BKPasscodeLockScreenManager.m in Sources */,
-				F77B0E471D118A16002130FE /* CCAdd.m in Sources */,
 				F77B0E481D118A16002130FE /* CCCrypto.m in Sources */,
 				F7D6A0911D82DBFA0045AD1A /* CCControlCenter.m in Sources */,
 				F7659A6A1DC0B760004860C4 /* PSTGridLayoutInfo.m in Sources */,
@@ -3823,6 +4142,7 @@
 				F77B0EC61D118A16002130FE /* CCCellMain.m in Sources */,
 				F77B0EC71D118A16002130FE /* AESCrypt.m in Sources */,
 				F73CCE091DC13776007E38D8 /* NSObject+XLFormAdditions.m in Sources */,
+				F7ECBA6D1E239DCD003E6328 /* CCCreateCloud.swift in Sources */,
 				F77B0ECB1D118A16002130FE /* HRBrightnessCursor.m in Sources */,
 				F77B0ECC1D118A16002130FE /* UIImage+Masking.m in Sources */,
 				F77B0ECE1D118A16002130FE /* NSData+CommonCrypto.m in Sources */,
@@ -3850,6 +4170,16 @@
 			target = F71459B41D12E3B700CAFEEC /* Share Ext Nextcloud */;
 			targetProxy = F7145A311D12E65F00CAFEEC /* PBXContainerItemProxy */;
 		};
+		F74344281E1264EE001CC831 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F743441F1E1264EE001CC831 /* PickerFileProvider */;
+			targetProxy = F74344271E1264EE001CC831 /* PBXContainerItemProxy */;
+		};
+		F743442B1E1264EE001CC831 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F74344111E1264ED001CC831 /* Picker */;
+			targetProxy = F743442A1E1264EE001CC831 /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
@@ -3863,6 +4193,14 @@
 				F7D96F0B1D99498600A587A5 /* de */,
 			);
 			name = BKPasscodeView.strings;
+			sourceTree = "<group>";
+		};
+		F74344181E1264EE001CC831 /* MainInterface.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F74344191E1264EE001CC831 /* Base */,
+			);
+			name = MainInterface.storyboard;
 			sourceTree = "<group>";
 		};
 		F744BE9F1BEBB69F004FFF66 /* Intro.strings */ = {
@@ -3957,7 +4295,7 @@
 				GCC_PREFIX_HEADER = "$(SRCROOT)/iOSClient/CryptoCloud.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
-					"SHARE_IN=1",
+					"EXTENSION=1",
 					"NC=1",
 				);
 				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
@@ -3997,7 +4335,7 @@
 				GCC_PREFIX_HEADER = "$(SRCROOT)/iOSClient/CryptoCloud.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
-					"SHARE_IN=1",
+					"EXTENSION=1",
 					"NC=1",
 				);
 				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
@@ -4019,12 +4357,135 @@
 			};
 			name = Release;
 		};
+		F743442D1E1264EE001CC831 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
+				CODE_SIGN_ENTITLEMENTS = Picker/Picker.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
+				GCC_PREFIX_HEADER = "$(SRCROOT)/iOSClient/CryptoCloud.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"EXTENSION=1",
+					"DEBUG=1",
+					"NC=1",
+				);
+				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
+				INFOPLIST_FILE = Picker/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				LIBRARY_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
+				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.Nextcloud.Picker;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG NC";
+				SWIFT_OBJC_BRIDGING_HEADER = "Picker/Picker-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 3.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		F743442E1E1264EE001CC831 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
+				CODE_SIGN_ENTITLEMENTS = Picker/Picker.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
+				GCC_PREFIX_HEADER = "$(SRCROOT)/iOSClient/CryptoCloud.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"EXTENSION=1",
+					"NC=1",
+				);
+				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
+				INFOPLIST_FILE = Picker/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				LIBRARY_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
+				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.Nextcloud.Picker;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = NC;
+				SWIFT_OBJC_BRIDGING_HEADER = "Picker/Picker-Bridging-Header.h";
+				SWIFT_VERSION = 3.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		F743442F1E1264EE001CC831 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CODE_SIGN_ENTITLEMENTS = PickerFileProvider/PickerFileProvider.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"EXTENSION=1",
+					"NC=1",
+				);
+				INFOPLIST_FILE = PickerFileProvider/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.Nextcloud.PickerFileProvider;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG NC";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 3.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		F74344301E1264EE001CC831 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CODE_SIGN_ENTITLEMENTS = PickerFileProvider/PickerFileProvider.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"NC=1",
+					"EXTENSION=1",
+				);
+				INFOPLIST_FILE = PickerFileProvider/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.Nextcloud.PickerFileProvider;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = NC;
+				SWIFT_VERSION = 3.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		F77B0F9B1D118A16002130FE /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIconNextcloud;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = iOSClient/Nextcloud.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -4050,6 +4511,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "it.twsweb.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "iOSClient/Nextcloud-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USE_HEADERMAP = YES;
@@ -4063,6 +4526,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIconNextcloud;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = iOSClient/Nextcloud.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -4089,6 +4553,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "it.twsweb.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "iOSClient/Nextcloud-Bridging-Header.h";
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USE_HEADERMAP = YES;
@@ -4202,6 +4667,24 @@
 			buildConfigurations = (
 				F7145A261D12E3B700CAFEEC /* Debug */,
 				F7145A271D12E3B700CAFEEC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F743443B1E1264EE001CC831 /* Build configuration list for PBXNativeTarget "PickerFileProvider" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F743442F1E1264EE001CC831 /* Debug */,
+				F74344301E1264EE001CC831 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F743443C1E1264EE001CC831 /* Build configuration list for PBXNativeTarget "Picker" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F743442D1E1264EE001CC831 /* Debug */,
+				F743442E1E1264EE001CC831 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
