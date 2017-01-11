@@ -35,6 +35,7 @@ static const CGFloat kCancelButtonShadowHeightRatio = 0.333f;
 @property (nonatomic) AHKActionSheetButtonType type;
 @property (strong, nonatomic) AHKActionSheetHandler handler;
 @property (nonatomic, strong) UIColor *backgroundColor;
+@property (nonatomic) CGFloat height;
 @end
 
 @implementation AHKActionSheetItem
@@ -193,7 +194,8 @@ static const CGFloat kCancelButtonShadowHeightRatio = 0.333f;
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return self.buttonHeight;
+    AHKActionSheetItem *item = self.items[(NSUInteger)indexPath.row];
+    return item.height;
 }
 
 /*
@@ -270,15 +272,16 @@ static const CGFloat kCancelButtonShadowHeightRatio = 0.333f;
 
 - (void)addButtonWithTitle:(NSString *)title type:(AHKActionSheetButtonType)type handler:(AHKActionSheetHandler)handler
 {
-    [self addButtonWithTitle:title image:nil backgroundColor:[UIColor whiteColor] type:type handler:handler];
+    [self addButtonWithTitle:title image:nil backgroundColor:[UIColor whiteColor] height:self.buttonHeight type:type handler:handler];
 }
 
-- (void)addButtonWithTitle:(NSString *)title image:(UIImage *)image backgroundColor:(UIColor *)backgroundColor type:(AHKActionSheetButtonType)type handler:(AHKActionSheetHandler)handler
+- (void)addButtonWithTitle:(NSString *)title image:(UIImage *)image backgroundColor:(UIColor *)backgroundColor height:(CGFloat)height type:(AHKActionSheetButtonType)type handler:(AHKActionSheetHandler)handler
 {
     AHKActionSheetItem *item = [[AHKActionSheetItem alloc] init];
     item.title = title;
     item.image = image;
     item.backgroundColor = backgroundColor;
+    item.height = height;
     item.type = type;
     item.handler = handler;
     [self.items addObject:item];
