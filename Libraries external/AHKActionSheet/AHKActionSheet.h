@@ -42,7 +42,6 @@ typedef void(^AHKActionSheetHandler)(AHKActionSheet *actionSheet);
  *  It's best to use a color similar (but maybe with a lower alpha value) to blurTintColor.
  *  See "Advanced" example in the example project to see it used.
  */
-@property (strong, nonatomic) UIColor *cancelButtonShadowColor UI_APPEARANCE_SELECTOR;
 /// Boxed (@YES, @NO) boolean value (enabled by default). Isn't supported on iOS 6.
 @property (strong, nonatomic) NSNumber *automaticallyTintButtonImages UI_APPEARANCE_SELECTOR;
 /// Boxed boolean value. Useful when adding buttons without images (in that case text looks better centered). Disabled by default.

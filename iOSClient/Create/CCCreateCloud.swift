@@ -47,7 +47,7 @@ class CreateMenuAdd: NSObject {
         
         actionSheet?.buttonHeight = 50.0
         actionSheet?.cancelButtonHeight = 50.0
-        actionSheet?.separatorHeight = 30.0
+        actionSheet?.separatorHeight = 5.0
         
         actionSheet?.selectedBackgroundColor = UIColor(colorLiteralRed: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 0.1)
         actionSheet?.separatorColor = UIColor(colorLiteralRed: 153.0/255.0, green: 153.0/255.0, blue: 153.0/255.0, alpha: 0.2)
@@ -90,7 +90,7 @@ class CreateMenuAdd: NSObject {
 
         actionSheet?.buttonHeight = 50.0
         actionSheet?.cancelButtonHeight = 50.0
-        actionSheet?.separatorHeight = 30.0
+        actionSheet?.separatorHeight = 5.0
         
         actionSheet?.selectedBackgroundColor = UIColor(colorLiteralRed: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 0.1)
         actionSheet?.separatorColor = UIColor(colorLiteralRed: 153.0/255.0, green: 153.0/255.0, blue: 153.0/255.0, alpha: 0.2)
@@ -133,7 +133,7 @@ class CreateMenuAdd: NSObject {
 
         actionSheet?.buttonHeight = 50.0
         actionSheet?.cancelButtonHeight = 50.0
-        actionSheet?.separatorHeight = 30.0
+        actionSheet?.separatorHeight = 5.0
         
         actionSheet?.selectedBackgroundColor = UIColor(colorLiteralRed: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 0.1)
         actionSheet?.separatorColor = UIColor(colorLiteralRed: 153.0/255.0, green: 153.0/255.0, blue: 153.0/255.0, alpha: 0.2)
@@ -152,7 +152,7 @@ class CreateMenuAdd: NSObject {
             appDelegate.activeMain.returnCreate(Int(returnAccountWeb))
         })
         
-        actionSheet?.addButton(withTitle: "", image: nil, backgroundColor: UIColor.white, height: 10.0, type: AHKActionSheetButtonType.disabled, handler: {(AHKActionSheet) -> Void in
+        actionSheet?.addButton(withTitle: "", image: nil, backgroundColor: UIColor(colorLiteralRed: 250.0/255.0, green: 250.0/255.0, blue: 250.0/255.0, alpha: 1), height: 10.0, type: AHKActionSheetButtonType.disabled, handler: {(AHKActionSheet) -> Void in
             print("disable")
         })
         
@@ -168,7 +168,7 @@ class CreateMenuAdd: NSObject {
             appDelegate.activeMain.returnCreate(Int(returnContoCorrente))
         })
         
-        actionSheet?.addButton(withTitle: "", image: nil, backgroundColor: UIColor.white, height: 10.0, type: AHKActionSheetButtonType.disabled, handler: {(AHKActionSheet) -> Void in
+        actionSheet?.addButton(withTitle: "", image: nil, backgroundColor: UIColor(colorLiteralRed: 250.0/255.0, green: 250.0/255.0, blue: 250.0/255.0, alpha: 1), height: 10.0, type: AHKActionSheetButtonType.disabled, handler: {(AHKActionSheet) -> Void in
             print("disable")
         })
         
