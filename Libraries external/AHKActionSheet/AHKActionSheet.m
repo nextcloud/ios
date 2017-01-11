@@ -515,7 +515,9 @@ static const CGFloat kSpaceDivide = 5.0f;
     
     [cancelButton setAttributedTitle:attrTitle forState:UIControlStateNormal];
     [cancelButton addTarget:self action:@selector(cancelButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
-        
+    
+    cancelButton.frame = CGRectMake(10, CGRectGetMaxY(self.bounds) - self.cancelButtonHeight, CGRectGetWidth(self.bounds) - 20, self.cancelButtonHeight - kSpaceDivide);
+    
     // move the button below the screen (ready to be animated -show)
     cancelButton.transform = CGAffineTransformMakeTranslation(0, self.cancelButtonHeight - kSpaceDivide);
     cancelButton.clipsToBounds = YES;

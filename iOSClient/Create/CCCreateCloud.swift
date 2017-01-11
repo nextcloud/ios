@@ -30,7 +30,8 @@ class CreateMenuAdd: NSObject {
     let fontButton = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 14)!, NSForegroundColorAttributeName:UIColor(colorLiteralRed: 65.0/255.0, green: 64.0/255.0, blue: 66.0/255.0, alpha: 1.0)]
     let fontEncrypted = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 14)!, NSForegroundColorAttributeName:UIColor(colorLiteralRed: 241.0/255.0, green: 90.0/255.0, blue: 34.0/255.0, alpha: 1.0)]
     let fontCancel = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 16)!, NSForegroundColorAttributeName:UIColor(colorLiteralRed: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)]
-    
+    let fontDisable = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 12)!, NSForegroundColorAttributeName:UIColor(colorLiteralRed: 65.0/255.0, green: 64.0/255.0, blue: 66.0/255.0, alpha: 1.0)]
+
     let colorLightGray = UIColor(colorLiteralRed: 250.0/255.0, green: 250.0/255.0, blue: 250.0/255.0, alpha: 1)
     
     func createMenuPlain(view : UIView) {
@@ -54,6 +55,7 @@ class CreateMenuAdd: NSObject {
         actionSheet?.buttonTextAttributes = fontButton
         actionSheet?.encryptedButtonTextAttributes = fontEncrypted
         actionSheet?.cancelButtonTextAttributes = fontCancel
+        actionSheet?.disableButtonTextAttributes = fontDisable
         
         actionSheet?.cancelButtonTitle = NSLocalizedString("_cancel_", comment: "")
 
@@ -96,6 +98,7 @@ class CreateMenuAdd: NSObject {
         actionSheet?.buttonTextAttributes = fontButton
         actionSheet?.encryptedButtonTextAttributes = fontEncrypted
         actionSheet?.cancelButtonTextAttributes = fontCancel
+        actionSheet?.disableButtonTextAttributes = fontDisable
         
         actionSheet?.cancelButtonTitle = NSLocalizedString("_cancel_", comment: "")
         
@@ -138,6 +141,7 @@ class CreateMenuAdd: NSObject {
         actionSheet?.buttonTextAttributes = fontButton
         actionSheet?.encryptedButtonTextAttributes = fontEncrypted
         actionSheet?.cancelButtonTextAttributes = fontCancel
+        actionSheet?.disableButtonTextAttributes = fontDisable
         
         actionSheet?.cancelButtonTitle = NSLocalizedString("_cancel_", comment: "")
         

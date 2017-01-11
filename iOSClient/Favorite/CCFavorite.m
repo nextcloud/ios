@@ -396,7 +396,7 @@
     actionSheet.encryptedButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:14], NSForegroundColorAttributeName:COLOR_ENCRYPTED };
     actionSheet.buttonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:14], NSForegroundColorAttributeName:COLOR_GRAY };
     actionSheet.cancelButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:COLOR_BRAND };
-    actionSheet.disableButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:14], NSForegroundColorAttributeName:COLOR_GRAY };
+    actionSheet.disableButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:12], NSForegroundColorAttributeName:COLOR_GRAY };
     
     actionSheet.separatorColor = COLOR_SEPARATOR_TABLE;
     actionSheet.cancelButtonTitle = NSLocalizedString(@"_cancel_",nil);
@@ -406,14 +406,22 @@
         iconHeader = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/.%@.ico", self.serverUrlLocal, self.metadata.fileNamePrint]];
     else
         iconHeader = [UIImage imageNamed:self.metadata.iconName];
-        
-    [actionSheet addButtonWithTitle:NSLocalizedString(@"_open_in_", nil)
-                              image:[UIImage imageNamed:image_actionSheetOpenIn]
-                    backgroundColor:[UIColor whiteColor]
+    
+    [actionSheet addButtonWithTitle: _metadata.fileNamePrint
+                              image: iconHeader
+                    backgroundColor: COLOR_NAVBAR_IOS7
                              height: 50.0
-                               type:AHKActionSheetButtonTypeDefault
-                            handler:^(AHKActionSheet *as) {
-                                [self performSelector:@selector(openWith:) withObject:self.metadata afterDelay:0.1];
+                               type: AHKActionSheetButtonTypeDisabled
+                            handler: nil
+    ];
+    
+    [actionSheet addButtonWithTitle: NSLocalizedString(@"_open_in_", nil)
+                              image: [UIImage imageNamed:image_actionSheetOpenIn]
+                    backgroundColor: [UIColor whiteColor]
+                             height: 50.0
+                               type: AHKActionSheetButtonTypeDefault
+                            handler: ^(AHKActionSheet *as) {
+                                [self performSelector:@selector(openWith:) withObject:self.metadata];
                             }];
 
     [actionSheet show];
