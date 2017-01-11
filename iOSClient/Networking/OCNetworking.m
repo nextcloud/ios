@@ -723,11 +723,8 @@
         
         if ([recordAccount.account isEqualToString:_metadataNet.account]) {
         
-            for (OCSharedDto *item in items) {
-                
-                item.path = [item.path stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+            for (OCSharedDto *item in items)
                 [[self getShareID] setObject:item forKey:[@(item.idRemoteShared) stringValue]];
-            }
             
             if ([_metadataNet.selector isEqual:selectorOpenWindowShare]) openWindow = YES;
             

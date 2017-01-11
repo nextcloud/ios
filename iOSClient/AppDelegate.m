@@ -63,8 +63,12 @@
     NSString *dir;
     NSURL *dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:capabilitiesGroups];
     
-    NSLog(@"[LOG] Start program group %@", dirGroup);
-    
+    NSLog(@"[LOG] Start program group -----------------");
+    NSLog(@"%@", dirGroup);    
+    NSLog(@"[LOG] Start program application -----------");
+    NSLog(@"%@", [[CCUtility getDirectoryLocal] stringByDeletingLastPathComponent]);
+    NSLog(@"[LOG] -------------------------------------");
+
     // create Directory local => Documents
     dir = [CCUtility getDirectoryLocal];
     if (![[NSFileManager defaultManager] fileExistsAtPath: dir] && [dir length])
