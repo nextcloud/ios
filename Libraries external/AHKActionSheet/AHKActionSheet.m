@@ -13,7 +13,7 @@
 #import "UIWindow+AHKAdditions.h"
 
 
-static const NSTimeInterval kDefaultAnimationDuration = 0.5f;
+static const NSTimeInterval kDefaultAnimationDuration = 0.2f;
 // Length of the range at which the blurred background is being hidden when the user scrolls the tableView to the top.
 static const CGFloat kBlurFadeRangeSize = 200.0f;
 static NSString * const kCellIdentifier = @"Cell";
@@ -64,11 +64,11 @@ static const CGFloat kSpaceDivide = 5.0f;
     }
 
     AHKActionSheet *appearance = [self appearance];
-    [appearance setBlurRadius:16.0f];
-    [appearance setBlurTintColor:[UIColor colorWithWhite:1.0f alpha:0.5f]];
+    [appearance setBlurRadius:0.0f];
+    [appearance setBlurTintColor:[UIColor colorWithWhite:0.0f alpha:0.5f]];
     [appearance setBlurSaturationDeltaFactor:1.8f];
-    [appearance setButtonHeight:60.0f];
-    [appearance setSeparatorHeight:0.0f];
+    [appearance setButtonHeight:50.0f];
+    [appearance setSeparatorHeight:5.0f];
     [appearance setCancelButtonHeight:44.0f];
     [appearance setAutomaticallyTintButtonImages:@YES];
     [appearance setSelectedBackgroundColor:[UIColor colorWithWhite:0.1f alpha:0.2f]];
