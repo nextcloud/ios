@@ -72,17 +72,13 @@ static const CGFloat kSpaceDivide = 5.0f;
     [appearance setCancelButtonHeight:44.0f];
     [appearance setAutomaticallyTintButtonImages:@YES];
     [appearance setSelectedBackgroundColor:[UIColor colorWithWhite:0.1f alpha:0.2f]];
-    [appearance setCancelButtonTextAttributes:@{ NSFontAttributeName : [UIFont systemFontOfSize:17.0f],
-                                                 NSForegroundColorAttributeName : [UIColor darkGrayColor] }];
+    [appearance setCancelButtonTextAttributes:@{ NSFontAttributeName : [UIFont systemFontOfSize:17.0f], NSForegroundColorAttributeName : [UIColor darkGrayColor] }];
     [appearance setButtonTextAttributes:@{ NSFontAttributeName : [UIFont systemFontOfSize:17.0f]}];
-    [appearance setDisabledButtonTextAttributes:@{ NSFontAttributeName : [UIFont systemFontOfSize:14.0f],
-                                                   NSForegroundColorAttributeName : [UIColor colorWithWhite:0.6f alpha:1.0] }];
-    [appearance setDestructiveButtonTextAttributes:@{ NSFontAttributeName : [UIFont systemFontOfSize:17.0f],
-                                                      NSForegroundColorAttributeName : [UIColor redColor] }];
-    [appearance setTitleTextAttributes:@{ NSFontAttributeName : [UIFont systemFontOfSize:14.0f],
-                                          NSForegroundColorAttributeName : [UIColor grayColor] }];
+    [appearance setDisableButtonTextAttributes:@{ NSFontAttributeName : [UIFont systemFontOfSize:17.0f]}];
+    [appearance setDestructiveButtonTextAttributes:@{ NSFontAttributeName : [UIFont systemFontOfSize:17.0f], NSForegroundColorAttributeName : [UIColor redColor] }];
+    [appearance setTitleTextAttributes:@{ NSFontAttributeName : [UIFont systemFontOfSize:14.0f], NSForegroundColorAttributeName : [UIColor grayColor] }];
     [appearance setCancelOnPanGestureEnabled:@(NO)];
-    [appearance setCancelOnTapEmptyAreaEnabled:@(NO)];
+    [appearance setCancelOnTapEmptyAreaEnabled:@(YES)];
     [appearance setAnimationDuration:kDefaultAnimationDuration];
 }
 
@@ -149,7 +145,7 @@ static const CGFloat kSpaceDivide = 5.0f;
             attributes = self.buttonTextAttributes;
             break;
         case AHKActionSheetButtonTypeDisabled:
-            attributes = self.disabledButtonTextAttributes;
+            attributes = self.disableButtonTextAttributes;
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
             break;
         case AHKActionSheetButtonTypeDestructive:
@@ -160,18 +156,39 @@ static const CGFloat kSpaceDivide = 5.0f;
             break;
     }
 
-    NSAttributedString *attrTitle = [[NSAttributedString alloc] initWithString:item.title attributes:attributes];
-    cell.textLabel.attributedText = attrTitle;
-    cell.textLabel.textAlignment = [self.buttonTextCenteringEnabled boolValue] ? NSTextAlignmentCenter : NSTextAlignmentLeft;
-
     // Use image with template mode with color the same as the text (when enabled).
     BOOL useTemplateMode = [UIImage instancesRespondToSelector:@selector(imageWithRenderingMode:)] && [self.automaticallyTintButtonImages boolValue];
-    cell.imageView.image = useTemplateMode ? [item.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] : item.image;
+    
+    if (item.type != AHKActionSheetButtonTypeDisabled) {
+        
+        NSAttributedString *attrTitle = [[NSAttributedString alloc] initWithString:item.title attributes:attributes];
+        cell.textLabel.attributedText = attrTitle;
+        cell.textLabel.textAlignment = [self.buttonTextCenteringEnabled boolValue] ? NSTextAlignmentCenter : NSTextAlignmentLeft;
+        
+        cell.imageView.image = useTemplateMode ? [item.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] : item.image;
 
-    if ([UIImageView instancesRespondToSelector:@selector(tintColor)]){
-        cell.imageView.tintColor = attributes[NSForegroundColorAttributeName] ? attributes[NSForegroundColorAttributeName] : [UIColor blackColor];
+        if ([UIImageView instancesRespondToSelector:@selector(tintColor)]){
+            cell.imageView.tintColor = attributes[NSForegroundColorAttributeName] ? attributes[NSForegroundColorAttributeName] : [UIColor blackColor];
+        }
+        
+    } else {
+        
+        UIImageView *imageView = [[UIImageView alloc]initWithFrame:CGRectMake(15, _buttonHeight/2 - 15, 30, 30)];
+        imageView.backgroundColor = [UIColor clearColor];
+        //[imageView.layer setCornerRadius:8.0f];
+        [imageView.layer setMasksToBounds:YES];
+        [imageView setImage:item.image];
+        [cell.contentView addSubview:imageView];
+        
+        UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(cell.frame.size.height + 5 , 0, cell.frame.size.width - cell.frame.size.height - 20, cell.frame.size.height)];
+        NSAttributedString *attrTitle = [[NSAttributedString alloc] initWithString:item.title attributes:attributes];
+        label.text =  [NSString stringWithFormat: @"test"];
+        label.numberOfLines = 0;
+        label.attributedText = attrTitle;
+        label.textAlignment = NSTextAlignmentLeft;
+        [cell.contentView addSubview:label];
     }
-
+    
     cell.backgroundColor = item.backgroundColor;
 
     if (self.selectedBackgroundColor && ![cell.selectedBackgroundView.backgroundColor isEqual:self.selectedBackgroundColor]) {

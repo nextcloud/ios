@@ -3967,36 +3967,6 @@
     return NSLocalizedString(@"_more_", nil);
 }
 
-+ (UIView *)headerActionSheet:(UITableViewController *)vc image:(UIImage *)image title:(NSString *)title cryptated:(BOOL)cryptated
-{
-    CGFloat width = CGRectGetWidth(vc.view.bounds);
-    //CGFloat height = CGRectGetHeight(vc.view.bounds);
-    
-    UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 200, 60)];
-    headerView.backgroundColor = COLOR_NAVBAR_IOS7;
-    
-    // IMAGE
-    UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
-    imageView.frame = CGRectMake(13, 15, 30, 30);
-    
-    [headerView addSubview:imageView];
-    
-    // LABEL
-    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(55, 0, width-55-10, 60)];
-    label.numberOfLines = 0;
-    label.text = title;
-    
-    if (cryptated) label.textColor = COLOR_ENCRYPTED;
-    else label.textColor = COLOR_CLEAR;
-    
-    label.font = [UIFont systemFontOfSize:13];
-    label.backgroundColor = [UIColor clearColor];
-    
-    [headerView addSubview:label];
-    
-    return  headerView;
-}
-
 - (void)tableView:(UITableView *)tableView swipeAccessoryButtonPushedForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     _metadata = [self getMetadataFromSectionDataSource:indexPath];
@@ -4026,6 +3996,31 @@
         else titoloLock = [NSString stringWithFormat:NSLocalizedString(@"_protect_passcode_", nil)];
     }
     
+    /******************************************* AHKActionSheet *******************************************/
+    
+    UIImage *iconHeader;
+    
+    AHKActionSheet *actionSheet = [[AHKActionSheet alloc] initWithView:self.view title:nil];
+    
+    actionSheet.animationDuration = 0.2;
+    
+    actionSheet.blurRadius = 0.0f;
+    actionSheet.blurTintColor = [UIColor colorWithWhite:0.0f alpha:0.50f];
+    
+    actionSheet.buttonHeight = 50.0;
+    actionSheet.cancelButtonHeight = 50.0f;
+    actionSheet.separatorHeight = 5.0f;
+    
+    actionSheet.selectedBackgroundColor = COLOR_SELECT_BACKGROUND;
+    
+    actionSheet.encryptedButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:14], NSForegroundColorAttributeName:COLOR_ENCRYPTED };
+    actionSheet.buttonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:14], NSForegroundColorAttributeName:COLOR_GRAY };
+    actionSheet.cancelButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:COLOR_BRAND };
+    actionSheet.disableButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:12], NSForegroundColorAttributeName:COLOR_GRAY };
+    
+    actionSheet.separatorColor = COLOR_SEPARATOR_TABLE;
+    actionSheet.cancelButtonTitle = NSLocalizedString(@"_cancel_",nil);
+    
     /******************************************* DIRECTORY *******************************************/
     
     if (_metadata.directory) {
@@ -4038,37 +4033,19 @@
         // Directory bloccata ?
         if ([CCCoreData isDirectoryLock:lockServerUrl activeAccount:app.activeAccount] && [[CCUtility getBlockCode] length] && app.sessionePasscodeLock == nil) lockDirectory = YES;
         
-        AHKActionSheet *actionSheet = [[AHKActionSheet alloc] initWithView:self.view title:nil];
-        
-        actionSheet.animationDuration = 0.2;
-        actionSheet.cancelOnTapEmptyAreaEnabled = @(YES);
-        actionSheet.automaticallyTintButtonImages = @(NO);
-
-        actionSheet.blurRadius = 0.0f;
-        actionSheet.blurTintColor = [UIColor colorWithWhite:0.0f alpha:0.50f];
-        
-        actionSheet.buttonHeight = 50.0;
-        actionSheet.cancelButtonHeight = 50.0f;
-        actionSheet.separatorHeight = 30.0f;
-        
-        actionSheet.selectedBackgroundColor = COLOR_SELECT_BACKGROUND;
-        
-        actionSheet.encryptedButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:14], NSForegroundColorAttributeName:COLOR_ENCRYPTED };
-        actionSheet.buttonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:14], NSForegroundColorAttributeName:COLOR_GRAY };
-        actionSheet.cancelButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:COLOR_BRAND };
-
-        actionSheet.separatorColor = COLOR_SEPARATOR_TABLE;
-        actionSheet.cancelButtonTitle = NSLocalizedString(@"_cancel_",nil);
-
         iconHeader = [UIImage imageNamed:_metadata.iconName];
-        
-        UIView *headerView = [[self class] headerActionSheet:self image:iconHeader title:_metadata.fileNamePrint cryptated:_metadata.cryptated];
-        
-        actionSheet.headerView = headerView;
 
         NSString *cameraUploadFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:app.activeAccount];
         NSString *cameraUploadFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:app.activeAccount activeUrl:app.activeUrl typeCloud:app.typeCloud];
         
+        [actionSheet addButtonWithTitle: _metadata.fileNamePrint
+                                  image: iconHeader
+                        backgroundColor: COLOR_NAVBAR_IOS7
+                                 height: 50.0
+                                   type: AHKActionSheetButtonTypeDisabled
+                                handler: nil
+        ];
+
         if (!([_metadata.fileName isEqualToString:cameraUploadFolderName] == YES && [_localServerUrl isEqualToString:cameraUploadFolderPath] == YES) && !lockDirectory) {
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_rename_", nil)
@@ -4189,39 +4166,20 @@
     
     if ([_metadata.type isEqualToString:metadataType_file] && !_metadata.directory) {
         
-        UIImage *iconHeader;
-        
-        AHKActionSheet *actionSheet = [[AHKActionSheet alloc] initWithView:self.view title:nil];
-        
-        actionSheet.animationDuration = 0.2;
-        actionSheet.cancelOnTapEmptyAreaEnabled = @(YES);
-        actionSheet.automaticallyTintButtonImages = @(NO);
-        
-        actionSheet.blurRadius = 0.0f;
-        actionSheet.blurTintColor = [UIColor colorWithWhite:0.0f alpha:0.50f];
-        
-        actionSheet.buttonHeight = 50.0;
-        actionSheet.cancelButtonHeight = 50.0f;
-        actionSheet.separatorHeight = 30.0f;
-        
-        actionSheet.selectedBackgroundColor = COLOR_SELECT_BACKGROUND;
-        
-        actionSheet.encryptedButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:14], NSForegroundColorAttributeName:COLOR_ENCRYPTED };
-        actionSheet.buttonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:14], NSForegroundColorAttributeName:COLOR_GRAY };
-        actionSheet.cancelButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:COLOR_BRAND };
-        
-        actionSheet.separatorColor = COLOR_SEPARATOR_TABLE;
-        actionSheet.cancelButtonTitle = NSLocalizedString(@"_cancel_",nil);
-        
         // assegnamo l'immagine anteprima se esiste, altrimenti metti quella standars
         if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, _metadata.fileID]])
             iconHeader = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, _metadata.fileID]];
         else
             iconHeader = [UIImage imageNamed:_metadata.iconName];
-    
-        UIView *headerView = [[self class] headerActionSheet:self image:iconHeader title:_metadata.fileNamePrint cryptated:_metadata.cryptated];
-        actionSheet.headerView = headerView;
-
+        
+        [actionSheet addButtonWithTitle: _metadata.fileNamePrint
+                                  image: iconHeader
+                        backgroundColor: COLOR_NAVBAR_IOS7
+                                 height: 50.0
+                                   type: AHKActionSheetButtonTypeDisabled
+                                handler: nil
+        ];
+        
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_rename_", nil)
                                   image:[UIImage imageNamed:image_actionSheetRename]
                         backgroundColor:[UIColor whiteColor]
@@ -4346,34 +4304,15 @@
     
     if ([_metadata.type isEqualToString:metadataType_model]) {
         
-        UIImage *iconHeader;
-     
-        AHKActionSheet *actionSheet = [[AHKActionSheet alloc] initWithView:self.view title:nil];
-     
-        actionSheet.animationDuration = 0.2;
-        actionSheet.cancelOnTapEmptyAreaEnabled = @(YES);
-        actionSheet.automaticallyTintButtonImages = @(NO);
-        
-        actionSheet.blurRadius = 0.0f;
-        actionSheet.blurTintColor = [UIColor colorWithWhite:0.0f alpha:0.50f];
-        
-        actionSheet.buttonHeight = 50.0;
-        actionSheet.cancelButtonHeight = 50.0f;
-        actionSheet.separatorHeight = 30.0f;
-        
-        actionSheet.selectedBackgroundColor = COLOR_SELECT_BACKGROUND;
-        
-        actionSheet.encryptedButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:14], NSForegroundColorAttributeName:COLOR_ENCRYPTED };
-        actionSheet.buttonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:14], NSForegroundColorAttributeName:COLOR_GRAY };
-        actionSheet.cancelButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:COLOR_BRAND };
-        
-        actionSheet.separatorColor = COLOR_SEPARATOR_TABLE;
-        actionSheet.cancelButtonTitle = NSLocalizedString(@"_cancel_",nil);
-
         iconHeader = [UIImage imageNamed:_metadata.iconName];
      
-        UIView *headerView = [[self class] headerActionSheet:self image:iconHeader title:_metadata.fileNamePrint cryptated:_metadata.cryptated];
-        actionSheet.headerView = headerView;
+        [actionSheet addButtonWithTitle: _metadata.fileNamePrint
+                                  image: iconHeader
+                        backgroundColor: COLOR_NAVBAR_IOS7
+                                 height: 50.0
+                                   type: AHKActionSheetButtonTypeDisabled
+                                handler: nil
+        ];
         
         if ([_metadata.model isEqualToString:@"note"]) {
         

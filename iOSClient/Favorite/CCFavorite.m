@@ -369,36 +369,6 @@
     } else return nil;
 }
 
-+ (UIView *)headerActionSheet:(UITableViewController *)vc image:(UIImage *)image title:(NSString *)title cryptated:(BOOL)cryptated
-{
-    CGFloat width = CGRectGetWidth(vc.view.bounds);
-    //CGFloat height = CGRectGetHeight(vc.view.bounds);
-    
-    UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 200, 60)];
-    headerView.backgroundColor = COLOR_NAVBAR_IOS7;
-    
-    // IMAGE
-    UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
-    imageView.frame = CGRectMake(13, 15, 30, 30);
-    
-    [headerView addSubview:imageView];
-    
-    // LABEL
-    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(55, 0, width-55-10, 60)];
-    label.numberOfLines = 0;
-    label.text = title;
-    
-    if (cryptated) label.textColor = COLOR_ENCRYPTED;
-    else label.textColor = COLOR_CLEAR;
-    
-    label.font = [UIFont systemFontOfSize:13];
-    label.backgroundColor = [UIColor clearColor];
-    
-    [headerView addSubview:label];
-    
-    return  headerView;
-}
-
 - (void)tableView:(UITableView *)tableView swipeAccessoryButtonPushedForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UIImage *iconHeader;
@@ -413,22 +383,21 @@
     AHKActionSheet *actionSheet = [[AHKActionSheet alloc] initWithView:self.view title:nil];
     
     actionSheet.animationDuration = 0.2;
-    actionSheet.cancelOnTapEmptyAreaEnabled = @(YES);
-    actionSheet.automaticallyTintButtonImages = @(NO);
     
     actionSheet.blurRadius = 0.0f;
     actionSheet.blurTintColor = [UIColor colorWithWhite:0.0f alpha:0.50f];
     
     actionSheet.buttonHeight = 50.0;
     actionSheet.cancelButtonHeight = 50.0f;
-    actionSheet.separatorHeight = 30.0f;
+    actionSheet.separatorHeight = 5.0f;
     
     actionSheet.selectedBackgroundColor = COLOR_SELECT_BACKGROUND;
-
+    
     actionSheet.encryptedButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:14], NSForegroundColorAttributeName:COLOR_ENCRYPTED };
     actionSheet.buttonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:14], NSForegroundColorAttributeName:COLOR_GRAY };
     actionSheet.cancelButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:COLOR_BRAND };
-
+    actionSheet.disableButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:14], NSForegroundColorAttributeName:COLOR_GRAY };
+    
     actionSheet.separatorColor = COLOR_SEPARATOR_TABLE;
     actionSheet.cancelButtonTitle = NSLocalizedString(@"_cancel_",nil);
 
@@ -437,9 +406,6 @@
         iconHeader = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/.%@.ico", self.serverUrlLocal, self.metadata.fileNamePrint]];
     else
         iconHeader = [UIImage imageNamed:self.metadata.iconName];
-
-    UIView *headerView = [[self class] headerActionSheet:self image:iconHeader title:self.metadata.fileNamePrint cryptated:self.metadata.cryptated];
-    actionSheet.headerView = headerView;
         
     [actionSheet addButtonWithTitle:NSLocalizedString(@"_open_in_", nil)
                               image:[UIImage imageNamed:image_actionSheetOpenIn]
