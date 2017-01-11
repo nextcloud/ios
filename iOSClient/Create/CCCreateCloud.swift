@@ -80,7 +80,6 @@ class CreateMenuAdd: NSObject {
     func createMenuEncrypted(view : UIView) {
         
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        
         let actionSheet = AHKActionSheet.init(view: view, title: nil)
         
         actionSheet?.animationDuration = 0.2
