@@ -315,29 +315,29 @@
         // Check items > 0
         if ([items count] == 0) {
             
-#ifndef SHARE_IN
+#ifndef EXTENSION
             [app messageNotification:@"Server error" description:@"Read Folder WebDAV : [items NULL] please fix" visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeError];
 #endif
-            
+
             dispatch_async(dispatch_get_main_queue(), ^{
                 
                 if ([self.delegate respondsToSelector:@selector(readFolderSuccess:permissions:rev:metadatas:)])
                     [self.delegate readFolderSuccess:_metadataNet permissions:@"" rev:@"" metadatas:metadatas];
             });
-            
+
             [self complete];
             
             return;
         }
-        
+
         // directory [0]
         OCFileDto *itemDtoDirectory = [items objectAtIndex:0];
         NSString *permissions = itemDtoDirectory.permissions;
         NSString *rev = itemDtoDirectory.etag;
         NSDate *date = [NSDate dateWithTimeIntervalSince1970:itemDtoDirectory.date];
-        
+            
         NSString *directoryID = [CCCoreData addDirectory:_metadataNet.serverUrl date:date permissions:permissions activeAccount:_metadataNet.account];
-        
+            
         NSString *cameraFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:_metadataNet.account];
         NSString *cameraFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:_metadataNet.account activeUrl:_activeUrl typeCloud:_typeCloud];
         NSString *directoryUser = [CCUtility getDirectoryActiveUser:_activeUser activeUrl:_activeUrl];
@@ -346,14 +346,14 @@
         _metadataNet.directoryID = directoryID;
         
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-            
+
             NSArray *itemsSortedArray = [items sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
                 
                 NSString *first = [(OCFileDto*)a fileName];
                 NSString *second = [(OCFileDto*)b fileName];
                 return [[first lowercaseString] compare:[second lowercaseString]];
             }];
-            
+        
             for (NSUInteger i=1; i < [itemsSortedArray count]; i++) {
                 
                 OCFileDto *itemDto = [itemsSortedArray objectAtIndex:i];
@@ -372,7 +372,7 @@
             }
             
             dispatch_async(dispatch_get_main_queue(), ^{
-                
+                                
                 if ([self.delegate respondsToSelector:@selector(readFolderSuccess:permissions:rev:metadatas:)])
                     [self.delegate readFolderSuccess:_metadataNet permissions:permissions rev:rev metadatas:metadatas];
             });
@@ -639,7 +639,7 @@
         // BUG 1038
         if ([items count] == 0) {
        
-#ifndef SHARE_IN
+#ifndef EXTENSION
             [app messageNotification:@"Server error" description:@"Read File WebDAV : [items NULL] please fix" visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeError];
 #endif
         }

@@ -392,7 +392,7 @@
 {
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:activeAccount];
     
-    fileNameFolder = [CCUtility clearFile:fileNameFolder];
+    fileNameFolder = [CCUtility removeForbiddenCharacters:fileNameFolder];
     if (![fileNameFolder length]) return;
     
     metadataNet.action = actionCreateFolder;
