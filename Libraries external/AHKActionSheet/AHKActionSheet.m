@@ -68,6 +68,7 @@ static const CGFloat kCancelButtonShadowHeightRatio = 0.333f;
     [appearance setBlurTintColor:[UIColor colorWithWhite:1.0f alpha:0.5f]];
     [appearance setBlurSaturationDeltaFactor:1.8f];
     [appearance setButtonHeight:60.0f];
+    [appearance setSeparatorHeight:0.0f];
     [appearance setCancelButtonHeight:44.0f];
     [appearance setAutomaticallyTintButtonImages:@YES];
     [appearance setSelectedBackgroundColor:[UIColor colorWithWhite:0.1f alpha:0.2f]];
@@ -327,8 +328,12 @@ static const CGFloat kCancelButtonShadowHeightRatio = 0.333f;
 
 
         // manual calculation of table's contentSize.height
-        CGFloat tableContentHeight = [self.items count] * self.buttonHeight + CGRectGetHeight(self.tableView.tableHeaderView.frame);
-
+        CGFloat tableContentHeight = 0; //[self.items count] * self.buttonHeight + CGRectGetHeight(self.tableView.tableHeaderView.frame);
+        for (AHKActionSheetItem *item in self.items) {
+            tableContentHeight = tableContentHeight + item.height;
+        }
+        tableContentHeight = tableContentHeight + self.separatorHeight + CGRectGetHeight(self.tableView.tableHeaderView.frame);
+        
         CGFloat topInset;
         BOOL buttonsFitInWithoutScrolling = tableContentHeight < CGRectGetHeight(self.tableView.frame) * (1.0 - kTopSpaceMarginFraction);
         if (buttonsFitInWithoutScrolling) {

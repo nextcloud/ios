@@ -35,6 +35,8 @@ typedef void(^AHKActionSheetHandler)(AHKActionSheet *actionSheet);
 @property (nonatomic) CGFloat buttonHeight UI_APPEARANCE_SELECTOR;
 /// Height of the cancel button.
 @property (nonatomic) CGFloat cancelButtonHeight UI_APPEARANCE_SELECTOR;
+/// Height separator from cancelButtonHeight and table
+@property (nonatomic) CGFloat separatorHeight UI_APPEARANCE_SELECTOR;
 /**
  *  If set, a small shadow (a gradient layer) will be drawn above the cancel button to separate it visually from the other buttons.
  *  It's best to use a color similar (but maybe with a lower alpha value) to blurTintColor.

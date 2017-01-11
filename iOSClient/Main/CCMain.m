@@ -4251,6 +4251,7 @@
         
         actionSheet.buttonHeight = 50.0;
         actionSheet.cancelButtonHeight = 50.0f;
+        actionSheet.separatorHeight = 30.0f;
         
         actionSheet.selectedBackgroundColor = COLOR_SELECT_BACKGROUND;
         
@@ -4275,6 +4276,7 @@
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_rename_", nil)
                                       image:[UIImage imageNamed:image_actionSheetRename]
                             backgroundColor:[UIColor whiteColor]
+                                     height: 50.0
                                        type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
                                    
@@ -4296,6 +4298,7 @@
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_move_", nil)
                                       image:[UIImage imageNamed:image_actionSheetMove]
                             backgroundColor:[UIColor whiteColor]
+                                     height: 50.0
                                        type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
                                         
@@ -4311,6 +4314,7 @@
             [actionSheet addButtonWithTitle:titoloCriptaDecripta
                                       image:[UIImage imageNamed:image_actionSheetCrypto]
                             backgroundColor:[UIColor whiteColor]
+                                     height: 50.0
                                        type:AHKActionSheetButtonTypeEncrypted
                                     handler:^(AHKActionSheet *as) {
                                         
@@ -4326,6 +4330,7 @@
             [actionSheet addButtonWithTitle:titoloLock
                                       image:[UIImage imageNamed:image_actionSheetLock]
                             backgroundColor:[UIColor whiteColor]
+                                     height: 50.0
                                        type:AHKActionSheetButtonTypeEncrypted
                                     handler:^(AHKActionSheet *as) {
                                         
@@ -4341,6 +4346,7 @@
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_share_", nil)
                                       image:[UIImage imageNamed:image_actionSheetShare]
                             backgroundColor:[UIColor whiteColor]
+                                     height: 50.0
                                        type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
                                         
@@ -4357,6 +4363,7 @@
             [actionSheet addButtonWithTitle:titoloSynchronized
                                       image:[UIImage imageNamed:image_actionSheetSynchronized]
                             backgroundColor:[UIColor whiteColor]
+                                     height: 50.0
                                        type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
                                         
@@ -4397,6 +4404,7 @@
         
         actionSheet.buttonHeight = 50.0;
         actionSheet.cancelButtonHeight = 50.0f;
+        actionSheet.separatorHeight = 30.0f;
         
         actionSheet.selectedBackgroundColor = COLOR_SELECT_BACKGROUND;
         
@@ -4419,6 +4427,7 @@
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_rename_", nil)
                                   image:[UIImage imageNamed:image_actionSheetRename]
                         backgroundColor:[UIColor whiteColor]
+                                 height: 50.0
                                    type:AHKActionSheetButtonTypeDefault
                                 handler:^(AHKActionSheet *as) {
                                     
@@ -4437,6 +4446,7 @@
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_move_", nil)
                                   image:[UIImage imageNamed:image_actionSheetMove]
                         backgroundColor:[UIColor whiteColor]
+                                 height: 50.0
                                    type:AHKActionSheetButtonTypeDefault
                                 handler:^(AHKActionSheet *as) {
                                     
@@ -4449,6 +4459,7 @@
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_reload_", nil)
                                   image:[UIImage imageNamed:image_actionSheetReload]
                         backgroundColor:[UIColor whiteColor]
+                                 height: 50.0
                                    type:AHKActionSheetButtonTypeDefault
                                 handler:^(AHKActionSheet *as) {
                                     
@@ -4461,6 +4472,7 @@
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_open_in_", nil)
                                   image:[UIImage imageNamed:image_actionSheetOpenIn]
                         backgroundColor:[UIColor whiteColor]
+                                 height: 50.0
                                    type:AHKActionSheetButtonTypeDefault
                                 handler:^(AHKActionSheet *as) {
                                     
@@ -4475,6 +4487,7 @@
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_share_", nil)
                                       image:[UIImage imageNamed:image_actionSheetShare]
                             backgroundColor:[UIColor whiteColor]
+                                     height: 50.0
                                        type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
                                         
@@ -4488,6 +4501,7 @@
         [actionSheet addButtonWithTitle:titoloCriptaDecripta
                                   image:[UIImage imageNamed:image_actionSheetCrypto]
                         backgroundColor:[UIColor whiteColor]
+                                 height: 50.0
                                    type:AHKActionSheetButtonTypeEncrypted
                                 handler:^(AHKActionSheet *as) {
                                     
@@ -4500,6 +4514,7 @@
         [actionSheet addButtonWithTitle:titoloPreferiti
                                   image:[UIImage imageNamed:image_actionSheetFavorite]
                         backgroundColor:[UIColor whiteColor]
+                                 height: 50.0
                                    type:AHKActionSheetButtonTypeDefault
                                 handler:^(AHKActionSheet *as) {
                                     
@@ -4516,6 +4531,7 @@
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_add_local_", nil)
                                   image:[UIImage imageNamed:image_actionSheetLocal]
                         backgroundColor:[UIColor whiteColor]
+                                 height: 50.0
                                    type:AHKActionSheetButtonTypeDefault
                                 handler:^(AHKActionSheet *as) {
                                     
@@ -4545,6 +4561,7 @@
         
         actionSheet.buttonHeight = 50.0;
         actionSheet.cancelButtonHeight = 50.0f;
+        actionSheet.separatorHeight = 30.0f;
         
         actionSheet.selectedBackgroundColor = COLOR_SELECT_BACKGROUND;
         
@@ -4565,6 +4582,7 @@
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_rename_", nil)
                                       image:[UIImage imageNamed:image_actionSheetRename]
                             backgroundColor:[UIColor whiteColor]
+                                     height: 50.0
                                        type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
                                     
@@ -4584,6 +4602,7 @@
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_move_", nil)
                                   image:[UIImage imageNamed:image_actionSheetMove]
                         backgroundColor:[UIColor whiteColor]
+                                 height: 50.0
                                    type:AHKActionSheetButtonTypeDefault
                                 handler:^(AHKActionSheet *as) {
                                     
@@ -4596,6 +4615,7 @@
         [actionSheet addButtonWithTitle:titoloPreferiti
                                   image:[UIImage imageNamed:image_actionSheetFavorite]
                         backgroundColor:[UIColor whiteColor]
+                                 height: 50.0
                                    type:AHKActionSheetButtonTypeDefault
                                 handler:^(AHKActionSheet *as) {
                                     
@@ -4611,6 +4631,7 @@
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_add_local_", nil)
                                   image:[UIImage imageNamed:image_actionSheetLocal]
                         backgroundColor:[UIColor whiteColor]
+                                 height: 50.0
                                    type:AHKActionSheetButtonTypeDefault
                                 handler:^(AHKActionSheet *as) {
                                     
