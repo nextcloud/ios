@@ -98,8 +98,6 @@
     
     if (serverUrlTo) {
         
-        /*** NEXTCLOUD OWNCLOUD ***/
-        
         if ([app.typeCloud isEqualToString:typeCloudOwnCloud] || [app.typeCloud isEqualToString:typeCloudNextcloud]) {
             
             NSURL *url = [NSURL URLWithString:[serverUrlTo stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
@@ -108,15 +106,6 @@
             newPath = [[url URLByDeletingLastPathComponent] absoluteString];
             newPath = [newPath substringToIndex:[newPath length] -1];
             
-        }
-        
-        /*** DROPBOX ***/
-
-        if ([app.typeCloud isEqualToString:typeCloudDropbox]) {
-            
-            fileName = [serverUrlTo lastPathComponent];
-            newPath = [serverUrlTo stringByDeletingLastPathComponent];
-
         }
         
         if ([serverUrlTo isEqualToString:[CCUtility getHomeServerUrlActiveUrl:app.activeUrl typeCloud:app.typeCloud]]) {
@@ -182,8 +171,6 @@
     // rebuild
     if (app.activeAccount && app.activeUrl && app.activePhotosCameraUpload)
         [app.activePhotosCameraUpload reloadDatasourceForced];
-
-    /*** NEXTCLOUD OWNCLOUD ***/
     
     // Create Folder cameraUpload
     if (([app.typeCloud isEqualToString:typeCloudOwnCloud] || [app.typeCloud isEqualToString:typeCloudNextcloud]) && app.activeMain)

@@ -130,15 +130,6 @@
     _netQueueUploadWWan.name = netQueueUploadWWanName;
     _netQueueUploadWWan.maxConcurrentOperationCount = maxConcurrentOperationDownloadUpload;
     
-#ifdef CC
-    // Inizialize DBSession for Dropbox
-    NSString *appKey = appKeyCryptoCloud;
-    NSString *appSecret = appSecretCryptoCloud;
-    
-    DBSession *dbSession = [[DBSession alloc] initWithAppKey:appKey appSecret:appSecret root:kDBRootDropbox];
-    [DBSession setSharedSession:dbSession];
-#endif
-    
     // Add notification change session
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(sessionChanged:) name:networkingSessionNotification object:nil];
     
@@ -826,71 +817,29 @@
     // netQueueDownload
     for (NSOperation *operation in [app.netQueueDownload operations]) {
         
-        /*** NEXTCLOUD OWNCLOUD ***/
-        
         if ([app.typeCloud isEqualToString:typeCloudOwnCloud] || [app.typeCloud isEqualToString:typeCloudNextcloud])
             if (((OCnetworking *)operation).isExecuting == NO) _queueNunDownload++;
-        
-#ifdef CC
-        
-        /*** DROPBOX ***/
-        
-        if ([app.typeCloud isEqualToString:typeCloudDropbox])
-            if (((DBnetworking *)operation).isExecuting == NO) _queueNunDownload++;
-        
-#endif
     }
     
     // netQueueDownloadWWan
     for (NSOperation *operation in [app.netQueueDownloadWWan operations]) {
         
-        /*** NEXTCLOUD OWNCLOUD ***/
-        
         if ([app.typeCloud isEqualToString:typeCloudOwnCloud] || [app.typeCloud isEqualToString:typeCloudNextcloud])
             if (((OCnetworking *)operation).isExecuting == NO) _queueNumDownloadWWan++;
-        
-#ifdef CC
-        
-        /*** DROPBOX ***/
-        
-        if ([app.typeCloud isEqualToString:typeCloudDropbox])
-            if (((DBnetworking *)operation).isExecuting == NO) _queueNumDownloadWWan++;
-        
-#endif
     }
     
     // netQueueUpload
     for (NSOperation *operation in [app.netQueueUpload operations]) {
         
-        /*** NEXTCLOUD OWNCLOUD ***/
-        
         if ([app.typeCloud isEqualToString:typeCloudOwnCloud] || [app.typeCloud isEqualToString:typeCloudNextcloud])
             if (((OCnetworking *)operation).isExecuting == NO) _queueNumUpload++;
-        
-#ifdef CC
-        
-        /*** DROPBOX ***/
-        
-        if ([app.typeCloud isEqualToString:typeCloudDropbox])
-            if (((DBnetworking *)operation).isExecuting == NO) _queueNumUpload++;
-#endif
     }
     
     // netQueueUploadWWan
     for (NSOperation *operation in [app.netQueueUploadWWan operations]) {
         
-        /*** NEXTCLOUD OWNCLOUD ***/
-        
         if ([app.typeCloud isEqualToString:typeCloudOwnCloud] || [app.typeCloud isEqualToString:typeCloudNextcloud])
             if (((OCnetworking *)operation).isExecuting == NO) _queueNumUploadWWan++;
-        
-#ifdef CC
-        
-        /*** DROPBOX ***/
-        
-        if ([app.typeCloud isEqualToString:typeCloudDropbox])
-            if (((DBnetworking *)operation).isExecuting == NO) _queueNumUploadWWan++;
-#endif
     }
     
     // Total
@@ -1131,18 +1080,8 @@
     if (netQueue == _netQueue)
         activityIndicator = YES;
     
-    /*** NEXTCLOUD OWNCLOUD ***/
-    
     if ([_typeCloud isEqualToString:typeCloudOwnCloud] || [_typeCloud isEqualToString:typeCloudNextcloud])
         operation = [[OCnetworking alloc] initWithDelegate:delegate metadataNet:metadataNet withUser:_activeUser withPassword:_activePassword withUrl:_activeUrl withTypeCloud:_typeCloud activityIndicator:activityIndicator];
-    
-#ifdef CC
-    
-    /*** DROPBOX ***/
-    
-    if ([_typeCloud isEqualToString:typeCloudDropbox])
-        operation = [[DBnetworking alloc] initWithDelegate:delegate metadataNet:metadataNet withUser:_activeUser withPassword:_activePassword withUrl:_activeUrl withActiveUID:_activeUID withActiveAccessToken:_activeAccessToken activityIndicator:activityIndicator];
-#endif
     
     [operation setQueuePriority:metadataNet.priority];
     
@@ -1152,8 +1091,6 @@
 - (NSMutableArray *)verifyExistsInQueuesDownloadSelector:(NSString *)selector
 {
     NSMutableArray *metadatasNet = [[NSMutableArray alloc] init];
-    
-    /*** NEXTCLOUD OWNCLOUD ***/
     
     if ([app.typeCloud isEqualToString:typeCloudOwnCloud] || [app.typeCloud isEqualToString:typeCloudNextcloud]) {
         
@@ -1166,31 +1103,12 @@
                 [metadatasNet addObject:[operation.metadataNet copy]];
     }
     
-#ifdef CC
-    
-    /*** DROPBOX ***/
-    
-    if ([app.typeCloud isEqualToString:typeCloudDropbox]) {
-        
-        for (DBnetworking *operation in [self.netQueueDownload operations])
-            if ([operation.metadataNet.selector isEqualToString:selector])
-                [metadatasNet addObject:operation.metadataNet];
-        
-        for (DBnetworking *operation in [self.netQueueDownloadWWan operations])
-            if ([operation.metadataNet.selector isEqualToString:selector])
-                [metadatasNet addObject:operation.metadataNet];
-    }
-    
-#endif
-    
     return metadatasNet;
 }
 
 - (NSMutableArray *)verifyExistsInQueuesUploadSelector:(NSString *)selector
 {
     NSMutableArray *metadatasNet = [[NSMutableArray alloc] init];
-    
-    /*** NEXTCLOUD OWNCLOUD ***/
     
     if ([app.typeCloud isEqualToString:typeCloudOwnCloud] || [app.typeCloud isEqualToString:typeCloudNextcloud]) {
         
@@ -1202,23 +1120,6 @@
             if ([operation.metadataNet.selector isEqualToString:selector])
                 [metadatasNet addObject:[operation.metadataNet copy]];
     }
-    
-#ifdef CC
-
-    /*** DROPBOX ***/
-    
-    if ([app.typeCloud isEqualToString:typeCloudDropbox]) {
-        
-        for (DBnetworking *operation in [self.netQueueUpload operations])
-            if ([operation.metadataNet.selector isEqualToString:selector])
-                [metadatasNet addObject:operation.metadataNet];
-        
-        for (DBnetworking *operation in [self.netQueueUploadWWan operations])
-            if ([operation.metadataNet.selector isEqualToString:selector])
-                [metadatasNet addObject:operation.metadataNet];
-    }
-    
-#endif
     
     return metadatasNet;
 }
@@ -1408,41 +1309,6 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Dropbox =====
-#pragma --------------------------------------------------------------------------------------------
-
-#ifdef CC
-- (void)sessionDidReceiveAuthorizationFailure:(DBSession*)session userId:(NSString *)userId
-{
-    
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"messageLoginIncorrect" object:nil];
-}
-
-- (void)restClient:(DBRestClient *)client loadedAccountInfo:(DBAccountInfo *)info
-{
-    NSString *account = [NSString stringWithFormat:@"%@ %@", [info email], typeCloudDropbox];
-    
-    [CCCoreData deleteAccount:account];
-        
-    // new account
-    [CCCoreData addAccount:account url:@"https://www.dropbox.com" user:[info email] password:nil uid:info.userId typeCloud:typeCloudDropbox];
-    TableAccount *tableAccount = [CCCoreData setActiveAccount:account];
-    if (tableAccount)
-        [self settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activePassword:tableAccount.password activeUID:tableAccount.uid activeAccessToken:tableAccount.token typeCloud:tableAccount.typeCloud];
-    
-    NSString *uuid = [CCUtility getUUID];
-    NSString *passcode = [CCUtility getKeyChainPasscodeForUUID:uuid];
-    
-    // update ManageAccount
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"updateFormManageAccount" object:nil];
-    
-    // Login correct
-    if ([passcode length] > 0  && [self.activeAccount length] > 0)
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"messageLoginCorrect" object:nil];
-}
-#endif
-
-#pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Open CCUploadFromOtherUpp  =====
 #pragma --------------------------------------------------------------------------------------------
 
@@ -1456,34 +1322,7 @@
 {
     NSLog(@"[LOG] URL from %@ application", sourceApplication);
     NSLog(@"[LOG] the path is: %@", url.path);
-    
-#ifdef CC
-    /*************************************** DROPBOX *********************************/
-    
-    if ([[DBSession sharedSession] handleOpenURL:url]) {
-        NSString *query = url.query;
-        if ([[url absoluteString] rangeOfString:@"cancel"].location == NSNotFound) {
-            NSDictionary *urlData = [DBSession parseURLParams:query];
-            NSString *uid = [urlData objectForKey:@"uid"];
-            if ([[[DBSession sharedSession] userIds] containsObject:uid]) {
-                
-                self.restClient = [[DBRestClient alloc] initWithSession:[DBSession sharedSession] userId:uid];
-                self.restClient.delegate = self;
-                
-                [self.restClient loadAccountInfo];
-            }
-            
-        } else {
-            
-            // user cancelled the login
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"messageLoginIncorrect" object:nil];
-        }
         
-        return YES;
-    }
-    /*********************************************************************************/
-#endif
-    
     NSArray *splitedUrl = [url.path componentsSeparatedByString:@"/"];
     self.fileNameUpload = [NSString stringWithFormat:@"%@",[splitedUrl objectAtIndex:([splitedUrl count]-1)]];
     NSString *passcode = [CCUtility getKeyChainPasscodeForUUID:[CCUtility getUUID]];

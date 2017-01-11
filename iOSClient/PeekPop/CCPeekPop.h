@@ -26,19 +26,9 @@
 #import "CCMetadata.h"
 #import "OCNetworking.h"
 
-#ifdef CC
-#import "DBnetworking.h"
-
-@protocol CCPeekPopDelegate;
-
-@interface CCPeekPop : UIViewController <OCNetworkingDelegate, DBnetworkingDelegate>
-#endif
-
-#ifdef NC
 @protocol CCPeekPopDelegate;
 
 @interface CCPeekPop : UIViewController <OCNetworkingDelegate>
-#endif
 
 @property (nonatomic, weak) id <CCPeekPopDelegate> delegate;
 

@@ -30,19 +30,9 @@
 #import "OCNetworking.h"
 #import "CCHud.h"
 
-#ifdef CC
-#import "DBnetworking.h"
-
-@protocol CCMoveDelegate;
-
-@interface CCMove : UITableViewController <UIAlertViewDelegate, UITableViewDelegate, OCNetworkingDelegate, DBnetworkingDelegate, BKPasscodeViewControllerDelegate>
-#endif
-
-#ifdef NC
 @protocol CCMoveDelegate;
 
 @interface CCMove : UITableViewController <UIAlertViewDelegate, UITableViewDelegate, OCNetworkingDelegate, BKPasscodeViewControllerDelegate>
-#endif
 
 @property (nonatomic, weak) id <CCMoveDelegate> delegate;
 @property (nonatomic, strong) NSOperationQueue *networkingOperationQueue;

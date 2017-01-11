@@ -107,13 +107,6 @@
     metadataNet.action = actionDownloadThumbnail;
     metadataNet.fileID = metadata.fileID;
     
-    /*** DROPBOX ***/
-
-    if ([metadata.typeCloud isEqualToString:typeCloudDropbox])
-        metadataNet.fileName = metadata.fileName;
-    
-    /*** NEXTCLOUD OWNCLOUD ***/
-    
     if ([metadata.typeCloud isEqualToString:typeCloudOwnCloud] || [metadata.typeCloud isEqualToString:typeCloudNextcloud])
         metadataNet.fileName = [self returnFileNamePathFromFileName:metadata.fileName serverUrl:app.serverUrl];
     

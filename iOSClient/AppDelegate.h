@@ -25,10 +25,6 @@
 #import <CoreData/CoreData.h>
 #import <MagicalRecord/MagicalRecord.h>
 
-#ifdef CC
-#import <DropboxSDK/DropboxSDK.h>
-#endif
-
 #import "OCCapabilities.h"
 #import "BKPasscodeLockScreenManager.h"
 #import "REMenu.h"
@@ -44,13 +40,7 @@
 #import "CCPhotosCameraUpload.h"
 #import "CCFavorite.h"
 
-#ifdef CC
-@interface AppDelegate : UIResponder <UIApplicationDelegate, BKPasscodeLockScreenManagerDelegate, BKPasscodeViewControllerDelegate, DBRestClientDelegate, LMMediaPlayerViewDelegate, TWMessageBarStyleSheet>
-#endif
-
-#ifdef NC
 @interface AppDelegate : UIResponder <UIApplicationDelegate, BKPasscodeLockScreenManagerDelegate, BKPasscodeViewControllerDelegate, LMMediaPlayerViewDelegate, TWMessageBarStyleSheet>
-#endif
 
 // Timer 5 sec.
 @property (nonatomic, strong) NSTimer *timerVerifyProcess;
@@ -72,11 +62,6 @@
 // next version ... ? ...
 @property double currentLatitude;
 @property double currentLongitude;
-
-#ifdef CC
-// Dropbox & Networking Session
-@property (nonatomic, strong) DBRestClient *restClient;
-#endif
 
 // ownCloud & Nextcloud
 @property BOOL hasServerForbiddenCharactersSupport;

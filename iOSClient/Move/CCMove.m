@@ -221,23 +221,8 @@
 
 // MARK: - NetWorking
 
-- (void)dropboxFailure
-{
-    [_hud hideHud];
-    
-    UIAlertController * alert= [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_comm_error_dropbox_", nil) message:NSLocalizedString(@"_comm_error_dropbox_txt_", nil) preferredStyle:UIAlertControllerStyleAlert];
-    UIAlertAction* ok = [UIAlertAction actionWithTitle: NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault
-                                               handler:^(UIAlertAction * action) {
-                                                   [alert dismissViewControllerAnimated:YES completion:nil];
-                                               }];
-    [alert addAction:ok];
-    [self presentViewController:alert animated:YES completion:nil];
-}
-
 - (void)addNetworkingQueue:(CCMetadataNet *)metadataNet
 {
-    /*** NEXTCLOUD OWNCLOUD ***/
-    
     if ([typeCloud isEqualToString:typeCloudOwnCloud] || [typeCloud isEqualToString:typeCloudNextcloud]) {
         
         OCnetworking *operation = [[OCnetworking alloc] initWithDelegate:self metadataNet:metadataNet withUser:activeUser withPassword:activePassword withUrl:activeUrl withTypeCloud:typeCloud activityIndicator:NO];
@@ -245,20 +230,6 @@
         _networkingOperationQueue.maxConcurrentOperationCount = maxConcurrentOperation;
         [_networkingOperationQueue addOperation:operation];
     }
-    
-#ifdef CC
-    
-    /*** DROPBOX ***/
-
-    if ([typeCloud isEqualToString:typeCloudDropbox]) {
-        
-        DBnetworking *operation = [[DBnetworking alloc] initWithDelegate:self metadataNet:metadataNet withUser:activeUser withPassword:activePassword withUrl:activeUrl withActiveUID:activeUID withActiveAccessToken:activeAccessToken activityIndicator:NO];
-        
-        _networkingOperationQueue.maxConcurrentOperationCount = maxConcurrentOperation;
-        [_networkingOperationQueue addOperation:operation];
-    }
-#endif
-    
 }
 
 // MARK: - Download File

@@ -29,11 +29,6 @@
 
 #import "NSDate+ISO8601.h"
 
-
-#ifdef CC
-#import "CCSharedDBSession.h"
-#endif
-
 @interface CCNetworking ()
 {
     NSManagedObjectContext *_context;
@@ -427,8 +422,6 @@
     
     if ([task isKindOfClass:[NSURLSessionDownloadTask class]]) {
         
-        /*** NEXTCLOUD OWNCLOUD ***/
-        
         if ([_typeCloud isEqualToString:typeCloudOwnCloud] || [_typeCloud isEqualToString:typeCloudNextcloud]) {
             
             NSDictionary *fields = [httpResponse allHeaderFields];
@@ -438,24 +431,6 @@
                 date = [dateFormatter dateFromString:[fields objectForKey:@"Date"]];
             }
         }
-
-#ifdef CC
-        
-        /*** DROPBOX ***/
-        
-        if ([_typeCloud isEqualToString:typeCloudDropbox]) {
-            
-            NSData *data = [_taskData objectForKey:[NSNumber numberWithLong:task.taskIdentifier]];
-            
-            if (errorCode == 0 && data) {
-                NSDictionary *response = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-                DBMetadata *dbMetadata = [[DBMetadata alloc] initWithDictionary:response];
-                fileID = dbMetadata.rev;
-                date = dbMetadata.lastModifiedDate;
-            }
-        }
-#endif
-        
         
         dispatch_async(dispatch_get_main_queue(), ^{
         
@@ -471,8 +446,6 @@
     
     if ([task isKindOfClass:[NSURLSessionUploadTask class]]) {
         
-        /*** NEXTCLOUD OWNCLOUD ***/
-        
         if ([_typeCloud isEqualToString:typeCloudOwnCloud] || [_typeCloud isEqualToString:typeCloudNextcloud]) {
             
             NSDictionary *fields = [httpResponse allHeaderFields];
@@ -483,23 +456,6 @@
                 date = [dateFormatter dateFromString:[fields objectForKey:@"Date"]];
             }
         }
-
-#ifdef CC
-        
-        /*** DROPBOX ***/
-
-        if ([_typeCloud isEqualToString:typeCloudDropbox]) {
-            
-            NSData *data = [_taskData objectForKey:[NSNumber numberWithLong:task.taskIdentifier]];
-            
-            if (errorCode == 0 && data) {
-                NSDictionary *response = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-                DBMetadata *dbMetadata = [[DBMetadata alloc] initWithDictionary:response];
-                fileID = dbMetadata.rev;
-                date = dbMetadata.lastModifiedDate;
-            }
-        }
-#endif
         
         dispatch_async(dispatch_get_main_queue(), ^{
             
@@ -580,23 +536,6 @@
     NSURLSession *sessionDownload;
     NSURL *url;
     NSMutableURLRequest *request;
-    
-#ifdef CC
-    
-    /*** DROPBOX ***/
-    
-    if ([_typeCloud isEqualToString:typeCloudDropbox]) {
-    
-        NSString *serverFileUrl = [[urlBaseDownloadDB stringByAppendingString:[CCUtility stringAppendServerUrl:serverUrl addServerUrl:fileName]] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    
-        url = [NSURL URLWithString:serverFileUrl];
-        request = [[NSMutableURLRequest alloc] initWithURL:url];
-    
-        [request addValue:[self apiAuthorizationHeader:1] forHTTPHeaderField:@"Authorization"];
-    }
-#endif
-    
-    /*** NEXTCLOUD OWNCLOUD ***/
     
     if ([_typeCloud isEqualToString:typeCloudNextcloud] || [_typeCloud isEqualToString:typeCloudOwnCloud]) {
         
@@ -1241,32 +1180,6 @@
     NSURLSession *sessionUpload;
     NSURL *url;
     NSMutableURLRequest *request;
-  
-#ifdef CC
-    
-    /*** DROPBOX ***/
-    
-    if ([_typeCloud isEqualToString:typeCloudDropbox]) {
-    
-        NSString *fileNamePath = [CCUtility stringAppendServerUrl:serverUrl addServerUrl:fileName];
-        NSString *urlWithParams = [urlBaseUploadDB stringByAppendingString:fileNamePath];
-        
-        // Add parameter, if present, parent_rev
-        if (parentRev)
-            urlWithParams = [NSString stringWithFormat:@"%@?parent_rev=%@", urlWithParams, parentRev];
-        
-        // Encoding UTF8
-        urlWithParams = [urlWithParams stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    
-        url = [NSURL URLWithString:urlWithParams];
-        request = [[NSMutableURLRequest alloc] initWithURL:url];
-        
-        [request setHTTPMethod:@"PUT"];
-        [request addValue:[self apiAuthorizationHeader:1] forHTTPHeaderField:@"Authorization"];
-    }
-#endif
-    
-    /*** NEXTCLOUD OWNCLOUD ***/
     
     if ([_typeCloud isEqualToString:typeCloudNextcloud] || [_typeCloud isEqualToString:typeCloudOwnCloud]) {
         
@@ -1818,19 +1731,6 @@
 {
     NSString *fileName = [url lastPathComponent];
     
-    /*** DROPBOX ***/
-
-    if ([_typeCloud isEqualToString:typeCloudDropbox]) {
-        
-        url = [url stringByReplacingOccurrencesOfString:urlBaseDownloadDB withString:@""];
-        url = [url stringByReplacingOccurrencesOfString:urlBaseUploadDB withString:@""];
-        url = [url stringByReplacingOccurrencesOfString:[@"/" stringByAppendingString:fileName] withString:@""];
-        
-        if ([url length] == 0) url = @"/";
-    }
-    
-    /*** NEXTCLOUD OWNCLOUD ***/
-    
     if ([_typeCloud isEqualToString:typeCloudOwnCloud] || [_typeCloud isEqualToString:typeCloudNextcloud]) {
         
         url = [url stringByReplacingOccurrencesOfString:[@"/" stringByAppendingString:fileName] withString:@""];
@@ -1850,86 +1750,5 @@
     
     return [data objectForKey:@"title"];
 }
-
-#ifdef CC
-
-// ===== DB OAuth version = 1.0 & 2.0 =====
-
-- (NSString *)apiAuthorizationHeader:(NSInteger)version
-{
-    NSString *header;
-    
-    if (version == 1) {
-        
-#ifdef EXTENSION
-        MPOAuthCredentialConcreteStore *mpoAuth = [[[CCSharedDBSession sharedDBSession] dBSession] credentialStoreForUserId:_activeUID];
-#else
-        MPOAuthCredentialConcreteStore *mpoAuth = [[DBSession sharedSession] credentialStoreForUserId:_activeUID];
-#endif
-        
-        NSString *token = [mpoAuth accessToken];
-        NSString *tokenSecret = [mpoAuth accessTokenSecret];
-        
-        NSString *appKey = appKeyCryptoCloud;
-        NSString *appSecret = appSecretCryptoCloud;
-        
-        header = [NSString stringWithFormat:@"OAuth oauth_version=\"1.0\",oauth_signature_method=\"PLAINTEXT\",oauth_consumer_key=\"%@\"",appKey];
-        
-        if (token) header = [header stringByAppendingString:[NSString stringWithFormat:@",oauth_token=\"%@\"",token]];
-        if (!tokenSecret) tokenSecret = @"";
-        
-        header = [header stringByAppendingString:[NSString stringWithFormat:@",oauth_signature=\"%@&%@\"",appSecret,tokenSecret]];
-    }
-    
-    if (version == 2) {
-        
-        if ([_activeAccessToken length] == 0) _activeAccessToken = [CCCoreData getTokenActiveAccount:_activeAccount];
-        if ([_activeAccessToken length] == 0) [self requestAccessTokenOAuth2];
-        
-        header = [NSString stringWithFormat:@"Bearer %@", _activeAccessToken];
-    }
-    
-    return header;
-}
-
-// ===== Richiesta Token OAuth 2.0 =====
-
-- (void)requestAccessTokenOAuth2
-{
-    NSString *urlWithParams = @"https://api.dropboxapi.com/1/oauth2/token_from_oauth1";
-    NSURL *url = [NSURL URLWithString:urlWithParams];
-    
-    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url];
-    [request setHTTPMethod:@"POST"];
-    [request addValue:[self apiAuthorizationHeader:1] forHTTPHeaderField:@"Authorization"];
-    
-    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-    
-    NSURLSessionDataTask *dataTask = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
-        
-        NSHTTPURLResponse* httpResponse = (NSHTTPURLResponse*)response;
-        
-        if (error == nil && (httpResponse.statusCode >= 200 && httpResponse.statusCode < 300)) {
-            
-            NSDictionary *record = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-            NSString *accessToken = [record objectForKey:@"access_token"];
-            
-            if (accessToken) {
-                
-                [CCCoreData setTokenAccount:accessToken activeAccount:_activeAccount];
-                _activeAccessToken = accessToken;
-            }
-        }
-        
-        dispatch_semaphore_signal(semaphore);
-        
-    }];
-    
-    [dataTask resume];
-    
-    while (dispatch_semaphore_wait(semaphore, DISPATCH_TIME_NOW))
-        [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]];
-}
-#endif
 
 @end

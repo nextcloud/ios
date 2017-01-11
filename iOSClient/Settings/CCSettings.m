@@ -166,13 +166,7 @@
     section = [XLFormSectionDescriptor formSection];
     [form addFormSection:section];
     
-#ifdef CC
-    section.footerTitle = @"Crypto Cloud © 2016 T.W.S. Inc.";
-#endif
-    
-#ifdef NC
     section.footerTitle = @"Nextcloud © 2016 T.W.S. Inc.";
-#endif
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"buttonLeftAligned" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_acknowledgements_", nil)];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
@@ -411,15 +405,8 @@
     if ([CCUtility getSimplyBlockCode]) [rowSimplyPasscode setValue:@1]; else [rowSimplyPasscode setValue:@0];
     if ([CCUtility getOnlyLockDir]) [rowOnlyLockDir setValue:@1]; else [rowOnlyLockDir setValue:@0];
     
-    /*** NEXTCLOUD OWNCLOUD ***/
-    
     if ([app.typeCloud isEqualToString:typeCloudOwnCloud] || [app.typeCloud isEqualToString:typeCloudNextcloud])
         rowVersionServer.value =  [CCNetworking sharedNetworking].sharedOCCommunication.getCurrentServerVersion;
-    
-    /*** DROPBOX ***/
-
-    if ([app.typeCloud isEqualToString:typeCloudDropbox])
-        rowVersionServer.value = @"Dropbox Inc.";
     
     rowUrlCloud.value = app.activeUrl;
     rowUserNameCloud.value = app.activeUser;
@@ -654,15 +641,8 @@
     // Email Recipents
     NSArray *toRecipents;
     
-#ifdef CC
-    messageBody = [NSString stringWithFormat:@"\n\n\nCrypto Cloud Version %@ (%@)", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"], [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
-    toRecipents = [NSArray arrayWithObject:_mail_me_];
-#endif
-    
-#ifdef NC
     messageBody = [NSString stringWithFormat:@"\n\n\nNextcloud Version %@ (%@)", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"], [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
     toRecipents = [NSArray arrayWithObject:_mail_me_];
-#endif
     
     MFMailComposeViewController *mc = [[MFMailComposeViewController alloc] init];
     mc.mailComposeDelegate = self;
@@ -703,10 +683,6 @@
             [CCCoreData flushAllDatabase];
         
             [CCUtility deleteAllChainStore];
-        
-#ifdef CC
-            [[DBSession sharedSession] unlinkAll];
-#endif
             
             [self emptyDocumentsDirectory];
         

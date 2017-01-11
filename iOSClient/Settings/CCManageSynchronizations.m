@@ -136,15 +136,8 @@
         
         for (TableDirectory *directory in tableSynchronized) {
             
-            /*** NEXTCLOUD OWNCLOUD ***/
-            
             if ([app.typeCloud isEqualToString:typeCloudOwnCloud] || [app.typeCloud isEqualToString:typeCloudNextcloud])
                 title = [directory.serverUrl stringByReplacingOccurrencesOfString:home withString:@""];
-            
-            /*** DROPBOX ***/
-
-            if ([app.typeCloud isEqualToString:typeCloudDropbox])
-                title = directory.serverUrl;
             
             title = [title lastPathComponent];
             if ([CCUtility isCryptoString:title]) {

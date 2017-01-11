@@ -29,10 +29,6 @@
 #import <MessageUI/MessageUI.h>
 #import <UICKeyChainStore/UICKeyChainStore.h>
 
-#ifdef CC
-#import <DropboxSDK/DropboxSDK.h>
-#endif
-
 #import "OCFileDto.h"
 #import "CCMetadata.h"
 #import "CCCrypto.h"
@@ -156,10 +152,6 @@
 + (NSString *)localizableBrand:(NSString *)localize table:(NSString *)table;
 
 // ===== CCMetadata =====
-
-#ifdef CC
-+ (CCMetadata *)trasformedMetadataToMetadata:(DBMetadata *)dbMetadata fileNamePrint:(NSString *)fileNamePrint serverUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID cameraFolderName:(NSString *)cameraFolderName cameraFolderPath:(NSString *)cameraFolderPath activeAccount:(NSString *)activeAccount directoryUser:(NSString *)directoryUser;
-#endif
 
 + (CCMetadata *)trasformedOCFileToCCMetadata:(OCFileDto *)itemDto fileNamePrint:(NSString *)fileNamePrint serverUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID cameraFolderName:(NSString *)cameraFolderName cameraFolderPath:(NSString *)cameraFolderPath activeAccount:(NSString *)activeAccount directoryUser:(NSString *)directoryUser typeCloud:(NSString *)typeCloud;
 

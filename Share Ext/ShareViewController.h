@@ -38,14 +38,7 @@
 
 #import "TableAccount.h"
 
-#ifdef CC
-#import "DBnetworking.h"
-@interface ShareViewController : UIViewController <UITableViewDelegate, CCMoveDelegate, OCNetworkingDelegate, DBnetworkingDelegate, MBProgressHUDDelegate, BKPasscodeViewControllerDelegate, CCNetworkingDelegate>
-#endif
-
-#ifdef NC
 @interface ShareViewController : UIViewController <UITableViewDelegate, CCMoveDelegate, OCNetworkingDelegate, MBProgressHUDDelegate, BKPasscodeViewControllerDelegate, CCNetworkingDelegate>
-#endif
 
 @property (nonatomic, strong) NSOperationQueue *networkingOperationQueue;
 

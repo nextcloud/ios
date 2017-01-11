@@ -28,10 +28,6 @@
 #import "CCCertificate.h"
 #import "NSString+Encode.h"
 
-#ifdef CC
-#import "CCSharedDBSession.h"
-#endif
-
 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
 
 @interface OCnetworking ()

@@ -111,9 +111,7 @@
 + (TableAccount *)setActiveFirstAccountNextcloudOwncloud
 {
     NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
-    
-    /*** NEXTCLOUD OWNCLOUD ***/
-    
+        
     TableAccount *record = [TableAccount MR_findFirstWithPredicate:[NSPredicate predicateWithFormat:@"(typeCloud == %@) OR (typeCloud == %@)", typeCloudNextcloud, typeCloudOwnCloud] inContext:context];
     
     if (record)
@@ -129,16 +127,7 @@
     
     NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
     
-#ifdef CC
-    records = [TableAccount MR_findAllInContext:context];
-#endif
-    
-#ifdef NC
-    
-    /*** NEXTCLOUD OWNCLOUD ***/
-    
     records = [TableAccount MR_findAllWithPredicate:[NSPredicate predicateWithFormat:@"(typeCloud == %@) OR (typeCloud == %@)", typeCloudNextcloud, typeCloudOwnCloud] inContext:context];
-#endif
     
     for (TableAccount *tableAccount in records)
         [accounts addObject:tableAccount.account];
@@ -159,17 +148,8 @@
 
     NSSortDescriptor *descriptor = [[NSSortDescriptor alloc] initWithKey:@"account" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)];
     NSArray *records;
-    
-#ifdef CC
-    records = [TableAccount MR_findAllInContext:context];
-#endif
-    
-#ifdef NC
-    
-    /*** NEXTCLOUD OWNCLOUD ***/
-    
+        
     records = [TableAccount MR_findAllWithPredicate:[NSPredicate predicateWithFormat:@"(typeCloud == %@) OR (typeCloud == %@)", typeCloudNextcloud, typeCloudOwnCloud] inContext:context];
-#endif
     
     records = [NSMutableArray arrayWithArray:[records sortedArrayUsingDescriptors:[[NSArray alloc] initWithObjects:descriptor, nil]]];
     
@@ -182,13 +162,8 @@
 
     TableAccount *record = [TableAccount MR_findFirstByAttribute:@"active" withValue:[NSNumber numberWithBool:YES] inContext:context];
     
-#ifdef NC
-    
-    /*** NEXTCLOUD OWNCLOUD ***/
-    
     if ([record.typeCloud isEqualToString:typeCloudNextcloud] == NO && [record.typeCloud isEqualToString:typeCloudOwnCloud] == NO)
         return [self setActiveFirstAccountNextcloudOwncloud];
-#endif
     
     if (record) return record;
     else return nil;
@@ -1682,26 +1657,6 @@
 {
     // rimuovi tutte le condivisioni
     [self removeAllShareActiveAccount:activeAccount sharesLink:sharesLink sharesUserAndGroup:sharesUserAndGroup];
-    
-    /*** DROPBOX ***/
-    
-    if ([typeCloud isEqualToString:typeCloudDropbox]) {
-        
-        // Link
-        for (NSString *url in items) {
-            
-            NSDictionary *item = [items objectForKey:url];
-            
-            NSString *path = [item objectForKey:@"path"];
-            NSString *fileName = [path lastPathComponent];
-            NSString *serverUrl = [path stringByDeletingLastPathComponent];
-            
-            if ([item objectForKey:@"url"])
-                [self setShareLink:[item objectForKey:@"url"] fileName:fileName serverUrl:serverUrl sharesLink:sharesLink activeAccount:activeAccount];
-        }
-    }
-    
-    /*** NEXTCLOUD OWNCLOUD ***/
     
     if ([typeCloud isEqualToString:typeCloudOwnCloud] || [typeCloud isEqualToString:typeCloudNextcloud]) {
         

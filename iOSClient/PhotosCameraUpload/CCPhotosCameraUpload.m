@@ -1272,16 +1272,6 @@
 {
     OCnetworking *ocNet;
     
-    /*** DROPBOX ***/
-
-    if ([app.typeCloud isEqualToString:typeCloudDropbox]) {
-        
-        [CCCoreData clearDateReadDirectory:[CCUtility deletingLastPathComponentFromServerUrl:folderPathName] activeAccount:app.activeAccount];
-        return YES;
-    }
-    
-    /*** NEXTCLOUD OWNCLOUD ***/
-    
     if ([app.typeCloud isEqualToString:typeCloudOwnCloud] || [app.typeCloud isEqualToString:typeCloudNextcloud]) {
         
         NSError *error;

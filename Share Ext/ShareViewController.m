@@ -23,14 +23,7 @@
 
 #import "ShareViewController.h"
 
-#ifdef CC
-#import "Share_Ext-Swift.h"
-#import "CCSharedDBSession.h"
-#endif
-
-#ifdef NC
 #import "Share_Ext_Nextcloud-Swift.h"
-#endif
 
 @import MobileCoreServices;
 
@@ -78,14 +71,6 @@
         _activeUser = recordAccount.user;
         _directoryUser = [CCUtility getDirectoryActiveUser:self.activeUser activeUrl:self.activeUrl];
         _typeCloud = recordAccount.typeCloud;
-        
-        /*** DROPBOX ***/
-
-        if ([_typeCloud isEqualToString:typeCloudDropbox]) {
-            
-            _activeUID = recordAccount.uid;
-            _activeAccessToken = recordAccount.token;
-        }
         
         if ([_activeAccount isEqualToString:[CCUtility getActiveAccountShareExt]]) {
             
@@ -202,14 +187,7 @@
     // Title
     [self.navigationController.navigationBar setTitleTextAttributes: @{NSForegroundColorAttributeName:self.navigationController.navigationBar.tintColor}];
     
-#ifdef CC
-    self.navigationItem.title = @"Crypto Cloud";
-#endif
-   
-#ifdef NC
     self.navigationItem.title = @"Nextcloud";
-#endif
-    
     self.navigationItem.leftBarButtonItem = leftButtonCancel;
     self.navigationItem.rightBarButtonItems = [[NSArray alloc] initWithObjects:rightButtonUpload, rightButtonEncrypt, nil];
     self.navigationItem.hidesBackButton = YES;
@@ -311,19 +289,6 @@
     [self.hud progress:progress];
 }
 
-- (void)dropboxFailure
-{
-    [self.hud hideHud];
-    
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_comm_error_dropbox_", nil) message:NSLocalizedString(@"_comm_error_dropbox_txt_", nil) preferredStyle:UIAlertControllerStyleAlert];
-    UIAlertAction *ok = [UIAlertAction actionWithTitle: NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault
-                                               handler:^(UIAlertAction * action) {
-                                                   [alert dismissViewControllerAnimated:YES completion:nil];
-                                               }];
-    [alert addAction:ok];
-    [self presentViewController:alert animated:YES completion:nil];
-}
-
 - (void)uploadFileFailure:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode
 {
     [self.hud hideHud];
@@ -366,18 +331,8 @@
 {
     id operation;
     
-    /*** NEXTCLOUD OWNCLOUD ***/
-    
     if ([_typeCloud isEqualToString:typeCloudOwnCloud] || [_typeCloud isEqualToString:typeCloudNextcloud])
         operation = [[OCnetworking alloc] initWithDelegate:self metadataNet:metadataNet withUser:_activeUser withPassword:_activePassword withUrl:_activeUrl withTypeCloud:_typeCloud activityIndicator:NO];
-    
-#ifdef CC
-    
-    /*** DROPBOX ***/
-
-    if ([_typeCloud isEqualToString:typeCloudDropbox])
-        operation = [[DBnetworking alloc] initWithDelegate:self metadataNet:metadataNet withUser:_activeUser withPassword:_activePassword withUrl:_activeUrl withActiveUID:_activeUID withActiveAccessToken:_activeAccessToken activityIndicator:NO];
-#endif
     
     [operation setQueuePriority:metadataNet.priority];
     
@@ -409,15 +364,7 @@
     BKTouchIDManager *touchIDManager = [[BKTouchIDManager alloc] initWithKeychainServiceName:BKPasscodeKeychainServiceName];
     touchIDManager.promptText = NSLocalizedString(@"_scan_fingerprint_", nil);
     viewController.touchIDManager = touchIDManager;
-    
-#ifdef CC
-    viewController.title = @"Crypto Cloud";
-#endif
-    
-#ifdef NC
-     viewController.title = @"Nextcloud";
-#endif
-    
+    viewController.title = @"Nextcloud";
     viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
     viewController.navigationItem.leftBarButtonItem.tintColor = COLOR_ENCRYPTED;
     

@@ -21,16 +21,8 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifdef CC
-#import <DropboxSDK/DropboxSDK.h>
-#endif
-
 @interface CCSharedDBSession : NSObject
 
 + (CCSharedDBSession *)sharedDBSession;
-
-#ifdef CC
-- (DBSession *)dBSession;
-#endif
 
 @end

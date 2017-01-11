@@ -41,26 +41,7 @@
 {
     self = [super init];
     
-#ifdef CC
-    [self dBSession];
-#endif
-    
     return self;
 }
-
-#ifdef CC
-- (DBSession *)dBSession
-{
-    static DBSession* dBSession = nil;
-    if (dBSession == nil) {
-        
-        NSString *appKey = appKeyCryptoCloud;
-        NSString *appSecret = appSecretCryptoCloud;
-      
-        dBSession = [[DBSession alloc] initWithAppKey:appKey appSecret:appSecret root:kDBRootDropbox];
-    }
-    return dBSession;
-}
-#endif
 
 @end

@@ -71,30 +71,12 @@
     if (listAccount.count == 0) row.disabled = @YES;
     [section addFormRow:row];
 
-#ifdef NC
     // New Account nextcloud
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"addAccountNextcloud" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_add_nextcloud_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:[UIImage imageNamed:image_settingsAccountNextcloud] forKey:@"imageView.image"];
     row.action.formSelector = @selector(addAccountNextcloud:);
     [section addFormRow:row];
-#endif
-    
-#ifdef CC
-    // New Account ownCloud
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"addAccountOwnCloud" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_add_owncloud_", nil)];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIImage imageNamed:image_settingsAccountOwnCloud] forKey:@"imageView.image"];
-    row.action.formSelector = @selector(addAccountOwnCloud:);
-    [section addFormRow:row];
-    
-    // New Account Dropbox
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"addAccountDropbox" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_add_dropbox_", nil)];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIImage imageNamed:image_settingsAccountDropbox] forKey:@"imageView.image"];
-    row.action.formSelector = @selector(addAccountDropbox:);
-    [section addFormRow:row];
-#endif
     
     // delete Account
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"delAccount" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_delete_account_", nil)];
@@ -162,8 +144,6 @@
     [self presentViewController:loginVC animated:YES completion:nil];
 }
 
-/*** OWNCLOUD ***/
-
 - (void)addAccountOwnCloud:(XLFormRowDescriptor *)sender
 {
     [self deselectFormRow:sender];
@@ -178,22 +158,6 @@
     
     [self presentViewController:loginVC animated:YES completion:nil];
 }
-
-#ifdef CC
-
-/*** DROPBOX ***/
-
-- (void)addAccountDropbox:(XLFormRowDescriptor *)sender
-{
-    [self deselectFormRow:sender];
-    
-    [app cancelAllOperations];
-    [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
-    
-    [[DBSession sharedSession] linkFromController:self];
-}
-
-#endif
 
 - (void)openLoginSetupVC
 {    
@@ -219,8 +183,6 @@
     
     [app cancelAllOperations];
     [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
-
-    /*** NEXTCLOUD OWNCLOUD ***/
     
     if ([app.typeCloud isEqualToString:typeCloudNextcloud] || [app.typeCloud isEqualToString:typeCloudOwnCloud]) {
     
@@ -237,17 +199,6 @@
         
         [self presentViewController:loginVC animated:YES completion:nil];
     }
-    
-#ifdef CC
-    
-    /*** DROPBOX ***/
-
-    if ([app.typeCloud isEqualToString:typeCloudDropbox]) {
-        
-        [[DBSession sharedSession] linkFromController:self];
-    }
-    
-#endif
     
     [self UpdateForm];
 }
@@ -270,15 +221,6 @@
         [app cancelAllOperations];
         
         [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
-
-#ifdef CC
-        
-        /*** DROPBOX ***/
-
-        // Dropbox unlink UID
-        if ([app.typeCloud isEqualToString:typeCloudDropbox])
-            [[DBSession sharedSession] unlinkUserId:app.activeUID];
-#endif
 
         [self deleteAccount:accountNow];
         

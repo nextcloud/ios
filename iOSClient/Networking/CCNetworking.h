@@ -73,12 +73,6 @@
 - (void)verifyUploadInProgress;
 - (void)automaticUploadInError;
 
-#ifdef CC
-// Dropbox
-- (NSString *)apiAuthorizationHeader:(NSInteger)version;
-- (void)requestAccessTokenOAuth2;
-#endif
-
 @end
 
 @protocol CCNetworkingDelegate <NSObject>

@@ -60,32 +60,6 @@
     row.action.formSelector = @selector(intro:);
     [section addFormRow:row];
 
-#ifdef CC
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"synchronizations" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_help_synchronizations_", nil)];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
-    row.action.formSelector = @selector(synchronizations:);
-    [section addFormRow:row];
-    
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"share" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_help_share_", nil)];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
-    row.action.formSelector = @selector(share:);
-    [section addFormRow:row];
-    
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"itunesshare" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_help_itunes_share_", nil)];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
-    row.action.formSelector = @selector(itunesshare:);
-    [section addFormRow:row];
-
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"shareext" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_help_share_ext_", nil)];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
-    row.action.formSelector = @selector(shareExt:);
-    [section addFormRow:row];
-#endif
-
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"switchuser" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_help_switch_user_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];

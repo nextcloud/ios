@@ -379,8 +379,6 @@
 {
     NSString *appVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
     
-    /*** NEXTCLOUD OWNCLOUD ***/
-    
     if ([typeCloud isEqualToString:typeCloudOwnCloud])
         return [NSString stringWithFormat:@"%@%@",@"Mozilla/5.0 (iOS) CryptoCloud-iOS/",appVersion];
     
@@ -493,16 +491,9 @@
     if (activeUrl == nil || typeCloud == nil) return nil;
     
     NSString *home;
-    
-    /*** NEXTCLOUD OWNCLOUD ***/
-    
+        
     if ([typeCloud isEqualToString:typeCloudOwnCloud] || [typeCloud isEqualToString:typeCloudNextcloud])
         home = [activeUrl stringByAppendingString:webDAV];
-    
-    /*** DROPBOX ***/
-
-    if ([typeCloud isEqualToString:typeCloudDropbox])
-        home = @"/";
     
     return home;
 }
@@ -718,60 +709,6 @@
 #pragma mark ===== CCMetadata =====
 #pragma --------------------------------------------------------------------------------------------
 
-#ifdef CC
-+ (CCMetadata *)trasformedMetadataToMetadata:(DBMetadata *)dbMetadata fileNamePrint:(NSString *)fileNamePrint serverUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID cameraFolderName:(NSString *)cameraFolderName cameraFolderPath:(NSString *)cameraFolderPath activeAccount:(NSString *)activeAccount directoryUser:(NSString *)directoryUser
-{
-    CCMetadata *metadata = [[CCMetadata alloc] init];
-    
-    metadata.account = activeAccount;
-    metadata.cryptated = NO;
-    metadata.date = dbMetadata.lastModifiedDate;
-    metadata.directory = dbMetadata.isDirectory;
-    metadata.errorPasscode = NO;
-    metadata.fileID = dbMetadata.rev;
-    metadata.directoryID = directoryID;
-    metadata.fileName = [CCUtility removeForbiddenCharacters:dbMetadata.filename];
-    metadata.fileNameData = [CCUtility trasformedFileNamePlistInCrypto:metadata.fileName];
-    metadata.fileNamePrint = [CCUtility removeForbiddenCharacters:fileNamePrint];
-    metadata.iconName = @"";
-    metadata.model = @"";
-    metadata.nameCurrentDevice = [CCUtility getNameCurrentDevice];
-    metadata.permissions = @"";
-    metadata.protocol = @"";
-    metadata.rev = dbMetadata.rev;
-    metadata.size = (long)dbMetadata.totalBytes;
-    metadata.thumbnailExists = dbMetadata.thumbnailExists;
-    metadata.title = @"";
-    metadata.type = metadataType_file;
-    metadata.typeFile = @"";
-    metadata.typeCloud = typeCloudDropbox;
-    metadata.uuid = [CCUtility getUUID];
-    
-    switch ([self getTypeFileName:metadata.fileName]) {
-            
-        case metadataTypeFilenamePlist:
-            
-            metadata.cryptated = YES;
-            metadata.fileNamePrint = NSLocalizedString(@"_download_plist_", nil);
-            
-            [self insertInformationPlist:metadata directoryUser:directoryUser];
-            
-            break;
-            
-        case metadataTypeFilenameCrypto:
-            
-            metadata.cryptated = YES;
-            metadata.fileNamePrint = @"";
-            
-            break;
-    }
-
-    [self insertTypeFileIconName:metadata directory:serverUrl cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath];
-    
-    return metadata;
-}
-#endif
-
 + (CCMetadata *)trasformedOCFileToCCMetadata:(OCFileDto *)itemDto fileNamePrint:(NSString *)fileNamePrint serverUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID cameraFolderName:(NSString *)cameraFolderName cameraFolderPath:(NSString *)cameraFolderPath activeAccount:(NSString *)activeAccount directoryUser:(NSString *)directoryUser typeCloud:(NSString *)typeCloud
 {
     CCMetadata *metadata = [[CCMetadata alloc] init];
@@ -836,8 +773,6 @@
         
         NSString *ext = (__bridge NSString *)fileExtension;
         ext = ext.uppercaseString;
-
-        /*** NEXTCLOUD OWNCLOUD ***/
         
         // thumbnailExists for typeCloudOwnCloud
         if ([metadata.typeCloud isEqualToString:typeCloudOwnCloud] || [metadata.typeCloud isEqualToString:typeCloudNextcloud]) {

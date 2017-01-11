@@ -958,11 +958,6 @@
 
 - (void)changePasswordAccount
 {
-    if (_loginVC || [app.typeCloud isEqualToString:typeCloudDropbox])
-        return;
-    
-    /*** NEXTCLOUD OWNCLOUD ***/
-    
     if ([app.typeCloud isEqualToString:typeCloudNextcloud])
         _loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
     
@@ -1050,15 +1045,6 @@
     app.hasServerForbiddenCharactersSupport = NO;
     app.hasServerShareSupport = YES;
     
-    /*** DROPBOX ***/
-
-    if ([app.typeCloud isEqualToString:typeCloudDropbox]) {
-                
-        [self requestSharedByServer];
-    }
-    
-    /*** NEXTCLOUD OWNCLOUD ***/
-    
     if ([app.typeCloud isEqualToString:typeCloudOwnCloud] || [app.typeCloud isEqualToString:typeCloudNextcloud]) {
         
         metadataNet.action = actionGetFeaturesSuppServer;
@@ -1067,22 +1053,6 @@
         metadataNet.action = actionGetCapabilities;
         [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
     }
-}
-
-- (void)dropboxFailure
-{
-    [_hud hideHud];
-    
-    [app cancelAllOperations];
-    [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
-    
-    UIAlertController * alert= [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_comm_error_dropbox_", nil) message:NSLocalizedString(@"_comm_error_dropbox_txt_", nil) preferredStyle:UIAlertControllerStyleAlert];
-    UIAlertAction* ok = [UIAlertAction actionWithTitle: NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault
-                                               handler:^(UIAlertAction * action) {
-                                                   [alert dismissViewControllerAnimated:YES completion:nil];
-                                               }];
-    [alert addAction:ok];
-    [self presentViewController:alert animated:YES completion:nil];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1125,13 +1095,6 @@
     metadataNet.action = actionDownloadThumbnail;
     metadataNet.fileID = metadata.fileID;
 
-    /*** DROPBOX ***/
-
-    if ([metadata.typeCloud isEqualToString:typeCloudDropbox])
-        metadataNet.fileName = metadata.fileName;
-    
-    /*** NEXTCLOUD OWNCLOUD ***/
-    
     if ([metadata.typeCloud isEqualToString:typeCloudOwnCloud] || [metadata.typeCloud isEqualToString:typeCloudNextcloud])
         metadataNet.fileName = [CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:_localServerUrl activeUrl:app.activeUrl typeCloud:app.typeCloud];
     
@@ -1319,22 +1282,10 @@
         
         for (NSOperation *operation in [app.netQueue operations]) {
             
-            /*** NEXTCLOUD OWNCLOUD ***/
-            
             if ([app.typeCloud isEqualToString:typeCloudOwnCloud] || [app.typeCloud isEqualToString:typeCloudNextcloud]) {
                 if ([((OCnetworking *)operation).metadataNet.selector isEqualToString:selectorLoadPlist])
                     countSelectorLoadPlist++;
             }
-            
-#ifdef CC
-            /*** DROPBOX ***/
-
-            if ([app.typeCloud isEqualToString:typeCloudDropbox]) {
-                if ([((DBnetworking *)operation).metadataNet.selector isEqualToString:selectorLoadPlist])
-                    countSelectorLoadPlist++;
-            }
-#endif
-            
         }
         
         if ((countSelectorLoadPlist == 0 || countSelectorLoadPlist % maxConcurrentOperation == 0) && [metadata.directoryID isEqualToString:_localDirectoryID]) {
@@ -1490,30 +1441,6 @@
         } else {
             
             CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
-            
-            /*** DROPBOX ***/
-
-            if ([app.typeCloud isEqualToString:typeCloudDropbox]) {
-                
-                metadataNet.action = actionUploadAsset;
-                metadataNet.assetLocalItentifier = asset.localIdentifier;
-                metadataNet.cryptated = cryptated;
-                metadataNet.errorCode = 0;
-                metadataNet.fileName = fileNameUpload;
-                metadataNet.priority = NSOperationQueuePriorityVeryHigh;
-                metadataNet.selector = selectorUploadFile;
-                metadataNet.selectorPost = nil;
-                metadataNet.session = session;
-                metadataNet.serverUrl = serverUrl;
-                metadataNet.taskStatus = taskStatusResume;
-                
-                if ([metadataNet.session containsString:@"wwan"])
-                    [app addNetworkingOperationQueue:app.netQueueUploadWWan delegate:self metadataNet:metadataNet];
-                else
-                    [app addNetworkingOperationQueue:app.netQueueUpload delegate:self metadataNet:metadataNet];
-            }
-            
-            /*** NEXTCLOUD OWNCLOUD ***/
             
             if ([app.typeCloud isEqualToString:typeCloudNextcloud] || [app.typeCloud isEqualToString:typeCloudOwnCloud]) {
             
@@ -1956,23 +1883,6 @@
 {
     CCMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", metadataNet.fileID, app.activeAccount] context:nil];
     
-    /*** DROPBOX ***/
-
-    if ([app.typeCloud isEqualToString:typeCloudDropbox] && [metadataNet.selector isEqualToString:selectorMoveCrypto] == NO) {
-        
-        // Drop Box cambia rev, quindi cambio etav e rev da metadata.rev e metadata.fileID ----> revTo
-        [CCCoreData changeRevFileIDDB:metadata.rev revTo:revTo activeAccount:app.activeAccount];
-            
-        // change file
-        [[NSFileManager defaultManager] moveItemAtPath:[NSString stringWithFormat:@"%@/%@",app.directoryUser,metadata.fileID] toPath:[NSString stringWithFormat:@"%@/%@",app.directoryUser,revTo] error:nil];
-        
-        UIImage *image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico",app.directoryUser,metadata.fileID]];
-        [CCGraphics saveIcoWithFileID:revTo image:image writeToFile:nil copy:NO move:YES fromPath:[NSString stringWithFormat:@"%@/%@.ico",app.directoryUser,metadata.fileID] toPath:[NSString stringWithFormat:@"%@/%@.ico",app.directoryUser,revTo]];
-        
-        metadata.fileID = revTo;
-        metadata.rev = revTo;
-    }
-
     if (metadata.directory == YES)
         [CCCoreData renameDirectory:[CCUtility stringAppendServerUrl:metadataNet.serverUrl addServerUrl:metadataNet.fileName] serverUrlTo:[CCUtility stringAppendServerUrl:metadataNet.serverUrl addServerUrl:metadataNet.fileNameTo] activeAccount:app.activeAccount];
     else
@@ -2101,18 +2011,6 @@
         NSString *directoryID = metadataNet.directoryID;
         NSString *directoryIDTo = metadataNet.directoryIDTo;
 
-        /*** DROPBOX ***/
-
-        if ([app.typeCloud isEqualToString:typeCloudDropbox]) {
-        
-            // Drop Box change rev
-            [CCCoreData changeRevFileIDDB:metadataNet.rev revTo:revTo activeAccount:app.activeAccount];
-            
-            // fileID -> rev ;
-            [[NSFileManager defaultManager] moveItemAtPath:[NSString stringWithFormat:@"%@/%@",app.directoryUser,metadataNet.fileID] toPath:[NSString stringWithFormat:@"%@/%@",app.directoryUser,revTo] error:nil];
-            [[NSFileManager defaultManager] moveItemAtPath:[NSString stringWithFormat:@"%@/%@.ico",app.directoryUser,metadataNet.fileID] toPath:[NSString stringWithFormat:@"%@/%@.ico",app.directoryUser,revTo] error:nil];
-        }
-    
         // FILE -> Metadata
         if (metadataNet.directory == NO) {
             
@@ -2737,38 +2635,6 @@
     
     [CCCoreData updateShare:items sharesLink:app.sharesLink sharesUserAndGroup:app.sharesUserAndGroup activeAccount:app.activeAccount activeUrl:app.activeUrl typeCloud:app.typeCloud];
     
-#ifdef CC
-    
-    /*** DROPBOX ***/
-
-    if (openWindow && [app.typeCloud isEqualToString:typeCloudDropbox]) {
-        
-        if (_shareDB) {
-                
-            [_shareDB reloadData];
-                
-        } else {
-            
-            CCMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", metadataNet.fileID, app.activeAccount] context:nil];
-            
-            // Apriamo la view
-            _shareDB = [[UIStoryboard storyboardWithName:@"CCShare" bundle:nil] instantiateViewControllerWithIdentifier:@"CCShareDB"];
-            
-            _shareDB.delegate = self;
-            _shareDB.metadata = metadata;
-            _shareDB.serverUrl = metadataNet.serverUrl;
-            
-            _shareDB.shareLink = [app.sharesLink objectForKey:metadata.fileID];
-
-            [_shareDB setModalPresentationStyle:UIModalPresentationFormSheet];
-            [self presentViewController:_shareDB animated:YES completion:nil];
-        }
-    }
-    
-#endif
-    
-    /*** NEXTCLOUD OWNCLOUD ***/
-    
     if (openWindow && ([app.typeCloud isEqualToString:typeCloudOwnCloud] || [app.typeCloud isEqualToString:typeCloudNextcloud])) {
             
         if (_shareOC) {
@@ -2815,39 +2681,16 @@
     if (_shareOC)
         [_shareOC reloadData];
     
-#ifdef CC
-    if (_shareDB)
-        [_shareDB reloadData];
-#endif
-    
     [self tableViewReload];
     
     if (errorCode == 401)
         [self changePasswordAccount];
 }
 
-// Dropbox
-- (void)shareSuccessDropBox:(CCMetadataNet *)metadataNet link:(NSString *)link
-{
-    [_hud hideHud];
-    
-    // salviamo il link
-    [CCCoreData setShareLink:link fileName:metadataNet.fileName serverUrl:metadataNet.serverUrl sharesLink:app.sharesLink activeAccount:app.activeAccount];
-    
-#ifdef CC
-    if (_shareDB)
-        [_shareDB reloadData];
-#endif
-    
-    [self tableViewReload];
-}
-
 - (void)share:(CCMetadata *)metadata serverUrl:(NSString *)serverUrl password:(NSString *)password
 {
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
-    
-    /*** NEXTCLOUD OWNCLOUD ***/
-    
+        
     if ([app.typeCloud isEqualToString:typeCloudOwnCloud] || [app.typeCloud isEqualToString:typeCloudNextcloud]) {
         
         metadataNet.action = actionShare;
@@ -2861,30 +2704,6 @@
         [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
     }
 
-    /*** DROPBOX ***/
-
-    if ([app.typeCloud isEqualToString:typeCloudDropbox]) {
-        
-        metadataNet.fileID = metadata.fileID;
-        metadataNet.fileName = metadata.fileName;
-        metadataNet.fileNamePrint = metadata.fileNamePrint;
-        metadataNet.serverUrl = serverUrl;
-        
-        NSString *shareLink = [app.sharesLink objectForKey:metadata.fileID];
-        
-        if ([shareLink length] > 0) {
-                        
-            [self shareSuccessDropBox:metadataNet link:shareLink];
-            
-        } else {
-            
-            metadataNet.action = actionShare;
-            metadataNet.selector = selectorShare;
-            
-            [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
-        }
-    }
-    
     [_hud visibleHudTitle:NSLocalizedString(@"_creating_sharing_", nil) mode:MBProgressHUDModeIndeterminate color:nil];
 }
 
@@ -2894,23 +2713,12 @@
     
     // rimuoviamo la condivisione da db
     [CCCoreData unShare:metadataNet.share fileName:metadataNet.fileName serverUrl:metadataNet.serverUrl sharesLink:app.sharesLink sharesUserAndGroup:app.sharesUserAndGroup activeAccount:app.activeAccount];
-    
-    /*** NEXTCLOUD OWNCLOUD ***/
-    
+        
     if ([app.typeCloud isEqualToString:typeCloudNextcloud] && _shareOC)
         [_shareOC reloadData];
 
     if ([app.typeCloud isEqualToString:typeCloudOwnCloud] && _shareOC)
         [_shareOC reloadData];
-    
-#ifdef CC
-    
-    /*** DROPBOX ***/
-
-    if ([app.typeCloud isEqualToString:typeCloudDropbox] && _shareDB)
-        [_shareDB reloadData];
-    
-#endif
     
     [self tableViewReload];
 }
@@ -2935,8 +2743,6 @@
 - (void)updateShare:(NSString *)share metadata:(CCMetadata *)metadata serverUrl:(NSString *)serverUrl password:(NSString *)password expirationTime:(NSString *)expirationTime permission:(NSInteger)permission
 {
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
-    
-    /*** NEXTCLOUD OWNCLOUD ***/
     
     if ([app.typeCloud isEqualToString:typeCloudOwnCloud] || [app.typeCloud isEqualToString:typeCloudNextcloud]) {
         
@@ -2973,9 +2779,7 @@
 - (void)getUserAndGroup:(NSString *)find
 {
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
-    
-    /*** NEXTCLOUD OWNCLOUD ***/
-    
+        
     if ([app.typeCloud isEqualToString:typeCloudOwnCloud] || [app.typeCloud isEqualToString:typeCloudNextcloud]) {
         
         metadataNet.action = actionGetUserAndGroup;
@@ -3233,12 +3037,6 @@
         
         item.title = [record.account stringByTruncatingToWidth:self.view.bounds.size.width - 100 withFont:[UIFont systemFontOfSize:12.0] atEnd:YES];
         item.argument = record.account;
-        
-        /*** DROPBOX ***/
-
-        if ([record.typeCloud isEqualToString:typeCloudDropbox]) item.image = [UIImage imageNamed:image_typeCloudDropbox];
-        
-        /*** NEXTCLOUD OWNCLOUD ***/
         
         if ([record.typeCloud isEqualToString:typeCloudNextcloud]) item.image = [UIImage imageNamed:image_typeCloudNextcloud];
         if ([record.typeCloud isEqualToString:typeCloudOwnCloud]) item.image = [UIImage imageNamed:image_typeCloudOwnCloud];

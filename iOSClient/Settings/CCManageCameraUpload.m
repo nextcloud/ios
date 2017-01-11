@@ -202,9 +202,7 @@
     if ([rowDescriptor.tag isEqualToString:@"cameraupload"]) {
         
         if ([[rowDescriptor.value valueData] boolValue] == YES) {
-            
-            /*** NEXTCLOUD OWNCLOUD ***/
-            
+                        
             // Create Folder cameraUpload
             if (([app.typeCloud isEqualToString:typeCloudOwnCloud] || [app.typeCloud isEqualToString:typeCloudNextcloud]) && app.activeMain)
                 [app.activeMain createFolderCameraUpload];

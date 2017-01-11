@@ -32,10 +32,6 @@ NSString *const appCertificates = @"Library/Application Support/Certificates";
 NSString *const webDAV = @"/remote.php/webdav";
 NSString *const typeCloudNextcloud = @"nextcloud";
 NSString *const typeCloudOwnCloud = @"owncloud";
-NSString *const typeCloudDropbox = @"dropbox";
-
-NSString *const urlBaseDownloadDB = @"https://api-content.dropbox.com/1/files/dropbox";
-NSString *const urlBaseUploadDB = @"https://api-content.dropbox.com/1/files_put/dropbox";
 
 // BKPasscode
 NSString *const BKPasscodeKeychainServiceName = @"Crypto Cloud";

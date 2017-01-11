@@ -43,14 +43,8 @@
     
     self.brand.image = [UIImage imageNamed:image_launchscreen];
     
-#ifdef CC
-    _nextcloud.hidden = YES;
-#endif
-    
-#ifdef NC
     _owncloud.hidden = YES;
     _dropbox.hidden = YES;
-#endif
     
     [_nextcloud setTitle:[NSString stringWithFormat:@"     %@", NSLocalizedString(@"_add_your_nextcloud_", nil)] forState:UIControlStateNormal];
     [_owncloud setTitle:[NSString stringWithFormat:@"     %@", NSLocalizedString(@"_add_your_owncloud_", nil)] forState:UIControlStateNormal];
