@@ -155,39 +155,37 @@ static const CGFloat kSpaceDivide = 5.0f;
             attributes = self.encryptedButtonTextAttributes;
             break;
     }
-
-    // Use image with template mode with color the same as the text (when enabled).
-    BOOL useTemplateMode = [UIImage instancesRespondToSelector:@selector(imageWithRenderingMode:)] && [self.automaticallyTintButtonImages boolValue];
     
-    if (item.type != AHKActionSheetButtonTypeDisabled) {
+    UIImageView *imageView;
+    
+    if (item.type == AHKActionSheetButtonTypeDisabled) {
         
-        NSAttributedString *attrTitle = [[NSAttributedString alloc] initWithString:item.title attributes:attributes];
-        cell.textLabel.attributedText = attrTitle;
-        cell.textLabel.textAlignment = [self.buttonTextCenteringEnabled boolValue] ? NSTextAlignmentCenter : NSTextAlignmentLeft;
-        
-        cell.imageView.image = useTemplateMode ? [item.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] : item.image;
-
-        if ([UIImageView instancesRespondToSelector:@selector(tintColor)]){
-            cell.imageView.tintColor = attributes[NSForegroundColorAttributeName] ? attributes[NSForegroundColorAttributeName] : [UIColor blackColor];
-        }
+        imageView = [[UIImageView alloc]initWithFrame:CGRectMake(15, _buttonHeight/2 - (30/2), 30, 30)];
+        imageView.backgroundColor = [UIColor clearColor];
+        [imageView setImage:item.image];
         
     } else {
         
-        UIImageView *imageView = [[UIImageView alloc]initWithFrame:CGRectMake(15, _buttonHeight/2 - 15, 30, 30)];
-        imageView.backgroundColor = [UIColor clearColor];
-        //[imageView.layer setCornerRadius:8.0f];
-        [imageView.layer setMasksToBounds:YES];
-        [imageView setImage:item.image];
-        [cell.contentView addSubview:imageView];
+        imageView = [[UIImageView alloc]initWithFrame:CGRectMake(15, _buttonHeight/2 - (25/2), 25, 25)];
         
-        UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(cell.frame.size.height + 5 , 0, cell.frame.size.width - cell.frame.size.height - 20, cell.frame.size.height)];
-        NSAttributedString *attrTitle = [[NSAttributedString alloc] initWithString:item.title attributes:attributes];
-        label.text =  [NSString stringWithFormat: @"test"];
-        label.numberOfLines = 0;
-        label.attributedText = attrTitle;
-        label.textAlignment = NSTextAlignmentLeft;
-        [cell.contentView addSubview:label];
+        BOOL useTemplateMode = [UIImage instancesRespondToSelector:@selector(imageWithRenderingMode:)] && [self.automaticallyTintButtonImages boolValue];
+
+        imageView.image = useTemplateMode ? [item.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] : item.image;
+        
+        if ([UIImageView instancesRespondToSelector:@selector(tintColor)]){
+            imageView.tintColor = attributes[NSForegroundColorAttributeName] ? attributes[NSForegroundColorAttributeName] : [UIColor blackColor];
+        }
     }
+    
+    [cell.contentView addSubview:imageView];
+        
+    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(cell.frame.size.height + 5 , 0, cell.frame.size.width - cell.frame.size.height - 20, cell.frame.size.height)];
+    NSAttributedString *attrTitle = [[NSAttributedString alloc] initWithString:item.title attributes:attributes];
+    label.text =  [NSString stringWithFormat: @"test"];
+    label.numberOfLines = 0;
+    label.attributedText = attrTitle;
+    label.textAlignment = [self.buttonTextCenteringEnabled boolValue] ? NSTextAlignmentCenter : NSTextAlignmentLeft;
+    [cell.contentView addSubview:label];
     
     cell.backgroundColor = item.backgroundColor;
 
