@@ -138,7 +138,10 @@ static const CGFloat kSpaceDivide = 5.0f;
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellIdentifier forIndexPath:indexPath];
+    UITableViewCell *cell;
+    
+    if (cell == nil)
+        cell = [tableView dequeueReusableCellWithIdentifier:kCellIdentifier forIndexPath:indexPath];
     
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     
@@ -183,15 +186,12 @@ static const CGFloat kSpaceDivide = 5.0f;
         }
     }
     
-    [cell.contentView addSubview:imageView];
-        
     UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(cell.frame.size.height + 5 , 0, cell.frame.size.width - cell.frame.size.height - 20, cell.frame.size.height)];
     NSAttributedString *attrTitle = [[NSAttributedString alloc] initWithString:item.title attributes:attributes];
     label.text =  [NSString stringWithFormat: @"test"];
     label.numberOfLines = 0;
     label.attributedText = attrTitle;
     label.textAlignment = [self.buttonTextCenteringEnabled boolValue] ? NSTextAlignmentCenter : NSTextAlignmentLeft;
-    [cell.contentView addSubview:label];
     
     cell.backgroundColor = item.backgroundColor;
 
@@ -199,6 +199,12 @@ static const CGFloat kSpaceDivide = 5.0f;
         cell.selectedBackgroundView = [[UIView alloc] init];
         cell.selectedBackgroundView.backgroundColor = self.selectedBackgroundColor;
     }
+    
+    for (UIView *subview in [cell.contentView subviews])
+        [subview removeFromSuperview];
+    
+    [cell.contentView addSubview:imageView];
+    [cell.contentView addSubview:label];
 
     return cell;
 }
@@ -317,11 +323,6 @@ static const CGFloat kSpaceDivide = 5.0f;
 
 #pragma mark - Public
 
-- (void)addButtonWithTitle:(NSString *)title type:(AHKActionSheetButtonType)type handler:(AHKActionSheetHandler)handler
-{
-    [self addButtonWithTitle:title image:nil backgroundColor:[UIColor whiteColor] height:self.buttonHeight type:type handler:handler];
-}
-
 - (void)addButtonWithTitle:(NSString *)title image:(UIImage *)image backgroundColor:(UIColor *)backgroundColor height:(CGFloat)height type:(AHKActionSheetButtonType)type handler:(AHKActionSheetHandler)handler
 {
     AHKActionSheetItem *item = [[AHKActionSheetItem alloc] init];
@@ -375,7 +376,8 @@ static const CGFloat kSpaceDivide = 5.0f;
         self.tableView.transform = CGAffineTransformMakeTranslation(0, 0);
 
         // manual calculation of table's contentSize.height
-        CGFloat tableContentHeight = 0; //[self.items count] * self.buttonHeight + CGRectGetHeight(self.tableView.tableHeaderView.frame);
+        CGFloat tableContentHeight = 0;
+        
         for (AHKActionSheetItem *item in self.items) {
             tableContentHeight = tableContentHeight + item.height;
         }
@@ -534,10 +536,7 @@ static const CGFloat kSpaceDivide = 5.0f;
 {
     CGRect statusBarViewRect = [self convertRect:[UIApplication sharedApplication].statusBarFrame fromView:nil];
     CGFloat statusBarHeight = CGRectGetHeight(statusBarViewRect);
-    CGRect frame = CGRectMake(0,
-                              statusBarHeight,
-                              CGRectGetWidth(self.bounds),
-                              CGRectGetHeight(self.bounds) - statusBarHeight - self.cancelButtonHeight);
+    CGRect frame = CGRectMake(0, statusBarHeight, CGRectGetWidth(self.bounds), CGRectGetHeight(self.bounds) - statusBarHeight - self.cancelButtonHeight - self.separatorHeight);
 
     UITableView *tableView = [[UITableView alloc] initWithFrame:frame];
     
