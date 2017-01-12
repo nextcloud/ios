@@ -470,6 +470,10 @@
 "_upload_template_"                 = "Upload a template";
 "_upload_plain_mode"                = "Upload plain mode";
 
+// Document Picker
+
+"_save_document_picker_"            = "Save here";
+
 // -----------------------------------------------------------------------------------------------------------
 
 "Done"                          = "Done";
