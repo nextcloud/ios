@@ -1404,8 +1404,22 @@
     }
 }
 
+//
+// This procedure with performSelectorOnMainThread it's necessary after for use the function "Sync" in OCNetworking
+//
 - (void)uploadFileAsset:(NSMutableArray *)assets serverUrl:(NSString *)serverUrl cryptated:(BOOL)cryptated useSubFolder:(BOOL)useSubFolder session:(NSString *)session
 {
+    [self performSelectorOnMainThread:@selector(uploadFileAssetObject:) withObject:@[assets, serverUrl, [NSNumber numberWithBool:cryptated], [NSNumber numberWithBool:useSubFolder], session] waitUntilDone:NO];
+}
+
+- (void)uploadFileAssetObject:(NSArray *)arguments
+{
+    NSArray *assets = [arguments objectAtIndex:0];
+    NSString *serverUrl = [arguments objectAtIndex:1];
+    BOOL cryptated = [[arguments objectAtIndex:2] boolValue];
+    BOOL useSubFolder = [[arguments objectAtIndex:3] boolValue];
+    NSString * session = [arguments objectAtIndex:4];
+    
     NSLog(@"[LOG] Asset N. %lu", (unsigned long)[assets count]);
     
     // remove title
@@ -1438,7 +1452,6 @@
         }
     }
 
-    
     NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:app.activeAccount];
 
     for (PHAsset *asset in assets) {

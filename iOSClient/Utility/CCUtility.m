@@ -720,11 +720,7 @@
 {
     NSMutableOrderedSet *datesSubFolder = [[NSMutableOrderedSet alloc] init];
     
-    for (ALAsset *asset in alassets) {
-        
-        NSURL *url = [asset valueForProperty:@"ALAssetPropertyAssetURL"];
-        PHFetchResult *fetchResult = [PHAsset fetchAssetsWithALAssetURLs:@[url] options:nil];
-        PHAsset *asset = [fetchResult firstObject];
+    for (PHAsset *asset in alassets) {
         
         NSDate *assetDate = asset.creationDate;
             
