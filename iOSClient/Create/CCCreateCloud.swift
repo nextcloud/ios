@@ -200,14 +200,17 @@ class CreateMenuAdd: NSObject {
 
 // MARK: - CreateFormUpload
 
-class CreateFormUpload: XLFormViewController {
+class CreateFormUpload: XLFormViewController, CCMoveDelegate {
     
     var localServerUrl : String?
     var titleLocalServerUrl : String?
+    var assets: NSMutableArray = []
+    var cryptated : Bool?
+    var session : String?
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
-    convenience init(_ titleLocalServerUrl : String?, localServerUrl : String?) {
+    convenience init(_ titleLocalServerUrl : String?, localServerUrl : String?, assets : NSMutableArray?, cryptated : Bool, session : String?) {
         
         self.init()
         
@@ -218,6 +221,10 @@ class CreateFormUpload: XLFormViewController {
         }
         
         self.localServerUrl = localServerUrl
+        self.assets = assets!
+        self.cryptated = cryptated
+        self.session = session
+        
         self.initializeForm()
     }
     
@@ -234,8 +241,6 @@ class CreateFormUpload: XLFormViewController {
     }
     
     func initializeForm() {
-        
-        
 
         let form : XLFormDescriptor = XLFormDescriptor() as XLFormDescriptor
         form.rowNavigationOptions = XLFormRowNavigationOptions.stopDisableRow
@@ -248,6 +253,7 @@ class CreateFormUpload: XLFormViewController {
         
         row = XLFormRowDescriptor(tag: "ButtonDestinationFolder", rowType: XLFormRowDescriptorTypeButton, title: self.titleLocalServerUrl)
         row.cellConfig.setObject(UIImage(named: image_settingsManagePhotos)!, forKey: "imageView.image" as NSCopying)
+        row.action.formSelector = #selector(changeDestinationFolder(_:))
         section.addFormRow(row)
         
         section = XLFormSectionDescriptor.formSection(withTitle: NSLocalizedString("_use_folder_photos_", comment: "")) as XLFormSectionDescriptor
@@ -278,8 +284,52 @@ class CreateFormUpload: XLFormViewController {
         self.form = form
     }
     
-    func save() {
+    func reloadForm() {
         
+        self.form.delegate = nil
+        
+        let buttonDestinationFolder : XLFormRowDescriptor  = self.form.formRow(withTag: "ButtonDestinationFolder")!
+        buttonDestinationFolder.title = self.titleLocalServerUrl
+        
+        self.tableView.reloadData()
+        self.form.delegate = self
+    }
+    
+    func changeDestinationFolder(_ sender: XLFormRowDescriptor) {
+        
+        self.deselectFormRow(sender)
+        
+        let storyboard : UIStoryboard = UIStoryboard(name: "CCMove", bundle: nil)
+        let navigationController = storyboard.instantiateViewController(withIdentifier: "CCMove") as! UINavigationController
+        let viewController : CCMove = navigationController.topViewController as! CCMove
+        
+        viewController.delegate = self;
+        viewController.tintColor = UIColor.init(colorLiteralRed: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0) // COLOR_BRAND
+        viewController.barTintColor = UIColor.init(colorLiteralRed: 248.0/255.0, green: 248.0/255.0, blue: 248.0/255.0, alpha: 1.0) // COLOR_BAR;
+        viewController.tintColorTitle = UIColor.init(colorLiteralRed: 65.0/255.0, green: 64.0/255.0, blue: 66.0/255.0, alpha: 1.0) // COLOR_GRAY;
+        viewController.move.title = NSLocalizedString("_select_", comment: "");
+        viewController.networkingOperationQueue =  appDelegate.netQueue 
+
+        navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
+        self.present(navigationController, animated: true, completion: nil)
+    }
+    
+    func move(_ serverUrlTo: String!, title: String!, selectedMetadatas: [Any]!) {
+        
+        self.localServerUrl = serverUrlTo
+        if title == nil {
+            self.titleLocalServerUrl = "/"
+        } else {
+            self.titleLocalServerUrl = title
+        }
+        
+        self.reloadForm()
+    }
+    
+    func save() {
+        self.dismiss(animated: true, completion: {
+            self.appDelegate.activeMain.uploadFileAsset(self.assets, serverUrl: self.localServerUrl, cryptated: self.cryptated!, session: self.session)
+        })
     }
 
     func cancel() {

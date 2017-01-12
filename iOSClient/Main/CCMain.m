@@ -697,9 +697,7 @@
 {
     [picker dismissViewControllerAnimated:YES completion:^{
         
-#ifdef DEBUG
-        
-        CreateFormUpload *form = [[CreateFormUpload alloc] init:_titleMain localServerUrl:_localServerUrl];
+        CreateFormUpload *form = [[CreateFormUpload alloc] init:_titleMain localServerUrl:_localServerUrl assets:assets cryptated:_isPickerCriptate session:upload_session];
         form.title = NSLocalizedString(@"_upload_photos_videos_", nil);
         
         UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:form];
@@ -710,11 +708,8 @@
         
         [self presentViewController:navigationController animated:YES completion:nil];
         
-        return;
-#else
-        [self uploadFileAsset:assets serverUrl:_localServerUrl cryptated:_isPickerCriptate session:upload_session];
-#endif
-        
+        // OLD :
+        // [self uploadFileAsset:assets serverUrl:_localServerUrl cryptated:_isPickerCriptate session:upload_session];
     }];
 }
 
