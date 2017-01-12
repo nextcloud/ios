@@ -59,19 +59,19 @@ class CreateMenuAdd: NSObject {
         
         actionSheet?.cancelButtonTitle = NSLocalizedString("_cancel_", comment: "")
 
-        actionSheet?.addButton(withTitle: "Create a new folder", image: UIImage(named: "createFolderNextcloud"), backgroundColor: UIColor.white, height: 50.0 ,type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
+        actionSheet?.addButton(withTitle: NSLocalizedString("_create_folder_", comment: ""), image: UIImage(named: "createFolderNextcloud"), backgroundColor: UIColor.white, height: 50.0 ,type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
             appDelegate.activeMain.returnCreate(Int(returnCreateFolderPlain))
         })
         
-        actionSheet?.addButton(withTitle: "Upload photos and videos", image: UIImage(named: "uploadPhotoNextcloud"), backgroundColor: UIColor.white, height: 50.0, type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
+        actionSheet?.addButton(withTitle: NSLocalizedString("_upload_photos_videos_", comment: ""), image: UIImage(named: "uploadPhotoNextcloud"), backgroundColor: UIColor.white, height: 50.0, type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
             appDelegate.activeMain.returnCreate(Int(returnCreateFotoVideoPlain))
         })
         
-        actionSheet?.addButton(withTitle: "Upload a file", image: UIImage(named: "uploadFileNextcloud"), backgroundColor: UIColor.white, height: 50.0, type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
+        actionSheet?.addButton(withTitle: NSLocalizedString("_upload_file_", comment: ""), image: UIImage(named: "uploadFileNextcloud"), backgroundColor: UIColor.white, height: 50.0, type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
             appDelegate.activeMain.returnCreate(Int(returnCreateFilePlain))
         })
         
-        actionSheet?.addButton(withTitle: "Upload Encrypted mode", image: UIImage(named: "actionSheetLock"), backgroundColor: colorLightGray, height: 50.0, type: AHKActionSheetButtonType.encrypted, handler: {(AHKActionSheet) -> Void in
+        actionSheet?.addButton(withTitle: NSLocalizedString("_upload_encrypted_mode", comment: ""), image: UIImage(named: "actionSheetLock"), backgroundColor: colorLightGray, height: 50.0, type: AHKActionSheetButtonType.encrypted, handler: {(AHKActionSheet) -> Void in
             self.createMenuEncrypted(view: view)
         })
         
@@ -104,23 +104,23 @@ class CreateMenuAdd: NSObject {
         
         actionSheet?.cancelButtonTitle = NSLocalizedString("_cancel_", comment: "")
         
-        actionSheet?.addButton(withTitle: "Create a new folder", image: UIImage(named: "foldercrypto"), backgroundColor: UIColor.white, height: 50.0, type: AHKActionSheetButtonType.encrypted, handler: {(AHKActionSheet) -> Void in
+        actionSheet?.addButton(withTitle: NSLocalizedString("_create_folder_", comment: ""), image: UIImage(named: "foldercrypto"), backgroundColor: UIColor.white, height: 50.0, type: AHKActionSheetButtonType.encrypted, handler: {(AHKActionSheet) -> Void in
             appDelegate.activeMain.returnCreate(Int(returnCreateFolderEncrypted))
         })
         
-        actionSheet?.addButton(withTitle: "Upload photos and videos", image: UIImage(named: "photocrypto"), backgroundColor: UIColor.white, height: 50.0, type: AHKActionSheetButtonType.encrypted, handler: {(AHKActionSheet) -> Void in
+        actionSheet?.addButton(withTitle: NSLocalizedString("_upload_photos_videos_", comment: ""), image: UIImage(named: "photocrypto"), backgroundColor: UIColor.white, height: 50.0, type: AHKActionSheetButtonType.encrypted, handler: {(AHKActionSheet) -> Void in
             appDelegate.activeMain.returnCreate(Int(returnCreateFotoVideoEncrypted))
         })
         
-        actionSheet?.addButton(withTitle: "Upload a file", image: UIImage(named: "importCloudCrypto"), backgroundColor: UIColor.white, height: 50.0, type: AHKActionSheetButtonType.encrypted, handler: {(AHKActionSheet) -> Void in
+        actionSheet?.addButton(withTitle: NSLocalizedString("_upload_file_", comment: ""), image: UIImage(named: "importCloudCrypto"), backgroundColor: UIColor.white, height: 50.0, type: AHKActionSheetButtonType.encrypted, handler: {(AHKActionSheet) -> Void in
             appDelegate.activeMain.returnCreate(Int(returnCreateFileEncrypted))
         })
 
-        actionSheet?.addButton(withTitle: NSLocalizedString("Upload Template", comment: ""), image: UIImage(named: "template"), backgroundColor: colorLightGray, height: 50.0, type: AHKActionSheetButtonType.encrypted, handler: {(AHKActionSheet) -> Void in
+        actionSheet?.addButton(withTitle: NSLocalizedString("_upload_template_", comment: ""), image: UIImage(named: "template"), backgroundColor: colorLightGray, height: 50.0, type: AHKActionSheetButtonType.encrypted, handler: {(AHKActionSheet) -> Void in
             self.createMenuTemplate(view: view)
         })
 
-        actionSheet?.addButton(withTitle: NSLocalizedString("Upload Plain mode", comment: ""), image: UIImage(named: "uploadPlainModeNextcloud"), backgroundColor: colorLightGray, height: 50.0, type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
+        actionSheet?.addButton(withTitle: NSLocalizedString("_upload_plain_mode", comment: ""), image: UIImage(named: "uploadPlainModeNextcloud"), backgroundColor: colorLightGray, height: 50.0, type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
             self.createMenuPlain(view: view)
         })
         

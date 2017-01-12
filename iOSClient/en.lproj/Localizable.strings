@@ -462,6 +462,14 @@
 
 "_create_synchronization_"          = "Create synchronization";
 
+// Create Cloud
+
+"_upload_photos_videos_"            = "Upload photos and videos";
+"_upload_file_"                     = "Upload a file";
+"_upload_encrypted_mode"            = "Upload encrypted mode";
+"_upload_template_"                 = "Upload a template";
+"_upload_plain_mode"                = "Upload plain mode";
+
 // -----------------------------------------------------------------------------------------------------------
 
 "Done"                          = "Done";
