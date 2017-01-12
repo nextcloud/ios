@@ -1405,14 +1405,14 @@
 }
 
 //
-// This procedure with performSelectorOnMainThread it's necessary after for use the function "Sync" in OCNetworking
+// This procedure with performSelectorOnMainThread it's necessary after (Bridge) for use the function "Sync" in OCNetworking
 //
 - (void)uploadFileAsset:(NSMutableArray *)assets serverUrl:(NSString *)serverUrl cryptated:(BOOL)cryptated useSubFolder:(BOOL)useSubFolder session:(NSString *)session
 {
-    [self performSelectorOnMainThread:@selector(uploadFileAssetObject:) withObject:@[assets, serverUrl, [NSNumber numberWithBool:cryptated], [NSNumber numberWithBool:useSubFolder], session] waitUntilDone:NO];
+    [self performSelectorOnMainThread:@selector(uploadFileAssetBridge:) withObject:@[assets, serverUrl, [NSNumber numberWithBool:cryptated], [NSNumber numberWithBool:useSubFolder], session] waitUntilDone:NO];
 }
 
-- (void)uploadFileAssetObject:(NSArray *)arguments
+- (void)uploadFileAssetBridge:(NSArray *)arguments
 {
     NSArray *assets = [arguments objectAtIndex:0];
     NSString *serverUrl = [arguments objectAtIndex:1];
@@ -1420,15 +1420,14 @@
     BOOL useSubFolder = [[arguments objectAtIndex:3] boolValue];
     NSString * session = [arguments objectAtIndex:4];
     
-    NSLog(@"[LOG] Asset N. %lu", (unsigned long)[assets count]);
-    
-    // remove title
+    // remove title (graphics)
     [self setTitleBackgroundTableView:nil];
 
     NSString *folderPhotos = [CCCoreData getCameraUploadFolderNamePathActiveAccount:app.activeAccount activeUrl:app.activeUrl typeCloud:app.typeCloud];
+    NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:app.activeAccount];
     
     // Create if request the folder for Photos
-    if (useSubFolder || [serverUrl isEqualToString:folderPhotos]) {
+    if ((useSubFolder || [serverUrl isEqualToString:folderPhotos]) && [_localServerUrl isEqualToString:serverUrl] == NO){
         
         if(![app.activePhotosCameraUpload createFolder:folderPhotos]) {
             
@@ -1438,7 +1437,7 @@
         }
     }
     
-    // Subfolder ? Create
+    // Create if request the subfolders
     if (useSubFolder) {
         
         for (NSString *dateSubFolder in [CCUtility createNameSubFolder:assets]) {
@@ -1452,8 +1451,8 @@
         }
     }
 
-    NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:app.activeAccount];
-
+    NSLog(@"[LOG] Asset N. %lu", (unsigned long)[assets count]);
+    
     for (PHAsset *asset in assets) {
         
         NSString *fileNameUpload;
