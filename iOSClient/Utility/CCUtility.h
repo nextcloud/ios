@@ -155,6 +155,8 @@
 
 + (NSString *)localizableBrand:(NSString *)localize table:(NSString *)table;
 
++ (NSArray *)createNameSubFolder:(NSArray *)alassets;
+
 // ===== CCMetadata =====
 
 + (CCMetadata *)trasformedOCFileToCCMetadata:(OCFileDto *)itemDto fileNamePrint:(NSString *)fileNamePrint serverUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID cameraFolderName:(NSString *)cameraFolderName cameraFolderPath:(NSString *)cameraFolderPath activeAccount:(NSString *)activeAccount directoryUser:(NSString *)directoryUser typeCloud:(NSString *)typeCloud;

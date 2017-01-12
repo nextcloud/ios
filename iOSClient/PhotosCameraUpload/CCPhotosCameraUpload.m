@@ -1110,10 +1110,10 @@
     // STOP new request : initStateCameraUpload
     _AutomaticCameraUploadInProgress = YES;
     
-    NSString *folderPathName = [CCCoreData getCameraUploadFolderNamePathActiveAccount:app.activeAccount activeUrl:app.activeUrl typeCloud:app.typeCloud];
+    NSString *folderPhotos = [CCCoreData getCameraUploadFolderNamePathActiveAccount:app.activeAccount activeUrl:app.activeUrl typeCloud:app.typeCloud];
     
     // verify/create folder Camera Upload, if error exit
-    if(![self createFolder:folderPathName]) {
+    if(![self createFolder:folderPhotos]) {
         
         // Full Upload ?
         if (assetsFull)
@@ -1159,7 +1159,7 @@
     NSMutableArray *newItemsPHAssetToUpload = [[NSMutableArray alloc] init];
     NSMutableOrderedSet *datesSubFolder = [[NSMutableOrderedSet alloc] init];
     
-    NSString *folderCameraUpload = [CCCoreData getCameraUploadFolderNamePathActiveAccount:app.activeAccount activeUrl:app.activeUrl typeCloud:app.typeCloud];
+    NSString *folderPhotos = [CCCoreData getCameraUploadFolderNamePathActiveAccount:app.activeAccount activeUrl:app.activeUrl typeCloud:app.typeCloud];
     BOOL createSubfolders = [CCCoreData getCameraUploadCreateSubfolderActiveAccount:app.activeAccount];
     
     for (ALAsset *asset in newItemsToUpload) {
@@ -1190,7 +1190,7 @@
         
         for (NSString *dateSubFolder in datesSubFolder) {
             
-            if(![self createFolder:[NSString stringWithFormat:@"%@/%@", folderCameraUpload, dateSubFolder]]) {
+            if(![self createFolder:[NSString stringWithFormat:@"%@/%@", folderPhotos, dateSubFolder]]) {
                 
                 [self endLoadingAssets];
                 
@@ -1226,9 +1226,9 @@
         NSString *monthString = [formatter stringFromDate:assetDate];
 
         if (createSubfolders)
-            serverUrl = [NSString stringWithFormat:@"%@/%@/%@", folderCameraUpload, yearString, monthString];
+            serverUrl = [NSString stringWithFormat:@"%@/%@/%@", folderPhotos, yearString, monthString];
         else
-            serverUrl = folderCameraUpload;
+            serverUrl = folderPhotos;
         
         CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
             

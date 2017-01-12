@@ -225,8 +225,8 @@
     NSString *cameraFolderName = [self getCameraUploadFolderNameActiveAccount:activeAccount];
     NSString *cameraFolderPath = [self getCameraUploadFolderPathActiveAccount:activeAccount activeUrl:activeUrl typeCloud:typeCloud];
     
-    NSString *result = [CCUtility stringAppendServerUrl:cameraFolderPath addServerUrl:cameraFolderName];
-    return result;
+    NSString *folderPhotos = [CCUtility stringAppendServerUrl:cameraFolderPath addServerUrl:cameraFolderName];
+    return folderPhotos;
 }
 
 + (BOOL)getCameraUploadActiveAccount:(NSString *)activeAccount

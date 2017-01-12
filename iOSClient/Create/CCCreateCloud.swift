@@ -248,7 +248,7 @@ class CreateFormUpload: XLFormViewController, CCMoveDelegate {
         var section : XLFormSectionDescriptor
         var row : XLFormRowDescriptor
 
-        section = XLFormSectionDescriptor.formSection(withTitle: NSLocalizedString("_destination_folder_", comment: "")) as XLFormSectionDescriptor
+        section = XLFormSectionDescriptor.formSection()
         form.addFormSection(section)
         
         row = XLFormRowDescriptor(tag: "ButtonDestinationFolder", rowType: XLFormRowDescriptorTypeButton, title: self.titleLocalServerUrl)
@@ -256,14 +256,14 @@ class CreateFormUpload: XLFormViewController, CCMoveDelegate {
         row.action.formSelector = #selector(changeDestinationFolder(_:))
         section.addFormRow(row)
         
-        section = XLFormSectionDescriptor.formSection(withTitle: NSLocalizedString("_use_folder_photos_", comment: "")) as XLFormSectionDescriptor
+        section = XLFormSectionDescriptor.formSection()
         form.addFormSection(section)
         
         row = XLFormRowDescriptor(tag: "useFolderPhoto", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_photo_camera_", comment: ""))
         row.value = 0
         section.addFormRow(row)
         
-        row = XLFormRowDescriptor(tag: "useSubfolder", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_upload_camera_create_subfolder_", comment: ""))
+        row = XLFormRowDescriptor(tag: "useSubFolder", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_upload_camera_create_subfolder_", comment: ""))
         row.hidden = "$\("useFolderPhoto") == 0"
         
         if CCCoreData.getCameraUploadCreateSubfolderActiveAccount(appDelegate.activeAccount) == true {
@@ -284,6 +284,55 @@ class CreateFormUpload: XLFormViewController, CCMoveDelegate {
         self.form = form
     }
     
+    //MARK: XLFormDescriptorDelegate
+    
+    override func formRowDescriptorValueHasChanged(_ formRow: XLFormRowDescriptor!, oldValue: Any!, newValue: Any!) {
+        
+        super.formRowDescriptorValueHasChanged(formRow, oldValue: oldValue, newValue: newValue)
+        
+        if formRow.tag == "useFolderPhoto" {
+            
+            if (formRow.value! as AnyObject).boolValue  == true {
+                
+                let buttonDestinationFolder : XLFormRowDescriptor  = self.form.formRow(withTag: "ButtonDestinationFolder")!
+                buttonDestinationFolder.hidden = true
+                
+            } else{
+                
+                let buttonDestinationFolder : XLFormRowDescriptor  = self.form.formRow(withTag: "ButtonDestinationFolder")!
+                buttonDestinationFolder.hidden = false
+            }
+        }
+        else if formRow.tag == "useSubFolder" {
+            
+            if (formRow.value! as AnyObject).boolValue  == true {
+            
+            } else{
+                
+            }
+        }
+    }
+    
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        
+        var returnTitle : String?
+        
+        if section == 0 {
+            let buttonDestinationFolder : XLFormRowDescriptor  = self.form.formRow(withTag: "ButtonDestinationFolder")!
+            if buttonDestinationFolder.isHidden() {
+                returnTitle = ""
+            } else {
+                returnTitle = NSLocalizedString("_destination_folder_", comment: "")
+            }
+        }
+        
+        if section == 1 {
+            returnTitle = NSLocalizedString("_use_folder_photos_", comment: "")
+        }
+        
+        return returnTitle
+    }
+
     func reloadForm() {
         
         self.form.delegate = nil
@@ -327,8 +376,17 @@ class CreateFormUpload: XLFormViewController, CCMoveDelegate {
     }
     
     func save() {
+        
         self.dismiss(animated: true, completion: {
-            self.appDelegate.activeMain.uploadFileAsset(self.assets, serverUrl: self.localServerUrl, cryptated: self.cryptated!, session: self.session)
+            
+            let useFolderPhoto : XLFormRowDescriptor  = self.form.formRow(withTag: "useFolderPhoto")!
+            let useSubfolder : XLFormRowDescriptor  = self.form.formRow(withTag: "useSubFolder")!
+            
+            if (useFolderPhoto.value! as AnyObject).boolValue == true {
+                self.localServerUrl = CCCoreData.getCameraUploadFolderNamePathActiveAccount(self.appDelegate.activeAccount, activeUrl: self.appDelegate.activeUrl, typeCloud: self.appDelegate.typeCloud)
+            }
+            
+            self.appDelegate.activeMain.uploadFileAsset(self.assets, serverUrl: self.localServerUrl, cryptated: self.cryptated!, useSubFolder: (useSubfolder.value! as AnyObject).boolValue, session: self.session)
         })
     }
 

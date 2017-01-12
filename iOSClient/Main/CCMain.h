@@ -81,7 +81,7 @@
 - (void)createFolder:(NSString *)fileNameFolder folderCameraUpload:(BOOL)folderCameraUpload;
 - (void)readFolderWithForced:(BOOL)forced;
 
-- (void)uploadFileAsset:(NSMutableArray *)assets serverUrl:(NSString *)serverUrl cryptated:(BOOL)cryptated session:(NSString *)session;
+- (void)uploadFileAsset:(NSMutableArray *)assets serverUrl:(NSString *)serverUrl cryptated:(BOOL)cryptated useSubFolder:(BOOL)useSubFolder session:(NSString *)session;
 
 - (void)progressTask:(NSString *)fileID serverUrl:(NSString *)serverUrl cryptated:(BOOL)cryptated progress:(float)progress;
 

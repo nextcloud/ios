@@ -706,10 +706,7 @@
         
         //navController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
         
-        [self presentViewController:navigationController animated:YES completion:nil];
-        
-        // OLD :
-        // [self uploadFileAsset:assets serverUrl:_localServerUrl cryptated:_isPickerCriptate session:upload_session];
+        [self presentViewController:navigationController animated:YES completion:nil];        
     }];
 }
 
@@ -1407,12 +1404,40 @@
     }
 }
 
-- (void)uploadFileAsset:(NSMutableArray *)assets serverUrl:(NSString *)serverUrl cryptated:(BOOL)cryptated session:(NSString *)session
+- (void)uploadFileAsset:(NSMutableArray *)assets serverUrl:(NSString *)serverUrl cryptated:(BOOL)cryptated useSubFolder:(BOOL)useSubFolder session:(NSString *)session
 {
     NSLog(@"[LOG] Asset N. %lu", (unsigned long)[assets count]);
     
     // remove title
     [self setTitleBackgroundTableView:nil];
+
+    NSString *folderPhotos = [CCCoreData getCameraUploadFolderNamePathActiveAccount:app.activeAccount activeUrl:app.activeUrl typeCloud:app.typeCloud];
+    
+    // Create if request the folder for Photos
+    if (useSubFolder || [serverUrl isEqualToString:folderPhotos]) {
+        
+        if(![app.activePhotosCameraUpload createFolder:folderPhotos]) {
+            
+            [app messageNotification:@"_error_" description:@"_error_createsubfolders_upload_" visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeInfo];
+            
+            return;
+        }
+    }
+    
+    // Subfolder ? Create
+    if (useSubFolder) {
+        
+        for (NSString *dateSubFolder in [CCUtility createNameSubFolder:assets]) {
+                
+            if(![app.activePhotosCameraUpload createFolder:[NSString stringWithFormat:@"%@/%@", folderPhotos, dateSubFolder]]) {
+                
+                [app messageNotification:@"_error_" description:@"_error_createsubfolders_upload_" visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeInfo];
+                    
+                return;
+            }
+        }
+    }
+
     
     NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:app.activeAccount];
 

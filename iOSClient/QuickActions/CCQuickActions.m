@@ -171,7 +171,7 @@
 
 - (void)move:(NSString *)serverUrlTo title:(NSString *)title selectedMetadatas:(NSArray *)selectedMetadatas
 {    
-    [_mainVC uploadFileAsset:_assets serverUrl:serverUrlTo cryptated:_cryptated session:upload_session];
+    [_mainVC uploadFileAsset:_assets serverUrl:serverUrlTo cryptated:_cryptated useSubFolder:NO session:upload_session];
 }
 
 - (void)moveOpenWindow:(NSArray *)indexPaths

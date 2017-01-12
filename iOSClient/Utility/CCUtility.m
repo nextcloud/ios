@@ -716,6 +716,32 @@
     return translate;
 }
 
++ (NSArray *)createNameSubFolder:(NSArray *)alassets
+{
+    NSMutableOrderedSet *datesSubFolder = [[NSMutableOrderedSet alloc] init];
+    
+    for (ALAsset *asset in alassets) {
+        
+        NSURL *url = [asset valueForProperty:@"ALAssetPropertyAssetURL"];
+        PHFetchResult *fetchResult = [PHAsset fetchAssetsWithALAssetURLs:@[url] options:nil];
+        PHAsset *asset = [fetchResult firstObject];
+        
+        NSDate *assetDate = asset.creationDate;
+            
+        NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+        [formatter setDateFormat:@"yyyy"];
+        NSString *yearString = [formatter stringFromDate:assetDate];
+        [datesSubFolder addObject:yearString];
+            
+        [formatter setDateFormat:@"MM"];
+        NSString *monthString = [formatter stringFromDate:assetDate];
+        monthString = [NSString stringWithFormat:@"%@/%@", yearString, monthString];
+        [datesSubFolder addObject:monthString];
+    }
+    
+    return (NSArray *)datesSubFolder;
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== CCMetadata =====
 #pragma --------------------------------------------------------------------------------------------
