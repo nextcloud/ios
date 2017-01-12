@@ -1157,11 +1157,11 @@
 - (void)uploadAssetsToNetwork:(NSMutableArray *)newItemsToUpload assetsFull:(BOOL)assetsFull
 {
     NSMutableArray *newItemsPHAssetToUpload = [[NSMutableArray alloc] init];
-    NSMutableOrderedSet *datesSubFolder = [[NSMutableOrderedSet alloc] init];
     
     NSString *folderPhotos = [CCCoreData getCameraUploadFolderNamePathActiveAccount:app.activeAccount activeUrl:app.activeUrl typeCloud:app.typeCloud];
     BOOL createSubfolders = [CCCoreData getCameraUploadCreateSubfolderActiveAccount:app.activeAccount];
     
+    /*
     for (ALAsset *asset in newItemsToUpload) {
         
         NSURL *url = [asset valueForProperty:@"ALAssetPropertyAssetURL"];
@@ -1184,13 +1184,14 @@
             [datesSubFolder addObject:monthString];
         }
     }
+    */
     
     // Use subfolders
     if (createSubfolders) {
         
-        for (NSString *dateSubFolder in datesSubFolder) {
+        for (NSString *dateSubFolder in [CCUtility createNameSubFolder:newItemsToUpload]) {
             
-            if(![self createFolder:[NSString stringWithFormat:@"%@/%@", folderPhotos, dateSubFolder]]) {
+            if (![self createFolder:[NSString stringWithFormat:@"%@/%@", folderPhotos, dateSubFolder]]) {
                 
                 [self endLoadingAssets];
                 

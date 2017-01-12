@@ -716,14 +716,30 @@
     return translate;
 }
 
-+ (NSArray *)createNameSubFolder:(NSArray *)alassets
++ (NSArray *)createNameSubFolder:(NSArray *)assets
 {
     NSMutableOrderedSet *datesSubFolder = [[NSMutableOrderedSet alloc] init];
     
-    for (PHAsset *asset in alassets) {
+    for (id asset in assets) {
         
-        NSDate *assetDate = asset.creationDate;
+        NSDate *assetDate;
+        
+        if ([asset isKindOfClass:[PHAsset class]]) {
             
+            PHAsset *phAsset = (PHAsset *)asset;
+            assetDate = phAsset.creationDate;
+        }
+        
+        if ([asset isKindOfClass:[ALAsset class]]) {
+            
+            ALAsset *alAsset = (ALAsset *)asset;
+            NSURL *url = [alAsset valueForProperty:@"ALAssetPropertyAssetURL"];
+            PHFetchResult *fetchResult = [PHAsset fetchAssetsWithALAssetURLs:@[url] options:nil];
+            PHAsset *phAsset = [fetchResult firstObject];
+            
+            assetDate = phAsset.creationDate;
+        }
+        
         NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
         [formatter setDateFormat:@"yyyy"];
         NSString *yearString = [formatter stringFromDate:assetDate];

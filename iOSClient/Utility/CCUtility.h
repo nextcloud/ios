@@ -155,7 +155,7 @@
 
 + (NSString *)localizableBrand:(NSString *)localize table:(NSString *)table;
 
-+ (NSArray *)createNameSubFolder:(NSArray *)alassets;
++ (NSArray *)createNameSubFolder:(NSArray *)assets;
 
 // ===== CCMetadata =====
 

@@ -1456,6 +1456,8 @@
     for (PHAsset *asset in assets) {
         
         NSString *fileNameUpload;
+        NSDate *assetDate = asset.creationDate;
+        NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
         
         // Create file name for upload
         if (cryptated) {
@@ -1465,6 +1467,18 @@
             fileNameUpload = [CCUtility createFileNameFromAsset:asset];
         }
 
+        // Create serverUrl if use sub folder
+        if (useSubFolder) {
+            
+            [formatter setDateFormat:@"yyyy"];
+            NSString *yearString = [formatter stringFromDate:assetDate];
+        
+            [formatter setDateFormat:@"MM"];
+            NSString *monthString = [formatter stringFromDate:assetDate];
+            
+            serverUrl = [NSString stringWithFormat:@"%@/%@/%@", folderPhotos, yearString, monthString];
+        }
+        
         // Check if is in upload 
         NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND (fileName == %@) AND (session != NULL) AND (session != '')", app.activeAccount, directoryID, fileNameUpload];
         NSArray *isRecordInSessions = [CCCoreData getTableMetadataWithPredicate:predicate context:nil];
