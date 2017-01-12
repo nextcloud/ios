@@ -195,6 +195,12 @@
     [UICKeyChainStore setString:fileNameMask forKey:@"fileNameMask" service:serviceShareKeyChain];
 }
 
++ (void)setCreateMenuEncrypted:(BOOL)encrypted
+{
+    NSString *sEncrypted = (encrypted) ? @"true" : @"false";
+    [UICKeyChainStore setString:sEncrypted forKey:@"createMenuEncrypted" service:serviceShareKeyChain];
+}
+
 #pragma ------------------------------ GET
 
 + (NSString *)getKeyChainPasscodeForUUID:(NSString *)uuid
@@ -369,6 +375,11 @@
         mask = @"";
         
     return mask;
+}
+
++ (BOOL)getCreateMenuEncrypted
+{
+    return [[UICKeyChainStore stringForKey:@"createMenuEncrypted" service:serviceShareKeyChain] boolValue];
 }
 
 #pragma --------------------------------------------------------------------------------------------

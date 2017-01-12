@@ -806,7 +806,10 @@
 {
     CreateMenuAdd *menuAdd = [[CreateMenuAdd alloc] init];
     
-    [menuAdd createMenuPlainWithView:self.window.rootViewController.view];
+    if ([CCUtility getCreateMenuEncrypted])
+        [menuAdd createMenuEncryptedWithView:self.window.rootViewController.view];
+    else
+        [menuAdd createMenuPlainWithView:self.window.rootViewController.view];
 }
 
 - (void)updateApplicationIconBadgeNumber

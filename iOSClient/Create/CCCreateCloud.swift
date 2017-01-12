@@ -76,6 +76,8 @@ class CreateMenuAdd: NSObject {
         })
         
         actionSheet?.show()
+        
+        CCUtility.setCreateMenuEncrypted(false)
     }
     
     func createMenuEncrypted(view : UIView) {
@@ -118,7 +120,13 @@ class CreateMenuAdd: NSObject {
             self.createMenuTemplate(view: view)
         })
 
+        actionSheet?.addButton(withTitle: NSLocalizedString("Upload Plain mode", comment: ""), image: UIImage(named: "uploadPlainModeNextcloud"), backgroundColor: colorLightGray, height: 50.0, type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
+            self.createMenuPlain(view: view)
+        })
+        
         actionSheet?.show()
+        
+        CCUtility.setCreateMenuEncrypted(true)
     }
 
     func createMenuTemplate(view : UIView) {

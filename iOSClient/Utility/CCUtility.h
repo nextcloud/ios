@@ -82,6 +82,8 @@
 
 + (void)setFileNameMask:(NSString *)fileNameMask;
 
++ (void)setCreateMenuEncrypted:(BOOL)encrypted;
+
 // GET
 
 + (NSString *)getKeyChainPasscodeForUUID:(NSString *)uuid;
@@ -118,6 +120,8 @@
 + (BOOL)getDirectoryOnTop;
 
 + (NSString *)getFileNameMask;
+
++ (BOOL)getCreateMenuEncrypted;
 
 // ===== Varius =====
 
