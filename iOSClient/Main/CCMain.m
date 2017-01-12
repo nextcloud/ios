@@ -634,19 +634,6 @@
 
 - (void)openAssetsPickerController
 {
-    
-#ifdef DEBUG
-    
-    CreateFormUpload *form = [[CreateFormUpload alloc] init:_titleMain];
-    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:form];
-    
-    //navController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-
-    [self presentViewController:navController animated:YES completion:nil];
-
-    return;
-#endif
-    
     CTAssetSelectionLabel *assetSelectionLabel = [CTAssetSelectionLabel appearance];
     assetSelectionLabel.borderWidth = 1.0;
     assetSelectionLabel.borderColor = COLOR_BRAND;
@@ -710,7 +697,24 @@
 {
     [picker dismissViewControllerAnimated:YES completion:^{
         
+#ifdef DEBUG
+        
+        CreateFormUpload *form = [[CreateFormUpload alloc] init:_titleMain localServerUrl:_localServerUrl];
+        form.title = NSLocalizedString(@"_upload_photos_videos_", nil);
+        
+        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:form];
+        
+        [navigationController setModalPresentationStyle:UIModalPresentationFormSheet];
+        
+        //navController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+        
+        [self presentViewController:navigationController animated:YES completion:nil];
+        
+        return;
+#else
         [self uploadFileAsset:assets serverUrl:_localServerUrl cryptated:_isPickerCriptate session:upload_session];
+#endif
+        
     }];
 }
 

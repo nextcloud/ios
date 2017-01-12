@@ -202,18 +202,22 @@ class CreateMenuAdd: NSObject {
 
 class CreateFormUpload: XLFormViewController {
     
-    var destinationFolder : String?
+    var localServerUrl : String?
+    var titleLocalServerUrl : String?
     
-    convenience init(_ destionationFolder : String?) {
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    
+    convenience init(_ titleLocalServerUrl : String?, localServerUrl : String?) {
         
         self.init()
         
-        if destionationFolder == nil || destionationFolder?.isEmpty == true {
-            self.destinationFolder = "/" //NSLocalizedString("_root_", comment: "")
+        if titleLocalServerUrl == nil || titleLocalServerUrl?.isEmpty == true {
+            self.titleLocalServerUrl = "/" //NSLocalizedString("_root_", comment: "")
         } else {
-            self.destinationFolder = destionationFolder
+            self.titleLocalServerUrl = titleLocalServerUrl
         }
-    
+        
+        self.localServerUrl = localServerUrl
         self.initializeForm()
     }
     
@@ -231,32 +235,45 @@ class CreateFormUpload: XLFormViewController {
     
     func initializeForm() {
         
+        
+
         let form : XLFormDescriptor = XLFormDescriptor() as XLFormDescriptor
         form.rowNavigationOptions = XLFormRowNavigationOptions.stopDisableRow
 
         var section : XLFormSectionDescriptor
         var row : XLFormRowDescriptor
 
-        section = XLFormSectionDescriptor.formSection(withTitle: "_destination_folder_") as XLFormSectionDescriptor
+        section = XLFormSectionDescriptor.formSection(withTitle: NSLocalizedString("_destination_folder_", comment: "")) as XLFormSectionDescriptor
         form.addFormSection(section)
         
-        row = XLFormRowDescriptor(tag: "ButtonDestinationFolder", rowType: XLFormRowDescriptorTypeButton, title: self.destinationFolder)
+        row = XLFormRowDescriptor(tag: "ButtonDestinationFolder", rowType: XLFormRowDescriptorTypeButton, title: self.titleLocalServerUrl)
         row.cellConfig.setObject(UIImage(named: image_settingsManagePhotos)!, forKey: "imageView.image" as NSCopying)
         section.addFormRow(row)
         
-        section = XLFormSectionDescriptor.formSection(withTitle: "A") as XLFormSectionDescriptor
+        section = XLFormSectionDescriptor.formSection(withTitle: NSLocalizedString("_use_folder_photos_", comment: "")) as XLFormSectionDescriptor
         form.addFormSection(section)
         
-        row = XLFormRowDescriptor(tag: "FolderPhoto", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: "Save in Pfoto folder")
+        row = XLFormRowDescriptor(tag: "useFolderPhoto", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_photo_camera_", comment: ""))
+        row.value = 0
         section.addFormRow(row)
-        row = XLFormRowDescriptor(tag: "der", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: "Subloder")
+        
+        row = XLFormRowDescriptor(tag: "useSubfolder", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_upload_camera_create_subfolder_", comment: ""))
+        row.hidden = "$\("useFolderPhoto") == 0"
+        
+        if CCCoreData.getCameraUploadCreateSubfolderActiveAccount(appDelegate.activeAccount) == true {
+            row.value = 1
+        } else {
+            row.value = 0
+        }
         section.addFormRow(row)
 
+        /*
         section = XLFormSectionDescriptor.formSection(withTitle: "B") as XLFormSectionDescriptor
         form.addFormSection(section)
         
-        row = XLFormRowDescriptor(tag: "TextFieldAndTextView", rowType: XLFormRowDescriptorTypeName, title: "File name")
+        row = XLFormRowDescriptor(tag: "TextFieldAndTextView", rowType: XLFormRowDescriptorTypeName, title: NSLocalizedString("_add_passport_", comment: ""))
         section.addFormRow(row)
+        */
         
         self.form = form
     }
@@ -266,7 +283,7 @@ class CreateFormUpload: XLFormViewController {
     }
 
     func cancel() {
-        
+        self.dismiss(animated: true, completion: nil)
     }
 }
 

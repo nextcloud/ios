@@ -474,6 +474,11 @@
 
 "_save_document_picker_"            = "Save here";
 
+// CreateFormUpload
+
+"_destination_folder_"              = "Destination folder";
+"_use_folder_photos_"               = "Use the folder Photos as destination";
+
 // -----------------------------------------------------------------------------------------------------------
 
 "Done"                          = "Done";
