@@ -248,6 +248,8 @@ class CreateFormUpload: XLFormViewController, CCMoveDelegate {
         var section : XLFormSectionDescriptor
         var row : XLFormRowDescriptor
 
+        // Section: Destination Folder
+        
         section = XLFormSectionDescriptor.formSection()
         form.addFormSection(section)
         
@@ -255,6 +257,8 @@ class CreateFormUpload: XLFormViewController, CCMoveDelegate {
         row.cellConfig.setObject(UIImage(named: image_settingsManagePhotos)!, forKey: "imageView.image" as NSCopying)
         row.action.formSelector = #selector(changeDestinationFolder(_:))
         section.addFormRow(row)
+        
+        // Section: Folder Photo
         
         section = XLFormSectionDescriptor.formSection()
         form.addFormSection(section)
@@ -273,13 +277,13 @@ class CreateFormUpload: XLFormViewController, CCMoveDelegate {
         }
         section.addFormRow(row)
 
-        /*
-        section = XLFormSectionDescriptor.formSection(withTitle: "B") as XLFormSectionDescriptor
+        // Section: Rename File Name
+        
+        section = XLFormSectionDescriptor.formSection()
         form.addFormSection(section)
         
-        row = XLFormRowDescriptor(tag: "TextFieldAndTextView", rowType: XLFormRowDescriptorTypeName, title: NSLocalizedString("_add_passport_", comment: ""))
+        row = XLFormRowDescriptor(tag: "maskFileName", rowType: XLFormRowDescriptorTypeName, title: NSLocalizedString("_filename_", comment: ""))
         section.addFormRow(row)
-        */
         
         self.form = form
     }
@@ -311,6 +315,10 @@ class CreateFormUpload: XLFormViewController, CCMoveDelegate {
                 
             }
         }
+        else if formRow.tag == "maskFileName" {
+            
+            
+        }
     }
     
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
@@ -328,6 +336,10 @@ class CreateFormUpload: XLFormViewController, CCMoveDelegate {
         
         if section == 1 {
             returnTitle = NSLocalizedString("_use_folder_photos_", comment: "")
+        }
+        
+        if section == 2 {
+            returnTitle = NSLocalizedString("_rename_filename_", comment: "")
         }
         
         return returnTitle
