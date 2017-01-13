@@ -238,6 +238,8 @@ class CreateFormUpload: XLFormViewController, CCMoveDelegate {
         
         self.navigationItem.leftBarButtonItem = cancelButton
         self.navigationItem.rightBarButtonItem = saveButton
+        
+        self.reloadForm()
     }
     
     func initializeForm() {
@@ -283,6 +285,20 @@ class CreateFormUpload: XLFormViewController, CCMoveDelegate {
         form.addFormSection(section)
         
         row = XLFormRowDescriptor(tag: "maskFileName", rowType: XLFormRowDescriptorTypeName, title: NSLocalizedString("_filename_", comment: ""))
+        
+        let fileNameMask : String = CCUtility.getFileNameMask()
+        if fileNameMask.characters.count > 0 {
+            row.value = fileNameMask
+        }
+        section.addFormRow(row)
+        
+        // Section: Preview File Name
+        
+        section = XLFormSectionDescriptor.formSection()
+        form.addFormSection(section)
+
+        row = XLFormRowDescriptor(tag: "previewFileName", rowType: XLFormRowDescriptorTypeTextView, title: "")
+        row.disabled = true
         section.addFormRow(row)
         
         self.form = form
@@ -317,20 +333,10 @@ class CreateFormUpload: XLFormViewController, CCMoveDelegate {
         }
         else if formRow.tag == "maskFileName" {
             
-            if formRow.value != nil {
-                
-                var value : String = formRow.value as! String
-                value = value.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
-                
-                if value.characters.count > 0 {
-                    
-                    self.form.delegate = nil
-                    formRow.value = value
-                    CCUtility.setFileNameMask(formRow.value as! String)
-                    self.tableView.reloadData()
-                    self.form.delegate = self
-                }
-            }
+            let previewFileName : XLFormRowDescriptor  = self.form.formRow(withTag: "previewFileName")!
+            previewFileName.value = self.previewFileName(valueRename: formRow.value as? String)
+            let indexPathPreview : IndexPath = IndexPath(row: 0, section: 3)
+            self.tableView.reloadRows(at: [indexPathPreview], with: UITableViewRowAnimation.none)
         }
     }
     
@@ -350,6 +356,8 @@ class CreateFormUpload: XLFormViewController, CCMoveDelegate {
             return NSLocalizedString("_use_folder_photos_", comment: "")
         case 2:
             return NSLocalizedString("_rename_filename_", comment: "")
+        case 3:
+            return NSLocalizedString("_preview_filename_", comment: "")
         default:
             return ""
         }
@@ -358,9 +366,14 @@ class CreateFormUpload: XLFormViewController, CCMoveDelegate {
     override func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
         
         switch section {
-            
+           
+        /*
         case 2:
-            return NSLocalizedString("_rename_filename_", comment: "")
+            let buttonDestinationFolder : XLFormRowDescriptor  = self.form.formRow(withTag: "maskFileName")!
+            let text = self.writePreviewFileName(buttonDestinationFolder)
+            return text
+        */
+            
         default:
             return ""
         }
@@ -373,8 +386,38 @@ class CreateFormUpload: XLFormViewController, CCMoveDelegate {
         let buttonDestinationFolder : XLFormRowDescriptor  = self.form.formRow(withTag: "ButtonDestinationFolder")!
         buttonDestinationFolder.title = self.titleLocalServerUrl
         
+        let maskFileName : XLFormRowDescriptor = self.form.formRow(withTag: "maskFileName")!
+        let previewFileName : XLFormRowDescriptor  = self.form.formRow(withTag: "previewFileName")!
+        previewFileName.value = self.previewFileName(valueRename: maskFileName.value as? String)
+        
         self.tableView.reloadData()
         self.form.delegate = self
+    }
+    
+    func previewFileName(valueRename : String?) -> String {
+        
+        var returnString : String = ""
+        
+        if valueRename != nil {
+            
+            let valueRenameTrimming = valueRename!.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
+            
+            if valueRenameTrimming.characters.count > 0 {
+                
+                self.form.delegate = nil
+                CCUtility.setFileNameMask(valueRenameTrimming)
+                self.form.delegate = self
+                
+                returnString = CCUtility.createFileName(from: assets[0] as! PHAsset, withMask: true)
+            }
+            
+        } else {
+            
+            CCUtility.setFileNameMask("")
+            returnString = CCUtility.createFileName(from: assets[0] as! PHAsset, withMask: false)
+        }
+        
+        return returnString
     }
     
     func changeDestinationFolder(_ sender: XLFormRowDescriptor) {

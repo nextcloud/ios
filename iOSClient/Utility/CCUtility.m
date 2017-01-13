@@ -480,6 +480,7 @@
 + (NSString *)createFileNameFromAsset:(PHAsset *)asset withMask:(BOOL)withMask
 {
     NSDate *assetDate = asset.creationDate;
+    NSString *fileName;
     
     NSString *assetFileName = [asset valueForKey:@"filename"];
     
@@ -489,12 +490,22 @@
     
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
     [formatter setDateFormat:@"yyyy-MM-dd HH-mm-ss"];
-    NSString *filenameDate = [formatter stringFromDate:assetDate];
+    NSString *fileNameDate = [formatter stringFromDate:assetDate];
     
-    NSString *filenameExt = [[assetFileName pathExtension] lowercaseString];
-    NSString *fileNameUpload = [NSString stringWithFormat:@"%@ %@.%@", filenameDate, numberFileName, filenameExt];
+    NSString *fileNameExt = [[assetFileName pathExtension] lowercaseString];
     
-    return fileNameUpload;
+    if (withMask) {
+        fileName = [CCUtility getFileNameMask];
+        if ([fileName length] > 0)
+            fileName = [NSString stringWithFormat:@"%@-%@.%@", fileName, numberFileName, fileNameExt];
+        else
+            fileName = [NSString stringWithFormat:@"%@ %@.%@", fileNameDate, numberFileName, fileNameExt];
+        
+    } else {
+        fileName = [NSString stringWithFormat:@"%@ %@.%@", fileNameDate, numberFileName, fileNameExt];
+    }
+    
+    return fileName;
 }
 
 + (NSString *)getHomeServerUrlActiveUrl:(NSString *)activeUrl typeCloud:(NSString *)typeCloud
