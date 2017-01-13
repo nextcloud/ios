@@ -379,14 +379,16 @@ class CreateFormUpload: XLFormViewController, CCMoveDelegate {
         
         self.dismiss(animated: true, completion: {
             
-            let useFolderPhoto : XLFormRowDescriptor  = self.form.formRow(withTag: "useFolderPhoto")!
-            let useSubfolder : XLFormRowDescriptor  = self.form.formRow(withTag: "useSubFolder")!
+            let useFolderPhotoRow : XLFormRowDescriptor  = self.form.formRow(withTag: "useFolderPhoto")!
+            let useSubFolderRow : XLFormRowDescriptor  = self.form.formRow(withTag: "useSubFolder")!
+            var useSubFolder : Bool = false
             
-            if (useFolderPhoto.value! as AnyObject).boolValue == true {
+            if (useFolderPhotoRow.value! as AnyObject).boolValue == true {
                 self.localServerUrl = CCCoreData.getCameraUploadFolderNamePathActiveAccount(self.appDelegate.activeAccount, activeUrl: self.appDelegate.activeUrl, typeCloud: self.appDelegate.typeCloud)
+                useSubFolder = (useSubFolderRow.value! as AnyObject).boolValue
             }
             
-            self.appDelegate.activeMain.uploadFileAsset(self.assets, serverUrl: self.localServerUrl, cryptated: self.cryptated!, useSubFolder: (useSubfolder.value! as AnyObject).boolValue, session: self.session)
+            self.appDelegate.activeMain.uploadFileAsset(self.assets, serverUrl: self.localServerUrl, cryptated: self.cryptated!, useSubFolder: useSubFolder, session: self.session)
         })
     }
 
