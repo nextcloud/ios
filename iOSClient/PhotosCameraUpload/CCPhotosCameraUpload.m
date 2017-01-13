@@ -1193,7 +1193,7 @@
         NSDate *assetDate = asset.creationDate;
         PHAssetMediaType assetMediaType = asset.mediaType;
         NSString *session;
-        NSString *fileNameUpload = [CCUtility createFileNameFromAsset:asset withMask:false];
+        NSString *fileName = [CCUtility createFileNameFromAsset:asset withMask:false];
         
         // Select type of session
         
@@ -1228,7 +1228,7 @@
             metadataNet.selectorPost = nil;
             metadataNet.priority = NSOperationQueuePriorityHigh;
         }
-        metadataNet.fileName = fileNameUpload;
+        metadataNet.fileName = fileName;
         metadataNet.serverUrl = serverUrl;
         metadataNet.session = session;
         metadataNet.taskStatus = taskStatusResume;

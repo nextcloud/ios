@@ -1463,18 +1463,11 @@
     
     for (PHAsset *asset in assets) {
         
-        NSString *fileNameUpload;
+        NSString *fileName = [CCUtility createFileNameFromAsset:asset withMask:true];
+        
         NSDate *assetDate = asset.creationDate;
         NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
         
-        // Create file name for upload
-        if (cryptated) {
-            CCCrypto *crypto = [[CCCrypto alloc] init];
-            fileNameUpload = [NSString stringWithFormat:@"%@.plist", [crypto createFilenameEncryptor:[CCUtility createFileNameFromAsset:asset withMask:true] uuid:[CCUtility getUUID]]];
-        } else {
-            fileNameUpload = [CCUtility createFileNameFromAsset:asset withMask:true];
-        }
-
         // Create serverUrl if use sub folder
         if (useSubFolder) {
             
@@ -1488,7 +1481,7 @@
         }
         
         // Check if is in upload 
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND (fileName == %@) AND (session != NULL) AND (session != '')", app.activeAccount, directoryID, fileNameUpload];
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND (fileName == %@) AND (session != NULL) AND (session != '')", app.activeAccount, directoryID, fileName];
         NSArray *isRecordInSessions = [CCCoreData getTableMetadataWithPredicate:predicate context:nil];
 
         if ([isRecordInSessions count] > 0) {
@@ -1505,7 +1498,7 @@
                 metadataNet.action = actionReadFile;
                 metadataNet.assetLocalItentifier = asset.localIdentifier;
                 metadataNet.cryptated = cryptated;
-                metadataNet.fileName = fileNameUpload;
+                metadataNet.fileName = fileName;
                 metadataNet.priority = NSOperationQueuePriorityVeryHigh;
                 metadataNet.session = session;
                 metadataNet.selector = selectorReadFileUploadFile;

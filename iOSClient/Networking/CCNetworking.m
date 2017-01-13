@@ -727,7 +727,7 @@
 #pragma mark =====  Upload =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)uploadFileFromAssetLocalIdentifier:(NSString *)localIdentifier fileName:(NSString *)fileNameXX serverUrl:(NSString *)serverUrl cryptated:(BOOL)cryptated session:(NSString *)session taskStatus:(NSInteger)taskStatus selector:(NSString *)selector selectorPost:(NSString *)selectorPost parentRev:(NSString *)parentRev errorCode:(NSInteger)errorCode delegate:(id)delegate
+- (void)uploadFileFromAssetLocalIdentifier:(NSString *)localIdentifier fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl cryptated:(BOOL)cryptated session:(NSString *)session taskStatus:(NSInteger)taskStatus selector:(NSString *)selector selectorPost:(NSString *)selectorPost parentRev:(NSString *)parentRev errorCode:(NSInteger)errorCode delegate:(id)delegate
 {
     PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[localIdentifier] options:nil];
     
@@ -745,8 +745,7 @@
     
     // create fileName
     NSString *assetFileName = [asset valueForKey:@"filename"];
-    NSString *fileNameUpload = [CCUtility createFileNameFromAsset:asset withMask:false];
-    NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", _directoryUser, fileNameUpload];
+    NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", _directoryUser, fileName];
     
     //delegate
     if (delegate == nil)
@@ -827,21 +826,21 @@
         
     } else {
         
-        [self upload:fileNameUpload serverUrl:serverUrl cryptated:cryptated template:NO onlyPlist:NO assetTemplateFileName:assetFileName assetDate:assetDate assetMediaType:assetMediaType localIdentifier:localIdentifier session:session taskStatus:taskStatus selector:selector selectorPost:selectorPost parentRev:parentRev errorCode:errorCode delegate:delegate];
+        [self upload:fileName serverUrl:serverUrl cryptated:cryptated template:NO onlyPlist:NO assetFileName:assetFileName assetDate:assetDate assetMediaType:assetMediaType localIdentifier:localIdentifier session:session taskStatus:taskStatus selector:selector selectorPost:selectorPost parentRev:parentRev errorCode:errorCode delegate:delegate];
     }
 }
 
 - (void)uploadFile:(NSString *)fileName serverUrl:(NSString *)serverUrl cryptated:(BOOL)cryptated onlyPlist:(BOOL)onlyPlist session:(NSString *)session taskStatus:(NSInteger)taskStatus selector:(NSString *)selector selectorPost:(NSString *)selectorPost parentRev:(NSString *)parentRev errorCode:(NSInteger)errorCode delegate:(id)delegate
 {
-    [self upload:fileName serverUrl:serverUrl cryptated:cryptated template:NO onlyPlist:onlyPlist assetTemplateFileName:nil assetDate:nil assetMediaType:PHAssetMediaTypeUnknown localIdentifier:nil session:session taskStatus:taskStatus selector:selector selectorPost:selectorPost parentRev:parentRev errorCode:errorCode delegate:delegate];
+    [self upload:fileName serverUrl:serverUrl cryptated:cryptated template:NO onlyPlist:onlyPlist assetFileName:nil assetDate:nil assetMediaType:PHAssetMediaTypeUnknown localIdentifier:nil session:session taskStatus:taskStatus selector:selector selectorPost:selectorPost parentRev:parentRev errorCode:errorCode delegate:delegate];
 }
 
 - (void)uploadTemplate:(NSString *)fileNamePrint fileNameCrypto:(NSString *)fileNameCrypto serverUrl:(NSString *)serverUrl session:(NSString *)session taskStatus:(NSInteger)taskStatus selector:(NSString *)selector selectorPost:(NSString *)selectorPost parentRev:(NSString *)parentRev errorCode:(NSInteger)errorCode delegate:(id)delegate
 {
-    [self upload:fileNameCrypto serverUrl:serverUrl cryptated:YES template:YES onlyPlist:NO assetTemplateFileName:fileNamePrint assetDate:nil assetMediaType:PHAssetMediaTypeUnknown localIdentifier:nil session:session taskStatus:taskStatus selector:selector selectorPost:selectorPost parentRev:parentRev errorCode:errorCode delegate:delegate];
+    [self upload:fileNameCrypto serverUrl:serverUrl cryptated:YES template:YES onlyPlist:NO assetFileName:fileNamePrint assetDate:nil assetMediaType:PHAssetMediaTypeUnknown localIdentifier:nil session:session taskStatus:taskStatus selector:selector selectorPost:selectorPost parentRev:parentRev errorCode:errorCode delegate:delegate];
 }
 
-- (void)upload:(NSString *)fileName serverUrl:(NSString *)serverUrl cryptated:(BOOL)cryptated template:(BOOL)template onlyPlist:(BOOL)onlyPlist assetTemplateFileName:(NSString *)assetTemplateFileName assetDate:(NSDate *)assetDate assetMediaType:(PHAssetMediaType)assetMediaType localIdentifier:(NSString *)localIdentifier session:(NSString *)session taskStatus:(NSInteger)taskStatus selector:(NSString *)selector selectorPost:(NSString *)selectorPost parentRev:(NSString *)parentRev errorCode:(NSInteger)errorCode delegate:(id)delegate
+- (void)upload:(NSString *)fileName serverUrl:(NSString *)serverUrl cryptated:(BOOL)cryptated template:(BOOL)template onlyPlist:(BOOL)onlyPlist assetFileName:(NSString *)assetFileName assetDate:(NSDate *)assetDate assetMediaType:(PHAssetMediaType)assetMediaType localIdentifier:(NSString *)localIdentifier session:(NSString *)session taskStatus:(NSInteger)taskStatus selector:(NSString *)selector selectorPost:(NSString *)selectorPost parentRev:(NSString *)parentRev errorCode:(NSInteger)errorCode delegate:(id)delegate
 {
     NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:_activeAccount];
     NSString *fileNameCrypto;
@@ -891,8 +890,8 @@
             [CCUtility moveFileAtPath:[NSTemporaryDirectory() stringByAppendingString:fileName] toPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, fileName]];
             [CCUtility moveFileAtPath:[NSTemporaryDirectory() stringByAppendingString:[fileName stringByAppendingString:@".plist"]] toPath:[NSString stringWithFormat:@"%@/%@.plist", _directoryUser, fileName]];
             
-            fileNameCrypto = fileName;          // file Name Crypto
-            fileName = assetTemplateFileName;   // file Name Print
+            fileNameCrypto = fileName;  // file Name Crypto
+            fileName = assetFileName;   // file Name Print
             
             [CCUtility insertInformationPlist:metadata directoryUser:_directoryUser];
             
@@ -920,16 +919,6 @@
         
         if (template == NO) {
         
-            // REMOVE V 2.17
-            /*
-            NSString *fileNameForCrypto;
-        
-            if ([selector isEqualToString:selectorUploadAutomatic] || [selector isEqualToString:selectorUploadAutomaticAll])
-                fileNameForCrypto = [NSString stringWithFormat:@"%@%@", assetTemplateFileName, assetDate];
-            else
-                fileNameForCrypto = fileName;
-            */
-            
             NSString *passcode = [crypto getKeyPasscode:[CCUtility getUUID]];
         
             fileNameCrypto = [crypto encryptWithCreatePlist:fileName fileNameEncrypted:fileName passcode:passcode directoryUser:_directoryUser];
