@@ -920,16 +920,19 @@
         
         if (template == NO) {
         
+            // REMOVE V 2.17
+            /*
             NSString *fileNameForCrypto;
         
             if ([selector isEqualToString:selectorUploadAutomatic] || [selector isEqualToString:selectorUploadAutomaticAll])
                 fileNameForCrypto = [NSString stringWithFormat:@"%@%@", assetTemplateFileName, assetDate];
             else
                 fileNameForCrypto = fileName;
-        
+            */
+            
             NSString *passcode = [crypto getKeyPasscode:[CCUtility getUUID]];
         
-            fileNameCrypto = [crypto encryptWithCreatePlist:fileName fileNameEncrypted:fileNameForCrypto passcode:passcode directoryUser:_directoryUser];
+            fileNameCrypto = [crypto encryptWithCreatePlist:fileName fileNameEncrypted:fileName passcode:passcode directoryUser:_directoryUser];
         
             // Encrypted file error
             if (fileNameCrypto == nil) {
