@@ -317,32 +317,53 @@ class CreateFormUpload: XLFormViewController, CCMoveDelegate {
         }
         else if formRow.tag == "maskFileName" {
             
-            
+            if formRow.value != nil {
+                
+                var value : String = formRow.value as! String
+                value = value.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
+                
+                if value.characters.count > 0 {
+                    
+                    self.form.delegate = nil
+                    formRow.value = value
+                    CCUtility.setFileNameMask(formRow.value as! String)
+                    self.tableView.reloadData()
+                    self.form.delegate = self
+                }
+            }
         }
     }
     
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         
-        var returnTitle : String?
+        switch section {
         
-        if section == 0 {
+        case 0:
             let buttonDestinationFolder : XLFormRowDescriptor  = self.form.formRow(withTag: "ButtonDestinationFolder")!
+            
             if buttonDestinationFolder.isHidden() {
-                returnTitle = ""
+                return ""
             } else {
-                returnTitle = NSLocalizedString("_destination_folder_", comment: "")
+                return NSLocalizedString("_destination_folder_", comment: "")
             }
+        case 1:
+            return NSLocalizedString("_use_folder_photos_", comment: "")
+        case 2:
+            return NSLocalizedString("_rename_filename_", comment: "")
+        default:
+            return ""
         }
+    }
+    
+    override func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
         
-        if section == 1 {
-            returnTitle = NSLocalizedString("_use_folder_photos_", comment: "")
+        switch section {
+            
+        case 2:
+            return NSLocalizedString("_rename_filename_", comment: "")
+        default:
+            return ""
         }
-        
-        if section == 2 {
-            returnTitle = NSLocalizedString("_rename_filename_", comment: "")
-        }
-        
-        return returnTitle
     }
 
     func reloadForm() {

@@ -477,7 +477,7 @@
     return [NSString stringWithFormat:@"%@", randomString];
 }
 
-+ (NSString *)createFileNameFromAsset:(PHAsset *)asset
++ (NSString *)createFileNameFromAsset:(PHAsset *)asset withMask:(BOOL)withMask
 {
     NSDate *assetDate = asset.creationDate;
     
@@ -716,35 +716,19 @@
     return translate;
 }
 
-+ (NSArray *)createNameSubFolder:(NSArray *)assets
++ (NSArray *)createNameSubFolder:(NSArray *)alassets
 {
     NSMutableOrderedSet *datesSubFolder = [[NSMutableOrderedSet alloc] init];
     
-    for (id asset in assets) {
+    for (PHAsset *asset in alassets) {
         
-        NSDate *assetDate;
-        
-        if ([asset isKindOfClass:[PHAsset class]]) {
-            
-            PHAsset *phAsset = (PHAsset *)asset;
-            assetDate = phAsset.creationDate;
-        }
-        
-        if ([asset isKindOfClass:[ALAsset class]]) {
-            
-            ALAsset *alAsset = (ALAsset *)asset;
-            NSURL *url = [alAsset valueForProperty:@"ALAssetPropertyAssetURL"];
-            PHFetchResult *fetchResult = [PHAsset fetchAssetsWithALAssetURLs:@[url] options:nil];
-            PHAsset *phAsset = [fetchResult firstObject];
-            
-            assetDate = phAsset.creationDate;
-        }
+        NSDate *assetDate = asset.creationDate;
         
         NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
         [formatter setDateFormat:@"yyyy"];
         NSString *yearString = [formatter stringFromDate:assetDate];
         [datesSubFolder addObject:yearString];
-            
+        
         [formatter setDateFormat:@"MM"];
         NSString *monthString = [formatter stringFromDate:assetDate];
         monthString = [NSString stringWithFormat:@"%@/%@", yearString, monthString];

@@ -1161,35 +1161,19 @@
     NSString *folderPhotos = [CCCoreData getCameraUploadFolderNamePathActiveAccount:app.activeAccount activeUrl:app.activeUrl typeCloud:app.typeCloud];
     BOOL createSubfolders = [CCCoreData getCameraUploadCreateSubfolderActiveAccount:app.activeAccount];
     
-    /*
+    // Conversion from ALAsset -to-> PHAsset
     for (ALAsset *asset in newItemsToUpload) {
         
         NSURL *url = [asset valueForProperty:@"ALAssetPropertyAssetURL"];
         PHFetchResult *fetchResult = [PHAsset fetchAssetsWithALAssetURLs:@[url] options:nil];
         PHAsset *asset = [fetchResult firstObject];
         [newItemsPHAssetToUpload addObject:asset];
-        
-        if (createSubfolders) {
-
-            NSDate *assetDate = asset.creationDate;
-            
-            NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-            [formatter setDateFormat:@"yyyy"];
-            NSString *yearString = [formatter stringFromDate:assetDate];
-            [datesSubFolder addObject:yearString];
-        
-            [formatter setDateFormat:@"MM"];
-            NSString *monthString = [formatter stringFromDate:assetDate];
-            monthString = [NSString stringWithFormat:@"%@/%@", yearString, monthString];
-            [datesSubFolder addObject:monthString];
-        }
     }
-    */
-    
+        
     // Use subfolders
     if (createSubfolders) {
         
-        for (NSString *dateSubFolder in [CCUtility createNameSubFolder:newItemsToUpload]) {
+        for (NSString *dateSubFolder in [CCUtility createNameSubFolder:newItemsPHAssetToUpload]) {
             
             if (![self createFolder:[NSString stringWithFormat:@"%@/%@", folderPhotos, dateSubFolder]]) {
                 
@@ -1209,7 +1193,7 @@
         NSDate *assetDate = asset.creationDate;
         PHAssetMediaType assetMediaType = asset.mediaType;
         NSString *session;
-        NSString *fileNameUpload = [CCUtility createFileNameFromAsset:asset];
+        NSString *fileNameUpload = [CCUtility createFileNameFromAsset:asset withMask:false];
         
         // Select type of session
         

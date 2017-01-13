@@ -1470,9 +1470,9 @@
         // Create file name for upload
         if (cryptated) {
             CCCrypto *crypto = [[CCCrypto alloc] init];
-            fileNameUpload = [NSString stringWithFormat:@"%@.plist", [crypto createFilenameEncryptor:[CCUtility createFileNameFromAsset:asset] uuid:[CCUtility getUUID]]];
+            fileNameUpload = [NSString stringWithFormat:@"%@.plist", [crypto createFilenameEncryptor:[CCUtility createFileNameFromAsset:asset withMask:true] uuid:[CCUtility getUUID]]];
         } else {
-            fileNameUpload = [CCUtility createFileNameFromAsset:asset];
+            fileNameUpload = [CCUtility createFileNameFromAsset:asset withMask:true];
         }
 
         // Create serverUrl if use sub folder

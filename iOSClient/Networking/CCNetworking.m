@@ -727,7 +727,7 @@
 #pragma mark =====  Upload =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)uploadFileFromAssetLocalIdentifier:(NSString *)localIdentifier serverUrl:(NSString *)serverUrl cryptated:(BOOL)cryptated session:(NSString *)session taskStatus:(NSInteger)taskStatus selector:(NSString *)selector selectorPost:(NSString *)selectorPost parentRev:(NSString *)parentRev errorCode:(NSInteger)errorCode delegate:(id)delegate
+- (void)uploadFileFromAssetLocalIdentifier:(NSString *)localIdentifier fileName:(NSString *)fileNameXX serverUrl:(NSString *)serverUrl cryptated:(BOOL)cryptated session:(NSString *)session taskStatus:(NSInteger)taskStatus selector:(NSString *)selector selectorPost:(NSString *)selectorPost parentRev:(NSString *)parentRev errorCode:(NSInteger)errorCode delegate:(id)delegate
 {
     PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[localIdentifier] options:nil];
     
@@ -745,7 +745,7 @@
     
     // create fileName
     NSString *assetFileName = [asset valueForKey:@"filename"];
-    NSString *fileNameUpload = [CCUtility createFileNameFromAsset:asset];
+    NSString *fileNameUpload = [CCUtility createFileNameFromAsset:asset withMask:false];
     NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", _directoryUser, fileNameUpload];
     
     //delegate

@@ -134,7 +134,7 @@
 + (NSString *)stringAppendServerUrl:(NSString *)serverUrl addServerUrl:(NSString *)addServerUrl;
 
 + (NSString *)createID;
-+ (NSString *)createFileNameFromAsset:(PHAsset *)asset;
++ (NSString *)createFileNameFromAsset:(PHAsset *)asset withMask:(BOOL)withMask;
 
 + (NSString *)getHomeServerUrlActiveUrl:(NSString *)activeUrl typeCloud:(NSString *)typeCloud;
 + (NSString *)getDirectoryActiveUser:(NSString *)activeUser activeUrl:(NSString *)activeUrl;
