@@ -286,6 +286,7 @@ class CreateFormUpload: XLFormViewController, CCMoveDelegate {
         form.addFormSection(section)
 
         row = XLFormRowDescriptor(tag: "previewFileName", rowType: XLFormRowDescriptorTypeTextView, title: "")
+        //row.cellConfig.setObject(UIColor.lightGray, forKey: "backgroundColor" as NSCopying)
         row.disabled = true
         section.addFormRow(row)
         
@@ -339,10 +340,7 @@ class CreateFormUpload: XLFormViewController, CCMoveDelegate {
         self.navigationItem.leftBarButtonItem = cancelButton
         self.navigationItem.rightBarButtonItem = saveButton
         
-        //self.tableView.tableFooterView = UIView.init(frame: CGRect(x: 0, y: 0, width: self.tableView.frame.size.width, height: 10))
-        //cell.separatorInset = UIEdgeInsetsMake(0, cell.bounds.size.width, 0, 0);
-        
-        self.tableView.separatorStyle = UITableViewCellSeparatorStyle.none
+        //self.tableView.separatorStyle = UITableViewCellSeparatorStyle.none
         
         self.reloadForm()
     }
@@ -357,7 +355,6 @@ class CreateFormUpload: XLFormViewController, CCMoveDelegate {
         let maskFileName : XLFormRowDescriptor = self.form.formRow(withTag: "maskFileName")!
         let previewFileName : XLFormRowDescriptor  = self.form.formRow(withTag: "previewFileName")!
         previewFileName.value = self.previewFileName(valueRename: maskFileName.value as? String)
-        //previewFileName.cellConfig.setObject(UIColor.clear, forKey: "backgroundColor" as NSCopying)
         
         self.tableView.reloadData()
         self.form.delegate = self
