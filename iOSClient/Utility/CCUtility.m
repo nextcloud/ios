@@ -495,13 +495,33 @@
     NSString *fileNameExt = [[assetFileName pathExtension] lowercaseString];
     
     if (key) {
+        
         fileName = [CCUtility getFileNameMask:key];
-        if ([fileName length] > 0)
+        
+        if ([fileName length] > 0) {
+            
+            [formatter setDateFormat:@"dd"];
+            NSString *day = [formatter stringFromDate:assetDate];
+            [formatter setDateFormat:@"MMM"];
+            NSString *month = [formatter stringFromDate:assetDate];
+            [formatter setDateFormat:@"yyyy"];
+            NSString *year = [formatter stringFromDate:assetDate];
+            
+            // Replace string with date
+
+            fileName = [fileName stringByReplacingOccurrencesOfString:@"DD" withString:day];
+            fileName = [fileName stringByReplacingOccurrencesOfString:@"MM" withString:month];
+            fileName = [fileName stringByReplacingOccurrencesOfString:@"YY" withString:year];
+
             fileName = [NSString stringWithFormat:@"%@-%@.%@", fileName, numberFileName, fileNameExt];
-        else
+            
+        } else {
+            
             fileName = [NSString stringWithFormat:@"%@ %@.%@", fileNameDate, numberFileName, fileNameExt];
+        }
         
     } else {
+        
         fileName = [NSString stringWithFormat:@"%@ %@.%@", fileNameDate, numberFileName, fileNameExt];
     }
     
