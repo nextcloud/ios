@@ -303,6 +303,10 @@ extern NSString *const BKPasscodeKeychainServiceName;
 #define TabBarApplicationIndexPhotos    3
 #define TabBarApplicationIndexSettings  4
 
+#define keyFileNameMask                 @"fileNameMask"
+#define keyFileNameMaskAutomaticPhotos  @"fileNameMaskAutomaticPhotos"
+
+
 @interface CCAspect : NSObject
 
 + (void)aspectNavigationControllerBar:(UINavigationBar *)nav hidden:(BOOL)hidden;

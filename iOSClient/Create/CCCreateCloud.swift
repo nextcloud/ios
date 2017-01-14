@@ -286,7 +286,7 @@ class CreateFormUpload: XLFormViewController, CCMoveDelegate {
         
         row = XLFormRowDescriptor(tag: "maskFileName", rowType: XLFormRowDescriptorTypeName, title: NSLocalizedString("_filename_", comment: ""))
         
-        let fileNameMask : String = CCUtility.getFileNameMask()
+        let fileNameMask : String = CCUtility.getFileNameMask(keyFileNameMask)
         if fileNameMask.characters.count > 0 {
             row.value = fileNameMask
         }
@@ -389,6 +389,7 @@ class CreateFormUpload: XLFormViewController, CCMoveDelegate {
         let maskFileName : XLFormRowDescriptor = self.form.formRow(withTag: "maskFileName")!
         let previewFileName : XLFormRowDescriptor  = self.form.formRow(withTag: "previewFileName")!
         previewFileName.value = self.previewFileName(valueRename: maskFileName.value as? String)
+        previewFileName.cellConfig.setObject(UIColor.clear, forKey: "backgroundColor" as NSCopying)
         
         self.tableView.reloadData()
         self.form.delegate = self
@@ -405,16 +406,16 @@ class CreateFormUpload: XLFormViewController, CCMoveDelegate {
             if valueRenameTrimming.characters.count > 0 {
                 
                 self.form.delegate = nil
-                CCUtility.setFileNameMask(valueRenameTrimming)
+                CCUtility.setFileNameMask(valueRenameTrimming, key: keyFileNameMask)
                 self.form.delegate = self
                 
-                returnString = CCUtility.createFileName(from: assets[0] as! PHAsset, withMask: true)
+                returnString = CCUtility.createFileName(from: assets[0] as! PHAsset, key: keyFileNameMask)
             }
             
         } else {
             
-            CCUtility.setFileNameMask("")
-            returnString = CCUtility.createFileName(from: assets[0] as! PHAsset, withMask: false)
+            CCUtility.setFileNameMask("", key: keyFileNameMask)
+            returnString = CCUtility.createFileName(from: assets[0] as! PHAsset, key: nil)
         }
         
         return returnString

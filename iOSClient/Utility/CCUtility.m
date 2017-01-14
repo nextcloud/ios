@@ -190,9 +190,9 @@
     [UICKeyChainStore setString:sDirectoryOnTop forKey:@"directoryOnTop" service:serviceShareKeyChain];
 }
 
-+ (void)setFileNameMask:(NSString *)fileNameMask
++ (void)setFileNameMask:(NSString *)mask key:(NSString *)key
 {
-    [UICKeyChainStore setString:fileNameMask forKey:@"fileNameMask" service:serviceShareKeyChain];
+    [UICKeyChainStore setString:mask forKey:key service:serviceShareKeyChain];
 }
 
 + (void)setCreateMenuEncrypted:(BOOL)encrypted
@@ -367,9 +367,9 @@
     return [[UICKeyChainStore stringForKey:@"directoryOnTop" service:serviceShareKeyChain] boolValue];
 }
 
-+ (NSString *)getFileNameMask
++ (NSString *)getFileNameMask:(NSString *)key
 {
-    NSString *mask = [UICKeyChainStore stringForKey:@"fileNameMask" service:serviceShareKeyChain];
+    NSString *mask = [UICKeyChainStore stringForKey:key service:serviceShareKeyChain];
     
     if (mask == nil)
         mask = @"";
@@ -477,7 +477,7 @@
     return [NSString stringWithFormat:@"%@", randomString];
 }
 
-+ (NSString *)createFileNameFromAsset:(PHAsset *)asset withMask:(BOOL)withMask
++ (NSString *)createFileNameFromAsset:(PHAsset *)asset key:(NSString *)key
 {
     NSDate *assetDate = asset.creationDate;
     NSString *fileName;
@@ -494,8 +494,8 @@
     
     NSString *fileNameExt = [[assetFileName pathExtension] lowercaseString];
     
-    if (withMask) {
-        fileName = [CCUtility getFileNameMask];
+    if (key) {
+        fileName = [CCUtility getFileNameMask:key];
         if ([fileName length] > 0)
             fileName = [NSString stringWithFormat:@"%@-%@.%@", fileName, numberFileName, fileNameExt];
         else

@@ -80,7 +80,7 @@
 
 + (void)setDirectoryOnTop:(BOOL)directoryOnTop;
 
-+ (void)setFileNameMask:(NSString *)fileNameMask;
++ (void)setFileNameMask:(NSString *)mask key:(NSString *)key;
 
 + (void)setCreateMenuEncrypted:(BOOL)encrypted;
 
@@ -119,7 +119,7 @@
 
 + (BOOL)getDirectoryOnTop;
 
-+ (NSString *)getFileNameMask;
++ (NSString *)getFileNameMask:(NSString *)key;
 
 + (BOOL)getCreateMenuEncrypted;
 
@@ -134,7 +134,7 @@
 + (NSString *)stringAppendServerUrl:(NSString *)serverUrl addServerUrl:(NSString *)addServerUrl;
 
 + (NSString *)createID;
-+ (NSString *)createFileNameFromAsset:(PHAsset *)asset withMask:(BOOL)withMask;
++ (NSString *)createFileNameFromAsset:(PHAsset *)asset key:(NSString *)key;
 
 + (NSString *)getHomeServerUrlActiveUrl:(NSString *)activeUrl typeCloud:(NSString *)typeCloud;
 + (NSString *)getDirectoryActiveUser:(NSString *)activeUser activeUrl:(NSString *)activeUrl;
