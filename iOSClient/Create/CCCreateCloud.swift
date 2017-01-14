@@ -228,20 +228,8 @@ class CreateFormUpload: XLFormViewController, CCMoveDelegate {
         self.initializeForm()
     }
     
-    override func viewDidLoad() {
+    //MARK: XLFormDescriptorDelegate
 
-        super.viewDidLoad()
-        
-        let cancelButton : UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: UIBarButtonItemStyle.plain, target: self, action: #selector(cancel))
-        
-        let saveButton : UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_save_", comment: ""), style: UIBarButtonItemStyle.plain, target: self, action: #selector(save))
-        
-        self.navigationItem.leftBarButtonItem = cancelButton
-        self.navigationItem.rightBarButtonItem = saveButton
-        
-        self.reloadForm()
-    }
-    
     func initializeForm() {
 
         let form : XLFormDescriptor = XLFormDescriptor() as XLFormDescriptor
@@ -304,8 +292,6 @@ class CreateFormUpload: XLFormViewController, CCMoveDelegate {
         self.form = form
     }
     
-    //MARK: XLFormDescriptorDelegate
-    
     override func formRowDescriptorValueHasChanged(_ formRow: XLFormRowDescriptor!, oldValue: Any!, newValue: Any!) {
         
         super.formRowDescriptorValueHasChanged(formRow, oldValue: oldValue, newValue: newValue)
@@ -326,7 +312,7 @@ class CreateFormUpload: XLFormViewController, CCMoveDelegate {
         else if formRow.tag == "useSubFolder" {
             
             if (formRow.value! as AnyObject).boolValue  == true {
-            
+                
             } else{
                 
             }
@@ -340,6 +326,45 @@ class CreateFormUpload: XLFormViewController, CCMoveDelegate {
         }
     }
     
+    // MARK: - View Life Cycle
+
+    override func viewDidLoad() {
+        
+        super.viewDidLoad()
+        
+        let cancelButton : UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: UIBarButtonItemStyle.plain, target: self, action: #selector(cancel))
+        
+        let saveButton : UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_save_", comment: ""), style: UIBarButtonItemStyle.plain, target: self, action: #selector(save))
+        
+        self.navigationItem.leftBarButtonItem = cancelButton
+        self.navigationItem.rightBarButtonItem = saveButton
+        
+        //self.tableView.tableFooterView = UIView.init(frame: CGRect(x: 0, y: 0, width: self.tableView.frame.size.width, height: 10))
+        //cell.separatorInset = UIEdgeInsetsMake(0, cell.bounds.size.width, 0, 0);
+        
+        self.tableView.separatorStyle = UITableViewCellSeparatorStyle.none
+        
+        self.reloadForm()
+    }
+
+    func reloadForm() {
+        
+        self.form.delegate = nil
+        
+        let buttonDestinationFolder : XLFormRowDescriptor  = self.form.formRow(withTag: "ButtonDestinationFolder")!
+        buttonDestinationFolder.title = self.titleLocalServerUrl
+        
+        let maskFileName : XLFormRowDescriptor = self.form.formRow(withTag: "maskFileName")!
+        let previewFileName : XLFormRowDescriptor  = self.form.formRow(withTag: "previewFileName")!
+        previewFileName.value = self.previewFileName(valueRename: maskFileName.value as? String)
+        //previewFileName.cellConfig.setObject(UIColor.clear, forKey: "backgroundColor" as NSCopying)
+        
+        self.tableView.reloadData()
+        self.form.delegate = self
+    }
+
+    //MARK: TableView
+
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         
         switch section {
@@ -379,21 +404,47 @@ class CreateFormUpload: XLFormViewController, CCMoveDelegate {
         }
     }
 
-    func reloadForm() {
+    // MARK: - Action
+
+    func move(_ serverUrlTo: String!, title: String!, selectedMetadatas: [Any]!) {
         
-        self.form.delegate = nil
+        self.localServerUrl = serverUrlTo
         
-        let buttonDestinationFolder : XLFormRowDescriptor  = self.form.formRow(withTag: "ButtonDestinationFolder")!
-        buttonDestinationFolder.title = self.titleLocalServerUrl
+        if title == nil {
+            
+            self.titleLocalServerUrl = "/"
+            
+        } else {
+            
+            self.titleLocalServerUrl = title
+        }
         
-        let maskFileName : XLFormRowDescriptor = self.form.formRow(withTag: "maskFileName")!
-        let previewFileName : XLFormRowDescriptor  = self.form.formRow(withTag: "previewFileName")!
-        previewFileName.value = self.previewFileName(valueRename: maskFileName.value as? String)
-        previewFileName.cellConfig.setObject(UIColor.clear, forKey: "backgroundColor" as NSCopying)
-        
-        self.tableView.reloadData()
-        self.form.delegate = self
+        self.reloadForm()
     }
+    
+    func save() {
+        
+        self.dismiss(animated: true, completion: {
+            
+            let useFolderPhotoRow : XLFormRowDescriptor  = self.form.formRow(withTag: "useFolderPhoto")!
+            let useSubFolderRow : XLFormRowDescriptor  = self.form.formRow(withTag: "useSubFolder")!
+            var useSubFolder : Bool = false
+            
+            if (useFolderPhotoRow.value! as AnyObject).boolValue == true {
+                self.localServerUrl = CCCoreData.getCameraUploadFolderNamePathActiveAccount(self.appDelegate.activeAccount, activeUrl: self.appDelegate.activeUrl, typeCloud: self.appDelegate.typeCloud)
+                useSubFolder = (useSubFolderRow.value! as AnyObject).boolValue
+            }
+            
+            self.appDelegate.activeMain.uploadFileAsset(self.assets, serverUrl: self.localServerUrl, cryptated: self.cryptated!, useSubFolder: useSubFolder, session: self.session)
+        })
+    }
+
+    func cancel() {
+        
+        self.dismiss(animated: true, completion: nil)
+    }
+    
+    // MARK: - Utility
     
     func previewFileName(valueRename : String?) -> String {
         
@@ -434,44 +485,12 @@ class CreateFormUpload: XLFormViewController, CCMoveDelegate {
         viewController.barTintColor = UIColor.init(colorLiteralRed: 248.0/255.0, green: 248.0/255.0, blue: 248.0/255.0, alpha: 1.0) // COLOR_BAR;
         viewController.tintColorTitle = UIColor.init(colorLiteralRed: 65.0/255.0, green: 64.0/255.0, blue: 66.0/255.0, alpha: 1.0) // COLOR_GRAY;
         viewController.move.title = NSLocalizedString("_select_", comment: "");
-        viewController.networkingOperationQueue =  appDelegate.netQueue 
-
+        viewController.networkingOperationQueue =  appDelegate.netQueue
+        
         navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
         self.present(navigationController, animated: true, completion: nil)
     }
     
-    func move(_ serverUrlTo: String!, title: String!, selectedMetadatas: [Any]!) {
-        
-        self.localServerUrl = serverUrlTo
-        if title == nil {
-            self.titleLocalServerUrl = "/"
-        } else {
-            self.titleLocalServerUrl = title
-        }
-        
-        self.reloadForm()
-    }
-    
-    func save() {
-        
-        self.dismiss(animated: true, completion: {
-            
-            let useFolderPhotoRow : XLFormRowDescriptor  = self.form.formRow(withTag: "useFolderPhoto")!
-            let useSubFolderRow : XLFormRowDescriptor  = self.form.formRow(withTag: "useSubFolder")!
-            var useSubFolder : Bool = false
-            
-            if (useFolderPhotoRow.value! as AnyObject).boolValue == true {
-                self.localServerUrl = CCCoreData.getCameraUploadFolderNamePathActiveAccount(self.appDelegate.activeAccount, activeUrl: self.appDelegate.activeUrl, typeCloud: self.appDelegate.typeCloud)
-                useSubFolder = (useSubFolderRow.value! as AnyObject).boolValue
-            }
-            
-            self.appDelegate.activeMain.uploadFileAsset(self.assets, serverUrl: self.localServerUrl, cryptated: self.cryptated!, useSubFolder: useSubFolder, session: self.session)
-        })
-    }
-
-    func cancel() {
-        self.dismiss(animated: true, completion: nil)
-    }
 }
 
 
