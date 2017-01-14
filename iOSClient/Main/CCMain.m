@@ -593,7 +593,7 @@
         NSFileCoordinator *coordinator = [[NSFileCoordinator alloc] initWithFilePresenter:nil];
         __block NSError *error;
         
-        [coordinator coordinateReadingItemAtURL:url options:0 error:&error byAccessor:^(NSURL *newURL) {
+        [coordinator coordinateReadingItemAtURL:url options:NSFileCoordinatorReadingForUploading error:&error byAccessor:^(NSURL *newURL) {
             
             NSString *fileName = [url lastPathComponent];
             NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", app.directoryUser, fileName];

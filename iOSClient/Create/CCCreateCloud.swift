@@ -322,6 +322,8 @@ class CreateFormUpload: XLFormViewController, CCMoveDelegate {
             
             let previewFileName : XLFormRowDescriptor  = self.form.formRow(withTag: "previewFileName")!
             previewFileName.value = self.previewFileName(valueRename: formRow.value as? String)
+            
+            // reload only previewFileName cell
             let indexPathPreview : IndexPath = IndexPath(row: 0, section: 3)
             self.tableView.reloadRows(at: [indexPathPreview], with: UITableViewRowAnimation.none)
         }
