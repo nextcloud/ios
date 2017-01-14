@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11542" systemVersion="16B2555" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="16C67" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11524"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -27,8 +27,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JUe-yv-Jbr">
-                                <rect key="frame" x="20" y="291" width="300" height="60"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JUe-yv-Jbr">
+                                <rect key="frame" x="16" y="291" width="300" height="60"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="300" id="BMA-G4-Tnk"/>
                                     <constraint firstAttribute="height" constant="60" id="MZc-Fv-80y"/>
@@ -41,8 +41,8 @@
                                     <action selector="handleOwnCloud:" destination="oPR-g1-XDa" eventType="touchUpInside" id="a02-A7-0DI"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="B7w-T7-jkG">
-                                <rect key="frame" x="20" y="359" width="300" height="60"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="B7w-T7-jkG">
+                                <rect key="frame" x="16" y="359" width="300" height="60"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="300" id="64Q-qN-Vng"/>
                                     <constraint firstAttribute="height" constant="60" id="PFP-Wy-f1y"/>
@@ -55,8 +55,8 @@
                                     <action selector="handleNextcloud:" destination="oPR-g1-XDa" eventType="touchUpInside" id="TBv-by-nV6"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9yF-S6-HLL">
-                                <rect key="frame" x="20" y="427" width="300" height="60"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9yF-S6-HLL">
+                                <rect key="frame" x="16" y="427" width="300" height="60"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="60" id="V04-cr-eRC"/>
                                     <constraint firstAttribute="width" constant="300" id="w8s-7H-mx2"/>
@@ -69,8 +69,8 @@
                                     <action selector="handleDropBox:" destination="oPR-g1-XDa" eventType="touchUpInside" id="MLp-2N-H6Z"/>
                                 </connections>
                             </button>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="cryptocloudlaunchscreen" translatesAutoresizingMaskIntoConstraints="NO" id="Wiv-CB-4tC">
-                                <rect key="frame" x="238" y="60" width="125" height="170"/>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="cryptocloudlaunchscreen" translatesAutoresizingMaskIntoConstraints="NO" id="Wiv-CB-4tC">
+                                <rect key="frame" x="125" y="60" width="125" height="170"/>
                             </imageView>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -108,8 +108,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <textField opaque="NO" clipsSubviews="YES" tag="2" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="User" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="H0b-5A-vRO">
-                                <rect key="frame" x="54" y="196" width="536" height="30"/>
+                            <textField opaque="NO" clipsSubviews="YES" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="User" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="H0b-5A-vRO">
+                                <rect key="frame" x="50" y="196" width="319" height="30"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="30" id="j74-kN-LHM"/>
                                 </constraints>
@@ -117,8 +117,8 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                 <textInputTraits key="textInputTraits" autocorrectionType="no" returnKeyType="done"/>
                             </textField>
-                            <textField opaque="NO" clipsSubviews="YES" tag="3" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Password" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="qsY-HN-NTO">
-                                <rect key="frame" x="54" y="234" width="490" height="30"/>
+                            <textField opaque="NO" clipsSubviews="YES" tag="3" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Password" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="qsY-HN-NTO">
+                                <rect key="frame" x="50" y="234" width="273" height="30"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="30" id="QVB-Au-F7J"/>
                                 </constraints>
@@ -126,8 +126,8 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                 <textInputTraits key="textInputTraits" returnKeyType="done" secureTextEntry="YES"/>
                             </textField>
-                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="i3A-7y-R1E">
-                                <rect key="frame" x="0.0" y="275" width="600" height="50"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="i3A-7y-R1E">
+                                <rect key="frame" x="-4" y="275" width="383" height="50"/>
                                 <color key="backgroundColor" red="0.91764705879999997" green="0.26274509800000001" blue="0.1058823529" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="50" id="mNO-KB-37L"/>
@@ -140,36 +140,36 @@
                                     <action selector="handleButtonLogin:" destination="R0z-L3-spN" eventType="touchUpInside" id="sO2-a3-Dsu"/>
                                 </connections>
                             </button>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="baseurl" translatesAutoresizingMaskIntoConstraints="NO" id="nzJ-WD-LS3">
-                                <rect key="frame" x="11" y="160" width="25" height="25"/>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="baseurl" translatesAutoresizingMaskIntoConstraints="NO" id="nzJ-WD-LS3">
+                                <rect key="frame" x="7" y="160" width="25" height="25"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="25" id="VGh-jJ-CU2"/>
                                     <constraint firstAttribute="height" constant="25" id="lyd-V5-5Dd"/>
                                 </constraints>
                             </imageView>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="user" translatesAutoresizingMaskIntoConstraints="NO" id="Epv-G7-WxY">
-                                <rect key="frame" x="11" y="198" width="25" height="25"/>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="user" translatesAutoresizingMaskIntoConstraints="NO" id="Epv-G7-WxY">
+                                <rect key="frame" x="7" y="198" width="25" height="25"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="25" id="CI9-u8-Q4w"/>
                                     <constraint firstAttribute="height" constant="25" id="wJz-Kg-ysv"/>
                                 </constraints>
                             </imageView>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="password" translatesAutoresizingMaskIntoConstraints="NO" id="dHJ-as-sqM">
-                                <rect key="frame" x="11" y="236" width="25" height="25"/>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="password" translatesAutoresizingMaskIntoConstraints="NO" id="dHJ-as-sqM">
+                                <rect key="frame" x="7" y="236" width="25" height="25"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="25" id="ZvH-2J-kIR"/>
                                     <constraint firstAttribute="width" constant="25" id="rCR-hj-Zey"/>
                                 </constraints>
                             </imageView>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="ImageLoginOwncloud" translatesAutoresizingMaskIntoConstraints="NO" id="4hl-hN-WBB">
-                                <rect key="frame" x="225" y="30" width="167" height="120"/>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ImageLoginOwncloud" translatesAutoresizingMaskIntoConstraints="NO" id="4hl-hN-WBB">
+                                <rect key="frame" x="112" y="30" width="167" height="120"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="167" id="8QJ-g2-FIN"/>
                                     <constraint firstAttribute="height" constant="120" id="Cbz-Gc-3R9"/>
                                 </constraints>
                             </imageView>
-                            <textField opaque="NO" clipsSubviews="YES" tag="1" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="https://owncloud.yourdomain.com" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="D0R-AM-DFg">
-                                <rect key="frame" x="54" y="158" width="490" height="30"/>
+                            <textField opaque="NO" clipsSubviews="YES" tag="1" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="https://owncloud.yourdomain.com" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="D0R-AM-DFg">
+                                <rect key="frame" x="50" y="158" width="273" height="30"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="30" id="cvn-kn-gsR"/>
                                 </constraints>
@@ -180,8 +180,8 @@
                                     <action selector="handlebaseUrlchange:" destination="R0z-L3-spN" eventType="editingDidEnd" id="gMK-Ol-O4T"/>
                                 </connections>
                             </textField>
-                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="BOk-cz-Mdy">
-                                <rect key="frame" x="530" y="28" width="54" height="30"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="BOk-cz-Mdy">
+                                <rect key="frame" x="309" y="28" width="54" height="30"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="54" id="RRe-BZ-9jz"/>
                                 </constraints>
@@ -193,15 +193,15 @@
                                     <action selector="handleAnnulla:" destination="R0z-L3-spN" eventType="touchUpInside" id="6gV-dM-lnu"/>
                                 </connections>
                             </button>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="jA7-8D-Nih" userLabel="loadingBaseUrl">
-                                <rect key="frame" x="559" y="160" width="25" height="25"/>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="jA7-8D-Nih" userLabel="loadingBaseUrl">
+                                <rect key="frame" x="338" y="160" width="25" height="25"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="25" id="npn-xp-twa"/>
                                     <constraint firstAttribute="width" constant="25" id="yfj-WE-ntb"/>
                                 </constraints>
                             </imageView>
-                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qgh-Ys-Egc">
-                                <rect key="frame" x="559" y="236" width="25" height="25"/>
+                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qgh-Ys-Egc">
+                                <rect key="frame" x="338" y="236" width="25" height="25"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="25" id="Qzi-BS-FCX"/>
                                     <constraint firstAttribute="height" constant="25" id="glI-8o-5GA"/>
@@ -274,8 +274,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <textField opaque="NO" clipsSubviews="YES" tag="2" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="User" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="1Gf-Bw-Nim">
-                                <rect key="frame" x="54" y="196" width="536" height="30"/>
+                            <textField opaque="NO" clipsSubviews="YES" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="User" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="1Gf-Bw-Nim">
+                                <rect key="frame" x="50" y="196" width="319" height="30"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="30" id="JYC-15-QFZ"/>
                                 </constraints>
@@ -283,8 +283,8 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                 <textInputTraits key="textInputTraits" autocorrectionType="no" returnKeyType="done"/>
                             </textField>
-                            <textField opaque="NO" clipsSubviews="YES" tag="3" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Password" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="jU7-Iw-XfU">
-                                <rect key="frame" x="54" y="234" width="490" height="30"/>
+                            <textField opaque="NO" clipsSubviews="YES" tag="3" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Password" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="jU7-Iw-XfU">
+                                <rect key="frame" x="50" y="234" width="273" height="30"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="30" id="SHB-pM-p1U"/>
                                 </constraints>
@@ -292,8 +292,8 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                 <textInputTraits key="textInputTraits" returnKeyType="done" secureTextEntry="YES"/>
                             </textField>
-                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="HQd-pF-3cE">
-                                <rect key="frame" x="0.0" y="275" width="600" height="50"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="HQd-pF-3cE">
+                                <rect key="frame" x="-4" y="275" width="383" height="50"/>
                                 <color key="backgroundColor" red="0.2196078431372549" green="0.50196078431372548" blue="0.76470588235294112" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="50" id="S6Y-YG-g6O"/>
@@ -306,36 +306,36 @@
                                     <action selector="handleButtonLogin:" destination="yj9-jo-WIn" eventType="touchUpInside" id="e6z-ip-PXo"/>
                                 </connections>
                             </button>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="baseurlNextcloud" translatesAutoresizingMaskIntoConstraints="NO" id="s9o-RX-XeS">
-                                <rect key="frame" x="11" y="160" width="25" height="25"/>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="baseurlNextcloud" translatesAutoresizingMaskIntoConstraints="NO" id="s9o-RX-XeS">
+                                <rect key="frame" x="7" y="160" width="25" height="25"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="25" id="fh1-RS-gPF"/>
                                     <constraint firstAttribute="height" constant="25" id="rDO-8n-TTv"/>
                                 </constraints>
                             </imageView>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="userNextcloud" translatesAutoresizingMaskIntoConstraints="NO" id="4OF-5u-Hd1">
-                                <rect key="frame" x="11" y="198" width="25" height="25"/>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="userNextcloud" translatesAutoresizingMaskIntoConstraints="NO" id="4OF-5u-Hd1">
+                                <rect key="frame" x="7" y="198" width="25" height="25"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="25" id="FlR-Hd-bH5"/>
                                     <constraint firstAttribute="height" constant="25" id="ViZ-ks-cWQ"/>
                                 </constraints>
                             </imageView>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="passwordNextcloud" translatesAutoresizingMaskIntoConstraints="NO" id="7q8-rl-x2M">
-                                <rect key="frame" x="11" y="236" width="25" height="25"/>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="passwordNextcloud" translatesAutoresizingMaskIntoConstraints="NO" id="7q8-rl-x2M">
+                                <rect key="frame" x="7" y="236" width="25" height="25"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="25" id="P8q-8P-IZg"/>
                                     <constraint firstAttribute="width" constant="25" id="glL-CW-aF0"/>
                                 </constraints>
                             </imageView>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="ImageLoginNextcloud" translatesAutoresizingMaskIntoConstraints="NO" id="BpI-xK-1SU">
-                                <rect key="frame" x="225" y="30" width="167" height="120"/>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ImageLoginNextcloud" translatesAutoresizingMaskIntoConstraints="NO" id="BpI-xK-1SU">
+                                <rect key="frame" x="112" y="30" width="167" height="120"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="120" id="E9d-5O-bto"/>
                                     <constraint firstAttribute="width" constant="167" id="xwH-mh-yDU"/>
                                 </constraints>
                             </imageView>
-                            <textField opaque="NO" clipsSubviews="YES" tag="1" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="https://nextcloud.yourdomain.com" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="szn-G7-5sK">
-                                <rect key="frame" x="54" y="158" width="490" height="30"/>
+                            <textField opaque="NO" clipsSubviews="YES" tag="1" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="https://nextcloud.yourdomain.com" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="szn-G7-5sK">
+                                <rect key="frame" x="50" y="158" width="273" height="30"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="30" id="I2v-Zr-IWf"/>
                                 </constraints>
@@ -346,11 +346,8 @@
                                     <action selector="handlebaseUrlchange:" destination="yj9-jo-WIn" eventType="editingDidEnd" id="efj-33-NT5"/>
                                 </connections>
                             </textField>
-                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bSU-bn-DlO">
-                                <rect key="frame" x="530" y="28" width="54" height="30"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="54" id="Ifq-v9-Tul"/>
-                                </constraints>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bSU-bn-DlO">
+                                <rect key="frame" x="312" y="28" width="51" height="30"/>
                                 <state key="normal" title="Annulla">
                                     <color key="titleColor" red="0.21960784310000001" green="0.50196078430000002" blue="0.76470588240000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -359,15 +356,15 @@
                                     <action selector="handleAnnulla:" destination="yj9-jo-WIn" eventType="touchUpInside" id="XyT-Gg-W9A"/>
                                 </connections>
                             </button>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="oF7-f3-D2I" userLabel="loadingBaseUrl">
-                                <rect key="frame" x="559" y="160" width="25" height="25"/>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="oF7-f3-D2I" userLabel="loadingBaseUrl">
+                                <rect key="frame" x="338" y="160" width="25" height="25"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="25" id="eDp-jx-Oj5"/>
                                     <constraint firstAttribute="height" constant="25" id="gLa-aq-eNG"/>
                                 </constraints>
                             </imageView>
-                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fhk-o9-J0l">
-                                <rect key="frame" x="559" y="236" width="25" height="25"/>
+                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fhk-o9-J0l">
+                                <rect key="frame" x="338" y="236" width="25" height="25"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="25" id="Tme-Lb-bhd"/>
                                     <constraint firstAttribute="width" constant="25" id="uVC-Cm-7w6"/>
@@ -432,7 +429,7 @@
     <resources>
         <image name="ImageLoginNextcloud" width="300" height="200"/>
         <image name="ImageLoginOwncloud" width="300" height="200"/>
-        <image name="baseurl" width="64" height="64"/>
+        <image name="baseurl" width="25" height="25"/>
         <image name="baseurlNextcloud" width="25" height="25"/>
         <image name="cryptocloudlaunchscreen" width="125" height="170"/>
         <image name="newAccountDropBox" width="50" height="50"/>
