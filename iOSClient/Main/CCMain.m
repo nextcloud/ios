@@ -697,7 +697,7 @@
 {
     [picker dismissViewControllerAnimated:YES completion:^{
         
-        CreateFormUpload *form = [[CreateFormUpload alloc] init:_titleMain localServerUrl:_localServerUrl assets:assets cryptated:_isPickerCriptate session:upload_session];
+        CreateFormUploadAssets *form = [[CreateFormUploadAssets alloc] init:_titleMain localServerUrl:_localServerUrl assets:assets cryptated:_isPickerCriptate session:upload_session];
         form.title = NSLocalizedString(@"_upload_photos_videos_", nil);
         
         UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:form];

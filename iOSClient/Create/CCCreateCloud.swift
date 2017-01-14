@@ -198,9 +198,9 @@ class CreateMenuAdd: NSObject {
 
 }
 
-// MARK: - CreateFormUpload
+// MARK: - CreateFormUploadAssets
 
-class CreateFormUpload: XLFormViewController, CCMoveDelegate {
+class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
     
     var localServerUrl : String?
     var titleLocalServerUrl : String?
