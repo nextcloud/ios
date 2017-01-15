@@ -336,7 +336,10 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
             // reload cell
             if fileName != nil {
                 if newValue as! String != formRow.value as! String {
+                    
                     self.reloadFormRow(formRow)
+                    
+                    appDelegate.messageNotification("_info_", description: "_forbidden_characters_", visible: true, delay: TimeInterval(dismissAfterSecond), type: TWMessageBarMessageType.info)
                 }
             }
             self.reloadFormRow(previewFileName)

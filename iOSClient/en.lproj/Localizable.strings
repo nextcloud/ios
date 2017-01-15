@@ -481,6 +481,7 @@
 "_rename_filename_"                 = "Rename file name";
 "_filename_"                        = "File name";
 "_preview_filename_"                = "Example preview file name";
+"_forbidden_characters_"            = "Invalid character in the file name";
 
 // -----------------------------------------------------------------------------------------------------------
 
