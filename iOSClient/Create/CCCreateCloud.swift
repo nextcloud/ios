@@ -49,7 +49,6 @@ class CreateMenuAdd: NSObject {
         actionSheet?.cancelButtonHeight = 50.0
         actionSheet?.separatorHeight = 5.0
         
-        actionSheet?.selectedBackgroundColor = UIColor(colorLiteralRed: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 0.1)
         actionSheet?.separatorColor = UIColor(colorLiteralRed: 153.0/255.0, green: 153.0/255.0, blue: 153.0/255.0, alpha: 0.2)
         
         actionSheet?.buttonTextAttributes = fontButton
@@ -94,7 +93,6 @@ class CreateMenuAdd: NSObject {
         actionSheet?.cancelButtonHeight = 50.0
         actionSheet?.separatorHeight = 5.0
         
-        actionSheet?.selectedBackgroundColor = UIColor(colorLiteralRed: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 0.1)
         actionSheet?.separatorColor = UIColor(colorLiteralRed: 153.0/255.0, green: 153.0/255.0, blue: 153.0/255.0, alpha: 0.2)
 
         actionSheet?.buttonTextAttributes = fontButton
@@ -143,7 +141,6 @@ class CreateMenuAdd: NSObject {
         actionSheet?.cancelButtonHeight = 50.0
         actionSheet?.separatorHeight = 5.0
         
-        actionSheet?.selectedBackgroundColor = UIColor(colorLiteralRed: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 0.1)
         actionSheet?.separatorColor = UIColor(colorLiteralRed: 153.0/255.0, green: 153.0/255.0, blue: 153.0/255.0, alpha: 0.2)
 
         actionSheet?.buttonTextAttributes = fontButton

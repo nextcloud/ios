@@ -79,7 +79,6 @@ static const CGFloat maxWidth = 414.0f;
     [appearance setSeparatorHeight:5.0f];
     [appearance setCancelButtonHeight:44.0f];
     [appearance setAutomaticallyTintButtonImages:@YES];
-    [appearance setSelectedBackgroundColor:[UIColor colorWithWhite:0.1f alpha:0.2f]];
     [appearance setCancelButtonTextAttributes:@{ NSFontAttributeName : [UIFont systemFontOfSize:17.0f], NSForegroundColorAttributeName : [UIColor darkGrayColor] }];
     [appearance setButtonTextAttributes:@{ NSFontAttributeName : [UIFont systemFontOfSize:17.0f]}];
     [appearance setDisableButtonTextAttributes:@{ NSFontAttributeName : [UIFont systemFontOfSize:17.0f]}];
@@ -145,7 +144,7 @@ static const CGFloat maxWidth = 414.0f;
     if (cell == nil)
         cell = [tableView dequeueReusableCellWithIdentifier:kCellIdentifier forIndexPath:indexPath];
     
-    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    //cell.selectionStyle = UITableViewCellSelectionStyleNone;
     
     AHKActionSheetItem *item = self.items[(NSUInteger)indexPath.row];
 
@@ -196,11 +195,7 @@ static const CGFloat maxWidth = 414.0f;
     label.textAlignment = [self.buttonTextCenteringEnabled boolValue] ? NSTextAlignmentCenter : NSTextAlignmentLeft;
     
     cell.backgroundColor = item.backgroundColor;
-
-    if (self.selectedBackgroundColor && ![cell.selectedBackgroundView.backgroundColor isEqual:self.selectedBackgroundColor]) {
-        cell.selectedBackgroundView = [[UIView alloc] init];
-        cell.selectedBackgroundView.backgroundColor = self.selectedBackgroundColor;
-    }
+    cell.selectedBackgroundView = [self createBackgroundView:tableView cell:cell forRowAtIndexPath:indexPath color:self.separatorColor];
     
     for (UIView *subview in [cell.contentView subviews])
         [subview removeFromSuperview];
@@ -232,6 +227,11 @@ static const CGFloat maxWidth = 414.0f;
 {
     AHKActionSheetItem *item = self.items[(NSUInteger)indexPath.row];
     
+    cell.backgroundView = [self createBackgroundView:tableView cell:cell forRowAtIndexPath:indexPath color:item.backgroundColor];
+}
+
+- (UIView *)createBackgroundView:(UITableView *)tableView cell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath color:(UIColor *)color
+{
     CGFloat cornerRadius = 10.f;
     cell.backgroundColor = UIColor.clearColor;
     CAShapeLayer *layer = [[CAShapeLayer alloc] init];
@@ -257,10 +257,6 @@ static const CGFloat maxWidth = 414.0f;
         addLine = YES;
     }
     
-    layer.path = pathRef;
-    CFRelease(pathRef);
-    layer.fillColor = item.backgroundColor.CGColor;
-    
     if (addLine == YES) {
         CALayer *lineLayer = [[CALayer alloc] init];
         CGFloat lineHeight = (1.f / [UIScreen mainScreen].scale);
@@ -268,12 +264,18 @@ static const CGFloat maxWidth = 414.0f;
         lineLayer.backgroundColor = tableView.separatorColor.CGColor;
         [layer addSublayer:lineLayer];
     }
-    
+
+    layer.path = pathRef;
+    CFRelease(pathRef);
+    layer.fillColor = color.CGColor;
+
     UIView *testView = [[UIView alloc] initWithFrame:bounds];
     [testView.layer insertSublayer:layer atIndex:0];
     testView.backgroundColor = UIColor.clearColor;
-    cell.backgroundView = testView;
+
+    return testView;
 }
+
 
 #pragma mark - UIScrollViewDelegate
 
