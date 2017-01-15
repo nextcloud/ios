@@ -23,6 +23,12 @@
 // THE SOFTWARE.
 //
 
+//
+//  Add Support for Quota
+//  quotaUsed and quotaAvailable
+//
+//  Author Marino Faggiana <m.faggiana@twsweb.it>
+//
 
 #import "OCXMLParser.h"
 #import "NSString+Encode.h"
@@ -226,8 +232,11 @@ NSString *OCCWebDAVURIKey           = @"uri";
         _currentFile = [[OCFileDto alloc] init];
 
         _xmlBucket = nil;
+    } else if ([elementName isEqualToString:@"d:quota-used-bytes"]) {
+        _currentFile.quotaUsed = (unsigned long long)[_xmlChars longLongValue];
+    } else if ([elementName isEqualToString:@"d:quota-available-bytes"]) {
+        _currentFile.quotaAvailable = (unsigned long long)[_xmlChars longLongValue];
     }
-   
 }
 
 - (void)parser:(NSXMLParser *)parser foundCharacters:(NSString *)string {

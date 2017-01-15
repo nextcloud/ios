@@ -331,6 +331,7 @@
         NSString *permissions = itemDtoDirectory.permissions;
         NSString *rev = itemDtoDirectory.etag;
         NSDate *date = [NSDate dateWithTimeIntervalSince1970:itemDtoDirectory.date];
+        long long quota = itemDtoDirectory.quotaUsed + itemDtoDirectory.quotaAvailable;
             
         NSString *directoryID = [CCCoreData addDirectory:_metadataNet.serverUrl date:date permissions:permissions activeAccount:_metadataNet.account];
             

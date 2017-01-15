@@ -24,6 +24,13 @@
 //
 //
 
+//
+//  Add Support for Quota
+//  quotaUsed and quotaAvailable
+//
+//  Author Marino Faggiana <m.faggiana@twsweb.it>
+//
+
 #import <Foundation/Foundation.h>
 
 @interface OCFileDto : NSObject
@@ -36,5 +43,7 @@
 @property (nonatomic, copy) NSString *etag;
 @property (nonatomic, copy) NSString *permissions;
 @property (nonatomic, copy) NSString *ocId;
+@property long long quotaUsed;
+@property long long quotaAvailable;
 
 @end
