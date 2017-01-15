@@ -320,12 +320,26 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         }
         else if formRow.tag == "maskFileName" {
             
+            let fileName : String? = formRow.value as? String
+            
+            self.form.delegate = nil
+            
+            if fileName != nil {
+                formRow.value = CCUtility.removeForbiddenCharacters(fileName)
+            }
+            
+            self.form.delegate = self
+            
             let previewFileName : XLFormRowDescriptor  = self.form.formRow(withTag: "previewFileName")!
             previewFileName.value = self.previewFileName(valueRename: formRow.value as? String)
             
-            // reload only previewFileName cell
-            let indexPathPreview : IndexPath = IndexPath(row: 0, section: 3)
-            self.tableView.reloadRows(at: [indexPathPreview], with: UITableViewRowAnimation.none)
+            // reload cell
+            if fileName != nil {
+                if newValue as! String != formRow.value as! String {
+                    self.reloadFormRow(formRow)
+                }
+            }
+            self.reloadFormRow(previewFileName)
         }
     }
     
@@ -460,6 +474,11 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
                 self.form.delegate = self
                 
                 returnString = CCUtility.createFileName(from: assets[0] as! PHAsset, key: keyFileNameMask)
+                
+            } else {
+                
+                CCUtility.setFileNameMask("", key: keyFileNameMask)
+                returnString = CCUtility.createFileName(from: assets[0] as! PHAsset, key: nil)
             }
             
         } else {
