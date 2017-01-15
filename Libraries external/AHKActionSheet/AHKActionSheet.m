@@ -32,6 +32,8 @@ static const CGFloat kFlickDownMinVelocity = 2000.0f;
 static const CGFloat kTopSpaceMarginFraction = 0.0f;
 // cancelButton's shadow height as the ratio to the cancelButton's height
 static const CGFloat kSpaceDivide = 5.0f;
+// width iPhone 7 Plus
+static const CGFloat maxWidth = 414.0f;
 
 
 /// Used for storing button configuration.
@@ -337,8 +339,6 @@ static const CGFloat kSpaceDivide = 5.0f;
 
 - (void)show
 {
-    NSAssert([self.items count] > 0, @"Please add some buttons before calling -show.");
-
     if ([self isVisible]) {
         return;
     }
@@ -364,7 +364,10 @@ static const CGFloat kSpaceDivide = 5.0f;
 
     void(^delayedAnimations)(void) = ^(void) {
         
-        self.cancelButton.frame = CGRectMake(10, CGRectGetMaxY(self.bounds) - self.cancelButtonHeight, CGRectGetWidth(self.bounds) - 20, self.cancelButtonHeight - kSpaceDivide);
+        CGFloat width = CGRectGetWidth(self.bounds);
+        if (width > maxWidth) width = maxWidth;
+        
+        self.cancelButton.frame = CGRectMake(10 + (CGRectGetWidth(self.bounds)/2 - width/2), CGRectGetMaxY(self.bounds) - self.cancelButtonHeight, width - 20, self.cancelButtonHeight - kSpaceDivide);
     
         // Corner Radius
         self.cancelButton.layer.cornerRadius = 10;
@@ -510,6 +513,11 @@ static const CGFloat kSpaceDivide = 5.0f;
 - (void)setUpCancelButton
 {
     UIButton *cancelButton;
+    
+    CGFloat width = CGRectGetWidth(self.bounds);
+    if (width > maxWidth) width = maxWidth;
+
+    
     // It's hard to check if UIButtonTypeSystem enumeration exists, so we're checking existence of another method that was introduced in iOS 7.
     if ([UIView instancesRespondToSelector:@selector(tintAdjustmentMode)]) {
         cancelButton= [UIButton buttonWithType:UIButtonTypeSystem];
@@ -522,7 +530,7 @@ static const CGFloat kSpaceDivide = 5.0f;
     [cancelButton setAttributedTitle:attrTitle forState:UIControlStateNormal];
     [cancelButton addTarget:self action:@selector(cancelButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
     
-    cancelButton.frame = CGRectMake(10, CGRectGetMaxY(self.bounds) - self.cancelButtonHeight, CGRectGetWidth(self.bounds) - 20, self.cancelButtonHeight - kSpaceDivide);
+    cancelButton.frame = CGRectMake(10 + (CGRectGetWidth(self.bounds)/2 - width/2), CGRectGetMaxY(self.bounds) - self.cancelButtonHeight, width - 20, self.cancelButtonHeight - kSpaceDivide);
     
     // move the button below the screen (ready to be animated -show)
     cancelButton.transform = CGAffineTransformMakeTranslation(0, self.cancelButtonHeight - kSpaceDivide);
@@ -534,9 +542,13 @@ static const CGFloat kSpaceDivide = 5.0f;
 
 - (void)setUpTableView
 {
+    CGFloat width = CGRectGetWidth(self.bounds);
+    if (width > maxWidth) width = maxWidth;
+    
     CGRect statusBarViewRect = [self convertRect:[UIApplication sharedApplication].statusBarFrame fromView:nil];
     CGFloat statusBarHeight = CGRectGetHeight(statusBarViewRect);
-    CGRect frame = CGRectMake(0, statusBarHeight, CGRectGetWidth(self.bounds), CGRectGetHeight(self.bounds) - statusBarHeight - self.cancelButtonHeight - self.separatorHeight);
+    
+    CGRect frame = CGRectMake((CGRectGetWidth(self.bounds)/2 - width/2), statusBarHeight, width, CGRectGetHeight(self.bounds) - statusBarHeight - self.cancelButtonHeight - self.separatorHeight);
 
     UITableView *tableView = [[UITableView alloc] initWithFrame:frame];
     
@@ -558,56 +570,6 @@ static const CGFloat kSpaceDivide = 5.0f;
     tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
 
     self.tableView = tableView;
-
-    [self setUpTableViewHeader];
-}
-
-- (void)setUpTableViewHeader
-{
-    if (self.title) {
-        // paddings similar to those in the UITableViewCell
-        static const CGFloat leftRightPadding = 15.0f;
-        static const CGFloat topBottomPadding = 8.0f;
-        CGFloat labelWidth = CGRectGetWidth(self.bounds) - 2*leftRightPadding;
-
-        NSAttributedString *attrText = [[NSAttributedString alloc] initWithString:self.title attributes:self.titleTextAttributes];
-
-        // create a label and calculate its size
-        UILabel *label = [[UILabel alloc] init];
-        label.numberOfLines = 0;
-        [label setAttributedText:attrText];
-        CGSize labelSize = [label sizeThatFits:CGSizeMake(labelWidth, MAXFLOAT)];
-        label.frame = CGRectMake(leftRightPadding, topBottomPadding, labelWidth, labelSize.height);
-        label.backgroundColor = [UIColor clearColor];
-
-        // create and add a header consisting of the label
-        UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.bounds), labelSize.height + 2*topBottomPadding)];
-        [headerView addSubview:label];
-        
-        self.tableView.tableHeaderView = headerView;
-
-    } else if (self.headerView) {
-        self.tableView.tableHeaderView = self.headerView;
-    }
-
-    // add a separator between the tableHeaderView and a first row (technically at the bottom of the tableHeaderView)
-    if (self.tableView.tableHeaderView && self.tableView.separatorStyle != UITableViewCellSeparatorStyleNone) {
-        CGFloat separatorHeight = 1.0f / [UIScreen mainScreen].scale;
-        CGRect separatorFrame = CGRectMake(0,
-                                           CGRectGetHeight(self.tableView.tableHeaderView.frame) - separatorHeight,
-                                           CGRectGetWidth(self.tableView.tableHeaderView.frame),
-                                           separatorHeight);
-        
-        UIView *separator = [[UIView alloc] initWithFrame:separatorFrame];
-        separator.backgroundColor = self.tableView.separatorColor;
-        
-        // Add line
-        UIView *line = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.tableView.tableHeaderView.frame), 1 / UIScreen.mainScreen.scale)];
-        line.backgroundColor = self.tableView.separatorColor;
-        
-        [self.tableView.tableHeaderView addSubview:separator];
-        [self.tableView.tableHeaderView addSubview:line];
-    }
 }
 
 - (void)fadeBlursOnScrollToTop
