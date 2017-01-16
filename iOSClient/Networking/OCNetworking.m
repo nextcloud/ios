@@ -331,8 +331,7 @@
         NSString *permissions = itemDtoDirectory.permissions;
         NSString *rev = itemDtoDirectory.etag;
         NSDate *date = [NSDate dateWithTimeIntervalSince1970:itemDtoDirectory.date];
-        long long quota = itemDtoDirectory.quotaUsed + itemDtoDirectory.quotaAvailable;
-            
+        
         NSString *directoryID = [CCCoreData addDirectory:_metadataNet.serverUrl date:date permissions:permissions activeAccount:_metadataNet.account];
             
         NSString *cameraFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:_metadataNet.account];
@@ -341,6 +340,16 @@
         
         // Update metadataNet.directoryID
         _metadataNet.directoryID = directoryID;
+        
+#ifndef EXTENSION
+        NSString *home = [CCUtility getHomeServerUrlActiveUrl:_activeUrl typeCloud:_typeCloud];
+        
+        if ([home isEqualToString:_metadataNet.serverUrl]) {
+            
+            app.quotaUsed = itemDtoDirectory.quotaUsed;
+            app.quotaAvailable = itemDtoDirectory.quotaAvailable;
+        }
+#endif
         
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
 
@@ -628,7 +637,17 @@
             NSString *directoryUser = [CCUtility getDirectoryActiveUser:_activeUser activeUrl:_activeUrl];
         
             metadata = [CCUtility trasformedOCFileToCCMetadata:itemDto fileNamePrint:_metadataNet.fileNamePrint serverUrl:_metadataNet.serverUrl directoryID:directoryID cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath activeAccount:_metadataNet.account directoryUser:directoryUser typeCloud:_typeCloud];
-       
+            
+#ifndef EXTENSION
+            NSString *home = [CCUtility getHomeServerUrlActiveUrl:_activeUrl typeCloud:_typeCloud];
+            
+            if ([home isEqualToString:fileName]) {
+                
+                app.quotaUsed = itemDto.quotaUsed;
+                app.quotaAvailable = itemDto.quotaAvailable;
+            }
+#endif
+            
             if([self.delegate respondsToSelector:@selector(readFileSuccess:metadata:)])
                 [self.delegate readFileSuccess:_metadataNet metadata:metadata];
         }

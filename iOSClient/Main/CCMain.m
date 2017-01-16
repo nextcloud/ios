@@ -1048,6 +1048,11 @@
         
         metadataNet.action = actionGetCapabilities;
         [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+        
+        metadataNet.action = actionReadFile;
+        metadataNet.selector = selectorReadFileQuota;
+        metadataNet.serverUrl = _localServerUrl;
+        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
     }
 }
 
@@ -1585,6 +1590,12 @@
             [app addNetworkingOperationQueue:app.netQueueUploadWWan delegate:self metadataNet:metadataNet];
         else
             [app addNetworkingOperationQueue:app.netQueueUpload delegate:self metadataNet:metadataNet];
+    }
+    
+    // Quota
+    if ([metadataNet.selector isEqualToString:selectorReadFileQuota]) {
+        
+        NSLog(@"Quota");
     }
 }
 

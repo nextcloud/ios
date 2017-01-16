@@ -234,6 +234,7 @@ extern NSString *const BKPasscodeKeychainServiceName;
 #define selectorReadFileFolder          @"readFileFolder"
 #define selectorReadFileUploadFile      @"readFileUploadFile"
 #define selectorReadFileVerifyUpload    @"readFileVerifyUpload"
+#define selectorReadFileQuota           @"readFileQuota"
 #define selectorReadFolder              @"readFolder"
 #define selectorReadFolderForced        @"readFolderForced"
 #define selectorReadShare               @"readShare"
