@@ -43,7 +43,7 @@
 @property (nonatomic, copy) NSString *etag;
 @property (nonatomic, copy) NSString *permissions;
 @property (nonatomic, copy) NSString *ocId;
-@property long long quotaUsed;
-@property long long quotaAvailable;
+@property double quotaUsed;
+@property double quotaAvailable;
 
 @end

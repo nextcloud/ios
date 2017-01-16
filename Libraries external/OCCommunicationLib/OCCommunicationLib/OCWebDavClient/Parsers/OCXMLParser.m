@@ -233,9 +233,9 @@ NSString *OCCWebDAVURIKey           = @"uri";
 
         _xmlBucket = nil;
     } else if ([elementName isEqualToString:@"d:quota-used-bytes"]) {
-        _currentFile.quotaUsed = (unsigned long long)[_xmlChars longLongValue];
+        _currentFile.quotaUsed = (double)[_xmlChars longLongValue];
     } else if ([elementName isEqualToString:@"d:quota-available-bytes"]) {
-        _currentFile.quotaAvailable = (unsigned long long)[_xmlChars longLongValue];
+        _currentFile.quotaAvailable = (double)[_xmlChars longLongValue];
     }
 }
 

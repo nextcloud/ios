@@ -59,8 +59,8 @@
 @property (nonatomic, strong) NSString *typeCloud;
 @property (nonatomic, strong) NSString *serverUrl;
 @property (nonatomic, strong) NSString *directoryUser;
-@property long long quotaUsed;
-@property long long quotaAvailable;
+@property double quotaUsed;
+@property double quotaAvailable;
 
 // next version ... ? ...
 @property double currentLatitude;
