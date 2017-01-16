@@ -31,6 +31,7 @@
 @dynamic exifDate;
 @dynamic exifLatitude;
 @dynamic exifLongitude;
+@dynamic favorite;
 @dynamic offline;
 @dynamic fileName;
 @dynamic fileNamePrint;

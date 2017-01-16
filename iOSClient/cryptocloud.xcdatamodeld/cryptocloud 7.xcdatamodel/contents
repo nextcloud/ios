@@ -73,6 +73,7 @@
         <attribute name="exifDate" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="exifLatitude" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="exifLongitude" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="favorite" optional="YES" attributeType="Boolean" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="fileID" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="fileName" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="fileNamePrint" optional="YES" attributeType="String" syncable="YES"/>
@@ -128,7 +129,7 @@
         <element name="TableCertificates" positionX="-5976" positionY="297" width="128" height="75"/>
         <element name="TableDirectory" positionX="-5465" positionY="426" width="128" height="210"/>
         <element name="TableGPS" positionX="-5609" positionY="243" width="128" height="180"/>
-        <element name="TableLocalFile" positionX="-5472" positionY="153" width="135" height="225"/>
+        <element name="TableLocalFile" positionX="-5472" positionY="153" width="135" height="240"/>
         <element name="TableMetadata" positionX="-5949" positionY="162" width="162" height="525"/>
         <element name="TableShare" positionX="-5976" positionY="297" width="128" height="135"/>
     </elements>
