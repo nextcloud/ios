@@ -453,7 +453,7 @@
             else sectionName = @"";
             break;
         case 4:
-            if ([CCCoreData getCameraUploadActiveAccount:app.activeAccount]) sectionName = [NSLocalizedString(@"_upload_camera_fullphotos_", nil) stringByAppendingString:@" (beta)"];
+            if ([CCCoreData getCameraUploadActiveAccount:app.activeAccount]) sectionName = NSLocalizedString(@"_upload_camera_fullphotos_", nil);
             else sectionName = @"";
             break;
         case 5:
