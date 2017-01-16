@@ -1898,6 +1898,42 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Routine for migrate =====
+#pragma --------------------------------------------------------------------------------------------
+
++ (void)localTableCopyFavoriteToOffline
+{
+    [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
+        
+        NSArray *records = [TableLocalFile MR_findAllInContext:localContext];
+        
+        for (TableLocalFile *record in records) {
+            
+            if ([record.favorite isEqualToNumber:[NSNumber numberWithInt:1]]) {
+                record.favorite = [NSNumber numberWithInteger:0];
+                record.offline = [NSNumber numberWithInteger:1];
+            }
+        }
+    }];
+}
+
++ (void)directoryTableCopySynchronizedToOffline
+{
+    [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
+        
+        NSArray *records = [TableDirectory MR_findAllInContext:localContext];
+        
+        for (TableDirectory *record in records) {
+            
+            if ([record.synchronized isEqualToNumber:[NSNumber numberWithInt:1]]) {
+                record.synchronized = [NSNumber numberWithInteger:0];
+                record.offline = [NSNumber numberWithInteger:1];
+            }
+        }
+    }];
+}
+
+#pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Utility Database =====
 #pragma --------------------------------------------------------------------------------------------
 

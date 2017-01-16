@@ -30,8 +30,10 @@
 @dynamic dateReadDirectory;
 @dynamic dateRecord;
 @dynamic directoryID;
+@dynamic favorite;
 @dynamic fileID;
 @dynamic lock;
+@dynamic offline;
 @dynamic permissions;
 @dynamic rev;
 @dynamic serverUrl;

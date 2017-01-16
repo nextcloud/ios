@@ -32,8 +32,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nullable, nonatomic, retain) NSDate *dateReadDirectory;
 @property (nullable, nonatomic, retain) NSDate *dateRecord;
 @property (nullable, nonatomic, retain) NSString *directoryID;
+@property (nullable, nonatomic, retain) NSNumber *favorite;
 @property (nullable, nonatomic, retain) NSString *fileID;
 @property (nullable, nonatomic, retain) NSNumber *lock;
+@property (nullable, nonatomic, retain) NSNumber *offline;
 @property (nullable, nonatomic, retain) NSString *permissions;
 @property (nullable, nonatomic, retain) NSString *rev;
 @property (nullable, nonatomic, retain) NSString *serverUrl;

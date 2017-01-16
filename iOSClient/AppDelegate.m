@@ -1387,6 +1387,9 @@
         
         [CCCoreData clearAllDateReadDirectory];
         [CCCoreData flushTableMetadataAccount:nil];
+        
+        [CCCoreData localTableCopyFavoriteToOffline];
+        [CCCoreData directoryTableCopySynchronizedToOffline];
     }
 }
 

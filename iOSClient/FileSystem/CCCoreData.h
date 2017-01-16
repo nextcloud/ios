@@ -206,6 +206,11 @@
 + (void)insertMetadataInEntity:(CCMetadata *)metadata recordMetadata:(TableMetadata *)recordMetadata activeAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl typeCloud:(NSString *)typeCloud;
 + (CCMetadata *)insertEntityInMetadata:(TableMetadata *)recordMetadata;
 
+// ===== Routine for migrate =====
+
++ (void)localTableCopyFavoriteToOffline;
++ (void)directoryTableCopySynchronizedToOffline;
+
 // ===== Utility Database =====
 
 + (void)moveCoreDataToGroup;

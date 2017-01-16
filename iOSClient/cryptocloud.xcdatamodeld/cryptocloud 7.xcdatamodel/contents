@@ -48,8 +48,10 @@
         <attribute name="dateReadDirectory" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="dateRecord" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="directoryID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="favorite" optional="YES" attributeType="Boolean" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="fileID" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="lock" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="offline" optional="YES" attributeType="Boolean" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="permissions" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="rev" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="serverUrl" optional="YES" attributeType="String" syncable="YES"/>
@@ -127,7 +129,7 @@
         <element name="TableAccount" positionX="-6174" positionY="153" width="171" height="420"/>
         <element name="TableAutomaticUpload" positionX="-5967" positionY="306" width="128" height="180"/>
         <element name="TableCertificates" positionX="-5976" positionY="297" width="128" height="75"/>
-        <element name="TableDirectory" positionX="-5465" positionY="426" width="128" height="210"/>
+        <element name="TableDirectory" positionX="-5465" positionY="426" width="128" height="240"/>
         <element name="TableGPS" positionX="-5609" positionY="243" width="128" height="180"/>
         <element name="TableLocalFile" positionX="-5472" positionY="153" width="135" height="240"/>
         <element name="TableMetadata" positionX="-5949" positionY="162" width="162" height="525"/>
