@@ -1237,14 +1237,14 @@
 {
     [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
         
-        BOOL favorite = NO;
+        BOOL offline = NO;
     
         NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (fileID == %@)", activeAccount, metadata.fileID];
         TableLocalFile *record = [TableLocalFile MR_findFirstWithPredicate:predicate inContext:localContext];
         
         if (record) {
             
-            favorite = [[record valueForKey:@"favorite"] boolValue];
+            offline = [[record valueForKey:@"offline"] boolValue];
             
             [record MR_deleteEntityInContext:localContext];
         }
@@ -1260,7 +1260,7 @@
         record.exifLatitude = @"-1";
         record.exifLongitude = @"-1";
         
-        record.favorite = [NSNumber numberWithBool:favorite];
+        record.offline = [NSNumber numberWithBool:offline];
         record.fileName = metadata.fileName;
         record.fileNamePrint = metadata.fileNamePrint;
         record.rev = metadata.rev;
@@ -1268,7 +1268,7 @@
     }];
 }
 
-+ (void)addFavorite:(NSString *)fileID activeAccount:(NSString *)activeAccount
++ (void)addOffline:(NSString *)fileID activeAccount:(NSString *)activeAccount
 {
     [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
         
@@ -1276,7 +1276,7 @@
         TableLocalFile *record = [TableLocalFile MR_findFirstWithPredicate:predicate inContext:localContext];
     
         if (record)
-            record.favorite = [NSNumber numberWithBool:YES];
+            record.offline = [NSNumber numberWithBool:YES];
     }];
 }
 
@@ -1288,7 +1288,7 @@
     }];
 }
 
-+ (void)removeFavoriteFromFileID:(NSString *)fileID activeAccount:(NSString *)activeAccount
++ (void)removeOfflineFromFileID:(NSString *)fileID activeAccount:(NSString *)activeAccount
 {
     [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
         
@@ -1296,7 +1296,7 @@
         TableLocalFile *record = [TableLocalFile MR_findFirstWithPredicate:predicate inContext:localContext];
     
         if (record)
-            record.favorite = [NSNumber numberWithBool:NO];
+            record.offline = [NSNumber numberWithBool:NO];
     }];
 }
 
@@ -1336,9 +1336,9 @@
     }];
 }
 
-+ (BOOL)isFavorite:(NSString *)fileID activeAccount:(NSString *)activeAccount
++ (BOOL)isOffline:(NSString *)fileID activeAccount:(NSString *)activeAccount
 {
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(fileID == %@) AND (favorite == 1) AND (account == %@)", fileID, activeAccount];
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(fileID == %@) AND (offline == 1) AND (account == %@)", fileID, activeAccount];
     TableLocalFile *record = [TableLocalFile MR_findFirstWithPredicate:predicate];
     
     if (record) return YES;
@@ -1393,12 +1393,12 @@
     return [TableLocalFile MR_findAllWithPredicate:predicate];
 }
 
-+ (NSArray *)getFavoriteWithControlZombie:(BOOL)controlZombie activeAccount:(NSString *)activeAccount directoryUser:(NSString *)directoryUser
++ (NSArray *)getOfflineWithControlZombie:(BOOL)controlZombie activeAccount:(NSString *)activeAccount directoryUser:(NSString *)directoryUser
 {
     NSMutableArray *result = [[NSMutableArray alloc] init];
-    NSMutableArray *favorites = [self getTableLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (favorite == 1)", activeAccount] controlZombie:controlZombie activeAccount:activeAccount directoryUser:directoryUser];
+    NSMutableArray *offline = [self getTableLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (offline == 1)", activeAccount] controlZombie:controlZombie activeAccount:activeAccount directoryUser:directoryUser];
     
-    for (NSManagedObject *entity in favorites) {
+    for (NSManagedObject *entity in offline) {
         NSString *fileID = [entity valueForKey:@"fileID"];
         CCMetadata *metadata = [self getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, activeAccount] context:nil];
         if (metadata) [result addObject:[metadata copy]];

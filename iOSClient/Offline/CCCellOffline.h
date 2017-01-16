@@ -1,8 +1,8 @@
 //
-//  TableLocalFile+CoreDataProperties.m
+//  CCCellOffline.h
 //  Crypto Cloud Technology Nextcloud
 //
-//  Created by Marino Faggiana on 18/01/16.
+//  Created by Marino Faggiana on 05/05/15.
 //  Copyright (c) 2014 TWS. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
@@ -21,21 +21,20 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#import "TableLocalFile+CoreDataProperties.h"
+#import <UIKit/UIKit.h>
 
-@implementation TableLocalFile (CoreDataProperties)
+@interface CCCellOffline : UITableViewCell
 
-@dynamic account;
-@dynamic date;
-@dynamic dateRecord;
-@dynamic exifDate;
-@dynamic exifLatitude;
-@dynamic exifLongitude;
-@dynamic offline;
-@dynamic fileName;
-@dynamic fileNamePrint;
-@dynamic fileID;
-@dynamic rev;
-@dynamic size;
+@property(nonatomic, weak) IBOutlet UIImageView *fileImageView;
+@property(nonatomic, weak) IBOutlet UIImageView *statusImageView;
+
+@property(nonatomic, weak) IBOutlet UILabel *labelTitle;
+@property(nonatomic, weak) IBOutlet UILabel *labelInfoFile;
+
+//Last position of the scroll of the swipe
+@property (nonatomic, assign) CGFloat lastContentOffset;
+
+//Index path of the cell swipe gesture ocured
+@property (nonatomic, strong) NSIndexPath *indexPath;
 
 @end

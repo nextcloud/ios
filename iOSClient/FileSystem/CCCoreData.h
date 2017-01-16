@@ -158,18 +158,18 @@
 // ===== LocalFile =====
 
 + (void)addLocalFile:(CCMetadata *)metadata activeAccount:(NSString *)activeAccount;
-+ (void)addFavorite:(NSString *)fileID activeAccount:(NSString *)activeAccount;
++ (void)addOffline:(NSString *)fileID activeAccount:(NSString *)activeAccount;
 
 + (void)deleteLocalFileWithPredicate:(NSPredicate *)predicate;
-+ (void)removeFavoriteFromFileID:(NSString *)fileID activeAccount:(NSString *)activeAccount;
++ (void)removeOfflineFromFileID:(NSString *)fileID activeAccount:(NSString *)activeAccount;
 
 + (void)renameLocalFileWithFileID:(NSString *)fileID fileNameTo:(NSString *)fileNameTo fileNamePrintTo:(NSString *)fileNamePrintTo activeAccount:(NSString *)activeAccount;
 + (void)updateLocalFileModel:(CCMetadata *)metadata activeAccount:(NSString *)activeAccount;
 
-+ (BOOL)isFavorite:(NSString *)fileID activeAccount:(NSString *)activeAccount;
++ (BOOL)isOffline:(NSString *)fileID activeAccount:(NSString *)activeAccount;
 
 + (TableLocalFile *)getLocalFileWithFileID:(NSString *)fileID activeAccount:(NSString *)activeAccount;
-+ (NSArray *)getFavoriteWithControlZombie:(BOOL)controlZombie activeAccount:(NSString *)activeAccount directoryUser:(NSString *)directoryUser;
++ (NSArray *)getOfflineWithControlZombie:(BOOL)controlZombie activeAccount:(NSString *)activeAccount directoryUser:(NSString *)directoryUser;
 + (NSArray *)getTableLocalFileWithPredicate:(NSPredicate *)predicate;
 
 + (NSArray *)getGeoInformationLocalFromFileID:(NSString *)fileID activeAccount:(NSString *)activeAccount;

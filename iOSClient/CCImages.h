@@ -39,7 +39,7 @@
 #define image_actionSheetSynchronized           @"SynchronizedNextcloud"
 #define image_actionSheetReload                 @"reloadNextcloud"
 #define image_actionSheetOpenIn                 @"openInNextcloud"
-#define image_actionSheetFavorite               @"favoriteNextcloud"
+#define image_actionSheetOffline                @"actionSheetOfflineNextcloud"
 #define image_actionSheetLocal                  @"localStorageNextcloud"
 
 #ifdef CC
@@ -62,7 +62,7 @@
 #ifdef CC
 
 #define image_brandCameraUpload                 @"cryptocloudCameraUpload"
-#define image_brandFavorite                     @"cryptocloudFavorite"
+#define image_brandOffline                      @"cryptocloudOffline"
 #define image_brandLocal                        @"cryptocloudLocal"
 #define image_brandNavigationController         @"cryptocloud_navigationcontroller"
 #define image_brandNavigationController1        @"cryptocloud_navigationcontroller1"
@@ -76,7 +76,7 @@
 #ifdef NC
 
 #define image_brandCameraUpload                 @"nextcloudCameraUpload"
-#define image_brandFavorite                     @"nextcloudFavorite"
+#define image_brandOffline                      @"nextcloudOffline"
 #define image_brandLocal                        @"nextcloudLocal"
 #define image_brandNavigationController         @"nextcloud_navigationcontroller"
 #define image_brandNavigationController1        @"nextcloud_navigationcontroller1"
@@ -122,8 +122,8 @@
 #define image_encryptedSelectedFiles            @"encryptedSelectedFilesNextcloud"
 #endif
 
-#define image_favorite                          @"favorite"
-#define image_favoritecrypto                    @"favoritecrypto"
+#define image_offline                           @"offlineNextcloud"
+#define image_offlinecrypto                     @"offlinecrypto"
 #define image_file                              @"file"
 #define image_filePreviewDownload               @"filePreviewDownload"
 #define image_filePreviewDownloadCrypto         @"filePreviewDownloadCrypto"
@@ -179,7 +179,7 @@
 #define image_movie                             @"movie"
 #define image_moviecrypto                       @"moviecrypto"
 
-#define image_navBarFavorite                    @"navBarFavorite"
+#define image_navBarOffline                     @"navBarOffline"
 #define image_navBarLocal                       @"navBarLocal"
 
 #define image_openSelectedFiles                 @"openSelectedFiles"
@@ -196,12 +196,14 @@
 #define image_quickActionPhotos                 @"quickActionPhotos"
 #define image_quickActionUploadClear            @"quickActionUploadClear"
 #define image_quickActionUploadEncrypted        @"quickActionUploadEncrypted"
+#define image_quickActionUploadOffline          @"quickActionUploadOfflineNextcloud"
 #endif
 
 #ifdef NC
 #define image_quickActionPhotos                 @"quickActionPhotosNextcloud"
 #define image_quickActionUploadClear            @"quickActionUploadClearNextcloud"
 #define image_quickActionUploadEncrypted        @"quickActionUploadEncryptedNextcloud"
+#define image_quickActionUploadOffline          @"quickActionUploadOfflineNextcloud"
 #endif
 
 #define image_reloadtask                        @"reloadtask"
@@ -275,7 +277,7 @@
 #define image_tabBarFile                        @"tabBarNextcloud"
 #endif
 
-#define image_tabBarFavorite                    @"tabBarFavorite"
+#define image_tabBarOffline                     @"tabBarOffline"
 #define image_tabBarLocal                       @"tabBarLocal"
 #define image_tabBarPhotos                      @"tabBarPhotos"
 #define image_tabBarSettings                    @"tabBarSettings"

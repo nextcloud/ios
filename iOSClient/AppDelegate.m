@@ -30,7 +30,7 @@
 #import "CCNetworking.h"
 #import "CCCoreData.h"
 #import "CCCrypto.h"
-#import "CCFavorite.h"
+#import "CCOffline.h"
 #import "CCManageAsset.h"
 #import "CCGraphics.h"
 #import "CCPhotosCameraUpload.h"
@@ -370,8 +370,8 @@
     // 1 sec.
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1.0 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         
-        NSLog(@"[LOG] Synchronize Favorites");
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"synchronizedFavorites" object:nil];
+        NSLog(@"[LOG] Synchronize Offline");
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"synchronizedOffline" object:nil];
         
         NSLog(@"[LOG] Synchronize Folders");
         [[CCSynchronization sharedSynchronization] synchronizationFolders];
@@ -447,17 +447,18 @@
     UIApplicationShortcutIcon *shortcutPhotosIcon = [UIApplicationShortcutIcon iconWithTemplateImageName:image_quickActionPhotos];
     UIApplicationShortcutIcon *shortcutUploadClearIcon = [UIApplicationShortcutIcon iconWithTemplateImageName:image_quickActionUploadClear];
     UIApplicationShortcutIcon *shortcutUploadEncryptedIcon = [UIApplicationShortcutIcon iconWithTemplateImageName:image_quickActionUploadEncrypted];
+    UIApplicationShortcutIcon *shortcutIconTypeOffline = [UIApplicationShortcutIcon iconWithTemplateImageName:image_quickActionUploadOffline];
     
     UIApplicationShortcutItem *shortcutPhotos = [[UIApplicationShortcutItem alloc] initWithType:[NSString stringWithFormat:@"%@.photos", bundleId] localizedTitle:NSLocalizedString(@"_photo_camera_", nil) localizedSubtitle:nil icon:shortcutPhotosIcon userInfo:nil];
 
-    UIApplicationShortcutItem *shortcutFavorite = [[UIApplicationShortcutItem alloc] initWithType:[NSString stringWithFormat:@"%@.favorite", bundleId] localizedTitle:NSLocalizedString(@"_favorites_", nil) localizedSubtitle:nil icon:[UIApplicationShortcutIcon iconWithType:UIApplicationShortcutIconTypeFavorite] userInfo:nil];
+    UIApplicationShortcutItem *shortcutOffline = [[UIApplicationShortcutItem alloc] initWithType:[NSString stringWithFormat:@"%@.offline", bundleId] localizedTitle:NSLocalizedString(@"_offline_", nil) localizedSubtitle:nil icon:shortcutIconTypeOffline userInfo:nil];
     
     UIApplicationShortcutItem *shortcutUploadClear = [[UIApplicationShortcutItem alloc] initWithType:[NSString stringWithFormat:@"%@.uploadClear", bundleId] localizedTitle:NSLocalizedString(@"_upload_file_", nil) localizedSubtitle:nil icon:shortcutUploadClearIcon userInfo:nil];
     
     UIApplicationShortcutItem *shortcutUploadEncrypted = [[UIApplicationShortcutItem alloc] initWithType:[NSString stringWithFormat:@"%@.uploadEncrypted", bundleId] localizedTitle:NSLocalizedString(@"_upload_encrypted_file_", nil) localizedSubtitle:nil icon:shortcutUploadEncryptedIcon userInfo:nil];
     
     // add all items to an array
-    NSArray *items = @[shortcutUploadEncrypted, shortcutUploadClear, shortcutPhotos, shortcutFavorite];
+    NSArray *items = @[shortcutUploadEncrypted, shortcutUploadClear, shortcutPhotos, shortcutOffline];
     
     // add the array to our app
     [UIApplication sharedApplication].shortcutItems = items;
@@ -476,7 +477,7 @@
     
     NSString *bundleId = [NSBundle mainBundle].bundleIdentifier;
     
-    NSString *shortcutFavorite = [NSString stringWithFormat:@"%@.favorite", bundleId];
+    NSString *shortcutOffline = [NSString stringWithFormat:@"%@.offline", bundleId];
     NSString *shortcutPhotos = [NSString stringWithFormat:@"%@.photos", bundleId];
     NSString *shortcutUploadClear = [NSString stringWithFormat:@"%@.uploadClear", bundleId];
     NSString *shortcutUploadEncrypted = [NSString stringWithFormat:@"%@.uploadEncrypted", bundleId];
@@ -589,7 +590,7 @@
         handled = YES;
     }
     
-    else if ([shortcutItem.type isEqualToString:shortcutFavorite] && self.activeAccount) {
+    else if ([shortcutItem.type isEqualToString:shortcutOffline] && self.activeAccount) {
         
         dispatch_async(dispatch_get_main_queue(), ^{
             
@@ -603,11 +604,11 @@
                     if ([nvc.topViewController isKindOfClass:[CCDetail class]])
                         [nvc popToRootViewControllerAnimated:NO];
                 
-                    if ([nvc.topViewController isKindOfClass:[CCFavorite class]])
-                        [(CCFavorite *)nvc.topViewController forcedSwitchFavorite];
+                    if ([nvc.topViewController isKindOfClass:[CCOffline class]])
+                        [(CCOffline *)nvc.topViewController forcedSwitchOffline];
                 }
             
-                [tbc setSelectedIndex:TabBarApplicationIndexFavorite];
+                [tbc setSelectedIndex:TabBarApplicationIndexOffline];
             
             } else {
             
@@ -616,11 +617,11 @@
             
                 UITabBarController *tbc = splitViewController.viewControllers.firstObject;
         
-                UINavigationController *ncFavorite = [tbc.viewControllers objectAtIndex:TabBarApplicationIndexFavorite];
-                if ([ncFavorite.topViewController isKindOfClass:[CCFavorite class]])
-                    [(CCFavorite *)ncFavorite.topViewController forcedSwitchFavorite];
+                UINavigationController *ncOffline = [tbc.viewControllers objectAtIndex:TabBarApplicationIndexOffline];
+                if ([ncOffline.topViewController isKindOfClass:[CCOffline class]])
+                    [(CCOffline *)ncOffline.topViewController forcedSwitchOffline];
             
-                [tbc setSelectedIndex:TabBarApplicationIndexFavorite];
+                [tbc setSelectedIndex:TabBarApplicationIndexOffline];
             }
         });
         
@@ -732,16 +733,16 @@
     item.image = [UIImage imageNamed:image_tabBarFile];
     item.selectedImage = [UIImage imageNamed:image_tabBarFile];
     
-    // Favorite - Local
-    item = [tabBarController.tabBar.items objectAtIndex:TabBarApplicationIndexFavorite];
+    // Offline - Local
+    item = [tabBarController.tabBar.items objectAtIndex:TabBarApplicationIndexOffline];
     if (app.isLocalStorage) {
         [item setTitle:NSLocalizedString(@"_local_storage_", nil)];
         item.image = [UIImage imageNamed:image_tabBarLocal];
         item.selectedImage = [UIImage imageNamed:image_tabBarLocal];
     } else {
-        [item setTitle:NSLocalizedString(@"_favorites_", nil)];
-        item.image = [UIImage imageNamed:image_tabBarFavorite];
-        item.selectedImage = [UIImage imageNamed:image_tabBarFavorite];
+        [item setTitle:NSLocalizedString(@"_offline_", nil)];
+        item.image = [UIImage imageNamed:image_tabBarOffline];
+        item.selectedImage = [UIImage imageNamed:image_tabBarOffline];
     }
     
     // Hide (PLUS)

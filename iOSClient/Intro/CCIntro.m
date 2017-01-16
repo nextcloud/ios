@@ -145,7 +145,7 @@
     page4.showTitleView = NO;
     
     EAIntroPage *page5 = [EAIntroPage page];
-    page5.title = [CCUtility localizableBrand:@"_intro_09_" table:@"Intro"]; // "PREFERITI & ARCHIVIO LOCALE"
+    page5.title = [CCUtility localizableBrand:@"_intro_09_" table:@"Intro"]; // "OFFLINE & LOCAL"
     page5.titlePositionY = titlePositionY;
     page5.titleFont = RalewayMedium(20.0f);
     page5.desc = [CCUtility localizableBrand:@"_intro_10_" table:@"Intro"];

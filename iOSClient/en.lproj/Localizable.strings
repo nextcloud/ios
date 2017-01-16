@@ -95,7 +95,7 @@
 "_want_exit_"               = "Attention! _brand_ will be reset to the initial state. Continue?";
 "_proceed_"                 = "Proceed";
 "_delete_cache_"            = "Delete cache";
-"_want_delete_cache_"       = "Do you want to delete cache (will also delete all local files and reset the favorite)?";
+"_want_delete_cache_"       = "Do you want to delete cache (will also delete all local files and reset the file offline)?";
 "_mail_deleted_"            = "Email deleted";
 "_mail_saved_"              = "Email saved";
 "_mail_sent_"               = "Email sent successfully";
@@ -196,12 +196,14 @@
 "_email_"                       = "Email";
 "_title_form_security_init_"    = "Security options";
 
-// Favorite
+// offline
 
 "_favorites_"                   = "Favorites";
+"_offline_"                     = "Offline";
 "_local_storage_"               = "Local storage";
 "_no_files_uploaded_"           = "No files uploaded";
 "_tutorial_favorite_view_"      = "Copy here the files that should be available offline. They will be synchronized with your cloud.";
+"_tutorial_offline_view_"       = "Copy here the files that should be available offline. They will be synchronized with your cloud.";
 "_tutorial_local_view_"         = "Copy here the files you want to have available offline, but that will no longer be synchronized with your cloud. \n\n You'll find the unpacked files from your cloud. \n\n Connect to iTunes to share these files.";
 "_more_"                        = "More";
 
@@ -315,7 +317,9 @@
 "_encrypt_"                     = "Encrypt";
 "_decrypt_"                     = "Decrypt";
 "_remove_favorites_"            = "Remove from favorites";
+"_remove_offline_"              = "Remove from offline";
 "_add_favorites_"               = "Add to favorites";
+"_add_offline_"                 = "Add to offline";
 "_remove_passcode_"             = "Remove password protection";
 "_protect_passcode_"            = "Protect with password";
 "_share_"                       = "Share";

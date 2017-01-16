@@ -171,10 +171,10 @@
             </objects>
             <point key="canvasLocation" x="7781" y="1209"/>
         </scene>
-        <!--Favorite-->
+        <!--Offline-->
         <scene sceneID="JPc-HC-iQ7">
             <objects>
-                <tableViewController storyboardIdentifier="CCFavoriteVC" extendedLayoutIncludesOpaqueBars="YES" id="Per-s0-P6C" customClass="CCFavorite" sceneMemberID="viewController">
+                <tableViewController storyboardIdentifier="CCOfflineVC" extendedLayoutIncludesOpaqueBars="YES" id="Per-s0-P6C" customClass="CCOffline" sceneMemberID="viewController">
                     <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" allowsSelectionDuringEditing="YES" rowHeight="60" sectionHeaderHeight="22" sectionFooterHeight="22" id="ehH-Wz-w3L">
                         <rect key="frame" x="0.0" y="64" width="375" height="603"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -459,11 +459,11 @@
             </objects>
             <point key="canvasLocation" x="5653" y="327"/>
         </scene>
-        <!--Favorite-->
+        <!--Offline-->
         <scene sceneID="YSr-JF-a0V">
             <objects>
                 <navigationController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="hwM-4d-Afb" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Favorite" image="tabBarFavorite" id="o09-67-hwf"/>
+                    <tabBarItem key="tabBarItem" title="Offline" image="tabBarOffline" id="o09-67-hwf"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="MJw-Bn-5le">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
@@ -583,7 +583,7 @@
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="Cc7-4O-z6Q" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" enabled="NO" title="" id="vIy-cM-ojV"/>
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="jCU-so-Np6">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="jCU-so-Np6">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -600,11 +600,11 @@
     <resources>
         <image name="cryptocloud_sfondo_iPad" width="256" height="187"/>
         <image name="tabBarCryptoCloud" width="50" height="50"/>
-        <image name="tabBarFavorite" width="25" height="25"/>
+        <image name="tabBarOffline" width="25" height="25"/>
         <image name="tabBarPhotos" width="25" height="25"/>
         <image name="tabBarSettings" width="25" height="25"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="YTW-Kz-l02"/>
+        <segue reference="op6-ow-K8v"/>
     </inferredMetricsTieBreakers>
 </document>

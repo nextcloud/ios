@@ -265,11 +265,11 @@
     row.action.formSelector = @selector(copyDirGroupToLocal:);
     [section addFormRow:row];
 
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"quickActionFavorite" rowType:XLFormRowDescriptorTypeButton title:@"Quick Action Favorite"];
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"quickActionOffline" rowType:XLFormRowDescriptorTypeButton title:@"Quick Action Offline"];
     [row.cellConfig setObject:[UIColor redColor] forKey:@"textLabel.textColor"];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:[UIImage imageNamed:image_settingsAdmin] forKey:@"imageView.image"];
-    row.action.formSelector = @selector(quickActionFavorite:);
+    row.action.formSelector = @selector(quickActionOffline:);
     [section addFormRow:row];
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"quickActionPhotos" rowType:XLFormRowDescriptorTypeButton title:@"Quick Action Photos"];
@@ -363,13 +363,13 @@
     exit(0);
 }
 
-- (void)quickActionFavorite:(XLFormRowDescriptor *)sender
+- (void)quickActionOffline:(XLFormRowDescriptor *)sender
 {
     NSString *bundleId = [NSBundle mainBundle].bundleIdentifier;
     
-    UIApplicationShortcutItem *shortcutFavorite = [[UIApplicationShortcutItem alloc] initWithType:[NSString stringWithFormat:@"%@.favorite", bundleId] localizedTitle:@"" localizedSubtitle:nil icon:nil userInfo:nil];
+    UIApplicationShortcutItem *shortcutOffline = [[UIApplicationShortcutItem alloc] initWithType:[NSString stringWithFormat:@"%@.offline", bundleId] localizedTitle:@"" localizedSubtitle:nil icon:nil userInfo:nil];
     
-    [app handleShortCutItem:shortcutFavorite];
+    [app handleShortCutItem:shortcutOffline];
 }
 
 - (void)quickActionPhotos:(XLFormRowDescriptor *)sender

@@ -33,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nullable, nonatomic, retain) NSDate *exifDate;
 @property (nullable, nonatomic, retain) NSString *exifLatitude;
 @property (nullable, nonatomic, retain) NSString *exifLongitude;
-@property (nullable, nonatomic, retain) NSNumber *favorite;
+@property (nullable, nonatomic, retain) NSNumber *offline;
 @property (nullable, nonatomic, retain) NSString *fileID;
 @property (nullable, nonatomic, retain) NSString *fileName;
 @property (nullable, nonatomic, retain) NSString *fileNamePrint;

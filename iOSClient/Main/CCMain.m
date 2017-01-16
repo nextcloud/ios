@@ -1161,9 +1161,9 @@
         [self getDataSourceWithReloadTableView:metadata.directoryID fileID:metadata.fileID selector:selector];
     }
     
-    // add Favorite
-    if ([selector isEqualToString:selectorAddFavorite]) {
-        [CCCoreData addFavorite:metadata.fileID activeAccount:app.activeAccount];
+    // add Offline
+    if ([selector isEqualToString:selectorAddOffline]) {
+        [CCCoreData addOffline:metadata.fileID activeAccount:app.activeAccount];
         [self getDataSourceWithReloadTableView:metadata.directoryID fileID:metadata.fileID selector:selector];
     }
     
@@ -2014,7 +2014,7 @@
         metadataNet.session = upload_session_foreground;
         metadataNet.taskStatus = taskStatusResume;
         
-        if ([CCCoreData isFavorite:metadata.fileID activeAccount:app.activeAccount]) metadataNet.selectorPost = selectorAddFavorite;
+        if ([CCCoreData isOffline:metadata.fileID activeAccount:app.activeAccount]) metadataNet.selectorPost = selectorAddOffline;
         
         [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
         
@@ -2043,7 +2043,7 @@
         metadataNet.session = upload_session_foreground;
         metadataNet.taskStatus = taskStatusResume;
         
-        if ([CCCoreData isFavorite:metadata.fileID activeAccount:app.activeAccount]) metadataNet.selectorPost = selectorAddFavorite;
+        if ([CCCoreData isOffline:metadata.fileID activeAccount:app.activeAccount]) metadataNet.selectorPost = selectorAddOffline;
         
         [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
     }
@@ -2923,31 +2923,31 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Favorite =====
+#pragma mark ===== Offline =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)addFavorite:(CCMetadata *)metadata
+- (void)addOffline:(CCMetadata *)metadata
 {
     if (metadata.errorPasscode || !metadata.uuid) return;
     
     if ([metadata.type isEqualToString:metadataType_file])
-        [[CCNetworking sharedNetworking] downloadFile:metadata serverUrl:_localServerUrl downloadData:YES downloadPlist:NO selector:selectorAddFavorite selectorPost:nil session:download_session taskStatus:taskStatusResume delegate:self];
+        [[CCNetworking sharedNetworking] downloadFile:metadata serverUrl:_localServerUrl downloadData:YES downloadPlist:NO selector:selectorAddOffline selectorPost:nil session:download_session taskStatus:taskStatusResume delegate:self];
     
     if ([metadata.type isEqualToString:metadataType_model])
-        [CCCoreData addFavorite:metadata.fileID activeAccount:app.activeAccount];
+        [CCCoreData addOffline:metadata.fileID activeAccount:app.activeAccount];
     
     NSIndexPath *indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:metadata.fileID];
     if (indexPath) [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObjects:indexPath, nil] withRowAnimation:UITableViewRowAnimationAutomatic];
 }
 
-- (void)removeFavorite:(CCMetadata *)metadata
+- (void)removeOffline:(CCMetadata *)metadata
 {
-    [CCCoreData removeFavoriteFromFileID:metadata.fileID activeAccount:app.activeAccount];
+    [CCCoreData removeOfflineFromFileID:metadata.fileID activeAccount:app.activeAccount];
     
     NSIndexPath *indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:metadata.fileID];
     if (indexPath) [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObjects:indexPath, nil] withRowAnimation:UITableViewRowAnimationAutomatic];
     
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"reloadTableFavorite" object:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"reloadTableOffline" object:nil];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -2967,7 +2967,7 @@
         
         [app messageNotification:@"_add_local_" description:@"_file_saved_local_" visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeSuccess];
         
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"reloadTableFavorite" object:nil];
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"reloadTableOffline" object:nil];
     }
     
     NSIndexPath *indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:metadata.fileID];
@@ -4036,14 +4036,14 @@
 {
     _metadata = [self getMetadataFromSectionDataSource:indexPath];
     
-    NSString *titoloCriptaDecripta, *titoloPreferiti, *titoloLock, *titoloSynchronized;
+    NSString *titoloCriptaDecripta, *titoloOffline, *titoloLock, *titoloSynchronized;
     BOOL synchronized = NO;
     
     if (_metadata.cryptated) titoloCriptaDecripta = [NSString stringWithFormat:NSLocalizedString(@"_decrypt_", nil)];
     else titoloCriptaDecripta = [NSString stringWithFormat:NSLocalizedString(@"_encrypt_", nil)];
     
-    if ([CCCoreData isFavorite:_metadata.fileID activeAccount:app.activeAccount]) titoloPreferiti = [NSString stringWithFormat:NSLocalizedString(@"_remove_favorites_", nil)];
-    else titoloPreferiti = [NSString stringWithFormat:NSLocalizedString(@"_add_favorites_", nil)];
+    if ([CCCoreData isOffline:_metadata.fileID activeAccount:app.activeAccount]) titoloOffline = [NSString stringWithFormat:NSLocalizedString(@"_remove_offline_", nil)];
+    else titoloOffline = [NSString stringWithFormat:NSLocalizedString(@"_add_offline_", nil)];
     
     NSString *synchronizedServerUrl = [CCUtility stringAppendServerUrl:_localServerUrl addServerUrl:_metadata.fileNameData];
     if (_metadata.directory && [CCCoreData isSynchronizedDirectory:synchronizedServerUrl activeAccount:app.activeAccount]) {
@@ -4332,8 +4332,8 @@
                                     [self performSelector:@selector(cmdEncryptedDecryptedFile) withObject:nil afterDelay:0.1];
                                 }];
         
-        [actionSheet addButtonWithTitle:titoloPreferiti
-                                  image:[UIImage imageNamed:image_actionSheetFavorite]
+        [actionSheet addButtonWithTitle:titoloOffline
+                                  image:[UIImage imageNamed:image_actionSheetOffline]
                         backgroundColor:[UIColor whiteColor]
                                  height: 50.0
                                    type:AHKActionSheetButtonTypeDefault
@@ -4342,10 +4342,10 @@
                                     // close swipe
                                     [self setEditing:NO animated:YES];
                                     
-                                    if ([CCCoreData isFavorite:_metadata.fileID activeAccount:app.activeAccount])
-                                        [self removeFavorite:_metadata];
+                                    if ([CCCoreData isOffline:_metadata.fileID activeAccount:app.activeAccount])
+                                        [self removeOffline:_metadata];
                                     else
-                                        [self addFavorite:_metadata];
+                                        [self addOffline:_metadata];
                                 }];
 
 
@@ -4414,8 +4414,8 @@
                                     [self moveOpenWindow:[[NSArray alloc] initWithObjects:indexPath, nil]];
                                 }];
 
-        [actionSheet addButtonWithTitle:titoloPreferiti
-                                  image:[UIImage imageNamed:image_actionSheetFavorite]
+        [actionSheet addButtonWithTitle:titoloOffline
+                                  image:[UIImage imageNamed:image_actionSheetOffline]
                         backgroundColor:[UIColor whiteColor]
                                  height: 50.0
                                    type:AHKActionSheetButtonTypeDefault
@@ -4424,10 +4424,10 @@
                                     // close swipe
                                     [self setEditing:NO animated:YES];
                                     
-                                    if ([CCCoreData isFavorite:_metadata.fileID activeAccount:app.activeAccount])
-                                        [self removeFavorite:_metadata];
+                                    if ([CCCoreData isOffline:_metadata.fileID activeAccount:app.activeAccount])
+                                        [self removeOffline:_metadata];
                                     else
-                                        [self addFavorite:_metadata];
+                                        [self addOffline:_metadata];
                                 }];
 
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_add_local_", nil)
@@ -4530,10 +4530,10 @@
     if (app.activeAccount == nil || app.activeUrl == nil || directoryID == nil)
         return;
     
-    // Reload -> Favorite ?
+    // Reload -> Offline ?
     if (fileID)
-        if ([CCCoreData isFavorite:fileID activeAccount:app.activeAccount])
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"reloadTableFavorite" object:nil];
+        if ([CCCoreData isOffline:fileID activeAccount:app.activeAccount])
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"reloadTableOffline" object:nil];
 
     // Reload -> Self se non siamo nella dir appropriata cercala e se è in memoria reindirizza il reload
     if ([directoryID isEqualToString:_localDirectoryID] == NO || _localServerUrl == nil) {
@@ -4871,7 +4871,7 @@
     
     cell.fileImageView.image = nil;
     cell.statusImageView.image = nil;
-    cell.favoriteImageView.image = nil;
+    cell.offlineImageView.image = nil;
     cell.synchronizedImageView.image = nil;
     cell.sharedImageView.image = nil;
     
@@ -5025,13 +5025,13 @@
     if (metadata.directory && ([CCCoreData isDirectoryLock:lockServerUrl activeAccount:app.activeAccount] && [[CCUtility getBlockCode] length])) cell.statusImageView.image = [UIImage imageNamed:image_passcode];
     
     // ----------------------------------------------------------------------------------------------------------
-    // Favorite
+    // Offline
     // ----------------------------------------------------------------------------------------------------------
 
-    if ([CCCoreData isFavorite:metadata.fileID activeAccount:app.activeAccount]) {
+    if ([CCCoreData isOffline:metadata.fileID activeAccount:app.activeAccount]) {
         
-        if (metadata.cryptated) cell.favoriteImageView.image = [UIImage imageNamed:image_favoritecrypto];
-        else cell.favoriteImageView.image = [UIImage imageNamed:image_favorite];
+        if (metadata.cryptated) cell.offlineImageView.image = [UIImage imageNamed:image_offlinecrypto];
+        else cell.offlineImageView.image = [UIImage imageNamed:image_offline];
     }
     
     // ----------------------------------------------------------------------------------------------------------

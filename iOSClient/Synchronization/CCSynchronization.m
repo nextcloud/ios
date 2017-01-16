@@ -298,11 +298,11 @@
             NSString *selector, *selectorPost;
             BOOL downloadData, downloadPlist;
         
-            // it's a favorite ?
-            BOOL isFavorite = [CCCoreData isFavorite:metadata.fileID activeAccount:app.activeAccount];
+            // it's a offline ?
+            BOOL isOffline = [CCCoreData isOffline:metadata.fileID activeAccount:app.activeAccount];
         
-            if (isFavorite)
-                selectorPost = selectorAddFavorite;
+            if (isOffline)
+                selectorPost = selectorAddOffline;
         
             if ([metadata.type isEqualToString:metadataType_file]) {
                 downloadData = YES;

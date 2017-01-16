@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="11759" systemVersion="16C67" minimumToolsVersion="Xcode 7.0" sourceLanguage="Objective-C" userDefinedModelVersionIdentifier="cryptocloud">
+    <entity name="TableAccount" representedClassName="TableAccount" syncable="YES">
+        <attribute name="account" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="active" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="cameraUpload" optional="YES" attributeType="Boolean" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="cameraUploadBackground" optional="YES" attributeType="Boolean" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="cameraUploadCreateSubfolder" optional="YES" attributeType="Boolean" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="cameraUploadCryptatedPhoto" optional="YES" attributeType="Boolean" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="cameraUploadCryptatedVideo" optional="YES" attributeType="Boolean" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="cameraUploadDatePhoto" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="cameraUploadDateVideo" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="cameraUploadFolderName" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="cameraUploadFolderPath" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="cameraUploadFull" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="cameraUploadPhoto" optional="YES" attributeType="Boolean" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="cameraUploadSaveAlbum" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="cameraUploadVideo" optional="YES" attributeType="Boolean" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="cameraUploadWWAnPhoto" optional="YES" attributeType="Boolean" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="cameraUploadWWAnVideo" optional="YES" attributeType="Boolean" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="dateRecord" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="optimization" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="password" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="token" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="typeCloud" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="uid" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="url" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="user" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <entity name="TableAutomaticUpload" representedClassName="TableAutomaticUpload" syncable="YES">
+        <attribute name="account" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="assetLocalItentifier" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="fileName" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="priority" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="selector" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="selectorPost" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="serverUrl" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="session" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <entity name="TableCertificates" representedClassName="TableCertificates" syncable="YES">
+        <attribute name="certificateLocation" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="dateRecord" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+    </entity>
+    <entity name="TableDirectory" representedClassName="TableDirectory" syncable="YES">
+        <attribute name="account" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="dateReadDirectory" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="dateRecord" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="directoryID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="fileID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="lock" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="permissions" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="rev" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="serverUrl" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="synchronized" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="NO" syncable="YES"/>
+    </entity>
+    <entity name="TableGPS" representedClassName="TableGPS" syncable="YES">
+        <attribute name="dateRecord" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="latitude" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="location" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="longitude" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="placemarkAdministrativeArea" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="placemarkCountry" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="placemarkLocality" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="placemarkPostalCode" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="placemarkThoroughfare" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <entity name="TableLocalFile" representedClassName="TableLocalFile" syncable="YES">
+        <attribute name="account" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="dateRecord" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="exifDate" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="exifLatitude" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="exifLongitude" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="fileID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="fileName" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="fileNamePrint" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="offline" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="rev" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="size" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+    </entity>
+    <entity name="TableMetadata" representedClassName="TableMetadata" syncable="YES">
+        <attribute name="account" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="cryptated" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="dateRecord" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="directory" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="directoryID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="errorPasscode" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="fileID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="fileName" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="fileNameData" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="fileNamePrint" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="iconName" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="localIdentifier" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="model" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="nameCurrentDevice" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="permissions" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="protocol" optional="YES" attributeType="String" defaultValueString="1" syncable="YES"/>
+        <attribute name="rev" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="session" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="sessionError" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="sessionID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="sessionSelector" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="sessionSelectorPost" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="sessionTaskIdentifier" optional="YES" attributeType="Integer 16" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="sessionTaskIdentifierPlist" optional="YES" attributeType="Integer 16" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="size" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="thumbnailExists" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="type" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="typeCloud" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="typeFile" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="uuid" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <entity name="TableShare" representedClassName="TableShare" syncable="YES">
+        <attribute name="account" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="dateRecord" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="fileName" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="serverUrl" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="shareLink" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="shareUserAndGroup" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <elements>
+        <element name="TableAccount" positionX="-6174" positionY="153" width="171" height="420"/>
+        <element name="TableAutomaticUpload" positionX="-5967" positionY="306" width="128" height="180"/>
+        <element name="TableCertificates" positionX="-5976" positionY="297" width="128" height="75"/>
+        <element name="TableDirectory" positionX="-5465" positionY="426" width="128" height="210"/>
+        <element name="TableGPS" positionX="-5609" positionY="243" width="128" height="180"/>
+        <element name="TableLocalFile" positionX="-5472" positionY="153" width="135" height="225"/>
+        <element name="TableMetadata" positionX="-5949" positionY="162" width="162" height="525"/>
+        <element name="TableShare" positionX="-5976" positionY="297" width="128" height="135"/>
+    </elements>
+</model>

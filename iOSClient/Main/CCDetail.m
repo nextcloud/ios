@@ -380,8 +380,8 @@
     [self.thumbs removeAllObjects];
     [_dataSourceDirectoryID removeAllObjects];
     
-    // Favorite
-    if (self.sourceDirectory == sorceDirectoryFavorite) {
+    // Offline
+    if (self.sourceDirectory == sorceDirectoryOffline) {
             
         self.dataSourceImagesVideos = (NSMutableArray *)[CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", self.metadataDetail.fileID, app.activeAccount] fieldOrder:[CCUtility getOrderSettings] ascending:[CCUtility getAscendingSettings]];
     }

@@ -208,7 +208,7 @@ extern NSString *const BKPasscodeKeychainServiceName;
 #define uploadSessionID @"ID_UPLOAD_"
 
 // Metadata.Net SELECTOR
-#define selectorAddFavorite             @"addFavorite"
+#define selectorAddOffline              @"addOffline"
 #define selectorAddLocal                @"addLocal"
 #define selectorBrowseImages            @"browseImages"
 #define selectorCreateFolder            @"createFolder"
@@ -230,7 +230,7 @@ extern NSString *const BKPasscodeKeychainServiceName;
 #define selectorOpenIn                  @"openIn"
 #define selectorOpenWindowShare         @"openWindowShare"
 #define selectorReadFile                @"readFile"
-#define selectorReadFileFavorite        @"readFileFavorite"
+#define selectorReadFileOffline         @"readFileOffline"
 #define selectorReadFileFolder          @"readFileFolder"
 #define selectorReadFileUploadFile      @"readFileUploadFile"
 #define selectorReadFileVerifyUpload    @"readFileVerifyUpload"
@@ -276,7 +276,7 @@ extern NSString *const BKPasscodeKeychainServiceName;
 // Tipi di sorgente directory
 #define sorceDirectoryAccount           0
 #define sorceDirectoryLocal             1
-#define sorceDirectoryFavorite          2
+#define sorceDirectoryOffline           2
 
 // Metadata : FileType
 #define metadataTypeFile_audio          @"audio"
@@ -299,7 +299,7 @@ extern NSString *const BKPasscodeKeychainServiceName;
 #define metadataTypeFilenameCrypto      2
 
 #define TabBarApplicationIndexFile      0
-#define TabBarApplicationIndexFavorite  1
+#define TabBarApplicationIndexOffline   1
 #define TabBarApplicationIndexHide      2
 #define TabBarApplicationIndexPhotos    3
 #define TabBarApplicationIndexSettings  4
