@@ -307,11 +307,15 @@
 
 - (void)emptyDataSetDidTapButton:(UIScrollView *)scrollView
 {    
-    CCManageCameraUpload *viewController = [[CCManageCameraUpload alloc] initWithNibName:nil bundle:nil];
-    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
-    
-    [navigationController setModalPresentationStyle:UIModalPresentationFullScreen];
-    [self presentViewController:navigationController animated:YES completion:nil];
+    [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
+        
+        // If the user has previously granted or denied photo library access permission, it executes the handler block when called; otherwise, it displays an alert and executes the block only after the user has responded to the alert.
+        CCManageCameraUpload *viewController = [[CCManageCameraUpload alloc] initWithNibName:nil bundle:nil];
+        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
+        
+        [navigationController setModalPresentationStyle:UIModalPresentationFullScreen];
+        [self presentViewController:navigationController animated:YES completion:nil];
+    }];
 }
 
 #pragma --------------------------------------------------------------------------------------------
