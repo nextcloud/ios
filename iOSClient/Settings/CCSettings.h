@@ -38,4 +38,6 @@
 
 @property (nonatomic, strong) CCHud *hud;
 
+- (void)reloadForm;
+
 @end

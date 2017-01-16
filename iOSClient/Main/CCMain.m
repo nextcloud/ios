@@ -1595,7 +1595,8 @@
     // Quota
     if ([metadataNet.selector isEqualToString:selectorReadFileQuota]) {
         
-        NSLog(@"Quota");
+        if (app.activeSettings)
+            [app.activeSettings reloadForm];        
     }
 }
 

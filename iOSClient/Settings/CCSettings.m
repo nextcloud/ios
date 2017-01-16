@@ -38,6 +38,8 @@
     if (self) {
         
         [self initializeForm];
+        
+        app.activeSettings = self;
     }
     
     return self;
@@ -109,6 +111,13 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
     [section addFormRow:row];
+    
+    // quota
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"quota" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_quota_", nil)];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
+    [section addFormRow:row];
+
     
     // Change Account
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"changecredentials" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_change_credentials_", nil)];
@@ -210,7 +219,6 @@
     row.action.formSelector = @selector(sendMail:);
     [section addFormRow:row];
 
-    
     // Section : cache
     
     section = [XLFormSectionDescriptor formSection];
@@ -391,6 +399,7 @@
     
     XLFormRowDescriptor *rowUrlCloud = [self.form formRowWithTag:@"urlcloud"];
     XLFormRowDescriptor *rowUserNameCloud = [self.form formRowWithTag:@"usernamecloud"];
+    XLFormRowDescriptor *rowQuota = [self.form formRowWithTag:@"quota"];
     
     // ------------------------------------------------------------------
     
@@ -410,6 +419,11 @@
     
     rowUrlCloud.value = app.activeUrl;
     rowUserNameCloud.value = app.activeUser;
+    
+    NSString *quota = [CCUtility transformedSize:(app.quotaAvailable + app.quotaUsed)];
+    NSString *quotaAvailable = [CCUtility transformedSize:(app.quotaAvailable)];
+    
+    rowQuota.value = [NSString stringWithFormat:@"%@ / %@ %@", quota, quotaAvailable, NSLocalizedString(@"_available_", nil)];
         
     // -----------------------------------------------------------------
     

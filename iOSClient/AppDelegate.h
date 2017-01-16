@@ -39,6 +39,7 @@
 #import "CCMain.h"
 #import "CCPhotosCameraUpload.h"
 #import "CCFavorite.h"
+#import "CCSettings.h"
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate, BKPasscodeLockScreenManagerDelegate, BKPasscodeViewControllerDelegate, LMMediaPlayerViewDelegate, TWMessageBarStyleSheet>
 
@@ -136,6 +137,7 @@
 @property (nonatomic, strong) CCPhotosCameraUpload *activePhotosCameraUpload;
 @property (nonatomic, retain) CCDetail *activeDetail;
 @property (nonatomic, retain) CCFavorite *activeFavorite;
+@property (nonatomic, retain) CCSettings *activeSettings;
 
 @property (nonatomic, strong) NSMutableDictionary *listMainVC;
 @property (nonatomic, strong) NSMutableDictionary *listProgressMetadata;

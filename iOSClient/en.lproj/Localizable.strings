@@ -123,6 +123,8 @@
 "_help_"                    = "Help";
 "_lock_protection_simply_"  = "Weak password protection";
 "_change_simply_passcode_"  = "Change password type";
+"_quota_"                   = "Quota";
+"_available_"               = "available";
 
 // Manage Camera Upload
 
