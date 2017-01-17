@@ -25,7 +25,7 @@
 
 #import "AppDelegate.h"
 #import "CCPhotosCameraUpload.h"
-#import "CCSynchronization.h"
+#import "CCOfflineFolder.h"
 
 #import "Nextcloud-Swift.h"
 
@@ -35,7 +35,7 @@
 #define alertCreateFolder 1
 #define alertCreateFolderCrypto 2
 #define alertRename 3
-#define alertSynchronization 4
+#define alertOfflineFolder 4
 
 @interface CCMain ()
 {
@@ -353,9 +353,9 @@
             [self renameFile:_metadata fileName:[alertView textFieldAtIndex:0].text];
         }
     }
-    if (alertView.tag == alertSynchronization && buttonIndex == 1) {
+    if (alertView.tag == alertOfflineFolder && buttonIndex == 1) {
      
-        [[CCSynchronization sharedSynchronization] synchronizationFolder:[CCUtility stringAppendServerUrl:_localServerUrl addServerUrl:_metadata.fileNameData]];
+        [[CCOfflineFolder sharedOfflineFolder] addRemoveOfflineFolder:[CCUtility stringAppendServerUrl:_localServerUrl addServerUrl:_metadata.fileNameData]];
         [self performSelector:@selector(getDataSourceWithReloadTableView) withObject:nil afterDelay:0.5];
     }
 }
@@ -381,7 +381,7 @@
      4> return YES or NO Based on the length
      */
     
-    if (alertView.tag == alertSynchronization) return YES;
+    if (alertView.tag == alertOfflineFolder) return YES;
     else return ([[[alertView textFieldAtIndex:0] text] length]>0)?YES:NO;
 }
 
@@ -1155,8 +1155,8 @@
         [self getDataSourceWithReloadTableView:metadata.directoryID fileID:metadata.fileID selector:selector];
     }
     
-    // Synchronize
-    if ([selector isEqualToString:selectorDownloadSynchronized]) {
+    // Offline Directory
+    if ([selector isEqualToString:selectorDownloadOffline]) {
         
         [self getDataSourceWithReloadTableView:metadata.directoryID fileID:metadata.fileID selector:selector];
     }
@@ -1744,10 +1744,10 @@
     // read plist
     [self downloadPlist:metadataNet.directoryID serverUrl:metadataNet.serverUrl];
     
-    // Synchronization directory
+    // Offline Folder
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
         
-        [[CCSynchronization sharedSynchronization] verifyChangeMedatas:metadatas serverUrl:metadataNet.serverUrl directoryID:metadataNet.directoryID account:app.activeAccount synchronization:NO];
+        [[CCOfflineFolder sharedOfflineFolder] verifyChangeMedatas:metadatas serverUrl:metadataNet.serverUrl directoryID:metadataNet.directoryID account:app.activeAccount offline:NO];
     });
 
     // this is the same directory
@@ -4036,8 +4036,8 @@
 {
     _metadata = [self getMetadataFromSectionDataSource:indexPath];
     
-    NSString *titoloCriptaDecripta, *titoloOffline, *titoloLock, *titoloSynchronized;
-    BOOL synchronized = NO;
+    NSString *titoloCriptaDecripta, *titoloOffline, *titoloLock, *titleOfflineFolder;
+    BOOL offlineFolder = NO;
     
     if (_metadata.cryptated) titoloCriptaDecripta = [NSString stringWithFormat:NSLocalizedString(@"_decrypt_", nil)];
     else titoloCriptaDecripta = [NSString stringWithFormat:NSLocalizedString(@"_encrypt_", nil)];
@@ -4045,13 +4045,13 @@
     if ([CCCoreData isOffline:_metadata.fileID activeAccount:app.activeAccount]) titoloOffline = [NSString stringWithFormat:NSLocalizedString(@"_remove_offline_", nil)];
     else titoloOffline = [NSString stringWithFormat:NSLocalizedString(@"_add_offline_", nil)];
     
-    NSString *synchronizedServerUrl = [CCUtility stringAppendServerUrl:_localServerUrl addServerUrl:_metadata.fileNameData];
-    if (_metadata.directory && [CCCoreData isSynchronizedDirectory:synchronizedServerUrl activeAccount:app.activeAccount]) {
+    NSString *offlineServerUrl = [CCUtility stringAppendServerUrl:_localServerUrl addServerUrl:_metadata.fileNameData];
+    if (_metadata.directory && [CCCoreData isOfflineDirectory:offlineServerUrl activeAccount:app.activeAccount]) {
         
-        titoloSynchronized = [NSString stringWithFormat:NSLocalizedString(@"_remove_synchronized_folder_", nil)];
-        synchronized = YES;
+        titleOfflineFolder = [NSString stringWithFormat:NSLocalizedString(@"_remove_offline_", nil)];
+        offlineFolder = YES;
         
-    } else titoloSynchronized = [NSString stringWithFormat:NSLocalizedString(@"_synchronized_folder_", nil)];
+    } else titleOfflineFolder = [NSString stringWithFormat:NSLocalizedString(@"_add_offline_", nil)];
     
     if (_metadata.directory) {
         // calcolo lockServerUrl
@@ -4200,8 +4200,8 @@
         
         if (!lockDirectory) {
         
-            [actionSheet addButtonWithTitle:titoloSynchronized
-                                      image:[UIImage imageNamed:image_actionSheetSynchronized]
+            [actionSheet addButtonWithTitle:titleOfflineFolder
+                                      image:[UIImage imageNamed:image_actionSheetOffline]
                             backgroundColor:[UIColor whiteColor]
                                      height: 50.0
                                        type:AHKActionSheetButtonTypeDefault
@@ -4210,15 +4210,15 @@
                                         // close swipe
                                         [self setEditing:NO animated:YES];
                                         
-                                        if (synchronized == NO) {
+                                        if (offlineFolder == NO) {
                                             
-                                            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"",nil) message:NSLocalizedString(@"_synchronized_confirm_",nil) delegate:self cancelButtonTitle:NSLocalizedString(@"_cancel_",nil) otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
-                                            alertView.tag = alertSynchronization;
+                                            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"",nil) message:NSLocalizedString(@"_offline_folder_confirm_",nil) delegate:self cancelButtonTitle:NSLocalizedString(@"_cancel_",nil) otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
+                                            alertView.tag = alertOfflineFolder;
                                             [alertView show];
                                             
                                         } else {
                                             
-                                            [[CCSynchronization sharedSynchronization] synchronizationFolder:[CCUtility stringAppendServerUrl:_localServerUrl addServerUrl:_metadata.fileNameData]];
+                                            [[CCOfflineFolder sharedOfflineFolder] addRemoveOfflineFolder:[CCUtility stringAppendServerUrl:_localServerUrl addServerUrl:_metadata.fileNameData]];
                                             [self performSelector:@selector(getDataSourceWithReloadTableView) withObject:nil afterDelay:0.5];
                                         }
                                     }];
@@ -4538,7 +4538,7 @@
     // Reload -> Self se non siamo nella dir appropriata cercala e se è in memoria reindirizza il reload
     if ([directoryID isEqualToString:_localDirectoryID] == NO || _localServerUrl == nil) {
         
-        if ([selector isEqualToString:selectorDownloadSynchronized]) {
+        if ([selector isEqualToString:selectorDownloadOffline]) {
             [app.controlCenter reloadDatasource];
         } else {
             CCMain *main = [app.listMainVC objectForKey:[CCCoreData getServerUrlFromDirectoryID:directoryID activeAccount:app.activeAccount]];
@@ -4916,13 +4916,18 @@
         lunghezzaFile = @" ";
         
         // ----------------------------------------------------------------------------------------------------------
-        // Synchronize
+        // Offline Folder
         // ----------------------------------------------------------------------------------------------------------
         
-        NSString *synchronizedServerUrl = [CCUtility stringAppendServerUrl:_localServerUrl addServerUrl:metadata.fileNameData];
-        if ([CCCoreData isSynchronizedDirectory:synchronizedServerUrl activeAccount:app.activeAccount]) {
+        NSString *offlineServerUrl = [CCUtility stringAppendServerUrl:_localServerUrl addServerUrl:metadata.fileNameData];
+        if ([CCCoreData isOfflineDirectory:offlineServerUrl activeAccount:app.activeAccount]) {
             
-            if ([[CCSynchronization sharedSynchronization] synchronizationAnimationDirectory:[[NSArray alloc] initWithObjects:synchronizedServerUrl, nil] callViewController:NO]) {
+            // Image Offline
+            if (metadata.cryptated) cell.offlineImageView.image = [UIImage imageNamed:image_offlinecrypto];
+            else cell.offlineImageView.image = [UIImage imageNamed:image_offline];
+            
+            // Animation synchronized gif
+            if ([[CCOfflineFolder sharedOfflineFolder] offlineFolderAnimationDirectory:[[NSArray alloc] initWithObjects:offlineServerUrl, nil] callViewController:NO]) {
                 
                 NSURL *myURL;
                 
@@ -4930,11 +4935,6 @@
                 else myURL = [[NSBundle mainBundle] URLForResource: @"synchronized" withExtension:@"gif"];
                 
                 cell.synchronizedImageView.image = [UIImage animatedImageWithAnimatedGIFURL:myURL];
-                
-            } else {
-                
-                if (metadata.cryptated) cell.synchronizedImageView.image = [UIImage imageNamed:image_synchronizedcrypto];
-                else cell.synchronizedImageView.image = [UIImage imageNamed:image_synchronized];
             }
         }
 
@@ -5382,10 +5382,10 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Synchronize Cell =====
+#pragma mark ===== Offline Folder Cell =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)synchronizedFolderGraphicsServerUrl:(NSString *)serverUrl animation:(BOOL)animation
+- (void)offlineFolderGraphicsServerUrl:(NSString *)serverUrl animation:(BOOL)animation
 {
     BOOL cryptated = NO;
     CCCellMain *cell;
@@ -5423,10 +5423,7 @@
         
     } else {
         
-        if (cryptated)
-            cell.synchronizedImageView.image = [UIImage imageNamed:image_synchronizedcrypto];
-        else
-            cell.synchronizedImageView.image = [UIImage imageNamed:image_synchronized];
+        cell.synchronizedImageView.image = nil;
     }
 }
 

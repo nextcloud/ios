@@ -159,17 +159,6 @@
     row.action.formSegueIdenfifier = @"CCManageOptimizationsSegue";
     [section addFormRow:row];
 
-    // Section : Synchronizations
-    
-    section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_synchronizations_", nil)];
-    [form addFormSection:section];
-    
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"synchronizations" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_synchronizations_", nil)];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    row.action.formSegueIdenfifier = @"CCManageSynchronizationsSegue";
-    [row.cellConfig setObject:[UIImage imageNamed:image_settingsSync] forKey:@"imageView.image"];
-    [section addFormRow:row];
-
     // Section : Acknowledgements
 
     section = [XLFormSectionDescriptor formSection];

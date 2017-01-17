@@ -24,7 +24,7 @@
 #import "CCOffline.h"
 
 #import "AppDelegate.h"
-#import "CCSynchronization.h"
+#import "CCOfflineFolder.h"
 
 #pragma GCC diagnostic ignored "-Wundeclared-selector"
 
@@ -47,7 +47,7 @@
     if (self = [super initWithCoder:aDecoder])  {
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadTable) name:@"reloadTableCCOffline" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(synchronizedOffline) name:@"synchronizedCCOffline" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(readFileOffline) name:@"readFileOffline" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initToHome) name:@"initToHomeOffline" object:nil];
         
         app.activeOffline = self;
@@ -303,7 +303,7 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Synchronized Offline =====
+#pragma mark ===== read file Offline for download =====
 #pragma---------------------------------------------------------------------------------------------
 
 - (void)readFileFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
@@ -315,13 +315,13 @@
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
         
-        [[CCSynchronization sharedSynchronization] verifyChangeMedatas:[[NSArray alloc] initWithObjects:metadata, nil] serverUrl:metadataNet.serverUrl directoryID:metadataNet.directoryID account:app.activeAccount synchronization:NO];
+        [[CCOfflineFolder sharedOfflineFolder] verifyChangeMedatas:[[NSArray alloc] initWithObjects:metadata, nil] serverUrl:metadataNet.serverUrl directoryID:metadataNet.directoryID account:app.activeAccount offline:NO];
     });
     
     [self.tableView performSelector:@selector(reloadData) withObject:nil afterDelay:0.1];
 }
 
-- (void)synchronizedOffline
+- (void)readFileOffline
 {
     if (app.activeAccount == nil || [CCUtility getHomeServerUrlActiveUrl:app.activeUrl typeCloud:app.typeCloud] == nil) return;
     

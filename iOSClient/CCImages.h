@@ -36,7 +36,6 @@
 #define image_actionSheetCrypto                 @"actionSheetCrypto"
 #define image_actionSheetLock                   @"actionSheetLock"
 #define image_actionSheetShare                  @"shareNextcloud"
-#define image_actionSheetSynchronized           @"SynchronizedNextcloud"
 #define image_actionSheetReload                 @"reloadNextcloud"
 #define image_actionSheetOpenIn                 @"openInNextcloud"
 #define image_actionSheetOffline                @"actionSheetOfflineNextcloud"
@@ -266,8 +265,6 @@
 #define image_statusuploadcrypto                @"statusuploadcrypto"
 #define image_stoptask                          @"stoptask"
 #define image_stoptaskcrypto                    @"stoptaskcrypto"
-#define image_synchronized                      @"synchronized"
-#define image_synchronizedcrypto                @"synchronizedcrypto"
 
 #ifdef CC
 #define image_tabBarFile                        @"tabBarCryptoCloud"

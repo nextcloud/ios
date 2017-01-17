@@ -60,7 +60,6 @@
 
 + (void)setOptimizedPhoto:(BOOL)resize;
 + (void)setUploadAndRemovePhoto:(BOOL)remove;
-+ (void)setSynchronizationsOnlyWiFi:(BOOL)onlyWiFi;
 
 + (void)setOrderSettings:(NSString *)order;
 + (void)setAscendingSettings:(BOOL)ascendente;
@@ -98,7 +97,6 @@
 
 + (BOOL)getOptimizedPhoto;
 + (BOOL)getUploadAndRemovePhoto;
-+ (BOOL)getSynchronizationsOnlyWiFi;
 
 + (NSString *)getOrderSettings;
 + (BOOL)getAscendingSettings;

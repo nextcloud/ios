@@ -175,7 +175,7 @@
 "_optimized_photos_how_"    = "If your iPhone is low on space, full-resolution photos are automatically replaced with optimized versions. The full-resolution versions are stored in your Cloud.";
 "_upload_del_photos_how_"   = "Files will be removed from _brand_ memory after they’ve been uploaded to the Cloud. They will remain in the camera roll. Just download the files to see them.";
 
-// Manage Synchronizations
+// Manage Synchronizations [DISMISS]
 
 "_sync_wifi_how_"           = "The files in synchronized folders will be updated only when Wi-Fi is available";
 "_sync_active_"             = "Active synchronizations of folders";
@@ -342,6 +342,7 @@
 "_synchronized_folder_"         = "Keep the folder synchronized";
 "_remove_synchronized_folder_"  = "Remove the synchronization";
 "_synchronized_confirm_"        = "After enabling the synchronization, all files in the folder will be synchronized with the server, continue?";
+"_offline_folder_confirm_"      = "After enabling the offline, all files in the folder will be synchronized with the server, continue?";
 "_same_device_different_passcode_"  = "The file was encrypted on the same device but with different passcode. Keep in mind that if the old passcode is entered, files encrypted with the new passcode will not be readable.";
 "_file_encrypted_another_device_"   = "The file was encrypted on another device [%@], enter the passcode to decrypt its content.";
 "_file_not_found_reload_"       = "File not found, pull down to refresh";
@@ -464,7 +465,7 @@
 
 "_no_transfer_"                     = "No transfer";
 
-// Synchronization
+// Offline
 
 "_create_synchronization_"          = "Create synchronization";
 

@@ -144,10 +144,10 @@
 
 + (BOOL)isDirectoryOutOfDate:(int)numAddDay directoryID:(NSString *)directoryID activeAccount:(NSString *)activeAccount;
 
-+ (void)removeSynchronizedDirectoryID:(NSString *)directoryID activeAccount:(NSString *)activeAccount;
-+ (NSArray *)getSynchronizedDirectoryActiveAccount:(NSString *)activeAccount;
-+ (void)setSynchronizedDirectory:(NSString *)serverUrl synchronized:(BOOL)synchronized activeAccount:(NSString *)activeAccount;
-+ (BOOL)isSynchronizedDirectory:(NSString *)serverUrl activeAccount:(NSString *)activeAccount;
++ (void)removeOfflineDirectoryID:(NSString *)directoryID activeAccount:(NSString *)activeAccount;
++ (NSArray *)getOfflineDirectoryActiveAccount:(NSString *)activeAccount;
++ (void)setOfflineDirectory:(NSString *)serverUrl offline:(BOOL)offline activeAccount:(NSString *)activeAccount;
++ (BOOL)isOfflineDirectory:(NSString *)serverUrl activeAccount:(NSString *)activeAccount;
 
 + (BOOL)setDirectoryLock:(NSString *)serverUrl activeAccount:(NSString *)activeAccount;
 + (BOOL)setDirectoryUnLock:(NSString *)serverUrl activeAccount:(NSString *)activeAccount;

@@ -95,7 +95,7 @@
 - (void)requestSharedByServer;
 - (void)requestServerInformation;
 
-- (void)synchronizedFolderGraphicsServerUrl:(NSString *)serverUrl animation:(BOOL)animation;
+- (void)offlineFolderGraphicsServerUrl:(NSString *)serverUrl animation:(BOOL)animation;
 
 - (void)clearDateReadDataSource:(NSNotification *)notification;
 

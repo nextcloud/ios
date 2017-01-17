@@ -113,13 +113,6 @@
     [self.intro showIntroCryptoCloud:0.1];
 }
 
-- (void)synchronizations:(XLFormRowDescriptor *)sender
-{
-    [self deselectFormRow:sender];
-    
-    [self.intro showIntroVersion:@"1.90" duration:0.1 review:YES];
-}
-
 - (void)share:(XLFormRowDescriptor *)sender
 {
     [self deselectFormRow:sender];

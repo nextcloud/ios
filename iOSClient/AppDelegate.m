@@ -34,7 +34,7 @@
 #import "CCManageAsset.h"
 #import "CCGraphics.h"
 #import "CCPhotosCameraUpload.h"
-#import "CCSynchronization.h"
+#import "CCOfflineFolder.h"
 #import "CCMain.h"
 #import "CCDetail.h"
 
@@ -370,11 +370,11 @@
     // 1 sec.
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1.0 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         
-        NSLog(@"[LOG] Synchronize Offline");
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"synchronizedOffline" object:nil];
+        NSLog(@"[LOG] read file Offline");
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"readFileOffline" object:nil];
         
-        NSLog(@"[LOG] Synchronize Folders");
-        [[CCSynchronization sharedSynchronization] synchronizationFolders];
+        NSLog(@"[LOG]  read folder offline");
+        [[CCOfflineFolder sharedOfflineFolder] readFolderOffline];
         
     });
     
@@ -397,14 +397,14 @@
 {
 // BACKGROND & FOREGROUND
     
-    /* Active/Disactive Graphics Animation Synchronization Folders */
-    NSArray *records = [CCCoreData getSynchronizedDirectoryActiveAccount:app.activeAccount];
+    /* Active/Disactive Graphics Animation Offline Folders */
+    NSArray *records = [CCCoreData getOfflineDirectoryActiveAccount:app.activeAccount];
     NSMutableArray *directory = [[NSMutableArray alloc] init];
     for (TableDirectory *record in records)
         [directory addObject:record.serverUrl];
     
     if ([directory count] > 0)
-        [[CCSynchronization sharedSynchronization] synchronizationAnimationDirectory:directory callViewController:YES];
+        [[CCOfflineFolder sharedOfflineFolder] offlineFolderAnimationDirectory:directory callViewController:YES];
 
 // ONLY BACKGROUND
     

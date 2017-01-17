@@ -120,12 +120,6 @@
     [UICKeyChainStore setString:sRemovePhoto forKey:@"uploadremovephoto" service:serviceShareKeyChain];
 }
 
-+ (void)setSynchronizationsOnlyWiFi:(BOOL)onlyWiFi
-{
-    NSString *sSynchronizationsOnlyWiFi = (onlyWiFi) ? @"true" : @"false";
-    [UICKeyChainStore setString:sSynchronizationsOnlyWiFi forKey:@"synchronizationsonlywifi" service:serviceShareKeyChain];
-}
-
 + (void)setOrderSettings:(NSString *)order
 {
     [UICKeyChainStore setString:order forKey:@"order" service:serviceShareKeyChain];
@@ -264,11 +258,6 @@
 + (BOOL)getUploadAndRemovePhoto
 {
     return [[UICKeyChainStore stringForKey:@"uploadremovephoto" service:serviceShareKeyChain] boolValue];
-}
-
-+ (BOOL)getSynchronizationsOnlyWiFi
-{
-    return [[UICKeyChainStore stringForKey:@"synchronizationsonlywifi" service:serviceShareKeyChain] boolValue];
 }
 
 + (NSString *)getOrderSettings

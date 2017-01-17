@@ -18,7 +18,7 @@
 "_intro_07_" = "_brand_";
 "_intro_08_" = "From now on, you will be able to see all the files stored in your Cloud. You will be able to rename, move, delete them, send them to other compatible programs installed in your iPhone, and much more.";
 "_intro_09_" = "OFFLINE & LOCAL STORAGE";
-"_intro_10_" = "You can tag the most important files as 'Offline', so that they are copied and will always remain synchronized on your iPhone and they can be consulted offline. In the 'Local storage' instead enter files that are no longer synchronized. In the 'Local storage' they will be decompress the compressed files you download from the cloud where you can also access it via iTunes.";
+"_intro_10_" = "You can tag the most important files or folders as 'Offline', so that they are copied and will always remain synchronized on your iPhone and they can be consulted offline. In the 'Local storage' instead enter files that are no longer synchronized. In the 'Local storage' they will be decompress the compressed files you download from the cloud where you can also access it via iTunes.";
 "_intro_11_" = "ENCRYPT / DECRYPT";
 "_intro_12_" = "Any file can be encrypted or decrypted. The name of folders containing your files can be encrypted as well (so as to hide any possible hint at their contents).";
 "_intro_13_" = "ADD";

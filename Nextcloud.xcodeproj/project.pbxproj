@@ -82,7 +82,6 @@
 		F71E68021DC1F79D003BA52B /* libownCloudiOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F71E67FC1DC1F76F003BA52B /* libownCloudiOS.a */; };
 		F7229B3B1DF7187F00E8C4E7 /* InfoNextcloud.plist in Resources */ = {isa = PBXBuildFile; fileRef = F7229B371DF7187F00E8C4E7 /* InfoNextcloud.plist */; };
 		F725437C1E12A44A009BF4C2 /* CCSection.m in Sources */ = {isa = PBXBuildFile; fileRef = F78F6FAF1CC8CCB700F4EA25 /* CCSection.m */; };
-		F72764651DB8FE2A002334CD /* CCSynchronization.m in Sources */ = {isa = PBXBuildFile; fileRef = F72764631DB8FE2A002334CD /* CCSynchronization.m */; };
 		F72C63891DC14B0400FA5ED5 /* libMagicalRecord.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F7B61E9B1DC13C20009E938F /* libMagicalRecord.a */; };
 		F732BA061D76CE1500E9878B /* CCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F732BA041D76CE1500E9878B /* CCNetworking.m */; };
 		F732BA0B1D76DBA500E9878B /* CCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F732BA041D76CE1500E9878B /* CCNetworking.m */; };
@@ -312,7 +311,6 @@
 		F77B0E711D118A16002130FE /* LMMediaItem.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0F351C889339008DAB36 /* LMMediaItem.m */; };
 		F77B0E731D118A16002130FE /* PPImageScrollingTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F05231C889184008DAB36 /* PPImageScrollingTableViewCell.m */; };
 		F77B0E741D118A16002130FE /* CCBancomat.m in Sources */ = {isa = PBXBuildFile; fileRef = F72137221BAFF0920012B613 /* CCBancomat.m */; };
-		F77B0E751D118A16002130FE /* CCManageSynchronizations.m in Sources */ = {isa = PBXBuildFile; fileRef = F776B0CC1BEA22F00081EFBA /* CCManageSynchronizations.m */; };
 		F77B0E761D118A16002130FE /* ReaderViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0ED61C889317008DAB36 /* ReaderViewController.m */; };
 		F77B0E771D118A16002130FE /* TableShare+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F7EC9CCC1C4FA803008122B5 /* TableShare+CoreDataProperties.m */; };
 		F77B0E781D118A16002130FE /* ReaderThumbFetch.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0ECA1C889317008DAB36 /* ReaderThumbFetch.m */; };
@@ -556,6 +554,7 @@
 		F7D6A0931D82DBFA0045AD1A /* CCControlCenterCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D6A08C1D82DBFA0045AD1A /* CCControlCenterCell.m */; };
 		F7D6A0951D82DBFA0045AD1A /* CCControlCenterCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7D6A08D1D82DBFA0045AD1A /* CCControlCenterCell.xib */; };
 		F7D6A0971D82DBFA0045AD1A /* CCMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D6A08F1D82DBFA0045AD1A /* CCMenu.m */; };
+		F7DAE66E1E2E109F004EFA30 /* CCOfflineFolder.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DAE66D1E2E109F004EFA30 /* CCOfflineFolder.m */; };
 		F7DCA1C81D32BD4100E48D39 /* Share Ext Nextcloud.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = F7DCA1B81D32BD4100E48D39 /* Share Ext Nextcloud.entitlements */; };
 		F7ECBA6D1E239DCD003E6328 /* CCCreateCloud.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7ECBA6C1E239DCD003E6328 /* CCCreateCloud.swift */; };
 		F7EF0CAF1D9E95F400A9D15E /* CCSharedDBSession.m in Sources */ = {isa = PBXBuildFile; fileRef = F7EF0CAD1D9E95F400A9D15E /* CCSharedDBSession.m */; };
@@ -1103,8 +1102,6 @@
 		F722CEEB1A40361A00C40606 /* Raleway-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Raleway-Regular.ttf"; sourceTree = "<group>"; };
 		F722CEEC1A40361A00C40606 /* Raleway-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Raleway-SemiBold.ttf"; sourceTree = "<group>"; };
 		F722CEED1A40361A00C40606 /* Raleway-Thin.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Raleway-Thin.ttf"; sourceTree = "<group>"; };
-		F72764621DB8FE2A002334CD /* CCSynchronization.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCSynchronization.h; sourceTree = "<group>"; };
-		F72764631DB8FE2A002334CD /* CCSynchronization.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCSynchronization.m; sourceTree = "<group>"; };
 		F7296A601C8880C9001A7809 /* CCCellShareExt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCCellShareExt.h; sourceTree = "<group>"; };
 		F7296A611C8880C9001A7809 /* CCCellShareExt.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCCellShareExt.m; sourceTree = "<group>"; };
 		F7296A621C8880C9001A7809 /* CCCellShareExt.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CCCellShareExt.xib; sourceTree = "<group>"; };
@@ -1366,8 +1363,6 @@
 		F771CD5B1E07F6620066F76D /* TableAutomaticUpload+CoreDataClass.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableAutomaticUpload+CoreDataClass.m"; sourceTree = "<group>"; };
 		F771CD5C1E07F6620066F76D /* TableAutomaticUpload+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableAutomaticUpload+CoreDataProperties.h"; sourceTree = "<group>"; };
 		F771CD5D1E07F6620066F76D /* TableAutomaticUpload+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableAutomaticUpload+CoreDataProperties.m"; sourceTree = "<group>"; };
-		F776B0CB1BEA22F00081EFBA /* CCManageSynchronizations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCManageSynchronizations.h; sourceTree = "<group>"; };
-		F776B0CC1BEA22F00081EFBA /* CCManageSynchronizations.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCManageSynchronizations.m; sourceTree = "<group>"; };
 		F777F0301C29717F00CE81CB /* PHAsset+Utility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "PHAsset+Utility.h"; sourceTree = "<group>"; };
 		F777F0311C29717F00CE81CB /* PHAsset+Utility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "PHAsset+Utility.m"; sourceTree = "<group>"; };
 		F77D49A71DC238E500CDC568 /* loading@2x.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = "loading@2x.gif"; sourceTree = "<group>"; };
@@ -1492,6 +1487,8 @@
 		F7D96F0D1D99498600A587A5 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		F7D96F0E1D99498700A587A5 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Intro.strings; sourceTree = "<group>"; };
 		F7D96F0F1D99498700A587A5 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Error.strings; sourceTree = "<group>"; };
+		F7DAE66C1E2E109F004EFA30 /* CCOfflineFolder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCOfflineFolder.h; sourceTree = "<group>"; };
+		F7DAE66D1E2E109F004EFA30 /* CCOfflineFolder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCOfflineFolder.m; sourceTree = "<group>"; };
 		F7DCA1B81D32BD4100E48D39 /* Share Ext Nextcloud.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = "Share Ext Nextcloud.entitlements"; path = "Share Ext/Share Ext Nextcloud.entitlements"; sourceTree = SOURCE_ROOT; };
 		F7E456D41C89D54A00BD63F0 /* Share Ext-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Share Ext-Bridging-Header.h"; sourceTree = "<group>"; };
 		F7EC9CCB1C4FA803008122B5 /* TableShare+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableShare+CoreDataProperties.h"; sourceTree = "<group>"; };
@@ -2378,15 +2375,6 @@
 			path = Raleway;
 			sourceTree = "<group>";
 		};
-		F72764611DB8FE2A002334CD /* Synchronization */ = {
-			isa = PBXGroup;
-			children = (
-				F72764621DB8FE2A002334CD /* CCSynchronization.h */,
-				F72764631DB8FE2A002334CD /* CCSynchronization.m */,
-			);
-			path = Synchronization;
-			sourceTree = "<group>";
-		};
 		F728CE741BF6322C00E69702 /* Share */ = {
 			isa = PBXGroup;
 			children = (
@@ -2899,8 +2887,6 @@
 				F7AB79F01BB1A3AD00A82F32 /* CCManageOptimizations.m */,
 				F797F4061CF1ECFE00D0B84B /* CCManagePhotos.h */,
 				F797F4071CF1ECFE00D0B84B /* CCManagePhotos.m */,
-				F776B0CB1BEA22F00081EFBA /* CCManageSynchronizations.h */,
-				F776B0CC1BEA22F00081EFBA /* CCManageSynchronizations.m */,
 				F7ACE4301BAC0268006C0017 /* CCSettings.h */,
 				F7ACE4311BAC0268006C0017 /* CCSettings.m */,
 			);
@@ -2987,6 +2973,8 @@
 				F7C00D441E2D0D0F0032160B /* CCCellOffline.xib */,
 				F7C00D451E2D0D0F0032160B /* CCOffline.h */,
 				F7C00D461E2D0D0F0032160B /* CCOffline.m */,
+				F7DAE66C1E2E109F004EFA30 /* CCOfflineFolder.h */,
+				F7DAE66D1E2E109F004EFA30 /* CCOfflineFolder.m */,
 			);
 			path = Offline;
 			sourceTree = "<group>";
@@ -3189,7 +3177,6 @@
 				F7FE125B1BAC03FB0041924B /* Security */,
 				F7ACE4281BAC0268006C0017 /* Settings */,
 				F728CE741BF6322C00E69702 /* Share */,
-				F72764611DB8FE2A002334CD /* Synchronization */,
 				F721371B1BAFF0920012B613 /* Templates */,
 				F7CE287E1D1ACFA70025783C /* UINavigationController+CCProgress */,
 				F70784811A2C8A0D00AC9FFF /* UploadFromOtherUpp */,
@@ -3917,7 +3904,6 @@
 				F77B0E051D118A16002130FE /* ReaderDocument.m in Sources */,
 				F7F06ECD1DBFACC600099AE9 /* CTAssetThumbnailStacks.m in Sources */,
 				F7659A581DC0B760004860C4 /* NSIndexPath+PSTCollectionViewAdditions.m in Sources */,
-				F72764651DB8FE2A002334CD /* CCSynchronization.m in Sources */,
 				F7659A681DC0B760004860C4 /* PSTCollectionViewUpdateItem.m in Sources */,
 				F7C00D471E2D0D0F0032160B /* CCCellOffline.m in Sources */,
 				F77B0E071D118A16002130FE /* ioapi.c in Sources */,
@@ -4014,6 +4000,7 @@
 				F73CCE0B1DC13776007E38D8 /* NSPredicate+XLFormAdditions.m in Sources */,
 				F77B0E5C1D118A16002130FE /* AHKActionSheetViewController.m in Sources */,
 				F73CCE131DC13776007E38D8 /* XLFormRightImageButton.m in Sources */,
+				F7DAE66E1E2E109F004EFA30 /* CCOfflineFolder.m in Sources */,
 				F77B0E5D1D118A16002130FE /* UIImage+Blurring.m in Sources */,
 				F7BE6E2F1D2D5C3B00106933 /* CCQuickActions.m in Sources */,
 				F77B0E5E1D118A16002130FE /* unzip.c in Sources */,
@@ -4040,7 +4027,6 @@
 				F77B0E731D118A16002130FE /* PPImageScrollingTableViewCell.m in Sources */,
 				F7659A2E1DC0B72F004860C4 /* EARestrictedScrollView.m in Sources */,
 				F77B0E741D118A16002130FE /* CCBancomat.m in Sources */,
-				F77B0E751D118A16002130FE /* CCManageSynchronizations.m in Sources */,
 				F77B0E761D118A16002130FE /* ReaderViewController.m in Sources */,
 				F77B0E771D118A16002130FE /* TableShare+CoreDataProperties.m in Sources */,
 				F77B0E781D118A16002130FE /* ReaderThumbFetch.m in Sources */,

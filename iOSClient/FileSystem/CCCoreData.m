@@ -1094,28 +1094,28 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Synchronized Directory =====
+#pragma mark ===== Offline Directory =====
 #pragma --------------------------------------------------------------------------------------------
 
-+ (void)removeSynchronizedDirectoryID:(NSString *)directoryID activeAccount:(NSString *)activeAccount
++ (void)removeOfflineDirectoryID:(NSString *)directoryID activeAccount:(NSString *)activeAccount
 {
     [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
 
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(directoryID == %@) AND (account == %@) AND (synchronized == 1)", directoryID, activeAccount];
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(directoryID == %@) AND (account == %@) AND (offline == 1)", directoryID, activeAccount];
         TableDirectory *record = [TableDirectory MR_findFirstWithPredicate:predicate inContext:localContext];
     
         if (record)
-            record.synchronized = [NSNumber numberWithBool:FALSE];
+            record.offline = [NSNumber numberWithBool:FALSE];
     }];
 }
 
-+ (NSArray *)getSynchronizedDirectoryActiveAccount:(NSString *)activeAccount
++ (NSArray *)getOfflineDirectoryActiveAccount:(NSString *)activeAccount
 {
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (synchronized == 1)", activeAccount];
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (offline == 1)", activeAccount];
     return [TableDirectory MR_findAllWithPredicate:predicate];
 }
 
-+ (void)setSynchronizedDirectory:(NSString *)serverUrl synchronized:(BOOL)synchronized activeAccount:(NSString *)activeAccount
++ (void)setOfflineDirectory:(NSString *)serverUrl offline:(BOOL)offline activeAccount:(NSString *)activeAccount
 {
     [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
 
@@ -1123,13 +1123,13 @@
         TableDirectory *record = [TableDirectory MR_findFirstWithPredicate:predicate inContext:localContext];
     
         if (record)
-            record.synchronized = [NSNumber numberWithBool:synchronized];
+            record.offline = [NSNumber numberWithBool:offline];
     }];
 }
 
-+ (BOOL)isSynchronizedDirectory:(NSString *)serverUrl activeAccount:(NSString *)activeAccount
++ (BOOL)isOfflineDirectory:(NSString *)serverUrl activeAccount:(NSString *)activeAccount
 {
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(directoryID == %@) AND (synchronized == 1) AND (account == %@)", [self getDirectoryIDFromServerUrl:serverUrl activeAccount:activeAccount], activeAccount];
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(directoryID == %@) AND (offline == 1) AND (account == %@)", [self getDirectoryIDFromServerUrl:serverUrl activeAccount:activeAccount], activeAccount];
     TableDirectory *record = [TableDirectory MR_findFirstWithPredicate:predicate];
     
     if (record) return YES;
