@@ -2,17 +2,17 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "offlineNextcloud@1x.png",
+      "filename" : "actionSheetOffline.png",
       "scale" : "1x"
     },
     {
       "idiom" : "universal",
-      "filename" : "offlineNextcloud@2x.png",
+      "filename" : "actionSheetOffline@2x.png",
       "scale" : "2x"
     },
     {
       "idiom" : "universal",
-      "filename" : "offlineNextcloud@3x.png",
+      "filename" : "actionSheetOffline@3x.png",
       "scale" : "3x"
     }
   ],

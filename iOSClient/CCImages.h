@@ -38,7 +38,7 @@
 #define image_actionSheetShare                  @"shareNextcloud"
 #define image_actionSheetReload                 @"reloadNextcloud"
 #define image_actionSheetOpenIn                 @"openInNextcloud"
-#define image_actionSheetOffline                @"actionSheetOfflineNextcloud"
+#define image_actionSheetOffline                @"actionSheetOffline"
 #define image_actionSheetLocal                  @"localStorageNextcloud"
 
 #ifdef CC
@@ -121,7 +121,7 @@
 #define image_encryptedSelectedFiles            @"encryptedSelectedFilesNextcloud"
 #endif
 
-#define image_offline                           @"offlineNextcloud"
+#define image_offline                           @"offline"
 #define image_offlinecrypto                     @"offlinecrypto"
 #define image_file                              @"file"
 #define image_filePreviewDownload               @"filePreviewDownload"
