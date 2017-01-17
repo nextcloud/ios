@@ -62,6 +62,9 @@
 
     form = [XLFormDescriptor formDescriptorWithTitle:NSLocalizedString(@"_uploading_from_camera_", nil)];
     
+    // Request permission for camera roll access
+    [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status){}];
+    
     // Camera Upload
     
     section = [XLFormSectionDescriptor formSection];

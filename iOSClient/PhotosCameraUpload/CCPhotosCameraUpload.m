@@ -309,7 +309,7 @@
 {    
     CCManageCameraUpload *viewController = [[CCManageCameraUpload alloc] initWithNibName:nil bundle:nil];
     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
-    
+        
     [navigationController setModalPresentationStyle:UIModalPresentationFullScreen];
     [self presentViewController:navigationController animated:YES completion:nil];
 }
