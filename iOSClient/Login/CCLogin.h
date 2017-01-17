@@ -36,9 +36,6 @@
 @property (nonatomic, strong) NSDate *lockUntilDate;
 
 @property (nonatomic, weak) IBOutlet UIImageView *brand;
-
-@property (nonatomic, weak) IBOutlet UIButton *owncloud;
-@property (nonatomic, weak) IBOutlet UIButton *dropbox;
 @property (nonatomic, weak) IBOutlet UIButton *nextcloud;
 
 @property (nonatomic, strong) CCIntro *intro;

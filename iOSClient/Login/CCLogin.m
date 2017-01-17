@@ -43,12 +43,7 @@
     
     self.brand.image = [UIImage imageNamed:image_launchscreen];
     
-    _owncloud.hidden = YES;
-    _dropbox.hidden = YES;
-    
     [_nextcloud setTitle:[NSString stringWithFormat:@"     %@", NSLocalizedString(@"_add_your_nextcloud_", nil)] forState:UIControlStateNormal];
-    [_owncloud setTitle:[NSString stringWithFormat:@"     %@", NSLocalizedString(@"_add_your_owncloud_", nil)] forState:UIControlStateNormal];
-    [_dropbox setTitle:[NSString stringWithFormat:@"     %@", NSLocalizedString(@"_add_your_dropbox_", nil)] forState:UIControlStateNormal];
 }
 
 -(void)viewDidAppear:(BOOL)animated
@@ -106,9 +101,6 @@
         return;
     }
     
-    self.owncloud.enabled = NO;
-    self.dropbox.enabled = NO;
-    
     CCLoginNCOC *loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
     
     [loginVC setModifyOnlyPassword:NO];
@@ -116,41 +108,6 @@
     
     [self presentViewController:loginVC animated:YES completion:NULL];
 }
-
-- (IBAction)handleOwnCloud:(id)sender
-{
-    if ([[CCUtility getKeyChainPasscodeForUUID:[CCUtility getUUID]] length] == 0) {
-        
-        [self passcodeVC];
-        return;
-    }
-    
-    self.owncloud.enabled = NO;
-    self.dropbox.enabled = NO;
-    
-    CCLoginNCOC *loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginOwnCloud"];
-    
-    [loginVC setModifyOnlyPassword:NO];
-    [loginVC setTypeCloud:typeCloudOwnCloud];
-    
-    [self presentViewController:loginVC animated:YES completion:NULL];
-}
-
-#ifdef CC
-- (IBAction)handleDropBox:(id)sender
-{
-    if ([[CCUtility getKeyChainPasscodeForUUID:[CCUtility getUUID]] length] == 0) {
-        
-        [self passcodeVC];
-        return;
-    }
-    
-    self.owncloud.enabled = NO;
-    self.dropbox.enabled = NO;
-    
-    [[DBSession sharedSession] linkFromController:self];
-}
-#endif
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark == BKPasscodeViewController ==
@@ -297,9 +254,6 @@
 - (void)loginIncorrect
 {
     NSLog(@"[LOG] Incorrect login");
-    
-    self.owncloud.enabled = YES;
-    self.dropbox.enabled = YES;
 }
 
 @end
