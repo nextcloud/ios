@@ -123,7 +123,7 @@
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"changecredentials" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_change_credentials_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:[UIImage imageNamed:image_settingsCredentials] forKey:@"imageView.image"];
-    row.action.formSegueIdenfifier = @"CCManageAccountSegue";
+    row.action.formSegueIdentifier = @"CCManageAccountSegue";
     [section addFormRow:row];
     
     // Section : Camera Upload
@@ -134,7 +134,7 @@
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"cameraupload" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_uploading_from_camera_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:[UIImage imageNamed:image_settingsCameraUpload] forKey:@"imageView.image"];
-    row.action.formSegueIdenfifier = @"CCManageCameraUploadSegue";
+    row.action.formSegueIdentifier = @"CCManageCameraUploadSegue";
     [section addFormRow:row];
 
     // Section : Photos
@@ -145,7 +145,7 @@
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"managephotos" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_photo_camera_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:[UIImage imageNamed:image_settingsManagePhotos] forKey:@"imageView.image"];
-    row.action.formSegueIdenfifier = @"CCManagePhotosSegue";
+    row.action.formSegueIdentifier = @"CCManagePhotosSegue";
     [section addFormRow:row];
 
     // Section : Optimizations
@@ -156,7 +156,7 @@
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"optimizations" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_optimizations_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:[UIImage imageNamed:image_settingsOptimizations] forKey:@"imageView.image"];
-    row.action.formSegueIdenfifier = @"CCManageOptimizationsSegue";
+    row.action.formSegueIdentifier = @"CCManageOptimizationsSegue";
     [section addFormRow:row];
 
     // Section : Acknowledgements
@@ -192,7 +192,7 @@
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"help" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_help_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:[UIImage imageNamed:image_settingsHelp] forKey:@"imageView.image"];
-    row.action.formSegueIdenfifier = @"CCManageHelpSegue";
+    row.action.formSegueIdentifier = @"CCManageHelpSegue";
     [section addFormRow:row];
     
     // Section : mail
