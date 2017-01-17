@@ -70,9 +70,7 @@
 @property (nonatomic, weak) NSString *textBackButton;
 
 @property (nonatomic, weak) CCShareOC* shareOC;
-
 @property (nonatomic, weak) CCDetail *detailViewController;
-
 @property (nonatomic, weak) CCLoginNCOC *loginVC;
 
 - (void)returnCreate:(NSInteger)type;
