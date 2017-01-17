@@ -13,13 +13,6 @@ xcuserdata/
 README.md
 Documentation/
 
-############ CRYPTO CLOUD #################
-iOSClient/CryptoCloud.xcassets
-iOSClient/Crypto Cloud.entitlements
-iOSClient/LaunchScreen.xib
-iOSClient/Networking/DB*.*
-iOSClient/InfoPlist/InfoCryptoCloud.plist
-
 ########### OSX ###########
 # OS X temporary files that should never be committed
 

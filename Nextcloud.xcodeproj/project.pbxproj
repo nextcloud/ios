@@ -217,7 +217,6 @@
 		F7676A7F1D5CB2A400DF734C /* icon-info@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F7676A751D5CB2A400DF734C /* icon-info@2x.png */; };
 		F7676A811D5CB2A400DF734C /* icon-success.png in Resources */ = {isa = PBXBuildFile; fileRef = F7676A761D5CB2A400DF734C /* icon-success.png */; };
 		F7676A831D5CB2A400DF734C /* icon-success@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F7676A771D5CB2A400DF734C /* icon-success@2x.png */; };
-		F76AE7A31E2E28AE00872570 /* CryptoCloud.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F76AE7A21E2E28AE00872570 /* CryptoCloud.xcassets */; };
 		F771CD5E1E07F6620066F76D /* TableAutomaticUpload+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F771CD5B1E07F6620066F76D /* TableAutomaticUpload+CoreDataClass.m */; };
 		F771CD5F1E07F6620066F76D /* TableAutomaticUpload+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F771CD5B1E07F6620066F76D /* TableAutomaticUpload+CoreDataClass.m */; };
 		F771CD601E07F6620066F76D /* TableAutomaticUpload+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F771CD5D1E07F6620066F76D /* TableAutomaticUpload+CoreDataProperties.m */; };
@@ -1355,7 +1354,6 @@
 		F768EAFB1BFB7CD800B6E341 /* CCShareOC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCShareOC.h; sourceTree = "<group>"; };
 		F768EAFC1BFB7CD800B6E341 /* CCShareOC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCShareOC.m; sourceTree = "<group>"; };
 		F768EB021BFB7EA900B6E341 /* CCShare.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = CCShare.storyboard; sourceTree = "<group>"; };
-		F76AE7A21E2E28AE00872570 /* CryptoCloud.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = CryptoCloud.xcassets; sourceTree = "<group>"; };
 		F76C3B831C6388BC00DC4301 /* CCGraphics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCGraphics.h; sourceTree = "<group>"; };
 		F76C3B841C6388BC00DC4301 /* CCGraphics.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCGraphics.m; sourceTree = "<group>"; };
 		F76C3B871C638A4C00DC4301 /* CCError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCError.h; sourceTree = "<group>"; };
@@ -3160,7 +3158,6 @@
 				F7C8C1911B482CEA0048180E /* CCGlobal.m */,
 				F78088E51DD3A1DB005C5A7C /* cryptocloud.xcdatamodeld */,
 				F7F67BB81A24D27800EE80DA /* Images.xcassets */,
-				F76AE7A21E2E28AE00872570 /* CryptoCloud.xcassets */,
 				F7596C771D128FC80092A6B8 /* Nextcloud.xcassets */,
 				F70211F31BAC56E9003FC03E /* Main */,
 				F7ECBA6B1E239DCD003E6328 /* Create */,
@@ -3679,7 +3676,6 @@
 				F77B0F761D118A16002130FE /* VideoOverlay.png in Resources */,
 				F7676A811D5CB2A400DF734C /* icon-success.png in Resources */,
 				F77B0F771D118A16002130FE /* ZSSimage@2x.png in Resources */,
-				F76AE7A31E2E28AE00872570 /* CryptoCloud.xcassets in Resources */,
 				F77B0F781D118A16002130FE /* PlayButtonOverlayLargeTap@3x.png in Resources */,
 				F77B0F791D118A16002130FE /* ZSSunlink.png in Resources */,
 				F77B0F7A1D118A16002130FE /* ZSSredo.png in Resources */,
