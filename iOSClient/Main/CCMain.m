@@ -1265,19 +1265,11 @@
     }
     
     // Copy File
-    if ([selector isEqualToString:selectorLoadCopyFile]) {
+    if ([selector isEqualToString:selectorLoadCopy]) {
         
         [self getDataSourceWithReloadTableView:metadata.directoryID fileID:metadata.fileID selector:selector];
         
-        [self copyFileFiles:false];
-    }
-    
-    // Copy Files
-    if ([selector isEqualToString:selectorLoadCopyFile]) {
-        
-        [self getDataSourceWithReloadTableView:metadata.directoryID fileID:metadata.fileID selector:selector];
-        
-        [self copyFileFiles:true];
+        [self copyFileToPasteboard:metadata];
     }
     
     // download and view a template
@@ -3713,12 +3705,14 @@
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender
 {
+    // For copy file, copy files, Open in ... :
+    //
+    // NO Directory
+    // NO Error Passcode
+    // NO In Session mode (download/upload)
+    // NO Template
+    
     if (@selector(copyFile:) == action || @selector(openinFile:) == action) {
-        
-        // NO Directory
-        // NO Error Passcode
-        // NO In Session mode (download/upload)
-        // NO Template
         
         if (_isSelectedMode == NO && _metadata && !_metadata.directory && !_metadata.errorPasscode && [_metadata.session length] == 0 && ![_metadata.typeFile isEqualToString:metadataTypeFile_template])  {
             
@@ -3733,19 +3727,19 @@
         
         if (_isSelectedMode) {
             
-            BOOL isValid = NO;
-            
             NSArray *selectedMetadatas = [self getMetadatasFromSelectedRows:[self.tableView indexPathsForSelectedRows]];
             
             for (CCMetadata *metadata in selectedMetadatas) {
                 
-                if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID]])
-                    isValid = YES;
+                if (!metadata.directory && !metadata.errorPasscode && metadata.session.length == 0 && ![metadata.typeFile isEqualToString:metadataTypeFile_template])  {
+                    
+                    // NO Cryptated with Title lenght = 0
+                    if (!metadata.cryptated || (metadata.cryptated && metadata.title.length > 0))
+                        return YES;
+                }
             }
-            
-            return isValid;
-            
-        } else return NO;
+        }
+        return NO;
     }
 
     if (@selector(pasteFile:) == action || @selector(pasteFileEncrypted:) == action) {
@@ -3810,50 +3804,46 @@
 
 - (void)copyFile:(id)sender
 {
-    [self copyFileFiles:false];
+    // Remove all item
+    UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+    pasteboard.items = [[NSArray alloc] init];
+    
+    if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser,_metadata.fileID]])
+        [self copyFileToPasteboard:_metadata];
+    else
+        [[CCNetworking sharedNetworking] downloadFile:_metadata serverUrl:_localServerUrl downloadData:YES downloadPlist:NO selector:selectorLoadCopy selectorPost:nil session:download_session taskStatus:taskStatusResume delegate:self];
 }
 
 - (void)copyFiles:(id)sender
 {
-    [self copyFileFiles:false];
+    // Remove all item
+    UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+    pasteboard.items = [[NSArray alloc] init];
+    
+    NSArray *selectedMetadatas = [self getMetadatasFromSelectedRows:[self.tableView indexPathsForSelectedRows]];
+    
+    for (CCMetadata *metadata in selectedMetadatas) {
+        
+        if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID]])
+            [self copyFileToPasteboard:metadata];
+        else
+            [[CCNetworking sharedNetworking] downloadFile:metadata serverUrl:_localServerUrl downloadData:YES downloadPlist:NO selector:selectorLoadCopy selectorPost:nil session:download_session taskStatus:taskStatusResume delegate:self];
+    }
+    
+    [self tableViewSelect:NO];
 }
 
-- (void)copyFileFiles:(BOOL)addItem
+- (void)copyFileToPasteboard:(CCMetadata *)metadata
 {
     UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-    NSMutableArray *items = [[NSMutableArray alloc] init];
+    NSMutableArray *items = [[NSMutableArray alloc] initWithArray:pasteboard.items];
     
     // key : it.twsweb.Crypto-Cloud.CCMetadata      Value : (NSData) metadata
     
-    if (_isSelectedMode) {
-        
-        NSArray *selectedMetadatas = [self getMetadatasFromSelectedRows:[self.tableView indexPathsForSelectedRows]];
-
-        for (CCMetadata *metadata in selectedMetadatas) {
-            
-            if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID]]) {
-                
-                NSDictionary *item = [NSDictionary dictionaryWithObjectsAndKeys:[NSKeyedArchiver archivedDataWithRootObject:metadata], @"it.twsweb.Crypto-Cloud.CCMetadata",nil];
-                [items addObject:item];
-            }
-        }
-        
-        [self tableViewSelect:NO];
-        
-    } else {
-        
-        if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser,_metadata.fileID]]) {
-            
-            NSDictionary *item = [NSDictionary dictionaryWithObjectsAndKeys:[NSKeyedArchiver archivedDataWithRootObject:_metadata], @"it.twsweb.Crypto-Cloud.CCMetadata", nil];
-            [items addObject:item];
-            
-        } else {
-            
-            [[CCNetworking sharedNetworking] downloadFile:_metadata serverUrl:_localServerUrl downloadData:YES downloadPlist:NO selector:selectorLoadCopyFile selectorPost:nil session:download_session taskStatus:taskStatusResume delegate:self];
-        }
-    }
+    NSDictionary *item = [NSDictionary dictionaryWithObjectsAndKeys:[NSKeyedArchiver archivedDataWithRootObject:metadata], @"it.twsweb.Crypto-Cloud.CCMetadata",nil];
+    [items addObject:item];
     
-    pasteboard.items = items;
+    [pasteboard setItems:items];
 }
 
 /************************************ OPEN IN ... ************************************/
