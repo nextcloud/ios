@@ -676,14 +676,7 @@ extension DocumentPickerViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-        if (recordsTableMetadata == nil) {
-            
-            return 0
-            
-        } else {
-            
-            return recordsTableMetadata!.count
-        }
+       return recordsTableMetadata?.count ?? 0
     }
         
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
