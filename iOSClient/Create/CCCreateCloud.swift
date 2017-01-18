@@ -212,7 +212,7 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         self.init()
         
         if titleLocalServerUrl == nil || titleLocalServerUrl?.isEmpty == true {
-            self.titleLocalServerUrl = "/" //NSLocalizedString("_root_", comment: "")
+            self.titleLocalServerUrl = "/"
         } else {
             self.titleLocalServerUrl = titleLocalServerUrl
         }

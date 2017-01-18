@@ -1264,6 +1264,14 @@
         [self getDataSourceWithReloadTableView:metadata.directoryID fileID:metadata.fileID selector:selector];
     }
     
+    // Copy
+    if ([selector isEqualToString:selectorLoadCopy]) {
+        
+        [self getDataSourceWithReloadTableView:metadata.directoryID fileID:metadata.fileID selector:selector];
+        
+        [self copyFileFiles];
+    }
+    
     // download and view a template
     if ([selector isEqualToString:selectorLoadModelView]) {
         
@@ -3697,12 +3705,18 @@
 {
     if (@selector(copyFile:) == action) {
         
-        if (_isSelectedMode == NO && _metadata) {
+        // NO Directory
+        // NO Error Passcode
+        // NO In Session mode (download/upload)
+        // NO Template
+        
+        if (_isSelectedMode == NO && _metadata && !_metadata.directory && !_metadata.errorPasscode && [_metadata.session length] == 0 && ![_metadata.typeFile isEqualToString:metadataTypeFile_template])  {
             
-            if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, _metadata.fileID]]) return YES;
-            else return NO;
-            
-        } else return NO;
+            // NO Cryptated with Title lenght = 0
+            if (!_metadata.cryptated || (_metadata.cryptated && _metadata.title.length > 0))
+                return YES;
+        }
+        return NO;
     }
     
     if (@selector(copyFiles:) == action) {
@@ -3822,6 +3836,10 @@
             
             NSDictionary *item = [NSDictionary dictionaryWithObjectsAndKeys:[NSKeyedArchiver archivedDataWithRootObject:_metadata], @"it.twsweb.Crypto-Cloud.CCMetadata", nil];
             [items addObject:item];
+            
+        } else {
+            
+            [[CCNetworking sharedNetworking] downloadFile:_metadata serverUrl:_localServerUrl downloadData:YES downloadPlist:NO selector:selectorLoadCopy selectorPost:nil session:download_session taskStatus:taskStatusResume delegate:self];
         }
     }
     

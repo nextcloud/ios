@@ -224,6 +224,7 @@ extern NSString *const BKPasscodeKeychainServiceName;
 #define selectorLoadModelView           @"loadModelView"
 #define selectorLoadPlist               @"loadPlist"
 #define selectorLoadViewImage           @"loadViewImage"
+#define selectorLoadCopy                @"loadCopy"
 #define selectorMove                    @"move"
 #define selectorMoveCrypto              @"moveCrypto"
 #define selectorMovePlist               @"movePlist"
