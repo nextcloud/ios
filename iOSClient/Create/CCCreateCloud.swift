@@ -235,6 +235,8 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         var section : XLFormSectionDescriptor
         var row : XLFormRowDescriptor
 
+        let sectionColor: UIColor = UIColor(colorLiteralRed: 239.0/255.0, green: 239.0/255.0, blue: 244.0/255.0, alpha: 1)
+        
         // Section: Destination Folder
         
         section = XLFormSectionDescriptor.formSection()
@@ -279,11 +281,13 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         
         // Section: Preview File Name
         
-        section = XLFormSectionDescriptor.formSection()
-        form.addFormSection(section)
-
+        //section = XLFormSectionDescriptor.formSection()
+        //form.addFormSection(section)
+        
         row = XLFormRowDescriptor(tag: "previewFileName", rowType: XLFormRowDescriptorTypeTextView, title: "")
-        //row.cellConfig.setObject(UIColor.lightGray, forKey: "backgroundColor" as NSCopying)
+        row.height = 180
+        row.cellConfig.setObject(sectionColor, forKey: "backgroundColor" as NSCopying)
+        row.cellConfig.setObject(sectionColor, forKey: "textView.backgroundColor" as NSCopying)
         row.disabled = true
         section.addFormRow(row)
         
@@ -360,6 +364,8 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         
         //self.tableView.separatorStyle = UITableViewCellSeparatorStyle.none
         
+        self.tableView.separatorInset = UIEdgeInsetsMake(0, 0, 0, 0);
+        
         self.reloadForm()
     }
 
@@ -390,12 +396,12 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
             if buttonDestinationFolder.isHidden() {
                 return ""
             } else {
-                return NSLocalizedString("_destination_folder_", comment: "")
+                return "    " + NSLocalizedString("_destination_folder_", comment: "")
             }
         case 1:
-            return NSLocalizedString("_use_folder_photos_", comment: "")
+            return "    " + NSLocalizedString("_use_folder_photos_", comment: "")
         case 2:
-            return NSLocalizedString("_rename_filename_", comment: "")
+            return "    " + NSLocalizedString("_rename_filename_", comment: "")
         case 3:
             return NSLocalizedString("_preview_filename_", comment: "")
         default:
@@ -489,7 +495,7 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
             returnString = CCUtility.createFileName(from: assets[0] as! PHAsset, key: nil)
         }
         
-        return returnString
+        return NSLocalizedString("_preview_filename_", comment: "") + ":" + "\n\n" + returnString
     }
     
     func changeDestinationFolder(_ sender: XLFormRowDescriptor) {

@@ -1264,12 +1264,20 @@
         [self getDataSourceWithReloadTableView:metadata.directoryID fileID:metadata.fileID selector:selector];
     }
     
-    // Copy
-    if ([selector isEqualToString:selectorLoadCopy]) {
+    // Copy File
+    if ([selector isEqualToString:selectorLoadCopyFile]) {
         
         [self getDataSourceWithReloadTableView:metadata.directoryID fileID:metadata.fileID selector:selector];
         
-        [self copyFileFiles];
+        [self copyFileFiles:false];
+    }
+    
+    // Copy Files
+    if ([selector isEqualToString:selectorLoadCopyFile]) {
+        
+        [self getDataSourceWithReloadTableView:metadata.directoryID fileID:metadata.fileID selector:selector];
+        
+        [self copyFileFiles:true];
     }
     
     // download and view a template
@@ -3684,13 +3692,15 @@
         UIMenuItem *copyFileItem = [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"_copy_file_", nil) action:@selector(copyFile:)];
         UIMenuItem *copyFilesItem = [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"_copy_files_", nil) action:@selector(copyFiles:)];
 
+        UIMenuItem *openinFileItem = [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"_open_in_", nil) action:@selector(openinFile:)];
+        
         UIMenuItem *pasteFileItem = [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"_paste_file_", nil) action:@selector(pasteFile:)];
         UIMenuItem *pasteFileEncryptedItem = [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"_paste_file_encrypted_", nil) action:@selector(pasteFileEncrypted:)];
         
         UIMenuItem *pasteFilesItem = [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"_paste_files_", nil) action:@selector(pasteFiles:)];
         UIMenuItem *pasteFilesEncryptedItem = [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"_paste_files_encrypted_", nil) action:@selector(pasteFilesEncrypted:)];
         
-        [menuController setMenuItems:[NSArray arrayWithObjects:copyFileItem, copyFilesItem, pasteFileItem, pasteFilesItem, pasteFileEncryptedItem, pasteFilesEncryptedItem, nil]];
+        [menuController setMenuItems:[NSArray arrayWithObjects:copyFileItem, copyFilesItem, openinFileItem, pasteFileItem, pasteFilesItem, pasteFileEncryptedItem, pasteFilesEncryptedItem, nil]];
         [menuController setTargetRect:CGRectMake(touchPoint.x, touchPoint.y, 0.0f, 0.0f) inView:tableView];
         [menuController setMenuVisible:YES animated:YES];
     }
@@ -3703,7 +3713,7 @@
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender
 {
-    if (@selector(copyFile:) == action) {
+    if (@selector(copyFile:) == action || @selector(openinFile:) == action) {
         
         // NO Directory
         // NO Error Passcode
@@ -3800,15 +3810,15 @@
 
 - (void)copyFile:(id)sender
 {
-    [self copyFileFiles];
+    [self copyFileFiles:false];
 }
 
 - (void)copyFiles:(id)sender
 {
-    [self copyFileFiles];
+    [self copyFileFiles:false];
 }
 
-- (void)copyFileFiles
+- (void)copyFileFiles:(BOOL)addItem
 {
     UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
     NSMutableArray *items = [[NSMutableArray alloc] init];
@@ -3839,11 +3849,18 @@
             
         } else {
             
-            [[CCNetworking sharedNetworking] downloadFile:_metadata serverUrl:_localServerUrl downloadData:YES downloadPlist:NO selector:selectorLoadCopy selectorPost:nil session:download_session taskStatus:taskStatusResume delegate:self];
+            [[CCNetworking sharedNetworking] downloadFile:_metadata serverUrl:_localServerUrl downloadData:YES downloadPlist:NO selector:selectorLoadCopyFile selectorPost:nil session:download_session taskStatus:taskStatusResume delegate:self];
         }
     }
     
     pasteboard.items = items;
+}
+
+/************************************ OPEN IN ... ************************************/
+
+- (void)openinFile:(id)sender
+{
+    [self openIn:_metadata];
 }
 
 /************************************ PASTE ************************************/
