@@ -112,6 +112,9 @@
     // title
     self.title = self.textView;
     
+    // Plus Button
+    [app plusButtonVisibile:true];
+    
     [self reloadTable];
 }
 
