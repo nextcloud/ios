@@ -1049,6 +1049,9 @@
         metadataNet.action = actionGetCapabilities;
         [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
         
+        metadataNet.action = actionGetNotificationsOfTheServer;
+        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+        
         metadataNet.action = actionReadFile;
         metadataNet.selector = selectorReadFileQuota;
         metadataNet.serverUrl = _localServerUrl;

@@ -932,6 +932,27 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
+#pragma mark =====  Notification =====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)getNotificationsOfTheServer
+{
+    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+    
+    [communication setCredentialsWithUser:_activeUser andPassword:_activePassword];
+    [communication setUserAgent:[CCUtility getUserAgent:_typeCloud]];
+    
+    [communication getNotificationsOfTheServer:[_activeUrl stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, OCCapabilities *capabilities, NSString *redirectedServer) {
+        
+        [self complete];
+        
+    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+        
+        [self complete];
+    }];
+}
+
+#pragma --------------------------------------------------------------------------------------------
 #pragma mark =====  Server =====
 #pragma --------------------------------------------------------------------------------------------
 

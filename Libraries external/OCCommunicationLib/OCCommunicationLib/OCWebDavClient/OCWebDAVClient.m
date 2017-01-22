@@ -620,6 +620,23 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     return operation;
 }
 
+#pragma mark - Get Notification
+
+- (void) getNotificationsOfTheServer:(NSString *)serverPath
+                onCommunication:(OCCommunication *)sharedOCCommunication
+                        success:(void(^)(NSHTTPURLResponse *, id))success
+                        failure:(void(^)(NSHTTPURLResponse *, id  _Nullable responseObject, NSError *))failure {
+    
+    NSParameterAssert(success);
+    
+    _requestMethod = @"GET";
+    
+    NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
+    
+    OCHTTPRequestOperation *operation = [self mr_operationWithRequest:request onCommunication:sharedOCCommunication success:success failure:failure];
+    [self setRedirectionBlockOnDatataskWithOCCommunication:sharedOCCommunication andSessionManager:sharedOCCommunication.networkSessionManager];
+    [operation resume];
+}
 
 #pragma mark - Manage Redirections
 
@@ -666,6 +683,5 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
         
     }];
 }
-
 
 @end

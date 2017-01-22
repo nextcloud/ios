@@ -353,7 +353,6 @@
         
         //NSLog(@"[LOG] Read Folder for change Rev");
         //[[NSNotificationCenter defaultCenter] postNotificationName:@"readFileSelfFolderRev" object:nil];
-        
     });
 
     // 0.5 sec.
