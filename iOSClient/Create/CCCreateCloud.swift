@@ -287,6 +287,8 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         row.height = 180
         row.cellConfig.setObject(sectionColor, forKey: "backgroundColor" as NSCopying)
         row.cellConfig.setObject(sectionColor, forKey: "textView.backgroundColor" as NSCopying)
+        //row.cellConfig.setObject(10, forKey: "textView.layer.borderWidth" as NSCopying)
+
         row.disabled = true
         section.addFormRow(row)
         
@@ -361,7 +363,8 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         self.navigationItem.leftBarButtonItem = cancelButton
         self.navigationItem.rightBarButtonItem = saveButton
         
-        self.tableView.separatorInset = UIEdgeInsetsMake(0, 0, 0, 0);
+        self.tableView.separatorStyle = UITableViewCellSeparatorStyle.none
+        //self.tableView.separatorInset = UIEdgeInsetsMake(0, 0, 0, 0);
         
         self.reloadForm()
     }
