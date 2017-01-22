@@ -4225,6 +4225,32 @@
                                     }];
         }
         
+        if (!([_metadata.fileName isEqualToString:cameraUploadFolderName] == YES && [_localServerUrl isEqualToString:cameraUploadFolderPath] == YES) && _metadata.cryptated == NO) {
+            
+            [actionSheet addButtonWithTitle:NSLocalizedString(@"_folder_automatic_upload_", nil)
+                                      image:[UIImage imageNamed:image_folderphotocamera]
+                            backgroundColor:[UIColor whiteColor]
+                                     height: 50.0
+                                       type:AHKActionSheetButtonTypeDefault
+                                    handler:^(AHKActionSheet *as) {
+                                        
+                                        // close swipe
+                                        [self setEditing:NO animated:YES];
+                                        
+                                        // Settings new folder Automatatic upload
+                                        NSString *oldPath = [CCCoreData getCameraUploadFolderPathActiveAccount:app.activeAccount activeUrl:app.activeUrl typeCloud:app.typeCloud];
+                                        
+                                        [CCCoreData setCameraUploadFolderName:_metadata.fileName activeAccount:app.activeAccount];
+                                        [CCCoreData setCameraUploadFolderPath:_localServerUrl activeUrl:app.activeUrl typeCloud:app.typeCloud activeAccount:app.activeAccount];
+                                        
+                                        [CCCoreData clearDateReadDirectory:oldPath activeAccount:app.activeAccount];
+                                        
+                                        if (app.activeAccount && app.activeUrl && app.activePhotosCameraUpload)
+                                            [app.activePhotosCameraUpload reloadDatasourceForced];
+                                        
+                                        [self readFolderWithForced:YES];
+                                    }];
+        }
         
         if (!lockDirectory) {
         

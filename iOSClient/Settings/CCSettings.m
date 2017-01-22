@@ -137,17 +137,6 @@
     row.action.formSegueIdentifier = @"CCManageCameraUploadSegue";
     [section addFormRow:row];
 
-    // Section : Photos
-    
-    section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_photo_camera_", nil)];
-    [form addFormSection:section];
-    
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"managephotos" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_photo_camera_", nil)];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIImage imageNamed:image_settingsManagePhotos] forKey:@"imageView.image"];
-    row.action.formSegueIdentifier = @"CCManagePhotosSegue";
-    [section addFormRow:row];
-
     // Section : Optimizations
     
     section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_optimizations_", nil)];

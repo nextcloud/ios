@@ -368,6 +368,7 @@
 "_file_saved_cameraroll_"       = "File saved to Photo Album";
 "_directory_on_top_yes_"        = "✓ Folders on top";
 "_directory_on_top_no_"         = "Folders on top";
+"_folder_automatic_upload_"     = "Folder for Automatic upload";
 
 "audio"                         = "AUDIO";
 "compress"                      = "COMPRESS";
