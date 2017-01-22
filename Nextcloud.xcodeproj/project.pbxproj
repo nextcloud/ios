@@ -249,7 +249,6 @@
 		F77B0E1B1D118A16002130FE /* CCGraphics.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B841C6388BC00DC4301 /* CCGraphics.m */; };
 		F77B0E1C1D118A16002130FE /* BKPasscodeDummyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02C01C889183008DAB36 /* BKPasscodeDummyViewController.m */; };
 		F77B0E1D1D118A16002130FE /* ReaderThumbQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0ECC1C889317008DAB36 /* ReaderThumbQueue.m */; };
-		F77B0E1F1D118A16002130FE /* CCManagePhotos.m in Sources */ = {isa = PBXBuildFile; fileRef = F797F4071CF1ECFE00D0B84B /* CCManagePhotos.m */; };
 		F77B0E201D118A16002130FE /* CCShareUserOC.m in Sources */ = {isa = PBXBuildFile; fileRef = F78316871C0CB3CA00C43975 /* CCShareUserOC.m */; };
 		F77B0E211D118A16002130FE /* ThumbsMainToolbar.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0ED81C889317008DAB36 /* ThumbsMainToolbar.m */; };
 		F77B0E221D118A16002130FE /* CCManageLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = F7BFCCC11B68C21900548E76 /* CCManageLocation.m */; };
@@ -1387,8 +1386,6 @@
 		F7956FC91B4886E60085DEA3 /* CCUploadFromOtherUpp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCUploadFromOtherUpp.h; sourceTree = "<group>"; };
 		F7956FCA1B4886E60085DEA3 /* CCUploadFromOtherUpp.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCUploadFromOtherUpp.m; sourceTree = "<group>"; };
 		F7956FCB1B4886E60085DEA3 /* CCUploadFromOtherUpp.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = CCUploadFromOtherUpp.storyboard; sourceTree = "<group>"; };
-		F797F4061CF1ECFE00D0B84B /* CCManagePhotos.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCManagePhotos.h; sourceTree = "<group>"; };
-		F797F4071CF1ECFE00D0B84B /* CCManagePhotos.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCManagePhotos.m; sourceTree = "<group>"; };
 		F7994B731D5B854C008525D9 /* TableCertificates+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableCertificates+CoreDataProperties.h"; sourceTree = "<group>"; };
 		F7994B741D5B854C008525D9 /* TableCertificates+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableCertificates+CoreDataProperties.m"; sourceTree = "<group>"; };
 		F7994B751D5B854C008525D9 /* TableCertificates.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableCertificates.h; sourceTree = "<group>"; };
@@ -2875,8 +2872,6 @@
 				F7FEB6CF1BECADC100E7C415 /* CCManageHelp.m */,
 				F7AB79EF1BB1A3AD00A82F32 /* CCManageOptimizations.h */,
 				F7AB79F01BB1A3AD00A82F32 /* CCManageOptimizations.m */,
-				F797F4061CF1ECFE00D0B84B /* CCManagePhotos.h */,
-				F797F4071CF1ECFE00D0B84B /* CCManagePhotos.m */,
 				F7ACE4301BAC0268006C0017 /* CCSettings.h */,
 				F7ACE4311BAC0268006C0017 /* CCSettings.m */,
 			);
@@ -3918,7 +3913,6 @@
 				F73CCE071DC13776007E38D8 /* NSExpression+XLFormAdditions.m in Sources */,
 				F77B0E1C1D118A16002130FE /* BKPasscodeDummyViewController.m in Sources */,
 				F77B0E1D1D118A16002130FE /* ReaderThumbQueue.m in Sources */,
-				F77B0E1F1D118A16002130FE /* CCManagePhotos.m in Sources */,
 				F7659A6E1DC0B760004860C4 /* PSTGridLayoutRow.m in Sources */,
 				F77B0E201D118A16002130FE /* CCShareUserOC.m in Sources */,
 				F77B0E211D118A16002130FE /* ThumbsMainToolbar.m in Sources */,
