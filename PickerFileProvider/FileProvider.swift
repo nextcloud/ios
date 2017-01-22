@@ -63,18 +63,21 @@ class FileProvider: NSFileProviderExtension {
     }
     
     override func startProvidingItem(at url: URL, completionHandler: ((_ error: Error?) -> Void)?) {
-        // Should ensure that the actual file is in the position returned by URLForItemWithIdentifier, then call the completion handler
         
-        // TODO: get the contents of file at <url> from model
-        let fileData = NSData()
-        
-        do {
-            _ = try fileData.write(to: url, options: [])
-        } catch {
-            // Handle error
+        guard let fileData = try? Data(contentsOf: url) else {
+            // NOTE: you would generate an NSError to supply to the completionHandler
+            // here however that is outside of the scope for this tutorial
+            completionHandler?(nil)
+            return
         }
         
-        completionHandler?(nil);
+        do {
+            _ = try fileData.write(to: url, options: NSData.WritingOptions())
+            completionHandler?(nil)
+        } catch let error as NSError {
+            print("error writing file to URL")
+            completionHandler?(error)
+        }
     }
     
     override func itemChanged(at url: URL) {

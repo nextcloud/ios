@@ -105,7 +105,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
             if (localServerUrl == nil) {
             
                 localServerUrl = CCUtility.getHomeServerUrlActiveUrl(activeUrl, typeCloud: typeCloud)
-                
+                                
             } else {
                 
                 self.navigationItem.title = titleFolder
@@ -397,19 +397,24 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         switch selector {
             
         case selectorLoadFileView :
+            
+            let sourceUrl = URL(string: "file://\(directoryUser!)/\(fileID!)".addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!)!
+            let destinationUrl : URL! = appGroupContainerURL()?.appendingPathComponent(metadata!.fileNamePrint!)
                 
             do {
-                
-                try FileManager.default.moveItem(atPath: "\(directoryUser!)/\(fileID!)", toPath: "\(directoryUser!)/\(metadata!.fileNamePrint!)")
-                    
+                try FileManager.default.removeItem(at: destinationUrl)
+            } catch _ {
+                print("file do not exists")
+            }
+
+            do {
+                try FileManager.default.copyItem(at: sourceUrl, to: destinationUrl)
             } catch let error as NSError {
-        
                 print(error)
             }
                 
-            let url = URL(string: "file://\(directoryUser!)/\(metadata!.fileNamePrint!)".addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!)
-            self.dismissGrantingAccess(to: url)
-            
+            self.dismissGrantingAccess(to: destinationUrl)
+                      
         case selectorLoadPlist :
             
             CCCoreData.downloadFilePlist(metadata, activeAccount: activeAccount, activeUrl: activeUrl, typeCloud: typeCloud, directoryUser: directoryUser)
@@ -419,7 +424,6 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
             
             print("selector : \(selector!)")
             tableView.reloadData()
-            
         }
     }
  
