@@ -400,7 +400,9 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
             
             let sourceUrl = URL(string: "file://\(directoryUser!)/\(fileID!)".addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!)!
             let destinationUrl : URL! = appGroupContainerURL()?.appendingPathComponent(metadata!.fileNamePrint!)
-                
+            
+            // Destination Provider
+
             do {
                 try FileManager.default.removeItem(at: destinationUrl)
             } catch _ {
@@ -412,9 +414,11 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
             } catch let error as NSError {
                 print(error)
             }
-                
+            
+            // Dismiss
+            
             self.dismissGrantingAccess(to: destinationUrl)
-                      
+            
         case selectorLoadPlist :
             
             CCCoreData.downloadFilePlist(metadata, activeAccount: activeAccount, activeUrl: activeUrl, typeCloud: typeCloud, directoryUser: directoryUser)
