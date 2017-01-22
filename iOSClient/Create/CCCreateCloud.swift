@@ -206,6 +206,7 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
     var session : String = ""
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    let sectionColor: UIColor = UIColor(colorLiteralRed: 239.0/255.0, green: 239.0/255.0, blue: 244.0/255.0, alpha: 1)
     
     convenience init(_ titleLocalServerUrl : String?, localServerUrl : String, assets : NSMutableArray, cryptated : Bool, session : String) {
         
@@ -234,8 +235,6 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
 
         var section : XLFormSectionDescriptor
         var row : XLFormRowDescriptor
-
-        let sectionColor: UIColor = UIColor(colorLiteralRed: 239.0/255.0, green: 239.0/255.0, blue: 244.0/255.0, alpha: 1)
         
         // Section: Destination Folder
         
@@ -361,8 +360,6 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         
         self.navigationItem.leftBarButtonItem = cancelButton
         self.navigationItem.rightBarButtonItem = saveButton
-        
-        //self.tableView.separatorStyle = UITableViewCellSeparatorStyle.none
         
         self.tableView.separatorInset = UIEdgeInsetsMake(0, 0, 0, 0);
         
