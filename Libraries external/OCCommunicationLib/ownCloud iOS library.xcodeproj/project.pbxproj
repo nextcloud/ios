@@ -50,6 +50,7 @@
 		EAABAB40185F225300909831 /* video.MOV in Resources */ = {isa = PBXBuildFile; fileRef = EAABAB3F185F225300909831 /* video.MOV */; };
 		F76D14571E365C3E006CD8B1 /* OCNotificationsAction.m in Sources */ = {isa = PBXBuildFile; fileRef = F76D14531E365C3E006CD8B1 /* OCNotificationsAction.m */; };
 		F76D14581E365C3E006CD8B1 /* OCRichObjectStrings.m in Sources */ = {isa = PBXBuildFile; fileRef = F76D14551E365C3E006CD8B1 /* OCRichObjectStrings.m */; };
+		F794C3581E365F410024396B /* OCNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = F794C3571E365F410024396B /* OCNotifications.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -141,6 +142,8 @@
 		F76D14531E365C3E006CD8B1 /* OCNotificationsAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCNotificationsAction.m; sourceTree = "<group>"; };
 		F76D14541E365C3E006CD8B1 /* OCRichObjectStrings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCRichObjectStrings.h; sourceTree = "<group>"; };
 		F76D14551E365C3E006CD8B1 /* OCRichObjectStrings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCRichObjectStrings.m; sourceTree = "<group>"; };
+		F794C3561E365F410024396B /* OCNotifications.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCNotifications.h; sourceTree = "<group>"; };
+		F794C3571E365F410024396B /* OCNotifications.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCNotifications.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -217,14 +220,14 @@
 			children = (
 				EAABAA30183E688900909831 /* OCFileDto.h */,
 				EAABAA31183E688900909831 /* OCFileDto.m */,
-				F71DB38B1E35FAD80057BEE3 /* OCNotifications.h */,
-				F71DB38C1E35FAD80057BEE3 /* OCNotifications.m */,
 				EA0599981BB96D14002C2864 /* OCShareUser.h */,
 				EA0599991BB96D14002C2864 /* OCShareUser.m */,
 				13AA8634187C211900A10927 /* OCSharedDto.h */,
 				13AA8635187C211900A10927 /* OCSharedDto.m */,
 				EA913A701BE9FB0700D015B8 /* OCCapabilities.h */,
 				EA913A711BE9FB0700D015B8 /* OCCapabilities.m */,
+				F794C3561E365F410024396B /* OCNotifications.h */,
+				F794C3571E365F410024396B /* OCNotifications.m */,
 				F76D14521E365C3E006CD8B1 /* OCNotificationsAction.h */,
 				F76D14531E365C3E006CD8B1 /* OCNotificationsAction.m */,
 				F76D14541E365C3E006CD8B1 /* OCRichObjectStrings.h */,
@@ -437,6 +440,7 @@
 				EA73DC831B1C48EA00C3AC21 /* OCXMLServerErrorsParser.m in Sources */,
 				1345E4601884213400153F14 /* OCXMLShareByLinkParser.m in Sources */,
 				59A5B720191907F100724BE3 /* AFSecurityPolicy.m in Sources */,
+				F794C3581E365F410024396B /* OCNotifications.m in Sources */,
 				EAABAA32183E688900909831 /* OCFileDto.m in Sources */,
 				F76D14581E365C3E006CD8B1 /* OCRichObjectStrings.m in Sources */,
 				EA7CC934183E150000B6A4B4 /* OCCommunication.m in Sources */,
