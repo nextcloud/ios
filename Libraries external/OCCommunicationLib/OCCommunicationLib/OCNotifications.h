@@ -8,26 +8,6 @@
 
 #import <Foundation/Foundation.h>
 
-@interface OCNotificationsAction : NSObject
-
-@property (nonatomic, strong) NSString *label;
-@property (nonatomic, strong) NSString *link;
-@property (nonatomic, strong) NSString *type;
-@property BOOL primary;
-
-@end
-
-@interface OCRichObjectStrings : NSObject
-
-@property (nonatomic, strong) NSString *idObject;
-@property (nonatomic, strong) NSString *type;
-@property (nonatomic, strong) NSString *name;
-@property (nonatomic, strong) NSString *path;
-@property (nonatomic, strong) NSString *link;
-@property (nonatomic, strong) NSString *server;
-
-@end
-
 @interface OCNotifications : NSObject
 
 @property NSInteger idNotification;
@@ -38,13 +18,13 @@
 @property (nonatomic, strong) NSString *idObject;
 @property (nonatomic, strong) NSString *subject;
 @property (nonatomic, strong) NSString *subjectRich;
-@property (nonatomic, strong) OCRichObjectStrings *subjectRichParameters;
+@property (nonatomic, strong) NSArray *subjectRichParameters;
 @property (nonatomic, strong) NSString *message;
 @property (nonatomic, strong) NSString *messageRich;
-@property (nonatomic, strong) OCRichObjectStrings *messageRichParameters;
+@property (nonatomic, strong) NSArray *messageRichParameters;
 @property (nonatomic, strong) NSString *link;
 @property (nonatomic, strong) NSString *icon;
-@property (nonatomic, strong) OCNotificationsAction *action;
+@property (nonatomic, strong) NSArray *action;
 
 @end
 
