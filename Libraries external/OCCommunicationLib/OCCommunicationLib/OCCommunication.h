@@ -29,7 +29,9 @@
 @class AFURLSessionManager;
 @class AFSecurityPolicy;
 @class OCCapabilities;
-
+@class OCNotifications;
+@class OCRichObjectStrings;
+@class OCNotificationsAction;
 
 @interface OCCommunication : NSObject
 
@@ -767,15 +769,6 @@ typedef enum {
 /// @name Get the server Notification
 ///-----------------------------------
 
-/**
- * Method read the capabilities of the server
- *
- * @param serverPath  -> NSString server
- * @param sharedOCCommunication -> OCCommunication Singleton of communication to add the operation on the queue.
- *
- * @return capabilities -> OCCapabilities
- *
- */
+- (void) getNotificationsOfTheServer:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *listOfNotifications, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest;
 
-- (void) getNotificationsOfTheServer:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, OCCapabilities *capabilities, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest;
 @end

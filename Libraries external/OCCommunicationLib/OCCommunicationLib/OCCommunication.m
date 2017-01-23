@@ -37,6 +37,9 @@
 #import "AFURLSessionManager.h"
 #import "OCShareUser.h"
 #import "OCCapabilities.h"
+#import "OCNotifications.h"
+#import "OCNotificationsAction.h"
+#import "OCRichObjectStrings.h"
 
 @interface OCCommunication ()
 
@@ -1284,7 +1287,7 @@
 
 #pragma mark - Get Notification Server
 
-- (void) getNotificationsOfTheServer:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, OCCapabilities *capabilities, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest{
+- (void) getNotificationsOfTheServer:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *listOfNotifications, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest{
     
     serverPath = [serverPath encodeString:NSUTF8StringEncoding];
     serverPath = [serverPath stringByAppendingString:k_url_acces_remote_notification_api];
@@ -1292,15 +1295,87 @@
     OCWebDAVClient *request = [OCWebDAVClient new];
     request = [self getRequestWithCredentials:request];
     
-    
     [request getNotificationsOfTheServer:serverPath onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
         
         NSData *responseData = (NSData*) responseObject;
-        OCXMLSharedParser *parser = [[OCXMLSharedParser alloc]init];
-            
-        [parser initParserWithData:responseData];
+        
+        //Parse
+        NSError *error;
+        NSDictionary *jsongParsed = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableContainers error:&error];
+        NSLog(@"[LOG] Notifications : %@",jsongParsed);
+        
+        if (jsongParsed.allKeys > 0) {
+        
+            NSDictionary *ocs = [jsongParsed valueForKey:@"ocs"];
+            NSDictionary *meta = [ocs valueForKey:@"meta"];
+            NSDictionary *datas = [ocs valueForKey:@"data"];
+        
+            NSInteger statusCode = [[meta valueForKey:@"statuscode"] integerValue];
+                        
+            if (statusCode == kOCNotificationAPINoContent || statusCode == kOCNotificationAPISuccessful) {
+                
+                for (NSDictionary *data in datas) {
+                
+                    OCNotifications *notification = [OCNotifications new];
+                    
+                    notification.idNotification = [[data valueForKey:@"notification_id"] integerValue];
+                    notification.app = [data valueForKey:@"app"];
+                    notification.user = [data valueForKey:@"user"];
+                    notification.date = [data valueForKey:@"datetime"];
+                    notification.typeObject = [data valueForKey:@"object_type"];
+                    notification.idObject = [data valueForKey:@"object_id"];
+                    
+                    notification.subject = [data valueForKey:@"subject"];
+                    notification.subjectRich = [data valueForKey:@"subjectRich"];
+                    NSDictionary *subjectsRichParameters = [data valueForKey:@"subjectRichParameters"];
+                    
+                    NSMutableArray *listSubjectRichParameters = [NSMutableArray new];
+                    for (NSDictionary *subjectRichParameters in subjectsRichParameters) {
+                     
+                        OCRichObjectStrings *richObjectStrings = [OCRichObjectStrings new];
+                        
+                        richObjectStrings.idObject = [subjectRichParameters valueForKey:@"id"];
+                        richObjectStrings.type = [subjectRichParameters valueForKey:@"type"];
+                        richObjectStrings.name = [subjectRichParameters valueForKey:@"name"];
+                        richObjectStrings.path = [subjectRichParameters valueForKey:@"path"];
+                        richObjectStrings.link = [subjectRichParameters valueForKey:@"link"];
+                        richObjectStrings.server = [subjectRichParameters valueForKey:@"server"];
+                        
+                        [listSubjectRichParameters addObject:richObjectStrings];
+                    }
+                    notification.subjectRichParameters = [[NSArray alloc] initWithArray:listSubjectRichParameters copyItems:YES];
+                    
+                    notification.message = [data valueForKey:@"message"];
+                    notification.messageRich = [data valueForKey:@"messageRich"];
+                    NSDictionary *messagesRichParameters = [data valueForKey:@"messageRichParameters"];
+
+                    notification.link = [data valueForKey:@"link"];
+                    notification.icon = [data valueForKey:@"icon"];
+                    
+                    NSDictionary *actions = [data valueForKey:@"actions"];
+                    
+                    NSLog(@"end");
+
+                }
+                
+                NSLog(@"end");
+                
+            } else {
+                
+                NSString *message = (NSString*)[meta objectForKey:@"message"];
+                
+                if ([message isKindOfClass:[NSNull class]]) {
+                    message = @"";
+                }
+                
+                NSError *error = [UtilsFramework getErrorWithCode:statusCode andCustomMessageFromTheServer:message];
+                failureRequest(response, error, request.redirectedServer);
+
+            }
+        }
     
-        NSLog(@"parser");
+        //Return success
+        successRequest(response, nil, request.redirectedServer);
         
     } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
         failureRequest(response, error, request.redirectedServer);

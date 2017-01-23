@@ -37,6 +37,9 @@
 #define kOCSharedAPISuccessful 100
 #define kOCShareeAPISuccessful 200
 
+#define kOCNotificationAPINoContent  204
+#define kOCNotificationAPISuccessful 200
+
 typedef enum {
     OCServerErrorForbiddenCharacters = 101,
 } OCServerErrorEnum;
