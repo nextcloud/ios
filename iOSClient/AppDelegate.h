@@ -25,7 +25,6 @@
 #import <CoreData/CoreData.h>
 #import <MagicalRecord/MagicalRecord.h>
 
-#import "OCCapabilities.h"
 #import "BKPasscodeLockScreenManager.h"
 #import "REMenu.h"
 #import "LMMediaPlayerView.h"

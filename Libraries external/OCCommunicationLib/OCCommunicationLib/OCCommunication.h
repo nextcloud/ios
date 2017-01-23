@@ -29,10 +29,6 @@
 @class AFURLSessionManager;
 @class AFSecurityPolicy;
 @class OCCapabilities;
-@class OCNotifications;
-@class OCRichObjectStrings;
-@class OCNotificationsAction;
-
 
 @interface OCCommunication : NSObject
 

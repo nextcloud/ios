@@ -25,14 +25,12 @@
 
 #import "AFURLSessionManager.h"
 #import "TWMessageBarManager.h"
-#import "OCCapabilities.h"
-#import "OCFileDto.h"
-#import "OCFrameworkConstants.h"
-#import "OCSharedDto.h"
 #import "CCNetworking.h"
 #import "CCMetadata.h"
 #import "CCError.h"
 #import "CCCoreData.h"
+
+
 
 @protocol OCNetworkingDelegate;
 

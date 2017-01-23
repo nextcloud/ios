@@ -23,11 +23,11 @@
 
 #import <Foundation/Foundation.h>
 #import <Photos/Photos.h>
+#import <OCCommunicationLib/OCCommunication.h>
+#import <OCCommunicationLib/OCFrameworkConstants.h>
+//#import <OCCommunicationLib/OCNotifications.h>
 
 #import "AFURLSessionManager.h"
-#import "OCCommunication.h"
-#import "OCFrameworkConstants.h"
-#import "OCErrorMsg.h"
 #import "TWMessageBarManager.h"
 #import "PHAsset+Utility.h"
 #import "CCCoreData.h"

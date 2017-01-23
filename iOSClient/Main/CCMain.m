@@ -1014,10 +1014,10 @@
 {
     app.listOfNotifications = [[NSArray alloc] initWithArray:listOfNotifications];
     
-    for (OCNotifications *notification in listOfNotifications) {
+    //for (OCNotifications *notification in listOfNotifications) {
                 
         //[app messageNotification:@"Notication" description:notification.subject visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeError];
-    }
+    //}
 }
 
 - (void)getNotificationsOfServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
