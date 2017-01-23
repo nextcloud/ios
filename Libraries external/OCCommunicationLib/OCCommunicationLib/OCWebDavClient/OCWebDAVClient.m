@@ -622,14 +622,13 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
 
 #pragma mark - Get Notification
 
-- (void) getNotificationsOfTheServer:(NSString *)serverPath
-                onCommunication:(OCCommunication *)sharedOCCommunication
-                        success:(void(^)(NSHTTPURLResponse *, id))success
-                        failure:(void(^)(NSHTTPURLResponse *, id  _Nullable responseObject, NSError *))failure {
-    
-    NSParameterAssert(success);
+- (void) getNotificationsOfTheServer:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success
+                             failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure{
     
     _requestMethod = @"GET";
+
+    NSString *jsonQuery = [NSString stringWithFormat:@"?format=json"];
+    serverPath = [serverPath stringByAppendingString:jsonQuery];
     
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
     
