@@ -72,6 +72,7 @@
 @property BOOL hasServerShareeSupport;
 @property BOOL hasServerCapabilitiesSupport;
 @property OCCapabilities *capabilities;
+@property (nonatomic, strong) NSArray *listOfNotifications;
 
 // Network Operation
 @property (nonatomic, strong) NSOperationQueue *netQueue;

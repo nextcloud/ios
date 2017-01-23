@@ -935,14 +935,14 @@
 #pragma mark =====  Notification =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)getNotificationsOfTheServer
+- (void)getNotificationsOfServer
 {
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     
     [communication setCredentialsWithUser:_activeUser andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent:_typeCloud]];
     
-    [communication getNotificationsOfTheServer:[_activeUrl stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *listOfNotifications, NSString *redirectedServer) {
+    [communication getNotificationsOfServer:[_activeUrl stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *listOfNotifications, NSString *redirectedServer) {
         
         [self complete];
         

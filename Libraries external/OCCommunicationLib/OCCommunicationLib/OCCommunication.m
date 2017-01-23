@@ -1287,7 +1287,7 @@
 
 #pragma mark - Get Notification Server
 
-- (void) getNotificationsOfTheServer:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *listOfNotifications, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest{
+- (void) getNotificationsOfServer:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *listOfNotifications, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest{
     
     serverPath = [serverPath encodeString:NSUTF8StringEncoding];
     serverPath = [serverPath stringByAppendingString:k_url_acces_remote_notification_api];
@@ -1295,7 +1295,7 @@
     OCWebDAVClient *request = [OCWebDAVClient new];
     request = [self getRequestWithCredentials:request];
     
-    [request getNotificationsOfTheServer:serverPath onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
+    [request getNotificationsOfServer:serverPath onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
         
         NSData *responseData = (NSData*) responseObject;
         
@@ -1323,7 +1323,11 @@
                     notification.idNotification = [[data valueForKey:@"notification_id"] integerValue];
                     notification.app = [data valueForKey:@"app"];
                     notification.user = [data valueForKey:@"user"];
-                    notification.date = [data valueForKey:@"datetime"];
+                    
+                    NSString *dateString = [data valueForKey:@"datetime"];
+                    NSISO8601DateFormatter *formatter = [[NSISO8601DateFormatter alloc] init];
+                    notification.date = [formatter dateFromString:dateString];
+                    
                     notification.typeObject = [data valueForKey:@"object_type"];
                     notification.idObject = [data valueForKey:@"object_id"];
                     notification.subject = [data valueForKey:@"subject"];
@@ -1349,7 +1353,6 @@
                 
                 NSError *error = [UtilsFramework getErrorWithCode:statusCode andCustomMessageFromTheServer:message];
                 failureRequest(response, error, request.redirectedServer);
-
             }
         }
     
@@ -1359,7 +1362,6 @@
     } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
         failureRequest(response, error, request.redirectedServer);
     }];
-
 }
 
 #pragma mark - Clear Cache

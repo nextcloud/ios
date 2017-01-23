@@ -1049,7 +1049,7 @@
         metadataNet.action = actionGetCapabilities;
         [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
         
-        metadataNet.action = actionGetNotificationsOfTheServer;
+        metadataNet.action = actionGetNotificationsOfServer;
         [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
         
         metadataNet.action = actionReadFile;

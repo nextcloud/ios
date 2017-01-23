@@ -13,7 +13,7 @@
 @property NSInteger idNotification;
 @property (nonatomic, strong) NSString *app;
 @property (nonatomic, strong) NSString *user;
-@property long date;
+@property (nonatomic, strong) NSDate *date;
 @property (nonatomic, strong) NSString *typeObject;
 @property (nonatomic, strong) NSString *idObject;
 @property (nonatomic, strong) NSString *subject;
