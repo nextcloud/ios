@@ -48,6 +48,8 @@
 		EAABAB39185B353100909831 /* test.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = EAABAB38185B353100909831 /* test.jpeg */; };
 		EAABAB3C185EE33B00909831 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EAABAB3B185EE33B00909831 /* UIKit.framework */; };
 		EAABAB40185F225300909831 /* video.MOV in Resources */ = {isa = PBXBuildFile; fileRef = EAABAB3F185F225300909831 /* video.MOV */; };
+		F71DB38D1E35FAD80057BEE3 /* OCNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = F71DB38C1E35FAD80057BEE3 /* OCNotifications.m */; };
+		F71DB3901E36111E0057BEE3 /* OCXMLNotificationsParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F71DB38F1E36111E0057BEE3 /* OCXMLNotificationsParser.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -135,6 +137,10 @@
 		EAABAB38185B353100909831 /* test.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = test.jpeg; path = Resources/test.jpeg; sourceTree = "<group>"; };
 		EAABAB3B185EE33B00909831 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		EAABAB3F185F225300909831 /* video.MOV */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; name = video.MOV; path = Resources/video.MOV; sourceTree = "<group>"; };
+		F71DB38B1E35FAD80057BEE3 /* OCNotifications.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCNotifications.h; sourceTree = "<group>"; };
+		F71DB38C1E35FAD80057BEE3 /* OCNotifications.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCNotifications.m; sourceTree = "<group>"; };
+		F71DB38E1E36111E0057BEE3 /* OCXMLNotificationsParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCXMLNotificationsParser.h; sourceTree = "<group>"; };
+		F71DB38F1E36111E0057BEE3 /* OCXMLNotificationsParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCXMLNotificationsParser.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -164,6 +170,8 @@
 		13AA8637187C331F00A10927 /* Parsers */ = {
 			isa = PBXGroup;
 			children = (
+				F71DB38E1E36111E0057BEE3 /* OCXMLNotificationsParser.h */,
+				F71DB38F1E36111E0057BEE3 /* OCXMLNotificationsParser.m */,
 				131C67B7187C3E360009030E /* OCXMLSharedParser.h */,
 				131C67B8187C3E360009030E /* OCXMLSharedParser.m */,
 				13AA863E187C3B9700A10927 /* OCXMLParser.h */,
@@ -211,6 +219,8 @@
 			children = (
 				EAABAA30183E688900909831 /* OCFileDto.h */,
 				EAABAA31183E688900909831 /* OCFileDto.m */,
+				F71DB38B1E35FAD80057BEE3 /* OCNotifications.h */,
+				F71DB38C1E35FAD80057BEE3 /* OCNotifications.m */,
 				EA0599981BB96D14002C2864 /* OCShareUser.h */,
 				EA0599991BB96D14002C2864 /* OCShareUser.m */,
 				13AA8634187C211900A10927 /* OCSharedDto.h */,
@@ -426,10 +436,12 @@
 				1345E4601884213400153F14 /* OCXMLShareByLinkParser.m in Sources */,
 				59A5B720191907F100724BE3 /* AFSecurityPolicy.m in Sources */,
 				EAABAA32183E688900909831 /* OCFileDto.m in Sources */,
+				F71DB38D1E35FAD80057BEE3 /* OCNotifications.m in Sources */,
 				EA7CC934183E150000B6A4B4 /* OCCommunication.m in Sources */,
 				131C67B9187C3E360009030E /* OCXMLSharedParser.m in Sources */,
 				13AA8640187C3B9700A10927 /* OCXMLParser.m in Sources */,
 				EA7CC912183E146000B6A4B4 /* UtilsFramework.m in Sources */,
+				F71DB3901E36111E0057BEE3 /* OCXMLNotificationsParser.m in Sources */,
 				EA7CC92A183E14A100B6A4B4 /* NSDate+RFC1123.m in Sources */,
 				13AA8636187C211900A10927 /* OCSharedDto.m in Sources */,
 				EA7CC928183E14A100B6A4B4 /* NSDate+ISO8601.m in Sources */,
