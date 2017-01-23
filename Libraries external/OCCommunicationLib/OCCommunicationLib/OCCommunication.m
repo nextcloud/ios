@@ -1297,13 +1297,21 @@
     [request getNotificationsOfTheServer:serverPath onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
         
         NSData *responseData = (NSData*) responseObject;
-        OCXMLNotificationsParser *parser = [[OCXMLNotificationsParser alloc] init];
-            
-        [parser initParserWithData:responseData];
-        NSMutableArray *notificationsList = [parser.notificationsList mutableCopy];
+        
+        //Parse
+        NSError *error;
+        NSDictionary *jsongParsed = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableContainers error:&error];
+        NSLog(@"dic: %@",jsongParsed);
+        
+        OCNotifications *notification = [OCNotifications new];
+
+        
+        
+        
+        
     
         //Return success
-        successRequest(response, notificationsList, request.redirectedServer);
+        successRequest(response, notification, request.redirectedServer);
         
     } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
         failureRequest(response, error, request.redirectedServer);
