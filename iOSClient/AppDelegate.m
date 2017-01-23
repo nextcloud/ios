@@ -136,7 +136,7 @@
     
     // Add notification change session
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(sessionChanged:) name:networkingSessionNotification object:nil];
-    
+        
     // Inizializzazioni Share
     self.sharesID = [[NSMutableDictionary alloc] init];
     self.sharesLink = [[NSMutableDictionary alloc] init];

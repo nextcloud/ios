@@ -584,7 +584,10 @@
 				GCC_PREFIX_HEADER = "OCCommunicationLib/ownCloud iOS library-Prefix.pch";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				ONLY_ACTIVE_ARCH = NO;
-				OTHER_LDFLAGS = "-ObjC";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-all_load",
+				);
 				PRODUCT_NAME = ownCloudiOS;
 				SKIP_INSTALL = YES;
 				VALID_ARCHS = "armv7 armv7s arm64";
@@ -600,7 +603,10 @@
 				GCC_PREFIX_HEADER = "OCCommunicationLib/ownCloud iOS library-Prefix.pch";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				ONLY_ACTIVE_ARCH = NO;
-				OTHER_LDFLAGS = "-ObjC";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-all_load",
+				);
 				PRODUCT_NAME = ownCloudiOS;
 				SKIP_INSTALL = YES;
 				VALID_ARCHS = "armv7 armv7s arm64";

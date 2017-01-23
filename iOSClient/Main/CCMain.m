@@ -1010,6 +1010,21 @@
 #pragma mark ==== Request Server  ====
 #pragma --------------------------------------------------------------------------------------------
 
+- (void)getNotificationsOfServerSuccess:(NSArray *)listOfNotifications
+{
+    app.listOfNotifications = [[NSArray alloc] initWithArray:listOfNotifications];
+    
+    for (OCNotifications *notification in listOfNotifications) {
+                
+        //[app messageNotification:@"Notication" description:notification.subject visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeError];
+    }
+}
+
+- (void)getNotificationsOfServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+{
+    NSLog(@"Error Notification");
+}
+
 - (void)getCapabilitiesOfServerSuccess:(OCCapabilities *)capabilities
 {
     app.capabilities = capabilities;

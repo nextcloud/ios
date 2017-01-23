@@ -944,11 +944,26 @@
     
     [communication getNotificationsOfServer:[_activeUrl stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *listOfNotifications, NSString *redirectedServer) {
         
+        if ([self.delegate respondsToSelector:@selector(getNotificationsOfServerSuccess:)])
+            [self.delegate getNotificationsOfServerSuccess:listOfNotifications];
+        
         [self complete];
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
+        NSInteger errorCode = response.statusCode;
+        if (errorCode == 0)
+            errorCode = error.code;
+        
+        if([self.delegate respondsToSelector:@selector(getNotificationsOfServerFailure:message:errorCode:)])
+            [self.delegate getNotificationsOfServerFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        
+        // Request trusted certificated
+        if ([error code] == NSURLErrorServerCertificateUntrusted)
+            [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
+        
         [self complete];
+
     }];
 }
 
