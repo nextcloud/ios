@@ -10,8 +10,8 @@
 
 @implementation OCXMLNotificationsParser
 
-@synthesize notificationList=_notificationList;
-@synthesize currentNotification=_currentNotification;
+@synthesize notificationsList =_notificationsList;
+@synthesize currentNotifications =_currentNotifications;
 
 
 /*
@@ -20,7 +20,7 @@
  */
 - (void)initParserWithData: (NSData*)data{
     
-    _notificationList = [[NSMutableArray alloc]init];
+    _notificationsList = [[NSMutableArray alloc]init];
     
     NSXMLParser *parser = [[NSXMLParser alloc] initWithData:data];
     [parser setDelegate:self];

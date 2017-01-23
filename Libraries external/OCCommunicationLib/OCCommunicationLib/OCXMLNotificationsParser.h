@@ -13,13 +13,13 @@
 
     NSMutableString *_xmlChars;
     NSMutableDictionary *_xmlBucket;
-    NSMutableArray *_notificationList;
-    OCNotifications *_currentNotification;
+    NSMutableArray *_notificationsList;
+    OCNotifications *_currentNotifications;
     BOOL isNotFirstFileOfList;
 }
 
-@property(nonatomic,strong) NSMutableArray *notificationList;
-@property(nonatomic,strong) OCNotifications *currentNotification;
+@property(nonatomic,strong) NSMutableArray *notificationsList;
+@property(nonatomic,strong) OCNotifications *currentNotifications;
 
 - (void)initParserWithData: (NSData*)data;
 
