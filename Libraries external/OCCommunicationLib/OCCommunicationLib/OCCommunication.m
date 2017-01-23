@@ -38,7 +38,6 @@
 #import "OCShareUser.h"
 #import "OCCapabilities.h"
 #import "OCNotifications.h"
-#import "OCXMLNotificationsParser.h"
 
 @interface OCCommunication ()
 
@@ -1286,7 +1285,7 @@
 
 #pragma mark - Get Notification Server
 
-- (void) getNotificationsOfTheServer:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, OCNotifications *notifications, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest{
+- (void) getNotificationsOfTheServer:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *listOfNotifications, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest{
     
     serverPath = [serverPath encodeString:NSUTF8StringEncoding];
     serverPath = [serverPath stringByAppendingString:k_url_acces_remote_notification_api];
@@ -1301,17 +1300,47 @@
         //Parse
         NSError *error;
         NSDictionary *jsongParsed = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableContainers error:&error];
-        NSLog(@"dic: %@",jsongParsed);
+        NSLog(@"[LOG] Notifications : %@",jsongParsed);
         
-        OCNotifications *notification = [OCNotifications new];
+        if (jsongParsed.allKeys > 0) {
+        
+            NSDictionary *ocs = [jsongParsed valueForKey:@"ocs"];
+            NSDictionary *meta = [ocs valueForKey:@"meta"];
+            NSDictionary *datas = [ocs valueForKey:@"data"];
+        
+            NSInteger statusCode = [[meta valueForKey:@"statuscode"] integerValue];
+                        
+            if (statusCode == kOCNotificationAPINoContent || statusCode == kOCNotificationAPISuccessful) {
+                
+                for (NSDictionary *data in datas) {
+                
+                    OCNotifications *notification = [OCNotifications new];
+                    
+                    notification.idNotification = [[data valueForKey:@"notification_id"] integerValue];
+                    notification.app = [data valueForKey:@"app"];
+                
+                    NSLog(@"end");
 
-        
-        
-        
-        
+                }
+                
+                NSLog(@"end");
+                
+            } else {
+                
+                NSString *message = (NSString*)[meta objectForKey:@"message"];
+                
+                if ([message isKindOfClass:[NSNull class]]) {
+                    message = @"";
+                }
+                
+                NSError *error = [UtilsFramework getErrorWithCode:statusCode andCustomMessageFromTheServer:message];
+                failureRequest(response, error, request.redirectedServer);
+
+            }
+        }
     
         //Return success
-        successRequest(response, notification, request.redirectedServer);
+        successRequest(response, nil, request.redirectedServer);
         
     } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
         failureRequest(response, error, request.redirectedServer);

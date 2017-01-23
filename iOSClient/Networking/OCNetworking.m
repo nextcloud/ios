@@ -942,7 +942,7 @@
     [communication setCredentialsWithUser:_activeUser andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent:_typeCloud]];
     
-    [communication getNotificationsOfTheServer:[_activeUrl stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, OCNotifications *notifications, NSString *redirectedServer) {
+    [communication getNotificationsOfTheServer:[_activeUrl stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *listOfNotifications, NSString *redirectedServer) {
         
         [self complete];
         
