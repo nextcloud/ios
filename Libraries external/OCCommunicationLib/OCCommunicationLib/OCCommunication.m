@@ -1304,6 +1304,8 @@
         NSDictionary *jsongParsed = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableContainers error:&error];
         NSLog(@"[LOG] Notifications : %@",jsongParsed);
         
+        NSMutableArray *listOfNotifications = [NSMutableArray new];
+
         if (jsongParsed.allKeys > 0) {
         
             NSDictionary *ocs = [jsongParsed valueForKey:@"ocs"];
@@ -1324,43 +1326,18 @@
                     notification.date = [data valueForKey:@"datetime"];
                     notification.typeObject = [data valueForKey:@"object_type"];
                     notification.idObject = [data valueForKey:@"object_id"];
-                    
                     notification.subject = [data valueForKey:@"subject"];
                     notification.subjectRich = [data valueForKey:@"subjectRich"];
-                    
-                    NSDictionary *subjectsRichParameters = [data valueForKey:@"subjectRichParameters"];
-                    
-                    NSMutableArray *listSubjectRichParameters = [NSMutableArray new];
-                    for (NSDictionary *subjectRichParameters in subjectsRichParameters) {
-                     
-                        
-                        OCRichObjectStrings *richObjectStrings = [OCRichObjectStrings new];
-                        
-                        //richObjectStrings.idObject = [subjectRichParameters valueForKey:@"id"];
-                        richObjectStrings.type = [subjectRichParameters valueForKey:@"type"];
-                        richObjectStrings.name = [subjectRichParameters valueForKey:@"name"];
-                        richObjectStrings.path = [subjectRichParameters valueForKey:@"path"];
-                        richObjectStrings.link = [subjectRichParameters valueForKey:@"link"];
-                        richObjectStrings.server = [subjectRichParameters valueForKey:@"server"];
-                        
-                        [listSubjectRichParameters addObject:richObjectStrings];
-                    }
-                    notification.subjectRichParameters = [[NSArray alloc] initWithArray:listSubjectRichParameters copyItems:YES];
-                    
+                    notification.subjectRichParameters = [data valueForKey:@"subjectRichParameters"];
                     notification.message = [data valueForKey:@"message"];
                     notification.messageRich = [data valueForKey:@"messageRich"];
-                    NSDictionary *messagesRichParameters = [data valueForKey:@"messageRichParameters"];
-
+                    notification.messageRichParameters = [data valueForKey:@"messageRichParameters"];
                     notification.link = [data valueForKey:@"link"];
                     notification.icon = [data valueForKey:@"icon"];
+                    notification.action = [data valueForKey:@"actions"];
                     
-                    NSDictionary *actions = [data valueForKey:@"actions"];
-                    
-                    NSLog(@"end");
-
+                    [listOfNotifications addObject:notification];
                 }
-                
-                NSLog(@"end");
                 
             } else {
                 
@@ -1377,7 +1354,7 @@
         }
     
         //Return success
-        successRequest(response, nil, request.redirectedServer);
+        successRequest(response, listOfNotifications, request.redirectedServer);
         
     } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
         failureRequest(response, error, request.redirectedServer);
