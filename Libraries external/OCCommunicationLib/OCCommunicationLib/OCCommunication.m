@@ -1327,14 +1327,16 @@
                     
                     notification.subject = [data valueForKey:@"subject"];
                     notification.subjectRich = [data valueForKey:@"subjectRich"];
+                    
                     NSDictionary *subjectsRichParameters = [data valueForKey:@"subjectRichParameters"];
                     
                     NSMutableArray *listSubjectRichParameters = [NSMutableArray new];
                     for (NSDictionary *subjectRichParameters in subjectsRichParameters) {
                      
+                        
                         OCRichObjectStrings *richObjectStrings = [OCRichObjectStrings new];
                         
-                        richObjectStrings.idObject = [subjectRichParameters valueForKey:@"id"];
+                        //richObjectStrings.idObject = [subjectRichParameters valueForKey:@"id"];
                         richObjectStrings.type = [subjectRichParameters valueForKey:@"type"];
                         richObjectStrings.name = [subjectRichParameters valueForKey:@"name"];
                         richObjectStrings.path = [subjectRichParameters valueForKey:@"path"];
