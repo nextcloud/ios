@@ -33,6 +33,7 @@
 @class OCRichObjectStrings;
 @class OCNotificationsAction;
 
+
 @interface OCCommunication : NSObject
 
 //Type of credential
