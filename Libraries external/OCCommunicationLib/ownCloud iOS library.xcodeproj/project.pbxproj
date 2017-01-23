@@ -48,7 +48,6 @@
 		EAABAB39185B353100909831 /* test.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = EAABAB38185B353100909831 /* test.jpeg */; };
 		EAABAB3C185EE33B00909831 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EAABAB3B185EE33B00909831 /* UIKit.framework */; };
 		EAABAB40185F225300909831 /* video.MOV in Resources */ = {isa = PBXBuildFile; fileRef = EAABAB3F185F225300909831 /* video.MOV */; };
-		F76D14561E365C3E006CD8B1 /* OCNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = F76D14511E365C3E006CD8B1 /* OCNotifications.m */; };
 		F76D14571E365C3E006CD8B1 /* OCNotificationsAction.m in Sources */ = {isa = PBXBuildFile; fileRef = F76D14531E365C3E006CD8B1 /* OCNotificationsAction.m */; };
 		F76D14581E365C3E006CD8B1 /* OCRichObjectStrings.m in Sources */ = {isa = PBXBuildFile; fileRef = F76D14551E365C3E006CD8B1 /* OCRichObjectStrings.m */; };
 /* End PBXBuildFile section */
@@ -138,8 +137,6 @@
 		EAABAB38185B353100909831 /* test.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = test.jpeg; path = Resources/test.jpeg; sourceTree = "<group>"; };
 		EAABAB3B185EE33B00909831 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		EAABAB3F185F225300909831 /* video.MOV */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; name = video.MOV; path = Resources/video.MOV; sourceTree = "<group>"; };
-		F76D14501E365C3E006CD8B1 /* OCNotifications.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCNotifications.h; sourceTree = "<group>"; };
-		F76D14511E365C3E006CD8B1 /* OCNotifications.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCNotifications.m; sourceTree = "<group>"; };
 		F76D14521E365C3E006CD8B1 /* OCNotificationsAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCNotificationsAction.h; sourceTree = "<group>"; };
 		F76D14531E365C3E006CD8B1 /* OCNotificationsAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCNotificationsAction.m; sourceTree = "<group>"; };
 		F76D14541E365C3E006CD8B1 /* OCRichObjectStrings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCRichObjectStrings.h; sourceTree = "<group>"; };
@@ -226,8 +223,6 @@
 				13AA8635187C211900A10927 /* OCSharedDto.m */,
 				EA913A701BE9FB0700D015B8 /* OCCapabilities.h */,
 				EA913A711BE9FB0700D015B8 /* OCCapabilities.m */,
-				F76D14501E365C3E006CD8B1 /* OCNotifications.h */,
-				F76D14511E365C3E006CD8B1 /* OCNotifications.m */,
 				F76D14521E365C3E006CD8B1 /* OCNotificationsAction.h */,
 				F76D14531E365C3E006CD8B1 /* OCNotificationsAction.m */,
 				F76D14541E365C3E006CD8B1 /* OCRichObjectStrings.h */,
@@ -442,7 +437,6 @@
 				59A5B720191907F100724BE3 /* AFSecurityPolicy.m in Sources */,
 				EAABAA32183E688900909831 /* OCFileDto.m in Sources */,
 				F76D14581E365C3E006CD8B1 /* OCRichObjectStrings.m in Sources */,
-				F76D14561E365C3E006CD8B1 /* OCNotifications.m in Sources */,
 				EA7CC934183E150000B6A4B4 /* OCCommunication.m in Sources */,
 				F76D14571E365C3E006CD8B1 /* OCNotificationsAction.m in Sources */,
 				131C67B9187C3E360009030E /* OCXMLSharedParser.m in Sources */,
