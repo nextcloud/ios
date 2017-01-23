@@ -11,7 +11,7 @@
 @interface OCNotifications : NSObject
 
 @property NSInteger idNotification;
-@property (nonatomic, strong) NSString *app;
+@property (nonatomic, strong) NSString *application;
 @property (nonatomic, strong) NSString *user;
 @property (nonatomic, strong) NSDate *date;
 @property (nonatomic, strong) NSString *typeObject;

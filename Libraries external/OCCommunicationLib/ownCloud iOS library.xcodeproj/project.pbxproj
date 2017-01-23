@@ -33,6 +33,7 @@
 		EA7CC92A183E14A100B6A4B4 /* NSDate+RFC1123.m in Sources */ = {isa = PBXBuildFile; fileRef = EA7CC920183E14A100B6A4B4 /* NSDate+RFC1123.m */; };
 		EA7CC92B183E14A100B6A4B4 /* NSDate+RFC1123.m in Sources */ = {isa = PBXBuildFile; fileRef = EA7CC920183E14A100B6A4B4 /* NSDate+RFC1123.m */; };
 		EA7CC92C183E14A100B6A4B4 /* OCHTTPRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = EA7CC923183E14A100B6A4B4 /* OCHTTPRequestOperation.m */; };
+		EA7CC92D183E14A100B6A4B4 /* OCHTTPRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = EA7CC923183E14A100B6A4B4 /* OCHTTPRequestOperation.m */; };
 		EA7CC92E183E14A100B6A4B4 /* OCWebDAVClient.m in Sources */ = {isa = PBXBuildFile; fileRef = EA7CC925183E14A100B6A4B4 /* OCWebDAVClient.m */; };
 		EA7CC92F183E14A100B6A4B4 /* OCWebDAVClient.m in Sources */ = {isa = PBXBuildFile; fileRef = EA7CC925183E14A100B6A4B4 /* OCWebDAVClient.m */; };
 		EA7CC934183E150000B6A4B4 /* OCCommunication.m in Sources */ = {isa = PBXBuildFile; fileRef = EA7CC933183E150000B6A4B4 /* OCCommunication.m */; };
@@ -47,9 +48,9 @@
 		EAABAB39185B353100909831 /* test.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = EAABAB38185B353100909831 /* test.jpeg */; };
 		EAABAB3C185EE33B00909831 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EAABAB3B185EE33B00909831 /* UIKit.framework */; };
 		EAABAB40185F225300909831 /* video.MOV in Resources */ = {isa = PBXBuildFile; fileRef = EAABAB3F185F225300909831 /* video.MOV */; };
-		F76D14571E365C3E006CD8B1 /* OCNotificationsAction.m in Sources */ = {isa = PBXBuildFile; fileRef = F76D14531E365C3E006CD8B1 /* OCNotificationsAction.m */; };
-		F76D14581E365C3E006CD8B1 /* OCRichObjectStrings.m in Sources */ = {isa = PBXBuildFile; fileRef = F76D14551E365C3E006CD8B1 /* OCRichObjectStrings.m */; };
-		F794C3581E365F410024396B /* OCNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = F794C3571E365F410024396B /* OCNotifications.m */; };
+		F704980D1E369EF6008F5BB6 /* OCNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = F70498081E369EF6008F5BB6 /* OCNotifications.m */; };
+		F704980E1E369EF6008F5BB6 /* OCNotificationsAction.m in Sources */ = {isa = PBXBuildFile; fileRef = F704980A1E369EF6008F5BB6 /* OCNotificationsAction.m */; };
+		F704980F1E369EF6008F5BB6 /* OCRichObjectStrings.m in Sources */ = {isa = PBXBuildFile; fileRef = F704980C1E369EF6008F5BB6 /* OCRichObjectStrings.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -137,12 +138,12 @@
 		EAABAB38185B353100909831 /* test.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = test.jpeg; path = Resources/test.jpeg; sourceTree = "<group>"; };
 		EAABAB3B185EE33B00909831 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		EAABAB3F185F225300909831 /* video.MOV */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; name = video.MOV; path = Resources/video.MOV; sourceTree = "<group>"; };
-		F76D14521E365C3E006CD8B1 /* OCNotificationsAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCNotificationsAction.h; sourceTree = "<group>"; };
-		F76D14531E365C3E006CD8B1 /* OCNotificationsAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCNotificationsAction.m; sourceTree = "<group>"; };
-		F76D14541E365C3E006CD8B1 /* OCRichObjectStrings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCRichObjectStrings.h; sourceTree = "<group>"; };
-		F76D14551E365C3E006CD8B1 /* OCRichObjectStrings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCRichObjectStrings.m; sourceTree = "<group>"; };
-		F794C3561E365F410024396B /* OCNotifications.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCNotifications.h; sourceTree = "<group>"; };
-		F794C3571E365F410024396B /* OCNotifications.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCNotifications.m; sourceTree = "<group>"; };
+		F70498071E369EF6008F5BB6 /* OCNotifications.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCNotifications.h; sourceTree = "<group>"; };
+		F70498081E369EF6008F5BB6 /* OCNotifications.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCNotifications.m; sourceTree = "<group>"; };
+		F70498091E369EF6008F5BB6 /* OCNotificationsAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCNotificationsAction.h; sourceTree = "<group>"; };
+		F704980A1E369EF6008F5BB6 /* OCNotificationsAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCNotificationsAction.m; sourceTree = "<group>"; };
+		F704980B1E369EF6008F5BB6 /* OCRichObjectStrings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCRichObjectStrings.h; sourceTree = "<group>"; };
+		F704980C1E369EF6008F5BB6 /* OCRichObjectStrings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCRichObjectStrings.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -225,13 +226,13 @@
 				13AA8635187C211900A10927 /* OCSharedDto.m */,
 				EA913A701BE9FB0700D015B8 /* OCCapabilities.h */,
 				EA913A711BE9FB0700D015B8 /* OCCapabilities.m */,
-				F794C3561E365F410024396B /* OCNotifications.h */,
-				F794C3571E365F410024396B /* OCNotifications.m */,
-				F76D14521E365C3E006CD8B1 /* OCNotificationsAction.h */,
-				F76D14531E365C3E006CD8B1 /* OCNotificationsAction.m */,
-				F76D14541E365C3E006CD8B1 /* OCRichObjectStrings.h */,
-				F76D14551E365C3E006CD8B1 /* OCRichObjectStrings.m */,
 				EAABAA2F183E687000909831 /* OCFrameworkConstants.h */,
+				F70498071E369EF6008F5BB6 /* OCNotifications.h */,
+				F70498081E369EF6008F5BB6 /* OCNotifications.m */,
+				F70498091E369EF6008F5BB6 /* OCNotificationsAction.h */,
+				F704980A1E369EF6008F5BB6 /* OCNotificationsAction.m */,
+				F704980B1E369EF6008F5BB6 /* OCRichObjectStrings.h */,
+				F704980C1E369EF6008F5BB6 /* OCRichObjectStrings.m */,
 				EA7CC932183E150000B6A4B4 /* OCCommunication.h */,
 				EA7CC933183E150000B6A4B4 /* OCCommunication.m */,
 				EAABAB1218574A7C00909831 /* OCErrorMsg.h */,
@@ -439,11 +440,11 @@
 				EA73DC831B1C48EA00C3AC21 /* OCXMLServerErrorsParser.m in Sources */,
 				1345E4601884213400153F14 /* OCXMLShareByLinkParser.m in Sources */,
 				59A5B720191907F100724BE3 /* AFSecurityPolicy.m in Sources */,
-				F794C3581E365F410024396B /* OCNotifications.m in Sources */,
 				EAABAA32183E688900909831 /* OCFileDto.m in Sources */,
-				F76D14581E365C3E006CD8B1 /* OCRichObjectStrings.m in Sources */,
+				F704980F1E369EF6008F5BB6 /* OCRichObjectStrings.m in Sources */,
+				F704980D1E369EF6008F5BB6 /* OCNotifications.m in Sources */,
 				EA7CC934183E150000B6A4B4 /* OCCommunication.m in Sources */,
-				F76D14571E365C3E006CD8B1 /* OCNotificationsAction.m in Sources */,
+				F704980E1E369EF6008F5BB6 /* OCNotificationsAction.m in Sources */,
 				131C67B9187C3E360009030E /* OCXMLSharedParser.m in Sources */,
 				13AA8640187C3B9700A10927 /* OCXMLParser.m in Sources */,
 				EA7CC912183E146000B6A4B4 /* UtilsFramework.m in Sources */,
@@ -470,6 +471,7 @@
 				EAABAA33183E688900909831 /* OCFileDto.m in Sources */,
 				EA7CC8B7183E11E600B6A4B4 /* OCCommunicationLibTests.m in Sources */,
 				EA7CC929183E14A100B6A4B4 /* NSDate+ISO8601.m in Sources */,
+				EA7CC92D183E14A100B6A4B4 /* OCHTTPRequestOperation.m in Sources */,
 				EAABAB2718585C5200909831 /* NSString+Encode.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -584,10 +586,7 @@
 				GCC_PREFIX_HEADER = "OCCommunicationLib/ownCloud iOS library-Prefix.pch";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				ONLY_ACTIVE_ARCH = NO;
-				OTHER_LDFLAGS = (
-					"-ObjC",
-					"-all_load",
-				);
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = ownCloudiOS;
 				SKIP_INSTALL = YES;
 				VALID_ARCHS = "armv7 armv7s arm64";
@@ -603,10 +602,7 @@
 				GCC_PREFIX_HEADER = "OCCommunicationLib/ownCloud iOS library-Prefix.pch";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				ONLY_ACTIVE_ARCH = NO;
-				OTHER_LDFLAGS = (
-					"-ObjC",
-					"-all_load",
-				);
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = ownCloudiOS;
 				SKIP_INSTALL = YES;
 				VALID_ARCHS = "armv7 armv7s arm64";

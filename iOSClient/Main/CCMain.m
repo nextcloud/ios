@@ -26,6 +26,7 @@
 #import "AppDelegate.h"
 #import "CCPhotosCameraUpload.h"
 #import "CCOfflineFolder.h"
+#import <OCCommunicationLib/OCNotifications.h>
 
 #import "Nextcloud-Swift.h"
 
@@ -1014,10 +1015,10 @@
 {
     app.listOfNotifications = [[NSArray alloc] initWithArray:listOfNotifications];
     
-    //for (OCNotifications *notification in listOfNotifications) {
+    for (OCNotifications *notification in listOfNotifications) {
                 
-        //[app messageNotification:@"Notication" description:notification.subject visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeError];
-    //}
+        [app messageNotification:@"Notication" description:notification.subject visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeInfo];
+    }
 }
 
 - (void)getNotificationsOfServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode

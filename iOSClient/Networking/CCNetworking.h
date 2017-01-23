@@ -25,7 +25,6 @@
 #import <Photos/Photos.h>
 #import <OCCommunicationLib/OCCommunication.h>
 #import <OCCommunicationLib/OCFrameworkConstants.h>
-//#import <OCCommunicationLib/OCNotifications.h>
 
 #import "AFURLSessionManager.h"
 #import "TWMessageBarManager.h"

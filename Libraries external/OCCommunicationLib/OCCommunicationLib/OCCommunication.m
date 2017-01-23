@@ -1321,7 +1321,7 @@
                     OCNotifications *notification = [OCNotifications new];
                     
                     notification.idNotification = [[data valueForKey:@"notification_id"] integerValue];
-                    notification.app = [data valueForKey:@"app"];
+                    notification.application = [data valueForKey:@"app"];
                     notification.user = [data valueForKey:@"user"];
                     
                     NSString *dateString = [data valueForKey:@"datetime"];
