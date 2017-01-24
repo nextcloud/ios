@@ -24,7 +24,7 @@
 @property (nonatomic, strong) NSDictionary *messageRichParameters;
 @property (nonatomic, strong) NSString *link;
 @property (nonatomic, strong) NSString *icon;
-@property (nonatomic, strong) NSDictionary *action;
+@property (nonatomic, strong) NSArray *actions;
 
 @end
 

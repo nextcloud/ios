@@ -1338,7 +1338,13 @@
                     notification.messageRichParameters = [data valueForKey:@"messageRichParameters"];
                     notification.link = [data valueForKey:@"link"];
                     notification.icon = [data valueForKey:@"icon"];
-                    notification.action = [data valueForKey:@"actions"];
+                    
+                    NSArray *actions = [[NSArray alloc] initWithObjects: [data valueForKey:@"actions"], nil ];
+                    
+                    for (NSDictionary *action in actions) {
+                        
+                    }
+                    
                     
                     [listOfNotifications addObject:notification];
                 }

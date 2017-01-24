@@ -488,11 +488,9 @@ extension DocumentPickerViewController {
         case .moveToService, .exportToService:
             
             let fileName = sourceURL.lastPathComponent
+            let destinationURLDirectoryUser = URL(string: "file://\(directoryUser!)/\(fileName)".addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!)!
             
-            guard let destinationURLDirectoryUser = URL(string: "file://\(directoryUser!)/\(fileName)".addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!) else {
-                
-                return
-            }
+            //let fileSize = (try! FileManager.default.attributesOfItem(atPath: sourceURL.path)[FileAttributeKey.size] as! NSNumber).uint64Value
             
             self.destinationURL = appGroupContainerURL()?.appendingPathComponent(fileName)
             
@@ -509,7 +507,7 @@ extension DocumentPickerViewController {
                 print("file do not exists")
                 return
             }
-
+            
             fileCoordinator.coordinate(readingItemAt: sourceURL, options: .withoutChanges, error: nil, byAccessor: { [weak self] newURL in
                 
                 do {

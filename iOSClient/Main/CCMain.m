@@ -623,9 +623,12 @@
 - (void)openImportDocumentPicker
 {
     UIDocumentMenuViewController *documentProviderMenu = [[UIDocumentMenuViewController alloc] initWithDocumentTypes:@[@"public.data"] inMode:UIDocumentPickerModeImport];
-    documentProviderMenu.modalPresentationStyle = UIModalPresentationFormSheet;
     
+    documentProviderMenu.modalPresentationStyle = UIModalPresentationFormSheet;
+    documentProviderMenu.popoverPresentationController.sourceView = self.view;
+    documentProviderMenu.popoverPresentationController.sourceRect = self.view.bounds;
     documentProviderMenu.delegate = self;
+    
     [self presentViewController:documentProviderMenu animated:YES completion:nil];
 }
 
