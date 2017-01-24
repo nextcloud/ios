@@ -453,6 +453,24 @@
     NSLog(@"DEVICE TOKEN = %@", deviceToken);
 }
 
+- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
+{
+    NSLog(@"Error register remote notification %@", error);
+}
+
+- (void) application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
+    
+    UIApplicationState state = [application applicationState];
+    
+    if (state == UIApplicationStateInactive || state == UIApplicationStateBackground) {
+        
+        NSLog(@"Receive Notification on Inactive or Background state");
+        
+    } else {
+        
+        NSLog(@"Receive Notification on Active state");
+    }
+}
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Quick Actions - ShotcutItem =====
 #pragma --------------------------------------------------------------------------------------------
