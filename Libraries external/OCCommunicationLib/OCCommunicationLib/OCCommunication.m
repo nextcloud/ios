@@ -1339,13 +1339,24 @@
                     notification.link = [data valueForKey:@"link"];
                     notification.icon = [data valueForKey:@"icon"];
                     
-                    NSArray *actions = [[NSArray alloc] initWithObjects: [data valueForKey:@"actions"], nil ];
+                    /* ACTION */
                     
-                    for (NSDictionary *action in actions) {
+                    NSMutableArray *actionsArr = [NSMutableArray new];
+                    NSDictionary *actionsDic = [data valueForKey:@"actions"];
+                    
+                    for (NSDictionary *actionDic in actionsDic) {
                         
+                        OCNotificationsAction *notificationAction = [OCNotificationsAction new];
+                        
+                        notificationAction.label = [actionDic valueForKey:@"label"];
+                        notificationAction.link = [actionDic valueForKey:@"link"];
+                        notificationAction.primary = [[actionDic valueForKey:@"primary"] boolValue];
+                        notificationAction.type = [actionDic valueForKey:@"type"];
+
+                        [actionsArr addObject:notificationAction];
                     }
                     
-                    
+                    notification.actions = [[NSArray alloc] initWithArray:actionsArr];
                     [listOfNotifications addObject:notification];
                 }
                 

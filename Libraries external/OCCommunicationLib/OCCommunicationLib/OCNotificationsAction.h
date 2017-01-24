@@ -12,7 +12,7 @@
 
 @property (nonatomic, strong) NSString *label;
 @property (nonatomic, strong) NSString *link;
-@property (nonatomic, strong) NSString *type;
 @property BOOL primary;
+@property (nonatomic, strong) NSString *type;
 
 @end
