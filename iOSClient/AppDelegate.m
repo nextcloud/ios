@@ -243,6 +243,11 @@
     // Start timer Verify Process
     self.timerVerifyProcess = [NSTimer scheduledTimerWithTimeInterval:5.0 target:self selector:@selector(verifyProcess) userInfo:nil repeats:YES];
     
+    // Registration Push Notification
+    UIUserNotificationType types = UIUserNotificationTypeSound | UIUserNotificationTypeBadge | UIUserNotificationTypeAlert;
+    UIUserNotificationSettings *notificationSettings = [UIUserNotificationSettings settingsForTypes:types categories:nil];
+    [application registerUserNotificationSettings:notificationSettings];
+    
     return YES;
 }
 
@@ -432,6 +437,20 @@
     
     self.activeUID = activeUID;
     self.activeAccessToken = activeAccessToken;
+}
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Push Notification =====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
+{
+    [application registerForRemoteNotifications];
+}
+
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
+{
+    NSLog(@"DEVICE TOKEN = %@", deviceToken);
 }
 
 #pragma --------------------------------------------------------------------------------------------
