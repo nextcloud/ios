@@ -766,6 +766,16 @@ typedef enum {
 /// @name Get the server Notification
 ///-----------------------------------
 
+/**
+ * Method read the notification of the server
+ *
+ * @param serverPath  -> NSString server
+ * @param sharedOCCommunication -> OCCommunication Singleton of communication to add the operation on the queue.
+ *
+ * @return listOfNotifications -> OCNotification
+ *
+ */
+
 - (void) getNotificationsOfServer:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *listOfNotifications, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest;
 
 @end
