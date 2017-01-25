@@ -201,7 +201,7 @@
 
 - (void)uploadAsset
 {
-    [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:_metadataNet.assetLocalItentifier fileName:_metadataNet.fileName serverUrl:_metadataNet.serverUrl cryptated:_metadataNet.cryptated session:_metadataNet.session taskStatus:_metadataNet.taskStatus selector:_metadataNet.selector selectorPost:_metadataNet.selectorPost parentRev:nil errorCode:_metadataNet.errorCode delegate:self];
+    [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:_metadataNet.identifier fileName:_metadataNet.fileName serverUrl:_metadataNet.serverUrl cryptated:_metadataNet.cryptated session:_metadataNet.session taskStatus:_metadataNet.taskStatus selector:_metadataNet.selector selectorPost:_metadataNet.selectorPost parentRev:nil errorCode:_metadataNet.errorCode delegate:self];
 }
 
 - (void)uploadTemplate
@@ -966,19 +966,19 @@
     }];
 }
 
-- (void)deleteNotifications
+- (void)setNotification
 {
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     
     [communication setCredentialsWithUser:_activeUser andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent:_typeCloud]];
     
-    NSString *idNotification = _metadataNet.options;
+    NSString *type = _metadataNet.options;
     
-    [communication deleteNotification:[_activeUrl stringByAppendingString:@"/"] idNotification:idNotification onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+    [communication setNotification:_metadataNet.serverUrl type:type onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
-        if ([self.delegate respondsToSelector:@selector(deleteNotificationsSuccess:)])
-            [self.delegate deleteNotificationsSuccess:_metadataNet];
+        if ([self.delegate respondsToSelector:@selector(setNotificationSuccess:)])
+            [self.delegate setNotificationSuccess:_metadataNet];
         
         [self complete];
         
@@ -988,8 +988,8 @@
         if (errorCode == 0)
             errorCode = error.code;
         
-        if([self.delegate respondsToSelector:@selector(deleteNotificationsFailure:message:errorCode:)])
-            [self.delegate deleteNotificationsFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        if([self.delegate respondsToSelector:@selector(setNotificationFailure:message:errorCode:)])
+            [self.delegate setNotificationFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
         
         // Request trusted certificated
         if ([error code] == NSURLErrorServerCertificateUntrusted)

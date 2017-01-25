@@ -15,9 +15,9 @@
 }
 
 @dynamic account;
-@dynamic assetLocalItentifier;
 @dynamic date;
 @dynamic fileName;
+@dynamic identifier;
 @dynamic priority;
 @dynamic selector;
 @dynamic selectorPost;

@@ -187,7 +187,7 @@
     
     [metadataNet setAccount: self.account];
     [metadataNet setAction: self.action];
-    [metadataNet setAssetLocalItentifier: self.assetLocalItentifier];
+    [metadataNet setIdentifier: self.identifier];
     [metadataNet setCryptated: self.cryptated];
     [metadataNet setDate: self.date];
     [metadataNet setDirectory: self.directory];

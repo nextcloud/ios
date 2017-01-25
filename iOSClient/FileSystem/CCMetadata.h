@@ -69,7 +69,7 @@
 
 @property (nonatomic, strong) NSString *account;
 @property (nonatomic, strong) NSString *action;
-@property (nonatomic, strong) NSString *assetLocalItentifier;
+@property (nonatomic, strong) NSString *identifier;
 @property BOOL cryptated;
 @property (nonatomic, strong) NSDate *date;
 @property BOOL directory;

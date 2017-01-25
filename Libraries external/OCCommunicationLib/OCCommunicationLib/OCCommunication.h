@@ -782,19 +782,19 @@ typedef enum {
 
 
 ///-----------------------------------
-/// @name Delete Notification
+/// @name set Notification
 ///-----------------------------------
 
 /**
  * Method read the notification of the server
  *
  * @param serverPath            -> NSString server
- * @param idNotification        -> NSString idNotification
+ * @param type                  -> NSString "POST" "DELETE"
  * @param sharedOCCommunication -> OCCommunication Singleton of communication to add the operation on the queue.
  *
  */
 
-- (void) deleteNotification:(NSString*)serverPath idNotification:(NSString *)idNotification onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest;
+- (void) setNotification:(NSString*)serverPath type:(NSString *)type onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest;
 
 @end
 

@@ -1221,7 +1221,7 @@
         CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
             
         metadataNet.action = actionUploadAsset;
-        metadataNet.assetLocalItentifier = asset.localIdentifier;
+        metadataNet.identifier = asset.localIdentifier;
         if (assetsFull) {
             metadataNet.selector = selectorUploadAutomaticAll;
             metadataNet.selectorPost = selectorUploadRemovePhoto;

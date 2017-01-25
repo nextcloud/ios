@@ -1464,7 +1464,7 @@
     TableAutomaticUpload *record = [TableAutomaticUpload MR_createEntityInContext:context];
         
     record.account = account;
-    record.assetLocalItentifier = metadataNet.assetLocalItentifier;
+    record.identifier = metadataNet.identifier;
     record.date = [NSDate date];
     record.fileName = metadataNet.fileName;
     record.selector = metadataNet.selector;
@@ -1488,7 +1488,7 @@
         CCMetadataNet *metadataNet = [[CCMetadataNet alloc] init];
         
         metadataNet.action = actionUploadAsset;                             // Default
-        metadataNet.assetLocalItentifier = record.assetLocalItentifier;
+        metadataNet.identifier = record.identifier;
         metadataNet.fileName = record.fileName;
         metadataNet.priority = [record.priority longValue];
         metadataNet.selector = record.selector;

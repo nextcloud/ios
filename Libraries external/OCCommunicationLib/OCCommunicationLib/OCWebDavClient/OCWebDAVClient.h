@@ -492,11 +492,11 @@ extern NSString * _Nullable OCWebDAVModificationDateKey;
  * Method read the notification of the server
  *
  * @param serverPath            -> NSString server
- * @param idNotification        -> NSString idNotification
+ * @param type                  -> NSString "POST" "DELETE"
  * @param sharedOCCommunication -> OCCommunication Singleton of communication to add the operation on the queue.
  *
  */
 
-- (void)deleteNotification:(NSString * _Nonnull)serverPath idNotification:(NSString * _Nonnull)idNotification onCommunication:(OCCommunication * _Nonnull)sharedOCCommunication success:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull, id _Nonnull))success failure:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull, id  _Nullable responseObject, NSError * _Nonnull))failure;
+- (void)setNotification:(NSString * _Nonnull)serverPath type:(NSString * _Nonnull)type onCommunication:(OCCommunication * _Nonnull)sharedOCCommunication success:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull, id _Nonnull))success failure:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull, id  _Nullable responseObject, NSError * _Nonnull))failure;
 
 @end

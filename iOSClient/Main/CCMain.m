@@ -27,6 +27,8 @@
 #import "CCPhotosCameraUpload.h"
 #import "CCOfflineFolder.h"
 #import <OCCommunicationLib/OCNotifications.h>
+#import <OCCommunicationLib/OCNotificationsAction.h>
+#import <OCCommunicationLib/OCFrameworkConstants.h>
 
 #import "Nextcloud-Swift.h"
 
@@ -1036,29 +1038,57 @@
                         
                         CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
                         
-                        metadataNet.action  = actionDeleteNotifications;
-                        metadataNet.options = [NSString stringWithFormat:@"%lu", (unsigned long)notification.idNotification];
+                        metadataNet.action  = actionSetNotification;
+                        metadataNet.serverUrl =  [NSString stringWithFormat:@"%@/%@/%@", app.activeUrl, k_url_acces_remote_notification_api, idNotification];
+                        metadataNet.options = @"DELETE";
                         
                         [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
                     }
                 }
             }];
         }
+        
+        // Action request
+        else {
+            
+            NSMutableArray *buttons = [NSMutableArray new];
+            for (OCNotificationsAction *action in notification.actions)
+                [buttons addObject:action.label];
+            
+            [JSAlertView alert:notification.subject withTitle:@"Server Notification" buttons:buttons withCompletionHandler:^(NSInteger buttonIndex, NSString *buttonTitle) {
+                
+                NSLog(@"Pressed %@ at index %ld", buttonTitle, (long)buttonIndex);
+                
+                for (OCNotificationsAction *action in notification.actions)
+                    if ([action.label isEqualToString:buttonTitle]) {
+                        
+                        /*
+                        CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
+                        
+                        metadataNet.action  = actionSetNotification;
+                        metadataNet.serverUrl =  action.link;
+                        metadataNet.options = action.type;
+                        
+                        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+                        */ 
+                    }
+            }];
+        }
     }
 }
 
-- (void)deleteNotificationsSuccess:(CCMetadataNet *)metadataNet
+- (void)setNotificationSuccess:(CCMetadataNet *)metadataNet
 {
     AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     
     NSString *idNotification = metadataNet.options;
     
-    [appDelegate.listOfNotifications  removeObjectForKey:idNotification];
+    [appDelegate.listOfNotifications removeObjectForKey:idNotification];
     
     NSLog(@"delete Notification id :%@", idNotification);
 }
 
-- (void)deleteNotificationsFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+- (void)setNotificationFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
     NSLog(@"Error Notification");
 }
@@ -1574,7 +1604,7 @@
             if ([app.typeCloud isEqualToString:typeCloudNextcloud] || [app.typeCloud isEqualToString:typeCloudOwnCloud]) {
             
                 metadataNet.action = actionReadFile;
-                metadataNet.assetLocalItentifier = asset.localIdentifier;
+                metadataNet.identifier = asset.localIdentifier;
                 metadataNet.cryptated = cryptated;
                 metadataNet.fileName = fileName;
                 metadataNet.priority = NSOperationQueuePriorityVeryHigh;

@@ -637,13 +637,11 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     [operation resume];
 }
 
-- (void) deleteNotification:(NSString *)serverPath idNotification:(NSString *)idNotification onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *, id))success failure:(void(^)(NSHTTPURLResponse *, id  _Nullable responseObject, NSError *))failure {
+- (void) setNotification:(NSString *)serverPath type:(NSString *)type onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *, id))success failure:(void(^)(NSHTTPURLResponse *, id  _Nullable responseObject, NSError *))failure {
     
     NSParameterAssert(success);
     
-    _requestMethod = @"DELETE";
-    
-    serverPath = [NSString stringWithFormat:@"%@/%@", serverPath, idNotification];
+    _requestMethod = type;
     
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
     
