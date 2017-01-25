@@ -967,6 +967,20 @@
     }];
 }
 
+- (void)deleteNotifications
+{
+    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+    
+    [communication setCredentialsWithUser:_activeUser andPassword:_activePassword];
+    [communication setUserAgent:[CCUtility getUserAgent:_typeCloud]];
+    
+    [communication deleteNotification:[_activeUrl stringByAppendingString:@"/"] notification_id:0 onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+        NSLog(@"a");
+    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+        NSLog(@"b");
+    }];
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark =====  Server =====
 #pragma --------------------------------------------------------------------------------------------

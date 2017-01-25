@@ -1006,12 +1006,9 @@
 }
 
 #pragma mark -
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ======================= NetWorking ==================================
-#pragma --------------------------------------------------------------------------------------------
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ==== Request Server  ====
+#pragma mark ==== Notification  ====
 #pragma --------------------------------------------------------------------------------------------
 
 - (void)getNotificationsOfServerSuccess:(NSArray *)listOfNotifications
@@ -1033,6 +1030,10 @@
 {
     app.capabilities = capabilities;
 }
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ==== Request Server  ====
+#pragma --------------------------------------------------------------------------------------------
 
 - (void)getFeaturesSupportedByServerSuccess:(BOOL)hasCapabilitiesSupport hasForbiddenCharactersSupport:(BOOL)hasForbiddenCharactersSupport hasShareSupport:(BOOL)hasShareSupport hasShareeSupport:(BOOL)hasShareeSupport
 {

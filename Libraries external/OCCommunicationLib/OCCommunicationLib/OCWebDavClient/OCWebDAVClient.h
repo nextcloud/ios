@@ -466,7 +466,7 @@ extern NSString * _Nullable OCWebDAVModificationDateKey;
                             success:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull operation, id _Nonnull response))success
                             failure:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull operation, id  _Nullable responseObject, NSError * _Nonnull error))failure;
 
-#pragma mark - Get Notification
+#pragma mark - Notification
 
 ///-----------------------------------
 /// @name Get the server Notification
@@ -482,6 +482,8 @@ extern NSString * _Nullable OCWebDAVModificationDateKey;
  *
  */
 
-- (void) getNotificationsOfServer:(NSString * _Nonnull)serverPath onCommunication:(OCCommunication * _Nonnull)sharedOCComunication success:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull operation, id _Nonnull response))success
-                          failure:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull operation, id  _Nullable responseObject, NSError * _Nonnull error))failure;
+- (void) getNotificationsOfServer:(NSString * _Nonnull)serverPath onCommunication:(OCCommunication * _Nonnull)sharedOCComunication success:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull operation, id _Nonnull response))success failure:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull operation, id  _Nullable responseObject, NSError * _Nonnull error))failure;
+
+- (void)deleteNotification:(NSString * _Nonnull)serverPath notification_id:(NSString * _Nonnull)notification_id onCommunication:(OCCommunication * _Nonnull)sharedOCCommunication success:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull, id _Nonnull))success failure:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull, id  _Nullable responseObject, NSError * _Nonnull))failure;
+
 @end

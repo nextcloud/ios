@@ -1252,7 +1252,6 @@
     } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
         failureRequest(response, error, request.redirectedServer);
     }];
-    
 }
 
 
@@ -1285,9 +1284,9 @@
     return operation;
 }
 
-#pragma mark - Get Notification Server
+#pragma mark - Notification Server
 
-- (void) getNotificationsOfServer:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *listOfNotifications, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest{
+- (void) getNotificationsOfServer:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *listOfNotifications, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
     serverPath = [serverPath encodeString:NSUTF8StringEncoding];
     serverPath = [serverPath stringByAppendingString:k_url_acces_remote_notification_api];
@@ -1380,6 +1379,22 @@
         failureRequest(response, error, request.redirectedServer);
     }];
 }
+
+- (void) deleteNotification:(NSString*)serverPath notification_id:(NSString *)notification_id onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void (^)(NSHTTPURLResponse *, NSString *))successRequest failureRequest:(void (^)(NSHTTPURLResponse *, NSError *, NSString *))failureRequest {
+    
+    serverPath = [serverPath encodeString:NSUTF8StringEncoding];
+    serverPath = [serverPath stringByAppendingString:k_url_acces_remote_notification_api];
+    
+    OCWebDAVClient *request = [OCWebDAVClient new];
+    request = [self getRequestWithCredentials:request];
+    
+    [request deleteNotification:serverPath notification_id:notification_id onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
+        
+    } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
+        failureRequest(response, error, request.redirectedServer);
+    }];
+}
+
 
 #pragma mark - Clear Cache
 
