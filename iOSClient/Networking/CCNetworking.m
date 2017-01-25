@@ -69,7 +69,7 @@
     _currentProgressMetadata = [[CCMetadata alloc] init];
     _delegates = [[NSMutableDictionary alloc] init];
     
-    // Inizializzazione Sessions
+    // Initialization Sessions
     [self sessionDownload];
     [self sessionDownloadForeground];
     [self sessionWWanDownload];

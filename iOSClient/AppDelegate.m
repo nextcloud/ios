@@ -136,12 +136,12 @@
     // Add notification change session
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(sessionChanged:) name:networkingSessionNotification object:nil];
         
-    // Inizializzazioni Share
+    // Initialization Share
     self.sharesID = [[NSMutableDictionary alloc] init];
     self.sharesLink = [[NSMutableDictionary alloc] init];
     self.sharesUserAndGroup = [[NSMutableDictionary alloc] init];
     
-    // Initialize Notification
+    // Initialization Notification
     self.listOfNotifications = [[NSMutableDictionary alloc] init];
     
     // Verify Session in progress and Init date task
@@ -152,7 +152,7 @@
     // Background Fetch
     [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
 
-    // Init List
+    // Initialization List
     self.listProgressMetadata = [[NSMutableDictionary alloc] init];
     self.listChangeTask = [[NSMutableDictionary alloc] init];
     self.listMainVC = [[NSMutableDictionary alloc] init];
