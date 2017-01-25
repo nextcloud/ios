@@ -1380,14 +1380,14 @@
     }];
 }
 
-- (void) setNotification:(NSString*)serverPath type:(NSString *)type onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void (^)(NSHTTPURLResponse *, NSString *))successRequest failureRequest:(void (^)(NSHTTPURLResponse *, NSError *, NSString *))failureRequest {
+- (void) setNotificationServer:(NSString*)serverPath type:(NSString *)type onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void (^)(NSHTTPURLResponse *, NSString *))successRequest failureRequest:(void (^)(NSHTTPURLResponse *, NSError *, NSString *))failureRequest {
     
     serverPath = [serverPath encodeString:NSUTF8StringEncoding];
     
     OCWebDAVClient *request = [OCWebDAVClient new];
     request = [self getRequestWithCredentials:request];
     
-    [request setNotification:serverPath type:type onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
+    [request setNotificationServer:serverPath type:type onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
         if (successRequest) {
             //Return success
             successRequest(response, request.redirectedServer);

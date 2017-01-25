@@ -782,7 +782,7 @@ typedef enum {
 
 
 ///-----------------------------------
-/// @name set Notification
+/// @name set server Notification
 ///-----------------------------------
 
 /**
@@ -794,7 +794,7 @@ typedef enum {
  *
  */
 
-- (void) setNotification:(NSString*)serverPath type:(NSString *)type onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest;
+- (void) setNotificationServer:(NSString*)serverPath type:(NSString *)type onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest;
 
 @end
 

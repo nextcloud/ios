@@ -966,7 +966,7 @@
     }];
 }
 
-- (void)setNotification
+- (void)setNotificationServer
 {
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     
@@ -975,10 +975,10 @@
     
     NSString *type = _metadataNet.options;
     
-    [communication setNotification:_metadataNet.serverUrl type:type onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+    [communication setNotificationServer:_metadataNet.serverUrl type:type onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
-        if ([self.delegate respondsToSelector:@selector(setNotificationSuccess:)])
-            [self.delegate setNotificationSuccess:_metadataNet];
+        if ([self.delegate respondsToSelector:@selector(setNotificationServerSuccess:)])
+            [self.delegate setNotificationServerSuccess:_metadataNet];
         
         [self complete];
         
@@ -988,8 +988,8 @@
         if (errorCode == 0)
             errorCode = error.code;
         
-        if([self.delegate respondsToSelector:@selector(setNotificationFailure:message:errorCode:)])
-            [self.delegate setNotificationFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        if([self.delegate respondsToSelector:@selector(setNotificationServerFailure:message:errorCode:)])
+            [self.delegate setNotificationServerFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
         
         // Request trusted certificated
         if ([error code] == NSURLErrorServerCertificateUntrusted)

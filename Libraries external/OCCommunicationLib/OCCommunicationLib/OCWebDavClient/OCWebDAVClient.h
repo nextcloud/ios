@@ -485,7 +485,7 @@ extern NSString * _Nullable OCWebDAVModificationDateKey;
 - (void) getNotificationsOfServer:(NSString * _Nonnull)serverPath onCommunication:(OCCommunication * _Nonnull)sharedOCComunication success:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull operation, id _Nonnull response))success failure:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull operation, id  _Nullable responseObject, NSError * _Nonnull error))failure;
 
 ///-----------------------------------
-/// @name Delete Notification
+/// @name set server Notification
 ///-----------------------------------
 
 /**
@@ -497,6 +497,6 @@ extern NSString * _Nullable OCWebDAVModificationDateKey;
  *
  */
 
-- (void)setNotification:(NSString * _Nonnull)serverPath type:(NSString * _Nonnull)type onCommunication:(OCCommunication * _Nonnull)sharedOCCommunication success:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull, id _Nonnull))success failure:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull, id  _Nullable responseObject, NSError * _Nonnull))failure;
+- (void)setNotificationServer:(NSString * _Nonnull)serverPath type:(NSString * _Nonnull)type onCommunication:(OCCommunication * _Nonnull)sharedOCCommunication success:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull, id _Nonnull))success failure:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull, id  _Nullable responseObject, NSError * _Nonnull))failure;
 
 @end

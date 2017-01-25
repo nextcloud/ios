@@ -1038,9 +1038,10 @@
                         
                         CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
                         
-                        metadataNet.action  = actionSetNotification;
-                        metadataNet.serverUrl =  [NSString stringWithFormat:@"%@/%@/%@", app.activeUrl, k_url_acces_remote_notification_api, idNotification];
+                        metadataNet.action  = actionSetNotificationServer;
+                        metadataNet.identifier = idNotification;
                         metadataNet.options = @"DELETE";
+                        metadataNet.serverUrl =  [NSString stringWithFormat:@"%@/%@/%@", app.activeUrl, k_url_acces_remote_notification_api, idNotification];
                         
                         [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
                     }
@@ -1062,33 +1063,30 @@
                 for (OCNotificationsAction *action in notification.actions)
                     if ([action.label isEqualToString:buttonTitle]) {
                         
-                        /*
                         CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
                         
-                        metadataNet.action  = actionSetNotification;
+                        metadataNet.action  = actionSetNotificationServer;
+                        metadataNet.identifier = idNotification;
                         metadataNet.serverUrl =  action.link;
                         metadataNet.options = action.type;
                         
                         [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
-                        */ 
                     }
             }];
         }
     }
 }
 
-- (void)setNotificationSuccess:(CCMetadataNet *)metadataNet
+- (void)setNotificationServerSuccess:(CCMetadataNet *)metadataNet
 {
     AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     
-    NSString *idNotification = metadataNet.options;
+    [appDelegate.listOfNotifications removeObjectForKey:metadataNet.identifier];
     
-    [appDelegate.listOfNotifications removeObjectForKey:idNotification];
-    
-    NSLog(@"delete Notification id :%@", idNotification);
+    NSLog(@"delete Notification id :%@", metadataNet.identifier);
 }
 
-- (void)setNotificationFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+- (void)setNotificationServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
     NSLog(@"Error Notification");
 }
