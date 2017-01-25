@@ -963,7 +963,6 @@
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
         
         [self complete];
-
     }];
 }
 
@@ -974,10 +973,29 @@
     [communication setCredentialsWithUser:_activeUser andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent:_typeCloud]];
     
-    [communication deleteNotification:[_activeUrl stringByAppendingString:@"/"] notification_id:0 onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
-        NSLog(@"a");
+    NSString *idNotification = _metadataNet.options;
+    
+    [communication deleteNotification:[_activeUrl stringByAppendingString:@"/"] idNotification:idNotification onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+        
+        if ([self.delegate respondsToSelector:@selector(deleteNotificationsSuccess:)])
+            [self.delegate deleteNotificationsSuccess:_metadataNet];
+        
+        [self complete];
+        
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
-        NSLog(@"b");
+        
+        NSInteger errorCode = response.statusCode;
+        if (errorCode == 0)
+            errorCode = error.code;
+        
+        if([self.delegate respondsToSelector:@selector(deleteNotificationsFailure:message:errorCode:)])
+            [self.delegate deleteNotificationsFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        
+        // Request trusted certificated
+        if ([error code] == NSURLErrorServerCertificateUntrusted)
+            [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
+        
+        [self complete];
     }];
 }
 

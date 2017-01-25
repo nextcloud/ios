@@ -97,6 +97,9 @@
 - (void)getNotificationsOfServerSuccess:(NSArray *)listOfNotifications;
 - (void)getNotificationsOfServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
 
+- (void)deleteNotificationsSuccess:(CCMetadataNet *)metadataNet;
+- (void)deleteNotificationsFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
+
 // HUD
 - (void)progressTask:(NSString *)fileID serverUrl:(NSString *)serverUrl cryptated:(BOOL)cryptated progress:(float)progress;
 

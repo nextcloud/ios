@@ -771,18 +771,30 @@ typedef enum {
 /**
  * Method read the notification of the server
  *
- * @param serverPath  -> NSString server
+ * @param serverPath            -> NSString server
  * @param sharedOCCommunication -> OCCommunication Singleton of communication to add the operation on the queue.
  *
- * @return listOfNotifications -> OCNotification
+ * @return listOfNotifications  -> OCNotification
  *
  */
 
 - (void) getNotificationsOfServer:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *listOfNotifications, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest;
 
 
+///-----------------------------------
+/// @name Delete Notification
+///-----------------------------------
 
-- (void) deleteNotification:(NSString*)serverPath notification_id:(NSString *)notification_id onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest;
+/**
+ * Method read the notification of the server
+ *
+ * @param serverPath            -> NSString server
+ * @param idNotification        -> NSString idNotification
+ * @param sharedOCCommunication -> OCCommunication Singleton of communication to add the operation on the queue.
+ *
+ */
+
+- (void) deleteNotification:(NSString*)serverPath idNotification:(NSString *)idNotification onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest;
 
 @end
 

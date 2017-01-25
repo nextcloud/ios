@@ -1013,21 +1013,54 @@
 
 - (void)getNotificationsOfServerSuccess:(NSArray *)listOfNotifications
 {
-    app.listOfNotifications = [[NSArray alloc] initWithArray:listOfNotifications];
+    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     
-    for (OCNotifications *notification in listOfNotifications) {
-                
-        //[app messageNotification:@"Notication" description:notification.subject visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeInfo];
+    // Insert/update listOfNotifications in Dictionary App.listOfNotifications
+    for (OCNotifications *notification in listOfNotifications)
+        [appDelegate.listOfNotifications setObject:notification forKey:[NSString stringWithFormat:@"%lu", (unsigned long)notification.idNotification]];
         
-        [JSAlertView alert:notification.subject withTitle:@"Server Notification" buttons:@[@"OK",@"NO"] withCompletionHandler:^(NSInteger buttonIndex, NSString *buttonTitle) {
-            NSLog(@"Pressed %@ at index %ld", buttonTitle, (long)buttonIndex);
-        }];
+    for (NSString *idNotification in app.listOfNotifications) {
+        
+        OCNotifications *notification = [app.listOfNotifications objectForKey:idNotification];
+        
+        // No Action request
+        if ([notification.actions count] == 0) {
+            
+            [JSAlertView alert:notification.subject withTitle:@"Server Notification" buttons:@[NSLocalizedString(@"_close_", nil),NSLocalizedString(@"_postpone_", nil)] withCompletionHandler:^(NSInteger buttonIndex, NSString *buttonTitle) {
+                
+                NSLog(@"Pressed %@ at index %ld", buttonTitle, (long)buttonIndex);
+                
+                if ([buttonTitle isEqualToString:NSLocalizedString(@"_close_", nil)]) {
+                    
+                    if ([app.typeCloud isEqualToString:typeCloudOwnCloud] || [app.typeCloud isEqualToString:typeCloudNextcloud]) {
+                        
+                        CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
+                        
+                        metadataNet.action  = actionDeleteNotifications;
+                        metadataNet.options = [NSString stringWithFormat:@"%lu", (unsigned long)notification.idNotification];
+                        
+                        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+                    }
+                }
+            }];
+        }
     }
 }
 
-- (void)showNotification
+- (void)deleteNotificationsSuccess:(CCMetadataNet *)metadataNet
 {
+    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     
+    NSString *idNotification = metadataNet.options;
+    
+    [appDelegate.listOfNotifications  removeObjectForKey:idNotification];
+    
+    NSLog(@"delete Notification id :%@", idNotification);
+}
+
+- (void)deleteNotificationsFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+{
+    NSLog(@"Error Notification");
 }
 
 - (void)getNotificationsOfServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
@@ -1035,14 +1068,14 @@
     NSLog(@"Error Notification");
 }
 
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ==== Request Server  ====
+#pragma --------------------------------------------------------------------------------------------
+
 - (void)getCapabilitiesOfServerSuccess:(OCCapabilities *)capabilities
 {
     app.capabilities = capabilities;
 }
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ==== Request Server  ====
-#pragma --------------------------------------------------------------------------------------------
 
 - (void)getFeaturesSupportedByServerSuccess:(BOOL)hasCapabilitiesSupport hasForbiddenCharactersSupport:(BOOL)hasForbiddenCharactersSupport hasShareSupport:(BOOL)hasShareSupport hasShareeSupport:(BOOL)hasShareeSupport
 {

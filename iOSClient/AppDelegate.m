@@ -141,6 +141,9 @@
     self.sharesLink = [[NSMutableDictionary alloc] init];
     self.sharesUserAndGroup = [[NSMutableDictionary alloc] init];
     
+    // Initialize Notification
+    self.listOfNotifications = [[NSMutableDictionary alloc] init];
+    
     // Verify Session in progress and Init date task
     self.sessionDateLastDownloadTasks = [NSDate date];
     self.sessionDateLastUploadTasks = [NSDate date];
