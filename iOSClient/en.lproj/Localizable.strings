@@ -430,6 +430,10 @@
 "_direct_sharee_footer_"        = "If you already know the name of the user enter it and press 'Done' to confirm";
 "_direct_sharee_"               = "Enter the username ...";
 "_user_sharee_footer_"          = "Tap for change privileges";
+"_share_type_title_"            = "Type of share";
+"_share_type_user_"             = "User";
+"_share_type_group_"            = "Group";
+"_share_type_remote_"           = "Remote";
 
 // Share Permission
 

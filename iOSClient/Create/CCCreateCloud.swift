@@ -270,7 +270,7 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         section = XLFormSectionDescriptor.formSection()
         form.addFormSection(section)
         
-        row = XLFormRowDescriptor(tag: "maskFileName", rowType: XLFormRowDescriptorTypeName, title: NSLocalizedString("_filename_", comment: ""))
+        row = XLFormRowDescriptor(tag: "maskFileName", rowType: XLFormRowDescriptorTypeAccount, title: NSLocalizedString("_filename_", comment: ""))
         
         let fileNameMask : String = CCUtility.getFileNameMask(keyFileNameMask)
         if fileNameMask.characters.count > 0 {

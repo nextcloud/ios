@@ -57,7 +57,7 @@
     [form addFormSection:section];
     section.footerTitle = NSLocalizedString(@"_find_sharee_footer_", nil);
     
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"findUser" rowType:XLFormRowDescriptorTypeName];
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"findUser" rowType:XLFormRowDescriptorTypeAccount];
     [row.cellConfigAtConfigure setObject:NSLocalizedString(@"_find_sharee_", nil) forKey:@"textField.placeholder"];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textField.font"];
     [section addFormRow:row];
@@ -69,11 +69,19 @@
     [form addFormSection:section];
     section.footerTitle = NSLocalizedString(@"_direct_sharee_footer_", nil);
     
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"directUser" rowType:XLFormRowDescriptorTypeName];
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"directUser" rowType:XLFormRowDescriptorTypeAccount];
     [row.cellConfigAtConfigure setObject:NSLocalizedString(@"_direct_sharee_", nil) forKey:@"textField.placeholder"];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textField.font"];
     [section addFormRow:row];
     
+    section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_share_type_title_", nil)];
+    [form addFormSection:section];
+    
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"pickerAccount" rowType:XLFormRowDescriptorTypePicker];
+    row.selectorOptions = @[NSLocalizedString(@"_share_type_user_", nil), NSLocalizedString(@"_share_type_group_", nil), NSLocalizedString(@"_share_type_remote_", nil)];
+    row.value = NSLocalizedString(@"_share_type_user_", nil);
+    [section addFormRow:row];
+
     section = [XLFormSectionDescriptor formSection];
     [form addFormSection:section];
     
@@ -121,7 +129,8 @@
     
         if ([self.directUser length] > 0 && [self.directUser isEqualToString:app.activeUser] == NO) {
         
-            [self.delegate shareUserAndGroup:self.directUser shareeType:0 permission:permission];
+            // User/Group/Federate
+            [self.delegate shareUserAndGroup:self.directUser shareeType:shareTypeRemote permission:permission];
         }
     }
     
