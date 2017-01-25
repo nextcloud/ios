@@ -1017,8 +1017,17 @@
     
     for (OCNotifications *notification in listOfNotifications) {
                 
-        [app messageNotification:@"Notication" description:notification.subject visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeInfo];
+        //[app messageNotification:@"Notication" description:notification.subject visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeInfo];
+        
+        [JSAlertView alert:notification.subject withTitle:@"Server Notification" buttons:@[@"OK",@"NO"] withCompletionHandler:^(NSInteger buttonIndex, NSString *buttonTitle) {
+            NSLog(@"Pressed %@ at index %ld", buttonTitle, (long)buttonIndex);
+        }];
     }
+}
+
+- (void)showNotification
+{
+    
 }
 
 - (void)getNotificationsOfServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode

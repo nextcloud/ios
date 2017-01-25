@@ -80,6 +80,7 @@
 		F7145A241D12E3B700CAFEEC /* CCCellShareExt.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7296A621C8880C9001A7809 /* CCCellShareExt.xib */; };
 		F71E68001DC1F792003BA52B /* libownCloudiOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F71E67FC1DC1F76F003BA52B /* libownCloudiOS.a */; };
 		F71E68021DC1F79D003BA52B /* libownCloudiOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F71E67FC1DC1F76F003BA52B /* libownCloudiOS.a */; };
+		F7253FCA1E38BAF20084135B /* JSAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7253FC91E38BAF20084135B /* JSAlertView.m */; };
 		F725437C1E12A44A009BF4C2 /* CCSection.m in Sources */ = {isa = PBXBuildFile; fileRef = F78F6FAF1CC8CCB700F4EA25 /* CCSection.m */; };
 		F72C63891DC14B0400FA5ED5 /* libMagicalRecord.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F7B61E9B1DC13C20009E938F /* libMagicalRecord.a */; };
 		F732BA061D76CE1500E9878B /* CCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F732BA041D76CE1500E9878B /* CCNetworking.m */; };
@@ -1098,6 +1099,8 @@
 		F722CEEB1A40361A00C40606 /* Raleway-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Raleway-Regular.ttf"; sourceTree = "<group>"; };
 		F722CEEC1A40361A00C40606 /* Raleway-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Raleway-SemiBold.ttf"; sourceTree = "<group>"; };
 		F722CEED1A40361A00C40606 /* Raleway-Thin.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Raleway-Thin.ttf"; sourceTree = "<group>"; };
+		F7253FC81E38BAF20084135B /* JSAlertView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSAlertView.h; sourceTree = "<group>"; };
+		F7253FC91E38BAF20084135B /* JSAlertView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSAlertView.m; sourceTree = "<group>"; };
 		F7296A601C8880C9001A7809 /* CCCellShareExt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCCellShareExt.h; sourceTree = "<group>"; };
 		F7296A611C8880C9001A7809 /* CCCellShareExt.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCCellShareExt.m; sourceTree = "<group>"; };
 		F7296A621C8880C9001A7809 /* CCCellShareExt.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CCCellShareExt.xib; sourceTree = "<group>"; };
@@ -1674,6 +1677,7 @@
 				F73CCE221DC13788007E38D8 /* DZNEmptyDataSet */,
 				F7659A211DC0B726004860C4 /* EAIntroView */,
 				F7659A2A1DC0B72F004860C4 /* EARestrictedScrollView */,
+				F7253FC71E38BAF20084135B /* JSAlertView */,
 				F7659A2F1DC0B737004860C4 /* iRate */,
 				F70F0F251C889339008DAB36 /* LMMediaPlayer */,
 				F70F04821C889183008DAB36 /* MBProgressHUD */,
@@ -2360,6 +2364,15 @@
 				F722CEED1A40361A00C40606 /* Raleway-Thin.ttf */,
 			);
 			path = Raleway;
+			sourceTree = "<group>";
+		};
+		F7253FC71E38BAF20084135B /* JSAlertView */ = {
+			isa = PBXGroup;
+			children = (
+				F7253FC81E38BAF20084135B /* JSAlertView.h */,
+				F7253FC91E38BAF20084135B /* JSAlertView.m */,
+			);
+			path = JSAlertView;
 			sourceTree = "<group>";
 		};
 		F728CE741BF6322C00E69702 /* Share */ = {
@@ -3926,6 +3939,7 @@
 				F77B0E241D118A16002130FE /* HRColorCursor.m in Sources */,
 				F77B0E251D118A16002130FE /* BKPasscodeInputView.m in Sources */,
 				F77B0E261D118A16002130FE /* ZSSTextView.m in Sources */,
+				F7253FCA1E38BAF20084135B /* JSAlertView.m in Sources */,
 				F77B0E271D118A16002130FE /* CYRLayoutManager.m in Sources */,
 				F77B0E291D118A16002130FE /* NSArray+LMMediaPlayerShuffle.m in Sources */,
 				F77B0E2A1D118A16002130FE /* REMenu.m in Sources */,

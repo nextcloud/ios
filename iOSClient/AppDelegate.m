@@ -458,7 +458,7 @@
     NSLog(@"Error register remote notification %@", error);
 }
 
-- (void) application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
     
     UIApplicationState state = [application applicationState];
     
