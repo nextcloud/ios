@@ -42,6 +42,7 @@
 @property (nonatomic, strong) NSMutableArray *users;
 @property (nonatomic, strong) NSString *directUser;
 @property BOOL isDirectory;
+@property NSInteger shareType;
 
 - (IBAction)endButtonAction:(id)sender;
 

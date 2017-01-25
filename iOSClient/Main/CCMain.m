@@ -1127,6 +1127,8 @@
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
    
     [app.sharesID removeAllObjects];
+    
+    [app.listOfNotifications removeAllObjects];
 
     app.hasServerForbiddenCharactersSupport = NO;
     app.hasServerShareSupport = YES;

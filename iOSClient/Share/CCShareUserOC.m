@@ -51,7 +51,7 @@
     
     form = [XLFormDescriptor formDescriptor];
     form.rowNavigationOptions = XLFormRowNavigationOptionNone;
-    form.assignFirstResponderOnShow = YES;
+    form.assignFirstResponderOnShow = NO;
     
     section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_find_sharee_title_", nil)];
     [form addFormSection:section];
@@ -77,9 +77,11 @@
     section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_share_type_title_", nil)];
     [form addFormSection:section];
     
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"pickerAccount" rowType:XLFormRowDescriptorTypePicker];
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"shareType" rowType:XLFormRowDescriptorTypePicker];
     row.selectorOptions = @[NSLocalizedString(@"_share_type_user_", nil), NSLocalizedString(@"_share_type_group_", nil), NSLocalizedString(@"_share_type_remote_", nil)];
     row.value = NSLocalizedString(@"_share_type_user_", nil);
+    self.shareType = shareTypeUser;
+    row.height = 100;
     [section addFormRow:row];
 
     section = [XLFormSectionDescriptor formSection];
@@ -130,7 +132,7 @@
         if ([self.directUser length] > 0 && [self.directUser isEqualToString:app.activeUser] == NO) {
         
             // User/Group/Federate
-            [self.delegate shareUserAndGroup:self.directUser shareeType:shareTypeRemote permission:permission];
+            [self.delegate shareUserAndGroup:self.directUser shareeType:self.shareType permission:permission];
         }
     }
     
@@ -156,6 +158,16 @@
     if ([rowDescriptor.tag isEqualToString:@"directUser"]) {
         
         self.directUser = newValue;
+    }
+    
+    if ([rowDescriptor.tag isEqualToString:@"shareType"]){
+        
+        if ([newValue isEqualToString:NSLocalizedString(@"_share_type_user_", nil)])
+            self.shareType = shareTypeUser;
+        if ([newValue isEqualToString:NSLocalizedString(@"_share_type_group_", nil)])
+            self.shareType = shareTypeGroup;
+        if ([newValue isEqualToString:NSLocalizedString(@"_share_type_remote_", nil)])
+            self.shareType = shareTypeRemote;
     }
 }
 
