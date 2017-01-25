@@ -904,14 +904,11 @@
     
     while (file = [enumerator nextObject]) {
         
-        /*
-        if (removeICO == NO) {
-            
-            NSString *ext = [[file pathExtension] lowercaseString];
-            
-            if ([ext isEqualToString:@"ico"] && [file rangeOfString:@"ID_UPLOAD_"].location == NSNotFound) continue;
-        }
-        */
+        NSString *ext = [[file pathExtension] lowercaseString];
+        
+        // Do not remove ICO
+        if ([ext isEqualToString:@"ico"])
+            continue;
         
         [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", dirIniziale, file] error:nil];
     }
