@@ -1028,7 +1028,7 @@
         // No Action request
         if ([notification.actions count] == 0) {
             
-            [JSAlertView alert:notification.subject withTitle:@"Server Notification" buttons:@[NSLocalizedString(@"_close_", nil),NSLocalizedString(@"_postpone_", nil)] withCompletionHandler:^(NSInteger buttonIndex, NSString *buttonTitle) {
+            [JSAlertView alert:notification.subject withTitle:nil buttons:@[NSLocalizedString(@"_close_", nil),NSLocalizedString(@"_postpone_", nil)] withCompletionHandler:^(NSInteger buttonIndex, NSString *buttonTitle) {
                 
                 NSLog(@"Pressed %@ at index %ld", buttonTitle, (long)buttonIndex);
                 
@@ -1056,7 +1056,7 @@
             for (OCNotificationsAction *action in notification.actions)
                 [buttons addObject:action.label];
             
-            [JSAlertView alert:notification.subject withTitle:@"Server Notification" buttons:buttons withCompletionHandler:^(NSInteger buttonIndex, NSString *buttonTitle) {
+            [JSAlertView alert:notification.subject withTitle:nil buttons:buttons withCompletionHandler:^(NSInteger buttonIndex, NSString *buttonTitle) {
                 
                 NSLog(@"Pressed %@ at index %ld", buttonTitle, (long)buttonIndex);
                 
