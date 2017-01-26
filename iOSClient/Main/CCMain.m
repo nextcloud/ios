@@ -321,6 +321,9 @@
         if (app.activeDetail)
             [app.activeDetail removeAllView];
         
+        // remove all Notification Messages
+        [app.listOfNotifications removeAllObjects];
+        
         // home main
         app.homeMain = self;
         
@@ -1161,8 +1164,6 @@
    
     [app.sharesID removeAllObjects];
     
-    [app.listOfNotifications removeAllObjects];
-
     app.hasServerForbiddenCharactersSupport = NO;
     app.hasServerShareSupport = YES;
     
