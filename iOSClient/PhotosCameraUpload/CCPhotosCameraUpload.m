@@ -134,7 +134,7 @@
     self.navigationItem.title = NSLocalizedString(@"_photo_camera_", nil);
 }
 
-- (void)setUINavigationBarSeleziona
+- (void)setUINavigationBarSelected
 {
     UIImage *icon;
     
@@ -160,7 +160,7 @@
     _cellEditing = edit;
     
     if (edit)
-        [self setUINavigationBarSeleziona];
+        [self setUINavigationBarSelected];
     else
         [self setUINavigationBarDefault];
 }

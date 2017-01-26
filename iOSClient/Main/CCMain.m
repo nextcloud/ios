@@ -202,7 +202,8 @@
     // Menu e Bar
     [self createReMainMenu];
     [self createReSelectMenu];
-    if (_isSelectedMode) [self setUINavigationBarSeleziona];
+    if (_isSelectedMode)
+        [self setUINavigationBarSelected];
     else [self setUINavigationBarDefault];
     
     // Plus Button
@@ -519,15 +520,27 @@
 {
     [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar hidden:NO];
     
+    UIBarButtonItem *buttonMore, *buttonNotification;
+    
     // =
-    UIImage *icon = [UIImage imageNamed:image_more];
-    UIBarButtonItem *buttonMore = [[UIBarButtonItem alloc] initWithImage:icon style:UIBarButtonItemStylePlain target:self action:@selector(toggleReMainMenu)];
+    buttonMore = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:image_more] style:UIBarButtonItemStylePlain target:self action:@selector(toggleReMainMenu)];
     buttonMore.enabled = true;
     
     // <
     self.navigationController.navigationBar.hidden = NO;
-    //self.navigationItem.rightBarButtonItems = [[NSArray alloc] initWithObjects:buttonAdd, buttonMore, nil];
-    self.navigationItem.rightBarButtonItems = [[NSArray alloc] initWithObjects:buttonMore, nil];
+    
+    // Notification
+    if ([app.listOfNotifications count] > 0) {
+        
+        buttonNotification = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:image_notification] style:UIBarButtonItemStylePlain target:self action:@selector(getNotificationsOfServerSuccess:)];
+        buttonNotification.tintColor = COLOR_BRAND;
+        buttonNotification.enabled = true;
+    }
+    
+    if (buttonNotification)
+        self.navigationItem.rightBarButtonItems = [[NSArray alloc] initWithObjects:buttonMore, buttonNotification, nil];
+    else
+        self.navigationItem.rightBarButtonItems = [[NSArray alloc] initWithObjects:buttonMore, nil];
 
     self.navigationItem.leftBarButtonItem = nil;
     
@@ -535,7 +548,7 @@
     [app.reSelectMenu close];
 }
 
-- (void)setUINavigationBarSeleziona
+- (void)setUINavigationBarSelected
 {
     [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar hidden:NO];
     
@@ -1018,9 +1031,10 @@
     AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     
     // Insert/update listOfNotifications in Dictionary App.listOfNotifications
-    for (OCNotifications *notification in listOfNotifications)
-        [appDelegate.listOfNotifications setObject:notification forKey:[NSString stringWithFormat:@"%lu", (unsigned long)notification.idNotification]];
-        
+    if ([listOfNotifications isKindOfClass:[NSArray class]])
+        for (OCNotifications *notification in listOfNotifications)
+            [appDelegate.listOfNotifications setObject:notification forKey:[NSString stringWithFormat:@"%lu", (unsigned long)notification.idNotification]];
+    
     for (NSString *idNotification in app.listOfNotifications) {
         
         OCNotifications *notification = [app.listOfNotifications objectForKey:idNotification];
@@ -1056,6 +1070,9 @@
             for (OCNotificationsAction *action in notification.actions)
                 [buttons addObject:action.label];
             
+            // Add button postpone
+            [buttons addObject:NSLocalizedString(@"_postpone_", nil)];
+            
             [JSAlertView alert:notification.subject withTitle:nil buttons:buttons withCompletionHandler:^(NSInteger buttonIndex, NSString *buttonTitle) {
                 
                 NSLog(@"Pressed %@ at index %ld", buttonTitle, (long)buttonIndex);
@@ -1075,6 +1092,10 @@
             }];
         }
     }
+    
+    // Update NavigationBar
+    if (!_isSelectedMode)
+        [self setUINavigationBarDefault];
 }
 
 - (void)setNotificationServerSuccess:(CCMetadataNet *)metadataNet
@@ -1084,16 +1105,28 @@
     [appDelegate.listOfNotifications removeObjectForKey:metadataNet.identifier];
     
     NSLog(@"delete Notification id :%@", metadataNet.identifier);
+    
+    // Update NavigationBar
+    if (!_isSelectedMode)
+        [self setUINavigationBarDefault];
 }
 
 - (void)setNotificationServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
     NSLog(@"Error Notification");
+    
+    // Update NavigationBar
+    if (!_isSelectedMode)
+        [self setUINavigationBarDefault];
 }
 
 - (void)getNotificationsOfServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
     NSLog(@"Error Notification");
+    
+    // Update NavigationBar
+    if (!_isSelectedMode)
+        [self setUINavigationBarDefault];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -4839,7 +4872,7 @@
     _isSelectedMode = edit;
     
     if (edit)
-        [self setUINavigationBarSeleziona];
+        [self setUINavigationBarSelected];
     else
         [self setUINavigationBarDefault];
     
