@@ -25,4 +25,8 @@
 
 // Standard menthod for displaying alert, fully customizable.
 + (instancetype)alert:(NSString*)message withTitle:(NSString*)title buttons:(NSArray*)buttonTitles withCompletionHandler:(void(^)(NSInteger buttonIndex, NSString *buttonTitle))completionHandler;
+
+// Nextcloud
++ (BOOL)isOpenAlertWindows;
+
 @end

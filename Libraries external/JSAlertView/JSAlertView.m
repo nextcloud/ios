@@ -124,6 +124,10 @@
     }
 }
 
++ (BOOL)isOpenAlertWindows
+{
+    return [[JSAlertView sharedInstance].allAlertWindows count];
+}
 
 
 /***********************************************************************

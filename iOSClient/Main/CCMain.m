@@ -124,6 +124,7 @@
     _selectedMetadatas = [[NSMutableArray alloc] init];
     _queueSelector = [[NSMutableArray alloc] init];
     _isViewDidLoad = YES;
+    _fatherPermission = @"";
 
     // delegate
     self.tableView.delegate = self;
@@ -1037,6 +1038,10 @@
     if ([listOfNotifications isKindOfClass:[NSArray class]])
         for (OCNotifications *notification in listOfNotifications)
             [appDelegate.listOfNotifications setObject:notification forKey:[NSString stringWithFormat:@"%lu", (unsigned long)notification.idNotification]];
+    
+    // Test if is already open, otherwise view the messages
+    if ([JSAlertView isOpenAlertWindows])
+        return;
     
     for (NSString *idNotification in app.listOfNotifications) {
         
