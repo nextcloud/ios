@@ -497,6 +497,10 @@
 "_preview_filename_"                = "Example preview file name";
 "_forbidden_characters_"            = "Invalid character in the file name";
 
+// Notification
+
+"_notification_"                    = "Notification";
+
 // -----------------------------------------------------------------------------------------------------------
 
 "Done"                          = "Done";

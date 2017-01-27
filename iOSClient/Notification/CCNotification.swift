@@ -33,6 +33,9 @@ class CCNotification: UITableViewController, UISearchResultsUpdating {
         
         super.viewDidLoad()
         
+        self.navigationController?.navigationBar.topItem?.title = NSLocalizedString("_notification_", comment: "")
+        self.navigationItem.setRightBarButton(UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(close)), animated: true)
+        
         self.resultSearchController = ({
 
             let controller = UISearchController(searchResultsController: nil)
@@ -55,6 +58,14 @@ class CCNotification: UITableViewController, UISearchResultsUpdating {
         super.didReceiveMemoryWarning()
     }
 
+    
+    func close() {
+        
+        self.dismiss(animated: true) { 
+            
+        }
+    }
+    
     override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         return true
     }
@@ -76,7 +87,7 @@ class CCNotification: UITableViewController, UISearchResultsUpdating {
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 90
+        return 120
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -101,9 +112,10 @@ class CCNotification: UITableViewController, UISearchResultsUpdating {
 
             let idNotification : String! = idsNotification[indexPath.row]
             let notification = appDelegate.listOfNotifications[idNotification] as! OCNotifications
-            
-            cell.subject.text = notification.subject
-            cell.message.text = notification.message
+                
+            cell.date.text = DateFormatter.localizedString(from: notification.date, dateStyle: .medium, timeStyle: .medium)
+            cell.subject.text = "let notification = appDelegate.listOfNotifications[idNotification] as! OCNotificationslet notification = appDelegate.listOfNotifications[idNotification] as! OCNotifications"//notification.subject
+            cell.message.text = "let notification = appDelegate.listOfNotifications[idNotification] as! OCNotificationslet notification = appDelegate.listOfNotifications[idNotification] as! OCNotifications"//notification.message
         }
         
         return cell
@@ -118,6 +130,7 @@ class CCNotification: UITableViewController, UISearchResultsUpdating {
 class CCNotificationCell: UITableViewCell {
     
     @IBOutlet weak var icon : UIImageView!
+    @IBOutlet weak var date: UILabel!
     @IBOutlet weak var subject: UILabel!
     @IBOutlet weak var message: UILabel!
 }

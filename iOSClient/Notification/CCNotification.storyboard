@@ -1,51 +1,78 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="16C67" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="16C67" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="eRR-MW-ghy">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
         <!--Notification-->
         <scene sceneID="dZP-R1-zZF">
             <objects>
-                <tableViewController storyboardIdentifier="CCNotification" id="c26-Us-IIn" customClass="CCNotification" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController id="c26-Us-IIn" customClass="CCNotification" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="90" sectionHeaderHeight="28" sectionFooterHeight="28" id="vzh-aE-2MF">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="Cell" rowHeight="90" id="R1c-h5-BOp" customClass="CCNotificationCell" customModule="Nextcloud" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="28" width="375" height="90"/>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="Cell" rowHeight="120" id="R1c-h5-BOp" customClass="CCNotificationCell" customModule="Nextcloud" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="28" width="375" height="120"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="R1c-h5-BOp" id="9Bv-1W-yVV">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="89.5"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="119"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="YM1-uH-2Cz" userLabel="icon">
-                                            <rect key="frame" x="8" y="8" width="30" height="30"/>
+                                            <rect key="frame" x="5" y="0.0" width="25" height="25"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         </imageView>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pg1-7p-7Rz" userLabel="subject">
-                                            <rect key="frame" x="46" y="13" width="321" height="21"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" numberOfLines="4" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9fz-sr-8Gv" userLabel="message">
+                                            <rect key="frame" x="5" y="70" width="362" height="44"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="44" id="w3S-Mr-J41"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" type="system" pointSize="10"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9fz-sr-8Gv" userLabel="message">
-                                            <rect key="frame" x="8" y="46" width="359" height="44"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YPu-No-c8x" userLabel="date">
+                                            <rect key="frame" x="49" y="2" width="316" height="21"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="21" id="7uN-7d-1nq"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" type="system" pointSize="10"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pg1-7p-7Rz" userLabel="subject">
+                                            <rect key="frame" x="5" y="27" width="362" height="38"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="38" id="HIf-ra-ApH"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" type="system" pointSize="10"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                     </subviews>
+                                    <constraints>
+                                        <constraint firstItem="pg1-7p-7Rz" firstAttribute="top" secondItem="9Bv-1W-yVV" secondAttribute="topMargin" constant="19" id="1w3-ai-rMk"/>
+                                        <constraint firstAttribute="trailingMargin" secondItem="pg1-7p-7Rz" secondAttribute="trailing" id="DSQ-Yx-x7F"/>
+                                        <constraint firstAttribute="trailingMargin" secondItem="9fz-sr-8Gv" secondAttribute="trailing" id="NcX-bX-zFO"/>
+                                        <constraint firstItem="9fz-sr-8Gv" firstAttribute="leading" secondItem="9Bv-1W-yVV" secondAttribute="leadingMargin" constant="-3" id="OV5-dL-Q2H"/>
+                                        <constraint firstItem="YPu-No-c8x" firstAttribute="top" secondItem="9Bv-1W-yVV" secondAttribute="topMargin" constant="-6" id="Z41-Sh-h01"/>
+                                        <constraint firstAttribute="trailingMargin" secondItem="YPu-No-c8x" secondAttribute="trailing" constant="2" id="ato-Mb-ehY"/>
+                                        <constraint firstItem="9fz-sr-8Gv" firstAttribute="leading" secondItem="pg1-7p-7Rz" secondAttribute="leading" id="h4U-rq-Ehk"/>
+                                        <constraint firstItem="9fz-sr-8Gv" firstAttribute="top" secondItem="pg1-7p-7Rz" secondAttribute="bottom" constant="5" id="heM-QX-U30"/>
+                                        <constraint firstItem="YPu-No-c8x" firstAttribute="leading" secondItem="9Bv-1W-yVV" secondAttribute="leadingMargin" constant="41" id="oKi-mq-icZ"/>
+                                        <constraint firstItem="pg1-7p-7Rz" firstAttribute="leading" secondItem="9Bv-1W-yVV" secondAttribute="leadingMargin" constant="-3" id="wM1-G2-xgz"/>
+                                    </constraints>
                                 </tableViewCellContentView>
                                 <connections>
+                                    <outlet property="date" destination="YPu-No-c8x" id="CfW-Pz-jdL"/>
                                     <outlet property="icon" destination="YM1-uH-2Cz" id="MPX-ZL-wVR"/>
                                     <outlet property="message" destination="9fz-sr-8Gv" id="3Zx-pz-gEK"/>
                                     <outlet property="subject" destination="pg1-7p-7Rz" id="FP7-vS-vEk"/>
@@ -57,9 +84,28 @@
                             <outlet property="delegate" destination="c26-Us-IIn" id="tCb-C6-XGN"/>
                         </connections>
                     </tableView>
+                    <navigationItem key="navigationItem" id="bV4-Hy-bmE"/>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="I7i-N5-tEB" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <searchDisplayController id="8eI-WG-bvp"/>
+            </objects>
+            <point key="canvasLocation" x="636" y="167.76611694152925"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="OKW-Am-E10">
+            <objects>
+                <navigationController storyboardIdentifier="CCNotification" automaticallyAdjustsScrollViewInsets="NO" id="eRR-MW-ghy" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="jDh-Ju-bUL">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="c26-Us-IIn" kind="relationship" relationship="rootViewController" id="q89-G9-gqj"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="BJ2-Ut-5Uk" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-303.19999999999999" y="167.76611694152925"/>
         </scene>
