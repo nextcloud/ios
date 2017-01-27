@@ -64,7 +64,7 @@
         
         [self setSecurityPolicyManagers:[self createSecurityPolicy]];
         
-        self.isCookiesAvailable = NO;
+        self.isCookiesAvailable = YES;
         self.isForbiddenCharactersAvailable = NO;
         
 #ifdef UNIT_TEST
@@ -106,7 +106,7 @@
 }
 
 -(id) initWithUploadSessionManager:(AFURLSessionManager *) uploadSessionManager {
-
+    
     self = [super init];
     
     if (self) {
@@ -114,7 +114,7 @@
         //Init the Donwload queue array
         self.downloadTaskNetworkQueueArray = [NSMutableArray new];
         
-        self.isCookiesAvailable = NO;
+        self.isCookiesAvailable = YES;
         self.isForbiddenCharactersAvailable = NO;
         
         //Credentials not set yet
@@ -261,11 +261,12 @@
 /// @name Check Server
 ///-----------------------------------
 - (void) checkServer: (NSString *) path
-      onCommunication:(OCCommunication *)sharedOCCommunication
-       successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer)) successRequest
-       failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
-
+     onCommunication:(OCCommunication *)sharedOCCommunication
+      successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer)) successRequest
+      failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
+    
     OCWebDAVClient *request = [OCWebDAVClient new];
+    request = [self getRequestWithCredentials:request];
     
     if (self.userAgent) {
         [request setUserAgent:self.userAgent];
@@ -274,13 +275,13 @@
     path = [path encodeString:NSUTF8StringEncoding];
     
     [request checkServer:path onCommunication:sharedOCCommunication
-                    success:^(NSHTTPURLResponse *response, id responseObject) {
-                        if (successRequest) {
-                            successRequest(response, request.redirectedServer);
-                        }
-                    } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
-                        failureRequest(response, error, request.redirectedServer);
-                    }];
+                 success:^(NSHTTPURLResponse *response, id responseObject) {
+                     if (successRequest) {
+                         successRequest(response, request.redirectedServer);
+                     }
+                 } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
+                     failureRequest(response, error, request.redirectedServer);
+                 }];
 }
 
 ///-----------------------------------

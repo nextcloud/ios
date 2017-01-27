@@ -50,6 +50,16 @@ class CCNotification: UITableViewController {
         }
     }
     
+    func getSataSourceAt(indexPath: IndexPath) -> OCNotifications {
+        
+        let idsNotification: [String] = appDelegate.listOfNotifications.allKeys as! [String]
+        
+        let idNotification : String! = idsNotification[indexPath.row]
+        let notification = appDelegate.listOfNotifications[idNotification] as! OCNotifications
+        
+        return notification
+    }
+    
     override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         return true
     }
@@ -57,20 +67,17 @@ class CCNotification: UITableViewController {
    
     override func tableView(_ tableView: UITableView, editActionsForRowAt: IndexPath) -> [UITableViewRowAction]? {
         
-        let idsNotification: [String] = appDelegate.listOfNotifications.allKeys as! [String]
+        let notification = self.getSataSourceAt(indexPath: editActionsForRowAt)
         
-        let idNotification : String! = idsNotification[editActionsForRowAt.row]
-        let notification = appDelegate.listOfNotifications[idNotification] as! OCNotifications
-
         // No Action request
         if notification.actions.count == 0 {
             
-            let delete = UITableViewRowAction(style: .normal, title: NSLocalizedString("_delete_", comment: "")) { action, index in
+            let cancel = UITableViewRowAction(style: .normal, title: NSLocalizedString("_cancel_", comment: "")) { action, index in
                 print("delete button tapped")
             }
-            delete.backgroundColor = .red
+            cancel.backgroundColor = .red
             
-            return [delete]
+            return [cancel]
             
         } else {
         // Action request
@@ -102,7 +109,17 @@ class CCNotification: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 120
+        
+        let notification = self.getSataSourceAt(indexPath: indexPath)
+        
+        if notification.message.characters.count > 0 {
+            
+            return 120
+            
+        } else {
+            
+            return 80
+        }
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -123,10 +140,7 @@ class CCNotification: UITableViewController {
             
         } else {
             
-            let idsNotification: [String] = appDelegate.listOfNotifications.allKeys as! [String]
-
-            let idNotification : String! = idsNotification[indexPath.row]
-            let notification = appDelegate.listOfNotifications[idNotification] as! OCNotifications
+            let notification = self.getSataSourceAt(indexPath: indexPath)
             
             let urlIcon = URL(string: notification.icon)!
             let pathFileName = (appDelegate.directoryUser) + "/" + urlIcon.lastPathComponent

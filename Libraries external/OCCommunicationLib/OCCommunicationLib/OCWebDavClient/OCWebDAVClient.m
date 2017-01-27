@@ -313,10 +313,11 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
 
 - (void)checkServer:(NSString *)path onCommunication:
 (OCCommunication *)sharedOCCommunication
-               success:(void(^)(NSHTTPURLResponse *, id))success
-               failure:(void(^)(NSHTTPURLResponse *, id  _Nullable responseObject, NSError *))failure {
+            success:(void(^)(NSHTTPURLResponse *, id))success
+            failure:(void(^)(NSHTTPURLResponse *, id  _Nullable responseObject, NSError *))failure {
     _requestMethod = @"HEAD";
     NSMutableURLRequest *request = [self requestWithMethod:_requestMethod path:path parameters:nil];
+    request.HTTPShouldHandleCookies = false;
     OCHTTPRequestOperation *operation = [self mr_operationWithRequest:request onCommunication:sharedOCCommunication success:success failure:failure];
     [self setRedirectionBlockOnDatataskWithOCCommunication:sharedOCCommunication andSessionManager:sharedOCCommunication.networkSessionManager];
     [operation resume];
@@ -406,14 +407,16 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
 
 - (void) getStatusOfTheServer:(NSString *)serverPath onCommunication:
 (OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id responseObject))success
-                            failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure  {
+                      failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure  {
     
     NSString *urlString = [NSString stringWithFormat:@"%@%@", serverPath, k_server_information_json];
     
     _requestMethod = @"GET";
     
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path: urlString parameters: nil];
-
+    
+    request.HTTPShouldHandleCookies = false;
+    
     OCHTTPRequestOperation *operation = [self mr_operationWithRequest:request onCommunication:sharedOCCommunication success:success failure:failure];
     [self setRedirectionBlockOnDatataskWithOCCommunication:sharedOCCommunication andSessionManager:sharedOCCommunication.networkSessionManager];
     [operation resume];
@@ -656,6 +659,11 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     
     [sessionManager setTaskWillPerformHTTPRedirectionBlock:^NSURLRequest * _Nonnull(NSURLSession * _Nonnull session, NSURLSessionTask * _Nonnull task, NSURLResponse * _Nonnull response, NSURLRequest * _Nonnull request) {
         
+        if (response == nil) {
+            // needed to handle fake redirects to canonical addresses, as explained in https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/URLLoadingSystem/Articles/RequestChanges.html
+            return request;
+        }
+        
         NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) response;
         NSDictionary *dict = [httpResponse allHeaderFields];
         //Server path of redirected server
@@ -667,6 +675,10 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
                 //We set the redirectedServer in case SAML or is a permanent redirection
                 self.redirectedServer = responseURLString;
                 
+                if ([UtilsFramework isURLWithSamlFragment:responseURLString]) {
+                    // if SAML request, we don't want to follow it; WebView takes care, not here -> nil to NO FOLLOW
+                    return nil;
+                }
             }
             
             NSMutableURLRequest *requestRedirect = [request mutableCopy];
@@ -681,16 +693,11 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
                 [requestRedirect setHTTPBody:[_postStringForShare dataUsingEncoding:NSUTF8StringEncoding]];
             }
             
-            if (sharedOCCommunication.isCookiesAvailable) {
-                //We add the cookies of that URL
-                request = [UtilsFramework getRequestWithCookiesByRequest:requestRedirect andOriginalUrlServer:self.originalUrlServer];
-            } else {
-                [UtilsFramework deleteAllCookies];
-            }
             return requestRedirect;
             
         } else {
-            return request;
+            // no location to redirect -> nil to NO FOLLOW
+            return nil;
         }
         
     }];
