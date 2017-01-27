@@ -23,10 +23,9 @@
 
 import UIKit
 
-class CCNotification: UITableViewController, UISearchResultsUpdating {
+class CCNotification: UITableViewController {
 
     var resultSearchController = UISearchController()
-    
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
     override func viewDidLoad() {
@@ -35,21 +34,6 @@ class CCNotification: UITableViewController, UISearchResultsUpdating {
         
         self.navigationController?.navigationBar.topItem?.title = NSLocalizedString("_notification_", comment: "")
         self.navigationItem.setRightBarButton(UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(close)), animated: true)
-        
-        self.resultSearchController = ({
-
-            let controller = UISearchController(searchResultsController: nil)
-            
-            controller.searchBar.sizeToFit()
-            controller.searchResultsUpdater = self
-            controller.dimsBackgroundDuringPresentation = false
-            controller.searchBar.scopeButtonTitles = ["A", "B", "C", "D"]
-            
-            self.tableView.tableHeaderView = controller.searchBar
-            self.tableView.tableFooterView = UIView()
-            
-            return controller
-        })()
         
         self.tableView.reloadData()
     }
@@ -73,17 +57,48 @@ class CCNotification: UITableViewController, UISearchResultsUpdating {
    
     override func tableView(_ tableView: UITableView, editActionsForRowAt: IndexPath) -> [UITableViewRowAction]? {
         
-        let favorite = UITableViewRowAction(style: .normal, title: "Favorite") { action, index in
-            print("favorite button tapped")
-        }
-        favorite.backgroundColor = .red
+        let idsNotification: [String] = appDelegate.listOfNotifications.allKeys as! [String]
         
-        let share = UITableViewRowAction(style: .normal, title: "Share") { action, index in
-            print("share button tapped")
+        let idNotification : String! = idsNotification[editActionsForRowAt.row]
+        let notification = appDelegate.listOfNotifications[idNotification] as! OCNotifications
+
+        // No Action request
+        if notification.actions.count == 0 {
+            
+            let delete = UITableViewRowAction(style: .normal, title: NSLocalizedString("_delete_", comment: "")) { action, index in
+                print("delete button tapped")
+            }
+            delete.backgroundColor = .red
+            
+            return [delete]
+            
+        } else {
+        // Action request
+            
+            var buttons = [UITableViewRowAction]()
+            
+            for action in notification.actions {
+                
+                let button = UITableViewRowAction(style: .normal, title: (action as! OCNotificationsAction).label) { action, index in
+                    
+                    for actionNotification in notification.actions {
+                        
+                        if (actionNotification as! OCNotificationsAction).label == action.title  {
+                            print(action.title!)
+                        }
+                    }
+                }
+                if (action as! OCNotificationsAction).type == "DELETE" {
+                    button.backgroundColor = .red
+                } else {
+                    button.backgroundColor = .green
+                }
+                
+                buttons.append(button)
+            }
+            
+            return buttons
         }
-        share.backgroundColor = .green
-        
-        return [share, favorite]
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -112,17 +127,61 @@ class CCNotification: UITableViewController, UISearchResultsUpdating {
 
             let idNotification : String! = idsNotification[indexPath.row]
             let notification = appDelegate.listOfNotifications[idNotification] as! OCNotifications
-                
+            
+            let urlIcon = URL(string: notification.icon)!
+            let pathFileName = (appDelegate.directoryUser) + "/" + urlIcon.lastPathComponent
+            let image = UIImage(contentsOfFile: pathFileName)
+            
+            if image == nil {
+                //downloadImage(url: urlIcon)
+            } else {
+                cell.icon.image = image
+            }
+            
             cell.date.text = DateFormatter.localizedString(from: notification.date, dateStyle: .medium, timeStyle: .medium)
-            cell.subject.text = "let notification = appDelegate.listOfNotifications[idNotification] as! OCNotificationslet notification = appDelegate.listOfNotifications[idNotification] as! OCNotifications"//notification.subject
-            cell.message.text = "let notification = appDelegate.listOfNotifications[idNotification] as! OCNotificationslet notification = appDelegate.listOfNotifications[idNotification] as! OCNotifications"//notification.message
+            cell.subject.text = notification.subject
+            cell.message.text = notification.message
+            
         }
         
         return cell
     }
     
-    func updateSearchResults(for searchController: UISearchController) {
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        tableView.deselectRow(at: indexPath, animated: true)
     }
+    
+    // MARK: - Get Image from url
+    
+    func getDataFromUrl(url: URL, completion: @escaping (_ data: Data?, _  response: URLResponse?, _ error: Error?) -> Void) {
+        URLSession.shared.dataTask(with: url) {
+            (data, response, error) in
+            completion(data, response, error)
+            }.resume()
+    }
+    
+    func downloadImage(url: URL) {
+        
+        print("Download Started")
+        getDataFromUrl(url: url) { (data, response, error)  in
+            guard let data = data, error == nil else { return }
+            let fileName = response?.suggestedFilename ?? url.lastPathComponent
+            print("Download Finished")
+            DispatchQueue.main.async() { () -> Void in
+                
+                do {
+                    let pathFileName = (self.appDelegate.directoryUser) + "/" + fileName
+                    try data.write(to: URL(fileURLWithPath: pathFileName), options: .atomic)
+                    
+                    self.tableView.reloadData()
+                } catch {
+                    print(error)
+                }
+            }
+        }
+    }
+
 }
 
 // MARK: - Class UITableViewCell

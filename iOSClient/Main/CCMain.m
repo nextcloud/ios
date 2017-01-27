@@ -1035,22 +1035,27 @@
     AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     
     // Insert/update listOfNotifications in Dictionary App.listOfNotifications
-    if ([listOfNotifications isKindOfClass:[NSArray class]])
+    if ([listOfNotifications isKindOfClass:[NSArray class]]) {
+      
         for (OCNotifications *notification in listOfNotifications)
             [appDelegate.listOfNotifications setObject:notification forKey:[NSString stringWithFormat:@"%lu", (unsigned long)notification.idNotification]];
+        
+    } else {
+        
+        if ([app.listOfNotifications count] > 0) {
+            
+            CCNotification *notificationVC = [[UIStoryboard storyboardWithName:@"CCNotification" bundle:nil] instantiateViewControllerWithIdentifier:@"CCNotification"];
+            
+            notificationVC.view.superview.frame = CGRectMake(100,100,self.view.bounds.size.width-100,self.view.bounds.size.height-100);
+            
+            [self presentViewController:notificationVC animated:YES completion:nil];
+        }
+    }
     
     // Test if is already open, otherwise view the messages
-    if ([JSAlertView isOpenAlertWindows])
-        return;
+    //if ([JSAlertView isOpenAlertWindows])
+    //    return;
     
-    if ([app.listOfNotifications count] > 0) {
-    
-        CCNotification *notificationVC = [[UIStoryboard storyboardWithName:@"CCNotification" bundle:nil] instantiateViewControllerWithIdentifier:@"CCNotification"];
-
-        notificationVC.view.superview.frame = CGRectMake(100,100,self.view.bounds.size.width-100,self.view.bounds.size.height-100);
-
-        [self presentViewController:notificationVC animated:YES completion:nil];
-    }
     
     /*
     for (NSString *idNotification in app.listOfNotifications) {
