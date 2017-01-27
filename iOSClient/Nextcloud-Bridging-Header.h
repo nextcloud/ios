@@ -4,3 +4,7 @@
 
 #import "AHKActionSheet.h"
 #import "AppDelegate.h"
+
+#import <OCCommunicationLib/OCNotifications.h>
+#import <OCCommunicationLib/OCNotificationsAction.h>
+#import <OCCommunicationLib/OCFrameworkConstants.h>
