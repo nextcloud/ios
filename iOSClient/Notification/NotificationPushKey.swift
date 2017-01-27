@@ -1,8 +1,8 @@
 //
-//  CCConstant.h
+//  CCNotificationPushKey.swift
 //  Crypto Cloud Technology Nextcloud
 //
-//  Created by Marino Faggiana on 26/01/17.
+//  Created by Marino Faggiana on 27/01/17.
 //  Copyright (c) 2017 TWS. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
@@ -21,25 +21,11 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-import UIKit
+import Foundation
 
-class CCConstant: NSObject {
+class CCNotificationPushKey: NSObject {
     
-    struct GlobalConstants {
-        
-        // GLOBLE COLOR DEFINE
-        
-        static let kColor_Seperator: UIColor = UIColor(red: 53.0/255.0, green: 126.0/255.0, blue: 167.0/255.0, alpha: 1.0)
-        
-        static let kColor_orange: UIColor = UIColor(red: 255.0/255.0, green: 147.0/255.0, blue: 38.0/255.0, alpha: 1.0)
-        
-        static let kColor_NonCompliant: UIColor = UIColor(red: 190.0/255.0, green: 15.0/255.0, blue: 52.0/255.0, alpha: 1.0)
-
-        static let kColor_Compliant: UIColor = UIColor(red: 87.0/255.0, green: 149.0/255.0, blue: 0.0/255.0, alpha: 1.0)
-
-        
-        // Response searchList
-        
-        static let kOrganizationFullName    = "FullName"
-    }
+    // Insert here the rsa2048 device PublicKey
+    
+    static let PUBLIC_KEY = ""
 }
