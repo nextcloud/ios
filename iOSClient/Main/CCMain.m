@@ -1043,6 +1043,13 @@
     if ([JSAlertView isOpenAlertWindows])
         return;
     
+    CCNotification *notificationVC = [[UIStoryboard storyboardWithName:@"CCNotification" bundle:nil] instantiateViewControllerWithIdentifier:@"CCNotification"];
+
+    notificationVC.view.superview.frame = CGRectMake(100,100,self.view.bounds.size.width-100,self.view.bounds.size.height-100);
+
+    [self presentViewController:notificationVC animated:YES completion:nil];
+    
+    /*
     for (NSString *idNotification in app.listOfNotifications) {
         
         OCNotifications *notification = [app.listOfNotifications objectForKey:idNotification];
@@ -1100,6 +1107,7 @@
             }];
         }
     }
+    */
     
     // Update NavigationBar
     if (!_isSelectedMode)

@@ -12,7 +12,7 @@
         <!--Notification-->
         <scene sceneID="qpr-sp-LUL">
             <objects>
-                <tableViewController id="XR4-7S-Rf2" customClass="CCNotification" sceneMemberID="viewController">
+                <tableViewController restorationIdentifier="CCNotification" storyboardIdentifier="CCNotification" id="XR4-7S-Rf2" customClass="CCNotification" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="zcw-hW-s5f">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
