@@ -545,8 +545,9 @@
 		F7C00D471E2D0D0F0032160B /* CCCellOffline.m in Sources */ = {isa = PBXBuildFile; fileRef = F7C00D431E2D0D0F0032160B /* CCCellOffline.m */; };
 		F7C00D481E2D0D0F0032160B /* CCCellOffline.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7C00D441E2D0D0F0032160B /* CCCellOffline.xib */; };
 		F7C00D491E2D0D0F0032160B /* CCOffline.m in Sources */ = {isa = PBXBuildFile; fileRef = F7C00D461E2D0D0F0032160B /* CCOffline.m */; };
-		F7C5258F1E3B441200FFE02C /* Notification.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7C5258E1E3B441200FFE02C /* Notification.storyboard */; };
-		F7C5259E1E3B45FA00FFE02C /* NotificationPushKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C5259D1E3B45FA00FFE02C /* NotificationPushKey.swift */; };
+		F7C5258F1E3B441200FFE02C /* CCNotification.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7C5258E1E3B441200FFE02C /* CCNotification.storyboard */; };
+		F7C5259E1E3B45FA00FFE02C /* CCNotificationPushKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C5259D1E3B45FA00FFE02C /* CCNotificationPushKey.swift */; };
+		F7C525A01E3B48B700FFE02C /* CCNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C5259F1E3B48B700FFE02C /* CCNotification.swift */; };
 		F7C994321E3A92C500C2466C /* CCConstant.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C994311E3A92C400C2466C /* CCConstant.swift */; };
 		F7C994331E3A92C500C2466C /* CCConstant.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C994311E3A92C400C2466C /* CCConstant.swift */; };
 		F7C994341E3A92C500C2466C /* CCConstant.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C994311E3A92C400C2466C /* CCConstant.swift */; };
@@ -1460,8 +1461,9 @@
 		F7C1D8BD1D47781C00B89DEA /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		F7C1D8BE1D47781D00B89DEA /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/Intro.strings; sourceTree = "<group>"; };
 		F7C1D8BF1D47781D00B89DEA /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/Error.strings; sourceTree = "<group>"; };
-		F7C5258E1E3B441200FFE02C /* Notification.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = Notification.storyboard; path = Notification/Notification.storyboard; sourceTree = "<group>"; };
-		F7C5259D1E3B45FA00FFE02C /* NotificationPushKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NotificationPushKey.swift; path = Notification/NotificationPushKey.swift; sourceTree = "<group>"; };
+		F7C5258E1E3B441200FFE02C /* CCNotification.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = CCNotification.storyboard; path = Notification/CCNotification.storyboard; sourceTree = "<group>"; };
+		F7C5259D1E3B45FA00FFE02C /* CCNotificationPushKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CCNotificationPushKey.swift; path = Notification/CCNotificationPushKey.swift; sourceTree = "<group>"; };
+		F7C5259F1E3B48B700FFE02C /* CCNotification.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CCNotification.swift; path = Notification/CCNotification.swift; sourceTree = "<group>"; };
 		F7C8C1721B482A920048180E /* CCMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = CCMetadata.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		F7C8C1731B482A920048180E /* CCMetadata.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = CCMetadata.m; sourceTree = "<group>"; };
 		F7C8C1901B482CEA0048180E /* CCGlobal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCGlobal.h; sourceTree = "<group>"; };
@@ -3005,8 +3007,9 @@
 		F7C5259A1E3B441D00FFE02C /* Notification */ = {
 			isa = PBXGroup;
 			children = (
-				F7C5259D1E3B45FA00FFE02C /* NotificationPushKey.swift */,
-				F7C5258E1E3B441200FFE02C /* Notification.storyboard */,
+				F7C5259D1E3B45FA00FFE02C /* CCNotificationPushKey.swift */,
+				F7C5258E1E3B441200FFE02C /* CCNotification.storyboard */,
+				F7C5259F1E3B48B700FFE02C /* CCNotification.swift */,
 			);
 			name = Notification;
 			sourceTree = "<group>";
@@ -3652,7 +3655,7 @@
 				F77B0F411D118A16002130FE /* ZSStextcolor@2x.png in Resources */,
 				F77B0F421D118A16002130FE /* ImageSelectedOn.png in Resources */,
 				F77B0F431D118A16002130FE /* Raleway-ExtraBold.ttf in Resources */,
-				F7C5258F1E3B441200FFE02C /* Notification.storyboard in Resources */,
+				F7C5258F1E3B441200FFE02C /* CCNotification.storyboard in Resources */,
 				F77B0F441D118A16002130FE /* Reader-Button-N@2x.png in Resources */,
 				F77B0F461D118A16002130FE /* Reader-Button-H@2x.png in Resources */,
 				F77B0F471D118A16002130FE /* ZSSbgcolor@2x.png in Resources */,
@@ -3914,6 +3917,7 @@
 				F7F06E931DBFACC600099AE9 /* NSNumberFormatter+CTAssetsPickerController.m in Sources */,
 				F77B0DF71D118A16002130FE /* UIXToolbarView.m in Sources */,
 				F771CD601E07F6620066F76D /* TableAutomaticUpload+CoreDataProperties.m in Sources */,
+				F7C525A01E3B48B700FFE02C /* CCNotification.swift in Sources */,
 				F77B0DF91D118A16002130FE /* TableMetadata.m in Sources */,
 				F77B0DFB1D118A16002130FE /* NYXProgressiveImageView.m in Sources */,
 				F7994B781D5B854C008525D9 /* TableCertificates+CoreDataProperties.m in Sources */,
@@ -4027,7 +4031,7 @@
 				F73CCE131DC13776007E38D8 /* XLFormRightImageButton.m in Sources */,
 				F7DAE66E1E2E109F004EFA30 /* CCOfflineFolder.m in Sources */,
 				F77B0E5D1D118A16002130FE /* UIImage+Blurring.m in Sources */,
-				F7C5259E1E3B45FA00FFE02C /* NotificationPushKey.swift in Sources */,
+				F7C5259E1E3B45FA00FFE02C /* CCNotificationPushKey.swift in Sources */,
 				F7BE6E2F1D2D5C3B00106933 /* CCQuickActions.m in Sources */,
 				F77B0E5E1D118A16002130FE /* unzip.c in Sources */,
 				F7659A291DC0B726004860C4 /* EAIntroView.m in Sources */,
