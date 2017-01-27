@@ -545,6 +545,10 @@
 		F7C00D471E2D0D0F0032160B /* CCCellOffline.m in Sources */ = {isa = PBXBuildFile; fileRef = F7C00D431E2D0D0F0032160B /* CCCellOffline.m */; };
 		F7C00D481E2D0D0F0032160B /* CCCellOffline.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7C00D441E2D0D0F0032160B /* CCCellOffline.xib */; };
 		F7C00D491E2D0D0F0032160B /* CCOffline.m in Sources */ = {isa = PBXBuildFile; fileRef = F7C00D461E2D0D0F0032160B /* CCOffline.m */; };
+		F7C994321E3A92C500C2466C /* CCConstant.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C994311E3A92C400C2466C /* CCConstant.swift */; };
+		F7C994331E3A92C500C2466C /* CCConstant.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C994311E3A92C400C2466C /* CCConstant.swift */; };
+		F7C994341E3A92C500C2466C /* CCConstant.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C994311E3A92C400C2466C /* CCConstant.swift */; };
+		F7C994351E3A92C500C2466C /* CCConstant.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C994311E3A92C400C2466C /* CCConstant.swift */; };
 		F7CE28851D1ACFA70025783C /* CCProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CE28801D1ACFA70025783C /* CCProgressView.m */; };
 		F7CE28881D1ACFA70025783C /* UINavigationController+CCProgress.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CE28821D1ACFA70025783C /* UINavigationController+CCProgress.m */; };
 		F7D2677C1E157053005ACB7E /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7F67BB81A24D27800EE80DA /* Images.xcassets */; };
@@ -1458,6 +1462,7 @@
 		F7C8C1731B482A920048180E /* CCMetadata.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = CCMetadata.m; sourceTree = "<group>"; };
 		F7C8C1901B482CEA0048180E /* CCGlobal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCGlobal.h; sourceTree = "<group>"; };
 		F7C8C1911B482CEA0048180E /* CCGlobal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCGlobal.m; sourceTree = "<group>"; };
+		F7C994311E3A92C400C2466C /* CCConstant.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CCConstant.swift; sourceTree = "<group>"; };
 		F7CD0FF91C8DDA7D006520C5 /* CCSharePermissionOC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCSharePermissionOC.h; sourceTree = "<group>"; };
 		F7CD0FFA1C8DDA7D006520C5 /* CCSharePermissionOC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCSharePermissionOC.m; sourceTree = "<group>"; };
 		F7CE287F1D1ACFA70025783C /* CCProgressView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCProgressView.h; sourceTree = "<group>"; };
@@ -3156,6 +3161,7 @@
 				F7D722AA1D11B6DA009F1A35 /* CCImages.h */,
 				F7C8C1901B482CEA0048180E /* CCGlobal.h */,
 				F7C8C1911B482CEA0048180E /* CCGlobal.m */,
+				F7C994311E3A92C400C2466C /* CCConstant.swift */,
 				F78088E51DD3A1DB005C5A7C /* cryptocloud.xcdatamodeld */,
 				F7F67BB81A24D27800EE80DA /* Images.xcassets */,
 				F7596C771D128FC80092A6B8 /* Nextcloud.xcassets */,
@@ -3771,6 +3777,7 @@
 				F71459E21D12E3B700CAFEEC /* TableAccount+CoreDataProperties.m in Sources */,
 				F71459E41D12E3B700CAFEEC /* RNDecryptor.m in Sources */,
 				F71459E61D12E3B700CAFEEC /* NYXImagesHelper.m in Sources */,
+				F7C994331E3A92C500C2466C /* CCConstant.swift in Sources */,
 				F71459E91D12E3B700CAFEEC /* UIImage+Enhancing.m in Sources */,
 				F71459EA1D12E3B700CAFEEC /* CCCellShareExt.m in Sources */,
 				F71459EB1D12E3B700CAFEEC /* TableMetadata+CoreDataProperties.m in Sources */,
@@ -3861,6 +3868,7 @@
 				F74344661E127E35001CC831 /* CCCoreData.m in Sources */,
 				F743447C1E127EB2001CC831 /* NSString+TruncateToWidth.m in Sources */,
 				F74344731E127E5E001CC831 /* TableAccount+CoreDataProperties.m in Sources */,
+				F7C994341E3A92C500C2466C /* CCConstant.swift in Sources */,
 				F74344601E127D4D001CC831 /* BKShiftingView.m in Sources */,
 				F74344831E127F80001CC831 /* RNCryptor.m in Sources */,
 			);
@@ -3871,6 +3879,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F74344251E1264EE001CC831 /* FileProvider.swift in Sources */,
+				F7C994351E3A92C500C2466C /* CCConstant.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4075,6 +4084,7 @@
 				F77B0E9C1D118A16002130FE /* AHKActionSheet.m in Sources */,
 				F77B0E9D1D118A16002130FE /* HRColorPickerView.m in Sources */,
 				F7CE28851D1ACFA70025783C /* CCProgressView.m in Sources */,
+				F7C994321E3A92C500C2466C /* CCConstant.swift in Sources */,
 				F77B0E9F1D118A16002130FE /* mztools.c in Sources */,
 				F7F06EC71DBFACC600099AE9 /* CTAssetsPickerNoAssetsView.m in Sources */,
 				F7659A271DC0B726004860C4 /* EAIntroPage.m in Sources */,
