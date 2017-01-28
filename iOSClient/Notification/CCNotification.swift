@@ -76,7 +76,7 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
         // No Action request
         if notification.actions.count == 0 {
             
-            let cancel = UITableViewRowAction(style: .normal, title: NSLocalizedString("_cancel_", comment: "")) { action, index in
+            let delete = UITableViewRowAction(style: .normal, title: NSLocalizedString("_delete_", comment: "")) { action, index in
 
                 tableView.setEditing(false, animated: true)
 
@@ -90,9 +90,9 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
                 self.appDelegate.addNetworkingOperationQueue(self.appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
             }
             
-            cancel.backgroundColor = .orange
+            delete.backgroundColor = CCConstant.GlobalConstants.kColor_cryptocloud
  
-            return [cancel]
+            return [delete]
  
         } else {
         // Action request
