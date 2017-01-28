@@ -162,6 +162,8 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
             let image = UIImage(contentsOfFile: pathFileName)
             
             if image == nil {
+                
+                cell.icon.image = UIImage(named: "notification")
                 //downloadImage(url: urlIcon)
             } else {
                 cell.icon.image = image

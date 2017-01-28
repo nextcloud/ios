@@ -27,20 +27,20 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pg1-7p-7Rz" userLabel="subject">
-                                            <rect key="frame" x="41" y="27" width="326" height="38"/>
+                                            <rect key="frame" x="47" y="27" width="320" height="38"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="38" id="HIf-ra-ApH"/>
                                             </constraints>
-                                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9fz-sr-8Gv" userLabel="message">
-                                            <rect key="frame" x="41" y="70" width="326" height="44"/>
+                                            <rect key="frame" x="47" y="70" width="320" height="44"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="44" id="w3S-Mr-J41"/>
                                             </constraints>
-                                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                             <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                             <nil key="highlightedColor"/>
                                         </label>
@@ -54,7 +54,7 @@
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="YM1-uH-2Cz" userLabel="icon">
-                                            <rect key="frame" x="3" y="-3" width="35" height="35"/>
+                                            <rect key="frame" x="4" y="3" width="35" height="35"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         </imageView>
                                     </subviews>
@@ -62,13 +62,13 @@
                                         <constraint firstItem="pg1-7p-7Rz" firstAttribute="top" secondItem="9Bv-1W-yVV" secondAttribute="topMargin" constant="19" id="1w3-ai-rMk"/>
                                         <constraint firstAttribute="trailingMargin" secondItem="pg1-7p-7Rz" secondAttribute="trailing" id="DSQ-Yx-x7F"/>
                                         <constraint firstAttribute="trailingMargin" secondItem="9fz-sr-8Gv" secondAttribute="trailing" id="NcX-bX-zFO"/>
-                                        <constraint firstItem="9fz-sr-8Gv" firstAttribute="leading" secondItem="9Bv-1W-yVV" secondAttribute="leadingMargin" constant="33" id="OV5-dL-Q2H"/>
+                                        <constraint firstItem="9fz-sr-8Gv" firstAttribute="leading" secondItem="9Bv-1W-yVV" secondAttribute="leadingMargin" constant="39" id="OV5-dL-Q2H"/>
                                         <constraint firstItem="YPu-No-c8x" firstAttribute="top" secondItem="9Bv-1W-yVV" secondAttribute="topMargin" constant="-6" id="Z41-Sh-h01"/>
                                         <constraint firstAttribute="trailingMargin" secondItem="YPu-No-c8x" secondAttribute="trailing" constant="2" id="ato-Mb-ehY"/>
                                         <constraint firstItem="9fz-sr-8Gv" firstAttribute="leading" secondItem="pg1-7p-7Rz" secondAttribute="leading" id="h4U-rq-Ehk"/>
                                         <constraint firstItem="9fz-sr-8Gv" firstAttribute="top" secondItem="pg1-7p-7Rz" secondAttribute="bottom" constant="5" id="heM-QX-U30"/>
                                         <constraint firstItem="YPu-No-c8x" firstAttribute="leading" secondItem="9Bv-1W-yVV" secondAttribute="leadingMargin" constant="41" id="oKi-mq-icZ"/>
-                                        <constraint firstItem="pg1-7p-7Rz" firstAttribute="leading" secondItem="9Bv-1W-yVV" secondAttribute="leadingMargin" constant="33" id="wM1-G2-xgz"/>
+                                        <constraint firstItem="pg1-7p-7Rz" firstAttribute="leading" secondItem="9Bv-1W-yVV" secondAttribute="leadingMargin" constant="39" id="wM1-G2-xgz"/>
                                     </constraints>
                                 </tableViewCellContentView>
                                 <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
@@ -96,7 +96,7 @@
             <objects>
                 <navigationController storyboardIdentifier="CCNotification" automaticallyAdjustsScrollViewInsets="NO" id="eRR-MW-ghy" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="jDh-Ju-bUL">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="jDh-Ju-bUL">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
