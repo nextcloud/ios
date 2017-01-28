@@ -55,20 +55,13 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
     
     // MARK: - Table
 
-    func getSataSourceAt(indexPath: IndexPath) -> OCNotifications {
-        
-        let notification = appDelegate.listOfNotifications.object(at: indexPath.row) as! OCNotifications
-        
-        return notification
-    }
-    
     override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         return true
     }
     
     override func tableView(_ tableView: UITableView, editActionsForRowAt: IndexPath) -> [UITableViewRowAction]? {
         
-        let notification = self.getSataSourceAt(indexPath: editActionsForRowAt)
+        let notification = appDelegate.listOfNotifications.object(at: editActionsForRowAt.row) as! OCNotifications
         
         // No Action request
         if notification.actions.count == 0 {
@@ -132,7 +125,7 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         
-        let notification = self.getSataSourceAt(indexPath: indexPath)
+        let notification = appDelegate.listOfNotifications.object(at: indexPath.row) as! OCNotifications
         
         if notification.message.characters.count > 0 {
             
@@ -162,7 +155,7 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
             
         } else {
             
-            let notification = self.getSataSourceAt(indexPath: indexPath)
+            let notification = appDelegate.listOfNotifications.object(at: indexPath.row) as! OCNotifications
             
             let urlIcon = URL(string: notification.icon)!
             let pathFileName = (appDelegate.directoryUser) + "/" + urlIcon.lastPathComponent
