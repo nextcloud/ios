@@ -36,7 +36,8 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
         self.navigationItem.setRightBarButton(UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(viewClose)), animated: true)
         
         self.tableView.separatorColor = UIColor(colorLiteralRed: 153.0/255.0, green: 153.0/255.0, blue: 153.0/255.0, alpha: 0.2)
-        
+        self.tableView.tableFooterView = UIView()
+
         self.tableView.reloadData()
     }
     
@@ -77,6 +78,8 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
             
             let cancel = UITableViewRowAction(style: .normal, title: NSLocalizedString("_cancel_", comment: "")) { action, index in
 
+                tableView.setEditing(false, animated: true)
+
                 let metadataNet = CCMetadataNet.init(account: self.appDelegate.activeAccount)!
                 
                 metadataNet.action = actionSetNotificationServer
@@ -103,7 +106,17 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
                     for actionNotification in notification.actions {
                         
                         if (actionNotification as! OCNotificationsAction).label == action.title  {
-                            print(action.title!)
+                            
+                            tableView.setEditing(false, animated: true)
+
+                            let metadataNet = CCMetadataNet.init(account: self.appDelegate.activeAccount)!
+                            
+                            metadataNet.action = actionSetNotificationServer
+                            metadataNet.identifier = "\(notification.idNotification)"
+                            metadataNet.serverUrl =  (actionNotification as! OCNotificationsAction).link
+                            metadataNet.options = (actionNotification as! OCNotificationsAction).type
+                            
+                            self.appDelegate.addNetworkingOperationQueue(self.appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
                         }
                     }
                 }
