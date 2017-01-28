@@ -57,10 +57,7 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
 
     func getSataSourceAt(indexPath: IndexPath) -> OCNotifications {
         
-        let idsNotification: [String] = appDelegate.listOfNotifications.allKeys as! [String]
-        
-        let idNotification : String! = idsNotification[indexPath.row]
-        let notification = appDelegate.listOfNotifications[idNotification] as! OCNotifications
+        let notification = appDelegate.listOfNotifications.object(at: indexPath.row) as! OCNotifications
         
         return notification
     }
@@ -200,7 +197,11 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
     
     func setNotificationServerSuccess(_ metadataNet: CCMetadataNet!) {
         
-        appDelegate.listOfNotifications.removeObject(forKey: metadataNet.identifier)
+        let listOfNotifications = appDelegate.listOfNotifications as NSArray as! [OCNotifications]
+        
+        if let index = listOfNotifications.index(where: {$0.idNotification == Int(metadataNet.identifier)})  {
+            appDelegate.listOfNotifications.removeObject(at: index)
+        }
         
         self.tableView.reloadData()
         

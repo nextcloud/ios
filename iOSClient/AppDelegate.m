@@ -142,7 +142,7 @@
     self.sharesUserAndGroup = [[NSMutableDictionary alloc] init];
     
     // Initialization Notification
-    self.listOfNotifications = [[NSMutableDictionary alloc] init];
+    self.listOfNotifications = [[NSMutableArray alloc] init];
     
     // Verify Session in progress and Init date task
     self.sessionDateLastDownloadTasks = [NSDate date];

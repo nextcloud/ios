@@ -536,7 +536,7 @@
     // Notification
     if ([app.listOfNotifications count] > 0) {
         
-        buttonNotification = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:image_notification] style:UIBarButtonItemStylePlain target:self action:@selector(getNotificationsOfServerSuccess:)];
+        buttonNotification = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:image_notification] style:UIBarButtonItemStylePlain target:self action:@selector(viewNotification)];
         buttonNotification.tintColor = COLOR_BRAND;
         buttonNotification.enabled = true;
     }
@@ -1034,22 +1034,46 @@
 {
     AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     
-    // Insert/update listOfNotifications in Dictionary App.listOfNotifications
-    if ([listOfNotifications isKindOfClass:[NSArray class]]) {
-      
-        for (OCNotifications *notification in listOfNotifications)
-            [appDelegate.listOfNotifications setObject:notification forKey:[NSString stringWithFormat:@"%lu", (unsigned long)notification.idNotification]];
+    // Order by date
         
-    } else {
+    NSArray *sorted = [listOfNotifications sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+            
+        OCNotifications *notification1 = obj1, *notification2 = obj2;
         
-        if ([app.listOfNotifications count] > 0) {
-            
-            CCNotification *notificationVC = [[UIStoryboard storyboardWithName:@"CCNotification" bundle:nil] instantiateViewControllerWithIdentifier:@"CCNotification"];
-            
-            notificationVC.view.superview.frame = CGRectMake(100,100,self.view.bounds.size.width-100,self.view.bounds.size.height-100);
-            
-            [self presentViewController:notificationVC animated:YES completion:nil];
+        return [notification2.date compare: notification1.date];
+        
+        /*
+        if ([notification1.date compare: notification2.date] == NSOrderedDescending) {
+            return NSOrderedDescending;
+        } else {
+            return NSOrderedAscending;
         }
+        */
+    }];
+        
+    appDelegate.listOfNotifications = [[NSMutableArray alloc] initWithArray:sorted];
+    
+    // Update NavigationBar
+    if (!_isSelectedMode)
+        [self setUINavigationBarDefault];
+}
+
+- (void)getNotificationsOfServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+{    
+    // Update NavigationBar
+    if (!_isSelectedMode)
+        [self setUINavigationBarDefault];
+}
+
+- (void)viewNotification
+{
+    if ([app.listOfNotifications count] > 0) {
+        
+        CCNotification *notificationVC = [[UIStoryboard storyboardWithName:@"CCNotification" bundle:nil] instantiateViewControllerWithIdentifier:@"CCNotification"];
+        
+        notificationVC.view.superview.frame = CGRectMake(100,100,self.view.bounds.size.width-100,self.view.bounds.size.height-100);
+        
+        [self presentViewController:notificationVC animated:YES completion:nil];
     }
     
     // Test if is already open, otherwise view the messages
@@ -1058,77 +1082,64 @@
     
     
     /*
-    for (NSString *idNotification in app.listOfNotifications) {
-        
-        OCNotifications *notification = [app.listOfNotifications objectForKey:idNotification];
-        
-        // No Action request
-        if ([notification.actions count] == 0) {
-            
-            [JSAlertView alert:notification.subject withTitle:nil buttons:@[NSLocalizedString(@"_close_", nil),NSLocalizedString(@"_postpone_", nil)] withCompletionHandler:^(NSInteger buttonIndex, NSString *buttonTitle) {
-                
-                NSLog(@"Pressed %@ at index %ld", buttonTitle, (long)buttonIndex);
-                
-                if ([buttonTitle isEqualToString:NSLocalizedString(@"_close_", nil)]) {
-                    
-                    if ([app.typeCloud isEqualToString:typeCloudOwnCloud] || [app.typeCloud isEqualToString:typeCloudNextcloud]) {
-                        
-                        CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
-                        
-                        metadataNet.action  = actionSetNotificationServer;
-                        metadataNet.identifier = idNotification;
-                        metadataNet.options = @"DELETE";
-                        metadataNet.serverUrl =  [NSString stringWithFormat:@"%@/%@/%@", app.activeUrl, k_url_acces_remote_notification_api, idNotification];
-                        
-                        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
-                    }
-                }
-            }];
-        }
-        
-        // Action request
-        else {
-            
-            NSMutableArray *buttons = [NSMutableArray new];
-            for (OCNotificationsAction *action in notification.actions)
-                [buttons addObject:action.label];
-            
-            // Add button postpone
-            [buttons addObject:NSLocalizedString(@"_postpone_", nil)];
-            
-            [JSAlertView alert:notification.subject withTitle:nil buttons:buttons withCompletionHandler:^(NSInteger buttonIndex, NSString *buttonTitle) {
-                
-                NSLog(@"Pressed %@ at index %ld", buttonTitle, (long)buttonIndex);
-                
-                for (OCNotificationsAction *action in notification.actions)
-                    if ([action.label isEqualToString:buttonTitle]) {
-                        
-                        CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
-                        
-                        metadataNet.action  = actionSetNotificationServer;
-                        metadataNet.identifier = idNotification;
-                        metadataNet.serverUrl =  action.link;
-                        metadataNet.options = action.type;
-                        
-                        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
-                    }
-            }];
-        }
-    }
-    */
-    
-    // Update NavigationBar
-    if (!_isSelectedMode)
-        [self setUINavigationBarDefault];
-}
-
-- (void)getNotificationsOfServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
-{
-    NSLog(@"Error Notification");
-    
-    // Update NavigationBar
-    if (!_isSelectedMode)
-        [self setUINavigationBarDefault];
+     for (NSString *idNotification in app.listOfNotifications) {
+     
+     OCNotifications *notification = [app.listOfNotifications objectForKey:idNotification];
+     
+     // No Action request
+     if ([notification.actions count] == 0) {
+     
+     [JSAlertView alert:notification.subject withTitle:nil buttons:@[NSLocalizedString(@"_close_", nil),NSLocalizedString(@"_postpone_", nil)] withCompletionHandler:^(NSInteger buttonIndex, NSString *buttonTitle) {
+     
+     NSLog(@"Pressed %@ at index %ld", buttonTitle, (long)buttonIndex);
+     
+     if ([buttonTitle isEqualToString:NSLocalizedString(@"_close_", nil)]) {
+     
+     if ([app.typeCloud isEqualToString:typeCloudOwnCloud] || [app.typeCloud isEqualToString:typeCloudNextcloud]) {
+     
+     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
+     
+     metadataNet.action  = actionSetNotificationServer;
+     metadataNet.identifier = idNotification;
+     metadataNet.options = @"DELETE";
+     metadataNet.serverUrl =  [NSString stringWithFormat:@"%@/%@/%@", app.activeUrl, k_url_acces_remote_notification_api, idNotification];
+     
+     [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+     }
+     }
+     }];
+     }
+     
+     // Action request
+     else {
+     
+     NSMutableArray *buttons = [NSMutableArray new];
+     for (OCNotificationsAction *action in notification.actions)
+     [buttons addObject:action.label];
+     
+     // Add button postpone
+     [buttons addObject:NSLocalizedString(@"_postpone_", nil)];
+     
+     [JSAlertView alert:notification.subject withTitle:nil buttons:buttons withCompletionHandler:^(NSInteger buttonIndex, NSString *buttonTitle) {
+     
+     NSLog(@"Pressed %@ at index %ld", buttonTitle, (long)buttonIndex);
+     
+     for (OCNotificationsAction *action in notification.actions)
+     if ([action.label isEqualToString:buttonTitle]) {
+     
+     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
+     
+     metadataNet.action  = actionSetNotificationServer;
+     metadataNet.identifier = idNotification;
+     metadataNet.serverUrl =  action.link;
+     metadataNet.options = action.type;
+     
+     [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+     }
+     }];
+     }
+     }
+     */
 }
 
 #pragma --------------------------------------------------------------------------------------------
