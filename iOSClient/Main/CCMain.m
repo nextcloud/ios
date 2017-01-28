@@ -1122,28 +1122,6 @@
         [self setUINavigationBarDefault];
 }
 
-- (void)setNotificationServerSuccess:(CCMetadataNet *)metadataNet
-{
-    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-    
-    [appDelegate.listOfNotifications removeObjectForKey:metadataNet.identifier];
-    
-    NSLog(@"delete Notification id :%@", metadataNet.identifier);
-    
-    // Update NavigationBar
-    if (!_isSelectedMode)
-        [self setUINavigationBarDefault];
-}
-
-- (void)setNotificationServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
-{
-    NSLog(@"Error Notification");
-    
-    // Update NavigationBar
-    if (!_isSelectedMode)
-        [self setUINavigationBarDefault];
-}
-
 - (void)getNotificationsOfServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
     NSLog(@"Error Notification");

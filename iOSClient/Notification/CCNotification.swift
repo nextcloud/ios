@@ -23,7 +23,7 @@
 
 import UIKit
 
-class CCNotification: UITableViewController {
+class CCNotification: UITableViewController, OCNetworkingDelegate {
 
     var resultSearchController = UISearchController()
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -66,7 +66,6 @@ class CCNotification: UITableViewController {
         return true
     }
     
-   
     override func tableView(_ tableView: UITableView, editActionsForRowAt: IndexPath) -> [UITableViewRowAction]? {
         
         let notification = self.getSataSourceAt(indexPath: editActionsForRowAt)
@@ -75,12 +74,21 @@ class CCNotification: UITableViewController {
         if notification.actions.count == 0 {
             
             let cancel = UITableViewRowAction(style: .normal, title: NSLocalizedString("_cancel_", comment: "")) { action, index in
-                print("delete button tapped")
+
+                let metadataNet = CCMetadataNet.init(account: self.appDelegate.activeAccount)!
+                
+                metadataNet.action = actionSetNotificationServer
+                metadataNet.identifier = "\(notification.idNotification)"
+                metadataNet.options = "DELETE"
+                metadataNet.serverUrl = "\(self.appDelegate.activeUrl!)/\(k_url_acces_remote_notification_api)/\(metadataNet.identifier!)"
+
+                self.appDelegate.addNetworkingOperationQueue(self.appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
             }
-            cancel.backgroundColor = .red
             
+            cancel.backgroundColor = .orange
+ 
             return [cancel]
-            
+ 
         } else {
         // Action request
             
@@ -137,7 +145,7 @@ class CCNotification: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     
         let cell = self.tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! CCNotificationCell
-                
+        
         if self.resultSearchController.isActive {
             
         } else {
@@ -166,6 +174,20 @@ class CCNotification: UITableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         tableView.deselectRow(at: indexPath, animated: true)
+    }
+    
+    // MARK: - Networking delegate
+
+    func setNotificationServerFailure(_ metadataNet: CCMetadataNet!, message: String!, errorCode: Int) {
+        
+        appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(dismissAfterSecond), type: TWMessageBarMessageType.error)
+    }
+    
+    func setNotificationServerSuccess(_ metadataNet: CCMetadataNet!) {
+        
+        appDelegate.listOfNotifications.removeObject(forKey: metadataNet.identifier)
+        
+        self.tableView.reloadData()
     }
     
     // MARK: - Get Image from url
