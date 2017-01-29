@@ -48,7 +48,6 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
         super.didReceiveMemoryWarning()
     }
 
-    
     func viewClose() {
         
         // Stop listening notification reload data
@@ -169,14 +168,15 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
                 
                 cell.icon.image = UIImage(named: "notification")
                 //downloadImage(url: urlIcon)
+                
             } else {
+                
                 cell.icon.image = image
             }
             
             cell.date.text = DateFormatter.localizedString(from: notification.date, dateStyle: .medium, timeStyle: .medium)
             cell.subject.text = notification.subject
             cell.message.text = notification.message
-            
         }
         
         return cell

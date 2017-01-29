@@ -474,6 +474,25 @@
         NSLog(@"Receive Notification on Active state");
     }
 }
+
+- (void) application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
+{
+    UIApplicationState state = [application applicationState];
+    
+    if (state == UIApplicationStateBackground || (state == UIApplicationStateInactive)) {
+        
+    } else if (state == UIApplicationStateInactive) {
+        
+        // user tapped notification
+        completionHandler(UIBackgroundFetchResultNewData);
+        
+    } else {
+        
+        // app is active
+        completionHandler(UIBackgroundFetchResultNoData);
+    }
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Quick Actions - ShotcutItem =====
 #pragma --------------------------------------------------------------------------------------------
