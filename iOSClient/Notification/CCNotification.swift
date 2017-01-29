@@ -174,7 +174,10 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
                 cell.icon.image = image
             }
             
-            cell.date.text = DateFormatter.localizedString(from: notification.date, dateStyle: .medium, timeStyle: .medium)
+            //
+            //cell.date.text = DateFormatter.localizedString(from: notification.date, dateStyle: .medium, timeStyle: .medium)
+            //
+            cell.date.text = CCUtility.dateDiff(notification.date)
             cell.subject.text = notification.subject
             cell.message.text = notification.message
         }

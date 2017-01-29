@@ -330,27 +330,6 @@
 }
 
 //
-// Method called by the system when all the background task has end
-//
-- (void)application:(UIApplication *)application handleEventsForBackgroundURLSession:(NSString *)identifier completionHandler:(void (^)())completionHandler
-{
-    NSLog(@"[LOG] Start completition handler from background - identifier : %@", identifier);
-    
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 25 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        
-        [[CCNetworking sharedNetworking] automaticDownloadInError];
-        [[CCNetworking sharedNetworking] automaticUploadInError];
-        
-        self.backgroundSessionCompletionHandler = completionHandler;
-        void (^completionHandler)() = self.backgroundSessionCompletionHandler;
-        self.backgroundSessionCompletionHandler = nil;
-        completionHandler();
-        
-        NSLog(@"[LOG] End 25 sec. completition handler - identifier : %@", identifier);
-    });
-}
-
-//
 // Application Initialized
 //
 - (void)applicationInitialized
@@ -1123,6 +1102,27 @@
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Operation Networking & Session =====
 #pragma --------------------------------------------------------------------------------------------
+
+//
+// Method called by the system when all the background task has end
+//
+- (void)application:(UIApplication *)application handleEventsForBackgroundURLSession:(NSString *)identifier completionHandler:(void (^)())completionHandler
+{
+    NSLog(@"[LOG] Start completition handler from background - identifier : %@", identifier);
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 25 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        
+        [[CCNetworking sharedNetworking] automaticDownloadInError];
+        [[CCNetworking sharedNetworking] automaticUploadInError];
+        
+        self.backgroundSessionCompletionHandler = completionHandler;
+        void (^completionHandler)() = self.backgroundSessionCompletionHandler;
+        self.backgroundSessionCompletionHandler = nil;
+        completionHandler();
+        
+        NSLog(@"[LOG] End 25 sec. completition handler - identifier : %@", identifier);
+    });
+}
 
 - (void)cancelAllOperations
 {
