@@ -135,6 +135,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         
         // COLOR_SEPARATOR_TABLE
         self.tableView.separatorColor = UIColor(colorLiteralRed: 153.0/255.0, green: 153.0/255.0, blue: 153.0/255.0, alpha: 0.2)
+        self.tableView.tableFooterView = UIView()
         
         // Encrypted mode
         encryptedButton.image = UIImage(named:image_shareExtEncrypt)?.withRenderingMode(.automatic)
@@ -725,6 +726,8 @@ extension DocumentPickerViewController: UITableViewDataSource {
         
         if metadata.directory && CCCoreData.isDirectoryLock(lockServerUrl, activeAccount: activeAccount) && (passcode?.characters.count)! > 0 {
             cell.StatusImageView.image = UIImage(named: image_passcode)
+        } else {
+            cell.StatusImageView.image = nil
         }
         
         return cell

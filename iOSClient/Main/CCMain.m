@@ -1033,25 +1033,26 @@
 - (void)getNotificationsOfServerSuccess:(NSArray *)listOfNotifications
 {
     AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    NSString *old = @"", *new = @"";
     
     // Order by date
-        
-    NSArray *sorted = [listOfNotifications sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+    NSArray *sortedListOfNotifications = [listOfNotifications sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
             
         OCNotifications *notification1 = obj1, *notification2 = obj2;
         
         return [notification2.date compare: notification1.date];
         
-        /*
-        if ([notification1.date compare: notification2.date] == NSOrderedDescending) {
-            return NSOrderedDescending;
-        } else {
-            return NSOrderedAscending;
-        }
-        */
     }];
-        
-    appDelegate.listOfNotifications = [[NSMutableArray alloc] initWithArray:sorted];
+    
+    // verify if listOfNotifications is changed
+    for (OCNotifications *notification in listOfNotifications)
+        new = [new stringByAppendingString:@(notification.idNotification).stringValue];
+    for (OCNotifications *notification in appDelegate.listOfNotifications)
+        old = [old stringByAppendingString:@(notification.idNotification).stringValue];
+
+    if (![new isEqualToString:old]) {
+        appDelegate.listOfNotifications = [[NSMutableArray alloc] initWithArray:sortedListOfNotifications];
+    }
     
     // Update NavigationBar
     if (!_isSelectedMode)
@@ -1075,71 +1076,6 @@
         
         [self presentViewController:notificationVC animated:YES completion:nil];
     }
-    
-    // Test if is already open, otherwise view the messages
-    //if ([JSAlertView isOpenAlertWindows])
-    //    return;
-    
-    
-    /*
-     for (NSString *idNotification in app.listOfNotifications) {
-     
-     OCNotifications *notification = [app.listOfNotifications objectForKey:idNotification];
-     
-     // No Action request
-     if ([notification.actions count] == 0) {
-     
-     [JSAlertView alert:notification.subject withTitle:nil buttons:@[NSLocalizedString(@"_close_", nil),NSLocalizedString(@"_postpone_", nil)] withCompletionHandler:^(NSInteger buttonIndex, NSString *buttonTitle) {
-     
-     NSLog(@"Pressed %@ at index %ld", buttonTitle, (long)buttonIndex);
-     
-     if ([buttonTitle isEqualToString:NSLocalizedString(@"_close_", nil)]) {
-     
-     if ([app.typeCloud isEqualToString:typeCloudOwnCloud] || [app.typeCloud isEqualToString:typeCloudNextcloud]) {
-     
-     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
-     
-     metadataNet.action  = actionSetNotificationServer;
-     metadataNet.identifier = idNotification;
-     metadataNet.options = @"DELETE";
-     metadataNet.serverUrl =  [NSString stringWithFormat:@"%@/%@/%@", app.activeUrl, k_url_acces_remote_notification_api, idNotification];
-     
-     [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
-     }
-     }
-     }];
-     }
-     
-     // Action request
-     else {
-     
-     NSMutableArray *buttons = [NSMutableArray new];
-     for (OCNotificationsAction *action in notification.actions)
-     [buttons addObject:action.label];
-     
-     // Add button postpone
-     [buttons addObject:NSLocalizedString(@"_postpone_", nil)];
-     
-     [JSAlertView alert:notification.subject withTitle:nil buttons:buttons withCompletionHandler:^(NSInteger buttonIndex, NSString *buttonTitle) {
-     
-     NSLog(@"Pressed %@ at index %ld", buttonTitle, (long)buttonIndex);
-     
-     for (OCNotificationsAction *action in notification.actions)
-     if ([action.label isEqualToString:buttonTitle]) {
-     
-     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
-     
-     metadataNet.action  = actionSetNotificationServer;
-     metadataNet.identifier = idNotification;
-     metadataNet.serverUrl =  action.link;
-     metadataNet.options = action.type;
-     
-     [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
-     }
-     }];
-     }
-     }
-     */
 }
 
 #pragma --------------------------------------------------------------------------------------------
