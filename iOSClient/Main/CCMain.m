@@ -1051,7 +1051,11 @@
         old = [old stringByAppendingString:@(notification.idNotification).stringValue];
 
     if (![new isEqualToString:old]) {
+        
         appDelegate.listOfNotifications = [[NSMutableArray alloc] initWithArray:sortedListOfNotifications];
+        
+        // reload Notification view
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"notificationReloadData" object:nil];
     }
     
     // Update NavigationBar
@@ -1071,8 +1075,6 @@
     if ([app.listOfNotifications count] > 0) {
         
         CCNotification *notificationVC = [[UIStoryboard storyboardWithName:@"CCNotification" bundle:nil] instantiateViewControllerWithIdentifier:@"CCNotification"];
-        
-        notificationVC.view.superview.frame = CGRectMake(100,100,self.view.bounds.size.width-100,self.view.bounds.size.height-100);
         
         [self presentViewController:notificationVC animated:YES completion:nil];
     }

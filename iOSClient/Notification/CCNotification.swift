@@ -38,6 +38,9 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
         self.tableView.separatorColor = UIColor(colorLiteralRed: 153.0/255.0, green: 153.0/255.0, blue: 153.0/255.0, alpha: 0.2)
         self.tableView.tableFooterView = UIView()
 
+        // Register to receive notification reload data
+        NotificationCenter.default.addObserver(self, selector: #selector(self.tableView.reloadData), name: Notification.Name("notificationReloadData"), object: nil)
+
         self.tableView.reloadData()
     }
     
@@ -48,9 +51,10 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
     
     func viewClose() {
         
-        self.dismiss(animated: true) { 
-            
-        }
+        // Stop listening notification reload data
+        NotificationCenter.default.removeObserver(self, name: Notification.Name("notificationReloadData"), object: nil);
+        
+        self.dismiss(animated: true, completion: nil)
     }
     
     // MARK: - Table
