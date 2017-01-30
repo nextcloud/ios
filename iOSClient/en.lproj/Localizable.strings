@@ -394,8 +394,6 @@
 "_paste_files_encrypted_"       = "Paste encrypted files";
 "_paste_cryptated_"             = "Paste encrypted file";
 
-"_error_remove_offline_"        = "Impossible to remove the offline";
-
 // Security
 
 "_reload_folder_"               = "Please reload folder";

@@ -4199,15 +4199,19 @@
         UIImage *iconHeader;
         BOOL lockDirectory = NO;
         
-        // calcolo lockServerUrl
-        NSString *lockServerUrl = [CCUtility stringAppendServerUrl:_localServerUrl addServerUrl:_metadata.fileNameData];
+        NSString *dirServerUrl = [CCUtility stringAppendServerUrl:_localServerUrl addServerUrl:_metadata.fileNameData];
+        NSString *upDir = [CCUtility deletingLastPathComponentFromServerUrl:dirServerUrl];
+        NSString *homeDir = [CCUtility getHomeServerUrlActiveUrl:app.activeUrl typeCloud:app.typeCloud];
+        
         // Directory bloccata ?
-        if ([CCCoreData isDirectoryLock:lockServerUrl activeAccount:app.activeAccount] && [[CCUtility getBlockCode] length] && app.sessionePasscodeLock == nil) lockDirectory = YES;
+        if ([CCCoreData isDirectoryLock:dirServerUrl activeAccount:app.activeAccount] && [[CCUtility getBlockCode] length] && app.sessionePasscodeLock == nil) lockDirectory = YES;
         
         iconHeader = [UIImage imageNamed:_metadata.iconName];
 
         NSString *cameraUploadFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:app.activeAccount];
         NSString *cameraUploadFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:app.activeAccount activeUrl:app.activeUrl typeCloud:app.typeCloud];
+        
+        
         
         [actionSheet addButtonWithTitle: _metadata.fileNamePrint
                                   image: iconHeader
@@ -4330,7 +4334,7 @@
                                     }];
         }
         
-        if (!lockDirectory) {
+        if (!lockDirectory && ([upDir isEqualToString:homeDir] || ![CCCoreData isOfflineDirectory:upDir activeAccount:app.activeAccount])) {
         
             [actionSheet addButtonWithTitle:titleOfflineFolder
                                       image:[UIImage imageNamed:image_actionSheetOffline]
@@ -4350,25 +4354,11 @@
                                             
                                         } else {
                                             
-                                            NSString *dir = [CCUtility stringAppendServerUrl:_localServerUrl addServerUrl:_metadata.fileNameData];
-                                            NSString *upDir = [CCUtility deletingLastPathComponentFromServerUrl:dir];
-                                            NSString *homeDir = [CCUtility getHomeServerUrlActiveUrl:app.activeUrl typeCloud:app.typeCloud];
-                                            
-                                            if (![upDir isEqualToString:homeDir] && [CCCoreData isOfflineDirectory:upDir activeAccount:app.activeAccount]) {
-                                            
-                                                [app messageNotification:@"_info_" description:@"_error_remove_offline_" visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeInfo];
-                                                    return;
-                                                    
-                                            }
-                                            
-                                            // remove offline folder
-                                            [CCCoreData setOfflineDirectory:dir offline:NO activeAccount:app.activeAccount];
-                                            
-                                            // remove all subfolder
+                                            // remove tag offline for all folder/subfolder/file
                                             NSArray *directories = [CCCoreData getOfflineDirectoryActiveAccount:app.activeAccount];
                                             
                                             for (TableDirectory *directory in directories)
-                                                if ([directory.serverUrl containsString:dir]) {
+                                                if ([directory.serverUrl containsString:dirServerUrl]) {
                                                     [CCCoreData setOfflineDirectory:directory.serverUrl offline:NO activeAccount:app.activeAccount];
                                                     [CCCoreData removeOfflineAllFileFromServerUrl:directory.serverUrl activeAccount:app.activeAccount];
                                                 }
@@ -4486,23 +4476,29 @@
                                     [self performSelector:@selector(cmdEncryptedDecryptedFile) withObject:nil afterDelay:0.1];
                                 }];
         
-        [actionSheet addButtonWithTitle:titoloOffline
-                                  image:[UIImage imageNamed:image_actionSheetOffline]
-                        backgroundColor:[UIColor whiteColor]
-                                 height: 50.0
-                                   type:AHKActionSheetButtonTypeDefault
-                                handler:^(AHKActionSheet *as) {
+        if (![CCCoreData isOfflineDirectory:_localServerUrl activeAccount:app.activeAccount]) {
+            
+            [actionSheet addButtonWithTitle:titoloOffline
+                                      image:[UIImage imageNamed:image_actionSheetOffline]
+                            backgroundColor:[UIColor whiteColor]
+                                     height: 50.0
+                                       type:AHKActionSheetButtonTypeDefault
+                                    handler:^(AHKActionSheet *as) {
                                     
-                                    // close swipe
-                                    [self setEditing:NO animated:YES];
+                                        // close swipe
+                                        [self setEditing:NO animated:YES];
                                     
-                                    if ([CCCoreData isOffline:_metadata.fileID activeAccount:app.activeAccount])
-                                        [self removeOffline:_metadata];
-                                    else
-                                        [self addOffline:_metadata];
-                                }];
-
-
+                                        if ([CCCoreData isOffline:_metadata.fileID activeAccount:app.activeAccount]) {
+                                        
+                                            [self removeOffline:_metadata];
+                                        
+                                        } else {
+                                        
+                                            [self addOffline:_metadata];
+                                        }
+                                    }];
+        }
+        
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_add_local_", nil)
                                   image:[UIImage imageNamed:image_actionSheetLocal]
                         backgroundColor:[UIColor whiteColor]
