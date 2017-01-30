@@ -362,9 +362,12 @@
         }
     }
     if (alertView.tag == alertOfflineFolder && buttonIndex == 1) {
-     
-        [[CCOfflineFolder sharedOfflineFolder] addRemoveOfflineFolder:[CCUtility stringAppendServerUrl:_localServerUrl addServerUrl:_metadata.fileNameData]];
-        [self performSelector:@selector(getDataSourceWithReloadTableView) withObject:nil afterDelay:0.5];
+        
+        NSString *dir = [CCUtility stringAppendServerUrl:_localServerUrl addServerUrl:_metadata.fileNameData];
+        
+        [[CCOfflineFolder sharedOfflineFolder] addOfflineFolder:dir];
+        
+        [self performSelector:@selector(getDataSourceWithReloadTableView) withObject:nil afterDelay:0.1];
     }
 }
 
@@ -4346,8 +4349,11 @@
                                             
                                         } else {
                                             
-                                            [[CCOfflineFolder sharedOfflineFolder] addRemoveOfflineFolder:[CCUtility stringAppendServerUrl:_localServerUrl addServerUrl:_metadata.fileNameData]];
-                                            [self performSelector:@selector(getDataSourceWithReloadTableView) withObject:nil afterDelay:0.5];
+                                            NSString *dir = [CCUtility stringAppendServerUrl:_localServerUrl addServerUrl:_metadata.fileNameData];
+                                            
+                                            [CCCoreData setOfflineDirectory:dir offline:NO activeAccount:app.activeAccount];
+                                            
+                                            [self performSelector:@selector(getDataSourceWithReloadTableView) withObject:nil];
                                         }
                                     }];
         }

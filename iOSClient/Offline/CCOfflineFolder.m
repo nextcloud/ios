@@ -78,31 +78,24 @@
 }
 
 //
-// Add - Remove Folder offline
+// Add Folder offline
 //
-- (void)addRemoveOfflineFolder:(NSString *)serverUrl
+- (void)addOfflineFolder:(NSString *)serverUrl
 {
-    BOOL offline = [CCCoreData isOfflineDirectory:serverUrl activeAccount:app.activeAccount];
     NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:app.activeAccount];
     
-    if (offline) {
+    // Set offline directory
+    [CCCoreData setOfflineDirectory:serverUrl offline:YES activeAccount:app.activeAccount];
         
-        [CCCoreData setOfflineDirectory:serverUrl offline:NO activeAccount:app.activeAccount];
+    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
         
-    } else {
+    metadataNet.action = actionReadFolder;
+    metadataNet.directoryID = directoryID;
+    metadataNet.priority = NSOperationQueuePriorityVeryHigh;
+    metadataNet.selector = selectorReadFolder;
+    metadataNet.serverUrl = serverUrl;
         
-        [CCCoreData setOfflineDirectory:serverUrl offline:YES activeAccount:app.activeAccount];
-        
-        CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
-        
-        metadataNet.action = actionReadFolder;
-        metadataNet.directoryID = directoryID;
-        metadataNet.priority = NSOperationQueuePriorityVeryHigh;
-        metadataNet.selector = selectorReadFolder;
-        metadataNet.serverUrl = serverUrl;
-        
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
-    }
+    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -168,53 +161,58 @@
         
         for (CCMetadata *metadata in metadatas) {
             
-            // no dir
-            if (metadata.directory)
-                continue;
-            
-            NSInteger typeFilename = [CCUtility getTypeFileName:metadata.fileName];
-            
-            // reject crypto
-            if (typeFilename == metadataTypeFilenameCrypto) continue;
-            
-            // Verify if the plist is complited
-            if (typeFilename == metadataTypeFilenamePlist) {
+            // dir recursive
+            if (metadata.directory) {
+                NSString *dir = [CCUtility stringAppendServerUrl:metadataNet.serverUrl addServerUrl:metadata.fileNameData];
                 
-                BOOL isCryptoComplete = NO;
-                NSString *fileNameCrypto = [CCUtility trasformedFileNamePlistInCrypto:metadata.fileName];
+                [[CCOfflineFolder sharedOfflineFolder] addOfflineFolder:dir];
                 
-                for (CCMetadata *completeMetadata in metadatas) {
+            } else {
+            
+                NSInteger typeFilename = [CCUtility getTypeFileName:metadata.fileName];
+            
+                // reject crypto
+                if (typeFilename == metadataTypeFilenameCrypto) continue;
+            
+                // Verify if the plist is complited
+                if (typeFilename == metadataTypeFilenamePlist) {
+                
+                    BOOL isCryptoComplete = NO;
+                    NSString *fileNameCrypto = [CCUtility trasformedFileNamePlistInCrypto:metadata.fileName];
+                
+                    for (CCMetadata *completeMetadata in metadatas) {
                     
-                    if (completeMetadata.cryptated == NO) continue;
-                    else  if ([completeMetadata.fileName isEqualToString:fileNameCrypto]) {
-                        isCryptoComplete = YES;
+                        if (completeMetadata.cryptated == NO) continue;
+                        else  if ([completeMetadata.fileName isEqualToString:fileNameCrypto]) {
+                            isCryptoComplete = YES;
+                            break;
+                        }
+                    }
+                    if (isCryptoComplete == NO) continue;
+                }
+        
+                // Error password
+                if (metadata.errorPasscode)
+                    continue;
+            
+                // Plist not download
+                if (metadata.cryptated && [metadata.title length] == 0)
+                    continue;
+            
+                // It's in session
+                BOOL recordInSession = NO;
+                for (TableMetadata *record in recordsInSessions) {
+                    if ([record.fileID isEqualToString:metadata.fileID]) {
+                        recordInSession = YES;
                         break;
                     }
                 }
-                if (isCryptoComplete == NO) continue;
+                if (recordInSession)
+                    continue;
+            
+                // Ohhhh INSERT
+                [metadatasForOfflineFolder addObject:metadata];
             }
-        
-            // Error password
-            if (metadata.errorPasscode)
-                continue;
-            
-            // Plist not download
-            if (metadata.cryptated && [metadata.title length] == 0)
-                continue;
-            
-            // It's in session
-            BOOL recordInSession = NO;
-            for (TableMetadata *record in recordsInSessions) {
-                if ([record.fileID isEqualToString:metadata.fileID]) {
-                    recordInSession = YES;
-                    break;
-                }
-            }
-            if (recordInSession)
-                continue;
-            
-            // Ohhhh INSERT
-            [metadatasForOfflineFolder addObject:metadata];
         }
         
         if ([metadatasForOfflineFolder count] > 0)

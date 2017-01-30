@@ -34,7 +34,7 @@
 + (CCOfflineFolder *)sharedOfflineFolder;
 
 - (void)readFolderOffline;
-- (void)addRemoveOfflineFolder:(NSString *)serverUrl;
+- (void)addOfflineFolder:(NSString *)serverUrl;
 
 - (void)verifyChangeMedatas:(NSArray *)allRecordMetadatas serverUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID account:(NSString *)account offline:(BOOL)offline;
 
