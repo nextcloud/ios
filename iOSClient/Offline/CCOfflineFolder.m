@@ -60,20 +60,28 @@
     if ([[app verifyExistsInQueuesDownloadSelector:selectorDownloadOffline] count] > 0)
         return;
     
+    NSString *father = @"";
     NSArray *directories = [CCCoreData getOfflineDirectoryActiveAccount:app.activeAccount];
     
     for (TableDirectory *directory in directories) {
         
-        CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
+        if (![directory.serverUrl containsString:father]) {
         
-        metadataNet.action = actionReadFolder;
-        metadataNet.date = [NSDate date];
-        metadataNet.directoryID = directory.directoryID;
-        metadataNet.priority = NSOperationQueuePriorityVeryLow;
-        metadataNet.selector = selectorOfflineFolder;
-        metadataNet.serverUrl = directory.serverUrl;
+            father = directory.serverUrl;
+            
+            CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
         
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+            metadataNet.action = actionReadFolder;
+            metadataNet.date = [NSDate date];
+            metadataNet.directoryID = directory.directoryID;
+            metadataNet.priority = NSOperationQueuePriorityVeryLow;
+            metadataNet.selector = selectorOfflineFolder;
+            metadataNet.serverUrl = directory.serverUrl;
+        
+            [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+            
+            NSLog(@"[LOG] Read offline directory : %@", directory.serverUrl);
+        }
     }
 }
 
@@ -96,6 +104,8 @@
     metadataNet.serverUrl = serverUrl;
         
     [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+    
+    NSLog(@"[LOG] Read offline directory : %@", serverUrl);
 }
 
 #pragma --------------------------------------------------------------------------------------------

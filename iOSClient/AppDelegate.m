@@ -358,7 +358,7 @@
         NSLog(@"[LOG] read file Offline");
         [[NSNotificationCenter defaultCenter] postNotificationName:@"readFileOffline" object:nil];
         
-        NSLog(@"[LOG]  read folder offline");
+        NSLog(@"[LOG] read folder offline");
         [[CCOfflineFolder sharedOfflineFolder] readFolderOffline];
         
     });

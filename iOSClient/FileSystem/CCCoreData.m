@@ -1112,7 +1112,18 @@
 + (NSArray *)getOfflineDirectoryActiveAccount:(NSString *)activeAccount
 {
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (offline == 1)", activeAccount];
-    return [TableDirectory MR_findAllWithPredicate:predicate];
+    NSArray *recordsTable = [TableDirectory MR_findAllWithPredicate:predicate];
+    
+    // Order by serverUrl
+    NSArray *sortedRecordsTable = [recordsTable sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+        
+        TableDirectory *record1 = obj1, *record2 = obj2;
+        
+        return (record1.serverUrl < record2.serverUrl);
+        
+    }];
+
+    return sortedRecordsTable;
 }
 
 + (void)setOfflineDirectory:(NSString *)serverUrl offline:(BOOL)offline activeAccount:(NSString *)activeAccount
