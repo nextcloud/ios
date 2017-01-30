@@ -337,6 +337,10 @@
         NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:app.activeAccount];
         if (serverUrl == nil) continue;
         
+        // if this file is on folder offline skip
+        if ([CCCoreData isOfflineDirectory:serverUrl activeAccount:app.activeAccount])
+            continue;
+
         CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
         
         metadataNet.action = actionReadFile;

@@ -258,6 +258,11 @@
         
         if (offline) {
             
+            // add flag offline
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [CCCoreData addOffline:metadata.fileID activeAccount:app.activeAccount];
+            });
+            
             if (![record.rev isEqualToString:metadata.rev ])
                 changeRev = YES;
             

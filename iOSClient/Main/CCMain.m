@@ -1835,6 +1835,7 @@
     // Offline Folder
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
         
+        // File is changed ??
         [[CCOfflineFolder sharedOfflineFolder] verifyChangeMedatas:metadatas serverUrl:metadataNet.serverUrl directoryID:metadataNet.directoryID account:app.activeAccount offline:NO];
     });
 
