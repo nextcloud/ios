@@ -1,5 +1,5 @@
 //
-//  CCOfflineFolder.m
+//  CCOfflineFileFolder.m
 //  Crypto Cloud Technology Nextcloud
 //
 //  Created by Marino Faggiana on 19/10/16.
@@ -21,29 +21,29 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#import "CCOfflineFolder.h"
+#import "CCOfflineFileFolder.h"
 
 #import "AppDelegate.h"
 #import "CCCoreData.h"
 #import "CCMain.h"
 
-@interface CCOfflineFolder ()
+@interface CCOfflineFileFolder ()
 {
     // local
 }
 @end
 
-@implementation CCOfflineFolder
+@implementation CCOfflineFileFolder
 
-+ (CCOfflineFolder *)sharedOfflineFolder {
-    static CCOfflineFolder *sharedOfflineFolder;
++ (CCOfflineFileFolder *)sharedOfflineFileFolder{
+    static CCOfflineFileFolder *sharedOfflineFileFolder;
     @synchronized(self)
     {
-        if (!sharedOfflineFolder) {
+        if (!sharedOfflineFileFolder) {
             
-            sharedOfflineFolder = [[CCOfflineFolder alloc] init];
+            sharedOfflineFileFolder = [[CCOfflineFileFolder alloc] init];
         }
-        return sharedOfflineFolder;
+        return sharedOfflineFileFolder;
     }
 }
 
@@ -180,7 +180,7 @@
                     
                     [CCCoreData addMetadata:metadata activeAccount:app.activeAccount activeUrl:app.activeUrl typeCloud:app.typeCloud context:nil];
                     
-                    [[CCOfflineFolder sharedOfflineFolder] addOfflineFolder:dir];
+                    [[CCOfflineFileFolder sharedOfflineFileFolder] addOfflineFolder:dir];
 
                 });
                 
@@ -346,7 +346,7 @@
             [app addNetworkingOperationQueue:app.netQueueDownload delegate:app.activeMain metadataNet:metadataNet];
         }
     
-        [[CCOfflineFolder sharedOfflineFolder] offlineFolderAnimationDirectory:[[NSArray alloc] initWithObjects:serverUrl, nil] callViewController:YES];
+        [[CCOfflineFileFolder sharedOfflineFileFolder] offlineFolderAnimationDirectory:[[NSArray alloc] initWithObjects:serverUrl, nil] callViewController:YES];
         
         [app.activeMain getDataSourceWithReloadTableView:directoryID fileID:nil selector:nil];
         

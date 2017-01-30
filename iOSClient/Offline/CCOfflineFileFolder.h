@@ -1,5 +1,5 @@
 //
-//  CCOfflineFolder.h
+//  CCOfflineFileFolder.h
 //  Crypto Cloud Technology Nextcloud
 //
 //  Created by Marino Faggiana on 19/10/16.
@@ -27,11 +27,11 @@
 #import "CCHud.h"
 #import "CCCellMain.h"
 
-@interface CCOfflineFolder : NSObject
+@interface CCOfflineFileFolder : NSObject
 
 @property (nonatomic, strong) CCHud *hud;
 
-+ (CCOfflineFolder *)sharedOfflineFolder;
++ (CCOfflineFileFolder *)sharedOfflineFileFolder;
 
 - (void)readFolderOffline;
 - (void)addOfflineFolder:(NSString *)serverUrl;

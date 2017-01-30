@@ -24,7 +24,7 @@
 #import "CCOffline.h"
 
 #import "AppDelegate.h"
-#import "CCOfflineFolder.h"
+#import "CCOfflineFileFolder.h"
 
 #pragma GCC diagnostic ignored "-Wundeclared-selector"
 
@@ -318,7 +318,7 @@
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
         
-        [[CCOfflineFolder sharedOfflineFolder] verifyChangeMedatas:[[NSArray alloc] initWithObjects:metadata, nil] serverUrl:metadataNet.serverUrl directoryID:metadataNet.directoryID account:app.activeAccount offline:NO];
+        [[CCOfflineFileFolder sharedOfflineFileFolder] verifyChangeMedatas:[[NSArray alloc] initWithObjects:metadata, nil] serverUrl:metadataNet.serverUrl directoryID:metadataNet.directoryID account:app.activeAccount offline:NO];
     });
     
     [self.tableView performSelector:@selector(reloadData) withObject:nil afterDelay:0.1];

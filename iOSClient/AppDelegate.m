@@ -33,7 +33,7 @@
 #import "CCManageAsset.h"
 #import "CCGraphics.h"
 #import "CCPhotosCameraUpload.h"
-#import "CCOfflineFolder.h"
+#import "CCOfflineFileFolder.h"
 #import "CCMain.h"
 #import "CCDetail.h"
 
@@ -359,7 +359,7 @@
         [[NSNotificationCenter defaultCenter] postNotificationName:@"readFileOffline" object:nil];
         
         NSLog(@"[LOG] read folder offline");
-        [[CCOfflineFolder sharedOfflineFolder] readFolderOffline];
+        [[CCOfflineFileFolder sharedOfflineFileFolder] readFolderOffline];
         
     });
     
@@ -389,7 +389,7 @@
         [directory addObject:record.serverUrl];
     
     if ([directory count] > 0)
-        [[CCOfflineFolder sharedOfflineFolder] offlineFolderAnimationDirectory:directory callViewController:YES];
+        [[CCOfflineFileFolder sharedOfflineFileFolder] offlineFolderAnimationDirectory:directory callViewController:YES];
 
 // ONLY BACKGROUND
     
