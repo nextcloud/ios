@@ -163,9 +163,16 @@
             
             // dir recursive
             if (metadata.directory) {
-                NSString *dir = [CCUtility stringAppendServerUrl:metadataNet.serverUrl addServerUrl:metadata.fileNameData];
                 
-                [[CCOfflineFolder sharedOfflineFolder] addOfflineFolder:dir];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    
+                    NSString *dir = [CCUtility stringAppendServerUrl:metadataNet.serverUrl addServerUrl:metadata.fileNameData];
+                    
+                    [CCCoreData addMetadata:metadata activeAccount:app.activeAccount activeUrl:app.activeUrl typeCloud:app.typeCloud context:nil];
+                    
+                    [[CCOfflineFolder sharedOfflineFolder] addOfflineFolder:dir];
+
+                });
                 
             } else {
             
