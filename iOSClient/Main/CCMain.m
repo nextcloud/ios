@@ -3031,7 +3031,7 @@
 
 - (void)removeOffline:(CCMetadata *)metadata
 {
-    [CCCoreData removeOfflineFromFileID:metadata.fileID activeAccount:app.activeAccount];
+    [CCCoreData removeOfflineFileID:metadata.fileID activeAccount:app.activeAccount];
     
     NSIndexPath *indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:metadata.fileID];
     if (indexPath) [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObjects:indexPath, nil] withRowAnimation:UITableViewRowAnimationAutomatic];
@@ -4351,8 +4351,27 @@
                                         } else {
                                             
                                             NSString *dir = [CCUtility stringAppendServerUrl:_localServerUrl addServerUrl:_metadata.fileNameData];
+                                            NSString *upDir = [CCUtility deletingLastPathComponentFromServerUrl:dir];
+                                            NSString *homeDir = [CCUtility getHomeServerUrlActiveUrl:app.activeUrl typeCloud:app.typeCloud];
                                             
+                                            if (![upDir isEqualToString:homeDir] && [CCCoreData isOfflineDirectory:upDir activeAccount:app.activeAccount]) {
+                                            
+                                                [app messageNotification:@"_info_" description:@"_error_remove_offline_" visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeInfo];
+                                                    return;
+                                                    
+                                            }
+                                            
+                                            // remove offline folder
                                             [CCCoreData setOfflineDirectory:dir offline:NO activeAccount:app.activeAccount];
+                                            
+                                            // remove all subfolder
+                                            NSArray *directories = [CCCoreData getOfflineDirectoryActiveAccount:app.activeAccount];
+                                            
+                                            for (TableDirectory *directory in directories)
+                                                if ([directory.serverUrl containsString:dir]) {
+                                                    [CCCoreData setOfflineDirectory:directory.serverUrl offline:NO activeAccount:app.activeAccount];
+                                                    [CCCoreData removeOfflineAllFileFromServerUrl:directory.serverUrl activeAccount:app.activeAccount];
+                                                }
                                             
                                             [self performSelector:@selector(getDataSourceWithReloadTableView) withObject:nil];
                                         }

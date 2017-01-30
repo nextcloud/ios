@@ -440,7 +440,7 @@
     if ([self.serverUrlLocal isEqualToString:@"Offline"]) {
         
         NSManagedObject *record = [dataSource objectAtIndex:indexPath.row];
-        [CCCoreData removeOfflineFromFileID:[record valueForKey:@"fileID"] activeAccount:app.activeAccount];
+        [CCCoreData removeOfflineFileID:[record valueForKey:@"fileID"] activeAccount:app.activeAccount];
     }
     
     if ([self.serverUrlLocal isEqualToString:@"Offline"] == NO) {

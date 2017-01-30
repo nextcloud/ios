@@ -120,7 +120,7 @@
 
 + (NSArray *)getRecordsTableMetadataPhotosCameraUpload:(NSString *)serverUrl activeAccount:(NSString *)activeAccount;
 
-+ (void)changeRevFileIDDB:(NSString *)revFileID revTo:(NSString *)revTo activeAccount:(NSString *)activeAccount;
++ (void)removeOfflineAllFileFromServerUrl:(NSString *)serverUrl activeAccount:(NSString *)activeAccount;
 
 // ===== Directory =====
 
@@ -161,7 +161,7 @@
 + (void)addOffline:(NSString *)fileID activeAccount:(NSString *)activeAccount;
 
 + (void)deleteLocalFileWithPredicate:(NSPredicate *)predicate;
-+ (void)removeOfflineFromFileID:(NSString *)fileID activeAccount:(NSString *)activeAccount;
++ (void)removeOfflineFileID:(NSString *)fileID activeAccount:(NSString *)activeAccount;
 
 + (void)renameLocalFileWithFileID:(NSString *)fileID fileNameTo:(NSString *)fileNameTo fileNamePrintTo:(NSString *)fileNamePrintTo activeAccount:(NSString *)activeAccount;
 + (void)updateLocalFileModel:(CCMetadata *)metadata activeAccount:(NSString *)activeAccount;

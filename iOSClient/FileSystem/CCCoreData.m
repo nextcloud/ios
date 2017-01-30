@@ -788,43 +788,6 @@
     return [self getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (session == %@) AND ((sessionTaskIdentifier != %i) OR (sessionTaskIdentifierPlist != %i))", activeAccount, upload_session_wwan, taskIdentifierDone, taskIdentifierDone] context:nil];
 }
 
-+ (void)changeRevFileIDDB:(NSString *)revFileID revTo:(NSString *)revTo activeAccount:(NSString *)activeAccount
-{
-    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
-    NSPredicate *predicate;
-    
-    // Metadata
-    predicate = [NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", revFileID, activeAccount];
-    TableMetadata *recordMetadata = [TableMetadata MR_findFirstWithPredicate:predicate inContext:context];
-    
-    if (recordMetadata) {
-        
-        TableMetadata *localRecord = [recordMetadata MR_inContext:context];
-            
-        localRecord.fileID = revTo;
-        localRecord.rev = revTo;
-        
-        // Aggiorniamo la data nella directory (ottimizzazione v 2.10)
-        [self setDateReadDirectoryID:recordMetadata.directoryID activeAccount:activeAccount];
-        
-        [context MR_saveToPersistentStoreAndWait];
-    }
-    
-    // File
-    predicate = [NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", revFileID, activeAccount];
-    TableLocalFile *recordLocalFile = [TableLocalFile MR_findFirstWithPredicate:predicate inContext:context];
-    
-    if (recordLocalFile) {
-        
-        TableLocalFile *localRecord = [recordLocalFile MR_inContext:context];
-            
-        localRecord.fileID = revTo;
-        localRecord.rev = revTo;
-        
-        [context MR_saveToPersistentStoreAndWait];
-    }
-}
-
 + (NSArray *)getRecordsTableMetadataPhotosCameraUpload:(NSString *)serverUrl activeAccount:(NSString *)activeAccount
 {
     NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
@@ -854,6 +817,20 @@
     else descriptor = [[NSSortDescriptor alloc] initWithKey:fieldOrder ascending:ascending selector:@selector(localizedCaseInsensitiveCompare:)];
     
     return [recordsPhotosCameraUpload sortedArrayUsingDescriptors:[NSArray arrayWithObjects:descriptor, nil]];
+}
+
++ (void)removeOfflineAllFileFromServerUrl:(NSString *)serverUrl activeAccount:(NSString *)activeAccount
+{
+    NSString *directoryID = [self getDirectoryIDFromServerUrl:serverUrl activeAccount:activeAccount];
+    
+    [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
+        
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@)", activeAccount, directoryID];
+        NSArray *records = [TableMetadata MR_findAllWithPredicate:predicate];
+        
+        for (TableMetadata *record in records)
+            [self removeOfflineFileID:record.fileID activeAccount:activeAccount];
+    }];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1299,7 +1276,7 @@
     }];
 }
 
-+ (void)removeOfflineFromFileID:(NSString *)fileID activeAccount:(NSString *)activeAccount
++ (void)removeOfflineFileID:(NSString *)fileID activeAccount:(NSString *)activeAccount
 {
     [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
         
