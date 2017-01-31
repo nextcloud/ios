@@ -1096,7 +1096,7 @@
         
         TableDirectory *record1 = obj1, *record2 = obj2;
         
-        return (record1.serverUrl < record2.serverUrl);
+        return [record1.serverUrl compare:record2.serverUrl];
         
     }];
 
