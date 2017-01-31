@@ -210,7 +210,6 @@ extern NSString *const BKPasscodeKeychainServiceName;
 // Metadata.Net SELECTOR
 #define selectorAddOffline              @"addOffline"
 #define selectorAddLocal                @"addLocal"
-#define selectorBrowseImages            @"browseImages"
 #define selectorCreateFolder            @"createFolder"
 #define selectorDecryptFile             @"decryptFile"
 #define selectorDelete                  @"delete"

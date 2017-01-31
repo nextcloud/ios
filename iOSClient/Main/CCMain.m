@@ -1202,7 +1202,7 @@
         [CCCoreData deleteFile:metadata serverUrl:serverUrl directoryUser:app.directoryUser typeCloud:app.typeCloud activeAccount:app.activeAccount];
     }
     
-    if ([selector isEqualToString:selectorLoadViewImage] || [selector isEqualToString:selectorBrowseImages]) {
+    if ([selector isEqualToString:selectorLoadViewImage]) {
         
         dispatch_async(dispatch_get_main_queue(), ^{
 
@@ -1385,8 +1385,8 @@
         }
     }
     
-    //selectorLoadViewImage & selectorBrowseImages
-    if ([selector isEqualToString:selectorLoadViewImage] || [selector isEqualToString:selectorBrowseImages]) {
+    //selectorLoadViewImage
+    if ([selector isEqualToString:selectorLoadViewImage]) {
         
         dispatch_async(dispatch_get_main_queue(), ^{
             
@@ -3082,31 +3082,6 @@
     
     NSIndexPath *indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:metadata.fileID];
     if (indexPath) [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObjects:indexPath, nil] withRowAnimation:UITableViewRowAnimationAutomatic];
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Browse Images =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)browseImages
-{
-    NSArray *records = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND ((typeFile == %@) OR (typeFile == %@))", app.activeAccount, _localDirectoryID, metadataTypeFile_image, metadataTypeFile_video] context:nil];
-    
-    if ([records count] == 0 || [self shouldPerformSegue:_localServerUrl] == NO) {
-        
-        [app messageNotification:@"_info_" description:@"_no_photo_load_" visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeInfo];
-        return;
-    }
-    
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.4 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        
-        _metadataSegue.fileID = nil;
-        _metadataSegue.directoryID = _localDirectoryID;
-        _metadataSegue.sessionSelector = selectorBrowseImages;
-        _metadataSegue.typeFile = metadataTypeFile_image;
-        
-        [self performSegueWithIdentifier:@"segueDetail" sender:self];
-    });
 }
 
 #pragma --------------------------------------------------------------------------------------------

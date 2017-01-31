@@ -370,8 +370,6 @@
 
 - (void)viewImage
 {
-    BOOL startDownloadBrowseImages = NO;
-    
     self.photoBrowser = [[MWPhotoBrowser alloc] initWithDelegate:self];
     _reload = NO;
     CCMetadata *metadata = [[CCMetadata alloc] init];
@@ -405,16 +403,6 @@
         // start from here ?
         if (self.metadataDetail.fileID && [metadata.fileID isEqualToString:self.metadataDetail.fileID])
             [self.photoBrowser setCurrentPhotoIndex:index];
-        
-        // here we can execute the first browse images
-        if ([self.metadataDetail.sessionSelector isEqualToString:selectorBrowseImages] && startDownloadBrowseImages == NO && [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID]] == NO && [metadata.session length] == 0) {
-            
-            NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account];
-            
-            [[CCNetworking sharedNetworking] downloadFile:metadata serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorBrowseImages selectorPost:nil session:download_session taskStatus:taskStatusResume delegate:nil];
-            
-            startDownloadBrowseImages = YES;
-        }
         
         if (metadata.cryptated) {
             
@@ -495,8 +483,8 @@
     if (self.sourceDirectory == sorceDirectoryLocal) directory = self.metadataDetail.directoryID;
     else directory = app.directoryUser;
 
-    // Download self.metadataSegue.sessionSelector = selectorBrowseImages;
-    if (metadata && [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", directory, metadata.fileID]] == NO && [metadata.session length] == 0 && [self.metadataDetail.sessionSelector isEqualToString:selectorBrowseImages] == NO)
+    // Download
+    if (metadata && [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", directory, metadata.fileID]] == NO && [metadata.session length] == 0)
         [self performSelector:@selector(downloadPhotoBrowser:) withObject:metadata afterDelay:0.1];
 }
 
@@ -746,15 +734,10 @@
 - (void)downloadPhotoBrowserSuccess:(CCMetadata *)metadataVar selector:(NSString *)selector
 {
     NSUInteger index = 0;
-    BOOL startDownloadBrowseImages;
-    BOOL indexFound = NO;
     
     // if a message for a directory of these
     if (![_dataSourceDirectoryID containsObject:metadataVar.directoryID])
         return;
-    
-    // is selector Browse Images ?
-    startDownloadBrowseImages = ([selector isEqualToString:selectorBrowseImages] ? NO : YES);
     
     for (NSUInteger i=0; i < [self.dataSourceImagesVideos count]; i++ ) {
         
@@ -764,20 +747,8 @@
         if ([metadataVar.fileID isEqualToString:metadata.fileID]) {
             
             index = i;
-            indexFound = YES;
+            break;
         }
-        
-        // next download browse imgage
-        if (startDownloadBrowseImages == NO && [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID]] == NO && [metadata.session length] == 0) {
-            
-            NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account];
-            
-            [[CCNetworking sharedNetworking] downloadFile:metadata serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorBrowseImages selectorPost:nil session:download_session taskStatus:taskStatusResume delegate:nil];
-            
-            startDownloadBrowseImages = YES;
-        }
-        
-        if (startDownloadBrowseImages && indexFound) break;
     }
     
     // do not reload is Video on air
