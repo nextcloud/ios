@@ -473,8 +473,12 @@
 - (void)reloadTable
 {
     // Datasource
-    if ([self.serverUrlLocal isEqualToString:@"Offline"])
-        dataSource = (NSMutableArray *)[CCCoreData getOfflineWithControlZombie:YES activeAccount:app.activeAccount directoryUser:app.directoryUser];
+    if ([self.serverUrlLocal isEqualToString:@"Offline"]) {
+        
+       // dataSource = (NSMutableArray *)[CCCoreData getOfflineWithControlZombie:YES activeAccount:app.activeAccount directoryUser:app.directoryUser];
+        
+        dataSource = [CCCoreData getHomeOfflineActiveAccount:app.activeAccount directoryUser:app.directoryUser];
+    }
     
     if ([self.serverUrlLocal isEqualToString:@"Offline"] == NO) {
         

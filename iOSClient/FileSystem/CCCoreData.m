@@ -1731,6 +1731,64 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Offline =====
+#pragma --------------------------------------------------------------------------------------------
+
++ (NSArray *)getHomeOfflineActiveAccount:(NSString *)activeAccount directoryUser:(NSString *)directoryUser
+{
+    NSMutableArray *metadatas = [NSMutableArray new];
+    NSArray *directories = [self getOfflineDirectoryActiveAccount:activeAccount];
+    NSString *father = @"";
+
+    // Add directory
+    
+    for (TableDirectory *directory in directories) {
+        
+        if (![directory.serverUrl containsString:father]) {
+            
+            father = directory.serverUrl;
+            
+            NSString *upDir = [CCUtility deletingLastPathComponentFromServerUrl:father];
+            NSString *directoryID = [self getDirectoryIDFromServerUrl:upDir activeAccount:activeAccount];
+            NSString *fileNamePrint = [father lastPathComponent];
+            
+            if (upDir && directoryID && fileNamePrint) {
+            
+                NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(directoryID == %@) AND (account == %@) AND (directory == 1) AND (fileNamePrint == %@)", directoryID, activeAccount, fileNamePrint];
+                CCMetadata *metadata = [self getMetadataWithPreficate:predicate context:nil];
+            
+                if (metadata)
+                    [metadatas addObject:metadata];
+            }
+        }
+    }
+    
+    // Add files
+    
+    NSArray *files = [self getTableLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (offline == 1)", activeAccount] controlZombie:YES activeAccount:activeAccount directoryUser:directoryUser];
+    
+    for (TableLocalFile *file in files) {
+        
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", file.fileID, activeAccount];
+        CCMetadata *metadata = [self getMetadataWithPreficate:predicate context:nil];
+        
+        if (metadata) {
+            
+            // verify if is not on directory offline
+            
+            NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(directoryID == %@) AND (offline == 1) AND (account == %@)", metadata.directoryID, activeAccount];
+            
+            TableDirectory *directory = [TableDirectory MR_findFirstWithPredicate:predicate];
+            
+            if (!directory)
+                [metadatas addObject:metadata];
+        }
+    }
+    
+    return (NSArray *)metadatas;
+}
+
+#pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== File System =====
 #pragma --------------------------------------------------------------------------------------------
 
