@@ -1381,20 +1381,6 @@
     return [TableLocalFile MR_findAllWithPredicate:predicate];
 }
 
-+ (NSArray *)getOfflineWithControlZombie:(BOOL)controlZombie activeAccount:(NSString *)activeAccount directoryUser:(NSString *)directoryUser
-{
-    NSMutableArray *result = [[NSMutableArray alloc] init];
-    NSMutableArray *offline = [self getTableLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (offline == 1)", activeAccount] controlZombie:controlZombie activeAccount:activeAccount directoryUser:directoryUser];
-    
-    for (NSManagedObject *entity in offline) {
-        NSString *fileID = [entity valueForKey:@"fileID"];
-        CCMetadata *metadata = [self getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, activeAccount] context:nil];
-        if (metadata) [result addObject:[metadata copy]];
-    }
-    
-    return result;
-}
-
 + (NSArray *)getGeoInformationLocalFromFileID:(NSString *)fileID activeAccount:(NSString *)activeAccount
 {
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, activeAccount];

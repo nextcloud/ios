@@ -330,7 +330,7 @@
     
     NSArray *metadatas = [[NSArray alloc] init];
     
-    metadatas = [CCCoreData getOfflineWithControlZombie:YES activeAccount:app.activeAccount directoryUser:app.directoryUser];
+    //metadatas = [CCCoreData getOfflineWithControlZombie:YES activeAccount:app.activeAccount directoryUser:app.directoryUser];
     
     for (CCMetadata *metadata in metadatas) {
         
@@ -474,8 +474,6 @@
 {
     // Datasource
     if ([self.serverUrlLocal isEqualToString:@"Offline"]) {
-        
-       // dataSource = (NSMutableArray *)[CCCoreData getOfflineWithControlZombie:YES activeAccount:app.activeAccount directoryUser:app.directoryUser];
         
         dataSource = [CCCoreData getHomeOfflineActiveAccount:app.activeAccount directoryUser:app.directoryUser];
     }

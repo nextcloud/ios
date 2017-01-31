@@ -169,7 +169,6 @@
 + (BOOL)isOffline:(NSString *)fileID activeAccount:(NSString *)activeAccount;
 
 + (TableLocalFile *)getLocalFileWithFileID:(NSString *)fileID activeAccount:(NSString *)activeAccount;
-+ (NSArray *)getOfflineWithControlZombie:(BOOL)controlZombie activeAccount:(NSString *)activeAccount directoryUser:(NSString *)directoryUser;
 + (NSArray *)getTableLocalFileWithPredicate:(NSPredicate *)predicate;
 
 + (NSArray *)getGeoInformationLocalFromFileID:(NSString *)fileID activeAccount:(NSString *)activeAccount;
