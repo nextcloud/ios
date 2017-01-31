@@ -3285,28 +3285,6 @@
     __block BOOL nuovoAscendente;
     UIImage *image;
     
-    // ITEM THUMBS ------------------------------------------------------------------------------------------------------
-    
-    if (app.browseItem == nil) app.browseItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_browse_images_", nil)
-                                                                                         subtitle:@""
-                                                                                            image:[UIImage imageNamed:image_thumbs]
-                                                                                 highlightedImage:nil
-                                                                                           action:^(REMenuItem *item) {
-                                                                                               
-                                                                                               [self browseImages];
-                                                                                           }];
-    
-    else app.browseItem = [app.browseItem initWithTitle:NSLocalizedString(@"_browse_images_", nil)
-                                                               subtitle:@""
-                                                                  image:[UIImage imageNamed:image_thumbs]
-                                                       highlightedImage:nil
-                                                                 action:^(REMenuItem *item) {
-                                                                     
-                                                                    [self browseImages];
-                                                                     
-                                                                 }];
-
-    
     // ITEM SELECT ----------------------------------------------------------------------------------------------------
     
     if (app.selezionaItem == nil) app.selezionaItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_select_", nil)
@@ -3490,8 +3468,8 @@
 
     // REMENU --------------------------------------------------------------------------------------------------------------
 
-    if (app.reMainMenu == nil) app.reMainMenu = [[REMenu alloc] initWithItems:@[app.browseItem, app.selezionaItem, app.ordinaItem, app.ascendenteItem, app.alphabeticItem, app.typefileItem, app.dateItem, app.directoryOnTopItem]];
-    else app.reMainMenu = [app.reMainMenu initWithItems:@[app.browseItem, app.selezionaItem, app.ordinaItem, app.ascendenteItem, app.alphabeticItem, app.typefileItem, app.dateItem, app.directoryOnTopItem]];
+    if (app.reMainMenu == nil) app.reMainMenu = [[REMenu alloc] initWithItems:@[app.selezionaItem, app.ordinaItem, app.ascendenteItem, app.alphabeticItem, app.typefileItem, app.dateItem, app.directoryOnTopItem]];
+    else app.reMainMenu = [app.reMainMenu initWithItems:@[app.selezionaItem, app.ordinaItem, app.ascendenteItem, app.alphabeticItem, app.typefileItem, app.dateItem, app.directoryOnTopItem]];
     
     app.reMainMenu.imageOffset = CGSizeMake(5, -1);
     

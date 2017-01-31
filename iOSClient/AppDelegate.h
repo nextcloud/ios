@@ -102,7 +102,6 @@
 
 // Remenu
 @property (nonatomic, strong) REMenu *reMainMenu;
-@property (nonatomic, strong) REMenuItem *browseItem;
 @property (nonatomic, strong) REMenuItem *selezionaItem;
 @property (nonatomic, strong) REMenuItem *directoryOnTopItem;
 @property (nonatomic, strong) REMenuItem *ordinaItem;
