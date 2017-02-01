@@ -109,7 +109,6 @@
     // Create a new view controller and pass suitable data.
     CCOfflinePageContent *pageContentViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"OfflinePageContentViewController"];
     
-   // pageContentViewController.imageFile = self.pageImages[index];
     pageContentViewController.pageIndex = index;
     pageContentViewController.pageType = self.pageType[index];
     

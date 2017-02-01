@@ -33,6 +33,7 @@
 
 
 @property (nonatomic, strong) CCMetadata *metadata;
+
 @property (nonatomic, strong) NSString *fileIDPhoto;
 @property (nonatomic, strong) NSString *directoryIDPhoto;
 

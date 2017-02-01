@@ -222,7 +222,7 @@
     if ([_pageType isEqualToString:pageOfflineOffline]) {
         
         NSManagedObject *record = [dataSource objectAtIndex:indexPath.row];
-        self.fileIDPhoto = [record valueForKey:@"fileID"];
+        _fileIDPhoto = [record valueForKey:@"fileID"];
         _metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", self.fileIDPhoto, app.activeAccount] context:nil];
     }
     
@@ -252,12 +252,21 @@
 
 -(void)performSegueDirectoryWithControlPasscode
 {
-    CCOffline *vc = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"OfflineViewController"];
+    CCOfflinePageContent *vc = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"OfflinePageContentViewController"];
     
-    NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:app.activeAccount];
+    NSString *serverUrl;
     
-    //vc.localServerUrl = [CCUtility stringAppendServerUrl:serverUrl addServerUrl:_metadata.fileName];
-    //vc.typeOfController = _typeOfController;
+    if ([_pageType isEqualToString:pageOfflineOffline] && !_localServerUrl) {
+    
+        serverUrl = [CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:app.activeAccount];
+        
+    } else {
+        
+        serverUrl = _localServerUrl;
+    }
+        
+    vc.localServerUrl = [CCUtility stringAppendServerUrl:serverUrl addServerUrl:_metadata.fileName];
+    vc.pageType = _pageType;
     
     [self.navigationController pushViewController:vc animated:YES];
 }
