@@ -37,6 +37,21 @@
 
 @implementation CCOffline
 
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Init =====
+#pragma --------------------------------------------------------------------------------------------
+
+- (id)initWithCoder:(NSCoder *)aDecoder
+{
+    if (self = [super initWithCoder:aDecoder])  {
+        
+        //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadTable) name:@"reloadTableFavorite" object:nil];
+        
+        app.activeOffline = self;
+    }
+    return self;
+}
+
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== View =====
@@ -47,7 +62,9 @@
     [super viewDidLoad];
     
     // Create data model
-    _pageType = @[@"Offline", @"Local"];
+    _pageType = @[pageOfflineOffline, pageOfflineLocal];
+    _currentPageType = pageOfflineOffline;
+    self.title = NSLocalizedString(@"_offline_", nil);
     
     // Create page view controller
     self.pageViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"OfflinePageViewController"];
@@ -139,23 +156,6 @@
 /*
 - (void)pageViewController:(UIPageViewController *)pageViewController willTransitionToViewControllers:(NSArray<UIViewController *> *)pendingViewControllers
 {
-    CCOfflinePageContent *vc = (CCOfflinePageContent *)pendingViewControllers[0];
-    NSString *serverUrl = vc.localServerUrl;
-    NSString *pageType = vc.pageType;
-    
-    if ([pageType isEqualToString:@"Offline"]) {
-        if (serverUrl)
-            self.title = @"Offline";
-        else
-            self.title = @"Offline";
-    }
-    
-    if ([pageType isEqualToString:@"Local"]) {
-        if ([serverUrl isEqualToString:[CCUtility getDirectoryLocal]])
-            self.title = @"Local";
-        else
-            self.title = @"Local";
-    }
 }
 */
 
@@ -164,24 +164,24 @@
     CCOfflinePageContent *vc = [self.pageViewController.viewControllers lastObject];
     
     NSString *serverUrl = vc.localServerUrl;
-    NSString *pageType = vc.pageType;
+    _currentPageType = vc.pageType;
 
-    if ([pageType isEqualToString:@"Offline"]) {
+    if ([_currentPageType isEqualToString:pageOfflineOffline]) {
         if (serverUrl)
-            self.title = @"Offline";
+            self.title = NSLocalizedString(@"_offline_", nil);
         else
-            self.title = @"Offline";
+            self.title = NSLocalizedString(@"_offline_", nil);
         
         UITabBarItem *item = [self.tabBarController.tabBar.items objectAtIndex:TabBarApplicationIndexOffline];
         item.selectedImage = [UIImage imageNamed:@"tabBarOffline"];
         item.image = [UIImage imageNamed:@"tabBarOffline"];
     }
     
-    if ([pageType isEqualToString:@"Local"]) {
+    if ([_currentPageType isEqualToString:pageOfflineLocal]) {
         if ([serverUrl isEqualToString:[CCUtility getDirectoryLocal]])
-            self.title = @"Local";
+            self.title = NSLocalizedString(@"_local_storage_", nil);
         else
-            self.title = @"Local";
+            self.title = NSLocalizedString(@"_local_storage_", nil);
         
         UITabBarItem *item = [self.tabBarController.tabBar.items objectAtIndex:TabBarApplicationIndexOffline];
         item.selectedImage = [UIImage imageNamed:@"tabBarLocal"];

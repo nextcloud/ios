@@ -309,6 +309,8 @@ extern NSString *const BKPasscodeKeychainServiceName;
 #define keyFileNameMask                 @"fileNameMask"
 #define keyFileNameMaskAutomaticPhotos  @"fileNameMaskAutomaticPhotos"
 
+#define pageOfflineOffline              @"Offline"
+#define pageOfflineLocal                @"Local"
 
 @interface CCAspect : NSObject
 

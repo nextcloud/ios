@@ -775,17 +775,11 @@
     item.image = [UIImage imageNamed:image_tabBarFile];
     item.selectedImage = [UIImage imageNamed:image_tabBarFile];
     
-    // Offline - Local
+    // Offline
     item = [tabBarController.tabBar.items objectAtIndex:TabBarApplicationIndexOffline];
-    if (app.isLocalStorage) {
-        [item setTitle:NSLocalizedString(@"_local_storage_", nil)];
-        item.image = [UIImage imageNamed:image_tabBarLocal];
-        item.selectedImage = [UIImage imageNamed:image_tabBarLocal];
-    } else {
-        [item setTitle:NSLocalizedString(@"_offline_", nil)];
-        item.image = [UIImage imageNamed:image_tabBarOffline];
-        item.selectedImage = [UIImage imageNamed:image_tabBarOffline];
-    }
+    [item setTitle:NSLocalizedString(@"_offline_", nil)];
+    item.image = [UIImage imageNamed:image_tabBarOffline];
+    item.selectedImage = [UIImage imageNamed:image_tabBarOffline];
     
     // Hide (PLUS)
     item = [tabBarController.tabBar.items objectAtIndex:TabBarApplicationIndexHide];

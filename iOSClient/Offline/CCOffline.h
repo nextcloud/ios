@@ -29,5 +29,6 @@
 
 @property (strong, nonatomic) UIPageViewController *pageViewController;
 @property (strong, nonatomic) NSArray *pageType;
+@property (strong, nonatomic) NSString *currentPageType;
 
 @end
