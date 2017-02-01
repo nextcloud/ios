@@ -641,7 +641,7 @@
                         [nvc popToRootViewControllerAnimated:NO];
                 
                     if ([nvc.topViewController isKindOfClass:[CCOffline class]])
-                        [(CCOffline *)nvc.topViewController forcedSwitchOffline];
+                        NSLog(@"ERROR");//[(CCOffline *)nvc.topViewController forcedSwitchOffline];
                 }
             
                 [tbc setSelectedIndex:TabBarApplicationIndexOffline];
@@ -655,7 +655,7 @@
         
                 UINavigationController *ncOffline = [tbc.viewControllers objectAtIndex:TabBarApplicationIndexOffline];
                 if ([ncOffline.topViewController isKindOfClass:[CCOffline class]])
-                    [(CCOffline *)ncOffline.topViewController forcedSwitchOffline];
+                    NSLog(@"ERROR");//[(CCOffline *)ncOffline.topViewController forcedSwitchOffline];
             
                 [tbc setSelectedIndex:TabBarApplicationIndexOffline];
             }

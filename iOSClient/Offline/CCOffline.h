@@ -25,40 +25,9 @@
 
 #import "CCOfflinePageContent.h"
 
-
-#import "UIScrollView+EmptyDataSet.h"
-#import "TWMessageBarManager.h"
-#import "AHKActionSheet.h"
-#import "CCCellOffline.h"
-#import "CCUtility.h"
-#import "CCCoreData.h"
-#import "CCMain.h"
-#import "CCGraphics.h"
-#import "CCAccountWeb.h"
-#import "CCBancomat.h"
-#import "CCCartaDiCredito.h"
-#import "CCCartaIdentita.h"
-#import "CCContoCorrente.h"
-#import "CCNote.h"
-#import "CCPassaporto.h"
-#import "CCPatenteGuida.h"
-
-@interface CCOffline : UIViewController <UIPageViewControllerDataSource, UITableViewDataSource, UITableViewDelegate, UIDocumentInteractionControllerDelegate, UIActionSheetDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, CCAccountWebDelegate, CCBancomatDelegate, CCCartaDiCreditoDelegate, CCCartaIdentitaDelegate, CCContoCorrenteDelegate, CCNoteDelegate, CCPassaportoDelegate, CCPatenteGuidaDelegate>
+@interface CCOffline : UIViewController <UIPageViewControllerDataSource, UIPageViewControllerDelegate>
 
 @property (strong, nonatomic) UIPageViewController *pageViewController;
 @property (strong, nonatomic) NSArray *pageType;
-
-
-@property (nonatomic, strong) CCMetadata *metadata;
-@property (nonatomic, strong) NSString *fileIDPhoto;
-@property (nonatomic, strong) NSString *directoryIDPhoto;
-
-@property (nonatomic, strong) NSString *localServerUrl;
-@property (nonatomic, strong) NSString *typeOfController;
-
-@property (nonatomic, weak) CCDetail *detailViewController;
-@property (nonatomic, strong) UIDocumentInteractionController *docController;
-
-- (void)forcedSwitchOffline;
 
 @end
