@@ -4676,10 +4676,6 @@
         NSArray *recordsTableMetadata = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@)", app.activeAccount, directoryID] fieldOrder:[CCUtility getOrderSettings] ascending:[CCUtility getAscendingSettings]];
     
         _sectionDataSource = [CCSection creataDataSourseSectionTableMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:_directoryGroupBy replaceDateToExifDate:NO activeAccount:app.activeAccount];
-    
-        // if DataSource has no records, Data Nil
-        //if ([_sectionDataSource.allRecordsDataSource count] == 0)
-        //    _dateReadDataSource = nil;
         
     } else {
         

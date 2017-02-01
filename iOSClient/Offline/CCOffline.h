@@ -45,8 +45,9 @@
 @property (nonatomic, strong) CCMetadata *metadata;
 @property (nonatomic, strong) NSString *fileIDPhoto;
 @property (nonatomic, strong) NSString *directoryIDPhoto;
-@property (nonatomic, strong) NSString *serverUrlLocal;
-@property (nonatomic, strong) NSString *textView;
+
+@property (nonatomic, strong) NSString *localServerUrl;
+@property (nonatomic, strong) NSString *typeOfController;
 
 @property (nonatomic, weak) CCDetail *detailViewController;
 @property (nonatomic, strong) UIDocumentInteractionController *docController;

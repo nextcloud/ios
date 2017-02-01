@@ -75,14 +75,17 @@
     // Custom Cell
     [self.tableView registerNib:[UINib nibWithNibName:@"CCCellOffline" bundle:nil] forCellReuseIdentifier:@"OfflineCell"];
         
-    // Settings initial dir
-    if (![self.serverUrlLocal length]) self.serverUrlLocal = @"Offline";
+    // Settings initial
+    if (!_localServerUrl) {
+        _typeOfController = @"offline";
+        _localServerUrl = nil;
+    }
     
     // dataSource
-    dataSource = [[NSMutableArray alloc] init];
+    dataSource = [NSMutableArray new];
     
     // Metadata
-    self.metadata = [[CCMetadata alloc] init];
+    _metadata = [CCMetadata new];
     
     self.tableView.emptyDataSetDelegate = self;
     self.tableView.emptyDataSetSource = self;
@@ -90,14 +93,11 @@
     
     // button
     UIImage *image;
-    if ([self.serverUrlLocal isEqualToString:@"Offline"]) {
+    if ([_typeOfController isEqualToString:@"offline"]) {
         image = [UIImage imageNamed:image_navBarLocal];
-        self.textView = NSLocalizedString(@"_offline_", nil);
     } else image = [UIImage imageNamed:image_navBarOffline];
     UIBarButtonItem *_btn=[[UIBarButtonItem alloc]initWithImage:image style:UIBarButtonItemStylePlain target:self action:@selector(switchOfflineLocal)];
     self.navigationItem.rightBarButtonItem=_btn;
-    
-    [self reloadTable];
 }
 
 // Apparirà
@@ -108,9 +108,6 @@
     // Color
     [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar hidden:NO];
     [CCAspect aspectTabBar:self.tabBarController.tabBar hidden:NO];
-    
-    // title
-    self.title = self.textView;
     
     // Plus Button
     [app plusButtonVisibile:true];
@@ -124,7 +121,7 @@
 
 - (void)forcedSwitchOffline
 {
-     if ([self.serverUrlLocal isEqualToString:@"Offline"] == NO)
+     if ([_typeOfController isEqualToString:@"offline"] == NO)
          [self switchOfflineLocal];
 }
 
@@ -132,9 +129,8 @@
 {
     UIImage *imageBarButton;
     
-    if ([self.serverUrlLocal isEqualToString:@"Offline"]) {
+    if ([_typeOfController isEqualToString:@"offline"]) {
         
-        self.textView = NSLocalizedString(@"_local_storage_", nil);
         imageBarButton = [UIImage imageNamed:image_navBarOffline];
         
         // img Tab Bar
@@ -143,12 +139,11 @@
         item.selectedImage = [UIImage imageNamed:image_tabBarLocal];
         item.image = [UIImage imageNamed:image_tabBarLocal];
 
-        self.serverUrlLocal = [CCUtility getDirectoryLocal];
+        _localServerUrl = [CCUtility getDirectoryLocal];
         app.isLocalStorage = true;
         
     } else {
         
-        self.textView = NSLocalizedString(@"_offline_", nil);
         imageBarButton = [UIImage imageNamed:image_navBarLocal];
         
         // Image Tab Bar
@@ -157,7 +152,7 @@
         item.selectedImage = [UIImage imageNamed:image_tabBarOffline];
         item.image = [UIImage imageNamed:image_tabBarOffline];
 
-        self.serverUrlLocal = @"Offline";
+        _localServerUrl = @"offline";
         app.isLocalStorage = false;
     }
     
@@ -168,7 +163,7 @@
     [self.navigationController popToRootViewControllerAnimated:NO];
     
     // refresh
-    if ([self.serverUrlLocal isEqualToString:@"Offline"])
+    if ([_typeOfController isEqualToString:@"offline"])
         [[NSNotificationCenter defaultCenter] postNotificationName:@"initToHomeOffline" object:nil];
     else
         [self reloadTable];
@@ -180,7 +175,7 @@
 
 - (BOOL)emptyDataSetShouldDisplay:(UIScrollView *)scrollView
 {
-    if ([self.serverUrlLocal isEqualToString:@"Offline"] || [self.serverUrlLocal isEqualToString:[CCUtility getDirectoryLocal]]) return YES;
+    if ([_typeOfController isEqualToString:@"Offline"] || [_localServerUrl isEqualToString:[CCUtility getDirectoryLocal]]) return YES;
     else return NO;
 }
 
@@ -201,7 +196,7 @@
 
 - (UIImage *)imageForEmptyDataSet:(UIScrollView *)scrollView
 {
-    if ([self.serverUrlLocal isEqualToString:@"Offline"]) return [UIImage imageNamed:image_brandOffline];
+    if ([_typeOfController isEqualToString:@"offline"]) return [UIImage imageNamed:image_brandOffline];
     else return [UIImage imageNamed:image_brandLocal];
 }
 
@@ -209,7 +204,7 @@
 {
     NSString *text;
     
-    if ([self.serverUrlLocal isEqualToString:@"Offline"]) text = NSLocalizedString(@"_no_files_uploaded_", nil);
+    if ([_typeOfController isEqualToString:@"offline"]) text = NSLocalizedString(@"_no_files_uploaded_", nil);
     else text = NSLocalizedString(@"_no_files_uploaded_", nil);
     
     NSDictionary *attributes = @{NSFontAttributeName:[UIFont boldSystemFontOfSize:20.0f], NSForegroundColorAttributeName:COLOR_BRAND};
@@ -221,7 +216,7 @@
 {
     NSString *text;
     
-    if ([self.serverUrlLocal isEqualToString:@"Offline"]) text = NSLocalizedString(@"_tutorial_offline_view_", nil);
+    if ([_typeOfController isEqualToString:@"offline"]) text = NSLocalizedString(@"_tutorial_offline_view_", nil);
     else text = NSLocalizedString(@"_tutorial_local_view_", nil);
     
     NSMutableParagraphStyle *paragraph = [NSMutableParagraphStyle new];
@@ -296,7 +291,7 @@
 
 - (void)openWith:(CCMetadata *)metadata
 {
-    NSURL *url = [NSURL fileURLWithPath:[NSString stringWithFormat:@"%@/%@", self.serverUrlLocal, metadata.fileNamePrint]];
+    NSURL *url = [NSURL fileURLWithPath:[NSString stringWithFormat:@"%@/%@", _localServerUrl, metadata.fileNamePrint]];
     
     self.docController = [UIDocumentInteractionController interactionControllerWithURL:url];
     
@@ -361,12 +356,12 @@
 // more
 - (NSString *)tableView:(UITableView *)tableView titleForSwipeAccessoryButtonForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if ([self.serverUrlLocal isEqualToString:@"Offline"] == NO) {
+    if ([_typeOfController isEqualToString:@"offline"] == NO) {
         
         NSString *cameraFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:app.activeAccount];
         NSString *cameraFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:app.activeAccount activeUrl:app.activeUrl typeCloud:app.typeCloud];
         
-        CCMetadata *metadata = [CCUtility insertFileSystemInMetadata:[dataSource objectAtIndex:indexPath.row] directory:self.serverUrlLocal activeAccount:app.activeAccount cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath];
+        CCMetadata *metadata = [CCUtility insertFileSystemInMetadata:[dataSource objectAtIndex:indexPath.row] directory:_localServerUrl activeAccount:app.activeAccount cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath];
         
         if (metadata.directory)
             return nil;
@@ -383,7 +378,7 @@
     NSString *cameraFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:app.activeAccount];
     NSString *cameraFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:app.activeAccount activeUrl:app.activeUrl typeCloud:app.typeCloud];
 
-    self.metadata = [CCUtility insertFileSystemInMetadata:[dataSource objectAtIndex:indexPath.row] directory:self.serverUrlLocal activeAccount:app.activeAccount cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath];
+    self.metadata = [CCUtility insertFileSystemInMetadata:[dataSource objectAtIndex:indexPath.row] directory:_localServerUrl activeAccount:app.activeAccount cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath];
     
     [self setEditing:NO animated:YES];
     
@@ -407,8 +402,8 @@
     actionSheet.cancelButtonTitle = NSLocalizedString(@"_cancel_",nil);
 
     // assegnamo l'immagine anteprima se esiste, altrimenti metti quella standars
-    if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/.%@.ico", self.serverUrlLocal, self.metadata.fileNamePrint]])
-        iconHeader = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/.%@.ico", self.serverUrlLocal, self.metadata.fileNamePrint]];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/.%@.ico", _localServerUrl, self.metadata.fileNamePrint]])
+        iconHeader = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/.%@.ico", _localServerUrl, self.metadata.fileNamePrint]];
     else
         iconHeader = [UIImage imageNamed:self.metadata.iconName];
     
@@ -437,16 +432,16 @@
     // close swip
     [self setEditing:NO animated:YES];
     
-    if ([self.serverUrlLocal isEqualToString:@"Offline"]) {
+    if ([_typeOfController isEqualToString:@"offline"]) {
         
         NSManagedObject *record = [dataSource objectAtIndex:indexPath.row];
         [CCCoreData removeOfflineFileID:[record valueForKey:@"fileID"] activeAccount:app.activeAccount];
     }
     
-    if ([self.serverUrlLocal isEqualToString:@"Offline"] == NO) {
+    if ([_typeOfController isEqualToString:@"offline"] == NO) {
         
-        NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", self.serverUrlLocal,[dataSource objectAtIndex:indexPath.row]];
-        NSString *iconPath = [NSString stringWithFormat:@"%@/.%@.ico", self.serverUrlLocal,[dataSource objectAtIndex:indexPath.row]];
+        NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", _localServerUrl,[dataSource objectAtIndex:indexPath.row]];
+        NSString *iconPath = [NSString stringWithFormat:@"%@/.%@.ico", _localServerUrl,[dataSource objectAtIndex:indexPath.row]];
         
         [[NSFileManager defaultManager] removeItemAtPath:fileNamePath error:nil];
         [[NSFileManager defaultManager] removeItemAtPath:iconPath error:nil];
@@ -461,8 +456,7 @@
 
 - (void)initToHome
 {
-    self.serverUrlLocal = @"Offline";
-    self.textView = NSLocalizedString(@"_offline_", nil);
+    _typeOfController = @"Offline";
     
     UIBarButtonItem *_btn=[[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:image_navBarLocal] style:UIBarButtonItemStylePlain target:self action:@selector(switchOfflineLocal)];
     self.navigationItem.rightBarButtonItem=_btn;
@@ -472,24 +466,37 @@
 
 - (void)reloadTable
 {
-    // Datasource
-    if ([self.serverUrlLocal isEqualToString:@"Offline"]) {
+    [dataSource removeAllObjects];
+    
+    if ([_typeOfController isEqualToString:@"offline"]) {
         
-        dataSource = [CCCoreData getHomeOfflineActiveAccount:app.activeAccount directoryUser:app.directoryUser];
+        if (!_localServerUrl) {
+            
+            dataSource = (NSMutableArray*)[CCCoreData getHomeOfflineActiveAccount:app.activeAccount directoryUser:app.directoryUser];
+            
+            self.title = @"offline";
+            
+        } else {
+            
+            NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:_localServerUrl activeAccount:app.activeAccount];
+            NSArray *recordsTableMetadata = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@)", app.activeAccount, directoryID] fieldOrder:[CCUtility getOrderSettings] ascending:[CCUtility getAscendingSettings]];
+            
+            CCSectionDataSource *sectionDataSource = [CCSection creataDataSourseSectionTableMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:nil replaceDateToExifDate:NO activeAccount:app.activeAccount];
+            
+            for (NSString *key in sectionDataSource.allRecordsDataSource)
+                [dataSource  insertObject:[sectionDataSource.allRecordsDataSource objectForKey:key] atIndex:0 ];
+            
+            self.title = [_localServerUrl lastPathComponent];
+        }
     }
     
-    if ([self.serverUrlLocal isEqualToString:@"Offline"] == NO) {
+    if ([_typeOfController isEqualToString:@"local"]) {
         
-        [dataSource removeAllObjects];
-        
-        NSArray *subpaths = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:self.serverUrlLocal error:nil];
+        NSArray *subpaths = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:_localServerUrl error:nil];
         
         for (NSString *subpath in subpaths)
             if (![[subpath lastPathComponent] hasPrefix:@"."]) [dataSource addObject:subpath];
     }
-    
-    // title
-    self.title = self.textView;
     
     [self.tableView reloadData];
 }
@@ -519,28 +526,28 @@
     cell.selectedBackgroundView = selectionColor;
 
     // i am in Offline
-    if ([self.serverUrlLocal isEqualToString:@"Offline"]) {
+    if ([_typeOfController isEqualToString:@"offline"]) {
     
         self.metadata = [dataSource objectAtIndex:indexPath.row];
         cell.fileImageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, self.metadata.fileID]];
     }
     
     // i am in local
-    if ([self.serverUrlLocal isEqualToString:@"Offline"] == NO) {
+    if ([_typeOfController isEqualToString:@"offline"] == NO) {
         
         NSString *cameraFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:app.activeAccount];
         NSString *cameraFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:app.activeAccount activeUrl:app.activeUrl typeCloud:app.typeCloud];
         
-        self.metadata = [CCUtility insertFileSystemInMetadata:[dataSource objectAtIndex:indexPath.row] directory:self.serverUrlLocal activeAccount:app.activeAccount cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath];
+        self.metadata = [CCUtility insertFileSystemInMetadata:[dataSource objectAtIndex:indexPath.row] directory:_localServerUrl activeAccount:app.activeAccount cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath];
         
-        cell.fileImageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/.%@.ico", self.serverUrlLocal, self.metadata.fileNamePrint]];
+        cell.fileImageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/.%@.ico", _localServerUrl, self.metadata.fileNamePrint]];
         
         if (!cell.fileImageView.image) {
                         
-            UIImage *icon = [CCGraphics createNewImageFrom:self.metadata.fileID directoryUser:self.serverUrlLocal fileNameTo:self.metadata.fileID fileNamePrint:self.metadata.fileNamePrint size:@"m" imageForUpload:NO typeFile:self.metadata.typeFile writePreview:NO optimizedFileName:[CCUtility getOptimizedPhoto]];
+            UIImage *icon = [CCGraphics createNewImageFrom:self.metadata.fileID directoryUser:_localServerUrl fileNameTo:self.metadata.fileID fileNamePrint:self.metadata.fileNamePrint size:@"m" imageForUpload:NO typeFile:self.metadata.typeFile writePreview:NO optimizedFileName:[CCUtility getOptimizedPhoto]];
             
             if (icon) {
-                [CCGraphics saveIcoWithFileID:self.metadata.fileNamePrint image:icon writeToFile:[NSString stringWithFormat:@"%@/.%@.ico", self.serverUrlLocal, self.metadata.fileNamePrint] copy:NO move:NO fromPath:nil toPath:nil];
+                [CCGraphics saveIcoWithFileID:self.metadata.fileNamePrint image:icon writeToFile:[NSString stringWithFormat:@"%@/.%@.ico", _localServerUrl, self.metadata.fileNamePrint] copy:NO move:NO fromPath:nil toPath:nil];
                 cell.fileImageView.image = icon;
             }
         }
@@ -611,22 +618,20 @@
     // deselect row
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
         
-    if ([self.serverUrlLocal isEqualToString:@"Offline"]) {
+    if ([_typeOfController isEqualToString:@"offline"]) {
         
         NSManagedObject *record = [dataSource objectAtIndex:indexPath.row];
         self.fileIDPhoto = [record valueForKey:@"fileID"];
-        self.directoryIDPhoto = nil;
         self.metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", self.fileIDPhoto, app.activeAccount] context:nil];
     }
     
-    if ([self.serverUrlLocal isEqualToString:@"Offline"] == NO) {
+    if ([_typeOfController isEqualToString:@"local"]) {
         
         NSString *cameraFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:app.activeAccount];
         NSString *cameraFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:app.activeAccount activeUrl:app.activeUrl typeCloud:app.typeCloud];
         
-        self.metadata = [CCUtility insertFileSystemInMetadata:[dataSource objectAtIndex:indexPath.row] directory:self.serverUrlLocal activeAccount:app.activeAccount cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath];
+        self.metadata = [CCUtility insertFileSystemInMetadata:[dataSource objectAtIndex:indexPath.row] directory:_localServerUrl activeAccount:app.activeAccount cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath];
         self.fileIDPhoto = self.metadata.fileID;
-        self.directoryIDPhoto = self.serverUrlLocal;
     }
     
     // if is in download [do not touch]
@@ -640,17 +645,20 @@
     
     if ([self.metadata.type isEqualToString:metadataType_model]) [self openModel:self.metadata];
     
-    if (self.metadata.directory) [self performSegueDirectoryWithControlPasscode];
+    if (self.metadata.directory)
+        [self performSegueDirectoryWithControlPasscode];
 }
 
 -(void)performSegueDirectoryWithControlPasscode
 {
-    CCOffline *viewController = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"CCOfflineVC"];
+    CCOffline *vc = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"CCOfflineVC"];
     
-    viewController.serverUrlLocal = [CCUtility stringAppendServerUrl:self.serverUrlLocal addServerUrl:self.metadata.fileName];
-    viewController.textView = self.metadata.fileName;
+    NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:app.activeAccount];
+    
+    vc.localServerUrl = [CCUtility stringAppendServerUrl:serverUrl addServerUrl:_metadata.fileName];
+    vc.typeOfController = _typeOfController;
 
-    [self.navigationController pushViewController:viewController animated:YES];
+    [self.navigationController pushViewController:vc animated:YES];
 }
 
 #pragma --------------------------------------------------------------------------------------------
