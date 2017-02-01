@@ -616,7 +616,7 @@
                     <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
                     <navigationItem key="navigationItem" id="rBu-RQ-Y1t"/>
                     <connections>
-                        <segue destination="mtc-lf-PRo" kind="showDetail" id="UBW-f3-oFA"/>
+                        <segue destination="mtc-lf-PRo" kind="showDetail" identifier="segueDetail" id="UBW-f3-oFA"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="hcx-8L-qXq" userLabel="First Responder" sceneMemberID="firstResponder"/>

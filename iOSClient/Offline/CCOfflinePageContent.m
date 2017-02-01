@@ -51,6 +51,13 @@
 {
     [super viewWillAppear:animated];
     
+    // Color
+    [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar hidden:NO];
+    [CCAspect aspectTabBar:self.tabBarController.tabBar hidden:NO];
+    
+    // Plus Button
+    [app plusButtonVisibile:true];
+    
     [self reloadTable];
 }
 
