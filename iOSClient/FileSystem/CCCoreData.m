@@ -1256,18 +1256,6 @@
     }];
 }
 
-+ (void)addOffline:(NSString *)fileID activeAccount:(NSString *)activeAccount
-{
-    [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
-        
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, activeAccount];
-        TableLocalFile *record = [TableLocalFile MR_findFirstWithPredicate:predicate inContext:localContext];
-    
-        if (record)
-            record.offline = [NSNumber numberWithBool:YES];
-    }];
-}
-
 + (void)deleteLocalFileWithPredicate:(NSPredicate *)predicate
 {
     [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
@@ -1324,15 +1312,6 @@
     }];
 }
 
-+ (BOOL)isOffline:(NSString *)fileID activeAccount:(NSString *)activeAccount
-{
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(fileID == %@) AND (offline == 1) AND (account == %@)", fileID, activeAccount];
-    TableLocalFile *record = [TableLocalFile MR_findFirstWithPredicate:predicate];
-    
-    if (record) return YES;
-    else return NO;
-}
-
 + (TableLocalFile *)getLocalFileWithFileID:(NSString *)fileID activeAccount:(NSString *)activeAccount
 {
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, activeAccount];
@@ -1379,6 +1358,53 @@
 + (NSArray *)getTableLocalFileWithPredicate:(NSPredicate *)predicate
 {
     return [TableLocalFile MR_findAllWithPredicate:predicate];
+}
+
++ (void)addOffline:(NSString *)fileID activeAccount:(NSString *)activeAccount
+{
+    [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
+        
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, activeAccount];
+        TableLocalFile *record = [TableLocalFile MR_findFirstWithPredicate:predicate inContext:localContext];
+        
+        if (record)
+            record.offline = [NSNumber numberWithBool:YES];
+    }];
+}
+
++ (BOOL)isOffline:(NSString *)fileID activeAccount:(NSString *)activeAccount
+{
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(fileID == %@) AND (offline == 1) AND (account == %@)", fileID, activeAccount];
+    TableLocalFile *record = [TableLocalFile MR_findFirstWithPredicate:predicate];
+    
+    if (record) return YES;
+    else return NO;
+}
+
++ (NSArray *)getOfflineLocalFileActiveAccount:(NSString *)activeAccount directoryUser:(NSString *)directoryUser
+{
+    NSMutableArray *metadatas = [NSMutableArray new];
+    NSArray *files = [self getTableLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (offline == 1)", activeAccount] controlZombie:YES activeAccount:activeAccount directoryUser:directoryUser];
+    
+    for (TableLocalFile *file in files) {
+        
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", file.fileID, activeAccount];
+        CCMetadata *metadata = [self getMetadataWithPreficate:predicate context:nil];
+        
+        if (metadata) {
+            
+            // verify if is not on directory offline
+            
+            NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(directoryID == %@) AND (offline == 1) AND (account == %@)", metadata.directoryID, activeAccount];
+            
+            TableDirectory *directory = [TableDirectory MR_findFirstWithPredicate:predicate];
+            
+            if (!directory)
+                [metadatas addObject:metadata];
+        }
+    }
+
+    return metadatas;
 }
 
 + (NSArray *)getGeoInformationLocalFromFileID:(NSString *)fileID activeAccount:(NSString *)activeAccount

@@ -108,9 +108,38 @@
     NSLog(@"[LOG] Read offline directory : %@", serverUrl);
 }
 
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Read Folder offline =====
-#pragma --------------------------------------------------------------------------------------------
+// Graphics Animation Offline Folders
+//
+// User return BOOL animation for 1 directory only
+//
+
+- (BOOL)offlineFolderAnimationDirectory:(NSArray *)directory callViewController:(BOOL)callViewController
+{
+    BOOL animation = NO;
+    NSMutableOrderedSet *serversUrlInDownload = [[NSMutableOrderedSet alloc] init];
+    
+    NSMutableArray *metadatasNet = [app verifyExistsInQueuesDownloadSelector:selectorDownloadOffline];
+    
+    for (CCMetadataNet *metadataNet in metadatasNet)
+        [serversUrlInDownload addObject:metadataNet.serverUrl];
+    
+    /* Animation ON/OFF */
+    
+    for (NSString *serverUrl in directory) {
+        
+        animation = [serversUrlInDownload containsObject:serverUrl];
+        
+        if (callViewController) {
+            
+            NSString *serverUrlOffline = [CCUtility deletingLastPathComponentFromServerUrl:serverUrl];
+            CCMain *viewController = [app.listMainVC objectForKey:serverUrlOffline];
+            if (viewController)
+                [viewController offlineFolderGraphicsServerUrl:serverUrl animation:animation];
+        }
+    }
+    
+    return animation;
+}
 
 - (void)readFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
@@ -237,6 +266,61 @@
     });
 }
 
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Read File Offline =====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)readFileOffline
+{
+    if (app.activeAccount == nil || [CCUtility getHomeServerUrlActiveUrl:app.activeUrl typeCloud:app.typeCloud] == nil)
+        return;
+        
+    NSArray *metadatas = [CCCoreData getOfflineLocalFileActiveAccount:app.activeAccount directoryUser:app.directoryUser];
+    
+    for (CCMetadata *metadata in metadatas) {
+        
+        NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:app.activeAccount];
+        if (serverUrl == nil) continue;
+        
+        CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
+        
+        metadataNet.action = actionReadFile;
+        metadataNet.fileID = metadata.fileID;
+        metadataNet.fileName = metadata.fileName;
+        metadataNet.fileNamePrint = metadata.fileNamePrint;
+        metadataNet.serverUrl = serverUrl;
+        metadataNet.selector = selectorReadFileOffline;
+        metadataNet.priority = NSOperationQueuePriorityVeryLow;
+        
+        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+    }
+}
+
+- (void)readFileFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+{
+    // verify active user
+    TableAccount *recordAccount = [CCCoreData getActiveAccount];
+    
+    // File not present, remove it
+    if (errorCode == 404 && [recordAccount.account isEqualToString:metadataNet.account]) {
+        [CCCoreData deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileID == %@)", metadataNet.account, metadataNet.fileID]];
+        [CCCoreData deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileID == %@)", metadataNet.account, metadataNet.fileID]];
+    }
+}
+
+- (void)readFileSuccess:(CCMetadataNet *)metadataNet metadata:(CCMetadata *)metadata
+{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
+        
+        [self verifyChangeMedatas:[[NSArray alloc] initWithObjects:metadata, nil] serverUrl:metadataNet.serverUrl directoryID:metadataNet.directoryID account:app.activeAccount offline:NO];
+    });
+}
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Verify Metadatas =====
+#pragma --------------------------------------------------------------------------------------------
+
+
 // MULTI THREAD
 - (void)verifyChangeMedatas:(NSArray *)allRecordMetadatas serverUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID account:(NSString *)account offline:(BOOL)offline
 {
@@ -354,37 +438,5 @@
     });
 }
 
-// Graphics Animation Offline Folders
-//
-// User return BOOL animation for 1 directory only
-//
-
-- (BOOL)offlineFolderAnimationDirectory:(NSArray *)directory callViewController:(BOOL)callViewController
-{
-    BOOL animation = NO;
-    NSMutableOrderedSet *serversUrlInDownload = [[NSMutableOrderedSet alloc] init];
-    
-    NSMutableArray *metadatasNet = [app verifyExistsInQueuesDownloadSelector:selectorDownloadOffline];
-    
-    for (CCMetadataNet *metadataNet in metadatasNet)
-        [serversUrlInDownload addObject:metadataNet.serverUrl];
-    
-    /* Animation ON/OFF */
-    
-    for (NSString *serverUrl in directory) {
-        
-        animation = [serversUrlInDownload containsObject:serverUrl];
-        
-        if (callViewController) {
-            
-            NSString *serverUrlOffline = [CCUtility deletingLastPathComponentFromServerUrl:serverUrl];
-            CCMain *viewController = [app.listMainVC objectForKey:serverUrlOffline];
-            if (viewController)
-                [viewController offlineFolderGraphicsServerUrl:serverUrl animation:animation];
-        }
-    }
-    
-    return animation;
-}
 
 @end

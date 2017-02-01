@@ -158,7 +158,6 @@
 // ===== LocalFile =====
 
 + (void)addLocalFile:(CCMetadata *)metadata activeAccount:(NSString *)activeAccount;
-+ (void)addOffline:(NSString *)fileID activeAccount:(NSString *)activeAccount;
 
 + (void)deleteLocalFileWithPredicate:(NSPredicate *)predicate;
 + (void)removeOfflineFileID:(NSString *)fileID activeAccount:(NSString *)activeAccount;
@@ -166,10 +165,12 @@
 + (void)renameLocalFileWithFileID:(NSString *)fileID fileNameTo:(NSString *)fileNameTo fileNamePrintTo:(NSString *)fileNamePrintTo activeAccount:(NSString *)activeAccount;
 + (void)updateLocalFileModel:(CCMetadata *)metadata activeAccount:(NSString *)activeAccount;
 
-+ (BOOL)isOffline:(NSString *)fileID activeAccount:(NSString *)activeAccount;
-
 + (TableLocalFile *)getLocalFileWithFileID:(NSString *)fileID activeAccount:(NSString *)activeAccount;
 + (NSArray *)getTableLocalFileWithPredicate:(NSPredicate *)predicate;
+
++ (void)addOffline:(NSString *)fileID activeAccount:(NSString *)activeAccount;
++ (BOOL)isOffline:(NSString *)fileID activeAccount:(NSString *)activeAccount;
++ (NSArray *)getOfflineLocalFileActiveAccount:(NSString *)activeAccount directoryUser:(NSString *)directoryUser;
 
 + (NSArray *)getGeoInformationLocalFromFileID:(NSString *)fileID activeAccount:(NSString *)activeAccount;
 + (void)setGeoInformationLocalFromFileID:(NSString *)fileID exifDate:(NSDate *)exifDate exifLatitude:(NSString *)exifLatitude exifLongitude:(NSString *)exifLongitude activeAccount:(NSString *)activeAccount;

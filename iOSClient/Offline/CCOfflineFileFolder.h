@@ -36,6 +36,8 @@
 - (void)readFolderOffline;
 - (void)addOfflineFolder:(NSString *)serverUrl;
 
+- (void)readFileOffline;
+
 - (void)verifyChangeMedatas:(NSArray *)allRecordMetadatas serverUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID account:(NSString *)account offline:(BOOL)offline;
 
 - (BOOL)offlineFolderAnimationDirectory:(NSArray *)directory callViewController:(BOOL)callViewController;
