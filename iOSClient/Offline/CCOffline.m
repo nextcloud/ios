@@ -30,7 +30,7 @@
 
 @interface CCOffline ()
 {
-
+    UIPageControl *pageControl;
 }
 
 @end
@@ -58,9 +58,8 @@
     NSArray *viewControllers = @[startingViewController];
     [self.pageViewController setViewControllers:viewControllers direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
 
-
     // Change the size of page view controller
-    self.pageViewController.view.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height - 30);
+    self.pageViewController.view.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
     
     [self addChildViewController:_pageViewController];
     [self.view addSubview:_pageViewController.view];
@@ -137,6 +136,7 @@
     return 0;
 }
 
+/*
 - (void)pageViewController:(UIPageViewController *)pageViewController willTransitionToViewControllers:(NSArray<UIViewController *> *)pendingViewControllers
 {
     CCOfflinePageContent *vc = (CCOfflinePageContent *)pendingViewControllers[0];
@@ -155,6 +155,37 @@
             self.title = @"Local";
         else
             self.title = @"Local";
+    }
+}
+*/
+
+- (void)pageViewController:(UIPageViewController *)pageViewController didFinishAnimating:(BOOL)finished previousViewControllers:(NSArray<UIViewController *> *)previousViewControllers transitionCompleted:(BOOL)completed
+{
+    CCOfflinePageContent *vc = [self.pageViewController.viewControllers lastObject];
+    
+    NSString *serverUrl = vc.localServerUrl;
+    NSString *pageType = vc.pageType;
+
+    if ([pageType isEqualToString:@"Offline"]) {
+        if (serverUrl)
+            self.title = @"Offline";
+        else
+            self.title = @"Offline";
+        
+        UITabBarItem *item = [self.tabBarController.tabBar.items objectAtIndex:TabBarApplicationIndexOffline];
+        item.selectedImage = [UIImage imageNamed:@"tabBarOffline"];
+        item.image = [UIImage imageNamed:@"tabBarOffline"];
+    }
+    
+    if ([pageType isEqualToString:@"Local"]) {
+        if ([serverUrl isEqualToString:[CCUtility getDirectoryLocal]])
+            self.title = @"Local";
+        else
+            self.title = @"Local";
+        
+        UITabBarItem *item = [self.tabBarController.tabBar.items objectAtIndex:TabBarApplicationIndexOffline];
+        item.selectedImage = [UIImage imageNamed:@"tabBarLocal"];
+        item.image = [UIImage imageNamed:@"tabBarLocal"];
     }
 }
 

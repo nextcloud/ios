@@ -602,7 +602,6 @@
         <!--Offline Page Content-->
         <scene sceneID="gxD-z5-PYJ">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="hcx-8L-qXq" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <tableViewController storyboardIdentifier="OfflinePageContentViewController" extendedLayoutIncludesOpaqueBars="YES" id="9Lm-gl-WZM" customClass="CCOfflinePageContent" sceneMemberID="viewController">
                     <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" allowsSelectionDuringEditing="YES" rowHeight="60" sectionHeaderHeight="22" sectionFooterHeight="22" id="vzb-Ug-0wK">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
@@ -620,6 +619,7 @@
                         <segue destination="mtc-lf-PRo" kind="showDetail" id="UBW-f3-oFA"/>
                     </connections>
                 </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="hcx-8L-qXq" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="7119" y="1218"/>
         </scene>
