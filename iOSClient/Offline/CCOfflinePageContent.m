@@ -34,6 +34,7 @@
     self.tableView.emptyDataSetDelegate = self;
     self.tableView.emptyDataSetSource = self;
     self.tableView.tableFooterView = [UIView new];
+    self.tableView.separatorColor = COLOR_SEPARATOR_TABLE;
     
     // Type
     if ([self.pageType isEqualToString:@"Offline"] && !_localServerUrl) {
@@ -114,6 +115,11 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     CCCellOffline *cell = (CCCellOffline *)[tableView dequeueReusableCellWithIdentifier:@"OfflineCell" forIndexPath:indexPath];
+    CCMetadata *metadata;
+    
+    // Initialize
+    cell.statusImageView.image = nil;
+    cell.offlineImageView.image = nil;
     
     // change color selection
     UIView *selectionColor = [[UIView alloc] init];
@@ -123,8 +129,11 @@
     // i am in Offline
     if ([_pageType isEqualToString:@"Offline"]) {
         
-        self.metadata = [dataSource objectAtIndex:indexPath.row];
-        cell.fileImageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, self.metadata.fileID]];
+        metadata = [dataSource objectAtIndex:indexPath.row];
+        cell.fileImageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]];
+        
+        if (_metadata.cryptated) cell.offlineImageView.image = [UIImage imageNamed:image_offlinecrypto];
+        else cell.offlineImageView.image = [UIImage imageNamed:image_offline];
     }
     
     // i am in local
@@ -133,23 +142,23 @@
         NSString *cameraFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:app.activeAccount];
         NSString *cameraFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:app.activeAccount activeUrl:app.activeUrl typeCloud:app.typeCloud];
         
-        self.metadata = [CCUtility insertFileSystemInMetadata:[dataSource objectAtIndex:indexPath.row] directory:_localServerUrl activeAccount:app.activeAccount cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath];
+        metadata = [CCUtility insertFileSystemInMetadata:[dataSource objectAtIndex:indexPath.row] directory:_localServerUrl activeAccount:app.activeAccount cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath];
         
-        cell.fileImageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/.%@.ico", _localServerUrl, self.metadata.fileNamePrint]];
+        cell.fileImageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/.%@.ico", _localServerUrl, metadata.fileNamePrint]];
         
         if (!cell.fileImageView.image) {
             
-            UIImage *icon = [CCGraphics createNewImageFrom:self.metadata.fileID directoryUser:_localServerUrl fileNameTo:self.metadata.fileID fileNamePrint:self.metadata.fileNamePrint size:@"m" imageForUpload:NO typeFile:self.metadata.typeFile writePreview:NO optimizedFileName:[CCUtility getOptimizedPhoto]];
+            UIImage *icon = [CCGraphics createNewImageFrom:metadata.fileID directoryUser:_localServerUrl fileNameTo:metadata.fileID fileNamePrint:metadata.fileNamePrint size:@"m" imageForUpload:NO typeFile:metadata.typeFile writePreview:NO optimizedFileName:[CCUtility getOptimizedPhoto]];
             
             if (icon) {
-                [CCGraphics saveIcoWithFileID:self.metadata.fileNamePrint image:icon writeToFile:[NSString stringWithFormat:@"%@/.%@.ico", _localServerUrl, self.metadata.fileNamePrint] copy:NO move:NO fromPath:nil toPath:nil];
+                [CCGraphics saveIcoWithFileID:metadata.fileNamePrint image:icon writeToFile:[NSString stringWithFormat:@"%@/.%@.ico", _localServerUrl, metadata.fileNamePrint] copy:NO move:NO fromPath:nil toPath:nil];
                 cell.fileImageView.image = icon;
             }
         }
     }
     
     // color and font
-    if (self.metadata.cryptated) {
+    if (metadata.cryptated) {
         cell.labelTitle.textColor = COLOR_ENCRYPTED;
         //nameLabel.font = RalewayLight(13.0f);
         cell.labelInfoFile.textColor = [UIColor blackColor];
@@ -161,44 +170,42 @@
         //detailLabel.font = RalewayLight(9.0f);
     }
     
-    if (self.metadata.directory) {
-        cell.labelInfoFile.text = [CCUtility dateDiff:self.metadata.date];
+    if (metadata.directory) {
+        cell.labelInfoFile.text = [CCUtility dateDiff:metadata.date];
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     }
     
     // File name
-    cell.labelTitle.text = self.metadata.fileNamePrint;
+    cell.labelTitle.text = metadata.fileNamePrint;
     cell.labelInfoFile.text = @"";
     
     // Immagine del file, se non c'è l'anteprima mettiamo quella standard
     if (cell.fileImageView.image == nil)
-        cell.fileImageView.image = [UIImage imageNamed:self.metadata.iconName];
-    
-    cell.statusImageView.image = nil;
+        cell.fileImageView.image = [UIImage imageNamed:metadata.iconName];
     
     // it's encrypted ???
-    if (self.metadata.cryptated && [self.metadata.type isEqualToString:metadataType_model] == NO)
+    if (metadata.cryptated && [metadata.type isEqualToString:metadataType_model] == NO)
         cell.statusImageView.image = [UIImage imageNamed:image_lock];
     
     // it's in download mode
-    if ([self.metadata.session length] > 0 && [self.metadata.session rangeOfString:@"download"].location != NSNotFound)
+    if ([metadata.session length] > 0 && [metadata.session rangeOfString:@"download"].location != NSNotFound)
         cell.statusImageView.image = [UIImage imageNamed:image_attention];
     
     // text and length
-    if (self.metadata.directory) {
+    if (metadata.directory) {
         
-        cell.labelInfoFile.text = [CCUtility dateDiff:self.metadata.date];
+        cell.labelInfoFile.text = [CCUtility dateDiff:metadata.date];
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         
     } else {
         
-        NSString *date = [CCUtility dateDiff:self.metadata.date];
-        NSString *length = [CCUtility transformedSize:self.metadata.size];
+        NSString *date = [CCUtility dateDiff:metadata.date];
+        NSString *length = [CCUtility transformedSize:metadata.size];
         
-        if ([self.metadata.type isEqualToString:metadataType_model])
+        if ([metadata.type isEqualToString:metadataType_model])
             cell.labelInfoFile.text = [NSString stringWithFormat:@"%@", date];
         
-        if ([self.metadata.type isEqualToString:metadataType_file] || [self.metadata.type isEqualToString:metadataType_local])
+        if ([metadata.type isEqualToString:metadataType_file] || [metadata.type isEqualToString:metadataType_local])
             cell.labelInfoFile.text = [NSString stringWithFormat:@"%@, %@", date, length];
         
         cell.accessoryType = UITableViewCellAccessoryNone;
@@ -217,7 +224,7 @@
         
         NSManagedObject *record = [dataSource objectAtIndex:indexPath.row];
         self.fileIDPhoto = [record valueForKey:@"fileID"];
-        self.metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", self.fileIDPhoto, app.activeAccount] context:nil];
+        _metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", self.fileIDPhoto, app.activeAccount] context:nil];
     }
     
     if ([_pageType isEqualToString:@"Local"]) {
@@ -225,14 +232,14 @@
         NSString *cameraFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:app.activeAccount];
         NSString *cameraFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:app.activeAccount activeUrl:app.activeUrl typeCloud:app.typeCloud];
         
-        self.metadata = [CCUtility insertFileSystemInMetadata:[dataSource objectAtIndex:indexPath.row] directory:_localServerUrl activeAccount:app.activeAccount cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath];
-        self.fileIDPhoto = self.metadata.fileID;
+        _metadata = [CCUtility insertFileSystemInMetadata:[dataSource objectAtIndex:indexPath.row] directory:_localServerUrl activeAccount:app.activeAccount cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath];
+        _fileIDPhoto = _metadata.fileID;
     }
     
     // if is in download [do not touch]
-    if ([self.metadata.session length] > 0 && [self.metadata.session rangeOfString:@"download"].location != NSNotFound) return;
+    if ([_metadata.session length] > 0 && [_metadata.session rangeOfString:@"download"].location != NSNotFound) return;
     
-    if (([self.metadata.type isEqualToString:metadataType_file] || [self.metadata.type isEqualToString:metadataType_local]) && self.metadata.directory == NO) {
+    if (([_metadata.type isEqualToString:metadataType_file] || [_metadata.type isEqualToString:metadataType_local]) && _metadata.directory == NO) {
         
         if ([self shouldPerformSegue])
             [self performSegueWithIdentifier:@"segueDetail" sender:self];
@@ -240,7 +247,7 @@
     
     //if ([self.metadata.type isEqualToString:metadataType_model]) [self openModel:self.metadata];
     
-    if (self.metadata.directory)
+    if (_metadata.directory)
         [self performSegueDirectoryWithControlPasscode];
 }
 
@@ -290,7 +297,7 @@
         self.detailViewController = segue.destinationViewController;
     }
     
-    self.detailViewController.metadataDetail = self.metadata;
+    self.detailViewController.metadataDetail = _metadata;
     
     if (app.isLocalStorage) self.detailViewController.sourceDirectory = sorceDirectoryLocal;
     else self.detailViewController.sourceDirectory = sorceDirectoryOffline;
@@ -298,7 +305,7 @@
     self.detailViewController.dateFilterQuery = nil;
     self.detailViewController.isCameraUpload = NO;
     
-    [self.detailViewController setTitle:self.metadata.fileNamePrint];
+    [self.detailViewController setTitle:_metadata.fileNamePrint];
 }
 
 @end

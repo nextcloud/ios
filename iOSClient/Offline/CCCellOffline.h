@@ -27,6 +27,7 @@
 
 @property(nonatomic, weak) IBOutlet UIImageView *fileImageView;
 @property(nonatomic, weak) IBOutlet UIImageView *statusImageView;
+@property(nonatomic, weak) IBOutlet UIImageView *offlineImageView;
 
 @property(nonatomic, weak) IBOutlet UILabel *labelTitle;
 @property(nonatomic, weak) IBOutlet UILabel *labelInfoFile;
