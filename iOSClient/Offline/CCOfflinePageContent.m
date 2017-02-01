@@ -37,14 +37,13 @@
     self.tableView.separatorColor = COLOR_SEPARATOR_TABLE;
     
     // Type
-    if ([self.pageType isEqualToString:@"Offline"] && !_localServerUrl) {
+    if ([self.pageType isEqualToString:pageOfflineOffline] && !_localServerUrl) {
         _localServerUrl = nil;
     }
     
-    if ([self.pageType isEqualToString:@"Local"] && !_localServerUrl) {
+    if ([self.pageType isEqualToString:pageOfflineLocal] && !_localServerUrl) {
         _localServerUrl = [CCUtility getDirectoryLocal];
     }
-    
 }
 
 // Apparirà
@@ -67,7 +66,7 @@
 {
     [dataSource removeAllObjects];
     
-    if ([_pageType isEqualToString:@"Offline"]) {
+    if ([_pageType isEqualToString:pageOfflineOffline]) {
         
         if (!_localServerUrl) {
             
@@ -85,7 +84,7 @@
         }
     }
     
-    if ([_pageType isEqualToString:@"Local"]) {
+    if ([_pageType isEqualToString:pageOfflineLocal]) {
         
         NSArray *subpaths = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:_localServerUrl error:nil];
         
@@ -127,7 +126,7 @@
     cell.selectedBackgroundView = selectionColor;
     
     // i am in Offline
-    if ([_pageType isEqualToString:@"Offline"]) {
+    if ([_pageType isEqualToString:pageOfflineOffline]) {
         
         metadata = [dataSource objectAtIndex:indexPath.row];
         cell.fileImageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]];
@@ -137,7 +136,7 @@
     }
     
     // i am in local
-    if ([_pageType isEqualToString:@"Local"]) {
+    if ([_pageType isEqualToString:pageOfflineLocal]) {
         
         NSString *cameraFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:app.activeAccount];
         NSString *cameraFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:app.activeAccount activeUrl:app.activeUrl typeCloud:app.typeCloud];
@@ -220,14 +219,14 @@
     // deselect row
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
-    if ([_pageType isEqualToString:@"Offline"]) {
+    if ([_pageType isEqualToString:pageOfflineOffline]) {
         
         NSManagedObject *record = [dataSource objectAtIndex:indexPath.row];
         self.fileIDPhoto = [record valueForKey:@"fileID"];
         _metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", self.fileIDPhoto, app.activeAccount] context:nil];
     }
     
-    if ([_pageType isEqualToString:@"Local"]) {
+    if ([_pageType isEqualToString:pageOfflineLocal]) {
         
         NSString *cameraFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:app.activeAccount];
         NSString *cameraFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:app.activeAccount activeUrl:app.activeUrl typeCloud:app.typeCloud];
