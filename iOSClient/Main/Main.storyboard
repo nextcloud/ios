@@ -65,6 +65,25 @@
             </objects>
             <point key="canvasLocation" x="9213" y="1218"/>
         </scene>
+        <!--Offline-->
+        <scene sceneID="AYB-62-j4s">
+            <objects>
+                <viewController storyboardIdentifier="OfflineViewController" id="rwz-Z7-lr8" customClass="CCOffline" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="dzn-ww-83z"/>
+                        <viewControllerLayoutGuide type="bottom" id="tXj-pi-tXG"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="HtS-Rb-W2J">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="2FU-76-z2B"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="fXh-VU-vqk" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="5857" y="1218"/>
+        </scene>
         <!--Page View Controller-->
         <scene sceneID="UZ5-5e-kso">
             <objects>
@@ -178,30 +197,6 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="W1h-qt-Bld" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="8572" y="1218"/>
-        </scene>
-        <!--Offline-->
-        <scene sceneID="JPc-HC-iQ7">
-            <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="k1c-kg-b3Q" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <tableViewController storyboardIdentifier="OfflineViewController" extendedLayoutIncludesOpaqueBars="YES" id="Per-s0-P6C" customClass="CCOffline" sceneMemberID="viewController">
-                    <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" allowsSelectionDuringEditing="YES" rowHeight="60" sectionHeaderHeight="22" sectionFooterHeight="22" id="ehH-Wz-w3L">
-                        <rect key="frame" x="0.0" y="64" width="375" height="603"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                        <sections/>
-                        <connections>
-                            <outlet property="dataSource" destination="Per-s0-P6C" id="nel-EP-EY5"/>
-                            <outlet property="delegate" destination="Per-s0-P6C" id="u2m-xI-k10"/>
-                        </connections>
-                    </tableView>
-                    <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
-                    <navigationItem key="navigationItem" id="Hkl-Ai-Txp"/>
-                    <connections>
-                        <segue destination="mtc-lf-PRo" kind="showDetail" identifier="segueDetail" id="N4u-p1-g7G"/>
-                    </connections>
-                </tableViewController>
-            </objects>
-            <point key="canvasLocation" x="5857" y="1218"/>
         </scene>
         <!--Acknowledgements-->
         <scene sceneID="h9y-Lj-jxB">
@@ -479,7 +474,7 @@
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
-                        <segue destination="Per-s0-P6C" kind="relationship" relationship="rootViewController" id="2Hp-bX-RE4"/>
+                        <segue destination="rwz-Z7-lr8" kind="relationship" relationship="rootViewController" id="sp7-ug-USE"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="NME-vT-pfd" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -607,6 +602,7 @@
         <!--Offline Page Content-->
         <scene sceneID="gxD-z5-PYJ">
             <objects>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="hcx-8L-qXq" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <tableViewController storyboardIdentifier="OfflinePageContentViewController" extendedLayoutIncludesOpaqueBars="YES" id="9Lm-gl-WZM" customClass="CCOfflinePageContent" sceneMemberID="viewController">
                     <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" allowsSelectionDuringEditing="YES" rowHeight="60" sectionHeaderHeight="22" sectionFooterHeight="22" id="vzb-Ug-0wK">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
@@ -620,10 +616,12 @@
                     </tableView>
                     <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
                     <navigationItem key="navigationItem" id="rBu-RQ-Y1t"/>
+                    <connections>
+                        <segue destination="mtc-lf-PRo" kind="showDetail" id="UBW-f3-oFA"/>
+                    </connections>
                 </tableViewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="hcx-8L-qXq" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="7113" y="1218"/>
+            <point key="canvasLocation" x="7119" y="1218"/>
         </scene>
     </scenes>
     <resources>
@@ -634,6 +632,6 @@
         <image name="tabBarSettings" width="25" height="25"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="N4u-p1-g7G"/>
+        <segue reference="UBW-f3-oFA"/>
     </inferredMetricsTieBreakers>
 </document>

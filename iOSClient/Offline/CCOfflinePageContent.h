@@ -13,6 +13,8 @@
 @interface CCOfflinePageContent : UITableViewController
 
 @property NSUInteger pageIndex;
+@property (nonatomic, strong) NSString *pageType;
+
 
 @property (nonatomic, weak) CCDetail *detailViewController;
 @property (nonatomic, strong) UIDocumentInteractionController *docController;

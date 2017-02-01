@@ -43,10 +43,10 @@
 #import "CCPassaporto.h"
 #import "CCPatenteGuida.h"
 
-@interface CCOffline : UITableViewController <UIPageViewControllerDataSource, UITableViewDataSource, UITableViewDelegate, UIDocumentInteractionControllerDelegate, UIActionSheetDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, CCAccountWebDelegate, CCBancomatDelegate, CCCartaDiCreditoDelegate, CCCartaIdentitaDelegate, CCContoCorrenteDelegate, CCNoteDelegate, CCPassaportoDelegate, CCPatenteGuidaDelegate>
+@interface CCOffline : UIViewController <UIPageViewControllerDataSource, UITableViewDataSource, UITableViewDelegate, UIDocumentInteractionControllerDelegate, UIActionSheetDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, CCAccountWebDelegate, CCBancomatDelegate, CCCartaDiCreditoDelegate, CCCartaIdentitaDelegate, CCContoCorrenteDelegate, CCNoteDelegate, CCPassaportoDelegate, CCPatenteGuidaDelegate>
 
 @property (strong, nonatomic) UIPageViewController *pageViewController;
-@property (strong, nonatomic) NSArray *pageTitles;
+@property (strong, nonatomic) NSArray *pageType;
 
 
 @property (nonatomic, strong) CCMetadata *metadata;

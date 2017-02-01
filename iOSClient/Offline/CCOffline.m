@@ -55,15 +55,6 @@
     return self;
 }
 
-- (id)initWithStyle:(UITableViewStyle)style
-{
-    self = [super initWithStyle:style];
-    if (self) {
-        // Custom initialization
-    }
-    return self;
-}
-
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== View =====
 #pragma --------------------------------------------------------------------------------------------
@@ -73,7 +64,7 @@
     [super viewDidLoad];
     
     // Create data model
-    _pageTitles = @[@"Offline", @"Local"];
+    _pageType = @[@"Offline", @"Local"];
     
     // Create page view controller
     self.pageViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"OfflinePageViewController"];
@@ -143,7 +134,7 @@
 
 - (CCOfflinePageContent *)viewControllerAtIndex:(NSUInteger)index
 {
-    if (([self.pageTitles count] == 0) || (index >= [self.pageTitles count])) {
+    if (([self.pageType count] == 0) || (index >= [self.pageType count])) {
         return nil;
     }
     
@@ -151,8 +142,8 @@
     CCOfflinePageContent *pageContentViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"OfflinePageContentViewController"];
     
    // pageContentViewController.imageFile = self.pageImages[index];
-   // pageContentViewController.titleText = self.pageTitles[index];
-   //  pageContentViewController.pageIndex = index;
+    pageContentViewController.pageIndex = index;
+    pageContentViewController.pageType = self.pageType[index];
     
     return pageContentViewController;
 }
@@ -178,7 +169,7 @@
     }
     
     index++;
-    if (index == [self.pageTitles count]) {
+    if (index == [self.pageType count]) {
         return nil;
     }
     return [self viewControllerAtIndex:index];
@@ -186,7 +177,7 @@
 
 - (NSInteger)presentationCountForPageViewController:(UIPageViewController *)pageViewController
 {
-    return [self.pageTitles count];
+    return [self.pageType count];
 }
 
 - (NSInteger)presentationIndexForPageViewController:(UIPageViewController *)pageViewController
@@ -396,7 +387,7 @@
         [[CCOfflineFileFolder sharedOfflineFileFolder] verifyChangeMedatas:[[NSArray alloc] initWithObjects:metadata, nil] serverUrl:metadataNet.serverUrl directoryID:metadataNet.directoryID account:app.activeAccount offline:NO];
     });
     
-    [self.tableView performSelector:@selector(reloadData) withObject:nil afterDelay:0.1];
+    //[self.tableView performSelector:@selector(reloadData) withObject:nil afterDelay:0.1];
 }
 
 - (void)readFileOffline
@@ -578,7 +569,7 @@
             if (![[subpath lastPathComponent] hasPrefix:@"."]) [dataSource addObject:subpath];
     }
     
-    [self.tableView reloadData];
+    //[self.tableView reloadData];
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
