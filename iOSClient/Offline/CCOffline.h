@@ -23,6 +23,9 @@
 
 #import <UIKit/UIKit.h>
 
+#import "CCOfflinePageContent.h"
+
+
 #import "UIScrollView+EmptyDataSet.h"
 #import "TWMessageBarManager.h"
 #import "AHKActionSheet.h"
@@ -40,7 +43,11 @@
 #import "CCPassaporto.h"
 #import "CCPatenteGuida.h"
 
-@interface CCOffline : UITableViewController <UITableViewDataSource, UITableViewDelegate, UIDocumentInteractionControllerDelegate, UIActionSheetDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, CCAccountWebDelegate, CCBancomatDelegate, CCCartaDiCreditoDelegate, CCCartaIdentitaDelegate, CCContoCorrenteDelegate, CCNoteDelegate, CCPassaportoDelegate, CCPatenteGuidaDelegate>
+@interface CCOffline : UITableViewController <UIPageViewControllerDataSource, UITableViewDataSource, UITableViewDelegate, UIDocumentInteractionControllerDelegate, UIActionSheetDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, CCAccountWebDelegate, CCBancomatDelegate, CCCartaDiCreditoDelegate, CCCartaIdentitaDelegate, CCContoCorrenteDelegate, CCNoteDelegate, CCPassaportoDelegate, CCPatenteGuidaDelegate>
+
+@property (strong, nonatomic) UIPageViewController *pageViewController;
+@property (strong, nonatomic) NSArray *pageTitles;
+
 
 @property (nonatomic, strong) CCMetadata *metadata;
 @property (nonatomic, strong) NSString *fileIDPhoto;
