@@ -44,6 +44,9 @@
     if ([self.pageType isEqualToString:pageOfflineLocal] && !_localServerUrl) {
         _localServerUrl = [CCUtility getDirectoryLocal];
     }
+    
+    // Title
+    self.title = [_localServerUrl lastPathComponent];
 }
 
 // Apparirà

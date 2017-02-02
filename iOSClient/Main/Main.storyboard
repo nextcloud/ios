@@ -252,7 +252,7 @@
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="eZl-ut-xpC" sceneMemberID="viewController">
                     <extendedEdge key="edgesForExtendedLayout"/>
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="rJe-3o-bpZ">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="rJe-3o-bpZ">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -449,7 +449,7 @@
                 <navigationController storyboardIdentifier="CCMainNC" extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="bSZ-tE-FEj" customClass="CCControlCenter" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="File" image="tabBarCryptoCloud" id="Zxv-aS-HGF"/>
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="cj6-rT-wnB">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="cj6-rT-wnB">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -539,7 +539,7 @@
                 <navigationController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="Npr-vu-PSD" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="Photos" image="tabBarPhotos" id="5cw-bP-7It"/>
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="ixg-Pw-TNO">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="ixg-Pw-TNO">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>

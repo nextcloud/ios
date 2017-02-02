@@ -71,9 +71,7 @@
     self.pageViewController.dataSource = self;
     self.pageViewController.delegate = self;
     
-    // Add the first PageContent
     CCOfflinePageContent *startingViewController = [self viewControllerAtIndex:0];
-    
     NSArray *viewControllers = @[startingViewController];
     [self.pageViewController setViewControllers:viewControllers direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
 
@@ -117,7 +115,6 @@
     return pageContentViewController;
 }
 
-
 - (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerBeforeViewController:(UIViewController *)viewController
 {
     NSUInteger index = ((CCOfflinePageContent*) viewController).pageIndex;
@@ -145,18 +142,15 @@
     return [self viewControllerAtIndex:index];
 }
 
-/*
 - (NSInteger)presentationCountForPageViewController:(UIPageViewController *)pageViewController
 {
     return [self.pageType count];
 }
 
-
 - (NSInteger)presentationIndexForPageViewController:(UIPageViewController *)pageViewController
 {
     return 0;
 }
-*/
 
 /*
 - (void)pageViewController:(UIPageViewController *)pageViewController willTransitionToViewControllers:(NSArray<UIViewController *> *)pendingViewControllers

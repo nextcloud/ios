@@ -30,6 +30,7 @@
 
 @property NSUInteger pageIndex;
 @property (nonatomic, strong) NSString *pageType;
+
 @property (nonatomic, weak) IBOutlet UITableView *tableView;
 
 @property (nonatomic, strong) CCMetadata *metadata;
