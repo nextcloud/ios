@@ -2171,6 +2171,8 @@
         NSString *fileName = [CCUtility trasformedFileNameCryptoInPlist:metadataNet.fileName];
         NSString *directoryID = metadataNet.directoryID;
         NSString *directoryIDTo = metadataNet.directoryIDTo;
+        
+        NSString *serverUrlTo = [CCCoreData getServerUrlFromDirectoryID:directoryIDTo activeAccount:app.activeAccount];
 
         // FILE -> Metadata
         if (metadataNet.directory == NO) {
@@ -2180,6 +2182,10 @@
                 [CCCoreData moveMetadata:fileName directoryID:directoryID directoryIDTo:directoryIDTo activeAccount:app.activeAccount];
             else
                 [CCCoreData deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(directoryID == %@)AND (account == %@)", directoryID, app.activeAccount]];
+            
+            // Check Offline
+            if ([CCCoreData isOfflineDirectoryServerUrl:serverUrlTo activeAccount:app.activeAccount])
+                [CCCoreData setOfflineLocalFileID:metadataNet.fileID offline:YES activeAccount:app.activeAccount];
         }
     
         // DIRECTORY ->  Directory - CCMetadata
@@ -2196,6 +2202,14 @@
             // rinominiamo ora la directory in CCMetadata
             if (directoryIDTo)
                 [CCCoreData moveMetadata:fileName directoryID:directoryID directoryIDTo:directoryIDTo activeAccount:app.activeAccount];
+            
+            // Add new directory
+            NSString *newDirectory = [NSString stringWithFormat:@"%@/%@", serverUrlTo, fileName];
+            [CCCoreData addDirectory:newDirectory date:[NSDate date] permissions:nil activeAccount:app.activeAccount];
+            
+            // Check Offline
+            if ([CCCoreData isOfflineDirectoryServerUrl:serverUrlTo activeAccount:app.activeAccount])
+                [CCCoreData setOfflineDirectoryServerUrl:newDirectory offline:YES activeAccount:app.activeAccount];
         }
     
         // reload Datasource
