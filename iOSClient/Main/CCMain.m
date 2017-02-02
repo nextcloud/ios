@@ -1243,7 +1243,7 @@
     
     // add Offline
     if ([selector isEqualToString:selectorAddOffline]) {
-        [CCCoreData addOffline:metadata.fileID activeAccount:app.activeAccount];
+        [CCCoreData setOfflineLocalFileID:metadata.fileID offline:YES activeAccount:app.activeAccount];
         [self getDataSourceWithReloadTableView:metadata.directoryID fileID:metadata.fileID selector:selector];
     }
     
@@ -1486,6 +1486,11 @@
     // Automatic upload
     if([selector isEqualToString:selectorUploadAutomatic] || [selector isEqualToString:selectorUploadAutomaticAll])
         [app loadTableAutomaticUploadForSelector:selector];
+    
+    // Check Offline
+    if ([CCCoreData isOfflineDirectoryServerUrl:_localServerUrl activeAccount:app.activeAccount])
+        [CCCoreData setOfflineLocalFileID:fileID offline:YES activeAccount:app.activeAccount];
+    
     
     if ([selectorPost isEqualToString:selectorReadFolderForced] ) {
             
@@ -2103,7 +2108,8 @@
         metadataNet.session = upload_session_foreground;
         metadataNet.taskStatus = taskStatusResume;
         
-        if ([CCCoreData isOffline:metadata.fileID activeAccount:app.activeAccount]) metadataNet.selectorPost = selectorAddOffline;
+        if ([CCCoreData isOfflineLocalFileID:metadata.fileID activeAccount:app.activeAccount])
+            metadataNet.selectorPost = selectorAddOffline;
         
         [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
         
@@ -2132,7 +2138,8 @@
         metadataNet.session = upload_session_foreground;
         metadataNet.taskStatus = taskStatusResume;
         
-        if ([CCCoreData isOffline:metadata.fileID activeAccount:app.activeAccount]) metadataNet.selectorPost = selectorAddOffline;
+        if ([CCCoreData isOfflineLocalFileID:metadata.fileID activeAccount:app.activeAccount])
+            metadataNet.selectorPost = selectorAddOffline;
         
         [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
     }
@@ -2321,7 +2328,13 @@
 {
     [_hud hideHud];
     
-    [CCCoreData addDirectory:[NSString stringWithFormat:@"%@/%@", metadataNet.serverUrl, metadataNet.fileName] date:[NSDate date] permissions:nil activeAccount:app.activeAccount];
+    NSString *newDirectory = [NSString stringWithFormat:@"%@/%@", metadataNet.serverUrl, metadataNet.fileName];
+    
+    [CCCoreData addDirectory:newDirectory date:[NSDate date] permissions:nil activeAccount:app.activeAccount];
+    
+    // Check Offline
+    if ([CCCoreData isOfflineDirectoryServerUrl:_localServerUrl activeAccount:app.activeAccount])
+        [CCCoreData setOfflineDirectoryServerUrl:newDirectory offline:YES activeAccount:app.activeAccount];
     
     // Load Folder or the Datasource
     if ([metadataNet.selectorPost isEqualToString:selectorReadFolderForced]) {
@@ -3023,7 +3036,7 @@
         [[CCNetworking sharedNetworking] downloadFile:metadata serverUrl:_localServerUrl downloadData:YES downloadPlist:NO selector:selectorAddOffline selectorPost:nil session:download_session taskStatus:taskStatusResume delegate:self];
     
     if ([metadata.type isEqualToString:metadataType_model])
-        [CCCoreData addOffline:metadata.fileID activeAccount:app.activeAccount];
+        [CCCoreData setOfflineLocalFileID:metadata.fileID offline:YES activeAccount:app.activeAccount];
     
     NSIndexPath *indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:metadata.fileID];
     if (indexPath) [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObjects:indexPath, nil] withRowAnimation:UITableViewRowAnimationAutomatic];
@@ -3031,7 +3044,7 @@
 
 - (void)removeOffline:(CCMetadata *)metadata
 {
-    [CCCoreData removeOfflineFileID:metadata.fileID activeAccount:app.activeAccount];
+    [CCCoreData setOfflineLocalFileID:metadata.fileID offline:NO activeAccount:app.activeAccount];
     
     NSIndexPath *indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:metadata.fileID];
     if (indexPath) [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObjects:indexPath, nil] withRowAnimation:UITableViewRowAnimationAutomatic];
@@ -4101,11 +4114,11 @@
     if (_metadata.cryptated) titoloCriptaDecripta = [NSString stringWithFormat:NSLocalizedString(@"_decrypt_", nil)];
     else titoloCriptaDecripta = [NSString stringWithFormat:NSLocalizedString(@"_encrypt_", nil)];
     
-    if ([CCCoreData isOffline:_metadata.fileID activeAccount:app.activeAccount]) titoloOffline = [NSString stringWithFormat:NSLocalizedString(@"_remove_offline_", nil)];
+    if ([CCCoreData isOfflineLocalFileID:_metadata.fileID activeAccount:app.activeAccount]) titoloOffline = [NSString stringWithFormat:NSLocalizedString(@"_remove_offline_", nil)];
     else titoloOffline = [NSString stringWithFormat:NSLocalizedString(@"_add_offline_", nil)];
     
     NSString *offlineServerUrl = [CCUtility stringAppendServerUrl:_localServerUrl addServerUrl:_metadata.fileNameData];
-    if (_metadata.directory && [CCCoreData isOfflineDirectory:offlineServerUrl activeAccount:app.activeAccount]) {
+    if (_metadata.directory && [CCCoreData isOfflineDirectoryServerUrl:offlineServerUrl activeAccount:app.activeAccount]) {
         
         titleOfflineFolder = [NSString stringWithFormat:NSLocalizedString(@"_remove_offline_", nil)];
         offlineFolder = YES;
@@ -4287,7 +4300,7 @@
                                     }];
         }
         
-        if (!lockDirectory && ([upDir isEqualToString:homeDir] || ![CCCoreData isOfflineDirectory:upDir activeAccount:app.activeAccount])) {
+        if (!lockDirectory && ([upDir isEqualToString:homeDir] || ![CCCoreData isOfflineDirectoryServerUrl:upDir activeAccount:app.activeAccount])) {
         
             [actionSheet addButtonWithTitle:titleOfflineFolder
                                       image:[UIImage imageNamed:image_actionSheetOffline]
@@ -4312,7 +4325,7 @@
                                             
                                             for (TableDirectory *directory in directories)
                                                 if ([directory.serverUrl containsString:dirServerUrl]) {
-                                                    [CCCoreData setOfflineDirectory:directory.serverUrl offline:NO activeAccount:app.activeAccount];
+                                                    [CCCoreData setOfflineDirectoryServerUrl:directory.serverUrl offline:NO activeAccount:app.activeAccount];
                                                     [CCCoreData removeOfflineAllFileFromServerUrl:directory.serverUrl activeAccount:app.activeAccount];
                                                 }
                                             
@@ -4429,7 +4442,7 @@
                                     [self performSelector:@selector(cmdEncryptedDecryptedFile) withObject:nil afterDelay:0.1];
                                 }];
         
-        if (![CCCoreData isOfflineDirectory:_localServerUrl activeAccount:app.activeAccount]) {
+        if (![CCCoreData isOfflineDirectoryServerUrl:_localServerUrl activeAccount:app.activeAccount]) {
             
             [actionSheet addButtonWithTitle:titoloOffline
                                       image:[UIImage imageNamed:image_actionSheetOffline]
@@ -4441,7 +4454,7 @@
                                         // close swipe
                                         [self setEditing:NO animated:YES];
                                     
-                                        if ([CCCoreData isOffline:_metadata.fileID activeAccount:app.activeAccount]) {
+                                        if ([CCCoreData isOfflineLocalFileID:_metadata.fileID activeAccount:app.activeAccount]) {
                                         
                                             [self removeOffline:_metadata];
                                         
@@ -4527,7 +4540,7 @@
                                     // close swipe
                                     [self setEditing:NO animated:YES];
                                     
-                                    if ([CCCoreData isOffline:_metadata.fileID activeAccount:app.activeAccount])
+                                    if ([CCCoreData isOfflineLocalFileID:_metadata.fileID activeAccount:app.activeAccount])
                                         [self removeOffline:_metadata];
                                     else
                                         [self addOffline:_metadata];
@@ -4635,7 +4648,7 @@
     
     // Reload -> Offline ?
     if (fileID)
-        if ([CCCoreData isOffline:fileID activeAccount:app.activeAccount])
+        if ([CCCoreData isOfflineLocalFileID:fileID activeAccount:app.activeAccount])
             [[NSNotificationCenter defaultCenter] postNotificationName:@"reloadTableOffline" object:nil];
 
     // Reload -> Self se non siamo nella dir appropriata cercala e se è in memoria reindirizza il reload
@@ -5019,7 +5032,7 @@
         // ----------------------------------------------------------------------------------------------------------
         
         NSString *offlineServerUrl = [CCUtility stringAppendServerUrl:_localServerUrl addServerUrl:metadata.fileNameData];
-        if ([CCCoreData isOfflineDirectory:offlineServerUrl activeAccount:app.activeAccount]) {
+        if ([CCCoreData isOfflineDirectoryServerUrl:offlineServerUrl activeAccount:app.activeAccount]) {
             
             // Image Offline
             if (metadata.cryptated) cell.offlineImageView.image = [UIImage imageNamed:image_offlinecrypto];
@@ -5127,7 +5140,7 @@
     // Offline
     // ----------------------------------------------------------------------------------------------------------
 
-    if ([CCCoreData isOffline:metadata.fileID activeAccount:app.activeAccount]) {
+    if ([CCCoreData isOfflineLocalFileID:metadata.fileID activeAccount:app.activeAccount]) {
         
         if (metadata.cryptated) cell.offlineImageView.image = [UIImage imageNamed:image_offlinecrypto];
         else cell.offlineImageView.image = [UIImage imageNamed:image_offline];

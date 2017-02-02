@@ -146,8 +146,8 @@
 
 + (void)removeOfflineDirectoryID:(NSString *)directoryID activeAccount:(NSString *)activeAccount;
 + (NSArray *)getOfflineDirectoryActiveAccount:(NSString *)activeAccount;
-+ (void)setOfflineDirectory:(NSString *)serverUrl offline:(BOOL)offline activeAccount:(NSString *)activeAccount;
-+ (BOOL)isOfflineDirectory:(NSString *)serverUrl activeAccount:(NSString *)activeAccount;
++ (void)setOfflineDirectoryServerUrl:(NSString *)serverUrl offline:(BOOL)offline activeAccount:(NSString *)activeAccount;
++ (BOOL)isOfflineDirectoryServerUrl:(NSString *)serverUrl activeAccount:(NSString *)activeAccount;
 
 + (BOOL)setDirectoryLock:(NSString *)serverUrl activeAccount:(NSString *)activeAccount;
 + (BOOL)setDirectoryUnLock:(NSString *)serverUrl activeAccount:(NSString *)activeAccount;
@@ -158,9 +158,7 @@
 // ===== LocalFile =====
 
 + (void)addLocalFile:(CCMetadata *)metadata activeAccount:(NSString *)activeAccount;
-
 + (void)deleteLocalFileWithPredicate:(NSPredicate *)predicate;
-+ (void)removeOfflineFileID:(NSString *)fileID activeAccount:(NSString *)activeAccount;
 
 + (void)renameLocalFileWithFileID:(NSString *)fileID fileNameTo:(NSString *)fileNameTo fileNamePrintTo:(NSString *)fileNamePrintTo activeAccount:(NSString *)activeAccount;
 + (void)updateLocalFileModel:(CCMetadata *)metadata activeAccount:(NSString *)activeAccount;
@@ -168,9 +166,13 @@
 + (TableLocalFile *)getLocalFileWithFileID:(NSString *)fileID activeAccount:(NSString *)activeAccount;
 + (NSArray *)getTableLocalFileWithPredicate:(NSPredicate *)predicate;
 
-+ (void)addOffline:(NSString *)fileID activeAccount:(NSString *)activeAccount;
-+ (BOOL)isOffline:(NSString *)fileID activeAccount:(NSString *)activeAccount;
+// ===== Offline LocalFile =====
+
++ (void)setOfflineLocalFileID:(NSString *)fileID offline:(BOOL)offline activeAccount:(NSString *)activeAccount;
++ (BOOL)isOfflineLocalFileID:(NSString *)fileID activeAccount:(NSString *)activeAccount;
 + (NSArray *)getOfflineLocalFileActiveAccount:(NSString *)activeAccount directoryUser:(NSString *)directoryUser;
+
+// ===== GeoInformation =====
 
 + (NSArray *)getGeoInformationLocalFromFileID:(NSString *)fileID activeAccount:(NSString *)activeAccount;
 + (void)setGeoInformationLocalFromFileID:(NSString *)fileID exifDate:(NSDate *)exifDate exifLatitude:(NSString *)exifLatitude exifLongitude:(NSString *)exifLongitude activeAccount:(NSString *)activeAccount;

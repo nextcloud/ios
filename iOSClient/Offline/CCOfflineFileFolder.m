@@ -93,7 +93,7 @@
     NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:app.activeAccount];
     
     // Set offline directory
-    [CCCoreData setOfflineDirectory:serverUrl offline:YES activeAccount:app.activeAccount];
+    [CCCoreData setOfflineDirectoryServerUrl:serverUrl offline:YES activeAccount:app.activeAccount];
         
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
         
@@ -344,7 +344,7 @@
             
             // add flag offline
             dispatch_async(dispatch_get_main_queue(), ^{
-                [CCCoreData addOffline:metadata.fileID activeAccount:app.activeAccount];
+                [CCCoreData setOfflineLocalFileID:metadata.fileID offline:YES activeAccount:app.activeAccount];
             });
             
             if (![record.rev isEqualToString:metadata.rev ])
@@ -398,7 +398,7 @@
             BOOL downloadData, downloadPlist;
         
             // it's a offline ?
-            BOOL isOffline = [CCCoreData isOffline:metadata.fileID activeAccount:app.activeAccount];
+            BOOL isOffline = [CCCoreData isOfflineLocalFileID:metadata.fileID activeAccount:app.activeAccount];
         
             if (isOffline)
                 selectorPost = selectorAddOffline;

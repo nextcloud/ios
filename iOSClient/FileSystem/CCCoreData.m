@@ -829,7 +829,7 @@
         NSArray *records = [TableMetadata MR_findAllWithPredicate:predicate];
         
         for (TableMetadata *record in records)
-            [self removeOfflineFileID:record.fileID activeAccount:activeAccount];
+            [self setOfflineLocalFileID:record.fileID offline:NO activeAccount:activeAccount];
     }];
 }
 
@@ -1103,7 +1103,7 @@
     return sortedRecordsTable;
 }
 
-+ (void)setOfflineDirectory:(NSString *)serverUrl offline:(BOOL)offline activeAccount:(NSString *)activeAccount
++ (void)setOfflineDirectoryServerUrl:(NSString *)serverUrl offline:(BOOL)offline activeAccount:(NSString *)activeAccount
 {
     [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
 
@@ -1115,9 +1115,9 @@
     }];
 }
 
-+ (BOOL)isOfflineDirectory:(NSString *)serverUrl activeAccount:(NSString *)activeAccount
++ (BOOL)isOfflineDirectoryServerUrl:(NSString *)serverUrl activeAccount:(NSString *)activeAccount
 {
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(directoryID == %@) AND (offline == 1) AND (account == %@)", [self getDirectoryIDFromServerUrl:serverUrl activeAccount:activeAccount], activeAccount];
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(serverUrl == %@) AND (offline == 1) AND (account == %@)", serverUrl, activeAccount];
     TableDirectory *record = [TableDirectory MR_findFirstWithPredicate:predicate];
     
     if (record) return YES;
@@ -1264,19 +1264,6 @@
     }];
 }
 
-+ (void)removeOfflineFileID:(NSString *)fileID activeAccount:(NSString *)activeAccount
-{
-    [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
-        
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, activeAccount];
-        TableLocalFile *record = [TableLocalFile MR_findFirstWithPredicate:predicate inContext:localContext];
-    
-        if (record)
-            record.offline = [NSNumber numberWithBool:NO];
-    }];
-}
-
-
 + (void)renameLocalFileWithFileID:(NSString *)fileID fileNameTo:(NSString *)fileNameTo fileNamePrintTo:(NSString *)fileNamePrintTo activeAccount:(NSString *)activeAccount
 {
     [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
@@ -1360,7 +1347,11 @@
     return [TableLocalFile MR_findAllWithPredicate:predicate];
 }
 
-+ (void)addOffline:(NSString *)fileID activeAccount:(NSString *)activeAccount
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Offline LocalFile =====
+#pragma --------------------------------------------------------------------------------------------
+
++ (void)setOfflineLocalFileID:(NSString *)fileID offline:(BOOL)offline activeAccount:(NSString *)activeAccount
 {
     [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
         
@@ -1368,11 +1359,11 @@
         TableLocalFile *record = [TableLocalFile MR_findFirstWithPredicate:predicate inContext:localContext];
         
         if (record)
-            record.offline = [NSNumber numberWithBool:YES];
+            record.offline = [NSNumber numberWithBool:offline];
     }];
 }
 
-+ (BOOL)isOffline:(NSString *)fileID activeAccount:(NSString *)activeAccount
++ (BOOL)isOfflineLocalFileID:(NSString *)fileID activeAccount:(NSString *)activeAccount
 {
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(fileID == %@) AND (offline == 1) AND (account == %@)", fileID, activeAccount];
     TableLocalFile *record = [TableLocalFile MR_findFirstWithPredicate:predicate];
@@ -1406,6 +1397,10 @@
 
     return metadatas;
 }
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== GeoInformation =====
+#pragma --------------------------------------------------------------------------------------------
 
 + (NSArray *)getGeoInformationLocalFromFileID:(NSString *)fileID activeAccount:(NSString *)activeAccount
 {
