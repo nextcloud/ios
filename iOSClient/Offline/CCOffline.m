@@ -71,7 +71,9 @@
     self.pageViewController.dataSource = self;
     self.pageViewController.delegate = self;
     
+    // Add the first PageContent
     CCOfflinePageContent *startingViewController = [self viewControllerAtIndex:0];
+    
     NSArray *viewControllers = @[startingViewController];
     [self.pageViewController setViewControllers:viewControllers direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
 
