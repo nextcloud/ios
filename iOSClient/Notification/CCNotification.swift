@@ -83,7 +83,7 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
                 self.appDelegate.addNetworkingOperationQueue(self.appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
             }
             
-            remove.backgroundColor = CCConstant.GlobalConstants.kColor_cryptocloud
+            remove.backgroundColor = CCConstant.GlobalConstants.kColor_Cryptocloud
  
             return [remove]
  
@@ -153,6 +153,10 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     
         let cell = self.tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! CCNotificationCell
+        
+        let selectionColor : UIView = UIView.init()
+        selectionColor.backgroundColor = CCConstant.GlobalConstants.kColor_SelectBackgrond
+        cell.selectedBackgroundView = selectionColor
         
         if self.resultSearchController.isActive {
             
