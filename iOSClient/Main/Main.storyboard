@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="16C67" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="4IE-mo-rkp">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="16D32" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="4IE-mo-rkp">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -481,6 +481,39 @@
             </objects>
             <point key="canvasLocation" x="5857" y="327"/>
         </scene>
+        <!--Offline Page Content-->
+        <scene sceneID="33n-4d-goO">
+            <objects>
+                <viewController storyboardIdentifier="OfflinePageContentViewController" id="6uw-SF-2Qu" customClass="CCOfflinePageContent" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="kXv-QP-Tlq"/>
+                        <viewControllerLayoutGuide type="bottom" id="Y8a-Ua-b9s"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="o6l-1S-6dH">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="Pes-cJ-S4N">
+                                <rect key="frame" x="0.0" y="91" width="375" height="576"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <connections>
+                                    <outlet property="dataSource" destination="6uw-SF-2Qu" id="65P-9j-K6G"/>
+                                    <outlet property="delegate" destination="6uw-SF-2Qu" id="jGP-Hq-vWN"/>
+                                </connections>
+                            </tableView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <connections>
+                        <outlet property="tableView" destination="Pes-cJ-S4N" id="Fxj-3r-MCL"/>
+                        <segue destination="mtc-lf-PRo" kind="showDetail" identifier="segueDetail" id="45n-bF-9RO"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="d5y-uw-vht" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="7125.6000000000004" y="1217.5412293853074"/>
+        </scene>
         <!--View Controller-->
         <scene sceneID="60G-IQ-Axc">
             <objects>
@@ -599,30 +632,6 @@
             </objects>
             <point key="canvasLocation" x="7935" y="327"/>
         </scene>
-        <!--Offline Page Content-->
-        <scene sceneID="gxD-z5-PYJ">
-            <objects>
-                <tableViewController storyboardIdentifier="OfflinePageContentViewController" extendedLayoutIncludesOpaqueBars="YES" id="9Lm-gl-WZM" customClass="CCOfflinePageContent" sceneMemberID="viewController">
-                    <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" allowsSelectionDuringEditing="YES" rowHeight="60" sectionHeaderHeight="22" sectionFooterHeight="22" id="vzb-Ug-0wK">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                        <sections/>
-                        <connections>
-                            <outlet property="dataSource" destination="9Lm-gl-WZM" id="GNR-vd-aD6"/>
-                            <outlet property="delegate" destination="9Lm-gl-WZM" id="Tec-M9-MCE"/>
-                        </connections>
-                    </tableView>
-                    <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
-                    <navigationItem key="navigationItem" id="rBu-RQ-Y1t"/>
-                    <connections>
-                        <segue destination="mtc-lf-PRo" kind="showDetail" identifier="segueDetail" id="UBW-f3-oFA"/>
-                    </connections>
-                </tableViewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="hcx-8L-qXq" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="7119" y="1218"/>
-        </scene>
     </scenes>
     <resources>
         <image name="cryptocloud_sfondo_iPad" width="256" height="187"/>
@@ -632,6 +641,6 @@
         <image name="tabBarSettings" width="25" height="25"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="UBW-f3-oFA"/>
+        <segue reference="45n-bF-9RO"/>
     </inferredMetricsTieBreakers>
 </document>

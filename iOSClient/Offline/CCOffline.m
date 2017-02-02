@@ -117,6 +117,7 @@
     return pageContentViewController;
 }
 
+
 - (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerBeforeViewController:(UIViewController *)viewController
 {
     NSUInteger index = ((CCOfflinePageContent*) viewController).pageIndex;
@@ -144,15 +145,18 @@
     return [self viewControllerAtIndex:index];
 }
 
+/*
 - (NSInteger)presentationCountForPageViewController:(UIPageViewController *)pageViewController
 {
     return [self.pageType count];
 }
 
+
 - (NSInteger)presentationIndexForPageViewController:(UIPageViewController *)pageViewController
 {
     return 0;
 }
+*/
 
 /*
 - (void)pageViewController:(UIPageViewController *)pageViewController willTransitionToViewControllers:(NSArray<UIViewController *> *)pendingViewControllers
