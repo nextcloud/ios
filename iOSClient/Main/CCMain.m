@@ -5585,7 +5585,6 @@
     _detailViewController.metadataDetail = _metadataSegue;
     _detailViewController.dateFilterQuery = nil;
     _detailViewController.isCameraUpload = NO;
-    _detailViewController.sourceDirectory = sorceDirectoryAccount;
     
     [_detailViewController setTitle:_metadata.fileNamePrint];
 }

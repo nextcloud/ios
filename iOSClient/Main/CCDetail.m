@@ -175,13 +175,10 @@
     fixedSpaceMini.width = 25;
     _buttonAction = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:image_actionSheetOpenIn] style:UIBarButtonItemStylePlain target:self action:@selector(actionButtonPressed:)];
     _buttonDelete = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(deleteButtonPressed:)];
-
-    if (self.sourceDirectory == sorceDirectoryAccount)
-        [_toolbar setItems:[NSArray arrayWithObjects: flexible, _buttonDelete, fixedSpaceMini, _buttonAction,  nil]];
-    else
-        [_toolbar setItems:[NSArray arrayWithObjects: flexible, _buttonAction,  nil]];
-
+    
+    [_toolbar setItems:[NSArray arrayWithObjects: flexible, _buttonDelete, fixedSpaceMini, _buttonAction,  nil]];
     [_toolbar setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin];
+    
     [self.view addSubview:_toolbar];
 }
 
@@ -256,7 +253,7 @@
 {
     NSString *fileName;
     
-    if (self.sourceDirectory == sorceDirectoryLocal) {
+    if (_sourceDirectoryLocal) {
         
         fileName = [NSString stringWithFormat:@"%@/%@", self.metadataDetail.directoryID, self.metadataDetail.fileNamePrint];
         
@@ -300,7 +297,7 @@
 {
     NSString *fileName;
     
-    if (self.sourceDirectory == sorceDirectoryLocal) {
+    if (_sourceDirectoryLocal) {
         
         fileName = [NSString stringWithFormat:@"%@/%@", self.metadataDetail.directoryID, self.metadataDetail.fileNamePrint];
         
@@ -372,27 +369,10 @@
 {
     self.photoBrowser = [[MWPhotoBrowser alloc] initWithDelegate:self];
     _reload = NO;
-    CCMetadata *metadata = [[CCMetadata alloc] init];
     
     [self.photos removeAllObjects];
     [self.thumbs removeAllObjects];
     [_dataSourceDirectoryID removeAllObjects];
-    
-    // Offline
-    if (self.sourceDirectory == sorceDirectoryOffline) {
-            
-        self.dataSourceImagesVideos = (NSMutableArray *)[CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", self.metadataDetail.fileID, app.activeAccount] fieldOrder:[CCUtility getOrderSettings] ascending:[CCUtility getAscendingSettings]];
-    }
-        
-    // Local
-    if (self.sourceDirectory == sorceDirectoryLocal) {
-        
-        NSString *cameraFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:app.activeAccount];
-        NSString *cameraFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:app.activeAccount activeUrl:app.activeUrl typeCloud:app.typeCloud];
-        
-        metadata = [CCUtility insertFileSystemInMetadata:self.metadataDetail.fileID directory:self.metadataDetail.directoryID activeAccount:app.activeAccount cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath];
-        self.dataSourceImagesVideos = [[NSMutableArray alloc] initWithObjects:metadata, nil];
-    }
     
     // if not images, exit
     if ([self.dataSourceImagesVideos count] == 0) return;
@@ -425,12 +405,7 @@
     
     // PhotoBrowser
     self.photoBrowser.displayActionButton = YES;
-    
-    if (self.sourceDirectory == sorceDirectoryAccount)
-        self.photoBrowser.displayDeleteButton = YES;
-    else
-        self.photoBrowser.displayDeleteButton = NO;
-    
+    self.photoBrowser.displayDeleteButton = YES;
     self.photoBrowser.displayNavArrows = YES;
     self.photoBrowser.displaySelectionButtons = NO;
     self.photoBrowser.alwaysShowControls = NO;
@@ -482,8 +457,10 @@
         _reload = NO;
     }
     
-    if (self.sourceDirectory == sorceDirectoryLocal) directory = self.metadataDetail.directoryID;
-    else directory = app.directoryUser;
+    if (_sourceDirectoryLocal)
+        directory = self.metadataDetail.directoryID;
+    else
+        directory = app.directoryUser;
 
     // Download
     if (metadata && [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", directory, metadata.fileID]] == NO && [metadata.session length] == 0)
@@ -495,8 +472,10 @@
     NSString *directory;
     UIImage *image;
     
-    if (self.sourceDirectory == sorceDirectoryLocal) directory = self.metadataDetail.directoryID;
-    else directory = app.directoryUser;
+    if (_sourceDirectoryLocal)
+        directory = self.metadataDetail.directoryID;
+    else
+        directory = app.directoryUser;
 
     CCMetadata *metadata = [self.dataSourceImagesVideos objectAtIndex:index];
     
@@ -629,8 +608,10 @@
     
     CCMetadata *metadata = [self.dataSourceImagesVideos objectAtIndex:index];
     
-    if (self.sourceDirectory == sorceDirectoryLocal) directory = self.metadataDetail.directoryID;
-    else directory = app.directoryUser;
+    if (_sourceDirectoryLocal)
+        directory = self.metadataDetail.directoryID;
+    else
+        directory = app.directoryUser;
 
     if (index < self.thumbs.count) {
         
@@ -638,7 +619,7 @@
             
             UIImage *image;
             
-            if (self.sourceDirectory == sorceDirectoryLocal) {
+            if (_sourceDirectoryLocal) {
                 
                 image = [CCGraphics createNewImageFrom:metadata.fileID directoryUser:directory fileNameTo:metadata.fileID fileNamePrint:metadata.fileNamePrint size:@"m" imageForUpload:NO typeFile:metadata.typeFile writePreview:NO optimizedFileName:[CCUtility getOptimizedPhoto]];
                 
@@ -669,7 +650,7 @@
     CCMetadata *metadata = [self.dataSourceImagesVideos objectAtIndex:index];
     if (metadata == nil) return;
     
-    if (self.sourceDirectory == sorceDirectoryLocal) {
+    if (_sourceDirectoryLocal) {
         
         filePath = [NSString stringWithFormat:@"%@/%@", self.metadataDetail.directoryID, self.metadataDetail.fileNamePrint];
         
@@ -857,7 +838,7 @@
 {
     NSString *fileName;
     
-    if (self.sourceDirectory == sorceDirectoryLocal) {
+    if (_sourceDirectoryLocal) {
         
         fileName = [NSString stringWithFormat:@"%@/%@", self.metadataDetail.directoryID, self.metadataDetail.fileNamePrint];
         
@@ -1029,7 +1010,7 @@
     
     if ([self.metadataDetail.fileNamePrint length] == 0) return;
     
-    if (self.sourceDirectory == sorceDirectoryLocal) {
+    if (_sourceDirectoryLocal) {
         
         filePath = [NSString stringWithFormat:@"%@/%@", self.metadataDetail.directoryID, self.metadataDetail.fileNamePrint];
         

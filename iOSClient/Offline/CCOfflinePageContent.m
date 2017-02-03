@@ -455,23 +455,45 @@
     
     if ([viewController isKindOfClass:[UINavigationController class]]) {
         UINavigationController *nav = viewController;
-        self.detailViewController = (CCDetail *)nav.topViewController;
+        _detailViewController = (CCDetail *)nav.topViewController;
     } else {
-        self.detailViewController = segue.destinationViewController;
+        _detailViewController = segue.destinationViewController;
     }
     
-    self.detailViewController.metadataDetail = _metadata;
+    NSMutableArray *allRecordsDataSourceImagesVideos = [NSMutableArray new];
     
-    if ([self.pageType isEqualToString:pageOfflineOffline])
-        self.detailViewController.sourceDirectory = sorceDirectoryOffline;
+    if ([self.pageType isEqualToString:pageOfflineOffline]) {
+        
+        for (CCMetadata *metadata in dataSource) {
+            if ([metadata.typeFile isEqualToString:metadataTypeFile_image] || [metadata.typeFile isEqualToString:metadataTypeFile_video])
+                [allRecordsDataSourceImagesVideos addObject:metadata];
+        }
+    }
     
-    if ([self.pageType isEqualToString:pageOfflineLocal])
-        self.detailViewController.sourceDirectory = sorceDirectoryLocal;
+    if ([self.pageType isEqualToString:pageOfflineLocal]) {
+        
+        NSString *cameraFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:app.activeAccount];
+        NSString *cameraFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:app.activeAccount activeUrl:app.activeUrl typeCloud:app.typeCloud];
+        
+        for (NSString *fileName in dataSource) {
+            
+            CCMetadata *metadata = [CCMetadata new];
+            metadata = [CCUtility insertFileSystemInMetadata:fileName directory:_localServerUrl activeAccount:app.activeAccount cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath];
+            
+            if ([metadata.typeFile isEqualToString:metadataTypeFile_image] || [metadata.typeFile isEqualToString:metadataTypeFile_video])
+                [allRecordsDataSourceImagesVideos addObject:metadata];
+        }
+        
+        _detailViewController.sourceDirectoryLocal = YES;
+    }
     
-    self.detailViewController.dateFilterQuery = nil;
-    self.detailViewController.isCameraUpload = NO;
+    _detailViewController.metadataDetail = _metadata;
+    _detailViewController.dateFilterQuery = nil;
+    _detailViewController.isCameraUpload = NO;
+    _detailViewController.dataSourceImagesVideos = allRecordsDataSourceImagesVideos;
+
     
-    [self.detailViewController setTitle:_metadata.fileNamePrint];
+    [_detailViewController setTitle:_metadata.fileNamePrint];
 }
 
 @end

@@ -304,11 +304,7 @@ extern NSString *const BKPasscodeKeychainServiceName;
 #define keyFileNameMask                 @"fileNameMask"
 #define keyFileNameMaskAutomaticPhotos  @"fileNameMaskAutomaticPhotos"
 
-// type of source directory 
-#define sorceDirectoryOffline           0
-#define sorceDirectoryLocal             1
-#define sorceDirectoryAccount           2
-
+// Type of page Offline
 #define pageOfflineOffline              @"Offline"
 #define pageOfflineLocal                @"Local"
 

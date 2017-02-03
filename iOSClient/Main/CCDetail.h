@@ -41,7 +41,7 @@
 @property (nonatomic, weak) id <CCDetailViewDelegate> delegate;
 
 @property (nonatomic, strong) CCMetadata *metadataDetail;
-@property NSInteger sourceDirectory;
+@property BOOL sourceDirectoryLocal;
 @property BOOL isCameraUpload;
 @property (nonatomic, strong) NSDate *dateFilterQuery;
 

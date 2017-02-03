@@ -779,7 +779,6 @@
     self.detailViewController.metadataDetail = _metadata;
     self.detailViewController.dateFilterQuery = _metadata.date;
     self.detailViewController.isCameraUpload = YES;
-    self.detailViewController.sourceDirectory = sorceDirectoryAccount;
     
     [self.detailViewController setTitle:_metadata.fileNamePrint];
 }
