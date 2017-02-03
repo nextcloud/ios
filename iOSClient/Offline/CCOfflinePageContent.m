@@ -36,7 +36,7 @@
     self.tableView.tableFooterView = [UIView new];
     self.tableView.separatorColor = COLOR_SEPARATOR_TABLE;
     
-    // Type
+    // calculate _localServerUrl
     if ([self.pageType isEqualToString:pageOfflineOffline] && !_localServerUrl) {
         _localServerUrl = nil;
     }
@@ -46,7 +46,7 @@
     }
     
     // Title
-    self.title = [_localServerUrl lastPathComponent];
+    self.title = _titleViewControl;
 }
 
 // Apparirà
@@ -74,7 +74,11 @@
 
 - (BOOL)emptyDataSetShouldDisplay:(UIScrollView *)scrollView
 {
-    return YES;
+    // only for root
+    if (!_localServerUrl || [_localServerUrl isEqualToString:[CCUtility getDirectoryLocal]])
+        return YES;
+    else
+        return NO;
 }
 
 - (CGFloat)spaceHeightForEmptyDataSet:(UIScrollView *)scrollView
@@ -210,8 +214,10 @@
         metadata = [dataSource objectAtIndex:indexPath.row];
         cell.fileImageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]];
         
-        if (_metadata.cryptated) cell.offlineImageView.image = [UIImage imageNamed:image_offlinecrypto];
-        else cell.offlineImageView.image = [UIImage imageNamed:image_offline];
+        if (metadata.cryptated)
+            cell.offlineImageView.image = [UIImage imageNamed:image_offlinecrypto];
+        else
+            cell.offlineImageView.image = [UIImage imageNamed:image_offline];
     }
     
     // i am in local
@@ -301,8 +307,7 @@
     if ([_pageType isEqualToString:pageOfflineOffline]) {
         
         NSManagedObject *record = [dataSource objectAtIndex:indexPath.row];
-        _fileIDPhoto = [record valueForKey:@"fileID"];
-        _metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", self.fileIDPhoto, app.activeAccount] context:nil];
+        _metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", [record valueForKey:@"fileID"], app.activeAccount] context:nil];
     }
     
     if ([_pageType isEqualToString:pageOfflineLocal]) {
@@ -311,7 +316,6 @@
         NSString *cameraFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:app.activeAccount activeUrl:app.activeUrl typeCloud:app.typeCloud];
         
         _metadata = [CCUtility insertFileSystemInMetadata:[dataSource objectAtIndex:indexPath.row] directory:_localServerUrl activeAccount:app.activeAccount cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath];
-        _fileIDPhoto = _metadata.fileID;
     }
     
     // if is in download [do not touch]
@@ -344,8 +348,9 @@
         serverUrl = _localServerUrl;
     }
         
-    vc.localServerUrl = [CCUtility stringAppendServerUrl:serverUrl addServerUrl:_metadata.fileName];
+    vc.localServerUrl = [CCUtility stringAppendServerUrl:serverUrl addServerUrl:_metadata.fileNameData];
     vc.pageType = _pageType;
+    vc.titleViewControl = _metadata.fileNamePrint;
     
     [self.navigationController pushViewController:vc animated:YES];
 }
@@ -386,8 +391,11 @@
     
     self.detailViewController.metadataDetail = _metadata;
     
-    if (app.isLocalStorage) self.detailViewController.sourceDirectory = sorceDirectoryLocal;
-    else self.detailViewController.sourceDirectory = sorceDirectoryOffline;
+    if ([self.pageType isEqualToString:pageOfflineOffline])
+        self.detailViewController.sourceDirectory = sorceDirectoryOffline;
+    
+    if ([self.pageType isEqualToString:pageOfflineLocal])
+        self.detailViewController.sourceDirectory = sorceDirectoryLocal;
     
     self.detailViewController.dateFilterQuery = nil;
     self.detailViewController.isCameraUpload = NO;

@@ -34,11 +34,8 @@
 @property (nonatomic, weak) IBOutlet UITableView *tableView;
 
 @property (nonatomic, strong) CCMetadata *metadata;
-
-@property (nonatomic, strong) NSString *fileIDPhoto;
-@property (nonatomic, strong) NSString *directoryIDPhoto;
-
 @property (nonatomic, strong) NSString *localServerUrl;
+@property (nonatomic, strong) NSString *titleViewControl;
 
 @property (nonatomic, weak) CCDetail *detailViewController;
 @property (nonatomic, strong) UIDocumentInteractionController *docController;

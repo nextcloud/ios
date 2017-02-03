@@ -144,9 +144,6 @@
 // ico Image Cache
 @property (nonatomic, strong) NSMutableDictionary *icoImagesCache;
 
-// Offline - LocalStorage
-@property BOOL isLocalStorage;
-
 // check isDeviceJailbroken
 @property BOOL isDeviceJailbroken;
 

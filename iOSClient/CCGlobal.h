@@ -275,11 +275,6 @@ extern NSString *const BKPasscodeKeychainServiceName;
 #define actionUploadTemplate            @"uploadTemplate"
 #define actionUploadOnlyPlist           @"uploadOnlyPlist"
 
-// Tipi di sorgente directory
-#define sorceDirectoryAccount           0
-#define sorceDirectoryLocal             1
-#define sorceDirectoryOffline           2
-
 // Metadata : FileType
 #define metadataTypeFile_audio          @"audio"
 #define metadataTypeFile_compress       @"compress"
@@ -308,6 +303,11 @@ extern NSString *const BKPasscodeKeychainServiceName;
 
 #define keyFileNameMask                 @"fileNameMask"
 #define keyFileNameMaskAutomaticPhotos  @"fileNameMaskAutomaticPhotos"
+
+// type of source directory 
+#define sorceDirectoryOffline           0
+#define sorceDirectoryLocal             1
+#define sorceDirectoryAccount           2
 
 #define pageOfflineOffline              @"Offline"
 #define pageOfflineLocal                @"Local"

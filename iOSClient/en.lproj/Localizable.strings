@@ -91,6 +91,7 @@
 "_app_in_use_"              = "Application in use";
 "_contact_by_email_"        = "Contact us by email";
 "_clear_cache_"             = "Clear Cache (%@ used)";
+"_clear_cache_no_size_"     = "Clear Cache";
 "_exit_"                    = "Exit _brand_";
 "_funct_not_enabled_"       = "Functionality not enabled";
 "_passcode_activate_"       = "Password Lock activated";

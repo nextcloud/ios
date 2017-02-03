@@ -1757,11 +1757,11 @@
             
             NSString *upDir = [CCUtility deletingLastPathComponentFromServerUrl:father];
             NSString *directoryID = [self getDirectoryIDFromServerUrl:upDir activeAccount:activeAccount];
-            NSString *fileNamePrint = [father lastPathComponent];
+            NSString *fileName = [father lastPathComponent];
             
-            if (upDir && directoryID && fileNamePrint) {
+            if (upDir && directoryID && fileName) {
             
-                NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(directoryID == %@) AND (account == %@) AND (directory == 1) AND (fileNamePrint == %@)", directoryID, activeAccount, fileNamePrint];
+                NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(directoryID == %@) AND (account == %@) AND (directory == 1) AND (fileNameData == %@)", directoryID, activeAccount, fileName];
                 CCMetadata *metadata = [self getMetadataWithPreficate:predicate context:nil];
             
                 if (metadata)

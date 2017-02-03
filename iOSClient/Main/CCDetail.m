@@ -426,8 +426,10 @@
     // PhotoBrowser
     self.photoBrowser.displayActionButton = YES;
     
-    if (self.sourceDirectory == sorceDirectoryAccount) self.photoBrowser.displayDeleteButton = YES;
-    else self.photoBrowser.displayDeleteButton = NO;
+    if (self.sourceDirectory == sorceDirectoryAccount)
+        self.photoBrowser.displayDeleteButton = YES;
+    else
+        self.photoBrowser.displayDeleteButton = NO;
     
     self.photoBrowser.displayNavArrows = YES;
     self.photoBrowser.displaySelectionButtons = NO;

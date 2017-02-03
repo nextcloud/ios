@@ -278,6 +278,7 @@
     intro.tapToNext = YES;
     intro.pageControl.pageIndicatorTintColor = [UIColor lightGrayColor];
     intro.pageControl.currentPageIndicatorTintColor = [UIColor blackColor];
+    intro.pageControl.backgroundColor = [UIColor clearColor];
     [intro.skipButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     
     [intro setDelegate:self];
@@ -414,6 +415,7 @@
         intro.tapToNext = YES;
         intro.pageControl.pageIndicatorTintColor = [UIColor lightGrayColor];
         intro.pageControl.currentPageIndicatorTintColor = [UIColor blackColor];
+        intro.pageControl.backgroundColor = [UIColor clearColor];
         [intro.skipButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
         
         [intro setDelegate:self];
@@ -517,6 +519,7 @@
         intro.tapToNext = YES;
         intro.pageControl.pageIndicatorTintColor = [UIColor lightGrayColor];
         intro.pageControl.currentPageIndicatorTintColor = [UIColor blackColor];
+        intro.pageControl.backgroundColor = [UIColor clearColor];
         [intro.skipButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
         
         [intro setDelegate:self];
@@ -620,6 +623,7 @@
         intro.tapToNext = YES;
         intro.pageControl.pageIndicatorTintColor = [UIColor lightGrayColor];
         intro.pageControl.currentPageIndicatorTintColor = [UIColor blackColor];
+        intro.pageControl.backgroundColor = [UIColor clearColor];
         [intro.skipButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
         
         [intro setDelegate:self];
@@ -807,6 +811,7 @@
         intro.tapToNext = YES;
         intro.pageControl.pageIndicatorTintColor = [UIColor lightGrayColor];
         intro.pageControl.currentPageIndicatorTintColor = [UIColor blackColor];
+        intro.pageControl.backgroundColor = [UIColor clearColor];
         [intro.skipButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
         
         [intro setDelegate:self];
@@ -868,6 +873,7 @@
         intro.tapToNext = YES;
         intro.pageControl.pageIndicatorTintColor = [UIColor lightGrayColor];
         intro.pageControl.currentPageIndicatorTintColor = [UIColor blackColor];
+        intro.pageControl.backgroundColor = [UIColor clearColor];
         [intro.skipButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
         
         [intro setDelegate:self];
@@ -934,6 +940,7 @@
         intro.tapToNext = YES;
         intro.pageControl.pageIndicatorTintColor = [UIColor lightGrayColor];
         intro.pageControl.currentPageIndicatorTintColor = [UIColor blackColor];
+        intro.pageControl.backgroundColor = [UIColor clearColor];
         [intro.skipButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
         
         [intro setDelegate:self];
@@ -1051,6 +1058,7 @@
         intro.tapToNext = YES;
         intro.pageControl.pageIndicatorTintColor = [UIColor lightGrayColor];
         intro.pageControl.currentPageIndicatorTintColor = [UIColor blackColor];
+        intro.pageControl.backgroundColor = [UIColor clearColor];
         [intro.skipButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
         
         [intro setDelegate:self];
@@ -1137,6 +1145,7 @@
         intro.tapToNext = YES;
         intro.pageControl.pageIndicatorTintColor = [UIColor lightGrayColor];
         intro.pageControl.currentPageIndicatorTintColor = [UIColor blackColor];
+        intro.pageControl.backgroundColor = [UIColor clearColor];
         [intro.skipButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
             
         [intro setDelegate:self];

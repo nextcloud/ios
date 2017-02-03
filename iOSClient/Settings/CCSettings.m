@@ -243,20 +243,12 @@
     row.action.formSelector = @selector(copyDirGroupToLocal:);
     [section addFormRow:row];
 
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"quickActionOffline" rowType:XLFormRowDescriptorTypeButton title:@"Quick Action Offline"];
-    [row.cellConfig setObject:[UIColor redColor] forKey:@"textLabel.textColor"];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIImage imageNamed:image_settingsAdmin] forKey:@"imageView.image"];
-    row.action.formSelector = @selector(quickActionOffline:);
-    [section addFormRow:row];
-    
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"quickActionPhotos" rowType:XLFormRowDescriptorTypeButton title:@"Quick Action Photos"];
     [row.cellConfig setObject:[UIColor redColor] forKey:@"textLabel.textColor"];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:[UIImage imageNamed:image_settingsAdmin] forKey:@"imageView.image"];
     row.action.formSelector = @selector(quickActionPhotos:);
     [section addFormRow:row];
-
 #endif
 
     // Section : quit
@@ -409,8 +401,9 @@
 
         XLFormRowDescriptor *rowAzzeraCache = [self.form formRowWithTag:@"azzeracache"];
 
-        NSString *size = [CCUtility transformedSize:[[self getUserDirectorySize] longValue]];
-        rowAzzeraCache.title = [NSString stringWithFormat:NSLocalizedString(@"_clear_cache_", nil), size];
+        //NSString *size = [CCUtility transformedSize:[[self getUserDirectorySize] longValue]];
+        //rowAzzeraCache.title = [NSString stringWithFormat:NSLocalizedString(@"_clear_cache_", nil), size];
+        rowAzzeraCache.title = NSLocalizedString(@"_clear_cache_no_size_", nil);
         
         [self.tableView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];
 

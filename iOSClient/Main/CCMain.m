@@ -1817,10 +1817,9 @@
     // read plist
     [self downloadPlist:metadataNet.directoryID serverUrl:metadataNet.serverUrl];
     
+    // File is changed ??
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
-        // File is changed ??
-        BOOL offline = [CCCoreData isOfflineDirectoryServerUrl:_localServerUrl activeAccount:app.activeAccount];
-        [[CCOfflineFileFolder sharedOfflineFileFolder] verifyChangeMedatas:metadatas serverUrl:metadataNet.serverUrl directoryID:metadataNet.directoryID account:app.activeAccount offline:offline];
+        [[CCOfflineFileFolder sharedOfflineFileFolder] verifyChangeMedatas:metadatas serverUrl:metadataNet.serverUrl directoryID:metadataNet.directoryID account:app.activeAccount offline:NO];
     });
 
     // this is the same directory
