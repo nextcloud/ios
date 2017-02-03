@@ -47,6 +47,7 @@
         
     BOOL _isMain;
     BOOL _isViewDidLoad;
+    BOOL _isOfflineLocalServerUrl;
     
     NSString *_localDirectoryID;
 
@@ -3035,8 +3036,6 @@
     
     NSIndexPath *indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:metadata.fileID];
     if (indexPath) [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObjects:indexPath, nil] withRowAnimation:UITableViewRowAnimationAutomatic];
-    
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"reloadTableOffline" object:nil];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -3055,8 +3054,6 @@
         [CCUtility copyFileAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileName] toPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryLocal], metadata.fileName]];
         
         [app messageNotification:@"_add_local_" description:@"_file_saved_local_" visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeSuccess];
-        
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"reloadTableOffline" object:nil];
     }
     
     NSIndexPath *indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:metadata.fileID];
@@ -4633,11 +4630,6 @@
     if (app.activeAccount == nil || app.activeUrl == nil || directoryID == nil)
         return;
     
-    // Reload -> Offline ?
-    if (fileID)
-        if ([CCCoreData isOfflineLocalFileID:fileID activeAccount:app.activeAccount])
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"reloadTableOffline" object:nil];
-
     // Reload -> Self se non siamo nella dir appropriata cercala e se è in memoria reindirizza il reload
     if ([directoryID isEqualToString:_localDirectoryID] == NO || _localServerUrl == nil) {
         
@@ -4655,6 +4647,9 @@
         
         return;
     }
+    
+    // Offline folder ?
+    _isOfflineLocalServerUrl = [CCCoreData isOfflineDirectoryServerUrl:_localServerUrl activeAccount:app.activeAccount];
     
     [app.controlCenter reloadDatasource];
     
@@ -5018,15 +5013,23 @@
         // Offline Folder
         // ----------------------------------------------------------------------------------------------------------
         
-        NSString *offlineServerUrl = [CCUtility stringAppendServerUrl:_localServerUrl addServerUrl:metadata.fileNameData];
-        if ([CCCoreData isOfflineDirectoryServerUrl:offlineServerUrl activeAccount:app.activeAccount]) {
+        NSString *directoryServerUrl = [CCUtility stringAppendServerUrl:_localServerUrl addServerUrl:metadata.fileNameData];
+        BOOL isOfflineDirectory = [CCCoreData isOfflineDirectoryServerUrl:directoryServerUrl activeAccount:app.activeAccount];
+        
+        // Verify Offline
+        if (_isOfflineLocalServerUrl == YES && isOfflineDirectory == NO) {
+            [CCCoreData setOfflineDirectoryServerUrl:directoryServerUrl offline:YES activeAccount:app.activeAccount];
+            isOfflineDirectory = YES;
+        }
+        
+        if (isOfflineDirectory) {
             
             // Image Offline
             if (metadata.cryptated) cell.offlineImageView.image = [UIImage imageNamed:image_offlinecrypto];
             else cell.offlineImageView.image = [UIImage imageNamed:image_offline];
             
             // Animation synchronized gif
-            if ([[CCOfflineFileFolder sharedOfflineFileFolder] offlineFolderAnimationDirectory:[[NSArray alloc] initWithObjects:offlineServerUrl, nil] callViewController:NO]) {
+            if ([[CCOfflineFileFolder sharedOfflineFileFolder] offlineFolderAnimationDirectory:[[NSArray alloc] initWithObjects:directoryServerUrl, nil] callViewController:NO]) {
                 
                 NSURL *myURL;
                 
@@ -5127,7 +5130,15 @@
     // Offline
     // ----------------------------------------------------------------------------------------------------------
 
-    if ([CCCoreData isOfflineLocalFileID:metadata.fileID activeAccount:app.activeAccount]) {
+    BOOL isOfflineFile = [CCCoreData isOfflineLocalFileID:metadata.fileID activeAccount:app.activeAccount];
+    
+    // Verify Offline
+    if(_isOfflineLocalServerUrl == YES && isOfflineFile == NO) {
+        [CCCoreData setOfflineLocalFileID:metadata.fileID offline:YES activeAccount:app.activeAccount];
+        isOfflineFile = YES;
+    }
+    
+    if (isOfflineFile) {
         
         if (metadata.cryptated) cell.offlineImageView.image = [UIImage imageNamed:image_offlinecrypto];
         else cell.offlineImageView.image = [UIImage imageNamed:image_offline];
