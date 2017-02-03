@@ -64,6 +64,15 @@
     [self reloadTable];
 }
 
+// E' arrivato
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    
+    // cancell Progress
+    [self.navigationController cancelCCProgress];
+}
+
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
 }
