@@ -1242,7 +1242,7 @@
     }
     
     // add Offline
-    if ([selector isEqualToString:selectorAddOffline]) {
+    if ([selector isEqualToString:selectorAddOffline] || [CCCoreData isOfflineDirectoryServerUrl:serverUrl activeAccount:app.activeAccount]) {
         [CCCoreData setOfflineLocalFileID:metadata.fileID offline:YES activeAccount:app.activeAccount];
         [self getDataSourceWithReloadTableView:metadata.directoryID fileID:metadata.fileID selector:selector];
     }
@@ -1809,27 +1809,6 @@
             if (metadataDB.session && [metadataDB.session rangeOfString:@"download"].location != NSNotFound) continue;
         }
 
-        // test rev subdirectory
-        /*
-        if (metadata.directory) {
-            
-            NSString *serverUrlTestRev = [CCUtility stringAppendServerUrl:_localServerUrl addServerUrl:metadata.fileName];
-            NSString *revPrev = [CCCoreData getDirectoryRevFromServerUrl:serverUrlTestRev activeAccount:app.activeAccount];
-            
-            if (![metadata.rev isEqualToString:revPrev]) {
-                
-                NSLog(@"Change etag, force reload folder");
-                
-                [CCCoreData setDirectoryRev:metadata.rev serverUrl:serverUrlTestRev activeAccount:app.activeAccount];
-                [CCCoreData clearDateReadDirectory:serverUrlTestRev activeAccount:app.activeAccount];
-                
-                CCMain *viewController = [app.listMainVC objectForKey:serverUrlTestRev];
-                if (viewController)
-                    [viewController clearDateReadDataSource:nil];
-            }
-        }
-        */
-        
         // end test, insert in CoreData
         [CCCoreData addMetadata:metadata activeAccount:app.activeAccount activeUrl:app.activeUrl typeCloud:app.typeCloud context:nil];
     }
@@ -1837,11 +1816,10 @@
     // read plist
     [self downloadPlist:metadataNet.directoryID serverUrl:metadataNet.serverUrl];
     
-    // Offline Folder
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
-        
         // File is changed ??
-        [[CCOfflineFileFolder sharedOfflineFileFolder] verifyChangeMedatas:metadatas serverUrl:metadataNet.serverUrl directoryID:metadataNet.directoryID account:app.activeAccount offline:NO];
+        BOOL offline = [CCCoreData isOfflineDirectoryServerUrl:_localServerUrl activeAccount:app.activeAccount];
+        [[CCOfflineFileFolder sharedOfflineFileFolder] verifyChangeMedatas:metadatas serverUrl:metadataNet.serverUrl directoryID:metadataNet.directoryID account:app.activeAccount offline:offline];
     });
 
     // this is the same directory
@@ -2177,11 +2155,8 @@
         // FILE -> Metadata
         if (metadataNet.directory == NO) {
             
-            // se esiste l' directoryIDTo destinazione allora cambiamo il file sul nuovo directoryID altrimenti cancelliamo il file
-            if (directoryIDTo)
-                [CCCoreData moveMetadata:fileName directoryID:directoryID directoryIDTo:directoryIDTo activeAccount:app.activeAccount];
-            else
-                [CCCoreData deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(directoryID == %@)AND (account == %@)", directoryID, app.activeAccount]];
+            // move metadata
+            [CCCoreData moveMetadata:fileName directoryID:directoryID directoryIDTo:directoryIDTo activeAccount:app.activeAccount];
             
             // Check Offline
             if ([CCCoreData isOfflineDirectoryServerUrl:serverUrlTo activeAccount:app.activeAccount])
@@ -2191,17 +2166,15 @@
         // DIRECTORY ->  Directory - CCMetadata
         if (metadataNet.directory == YES) {
         
-            // cancelliamo tutte le directory e subdirectory in Directory prelevando i fileID
+            // delete all dir / subdir
             NSArray *directoryIDs = [CCCoreData deleteDirectoryAndSubDirectory:[CCUtility stringAppendServerUrl:metadataNet.serverUrl addServerUrl:fileName] activeAccount:app.activeAccount];
         
-            // cancelliamo in metadata tutti i file degli fileID prelevati da directory
-            for(NSString *directoryIDDelete in directoryIDs) {
+            // delete all metadata and local file in dir / subdir
+            for (NSString *directoryIDDelete in directoryIDs)
                 [CCCoreData deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(directoryID == %@)AND (account == %@)",directoryIDDelete, app.activeAccount]];
-            }
         
-            // rinominiamo ora la directory in CCMetadata
-            if (directoryIDTo)
-                [CCCoreData moveMetadata:fileName directoryID:directoryID directoryIDTo:directoryIDTo activeAccount:app.activeAccount];
+            // move metadata
+            [CCCoreData moveMetadata:fileName directoryID:directoryID directoryIDTo:directoryIDTo activeAccount:app.activeAccount];
             
             // Add new directory
             NSString *newDirectory = [NSString stringWithFormat:@"%@/%@", serverUrlTo, fileName];
