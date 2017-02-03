@@ -252,7 +252,7 @@
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="eZl-ut-xpC" sceneMemberID="viewController">
                     <extendedEdge key="edgesForExtendedLayout"/>
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="rJe-3o-bpZ">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="rJe-3o-bpZ">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -430,7 +430,7 @@
             <objects>
                 <navigationController storyboardIdentifier="CCDetailNC" extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="mtc-lf-PRo" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="vxw-dW-rgx">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="vxw-dW-rgx">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -449,7 +449,7 @@
                 <navigationController storyboardIdentifier="CCMainNC" extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="bSZ-tE-FEj" customClass="CCControlCenter" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="File" image="tabBarCryptoCloud" id="Zxv-aS-HGF"/>
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="cj6-rT-wnB">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="cj6-rT-wnB">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -495,7 +495,7 @@
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="Pes-cJ-S4N">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <connections>
                                     <outlet property="dataSource" destination="6uw-SF-2Qu" id="65P-9j-K6G"/>
@@ -560,7 +560,7 @@
                     <toolbarItems/>
                     <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
                     <size key="freeformSize" width="384" height="667"/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="Gr7-lE-Txr">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="Gr7-lE-Txr">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -619,7 +619,7 @@
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="Cc7-4O-z6Q" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" enabled="NO" title="" id="vIy-cM-ojV"/>
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="jCU-so-Np6">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="jCU-so-Np6">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
