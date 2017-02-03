@@ -80,7 +80,7 @@
     
     [self addChildViewController:_pageViewController];
     [self.view addSubview:_pageViewController.view];
-    [self.pageViewController didMoveToParentViewController:self];
+    [self.pageViewController didMoveToParentViewController:self];    
 }
 
 // Apparirà

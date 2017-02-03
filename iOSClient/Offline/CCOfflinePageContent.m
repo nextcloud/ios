@@ -142,6 +142,20 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== UIDocumentInteractionControllerDelegate =====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)documentInteractionControllerDidDismissOptionsMenu:(UIDocumentInteractionController *)controller
+{
+    // evitiamo il rimando della eventuale photo e/o video
+    if ([CCCoreData getCameraUploadActiveAccount:app.activeAccount]) {
+        
+        [CCCoreData setCameraUploadDatePhoto:[NSDate date]];
+        [CCCoreData setCameraUploadDateVideo:[NSDate date]];
+    }
+}
+
+#pragma --------------------------------------------------------------------------------------------
 #pragma mark ==== Table ====
 #pragma --------------------------------------------------------------------------------------------
 
@@ -327,7 +341,8 @@
             [self performSegueWithIdentifier:@"segueDetail" sender:self];
     }
     
-    //if ([self.metadata.type isEqualToString:metadataType_model]) [self openModel:self.metadata];
+    if ([self.metadata.type isEqualToString:metadataType_model])
+        [self openModel:self.metadata];
     
     if (_metadata.directory)
         [self performSegueDirectoryWithControlPasscode];
@@ -358,6 +373,53 @@
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Navigation ====
 #pragma --------------------------------------------------------------------------------------------
+
+- (void)openModel:(CCMetadata *)metadata
+{
+    UIViewController *viewController;
+    BOOL isLocal = NO;
+    
+    if ([self.pageType isEqualToString:pageOfflineLocal])
+        isLocal = YES;
+    
+    if ([metadata.model isEqualToString:@"cartadicredito"])
+        viewController = [[CCCartaDiCredito alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid rev:metadata.rev fileID:metadata.fileID modelReadOnly:true isLocal:isLocal];
+    
+    if ([metadata.model isEqualToString:@"bancomat"])
+        viewController = [[CCBancomat alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid rev:metadata.rev fileID:metadata.fileID modelReadOnly:true isLocal:isLocal];
+    
+    if ([metadata.model isEqualToString:@"contocorrente"])
+        viewController = [[CCContoCorrente alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid rev:metadata.rev fileID:metadata.fileID modelReadOnly:true isLocal:isLocal];
+    
+    if ([metadata.model isEqualToString:@"accountweb"])
+        viewController = [[CCAccountWeb alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid rev:metadata.rev fileID:metadata.fileID modelReadOnly:true isLocal:isLocal];
+    
+    if ([metadata.model isEqualToString:@"patenteguida"])
+        viewController = [[CCPatenteGuida alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid rev:metadata.rev fileID:metadata.fileID modelReadOnly:true isLocal:isLocal];
+    
+    if ([metadata.model isEqualToString:@"cartaidentita"])
+        viewController = [[CCCartaIdentita alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid rev:metadata.rev fileID:metadata.fileID modelReadOnly:true isLocal:isLocal];
+    
+    if ([metadata.model isEqualToString:@"passaporto"])
+        viewController = [[CCPassaporto alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid rev:metadata.rev fileID:metadata.fileID modelReadOnly:true isLocal:isLocal];
+    
+    if ([metadata.model isEqualToString:@"note"]) {
+        
+        viewController = [[CCNote alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid rev:metadata.rev fileID:metadata.fileID modelReadOnly:true isLocal:isLocal];
+        
+        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
+        
+        [self presentViewController:navigationController animated:YES completion:nil];
+        
+    } else {
+        
+        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
+        
+        [navigationController setModalPresentationStyle:UIModalPresentationFormSheet];
+        
+        [self presentViewController:navigationController animated:YES completion:nil];
+    }
+}
 
 - (BOOL)shouldPerformSegue
 {
