@@ -69,6 +69,75 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
+#pragma mark ==== DZNEmptyDataSetSource Methods ====
+#pragma --------------------------------------------------------------------------------------------
+
+- (BOOL)emptyDataSetShouldDisplay:(UIScrollView *)scrollView
+{
+    return YES;
+}
+
+- (CGFloat)spaceHeightForEmptyDataSet:(UIScrollView *)scrollView
+{
+    return 0.0f;
+}
+
+- (CGFloat)verticalOffsetForEmptyDataSet:(UIScrollView *)scrollView
+{
+    return - self.navigationController.navigationBar.frame.size.height;
+}
+
+- (UIColor *)backgroundColorForEmptyDataSet:(UIScrollView *)scrollView
+{
+    return [UIColor whiteColor];
+}
+
+- (UIImage *)imageForEmptyDataSet:(UIScrollView *)scrollView
+{
+    if ([self.pageType isEqualToString:pageOfflineOffline])
+        return [UIImage imageNamed:image_brandOffline];
+    
+    if ([self.pageType isEqualToString:pageOfflineLocal])
+        return [UIImage imageNamed:image_brandLocal];
+    
+    return nil;
+}
+
+- (NSAttributedString *)titleForEmptyDataSet:(UIScrollView *)scrollView
+{
+    NSString *text;
+    
+    if ([self.pageType isEqualToString:pageOfflineOffline])
+        text = NSLocalizedString(@"_no_files_uploaded_", nil);
+    
+    if ([self.pageType isEqualToString:pageOfflineLocal])
+        text = NSLocalizedString(@"_no_files_uploaded_", nil);
+    
+    NSDictionary *attributes = @{NSFontAttributeName:[UIFont boldSystemFontOfSize:20.0f], NSForegroundColorAttributeName:COLOR_BRAND};
+    
+    return [[NSAttributedString alloc] initWithString:text attributes:attributes];
+}
+
+- (NSAttributedString *)descriptionForEmptyDataSet:(UIScrollView *)scrollView
+{
+    NSString *text;
+    
+    if ([self.pageType isEqualToString:pageOfflineOffline])
+        text = NSLocalizedString(@"_tutorial_offline_view_", nil);
+        
+    if ([self.pageType isEqualToString:pageOfflineLocal])
+        text = NSLocalizedString(@"_tutorial_local_view_", nil);
+    
+    NSMutableParagraphStyle *paragraph = [NSMutableParagraphStyle new];
+    paragraph.lineBreakMode = NSLineBreakByWordWrapping;
+    paragraph.alignment = NSTextAlignmentCenter;
+    
+    NSDictionary *attributes = @{NSFontAttributeName: [UIFont systemFontOfSize:14.0], NSForegroundColorAttributeName: [UIColor lightGrayColor], NSParagraphStyleAttributeName: paragraph};
+    
+    return [[NSAttributedString alloc] initWithString:text attributes:attributes];
+}
+
+#pragma --------------------------------------------------------------------------------------------
 #pragma mark ==== Table ====
 #pragma --------------------------------------------------------------------------------------------
 

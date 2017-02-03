@@ -489,18 +489,15 @@
     UIApplicationShortcutIcon *shortcutPhotosIcon = [UIApplicationShortcutIcon iconWithTemplateImageName:image_quickActionPhotos];
     UIApplicationShortcutIcon *shortcutUploadClearIcon = [UIApplicationShortcutIcon iconWithTemplateImageName:image_quickActionUploadClear];
     UIApplicationShortcutIcon *shortcutUploadEncryptedIcon = [UIApplicationShortcutIcon iconWithTemplateImageName:image_quickActionUploadEncrypted];
-    UIApplicationShortcutIcon *shortcutIconTypeOffline = [UIApplicationShortcutIcon iconWithTemplateImageName:image_quickActionUploadOffline];
     
     UIApplicationShortcutItem *shortcutPhotos = [[UIApplicationShortcutItem alloc] initWithType:[NSString stringWithFormat:@"%@.photos", bundleId] localizedTitle:NSLocalizedString(@"_photo_camera_", nil) localizedSubtitle:nil icon:shortcutPhotosIcon userInfo:nil];
 
-    UIApplicationShortcutItem *shortcutOffline = [[UIApplicationShortcutItem alloc] initWithType:[NSString stringWithFormat:@"%@.offline", bundleId] localizedTitle:NSLocalizedString(@"_offline_", nil) localizedSubtitle:nil icon:shortcutIconTypeOffline userInfo:nil];
-    
     UIApplicationShortcutItem *shortcutUploadClear = [[UIApplicationShortcutItem alloc] initWithType:[NSString stringWithFormat:@"%@.uploadClear", bundleId] localizedTitle:NSLocalizedString(@"_upload_file_", nil) localizedSubtitle:nil icon:shortcutUploadClearIcon userInfo:nil];
     
     UIApplicationShortcutItem *shortcutUploadEncrypted = [[UIApplicationShortcutItem alloc] initWithType:[NSString stringWithFormat:@"%@.uploadEncrypted", bundleId] localizedTitle:NSLocalizedString(@"_upload_encrypted_file_", nil) localizedSubtitle:nil icon:shortcutUploadEncryptedIcon userInfo:nil];
     
     // add all items to an array
-    NSArray *items = @[shortcutUploadEncrypted, shortcutUploadClear, shortcutPhotos, shortcutOffline];
+    NSArray *items = @[shortcutUploadEncrypted, shortcutUploadClear, shortcutPhotos];
     
     // add the array to our app
     [UIApplication sharedApplication].shortcutItems = items;
@@ -519,7 +516,6 @@
     
     NSString *bundleId = [NSBundle mainBundle].bundleIdentifier;
     
-    NSString *shortcutOffline = [NSString stringWithFormat:@"%@.offline", bundleId];
     NSString *shortcutPhotos = [NSString stringWithFormat:@"%@.photos", bundleId];
     NSString *shortcutUploadClear = [NSString stringWithFormat:@"%@.uploadClear", bundleId];
     NSString *shortcutUploadEncrypted = [NSString stringWithFormat:@"%@.uploadEncrypted", bundleId];
@@ -632,44 +628,6 @@
         handled = YES;
     }
     
-    else if ([shortcutItem.type isEqualToString:shortcutOffline] && self.activeAccount) {
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            
-            UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
-        
-            if (splitViewController.isCollapsed) {
-            
-                UITabBarController *tbc = splitViewController.viewControllers.firstObject;
-                for (UINavigationController *nvc in tbc.viewControllers) {
-                
-                    if ([nvc.topViewController isKindOfClass:[CCDetail class]])
-                        [nvc popToRootViewControllerAnimated:NO];
-                
-                    if ([nvc.topViewController isKindOfClass:[CCOffline class]])
-                        NSLog(@"ERROR");//[(CCOffline *)nvc.topViewController forcedSwitchOffline];
-                }
-            
-                [tbc setSelectedIndex:TabBarApplicationIndexOffline];
-            
-            } else {
-            
-                UINavigationController *nvcDetail = splitViewController.viewControllers.lastObject;
-                [nvcDetail popToRootViewControllerAnimated:NO];
-            
-                UITabBarController *tbc = splitViewController.viewControllers.firstObject;
-        
-                UINavigationController *ncOffline = [tbc.viewControllers objectAtIndex:TabBarApplicationIndexOffline];
-                if ([ncOffline.topViewController isKindOfClass:[CCOffline class]])
-                    NSLog(@"ERROR");//[(CCOffline *)ncOffline.topViewController forcedSwitchOffline];
-            
-                [tbc setSelectedIndex:TabBarApplicationIndexOffline];
-            }
-        });
-        
-        handled = YES;
-    }
-
     return handled;
 }
 

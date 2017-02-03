@@ -341,15 +341,6 @@
     exit(0);
 }
 
-- (void)quickActionOffline:(XLFormRowDescriptor *)sender
-{
-    NSString *bundleId = [NSBundle mainBundle].bundleIdentifier;
-    
-    UIApplicationShortcutItem *shortcutOffline = [[UIApplicationShortcutItem alloc] initWithType:[NSString stringWithFormat:@"%@.offline", bundleId] localizedTitle:@"" localizedSubtitle:nil icon:nil userInfo:nil];
-    
-    [app handleShortCutItem:shortcutOffline];
-}
-
 - (void)quickActionPhotos:(XLFormRowDescriptor *)sender
 {
     NSString *bundleId = [NSBundle mainBundle].bundleIdentifier;
