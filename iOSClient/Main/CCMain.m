@@ -1946,6 +1946,7 @@
         CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
         
         metadataNet.action = actionDeleteFileDirectory;
+        metadataNet.delegate = self;
         metadataNet.fileID = metadata.fileID;
         metadataNet.fileNamePrint = metadata.fileNamePrint;
         metadataNet.serverUrl = _localServerUrl;
@@ -1971,6 +1972,7 @@
         CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
         
         metadataNet.action = actionDeleteFileDirectory;
+        metadataNet.delegate = self;
         metadataNet.fileID = metadata.fileID;
         metadataNet.fileName = metadata.fileName;
         metadataNet.fileNamePrint = metadata.fileNamePrint;
