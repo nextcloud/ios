@@ -125,6 +125,9 @@
 		F73CCE261DC13788007E38D8 /* UIScrollView+EmptyDataSet.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCE241DC13788007E38D8 /* UIScrollView+EmptyDataSet.m */; };
 		F73CCE301DC13798007E38D8 /* UICKeyChainStore.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCE2A1DC13798007E38D8 /* UICKeyChainStore.m */; };
 		F73CCE321DC13798007E38D8 /* UICKeyChainStore.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCE2A1DC13798007E38D8 /* UICKeyChainStore.m */; };
+		F740B5DA1E45FB8C0072B57D /* CCActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F740B5D91E45FB8C0072B57D /* CCActions.swift */; };
+		F740B5DB1E45FB8C0072B57D /* CCActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F740B5D91E45FB8C0072B57D /* CCActions.swift */; };
+		F740B5DC1E45FB8C0072B57D /* CCActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F740B5D91E45FB8C0072B57D /* CCActions.swift */; };
 		F74344171E1264EE001CC831 /* DocumentPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74344161E1264EE001CC831 /* DocumentPickerViewController.swift */; };
 		F743441A1E1264EE001CC831 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F74344181E1264EE001CC831 /* MainInterface.storyboard */; };
 		F74344251E1264EE001CC831 /* FileProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74344241E1264EE001CC831 /* FileProvider.swift */; };
@@ -1203,6 +1206,7 @@
 		F73CCE281DC13798007E38D8 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F73CCE291DC13798007E38D8 /* UICKeyChainStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICKeyChainStore.h; sourceTree = "<group>"; };
 		F73CCE2A1DC13798007E38D8 /* UICKeyChainStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UICKeyChainStore.m; sourceTree = "<group>"; };
+		F740B5D91E45FB8C0072B57D /* CCActions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CCActions.swift; path = iOSClient/Actions/CCActions.swift; sourceTree = "<group>"; };
 		F7416BAB1E2E2FA900B261A1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F7416BAC1E2E2FBE00B261A1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F74344151E1264EE001CC831 /* Picker.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Picker.entitlements; sourceTree = "<group>"; };
@@ -2589,6 +2593,15 @@
 			path = UICKeyChainStore;
 			sourceTree = "<group>";
 		};
+		F740B5E71E45FB940072B57D /* Actions */ = {
+			isa = PBXGroup;
+			children = (
+				F740B5D91E45FB8C0072B57D /* CCActions.swift */,
+			);
+			name = Actions;
+			path = ..;
+			sourceTree = "<group>";
+		};
 		F7416BAD1E2E2FEF00B261A1 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
@@ -3187,6 +3200,7 @@
 				F7F67BB81A24D27800EE80DA /* Images.xcassets */,
 				F7596C771D128FC80092A6B8 /* Nextcloud.xcassets */,
 				F70211F31BAC56E9003FC03E /* Main */,
+				F740B5E71E45FB940072B57D /* Actions */,
 				F7ECBA6B1E239DCD003E6328 /* Create */,
 				F7E95CEC1AC40BA40060D08E /* FileSystem */,
 				F744BE911BEBB2EE004FFF66 /* Intro */,
@@ -3770,6 +3784,7 @@
 				F71459BF1D12E3B700CAFEEC /* RNEncryptor.m in Sources */,
 				F71459C21D12E3B700CAFEEC /* ShareViewController.m in Sources */,
 				F71459C31D12E3B700CAFEEC /* UIImage+Filtering.m in Sources */,
+				F740B5DB1E45FB8C0072B57D /* CCActions.swift in Sources */,
 				F71459C41D12E3B700CAFEEC /* UIImage+Saving.m in Sources */,
 				F71459C51D12E3B700CAFEEC /* UIImage+Rotating.m in Sources */,
 				F771CD611E07F6620066F76D /* TableAutomaticUpload+CoreDataProperties.m in Sources */,
@@ -3864,6 +3879,7 @@
 				F743448B1E12800D001CC831 /* CCCertificate.m in Sources */,
 				F743447D1E127ECB001CC831 /* AESCrypt.m in Sources */,
 				F743447E1E127ECE001CC831 /* NSData+Base64.m in Sources */,
+				F740B5DC1E45FB8C0072B57D /* CCActions.swift in Sources */,
 				F74344671E127E38001CC831 /* CCMetadata.m in Sources */,
 				F74344701E127E56001CC831 /* TableDirectory+CoreDataProperties.m in Sources */,
 				F74344781E127E9E001CC831 /* CCExifGeo.m in Sources */,
@@ -3967,6 +3983,7 @@
 				F77B0E201D118A16002130FE /* CCShareUserOC.m in Sources */,
 				F77B0E211D118A16002130FE /* ThumbsMainToolbar.m in Sources */,
 				F73CCDF31DC13776007E38D8 /* XLFormSwitchCell.m in Sources */,
+				F740B5DA1E45FB8C0072B57D /* CCActions.swift in Sources */,
 				F77B0E221D118A16002130FE /* CCManageLocation.m in Sources */,
 				F77B0E231D118A16002130FE /* CCSharePermissionOC.m in Sources */,
 				F77B0E241D118A16002130FE /* HRColorCursor.m in Sources */,

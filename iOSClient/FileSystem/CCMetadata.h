@@ -69,9 +69,9 @@
 
 @property (nonatomic, strong) NSString *account;
 @property (nonatomic, strong) NSString *action;
-@property (nonatomic, strong) NSString *identifier;
 @property BOOL cryptated;
 @property (nonatomic, strong) NSDate *date;
+@property (nonatomic, weak) id delegate;
 @property BOOL directory;
 @property (nonatomic, strong) NSString *directoryID;
 @property (nonatomic, strong) NSString *directoryIDTo;
@@ -85,6 +85,7 @@
 @property (nonatomic, strong) NSString *fileNameTo;
 @property (nonatomic, strong) NSString *fileNameLocal;
 @property (nonatomic, strong) NSString *fileNamePrint;
+@property (nonatomic, strong) NSString *identifier;
 @property (nonatomic, strong) CCMetadata *metadata;
 @property (nonatomic, strong) NSString *options;
 @property (nonatomic, strong) NSString *password;
