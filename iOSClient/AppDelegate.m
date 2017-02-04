@@ -41,7 +41,6 @@
 
 @interface AppDelegate ()
 {
-    
 }
 @end
 
