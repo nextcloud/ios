@@ -1792,7 +1792,7 @@
         }
     }
     
-    return (NSArray *)metadatas;
+    return [NSArray arrayWithArray:metadatas];    
 }
 
 #pragma --------------------------------------------------------------------------------------------

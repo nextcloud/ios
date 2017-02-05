@@ -12,7 +12,7 @@
 
 @interface CCOfflinePageContent ()
 {
-    NSMutableArray *dataSource;
+    NSArray *dataSource;
 }
 @end
 
@@ -170,36 +170,51 @@
 
 - (void)reloadTable
 {
-    [dataSource removeAllObjects];
-    
     if ([_pageType isEqualToString:pageOfflineOffline]) {
         
         if (!_localServerUrl) {
             
-            dataSource = (NSMutableArray*)[CCCoreData getHomeOfflineActiveAccount:app.activeAccount directoryUser:app.directoryUser];
+            dataSource = [CCCoreData getHomeOfflineActiveAccount:app.activeAccount directoryUser:app.directoryUser];
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.tableView reloadData];
+            });
             
         } else {
             
+            NSMutableArray *metadatas = [NSMutableArray new];
+
             NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:_localServerUrl activeAccount:app.activeAccount];
             NSArray *recordsTableMetadata = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@)", app.activeAccount, directoryID] fieldOrder:[CCUtility getOrderSettings] ascending:[CCUtility getAscendingSettings]];
             
             CCSectionDataSource *sectionDataSource = [CCSection creataDataSourseSectionTableMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:nil replaceDateToExifDate:NO activeAccount:app.activeAccount];
             
             for (NSString *key in sectionDataSource.allRecordsDataSource)
-                [dataSource  insertObject:[sectionDataSource.allRecordsDataSource objectForKey:key] atIndex:0 ];
+                [metadatas  insertObject:[sectionDataSource.allRecordsDataSource objectForKey:key] atIndex:0 ];
+            
+            dataSource = [NSArray arrayWithArray:metadatas];
+
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.tableView reloadData];
+            });
         }
     }
     
     if ([_pageType isEqualToString:pageOfflineLocal]) {
         
         NSArray *subpaths = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:_localServerUrl error:nil];
+        NSMutableArray *metadatas = [NSMutableArray new];
         
         for (NSString *subpath in subpaths)
             if (![[subpath lastPathComponent] hasPrefix:@"."])
-                [dataSource addObject:subpath];
+                [metadatas addObject:subpath];
+        
+        dataSource = [NSArray arrayWithArray:metadatas];
+
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.tableView reloadData];
+        });
     }
-    
-    [self.tableView reloadData];
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
