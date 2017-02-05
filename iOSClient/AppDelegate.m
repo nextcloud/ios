@@ -111,7 +111,7 @@
         [self settingActiveAccount:recordAccount.account activeUrl:recordAccount.url activeUser:recordAccount.user activePassword:recordAccount.password activeUID:recordAccount.uid activeAccessToken:recordAccount.token typeCloud:recordAccount.typeCloud];
     }
     
-    // Operation Queue OC-DB Networking
+    // Operation Queue OC Networking
     _netQueue = [[NSOperationQueue alloc] init];
     _netQueue.name = netQueueName;
     _netQueue.maxConcurrentOperationCount = maxConcurrentOperation;
