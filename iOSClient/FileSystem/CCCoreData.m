@@ -1781,31 +1781,18 @@
     
     for (TableDirectory *directory in directoriesNoOffline) {
         
-    }
-    
-    
-    /*
-    NSArray *files = [self getTableLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (offline == 1)", activeAccount] controlZombie:YES activeAccount:activeAccount directoryUser:directoryUser];
-    
-    for (TableLocalFile *file in files) {
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND (directory == 0)", activeAccount, directory.directoryID];
+        NSArray *tableMetadatas = [self getTableMetadataWithPredicate:predicate context:nil];
         
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", file.fileID, activeAccount];
-        CCMetadata *metadata = [self getMetadataWithPreficate:predicate context:nil];
-        
-        if (metadata) {
+        for (TableMetadata *tableMetadata in tableMetadatas) {
             
-            // verify if is not on directory offline
-            
-            NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(directoryID == %@) AND (offline == 1) AND (account == %@)", metadata.directoryID, activeAccount];
-            
-            TableDirectory *directory = [TableDirectory MR_findFirstWithPredicate:predicate];
-            
-            if (!directory)
-                [metadatas addObject:metadata];
+            TableLocalFile *tableLocalFile = [CCCoreData getLocalFileWithFileID:tableMetadata.fileID activeAccount:activeAccount];
+            if ([tableLocalFile.offline boolValue] == YES) {
+                [metadatas addObject:[self insertEntityInMetadata:tableMetadata]];
+            }
         }
     }
-    */
-             
+    
     return [NSArray arrayWithArray:metadatas];    
 }
 

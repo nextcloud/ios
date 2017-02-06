@@ -13,6 +13,7 @@
 @interface CCOfflinePageContent ()
 {
     NSArray *dataSource;
+    BOOL _reloadDataSource;
 }
 @end
 
@@ -31,8 +32,6 @@
     // Metadata
     _metadata = [CCMetadata new];
     
-    self.tableView.emptyDataSetDelegate = self;
-    self.tableView.emptyDataSetSource = self;
     self.tableView.tableFooterView = [UIView new];
     self.tableView.separatorColor = COLOR_SEPARATOR_TABLE;
     
@@ -62,7 +61,14 @@
     [app plusButtonVisibile:true];
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        
+        self.tableView.emptyDataSetDelegate = nil;
+        self.tableView.emptyDataSetSource = nil;
+        
         [self reloadTable];
+        
+        self.tableView.emptyDataSetDelegate = self;
+        self.tableView.emptyDataSetSource = self;
     });
 }
 
