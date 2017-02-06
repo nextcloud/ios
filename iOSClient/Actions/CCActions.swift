@@ -33,26 +33,27 @@ class CCActions: NSObject {
     
     //MARK: Shared Instance
     
-    /*
     static let sharedInstance : CCActions = {
         let instance = CCActions()
         return instance
     }()
-    */
     
     //MARK: Local Variable
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var metadataNet : CCMetadataNet = CCMetadataNet.init()
     
-    var delegate : CCActionsDelegate?
+    var delegate : CCActionsDelegate!
     
     //MARK: Init
     
     override init() {
     }
     
-    // BARK: Delete
+    // --------------------------------------------------------------------------------------------
+    // MARK: Delete File or Folder
+    // --------------------------------------------------------------------------------------------
+
     func deleteFileOrFolder(_ metadata : CCMetadata, serverUrl : String, delegate : AnyObject) {
         
         let metadataNet : CCMetadataNet = CCMetadataNet.init()
@@ -81,7 +82,7 @@ class CCActions: NSObject {
         } else {
             
             metadataNet.action = actionDeleteFileDirectory
-            metadataNet.delegate = self
+            metadataNet.delegate = delegate
             metadataNet.fileID = metadata.fileID
             metadataNet.fileName = metadata.fileName
             metadataNet.fileNamePrint = metadata.fileNamePrint
@@ -94,7 +95,9 @@ class CCActions: NSObject {
     }
     
     func deleteFileOrFolderSuccess(_ metadataNet : CCMetadataNet) {
-                
+        
+        self.delegate = metadataNet.delegate as! CCActionsDelegate
+        
         CCCoreData.deleteFile(metadataNet.metadata, serverUrl: metadataNet.serverUrl, directoryUser: appDelegate.directoryUser, typeCloud: appDelegate.typeCloud, activeAccount: appDelegate.activeAccount)
         
         delegate?.deleteFileOrFolderSuccess(metadataNet)
@@ -102,10 +105,16 @@ class CCActions: NSObject {
     
     func deleteFileOrFolderFailure(_ metadataNet : CCMetadataNet, message : NSString, errorCode : NSInteger) {
         
+        self.delegate = metadataNet.delegate as! CCActionsDelegate
+        
         if errorCode == 404 {
             CCCoreData.deleteFile(metadataNet.metadata, serverUrl: metadataNet.serverUrl, directoryUser: appDelegate.directoryUser, typeCloud: appDelegate.typeCloud, activeAccount: appDelegate.activeAccount)
         }
 
+        if message.length > 0 {
+            appDelegate.messageNotification("_delete_", description: message as String, visible: true, delay:TimeInterval(dismissAfterSecond), type:TWMessageBarMessageType.error)
+        }
+        
         delegate?.deleteFileOrFolderFailure(metadataNet, message: message, errorCode: errorCode)
     }
 }

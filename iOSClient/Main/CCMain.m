@@ -79,9 +79,6 @@
     // Datasource
     CCSectionDataSource *_sectionDataSource;
     NSDate *_dateReadDataSource;
-    
-    // Actions
-    CCActions *_actions;
 }
 @end
 
@@ -121,7 +118,7 @@
     [super viewDidLoad];
     
     // init object
-    _actions = [CCActions new];
+    //_actions = [CCActions new];
     _metadata = [[CCMetadata alloc] init];
     _metadataSegue = [[CCMetadata alloc] init];
     _hud = [[CCHud alloc] initWithView:[[[UIApplication sharedApplication] delegate] window]];
@@ -135,7 +132,6 @@
     self.tableView.delegate = self;
     self.tableView.tableFooterView = [UIView new];
     self.tableView.separatorColor = COLOR_SEPARATOR_TABLE;
-    _actions.delegate = self;
 
     [[CCNetworking sharedNetworking] settingDelegate:self];
     
@@ -1874,22 +1870,12 @@
     }
 }
 
-
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Delete File or Folder =====
 #pragma --------------------------------------------------------------------------------------------
 
 - (void)deleteFileOrFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    [_hud hideHud];
-    
-    if (errorCode == 404) {
-        [self deleteFileOrFolderSuccess:metadataNet];
-    }
-        
-    if (message)
-        [app messageNotification:@"_delete_" description:message visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeError];
-
     // is detailViewController active ?
     if (_detailViewController) {
         
@@ -1898,8 +1884,7 @@
         });
     }
     
-    [_selectedMetadatas removeAllObjects];
-    [_queueSelector removeAllObjects];
+    [self deleteFileOrFolderSuccess:metadataNet]; 
 }
 
 - (void)deleteFileOrFolderSuccess:(CCMetadataNet *)metadataNet
@@ -1910,7 +1895,6 @@
         
         [_hud hideHud];
         
-        // Carico la Folder o il Datasource
         if ([metadataNet.selectorPost isEqualToString:selectorReadFolderForced]) {
             [self readFolderWithForced:YES];
         } else {
@@ -1939,8 +1923,9 @@
 - (void)deleteFileOrFolder:(CCMetadata *)metadata numFile:(NSInteger)numFile ofFile:(NSInteger)ofFile
 {
     [_queueSelector addObject:selectorDelete];
-    [_actions deleteFileOrFolder:metadata serverUrl:_localServerUrl delegate:self];
     
+    [[CCActions sharedInstance] deleteFileOrFolder:metadata serverUrl:_localServerUrl delegate:self];
+        
     [_hud visibleHudTitle:[NSString stringWithFormat:NSLocalizedString(@"_delete_file_n_", nil), ofFile - numFile + 1, ofFile] mode:MBProgressHUDModeIndeterminate color:nil];
 }
 
