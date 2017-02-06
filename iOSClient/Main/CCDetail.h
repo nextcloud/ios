@@ -23,6 +23,7 @@
 
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
+#import <WebKit/WebKit.h>
 
 #import "UIImage+animatedGIF.h"
 #import "LMMediaPlayerView.h"
@@ -46,7 +47,7 @@
 @property (nonatomic, strong) NSDate *dateFilterQuery;
 
 // Document
-@property (nonatomic, strong) UIWebView *webView;
+@property (nonatomic, strong) WKWebView *webView;
 
 // Photo-Video
 @property (nonatomic, strong) NSMutableArray *dataSourceImagesVideos;
