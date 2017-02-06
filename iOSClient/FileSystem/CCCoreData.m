@@ -1781,15 +1781,6 @@
     
     for (TableDirectory *directory in directoriesNoOffline) {
         
-        NSArray *files = [self getTableLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND (offline == 1)", activeAccount, directory.directoryID] controlZombie:YES activeAccount:activeAccount directoryUser:directoryUser];
-        
-        for (TableLocalFile *file in files) {
-            
-            NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", file.fileID, activeAccount];
-            CCMetadata *metadata = [self getMetadataWithPreficate:predicate context:nil];
-
-            [metadatas addObject:metadata];
-        }
     }
     
     
