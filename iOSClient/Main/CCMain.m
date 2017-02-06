@@ -40,7 +40,7 @@
 #define alertRename 3
 #define alertOfflineFolder 4
 
-@interface CCMain ()
+@interface CCMain () <CCActionsDelegate>
 {
     CCMetadata *_metadataSegue;
     CCMetadata *_metadata;
@@ -79,6 +79,9 @@
     // Datasource
     CCSectionDataSource *_sectionDataSource;
     NSDate *_dateReadDataSource;
+    
+    // Actions
+    CCActions *_actions;
 }
 @end
 
@@ -118,6 +121,7 @@
     [super viewDidLoad];
     
     // init object
+    _actions = [CCActions new];
     _metadata = [[CCMetadata alloc] init];
     _metadataSegue = [[CCMetadata alloc] init];
     _hud = [[CCHud alloc] initWithView:[[[UIApplication sharedApplication] delegate] window]];
@@ -131,6 +135,7 @@
     self.tableView.delegate = self;
     self.tableView.tableFooterView = [UIView new];
     self.tableView.separatorColor = COLOR_SEPARATOR_TABLE;
+    _actions.delegate = self;
 
     [[CCNetworking sharedNetworking] settingDelegate:self];
     
@@ -1878,9 +1883,10 @@
 {
     [_hud hideHud];
     
-    if (errorCode == 404)
+    if (errorCode == 404) {
         [self deleteFileOrFolderSuccess:metadataNet];
-    
+    }
+        
     if (message)
         [app messageNotification:@"_delete_" description:message visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeError];
 
@@ -1904,25 +1910,18 @@
         
         [_hud hideHud];
         
-        CCMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", metadataNet.fileID, app.activeAccount] context:nil];
-        
-        if (metadata) {
-            
-            [CCCoreData deleteFile:metadata serverUrl:metadataNet.serverUrl directoryUser:app.directoryUser typeCloud:app.typeCloud activeAccount:app.activeAccount];
-            
-            // Carico la Folder o il Datasource
-            if ([metadataNet.selectorPost isEqualToString:selectorReadFolderForced]) {
-                [self readFolderWithForced:YES];
-            } else {
-                [self getDataSourceWithReloadTableView:metadata.directoryID fileID:metadata.fileID selector:metadataNet.selector];
-            }
+        // Carico la Folder o il Datasource
+        if ([metadataNet.selectorPost isEqualToString:selectorReadFolderForced]) {
+            [self readFolderWithForced:YES];
+        } else {
+            [self getDataSourceWithReloadTableView:metadataNet.metadata.directoryID fileID:metadataNet.metadata.fileID selector:metadataNet.selector];
         }
 
         // if detailViewController
         if (_detailViewController) {
             
             dispatch_async(dispatch_get_main_queue(), ^{
-                [_detailViewController deleteFileSuccess:metadata metadataNetVar:metadataNet];
+                [_detailViewController deleteFileSuccess:metadataNet.metadata metadataNetVar:metadataNet];
             });
         }
 
@@ -1939,50 +1938,9 @@
 
 - (void)deleteFileOrFolder:(CCMetadata *)metadata numFile:(NSInteger)numFile ofFile:(NSInteger)ofFile
 {
-    if (metadata.cryptated == YES) {
-        
-        // Cryptated
-        
-        CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
-        
-        metadataNet.action = actionDeleteFileDirectory;
-        metadataNet.delegate = self;
-        metadataNet.fileID = metadata.fileID;
-        metadataNet.fileNamePrint = metadata.fileNamePrint;
-        metadataNet.serverUrl = _localServerUrl;
-
-        // data crypto
-        metadataNet.fileName = metadata.fileNameData;
-        metadataNet.selector = selectorDeleteCrypto;
-            
-        [_queueSelector addObject:metadataNet.selector];
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
-        
-        // plist
-        metadataNet.fileName = metadata.fileName;
-        metadataNet.selector = selectorDeletePlist;
-            
-        [_queueSelector addObject:metadataNet.selector];
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
-            
-    } else {
-            
-        // Plain
+    [_queueSelector addObject:selectorDelete];
+    [_actions deleteFileOrFolder:metadata serverUrl:_localServerUrl delegate:self];
     
-        CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
-        
-        metadataNet.action = actionDeleteFileDirectory;
-        metadataNet.delegate = self;
-        metadataNet.fileID = metadata.fileID;
-        metadataNet.fileName = metadata.fileName;
-        metadataNet.fileNamePrint = metadata.fileNamePrint;
-        metadataNet.selector = selectorDelete;
-        metadataNet.serverUrl = _localServerUrl;
-        
-        [_queueSelector addObject:metadataNet.selector];
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
-    }
-        
     [_hud visibleHudTitle:[NSString stringWithFormat:NSLocalizedString(@"_delete_file_n_", nil), ofFile - numFile + 1, ofFile] mode:MBProgressHUDModeIndeterminate color:nil];
 }
 

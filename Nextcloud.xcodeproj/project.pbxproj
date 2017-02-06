@@ -80,6 +80,7 @@
 		F7145A241D12E3B700CAFEEC /* CCCellShareExt.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7296A621C8880C9001A7809 /* CCCellShareExt.xib */; };
 		F71E68001DC1F792003BA52B /* libownCloudiOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F71E67FC1DC1F76F003BA52B /* libownCloudiOS.a */; };
 		F71E68021DC1F79D003BA52B /* libownCloudiOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F71E67FC1DC1F76F003BA52B /* libownCloudiOS.a */; };
+		F720E01F1E48C73E001A4B9E /* CCActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F720E01E1E48C73E001A4B9E /* CCActions.swift */; };
 		F7253FCA1E38BAF20084135B /* JSAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7253FC91E38BAF20084135B /* JSAlertView.m */; };
 		F725437C1E12A44A009BF4C2 /* CCSection.m in Sources */ = {isa = PBXBuildFile; fileRef = F78F6FAF1CC8CCB700F4EA25 /* CCSection.m */; };
 		F72C63891DC14B0400FA5ED5 /* libMagicalRecord.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F7B61E9B1DC13C20009E938F /* libMagicalRecord.a */; };
@@ -1077,6 +1078,7 @@
 		F71E67F61DC1F76F003BA52B /* ownCloud iOS library.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "ownCloud iOS library.xcodeproj"; path = "Libraries external/OCCommunicationLib/ownCloud iOS library.xcodeproj"; sourceTree = SOURCE_ROOT; };
 		F71EDBFC1C4B93ED00265D0C /* JBroken.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JBroken.h; sourceTree = "<group>"; };
 		F71EDBFD1C4B93ED00265D0C /* JBroken.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JBroken.m; sourceTree = "<group>"; };
+		F720E01E1E48C73E001A4B9E /* CCActions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CCActions.swift; path = Actions/CCActions.swift; sourceTree = "<group>"; };
 		F721371D1BAFF0920012B613 /* CCAccountWeb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCAccountWeb.h; sourceTree = "<group>"; };
 		F721371E1BAFF0920012B613 /* CCAccountWeb.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCAccountWeb.m; sourceTree = "<group>"; };
 		F72137211BAFF0920012B613 /* CCBancomat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCBancomat.h; sourceTree = "<group>"; };
@@ -2338,6 +2340,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		F720E02A1E48C74C001A4B9E /* Actions */ = {
+			isa = PBXGroup;
+			children = (
+				F720E01E1E48C73E001A4B9E /* CCActions.swift */,
+			);
+			name = Actions;
+			sourceTree = "<group>";
+		};
 		F721371B1BAFF0920012B613 /* Templates */ = {
 			isa = PBXGroup;
 			children = (
@@ -3187,6 +3197,7 @@
 				F7F67BB81A24D27800EE80DA /* Images.xcassets */,
 				F7596C771D128FC80092A6B8 /* Nextcloud.xcassets */,
 				F70211F31BAC56E9003FC03E /* Main */,
+				F720E02A1E48C74C001A4B9E /* Actions */,
 				F7ECBA6B1E239DCD003E6328 /* Create */,
 				F7E95CEC1AC40BA40060D08E /* FileSystem */,
 				F744BE911BEBB2EE004FFF66 /* Intro */,
@@ -3967,6 +3978,7 @@
 				F77B0E201D118A16002130FE /* CCShareUserOC.m in Sources */,
 				F77B0E211D118A16002130FE /* ThumbsMainToolbar.m in Sources */,
 				F73CCDF31DC13776007E38D8 /* XLFormSwitchCell.m in Sources */,
+				F720E01F1E48C73E001A4B9E /* CCActions.swift in Sources */,
 				F77B0E221D118A16002130FE /* CCManageLocation.m in Sources */,
 				F77B0E231D118A16002130FE /* CCSharePermissionOC.m in Sources */,
 				F77B0E241D118A16002130FE /* HRColorCursor.m in Sources */,
