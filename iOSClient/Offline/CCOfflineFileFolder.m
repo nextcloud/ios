@@ -51,6 +51,7 @@
 #pragma mark ===== Read Folder Offline =====
 #pragma --------------------------------------------------------------------------------------------
 
+// MULTI THREAD
 - (void)readFolderOffline
 {
     if ([app.activeAccount length] == 0)
@@ -60,29 +61,32 @@
     if ([[app verifyExistsInQueuesDownloadSelector:selectorDownloadOffline] count] > 0)
         return;
     
-    NSString *father = @"";
-    NSArray *directories = [CCCoreData getDirectoryOffline:YES activeAccount:app.activeAccount];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        
+        NSString *father = @"";
+        NSArray *directories = [CCCoreData getDirectoryOffline:YES activeAccount:app.activeAccount];
     
-    for (TableDirectory *directory in directories) {
+        for (TableDirectory *directory in directories) {
         
-        if (![directory.serverUrl containsString:father]) {
+            if (![directory.serverUrl containsString:father]) {
         
-            father = directory.serverUrl;
+                father = directory.serverUrl;
             
-            CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
+                CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
         
-            metadataNet.action = actionReadFolder;
-            metadataNet.date = [NSDate date];
-            metadataNet.directoryID = directory.directoryID;
-            metadataNet.priority = NSOperationQueuePriorityVeryLow;
-            metadataNet.selector = selectorOfflineFolder;
-            metadataNet.serverUrl = directory.serverUrl;
+                metadataNet.action = actionReadFolder;
+                metadataNet.date = [NSDate date];
+                metadataNet.directoryID = directory.directoryID;
+                metadataNet.priority = NSOperationQueuePriorityVeryLow;
+                metadataNet.selector = selectorOfflineFolder;
+                metadataNet.serverUrl = directory.serverUrl;
         
-            [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+                [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
             
-            NSLog(@"[LOG] Read offline directory : %@", directory.serverUrl);
+                NSLog(@"[LOG] Read offline directory : %@", directory.serverUrl);
+            }
         }
-    }
+    });
 }
 
 //
@@ -123,7 +127,7 @@
     for (CCMetadataNet *metadataNet in metadatasNet)
         [serversUrlInDownload addObject:metadataNet.serverUrl];
     
-    /* Animation ON/OFF */
+    // Animation ON/OFF
     
     for (NSString *serverUrl in directory) {
         
@@ -274,26 +278,29 @@
 {
     if (app.activeAccount == nil || [CCUtility getHomeServerUrlActiveUrl:app.activeUrl typeCloud:app.typeCloud] == nil)
         return;
-        
-    NSArray *metadatas = [CCCoreData getOfflineLocalFileActiveAccount:app.activeAccount directoryUser:app.directoryUser];
     
-    for (CCMetadata *metadata in metadatas) {
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+
+        NSArray *metadatas = [CCCoreData getOfflineLocalFileActiveAccount:app.activeAccount directoryUser:app.directoryUser];
+    
+        for (CCMetadata *metadata in metadatas) {
         
-        NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:app.activeAccount];
-        if (serverUrl == nil) continue;
+            NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:app.activeAccount];
+            if (serverUrl == nil) continue;
         
-        CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
+            CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
         
-        metadataNet.action = actionReadFile;
-        metadataNet.fileID = metadata.fileID;
-        metadataNet.fileName = metadata.fileName;
-        metadataNet.fileNamePrint = metadata.fileNamePrint;
-        metadataNet.serverUrl = serverUrl;
-        metadataNet.selector = selectorReadFileOffline;
-        metadataNet.priority = NSOperationQueuePriorityVeryLow;
+            metadataNet.action = actionReadFile;
+            metadataNet.fileID = metadata.fileID;
+            metadataNet.fileName = metadata.fileName;
+            metadataNet.fileNamePrint = metadata.fileNamePrint;
+            metadataNet.serverUrl = serverUrl;
+            metadataNet.selector = selectorReadFileOffline;
+            metadataNet.priority = NSOperationQueuePriorityVeryLow;
         
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
-    }
+            [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+        }
+    });
 }
 
 - (void)readFileFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
