@@ -61,7 +61,7 @@
         return;
     
     NSString *father = @"";
-    NSArray *directories = [CCCoreData getOfflineDirectoryActiveAccount:app.activeAccount];
+    NSArray *directories = [CCCoreData getDirectoryOffline:YES activeAccount:app.activeAccount];
     
     for (TableDirectory *directory in directories) {
         

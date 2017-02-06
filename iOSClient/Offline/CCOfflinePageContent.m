@@ -61,7 +61,9 @@
     // Plus Button
     [app plusButtonVisibile:true];
     
-    [self reloadTable];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [self reloadTable];
+    });
 }
 
 // E' arrivato
