@@ -94,21 +94,6 @@
     [super didReceiveMemoryWarning];
 }
 
-/*
-- (BOOL)gestureRecognizer:(UIPanGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UISwipeGestureRecognizer *)otherGestureRecognizer
-{
-    return YES;
-}
-*/
-
-- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
-{
-    if ([touch.view isKindOfClass:[UITableView class]])
-        return NO;
-    else
-        return YES;
-}
-
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ==== DZNEmptyDataSetSource Methods ====
 #pragma --------------------------------------------------------------------------------------------
@@ -218,19 +203,7 @@
 
 - (void)tableView:(UITableView *)tableView swipeAccessoryButtonPushedForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if ([_pageType isEqualToString:pageOfflineOffline]) {
-        
-        NSManagedObject *record = [dataSource objectAtIndex:indexPath.row];
-        _metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", [record valueForKey:@"fileID"], app.activeAccount] context:nil];
-    }
-    
-    if ([_pageType isEqualToString:pageOfflineLocal]) {
-        
-        NSString *cameraFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:app.activeAccount];
-        NSString *cameraFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:app.activeAccount activeUrl:app.activeUrl typeCloud:app.typeCloud];
-        
-        _metadata = [CCUtility insertFileSystemInMetadata:[dataSource objectAtIndex:indexPath.row] directory:_localServerUrl activeAccount:app.activeAccount cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath];
-    }
+    [self setSelfMetadataFromIndexPath:indexPath];
     
     AHKActionSheet *actionSheet = [[AHKActionSheet alloc] initWithView:self.view title:nil];
     
@@ -261,22 +234,62 @@
     else
         iconHeader = [UIImage imageNamed:self.metadata.iconName];
     
-    [actionSheet addButtonWithTitle:NSLocalizedString(@"_open_in_", nil)
-                              image:[UIImage imageNamed:image_actionSheetOpenIn]
-                    backgroundColor:[UIColor whiteColor]
-                             height: 50.0
-                               type:AHKActionSheetButtonTypeDefault
-                            handler:^(AHKActionSheet *as) {
+    // NO Directory
+    if (_metadata.directory == NO) {
+    
+        [actionSheet addButtonWithTitle:NSLocalizedString(@"_open_in_", nil)
+                                  image:[UIImage imageNamed:image_actionSheetOpenIn]
+                        backgroundColor:[UIColor whiteColor]
+                                 height: 50.0
+                                   type:AHKActionSheetButtonTypeDefault
+                                handler:^(AHKActionSheet *as) {
                                 
-                                [self.tableView setEditing:NO animated:YES];
-                                [self openWith:_metadata];
-                            }];
+                                    [self.tableView setEditing:NO animated:YES];
+                                    [self openWith:_metadata];
+                                }];
+    }
+    
+    // ONLY Root Offline : Remove file/folder offline
+    if (_localServerUrl == nil && [_pageType isEqualToString:pageOfflineOffline]) {
+        
+        [actionSheet addButtonWithTitle:NSLocalizedString(@"_remove_offline_", nil)
+                                  image:[UIImage imageNamed:image_actionSheetOffline]
+                        backgroundColor:[UIColor whiteColor]
+                                 height: 50.0
+                                   type:AHKActionSheetButtonTypeDefault
+                                handler:^(AHKActionSheet *as) {
+                                    
+                                    if (_metadata.directory) {
+                                        
+                                        // remove tag offline for all folder/subfolder/file
+                                        NSString *relativeRoot = [CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:app.activeAccount];
+                                        NSString *dirServerUrl = [CCUtility stringAppendServerUrl:relativeRoot addServerUrl:_metadata.fileNameData];
+                                        NSArray *directories = [CCCoreData getOfflineDirectoryActiveAccount:app.activeAccount];
+                                        
+                                        for (TableDirectory *directory in directories)
+                                            if ([directory.serverUrl containsString:dirServerUrl]) {
+                                                [CCCoreData setOfflineDirectoryServerUrl:directory.serverUrl offline:NO activeAccount:app.activeAccount];
+                                                [CCCoreData removeOfflineAllFileFromServerUrl:directory.serverUrl activeAccount:app.activeAccount];
+                                            }
 
+                                    } else {
+                                        
+                                        [CCCoreData setOfflineLocalFileID:_metadata.fileID offline:NO activeAccount:app.activeAccount];
+                                    }
+                                    
+                                    [self.tableView setEditing:NO animated:YES];
+                                    
+                                    [self reloadTable];
+                                }];
+    }
+    
     [actionSheet show];
 }
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    [self setSelfMetadataFromIndexPath:indexPath];
+    
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         
         UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
@@ -285,7 +298,16 @@
                                                              style:UIAlertActionStyleDestructive
                                                            handler:^(UIAlertAction *action) {
                                                                
+                                                               if ([_pageType isEqualToString:pageOfflineLocal]) {
+                                                                   
+                                                                   NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", _localServerUrl, _metadata.fileNameData];
+                                                                   NSString *iconPath = [NSString stringWithFormat:@"%@/.%@.ico", _localServerUrl, _metadata.fileNameData];
+                                                                   
+                                                                   [[NSFileManager defaultManager] removeItemAtPath:fileNamePath error:nil];
+                                                                   [[NSFileManager defaultManager] removeItemAtPath:iconPath error:nil];
+                                                               }
                                                                
+                                                               [self reloadTable];
                                                            }]];
         
         
@@ -309,6 +331,23 @@
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ==== Table ====
 #pragma --------------------------------------------------------------------------------------------
+
+- (void)setSelfMetadataFromIndexPath:(NSIndexPath *)indexPath
+{
+    if ([_pageType isEqualToString:pageOfflineOffline]) {
+        
+        NSManagedObject *record = [dataSource objectAtIndex:indexPath.row];
+        _metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", [record valueForKey:@"fileID"], app.activeAccount] context:nil];
+    }
+    
+    if ([_pageType isEqualToString:pageOfflineLocal]) {
+        
+        NSString *cameraFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:app.activeAccount];
+        NSString *cameraFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:app.activeAccount activeUrl:app.activeUrl typeCloud:app.typeCloud];
+        
+        _metadata = [CCUtility insertFileSystemInMetadata:[dataSource objectAtIndex:indexPath.row] directory:_localServerUrl activeAccount:app.activeAccount cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath];
+    }
+}
 
 - (void)reloadTable
 {
@@ -474,19 +513,7 @@
     // deselect row
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
-    if ([_pageType isEqualToString:pageOfflineOffline]) {
-        
-        NSManagedObject *record = [dataSource objectAtIndex:indexPath.row];
-        _metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", [record valueForKey:@"fileID"], app.activeAccount] context:nil];
-    }
-    
-    if ([_pageType isEqualToString:pageOfflineLocal]) {
-        
-        NSString *cameraFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:app.activeAccount];
-        NSString *cameraFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:app.activeAccount activeUrl:app.activeUrl typeCloud:app.typeCloud];
-        
-        _metadata = [CCUtility insertFileSystemInMetadata:[dataSource objectAtIndex:indexPath.row] directory:_localServerUrl activeAccount:app.activeAccount cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath];
-    }
+    [self setSelfMetadataFromIndexPath:indexPath];
     
     // if is in download [do not touch]
     if ([_metadata.session length] > 0 && [_metadata.session rangeOfString:@"download"].location != NSNotFound) return;
