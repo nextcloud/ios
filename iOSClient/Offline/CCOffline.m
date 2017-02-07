@@ -80,7 +80,14 @@
     
     [self addChildViewController:_pageViewController];
     [self.view addSubview:_pageViewController.view];
-    [self.pageViewController didMoveToParentViewController:self];    
+    [self.pageViewController didMoveToParentViewController:self];
+    
+    // Enable swipe gesture only for page controller
+    for (UIScrollView *view in self.pageViewController.view.subviews) {
+        if ([view isKindOfClass:[UIScrollView class]]) {
+            view.scrollEnabled = NO;
+        }
+    }
 }
 
 // Apparirà

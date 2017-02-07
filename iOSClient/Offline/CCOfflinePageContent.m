@@ -51,6 +51,7 @@
     self.tableView.separatorColor = COLOR_SEPARATOR_TABLE;
     self.tableView.emptyDataSetDelegate = self;
     self.tableView.emptyDataSetSource = self;
+    self.tableView.allowsMultipleSelectionDuringEditing = NO;
     
     // calculate _localServerUrl
     if ([self.pageType isEqualToString:pageOfflineOffline] && !_localServerUrl) {
@@ -91,6 +92,21 @@
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
+}
+
+/*
+- (BOOL)gestureRecognizer:(UIPanGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UISwipeGestureRecognizer *)otherGestureRecognizer
+{
+    return YES;
+}
+*/
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
+{
+    if ([touch.view isKindOfClass:[UITableView class]])
+        return NO;
+    else
+        return YES;
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -178,6 +194,116 @@
         [CCCoreData setCameraUploadDatePhoto:[NSDate date]];
         [CCCoreData setCameraUploadDateVideo:[NSDate date]];
     }
+}
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Swipe Table -> menu =====
+#pragma--------------------------------------------------------------------------------------------
+
+// more
+- (NSString *)tableView:(UITableView *)tableView titleForSwipeAccessoryButtonForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+   return NSLocalizedString(@"_more_", nil);
+}
+
+- (NSString *)tableView:(UITableView *)tableView titleForDeleteConfirmationButtonForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return NSLocalizedString(@"_delete_", nil);
+}
+
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return YES;
+}
+
+- (void)tableView:(UITableView *)tableView swipeAccessoryButtonPushedForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if ([_pageType isEqualToString:pageOfflineOffline]) {
+        
+        NSManagedObject *record = [dataSource objectAtIndex:indexPath.row];
+        _metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", [record valueForKey:@"fileID"], app.activeAccount] context:nil];
+    }
+    
+    if ([_pageType isEqualToString:pageOfflineLocal]) {
+        
+        NSString *cameraFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:app.activeAccount];
+        NSString *cameraFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:app.activeAccount activeUrl:app.activeUrl typeCloud:app.typeCloud];
+        
+        _metadata = [CCUtility insertFileSystemInMetadata:[dataSource objectAtIndex:indexPath.row] directory:_localServerUrl activeAccount:app.activeAccount cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath];
+    }
+    
+    AHKActionSheet *actionSheet = [[AHKActionSheet alloc] initWithView:self.view title:nil];
+    
+    actionSheet.animationDuration = 0.2;
+    
+    actionSheet.blurRadius = 0.0f;
+    actionSheet.blurTintColor = [UIColor colorWithWhite:0.0f alpha:0.50f];
+    
+    actionSheet.buttonHeight = 50.0;
+    actionSheet.cancelButtonHeight = 50.0f;
+    actionSheet.separatorHeight = 5.0f;
+    
+    actionSheet.automaticallyTintButtonImages = @(NO);
+    
+    actionSheet.encryptedButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:14], NSForegroundColorAttributeName:COLOR_ENCRYPTED };
+    actionSheet.buttonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:14], NSForegroundColorAttributeName:COLOR_GRAY };
+    actionSheet.cancelButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:COLOR_BRAND };
+    actionSheet.disableButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:12], NSForegroundColorAttributeName:COLOR_GRAY };
+    
+    actionSheet.separatorColor = COLOR_SEPARATOR_TABLE;
+    actionSheet.cancelButtonTitle = NSLocalizedString(@"_cancel_",nil);
+
+    UIImage *iconHeader;
+    
+    // assegnamo l'immagine anteprima se esiste, altrimenti metti quella standars
+    if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/.%@.ico", _localServerUrl, _metadata.fileNamePrint]])
+        iconHeader = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/.%@.ico", _localServerUrl, _metadata.fileNamePrint]];
+    else
+        iconHeader = [UIImage imageNamed:self.metadata.iconName];
+    
+    [actionSheet addButtonWithTitle:NSLocalizedString(@"_open_in_", nil)
+                              image:[UIImage imageNamed:image_actionSheetOpenIn]
+                    backgroundColor:[UIColor whiteColor]
+                             height: 50.0
+                               type:AHKActionSheetButtonTypeDefault
+                            handler:^(AHKActionSheet *as) {
+                                
+                                [self.tableView setEditing:NO animated:YES];
+                                [self openWith:_metadata];
+                            }];
+
+    [actionSheet show];
+}
+
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (editingStyle == UITableViewCellEditingStyleDelete) {
+        
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+        
+        [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_delete_", nil)
+                                                             style:UIAlertActionStyleDestructive
+                                                           handler:^(UIAlertAction *action) {
+                                                               
+                                                               
+                                                           }]];
+        
+        
+        [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil)
+                                                             style:UIAlertActionStyleCancel
+                                                           handler:^(UIAlertAction *action) {
+                                                           }]];
+        
+        alertController.popoverPresentationController.sourceView = self.view;
+        alertController.popoverPresentationController.sourceRect = [self.tableView rectForRowAtIndexPath:indexPath];
+        
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+            [alertController.view layoutIfNeeded];
+        
+        [self presentViewController:alertController animated:YES completion:nil];
+    }
+
+    [self.tableView setEditing:NO animated:YES];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -449,6 +575,17 @@
         
         [self presentViewController:navigationController animated:YES completion:nil];
     }
+}
+
+- (void)openWith:(CCMetadata *)metadata
+{
+    NSURL *url = [NSURL fileURLWithPath:[NSString stringWithFormat:@"%@/%@", _localServerUrl, metadata.fileNamePrint]];
+    
+    self.docController = [UIDocumentInteractionController interactionControllerWithURL:url];
+    
+    self.docController.delegate = self;
+    
+    [self.docController presentOptionsMenuFromRect:self.view.frame inView:self.view animated:YES];
 }
 
 - (BOOL)shouldPerformSegue
