@@ -675,7 +675,12 @@
 - (void)photoBrowser:(MWPhotoBrowser *)photoBrowser deleteButtonPressedForPhotoAtIndex:(NSUInteger)index deleteButton:(UIBarButtonItem *)deleteButton
 {
     CCMetadata *metadata = [self.dataSourceImagesVideos objectAtIndex:index];
-    if (metadata == nil || [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID]] == NO) return;
+    if (metadata == nil || [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID]] == NO) {
+        
+        [app messageNotification:@"_info_" description:@"_file_not_found_" visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeInfo];
+        
+        return;
+    }
     
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
     
