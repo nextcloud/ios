@@ -26,11 +26,13 @@
 #import "AppDelegate.h"
 #import "CCMain.h"
 
+#import "Nextcloud-Swift.h"
+
 #define TOOLBAR_HEIGHT 49.0f
 
 #define alertRequestPasswordPDF 1
 
-@interface CCDetail ()
+@interface CCDetail () <CCActionsDelegate>
 {
     UIToolbar *_toolbar;
     
@@ -680,7 +682,7 @@
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_delete_", nil)
                                                          style:UIAlertActionStyleDestructive
                                                        handler:^(UIAlertAction *action) {
-                                                           [self.delegate deleteFileOrFolder:metadata numFile:1 ofFile:1];
+                                                           [[CCActions sharedInstance] deleteFileOrFolder:metadata delegate:self];
                                                        }]];
 
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil)
@@ -938,21 +940,21 @@
 #pragma mark ===== Delete =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)deleteFileFailure:(NSInteger)errorCode
+- (void)deleteFileOrFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
     NSLog(@"[LOG] delete failure");
 }
 
-- (void)deleteFileSuccess:(CCMetadata *)metadataVar metadataNetVar:(CCMetadataNet *)metadataNetVar
+- (void)deleteFileOrFolderSuccess:(CCMetadataNet *)metadataNet
 {
     // if a message for a directory of these
-    if (![_dataSourceDirectoryID containsObject:metadataVar.directoryID])
+    if (![_dataSourceDirectoryID containsObject:metadataNet.metadata.directoryID])
         return;
     
     // if we are not in browserPhoto and it's removed photo/video in preview then "< Back"
-    if (!self.photoBrowser && [self.metadataDetail.fileID isEqualToString:metadataVar.fileID]) {
+    if (!self.photoBrowser && [self.metadataDetail.fileID isEqualToString:metadataNet.metadata.fileID]) {
         
-        if ([metadataVar.typeFile isEqualToString:metadataTypeFile_audio])
+        if ([metadataNet.metadata.typeFile isEqualToString:metadataTypeFile_audio])
             [app.player.mediaPlayer stop];
         
         NSArray *viewsToRemove = [self.view subviews];
@@ -974,7 +976,7 @@
             CCMetadata *metadata = [self.dataSourceImagesVideos objectAtIndex:index];
         
             // ricerca index
-            if ([metadataVar.fileID isEqualToString:metadata.fileID]) {
+            if ([metadataNet.metadata.fileID isEqualToString:metadata.fileID]) {
             
                 [self.dataSourceImagesVideos removeObjectAtIndex:index];
             
@@ -1036,7 +1038,7 @@
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_delete_", nil)
                                                          style:UIAlertActionStyleDestructive
                                                        handler:^(UIAlertAction *action) {
-                                                           [self.delegate deleteFileOrFolder:self.metadataDetail numFile:1 ofFile:1];
+                                                           [[CCActions sharedInstance] deleteFileOrFolder:self.metadataDetail delegate:self];
                                                        }]];
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil)

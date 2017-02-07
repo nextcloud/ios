@@ -34,11 +34,7 @@
 #import "CCGraphics.h"
 #import "CCCoreData.h"
 
-@protocol CCDetailViewDelegate;
-
 @interface CCDetail : UIViewController <UIDocumentInteractionControllerDelegate, MWPhotoBrowserDelegate, ReaderViewControllerDelegate>
-
-@property (nonatomic, weak) id <CCDetailViewDelegate> delegate;
 
 @property (nonatomic, strong) CCMetadata *metadataDetail;
 @property BOOL sourceDirectoryLocal;
@@ -73,15 +69,6 @@
 - (void)downloadPhotoBrowserFailure:(NSInteger)errorCode;
 - (void)downloadPhotoBrowserSuccess:(CCMetadata *)metadataVar selector:(NSString *)selector;
 - (void)progressTask:(NSString *)fileID serverUrl:(NSString *)serverUrl cryptated:(BOOL)cryptated progress:(float)progress;
-
-- (void)deleteFileFailure:(NSInteger)errorCode;
-- (void)deleteFileSuccess:(CCMetadata *)metadataVar metadataNetVar:(CCMetadataNet *)metadataNetVar;
-
-@end
-
-@protocol CCDetailViewDelegate <NSObject>
-
-@optional - (void)deleteFileOrFolder:(CCMetadata *)metadata numFile:(NSInteger)numFile ofFile:(NSInteger)ofFile;
 
 @end
 

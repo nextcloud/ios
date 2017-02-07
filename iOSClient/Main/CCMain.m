@@ -1871,14 +1871,6 @@
 
 - (void)deleteFileOrFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    // is detailViewController active ?
-    if (_detailViewController) {
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [_detailViewController deleteFileFailure:errorCode];
-        });
-    }
-    
     [self deleteFileOrFolderSuccess:metadataNet]; 
 }
 
@@ -1896,14 +1888,6 @@
             [self getDataSourceWithReloadTableView:metadataNet.metadata.directoryID fileID:metadataNet.metadata.fileID selector:metadataNet.selector];
         }
 
-        // if detailViewController
-        if (_detailViewController) {
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [_detailViewController deleteFileSuccess:metadataNet.metadata metadataNetVar:metadataNet];
-            });
-        }
-
         // next
         if ([_selectedMetadatas count] > 0) {
             
@@ -1917,9 +1901,14 @@
 
 - (void)deleteFileOrFolder:(CCMetadata *)metadata numFile:(NSInteger)numFile ofFile:(NSInteger)ofFile
 {
-    [_queueSelector addObject:selectorDelete];
+    if (metadata.cryptated) {
+        [_queueSelector addObject:selectorDeleteCrypto];
+        [_queueSelector addObject:selectorDeletePlist];
+    } else {
+        [_queueSelector addObject:selectorDelete];
+    }
     
-    [[CCActions sharedInstance] deleteFileOrFolder:metadata serverUrl:_localServerUrl delegate:self];
+    [[CCActions sharedInstance] deleteFileOrFolder:metadata delegate:self];
         
     [_hud visibleHudTitle:[NSString stringWithFormat:NSLocalizedString(@"_delete_file_n_", nil), ofFile - numFile + 1, ofFile] mode:MBProgressHUDModeIndeterminate color:nil];
 }
@@ -5515,7 +5504,6 @@
             [allRecordsDataSourceImagesVideos addObject:metadata];
     }
 
-    _detailViewController.delegate = self;
     _detailViewController.dataSourceImagesVideos = allRecordsDataSourceImagesVideos;
     _detailViewController.metadataDetail = _metadataSegue;
     _detailViewController.dateFilterQuery = nil;

@@ -54,8 +54,9 @@ class CCActions: NSObject {
     // MARK: Delete File or Folder
     // --------------------------------------------------------------------------------------------
 
-    func deleteFileOrFolder(_ metadata : CCMetadata, serverUrl : String, delegate : AnyObject) {
+    func deleteFileOrFolder(_ metadata : CCMetadata, delegate : AnyObject) {
         
+        let serverUrl : String = CCCoreData.getServerUrl(fromDirectoryID: metadata.directoryID, activeAccount: appDelegate.activeAccount)!
         let metadataNet : CCMetadataNet = CCMetadataNet.init()
         
         if metadata.cryptated == true {

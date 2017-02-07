@@ -25,7 +25,9 @@
 
 #import "AppDelegate.h"
 
-@interface CCPhotosCameraUpload ()
+#import "Nextcloud-Swift.h"
+
+@interface CCPhotosCameraUpload () <CCActionsDelegate>
 {
     CCMetadata *_metadata;
 
@@ -424,21 +426,7 @@
 
 - (void)deleteFileOrFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    [_hud hideHud];
-    
-    if (errorCode == 404)
-        [self deleteFileOrFolderSuccess:metadataNet];
-    
-    if (message)
-        [app messageNotification:@"_delete_" description:message visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeError];
-    
-    // if detailViewController
-    if (self.detailViewController)
-            [self.detailViewController deleteFileFailure:errorCode];
-    
-    [_queueMetadatas removeAllObjects];
-    
-    [self reloadDatasource];
+    [self deleteFileOrFolderSuccess:metadataNet];
 }
 
 - (void)deleteFileOrFolderSuccess:(CCMetadataNet *)metadataNet
@@ -449,14 +437,6 @@
         
         [_hud hideHud];
 
-        CCMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", metadataNet.fileID, app.activeAccount] context:nil];
-    
-        if (metadata)
-            [CCCoreData deleteFile:metadata serverUrl:metadataNet.serverUrl directoryUser:app.directoryUser typeCloud:app.typeCloud activeAccount:app.activeAccount];
-    
-        if (self.detailViewController)
-            [self.detailViewController deleteFileSuccess:metadata metadataNetVar:metadataNet];
-    
         if ([_selectedMetadatas count] > 0) {
             
             [_selectedMetadatas removeObjectAtIndex:0];
@@ -479,44 +459,16 @@
 
 - (void)deleteFileOrFolder:(CCMetadata *)metadata numFile:(NSInteger)numFile ofFile:(NSInteger)ofFile
 {
-    if (metadata.cryptated == YES) {
-        
-        CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
-        
-        metadataNet.action = actionDeleteFileDirectory;
-        metadataNet.fileID = metadata.fileID;
-        metadataNet.fileNamePrint = metadata.fileNamePrint;
-        metadataNet.serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:app.activeAccount];
-        
-        // data crypto
-        metadataNet.fileName = metadata.fileNameData;
-        metadataNet.selector = selectorDeleteCrypto;
-        
-        [_queueMetadatas addObject:metadataNet.selector];
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
-        
-        // plist
-        metadataNet.fileName = metadata.fileName;
-        metadataNet.selector = selectorDeletePlist;
-        
-        [_queueMetadatas addObject:metadataNet.selector];
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
-        
-    } else  {
-        
-        CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
-        
-        metadataNet.action = actionDeleteFileDirectory;
-        metadataNet.fileID = metadata.fileID;
-        metadataNet.fileName = metadata.fileName;
-        metadataNet.fileNamePrint = metadata.fileNamePrint;
-        metadataNet.selector = selectorDelete;
-        metadataNet.serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:app.activeAccount];
-        
-        [_queueMetadatas addObject:metadataNet.selector];
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+    
+    if (metadata.cryptated) {
+        [_queueMetadatas addObject:selectorDeleteCrypto];
+        [_queueMetadatas addObject:selectorDeletePlist];
+    } else {
+        [_queueMetadatas addObject:selectorDelete];
     }
     
+    [[CCActions sharedInstance] deleteFileOrFolder:metadata delegate:self];
+
     [_hud visibleHudTitle:[NSString stringWithFormat:NSLocalizedString(@"_delete_file_n_", nil), ofFile - numFile + 1, ofFile] mode:MBProgressHUDModeIndeterminate color:nil];
 }
 
@@ -774,7 +726,6 @@
             [allRecordsDataSourceImagesVideos addObject:metadata];
     }
     
-    self.detailViewController.delegate = self;
     self.detailViewController.dataSourceImagesVideos = allRecordsDataSourceImagesVideos;
     self.detailViewController.metadataDetail = _metadata;
     self.detailViewController.dateFilterQuery = _metadata.date;
