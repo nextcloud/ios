@@ -139,7 +139,6 @@
     if (_webView) {
             
         [_webView removeFromSuperview];
-        _webView.delegate = nil;
         _webView = nil;
     }
         
@@ -314,7 +313,12 @@
     NSString *ext=@"";
     ext = [CCUtility getExtension:self.metadataDetail.fileNamePrint];
     
-    self.webView = [[UIWebView alloc] initWithFrame:(CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height - TOOLBAR_HEIGHT))];
+    WKPreferences *wkPreferences = [[WKPreferences alloc] init];
+    wkPreferences.javaScriptEnabled = false;
+    WKWebViewConfiguration *wkConfig = [[WKWebViewConfiguration alloc] init];
+    wkConfig.preferences = wkPreferences;
+
+    self.webView = [[WKWebView alloc] initWithFrame:(CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height - TOOLBAR_HEIGHT)) configuration:wkConfig];
     self.webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
     [self.webView setBackgroundColor:[UIColor whiteColor]];
@@ -350,16 +354,13 @@
         if (error != nil) {
             NSLog(@"[LOG] loadURLWithString %@",[error localizedDescription]);
         }
-        NSString *mimeType = [headResponse MIMEType];
         
-        [self.webView loadData:[NSData dataWithContentsOfURL: [NSURL fileURLWithPath:fileName]] MIMEType:mimeType textEncodingName:@"utf-8" baseURL:[NSURL URLWithString:@""]];
-        
+        [self.webView loadRequest:[NSMutableURLRequest requestWithURL:[NSURL fileURLWithPath:fileName]]];
     } else {
         
         [self.webView loadRequest:[NSMutableURLRequest requestWithURL:[NSURL fileURLWithPath:fileName]]];
     }
     
-    [self.webView setScalesPageToFit:YES];
     [self.view addSubview:self.webView];
 }
 
