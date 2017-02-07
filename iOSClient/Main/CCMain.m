@@ -1244,7 +1244,7 @@
     }
     
     // add Offline
-    if ([selector isEqualToString:selectorAddOffline] || [CCCoreData isOfflineDirectoryServerUrl:serverUrl activeAccount:app.activeAccount]) {
+    if ([selector isEqualToString:selectorAddOffline] && ![CCCoreData isOfflineDirectoryServerUrl:serverUrl activeAccount:app.activeAccount]) {
         [CCCoreData setOfflineLocalFileID:metadata.fileID offline:YES activeAccount:app.activeAccount];
         [self getDataSourceWithReloadTableView:metadata.directoryID fileID:metadata.fileID selector:selector];
     }
@@ -1488,11 +1488,6 @@
     // Automatic upload
     if([selector isEqualToString:selectorUploadAutomatic] || [selector isEqualToString:selectorUploadAutomaticAll])
         [app loadTableAutomaticUploadForSelector:selector];
-    
-    // Check Offline
-    if ([CCCoreData isOfflineDirectoryServerUrl:_localServerUrl activeAccount:app.activeAccount])
-        [CCCoreData setOfflineLocalFileID:fileID offline:YES activeAccount:app.activeAccount];
-    
     
     if ([selectorPost isEqualToString:selectorReadFolderForced] ) {
             
@@ -2102,10 +2097,6 @@
             
             // move metadata
             [CCCoreData moveMetadata:fileName directoryID:directoryID directoryIDTo:directoryIDTo activeAccount:app.activeAccount];
-            
-            // Check Offline
-            if ([CCCoreData isOfflineDirectoryServerUrl:serverUrlTo activeAccount:app.activeAccount])
-                [CCCoreData setOfflineLocalFileID:metadataNet.fileID offline:YES activeAccount:app.activeAccount];
         }
     
         // DIRECTORY ->  Directory - CCMetadata
@@ -5077,8 +5068,7 @@
     BOOL isOfflineFile = [CCCoreData isOfflineLocalFileID:metadata.fileID activeAccount:app.activeAccount];
     
     // Verify Offline
-    if(_isOfflineLocalServerUrl == YES && isOfflineFile == NO) {
-        [CCCoreData setOfflineLocalFileID:metadata.fileID offline:YES activeAccount:app.activeAccount];
+    if(_isOfflineLocalServerUrl || isOfflineFile) {
         isOfflineFile = YES;
     }
     

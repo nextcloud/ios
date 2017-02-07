@@ -332,6 +332,7 @@
 - (void)verifyChangeMedatas:(NSArray *)allRecordMetadatas serverUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID account:(NSString *)account offline:(BOOL)offline
 {
     NSMutableArray *metadatas = [[NSMutableArray alloc] init];
+    BOOL isOfflineDirectory = [CCCoreData isOfflineDirectoryServerUrl:serverUrl activeAccount:app.activeAccount];
     
     for (CCMetadata *metadata in allRecordMetadatas) {
         
@@ -349,10 +350,12 @@
         
         if (offline) {
             
-            // add flag offline
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [CCCoreData setOfflineLocalFileID:metadata.fileID offline:YES activeAccount:app.activeAccount];
-            });
+            // is Directory Offline && file is tagged offline ... ?? removed on offline
+            if (isOfflineDirectory && [record.offline boolValue] == YES) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [CCCoreData setOfflineLocalFileID:record.fileID offline:NO activeAccount:app.activeAccount];
+                });
+            }
             
             if (![record.rev isEqualToString:metadata.rev ])
                 changeRev = YES;
