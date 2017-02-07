@@ -49,6 +49,8 @@
     
     self.tableView.tableFooterView = [UIView new];
     self.tableView.separatorColor = COLOR_SEPARATOR_TABLE;
+    self.tableView.emptyDataSetDelegate = self;
+    self.tableView.emptyDataSetSource = self;
     
     // calculate _localServerUrl
     if ([self.pageType isEqualToString:pageOfflineOffline] && !_localServerUrl) {
@@ -75,16 +77,7 @@
     // Plus Button
     [app plusButtonVisibile:true];
     
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        
-        self.tableView.emptyDataSetDelegate = nil;
-        self.tableView.emptyDataSetSource = nil;
-        
-        [self reloadTable];
-        
-        self.tableView.emptyDataSetDelegate = self;
-        self.tableView.emptyDataSetSource = self;
-    });
+    [self reloadTable];
 }
 
 // E' arrivato
@@ -199,10 +192,6 @@
             
             dataSource = [CCCoreData getHomeOfflineActiveAccount:app.activeAccount directoryUser:app.directoryUser];
             
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self.tableView reloadData];
-            });
-            
         } else {
             
             NSMutableArray *metadatas = [NSMutableArray new];
@@ -216,10 +205,6 @@
                 [metadatas  insertObject:[sectionDataSource.allRecordsDataSource objectForKey:key] atIndex:0 ];
             
             dataSource = [NSArray arrayWithArray:metadatas];
-
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self.tableView reloadData];
-            });
         }
     }
     
@@ -233,11 +218,9 @@
                 [metadatas addObject:subpath];
         
         dataSource = [NSArray arrayWithArray:metadatas];
-
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.tableView reloadData];
-        });
     }
+    
+    [self.tableView reloadData];
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
