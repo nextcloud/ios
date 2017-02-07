@@ -1081,6 +1081,8 @@
         
         CCNotification *notificationVC = [[UIStoryboard storyboardWithName:@"CCNotification" bundle:nil] instantiateViewControllerWithIdentifier:@"CCNotification"];
         
+        [notificationVC setModalPresentationStyle:UIModalPresentationFormSheet];
+
         [self presentViewController:notificationVC animated:YES completion:nil];
     }
 }

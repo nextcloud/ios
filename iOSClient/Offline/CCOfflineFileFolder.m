@@ -193,10 +193,13 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             
             // delete metadata not present
-            for (CCMetadata *metadata in metadatasNotPresents)
+            for (CCMetadata *metadata in metadatasNotPresents) {
+                
                 [CCCoreData deleteFile:metadata serverUrl:metadataNet.serverUrl directoryUser:app.directoryUser typeCloud:app.typeCloud activeAccount:app.activeAccount];
+            }
             
-            [app.activeMain getDataSourceWithReloadTableView:metadataNet.directoryID fileID:nil selector:nil];
+            if ([metadatasNotPresents count] > 0)
+                [app.activeMain getDataSourceWithReloadTableView:metadataNet.directoryID fileID:nil selector:nil];
             
         });
         
