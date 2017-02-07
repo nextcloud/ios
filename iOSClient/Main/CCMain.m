@@ -4240,7 +4240,7 @@
                                         } else {
                                             
                                             // remove tag offline for all folder/subfolder/file
-                                            NSArray *directories = [CCCoreData getDirectoryOffline:YES activeAccount:app.activeAccount];
+                                            NSArray *directories = [CCCoreData getOfflineDirectoryActiveAccount:app.activeAccount];
                                             
                                             for (TableDirectory *directory in directories)
                                                 if ([directory.serverUrl containsString:dirServerUrl]) {

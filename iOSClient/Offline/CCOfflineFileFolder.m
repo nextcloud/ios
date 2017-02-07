@@ -64,7 +64,7 @@
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         
         NSString *father = @"";
-        NSArray *directories = [CCCoreData getDirectoryOffline:YES activeAccount:app.activeAccount];
+        NSArray *directories = [CCCoreData getOfflineDirectoryActiveAccount:app.activeAccount];
     
         for (TableDirectory *directory in directories) {
         

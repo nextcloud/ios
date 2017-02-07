@@ -1086,15 +1086,9 @@
     }];
 }
 
-+ (NSArray *)getDirectoryOffline:(BOOL)offline activeAccount:(NSString *)activeAccount
++ (NSArray *)getOfflineDirectoryActiveAccount:(NSString *)activeAccount
 {
-    NSPredicate *predicate;
-    
-    if (offline)
-        predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (offline == 1)", activeAccount];
-    else
-        predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND ((offline == 0) OR (offline == NULL))", activeAccount];
-    
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (offline == 1)", activeAccount];
     NSArray *recordsTable = [TableDirectory MR_findAllWithPredicate:predicate];
     
     // Order by serverUrl
@@ -1105,7 +1099,7 @@
         return [record1.serverUrl compare:record2.serverUrl];
         
     }];
-
+    
     return sortedRecordsTable;
 }
 
@@ -1750,8 +1744,7 @@
 + (NSArray *)getHomeOfflineActiveAccount:(NSString *)activeAccount directoryUser:(NSString *)directoryUser
 {
     NSMutableArray *metadatas = [NSMutableArray new];
-    NSArray *directoriesOffline = [self getDirectoryOffline:YES activeAccount:activeAccount];
-    NSArray *directoriesNoOffline = [self getDirectoryOffline:NO activeAccount:activeAccount];
+    NSArray *directoriesOffline = [self getOfflineDirectoryActiveAccount:activeAccount];
     NSString *father = @"";
 
     // Add directory
@@ -1779,18 +1772,16 @@
     
     // Add files
     
-    for (TableDirectory *directory in directoriesNoOffline) {
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (offline == 1)", activeAccount];
+    NSArray *localFiles = [CCCoreData getTableLocalFileWithPredicate:predicate];
+    
+    for (TableLocalFile *localFile in localFiles) {
         
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND (directory == 0)", activeAccount, directory.directoryID];
-        NSArray *tableMetadatas = [self getTableMetadataWithPredicate:predicate context:nil];
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (fileID == %@)", activeAccount, localFile.fileID];
+        CCMetadata *metadata = [CCCoreData getMetadataWithPreficate:predicate context:nil];
         
-        for (TableMetadata *tableMetadata in tableMetadatas) {
-            
-            TableLocalFile *tableLocalFile = [CCCoreData getLocalFileWithFileID:tableMetadata.fileID activeAccount:activeAccount];
-            if ([tableLocalFile.offline boolValue] == YES) {
-                [metadatas addObject:[self insertEntityInMetadata:tableMetadata]];
-            }
-        }
+        if (metadata)
+            [metadatas addObject:metadata];
     }
     
     return [NSArray arrayWithArray:metadatas];    

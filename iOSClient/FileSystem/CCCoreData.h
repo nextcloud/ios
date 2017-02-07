@@ -145,7 +145,7 @@
 + (BOOL)isDirectoryOutOfDate:(int)numAddDay directoryID:(NSString *)directoryID activeAccount:(NSString *)activeAccount;
 
 + (void)removeOfflineDirectoryID:(NSString *)directoryID activeAccount:(NSString *)activeAccount;
-+ (NSArray *)getDirectoryOffline:(BOOL)offline activeAccount:(NSString *)activeAccount;
++ (NSArray *)getOfflineDirectoryActiveAccount:(NSString *)activeAccount;
 + (void)setOfflineDirectoryServerUrl:(NSString *)serverUrl offline:(BOOL)offline activeAccount:(NSString *)activeAccount;
 + (BOOL)isOfflineDirectoryServerUrl:(NSString *)serverUrl activeAccount:(NSString *)activeAccount;
 

@@ -389,7 +389,7 @@
 // BACKGROND & FOREGROUND
     
     /* Active/Disactive Graphics Animation Offline Folders */
-    NSArray *records = [CCCoreData getDirectoryOffline:YES activeAccount:app.activeAccount];
+    NSArray *records = [CCCoreData getOfflineDirectoryActiveAccount:app.activeAccount];
     NSMutableArray *directory = [[NSMutableArray alloc] init];
     for (TableDirectory *record in records)
         [directory addObject:record.serverUrl];
