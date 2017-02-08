@@ -558,8 +558,8 @@
     
     [communication moveFileOrFolder:origineURL toDestiny:destinazioneURL onCommunication:communication withForbiddenCharactersSupported:hasServerForbiddenCharactersSupport successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
-        if ([_metadataNet.selector isEqualToString:selectorRename] && [self.delegate respondsToSelector:@selector(renameSuccess:revTo:)])
-            [self.delegate renameSuccess:_metadataNet revTo:nil];
+        if ([_metadataNet.selector isEqualToString:selectorRename] && [self.delegate respondsToSelector:@selector(renameSuccess:)])
+            [self.delegate renameSuccess:_metadataNet];
         
         if ([_metadataNet.selector rangeOfString:selectorMove].location != NSNotFound && [self.delegate respondsToSelector:@selector(moveSuccess:revTo:)])
             [self.delegate moveSuccess:_metadataNet revTo:nil];
@@ -572,8 +572,8 @@
         if (errorCode == 0)
             errorCode = error.code;
         
-        if ([self.delegate respondsToSelector:@selector(moveFileOrFolderFailure:message:errorCode:)])
-            [self.delegate moveFileOrFolderFailure:_metadataNet message:[CCError manageErrorOC:response.statusCode error:error] errorCode:errorCode];
+        if ([self.delegate respondsToSelector:@selector(renameMoveFileOrFolderFailure:message:errorCode:)])
+            [self.delegate renameMoveFileOrFolderFailure:_metadataNet message:[CCError manageErrorOC:response.statusCode error:error] errorCode:errorCode];
         
         // Request trusted certificated
         if ([error code] == NSURLErrorServerCertificateUntrusted)
@@ -595,8 +595,8 @@
             message = NSLocalizedStringFromTable(@"_unknow_response_server_", @"Error", nil);
         }
         
-        if ([self.delegate respondsToSelector:@selector(moveFileOrFolderFailure:message:errorCode:)])
-            [self.delegate moveFileOrFolderFailure:_metadataNet message:message errorCode:error.code];
+        if ([self.delegate respondsToSelector:@selector(renameMoveFileOrFolderFailure:message:errorCode:)])
+            [self.delegate renameMoveFileOrFolderFailure:_metadataNet message:message errorCode:error.code];
 
         [self complete];
     }];

@@ -27,6 +27,9 @@ import Foundation
     
     func deleteFileOrFolderSuccess(_ metadataNet : CCMetadataNet)
     func deleteFileOrFolderFailure(_ metadataNet : CCMetadataNet, message : NSString, errorCode : NSInteger)
+    
+    func renameSuccess(_ metadataNet : CCMetadataNet)
+    func renameMoveFileOrFolderFailure(_ metadataNet : CCMetadataNet, message : NSString, errorCode : NSInteger)
 }
 
 class CCActions: NSObject {
@@ -165,19 +168,39 @@ class CCActions: NSObject {
                         
                         let dataFileEncrypted = try RNEncryptor.encryptData(dataFile as Data!, with: kRNCryptorAES256Settings, password: crypto.getKeyPasscode(metadata.uuid))
                         
+                        let fileUrl = Foundation.URL(string: "\(NSTemporaryDirectory())\(metadata.fileNameData)")!
                         
-                        
+                        do {
+                            
+                            try dataFileEncrypted.write(to: fileUrl, options: [])
+                            
+                            metadataNet.action = actionUploadOnlyPlist
+                            metadataNet.fileName = metadata.fileName
+                            metadataNet.selectorPost = selectorReadFolderForced
+                            metadataNet.serverUrl = serverUrl
+                            metadataNet.session = upload_session_foreground
+                            metadataNet.taskStatus = Int(taskStatusResume)
+
+                            if CCCoreData.isOfflineLocalFileID(metadata.fileID, activeAccount: appDelegate.activeAccount) {
+                                metadataNet.selectorPost = selectorAddOffline
+                            }
+                            
+                            appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
+
+                            // delete file in filesystem
+                            CCCoreData.deleteFile(metadata, serverUrl: serverUrl, directoryUser: appDelegate.directoryUser, typeCloud: appDelegate.typeCloud, activeAccount: appDelegate.activeAccount)
+                            
+                        } catch let error {
+                            print(error.localizedDescription)
+                        }
                         
                     } catch let error {
                         print(error.localizedDescription)
-                        return
                     }
 
                 } catch let error {
                     print(error.localizedDescription)
-                    return
                 }
-                
             }
  
         } else {
@@ -185,10 +208,12 @@ class CCActions: NSObject {
             // Plain
             
             metadataNet.action = actionMoveFileOrFolder
+            metadataNet.delegate = delegate
             metadataNet.fileID = metadata.fileID
             metadataNet.fileName = metadata.fileName
             metadataNet.fileNamePrint = metadata.fileNamePrint
             metadataNet.fileNameTo = fileName
+            metadataNet.metadata = metadata
             metadataNet.selector = selectorRename
             metadataNet.selectorPost = selectorReadFolderForced
             metadataNet.serverUrl = serverUrl
@@ -197,36 +222,36 @@ class CCActions: NSObject {
             appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
         }
     }
+    
+
+    func renameSuccess(_ metadataNet : CCMetadataNet) {
+        
+        self.delegate = metadataNet.delegate as! CCActionsDelegate
+
+        if metadataNet.metadata.directory {
+            
+            let directory = CCUtility.stringAppendServerUrl(metadataNet.serverUrl, addServerUrl: metadataNet.fileName)
+            let directoryTo = CCUtility.stringAppendServerUrl(metadataNet.serverUrl, addServerUrl: metadataNet.fileNameTo)
+
+            CCCoreData.renameDirectory(directory, serverUrlTo: directory, activeAccount: directoryTo)
+            
+        } else {
+            
+            CCCoreData.renameLocalFile(withFileID: metadataNet.metadata.fileID, fileNameTo: metadataNet.fileNameTo, fileNamePrintTo: metadataNet.fileNameTo, activeAccount: appDelegate.activeAccount)
+        }
+        
+        delegate?.renameSuccess(metadataNet)
+    }
+    
+    func renameMoveFileOrFolderFailure(_ metadataNet : CCMetadataNet, message : NSString, errorCode : NSInteger) {
+
+        self.delegate = metadataNet.delegate as! CCActionsDelegate
+        
+        if message.length > 0 {
+            appDelegate.messageNotification("_move_", description: message as String, visible: true, delay:TimeInterval(dismissAfterSecond), type:TWMessageBarMessageType.error)
+        }
+        
+        delegate?.renameMoveFileOrFolderFailure(metadataNet, message: message, errorCode: errorCode)
+    }
 }
-
-    /*
-    
-    if (metadata.directory == NO) {
-    // cripto il file fileID in temp
-    
-    NSData *data = [NSData dataWithContentsOfFile:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID]];
-    
-    if (data) data = [RNEncryptor encryptData:data withSettings:kRNCryptorAES256Settings password:[crypto getKeyPasscode:metadata.uuid] error:nil];
-    if (data) [data writeToFile:[NSTemporaryDirectory() stringByAppendingString:metadata.fileNameData] atomically:YES];
-    }
-    
-    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
-    
-    metadataNet.action = actionUploadOnlyPlist;
-    metadataNet.fileName = metadata.fileName;
-    metadataNet.selectorPost = selectorReadFolderForced;
-    metadataNet.serverUrl = _localServerUrl;
-    metadataNet.session = upload_session_foreground;
-    metadataNet.taskStatus = taskStatusResume;
-    
-    if ([CCCoreData isOfflineLocalFileID:metadata.fileID activeAccount:app.activeAccount])
-    metadataNet.selectorPost = selectorAddOffline;
-    
-    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
-    
-    // delete file in filesystem
-    [CCCoreData deleteFile:metadata serverUrl:_localServerUrl directoryUser:app.directoryUser typeCloud:app.typeCloud activeAccount:app.activeAccount];
-    }
-
-    */
 

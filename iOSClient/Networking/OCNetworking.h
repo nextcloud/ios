@@ -74,8 +74,8 @@
 - (void)deleteFileOrFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
 
 - (void)moveSuccess:(CCMetadataNet *)metadataNet revTo:(NSString *)revTo;
-- (void)renameSuccess:(CCMetadataNet *)metadataNet revTo:(NSString *)revTo;
-- (void)moveFileOrFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
+- (void)renameSuccess:(CCMetadataNet *)metadataNet;
+- (void)renameMoveFileOrFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
 
 - (void)readFileSuccess:(CCMetadataNet *)metadataNet metadata:(CCMetadata *)metadata;
 - (void)readFileFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;

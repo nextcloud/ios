@@ -1944,18 +1944,19 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Rename =====
+#pragma mark ===== Rename / Move =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)renameSuccess:(CCMetadataNet *)metadataNet revTo:(NSString *)revTo
+- (void)renameSuccess:(CCMetadataNet *)metadataNet
 {
+    /*
     CCMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", metadataNet.fileID, app.activeAccount] context:nil];
     
     if (metadata.directory == YES)
         [CCCoreData renameDirectory:[CCUtility stringAppendServerUrl:metadataNet.serverUrl addServerUrl:metadataNet.fileName] serverUrlTo:[CCUtility stringAppendServerUrl:metadataNet.serverUrl addServerUrl:metadataNet.fileNameTo] activeAccount:app.activeAccount];
     else
         [CCCoreData renameLocalFileWithFileID:metadata.fileID fileNameTo:metadataNet.fileNameTo fileNamePrintTo:metadataNet.fileNameTo activeAccount:app.activeAccount];
-    
+    */
     if ([metadataNet.selectorPost isEqualToString:selectorReadFolderForced])
         [self readFolderWithForced:YES];
 }
@@ -2059,19 +2060,18 @@
     }
 }
 
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Move =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)moveFileOrFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+- (void)renameMoveFileOrFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
     [_hud hideHud];
     
     if (message)
         [app messageNotification:@"_move_" description:message visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeError];
     
-    [_selectedMetadatas removeAllObjects];
-    [_queueSelector removeAllObjects];
+    if ([metadataNet.selector isEqualToString:selectorMove]) {
+    
+        [_selectedMetadatas removeAllObjects];
+        [_queueSelector removeAllObjects];
+    }
 }
 
 - (void)moveSuccess:(CCMetadataNet *)metadataNet revTo:(NSString *)revTo
