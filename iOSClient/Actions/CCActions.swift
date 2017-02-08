@@ -250,7 +250,19 @@ class CCActions: NSObject {
         
         if message.length > 0 {
             
-            appDelegate.messageNotification("_move_", description: message as String, visible: true, delay:TimeInterval(dismissAfterSecond), type:TWMessageBarMessageType.error)
+            var title : String = ""
+            
+            if metadataNet.selector == selectorRename {
+                
+                title = "_delete_"
+            }
+            
+            if metadataNet.selector == selectorMove {
+                
+                title = "_move_"
+            }
+            
+            appDelegate.messageNotification(title, description: message as String, visible: true, delay:TimeInterval(dismissAfterSecond), type:TWMessageBarMessageType.error)
         }
         
         metadataNet.delegate?.renameMoveFileOrFolderFailure(metadataNet, message: message as NSString, errorCode: errorCode)
