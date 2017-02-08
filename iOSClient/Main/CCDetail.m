@@ -32,7 +32,7 @@
 
 #define alertRequestPasswordPDF 1
 
-@interface CCDetail () <CCActionsDelegate>
+@interface CCDetail () <CCActionsDeleteDelegate>
 {
     UIToolbar *_toolbar;
     

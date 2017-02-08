@@ -27,7 +27,7 @@
 
 #import "Nextcloud-Swift.h"
 
-@interface CCPhotosCameraUpload () <CCActionsDelegate>
+@interface CCPhotosCameraUpload () <CCActionsDeleteDelegate>
 {
     CCMetadata *_metadata;
 

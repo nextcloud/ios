@@ -40,7 +40,7 @@
 #define alertRename 3
 #define alertOfflineFolder 4
 
-@interface CCMain () <CCActionsDelegate>
+@interface CCMain () <CCActionsDeleteDelegate, CCActionsRenameDelegate, CCActionsUploadDelegate>
 {
     CCMetadata *_metadataSegue;
     CCMetadata *_metadata;
@@ -1949,16 +1949,7 @@
 
 - (void)renameSuccess:(CCMetadataNet *)metadataNet
 {
-    /*
-    CCMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", metadataNet.fileID, app.activeAccount] context:nil];
-    
-    if (metadata.directory == YES)
-        [CCCoreData renameDirectory:[CCUtility stringAppendServerUrl:metadataNet.serverUrl addServerUrl:metadataNet.fileName] serverUrlTo:[CCUtility stringAppendServerUrl:metadataNet.serverUrl addServerUrl:metadataNet.fileNameTo] activeAccount:app.activeAccount];
-    else
-        [CCCoreData renameLocalFileWithFileID:metadata.fileID fileNameTo:metadataNet.fileNameTo fileNamePrintTo:metadataNet.fileNameTo activeAccount:app.activeAccount];
-    */
-    if ([metadataNet.selectorPost isEqualToString:selectorReadFolderForced])
-        [self readFolderWithForced:YES];
+    [self readFolderWithForced:YES];
 }
 
 - (void)renameFile:(CCMetadata *)metadata fileName:(NSString *)fileName
@@ -2062,13 +2053,13 @@
 
 - (void)renameMoveFileOrFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    [_hud hideHud];
-    
-    if (message)
-        [app messageNotification:@"_move_" description:message visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeError];
-    
     if ([metadataNet.selector isEqualToString:selectorMove]) {
+        
+        [_hud hideHud];
     
+        if (message)
+            [app messageNotification:@"_move_" description:message visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeError];
+        
         [_selectedMetadatas removeAllObjects];
         [_queueSelector removeAllObjects];
     }

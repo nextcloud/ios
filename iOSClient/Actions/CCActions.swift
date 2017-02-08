@@ -23,20 +23,29 @@
 
 import Foundation
 
-@objc protocol CCActionsDelegate  {
+@objc protocol CCActionsDeleteDelegate  {
     
-    func deleteFileOrFolderSuccess(_ metadataNet : CCMetadataNet)
-    func deleteFileOrFolderFailure(_ metadataNet : CCMetadataNet, message : NSString, errorCode : NSInteger)
-    
-    func renameSuccess(_ metadataNet : CCMetadataNet)
-    func renameMoveFileOrFolderFailure(_ metadataNet : CCMetadataNet, message : NSString, errorCode : NSInteger)
+    func deleteFileOrFolderSuccess(_ metadataNet: CCMetadataNet)
+    func deleteFileOrFolderFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger)
+}
+
+@objc protocol CCActionsRenameDelegate  {
+
+    func renameSuccess(_ metadataNet: CCMetadataNet)
+    func renameMoveFileOrFolderFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger)
+}
+
+@objc protocol CCActionsUploadDelegate  {
+
+    func uploadFileSuccess(_ fileID: String, serverUrl: String, selector: String, selectorPost: String)
+    func uploadFileFailure(_ fileID:String, selector: String, message: String, errorCode: NSInteger)
 }
 
 class CCActions: NSObject {
     
     //MARK: Shared Instance
     
-    static let sharedInstance : CCActions = {
+    static let sharedInstance: CCActions = {
         let instance = CCActions()
         return instance
     }()
@@ -44,9 +53,7 @@ class CCActions: NSObject {
     //MARK: Local Variable
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    var metadataNet : CCMetadataNet = CCMetadataNet.init()
-    
-    var delegate : CCActionsDelegate!
+    var metadataNet: CCMetadataNet = CCMetadataNet.init()
     
     //MARK: Init
     
@@ -57,10 +64,10 @@ class CCActions: NSObject {
     // MARK: Delete File or Folder
     // --------------------------------------------------------------------------------------------
 
-    func deleteFileOrFolder(_ metadata : CCMetadata, delegate : AnyObject) {
+    func deleteFileOrFolder(_ metadata: CCMetadata, delegate: AnyObject) {
         
-        let serverUrl : String = CCCoreData.getServerUrl(fromDirectoryID: metadata.directoryID, activeAccount: appDelegate.activeAccount)!
-        let metadataNet : CCMetadataNet = CCMetadataNet.init()
+        let serverUrl = CCCoreData.getServerUrl(fromDirectoryID: metadata.directoryID, activeAccount: appDelegate.activeAccount)!
+        let metadataNet = CCMetadataNet.init()
         
         if metadata.cryptated == true {
             
@@ -98,42 +105,40 @@ class CCActions: NSObject {
         }
     }
     
-    func deleteFileOrFolderSuccess(_ metadataNet : CCMetadataNet) {
-        
-        self.delegate = metadataNet.delegate as! CCActionsDelegate
+    func deleteFileOrFolderSuccess(_ metadataNet: CCMetadataNet) {
         
         CCCoreData.deleteFile(metadataNet.metadata, serverUrl: metadataNet.serverUrl, directoryUser: appDelegate.directoryUser, typeCloud: appDelegate.typeCloud, activeAccount: appDelegate.activeAccount)
         
-        delegate?.deleteFileOrFolderSuccess(metadataNet)
+        metadataNet.delegate?.deleteFileOrFolderSuccess(metadataNet)
     }
     
-    func deleteFileOrFolderFailure(_ metadataNet : CCMetadataNet, message : NSString, errorCode : NSInteger) {
-        
-        self.delegate = metadataNet.delegate as! CCActionsDelegate
+    func deleteFileOrFolderFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger) {
         
         if errorCode == 404 {
+            
             CCCoreData.deleteFile(metadataNet.metadata, serverUrl: metadataNet.serverUrl, directoryUser: appDelegate.directoryUser, typeCloud: appDelegate.typeCloud, activeAccount: appDelegate.activeAccount)
         }
 
         if message.length > 0 {
+            
             appDelegate.messageNotification("_delete_", description: message as String, visible: true, delay:TimeInterval(dismissAfterSecond), type:TWMessageBarMessageType.error)
         }
         
-        delegate?.deleteFileOrFolderFailure(metadataNet, message: message, errorCode: errorCode)
+        metadataNet.delegate?.deleteFileOrFolderFailure(metadataNet, message: message, errorCode: errorCode)
     }
     
     // --------------------------------------------------------------------------------------------
     // MARK: Rename File or Folder
     // --------------------------------------------------------------------------------------------
     
-    func renameFileOrFolder(_ metadata : CCMetadata, fileName : String, delegate : AnyObject) {
+    func renameFileOrFolder(_ metadata: CCMetadata, fileName: String, delegate: AnyObject) {
 
-        let crypto : CCCrypto = CCCrypto.init()
-        let metadataNet : CCMetadataNet = CCMetadataNet.init()
+        let crypto = CCCrypto.init()
+        let metadataNet = CCMetadataNet.init()
         
-        let fileName : String = CCUtility.removeForbiddenCharacters(fileName, hasServerForbiddenCharactersSupport: appDelegate.hasServerForbiddenCharactersSupport)!
+        let fileName = CCUtility.removeForbiddenCharacters(fileName, hasServerForbiddenCharactersSupport: appDelegate.hasServerForbiddenCharactersSupport)!
         
-        let serverUrl : String = CCCoreData.getServerUrl(fromDirectoryID: metadata.directoryID, activeAccount: appDelegate.activeAccount)!
+        let serverUrl = CCCoreData.getServerUrl(fromDirectoryID: metadata.directoryID, activeAccount: appDelegate.activeAccount)!
         
         if fileName.characters.count == 0 {
             return
@@ -175,7 +180,9 @@ class CCActions: NSObject {
                             try dataFileEncrypted.write(to: fileUrl, options: [])
                             
                             metadataNet.action = actionUploadOnlyPlist
+                            metadataNet.delegate = self
                             metadataNet.fileName = metadata.fileName
+                            metadataNet.metadata = metadata
                             metadataNet.selectorPost = selectorReadFolderForced
                             metadataNet.serverUrl = serverUrl
                             metadataNet.session = upload_session_foreground
@@ -215,7 +222,6 @@ class CCActions: NSObject {
             metadataNet.fileNameTo = fileName
             metadataNet.metadata = metadata
             metadataNet.selector = selectorRename
-            metadataNet.selectorPost = selectorReadFolderForced
             metadataNet.serverUrl = serverUrl
             metadataNet.serverUrlTo = serverUrl
             
@@ -223,11 +229,8 @@ class CCActions: NSObject {
         }
     }
     
-
-    func renameSuccess(_ metadataNet : CCMetadataNet) {
+    func renameSuccess(_ metadataNet: CCMetadataNet) {
         
-        self.delegate = metadataNet.delegate as! CCActionsDelegate
-
         if metadataNet.metadata.directory {
             
             let directory = CCUtility.stringAppendServerUrl(metadataNet.serverUrl, addServerUrl: metadataNet.fileName)
@@ -240,18 +243,29 @@ class CCActions: NSObject {
             CCCoreData.renameLocalFile(withFileID: metadataNet.metadata.fileID, fileNameTo: metadataNet.fileNameTo, fileNamePrintTo: metadataNet.fileNameTo, activeAccount: appDelegate.activeAccount)
         }
         
-        delegate?.renameSuccess(metadataNet)
+        metadataNet.delegate?.renameSuccess(metadataNet)
     }
     
-    func renameMoveFileOrFolderFailure(_ metadataNet : CCMetadataNet, message : NSString, errorCode : NSInteger) {
-
-        self.delegate = metadataNet.delegate as! CCActionsDelegate
+    func renameMoveFileOrFolderFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger) {
         
         if message.length > 0 {
+            
             appDelegate.messageNotification("_move_", description: message as String, visible: true, delay:TimeInterval(dismissAfterSecond), type:TWMessageBarMessageType.error)
         }
         
-        delegate?.renameMoveFileOrFolderFailure(metadataNet, message: message, errorCode: errorCode)
+        metadataNet.delegate?.renameMoveFileOrFolderFailure(metadataNet, message: message as NSString, errorCode: errorCode)
+    }
+    
+    func uploadFileSuccess(_ fileID: String, serverUrl: String, selector: String, selectorPost: String) {
+        
+        metadataNet.delegate?.uploadFileSuccess(fileID, serverUrl: serverUrl, selector: selector, selectorPost: selectorPost)
+    }
+    
+    func uploadFileFailure(_ fileID:String, selector: String, message: String, errorCode: NSInteger) {
+        
+        metadataNet.delegate?.uploadFileFailure(fileID, selector: selector, message: message, errorCode: errorCode)
     }
 }
+
+
 
