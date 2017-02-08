@@ -38,7 +38,7 @@ import Foundation
 @objc protocol CCActionsUploadDelegate  {
 
     func uploadFileSuccess(_ fileID: String, serverUrl: String, selector: String, selectorPost: String)
-    func uploadFileFailure(_ fileID:String, selector: String, message: String, errorCode: NSInteger)
+    func uploadFileFailure(_ fileID: String, serverUrl: String, selector: String, message: String, errorCode: NSInteger)
 }
 
 class CCActions: NSObject {
@@ -273,9 +273,9 @@ class CCActions: NSObject {
         metadataNet.delegate?.uploadFileSuccess(fileID, serverUrl: serverUrl, selector: selector, selectorPost: selectorPost)
     }
     
-    func uploadFileFailure(_ fileID:String, selector: String, message: String, errorCode: NSInteger) {
+    func uploadFileFailure(_ fileID: String, serverUrl: String, selector: String, message: String, errorCode: NSInteger) {
         
-        metadataNet.delegate?.uploadFileFailure(fileID, selector: selector, message: message, errorCode: errorCode)
+        metadataNet.delegate?.uploadFileFailure(fileID, serverUrl: serverUrl, selector: selector, message: message, errorCode: errorCode)
     }
 }
 
