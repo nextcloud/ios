@@ -118,4 +118,115 @@ class CCActions: NSObject {
         
         delegate?.deleteFileOrFolderFailure(metadataNet, message: message, errorCode: errorCode)
     }
+    
+    // --------------------------------------------------------------------------------------------
+    // MARK: Rename File or Folder
+    // --------------------------------------------------------------------------------------------
+    
+    func renameFileOrFolder(_ metadata : CCMetadata, fileName : String, delegate : AnyObject) {
+
+        let crypto : CCCrypto = CCCrypto.init()
+        let metadataNet : CCMetadataNet = CCMetadataNet.init()
+        
+        let fileName : String = CCUtility.removeForbiddenCharacters(fileName, hasServerForbiddenCharactersSupport: appDelegate.hasServerForbiddenCharactersSupport)!
+        
+        let serverUrl : String = CCCoreData.getServerUrl(fromDirectoryID: metadata.directoryID, activeAccount: appDelegate.activeAccount)!
+        
+        if fileName.characters.count == 0 {
+            return
+        }
+        
+        if metadata.fileNamePrint == fileName {
+            return
+        }
+        
+        if metadata.cryptated {
+            
+            // Encrypted
+            
+            let newTitle = AESCrypt.encrypt(fileName, password: crypto.getKeyPasscode(metadata.uuid))
+            
+            if !crypto.updateTitleFilePlist(metadata.fileName, title: newTitle, directoryUser: appDelegate.directoryUser) {
+                
+                print("[LOG] Rename cryptated error \(fileName)")
+                
+                appDelegate.messageNotification("_rename_", description: "_file_not_found_reload_", visible: true, delay: TimeInterval(dismissAfterSecond), type: TWMessageBarMessageType.error)
+                
+                return
+            }
+            
+            if !metadata.directory {
+                
+                do {
+                    
+                    let dataFile = try NSData.init(contentsOfFile: "\(appDelegate.directoryUser)/\(metadata.fileID)", options:[])
+                    
+                    do {
+                        
+                        let dataFileEncrypted = try RNEncryptor.encryptData(dataFile as Data!, with: kRNCryptorAES256Settings, password: crypto.getKeyPasscode(metadata.uuid))
+                        
+                        
+                        
+                        
+                    } catch let error {
+                        print(error.localizedDescription)
+                        return
+                    }
+
+                } catch let error {
+                    print(error.localizedDescription)
+                    return
+                }
+                
+            }
+ 
+        } else {
+ 
+            // Plain
+            
+            metadataNet.action = actionMoveFileOrFolder
+            metadataNet.fileID = metadata.fileID
+            metadataNet.fileName = metadata.fileName
+            metadataNet.fileNamePrint = metadata.fileNamePrint
+            metadataNet.fileNameTo = fileName
+            metadataNet.selector = selectorRename
+            metadataNet.selectorPost = selectorReadFolderForced
+            metadataNet.serverUrl = serverUrl
+            metadataNet.serverUrlTo = serverUrl
+            
+            appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
+        }
+    }
 }
+
+    /*
+    
+    if (metadata.directory == NO) {
+    // cripto il file fileID in temp
+    
+    NSData *data = [NSData dataWithContentsOfFile:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID]];
+    
+    if (data) data = [RNEncryptor encryptData:data withSettings:kRNCryptorAES256Settings password:[crypto getKeyPasscode:metadata.uuid] error:nil];
+    if (data) [data writeToFile:[NSTemporaryDirectory() stringByAppendingString:metadata.fileNameData] atomically:YES];
+    }
+    
+    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
+    
+    metadataNet.action = actionUploadOnlyPlist;
+    metadataNet.fileName = metadata.fileName;
+    metadataNet.selectorPost = selectorReadFolderForced;
+    metadataNet.serverUrl = _localServerUrl;
+    metadataNet.session = upload_session_foreground;
+    metadataNet.taskStatus = taskStatusResume;
+    
+    if ([CCCoreData isOfflineLocalFileID:metadata.fileID activeAccount:app.activeAccount])
+    metadataNet.selectorPost = selectorAddOffline;
+    
+    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+    
+    // delete file in filesystem
+    [CCCoreData deleteFile:metadata serverUrl:_localServerUrl directoryUser:app.directoryUser typeCloud:app.typeCloud activeAccount:app.activeAccount];
+    }
+
+    */
+

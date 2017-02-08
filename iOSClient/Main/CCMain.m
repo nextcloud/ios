@@ -1962,6 +1962,10 @@
 
 - (void)renameFile:(CCMetadata *)metadata fileName:(NSString *)fileName
 {
+    
+    [[CCActions sharedInstance] renameFileOrFolder:metadata fileName:fileName delegate:self];
+    
+    /*
     NSString *fileNameTo, *newTitleTo;
     CCCrypto *crypto = [[CCCrypto alloc] init];
     
@@ -2025,6 +2029,7 @@
         // delete file in filesystem
         [CCCoreData deleteFile:metadata serverUrl:_localServerUrl directoryUser:app.directoryUser typeCloud:app.typeCloud activeAccount:app.activeAccount];
     }
+    */
 }
 
 - (void)renameNote:(CCMetadata *)metadata fileName:(NSString *)fileName
