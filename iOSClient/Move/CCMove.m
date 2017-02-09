@@ -135,7 +135,7 @@
 {
     [_networkingOperationQueue cancelAllOperations];
     
-    [self.delegate move:_serverUrl title:self.passMetadata.fileNamePrint selectedMetadatas:self.selectedMetadatas];
+    [self.delegate moveServerUrlTo:_serverUrl title:self.passMetadata.fileNamePrint selectedMetadatas:self.selectedMetadatas];
         
     [self dismissViewControllerAnimated:YES completion:nil];
 }

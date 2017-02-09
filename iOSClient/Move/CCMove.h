@@ -59,8 +59,6 @@
 
 @protocol CCMoveDelegate <NSObject>
 
-@optional
-
-- (void)move:(NSString *)serverUrlTo title:(NSString *)title selectedMetadatas:(NSArray *)selectedMetadatas;
+- (void)moveServerUrlTo:(NSString *)serverUrlTo title:(NSString *)title selectedMetadatas:(NSArray *)selectedMetadatas;
 
 @end

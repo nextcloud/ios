@@ -466,7 +466,7 @@
 
     } else {
         
-        // we are in home
+        // we are in home : LOGO BRAND
         if ([_serverUrl isEqualToString:[CCUtility getHomeServerUrlActiveUrl:app.activeUrl typeCloud:app.typeCloud]]) {
             
             self.navigationItem.title = nil;
@@ -2131,7 +2131,7 @@
     }
 }
 
-- (void)move:(NSString *)serverUrlTo title:(NSString *)title selectedMetadatas:(NSArray *)selectedMetadatas
+- (void)moveServerUrlTo:(NSString *)serverUrlTo title:(NSString *)title selectedMetadatas:(NSArray *)selectedMetadatas
 {
     // Test
     if ([_serverUrl isEqualToString:serverUrlTo]) {

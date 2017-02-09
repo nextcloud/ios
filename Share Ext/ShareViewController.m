@@ -193,7 +193,7 @@
     self.navigationItem.hidesBackButton = YES;
 }
 
-- (void)move:(NSString *)serverUrlTo title:(NSString *)title selectedMetadatas:(NSArray *)selectedMetadatas
+- (void)moveServerUrlTo:(NSString *)serverUrlTo title:(NSString *)title selectedMetadatas:(NSArray *)selectedMetadatas
 {
     if (serverUrlTo)
         _serverUrl = serverUrlTo;
