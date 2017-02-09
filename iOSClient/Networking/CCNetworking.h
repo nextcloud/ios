@@ -76,7 +76,7 @@
 
 @protocol CCNetworkingDelegate <NSObject>
 
-@optional - (void)getDataSourceWithReloadTableView:(NSString *)directoryID fileID:(NSString *)fileID selector:(NSString *)selector;
+@optional - (void)reloadDatasource:(NSString *)serverUrl fileID:(NSString *)fileID selector:(NSString *)selector;
 @optional - (void)comandoCreaCartella:(NSString *)fileNameFolder cameraUpload:(BOOL)cameraUpload;
 
 @optional - (void)downloadTaskSave:(NSURLSessionDownloadTask *)downloadTask;

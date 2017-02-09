@@ -295,7 +295,7 @@
     
     // refresh active Main
     if (_activeMain)
-        [_activeMain getDataSourceWithReloadTableView];
+        [_activeMain reloadDatasource];
     
     // Initializations
     [self applicationInitialized];
@@ -343,8 +343,6 @@
     // now
     dispatch_async(dispatch_get_main_queue(), ^{
         
-        //NSLog(@"[LOG] Read Folder for change Rev");
-        //[[NSNotificationCenter defaultCenter] postNotificationName:@"readFileSelfFolderRev" object:nil];
     });
 
     // 0.5 sec.
@@ -1321,8 +1319,9 @@
         [_activeDetail progressTask:nil serverUrl:nil cryptated:NO progress:0];
     
     // Refresh
-    if (_activeMain && [_listChangeTask count] == 0)
-        [_activeMain getDataSourceWithReloadTableView:metadata.directoryID fileID:nil selector:nil];
+    if (_activeMain && [_listChangeTask count] == 0) {
+        [_activeMain reloadDatasource:[CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account] fileID:nil selector:nil];
+    }
 }
 
 - (void)dropAutomaticUploadWithSelector:(NSString *)selector

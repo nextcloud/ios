@@ -199,7 +199,7 @@
             }
             
             if ([metadatasNotPresents count] > 0)
-                [app.activeMain getDataSourceWithReloadTableView:metadataNet.directoryID fileID:nil selector:nil];
+                [app.activeMain reloadDatasource:metadataNet.serverUrl fileID:nil selector:nil];
             
         });
         
@@ -269,7 +269,7 @@
         }
         
         if ([metadatasForOfflineFolder count] > 0)
-            [self verifyChangeMedatas:metadatasForOfflineFolder serverUrl:metadataNet.serverUrl directoryID:metadataNet.directoryID account:metadataNet.account offline:YES];
+            [self verifyChangeMedatas:metadatasForOfflineFolder serverUrl:metadataNet.serverUrl account:metadataNet.account offline:YES];
     });
 }
 
@@ -322,7 +322,7 @@
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
         
-        [self verifyChangeMedatas:[[NSArray alloc] initWithObjects:metadata, nil] serverUrl:metadataNet.serverUrl directoryID:metadataNet.directoryID account:app.activeAccount offline:NO];
+        [self verifyChangeMedatas:[[NSArray alloc] initWithObjects:metadata, nil] serverUrl:metadataNet.serverUrl account:app.activeAccount offline:NO];
     });
 }
 
@@ -332,7 +332,7 @@
 
 
 // MULTI THREAD
-- (void)verifyChangeMedatas:(NSArray *)allRecordMetadatas serverUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID account:(NSString *)account offline:(BOOL)offline
+- (void)verifyChangeMedatas:(NSArray *)allRecordMetadatas serverUrl:(NSString *)serverUrl account:(NSString *)account offline:(BOOL)offline
 {
     NSMutableArray *metadatas = [[NSMutableArray alloc] init];
     BOOL isOfflineDirectory = [CCCoreData isOfflineDirectoryServerUrl:serverUrl activeAccount:app.activeAccount];
@@ -390,12 +390,12 @@
     
     dispatch_async(dispatch_get_main_queue(), ^{
         if ([metadatas count])
-            [self offlineMetadatas:metadatas serverUrl:serverUrl directoryID:directoryID offline:offline];
+            [self offlineMetadatas:metadatas serverUrl:serverUrl offline:offline];
     });
 }
 
 // MAIN THREAD
-- (void)offlineMetadatas:(NSArray *)metadatas serverUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID offline:(BOOL)offline
+- (void)offlineMetadatas:(NSArray *)metadatas serverUrl:(NSString *)serverUrl offline:(BOOL)offline
 {
     // HUD
     if ([metadatas count] > 50 && offline) {
@@ -445,7 +445,7 @@
     
         [[CCOfflineFileFolder sharedOfflineFileFolder] offlineFolderAnimationDirectory:[[NSArray alloc] initWithObjects:serverUrl, nil] callViewController:YES];
         
-        [app.activeMain getDataSourceWithReloadTableView:directoryID fileID:nil selector:nil];
+        [app.activeMain reloadDatasource:serverUrl fileID:nil selector:nil];
         
         [_hud hideHud];
     });

@@ -590,10 +590,8 @@
     dispatch_async(dispatch_get_main_queue(), ^{
     
         // Refresh datasource if is not a Plist
-        NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:_activeAccount];
-        
-        if ([_delegate respondsToSelector:@selector(getDataSourceWithReloadTableView:fileID:selector:)] && [CCUtility isCryptoPlistString:fileName] == NO)
-            [_delegate getDataSourceWithReloadTableView:directoryID fileID:fileID selector:selector];
+        if ([_delegate respondsToSelector:@selector(reloadDatasource:fileID:selector:)] && [CCUtility isCryptoPlistString:fileName] == NO)
+            [_delegate reloadDatasource:serverUrl fileID:fileID selector:selector];
     });
 }
 
@@ -879,7 +877,7 @@
         
         [CCCoreData addMetadata:metadata activeAccount:_activeAccount activeUrl:_activeUrl typeCloud:_typeCloud context:_context];
         
-        [self uploadURLSession:fileName fileNamePrint:metadata.fileNamePrint serverUrl:serverUrl directoryID:metadata.directoryID sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist parentRev:parentRev selector:selector];
+        [self uploadURLSession:fileName fileNamePrint:metadata.fileNamePrint serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist parentRev:parentRev selector:selector];
     }
     
     else if (cryptated == YES) {
@@ -911,10 +909,10 @@
             [CCCoreData addMetadata:metadata activeAccount:_activeAccount activeUrl:_activeUrl typeCloud:_typeCloud context:_context];
             
             // DATA
-            [self uploadURLSession:fileNameCrypto fileNamePrint:fileName serverUrl:serverUrl directoryID:metadata.directoryID sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist parentRev:parentRev selector:selector];
+            [self uploadURLSession:fileNameCrypto fileNamePrint:fileName serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist parentRev:parentRev selector:selector];
             
             // PLIST
-            [self uploadURLSession:[fileNameCrypto stringByAppendingString:@".plist"] fileNamePrint:fileName serverUrl:serverUrl directoryID:metadata.directoryID sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist parentRev:parentRev selector:selector];
+            [self uploadURLSession:[fileNameCrypto stringByAppendingString:@".plist"] fileNamePrint:fileName serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist parentRev:parentRev selector:selector];
         }
         
         if (template == NO) {
@@ -1006,10 +1004,10 @@
                     [CCCoreData addMetadata:metadata activeAccount:_activeAccount activeUrl:_activeUrl typeCloud:_typeCloud context:_context];
                     
                     // DATA
-                    [self uploadURLSession:fileNameCrypto fileNamePrint:fileName serverUrl:serverUrl directoryID:metadata.directoryID sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist parentRev:parentRev selector:selector];
+                    [self uploadURLSession:fileNameCrypto fileNamePrint:fileName serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist parentRev:parentRev selector:selector];
                     
                     // PLIST
-                    [self uploadURLSession:[fileNameCrypto stringByAppendingString:@".plist"] fileNamePrint:fileName serverUrl:serverUrl directoryID:metadata.directoryID sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist parentRev:parentRev selector:selector];
+                    [self uploadURLSession:[fileNameCrypto stringByAppendingString:@".plist"] fileNamePrint:fileName serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist parentRev:parentRev selector:selector];
                 }];
 
                 [alertController addAction:cancelAction];
@@ -1035,10 +1033,10 @@
                 [CCCoreData addMetadata:metadata activeAccount:_activeAccount activeUrl:_activeUrl typeCloud:_typeCloud context:_context];
                 
                 // DATA
-                [self uploadURLSession:fileNameCrypto fileNamePrint:fileName serverUrl:serverUrl directoryID:metadata.directoryID sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist parentRev:parentRev selector:selector];
+                [self uploadURLSession:fileNameCrypto fileNamePrint:fileName serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist parentRev:parentRev selector:selector];
                 
                 // PLIST
-                [self uploadURLSession:[fileNameCrypto stringByAppendingString:@".plist"] fileNamePrint:fileName serverUrl:serverUrl directoryID:metadata.directoryID sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist parentRev:parentRev selector:selector];
+                [self uploadURLSession:[fileNameCrypto stringByAppendingString:@".plist"] fileNamePrint:fileName serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist parentRev:parentRev selector:selector];
             }
         }
     }
@@ -1092,7 +1090,7 @@
                 
                 [CCCoreData addMetadata:metadata activeAccount:_activeAccount activeUrl:_activeUrl typeCloud:_typeCloud context:_context];
                 
-                [self uploadURLSession:fileName fileNamePrint:fileName serverUrl:serverUrl directoryID:metadata.directoryID sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist parentRev:parentRev selector:selector];
+                [self uploadURLSession:fileName fileNamePrint:fileName serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist parentRev:parentRev selector:selector];
             }];
             
             [alertController addAction:cancelAction];
@@ -1115,7 +1113,7 @@
 #endif
             [CCCoreData addMetadata:metadata activeAccount:_activeAccount activeUrl:_activeUrl typeCloud:_typeCloud context:_context];
             
-            [self uploadURLSession:fileName fileNamePrint:fileName serverUrl:serverUrl directoryID:metadata.directoryID sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist parentRev:parentRev selector:selector];
+            [self uploadURLSession:fileName fileNamePrint:fileName serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist parentRev:parentRev selector:selector];
         }
     }
 }
@@ -1133,9 +1131,9 @@
         
             send = YES;
             
-            [self uploadURLSession:metadata.fileNameData fileNamePrint:metadata.fileNamePrint serverUrl:serverUrl directoryID:metadata.directoryID sessionID:metadata.sessionID session:metadata.session taskStatus:taskStatus assetDate:nil assetMediaType:0 cryptated:YES onlyPlist:NO parentRev:nil selector:metadata.sessionSelector];
+            [self uploadURLSession:metadata.fileNameData fileNamePrint:metadata.fileNamePrint serverUrl:serverUrl sessionID:metadata.sessionID session:metadata.session taskStatus:taskStatus assetDate:nil assetMediaType:0 cryptated:YES onlyPlist:NO parentRev:nil selector:metadata.sessionSelector];
             
-            [self uploadURLSession:metadata.fileName fileNamePrint:metadata.fileNamePrint serverUrl:serverUrl directoryID:metadata.directoryID sessionID:metadata.sessionID session:metadata.session taskStatus:taskStatus assetDate:nil assetMediaType:PHAssetMediaTypeUnknown cryptated:YES onlyPlist:NO parentRev:nil selector:metadata.sessionSelector];
+            [self uploadURLSession:metadata.fileName fileNamePrint:metadata.fileNamePrint serverUrl:serverUrl sessionID:metadata.sessionID session:metadata.session taskStatus:taskStatus assetDate:nil assetMediaType:PHAssetMediaTypeUnknown cryptated:YES onlyPlist:NO parentRev:nil selector:metadata.sessionSelector];
         }
         
     } else {
@@ -1145,7 +1143,7 @@
             
             send = YES;
             
-            [self uploadURLSession:metadata.fileName fileNamePrint:metadata.fileNamePrint serverUrl:serverUrl directoryID:metadata.directoryID sessionID:metadata.sessionID session:metadata.session taskStatus:taskStatus assetDate:nil assetMediaType:PHAssetMediaTypeUnknown cryptated:NO onlyPlist:NO parentRev:nil selector:metadata.sessionSelector];
+            [self uploadURLSession:metadata.fileName fileNamePrint:metadata.fileNamePrint serverUrl:serverUrl sessionID:metadata.sessionID session:metadata.session taskStatus:taskStatus assetDate:nil assetMediaType:PHAssetMediaTypeUnknown cryptated:NO onlyPlist:NO parentRev:nil selector:metadata.sessionSelector];
         }
     }
     
@@ -1167,7 +1165,7 @@
     }
 }
 
-- (void)uploadURLSession:(NSString *)fileName fileNamePrint:(NSString *)fileNamePrint serverUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID sessionID:(NSString*)sessionID session:(NSString *)session taskStatus:(NSInteger)taskStatus assetDate:(NSDate *)assetDate assetMediaType:(PHAssetMediaType)assetMediaType cryptated:(BOOL)cryptated onlyPlist:(BOOL)onlyPlist parentRev:(NSString *)parentRev selector:(NSString *)selector
+- (void)uploadURLSession:(NSString *)fileName fileNamePrint:(NSString *)fileNamePrint serverUrl:(NSString *)serverUrl sessionID:(NSString*)sessionID session:(NSString *)session taskStatus:(NSInteger)taskStatus assetDate:(NSDate *)assetDate assetMediaType:(PHAssetMediaType)assetMediaType cryptated:(BOOL)cryptated onlyPlist:(BOOL)onlyPlist parentRev:(NSString *)parentRev selector:(NSString *)selector
 {
     NSURLSession *sessionUpload;
     NSURL *url;
@@ -1263,8 +1261,8 @@
     dispatch_async(dispatch_get_main_queue(), ^{
         
         // refresh main
-        if ([self.delegate respondsToSelector:@selector(getDataSourceWithReloadTableView:fileID:selector:)])
-            [self.delegate getDataSourceWithReloadTableView:directoryID fileID:nil selector:selector];
+        if ([self.delegate respondsToSelector:@selector(reloadDatasource:fileID:selector:)])
+            [self.delegate reloadDatasource:serverUrl fileID:nil selector:selector];
     });
 }
 
@@ -1483,8 +1481,8 @@
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
                     
-                    if ([self.delegate respondsToSelector:@selector(getDataSourceWithReloadTableView:fileID:selector:)])
-                        [self.delegate getDataSourceWithReloadTableView:metadata.directoryID fileID:metadata.fileID selector:nil];
+                    if ([self.delegate respondsToSelector:@selector(reloadDatasource:fileID:selector:)])
+                        [self.delegate reloadDatasource:[CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account] fileID:metadata.fileID selector:nil];
                 });
                 
             }
@@ -1498,8 +1496,8 @@
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
                     
-                    if ([self.delegate respondsToSelector:@selector(getDataSourceWithReloadTableView:fileID:selector:)])
-                        [self.delegate getDataSourceWithReloadTableView:metadata.directoryID fileID:metadata.fileID selector:nil];
+                    if ([self.delegate respondsToSelector:@selector(reloadDatasource:fileID:selector:)])
+                        [self.delegate reloadDatasource:[CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account] fileID:metadata.fileID selector:nil];
                 });
             }
             
@@ -1511,7 +1509,7 @@
 
 - (void)automaticDownloadInError
 {
-    NSMutableSet *directoryIDs = [[NSMutableSet alloc] init];
+    NSMutableSet *serversUrl = [[NSMutableSet alloc] init];
     
     NSArray *records = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (session CONTAINS 'download') AND ((sessionTaskIdentifier == %i) OR (sessionTaskIdentifierPlist == %i))", _activeAccount, taskIdentifierError, taskIdentifierError] context:nil];
     
@@ -1529,16 +1527,16 @@
         if (metadata.sessionTaskIdentifierPlist == taskIdentifierError)
             [self downloadFile:metadata serverUrl:serverUrl downloadData:NO downloadPlist:YES selector:metadata.sessionSelector selectorPost:nil session:download_session taskStatus:taskStatusResume delegate:nil];
             
-        [directoryIDs addObject:metadata.directoryID];
+        [serversUrl addObject:serverUrl];
             
         NSLog(@"[LOG] Re download file : %@ - %@ [%i %i]", metadata.fileName, metadata.fileNamePrint, metadata.sessionTaskIdentifier, metadata.sessionTaskIdentifierPlist);
     }
     
     dispatch_async(dispatch_get_main_queue(), ^{
         
-        for (NSString *directoryID in directoryIDs)
-            if ([self.delegate respondsToSelector:@selector(getDataSourceWithReloadTableView:fileID:selector:)])
-                [self.delegate getDataSourceWithReloadTableView:directoryID fileID:nil selector:nil];
+        for (NSString *serverUrl in serversUrl)
+            if ([self.delegate respondsToSelector:@selector(reloadDatasource:fileID:selector:)])
+                [self.delegate reloadDatasource:serverUrl fileID:nil selector:nil];
     });
 }
 
@@ -1623,8 +1621,8 @@
     dispatch_async(dispatch_get_main_queue(), ^{
         
         for (NSString *directoryID in directoryIDs)
-            if ([self.delegate respondsToSelector:@selector(getDataSourceWithReloadTableView:fileID:selector:)])
-                [self.delegate getDataSourceWithReloadTableView:directoryID fileID:nil selector:nil];
+            if ([self.delegate respondsToSelector:@selector(reloadDatasource:fileID:selector:)])
+                [self.delegate reloadDatasource:[CCCoreData getServerUrlFromDirectoryID:directoryID activeAccount:_activeAccount] fileID:nil selector:nil];
     });
 }
 
@@ -1670,8 +1668,8 @@
         
         dispatch_async(dispatch_get_main_queue(), ^{
             
-            if ([self.delegate respondsToSelector:@selector(getDataSourceWithReloadTableView:fileID:selector:)])
-                [self.delegate getDataSourceWithReloadTableView:metadataTemp.directoryID fileID:metadataTemp.fileID selector:metadataNet.selector];
+            if ([self.delegate respondsToSelector:@selector(reloadDatasource:fileID:selector:)])
+                [self.delegate reloadDatasource:[CCCoreData getServerUrlFromDirectoryID:directoryID activeAccount:_activeAccount] fileID:metadataTemp.fileID selector:metadataNet.selector];
         });
         
     } else {

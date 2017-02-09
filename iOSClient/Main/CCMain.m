@@ -98,10 +98,6 @@
 
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setTitleNOAnimation) name:@"setTitleCCMainNOAnimation" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setTitleYESAnimation) name:@"setTitleCCMainYESAnimation" object:nil];
-        
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(readFileSelfFolderRev) name:@"readFileSelfFolderRev" object:nil];
-        
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(getDataSourceWithReloadTableView) name:@"getDataSourceWithReloadTableView" object:nil];
     }
     
     return self;
@@ -166,10 +162,9 @@
         
         // Settings this folder & delegate & Loading datasource
         app.directoryUser = [CCUtility getDirectoryActiveUser:app.activeUser activeUrl:app.activeUrl];
-        _directoryID = [CCCoreData getDirectoryIDFromServerUrl:_serverUrl activeAccount:app.activeAccount];
         
         // Load Datasource
-        [self getDataSourceWithReloadTableView:_directoryID fileID:nil selector:nil];
+        [self reloadDatasource:_serverUrl fileID:nil selector:nil];
         
         // Read Folder
         [self readFolderWithForced:NO];
@@ -198,7 +193,6 @@
     // Settings this folder & delegate & Loading datasource
     if (app.activeAccount) {
         app.directoryUser = [CCUtility getDirectoryActiveUser:app.activeUser activeUrl:app.activeUrl];
-        _directoryID = [CCCoreData getDirectoryIDFromServerUrl:_serverUrl activeAccount:app.activeAccount];
     }
     [[CCNetworking sharedNetworking] settingDelegate:self];
     
@@ -235,7 +229,7 @@
         if (app.activeAccount) {
             
             // Load Datasource
-            [self getDataSourceWithReloadTableView:_directoryID fileID:nil selector:nil];
+            [self reloadDatasource:_serverUrl fileID:nil selector:nil];
             
             // Read Folder
             [self readFolderWithForced:NO];
@@ -298,7 +292,6 @@
         [self.navigationController popToRootViewControllerAnimated:NO];
         
         _serverUrl = [CCUtility getHomeServerUrlActiveUrl:app.activeUrl typeCloud:app.typeCloud];
-        _directoryID = [CCCoreData getDirectoryIDFromServerUrl:_serverUrl activeAccount:app.activeAccount];
         _isFolderEncrypted = NO;
         
         app.directoryUser = [CCUtility getDirectoryActiveUser:app.activeUser activeUrl:app.activeUrl];
@@ -314,7 +307,7 @@
         [CCCoreData populateSharesVariableFromDBActiveAccount:app.activeAccount sharesLink:app.sharesLink sharesUserAndGroup:app.sharesUserAndGroup];
         
         // Load Datasource
-        [self getDataSourceWithReloadTableView:_directoryID fileID:nil selector:nil];
+        [self reloadDatasource:_serverUrl fileID:nil selector:nil];
 
         // Load Folder
         [self readFolderWithForced:NO];
@@ -339,7 +332,7 @@
     } else {
         
         // reload datasource
-        [self getDataSourceWithReloadTableView:_directoryID fileID:nil selector:nil];
+        [self reloadDatasource:_serverUrl fileID:nil selector:nil];
     }
 }
 
@@ -372,7 +365,7 @@
         
         [[CCOfflineFileFolder sharedOfflineFileFolder] addOfflineFolder:dir];
         
-        [self performSelector:@selector(getDataSourceWithReloadTableView) withObject:nil afterDelay:0.1];
+        [self performSelector:@selector(reloadDatasource) withObject:nil afterDelay:0.1];
     }
 }
 
@@ -1242,7 +1235,7 @@
             [app messageNotification:@"_download_file_" description:message visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeError];
     }
 
-    [self getDataSourceWithReloadTableView:metadata.directoryID fileID:metadata.fileID selector:selector];
+    [self reloadDatasource:serverUrl fileID:metadata.fileID selector:selector];
 }
 
 - (void)downloadFileSuccess:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost
@@ -1253,19 +1246,19 @@
 
     // reload
     if ([selector isEqualToString:selectorReload]) {
-        [self getDataSourceWithReloadTableView:metadata.directoryID fileID:metadata.fileID selector:selector];
+        [self reloadDatasource:serverUrl fileID:metadata.fileID selector:selector];
     }
     
     // Offline Directory
     if ([selector isEqualToString:selectorDownloadOffline]) {
         
-        [self getDataSourceWithReloadTableView:metadata.directoryID fileID:metadata.fileID selector:selector];
+        [self reloadDatasource:serverUrl fileID:metadata.fileID selector:selector];
     }
     
     // add Offline
     if ([selector isEqualToString:selectorAddOffline] && ![CCCoreData isOfflineDirectoryServerUrl:serverUrl activeAccount:app.activeAccount]) {
         [CCCoreData setOfflineLocalFileID:metadata.fileID offline:YES activeAccount:app.activeAccount];
-        [self getDataSourceWithReloadTableView:metadata.directoryID fileID:metadata.fileID selector:selector];
+        [self reloadDatasource:serverUrl fileID:metadata.fileID selector:selector];
     }
     
     // encrypted file
@@ -1281,7 +1274,7 @@
     // open View File
     if ([selector isEqualToString:selectorLoadFileView] && [[UIApplication sharedApplication] applicationState] == UIApplicationStateActive) {
         
-        [self getDataSourceWithReloadTableView:metadata.directoryID fileID:metadata.fileID selector:selector];
+        [self reloadDatasource:serverUrl fileID:metadata.fileID selector:selector];
         
         if ([metadata.typeFile isEqualToString:metadataTypeFile_compress]) {
             
@@ -1311,13 +1304,13 @@
         
         [app messageNotification:@"_add_local_" description:@"_file_saved_local_" visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeSuccess];
         
-        [self getDataSourceWithReloadTableView:metadata.directoryID fileID:metadata.fileID selector:selector];
+        [self reloadDatasource:serverUrl fileID:metadata.fileID selector:selector];
     }
     
     // Open with...
     if ([selector isEqualToString:selectorOpenIn] && [[UIApplication sharedApplication] applicationState] == UIApplicationStateActive) {
         
-        [self getDataSourceWithReloadTableView:metadata.directoryID fileID:metadata.fileID selector:selector];
+        [self reloadDatasource:serverUrl fileID:metadata.fileID selector:selector];
         
         [[NSFileManager defaultManager] removeItemAtPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileNamePrint] error:nil];
         [[NSFileManager defaultManager] linkItemAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID] toPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileNamePrint] error:nil];
@@ -1362,13 +1355,13 @@
             }
         }
         
-        [self getDataSourceWithReloadTableView:metadata.directoryID fileID:metadata.fileID selector:selector];
+        [self reloadDatasource:serverUrl fileID:metadata.fileID selector:selector];
     }
     
     // Copy File
     if ([selector isEqualToString:selectorLoadCopy]) {
         
-        [self getDataSourceWithReloadTableView:metadata.directoryID fileID:metadata.fileID selector:selector];
+        [self reloadDatasource:serverUrl fileID:metadata.fileID selector:selector];
         
         [self copyFileToPasteboard:metadata];
     }
@@ -1380,7 +1373,7 @@
         
         [self openModel:metadata.model isNew:false];
         
-        [self getDataSourceWithReloadTableView:metadata.directoryID fileID:metadata.fileID selector:selector];
+        [self reloadDatasource:serverUrl fileID:metadata.fileID selector:selector];
     }
     
     //download file plist
@@ -1398,10 +1391,10 @@
             }
         }
         
-        if ((countSelectorLoadPlist == 0 || countSelectorLoadPlist % maxConcurrentOperation == 0) && [metadata.directoryID isEqualToString:_directoryID]) {
+        if ((countSelectorLoadPlist == 0 || countSelectorLoadPlist % maxConcurrentOperation == 0) && [metadata.directoryID isEqualToString:[CCCoreData getDirectoryIDFromServerUrl:_serverUrl activeAccount:app.activeAccount]]) {
             
             dispatch_async(dispatch_get_main_queue(), ^{
-                [self getDataSourceWithReloadTableView:metadata.directoryID fileID:metadata.fileID selector:selector];
+                [self reloadDatasource:serverUrl fileID:metadata.fileID selector:selector];
             });
         }
     }
@@ -1420,7 +1413,7 @@
                 [app.activePhotosCameraUpload downloadFileSuccess:metadata];
         });
 
-        [self getDataSourceWithReloadTableView:metadata.directoryID fileID:metadata.fileID selector:selector];
+        [self reloadDatasource:serverUrl fileID:metadata.fileID selector:selector];
     }
     
     // if exists postselector call self with selectorPost
@@ -1499,7 +1492,7 @@
         [app messageNotification:@"_upload_file_" description:message visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeError];
     }
     
-    [self getDataSourceWithReloadTableView:[CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:app.activeAccount] fileID:nil selector:selector];
+    [self reloadDatasource:serverUrl fileID:nil selector:selector];
 }
 
 - (void)uploadFileSuccess:(CCMetadataNet *)metadataNet fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost
@@ -1514,7 +1507,7 @@
             
     } else {
     
-        [self getDataSourceWithReloadTableView:[CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:app.activeAccount] fileID:nil selector:selector];
+        [self reloadDatasource:serverUrl fileID:nil selector:selector];
     }
 }
 
@@ -1709,21 +1702,6 @@
     }
 }
 
-- (void)readFileSelfFolderRev
-{
-    // test
-    if ([app.activeAccount length] == 0 || [_directoryID length] == 0)
-        return;
-
-    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
-
-    metadataNet.action = actionReadFile;
-    metadataNet.selector = selectorReadFileFolder;
-    metadataNet.serverUrl = [CCCoreData getServerUrlFromDirectoryID:_directoryID activeAccount:app.activeAccount];
-
-    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
-}
-
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ==== Read Folder ====
 #pragma --------------------------------------------------------------------------------------------
@@ -1742,7 +1720,7 @@
     if (message && [record.account isEqualToString:metadataNet.account])
         [app messageNotification:@"_error_" description:message visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeError];
     
-    [self getDataSourceWithReloadTableView:metadataNet.directoryID fileID:nil selector:metadataNet.selector];
+    [self reloadDatasource:metadataNet.serverUrl fileID:nil selector:metadataNet.selector];
     
     if (errorCode == 401)
         [self changePasswordAccount];
@@ -1834,14 +1812,14 @@
     
     // File is changed ??
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
-        [[CCOfflineFileFolder sharedOfflineFileFolder] verifyChangeMedatas:metadatas serverUrl:metadataNet.serverUrl directoryID:metadataNet.directoryID account:app.activeAccount offline:NO];
+        [[CCOfflineFileFolder sharedOfflineFileFolder] verifyChangeMedatas:metadatas serverUrl:metadataNet.serverUrl account:app.activeAccount offline:NO];
     });
 
     // this is the same directory
     if ([metadataNet.serverUrl isEqualToString:_serverUrl]) {
         
         // reload
-        [self getDataSourceWithReloadTableView:metadataNet.directoryID fileID:nil selector:metadataNet.selector];
+        [self reloadDatasource:metadataNet.serverUrl fileID:nil selector:metadataNet.selector];
     
         // stoprefresh
         [_refreshControl endRefreshing];
@@ -1861,7 +1839,9 @@
     if (!_serverUrl || !app.activeAccount)
         return;
     
-    if (([CCCoreData isDirectoryOutOfDate:dayForceReadFolder directoryID:_directoryID activeAccount:app.activeAccount] || forced) && _directoryID && app.activeAccount) {
+    NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:_serverUrl activeAccount:app.activeAccount];
+    
+    if (([CCCoreData isDirectoryOutOfDate:dayForceReadFolder directoryID:directoryID activeAccount:app.activeAccount] || forced) && directoryID && app.activeAccount) {
         
         if (_refreshControl.isRefreshing == NO)
             [_hud visibleIndeterminateHud];
@@ -1870,10 +1850,10 @@
         
         metadataNet.action = actionReadFolder;
         metadataNet.date = [NSDate date];
-        metadataNet.directoryID = _directoryID;
+        metadataNet.directoryID = directoryID;
         metadataNet.priority = NSOperationQueuePriorityVeryHigh;
         metadataNet.selector = selectorReadFolder;
-        metadataNet.serverUrl = [CCCoreData getServerUrlFromDirectoryID:_directoryID activeAccount:app.activeAccount];
+        metadataNet.serverUrl = [CCCoreData getServerUrlFromDirectoryID:directoryID activeAccount:app.activeAccount];
 
         [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
         
@@ -1904,7 +1884,7 @@
         if ([metadataNet.selectorPost isEqualToString:selectorReadFolderForced]) {
             [self readFolderWithForced:YES];
         } else {
-            [self getDataSourceWithReloadTableView:metadataNet.metadata.directoryID fileID:metadataNet.metadata.fileID selector:metadataNet.selector];
+            [self reloadDatasource:metadataNet.serverUrl fileID:metadataNet.metadata.fileID selector:metadataNet.selector];
         }
 
         // next
@@ -2062,7 +2042,7 @@
         if ([metadataNet.selectorPost isEqualToString:selectorReadFolderForced])
             [self readFolderWithForced:YES];
         else
-            [self getDataSourceWithReloadTableView];
+            [self reloadDatasource];
 
         // Next file
         [_selectedMetadatas removeObjectAtIndex:0];
@@ -2200,7 +2180,7 @@
     if ([metadataNet.selectorPost isEqualToString:selectorReadFolderForced]) {
         [self readFolderWithForced:YES];
     } else {
-        [self getDataSourceWithReloadTableView:_directoryID fileID:metadataNet.fileID selector:metadataNet.selector];
+        [self reloadDatasource:metadataNet.serverUrl fileID:metadataNet.fileID selector:metadataNet.selector];
     }
 }
 
@@ -2416,7 +2396,7 @@
                 
         dispatch_async(dispatch_get_main_queue(), ^{
             [[CCNetworking sharedNetworking] uploadFile:metadata.fileName serverUrl:serverUrl cryptated:YES onlyPlist:NO session:upload_session taskStatus:taskStatusResume selector:nil selectorPost:nil parentRev:nil errorCode:0 delegate:nil];
-            [self performSelector:@selector(getDataSourceWithReloadTableView) withObject:nil afterDelay:0.1];
+            [self performSelector:@selector(reloadDatasource) withObject:nil afterDelay:0.1];
         });
         
     } else {
@@ -2438,7 +2418,7 @@
         
         dispatch_async(dispatch_get_main_queue(), ^{
             [[CCNetworking sharedNetworking] uploadFile:metadata.fileNamePrint serverUrl:serverUrl cryptated:NO onlyPlist:NO session:upload_session taskStatus:taskStatusResume selector:nil selectorPost:nil parentRev:nil errorCode:0 delegate:nil];
-            [self performSelector:@selector(getDataSourceWithReloadTableView) withObject:nil afterDelay:0.1];
+            [self performSelector:@selector(reloadDatasource) withObject:nil afterDelay:0.1];
         });
         
     } else {
@@ -2965,7 +2945,7 @@
     [CCUtility setOrderSettings:order];
     
     // refresh
-    [self getDataSourceWithReloadTableView:_directoryID fileID:nil selector:nil];
+    [self reloadDatasource:_serverUrl fileID:nil selector:nil];
     // new menu
     [self createReMainMenu];
 }
@@ -2978,7 +2958,7 @@
     [CCUtility setAscendingSettings:ascending];
     
     // refresh
-    [self getDataSourceWithReloadTableView:_directoryID fileID:nil selector:nil];
+    [self reloadDatasource:_serverUrl fileID:nil selector:nil];
     // new menu
     [self createReMainMenu];
 }
@@ -2991,7 +2971,7 @@
     [CCUtility setDirectoryOnTop:directoryOnTop];
     
     // refresh
-    [self getDataSourceWithReloadTableView:_directoryID fileID:nil selector:nil];
+    [self reloadDatasource:_serverUrl fileID:nil selector:nil];
     // new menu
     [self createReMainMenu];
 }
@@ -3004,7 +2984,7 @@
     [CCUtility setGroupBySettings:groupBy];
     
     // refresh
-    [self getDataSourceWithReloadTableView:_directoryID fileID:nil selector:nil];
+    [self reloadDatasource:_serverUrl fileID:nil selector:nil];
     // new menu
     [self createReMainMenu];
 }
@@ -3971,7 +3951,7 @@
     
     // forse reload
     _dateReadDataSource = nil;
-    [self getDataSourceWithReloadTableView];
+    [self reloadDatasource];
     
 }
 
@@ -4210,7 +4190,7 @@
                                                     [CCCoreData removeOfflineAllFileFromServerUrl:directory.serverUrl activeAccount:app.activeAccount];
                                                 }
                                             
-                                            [self performSelector:@selector(getDataSourceWithReloadTableView) withObject:nil];
+                                            [self performSelector:@selector(reloadDatasource) withObject:nil];
                                         }
                                     }];
         }
@@ -4517,25 +4497,25 @@
     _dateReadDataSource = Nil;
 }
 
-- (void)getDataSourceWithReloadTableView
+- (void)reloadDatasource
 {
-    [self getDataSourceWithReloadTableView:_directoryID fileID:nil selector:nil];
+    [self reloadDatasource:_serverUrl fileID:nil selector:nil];
 }
 
-- (void)getDataSourceWithReloadTableView:(NSString *)directoryID fileID:(NSString *)fileID selector:(NSString *)selector
+- (void)reloadDatasource:(NSString *)serverUrl fileID:(NSString *)fileID selector:(NSString *)selector
 {
-    if (app.activeAccount == nil || app.activeUrl == nil || directoryID == nil)
+    if (app.activeAccount == nil || app.activeUrl == nil || serverUrl == nil)
         return;
     
     // Reload -> Self se non siamo nella dir appropriata cercala e se è in memoria reindirizza il reload
-    if ([directoryID isEqualToString:_directoryID] == NO || _serverUrl == nil) {
+    if ([serverUrl isEqualToString:_serverUrl] == NO || _serverUrl == nil) {
         
         if ([selector isEqualToString:selectorDownloadOffline]) {
             [app.controlCenter reloadDatasource];
         } else {
-            CCMain *main = [app.listMainVC objectForKey:[CCCoreData getServerUrlFromDirectoryID:directoryID activeAccount:app.activeAccount]];
+            CCMain *main = [app.listMainVC objectForKey:serverUrl];
             if (main) {
-                [main getDataSourceWithReloadTableView];
+                [main reloadDatasource];
             } else {
                 [self tableViewReload];
                 [app.controlCenter reloadDatasource];
@@ -4555,7 +4535,7 @@
     _directoryOrder = [CCUtility getOrderSettings];
     
     // Controllo data lettura Data Source
-    NSDate *dateDateRecordDirectory = [CCCoreData getDateReadDirectoryID:_directoryID activeAccount:app.activeAccount];
+    NSDate *dateDateRecordDirectory = [CCCoreData getDateReadDirectoryID:[CCCoreData getDirectoryIDFromServerUrl:_serverUrl activeAccount:app.activeAccount] activeAccount:app.activeAccount];
     
     if ([dateDateRecordDirectory compare:_dateReadDataSource] == NSOrderedDescending || dateDateRecordDirectory == nil || _dateReadDataSource == nil) {
         
@@ -4565,7 +4545,7 @@
     
         // Data Source
     
-        NSArray *recordsTableMetadata = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@)", app.activeAccount, directoryID] fieldOrder:[CCUtility getOrderSettings] ascending:[CCUtility getAscendingSettings]];
+        NSArray *recordsTableMetadata = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@)", app.activeAccount, [CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:app.activeAccount]] fieldOrder:[CCUtility getOrderSettings] ascending:[CCUtility getAscendingSettings]];
     
         _sectionDataSource = [CCSection creataDataSourseSectionTableMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:_directoryGroupBy replaceDateToExifDate:NO activeAccount:app.activeAccount];
         
