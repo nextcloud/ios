@@ -434,12 +434,12 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
  
     //  MARK: - Upload
     
-    func uploadFileFailure(_ fileID: String!, serverUrl: String!, selector: String!, message: String!, errorCode: Int) {
+    func uploadFileFailure(_ metadataNet: CCMetadataNet, fileID: String, serverUrl: String, selector: String, message: String, errorCode: NSInteger){
         
         hud.hideHud()
         
         // remove file
-        CCCoreData.deleteMetadata(with: NSPredicate(format: "(account == '\(activeAccount!)') AND (fileID == '\(fileID!)')"))
+        CCCoreData.deleteMetadata(with: NSPredicate(format: "(account == '\(activeAccount!)') AND (fileID == '\(fileID)')"))
         
         if errorCode != -999 {
             
@@ -453,7 +453,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         }
     }
     
-    func uploadFileSuccess(_ fileID: String!, serverUrl: String!, selector: String!, selectorPost: String!) {
+    func uploadFileSuccess(_ metadataNet: CCMetadataNet, fileID: String, serverUrl: String, selector: String, selectorPost: String) {
         
         hud.hideHud()
         

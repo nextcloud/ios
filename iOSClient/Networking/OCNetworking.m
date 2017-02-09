@@ -217,20 +217,20 @@
         [self.delegate uploadTaskSave:uploadTask];
 }
 
-- (void)uploadFileSuccess:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost
+- (void)uploadFileSuccess:(CCMetadataNet *)metadataNet fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost
 {
     [self complete];
     
-    if ([self.delegate respondsToSelector:@selector(uploadFileSuccess:serverUrl:selector:selectorPost:)])
-        [self.delegate uploadFileSuccess:fileID serverUrl:serverUrl selector:selector selectorPost:selectorPost];
+    if ([self.delegate respondsToSelector:@selector(uploadFileSuccess:fileID:serverUrl:selector:selectorPost:)])
+        [self.delegate uploadFileSuccess:_metadataNet fileID:fileID serverUrl:serverUrl selector:selector selectorPost:selectorPost];
 }
 
-- (void)uploadFileFailure:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode
+- (void)uploadFileFailure:(CCMetadataNet *)metadataNet fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode
 {
     [self complete];
     
-    if ([self.delegate respondsToSelector:@selector(uploadFileFailure:serverUrl:selector:message:errorCode:)])
-        [self.delegate uploadFileFailure:fileID serverUrl:serverUrl selector:selector message:message errorCode:errorCode];
+    if ([self.delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
+        [self.delegate uploadFileFailure:_metadataNet fileID:fileID serverUrl:serverUrl selector:selector message:message errorCode:errorCode];
 }
 
 #pragma --------------------------------------------------------------------------------------------

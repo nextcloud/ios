@@ -37,8 +37,8 @@ import Foundation
 
 @objc protocol CCActionsUploadDelegate  {
 
-    func uploadFileSuccess(_ fileID: String, serverUrl: String, selector: String, selectorPost: String)
-    func uploadFileFailure(_ fileID: String, serverUrl: String, selector: String, message: String, errorCode: NSInteger)
+    func uploadFileSuccess(_ metadataNet: CCMetadataNet, fileID: String, serverUrl: String, selector: String, selectorPost: String)
+    func uploadFileFailure(_ metadataNet: CCMetadataNet, fileID: String, serverUrl: String, selector: String, message: String, errorCode: NSInteger)
 }
 
 class CCActions: NSObject {
@@ -268,15 +268,14 @@ class CCActions: NSObject {
         metadataNet.delegate?.renameMoveFileOrFolderFailure(metadataNet, message: message as NSString, errorCode: errorCode)
     }
     
-    // - (void)uploadFileSuccess:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost
-    func uploadFileSuccess(_ fileID: String, serverUrl: String, selector: String, selectorPost: String) {
+    func uploadFileSuccess(_ metadataNet: CCMetadataNet, fileID: String, serverUrl: String, selector: String, selectorPost: String) {
         
-        metadataNet.delegate?.uploadFileSuccess(fileID, serverUrl: serverUrl, selector: selector, selectorPost: selectorPost)
+        metadataNet.delegate?.uploadFileSuccess(metadataNet, fileID:fileID, serverUrl: serverUrl, selector: selector, selectorPost: selectorPost)
     }
     
-    func uploadFileFailure(_ fileID: String, serverUrl: String, selector: String, message: String, errorCode: NSInteger) {
+    func uploadFileFailure(_ metadataNet: CCMetadataNet, fileID: String, serverUrl: String, selector: String, message: String, errorCode: NSInteger) {
         
-        metadataNet.delegate?.uploadFileFailure(fileID, serverUrl: serverUrl, selector: selector, message: message, errorCode: errorCode)
+        metadataNet.delegate?.uploadFileFailure(metadataNet, fileID:fileID, serverUrl: serverUrl, selector: selector, message: message, errorCode: errorCode)
     }
 }
 

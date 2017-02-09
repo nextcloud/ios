@@ -733,8 +733,8 @@
     
     if (!result.count) {
         
-        if ([delegate respondsToSelector:@selector(uploadFileFailure:serverUrl:selector:message:errorCode:)])
-            [delegate uploadFileFailure:nil serverUrl:serverUrl selector:selector message:@"Internal error" errorCode:CCErrorInternalError];
+        if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
+            [delegate uploadFileFailure:nil fileID:nil serverUrl:serverUrl selector:selector message:@"Internal error" errorCode:CCErrorInternalError];
         return;
     }
     
@@ -821,8 +821,8 @@
     if (error) {
         
         // Error for uploadFileFailure
-        if ([delegate respondsToSelector:@selector(uploadFileFailure:serverUrl:selector:message:errorCode:)])
-            [delegate uploadFileFailure:nil serverUrl:serverUrl selector:selector message:@"_read_file_error_" errorCode:error.code];
+        if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
+            [delegate uploadFileFailure:nil fileID:nil serverUrl:serverUrl selector:selector message:@"_read_file_error_" errorCode:error.code];
         
     } else {
         
@@ -947,8 +947,8 @@
                     [alertWindow.rootViewController presentViewController:alertController animated:YES completion:nil];
                     
                     // Error for uploadFileFailure
-                    if ([[self getDelegate:uploadID] respondsToSelector:@selector(uploadFileFailure:serverUrl:selector:message:errorCode:)])
-                        [[self getDelegate:uploadID] uploadFileFailure:nil serverUrl:serverUrl selector:selector message:NSLocalizedString(@"_encrypt_error_", nil) errorCode:0];
+                    if ([[self getDelegate:uploadID] respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
+                        [[self getDelegate:uploadID] uploadFileFailure:nil fileID:nil serverUrl:serverUrl selector:selector message:NSLocalizedString(@"_encrypt_error_", nil) errorCode:0];
                 });
             
                 return;
@@ -983,8 +983,8 @@
                         //    [CCCoreData setCameraUploadDateAssetType:assetMediaType assetDate:assetDate activeAccount:_activeAccount];
                         
                         // Error for uploadFileFailure
-                        if ([[self getDelegate:uploadID] respondsToSelector:@selector(uploadFileFailure:serverUrl:selector:message:errorCode:)])
-                            [[self getDelegate:uploadID] uploadFileFailure:nil serverUrl:serverUrl selector:selector message:NSLocalizedString(@"_file_already_exists_", nil) errorCode:403];
+                        if ([[self getDelegate:uploadID] respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
+                            [[self getDelegate:uploadID] uploadFileFailure:nil fileID:nil serverUrl:serverUrl selector:selector message:NSLocalizedString(@"_file_already_exists_", nil) errorCode:403];
                     });
                     
                     return;
@@ -1074,8 +1074,8 @@
                     //    [CCCoreData setCameraUploadDateAssetType:assetMediaType assetDate:assetDate activeAccount:_activeAccount];
                 
                     // Error for uploadFileFailure
-                    if ([[self getDelegate:uploadID] respondsToSelector:@selector(uploadFileFailure:serverUrl:selector:message:errorCode:)])
-                        [[self getDelegate:uploadID] uploadFileFailure:nil serverUrl:serverUrl selector:selector message:NSLocalizedString(@"_file_already_exists_", nil) errorCode:403];
+                    if ([[self getDelegate:uploadID] respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
+                        [[self getDelegate:uploadID] uploadFileFailure:nil fileID:nil serverUrl:serverUrl selector:selector message:NSLocalizedString(@"_file_already_exists_", nil) errorCode:403];
                 });
                 
                 return;
@@ -1207,8 +1207,8 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             
             // Error for uploadFileFailure
-            if ([[self getDelegate:sessionID] respondsToSelector:@selector(uploadFileFailure:serverUrl:selector:message:errorCode:)])
-                [[self getDelegate:sessionID] uploadFileFailure:sessionID serverUrl:serverUrl selector:selector message:NSLocalizedString(@"_file_not_present_", nil) errorCode:404];
+            if ([[self getDelegate:sessionID] respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
+                [[self getDelegate:sessionID] uploadFileFailure:nil fileID:sessionID serverUrl:serverUrl selector:selector message:NSLocalizedString(@"_file_not_present_", nil) errorCode:404];
             
             [CCCoreData deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(sessionID == %@) AND (account == %@)", sessionID, _activeAccount]];
         });
@@ -1339,8 +1339,8 @@
         
         dispatch_async(dispatch_get_main_queue(), ^{
             
-            if ([[self getDelegate:sessionID] respondsToSelector:@selector(uploadFileFailure:serverUrl:selector:message:errorCode:)])
-                [[self getDelegate:sessionID] uploadFileFailure:fileID serverUrl:serverUrl selector:metadata.sessionSelector message:[CCError manageErrorKCF:errorCode withNumberError:YES] errorCode:errorCode];
+            if ([[self getDelegate:sessionID] respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
+                [[self getDelegate:sessionID] uploadFileFailure:nil fileID:fileID serverUrl:serverUrl selector:metadata.sessionSelector message:[CCError manageErrorKCF:errorCode withNumberError:YES] errorCode:errorCode];
         });
         
         return;
@@ -1431,8 +1431,8 @@
         
         dispatch_async(dispatch_get_main_queue(), ^{
             
-            if ([[self getDelegate:sessionID] respondsToSelector:@selector(uploadFileSuccess:serverUrl:selector:selectorPost:)])
-                [[self getDelegate:sessionID] uploadFileSuccess:metadata.fileID serverUrl:serverUrl selector:metadata.sessionSelector selectorPost:metadata.sessionSelectorPost];
+            if ([[self getDelegate:sessionID] respondsToSelector:@selector(uploadFileSuccess:fileID:serverUrl:selector:selectorPost:)])
+                [[self getDelegate:sessionID] uploadFileSuccess:nil fileID:metadata.fileID serverUrl:serverUrl selector:metadata.sessionSelector selectorPost:metadata.sessionSelectorPost];
         });
     }
 }
