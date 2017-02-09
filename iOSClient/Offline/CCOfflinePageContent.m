@@ -188,7 +188,21 @@
 // more
 - (NSString *)tableView:(UITableView *)tableView titleForSwipeAccessoryButtonForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-   return NSLocalizedString(@"_more_", nil);
+    // No Local
+    if ([_pageType isEqualToString:pageOfflineLocal])
+        return nil;
+    
+    // Root
+    if (_localServerUrl == nil)
+        return NSLocalizedString(@"_more_", nil);
+    
+    // No Root
+    CCMetadata *metadata = [self setSelfMetadataFromIndexPath:indexPath];
+    
+    if (metadata.directory)
+        return nil;
+    else
+        return NSLocalizedString(@"_more_", nil);
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForDeleteConfirmationButtonForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -203,7 +217,7 @@
 
 - (void)tableView:(UITableView *)tableView swipeAccessoryButtonPushedForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    [self setSelfMetadataFromIndexPath:indexPath];
+    _metadata = [self setSelfMetadataFromIndexPath:indexPath];
     
     AHKActionSheet *actionSheet = [[AHKActionSheet alloc] initWithView:self.view title:nil];
     
@@ -288,7 +302,7 @@
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    [self setSelfMetadataFromIndexPath:indexPath];
+    _metadata = [self setSelfMetadataFromIndexPath:indexPath];
     
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         
@@ -332,12 +346,14 @@
 #pragma mark ==== Table ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)setSelfMetadataFromIndexPath:(NSIndexPath *)indexPath
+- (CCMetadata *)setSelfMetadataFromIndexPath:(NSIndexPath *)indexPath
 {
+    CCMetadata *metadata;
+    
     if ([_pageType isEqualToString:pageOfflineOffline]) {
         
         NSManagedObject *record = [dataSource objectAtIndex:indexPath.row];
-        _metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", [record valueForKey:@"fileID"], app.activeAccount] context:nil];
+        metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", [record valueForKey:@"fileID"], app.activeAccount] context:nil];
     }
     
     if ([_pageType isEqualToString:pageOfflineLocal]) {
@@ -345,8 +361,10 @@
         NSString *cameraFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:app.activeAccount];
         NSString *cameraFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:app.activeAccount activeUrl:app.activeUrl typeCloud:app.typeCloud];
         
-        _metadata = [CCUtility insertFileSystemInMetadata:[dataSource objectAtIndex:indexPath.row] directory:_localServerUrl activeAccount:app.activeAccount cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath];
+        metadata = [CCUtility insertFileSystemInMetadata:[dataSource objectAtIndex:indexPath.row] directory:_localServerUrl activeAccount:app.activeAccount cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath];
     }
+    
+    return metadata;
 }
 
 - (void)reloadTable
@@ -366,8 +384,9 @@
             
             CCSectionDataSource *sectionDataSource = [CCSection creataDataSourseSectionTableMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:nil replaceDateToExifDate:NO activeAccount:app.activeAccount];
             
-            for (NSString *key in sectionDataSource.allRecordsDataSource)
-                [metadatas  insertObject:[sectionDataSource.allRecordsDataSource objectForKey:key] atIndex:0 ];
+            NSArray *fileIDs = [sectionDataSource.sectionArrayRow objectForKey:@"_none_"];
+            for (NSString *fileID in fileIDs)
+                [metadatas addObject:[sectionDataSource.allRecordsDataSource objectForKey:fileID]];
             
             dataSource = [NSArray arrayWithArray:metadatas];
         }
@@ -513,7 +532,7 @@
     // deselect row
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
-    [self setSelfMetadataFromIndexPath:indexPath];
+    _metadata = [self setSelfMetadataFromIndexPath:indexPath];
     
     // if is in download [do not touch]
     if ([_metadata.session length] > 0 && [_metadata.session rangeOfString:@"download"].location != NSNotFound) return;
