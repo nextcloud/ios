@@ -104,18 +104,20 @@
 {
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
     
+    NSString *serverUrl = app.activeMain.localServerUrl;
+    
     metadataNet.action = actionDownloadThumbnail;
     metadataNet.fileID = metadata.fileID;
     
     if ([metadata.typeCloud isEqualToString:typeCloudOwnCloud] || [metadata.typeCloud isEqualToString:typeCloudNextcloud])
-        metadataNet.fileName = [self returnFileNamePathFromFileName:metadata.fileName serverUrl:app.serverUrl];
+        metadataNet.fileName = [self returnFileNamePathFromFileName:metadata.fileName serverUrl:serverUrl];
     
     metadataNet.fileNameLocal = metadata.fileID;
     metadataNet.fileNamePrint = metadata.fileNamePrint;
     metadataNet.options = @"l";
     metadataNet.priority = NSOperationQueuePriorityLow;
     metadataNet.selector = selectorDownloadThumbnail;
-    metadataNet.serverUrl = app.serverUrl;
+    metadataNet.serverUrl = serverUrl;
     
     [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
 }

@@ -170,7 +170,6 @@
     if (_isMain == NO && app.activeAccount) {
         
         // Settings this folder & delegate & Loading datasource
-        app.serverUrl = _localServerUrl;
         app.directoryUser = [CCUtility getDirectoryActiveUser:app.activeUser activeUrl:app.activeUrl];
         _localDirectoryID = [CCCoreData getDirectoryIDFromServerUrl:_localServerUrl activeAccount:app.activeAccount];
         
@@ -203,7 +202,6 @@
     
     // Settings this folder & delegate & Loading datasource
     if (app.activeAccount) {
-        app.serverUrl = _localServerUrl;
         app.directoryUser = [CCUtility getDirectoryActiveUser:app.activeUser activeUrl:app.activeUrl];
         _localDirectoryID = [CCCoreData getDirectoryIDFromServerUrl:_localServerUrl activeAccount:app.activeAccount];
     }
@@ -308,7 +306,6 @@
         _localDirectoryID = [CCCoreData getDirectoryIDFromServerUrl:_localServerUrl activeAccount:app.activeAccount];
         _isFolderEncrypted = NO;
         
-        app.serverUrl = _localServerUrl;
         app.directoryUser = [CCUtility getDirectoryActiveUser:app.activeUser activeUrl:app.activeUrl];
     
         // add list

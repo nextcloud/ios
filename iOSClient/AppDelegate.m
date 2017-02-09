@@ -917,6 +917,9 @@
 
 - (BOOL)lockScreenManagerShouldShowLockScreen:(BKPasscodeLockScreenManager *)aManager
 {
+    // ServerUrl active
+    NSString *serverUrl = self.activeMain.localServerUrl;
+    
     // fermiamo la data della sessione
     self.sessionePasscodeLock = nil;
     
@@ -927,7 +930,7 @@
     // se non c'è il passcode esci con NON attivare la richiesta password
     if ([[CCUtility getKeyChainPasscodeForUUID:[CCUtility getUUID]] length] == 0) return NO;
     // se non è attivo il OnlyLockDir esci con NON attivare la richiesta password
-    if ([CCUtility getOnlyLockDir] && ![CCCoreData isBlockZone:self.serverUrl activeAccount:self.activeAccount]) return NO;
+    if ([CCUtility getOnlyLockDir] && ![CCCoreData isBlockZone:serverUrl activeAccount:self.activeAccount]) return NO;
         
     return YES;
 }
@@ -969,7 +972,8 @@
         [aViewController dismissViewControllerAnimated:YES completion:nil];
         
         // start session Passcode Lock
-        if ([CCCoreData isBlockZone:self.serverUrl activeAccount:self.activeAccount])
+        NSString *serverUrl = self.activeMain.localServerUrl;
+        if ([CCCoreData isBlockZone:serverUrl activeAccount:self.activeAccount])
             self.sessionePasscodeLock = [NSDate date];
     }
 }

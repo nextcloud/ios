@@ -736,9 +736,7 @@
                 
                 [CCUtility setBlockCode:@""];
                 [CCCoreData setAllDirectoryUnLockForAccount:app.activeAccount];
-                CCMain *mainVC = [app.listMainVC objectForKey:app.serverUrl];
-                if (mainVC)
-                    [mainVC.tableView reloadData];
+                [app.activeMain.tableView reloadData];
             }
             
             // email Key EAS-256
@@ -751,9 +749,7 @@
                 // disable passcode
                 [CCUtility setBlockCode:@""];
                 [CCCoreData setAllDirectoryUnLockForAccount:app.activeAccount];
-                CCMain *mainVC = [app.listMainVC objectForKey:app.serverUrl];
-                if (mainVC)
-                    [mainVC.tableView reloadData];
+                [app.activeMain.tableView reloadData];
                 
                 [CCUtility setSimplyBlockCode:![CCUtility getSimplyBlockCode]];
                 
