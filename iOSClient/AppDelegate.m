@@ -166,7 +166,7 @@
     
     // Page Control
     UIPageControl *pageControl = [UIPageControl appearance];
-    pageControl.pageIndicatorTintColor = COLOR_SEPARATOR_TABLE;
+    pageControl.pageIndicatorTintColor = [UIColor whiteColor];
     pageControl.currentPageIndicatorTintColor = COLOR_NEXTCLOUD;
     pageControl.backgroundColor = COLOR_NAVBAR_IOS7; //[UIColor clearColor];
     

@@ -364,7 +364,9 @@
     }
     if (alertView.tag == alertOfflineFolder && buttonIndex == 1) {
         
-        NSString *dir = [CCUtility stringAppendServerUrl:_serverUrl addServerUrl:_metadata.fileNameData];
+        NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:_metadata.account];
+
+        NSString *dir = [CCUtility stringAppendServerUrl:serverUrl addServerUrl:_metadata.fileNameData];
         
         [[CCOfflineFileFolder sharedOfflineFileFolder] addOfflineFolder:dir];
         
@@ -1148,10 +1150,10 @@
         
         metadataNet.action = actionGetNotificationsOfServer;
         [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
-        
+
         metadataNet.action = actionReadFile;
         metadataNet.selector = selectorReadFileQuota;
-        metadataNet.serverUrl = _serverUrl;
+        metadataNet.serverUrl = [CCUtility getHomeServerUrlActiveUrl:app.activeUrl typeCloud:app.typeCloud];
         [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
     }
 }

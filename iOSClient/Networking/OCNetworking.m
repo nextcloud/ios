@@ -342,9 +342,9 @@
         _metadataNet.directoryID = directoryID;
         
 #ifndef EXTENSION
-        NSString *home = [CCUtility getHomeServerUrlActiveUrl:_activeUrl typeCloud:_typeCloud];
+        NSString *root = [CCUtility getHomeServerUrlActiveUrl:_activeUrl typeCloud:_typeCloud];
         
-        if ([home isEqualToString:_metadataNet.serverUrl]) {
+        if ([root isEqualToString:_metadataNet.serverUrl]) {
             
             app.quotaUsed = itemDtoDirectory.quotaUsed;
             app.quotaAvailable = itemDtoDirectory.quotaAvailable;
@@ -639,9 +639,9 @@
             metadata = [CCUtility trasformedOCFileToCCMetadata:itemDto fileNamePrint:_metadataNet.fileNamePrint serverUrl:_metadataNet.serverUrl directoryID:directoryID cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath activeAccount:_metadataNet.account directoryUser:directoryUser typeCloud:_typeCloud];
             
 #ifndef EXTENSION
-            NSString *home = [CCUtility getHomeServerUrlActiveUrl:_activeUrl typeCloud:_typeCloud];
+            NSString *root = [CCUtility getHomeServerUrlActiveUrl:_activeUrl typeCloud:_typeCloud];
             
-            if ([home isEqualToString:fileName]) {
+            if ([root isEqualToString:fileName]) {
                 
                 app.quotaUsed = itemDto.quotaUsed;
                 app.quotaAvailable = itemDto.quotaAvailable;
