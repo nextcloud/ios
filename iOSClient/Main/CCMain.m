@@ -1467,7 +1467,7 @@
         [app loadTableAutomaticUploadForSelector:selector];
 
     // Read File test do not exists
-    if (errorCode == CCErrorFileUploadNotFound) {
+    if (errorCode == CCErrorFileUploadNotFound && fileID) {
        
         CCMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, app.activeAccount] context:nil];
         

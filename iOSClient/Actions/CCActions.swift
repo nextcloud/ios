@@ -167,28 +167,31 @@ class CCActions: NSObject {
                 
                 do {
                     
-                    let dataFile = try NSData.init(contentsOfFile: "\(appDelegate.directoryUser)/\(metadata.fileID)", options:[])
+                    let file = "\(appDelegate.directoryUser!)/\(metadata.fileID!)"
+                    let dataFile = try NSData.init(contentsOfFile: file, options:[])
                     
                     do {
                         
                         let dataFileEncrypted = try RNEncryptor.encryptData(dataFile as Data!, with: kRNCryptorAES256Settings, password: crypto.getKeyPasscode(metadata.uuid))
                         
-                        let fileUrl = Foundation.URL(string: "\(NSTemporaryDirectory())\(metadata.fileNameData)")!
-                        
                         do {
                             
+                            let fileUrl = URL(fileURLWithPath: "\(NSTemporaryDirectory())\(metadata.fileNameData!)")
                             try dataFileEncrypted.write(to: fileUrl, options: [])
                             
                         } catch let error {
                             print(error.localizedDescription)
+                            return
                         }
                         
                     } catch let error {
                         print(error.localizedDescription)
+                        return
                     }
 
                 } catch let error {
                     print(error.localizedDescription)
+                    return
                 }
             }
             
