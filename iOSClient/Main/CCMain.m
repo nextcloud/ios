@@ -77,6 +77,9 @@
     // Datasource
     CCSectionDataSource *_sectionDataSource;
     NSDate *_dateReadDataSource;
+    
+    // Search
+    BOOL _isSearchMode;
 }
 @end
 
@@ -3899,7 +3902,8 @@
             // disattivazione lock cartella
             if (aViewController.fromType == CCBKPasscodeFromDisactivateDirectory) {
                 
-                NSString *lockServerUrl = [CCUtility stringAppendServerUrl:_serverUrl addServerUrl:_metadata.fileNameData];
+                NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:_metadata.account];
+                NSString *lockServerUrl = [CCUtility stringAppendServerUrl:serverUrl addServerUrl:_metadata.fileNameData];
                 
                 if ([CCCoreData setDirectoryUnLock:lockServerUrl activeAccount:app.activeAccount] == NO) {
                     
@@ -3917,7 +3921,8 @@
 
 - (void)comandoLockPassword
 {
-    NSString *lockServerUrl = [CCUtility stringAppendServerUrl:_serverUrl addServerUrl:_metadata.fileNameData];
+    NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:_metadata.account];
+    NSString *lockServerUrl = [CCUtility stringAppendServerUrl:serverUrl addServerUrl:_metadata.fileNameData];
 
     // se non è abilitato il Lock Passcode esci
     if ([[CCUtility getBlockCode] length] == 0) {
@@ -3981,6 +3986,8 @@
 
 -(void) updateSearchResultsForSearchController:(UISearchController *)searchController
 {
+    _isSearchMode = YES;
+    
     _sectionDataSource = [CCSectionDataSource new];
     [self deleteRefreshControl];
     
@@ -3989,6 +3996,8 @@
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
 {
+    _isSearchMode = NO;
+    
     [self.searchController setActive:NO];
     [self createRefreshControl];
     
@@ -5506,7 +5515,8 @@
 
     if(self.tableView.editing == NO && _metadata.errorPasscode == NO){
         
-        NSString *lockServerUrl = [CCUtility stringAppendServerUrl:_serverUrl addServerUrl:_metadata.fileNameData];
+        NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:_metadata.account];
+        NSString *lockServerUrl = [CCUtility stringAppendServerUrl:serverUrl addServerUrl:_metadata.fileNameData];
         
         // SE siamo in presenza di una directory bloccata E è attivo il block E la sessione password Lock è senza data ALLORA chiediamo la password per procedere
         if ([CCCoreData isDirectoryLock:lockServerUrl activeAccount:app.activeAccount] && [[CCUtility getBlockCode] length] && app.sessionePasscodeLock == nil && controlPasscode) {
@@ -5545,21 +5555,21 @@
         if (_metadata.cryptated) nomeDir = [_metadata.fileName substringToIndex:[_metadata.fileName length]-6];
         else nomeDir = _metadata.fileName;
         
-        NSString *serverUrl = [CCUtility stringAppendServerUrl:[CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:_metadata.account] addServerUrl:nomeDir];
+        NSString *serverUrlPush = [CCUtility stringAppendServerUrl:serverUrl addServerUrl:nomeDir];
         
-        CCMain *viewController = [app.listMainVC objectForKey:serverUrl];
+        CCMain *viewController = [app.listMainVC objectForKey:serverUrlPush];
         
         if (viewController.isViewLoaded == false) {
             
             viewController = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"CCMainVC"];
             
             viewController.isFolderEncrypted = _metadata.cryptated;
-            viewController.serverUrl = serverUrl;
+            viewController.serverUrl = serverUrlPush;
             viewController.titleMain = _metadata.fileNamePrint;
             viewController.textBackButton = _titleMain;
             
             // save self
-            [app.listMainVC setObject:viewController forKey:serverUrl];
+            [app.listMainVC setObject:viewController forKey:serverUrlPush];
         }
                 
         [self.navigationController pushViewController:viewController animated:YES];

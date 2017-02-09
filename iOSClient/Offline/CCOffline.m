@@ -45,8 +45,6 @@
 {
     if (self = [super initWithCoder:aDecoder])  {
         
-        //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadTable) name:@"reloadTableFavorite" object:nil];
-        
         app.activeOffline = self;
     }
     return self;
