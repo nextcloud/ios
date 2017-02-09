@@ -2267,6 +2267,8 @@
 
 - (void)encyptedDecryptedFolder
 {
+    NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:_metadata.account];
+    
     if (_metadata.cryptated) {
         
         // DECRYPTED
@@ -2282,8 +2284,8 @@
         metadataNet.fileNamePrint = _metadata.fileNamePrint;
         metadataNet.priority = NSOperationQueuePriorityVeryHigh;
         metadataNet.selector = selectorRename;
-        metadataNet.serverUrl = _serverUrl;
-        metadataNet.serverUrlTo = _serverUrl;
+        metadataNet.serverUrl = serverUrl;
+        metadataNet.serverUrlTo = serverUrl;
         
         [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
         
@@ -2318,8 +2320,8 @@
         metadataNet.fileNameTo = fileNameCrypto;
         metadataNet.priority = NSOperationQueuePriorityVeryHigh;
         metadataNet.selector = selectorRename;
-        metadataNet.serverUrl = _serverUrl;
-        metadataNet.serverUrlTo = _serverUrl;
+        metadataNet.serverUrl = serverUrl;
+        metadataNet.serverUrlTo = serverUrl;
         
         [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
         
@@ -2329,7 +2331,7 @@
         metadataNet.fileName = [fileNameCrypto stringByAppendingString:@".plist"];
         metadataNet.priority = NSOperationQueuePriorityVeryLow;
         metadataNet.selectorPost = selectorReadFolderForced;
-        metadataNet.serverUrl = _serverUrl;
+        metadataNet.serverUrl = serverUrl;
         metadataNet.session = upload_session_foreground;
         metadataNet.taskStatus = taskStatusResume;
         
@@ -2356,8 +2358,12 @@
         
         NSLog(@"[LOG] Start encrypted selected files ...");
     
-        for (CCMetadata* metadata in metadatas)
-            [[CCNetworking sharedNetworking] downloadFile:metadata serverUrl:_serverUrl downloadData:YES downloadPlist:NO selector:selectorEncryptFile selectorPost:nil session:download_session taskStatus:taskStatusResume delegate:self];
+        for (CCMetadata* metadata in metadatas) {
+            
+            NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account];
+            
+            [[CCNetworking sharedNetworking] downloadFile:metadata serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorEncryptFile selectorPost:nil session:download_session taskStatus:taskStatusResume delegate:self];
+        }
     }
     
     [self tableViewSelect:NO];
@@ -2378,8 +2384,12 @@
         
         NSLog(@"[LOG] Start decrypted selected files ...");
         
-        for (CCMetadata* metadata in metadatas)
-            [[CCNetworking sharedNetworking] downloadFile:metadata serverUrl:_serverUrl downloadData:YES downloadPlist:NO selector:selectorDecryptFile selectorPost:nil session:download_session taskStatus:taskStatusResume delegate:self];
+        for (CCMetadata* metadata in metadatas) {
+            
+            NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account];
+            
+            [[CCNetworking sharedNetworking] downloadFile:metadata serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorDecryptFile selectorPost:nil session:download_session taskStatus:taskStatusResume delegate:self];
+        }
     }
     
     [self tableViewSelect:NO];
@@ -2392,7 +2402,9 @@
     if (_metadata.cryptated == YES) selector = selectorDecryptFile;
     if (_metadata.cryptated == NO) selector = selectorEncryptFile;
     
-    [[CCNetworking sharedNetworking] downloadFile:_metadata serverUrl:_serverUrl downloadData:YES downloadPlist:NO selector:selector selectorPost:nil session:download_session taskStatus:taskStatusResume delegate:self];
+    NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:_metadata.account];
+    
+    [[CCNetworking sharedNetworking] downloadFile:_metadata serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selector selectorPost:nil session:download_session taskStatus:taskStatusResume delegate:self];
 }
 
 - (void)encryptedFile:(CCMetadata *)metadata
