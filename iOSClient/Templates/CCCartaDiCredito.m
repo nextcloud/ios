@@ -35,7 +35,7 @@
 
 @implementation CCCartaDiCredito
 
-- (id)initWithDelegate:(id <CCCartaDiCreditoDelegate>)delegate fileName:(NSString *)fileName uuid:(NSString *)uuid rev:(NSString *)rev fileID:(NSString *)fileID modelReadOnly:(BOOL)modelReadOnly isLocal:(BOOL)isLocal
+- (id)initWithDelegate:(id <CCCartaDiCreditoDelegate>)delegate fileName:(NSString *)fileName uuid:(NSString *)uuid rev:(NSString *)rev fileID:(NSString *)fileID modelReadOnly:(BOOL)modelReadOnly isLocal:(BOOL)isLocal serverUrl:(NSString *)serverUrl
 {
     self = [super init];
     
@@ -47,6 +47,7 @@
         self.rev = rev;
         self.fileID = fileID;
         self.uuid = uuid;
+        self.serverUrl = serverUrl;
         
         CCCrypto *crypto = [[CCCrypto alloc] init];
         
@@ -211,7 +212,7 @@
         CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
         
         metadataNet.action = actionUploadTemplate;
-        metadataNet.serverUrl = app.serverUrl;
+        metadataNet.serverUrl = self.serverUrl;
         metadataNet.fileName = [CCUtility trasformedFileNamePlistInCrypto:fileNameModel];
         metadataNet.fileNamePrint = titolo.value;
         metadataNet.pathFolder = NSTemporaryDirectory();

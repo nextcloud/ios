@@ -396,6 +396,9 @@
 "_paste_files_encrypted_"       = "Paste encrypted files";
 "_paste_cryptated_"             = "Paste encrypted file";
 
+"_search_this_folder_"          = "This folder";
+"_search_all_folders_"          = "All folders";
+
 // Security
 
 "_reload_folder_"               = "Please reload folder";

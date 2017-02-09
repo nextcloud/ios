@@ -127,12 +127,15 @@
     _queueSelector = [[NSMutableArray alloc] init];
     _isViewDidLoad = YES;
     _fatherPermission = @"";
-
+    _searchController = [[UISearchController alloc] initWithSearchResultsController:nil];
+    
     // delegate
     self.tableView.delegate = self;
     self.tableView.tableFooterView = [UIView new];
     self.tableView.separatorColor = COLOR_SEPARATOR_TABLE;
-
+    self.searchController.delegate = self;
+    self.searchController.searchBar.delegate = self;
+    
     [[CCNetworking sharedNetworking] settingDelegate:self];
     
     // Custom Cell
@@ -183,6 +186,14 @@
         
     // List Transfers
     app.controlCenter = (CCControlCenter *)self.navigationController;
+    
+    // Search
+    self.searchController.searchResultsUpdater = self;
+    self.searchController.dimsBackgroundDuringPresentation = NO;
+    self.tableView.tableHeaderView = self.searchController.searchBar;
+    self.searchController.searchBar.scopeButtonTitles = @[NSLocalizedString(@"_search_this_folder_",nil),NSLocalizedString(@"_search_all_folders_",nil)];
+    self.searchController.searchBar.barTintColor = COLOR_SEPARATOR_TABLE;
+    [self.searchController.searchBar sizeToFit];
 }
 
 // Apparirà
@@ -815,29 +826,29 @@
     }
     
     if ([tipo isEqualToString:@"cartadicredito"])
-        viewController = [[CCCartaDiCredito alloc] initWithDelegate:self fileName:fileName uuid:uuid rev:rev fileID:fileID modelReadOnly:modelReadOnly isLocal:isLocal];
+        viewController = [[CCCartaDiCredito alloc] initWithDelegate:self fileName:fileName uuid:uuid rev:rev fileID:fileID modelReadOnly:modelReadOnly isLocal:isLocal serverUrl:_localServerUrl];
     
     if ([tipo isEqualToString:@"bancomat"])
-        viewController = [[CCBancomat alloc] initWithDelegate:self fileName:fileName uuid:uuid rev:rev fileID:fileID modelReadOnly:modelReadOnly isLocal:isLocal];
+        viewController = [[CCBancomat alloc] initWithDelegate:self fileName:fileName uuid:uuid rev:rev fileID:fileID modelReadOnly:modelReadOnly isLocal:isLocal serverUrl:_localServerUrl];
     
     if ([tipo isEqualToString:@"contocorrente"])
-        viewController = [[CCContoCorrente alloc] initWithDelegate:self fileName:fileName uuid:uuid rev:rev fileID:fileID modelReadOnly:modelReadOnly isLocal:isLocal];
+        viewController = [[CCContoCorrente alloc] initWithDelegate:self fileName:fileName uuid:uuid rev:rev fileID:fileID modelReadOnly:modelReadOnly isLocal:isLocal serverUrl:_localServerUrl];
     
     if ([tipo isEqualToString:@"accountweb"])
-        viewController = [[CCAccountWeb alloc] initWithDelegate:self fileName:fileName uuid:uuid rev:rev fileID:fileID modelReadOnly:modelReadOnly isLocal:isLocal];
+        viewController = [[CCAccountWeb alloc] initWithDelegate:self fileName:fileName uuid:uuid rev:rev fileID:fileID modelReadOnly:modelReadOnly isLocal:isLocal serverUrl:_localServerUrl];
     
     if ([tipo isEqualToString:@"patenteguida"])
-        viewController = [[CCPatenteGuida alloc] initWithDelegate:self fileName:fileName uuid:uuid rev:rev fileID:fileID modelReadOnly:modelReadOnly isLocal:isLocal];
+        viewController = [[CCPatenteGuida alloc] initWithDelegate:self fileName:fileName uuid:uuid rev:rev fileID:fileID modelReadOnly:modelReadOnly isLocal:isLocal serverUrl:_localServerUrl];
     
     if ([tipo isEqualToString:@"cartaidentita"])
-        viewController = [[CCCartaIdentita alloc] initWithDelegate:self fileName:fileName uuid:uuid rev:rev fileID:fileID modelReadOnly:modelReadOnly isLocal:isLocal];
+        viewController = [[CCCartaIdentita alloc] initWithDelegate:self fileName:fileName uuid:uuid rev:rev fileID:fileID modelReadOnly:modelReadOnly isLocal:isLocal serverUrl:_localServerUrl];
     
     if ([tipo isEqualToString:@"passaporto"])
-        viewController = [[CCPassaporto alloc] initWithDelegate:self fileName:fileName uuid:uuid rev:rev fileID:fileID modelReadOnly:modelReadOnly isLocal:isLocal];
+        viewController = [[CCPassaporto alloc] initWithDelegate:self fileName:fileName uuid:uuid rev:rev fileID:fileID modelReadOnly:modelReadOnly isLocal:isLocal serverUrl:_localServerUrl];
     
     if ([tipo isEqualToString:@"note"]) {
         
-        viewController = [[CCNote alloc] initWithDelegate:self fileName:fileName uuid:uuid rev:rev fileID:fileID modelReadOnly:modelReadOnly isLocal:isLocal];
+        viewController = [[CCNote alloc] initWithDelegate:self fileName:fileName uuid:uuid rev:rev fileID:fileID modelReadOnly:modelReadOnly isLocal:isLocal serverUrl:_localServerUrl];
         
         UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
         
@@ -2067,7 +2078,7 @@
             metadataNet.action = actionMoveFileOrFolder;
             metadataNet.directory = metadata.directory;
             metadataNet.fileID = metadata.fileID;
-            metadataNet.directoryID = _localDirectoryID;
+            metadataNet.directoryID = metadata.directoryID;
             metadataNet.directoryIDTo = [CCCoreData getDirectoryIDFromServerUrl:serverUrlTo activeAccount:app.activeAccount];
             metadataNet.fileName = metadata.fileName;
             metadataNet.fileNamePrint = metadataNet.fileNamePrint;
@@ -2090,7 +2101,7 @@
             metadataNet.action = actionMoveFileOrFolder;
             metadataNet.directory = metadata.directory;
             metadataNet.fileID = metadata.fileID;
-            metadataNet.directoryID = _localDirectoryID;
+            metadataNet.directoryID = metadata.directoryID;
             metadataNet.directoryIDTo = [CCCoreData getDirectoryIDFromServerUrl:serverUrlTo activeAccount:app.activeAccount];
             metadataNet.fileNamePrint = metadata.fileNamePrint;
             metadataNet.rev = metadata.rev;
@@ -3934,6 +3945,28 @@
     }
 }
 
+#pragma mark -
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Search =====
+#pragma --------------------------------------------------------------------------------------------
+
+-(void) updateSearchResultsForSearchController:(UISearchController *)searchController
+{
+    _sectionDataSource = [CCSectionDataSource new];
+        
+    [self tableViewReload];
+}
+
+- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
+{
+    [self.searchController setActive:NO];
+    
+    // forse reload
+    _dateReadDataSource = nil;
+    [self getDataSourceWithReloadTableView];
+}
+
+#pragma mark -
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Swipe Tablet -> menu =====
 #pragma --------------------------------------------------------------------------------------------
@@ -4566,12 +4599,7 @@
     
     if ((totSections < section) || (section > totSections)) {
       
-        NSString *message = [NSString stringWithFormat:@"DEBUG [0] : error section, totSections = %lu - section = %lu", (long)totSections, (long)section];
-        NSLog(@"[LOG] %@", message);
-#if DEBUG
-        UIAlertView * alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_error_", nil) message:message delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
-        [alertView show];
-#endif
+        NSLog(@"[LOG] %@", [NSString stringWithFormat:@"DEBUG [0] : error section, totSections = %lu - section = %lu", (long)totSections, (long)section]);
         return nil;
     }
     
@@ -4585,23 +4613,13 @@
         
         if ((totRows < row) || (row > totRows)) {
             
-            NSString *message = [NSString stringWithFormat:@"DEBUG [1] : error row, totRows = %lu - row = %lu [%@] [%@] [%@]", (long)totRows, (long)row, valueSection, _localDirectoryID, _localServerUrl];
-            NSLog(@"[LOG] %@", message);
-#if DEBUG
-            UIAlertView * alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_error_", nil) message:message delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
-            [alertView show];
-#endif
+            NSLog(@"[LOG] %@", [NSString stringWithFormat:@"DEBUG [1] : error row, totRows = %lu - row = %lu", (long)totRows, (long)row]);
             return nil;
         }
 
     } else {
         
         NSLog(@"[LOG] DEBUG [2] : fileIDs is NIL");
-#if DEBUG
-        UIAlertView * alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_error_", nil) message:@"DEBUG [2] : fileIDs is NIL" delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
-        [alertView show];
-#endif
-
         return nil;
     }
     
@@ -4678,7 +4696,6 @@
 {
     return [[_sectionDataSource.sectionArrayRow objectForKey:[_sectionDataSource.sections objectAtIndex:section]] count];
 }
-
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
     NSArray *sections = [_sectionDataSource.sectionArrayRow allKeys];
@@ -4687,7 +4704,7 @@
     if ([sectionTitle isKindOfClass:[NSString class]] && [sectionTitle rangeOfString:@"download"].location != NSNotFound) return 18.f;
     if ([sectionTitle isKindOfClass:[NSString class]] && [sectionTitle rangeOfString:@"upload"].location != NSNotFound) return 18.f;
     
-    if ([_directoryGroupBy isEqualToString:@"none"] && [sections count] <= 1) return 0.f;
+    if ([_directoryGroupBy isEqualToString:@"none"] && [sections count] <= 1) return 0.0f;
     
     return 20.f;
 }
