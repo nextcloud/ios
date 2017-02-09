@@ -33,10 +33,7 @@ import Foundation
 
     func renameSuccess(_ metadataNet: CCMetadataNet)
     func renameMoveFileOrFolderFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger)
-}
-
-@objc protocol CCActionsUploadDelegate  {
-
+    
     func uploadFileSuccess(_ metadataNet: CCMetadataNet, fileID: String, serverUrl: String, selector: String, selectorPost: String)
     func uploadFileFailure(_ metadataNet: CCMetadataNet, fileID: String, serverUrl: String, selector: String, message: String, errorCode: NSInteger)
 }

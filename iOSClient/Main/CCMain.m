@@ -40,7 +40,7 @@
 #define alertRename 3
 #define alertOfflineFolder 4
 
-@interface CCMain () <CCActionsDeleteDelegate, CCActionsRenameDelegate, CCActionsUploadDelegate>
+@interface CCMain () <CCActionsDeleteDelegate, CCActionsRenameDelegate>
 {
     CCMetadata *_metadataSegue;
     CCMetadata *_metadata;
@@ -1954,74 +1954,7 @@
 
 - (void)renameFile:(CCMetadata *)metadata fileName:(NSString *)fileName
 {
-    
     [[CCActions sharedInstance] renameFileOrFolder:metadata fileName:fileName delegate:self];
-    
-    /*
-    NSString *fileNameTo, *newTitleTo;
-    CCCrypto *crypto = [[CCCrypto alloc] init];
-    
-    fileNameTo = [CCUtility removeForbiddenCharacters:fileName hasServerForbiddenCharactersSupport:app.hasServerForbiddenCharactersSupport];
-    if (![fileNameTo length]) return;
-    
-    if ([metadata.fileNamePrint isEqualToString:fileNameTo]) return;
-    
-    // Plain
-    if (metadata.cryptated == NO) {
-        
-        CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
-        
-        metadataNet.action = actionMoveFileOrFolder;
-        metadataNet.fileID = metadata.fileID;
-        metadataNet.fileName = metadata.fileName;
-        metadataNet.fileNamePrint = metadata.fileNamePrint;
-        metadataNet.fileNameTo = fileNameTo;
-        metadataNet.selector = selectorRename;
-        metadataNet.selectorPost = selectorReadFolderForced;
-        metadataNet.serverUrl = _localServerUrl;
-        metadataNet.serverUrlTo = _localServerUrl;
-        
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
-        
-    } else {
-        
-        // Change only  the contenent of plist, then upload it
-        newTitleTo = [AESCrypt encrypt:fileNameTo password:[crypto getKeyPasscode:metadata.uuid]];
-        
-        if ([crypto updateTitleFilePlist:metadata.fileName title:newTitleTo directoryUser:app.directoryUser] == NO) {
-            
-            NSLog(@"[LOG] Rename cryptated error %@", fileName);
-            
-            [app messageNotification:@"_rename_" description:@"_file_not_found_reload_" visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeError];
-
-            return;
-        }
-        
-        if (metadata.directory == NO) {
-            // cripto il file fileID in temp
-            NSData *data = [NSData dataWithContentsOfFile:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID]];
-            if (data) data = [RNEncryptor encryptData:data withSettings:kRNCryptorAES256Settings password:[crypto getKeyPasscode:metadata.uuid] error:nil];
-            if (data) [data writeToFile:[NSTemporaryDirectory() stringByAppendingString:metadata.fileNameData] atomically:YES];
-        }
-        
-        CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
-        
-        metadataNet.action = actionUploadOnlyPlist;
-        metadataNet.fileName = metadata.fileName;
-        metadataNet.selectorPost = selectorReadFolderForced;
-        metadataNet.serverUrl = _localServerUrl;
-        metadataNet.session = upload_session_foreground;
-        metadataNet.taskStatus = taskStatusResume;
-        
-        if ([CCCoreData isOfflineLocalFileID:metadata.fileID activeAccount:app.activeAccount])
-            metadataNet.selectorPost = selectorAddOffline;
-        
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
-        
-        // delete file in filesystem
-        [CCCoreData deleteFile:metadata serverUrl:_localServerUrl directoryUser:app.directoryUser typeCloud:app.typeCloud activeAccount:app.activeAccount];
-    }
-    */
 }
 
 - (void)renameNote:(CCMetadata *)metadata fileName:(NSString *)fileName
