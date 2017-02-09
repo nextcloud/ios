@@ -179,24 +179,6 @@ class CCActions: NSObject {
                             
                             try dataFileEncrypted.write(to: fileUrl, options: [])
                             
-                            metadataNet.action = actionUploadOnlyPlist
-                            metadataNet.delegate = self
-                            metadataNet.fileName = metadata.fileName
-                            metadataNet.metadata = metadata
-                            metadataNet.selectorPost = selectorReadFolderForced
-                            metadataNet.serverUrl = serverUrl
-                            metadataNet.session = upload_session_foreground
-                            metadataNet.taskStatus = Int(taskStatusResume)
-
-                            if CCCoreData.isOfflineLocalFileID(metadata.fileID, activeAccount: appDelegate.activeAccount) {
-                                metadataNet.selectorPost = selectorAddOffline
-                            }
-                            
-                            appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
-
-                            // delete file in filesystem
-                            CCCoreData.deleteFile(metadata, serverUrl: serverUrl, directoryUser: appDelegate.directoryUser, typeCloud: appDelegate.typeCloud, activeAccount: appDelegate.activeAccount)
-                            
                         } catch let error {
                             print(error.localizedDescription)
                         }
@@ -209,6 +191,24 @@ class CCActions: NSObject {
                     print(error.localizedDescription)
                 }
             }
+            
+            metadataNet.action = actionUploadOnlyPlist
+            metadataNet.delegate = delegate
+            metadataNet.fileName = metadata.fileName
+            metadataNet.metadata = metadata
+            metadataNet.selectorPost = selectorReadFolderForced
+            metadataNet.serverUrl = serverUrl
+            metadataNet.session = upload_session_foreground
+            metadataNet.taskStatus = Int(taskStatusResume)
+            
+            if CCCoreData.isOfflineLocalFileID(metadata.fileID, activeAccount: appDelegate.activeAccount) {
+                metadataNet.selectorPost = selectorAddOffline
+            }
+            
+            appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
+            
+            // delete file in filesystem
+            CCCoreData.deleteFile(metadata, serverUrl: serverUrl, directoryUser: appDelegate.directoryUser, typeCloud: appDelegate.typeCloud, activeAccount: appDelegate.activeAccount)
  
         } else {
  
@@ -268,6 +268,7 @@ class CCActions: NSObject {
         metadataNet.delegate?.renameMoveFileOrFolderFailure(metadataNet, message: message as NSString, errorCode: errorCode)
     }
     
+    // - (void)uploadFileSuccess:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost
     func uploadFileSuccess(_ fileID: String, serverUrl: String, selector: String, selectorPost: String) {
         
         metadataNet.delegate?.uploadFileSuccess(fileID, serverUrl: serverUrl, selector: selector, selectorPost: selectorPost)
