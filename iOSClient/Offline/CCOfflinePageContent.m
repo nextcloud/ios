@@ -371,25 +371,26 @@
 {
     if ([_pageType isEqualToString:pageOfflineOffline]) {
         
+        NSMutableArray *metadatas = [NSMutableArray new];
+        NSArray *recordsTableMetadata ;
+        
         if (!_localServerUrl) {
             
-            dataSource = [CCCoreData getHomeOfflineActiveAccount:app.activeAccount directoryUser:app.directoryUser];
+            recordsTableMetadata = [CCCoreData getHomeOfflineActiveAccount:app.activeAccount directoryUser:app.directoryUser fieldOrder:[CCUtility getOrderSettings] ascending:[CCUtility getAscendingSettings]];
             
         } else {
             
-            NSMutableArray *metadatas = [NSMutableArray new];
-
             NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:_localServerUrl activeAccount:app.activeAccount];
-            NSArray *recordsTableMetadata = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@)", app.activeAccount, directoryID] fieldOrder:[CCUtility getOrderSettings] ascending:[CCUtility getAscendingSettings]];
-            
-            CCSectionDataSource *sectionDataSource = [CCSection creataDataSourseSectionTableMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:nil replaceDateToExifDate:NO activeAccount:app.activeAccount];
-            
-            NSArray *fileIDs = [sectionDataSource.sectionArrayRow objectForKey:@"_none_"];
-            for (NSString *fileID in fileIDs)
-                [metadatas addObject:[sectionDataSource.allRecordsDataSource objectForKey:fileID]];
-            
-            dataSource = [NSArray arrayWithArray:metadatas];
+            recordsTableMetadata = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@)", app.activeAccount, directoryID] fieldOrder:[CCUtility getOrderSettings] ascending:[CCUtility getAscendingSettings]];
         }
+        
+        CCSectionDataSource *sectionDataSource = [CCSection creataDataSourseSectionTableMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:nil replaceDateToExifDate:NO activeAccount:app.activeAccount];
+            
+        NSArray *fileIDs = [sectionDataSource.sectionArrayRow objectForKey:@"_none_"];
+        for (NSString *fileID in fileIDs)
+            [metadatas addObject:[sectionDataSource.allRecordsDataSource objectForKey:fileID]];
+            
+        dataSource = [NSArray arrayWithArray:metadatas];
     }
     
     if ([_pageType isEqualToString:pageOfflineLocal]) {

@@ -714,6 +714,13 @@
     } else return nil;
 }
 
++ (TableMetadata *)getTableMetadataWithPreficate:(NSPredicate *)predicate
+{
+    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
+    
+    return [TableMetadata MR_findFirstWithPredicate:predicate inContext:context];
+}
+
 + (NSArray *)getTableMetadataWithPredicate:(NSPredicate *)predicate context:(NSManagedObjectContext *)context
 {
     if (context == nil)
@@ -1741,11 +1748,12 @@
 #pragma mark ===== Offline =====
 #pragma --------------------------------------------------------------------------------------------
 
-+ (NSArray *)getHomeOfflineActiveAccount:(NSString *)activeAccount directoryUser:(NSString *)directoryUser
++ (NSArray *)getHomeOfflineActiveAccount:(NSString *)activeAccount directoryUser:(NSString *)directoryUser fieldOrder:(NSString *)fieldOrder ascending:(BOOL)ascending
 {
-    NSMutableArray *metadatas = [NSMutableArray new];
+    NSMutableArray *tableMetadatas = [NSMutableArray new];
     NSArray *directoriesOffline = [self getOfflineDirectoryActiveAccount:activeAccount];
     NSString *father = @"";
+    NSSortDescriptor *descriptor;
 
     // Add directory
     
@@ -1762,10 +1770,10 @@
             if (upDir && directoryID && fileName) {
             
                 NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(directoryID == %@) AND (account == %@) AND (directory == 1) AND (fileNameData == %@)", directoryID, activeAccount, fileName];
-                CCMetadata *metadata = [self getMetadataWithPreficate:predicate context:nil];
-            
-                if (metadata)
-                    [metadatas addObject:metadata];
+                TableMetadata *tableMetadata = [self getTableMetadataWithPreficate:predicate];
+                
+                if (tableMetadata)
+                    [tableMetadatas addObject:tableMetadata];
             }
         }
     }
@@ -1778,13 +1786,23 @@
     for (TableLocalFile *localFile in localFiles) {
         
         NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (fileID == %@)", activeAccount, localFile.fileID];
-        CCMetadata *metadata = [CCCoreData getMetadataWithPreficate:predicate context:nil];
+        TableMetadata *tableMetadata = [self getTableMetadataWithPreficate:predicate];
         
-        if (metadata)
-            [metadatas addObject:metadata];
+        if (tableMetadata)
+            [tableMetadatas addObject:tableMetadata];
     }
     
-    return [NSArray arrayWithArray:metadatas];    
+    // Order
+    
+    if ([fieldOrder isEqualToString:@"fileName"]) descriptor = [[NSSortDescriptor alloc] initWithKey:@"fileNamePrint" ascending:ascending selector:@selector(localizedCaseInsensitiveCompare:)];
+    
+    else if ([fieldOrder isEqualToString:@"fileDate"]) descriptor = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:ascending selector:nil];
+    
+    else if ([fieldOrder isEqualToString:@"sessionTaskIdentifier"]) descriptor = [[NSSortDescriptor alloc] initWithKey:@"sessionTaskIdentifier" ascending:ascending selector:nil];
+    
+    else descriptor = [[NSSortDescriptor alloc] initWithKey:fieldOrder ascending:ascending selector:@selector(localizedCaseInsensitiveCompare:)];
+
+    return [tableMetadatas sortedArrayUsingDescriptors:[NSArray arrayWithObjects:descriptor, nil]];//[NSArray arrayWithArray:tableMetadatas];
 }
 
 #pragma --------------------------------------------------------------------------------------------
