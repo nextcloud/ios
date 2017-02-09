@@ -68,7 +68,7 @@
 
     NSString *_fatherPermission;
 
-    UIRefreshControl *_ccRefreshControl;
+    UIRefreshControl *_refreshControl;
     UIDocumentInteractionController *_docController;
 
     CCHud *_hud;
@@ -145,11 +145,8 @@
     [self.tableView addGestureRecognizer:longPressRecognizer];
     
     // Pull-to-Refresh
-    _ccRefreshControl = [[UIRefreshControl alloc] init];
-    _ccRefreshControl.tintColor = COLOR_BRAND;
-    [_ccRefreshControl addTarget:self action:@selector(refreshControlTarget) forControlEvents:UIControlEventValueChanged];
-    [self setRefreshControl:_ccRefreshControl];
-
+    [self createRefreshControl];
+    
     // Register for 3D Touch Previewing if available
     if ([self.traitCollection respondsToSelector:@selector(forceTouchCapability)] && (self.traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable))
     {
@@ -407,6 +404,20 @@
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Graphic Window =====
 #pragma --------------------------------------------------------------------------------------------
+
+- (void)createRefreshControl
+{
+    _refreshControl = [UIRefreshControl new];
+    _refreshControl.tintColor = COLOR_BRAND;
+    [_refreshControl addTarget:self action:@selector(refreshControlTarget) forControlEvents:UIControlEventValueChanged];
+    [self setRefreshControl:_refreshControl];
+}
+
+- (void)deleteRefreshControl
+{
+    [_refreshControl endRefreshing];
+    self.refreshControl = nil;
+}
 
 - (void)refreshControlTarget
 {
@@ -1724,7 +1735,7 @@
     
     [_hud hideHud];
 
-    [_ccRefreshControl endRefreshing];
+    [_refreshControl endRefreshing];
         
     [_ImageTitleHomeCryptoCloud setUserInteractionEnabled:YES];
     
@@ -1833,7 +1844,7 @@
         [self getDataSourceWithReloadTableView:metadataNet.directoryID fileID:nil selector:metadataNet.selector];
     
         // stoprefresh
-        [_ccRefreshControl endRefreshing];
+        [_refreshControl endRefreshing];
     
         // Enable change user
         [_ImageTitleHomeCryptoCloud setUserInteractionEnabled:YES];
@@ -1852,7 +1863,7 @@
     
     if (([CCCoreData isDirectoryOutOfDate:dayForceReadFolder directoryID:_directoryID activeAccount:app.activeAccount] || forced) && _directoryID && app.activeAccount) {
         
-        if (_ccRefreshControl.isRefreshing == NO)
+        if (_refreshControl.isRefreshing == NO)
             [_hud visibleIndeterminateHud];
         
         CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
@@ -3948,17 +3959,20 @@
 -(void) updateSearchResultsForSearchController:(UISearchController *)searchController
 {
     _sectionDataSource = [CCSectionDataSource new];
-        
+    [self deleteRefreshControl];
+    
     [self tableViewReload];
 }
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
 {
     [self.searchController setActive:NO];
+    [self createRefreshControl];
     
     // forse reload
     _dateReadDataSource = nil;
     [self getDataSourceWithReloadTableView];
+    
 }
 
 #pragma mark -
