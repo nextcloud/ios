@@ -81,9 +81,9 @@
     [self.cancel setTitle:NSLocalizedString(@"_cancel_", nil)];
     [self.create setTitle:NSLocalizedString(@"_create_folder_", nil)];
 
-    if (![self.localServerUrl length]) {
+    if (![_serverUrl length]) {
         
-        self.localServerUrl = [CCUtility getHomeServerUrlActiveUrl:activeUrl typeCloud:typeCloud];
+        _serverUrl = [CCUtility getHomeServerUrlActiveUrl:activeUrl typeCloud:typeCloud];
         UIImageView *image = [[UIImageView alloc] initWithImage:[UIImage imageNamed:image_brandNavigationController]];
         [self.navigationController.navigationBar.topItem setTitleView:image];
         self.title = @"Home";
@@ -119,7 +119,7 @@
     if (buttonIndex == 1) {
         NSString *nome = [alertView textFieldAtIndex:0].text;
         if ([nome length]) {
-            nome = [NSString stringWithFormat:@"%@/%@", self.localServerUrl, [CCUtility removeForbiddenCharacters:nome hasServerForbiddenCharactersSupport:YES]];
+            nome = [NSString stringWithFormat:@"%@/%@", _serverUrl, [CCUtility removeForbiddenCharacters:nome hasServerForbiddenCharactersSupport:YES]];
         }
     }
 }
@@ -135,7 +135,7 @@
 {
     [_networkingOperationQueue cancelAllOperations];
     
-    [self.delegate move:self.localServerUrl title:self.passMetadata.fileNamePrint selectedMetadatas:self.selectedMetadatas];
+    [self.delegate move:_serverUrl title:self.passMetadata.fileNamePrint selectedMetadatas:self.selectedMetadatas];
         
     [self dismissViewControllerAnimated:YES completion:nil];
 }
@@ -305,7 +305,7 @@
                     metadataNet.downloadData = NO;
                     metadataNet.downloadPlist = YES;
                     metadataNet.selector = selectorLoadPlist;
-                    metadataNet.serverUrl = _localServerUrl;
+                    metadataNet.serverUrl = _serverUrl;
                     metadataNet.session = download_session_foreground;
                     metadataNet.taskStatus = taskStatusResume;
                     
@@ -328,7 +328,7 @@
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:activeAccount];
     
     metadataNet.action = actionReadFolder;
-    metadataNet.serverUrl = self.localServerUrl;
+    metadataNet.serverUrl = _serverUrl;
     metadataNet.selector = selectorReadFolder;
     metadataNet.date = nil;
     
@@ -370,7 +370,7 @@
     metadataNet.fileName = fileNameFolder;
     metadataNet.selector = selectorCreateFolder;
     metadataNet.selectorPost = selectorReadFolderForced;
-    metadataNet.serverUrl = _localServerUrl;
+    metadataNet.serverUrl = _serverUrl;
     
     [self addNetworkingQueue:metadataNet];
     
@@ -391,7 +391,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:self.localServerUrl activeAccount:activeAccount];
+    NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:_serverUrl activeAccount:activeAccount];
     NSPredicate *predicate;
     
     if (self.onlyClearDirectory) predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND (directory == 1) AND (cryptated == 0)", activeAccount, directoryID];
@@ -411,7 +411,7 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
     }
     
-    NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:self.localServerUrl activeAccount:activeAccount];
+    NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:_serverUrl activeAccount:activeAccount];
     
     if (self.onlyClearDirectory) predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND (directory == 1) AND (cryptated == 0)", activeAccount, directoryID];
     else predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND (directory == 1)", activeAccount, directoryID];
@@ -445,7 +445,7 @@
     NSPredicate *predicate;
 
     NSIndexPath *index = [self.tableView indexPathForSelectedRow];
-    NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:self.localServerUrl activeAccount:activeAccount];
+    NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:_serverUrl activeAccount:activeAccount];
     
     if (self.onlyClearDirectory) predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND (directory == 1) AND (cryptated == 0)", activeAccount, directoryID];
     else predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND (directory == 1)", activeAccount, directoryID];
@@ -455,7 +455,7 @@
     if (metadata.errorPasscode == NO) {
     
         // lockServerUrl
-        NSString *lockServerUrl = [CCUtility stringAppendServerUrl:self.localServerUrl addServerUrl:metadata.fileNameData];
+        NSString *lockServerUrl = [CCUtility stringAppendServerUrl:_serverUrl addServerUrl:metadata.fileNameData];
         
         // SE siamo in presenza di una directory bloccata E è attivo il block E la sessione PASSWORD Lock è senza data ALLORA chiediamo la password per procedere
         if ([CCCoreData isDirectoryLock:lockServerUrl activeAccount:activeAccount] && [[CCUtility getBlockCode] length] && controlPasscode) {
@@ -506,7 +506,7 @@
         viewController.networkingOperationQueue = _networkingOperationQueue;
 
         viewController.passMetadata = metadata;
-        viewController.localServerUrl = [CCUtility stringAppendServerUrl:self.localServerUrl addServerUrl:nomeDir];
+        viewController.serverUrl = [CCUtility stringAppendServerUrl:_serverUrl addServerUrl:nomeDir];
     
         [self.navigationController pushViewController:viewController animated:YES];
     }

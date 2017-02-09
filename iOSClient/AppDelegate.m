@@ -918,7 +918,7 @@
 - (BOOL)lockScreenManagerShouldShowLockScreen:(BKPasscodeLockScreenManager *)aManager
 {
     // ServerUrl active
-    NSString *serverUrl = self.activeMain.localServerUrl;
+    NSString *serverUrl = self.activeMain.serverUrl;
     
     // fermiamo la data della sessione
     self.sessionePasscodeLock = nil;
@@ -972,7 +972,7 @@
         [aViewController dismissViewControllerAnimated:YES completion:nil];
         
         // start session Passcode Lock
-        NSString *serverUrl = self.activeMain.localServerUrl;
+        NSString *serverUrl = self.activeMain.serverUrl;
         if ([CCCoreData isBlockZone:serverUrl activeAccount:self.activeAccount])
             self.sessionePasscodeLock = [NSDate date];
     }

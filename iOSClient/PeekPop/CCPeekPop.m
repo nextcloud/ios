@@ -104,7 +104,7 @@
 {
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
     
-    NSString *serverUrl = app.activeMain.localServerUrl;
+    NSString *serverUrl = app.activeMain.serverUrl;
     
     metadataNet.action = actionDownloadThumbnail;
     metadataNet.fileID = metadata.fileID;

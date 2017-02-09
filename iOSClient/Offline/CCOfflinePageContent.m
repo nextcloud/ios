@@ -53,13 +53,13 @@
     self.tableView.emptyDataSetSource = self;
     self.tableView.allowsMultipleSelectionDuringEditing = NO;
     
-    // calculate _localServerUrl
-    if ([self.pageType isEqualToString:pageOfflineOffline] && !_localServerUrl) {
-        _localServerUrl = nil;
+    // calculate _serverUrl
+    if ([self.pageType isEqualToString:pageOfflineOffline] && !_serverUrl) {
+        _serverUrl = nil;
     }
     
-    if ([self.pageType isEqualToString:pageOfflineLocal] && !_localServerUrl) {
-        _localServerUrl = [CCUtility getDirectoryLocal];
+    if ([self.pageType isEqualToString:pageOfflineLocal] && !_serverUrl) {
+        _serverUrl = [CCUtility getDirectoryLocal];
     }
     
     // Title
@@ -101,7 +101,7 @@
 - (BOOL)emptyDataSetShouldDisplay:(UIScrollView *)scrollView
 {
     // only for root
-    if (!_localServerUrl || [_localServerUrl isEqualToString:[CCUtility getDirectoryLocal]])
+    if (!_serverUrl || [_serverUrl isEqualToString:[CCUtility getDirectoryLocal]])
         return YES;
     else
         return NO;
@@ -193,7 +193,7 @@
         return nil;
     
     // Root
-    if (_localServerUrl == nil)
+    if (_serverUrl == nil)
         return NSLocalizedString(@"_more_", nil);
     
     // No Root
@@ -243,8 +243,8 @@
     UIImage *iconHeader;
     
     // assegnamo l'immagine anteprima se esiste, altrimenti metti quella standars
-    if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/.%@.ico", _localServerUrl, _metadata.fileNamePrint]])
-        iconHeader = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/.%@.ico", _localServerUrl, _metadata.fileNamePrint]];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/.%@.ico", _serverUrl, _metadata.fileNamePrint]])
+        iconHeader = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/.%@.ico", _serverUrl, _metadata.fileNamePrint]];
     else
         iconHeader = [UIImage imageNamed:self.metadata.iconName];
     
@@ -264,7 +264,7 @@
     }
     
     // ONLY Root Offline : Remove file/folder offline
-    if (_localServerUrl == nil && [_pageType isEqualToString:pageOfflineOffline]) {
+    if (_serverUrl == nil && [_pageType isEqualToString:pageOfflineOffline]) {
         
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_remove_offline_", nil)
                                   image:[UIImage imageNamed:image_actionSheetOffline]
@@ -314,8 +314,8 @@
                                                                
                                                                if ([_pageType isEqualToString:pageOfflineLocal]) {
                                                                    
-                                                                   NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", _localServerUrl, _metadata.fileNameData];
-                                                                   NSString *iconPath = [NSString stringWithFormat:@"%@/.%@.ico", _localServerUrl, _metadata.fileNameData];
+                                                                   NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", _serverUrl, _metadata.fileNameData];
+                                                                   NSString *iconPath = [NSString stringWithFormat:@"%@/.%@.ico", _serverUrl, _metadata.fileNameData];
                                                                    
                                                                    [[NSFileManager defaultManager] removeItemAtPath:fileNamePath error:nil];
                                                                    [[NSFileManager defaultManager] removeItemAtPath:iconPath error:nil];
@@ -361,7 +361,7 @@
         NSString *cameraFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:app.activeAccount];
         NSString *cameraFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:app.activeAccount activeUrl:app.activeUrl typeCloud:app.typeCloud];
         
-        metadata = [CCUtility insertFileSystemInMetadata:[dataSource objectAtIndex:indexPath.row] directory:_localServerUrl activeAccount:app.activeAccount cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath];
+        metadata = [CCUtility insertFileSystemInMetadata:[dataSource objectAtIndex:indexPath.row] directory:_serverUrl activeAccount:app.activeAccount cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath];
     }
     
     return metadata;
@@ -374,13 +374,13 @@
         NSMutableArray *metadatas = [NSMutableArray new];
         NSArray *recordsTableMetadata ;
         
-        if (!_localServerUrl) {
+        if (!_serverUrl) {
             
             recordsTableMetadata = [CCCoreData getHomeOfflineActiveAccount:app.activeAccount directoryUser:app.directoryUser fieldOrder:[CCUtility getOrderSettings] ascending:[CCUtility getAscendingSettings]];
             
         } else {
             
-            NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:_localServerUrl activeAccount:app.activeAccount];
+            NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:_serverUrl activeAccount:app.activeAccount];
             recordsTableMetadata = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@)", app.activeAccount, directoryID] fieldOrder:[CCUtility getOrderSettings] ascending:[CCUtility getAscendingSettings]];
         }
         
@@ -395,7 +395,7 @@
     
     if ([_pageType isEqualToString:pageOfflineLocal]) {
         
-        NSArray *subpaths = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:_localServerUrl error:nil];
+        NSArray *subpaths = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:_serverUrl error:nil];
         NSMutableArray *metadatas = [NSMutableArray new];
         
         for (NSString *subpath in subpaths)
@@ -455,16 +455,16 @@
         NSString *cameraFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:app.activeAccount];
         NSString *cameraFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:app.activeAccount activeUrl:app.activeUrl typeCloud:app.typeCloud];
         
-        metadata = [CCUtility insertFileSystemInMetadata:[dataSource objectAtIndex:indexPath.row] directory:_localServerUrl activeAccount:app.activeAccount cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath];
+        metadata = [CCUtility insertFileSystemInMetadata:[dataSource objectAtIndex:indexPath.row] directory:_serverUrl activeAccount:app.activeAccount cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath];
         
-        cell.fileImageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/.%@.ico", _localServerUrl, metadata.fileNamePrint]];
+        cell.fileImageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/.%@.ico", _serverUrl, metadata.fileNamePrint]];
         
         if (!cell.fileImageView.image) {
             
-            UIImage *icon = [CCGraphics createNewImageFrom:metadata.fileID directoryUser:_localServerUrl fileNameTo:metadata.fileID fileNamePrint:metadata.fileNamePrint size:@"m" imageForUpload:NO typeFile:metadata.typeFile writePreview:NO optimizedFileName:[CCUtility getOptimizedPhoto]];
+            UIImage *icon = [CCGraphics createNewImageFrom:metadata.fileID directoryUser:_serverUrl fileNameTo:metadata.fileID fileNamePrint:metadata.fileNamePrint size:@"m" imageForUpload:NO typeFile:metadata.typeFile writePreview:NO optimizedFileName:[CCUtility getOptimizedPhoto]];
             
             if (icon) {
-                [CCGraphics saveIcoWithFileID:metadata.fileNamePrint image:icon writeToFile:[NSString stringWithFormat:@"%@/.%@.ico", _localServerUrl, metadata.fileNamePrint] copy:NO move:NO fromPath:nil toPath:nil];
+                [CCGraphics saveIcoWithFileID:metadata.fileNamePrint image:icon writeToFile:[NSString stringWithFormat:@"%@/.%@.ico", _serverUrl, metadata.fileNamePrint] copy:NO move:NO fromPath:nil toPath:nil];
                 cell.fileImageView.image = icon;
             }
         }
@@ -557,16 +557,16 @@
     
     NSString *serverUrl;
     
-    if ([_pageType isEqualToString:pageOfflineOffline] && !_localServerUrl) {
+    if ([_pageType isEqualToString:pageOfflineOffline] && !_serverUrl) {
     
         serverUrl = [CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:app.activeAccount];
         
     } else {
         
-        serverUrl = _localServerUrl;
+        serverUrl = _serverUrl;
     }
         
-    vc.localServerUrl = [CCUtility stringAppendServerUrl:serverUrl addServerUrl:_metadata.fileNameData];
+    vc.serverUrl = [CCUtility stringAppendServerUrl:serverUrl addServerUrl:_metadata.fileNameData];
     vc.pageType = _pageType;
     vc.titleViewControl = _metadata.fileNamePrint;
     
@@ -586,29 +586,29 @@
         isLocal = YES;
     
     if ([metadata.model isEqualToString:@"cartadicredito"])
-        viewController = [[CCCartaDiCredito alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid rev:metadata.rev fileID:metadata.fileID modelReadOnly:true isLocal:isLocal serverUrl:_localServerUrl];
+        viewController = [[CCCartaDiCredito alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid rev:metadata.rev fileID:metadata.fileID modelReadOnly:true isLocal:isLocal serverUrl:_serverUrl];
     
     if ([metadata.model isEqualToString:@"bancomat"])
-        viewController = [[CCBancomat alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid rev:metadata.rev fileID:metadata.fileID modelReadOnly:true isLocal:isLocal serverUrl:_localServerUrl];
+        viewController = [[CCBancomat alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid rev:metadata.rev fileID:metadata.fileID modelReadOnly:true isLocal:isLocal serverUrl:_serverUrl];
     
     if ([metadata.model isEqualToString:@"contocorrente"])
-        viewController = [[CCContoCorrente alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid rev:metadata.rev fileID:metadata.fileID modelReadOnly:true isLocal:isLocal serverUrl:_localServerUrl];
+        viewController = [[CCContoCorrente alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid rev:metadata.rev fileID:metadata.fileID modelReadOnly:true isLocal:isLocal serverUrl:_serverUrl];
     
     if ([metadata.model isEqualToString:@"accountweb"])
-        viewController = [[CCAccountWeb alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid rev:metadata.rev fileID:metadata.fileID modelReadOnly:true isLocal:isLocal serverUrl:_localServerUrl];
+        viewController = [[CCAccountWeb alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid rev:metadata.rev fileID:metadata.fileID modelReadOnly:true isLocal:isLocal serverUrl:_serverUrl];
     
     if ([metadata.model isEqualToString:@"patenteguida"])
-        viewController = [[CCPatenteGuida alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid rev:metadata.rev fileID:metadata.fileID modelReadOnly:true isLocal:isLocal serverUrl:_localServerUrl];
+        viewController = [[CCPatenteGuida alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid rev:metadata.rev fileID:metadata.fileID modelReadOnly:true isLocal:isLocal serverUrl:_serverUrl];
     
     if ([metadata.model isEqualToString:@"cartaidentita"])
-        viewController = [[CCCartaIdentita alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid rev:metadata.rev fileID:metadata.fileID modelReadOnly:true isLocal:isLocal serverUrl:_localServerUrl];
+        viewController = [[CCCartaIdentita alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid rev:metadata.rev fileID:metadata.fileID modelReadOnly:true isLocal:isLocal serverUrl:_serverUrl];
     
     if ([metadata.model isEqualToString:@"passaporto"])
-        viewController = [[CCPassaporto alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid rev:metadata.rev fileID:metadata.fileID modelReadOnly:true isLocal:isLocal serverUrl:_localServerUrl];
+        viewController = [[CCPassaporto alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid rev:metadata.rev fileID:metadata.fileID modelReadOnly:true isLocal:isLocal serverUrl:_serverUrl];
     
     if ([metadata.model isEqualToString:@"note"]) {
         
-        viewController = [[CCNote alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid rev:metadata.rev fileID:metadata.fileID modelReadOnly:true isLocal:isLocal serverUrl:_localServerUrl];
+        viewController = [[CCNote alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid rev:metadata.rev fileID:metadata.fileID modelReadOnly:true isLocal:isLocal serverUrl:_serverUrl];
         
         UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
         
@@ -626,7 +626,7 @@
 
 - (void)openWith:(CCMetadata *)metadata
 {
-    NSURL *url = [NSURL fileURLWithPath:[NSString stringWithFormat:@"%@/%@", _localServerUrl, metadata.fileNamePrint]];
+    NSURL *url = [NSURL fileURLWithPath:[NSString stringWithFormat:@"%@/%@", _serverUrl, metadata.fileNamePrint]];
     
     self.docController = [UIDocumentInteractionController interactionControllerWithURL:url];
     
@@ -683,7 +683,7 @@
         for (NSString *fileName in dataSource) {
             
             CCMetadata *metadata = [CCMetadata new];
-            metadata = [CCUtility insertFileSystemInMetadata:fileName directory:_localServerUrl activeAccount:app.activeAccount cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath];
+            metadata = [CCUtility insertFileSystemInMetadata:fileName directory:_serverUrl activeAccount:app.activeAccount cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath];
             
             if ([metadata.typeFile isEqualToString:metadataTypeFile_image] || [metadata.typeFile isEqualToString:metadataTypeFile_video])
                 [allRecordsDataSourceImagesVideos addObject:metadata];

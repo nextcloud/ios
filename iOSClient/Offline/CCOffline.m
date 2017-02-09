@@ -169,7 +169,7 @@
 {
     CCOfflinePageContent *vc = [self.pageViewController.viewControllers lastObject];
     
-    NSString *serverUrl = vc.localServerUrl;
+    NSString *serverUrl = vc.serverUrl;
     _currentPageType = vc.pageType;
 
     if ([_currentPageType isEqualToString:pageOfflineOffline]) {

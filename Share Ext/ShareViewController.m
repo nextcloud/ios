@@ -76,7 +76,7 @@
             
             // load
             
-            _localServerUrl = [CCUtility getServerUrlShareExt];
+            _serverUrl = [CCUtility getServerUrlShareExt];
             
             _destinyFolderButton.title = [NSString stringWithFormat:NSLocalizedString(@"_destiny_folder_", nil), [CCUtility getTitleServerUrlShareExt]];
             
@@ -88,8 +88,8 @@
             
             [CCUtility setActiveAccountShareExt:self.activeAccount];
 
-            _localServerUrl  = [CCUtility getHomeServerUrlActiveUrl:self.activeUrl typeCloud:self.typeCloud];
-            [CCUtility setServerUrlShareExt:self.localServerUrl];
+            _serverUrl  = [CCUtility getHomeServerUrlActiveUrl:self.activeUrl typeCloud:self.typeCloud];
+            [CCUtility setServerUrlShareExt:_serverUrl];
 
             _destinyFolderButton.title = [NSString stringWithFormat:NSLocalizedString(@"_destiny_folder_", nil), NSLocalizedString(@"_home_", nil)];
             [CCUtility setTitleServerUrlShareExt:NSLocalizedString(@"_home_", nil)];
@@ -196,7 +196,7 @@
 - (void)move:(NSString *)serverUrlTo title:(NSString *)title selectedMetadatas:(NSArray *)selectedMetadatas
 {
     if (serverUrlTo)
-        self.localServerUrl = serverUrlTo;
+        _serverUrl = serverUrlTo;
     
     if (title) {
         self.destinyFolderButton.title = [NSString stringWithFormat:NSLocalizedString(@"_destiny_folder_", nil), title];
@@ -207,7 +207,7 @@
     }
     
     [CCUtility setActiveAccountShareExt:self.activeAccount];
-    [CCUtility setServerUrlShareExt:self.localServerUrl];
+    [CCUtility setServerUrlShareExt:_serverUrl];
 }
 
 - (IBAction)destinyFolderButtonTapped:(UIBarButtonItem *)sender
@@ -239,7 +239,7 @@
         metadataNet.cryptated = _localCryptated;
         metadataNet.fileName = fileName;
         metadataNet.fileNamePrint = fileName;
-        metadataNet.serverUrl = _localServerUrl;
+        metadataNet.serverUrl = _serverUrl;
         metadataNet.session = upload_session_foreground;
         metadataNet.taskStatus = taskStatusResume;
         

@@ -52,7 +52,6 @@
 @property (nonatomic, strong) NSString *typeCloud;
 @property (nonatomic, strong) NSString *serverUrl;
 
-@property (nonatomic ,strong) NSString *localServerUrl;
 @property BOOL localCryptated;
 
 @property (nonatomic, retain) NSMutableArray *filesName;

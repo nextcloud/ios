@@ -56,9 +56,8 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
     var activeAccessToken: String?
     var directoryUser: String?
     var typeCloud: String?
-    var serverUrl: String?
     
-    var localServerUrl: String?
+    var serverUrl: String?
     var thumbnailInLoading = [String: IndexPath]()
     var destinationURL: URL?
     
@@ -102,9 +101,9 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
             typeCloud = record.typeCloud!
             directoryUser = CCUtility.getDirectoryActiveUser(activeUser, activeUrl: activeUrl)
             
-            if (localServerUrl == nil) {
+            if (self.serverUrl == nil) {
             
-                localServerUrl = CCUtility.getHomeServerUrlActiveUrl(activeUrl, typeCloud: typeCloud)
+                self.serverUrl = CCUtility.getHomeServerUrlActiveUrl(activeUrl, typeCloud: typeCloud)
                                 
             } else {
                 
@@ -230,7 +229,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         let metadataNet = CCMetadataNet.init(account: activeAccount)!
 
         metadataNet.action = actionReadFolder
-        metadataNet.serverUrl = localServerUrl
+        metadataNet.serverUrl = self.serverUrl
         metadataNet.selector = selectorReadFolder
         
         let ocNetworking : OCnetworking = OCnetworking.init(delegate: self, metadataNet: metadataNet, withUser: activeUser, withPassword: activePassword, withUrl: activeUrl, withTypeCloud: typeCloud, activityIndicator: false)
@@ -303,7 +302,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
                 metadataNet.downloadData = false
                 metadataNet.downloadPlist = true
                 metadataNet.selector = selectorLoadPlist
-                metadataNet.serverUrl = localServerUrl
+                metadataNet.serverUrl = self.serverUrl
                 metadataNet.session = download_session_foreground
                 metadataNet.taskStatus = Int(taskStatusResume)
                 
@@ -349,12 +348,12 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         
         metadataNet.action = actionDownloadThumbnail
         metadataNet.fileID = metadata.fileID
-        metadataNet.fileName = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: localServerUrl, activeUrl: activeUrl, typeCloud: typeCloud)
+        metadataNet.fileName = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: self.serverUrl, activeUrl: activeUrl, typeCloud: typeCloud)
         metadataNet.fileNameLocal = metadata.fileID;
         metadataNet.fileNamePrint = metadata.fileNamePrint;
         metadataNet.options = "m";
         metadataNet.selector = selectorDownloadThumbnail;
-        metadataNet.serverUrl = localServerUrl
+        metadataNet.serverUrl = self.serverUrl
         
         let ocNetworking : OCnetworking = OCnetworking.init(delegate: self, metadataNet: metadataNet, withUser: activeUser, withPassword: activePassword, withUrl: activeUrl, withTypeCloud: typeCloud, activityIndicator: false)
         networkingOperationQueue.addOperation(ocNetworking)
@@ -528,7 +527,7 @@ extension DocumentPickerViewController {
                     metadataNet.cryptated = self!.parameterEncrypted!
                     metadataNet.fileName = fileName
                     metadataNet.fileNamePrint = fileName
-                    metadataNet.serverUrl = self!.localServerUrl
+                    metadataNet.serverUrl = self!.serverUrl
                     metadataNet.session = upload_session_foreground
                     metadataNet.taskStatus = Int(taskStatusResume)
                     
@@ -717,7 +716,7 @@ extension DocumentPickerViewController: UITableViewDataSource {
         cell.fileName.text = metadata.fileNamePrint
         
         // Status Image View
-        let lockServerUrl = CCUtility.stringAppendServerUrl(localServerUrl!, addServerUrl: metadata.fileNameData)
+        let lockServerUrl = CCUtility.stringAppendServerUrl(self.serverUrl!, addServerUrl: metadata.fileNameData)
         
         var passcode: String? = CCUtility.getBlockCode()
         if passcode == nil {
@@ -750,7 +749,7 @@ extension DocumentPickerViewController: UITableViewDataSource {
             
             if FileManager.default.fileExists(atPath: "\(directoryUser!)/\(self.metadata?.fileID!)") {
                 
-                downloadFileSuccess(self.metadata?.fileID!, serverUrl: localServerUrl!, selector: selectorLoadFileView, selectorPost: nil)
+                downloadFileSuccess(self.metadata?.fileID!, serverUrl: self.serverUrl!, selector: selectorLoadFileView, selectorPost: nil)
                 
             } else {
             
@@ -762,7 +761,7 @@ extension DocumentPickerViewController: UITableViewDataSource {
                 metadataNet.downloadPlist = false
                 metadataNet.metadata = metadata
                 metadataNet.selector = selectorLoadFileView
-                metadataNet.serverUrl = localServerUrl
+                metadataNet.serverUrl = self.serverUrl
                 metadataNet.session = download_session_foreground
                 metadataNet.taskStatus = Int(taskStatusResume)
             
@@ -782,7 +781,7 @@ extension DocumentPickerViewController: UITableViewDataSource {
                 dir = CCUtility.trasformedFileNamePlist(inCrypto: self.metadata?.fileName)
             }
             
-            serverUrlPush = CCUtility.stringAppendServerUrl(localServerUrl!, addServerUrl: dir)
+            serverUrlPush = CCUtility.stringAppendServerUrl(self.serverUrl!, addServerUrl: dir)
 
             var passcode: String? = CCUtility.getBlockCode()
             if passcode == nil {
@@ -810,7 +809,7 @@ extension DocumentPickerViewController: UITableViewDataSource {
         nextViewController.parameterProviderIdentifier = parameterProviderIdentifier
         nextViewController.parameterPasscodeCorrect = parameterPasscodeCorrect
         nextViewController.parameterEncrypted = parameterEncrypted
-        nextViewController.localServerUrl = serverUrlPush
+        nextViewController.serverUrl = serverUrlPush
         nextViewController.titleFolder = self.metadata?.fileNamePrint
         
         self.navigationController?.pushViewController(nextViewController, animated: true)

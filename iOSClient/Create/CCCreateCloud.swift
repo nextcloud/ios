@@ -199,8 +199,8 @@ class CreateMenuAdd: NSObject {
 
 class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
     
-    var localServerUrl : String = ""
-    var titleLocalServerUrl : String?
+    var serverUrl : String = ""
+    var titleServerUrl : String?
     var assets: NSMutableArray = []
     var cryptated : Bool = false
     var session : String = ""
@@ -208,17 +208,17 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     let sectionColor: UIColor = UIColor(colorLiteralRed: 239.0/255.0, green: 239.0/255.0, blue: 244.0/255.0, alpha: 1)
     
-    convenience init(_ titleLocalServerUrl : String?, localServerUrl : String, assets : NSMutableArray, cryptated : Bool, session : String) {
+    convenience init(_ titleServerUrl : String?, serverUrl : String, assets : NSMutableArray, cryptated : Bool, session : String) {
         
         self.init()
         
-        if titleLocalServerUrl == nil || titleLocalServerUrl?.isEmpty == true {
-            self.titleLocalServerUrl = "/"
+        if titleServerUrl == nil || titleServerUrl?.isEmpty == true {
+            self.titleServerUrl = "/"
         } else {
-            self.titleLocalServerUrl = titleLocalServerUrl
+            self.titleServerUrl = titleServerUrl
         }
         
-        self.localServerUrl = localServerUrl
+        self.serverUrl = serverUrl
         self.assets = assets
         self.cryptated = cryptated
         self.session = session
@@ -241,7 +241,7 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         section = XLFormSectionDescriptor.formSection()
         form.addFormSection(section)
         
-        row = XLFormRowDescriptor(tag: "ButtonDestinationFolder", rowType: XLFormRowDescriptorTypeButton, title: self.titleLocalServerUrl)
+        row = XLFormRowDescriptor(tag: "ButtonDestinationFolder", rowType: XLFormRowDescriptorTypeButton, title: self.titleServerUrl)
         row.cellConfig.setObject(UIImage(named: image_settingsManagePhotos)!, forKey: "imageView.image" as NSCopying)
         row.action.formSelector = #selector(changeDestinationFolder(_:))
         section.addFormRow(row)
@@ -374,7 +374,7 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         self.form.delegate = nil
         
         let buttonDestinationFolder : XLFormRowDescriptor  = self.form.formRow(withTag: "ButtonDestinationFolder")!
-        buttonDestinationFolder.title = self.titleLocalServerUrl
+        buttonDestinationFolder.title = self.titleServerUrl
         
         let maskFileName : XLFormRowDescriptor = self.form.formRow(withTag: "maskFileName")!
         let previewFileName : XLFormRowDescriptor  = self.form.formRow(withTag: "previewFileName")!
@@ -429,15 +429,15 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
 
     func move(_ serverUrlTo: String!, title: String!, selectedMetadatas: [Any]!) {
         
-        self.localServerUrl = serverUrlTo
+        self.serverUrl = serverUrlTo
         
         if title == nil {
             
-            self.titleLocalServerUrl = "/"
+            self.titleServerUrl = "/"
             
         } else {
             
-            self.titleLocalServerUrl = title
+            self.titleServerUrl = title
         }
         
         self.reloadForm()
@@ -452,11 +452,11 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
             var useSubFolder : Bool = false
             
             if (useFolderPhotoRow.value! as AnyObject).boolValue == true {
-                self.localServerUrl = CCCoreData.getCameraUploadFolderNamePathActiveAccount(self.appDelegate.activeAccount, activeUrl: self.appDelegate.activeUrl, typeCloud: self.appDelegate.typeCloud)
+                self.serverUrl = CCCoreData.getCameraUploadFolderNamePathActiveAccount(self.appDelegate.activeAccount, activeUrl: self.appDelegate.activeUrl, typeCloud: self.appDelegate.typeCloud)
                 useSubFolder = (useSubFolderRow.value! as AnyObject).boolValue
             }
             
-            self.appDelegate.activeMain.uploadFileAsset(self.assets, serverUrl: self.localServerUrl, cryptated: self.cryptated, useSubFolder: useSubFolder, session: self.session)
+            self.appDelegate.activeMain.uploadFileAsset(self.assets, serverUrl: self.serverUrl, cryptated: self.cryptated, useSubFolder: useSubFolder, session: self.session)
         })
     }
 
