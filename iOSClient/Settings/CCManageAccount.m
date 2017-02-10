@@ -134,7 +134,7 @@
     [self deselectFormRow:sender];
     
     [app cancelAllOperations];
-    [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
+    [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:k_taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
     
     CCLoginNCOC *loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
     
@@ -149,7 +149,7 @@
     [self deselectFormRow:sender];
     
     [app cancelAllOperations];
-    [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
+    [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:k_taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
 
     CCLoginNCOC *loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginOwnCloud"];
     
@@ -182,7 +182,7 @@
     [self deselectFormRow:sender];
     
     [app cancelAllOperations];
-    [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
+    [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:k_taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
     
     if ([app.typeCloud isEqualToString:typeCloudNextcloud] || [app.typeCloud isEqualToString:typeCloudOwnCloud]) {
     
@@ -220,7 +220,7 @@
         
         [app cancelAllOperations];
         
-        [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
+        [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:k_taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
 
         [self deleteAccount:accountNow];
         
@@ -277,7 +277,7 @@
 
     // removed  this -> ?????
     [app cancelAllOperations];
-    [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
+    [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:k_taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
     // removed  this -> ?????
     
     // change account

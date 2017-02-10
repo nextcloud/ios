@@ -126,14 +126,14 @@
     if (![[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileName]]) return nil;
     
     // only viedo / image
-    if (![typeFile isEqualToString:metadataTypeFile_image] && ![typeFile isEqualToString:metadataTypeFile_video]) return nil;
+    if (![typeFile isEqualToString: k_metadataTypeFile_image] && ![typeFile isEqualToString: k_metadataTypeFile_video]) return nil;
     
-    if ([typeFile isEqualToString:metadataTypeFile_image]) {
+    if ([typeFile isEqualToString: k_metadataTypeFile_image]) {
         
         originalImage = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@", directoryUser, fileName]];
     }
     
-    if ([typeFile isEqualToString:metadataTypeFile_video]) {
+    if ([typeFile isEqualToString: k_metadataTypeFile_video]) {
         
         // create symbolik link for read video file in temp
         [[NSFileManager defaultManager] removeItemAtPath:[NSTemporaryDirectory() stringByAppendingString:@"tempvideo.mp4"] error:nil];
@@ -187,7 +187,7 @@
     }
     
     // Optimized photos resolution
-    if ([typeFile isEqualToString:metadataTypeFile_image] && [ext isEqualToString:@"gif"] == NO && optimizedFileName && scaleImage && (originalImage.size.width > width || originalImage.size.height > height)) {
+    if ([typeFile isEqualToString: k_metadataTypeFile_image] && [ext isEqualToString:@"gif"] == NO && optimizedFileName && scaleImage && (originalImage.size.width > width || originalImage.size.height > height)) {
         
         // conversion scale proportion
         if (height > width) {

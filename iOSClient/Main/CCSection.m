@@ -94,7 +94,7 @@
             [copyRecords insertObject:metadata atIndex:0];
         } else {
             
-            if ([metadata.typeFile isEqualToString:metadataTypeFile_directory] && directoryOnTop) {
+            if ([metadata.typeFile isEqualToString: k_metadataTypeFile_directory] && directoryOnTop) {
                 [copyRecords insertObject:metadata atIndex:numDirectory++];
             } else {
                 [copyRecords addObject:metadata];
@@ -174,8 +174,8 @@
         }
         
         // Directory at Top
-        if ([obj1 isKindOfClass:[NSString class]] && [obj1 containsString:metadataTypeFile_directory]) return NSOrderedAscending;
-        if ([obj2 isKindOfClass:[NSString class]] && [obj2 containsString:metadataTypeFile_directory]) return NSOrderedDescending;
+        if ([obj1 isKindOfClass:[NSString class]] && [obj1 containsString: k_metadataTypeFile_directory]) return NSOrderedAscending;
+        if ([obj2 isKindOfClass:[NSString class]] && [obj2 containsString: k_metadataTypeFile_directory]) return NSOrderedDescending;
         
         if (ascending) return [obj1 compare:obj2];
         else return [obj2 compare:obj1];
@@ -204,9 +204,9 @@
                 [sectionDataSource.allRecordsDataSource setObject:metadata forKey:metadata.fileID];
                 [sectionDataSource.fileIDIndexPath setObject:[NSIndexPath indexPathForRow:indexRow inSection:indexSection] forKey:metadata.fileID];
                 
-                if ([metadata.typeFile isEqualToString:metadataTypeFile_image])
+                if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image])
                     sectionDataSource.image++;
-                if ([metadata.typeFile isEqualToString:metadataTypeFile_video])
+                if ([metadata.typeFile isEqualToString: k_metadataTypeFile_video])
                     sectionDataSource.video++;
                 if (metadata.directory)
                     sectionDataSource.directories++;

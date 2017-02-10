@@ -304,7 +304,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
                 metadataNet.selector = selectorLoadPlist
                 metadataNet.serverUrl = self.serverUrl
                 metadataNet.session = download_session_foreground
-                metadataNet.taskStatus = Int(taskStatusResume)
+                metadataNet.taskStatus = Int(k_taskStatusResume)
                 
                 let ocNetworking : OCnetworking = OCnetworking.init(delegate: self, metadataNet: metadataNet, withUser: activeUser, withPassword: activePassword, withUrl: activeUrl, withTypeCloud: typeCloud, activityIndicator: false)
                 networkingOperationQueue.addOperation(ocNetworking)
@@ -529,7 +529,7 @@ extension DocumentPickerViewController {
                     metadataNet.fileNamePrint = fileName
                     metadataNet.serverUrl = self!.serverUrl
                     metadataNet.session = upload_session_foreground
-                    metadataNet.taskStatus = Int(taskStatusResume)
+                    metadataNet.taskStatus = Int(k_taskStatusResume)
                     
                     let ocNetworking : OCnetworking = OCnetworking.init(delegate: self!, metadataNet: metadataNet, withUser: self!.activeUser, withPassword: self!.activePassword, withUrl: self!.activeUrl, withTypeCloud: self!.typeCloud, activityIndicator: false)
                     self!.networkingOperationQueue.addOperation(ocNetworking)
@@ -763,7 +763,7 @@ extension DocumentPickerViewController: UITableViewDataSource {
                 metadataNet.selector = selectorLoadFileView
                 metadataNet.serverUrl = self.serverUrl
                 metadataNet.session = download_session_foreground
-                metadataNet.taskStatus = Int(taskStatusResume)
+                metadataNet.taskStatus = Int(k_taskStatusResume)
             
                 let ocNetworking : OCnetworking = OCnetworking.init(delegate: self, metadataNet: metadataNet, withUser: activeUser, withPassword: activePassword, withUrl: activeUrl, withTypeCloud: typeCloud, activityIndicator: false)
                 networkingOperationQueue.addOperation(ocNetworking)

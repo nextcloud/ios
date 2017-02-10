@@ -175,18 +175,18 @@ extern NSString *const BKPasscodeKeychainServiceName;
 #define networkingSessionNotification   @"networkingSessionNotification"
 
 // TaskIdentifier
-#define taskIdentifierDone -1
-#define taskIdentifierStop -2
-#define taskIdentifierError -9999
-#define taskIdentifierNULL 9999
+#define k_taskIdentifierDone            -1
+#define k_taskIdentifierStop            -2
+#define k_taskIdentifierError           -9999
+#define k_taskIdentifierNULL            9999
 
 // TaskStatus
-#define taskStatusNone 0
-#define taskStatusCancel -1
-#define taskStatusResume -2
-#define taskStatusSuspend -3
+#define k_taskStatusNone                0
+#define k_taskStatusCancel              -1
+#define k_taskStatusResume              -2
+#define k_taskStatusSuspend             -3
 
-#define timerVerifySession 15.0
+#define k_timerVerifySession            15.0
 
 // OperationQueue
 #define netQueueName                    @"it.twsweb.cryptocloud.queue"
@@ -195,14 +195,14 @@ extern NSString *const BKPasscodeKeychainServiceName;
 #define netQueueUploadName              @"it.twsweb.cryptocloud.queueUpload"
 #define netQueueUploadWWanName          @"it.twsweb.cryptocloud.queueUploadWWan"
 
-#define maxConcurrentOperation 10
-#define maxConcurrentOperationDownloadUpload 10
+#define k_maxConcurrentOperation                10
+#define k_maxConcurrentOperationDownloadUpload  10
 
 // Error
-#define CCErrorTaskNil -9999
-#define CCErrorTaskDownloadNotFound -9998
-#define CCErrorFileUploadNotFound -9997
-#define CCErrorInternalError -9996
+#define k_CCErrorTaskNil                        -9999
+#define k_CCErrorTaskDownloadNotFound           -9998
+#define k_CCErrorFileUploadNotFound             -9997
+#define k_CCErrorInternalError                  -9996
 
 // Metadata ed ID
 #define uploadSessionID @"ID_UPLOAD_"
@@ -278,40 +278,40 @@ extern NSString *const BKPasscodeKeychainServiceName;
 #define actionUploadOnlyPlist           @"uploadOnlyPlist"
 
 // Metadata : FileType
-#define metadataTypeFile_audio          @"audio"
-#define metadataTypeFile_compress       @"compress"
-#define metadataTypeFile_directory      @"directory"
-#define metadataTypeFile_document       @"document"
-#define metadataTypeFile_image          @"image"
-#define metadataTypeFile_template       @"template"
-#define metadataTypeFile_unknown        @"unknow"
-#define metadataTypeFile_video          @"video"
+#define k_metadataTypeFile_audio            @"audio"
+#define k_metadataTypeFile_compress         @"compress"
+#define k_metadataTypeFile_directory        @"directory"
+#define k_metadataTypeFile_document         @"document"
+#define k_metadataTypeFile_image            @"image"
+#define k_metadataTypeFile_template         @"template"
+#define k_metadataTypeFile_unknown          @"unknow"
+#define k_metadataTypeFile_video            @"video"
 
 // Metadata : Type
-#define metadataType_file               @"file"
-#define metadataType_model              @"model"
-#define metadataType_local              @"local"
+#define k_metadataType_file                 @"file"
+#define k_metadataType_model                @"model"
+#define k_metadataType_local                @"local"
 
 // Metadata : Filename Type
-#define metadataTypeFilenamePlain       0
-#define metadataTypeFilenamePlist       1
-#define metadataTypeFilenameCrypto      2
+#define k_metadataTypeFilenamePlain         0
+#define k_metadataTypeFilenamePlist         1
+#define k_metadataTypeFilenameCrypto        2
 
-#define TabBarApplicationIndexFile      0
-#define TabBarApplicationIndexOffline   1
-#define TabBarApplicationIndexHide      2
-#define TabBarApplicationIndexPhotos    3
-#define TabBarApplicationIndexSettings  4
+#define k_tabBarApplicationIndexFile        0
+#define k_tabBarApplicationIndexOffline     1
+#define k_tabBarApplicationIndexHide        2
+#define k_tabBarApplicationIndexPhotos      3
+#define k_tabBarApplicationIndexSettings    4
 
-#define keyFileNameMask                 @"fileNameMask"
-#define keyFileNameMaskAutomaticPhotos  @"fileNameMaskAutomaticPhotos"
+#define k_keyFileNameMask                   @"fileNameMask"
+#define k_keyFileNameMaskAutomaticPhotos    @"fileNameMaskAutomaticPhotos"
 
 // Type of page Offline
-#define pageOfflineOffline              @"Offline"
-#define pageOfflineLocal                @"Local"
+#define k_pageOfflineOffline                @"Offline"
+#define k_pageOfflineLocal                  @"Local"
 
 // Search
-#define k_minCharsSearch                3
+#define k_minCharsSearch                    3
 
 @interface CCAspect : NSObject
 

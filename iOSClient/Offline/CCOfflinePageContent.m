@@ -57,11 +57,11 @@
     self.tableView.allowsMultipleSelectionDuringEditing = NO;
     
     // calculate _serverUrl
-    if ([self.pageType isEqualToString:pageOfflineOffline] && !_serverUrl) {
+    if ([self.pageType isEqualToString:k_pageOfflineOffline] && !_serverUrl) {
         _serverUrl = nil;
     }
     
-    if ([self.pageType isEqualToString:pageOfflineLocal] && !_serverUrl) {
+    if ([self.pageType isEqualToString:k_pageOfflineLocal] && !_serverUrl) {
         _serverUrl = [CCUtility getDirectoryLocal];
     }
     
@@ -127,10 +127,10 @@
 
 - (UIImage *)imageForEmptyDataSet:(UIScrollView *)scrollView
 {
-    if ([self.pageType isEqualToString:pageOfflineOffline])
+    if ([self.pageType isEqualToString:k_pageOfflineOffline])
         return [UIImage imageNamed:image_brandOffline];
     
-    if ([self.pageType isEqualToString:pageOfflineLocal])
+    if ([self.pageType isEqualToString:k_pageOfflineLocal])
         return [UIImage imageNamed:image_brandLocal];
     
     return nil;
@@ -140,10 +140,10 @@
 {
     NSString *text;
     
-    if ([self.pageType isEqualToString:pageOfflineOffline])
+    if ([self.pageType isEqualToString:k_pageOfflineOffline])
         text = NSLocalizedString(@"_no_files_uploaded_", nil);
     
-    if ([self.pageType isEqualToString:pageOfflineLocal])
+    if ([self.pageType isEqualToString:k_pageOfflineLocal])
         text = NSLocalizedString(@"_no_files_uploaded_", nil);
     
     NSDictionary *attributes = @{NSFontAttributeName:[UIFont boldSystemFontOfSize:20.0f], NSForegroundColorAttributeName:COLOR_BRAND};
@@ -155,10 +155,10 @@
 {
     NSString *text;
     
-    if ([self.pageType isEqualToString:pageOfflineOffline])
+    if ([self.pageType isEqualToString:k_pageOfflineOffline])
         text = NSLocalizedString(@"_tutorial_offline_view_", nil);
         
-    if ([self.pageType isEqualToString:pageOfflineLocal])
+    if ([self.pageType isEqualToString:k_pageOfflineLocal])
         text = NSLocalizedString(@"_tutorial_local_view_", nil);
     
     NSMutableParagraphStyle *paragraph = [NSMutableParagraphStyle new];
@@ -206,7 +206,7 @@
 - (NSString *)tableView:(UITableView *)tableView titleForSwipeAccessoryButtonForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     // No Local
-    if ([_pageType isEqualToString:pageOfflineLocal])
+    if ([_pageType isEqualToString:k_pageOfflineLocal])
         return nil;
     
     // Root
@@ -281,7 +281,7 @@
     }
     
     // ONLY Root Offline : Remove file/folder offline
-    if (_serverUrl == nil && [_pageType isEqualToString:pageOfflineOffline]) {
+    if (_serverUrl == nil && [_pageType isEqualToString:k_pageOfflineOffline]) {
         
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_remove_offline_", nil)
                                   image:[UIImage imageNamed:image_actionSheetOffline]
@@ -329,12 +329,12 @@
                                                              style:UIAlertActionStyleDestructive
                                                            handler:^(UIAlertAction *action) {
                                                                
-                                                               if ([_pageType isEqualToString:pageOfflineOffline]) {
+                                                               if ([_pageType isEqualToString:k_pageOfflineOffline]) {
                                                                    
                                                                    [[CCActions sharedInstance] deleteFileOrFolder:_metadata delegate:self];
                                                                }
                                                                
-                                                               if ([_pageType isEqualToString:pageOfflineLocal]) {
+                                                               if ([_pageType isEqualToString:k_pageOfflineLocal]) {
                                                                    
                                                                    NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", _serverUrl, _metadata.fileNameData];
                                                                    NSString *iconPath = [NSString stringWithFormat:@"%@/.%@.ico", _serverUrl, _metadata.fileNameData];
@@ -372,13 +372,13 @@
 {
     CCMetadata *metadata;
     
-    if ([_pageType isEqualToString:pageOfflineOffline]) {
+    if ([_pageType isEqualToString:k_pageOfflineOffline]) {
         
         NSManagedObject *record = [dataSource objectAtIndex:indexPath.row];
         metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", [record valueForKey:@"fileID"], app.activeAccount] context:nil];
     }
     
-    if ([_pageType isEqualToString:pageOfflineLocal]) {
+    if ([_pageType isEqualToString:k_pageOfflineLocal]) {
         
         NSString *cameraFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:app.activeAccount];
         NSString *cameraFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:app.activeAccount activeUrl:app.activeUrl typeCloud:app.typeCloud];
@@ -391,7 +391,7 @@
 
 - (void)reloadTable
 {
-    if ([_pageType isEqualToString:pageOfflineOffline]) {
+    if ([_pageType isEqualToString:k_pageOfflineOffline]) {
         
         NSMutableArray *metadatas = [NSMutableArray new];
         NSArray *recordsTableMetadata ;
@@ -415,7 +415,7 @@
         dataSource = [NSArray arrayWithArray:metadatas];
     }
     
-    if ([_pageType isEqualToString:pageOfflineLocal]) {
+    if ([_pageType isEqualToString:k_pageOfflineLocal]) {
         
         NSArray *subpaths = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:_serverUrl error:nil];
         NSMutableArray *metadatas = [NSMutableArray new];
@@ -460,7 +460,7 @@
     cell.selectedBackgroundView = selectionColor;
     
     // i am in Offline
-    if ([_pageType isEqualToString:pageOfflineOffline]) {
+    if ([_pageType isEqualToString:k_pageOfflineOffline]) {
         
         metadata = [dataSource objectAtIndex:indexPath.row];
         cell.fileImageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]];
@@ -472,7 +472,7 @@
     }
     
     // i am in local
-    if ([_pageType isEqualToString:pageOfflineLocal]) {
+    if ([_pageType isEqualToString:k_pageOfflineLocal]) {
         
         NSString *cameraFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:app.activeAccount];
         NSString *cameraFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:app.activeAccount activeUrl:app.activeUrl typeCloud:app.typeCloud];
@@ -519,7 +519,7 @@
         cell.fileImageView.image = [UIImage imageNamed:metadata.iconName];
     
     // it's encrypted ???
-    if (metadata.cryptated && [metadata.type isEqualToString:metadataType_model] == NO)
+    if (metadata.cryptated && [metadata.type isEqualToString: k_metadataType_model] == NO)
         cell.statusImageView.image = [UIImage imageNamed:image_lock];
     
     // it's in download mode
@@ -537,10 +537,10 @@
         NSString *date = [CCUtility dateDiff:metadata.date];
         NSString *length = [CCUtility transformedSize:metadata.size];
         
-        if ([metadata.type isEqualToString:metadataType_model])
+        if ([metadata.type isEqualToString: k_metadataType_model])
             cell.labelInfoFile.text = [NSString stringWithFormat:@"%@", date];
         
-        if ([metadata.type isEqualToString:metadataType_file] || [metadata.type isEqualToString:metadataType_local])
+        if ([metadata.type isEqualToString: k_metadataType_file] || [metadata.type isEqualToString: k_metadataType_local])
             cell.labelInfoFile.text = [NSString stringWithFormat:@"%@, %@", date, length];
         
         cell.accessoryType = UITableViewCellAccessoryNone;
@@ -560,13 +560,13 @@
     // if is in download [do not touch]
     if ([_metadata.session length] > 0 && [_metadata.session rangeOfString:@"download"].location != NSNotFound) return;
     
-    if (([_metadata.type isEqualToString:metadataType_file] || [_metadata.type isEqualToString:metadataType_local]) && _metadata.directory == NO) {
+    if (([_metadata.type isEqualToString: k_metadataType_file] || [_metadata.type isEqualToString: k_metadataType_local]) && _metadata.directory == NO) {
         
         if ([self shouldPerformSegue])
             [self performSegueWithIdentifier:@"segueDetail" sender:self];
     }
     
-    if ([self.metadata.type isEqualToString:metadataType_model])
+    if ([self.metadata.type isEqualToString: k_metadataType_model])
         [self openModel:self.metadata];
     
     if (_metadata.directory)
@@ -579,7 +579,7 @@
     
     NSString *serverUrl;
     
-    if ([_pageType isEqualToString:pageOfflineOffline] && !_serverUrl) {
+    if ([_pageType isEqualToString:k_pageOfflineOffline] && !_serverUrl) {
     
         serverUrl = [CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:app.activeAccount];
         
@@ -604,7 +604,7 @@
     UIViewController *viewController;
     BOOL isLocal = NO;
     
-    if ([self.pageType isEqualToString:pageOfflineLocal])
+    if ([self.pageType isEqualToString:k_pageOfflineLocal])
         isLocal = YES;
     
     if ([metadata.model isEqualToString:@"cartadicredito"])
@@ -689,15 +689,15 @@
     
     NSMutableArray *allRecordsDataSourceImagesVideos = [NSMutableArray new];
     
-    if ([self.pageType isEqualToString:pageOfflineOffline]) {
+    if ([self.pageType isEqualToString:k_pageOfflineOffline]) {
         
         for (CCMetadata *metadata in dataSource) {
-            if ([metadata.typeFile isEqualToString:metadataTypeFile_image] || [metadata.typeFile isEqualToString:metadataTypeFile_video])
+            if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image] || [metadata.typeFile isEqualToString: k_metadataTypeFile_video])
                 [allRecordsDataSourceImagesVideos addObject:metadata];
         }
     }
     
-    if ([self.pageType isEqualToString:pageOfflineLocal]) {
+    if ([self.pageType isEqualToString:k_pageOfflineLocal]) {
         
         NSString *cameraFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:app.activeAccount];
         NSString *cameraFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:app.activeAccount activeUrl:app.activeUrl typeCloud:app.typeCloud];
@@ -707,7 +707,7 @@
             CCMetadata *metadata = [CCMetadata new];
             metadata = [CCUtility insertFileSystemInMetadata:fileName directory:_serverUrl activeAccount:app.activeAccount cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath];
             
-            if ([metadata.typeFile isEqualToString:metadataTypeFile_image] || [metadata.typeFile isEqualToString:metadataTypeFile_video])
+            if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image] || [metadata.typeFile isEqualToString: k_metadataTypeFile_video])
                 [allRecordsDataSourceImagesVideos addObject:metadata];
         }
         

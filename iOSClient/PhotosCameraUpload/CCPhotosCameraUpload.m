@@ -335,13 +335,13 @@
         
         if ([[NSFileManager defaultManager] fileExistsAtPath:fileNamePath]) {
             
-            if ([metadata.typeFile isEqualToString:metadataTypeFile_image]) {
+            if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image]) {
                 
                 NSData *data = [NSData dataWithData:UIImageJPEGRepresentation([UIImage imageWithContentsOfFile:fileNamePath], 0.9)];
                 [dataToShare addObject:data];
             }
             
-            if ([metadata.typeFile isEqualToString:metadataTypeFile_video]) {
+            if ([metadata.typeFile isEqualToString: k_metadataTypeFile_video]) {
                 
                 [dataToShare addObject:[NSURL fileURLWithPath:fileNamePath]];
             }
@@ -722,7 +722,7 @@
     NSMutableArray *allRecordsDataSourceImagesVideos = [[NSMutableArray alloc] init];
     for (NSString *fileID in _sectionDataSource.allFileID) {
         CCMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:fileID];
-        if ([metadata.typeFile isEqualToString:metadataTypeFile_image] || [metadata.typeFile isEqualToString:metadataTypeFile_video])
+        if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image] || [metadata.typeFile isEqualToString: k_metadataTypeFile_video])
             [allRecordsDataSourceImagesVideos addObject:metadata];
     }
     
@@ -1184,7 +1184,7 @@
         metadataNet.fileName = fileName;
         metadataNet.serverUrl = serverUrl;
         metadataNet.session = session;
-        metadataNet.taskStatus = taskStatusResume;
+        metadataNet.taskStatus = k_taskStatusResume;
         
         [CCCoreData addTableAutomaticUpload:metadataNet account:app.activeAccount context:nil];
         

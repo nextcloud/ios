@@ -81,16 +81,16 @@
     else
         data = [[NSMutableDictionary alloc] init];
     
-    [data setObject:[NSNumber numberWithBool:directory] forKey:@"dir"];
+    [data setObject: [NSNumber numberWithBool:directory] forKey:@"dir"];
     if ([hint length] > 0) [data setObject:[AESCrypt encrypt:hint password:UUID_SIM] forKey:@"hint"];
     if ([icon length] > 0) [data setObject:icon forKey:@"icon"];
-    [data setObject:[NSString stringWithFormat:@"%li", (unsigned long)len] forKey:@"len"];
-    [data setObject:nameCurrentDevice forKey:@"namecurrentdevice"];
-    [data setObject:versionProtocolPlist forKey:@"protocol"];
-    [data setObject:title forKey:@"title"];
-    [data setObject:metadataType_file forKey:@"type"];
-    [data setObject:uuid forKey:@"uuid"];
-    [data setObject:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"] forKey:@"version"];
+    [data setObject: [NSString stringWithFormat:@"%li", (unsigned long)len] forKey:@"len"];
+    [data setObject: nameCurrentDevice forKey:@"namecurrentdevice"];
+    [data setObject: versionProtocolPlist forKey:@"protocol"];
+    [data setObject: title forKey:@"title"];
+    [data setObject: k_metadataType_file forKey:@"type"];
+    [data setObject: uuid forKey:@"uuid"];
+    [data setObject: [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"] forKey:@"version"];
     
     return [data writeToFile:fileNamePath atomically:YES];
 }
@@ -154,15 +154,15 @@
     else
         data = [[NSMutableDictionary alloc] init];
     
-    [data setObject:[NSNumber numberWithBool:true] forKey:@"dir"];
-    if ([hint length] > 0) [data setObject:[AESCrypt encrypt:hint password:UUID_SIM] forKey:@"hint"];
-    [data setObject:@"0" forKey:@"len"];
-    [data setObject:metadata.nameCurrentDevice forKey:@"namecurrentdevice"];
-    [data setObject:versionProtocolPlist forKey:@"protocol"];
-    [data setObject:title forKey:@"title"];
-    [data setObject:metadataType_file forKey:@"type"];
-    [data setObject:metadata.uuid forKey:@"uuid"];
-    [data setObject:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"] forKey:@"version"];
+    [data setObject: [NSNumber numberWithBool:true] forKey:@"dir"];
+    if ([hint length] > 0) [data setObject: [AESCrypt encrypt:hint password:UUID_SIM] forKey:@"hint"];
+    [data setObject: @"0" forKey:@"len"];
+    [data setObject: metadata.nameCurrentDevice forKey:@"namecurrentdevice"];
+    [data setObject: versionProtocolPlist forKey:@"protocol"];
+    [data setObject: title forKey:@"title"];
+    [data setObject: k_metadataType_file forKey:@"type"];
+    [data setObject: metadata.uuid forKey:@"uuid"];
+    [data setObject: [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"] forKey:@"version"];
     
     if ([data writeToFile:fileNamePath atomically:YES]) return fileName;
     else return nil;
@@ -185,16 +185,16 @@
         [dictionary setObject:encrypted forKey:key];
     }
     
-    [data setObject:dictionary forKey:@"field"];
-    if ([hint length] > 0) [data setObject:[AESCrypt encrypt:hint password:UUID_SIM] forKey:@"hint"];
-    [data setObject:icon forKey:@"icon"];
-    [data setObject:model forKey:@"model"];
-    [data setObject:[CCUtility getNameCurrentDevice] forKey:@"namecurrentdevice"];
-    [data setObject:versionProtocolPlist forKey:@"protocol"];
-    [data setObject:title forKey:@"title"];
-    [data setObject:metadataType_model forKey:@"type"];
-    [data setObject:uuid forKey:@"uuid"];
-    [data setObject:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"] forKey:@"version"];
+    [data setObject: dictionary forKey:@"field"];
+    if ([hint length] > 0) [data setObject: [AESCrypt encrypt:hint password:UUID_SIM] forKey:@"hint"];
+    [data setObject: icon forKey:@"icon"];
+    [data setObject: model forKey:@"model"];
+    [data setObject: [CCUtility getNameCurrentDevice] forKey:@"namecurrentdevice"];
+    [data setObject: versionProtocolPlist forKey:@"protocol"];
+    [data setObject: title forKey:@"title"];
+    [data setObject: k_metadataType_model forKey:@"type"];
+    [data setObject: uuid forKey:@"uuid"];
+    [data setObject: [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"] forKey:@"version"];
 
     BOOL ritorno = [data writeToFile:fileNamePath atomically:YES];
     

@@ -74,7 +74,7 @@
         
         NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:_metadata.account];
         
-        [[CCNetworking sharedNetworking] downloadFile:_metadata serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorOpenIn selectorPost:nil session:download_session taskStatus:taskStatusResume delegate:self.delegate];
+        [[CCNetworking sharedNetworking] downloadFile:_metadata serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorOpenIn selectorPost:nil session:download_session taskStatus:k_taskStatusResume delegate:self.delegate];
     }];
     
     return @[previewAction1];

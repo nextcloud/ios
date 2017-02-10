@@ -27,6 +27,6 @@
 #import "CCManageLocation.h"
 #import "CCPhotosCameraUpload.h"
 
-@interface CCManageCameraUpload : XLFormViewController <CCMoveDelegate>
+@interface CCManageCameraUpload : XLFormViewController
 
 @end

@@ -227,7 +227,7 @@
         
         OCnetworking *operation = [[OCnetworking alloc] initWithDelegate:self metadataNet:metadataNet withUser:activeUser withPassword:activePassword withUrl:activeUrl withTypeCloud:typeCloud activityIndicator:NO];
         
-        _networkingOperationQueue.maxConcurrentOperationCount = maxConcurrentOperation;
+        _networkingOperationQueue.maxConcurrentOperationCount = k_maxConcurrentOperation;
         [_networkingOperationQueue addOperation:operation];
     }
 }
@@ -307,7 +307,7 @@
                     metadataNet.selector = selectorLoadPlist;
                     metadataNet.serverUrl = _serverUrl;
                     metadataNet.session = download_session_foreground;
-                    metadataNet.taskStatus = taskStatusResume;
+                    metadataNet.taskStatus = k_taskStatusResume;
                     
                     [self addNetworkingQueue:metadataNet];
                 }

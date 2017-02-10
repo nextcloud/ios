@@ -154,7 +154,7 @@
             metadataNet.pathFolder = NSTemporaryDirectory();
             metadataNet.rev = self.rev;
             metadataNet.session = upload_session_foreground;
-            metadataNet.taskStatus = taskStatusResume;
+            metadataNet.taskStatus = k_taskStatusResume;
             
             // 2
             [app addNetworkingOperationQueue:app.netQueue delegate:self.delegate metadataNet:metadataNet];

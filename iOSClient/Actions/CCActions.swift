@@ -204,7 +204,7 @@ class CCActions: NSObject {
             metadataNet.selectorPost = selectorReadFolderForced
             metadataNet.serverUrl = serverUrl
             metadataNet.session = upload_session_foreground
-            metadataNet.taskStatus = Int(taskStatusResume)
+            metadataNet.taskStatus = Int(k_taskStatusResume)
             
             if CCCoreData.isOfflineLocalFileID(metadata.fileID, activeAccount: appDelegate.activeAccount) {
                 metadataNet.selectorPost = selectorAddOffline

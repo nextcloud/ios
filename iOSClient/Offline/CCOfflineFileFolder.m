@@ -225,10 +225,10 @@
                 NSInteger typeFilename = [CCUtility getTypeFileName:metadata.fileName];
             
                 // reject crypto
-                if (typeFilename == metadataTypeFilenameCrypto) continue;
+                if (typeFilename == k_metadataTypeFilenameCrypto) continue;
             
                 // Verify if the plist is complited
-                if (typeFilename == metadataTypeFilenamePlist) {
+                if (typeFilename == k_metadataTypeFilenamePlist) {
                 
                     BOOL isCryptoComplete = NO;
                     NSString *fileNameCrypto = [CCUtility trasformedFileNamePlistInCrypto:metadata.fileName];
@@ -371,14 +371,14 @@
         
         if (changeRev) {
             
-            if ([metadata.type isEqualToString:metadataType_file]) {
+            if ([metadata.type isEqualToString: k_metadataType_file]) {
                 
                 // remove file and ico
                 [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID] error:nil];
                 [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID] error:nil];
             }
             
-            if ([metadata.type isEqualToString:metadataType_model]) {
+            if ([metadata.type isEqualToString: k_metadataType_model]) {
                 
                 // remove model
                 [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileName] error:nil];
@@ -416,12 +416,12 @@
             if (isOffline)
                 selectorPost = selectorAddOffline;
         
-            if ([metadata.type isEqualToString:metadataType_file]) {
+            if ([metadata.type isEqualToString: k_metadataType_file]) {
                 downloadData = YES;
                 selector = selectorDownloadOffline;
             }
         
-            if ([metadata.type isEqualToString:metadataType_model]) {
+            if ([metadata.type isEqualToString: k_metadataType_model]) {
                 downloadPlist = YES;
                 selector = selectorLoadPlist;
             }
@@ -438,7 +438,7 @@
             metadataNet.selectorPost = selectorPost;
             metadataNet.serverUrl = serverUrl;
             metadataNet.session = download_session;
-            metadataNet.taskStatus = taskStatusResume;
+            metadataNet.taskStatus = k_taskStatusResume;
 
             [app addNetworkingOperationQueue:app.netQueueDownload delegate:app.activeMain metadataNet:metadataNet];
         }

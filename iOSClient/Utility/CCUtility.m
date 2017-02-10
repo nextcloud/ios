@@ -788,17 +788,17 @@
     metadata.protocol = @"";
     metadata.rev = itemDto.etag;
     metadata.size = itemDto.size;
-    metadata.sessionTaskIdentifier = taskIdentifierDone;
-    metadata.sessionTaskIdentifierPlist = taskIdentifierDone;
+    metadata.sessionTaskIdentifier = k_taskIdentifierDone;
+    metadata.sessionTaskIdentifierPlist = k_taskIdentifierDone;
     metadata.title = @"";
-    metadata.type = metadataType_file;
+    metadata.type = k_metadataType_file;
     metadata.typeFile = @"";
     metadata.typeCloud = typeCloud;
     metadata.uuid = [CCUtility getUUID];
     
     switch ([self getTypeFileName:metadata.fileName]) {
             
-        case metadataTypeFilenamePlist:
+        case k_metadataTypeFilenamePlist:
             
             metadata.cryptated = YES;            
             metadata.fileNamePrint = NSLocalizedString(@"_download_plist_", nil);
@@ -807,7 +807,7 @@
             
             break;
             
-        case metadataTypeFilenameCrypto:
+        case k_metadataTypeFilenameCrypto:
             
             metadata.cryptated = YES;
             metadata.fileNamePrint = @"";
@@ -822,9 +822,9 @@
 
 + (void)insertTypeFileIconName:(CCMetadata *)metadata directory:(NSString *)directory cameraFolderName:(NSString *)cameraFolderName cameraFolderPath:(NSString *)cameraFolderPath
 {
-    if ([metadata.type isEqualToString:metadataType_model]) {
+    if ([metadata.type isEqualToString: k_metadataType_model]) {
         
-        metadata.typeFile = metadataTypeFile_template;
+        metadata.typeFile = k_metadataTypeFile_template;
         
     } else if (!metadata.directory) {
         
@@ -845,38 +845,38 @@
         }
         // if wrong code, icon protect
         if (metadata.errorPasscode) {
-            metadata.typeFile = metadataTypeFile_unknown;
+            metadata.typeFile = k_metadataTypeFile_unknown;
             metadata.iconName = image_plist;
             return;
         }
         // Type compress
         if (UTTypeConformsTo(fileUTI, kUTTypeZipArchive) && [(__bridge NSString *)fileUTI containsString:@"org.openxmlformats"] == NO && [(__bridge NSString *)fileUTI containsString:@"oasis"] == NO) {
-            metadata.typeFile = metadataTypeFile_compress;
+            metadata.typeFile = k_metadataTypeFile_compress;
             if (metadata.cryptated) metadata.iconName = image_typeFileCompress;
             else metadata.iconName = image_typeFileCompress;
         }
         // Type image
         else if (UTTypeConformsTo(fileUTI, kUTTypeImage)) {
-            metadata.typeFile = metadataTypeFile_image;
+            metadata.typeFile = k_metadataTypeFile_image;
             if (metadata.cryptated) metadata.iconName = image_photocrypto;
             else metadata.iconName = image_photo;
         }
         // Type Video
         else if (UTTypeConformsTo(fileUTI, kUTTypeMovie)) {
-            metadata.typeFile = metadataTypeFile_video;
+            metadata.typeFile = k_metadataTypeFile_video;
             if (metadata.cryptated) metadata.iconName = image_moviecrypto;
             else metadata.iconName = image_movie;
         }
         // Type Audio
         else if (UTTypeConformsTo(fileUTI, kUTTypeAudio)) {
-            metadata.typeFile = metadataTypeFile_audio;
+            metadata.typeFile = k_metadataTypeFile_audio;
             if (metadata.cryptated) metadata.iconName = image_audiocrypto;
             else metadata.iconName = image_audio;
         }
         // Type Document [DOC] [PDF] [XLS] [TXT] (RTF = "public.rtf" - ODT = "org.oasis-open.opendocument.text") [MD]
         else if (UTTypeConformsTo(fileUTI, kUTTypeContent) || [ext isEqualToString:@"MD"]) {
             
-            metadata.typeFile = metadataTypeFile_document;
+            metadata.typeFile = k_metadataTypeFile_document;
             if (metadata.cryptated) metadata.iconName = image_documentcrypto;
             else metadata.iconName = image_document;
             
@@ -910,7 +910,7 @@
         } else {
             
             // Type unknown
-            metadata.typeFile = metadataTypeFile_unknown;
+            metadata.typeFile = k_metadataTypeFile_unknown;
             
             // icon uTorrent
             if ([(__bridge NSString *)fileExtension isEqualToString:@"torrent"]) {
@@ -926,7 +926,7 @@
         
     } else {
         // icon directory
-        metadata.typeFile = metadataTypeFile_directory;
+        metadata.typeFile = k_metadataTypeFile_directory;
         
         if (metadata.cryptated) metadata.iconName = image_foldercrypto;
         else metadata.iconName = image_folder;
@@ -1053,7 +1053,7 @@
     metadata.protocol = versionProtocolPlist;
     metadata.size = [attributes[NSFileSize] longValue];
     metadata.thumbnailExists = false;
-    metadata.type = metadataType_local;
+    metadata.type = k_metadataType_local;
     metadata.title = @"";
     metadata.uuid = [CCUtility getUUID];
     
@@ -1129,23 +1129,23 @@
             
         case 70:
             
-            if ([[fileName substringWithRange:NSMakeRange(64, 6)] isEqualToString:@"crypto"]) return metadataTypeFilenameCrypto;
-            else return metadataTypeFilenamePlain;
+            if ([[fileName substringWithRange:NSMakeRange(64, 6)] isEqualToString:@"crypto"]) return k_metadataTypeFilenameCrypto;
+            else return k_metadataTypeFilenamePlain;
             break;
             
         case 76:
             
-            if ([[fileName substringWithRange:NSMakeRange(64, 12)] isEqualToString:@"crypto.plist"]) return metadataTypeFilenamePlist;
-            else return metadataTypeFilenamePlain;
+            if ([[fileName substringWithRange:NSMakeRange(64, 12)] isEqualToString:@"crypto.plist"]) return k_metadataTypeFilenamePlist;
+            else return k_metadataTypeFilenamePlain;
             break;
             
         default:
             
-            return metadataTypeFilenamePlain;
+            return k_metadataTypeFilenamePlain;
             break;
     }
     
-    return metadataTypeFilenamePlain;
+    return k_metadataTypeFilenamePlain;
 }
 
 #pragma --------------------------------------------------------------------------------------------

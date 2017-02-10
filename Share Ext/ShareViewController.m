@@ -241,7 +241,7 @@
         metadataNet.fileNamePrint = fileName;
         metadataNet.serverUrl = _serverUrl;
         metadataNet.session = upload_session_foreground;
-        metadataNet.taskStatus = taskStatusResume;
+        metadataNet.taskStatus = k_taskStatusResume;
         
         [self addNetworkingQueue:metadataNet];
         
@@ -450,8 +450,8 @@
         if (fileSize > 0 && ((UTTypeConformsTo(fileUTI, kUTTypeImage)) || (UTTypeConformsTo(fileUTI, kUTTypeMovie)))) {
             
             NSString *typeFile;
-            if (UTTypeConformsTo(fileUTI, kUTTypeImage)) typeFile = metadataTypeFile_image;
-            if (UTTypeConformsTo(fileUTI, kUTTypeMovie)) typeFile = metadataTypeFile_video;
+            if (UTTypeConformsTo(fileUTI, kUTTypeImage)) typeFile = k_metadataTypeFile_image;
+            if (UTTypeConformsTo(fileUTI, kUTTypeMovie)) typeFile = k_metadataTypeFile_video;
             
             [CCGraphics createNewImageFrom:file directoryUser:self.directoryUser fileNameTo:file fileNamePrint:nil size:@"m" imageForUpload:NO typeFile:typeFile writePreview:YES optimizedFileName:NO];
         }

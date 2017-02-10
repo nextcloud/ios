@@ -272,7 +272,7 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         
         row = XLFormRowDescriptor(tag: "maskFileName", rowType: XLFormRowDescriptorTypeAccount, title: NSLocalizedString("_filename_", comment: ""))
         
-        let fileNameMask : String = CCUtility.getFileNameMask(keyFileNameMask)
+        let fileNameMask : String = CCUtility.getFileNameMask(k_keyFileNameMask)
         if fileNameMask.characters.count > 0 {
             row.value = fileNameMask
         }
@@ -478,20 +478,20 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
             if valueRenameTrimming.characters.count > 0 {
                 
                 self.form.delegate = nil
-                CCUtility.setFileNameMask(valueRenameTrimming, key: keyFileNameMask)
+                CCUtility.setFileNameMask(valueRenameTrimming, key: k_keyFileNameMask)
                 self.form.delegate = self
                 
-                returnString = CCUtility.createFileName(from: assets[0] as! PHAsset, key: keyFileNameMask)
+                returnString = CCUtility.createFileName(from: assets[0] as! PHAsset, key: k_keyFileNameMask)
                 
             } else {
                 
-                CCUtility.setFileNameMask("", key: keyFileNameMask)
+                CCUtility.setFileNameMask("", key: k_keyFileNameMask)
                 returnString = CCUtility.createFileName(from: assets[0] as! PHAsset, key: nil)
             }
             
         } else {
             
-            CCUtility.setFileNameMask("", key: keyFileNameMask)
+            CCUtility.setFileNameMask("", key: k_keyFileNameMask)
             returnString = CCUtility.createFileName(from: assets[0] as! PHAsset, key: nil)
         }
         

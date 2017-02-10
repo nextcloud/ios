@@ -60,8 +60,8 @@
     [super viewDidLoad];
     
     // Create data model
-    _pageType = @[pageOfflineOffline, pageOfflineLocal];
-    _currentPageType = pageOfflineOffline;
+    _pageType = @[k_pageOfflineOffline, k_pageOfflineLocal];
+    _currentPageType = k_pageOfflineOffline;
     self.title = NSLocalizedString(@"_offline_", nil);
     
     // Create page view controller
@@ -170,24 +170,24 @@
     NSString *serverUrl = vc.serverUrl;
     _currentPageType = vc.pageType;
 
-    if ([_currentPageType isEqualToString:pageOfflineOffline]) {
+    if ([_currentPageType isEqualToString:k_pageOfflineOffline]) {
         if (serverUrl)
             self.title = NSLocalizedString(@"_offline_", nil);
         else
             self.title = NSLocalizedString(@"_offline_", nil);
         
-        UITabBarItem *item = [self.tabBarController.tabBar.items objectAtIndex:TabBarApplicationIndexOffline];
+        UITabBarItem *item = [self.tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexOffline];
         item.selectedImage = [UIImage imageNamed:@"tabBarOffline"];
         item.image = [UIImage imageNamed:@"tabBarOffline"];
     }
     
-    if ([_currentPageType isEqualToString:pageOfflineLocal]) {
+    if ([_currentPageType isEqualToString:k_pageOfflineLocal]) {
         if ([serverUrl isEqualToString:[CCUtility getDirectoryLocal]])
             self.title = NSLocalizedString(@"_local_storage_", nil);
         else
             self.title = NSLocalizedString(@"_local_storage_", nil);
         
-        UITabBarItem *item = [self.tabBarController.tabBar.items objectAtIndex:TabBarApplicationIndexOffline];
+        UITabBarItem *item = [self.tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexOffline];
         item.selectedImage = [UIImage imageNamed:@"tabBarLocal"];
         item.image = [UIImage imageNamed:@"tabBarLocal"];
     }

@@ -211,13 +211,13 @@
         });
     }
     
-    if ([self.metadataDetail.typeFile isEqualToString:metadataTypeFile_image] || [self.metadataDetail.typeFile isEqualToString:metadataTypeFile_video]) {
+    if ([self.metadataDetail.typeFile isEqualToString: k_metadataTypeFile_image] || [self.metadataDetail.typeFile isEqualToString: k_metadataTypeFile_video]) {
         
         self.edgesForExtendedLayout = UIRectEdgeAll;
         [self viewImage];
     }
     
-    if ([self.metadataDetail.typeFile isEqualToString:metadataTypeFile_audio]) {
+    if ([self.metadataDetail.typeFile isEqualToString: k_metadataTypeFile_audio]) {
         
         self.edgesForExtendedLayout = UIRectEdgeBottom;
         [self viewAudio];
@@ -225,7 +225,7 @@
         [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar hidden:NO];
     }
     
-    if ([self.metadataDetail.typeFile isEqualToString:metadataTypeFile_document]) {
+    if ([self.metadataDetail.typeFile isEqualToString: k_metadataTypeFile_document]) {
         
         NSString *ext = [[self.metadataDetail.fileNamePrint pathExtension] lowercaseString];
         
@@ -397,7 +397,7 @@
             [self.photos addObject:[MWPhoto photoWithImage:[UIImage imageNamed:image_filePreviewDownload]]];
             
             MWPhoto *thumb = [MWPhoto photoWithImage:[UIImage imageNamed:image_filePreviewDownload]];
-            if ([metadata.typeFile isEqualToString:metadataTypeFile_video]) thumb.isVideo = YES;
+            if ([metadata.typeFile isEqualToString: k_metadataTypeFile_video]) thumb.isVideo = YES;
             [self.thumbs addObject:thumb];
         }
         
@@ -488,7 +488,7 @@
         
         if (metadata.fileID) {
             
-            if ([metadata.typeFile isEqualToString:metadataTypeFile_image]) {
+            if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image]) {
                 
                 NSString *fileImage = [NSString stringWithFormat:@"%@/%@", directory, metadata.fileID];
                 NSString *ext = [CCUtility getExtension:metadata.fileNamePrint];
@@ -522,7 +522,7 @@
                 }
             }
             
-            if ([metadata.typeFile isEqualToString:metadataTypeFile_video]) {
+            if ([metadata.typeFile isEqualToString: k_metadataTypeFile_video]) {
                 
                 if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", directory, metadata.fileID]]) {
                     
@@ -636,7 +636,7 @@
             if (image) {
                 
                 MWPhoto *thumb = [MWPhoto photoWithImage:image];
-                if ([metadata.typeFile isEqualToString:metadataTypeFile_video]) thumb.isVideo = YES;
+                if ([metadata.typeFile isEqualToString: k_metadataTypeFile_video]) thumb.isVideo = YES;
                 [self.thumbs replaceObjectAtIndex:index withObject:thumb];
             }
         }
@@ -765,7 +765,7 @@
 {
     NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account];
     
-    [[CCNetworking sharedNetworking] downloadFile:metadata serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorLoadViewImage selectorPost:nil session:download_session taskStatus:taskStatusResume delegate:nil];
+    [[CCNetworking sharedNetworking] downloadFile:metadata serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorLoadViewImage selectorPost:nil session:download_session taskStatus:k_taskStatusResume delegate:nil];
 }
 
 - (void)insertGeocoderLocation:(NSNotification *)notification
@@ -960,7 +960,7 @@
     // if we are not in browserPhoto and it's removed photo/video in preview then "< Back"
     if (!self.photoBrowser && [self.metadataDetail.fileID isEqualToString:metadataNet.metadata.fileID]) {
         
-        if ([metadataNet.metadata.typeFile isEqualToString:metadataTypeFile_audio])
+        if ([metadataNet.metadata.typeFile isEqualToString: k_metadataTypeFile_audio])
             [app.player.mediaPlayer stop];
         
         NSArray *viewsToRemove = [self.view subviews];
