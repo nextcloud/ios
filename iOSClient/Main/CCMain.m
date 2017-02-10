@@ -117,7 +117,6 @@
     [super viewDidLoad];
     
     // init object
-    //_actions = [CCActions new];
     _metadata = [[CCMetadata alloc] init];
     _metadataSegue = [[CCMetadata alloc] init];
     _hud = [[CCHud alloc] initWithView:[[[UIApplication sharedApplication] delegate] window]];
@@ -185,20 +184,15 @@
     // Search
     
     self.definesPresentationContext = YES;
-    
     self.searchController.searchResultsUpdater = self;
     self.searchController.dimsBackgroundDuringPresentation = NO;
     self.tableView.tableHeaderView = self.searchController.searchBar;
-    
+    self.searchController.searchBar.barTintColor = COLOR_SEPARATOR_TABLE;
+    [self.searchController.searchBar sizeToFit];
+
     if (_isRoot) self.searchController.searchBar.placeholder = NSLocalizedString(@"_search_all_folders_",nil);
     else self.searchController.searchBar.placeholder = NSLocalizedString(@"_search_this_folder_",nil);
-    
     //self.searchController.searchBar.scopeButtonTitles = @[NSLocalizedString(@"_search_this_folder_",nil),NSLocalizedString(@"_search_all_folders_",nil)];
-    self.searchController.searchBar.barTintColor = COLOR_SEPARATOR_TABLE;
-    
-    //self.searchController.hidesNavigationBarDuringPresentation = NO;
-    
-    [self.searchController.searchBar sizeToFit];    
 }
 
 // Apparirà
