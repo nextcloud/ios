@@ -266,6 +266,7 @@ extern NSString *const BKPasscodeKeychainServiceName;
 #define actionReadFile                  @"readFile"
 #define actionReadFolder                @"readFolder"
 #define actionReadShareServer           @"readShareServer"
+#define actionSearch                    @"search"
 #define actionShare                     @"share"
 #define actionShareWith                 @"shareWith"
 #define actionUnShare                   @"unShare"

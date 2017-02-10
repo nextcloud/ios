@@ -1856,6 +1856,22 @@
     
     NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:_serverUrl activeAccount:app.activeAccount];
     
+    // Search Mode
+    if (_isSearchMode) {
+        
+        CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
+        
+        metadataNet.action = actionSearch;
+        metadataNet.date = [NSDate date];
+        metadataNet.directoryID = directoryID;
+        metadataNet.priority = NSOperationQueuePriorityVeryHigh;
+        metadataNet.serverUrl = [CCCoreData getServerUrlFromDirectoryID:directoryID activeAccount:app.activeAccount];
+        
+        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+                
+        return;
+    }
+    
     if (([CCCoreData isDirectoryOutOfDate:dayForceReadFolder directoryID:directoryID activeAccount:app.activeAccount] || forced) && directoryID && app.activeAccount) {
         
         if (_refreshControl.isRefreshing == NO)
@@ -1896,12 +1912,8 @@
         
         [_hud hideHud];
         
-        if ([metadataNet.selectorPost isEqualToString:selectorReadFolderForced]) {
-            [self readFolderWithForced:YES];
-        } else {
-            [self reloadDatasource:metadataNet.serverUrl fileID:metadataNet.metadata.fileID selector:metadataNet.selector];
-        }
-
+        [self reloadDatasource:metadataNet.serverUrl fileID:metadataNet.metadata.fileID selector:metadataNet.selector];
+        
         // next
         if ([_selectedMetadatas count] > 0) {
             

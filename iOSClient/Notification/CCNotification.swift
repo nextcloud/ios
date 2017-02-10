@@ -83,7 +83,7 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
                 self.appDelegate.addNetworkingOperationQueue(self.appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
             }
             
-            remove.backgroundColor = CCConstant.GlobalConstants.kColor_Cryptocloud
+            remove.backgroundColor = .green
  
             return [remove]
  

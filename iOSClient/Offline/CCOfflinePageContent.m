@@ -25,7 +25,10 @@
 
 #import "AppDelegate.h"
 
-@interface CCOfflinePageContent ()
+#import "Nextcloud-Swift.h"
+
+
+@interface CCOfflinePageContent () <CCActionsDeleteDelegate>
 {
     NSArray *dataSource;
     BOOL _reloadDataSource;
@@ -182,6 +185,20 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Delete =====
+#pragma--------------------------------------------------------------------------------------------
+
+- (void)deleteFileOrFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+{
+    NSLog(@"[LOG] Delete error %@", message);
+}
+
+- (void)deleteFileOrFolderSuccess:(CCMetadataNet *)metadataNet
+{
+    [self reloadTable];
+}
+
+#pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Swipe Table -> menu =====
 #pragma--------------------------------------------------------------------------------------------
 
@@ -311,6 +328,11 @@
         [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_delete_", nil)
                                                              style:UIAlertActionStyleDestructive
                                                            handler:^(UIAlertAction *action) {
+                                                               
+                                                               if ([_pageType isEqualToString:pageOfflineOffline]) {
+                                                                   
+                                                                   [[CCActions sharedInstance] deleteFileOrFolder:_metadata delegate:self];
+                                                               }
                                                                
                                                                if ([_pageType isEqualToString:pageOfflineLocal]) {
                                                                    
