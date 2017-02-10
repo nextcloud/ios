@@ -191,8 +191,9 @@
     self.searchController.searchBar.barTintColor = COLOR_SEPARATOR_TABLE;
     [self.searchController.searchBar sizeToFit];
 
-    if (_isRoot) self.searchController.searchBar.placeholder = NSLocalizedString(@"_search_all_folders_",nil);
+    if (_isRoot) self.searchController.searchBar.placeholder = NSLocalizedString(@"_search_this_folder_",nil);
     else self.searchController.searchBar.placeholder = NSLocalizedString(@"_search_this_folder_",nil);
+    
     //self.searchController.searchBar.scopeButtonTitles = @[NSLocalizedString(@"_search_this_folder_",nil),NSLocalizedString(@"_search_all_folders_",nil)];
 }
 
@@ -834,6 +835,7 @@
     [self.tableView deselectRowAtIndexPath:index animated:NO];
     
     if (isnew) {
+        
         fileName = nil;
         uuid = [CCUtility getUUID];
         rev = nil;
@@ -841,7 +843,9 @@
         modelReadOnly = false;
         isLocal = false;
         serverUrl = _serverUrl;
+        
     } else {
+        
         fileName = _metadata.fileName;
         uuid = _metadata.uuid;
         rev = _metadata.rev;
@@ -1873,9 +1877,7 @@
     // init control
     if (!_serverUrl || !app.activeAccount)
         return;
-    
-    NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:_serverUrl activeAccount:app.activeAccount];
-    
+        
     // Search Mode
     if (_isSearchMode) {
         
@@ -1888,7 +1890,9 @@
         return;
     }
     
-    if (([CCCoreData isDirectoryOutOfDate:dayForceReadFolder directoryID:directoryID activeAccount:app.activeAccount] || forced) && directoryID && app.activeAccount) {
+    NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:_serverUrl activeAccount:app.activeAccount];
+    
+    if ([CCCoreData isDirectoryOutOfDate:dayForceReadFolder directoryID:directoryID activeAccount:app.activeAccount] || forced) {
         
         if (_refreshControl.isRefreshing == NO)
             [_hud visibleIndeterminateHud];
