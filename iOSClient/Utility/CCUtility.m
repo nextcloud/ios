@@ -788,6 +788,8 @@
     metadata.protocol = @"";
     metadata.rev = itemDto.etag;
     metadata.size = itemDto.size;
+    metadata.sessionTaskIdentifier = taskIdentifierDone;
+    metadata.sessionTaskIdentifierPlist = taskIdentifierDone;
     metadata.title = @"";
     metadata.type = metadataType_file;
     metadata.typeFile = @"";

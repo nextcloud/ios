@@ -4068,6 +4068,7 @@
 - (void)tableView:(UITableView *)tableView swipeAccessoryButtonPushedForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     _metadata = [self getMetadataFromSectionDataSource:indexPath];
+    
     NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:_metadata.account];
     
     NSString *titoloCriptaDecripta, *titoloOffline, *titoloLock, *titleOfflineFolder;
@@ -4540,9 +4541,9 @@
 
 - (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    _metadata = [self getMetadataFromSectionDataSource:indexPath];
+    CCMetadata *metadata = [self getMetadataFromSectionDataSource:indexPath];
     
-    if (_metadata.errorPasscode || (_metadata.cryptated && [_metadata.title length] == 0) || _metadata.sessionTaskIdentifier >= 0 || _metadata.sessionTaskIdentifier >= 0) return UITableViewCellEditingStyleNone;
+    if (metadata.errorPasscode || (metadata.cryptated && [metadata.title length] == 0) || metadata.sessionTaskIdentifier >= 0 || metadata.sessionTaskIdentifier >= 0) return UITableViewCellEditingStyleNone;
     else return UITableViewCellEditingStyleDelete;
 }
 

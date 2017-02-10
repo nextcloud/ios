@@ -56,7 +56,6 @@ class CCActions: NSObject {
     //MARK: Local Variable
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    var metadataNet: CCMetadataNet = CCMetadataNet.init()
     
     //MARK: Init
     
@@ -70,8 +69,8 @@ class CCActions: NSObject {
     func deleteFileOrFolder(_ metadata: CCMetadata, delegate: AnyObject) {
         
         let serverUrl = CCCoreData.getServerUrl(fromDirectoryID: metadata.directoryID, activeAccount: appDelegate.activeAccount)!
-        let metadataNet = CCMetadataNet.init()
-        
+        let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
+
         if metadata.cryptated == true {
             
             metadataNet.action = actionDeleteFileDirectory
@@ -137,7 +136,7 @@ class CCActions: NSObject {
     func renameFileOrFolder(_ metadata: CCMetadata, fileName: String, delegate: AnyObject) {
 
         let crypto = CCCrypto.init()
-        let metadataNet = CCMetadataNet.init()
+        let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
         
         let fileName = CCUtility.removeForbiddenCharacters(fileName, hasServerForbiddenCharactersSupport: appDelegate.hasServerForbiddenCharactersSupport)!
         
@@ -292,7 +291,10 @@ class CCActions: NSObject {
         
         if (serverUrl != nil) {
             
+            let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
+
             metadataNet.action = actionReadFolder;
+            metadataNet.directoryID = CCCoreData.getDirectoryID(fromServerUrl: serverUrl, activeAccount: appDelegate.activeUser)
             metadataNet.delegate = delegate
             metadataNet.fileName = fileName
             metadataNet.selector = selectorSearch
