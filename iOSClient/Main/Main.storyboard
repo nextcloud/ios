@@ -96,7 +96,7 @@
         <scene sceneID="kWr-RF-gdq">
             <objects>
                 <collectionViewController extendedLayoutIncludesOpaqueBars="YES" id="1Ca-6H-d29" customClass="CCPhotosCameraUpload" sceneMemberID="viewController">
-                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" dataMode="prototypes" id="zkC-IW-U7O">
+                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="zkC-IW-U7O">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -252,7 +252,7 @@
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="eZl-ut-xpC" sceneMemberID="viewController">
                     <extendedEdge key="edgesForExtendedLayout"/>
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="rJe-3o-bpZ">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="rJe-3o-bpZ">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -405,18 +405,10 @@
         <scene sceneID="OEe-6n-ARk">
             <objects>
                 <tableViewController storyboardIdentifier="CCMainVC" extendedLayoutIncludesOpaqueBars="YES" id="YJg-Xa-VYf" customClass="CCMain" sceneMemberID="viewController">
-                    <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" misplaced="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" allowsSelectionDuringEditing="YES" rowHeight="60" sectionHeaderHeight="22" sectionFooterHeight="22" id="7sT-6b-Pnh">
+                    <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" allowsSelectionDuringEditing="YES" rowHeight="60" sectionHeaderHeight="22" sectionFooterHeight="22" id="7sT-6b-Pnh">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                        <searchBar key="tableFooterView" contentMode="redraw" id="tgI-f2-wma">
-                            <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                            <textInputTraits key="textInputTraits"/>
-                            <connections>
-                                <outlet property="delegate" destination="YJg-Xa-VYf" id="esC-rG-QWk"/>
-                            </connections>
-                        </searchBar>
                         <sections/>
                         <connections>
                             <outlet property="dataSource" destination="YJg-Xa-VYf" id="sz8-sd-5O4"/>
@@ -433,7 +425,6 @@
                 <searchDisplayController id="xcf-VI-FqA">
                     <connections>
                         <outlet property="delegate" destination="YJg-Xa-VYf" id="J25-Dg-BOy"/>
-                        <outlet property="searchBar" destination="tgI-f2-wma" id="7yR-AV-erZ"/>
                         <outlet property="searchContentsController" destination="YJg-Xa-VYf" id="f4n-7F-MTp"/>
                         <outlet property="searchResultsDataSource" destination="YJg-Xa-VYf" id="Omt-3Z-A1J"/>
                         <outlet property="searchResultsDelegate" destination="YJg-Xa-VYf" id="r6f-t7-MvO"/>
@@ -466,7 +457,7 @@
                 <navigationController storyboardIdentifier="CCMainNC" extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="bSZ-tE-FEj" customClass="CCControlCenter" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="File" image="tabBarCryptoCloud" id="Zxv-aS-HGF"/>
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="cj6-rT-wnB">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="cj6-rT-wnB">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -556,7 +547,7 @@
                 <navigationController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="Npr-vu-PSD" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="Photos" image="tabBarPhotos" id="5cw-bP-7It"/>
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="ixg-Pw-TNO">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="ixg-Pw-TNO">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -658,6 +649,6 @@
         <image name="tabBarSettings" width="25" height="25"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="op6-ow-K8v"/>
+        <segue reference="YTW-Kz-l02"/>
     </inferredMetricsTieBreakers>
 </document>

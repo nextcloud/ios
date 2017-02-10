@@ -1877,12 +1877,12 @@
     // init control
     if (!_serverUrl || !app.activeAccount)
         return;
-        
+    
     // Search Mode
     if (_isSearchMode) {
         
-        [[CCActions sharedInstance] search:_serverUrl fileName:_searchFileName delegate:self];
-        [self tableViewReload];
+        if (_searchFileName.length >= k_minCharsSearch)
+            [[CCActions sharedInstance] search:_serverUrl fileName:_searchFileName delegate:self];
         
         if (forced)
             _reloadForcedFoderWhenSearchModeOff = YES;
@@ -1927,7 +1927,7 @@
     
     _searchFileName = [CCUtility removeForbiddenCharacters:searchController.searchBar.text hasServerForbiddenCharactersSupport:app.hasServerForbiddenCharactersSupport];
     
-    if (_searchFileName.length > 2) {
+    if (_searchFileName.length >= k_minCharsSearch) {
         
         _searchFileName = searchController.searchBar.text;
         [self readFolderWithForced:NO];
@@ -1938,16 +1938,13 @@
 
         [self reloadDatasource];
     }
-    
-    //let scopes = resultSearchController.searchBar.scopeButtonTitles! as [String]
-    //let currentScope = scopes[resultSearchController.searchBar.selectedScopeButtonIndex] as String
 }
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
 {
     [self cancelSearchBar];
     
-    // If necessite the reload folder
+    // Need reload folder
     if (_reloadForcedFoderWhenSearchModeOff) {
         
         _reloadForcedFoderWhenSearchModeOff = NO;

@@ -310,6 +310,9 @@ extern NSString *const BKPasscodeKeychainServiceName;
 #define pageOfflineOffline              @"Offline"
 #define pageOfflineLocal                @"Local"
 
+// Search
+#define k_minCharsSearch                3
+
 @interface CCAspect : NSObject
 
 + (void)aspectNavigationControllerBar:(UINavigationBar *)nav hidden:(BOOL)hidden;
