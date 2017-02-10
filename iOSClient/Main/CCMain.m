@@ -280,6 +280,15 @@
     return NO;
 }
 
+// detect scroll for remove keyboard in search mode
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
+{
+    if (_isSearchMode && scrollView == self.tableView) {
+        
+        [self.searchController.searchBar endEditing:YES];
+    }
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Initizlize Mail =====
 #pragma --------------------------------------------------------------------------------------------
@@ -4634,6 +4643,8 @@
         
             [self tableViewReload];
         
+            [self setTitleBackgroundTableView:nil];
+
             [app updateApplicationIconBadgeNumber];
             
         } else {
