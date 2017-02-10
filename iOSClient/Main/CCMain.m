@@ -1917,7 +1917,7 @@
     if (_searchFileName.length > 2) {
         
         _searchFileName = searchController.searchBar.text;
-        [self readFolderWithForced:YES];
+        [self readFolderWithForced:NO];
         
     }
     
