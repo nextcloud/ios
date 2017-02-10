@@ -45,7 +45,7 @@
     CCMetadata *_metadataSegue;
     CCMetadata *_metadata;
         
-    BOOL _isMain;
+    BOOL _isRoot;
     BOOL _isViewDidLoad;
     BOOL _isOfflineServerUrl;
     
@@ -81,6 +81,7 @@
     // Search
     BOOL _isSearchMode;
     NSString *_searchFileName;
+    NSArray *_searchResultMetadatas;
 }
 @end
 
@@ -126,6 +127,7 @@
     _isViewDidLoad = YES;
     _fatherPermission = @"";
     _searchController = [[UISearchController alloc] initWithSearchResultsController:nil];
+    _searchResultMetadatas = [NSArray new];
     
     // delegate
     self.tableView.delegate = self;
@@ -133,6 +135,7 @@
     self.tableView.separatorColor = COLOR_SEPARATOR_TABLE;
     self.searchController.delegate = self;
     self.searchController.searchBar.delegate = self;
+    self.definesPresentationContext = YES;
     
     [[CCNetworking sharedNetworking] settingDelegate:self];
     
@@ -162,7 +165,7 @@
     _reMenuBackgroundView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
     
     // if this is not Main (the Main uses inizializeMain)
-    if (_isMain == NO && app.activeAccount) {
+    if (_isRoot == NO && app.activeAccount) {
         
         // Settings this folder & delegate & Loading datasource
         app.directoryUser = [CCUtility getDirectoryActiveUser:app.activeUser activeUrl:app.activeUrl];
@@ -184,8 +187,14 @@
     self.searchController.searchResultsUpdater = self;
     self.searchController.dimsBackgroundDuringPresentation = NO;
     self.tableView.tableHeaderView = self.searchController.searchBar;
-    self.searchController.searchBar.scopeButtonTitles = @[NSLocalizedString(@"_search_this_folder_",nil),NSLocalizedString(@"_search_all_folders_",nil)];
+    
+    if (_isRoot) self.searchController.searchBar.placeholder = NSLocalizedString(@"_search_all_folders_",nil);
+    else self.searchController.searchBar.placeholder = NSLocalizedString(@"_search_this_folder_",nil);
+    
+    //self.searchController.searchBar.scopeButtonTitles = @[NSLocalizedString(@"_search_this_folder_",nil),NSLocalizedString(@"_search_all_folders_",nil)];
     self.searchController.searchBar.barTintColor = COLOR_SEPARATOR_TABLE;
+    self.searchController.hidesNavigationBarDuringPresentation = NO;
+    
     [self.searchController.searchBar sizeToFit];
 }
 
@@ -287,10 +296,10 @@
     if ([app.activeAccount length] == 0 || [app.activeUrl length] == 0 || [app.typeCloud length] == 0)
         return;
     
-    if ([app.listMainVC count] == 0 || _isMain) {
+    if ([app.listMainVC count] == 0 || _isRoot) {
         
-        // This is Main
-        _isMain = YES;
+        // This is Root
+        _isRoot = YES;
         
         // go Home
         [self.navigationController popToRootViewControllerAnimated:NO];
@@ -1897,14 +1906,20 @@
 -(void) updateSearchResultsForSearchController:(UISearchController *)searchController
 {
     _isSearchMode = YES;
-    
-    _sectionDataSource = [CCSectionDataSource new];
     [self deleteRefreshControl];
     
-    if (searchController.searchBar.text.length > 2) {
+    _searchFileName = [CCUtility removeForbiddenCharacters:searchController.searchBar.text hasServerForbiddenCharactersSupport:app.hasServerForbiddenCharactersSupport];
+    
+    if (_searchFileName.length > 2) {
         
         _searchFileName = searchController.searchBar.text;
         [self readFolderWithForced:YES];
+        
+    }
+    
+    if (_searchResultMetadatas.count == 0 && _searchFileName.length == 0) {
+
+        [self reloadDatasource];
     }
     
     //let scopes = resultSearchController.searchBar.scopeButtonTitles! as [String]
@@ -1913,25 +1928,37 @@
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
 {
-    _isSearchMode = NO;
-    
     [self.searchController setActive:NO];
     [self createRefreshControl];
     
-    // forse reload
+    _isSearchMode = NO;
     _dateReadDataSource = nil;
-    [self reloadDatasource];
+    _searchResultMetadatas = [NSArray new];
     
+    [self reloadDatasource];
 }
 
 - (void)searchFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    
+    if (message)
+        [app messageNotification:@"_error_" description:message visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeError];
 }
 
 - (void)searchSuccess:(CCMetadataNet *)metadataNet metadatas:(NSArray *)metadatas
 {
+    _searchResultMetadatas = [[NSArray alloc] initWithArray:metadatas];
     
+    [self reloadDatasource];
+}
+
+- (UIBarPosition)positionForBar:(id<UIBarPositioning>)bar
+{
+    if (bar == self.searchController.searchBar) {
+        return UIBarPositionTopAttached;
+    }
+    else { // Handle other cases
+        return UIBarPositionAny;
+    }
 }
 
 #pragma mark -
@@ -4587,6 +4614,16 @@
     if (app.activeAccount == nil || app.activeUrl == nil || serverUrl == nil)
         return;
     
+    // Search Mode
+    if(_isSearchMode) {
+        
+        _sectionDataSource = [CCSection creataDataSourseSectionMetadata:_searchResultMetadatas listProgressMetadata:nil groupByField:_directoryGroupBy replaceDateToExifDate:NO activeAccount:app.activeAccount];
+        
+        [self tableViewReload];
+        
+        return;
+    }
+    
     // Reload -> Self se non siamo nella dir appropriata cercala e se è in memoria reindirizza il reload
     if ([serverUrl isEqualToString:_serverUrl] == NO || _serverUrl == nil) {
         
@@ -4627,7 +4664,7 @@
     
         NSArray *recordsTableMetadata = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@)", app.activeAccount, [CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:app.activeAccount]] fieldOrder:[CCUtility getOrderSettings] ascending:[CCUtility getAscendingSettings]];
     
-        _sectionDataSource = [CCSection creataDataSourseSectionTableMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:_directoryGroupBy replaceDateToExifDate:NO activeAccount:app.activeAccount];
+        _sectionDataSource = [CCSection creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:_directoryGroupBy replaceDateToExifDate:NO activeAccount:app.activeAccount];
         
     } else {
         

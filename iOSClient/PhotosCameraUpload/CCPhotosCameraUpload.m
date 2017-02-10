@@ -524,7 +524,7 @@
     // datasource
     NSArray *recordsTableMetadata = [CCCoreData getRecordsTableMetadataPhotosCameraUpload:serverUrl activeAccount:app.activeAccount];
     
-    _sectionDataSource = [CCSection creataDataSourseSectionTableMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:@"date" replaceDateToExifDate:YES activeAccount:app.activeAccount];
+    _sectionDataSource = [CCSection creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:@"date" replaceDateToExifDate:YES activeAccount:app.activeAccount];
         
     //if ([_sectionDataSource.allRecordsDataSource count] == 0)
     //    _dateReadDataSource = nil;

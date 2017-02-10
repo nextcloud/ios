@@ -396,8 +396,8 @@
 "_paste_files_encrypted_"       = "Paste encrypted files";
 "_paste_cryptated_"             = "Paste encrypted file";
 
-"_search_this_folder_"          = "This folder";
-"_search_all_folders_"          = "All folders";
+"_search_this_folder_"          = "Search in this folder";
+"_search_all_folders_"          = "Search in all folders";
 
 // Security
 
