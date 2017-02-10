@@ -135,7 +135,6 @@
     self.tableView.separatorColor = COLOR_SEPARATOR_TABLE;
     self.searchController.delegate = self;
     self.searchController.searchBar.delegate = self;
-    self.definesPresentationContext = YES;
     
     [[CCNetworking sharedNetworking] settingDelegate:self];
     
@@ -184,6 +183,9 @@
     app.controlCenter = (CCControlCenter *)self.navigationController;
     
     // Search
+    
+    self.definesPresentationContext = YES;
+    
     self.searchController.searchResultsUpdater = self;
     self.searchController.dimsBackgroundDuringPresentation = NO;
     self.tableView.tableHeaderView = self.searchController.searchBar;
@@ -193,9 +195,10 @@
     
     //self.searchController.searchBar.scopeButtonTitles = @[NSLocalizedString(@"_search_this_folder_",nil),NSLocalizedString(@"_search_all_folders_",nil)];
     self.searchController.searchBar.barTintColor = COLOR_SEPARATOR_TABLE;
-    self.searchController.hidesNavigationBarDuringPresentation = NO;
     
-    [self.searchController.searchBar sizeToFit];
+    //self.searchController.hidesNavigationBarDuringPresentation = NO;
+    
+    [self.searchController.searchBar sizeToFit];    
 }
 
 // Apparirà
@@ -1928,14 +1931,7 @@
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
 {
-    [self.searchController setActive:NO];
-    [self createRefreshControl];
-    
-    _isSearchMode = NO;
-    _dateReadDataSource = nil;
-    _searchResultMetadatas = [NSArray new];
-    
-    [self reloadDatasource];
+    [self cancelSearchBar];
 }
 
 - (void)searchFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
@@ -1951,13 +1947,18 @@
     [self reloadDatasource];
 }
 
-- (UIBarPosition)positionForBar:(id<UIBarPositioning>)bar
+- (void)cancelSearchBar
 {
-    if (bar == self.searchController.searchBar) {
-        return UIBarPositionTopAttached;
-    }
-    else { // Handle other cases
-        return UIBarPositionAny;
+    if (self.searchController.active) {
+        
+        [self.searchController setActive:NO];
+        [self createRefreshControl];
+    
+        _isSearchMode = NO;
+        _dateReadDataSource = nil;
+        _searchResultMetadatas = [NSArray new];
+        
+        [self reloadDatasource];
     }
 }
 
@@ -5634,7 +5635,10 @@
             // save self
             [app.listMainVC setObject:viewController forKey:serverUrlPush];
         }
-                
+        
+        // OFF SearchBar
+        [viewController cancelSearchBar];
+        
         [self.navigationController pushViewController:viewController animated:YES];
     }
 }

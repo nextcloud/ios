@@ -100,5 +100,7 @@
 
 - (void)clearDateReadDataSource:(NSNotification *)notification;
 
+- (void)cancelSearchBar;
+
 @end
 
