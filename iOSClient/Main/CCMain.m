@@ -80,6 +80,7 @@
     
     // Search
     BOOL _isSearchMode;
+    BOOL _reloadForcedFoderWhenSearchModeOff;
     NSString *_searchFileName;
     NSArray *_searchResultMetadatas;
 }
@@ -300,6 +301,9 @@
         
         // go Home
         [self.navigationController popToRootViewControllerAnimated:NO];
+        
+        // Remove search mode
+        [self cancelSearchBar];
         
         _serverUrl = [CCUtility getHomeServerUrlActiveUrl:app.activeUrl typeCloud:app.typeCloud];
         _isFolderEncrypted = NO;
@@ -1869,6 +1873,9 @@
         [[CCActions sharedInstance] search:_serverUrl fileName:_searchFileName delegate:self];
         [self tableViewReload];
         
+        if (forced)
+            _reloadForcedFoderWhenSearchModeOff = YES;
+        
         return;
     }
     
@@ -1926,6 +1933,14 @@
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
 {
     [self cancelSearchBar];
+    
+    // If necessite the reload folder
+    if (_reloadForcedFoderWhenSearchModeOff) {
+        
+        _reloadForcedFoderWhenSearchModeOff = NO;
+        
+        [self readFolderWithForced:YES];
+    }
 }
 
 - (void)searchFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
@@ -1938,7 +1953,7 @@
 {
     _searchResultMetadatas = [[NSArray alloc] initWithArray:metadatas];
     
-    [self reloadDatasource];
+    [self reloadDatasource:metadataNet.serverUrl fileID:nil selector:metadataNet.selector];
 }
 
 - (void)cancelSearchBar
@@ -4613,9 +4628,18 @@
     // Search Mode
     if(_isSearchMode) {
         
-        _sectionDataSource = [CCSection creataDataSourseSectionMetadata:_searchResultMetadatas listProgressMetadata:nil groupByField:_directoryGroupBy replaceDateToExifDate:NO activeAccount:app.activeAccount];
+        if ([selector length] == 0 || [selector isEqualToString:selectorSearch]) {
         
-        [self tableViewReload];
+            _sectionDataSource = [CCSection creataDataSourseSectionMetadata:_searchResultMetadatas listProgressMetadata:nil groupByField:_directoryGroupBy replaceDateToExifDate:NO activeAccount:app.activeAccount];
+        
+            [self tableViewReload];
+        
+            [app updateApplicationIconBadgeNumber];
+            
+        } else {
+            
+            [self readFolderWithForced:NO];
+        }
         
         return;
     }
