@@ -98,7 +98,7 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ==== DZNEmptyDataSetSource Methods ====
+#pragma mark ==== DZNEmptyDataSetSource ====
 #pragma --------------------------------------------------------------------------------------------
 
 - (BOOL)emptyDataSetShouldDisplay:(UIScrollView *)scrollView
@@ -171,7 +171,7 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== UIDocumentInteractionControllerDelegate =====
+#pragma mark ===== UIDocumentInteractionController <delegate> =====
 #pragma --------------------------------------------------------------------------------------------
 
 - (void)documentInteractionControllerDidDismissOptionsMenu:(UIDocumentInteractionController *)controller
@@ -185,7 +185,7 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Delete =====
+#pragma mark ===== Delete <delegate> =====
 #pragma--------------------------------------------------------------------------------------------
 
 - (void)deleteFileOrFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode

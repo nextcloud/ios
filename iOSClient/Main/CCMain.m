@@ -40,7 +40,7 @@
 #define alertRename 3
 #define alertOfflineFolder 4
 
-@interface CCMain () <CCActionsDeleteDelegate, CCActionsRenameDelegate>
+@interface CCMain () <CCActionsDeleteDelegate, CCActionsRenameDelegate, CCActionsSearchDelegate>
 {
     CCMetadata *_metadataSegue;
     CCMetadata *_metadata;
@@ -80,6 +80,7 @@
     
     // Search
     BOOL _isSearchMode;
+    NSString *_searchFileName;
 }
 @end
 
@@ -1859,16 +1860,9 @@
     // Search Mode
     if (_isSearchMode) {
         
-        CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
+        [[CCActions sharedInstance] search:_serverUrl fileName:_searchFileName delegate:self];
+        [self tableViewReload];
         
-        metadataNet.action = actionSearch;
-        metadataNet.date = [NSDate date];
-        metadataNet.directoryID = directoryID;
-        metadataNet.priority = NSOperationQueuePriorityVeryHigh;
-        metadataNet.serverUrl = [CCCoreData getServerUrlFromDirectoryID:directoryID activeAccount:app.activeAccount];
-        
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
-                
         return;
     }
     
@@ -1895,6 +1889,52 @@
     }
 }
 
+#pragma mark -
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Search =====
+#pragma --------------------------------------------------------------------------------------------
+
+-(void) updateSearchResultsForSearchController:(UISearchController *)searchController
+{
+    _isSearchMode = YES;
+    
+    _sectionDataSource = [CCSectionDataSource new];
+    [self deleteRefreshControl];
+    
+    if (searchController.searchBar.text.length > 2) {
+        
+        _searchFileName = searchController.searchBar.text;
+        [self readFolderWithForced:YES];
+    }
+    
+    //let scopes = resultSearchController.searchBar.scopeButtonTitles! as [String]
+    //let currentScope = scopes[resultSearchController.searchBar.selectedScopeButtonIndex] as String
+}
+
+- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
+{
+    _isSearchMode = NO;
+    
+    [self.searchController setActive:NO];
+    [self createRefreshControl];
+    
+    // forse reload
+    _dateReadDataSource = nil;
+    [self reloadDatasource];
+    
+}
+
+- (void)searchFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+{
+    
+}
+
+- (void)searchSuccess:(CCMetadataNet *)metadataNet metadatas:(NSArray *)metadatas
+{
+    
+}
+
+#pragma mark -
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Delete File or Folder =====
 #pragma --------------------------------------------------------------------------------------------
@@ -3991,34 +4031,6 @@
         
         [app messageNotification:@"_error_" description:@"_error_operation_canc_" visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeError];
     }
-}
-
-#pragma mark -
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Search =====
-#pragma --------------------------------------------------------------------------------------------
-
--(void) updateSearchResultsForSearchController:(UISearchController *)searchController
-{
-    _isSearchMode = YES;
-    
-    _sectionDataSource = [CCSectionDataSource new];
-    [self deleteRefreshControl];
-    
-    [self tableViewReload];
-}
-
-- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
-{
-    _isSearchMode = NO;
-    
-    [self.searchController setActive:NO];
-    [self createRefreshControl];
-    
-    // forse reload
-    _dateReadDataSource = nil;
-    [self reloadDatasource];
-    
 }
 
 #pragma mark -

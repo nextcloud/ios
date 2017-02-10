@@ -242,6 +242,7 @@ extern NSString *const BKPasscodeKeychainServiceName;
 #define selectorRename                  @"rename"
 #define selectorSave                    @"save"
 #define selectorShare                   @"share"
+#define selectorSearch                  @"search"
 #define selectorOfflineFolder           @"offlineFolder"
 #define selectorUnshare                 @"unshare"
 #define selectorUpdateShare             @"updateShare"

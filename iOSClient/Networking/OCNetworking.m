@@ -374,13 +374,23 @@
                 }
                 // ------------------------
                 
-                [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileNamePrint:itemDto.fileName serverUrl:_metadataNet.serverUrl directoryID:directoryID cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath activeAccount:_metadataNet.account directoryUser:directoryUser typeCloud:_typeCloud]];
+                if ([_metadataNet.selector isEqualToString:selectorSearch] && [itemDto.fileName.lowercaseString hasPrefix:_metadataNet.fileName.lowercaseString]) {
+                    [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileNamePrint:itemDto.fileName serverUrl:_metadataNet.serverUrl directoryID:directoryID cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath activeAccount:_metadataNet.account directoryUser:directoryUser typeCloud:_typeCloud]];
+                }
+                
+                if ([_metadataNet.selector isEqualToString:selectorReadFolder]) {
+                    [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileNamePrint:itemDto.fileName serverUrl:_metadataNet.serverUrl directoryID:directoryID cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath activeAccount:_metadataNet.account directoryUser:directoryUser typeCloud:_typeCloud]];
+                }
             }
             
             dispatch_async(dispatch_get_main_queue(), ^{
-                                
-                if ([self.delegate respondsToSelector:@selector(readFolderSuccess:permissions:rev:metadatas:)])
+                
+                if ([_metadataNet.selector isEqualToString:selectorReadFolder] && [self.delegate respondsToSelector:@selector(readFolderSuccess:permissions:rev:metadatas:)])
                     [self.delegate readFolderSuccess:_metadataNet permissions:permissions rev:rev metadatas:metadatas];
+
+                if ([_metadataNet.selector isEqualToString:selectorSearch] && [self.delegate respondsToSelector:@selector(searchSuccess:metadatas:)])
+                    [self.delegate searchSuccess:_metadataNet metadatas:metadatas];
+        
             });
         });
         
@@ -392,9 +402,12 @@
         if (errorCode == 0)
             errorCode = error.code;
         
-        if ([self.delegate respondsToSelector:@selector(readFolderFailure:message:errorCode:)])
+        if ([_metadataNet.selector isEqualToString:selectorReadFolder] && [self.delegate respondsToSelector:@selector(readFolderFailure:message:errorCode:)])
             [self.delegate readFolderFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
         
+        if ([_metadataNet.selector isEqualToString:selectorSearch] && [self.delegate respondsToSelector:@selector(searchFailure:message:errorCode:)])
+            [self.delegate searchFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+
         // Request trusted certificated
         if ([error code] == NSURLErrorServerCertificateUntrusted)
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];

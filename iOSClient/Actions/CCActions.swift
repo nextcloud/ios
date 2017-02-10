@@ -38,6 +38,12 @@ import Foundation
     func uploadFileFailure(_ metadataNet: CCMetadataNet, fileID: String, serverUrl: String, selector: String, message: String, errorCode: NSInteger)
 }
 
+@objc protocol CCActionsSearchDelegate  {
+    
+    func searchSuccess(_ metadataNet: CCMetadataNet, metadatas: [Any])
+    func searchFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger)
+}
+
 class CCActions: NSObject {
     
     //MARK: Shared Instance
@@ -277,6 +283,39 @@ class CCActions: NSObject {
         
         metadataNet.delegate?.uploadFileFailure(metadataNet, fileID:fileID, serverUrl: serverUrl, selector: selector, message: message, errorCode: errorCode)
     }
+    
+    // --------------------------------------------------------------------------------------------
+    // MARK: Search
+    // --------------------------------------------------------------------------------------------
+    
+    func search(_ serverUrl : String?, fileName : String, delegate: AnyObject) {
+        
+        if (serverUrl != nil) {
+            
+            metadataNet.action = actionReadFolder;
+            metadataNet.delegate = delegate
+            metadataNet.fileName = fileName
+            metadataNet.selector = selectorSearch
+            metadataNet.serverUrl = serverUrl!
+
+            appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
+            
+        } else {
+            
+            // Search DAV API
+        }
+    }
+    
+    func searchSuccess(_ metadataNet: CCMetadataNet, metadatas: [CCMetadata]) {
+        
+        metadataNet.delegate?.searchSuccess(metadataNet, metadatas: metadatas)
+    }
+    
+    func searchFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger) {
+        
+        metadataNet.delegate?.searchFailure(metadataNet, message: message, errorCode: errorCode)
+    }
+
 }
 
 
