@@ -29,17 +29,11 @@ class CCConstant: NSObject {
         
         // GLOBLE COLOR DEFINE
                 
-        static let kColor_Seperator: UIColor = UIColor(red: 53.0/255.0, green: 126.0/255.0, blue: 167.0/255.0, alpha: 1.0)
+        static let k_Color_Seperator: UIColor = UIColor(red: 53.0/255.0, green: 126.0/255.0, blue: 167.0/255.0, alpha: 1.0)
         
-        static let kColor_Cryptocloud: UIColor = UIColor(red: 241.0/255.0, green: 90.0/255.0, blue: 34.0/255.0, alpha: 1.0)
+        static let k_Color_Cryptocloud: UIColor = UIColor(red: 241.0/255.0, green: 90.0/255.0, blue: 34.0/255.0, alpha: 1.0)
         
-        static let kColor_SelectBackgrond: UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 0.1)
-        
-        
-        static let kColor_NonCompliant: UIColor = UIColor(red: 190.0/255.0, green: 15.0/255.0, blue: 52.0/255.0, alpha: 1.0)
-
-        static let kColor_Compliant: UIColor = UIColor(red: 87.0/255.0, green: 149.0/255.0, blue: 0.0/255.0, alpha: 1.0)
-
+        static let k_Color_SelectBackgrond: UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 0.1)
         
         // Response searchList
         

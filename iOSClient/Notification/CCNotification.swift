@@ -155,7 +155,7 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! CCNotificationCell
         
         let selectionColor : UIView = UIView.init()
-        selectionColor.backgroundColor = CCConstant.GlobalConstants.kColor_SelectBackgrond
+        selectionColor.backgroundColor = CCConstant.GlobalConstants.k_Color_SelectBackgrond
         cell.selectedBackgroundView = selectionColor
         
         if self.resultSearchController.isActive {

@@ -209,7 +209,7 @@
 + (NSString *)getUUID
 {
 #if TARGET_IPHONE_SIMULATOR
-    NSUUID *deviceId = [[NSUUID alloc]initWithUUIDString:UUID_SIM];
+    NSUUID *deviceId = [[NSUUID alloc]initWithUUIDString:k_UUID_SIM];
     return [deviceId UUIDString];
 #else
     NSString *uuid = [[UIDevice currentDevice] identifierForVendor].UUIDString;
