@@ -64,17 +64,16 @@
 
 @interface CCMain : UITableViewController <UITableViewDataSource, UITableViewDelegate, UIActionSheetDelegate, UIGestureRecognizerDelegate, UIDocumentInteractionControllerDelegate, UIViewControllerPreviewingDelegate, CCMoveDelegate, CTAssetsPickerControllerDelegate, BKPasscodeViewControllerDelegate, UISplitViewControllerDelegate, UIPopoverControllerDelegate, CCNetworkingDelegate, CCShareOCDelegate, CCAccountWebDelegate, CCBancomatDelegate, CCCartaDiCreditoDelegate, CCCartaIdentitaDelegate, CCContoCorrenteDelegate, CCNoteDelegate, CCPassaportoDelegate, CCPatenteGuidaDelegate, CCPeekPopDelegate, UIDocumentMenuDelegate, UIDocumentPickerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, UIScrollViewDelegate>
 
-@property (nonatomic ,strong) NSString *serverUrl;
-
 @property BOOL isFolderEncrypted;
-@property (nonatomic, weak) NSString *titleMain;
-@property (nonatomic, weak) NSString *textBackButton;
 
-@property (nonatomic, weak) CCShareOC* shareOC;
+@property (nonatomic ,strong) NSString *serverUrl;
+@property (nonatomic, strong) NSString *titleMain;
+@property (nonatomic, strong) NSString *textBackButton;
+
+@property (nonatomic, weak) CCShareOC *shareOC;
 @property (nonatomic, weak) CCDetail *detailViewController;
 @property (nonatomic, weak) CCLoginNCOC *loginVC;
-
-@property (nonatomic, strong)  UISearchController *searchController;
+@property (nonatomic, weak) UISearchController *searchController;
 
 - (void)returnCreate:(NSInteger)type;
 
