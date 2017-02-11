@@ -2389,7 +2389,7 @@
 			path = Cell;
 			sourceTree = "<group>";
 		};
-		F72B60941A24F04E004EF66F /* Localizzazione */ = {
+		F72B60941A24F04E004EF66F /* Localizations */ = {
 			isa = PBXGroup;
 			children = (
 				F7BFE0CA1B67925500F072A4 /* TTOpenInAppActivityLocalizable.string */,
@@ -2399,7 +2399,7 @@
 				F744BE9F1BEBB69F004FFF66 /* Intro.strings */,
 				F7B381BF1C074E3E004693F8 /* Error.strings */,
 			);
-			name = Localizzazione;
+			name = Localizations;
 			sourceTree = "<group>";
 		};
 		F73CCD7F1DC13775007E38D8 /* XLForm */ = {
@@ -3201,7 +3201,7 @@
 				F76344761BF259A800188725 /* synchronizedcrypto.gif */,
 				F7F0617A1BAACDD300846525 /* CryptoCloud.pch */,
 				F7F67BAD1A24D27800EE80DA /* main.m */,
-				F72B60941A24F04E004EF66F /* Localizzazione */,
+				F72B60941A24F04E004EF66F /* Localizations */,
 			);
 			name = "Supporting Files";
 			path = iOSClient;
