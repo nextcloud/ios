@@ -60,7 +60,7 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {    
     NSString *dir;
-    NSURL *dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:capabilitiesGroups];
+    NSURL *dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:k_capabilitiesGroups];
     
     NSLog(@"[LOG] Start program group -----------------");
     NSLog(@"%@", dirGroup);    
@@ -114,23 +114,23 @@
     
     // Operation Queue OC Networking
     _netQueue = [[NSOperationQueue alloc] init];
-    _netQueue.name = netQueueName;
+    _netQueue.name = k_netQueueName;
     _netQueue.maxConcurrentOperationCount = k_maxConcurrentOperation;
    
     _netQueueDownload = [[NSOperationQueue alloc] init];
-    _netQueueDownload.name = netQueueDownloadName;
+    _netQueueDownload.name = k_netQueueDownloadName;
     _netQueueDownload.maxConcurrentOperationCount = k_maxConcurrentOperationDownloadUpload;
 
     _netQueueDownloadWWan = [[NSOperationQueue alloc] init];
-    _netQueueDownloadWWan.name = netQueueDownloadWWanName;
+    _netQueueDownloadWWan.name = k_netQueueDownloadWWanName;
     _netQueueDownloadWWan.maxConcurrentOperationCount = k_maxConcurrentOperationDownloadUpload;
     
     _netQueueUpload = [[NSOperationQueue alloc] init];
-    _netQueueUpload.name = netQueueUploadName;
+    _netQueueUpload.name = k_netQueueUploadName;
     _netQueueUpload.maxConcurrentOperationCount = k_maxConcurrentOperationDownloadUpload;
     
     _netQueueUploadWWan = [[NSOperationQueue alloc] init];
-    _netQueueUploadWWan.name = netQueueUploadWWanName;
+    _netQueueUploadWWan.name = k_netQueueUploadWWanName;
     _netQueueUploadWWan.maxConcurrentOperationCount = k_maxConcurrentOperationDownloadUpload;
     
     // Add notification change session

@@ -202,7 +202,7 @@
     if (record) {
         
         if ([record.cameraUploadFolderName length] > 0 ) return record.cameraUploadFolderName;
-        else return folderDefaultCameraUpload;
+        else return k_folderDefaultCameraUpload;
         
     } else return @"";
 }
@@ -2003,7 +2003,7 @@
 + (void)moveCoreDataToGroup
 {
     NSString *applicationName = [[[NSBundle mainBundle] infoDictionary] valueForKey:(NSString *)kCFBundleNameKey];
-    NSURL *dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:capabilitiesGroups];
+    NSURL *dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:k_capabilitiesGroups];
     NSString *dirToPath = [[dirGroup URLByAppendingPathComponent:appDatabase] path];
 
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES);

@@ -69,7 +69,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
     lazy var networkingOperationQueue: OperationQueue = {
         
         var queue = OperationQueue()
-        queue.name = netQueueName
+        queue.name = k_netQueueName
         queue.maxConcurrentOperationCount = 10
         
         return queue
@@ -551,7 +551,7 @@ extension DocumentPickerViewController {
     func appGroupContainerURL() -> URL? {
         
         guard let groupURL = FileManager.default
-            .containerURL(forSecurityApplicationGroupIdentifier: capabilitiesGroups) else {
+            .containerURL(forSecurityApplicationGroupIdentifier: k_capabilitiesGroups) else {
                 return nil
         }
         
@@ -844,7 +844,7 @@ class providerSessionDB {
     
     private init() {
     
-        let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: capabilitiesGroups)
+        let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: k_capabilitiesGroups)
         let pathDB = dirGroup?.appendingPathComponent(appDatabase).appendingPathComponent("cryptocloud")
         
         MagicalRecord.setupCoreDataStackWithAutoMigratingSqliteStore(at: pathDB!)

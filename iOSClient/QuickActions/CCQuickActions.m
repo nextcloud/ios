@@ -139,7 +139,7 @@
         }];
     }
     
-    if (imageSize > MaxDimensionUpload || (picker.selectedAssets.count >= (pickerControllerMax - _numTaskUploadInProgress))) {
+    if (imageSize > MaxDimensionUpload || (picker.selectedAssets.count >= (k_pickerControllerMax - _numTaskUploadInProgress))) {
         
         [app messageNotification:@"_info_" description:@"_limited_dimension_" visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeInfo];
         

@@ -49,14 +49,14 @@ extern NSString *const BKPasscodeKeychainServiceName;
 #endif
 
 // Version Protocol plist
-#define versionProtocolPlist @"1.3"
+#define k_versionProtocolPlist      @"1.3"
 
 // UUID
-#define UUID_SIM @"4BACFE4A-61A6-44B1-9A85-13FD167565AB"
+#define k_UUID_SIM                  @"4BACFE4A-61A6-44B1-9A85-13FD167565AB"
 
 // Capabilities Group & Service Key Share
-#define capabilitiesGroups @"group.it.twsweb.Crypto-Cloud"
-#define serviceShareKeyChain @"Crypto Cloud"
+#define k_capabilitiesGroups        @"group.it.twsweb.Crypto-Cloud"
+#define k_serviceShareKeyChain      @"Crypto Cloud"
 
 // BRAND
 #ifdef CC
@@ -142,10 +142,10 @@ extern NSString *const BKPasscodeKeychainServiceName;
 #define RalewayThin(s) [UIFont fontWithName:@"Raleway-Thin" size:s]
 
 // File Name Const
-#define folderDefaultCameraUpload   @"Photos"
+#define k_folderDefaultCameraUpload                     @"Photos"
 
 // Picker select image
-#define pickerControllerMax  500.0
+#define k_pickerControllerMax                           500.0
 
 // define ownCloud IOS
 #define server_version_with_new_shared_schema 8
@@ -153,15 +153,15 @@ extern NSString *const BKPasscodeKeychainServiceName;
 #define k_share_link_middle_part_url_after_version_8    @"index.php/s/"
 
 // Constants to identify the different permissions of a file
-#define k_permission_shared @"S"
-#define k_permission_can_share @"R"
-#define k_permission_mounted @"M"
-#define k_permission_file_can_write @"W"
-#define k_permission_can_create_file @"C"
-#define k_permission_can_create_folder @"K"
-#define k_permission_can_delete @"D"
-#define k_permission_can_rename @"N"
-#define k_permission_can_move @"V"
+#define k_permission_shared             @"S"
+#define k_permission_can_share          @"R"
+#define k_permission_mounted            @"M"
+#define k_permission_file_can_write     @"W"
+#define k_permission_can_create_file    @"C"
+#define k_permission_can_create_folder  @"K"
+#define k_permission_can_delete         @"D"
+#define k_permission_can_rename         @"N"
+#define k_permission_can_move           @"V"
 
 // Session
 #define download_session                @"it.twsweb.download.session"
@@ -189,11 +189,11 @@ extern NSString *const BKPasscodeKeychainServiceName;
 #define k_timerVerifySession            15.0
 
 // OperationQueue
-#define netQueueName                    @"it.twsweb.cryptocloud.queue"
-#define netQueueDownloadName            @"it.twsweb.cryptocloud.queueDownload"
-#define netQueueDownloadWWanName        @"it.twsweb.cryptocloud.queueDownloadWWan"
-#define netQueueUploadName              @"it.twsweb.cryptocloud.queueUpload"
-#define netQueueUploadWWanName          @"it.twsweb.cryptocloud.queueUploadWWan"
+#define k_netQueueName                          @"it.twsweb.cryptocloud.queue"
+#define k_netQueueDownloadName                  @"it.twsweb.cryptocloud.queueDownload"
+#define k_netQueueDownloadWWanName              @"it.twsweb.cryptocloud.queueDownloadWWan"
+#define k_netQueueUploadName                    @"it.twsweb.cryptocloud.queueUpload"
+#define k_netQueueUploadWWanName                @"it.twsweb.cryptocloud.queueUploadWWan"
 
 #define k_maxConcurrentOperation                10
 #define k_maxConcurrentOperationDownloadUpload  10

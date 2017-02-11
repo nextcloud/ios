@@ -50,7 +50,7 @@
 
 -(void)viewDidLoad
 {
-    dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:capabilitiesGroups];
+    dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:k_capabilitiesGroups];
     
     [MagicalRecord setupCoreDataStackWithAutoMigratingSqliteStoreNamed:(id)[dirGroup URLByAppendingPathComponent:[appDatabase stringByAppendingPathComponent:@"cryptocloud"]]];
     [MagicalRecord setLoggingLevel:MagicalRecordLoggingLevelOff];
@@ -103,8 +103,8 @@
     _filesSendCryptated = [[NSMutableArray alloc] init];
     _hud = [[CCHud alloc] initWithView:self.navigationController.view];
     
-    _networkingOperationQueue = [[NSOperationQueue alloc] init];
-    _networkingOperationQueue.name = netQueueName;
+    _networkingOperationQueue = [NSOperationQueue new];
+    _networkingOperationQueue.name = k_netQueueName;
     _networkingOperationQueue.maxConcurrentOperationCount = 1;
     
     [[CCNetworking sharedNetworking] settingDelegate:self];

@@ -836,7 +836,7 @@
 - (void)emptyGroupApplicationSupport
 {
     NSString *file;
-    NSURL *dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:capabilitiesGroups];
+    NSURL *dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:k_capabilitiesGroups];
     NSString *dirIniziale = [[dirGroup URLByAppendingPathComponent:appApplicationSupport] path];
     
     NSDirectoryEnumerator *enumerator = [[NSFileManager defaultManager] enumeratorAtPath:dirIniziale];
@@ -932,7 +932,7 @@
 {
     [self deselectFormRow:sender];
 
-    NSURL *dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:capabilitiesGroups];
+    NSURL *dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:k_capabilitiesGroups];
     dirGroup = [dirGroup URLByAppendingPathComponent:@"Library"];
     dirGroup = [dirGroup URLByAppendingPathComponent:@"Application Support"];
     dirGroup = [dirGroup URLByAppendingPathComponent:@"Crypto Cloud"];
