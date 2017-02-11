@@ -66,14 +66,13 @@
 
 @property BOOL isFolderEncrypted;
 
-@property (nonatomic ,strong) NSString *serverUrl;
+@property (nonatomic, strong) NSString *serverUrl;
 @property (nonatomic, strong) NSString *titleMain;
 @property (nonatomic, strong) NSString *textBackButton;
 
 @property (nonatomic, weak) CCShareOC *shareOC;
 @property (nonatomic, weak) CCDetail *detailViewController;
-@property (nonatomic, weak) CCLoginNCOC *loginVC;
-@property (nonatomic, weak) UISearchController *searchController;
+@property (nonatomic, strong) UISearchController *searchController;
 
 - (void)returnCreate:(NSInteger)type;
 
