@@ -111,14 +111,14 @@
         // how many download underway (only for groupSession)
         if ([metadata.session containsString:@"download"] && [groupByField isEqualToString:@"session"]) {
             counterSessionDownload++;
-            if (counterSessionDownload > MaxGroupBySessionDownloadDatasource)
+            if (counterSessionDownload > k_MaxGroupBySessionDownloadDatasource)
                 continue;
         }
 
         // how many upload underway (only for groupSession)
         if ([metadata.session containsString:@"upload"] && [groupByField isEqualToString:@"session"]) {
             counterSessionUpload++;
-            if (counterSessionUpload > MaxGroupBySessionUploadDatasource)
+            if (counterSessionUpload > k_MaxGroupBySessionUploadDatasource)
                 continue;
         }
         

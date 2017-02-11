@@ -61,14 +61,14 @@ extern NSString *const BKPasscodeKeychainServiceName;
 // BRAND
 #ifdef CC
 
-#define _brand_     @"Crypto Cloud"
-#define _mail_me_   @"cryptocloud@twsweb.it"
+#define _brand_                     @"Crypto Cloud"
+#define _mail_me_                   @"cryptocloud@twsweb.it"
 #endif
 
 #ifdef NC
 
-#define _brand_     @"Nextcloud"
-#define _mail_me_   @"ios@nextcloud.com"
+#define _brand_                     @"Nextcloud"
+#define _mail_me_                   @"ios@nextcloud.com"
 
 #endif
 
@@ -107,29 +107,29 @@ extern NSString *const BKPasscodeKeychainServiceName;
 #define COLOR_NO_CONNECTION [UIColor colorWithRed:204.0/255.0 green:204.0/255.0 blue:204.0/255.0 alpha:1.0]
 #define COLOR_NAVBAR_IOS7 [UIColor colorWithRed:247.0/255.0 green:247.0/255.0 blue:247.0/255.0 alpha:1.0]
 
-#define dismissAfterSecond 4
+#define k_dismissAfterSecond                    4
 
-#define MaxDimensionUpload 524288000       // 500 MB
+#define k_MaxDimensionUpload                    524288000       // 500 MB
 
-#define dayForceReadFolder 3
+#define k_dayForceReadFolder                    3
 
-#define MaxGroupBySessionUploadDatasource 50
-#define MaxGroupBySessionDownloadDatasource 50
+#define k_MaxGroupBySessionUploadDatasource     50
+#define k_MaxGroupBySessionDownloadDatasource   50
 
-#define returnCreateFolderPlain 0
-#define returnCreateFotoVideoPlain 1
-#define returnCreateFilePlain 2
-#define returnCreateFolderEncrypted 3
-#define returnCreateFotoVideoEncrypted 4
-#define returnCreateFileEncrypted 5
-#define returnCartaDiCredito 6
-#define returnBancomat 7
-#define returnContoCorrente 8
-#define returnAccountWeb 9
-#define returnNote 10
-#define returnPatenteGuida 11
-#define returnCartaIdentita 12
-#define returnPassaporto 13
+#define k_returnCreateFolderPlain               0
+#define k_returnCreateFotoVideoPlain            1
+#define k_returnCreateFilePlain                 2
+#define k_returnCreateFolderEncrypted           3
+#define k_returnCreateFotoVideoEncrypted        4
+#define k_returnCreateFileEncrypted             5
+#define k_returnCartaDiCredito                  6
+#define k_returnBancomat                        7
+#define k_returnContoCorrente                   8
+#define k_returnAccountWeb                      9
+#define k_returnNote                            10
+#define k_returnPatenteGuida                    11
+#define k_returnCartaIdentita                   12
+#define k_returnPassaporto                      13
 
 #define RalewayBold(s) [UIFont fontWithName:@"Raleway-Bold" size:s]
 #define RalewayExtraBold(s) [UIFont fontWithName:@"Raleway-ExtraBold" size:s]
@@ -153,40 +153,40 @@ extern NSString *const BKPasscodeKeychainServiceName;
 #define k_share_link_middle_part_url_after_version_8    @"index.php/s/"
 
 // Constants to identify the different permissions of a file
-#define k_permission_shared             @"S"
-#define k_permission_can_share          @"R"
-#define k_permission_mounted            @"M"
-#define k_permission_file_can_write     @"W"
-#define k_permission_can_create_file    @"C"
-#define k_permission_can_create_folder  @"K"
-#define k_permission_can_delete         @"D"
-#define k_permission_can_rename         @"N"
-#define k_permission_can_move           @"V"
+#define k_permission_shared                     @"S"
+#define k_permission_can_share                  @"R"
+#define k_permission_mounted                    @"M"
+#define k_permission_file_can_write             @"W"
+#define k_permission_can_create_file            @"C"
+#define k_permission_can_create_folder          @"K"
+#define k_permission_can_delete                 @"D"
+#define k_permission_can_rename                 @"N"
+#define k_permission_can_move                   @"V"
 
 // Session
-#define download_session                @"it.twsweb.download.session"
-#define download_session_foreground     @"it.twsweb.download.sessionforeground"
-#define download_session_wwan           @"it.twsweb.download.sessionwwan"
+#define k_download_session                      @"it.twsweb.download.session"
+#define k_download_session_foreground           @"it.twsweb.download.sessionforeground"
+#define k_download_session_wwan                 @"it.twsweb.download.sessionwwan"
 
-#define upload_session                  @"it.twsweb.upload.session"
-#define upload_session_foreground       @"it.twsweb.upload.sessionforeground"
-#define upload_session_wwan             @"it.twsweb.upload.sessionwwan"
+#define k_upload_session                        @"it.twsweb.upload.session"
+#define k_upload_session_foreground             @"it.twsweb.upload.sessionforeground"
+#define k_upload_session_wwan                   @"it.twsweb.upload.sessionwwan"
 
-#define networkingSessionNotification   @"networkingSessionNotification"
+#define k_networkingSessionNotification         @"networkingSessionNotification"
 
 // TaskIdentifier
-#define k_taskIdentifierDone            -1
-#define k_taskIdentifierStop            -2
-#define k_taskIdentifierError           -9999
-#define k_taskIdentifierNULL            9999
+#define k_taskIdentifierDone                    -1
+#define k_taskIdentifierStop                    -2
+#define k_taskIdentifierError                   -99999
+#define k_taskIdentifierNULL                    99999
 
 // TaskStatus
-#define k_taskStatusNone                0
-#define k_taskStatusCancel              -1
-#define k_taskStatusResume              -2
-#define k_taskStatusSuspend             -3
+#define k_taskStatusNone                        0
+#define k_taskStatusCancel                      -1
+#define k_taskStatusResume                      -2
+#define k_taskStatusSuspend                     -3
 
-#define k_timerVerifySession            15.0
+#define k_timerVerifySession                    15.0
 
 // OperationQueue
 #define k_netQueueName                          @"it.twsweb.cryptocloud.queue"
@@ -205,77 +205,77 @@ extern NSString *const BKPasscodeKeychainServiceName;
 #define k_CCErrorInternalError                  -9996
 
 // Metadata ed ID
-#define uploadSessionID @"ID_UPLOAD_"
+#define k_uploadSessionID                   @"ID_UPLOAD_"
 
 // Metadata.Net SELECTOR
-#define selectorAddOffline              @"addOffline"
-#define selectorAddLocal                @"addLocal"
-#define selectorCreateFolder            @"createFolder"
-#define selectorDecryptFile             @"decryptFile"
-#define selectorDelete                  @"delete"
-#define selectorDeleteCrypto            @"deleteCrypto"
-#define selectorDeletePlist             @"deletePlist"
-#define selectorDownloadThumbnail       @"downloadThumbnail"
-#define selectorDownloadOffline         @"downloadOffline"
-#define selectorEncryptFile             @"encryptFile"
-#define selectorGetUserAndGroup         @"getUserAndGroup"
-#define selectorLoadFileView            @"loadFileView"
-#define selectorLoadModelView           @"loadModelView"
-#define selectorLoadPlist               @"loadPlist"
-#define selectorLoadViewImage           @"loadViewImage"
-#define selectorLoadCopy                @"loadCopy"
-#define selectorMove                    @"move"
-#define selectorMoveCrypto              @"moveCrypto"
-#define selectorMovePlist               @"movePlist"
-#define selectorOpenIn                  @"openIn"
-#define selectorOpenWindowShare         @"openWindowShare"
-#define selectorReadFile                @"readFile"
-#define selectorReadFileOffline         @"readFileOffline"
-#define selectorReadFileFolder          @"readFileFolder"
-#define selectorReadFileUploadFile      @"readFileUploadFile"
-#define selectorReadFileVerifyUpload    @"readFileVerifyUpload"
-#define selectorReadFileQuota           @"readFileQuota"
-#define selectorReadFolder              @"readFolder"
-#define selectorReadFolderForced        @"readFolderForced"
-#define selectorReadShare               @"readShare"
-#define selectorReload                  @"reload"
-#define selectorRename                  @"rename"
-#define selectorSave                    @"save"
-#define selectorShare                   @"share"
-#define selectorSearch                  @"search"
-#define selectorOfflineFolder           @"offlineFolder"
-#define selectorUnshare                 @"unshare"
-#define selectorUpdateShare             @"updateShare"
-#define selectorUploadAutomatic         @"uploadAutomatic"
-#define selectorUploadAutomaticAll      @"uploadAutomaticAll"
-#define selectorUploadFile              @"uploadFile"
-#define selectorUploadFileCrypto        @"uploadFileCrypto"
-#define selectorUploadFilePlist         @"uploadFilePlist"
-#define selectorUploadRemovePhoto       @"uploadRemovePhoto"
+#define selectorAddOffline                  @"addOffline"
+#define selectorAddLocal                    @"addLocal"
+#define selectorCreateFolder                @"createFolder"
+#define selectorDecryptFile                 @"decryptFile"
+#define selectorDelete                      @"delete"
+#define selectorDeleteCrypto                @"deleteCrypto"
+#define selectorDeletePlist                 @"deletePlist"
+#define selectorDownloadThumbnail           @"downloadThumbnail"
+#define selectorDownloadOffline             @"downloadOffline"
+#define selectorEncryptFile                 @"encryptFile"
+#define selectorGetUserAndGroup             @"getUserAndGroup"
+#define selectorLoadFileView                @"loadFileView"
+#define selectorLoadModelView               @"loadModelView"
+#define selectorLoadPlist                   @"loadPlist"
+#define selectorLoadViewImage               @"loadViewImage"
+#define selectorLoadCopy                    @"loadCopy"
+#define selectorMove                        @"move"
+#define selectorMoveCrypto                  @"moveCrypto"
+#define selectorMovePlist                   @"movePlist"
+#define selectorOpenIn                      @"openIn"
+#define selectorOpenWindowShare             @"openWindowShare"
+#define selectorReadFile                    @"readFile"
+#define selectorReadFileOffline             @"readFileOffline"
+#define selectorReadFileFolder              @"readFileFolder"
+#define selectorReadFileUploadFile          @"readFileUploadFile"
+#define selectorReadFileVerifyUpload        @"readFileVerifyUpload"
+#define selectorReadFileQuota               @"readFileQuota"
+#define selectorReadFolder                  @"readFolder"
+#define selectorReadFolderForced            @"readFolderForced"
+#define selectorReadShare                   @"readShare"
+#define selectorReload                      @"reload"
+#define selectorRename                      @"rename"
+#define selectorSave                        @"save"
+#define selectorShare                       @"share"
+#define selectorSearch                      @"search"
+#define selectorOfflineFolder               @"offlineFolder"
+#define selectorUnshare                     @"unshare"
+#define selectorUpdateShare                 @"updateShare"
+#define selectorUploadAutomatic             @"uploadAutomatic"
+#define selectorUploadAutomaticAll          @"uploadAutomaticAll"
+#define selectorUploadFile                  @"uploadFile"
+#define selectorUploadFileCrypto            @"uploadFileCrypto"
+#define selectorUploadFilePlist             @"uploadFilePlist"
+#define selectorUploadRemovePhoto           @"uploadRemovePhoto"
 
 // Metadata.Net ACTION
-#define actionCreateFolder              @"createFolder"
-#define actionDeleteFileDirectory       @"deleteFileOrFolder"
-#define actionDownloadFile              @"downloadFile"
-#define actionDownloadThumbnail         @"downloadThumbnail"
-#define actionGetCapabilities           @"getCapabilitiesOfServer"
-#define actionGetFeaturesSuppServer     @"getFeaturesSupportedByServer"
-#define actionGetUserAndGroup           @"getUserAndGroup"
-#define actionGetNotificationsOfServer  @"getNotificationsOfServer"
-#define actionSetNotificationServer     @"setNotificationServer"
-#define actionMoveFileOrFolder          @"moveFileOrFolder"
-#define actionReadFile                  @"readFile"
-#define actionReadFolder                @"readFolder"
-#define actionReadShareServer           @"readShareServer"
-#define actionSearch                    @"search"
-#define actionShare                     @"share"
-#define actionShareWith                 @"shareWith"
-#define actionUnShare                   @"unShare"
-#define actionUpdateShare               @"updateShare"
-#define actionUploadFile                @"uploadFile"
-#define actionUploadAsset               @"uploadAsset"
-#define actionUploadTemplate            @"uploadTemplate"
-#define actionUploadOnlyPlist           @"uploadOnlyPlist"
+#define actionCreateFolder                  @"createFolder"
+#define actionDeleteFileDirectory           @"deleteFileOrFolder"
+#define actionDownloadFile                  @"downloadFile"
+#define actionDownloadThumbnail             @"downloadThumbnail"
+#define actionGetCapabilities               @"getCapabilitiesOfServer"
+#define actionGetFeaturesSuppServer         @"getFeaturesSupportedByServer"
+#define actionGetUserAndGroup               @"getUserAndGroup"
+#define actionGetNotificationsOfServer      @"getNotificationsOfServer"
+#define actionSetNotificationServer         @"setNotificationServer"
+#define actionMoveFileOrFolder              @"moveFileOrFolder"
+#define actionReadFile                      @"readFile"
+#define actionReadFolder                    @"readFolder"
+#define actionReadShareServer               @"readShareServer"
+#define actionSearch                        @"search"
+#define actionShare                         @"share"
+#define actionShareWith                     @"shareWith"
+#define actionUnShare                       @"unShare"
+#define actionUpdateShare                   @"updateShare"
+#define actionUploadFile                    @"uploadFile"
+#define actionUploadAsset                   @"uploadAsset"
+#define actionUploadTemplate                @"uploadTemplate"
+#define actionUploadOnlyPlist               @"uploadOnlyPlist"
 
 // Metadata : FileType
 #define k_metadataTypeFile_audio            @"audio"

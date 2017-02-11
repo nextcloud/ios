@@ -134,7 +134,7 @@
     _netQueueUploadWWan.maxConcurrentOperationCount = k_maxConcurrentOperationDownloadUpload;
     
     // Add notification change session
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(sessionChanged:) name:networkingSessionNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(sessionChanged:) name:k_networkingSessionNotification object:nil];
         
     // Initialization Share
     self.sharesID = [[NSMutableDictionary alloc] init];
@@ -997,7 +997,7 @@
         
         if (self.lastReachability == NO) {
             
-            [self messageNotification:@"_network_available_" description:nil visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeInfo];
+            [self messageNotification:@"_network_available_" description:nil visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo];
             
             if (_activeMain)
                 [_activeMain performSelector:@selector(requestServerInformation) withObject:nil afterDelay:3];
@@ -1010,7 +1010,7 @@
     } else {
         
         if (self.lastReachability == YES) {
-            [self messageNotification:@"_network_not_available_" description:nil visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeInfo];
+            [self messageNotification:@"_network_not_available_" description:nil visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo];
         }
         
         NSLog(@"[LOG] Reachability Changed: NOT Reachable");
@@ -1167,7 +1167,7 @@
         
         if (count >= 10) {
             
-            [app messageNotification:@"_error_" description:@"_too_errors_automatic_all_" visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeError];
+            [app messageNotification:@"_error_" description:@"_too_errors_automatic_all_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
             
             return;
         }
@@ -1277,8 +1277,8 @@
     else if ([[_listChangeTask objectForKey:metadata.fileID] isEqualToString:@"reloadUpload"]) {
         
         // V 1.8 if upload_session_wwan change in upload_session
-        if ([metadata.session isEqualToString:upload_session_wwan])
-            metadata.session = upload_session;
+        if ([metadata.session isEqualToString:k_upload_session_wwan])
+            metadata.session = k_upload_session;
         
         [[CCNetworking sharedNetworking] uploadFileMetadata:metadata taskStatus:k_taskStatusResume];
     }
@@ -1292,7 +1292,7 @@
         NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account];
         
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-            [[CCNetworking sharedNetworking] downloadFile:metadata serverUrl:serverUrl downloadData:downloadData downloadPlist:downloadPlist selector:metadata.sessionSelector selectorPost:metadata.sessionSelectorPost session:download_session taskStatus:k_taskStatusResume delegate:nil];
+            [[CCNetworking sharedNetworking] downloadFile:metadata serverUrl:serverUrl downloadData:downloadData downloadPlist:downloadPlist selector:metadata.sessionSelector selectorPost:metadata.sessionSelectorPost session:k_download_session taskStatus:k_taskStatusResume delegate:nil];
         });
     }
     else if ([[_listChangeTask objectForKey:metadata.fileID] isEqualToString:@"cancelUpload"]) {

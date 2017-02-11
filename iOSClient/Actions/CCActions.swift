@@ -123,7 +123,7 @@ class CCActions: NSObject {
 
         if message.length > 0 {
             
-            appDelegate.messageNotification("_delete_", description: message as String, visible: true, delay:TimeInterval(dismissAfterSecond), type:TWMessageBarMessageType.error)
+            appDelegate.messageNotification("_delete_", description: message as String, visible: true, delay:TimeInterval(k_dismissAfterSecond), type:TWMessageBarMessageType.error)
         }
         
         metadataNet.delegate?.deleteFileOrFolderFailure(metadataNet, message: message, errorCode: errorCode)
@@ -160,7 +160,7 @@ class CCActions: NSObject {
                 
                 print("[LOG] Rename cryptated error \(fileName)")
                 
-                appDelegate.messageNotification("_rename_", description: "_file_not_found_reload_", visible: true, delay: TimeInterval(dismissAfterSecond), type: TWMessageBarMessageType.error)
+                appDelegate.messageNotification("_rename_", description: "_file_not_found_reload_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error)
                 
                 return
             }
@@ -203,7 +203,7 @@ class CCActions: NSObject {
             metadataNet.metadata = metadata
             metadataNet.selectorPost = selectorReadFolderForced
             metadataNet.serverUrl = serverUrl
-            metadataNet.session = upload_session_foreground
+            metadataNet.session = k_upload_session_foreground
             metadataNet.taskStatus = Int(k_taskStatusResume)
             
             if CCCoreData.isOfflineLocalFileID(metadata.fileID, activeAccount: appDelegate.activeAccount) {
@@ -267,7 +267,7 @@ class CCActions: NSObject {
                 title = "_move_"
             }
             
-            appDelegate.messageNotification(title, description: message as String, visible: true, delay:TimeInterval(dismissAfterSecond), type:TWMessageBarMessageType.error)
+            appDelegate.messageNotification(title, description: message as String, visible: true, delay:TimeInterval(k_dismissAfterSecond), type:TWMessageBarMessageType.error)
         }
         
         metadataNet.delegate?.renameMoveFileOrFolderFailure(metadataNet, message: message as NSString, errorCode: errorCode)

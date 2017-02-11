@@ -153,7 +153,7 @@
             metadataNet.fileNamePrint = _titolo;
             metadataNet.pathFolder = NSTemporaryDirectory();
             metadataNet.rev = self.rev;
-            metadataNet.session = upload_session_foreground;
+            metadataNet.session = k_upload_session_foreground;
             metadataNet.taskStatus = k_taskStatusResume;
             
             // 2

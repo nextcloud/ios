@@ -389,7 +389,7 @@
 
 - (void)downloadFileFailure:(NSInteger)errorCode
 {
-    [app messageNotification:@"_download_selected_files_" description:@"_error_download_photobrowser_" visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeError];
+    [app messageNotification:@"_download_selected_files_" description:@"_error_download_photobrowser_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
 }
 
 - (void)downloadFileSuccess:(CCMetadata *)metadata
@@ -656,7 +656,7 @@
         if ([CCCoreData getLocalFileWithFileID:fileID activeAccount:app.activeAccount])
             [self cellSelect:YES indexPath:indexPath metadata:_metadata];
         else
-            [app messageNotification:@"_info_" description:@"_select_only_localfile_" visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeInfo];
+            [app messageNotification:@"_info_" description:@"_select_only_localfile_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo];
         
     } else {
         
@@ -1070,7 +1070,7 @@
         
         // Full Upload ?
         if (assetsFull)
-            [app messageNotification:@"_error_" description:NSLocalizedStringFromTable(@"_not_possible_create_folder_", @"Error", nil) visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeInfo];
+            [app messageNotification:@"_error_" description:NSLocalizedStringFromTable(@"_not_possible_create_folder_", @"Error", nil) visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo];
         
         // START new request : initStateCameraUpload
         _AutomaticCameraUploadInProgress = NO;
@@ -1133,7 +1133,7 @@
                 [self endLoadingAssets];
                 
                 if (assetsFull)
-                    [app messageNotification:@"_error_" description:@"_error_createsubfolders_upload_" visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeInfo];
+                    [app messageNotification:@"_error_" description:@"_error_createsubfolders_upload_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo];
                 
                 return;
             }
@@ -1150,10 +1150,10 @@
         
         // Select type of session
         
-        if (assetMediaType == PHAssetMediaTypeImage && [CCCoreData getCameraUploadWWanPhotoActiveAccount:app.activeAccount] == NO) session = upload_session;
-        if (assetMediaType == PHAssetMediaTypeVideo && [CCCoreData getCameraUploadWWanVideoActiveAccount:app.activeAccount] == NO) session = upload_session;
-        if (assetMediaType == PHAssetMediaTypeImage && [CCCoreData getCameraUploadWWanPhotoActiveAccount:app.activeAccount]) session = upload_session_wwan;
-        if (assetMediaType == PHAssetMediaTypeVideo && [CCCoreData getCameraUploadWWanVideoActiveAccount:app.activeAccount]) session = upload_session_wwan;
+        if (assetMediaType == PHAssetMediaTypeImage && [CCCoreData getCameraUploadWWanPhotoActiveAccount:app.activeAccount] == NO) session = k_upload_session;
+        if (assetMediaType == PHAssetMediaTypeVideo && [CCCoreData getCameraUploadWWanVideoActiveAccount:app.activeAccount] == NO) session = k_upload_session;
+        if (assetMediaType == PHAssetMediaTypeImage && [CCCoreData getCameraUploadWWanPhotoActiveAccount:app.activeAccount]) session = k_upload_session_wwan;
+        if (assetMediaType == PHAssetMediaTypeVideo && [CCCoreData getCameraUploadWWanVideoActiveAccount:app.activeAccount]) session = k_upload_session_wwan;
 
         NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
         

@@ -240,7 +240,7 @@
         metadataNet.fileName = fileName;
         metadataNet.fileNamePrint = fileName;
         metadataNet.serverUrl = _serverUrl;
-        metadataNet.session = upload_session_foreground;
+        metadataNet.session = k_upload_session_foreground;
         metadataNet.taskStatus = k_taskStatusResume;
         
         [self addNetworkingQueue:metadataNet];

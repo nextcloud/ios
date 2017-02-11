@@ -306,7 +306,7 @@
                     metadataNet.downloadPlist = YES;
                     metadataNet.selector = selectorLoadPlist;
                     metadataNet.serverUrl = _serverUrl;
-                    metadataNet.session = download_session_foreground;
+                    metadataNet.session = k_download_session_foreground;
                     metadataNet.taskStatus = k_taskStatusResume;
                     
                     [self addNetworkingQueue:metadataNet];

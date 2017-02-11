@@ -114,7 +114,7 @@
     
     if (sessionDownload == nil) {
         
-        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:download_session];
+        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:k_download_session];
         
         configuration.allowsCellularAccess = YES;
         configuration.sessionSendsLaunchEvents = YES;
@@ -123,7 +123,7 @@
         configuration.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
         
         sessionDownload = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
-        sessionDownload.sessionDescription = download_session;
+        sessionDownload.sessionDescription = k_download_session;
     }
     return sessionDownload;
 }
@@ -142,7 +142,7 @@
         configuration.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
     
         sessionDownloadForeground = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
-        sessionDownloadForeground.sessionDescription = download_session_foreground;
+        sessionDownloadForeground.sessionDescription = k_download_session_foreground;
     }
     return sessionDownloadForeground;
 }
@@ -153,7 +153,7 @@
     
     if (sessionWWanDownload == nil) {
         
-        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:download_session_wwan];
+        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:k_download_session_wwan];
         
         configuration.allowsCellularAccess = NO;
         configuration.sessionSendsLaunchEvents = YES;
@@ -162,7 +162,7 @@
         configuration.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
         
         sessionWWanDownload = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
-        sessionWWanDownload.sessionDescription = download_session_wwan;
+        sessionWWanDownload.sessionDescription = k_download_session_wwan;
     }
     return sessionWWanDownload;
 }
@@ -173,7 +173,7 @@
     
     if (sessionUpload == nil) {
         
-        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:upload_session];
+        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:k_upload_session];
         
         configuration.allowsCellularAccess = YES;
         configuration.sessionSendsLaunchEvents = YES;
@@ -182,7 +182,7 @@
         configuration.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
         
         sessionUpload = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
-        sessionUpload.sessionDescription = upload_session;
+        sessionUpload.sessionDescription = k_upload_session;
     }
     return sessionUpload;
 }
@@ -201,7 +201,7 @@
         configuration.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
         
         sessionUploadForeground = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
-        sessionUploadForeground.sessionDescription = upload_session_foreground;
+        sessionUploadForeground.sessionDescription = k_upload_session_foreground;
     }
     return sessionUploadForeground;
 }
@@ -212,7 +212,7 @@
     
     if (sessionWWanUpload == nil) {
         
-        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:upload_session_wwan];
+        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:k_upload_session_wwan];
         
         configuration.allowsCellularAccess = NO;
         configuration.sessionSendsLaunchEvents = YES;
@@ -221,7 +221,7 @@
         configuration.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
         
         sessionWWanUpload = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
-        sessionWWanUpload.sessionDescription = upload_session_wwan;
+        sessionWWanUpload.sessionDescription = k_upload_session_wwan;
     }
     return sessionWWanUpload;
 }
@@ -251,13 +251,13 @@
 
 - (NSURLSession *)getSessionfromSessionDescription:(NSString *)sessionDescription
 {
-    if ([sessionDescription isEqualToString:download_session]) return [self sessionDownload];
-    if ([sessionDescription isEqualToString:download_session_foreground]) return [self sessionDownloadForeground];
-    if ([sessionDescription isEqualToString:download_session_wwan]) return [self sessionWWanDownload];
+    if ([sessionDescription isEqualToString:k_download_session]) return [self sessionDownload];
+    if ([sessionDescription isEqualToString:k_download_session_foreground]) return [self sessionDownloadForeground];
+    if ([sessionDescription isEqualToString:k_download_session_wwan]) return [self sessionWWanDownload];
     
-    if ([sessionDescription isEqualToString:upload_session]) return [self sessionUpload];
-    if ([sessionDescription isEqualToString:upload_session_foreground]) return [self sessionUploadForeground];
-    if ([sessionDescription isEqualToString:upload_session_wwan]) return [self sessionWWanUpload];
+    if ([sessionDescription isEqualToString:k_upload_session]) return [self sessionUpload];
+    if ([sessionDescription isEqualToString:k_upload_session_foreground]) return [self sessionUploadForeground];
+    if ([sessionDescription isEqualToString:k_upload_session_wwan]) return [self sessionWWanUpload];
     
     return nil;
 }
@@ -436,7 +436,7 @@
         
             // Notification change session
             NSArray *object = [[NSArray alloc] initWithObjects:session, metadata, task, nil];
-            [[NSNotificationCenter defaultCenter] postNotificationName:networkingSessionNotification object:object];
+            [[NSNotificationCenter defaultCenter] postNotificationName:k_networkingSessionNotification object:object];
         
             [self downloadFileSuccessFailure:fileName fileID:metadata.fileID rev:rev date:date serverUrl:serverUrl selector:metadata.sessionSelector selectorPost:metadata.sessionSelectorPost errorCode:errorCode];
         });
@@ -461,7 +461,7 @@
             
             // Notification change session
             NSArray *object = [[NSArray alloc] initWithObjects:session, metadata, task, nil];
-            [[NSNotificationCenter defaultCenter] postNotificationName:networkingSessionNotification object:object];
+            [[NSNotificationCenter defaultCenter] postNotificationName:k_networkingSessionNotification object:object];
             
             [self uploadFileSuccessFailure:metadata fileName:fileName fileID:fileID rev:rev date:date serverUrl:serverUrl errorCode:errorCode];
         });
@@ -549,9 +549,9 @@
         [request setValue:authValue forHTTPHeaderField:@"Authorization"];
     }
     
-    if ([session isEqualToString:download_session]) sessionDownload = [self sessionDownload];
-    else if ([session isEqualToString:download_session_foreground]) sessionDownload = [self sessionDownloadForeground];
-    else if ([session isEqualToString:download_session_wwan]) sessionDownload = [self sessionWWanDownload];
+    if ([session isEqualToString:k_download_session]) sessionDownload = [self sessionDownload];
+    else if ([session isEqualToString:k_download_session_foreground]) sessionDownload = [self sessionDownloadForeground];
+    else if ([session isEqualToString:k_download_session_wwan]) sessionDownload = [self sessionWWanDownload];
     
     NSURLSessionDownloadTask *downloadTask = [sessionDownload downloadTaskWithRequest:request];
     
@@ -851,7 +851,7 @@
     CCMetadata *metadata = [CCUtility insertFileSystemInMetadata:fileName directory:_directoryUser activeAccount:_activeAccount cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath];
     
     //fileID
-    NSString *uploadID =  [uploadSessionID stringByAppendingString:[CCUtility createID]];
+    NSString *uploadID =  [k_uploadSessionID stringByAppendingString:[CCUtility createID]];
     
     //add delegate
     if (delegate)
@@ -1214,9 +1214,9 @@
         return;
     }
     
-    if ([session isEqualToString:upload_session]) sessionUpload = [self sessionUpload];
-    else if ([session isEqualToString:upload_session_foreground]) sessionUpload = [self sessionUploadForeground];
-    else if ([session isEqualToString:upload_session_wwan]) sessionUpload = [self sessionWWanUpload];
+    if ([session isEqualToString:k_upload_session]) sessionUpload = [self sessionUpload];
+    else if ([session isEqualToString:k_upload_session_foreground]) sessionUpload = [self sessionUploadForeground];
+    else if ([session isEqualToString:k_upload_session_wwan]) sessionUpload = [self sessionWWanUpload];
 
     NSURLSessionUploadTask *uploadTask = [sessionUpload uploadTaskWithRequest:request fromFile:[NSURL fileURLWithPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, fileNameForUpload]]];
     
@@ -1522,10 +1522,10 @@
         NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account];
             
         if (metadata.sessionTaskIdentifier == k_taskIdentifierError)
-            [self downloadFile:metadata serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:metadata.sessionSelector selectorPost:nil session:download_session taskStatus: k_taskStatusResume delegate:nil];
+            [self downloadFile:metadata serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:metadata.sessionSelector selectorPost:nil session:k_download_session taskStatus: k_taskStatusResume delegate:nil];
             
         if (metadata.sessionTaskIdentifierPlist == k_taskIdentifierError)
-            [self downloadFile:metadata serverUrl:serverUrl downloadData:NO downloadPlist:YES selector:metadata.sessionSelector selectorPost:nil session:download_session taskStatus: k_taskStatusResume delegate:nil];
+            [self downloadFile:metadata serverUrl:serverUrl downloadData:NO downloadPlist:YES selector:metadata.sessionSelector selectorPost:nil session:k_download_session taskStatus: k_taskStatusResume delegate:nil];
             
         [serversUrl addObject:serverUrl];
             
@@ -1592,7 +1592,7 @@
         // Notification change session
         dispatch_async(dispatch_get_main_queue(), ^{
             NSArray *object = [[NSArray alloc] initWithObjects:session, metadata, nil];
-            [[NSNotificationCenter defaultCenter] postNotificationName:networkingSessionNotification object:object];
+            [[NSNotificationCenter defaultCenter] postNotificationName:k_networkingSessionNotification object:object];
         });
     }
     

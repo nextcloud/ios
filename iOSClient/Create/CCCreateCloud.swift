@@ -59,15 +59,15 @@ class CreateMenuAdd: NSObject {
         actionSheet.cancelButtonTitle = NSLocalizedString("_cancel_", comment: "")
 
         actionSheet.addButton(withTitle: NSLocalizedString("_create_folder_", comment: ""), image: UIImage(named: "createFolderNextcloud"), backgroundColor: UIColor.white, height: 50.0 ,type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
-            appDelegate.activeMain.returnCreate(Int(returnCreateFolderPlain))
+            appDelegate.activeMain.returnCreate(Int(k_returnCreateFolderPlain))
         })
         
         actionSheet.addButton(withTitle: NSLocalizedString("_upload_photos_videos_", comment: ""), image: UIImage(named: "uploadPhotoNextcloud"), backgroundColor: UIColor.white, height: 50.0, type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
-            appDelegate.activeMain.returnCreate(Int(returnCreateFotoVideoPlain))
+            appDelegate.activeMain.returnCreate(Int(k_returnCreateFotoVideoPlain))
         })
         
         actionSheet.addButton(withTitle: NSLocalizedString("_upload_file_", comment: ""), image: UIImage(named: "uploadFileNextcloud"), backgroundColor: UIColor.white, height: 50.0, type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
-            appDelegate.activeMain.returnCreate(Int(returnCreateFilePlain))
+            appDelegate.activeMain.returnCreate(Int(k_returnCreateFilePlain))
         })
         
         actionSheet.addButton(withTitle: NSLocalizedString("_upload_encrypted_mode", comment: ""), image: UIImage(named: "actionSheetLock"), backgroundColor: colorLightGray, height: 50.0, type: AHKActionSheetButtonType.encrypted, handler: {(AHKActionSheet) -> Void in
@@ -103,15 +103,15 @@ class CreateMenuAdd: NSObject {
         actionSheet.cancelButtonTitle = NSLocalizedString("_cancel_", comment: "")
         
         actionSheet.addButton(withTitle: NSLocalizedString("_create_folder_", comment: ""), image: UIImage(named: "foldercrypto"), backgroundColor: UIColor.white, height: 50.0, type: AHKActionSheetButtonType.encrypted, handler: {(AHKActionSheet) -> Void in
-            appDelegate.activeMain.returnCreate(Int(returnCreateFolderEncrypted))
+            appDelegate.activeMain.returnCreate(Int(k_returnCreateFolderEncrypted))
         })
         
         actionSheet.addButton(withTitle: NSLocalizedString("_upload_photos_videos_", comment: ""), image: UIImage(named: "photocrypto"), backgroundColor: UIColor.white, height: 50.0, type: AHKActionSheetButtonType.encrypted, handler: {(AHKActionSheet) -> Void in
-            appDelegate.activeMain.returnCreate(Int(returnCreateFotoVideoEncrypted))
+            appDelegate.activeMain.returnCreate(Int(k_returnCreateFotoVideoEncrypted))
         })
         
         actionSheet.addButton(withTitle: NSLocalizedString("_upload_file_", comment: ""), image: UIImage(named: "importCloudCrypto"), backgroundColor: UIColor.white, height: 50.0, type: AHKActionSheetButtonType.encrypted, handler: {(AHKActionSheet) -> Void in
-            appDelegate.activeMain.returnCreate(Int(returnCreateFileEncrypted))
+            appDelegate.activeMain.returnCreate(Int(k_returnCreateFileEncrypted))
         })
 
         actionSheet.addButton(withTitle: NSLocalizedString("_upload_template_", comment: ""), image: UIImage(named: "template"), backgroundColor: colorLightGray, height: 50.0, type: AHKActionSheetButtonType.encrypted, handler: {(AHKActionSheet) -> Void in
@@ -151,11 +151,11 @@ class CreateMenuAdd: NSObject {
         actionSheet.cancelButtonTitle = NSLocalizedString("_cancel_", comment: "")
         
         actionSheet.addButton(withTitle: NSLocalizedString("_add_notes_", comment: ""), image: UIImage(named: "note"), backgroundColor: UIColor.white, height: 50.0, type: AHKActionSheetButtonType.encrypted, handler: {(AHKActionSheet) -> Void in
-            appDelegate.activeMain.returnCreate(Int(returnNote))
+            appDelegate.activeMain.returnCreate(Int(k_returnNote))
         })
         
         actionSheet.addButton(withTitle: NSLocalizedString("_add_web_account_", comment: ""), image: UIImage(named: "baseurl"), backgroundColor: UIColor.white, height: 50.0, type: AHKActionSheetButtonType.encrypted, handler: {(AHKActionSheet) -> Void in
-            appDelegate.activeMain.returnCreate(Int(returnAccountWeb))
+            appDelegate.activeMain.returnCreate(Int(k_returnAccountWeb))
         })
         
         actionSheet.addButton(withTitle: "", image: nil, backgroundColor: UIColor(colorLiteralRed: 250.0/255.0, green: 250.0/255.0, blue: 250.0/255.0, alpha: 1), height: 10.0, type: AHKActionSheetButtonType.disabled, handler: {(AHKActionSheet) -> Void in
@@ -163,15 +163,15 @@ class CreateMenuAdd: NSObject {
         })
         
         actionSheet.addButton(withTitle: NSLocalizedString("_add_credit_card_", comment: ""), image: UIImage(named: "cartadicredito"), backgroundColor: UIColor.white, height: 50.0, type: AHKActionSheetButtonType.encrypted, handler: {(AHKActionSheet) -> Void in
-            appDelegate.activeMain.returnCreate(Int(returnCartaDiCredito))
+            appDelegate.activeMain.returnCreate(Int(k_returnCartaDiCredito))
         })
         
         actionSheet.addButton(withTitle: NSLocalizedString("_add_atm_", comment: ""), image: UIImage(named: "bancomat"), backgroundColor: UIColor.white, height: 50.0, type: AHKActionSheetButtonType.encrypted, handler: {(AHKActionSheet) -> Void in
-            appDelegate.activeMain.returnCreate(Int(returnBancomat))
+            appDelegate.activeMain.returnCreate(Int(k_returnBancomat))
         })
         
         actionSheet.addButton(withTitle: NSLocalizedString("_add_bank_account_", comment: ""), image: UIImage(named: "contocorrente"), backgroundColor: UIColor.white, height: 50.0, type: AHKActionSheetButtonType.encrypted, handler: {(AHKActionSheet) -> Void in
-            appDelegate.activeMain.returnCreate(Int(returnContoCorrente))
+            appDelegate.activeMain.returnCreate(Int(k_returnContoCorrente))
         })
         
         actionSheet.addButton(withTitle: "", image: nil, backgroundColor: UIColor(colorLiteralRed: 250.0/255.0, green: 250.0/255.0, blue: 250.0/255.0, alpha: 1), height: 10.0, type: AHKActionSheetButtonType.disabled, handler: {(AHKActionSheet) -> Void in
@@ -179,15 +179,15 @@ class CreateMenuAdd: NSObject {
         })
         
         actionSheet.addButton(withTitle: NSLocalizedString("_add_driving_license_", comment: ""), image: UIImage(named: "patenteguida"), backgroundColor: UIColor.white, height: 50.0, type: AHKActionSheetButtonType.encrypted, handler: {(AHKActionSheet) -> Void in
-            appDelegate.activeMain.returnCreate(Int(returnPatenteGuida))
+            appDelegate.activeMain.returnCreate(Int(k_returnPatenteGuida))
         })
         
         actionSheet.addButton(withTitle: NSLocalizedString("_add_id_card_", comment: ""), image: UIImage(named: "cartaidentita"), backgroundColor: UIColor.white, height: 50.0, type: AHKActionSheetButtonType.encrypted, handler: {(AHKActionSheet) -> Void in
-            appDelegate.activeMain.returnCreate(Int(returnCartaIdentita))
+            appDelegate.activeMain.returnCreate(Int(k_returnCartaIdentita))
         })
         
         actionSheet.addButton(withTitle: NSLocalizedString("_add_passport_", comment: ""), image: UIImage(named: "passaporto"), backgroundColor: UIColor.white, height: 50.0, type: AHKActionSheetButtonType.encrypted, handler: {(AHKActionSheet) -> Void in
-            appDelegate.activeMain.returnCreate(Int(returnPassaporto))
+            appDelegate.activeMain.returnCreate(Int(k_returnPassaporto))
         })
         
         actionSheet.show()
@@ -342,7 +342,7 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
                     
                     self.reloadFormRow(formRow)
                     
-                    appDelegate.messageNotification("_info_", description: "_forbidden_characters_", visible: true, delay: TimeInterval(dismissAfterSecond), type: TWMessageBarMessageType.info)
+                    appDelegate.messageNotification("_info_", description: "_forbidden_characters_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info)
                 }
             }
             

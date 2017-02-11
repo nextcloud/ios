@@ -777,22 +777,22 @@
 
 + (NSArray *)getTableMetadataDownloadAccount:(NSString *)activeAccount
 {
-    return [self getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND ((session == %@) || (session == %@)) AND ((sessionTaskIdentifier != %i) OR (sessionTaskIdentifierPlist != %i))", activeAccount, download_session, download_session_foreground, k_taskIdentifierDone, k_taskIdentifierDone] context:nil];
+    return [self getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND ((session == %@) || (session == %@)) AND ((sessionTaskIdentifier != %i) OR (sessionTaskIdentifierPlist != %i))", activeAccount, k_download_session, k_download_session_foreground, k_taskIdentifierDone, k_taskIdentifierDone] context:nil];
 }
 
 + (NSArray *)getTableMetadataDownloadWWanAccount:(NSString *)activeAccount
 {
-    return [self getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (session == %@) AND ((sessionTaskIdentifier != %i) OR (sessionTaskIdentifierPlist != %i))", activeAccount, download_session_wwan, k_taskIdentifierDone, k_taskIdentifierDone] context:nil];
+    return [self getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (session == %@) AND ((sessionTaskIdentifier != %i) OR (sessionTaskIdentifierPlist != %i))", activeAccount, k_download_session_wwan, k_taskIdentifierDone, k_taskIdentifierDone] context:nil];
 }
 
 + (NSArray *)getTableMetadataUploadAccount:(NSString *)activeAccount
 {
-    return [self getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND ((session == %@) || (session == %@)) AND ((sessionTaskIdentifier != %i) OR (sessionTaskIdentifierPlist != %i))", activeAccount, upload_session, upload_session_foreground, k_taskIdentifierDone, k_taskIdentifierDone] context:nil];
+    return [self getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND ((session == %@) || (session == %@)) AND ((sessionTaskIdentifier != %i) OR (sessionTaskIdentifierPlist != %i))", activeAccount, k_upload_session, k_upload_session_foreground, k_taskIdentifierDone, k_taskIdentifierDone] context:nil];
 }
 
 + (NSArray *)getTableMetadataUploadWWanAccount:(NSString *)activeAccount
 {
-    return [self getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (session == %@) AND ((sessionTaskIdentifier != %i) OR (sessionTaskIdentifierPlist != %i))", activeAccount, upload_session_wwan, k_taskIdentifierDone, k_taskIdentifierDone] context:nil];
+    return [self getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (session == %@) AND ((sessionTaskIdentifier != %i) OR (sessionTaskIdentifierPlist != %i))", activeAccount, k_upload_session_wwan, k_taskIdentifierDone, k_taskIdentifierDone] context:nil];
 }
 
 + (NSArray *)getRecordsTableMetadataPhotosCameraUpload:(NSString *)serverUrl activeAccount:(NSString *)activeAccount

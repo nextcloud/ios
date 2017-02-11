@@ -437,7 +437,7 @@
             metadataNet.selector = selector;
             metadataNet.selectorPost = selectorPost;
             metadataNet.serverUrl = serverUrl;
-            metadataNet.session = download_session;
+            metadataNet.session = k_download_session;
             metadataNet.taskStatus = k_taskStatusResume;
 
             [app addNetworkingOperationQueue:app.netQueueDownload delegate:app.activeMain metadataNet:metadataNet];
