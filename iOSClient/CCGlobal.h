@@ -131,16 +131,6 @@ extern NSString *const BKPasscodeKeychainServiceName;
 #define k_returnCartaIdentita                   12
 #define k_returnPassaporto                      13
 
-#define RalewayBold(s) [UIFont fontWithName:@"Raleway-Bold" size:s]
-#define RalewayExtraBold(s) [UIFont fontWithName:@"Raleway-ExtraBold" size:s]
-#define RalewayExtraLight(s) [UIFont fontWithName:@"Raleway-ExtraLight" size:s]
-#define RalewayHeavy(s) [UIFont fontWithName:@"Raleway-Heavy" size:s]
-#define RalewayLight(s) [UIFont fontWithName:@"Raleway-Light" size:s]
-#define RalewayMedium(s) [UIFont fontWithName:@"Raleway-Medium" size:s]
-#define RalewayRegular(s) [UIFont fontWithName:@"Raleway-Regular" size:s]
-#define RalewaySemiBold(s) [UIFont fontWithName:@"Raleway-SemiBold" size:s]
-#define RalewayThin(s) [UIFont fontWithName:@"Raleway-Thin" size:s]
-
 // File Name Const
 #define k_folderDefaultCameraUpload                     @"Photos"
 

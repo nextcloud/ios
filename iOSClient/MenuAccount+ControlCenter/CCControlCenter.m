@@ -768,14 +768,10 @@
     // colori e font
     if (metadata.cryptated) {
         cell.labelTitle.textColor = COLOR_ENCRYPTED;
-        //nameLabel.font = RalewayLight(13.0f);
         cell.labelInfoFile.textColor = [UIColor blackColor];
-        //detailLabel.font = RalewayLight(9.0f);
     } else {
         cell.labelTitle.textColor = COLOR_CLEAR;
-        //nameLabel.font = RalewayLight(13.0f);
         cell.labelInfoFile.textColor = [UIColor blackColor];
-        //detailLabel.font = RalewayLight(9.0f);
     }
     
     // ----------------------------------------------------------------------------------------------------------

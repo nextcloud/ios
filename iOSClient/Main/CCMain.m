@@ -544,11 +544,11 @@
         if ([app.reachability isReachable] == NO) {
             messageLabel.text = NSLocalizedString(@"_comm_erro_pull_down_", nil);
             messageLabel.textColor = COLOR_NO_CONNECTION;
-            messageLabel.font = RalewayLight(14.0f);
+            messageLabel.font = [UIFont systemFontOfSize:14];
         } else {
             messageLabel.text = NSLocalizedString(title ,nil);
             messageLabel.textColor = [UIColor blackColor];
-            messageLabel.font = RalewayLight(14.0f);
+            messageLabel.font = [UIFont systemFontOfSize:14];
         }
         messageLabel.numberOfLines = 0;
         messageLabel.textAlignment = NSTextAlignmentCenter;
@@ -4996,14 +4996,10 @@
     // colori e font
     if (metadata.cryptated) {
         cell.labelTitle.textColor = COLOR_ENCRYPTED;
-        //nameLabel.font = RalewayLight(13.0f);
         cell.labelInfoFile.textColor = [UIColor blackColor];
-        //detailLabel.font = RalewayLight(9.0f);
     } else {
         cell.labelTitle.textColor = COLOR_CLEAR;
-        //nameLabel.font = RalewayLight(13.0f);
         cell.labelInfoFile.textColor = [UIColor blackColor];
-        //detailLabel.font = RalewayLight(9.0f);
     }
     
     // ----------------------------------------------------------------------------------------------------------

@@ -386,7 +386,6 @@
 		F77B0EEE1D118A16002130FE /* VideoOverlay@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0C851C8892DF008DAB36 /* VideoOverlay@2x.png */; };
 		F77B0EEF1D118A16002130FE /* UIBarButtonItemArrowLeft.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0C7B1C8892DF008DAB36 /* UIBarButtonItemArrowLeft.png */; };
 		F77B0EF01D118A16002130FE /* ZSSh4@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DA01C889300008DAB36 /* ZSSh4@2x.png */; };
-		F77B0EF11D118A16002130FE /* Raleway-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F722CEEC1A40361A00C40606 /* Raleway-SemiBold.ttf */; };
 		F77B0EF21D118A16002130FE /* ZSSunderline.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DCD1C889300008DAB36 /* ZSSunderline.png */; };
 		F77B0EF31D118A16002130FE /* VideoOverlay@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0C861C8892DF008DAB36 /* VideoOverlay@3x.png */; };
 		F77B0EF41D118A16002130FE /* ImageSelectedOff.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0C691C8892DF008DAB36 /* ImageSelectedOff.png */; };
@@ -400,7 +399,6 @@
 		F77B0EFF1D118A16002130FE /* ZSSinsertkeyword.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DAB1C889300008DAB36 /* ZSSinsertkeyword.png */; };
 		F77B0F001D118A16002130FE /* UIBarButtonItemArrowRight@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0C801C8892DF008DAB36 /* UIBarButtonItemArrowRight@3x.png */; };
 		F77B0F011D118A16002130FE /* UIBarButtonItemArrowRight.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0C7E1C8892DF008DAB36 /* UIBarButtonItemArrowRight.png */; };
-		F77B0F021D118A16002130FE /* Raleway-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F722CEED1A40361A00C40606 /* Raleway-Thin.ttf */; };
 		F77B0F031D118A16002130FE /* ImageSelectedSmallOff.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0C6F1C8892DF008DAB36 /* ImageSelectedSmallOff.png */; };
 		F77B0F041D118A16002130FE /* ZSSoutdent@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DB81C889300008DAB36 /* ZSSoutdent@2x.png */; };
 		F77B0F051D118A16002130FE /* ZSSindent.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DA91C889300008DAB36 /* ZSSindent.png */; };
@@ -458,7 +456,6 @@
 		F77B0F401D118A16002130FE /* UIBarButtonItemArrowLeft@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0C7C1C8892DF008DAB36 /* UIBarButtonItemArrowLeft@2x.png */; };
 		F77B0F411D118A16002130FE /* ZSStextcolor@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DCC1C889300008DAB36 /* ZSStextcolor@2x.png */; };
 		F77B0F421D118A16002130FE /* ImageSelectedOn.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0C6C1C8892DF008DAB36 /* ImageSelectedOn.png */; };
-		F77B0F431D118A16002130FE /* Raleway-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F722CEE61A40361A00C40606 /* Raleway-ExtraBold.ttf */; };
 		F77B0F441D118A16002130FE /* Reader-Button-N@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0EA71C889317008DAB36 /* Reader-Button-N@2x.png */; };
 		F77B0F461D118A16002130FE /* Reader-Button-H@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0EA51C889317008DAB36 /* Reader-Button-H@2x.png */; };
 		F77B0F471D118A16002130FE /* ZSSbgcolor@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0D901C889300008DAB36 /* ZSSbgcolor@2x.png */; };
@@ -477,18 +474,15 @@
 		F77B0F571D118A16002130FE /* synchronizedcrypto.gif in Resources */ = {isa = PBXBuildFile; fileRef = F76344761BF259A800188725 /* synchronizedcrypto.gif */; };
 		F77B0F581D118A16002130FE /* TTOpenInAppActivityLocalizable.string in Resources */ = {isa = PBXBuildFile; fileRef = F7BFE0CA1B67925500F072A4 /* TTOpenInAppActivityLocalizable.string */; };
 		F77B0F591D118A16002130FE /* ZSSRichTextEditor.js in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DF01C889300008DAB36 /* ZSSRichTextEditor.js */; };
-		F77B0F5A1D118A16002130FE /* Raleway-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F722CEE91A40361A00C40606 /* Raleway-Light.ttf */; };
 		F77B0F5B1D118A16002130FE /* ZSSclearstyle.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0D951C889300008DAB36 /* ZSSclearstyle.png */; };
 		F77B0F5C1D118A16002130FE /* ImagesIntro.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F744BE961BEBB31E004FFF66 /* ImagesIntro.xcassets */; };
 		F77B0F5D1D118A16002130FE /* Reader-Print.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0EB01C889317008DAB36 /* Reader-Print.png */; };
 		F77B0F5E1D118A16002130FE /* ZSSlink@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DB41C889300008DAB36 /* ZSSlink@2x.png */; };
 		F77B0F5F1D118A16002130FE /* Reader-Email.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0EA81C889317008DAB36 /* Reader-Email.png */; };
-		F77B0F601D118A16002130FE /* Raleway-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F722CEEA1A40361A00C40606 /* Raleway-Medium.ttf */; };
 		F77B0F611D118A16002130FE /* Acknowledgements.rtf in Resources */ = {isa = PBXBuildFile; fileRef = F7ACE42B1BAC0268006C0017 /* Acknowledgements.rtf */; };
 		F77B0F621D118A16002130FE /* ZSSunorderedlist.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DD31C889300008DAB36 /* ZSSunorderedlist.png */; };
 		F77B0F631D118A16002130FE /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7E70DE91A24DE4100E1B66A /* Localizable.strings */; };
 		F77B0F641D118A16002130FE /* ZSSh4.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0D9F1C889300008DAB36 /* ZSSh4.png */; };
-		F77B0F651D118A16002130FE /* Raleway-Heavy.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F722CEE81A40361A00C40606 /* Raleway-Heavy.ttf */; };
 		F77B0F661D118A16002130FE /* ImageSelectedOff@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0C6A1C8892DF008DAB36 /* ImageSelectedOff@2x.png */; };
 		F77B0F671D118A16002130FE /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7C6D5F61BE371D800AC83AD /* InfoPlist.strings */; };
 		F77B0F691D118A16002130FE /* ImageSelectedSmallOff@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0C701C8892DF008DAB36 /* ImageSelectedSmallOff@2x.png */; };
@@ -497,7 +491,6 @@
 		F77B0F6C1D118A16002130FE /* ZSSsubscript.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DC51C889300008DAB36 /* ZSSsubscript.png */; };
 		F77B0F6E1D118A16002130FE /* ZSShorizontalrule@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DA61C889300008DAB36 /* ZSShorizontalrule@2x.png */; };
 		F77B0F6F1D118A16002130FE /* ZSSforcejustify.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0D971C889300008DAB36 /* ZSSforcejustify.png */; };
-		F77B0F711D118A16002130FE /* Raleway-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F722CEE51A40361A00C40606 /* Raleway-Bold.ttf */; };
 		F77B0F721D118A16002130FE /* PlayButtonOverlayLarge@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0C761C8892DF008DAB36 /* PlayButtonOverlayLarge@2x.png */; };
 		F77B0F731D118A16002130FE /* ImageSelectedSmallOn@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0C741C8892DF008DAB36 /* ImageSelectedSmallOn@3x.png */; };
 		F77B0F741D118A16002130FE /* ZSSunorderedlist@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DD41C889300008DAB36 /* ZSSunorderedlist@2x.png */; };
@@ -518,8 +511,6 @@
 		F77B0F841D118A16002130FE /* Reader-Print@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0EB11C889317008DAB36 /* Reader-Print@2x.png */; };
 		F77B0F851D118A16002130FE /* Reader-Export@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0EAB1C889317008DAB36 /* Reader-Export@2x.png */; };
 		F77B0F861D118A16002130FE /* LMMediaPlayerView.bundle in Resources */ = {isa = PBXBuildFile; fileRef = F70F0F281C889339008DAB36 /* LMMediaPlayerView.bundle */; };
-		F77B0F871D118A16002130FE /* Raleway-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F722CEEB1A40361A00C40606 /* Raleway-Regular.ttf */; };
-		F77B0F891D118A16002130FE /* Raleway-ExtraLight.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F722CEE71A40361A00C40606 /* Raleway-ExtraLight.ttf */; };
 		F77B0F8A1D118A16002130FE /* CCCellMain.xib in Resources */ = {isa = PBXBuildFile; fileRef = F70211F61BAC56E9003FC03E /* CCCellMain.xib */; };
 		F77B0F8B1D118A16002130FE /* PlayButtonOverlayLargeTap@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0C791C8892DF008DAB36 /* PlayButtonOverlayLargeTap@2x.png */; };
 		F77B0F8C1D118A16002130FE /* CCCellMainTransfer.xib in Resources */ = {isa = PBXBuildFile; fileRef = F70211F91BAC56E9003FC03E /* CCCellMainTransfer.xib */; };
@@ -1099,16 +1090,6 @@
 		F72137301BAFF0920012B613 /* CCTemplates.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCTemplates.m; sourceTree = "<group>"; };
 		F7229B461DF71BA800E8C4E7 /* ChangeLog */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ChangeLog; sourceTree = SOURCE_ROOT; };
 		F7229B491DF71BB300E8C4E7 /* AUTHORS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AUTHORS; sourceTree = SOURCE_ROOT; };
-		F722CEE41A40361A00C40606 /* OFL.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = OFL.txt; sourceTree = "<group>"; };
-		F722CEE51A40361A00C40606 /* Raleway-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Raleway-Bold.ttf"; sourceTree = "<group>"; };
-		F722CEE61A40361A00C40606 /* Raleway-ExtraBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Raleway-ExtraBold.ttf"; sourceTree = "<group>"; };
-		F722CEE71A40361A00C40606 /* Raleway-ExtraLight.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Raleway-ExtraLight.ttf"; sourceTree = "<group>"; };
-		F722CEE81A40361A00C40606 /* Raleway-Heavy.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Raleway-Heavy.ttf"; sourceTree = "<group>"; };
-		F722CEE91A40361A00C40606 /* Raleway-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Raleway-Light.ttf"; sourceTree = "<group>"; };
-		F722CEEA1A40361A00C40606 /* Raleway-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Raleway-Medium.ttf"; sourceTree = "<group>"; };
-		F722CEEB1A40361A00C40606 /* Raleway-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Raleway-Regular.ttf"; sourceTree = "<group>"; };
-		F722CEEC1A40361A00C40606 /* Raleway-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Raleway-SemiBold.ttf"; sourceTree = "<group>"; };
-		F722CEED1A40361A00C40606 /* Raleway-Thin.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Raleway-Thin.ttf"; sourceTree = "<group>"; };
 		F7253FC81E38BAF20084135B /* JSAlertView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSAlertView.h; sourceTree = "<group>"; };
 		F7253FC91E38BAF20084135B /* JSAlertView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSAlertView.m; sourceTree = "<group>"; };
 		F7296A601C8880C9001A7809 /* CCCellShareExt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCCellShareExt.h; sourceTree = "<group>"; };
@@ -2373,23 +2354,6 @@
 			path = Templates;
 			sourceTree = "<group>";
 		};
-		F722CEE31A40361A00C40606 /* Raleway */ = {
-			isa = PBXGroup;
-			children = (
-				F722CEE41A40361A00C40606 /* OFL.txt */,
-				F722CEE51A40361A00C40606 /* Raleway-Bold.ttf */,
-				F722CEE61A40361A00C40606 /* Raleway-ExtraBold.ttf */,
-				F722CEE71A40361A00C40606 /* Raleway-ExtraLight.ttf */,
-				F722CEE81A40361A00C40606 /* Raleway-Heavy.ttf */,
-				F722CEE91A40361A00C40606 /* Raleway-Light.ttf */,
-				F722CEEA1A40361A00C40606 /* Raleway-Medium.ttf */,
-				F722CEEB1A40361A00C40606 /* Raleway-Regular.ttf */,
-				F722CEEC1A40361A00C40606 /* Raleway-SemiBold.ttf */,
-				F722CEED1A40361A00C40606 /* Raleway-Thin.ttf */,
-			);
-			path = Raleway;
-			sourceTree = "<group>";
-		};
 		F7253FC71E38BAF20084135B /* JSAlertView */ = {
 			isa = PBXGroup;
 			children = (
@@ -3238,7 +3202,6 @@
 				F7F0617A1BAACDD300846525 /* CryptoCloud.pch */,
 				F7F67BAD1A24D27800EE80DA /* main.m */,
 				F72B60941A24F04E004EF66F /* Localizzazione */,
-				F722CEE31A40361A00C40606 /* Raleway */,
 			);
 			name = "Supporting Files";
 			path = iOSClient;
@@ -3586,7 +3549,6 @@
 				F77B0EEE1D118A16002130FE /* VideoOverlay@2x.png in Resources */,
 				F77B0EEF1D118A16002130FE /* UIBarButtonItemArrowLeft.png in Resources */,
 				F77B0EF01D118A16002130FE /* ZSSh4@2x.png in Resources */,
-				F77B0EF11D118A16002130FE /* Raleway-SemiBold.ttf in Resources */,
 				F77D49A91DC238E500CDC568 /* loading@2x.gif in Resources */,
 				F77B0EF21D118A16002130FE /* ZSSunderline.png in Resources */,
 				F77B0EF31D118A16002130FE /* VideoOverlay@3x.png in Resources */,
@@ -3604,7 +3566,6 @@
 				F77B0F001D118A16002130FE /* UIBarButtonItemArrowRight@3x.png in Resources */,
 				F77B0F011D118A16002130FE /* UIBarButtonItemArrowRight.png in Resources */,
 				F7676A7B1D5CB2A400DF734C /* icon-error@2x.png in Resources */,
-				F77B0F021D118A16002130FE /* Raleway-Thin.ttf in Resources */,
 				F78BFED41D3111B800E513CF /* LaunchScreenNextcloud.xib in Resources */,
 				F77B0F031D118A16002130FE /* ImageSelectedSmallOff.png in Resources */,
 				F77B0F041D118A16002130FE /* ZSSoutdent@2x.png in Resources */,
@@ -3670,7 +3631,6 @@
 				F77B0F401D118A16002130FE /* UIBarButtonItemArrowLeft@2x.png in Resources */,
 				F77B0F411D118A16002130FE /* ZSStextcolor@2x.png in Resources */,
 				F77B0F421D118A16002130FE /* ImageSelectedOn.png in Resources */,
-				F77B0F431D118A16002130FE /* Raleway-ExtraBold.ttf in Resources */,
 				F77B0F441D118A16002130FE /* Reader-Button-N@2x.png in Resources */,
 				F77B0F461D118A16002130FE /* Reader-Button-H@2x.png in Resources */,
 				F77B0F471D118A16002130FE /* ZSSbgcolor@2x.png in Resources */,
@@ -3689,18 +3649,15 @@
 				F77B0F571D118A16002130FE /* synchronizedcrypto.gif in Resources */,
 				F77B0F581D118A16002130FE /* TTOpenInAppActivityLocalizable.string in Resources */,
 				F77B0F591D118A16002130FE /* ZSSRichTextEditor.js in Resources */,
-				F77B0F5A1D118A16002130FE /* Raleway-Light.ttf in Resources */,
 				F77B0F5B1D118A16002130FE /* ZSSclearstyle.png in Resources */,
 				F77B0F5C1D118A16002130FE /* ImagesIntro.xcassets in Resources */,
 				F77B0F5D1D118A16002130FE /* Reader-Print.png in Resources */,
 				F77B0F5E1D118A16002130FE /* ZSSlink@2x.png in Resources */,
 				F77B0F5F1D118A16002130FE /* Reader-Email.png in Resources */,
-				F77B0F601D118A16002130FE /* Raleway-Medium.ttf in Resources */,
 				F77B0F611D118A16002130FE /* Acknowledgements.rtf in Resources */,
 				F77B0F621D118A16002130FE /* ZSSunorderedlist.png in Resources */,
 				F77B0F631D118A16002130FE /* Localizable.strings in Resources */,
 				F77B0F641D118A16002130FE /* ZSSh4.png in Resources */,
-				F77B0F651D118A16002130FE /* Raleway-Heavy.ttf in Resources */,
 				F77B0F661D118A16002130FE /* ImageSelectedOff@2x.png in Resources */,
 				F77B0F671D118A16002130FE /* InfoPlist.strings in Resources */,
 				F77B0F691D118A16002130FE /* ImageSelectedSmallOff@2x.png in Resources */,
@@ -3711,7 +3668,6 @@
 				F7F06EC31DBFACC600099AE9 /* CTAssetsPickerController.bundle in Resources */,
 				F77B0F6E1D118A16002130FE /* ZSShorizontalrule@2x.png in Resources */,
 				F77B0F6F1D118A16002130FE /* ZSSforcejustify.png in Resources */,
-				F77B0F711D118A16002130FE /* Raleway-Bold.ttf in Resources */,
 				F77B0F721D118A16002130FE /* PlayButtonOverlayLarge@2x.png in Resources */,
 				F77B0F731D118A16002130FE /* ImageSelectedSmallOn@3x.png in Resources */,
 				F77B0F741D118A16002130FE /* ZSSunorderedlist@2x.png in Resources */,
@@ -3734,8 +3690,6 @@
 				F7676A831D5CB2A400DF734C /* icon-success@2x.png in Resources */,
 				F77B0F851D118A16002130FE /* Reader-Export@2x.png in Resources */,
 				F77B0F861D118A16002130FE /* LMMediaPlayerView.bundle in Resources */,
-				F77B0F871D118A16002130FE /* Raleway-Regular.ttf in Resources */,
-				F77B0F891D118A16002130FE /* Raleway-ExtraLight.ttf in Resources */,
 				F77B0F8A1D118A16002130FE /* CCCellMain.xib in Resources */,
 				F77B0F8B1D118A16002130FE /* PlayButtonOverlayLargeTap@2x.png in Resources */,
 				F77B0F8C1D118A16002130FE /* CCCellMainTransfer.xib in Resources */,
