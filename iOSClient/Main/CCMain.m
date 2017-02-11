@@ -1884,11 +1884,10 @@
     // Search Mode
     if (_isSearchMode) {
         
-        if (_searchFileName.length >= k_minCharsSearch)
-            [[CCActions sharedInstance] search:_serverUrl fileName:_searchFileName delegate:self];
-        
         if (forced)
             _reloadForcedFoderWhenSearchModeOff = YES;
+        
+        [self updateSearchResultsForSearchController:self.searchController];
         
         return;
     }
@@ -1923,7 +1922,7 @@
 #pragma mark ===== Search =====
 #pragma --------------------------------------------------------------------------------------------
 
--(void) updateSearchResultsForSearchController:(UISearchController *)searchController
+-(void)updateSearchResultsForSearchController:(UISearchController *)searchController
 {
     _isSearchMode = YES;
     [self deleteRefreshControl];
@@ -1933,7 +1932,7 @@
     if (fileName.length >= k_minCharsSearch && [fileName isEqualToString:_searchFileName] == NO) {
         
         _searchFileName = fileName;
-        [self readFolderWithForced:NO];
+        [[CCActions sharedInstance] search:_serverUrl fileName:_searchFileName delegate:self];
     }
     
     if (_searchResultMetadatas.count == 0 && fileName.length == 0) {
