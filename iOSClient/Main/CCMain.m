@@ -118,16 +118,17 @@
     [super viewDidLoad];
     
     // init object
-    _metadata = [[CCMetadata alloc] init];
-    _metadataSegue = [[CCMetadata alloc] init];
+    _metadata = [CCMetadata new];
+    _metadataSegue = [CCMetadata new];
     _hud = [[CCHud alloc] initWithView:[[[UIApplication sharedApplication] delegate] window]];
     _hudDeterminate = [[CCHud alloc] initWithView:[[[UIApplication sharedApplication] delegate] window]];
-    _selectedMetadatas = [[NSMutableArray alloc] init];
-    _queueSelector = [[NSMutableArray alloc] init];
+    _selectedMetadatas = [NSMutableArray new];
+    _queueSelector = [NSMutableArray new];
     _isViewDidLoad = YES;
     _fatherPermission = @"";
     _searchController = [[UISearchController alloc] initWithSearchResultsController:nil];
     _searchResultMetadatas = [NSArray new];
+    _searchFileName = @"";
     
     // delegate
     self.tableView.delegate = self;
@@ -1925,16 +1926,15 @@
     _isSearchMode = YES;
     [self deleteRefreshControl];
     
-    _searchFileName = [CCUtility removeForbiddenCharacters:searchController.searchBar.text hasServerForbiddenCharactersSupport:app.hasServerForbiddenCharactersSupport];
+    NSString *fileName = [CCUtility removeForbiddenCharacters:searchController.searchBar.text hasServerForbiddenCharactersSupport:app.hasServerForbiddenCharactersSupport];
     
-    if (_searchFileName.length >= k_minCharsSearch) {
+    if (fileName.length >= k_minCharsSearch && [fileName isEqualToString:_searchFileName] == NO) {
         
-        _searchFileName = searchController.searchBar.text;
+        _searchFileName = fileName;
         [self readFolderWithForced:NO];
-        
     }
     
-    if (_searchResultMetadatas.count == 0 && _searchFileName.length == 0) {
+    if (_searchResultMetadatas.count == 0 && fileName.length == 0) {
 
         [self reloadDatasource];
     }
