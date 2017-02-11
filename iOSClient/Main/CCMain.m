@@ -1975,6 +1975,7 @@
         [self createRefreshControl];
     
         _isSearchMode = NO;
+        _searchFileName = @"";
         _dateReadDataSource = nil;
         _searchResultMetadatas = [NSArray new];
         
