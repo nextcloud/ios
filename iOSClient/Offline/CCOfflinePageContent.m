@@ -644,13 +644,18 @@
 
 - (void)openWith:(CCMetadata *)metadata
 {
-    NSURL *url = [NSURL fileURLWithPath:[NSString stringWithFormat:@"%@/%@", _serverUrl, metadata.fileNamePrint]];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID]]) {
     
-    self.docController = [UIDocumentInteractionController interactionControllerWithURL:url];
+        [[NSFileManager defaultManager] removeItemAtPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileNamePrint] error:nil];
+        [[NSFileManager defaultManager] linkItemAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID] toPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileNamePrint] error:nil];
     
-    self.docController.delegate = self;
+        NSURL *url = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileNamePrint]];
     
-    [self.docController presentOptionsMenuFromRect:self.view.frame inView:self.view animated:YES];
+        _docController = [UIDocumentInteractionController interactionControllerWithURL:url];
+        _docController.delegate = self;
+    
+        [_docController presentOptionsMenuFromRect:self.view.frame inView:self.view animated:YES];
+    }
 }
 
 - (BOOL)shouldPerformSegue
