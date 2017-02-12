@@ -86,6 +86,7 @@
 #define image_documentcrypto                    @"documentcrypto"
 #define image_offline                           @"offline"
 #define image_offlinecrypto                     @"offlinecrypto"
+#define image_offlineTitle                      @"offlineTitle"
 #define image_file                              @"file"
 #define image_filePreviewDownload               @"filePreviewDownload"
 #define image_filePreviewDownloadCrypto         @"filePreviewDownloadCrypto"

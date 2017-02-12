@@ -519,7 +519,7 @@
             BOOL isOfflineDirectory = [CCCoreData isOfflineDirectoryServerUrl:_serverUrl activeAccount:app.activeAccount];
             
             if (isOfflineDirectory) {
-                self.navigationItem.titleView = [CCGraphics navigationBarTitle:_titleMain image:[UIImage imageNamed:image_offline]];
+                self.navigationItem.titleView = [CCGraphics navigationBarTitle:_titleMain image:[UIImage imageNamed:image_offlineTitle]];
             } else
                 self.navigationItem.title = _titleMain;
         }

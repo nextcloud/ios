@@ -25,6 +25,7 @@
 
 #import "AppDelegate.h"
 #import "CCUtility.h"
+#import "NSString+TruncateToWidth.h"
 
 @implementation CCGraphics
 
@@ -236,8 +237,10 @@
 {
     UIView *view = [UIView new];
     UILabel *label = [UILabel new];
+        
+    title = [@" " stringByAppendingString:title];
+    label.text =  [title stringByTruncatingToWidth:150 withFont:label.font atEnd:YES];
     
-    label.text = title;
     label.textAlignment = NSTextAlignmentCenter;
     [label sizeToFit];
     label.center = view.center;
