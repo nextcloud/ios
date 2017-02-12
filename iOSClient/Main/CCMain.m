@@ -536,14 +536,15 @@
         
         [self setTitleBackgroundTableView:nil];
     }
-
 }
 
 - (void)setTitleBackgroundTableView:(NSString *)title
 {
     if (title) {
+        
         // message if table is empty
         UILabel *messageLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height)];
+        
         if ([app.reachability isReachable] == NO) {
             messageLabel.text = NSLocalizedString(@"_comm_erro_pull_down_", nil);
             messageLabel.textColor = COLOR_NO_CONNECTION;
@@ -553,13 +554,17 @@
             messageLabel.textColor = [UIColor blackColor];
             messageLabel.font = [UIFont systemFontOfSize:14];
         }
+        
         messageLabel.numberOfLines = 0;
         messageLabel.textAlignment = NSTextAlignmentCenter;
         [messageLabel sizeToFit];
+        
         [self.tableView reloadData];
         self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
         self.tableView.backgroundView = messageLabel;
+        
     } else {
+        
         [self.tableView setBackgroundView:nil];
         self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
     }
@@ -5111,11 +5116,6 @@
     // ----------------------------------------------------------------------------------------------------------
 
     BOOL isOfflineFile = [CCCoreData isOfflineLocalFileID:metadata.fileID activeAccount:app.activeAccount];
-    
-    // Verify Offline
-    if(_isOfflineServerUrl || isOfflineFile) {
-        isOfflineFile = YES;
-    }
     
     if (isOfflineFile) {
         

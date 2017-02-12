@@ -465,10 +465,13 @@
         metadata = [dataSource objectAtIndex:indexPath.row];
         cell.fileImageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]];
         
-        if (metadata.cryptated)
-            cell.offlineImageView.image = [UIImage imageNamed:image_offlinecrypto];
-        else
-            cell.offlineImageView.image = [UIImage imageNamed:image_offline];
+        if (_serverUrl == nil) {
+            
+            if (metadata.cryptated)
+                cell.offlineImageView.image = [UIImage imageNamed:image_offlinecrypto];
+            else
+                cell.offlineImageView.image = [UIImage imageNamed:image_offline];
+        }
     }
     
     // i am in local
