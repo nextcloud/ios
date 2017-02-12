@@ -233,13 +233,16 @@
 #endif
 }
 
-+ (UIView *)navigationBarTitle:(NSString *)title image:(UIImage *)image
++ (UIView *)navigationBarTitle:(NSString *)title image:(UIImage *)image frame:(CGRect)frame
 {
     UIView *view = [UIView new];
     UILabel *label = [UILabel new];
         
     title = [@" " stringByAppendingString:title];
-    label.text =  [title stringByTruncatingToWidth:150 withFont:label.font atEnd:YES];
+    NSInteger width = floor(frame.size.width/3);
+    if (width < 80)
+        width = 80;
+    label.text =  [title stringByTruncatingToWidth:width withFont:label.font atEnd:YES];
     
     label.textAlignment = NSTextAlignmentCenter;
     [label sizeToFit];

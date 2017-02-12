@@ -75,10 +75,9 @@
                 CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
         
                 metadataNet.action = actionReadFolder;
-                metadataNet.date = [NSDate date];
                 metadataNet.directoryID = directory.directoryID;
                 metadataNet.priority = NSOperationQueuePriorityVeryLow;
-                metadataNet.selector = selectorOfflineFolder;
+                metadataNet.selector = selectorReadFolder;
                 metadataNet.serverUrl = directory.serverUrl;
         
                 [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
@@ -162,7 +161,7 @@
     
     __block NSMutableArray *metadatasForOfflineFolder = [[NSMutableArray alloc] init];
     
-    if ([recordAccount.account isEqualToString:metadataNet.account] == NO && [metadataNet.selector isEqualToString:selectorOfflineFolder])
+    if ([recordAccount.account isEqualToString:metadataNet.account] == NO)
         return;
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{

@@ -39,6 +39,6 @@
 
 + (UIImage *)scaleImage:(UIImage *)image toSize:(CGSize)targetSize;
 
-+ (UIView *)navigationBarTitle:(NSString *)title image:(UIImage *)image;
++ (UIView *)navigationBarTitle:(NSString *)title image:(UIImage *)image frame:(CGRect)frame;
 
 @end

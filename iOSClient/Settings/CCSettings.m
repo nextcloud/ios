@@ -153,7 +153,7 @@
     section = [XLFormSectionDescriptor formSection];
     [form addFormSection:section];
     
-    section.footerTitle = @"Nextcloud © 2016 T.W.S. Inc.";
+    section.footerTitle = @"Nextcloud © 2017 T.W.S. Inc.";
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"buttonLeftAligned" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_acknowledgements_", nil)];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
