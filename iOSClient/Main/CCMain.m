@@ -391,7 +391,7 @@
         
         [[CCOfflineFileFolder sharedOfflineFileFolder] addOfflineFolder:dir];
         
-        [self performSelector:@selector(reloadDatasource) withObject:nil afterDelay:0.1];
+        [self performSelector:@selector(reloadDatasource) withObject:nil];
     }
 }
 
@@ -1281,7 +1281,7 @@
         
         if ([metadata.typeFile isEqualToString: k_metadataTypeFile_compress]) {
             
-            [self performSelector:@selector(unZipFile:) withObject:metadata.fileID afterDelay:0.1];
+            [self performSelector:@selector(unZipFile:) withObject:metadata.fileID];
             
         } else if ([metadata.typeFile isEqualToString: k_metadataTypeFile_unknown]) {
             
@@ -2491,7 +2491,7 @@
                 
         dispatch_async(dispatch_get_main_queue(), ^{
             [[CCNetworking sharedNetworking] uploadFile:metadata.fileName serverUrl:serverUrl cryptated:YES onlyPlist:NO session:k_upload_session taskStatus:k_taskStatusResume selector:nil selectorPost:nil parentRev:nil errorCode:0 delegate:nil];
-            [self performSelector:@selector(reloadDatasource) withObject:nil afterDelay:0.1];
+            [self performSelector:@selector(reloadDatasource) withObject:nil];
         });
         
     } else {
@@ -2513,7 +2513,7 @@
         
         dispatch_async(dispatch_get_main_queue(), ^{
             [[CCNetworking sharedNetworking] uploadFile:metadata.fileNamePrint serverUrl:serverUrl cryptated:NO onlyPlist:NO session:k_upload_session taskStatus:k_taskStatusResume selector:nil selectorPost:nil parentRev:nil errorCode:0 delegate:nil];
-            [self performSelector:@selector(reloadDatasource) withObject:nil afterDelay:0.1];
+            [self performSelector:@selector(reloadDatasource) withObject:nil];
         });
         
     } else {
@@ -3510,14 +3510,14 @@
                                                                                         image:[UIImage imageNamed:image_encryptedSelectedFiles]
                                                                              highlightedImage:nil
                                                                                        action:^(REMenuItem *item) {
-                                                                                           [self performSelector:@selector(encryptedSelectedFiles) withObject:nil afterDelay:0.1];
+                                                                                           [self performSelector:@selector(encryptedSelectedFiles) withObject:nil];
                                                                                        }];
     else app.encryptItem = [app.encryptItem initWithTitle:NSLocalizedString(@"_encrypted_selected_files_", nil)
                                                            subtitle:@""
                                                               image:[UIImage imageNamed:image_encryptedSelectedFiles]
                                                    highlightedImage:nil
                                                              action:^(REMenuItem *item) {
-                                                                 [self performSelector:@selector(encryptedSelectedFiles) withObject:nil afterDelay:0.1];
+                                                                 [self performSelector:@selector(encryptedSelectedFiles) withObject:nil];
                                                              }];
     
     // ITEM DECRYPTED ----------------------------------------------------------------------------------------------------
@@ -3527,14 +3527,14 @@
                                                                                               image:[UIImage imageNamed:image_decryptedSelectedFiles]
                                                                                    highlightedImage:nil
                                                                                              action:^(REMenuItem *item) {
-                                                                                                 [self performSelector:@selector(decryptedSelectedFiles) withObject:nil afterDelay:0.1];
+                                                                                                 [self performSelector:@selector(decryptedSelectedFiles) withObject:nil];
                                                                                              }];
     else app.decryptItem = [app.decryptItem initWithTitle:NSLocalizedString(@"_decrypted_selected_files_", nil)
                                                                  subtitle:@""
                                                                     image:[UIImage imageNamed:image_decryptedSelectedFiles]
                                                          highlightedImage:nil
                                                                    action:^(REMenuItem *item) {
-                                                                       [self performSelector:@selector(decryptedSelectedFiles) withObject:nil afterDelay:0.1];
+                                                                       [self performSelector:@selector(decryptedSelectedFiles) withObject:nil];
                                                                    }];
 
 
@@ -4193,7 +4193,7 @@
                                         // close swipe
                                         [self setEditing:NO animated:YES];
                                         
-                                        [self performSelector:@selector(encyptedDecryptedFolder) withObject:nil afterDelay:0.1];
+                                        [self performSelector:@selector(encyptedDecryptedFolder) withObject:nil];
                                     }];
         }
 
@@ -4209,7 +4209,7 @@
                                         // close swipe
                                         [self setEditing:NO animated:YES];
                                         
-                                        [self performSelector:@selector(comandoLockPassword) withObject:nil afterDelay:0.1];
+                                        [self performSelector:@selector(comandoLockPassword) withObject:nil];
                                     }];
         }
         
@@ -4353,7 +4353,7 @@
                                     // close swipe
                                     [self setEditing:NO animated:YES];
                                     
-                                    [self performSelector:@selector(reloadFile:) withObject:_metadata afterDelay:0.1];
+                                    [self performSelector:@selector(reloadFile:) withObject:_metadata];
                                 }];
         
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_open_in_", nil)
@@ -4366,7 +4366,7 @@
                                     // close swipe
                                     [self setEditing:NO animated:YES];
                                     
-                                    [self performSelector:@selector(openIn:) withObject:_metadata afterDelay:0.1];
+                                    [self performSelector:@selector(openIn:) withObject:_metadata];
                                 }];
 
         if (_metadata.cryptated == NO && app.hasServerShareSupport) {
@@ -4395,7 +4395,7 @@
                                     // close swipe
                                     [self setEditing:NO animated:YES];
                                     
-                                    [self performSelector:@selector(cmdEncryptedDecryptedFile) withObject:nil afterDelay:0.1];
+                                    [self performSelector:@selector(cmdEncryptedDecryptedFile) withObject:nil];
                                 }];
         
         if (![CCCoreData isOfflineDirectoryServerUrl:serverUrl activeAccount:app.activeAccount]) {
@@ -4431,7 +4431,7 @@
                                     // close swipe
                                     [self setEditing:NO animated:YES];
                                     
-                                    [self performSelector:@selector(addLocal:) withObject:_metadata afterDelay:0.1];
+                                    [self performSelector:@selector(addLocal:) withObject:_metadata];
                                 }];
         
         [actionSheet show];
@@ -4512,7 +4512,7 @@
                                     // close swipe
                                     [self setEditing:NO animated:YES];
                                     
-                                    [self performSelector:@selector(addLocal:) withObject:_metadata afterDelay:0.1];
+                                    [self performSelector:@selector(addLocal:) withObject:_metadata];
                                 }];
 
         [actionSheet show];
@@ -4565,7 +4565,7 @@
         [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_delete_", nil)
                                                              style:UIAlertActionStyleDestructive
                                                            handler:^(UIAlertAction *action) {
-                                                               [self performSelector:@selector(deleteFile) withObject:nil afterDelay:0.1];
+                                                               [self performSelector:@selector(deleteFile) withObject:nil];
                                                            }]];
         
         [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil)
