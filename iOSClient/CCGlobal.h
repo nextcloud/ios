@@ -132,10 +132,10 @@ extern NSString *const BKPasscodeKeychainServiceName;
 #define k_returnPassaporto                      13
 
 // File Name Const
-#define k_folderDefaultCameraUpload                     @"Photos"
+#define k_folderDefaultCameraUpload             @"Photos"
 
 // Picker select image
-#define k_pickerControllerMax                           500.0
+#define k_pickerControllerMax                   100.0
 
 // define ownCloud IOS
 #define server_version_with_new_shared_schema 8

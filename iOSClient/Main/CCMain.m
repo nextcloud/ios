@@ -51,7 +51,6 @@
     
     BOOL _isPickerCriptate;              // if is cryptated image or video back from picker
     BOOL _isSelectedMode;
-    long _numTaskUploadInProgress;
     
     NSMutableArray *_selectedMetadatas;
     NSMutableArray *_queueSelector;
@@ -727,37 +726,6 @@
     }];
 }
 
-/*
-- (BOOL)assetsPickerController:(CTAssetsPickerController *)picker shouldSelectAsset:(PHAsset *)asset
-{
-    __block float imageSize;
-    
-    PHImageRequestOptions *option = [PHImageRequestOptions new];
-    option.synchronous = YES;
-    
-    // self Asset
-    [[PHImageManager defaultManager] requestImageDataForAsset:asset options:option resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
-        imageSize = imageData.length;
-    }];
-    
-    // Add selected Asset
-    for (PHAsset *asset in picker.selectedAssets) {
-        [[PHImageManager defaultManager] requestImageDataForAsset:asset options:option resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
-            imageSize = imageData.length + imageSize;
-        }];
-    }
-    
-    if (imageSize > MaxDimensionUpload || (picker.selectedAssets.count >= (pickerControllerMax - _numTaskUploadInProgress))) {
-        
-        [app messageNotification:@"_info_" description:@"_limited_dimension_" visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeInfo];
-        
-        return NO;
-    }
-    
-    return YES;
-}
-*/
-
 - (void)assetsPickerController:(CTAssetsPickerController *)picker didFinishPickingAssets:(NSMutableArray *)assets
 {
     [picker dismissViewControllerAnimated:YES completion:^{
@@ -898,8 +866,6 @@
 // New folder or new photo or video
 - (void)returnCreate:(NSInteger)type
 {
-    _numTaskUploadInProgress =  [[CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (session CONTAINS 'upload') AND ((sessionTaskIdentifier >= 0) OR (sessionTaskIdentifierPlist >= 0))", app.activeAccount] context:nil] count];
-    
     switch (type) {
             
         /* PLAIN */
@@ -4643,17 +4609,17 @@
         if ([selector length] == 0 || [selector isEqualToString:selectorSearch]) {
         
             _sectionDataSource = [CCSection creataDataSourseSectionMetadata:_searchResultMetadatas listProgressMetadata:nil groupByField:_directoryGroupBy replaceDateToExifDate:NO activeAccount:app.activeAccount];
-        
-            [self tableViewReload];
-        
-            [self setTitleBackgroundTableView:nil];
-
-            [app updateApplicationIconBadgeNumber];
             
         } else {
             
             [self readFolderWithForced:NO];
         }
+        
+        [self tableViewReload];
+        
+        [self setTitleBackgroundTableView:nil];
+        
+        [app updateApplicationIconBadgeNumber];
         
         return;
     }
@@ -5205,7 +5171,7 @@
     // downloadFile
     // ----------------------------------------------------------------------------------------------------------
     
-    if ([metadata.session length] > 0 && [metadata.session rangeOfString:@"download"].location != NSNotFound) {
+    if ([metadata.session length] > 0 && [metadata.session containsString:@"download"]) {
         
         if (metadata.cryptated) cell.statusImageView.image = [UIImage imageNamed:image_statusdownloadcrypto];
         else cell.statusImageView.image = [UIImage imageNamed:image_statusdownload];
