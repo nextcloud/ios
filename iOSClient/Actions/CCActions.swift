@@ -241,7 +241,7 @@ class CCActions: NSObject {
             let directory = CCUtility.stringAppendServerUrl(metadataNet.serverUrl, addServerUrl: metadataNet.fileName)
             let directoryTo = CCUtility.stringAppendServerUrl(metadataNet.serverUrl, addServerUrl: metadataNet.fileNameTo)
 
-            CCCoreData.renameDirectory(directory, serverUrlTo: directory, activeAccount: directoryTo)
+            CCCoreData.renameDirectory(directory, serverUrlTo: directoryTo, activeAccount: appDelegate.activeAccount)
             
         } else {
             

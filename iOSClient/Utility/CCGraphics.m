@@ -232,4 +232,27 @@
 #endif
 }
 
++ (UIView *)navigationBarTitle:(NSString *)title image:(UIImage *)image
+{
+    UIView *view = [UIView new];
+    UILabel *label = [UILabel new];
+    
+    label.text = title;
+    label.textAlignment = NSTextAlignmentCenter;
+    [label sizeToFit];
+    label.center = view.center;
+    
+    UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
+    float imageAspect = imageView.image.size.width / imageView.image.size.height;
+    imageView.frame = CGRectMake(label.frame.origin.x-label.frame.size.height*imageAspect, label.frame.origin.y, label.frame.size.height*imageAspect, label.frame.size.height);
+    imageView.contentMode = UIViewContentModeScaleAspectFit;
+    
+    [view addSubview:label];
+    [view addSubview:imageView];
+    
+    [view sizeToFit];
+    
+    return view;
+}
+
 @end

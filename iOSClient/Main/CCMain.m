@@ -476,7 +476,6 @@
     else
         [self.navigationController.navigationBar setTitleTextAttributes:@{NSForegroundColorAttributeName : COLOR_GRAY}];
 
-    //if (self.tableView.isEditing) {
     if (_isSelectedMode) {
         
         NSUInteger totali = [_sectionDataSource.allRecordsDataSource count];
@@ -517,7 +516,12 @@
             
         } else {
         
-            self.navigationItem.title = _titleMain;
+            BOOL isOfflineDirectory = [CCCoreData isOfflineDirectoryServerUrl:_serverUrl activeAccount:app.activeAccount];
+            
+            if (isOfflineDirectory) {
+                self.navigationItem.titleView = [CCGraphics navigationBarTitle:_titleMain image:[UIImage imageNamed:image_offline]];
+            } else
+                self.navigationItem.title = _titleMain;
         }
     }
 }
