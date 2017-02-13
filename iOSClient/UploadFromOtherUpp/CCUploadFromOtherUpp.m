@@ -108,8 +108,15 @@
             break;
         case 4:
             
-            if (row == 0) { nameLabel = (UILabel *)[cell viewWithTag:102]; nameLabel.text = NSLocalizedString(@"_upload_file_", nil); }
-            if (row == 1) { nameLabel = (UILabel *)[cell viewWithTag:103]; nameLabel.text = NSLocalizedString(@"_upload_encrypted_file_", nil); }
+            if (row == 0) {
+                nameLabel = (UILabel *)[cell viewWithTag:102]; nameLabel.text = NSLocalizedString(@"_upload_file_", nil);
+            }
+            
+            if (row == 1) {
+                nameLabel = (UILabel *)[cell viewWithTag:103]; nameLabel.text = NSLocalizedString(@"_upload_encrypted_file_", nil);
+                if (app.isCryptoCloudMode == NO)
+                    cell.hidden = YES;
+            }
             break;
     }
     

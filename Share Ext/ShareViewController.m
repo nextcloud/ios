@@ -39,6 +39,7 @@
     UIColor *tintColor;
     
     NSMutableArray *_filesSendCryptated;
+    BOOL _isCryptoCloudMode;
 }
 @end
 
@@ -72,6 +73,16 @@
         _directoryUser = [CCUtility getDirectoryActiveUser:self.activeUser activeUrl:self.activeUrl];
         _typeCloud = recordAccount.typeCloud;
         
+        if ([[CCUtility getKeyChainPasscodeForUUID:[CCUtility getUUID]] length] == 0) {
+            
+            _isCryptoCloudMode = NO;
+            
+        } else {
+            
+            _isCryptoCloudMode = YES;
+        }
+
+        
         if ([_activeAccount isEqualToString:[CCUtility getActiveAccountShareExt]]) {
             
             // load
@@ -80,7 +91,8 @@
             
             _destinyFolderButton.title = [NSString stringWithFormat:NSLocalizedString(@"_destiny_folder_", nil), [CCUtility getTitleServerUrlShareExt]];
             
-            _localCryptated = [CCUtility getCryptatedShareExt];
+            if (_isCryptoCloudMode)
+                _localCryptated = [CCUtility getCryptatedShareExt];
             
         } else {
             
@@ -94,8 +106,8 @@
             _destinyFolderButton.title = [NSString stringWithFormat:NSLocalizedString(@"_destiny_folder_", nil), NSLocalizedString(@"_home_", nil)];
             [CCUtility setTitleServerUrlShareExt:NSLocalizedString(@"_home_", nil)];
 
-            _localCryptated = YES;
-            [CCUtility setCryptatedShareExt:YES];
+            _localCryptated = NO;
+            [CCUtility setCryptatedShareExt:NO];
         }
     }
 
@@ -166,7 +178,7 @@
     self.navigationController.navigationBar.tintColor = tintColor;
     
     // Upload
-    if (self.localCryptated) {
+    if (self.localCryptated && _isCryptoCloudMode) {
         
         rightButtonUpload = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"_save_encrypted_", nil) style:UIBarButtonItemStylePlain target:self action:@selector(selectPost)];
         [rightButtonUpload setTintColor:COLOR_ENCRYPTED];
@@ -176,10 +188,12 @@
         rightButtonUpload = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"_save_", nil) style:UIBarButtonItemStylePlain target:self action:@selector(selectPost)];
     }
     
-    // Encrypt
-    UIImage *icon = [[UIImage imageNamed:image_shareExtEncrypt] imageWithRenderingMode:UIImageRenderingModeAutomatic];
-    rightButtonEncrypt = [[UIBarButtonItem alloc] initWithImage:icon style:UIBarButtonItemStylePlain target:self action:@selector(changeEncrypt)];
-    if (self.localCryptated) [rightButtonEncrypt setTintColor:COLOR_ENCRYPTED];
+    // Encrypt ICON
+    if (_isCryptoCloudMode) {
+        UIImage *icon = [[UIImage imageNamed:image_shareExtEncrypt] imageWithRenderingMode:UIImageRenderingModeAutomatic];
+        rightButtonEncrypt = [[UIBarButtonItem alloc] initWithImage:icon style:UIBarButtonItemStylePlain target:self action:@selector(changeEncrypt)];
+        if (self.localCryptated) [rightButtonEncrypt setTintColor:COLOR_ENCRYPTED];
+    }
     
     // Cancel
     leftButtonCancel = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIBarButtonItemStylePlain target:self action:@selector(cancelPost)];
@@ -330,19 +344,9 @@
 - (void)addNetworkingQueue:(CCMetadataNet *)metadataNet
 {
     id operation;
-    BOOL isCryptoCloudMode;
-    
-    if ([[CCUtility getKeyChainPasscodeForUUID:[CCUtility getUUID]] length] == 0) {
-        
-        isCryptoCloudMode = NO;
-        
-    } else {
-        
-        isCryptoCloudMode = YES;
-    }
-
+   
     if ([_typeCloud isEqualToString:typeCloudOwnCloud] || [_typeCloud isEqualToString:typeCloudNextcloud])
-        operation = [[OCnetworking alloc] initWithDelegate:self metadataNet:metadataNet withUser:_activeUser withPassword:_activePassword withUrl:_activeUrl withTypeCloud:_typeCloud activityIndicator:NO isCryptoCloudMode:isCryptoCloudMode];
+        operation = [[OCnetworking alloc] initWithDelegate:self metadataNet:metadataNet withUser:_activeUser withPassword:_activePassword withUrl:_activeUrl withTypeCloud:_typeCloud activityIndicator:NO isCryptoCloudMode:_isCryptoCloudMode];
     
     [operation setQueuePriority:metadataNet.priority];
     

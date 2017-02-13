@@ -51,10 +51,11 @@
     XLFormSectionDescriptor *section;
     XLFormRowDescriptor *row;
     
-    // Section : Settings
-    
     form = [XLFormDescriptor formDescriptorWithTitle:NSLocalizedString(@"_settings_", nil)];
     form.rowNavigationOptions = XLFormRowNavigationOptionNone;
+    
+    
+    // Section : PASSWORD --------------------------------------------------------------
     
     section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_passcode_", nil)];
     [form addFormSection:section];
@@ -90,9 +91,9 @@
         [section addFormRow:row];
     }
     
-    // Section : data Cloud
+    // Section : CLOUD ACCOUNT --------------------------------------------------------------
     
-    section = [XLFormSectionDescriptor formSectionWithTitle:@"Cloud account"];
+    section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_cloud_account_", nil)];
     [form addFormSection:section];
     
     // version
@@ -119,7 +120,6 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
     [section addFormRow:row];
 
-    
     // Change Account
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"changecredentials" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_change_credentials_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
@@ -127,9 +127,9 @@
     row.action.formSegueIdentifier = @"CCManageAccountSegue";
     [section addFormRow:row];
     
-    // Section : Camera Upload
+    // Section --------------------------------------------------------------
     
-    section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_uploading_from_camera_", nil)];
+    section = [XLFormSectionDescriptor formSection];
     [form addFormSection:section];
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"cameraupload" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_uploading_from_camera_", nil)];
@@ -138,9 +138,9 @@
     row.action.formSegueIdentifier = @"CCManageCameraUploadSegue";
     [section addFormRow:row];
 
-    // Section : Optimizations
+    // Section --------------------------------------------------------------
     
-    section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_optimizations_", nil)];
+    section = [XLFormSectionDescriptor formSection];
     [form addFormSection:section];
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"optimizations" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_optimizations_", nil)];
@@ -149,13 +149,25 @@
     row.action.formSegueIdentifier = @"CCManageOptimizationsSegue";
     [section addFormRow:row];
 
-    // Section : Acknowledgements
-
+    // Section --------------------------------------------------------------
+    
     section = [XLFormSectionDescriptor formSection];
     [form addFormSection:section];
     
+    // Crypto Cloud
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"cryptocloud" rowType:XLFormRowDescriptorTypeButton title:@"Crypto Cloud"];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[UIImage imageNamed:image_settingsCredentials] forKey:@"imageView.image"];
+    row.action.formSegueIdentifier = @"CCManageCryptoCloud";
+    [section addFormRow:row];
+    
+    // Section : INFORMATION --------------------------------------------------------------
+
+    section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_information_", nil)];
+    [form addFormSection:section];
     section.footerTitle = @"Nextcloud © 2017 T.W.S. Inc.";
     
+    // Acknowledgements
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"buttonLeftAligned" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_acknowledgements_", nil)];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
@@ -167,29 +179,13 @@
     };
     [section addFormRow:row];
     
-    // Version
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"versioneapplicazione" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_app_version_", nil)];
-    row.value = [NSString stringWithFormat:@"%@ (%@)", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"], [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
-    [section addFormRow:row];
-    
-    // Section : help
-    
-    section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_help_", nil)];
-    [form addFormSection:section];
-    
+    // Help
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"help" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_help_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:[UIImage imageNamed:image_settingsHelp] forKey:@"imageView.image"];
     row.action.formSegueIdentifier = @"CCManageHelpSegue";
     [section addFormRow:row];
-    
-    // Section : mail
-    
-    section = [XLFormSectionDescriptor formSection];
-    [form addFormSection:section];
-    
+
     // Contact us mail
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"sendmail" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_contact_by_email_", nil)];
     [row.cellConfig setObject:COLOR_BRAND forKey:@"textLabel.textColor"];
@@ -198,7 +194,15 @@
     row.action.formSelector = @selector(sendMail:);
     [section addFormRow:row];
 
-    // Section : cache
+    // Version
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"versioneapplicazione" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_app_version_", nil)];
+    row.value = [NSString stringWithFormat:@"%@ (%@)", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"], [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
+    [section addFormRow:row];
+    
+   
+    // Section --------------------------------------------------------------
     
     section = [XLFormSectionDescriptor formSection];
     [form addFormSection:section];
@@ -210,9 +214,26 @@
     row.action.formSelector = @selector(azzeraCache:);
     [section addFormRow:row];
 
-    // Section : debug
+    // Section --------------------------------------------------------------
+    
+    section = [XLFormSectionDescriptor formSection];
+    [form addFormSection:section];
+    
+    // Exit
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"esci" rowType:XLFormRowDescriptorTypeButton title:[CCUtility localizableBrand:@"_exit_" table:nil]];
+    
+    [row.cellConfig setObject:[UIColor redColor] forKey:@"textLabel.textColor"];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[UIImage imageNamed:image_settingsExit] forKey:@"imageView.image"];
+    row.action.formSelector = @selector(esci:);
+    [section addFormRow:row];
+    
+    section = [XLFormSectionDescriptor formSection];
+    [form addFormSection:section];
     
 #ifdef DEBUG
+    // Section : debug
+    
     section = [XLFormSectionDescriptor formSectionWithTitle:@"Debug"];
     [form addFormSection:section];
     
@@ -243,7 +264,7 @@
     [row.cellConfig setObject:[UIImage imageNamed:image_settingsAdmin] forKey:@"imageView.image"];
     row.action.formSelector = @selector(copyDirGroupToLocal:);
     [section addFormRow:row];
-
+    
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"quickActionPhotos" rowType:XLFormRowDescriptorTypeButton title:@"Quick Action Photos"];
     [row.cellConfig setObject:[UIColor redColor] forKey:@"textLabel.textColor"];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
@@ -252,23 +273,6 @@
     [section addFormRow:row];
 #endif
 
-    // Section : quit
-    
-    section = [XLFormSectionDescriptor formSection];
-    [form addFormSection:section];
-    
-    // Exit
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"esci" rowType:XLFormRowDescriptorTypeButton title:[CCUtility localizableBrand:@"_exit_" table:nil]];
-    
-    [row.cellConfig setObject:[UIColor redColor] forKey:@"textLabel.textColor"];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIImage imageNamed:image_settingsExit] forKey:@"imageView.image"];
-    row.action.formSelector = @selector(esci:);
-    [section addFormRow:row];
-    
-    section = [XLFormSectionDescriptor formSection];
-    [form addFormSection:section];
-    
     self.form = form;
 }
 
