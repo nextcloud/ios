@@ -3142,6 +3142,8 @@
     backgroundColor.G = 1;
     backgroundColor.B = 1;
     
+    NSInteger originY = 60;
+
     options.arrowSize = 9;
     options.marginXSpacing = 7;
     options.marginYSpacing = 10;
@@ -3154,8 +3156,12 @@
     options.textColor = textColor;
     options.menuBackgroundColor = backgroundColor;
     
+    CGRect rect = self.view.frame;
+    rect.origin.y = rect.origin.y + originY;
+    rect.size.height = rect.size.height - originY;
+    
     [CCMenu setTitleFont:[UIFont systemFontOfSize:12.0]];
-    [CCMenu showMenuInView:self.navigationController.view fromRect:self.view.frame menuItems:menuArray withOptions:options];
+    [CCMenu showMenuInView:self.navigationController.view fromRect:rect menuItems:menuArray withOptions:options];
 }
 
 - (void)changeDefaultAccount:(CCMenuItem *)sender
