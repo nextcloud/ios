@@ -43,7 +43,8 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
     var parameterProviderIdentifier: String!
     var parameterPasscodeCorrect: Bool? = false
     var parameterEncrypted: Bool? = false
-
+    var isCryptoCloudMode: Bool? = false
+    
     var metadata: CCMetadata?
     var recordsTableMetadata: [TableMetadata]?
     var titleFolder: String?
@@ -65,6 +66,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
     var passcodeLockUntilDate: Date? = nil
     var passcodeIsPush: Bool? = false
     var serverUrlPush: String?
+    
     
     lazy var networkingOperationQueue: OperationQueue = {
         
@@ -232,7 +234,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         metadataNet.serverUrl = self.serverUrl
         metadataNet.selector = selectorReadFolder
         
-        let ocNetworking : OCnetworking = OCnetworking.init(delegate: self, metadataNet: metadataNet, withUser: activeUser, withPassword: activePassword, withUrl: activeUrl, withTypeCloud: typeCloud, activityIndicator: false)
+        let ocNetworking : OCnetworking = OCnetworking.init(delegate: self, metadataNet: metadataNet, withUser: activeUser, withPassword: activePassword, withUrl: activeUrl, withTypeCloud: typeCloud, activityIndicator: false, isCryptoCloudMode: isCryptoCloudMode!)
         networkingOperationQueue.addOperation(ocNetworking)
         
         hud.visibleIndeterminateHud()
@@ -306,7 +308,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
                 metadataNet.session = k_download_session_foreground
                 metadataNet.taskStatus = Int(k_taskStatusResume)
                 
-                let ocNetworking : OCnetworking = OCnetworking.init(delegate: self, metadataNet: metadataNet, withUser: activeUser, withPassword: activePassword, withUrl: activeUrl, withTypeCloud: typeCloud, activityIndicator: false)
+                let ocNetworking : OCnetworking = OCnetworking.init(delegate: self, metadataNet: metadataNet, withUser: activeUser, withPassword: activePassword, withUrl: activeUrl, withTypeCloud: typeCloud, activityIndicator: false, isCryptoCloudMode: isCryptoCloudMode!)
                 networkingOperationQueue.addOperation(ocNetworking)
             }
         }
@@ -355,7 +357,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         metadataNet.selector = selectorDownloadThumbnail;
         metadataNet.serverUrl = self.serverUrl
         
-        let ocNetworking : OCnetworking = OCnetworking.init(delegate: self, metadataNet: metadataNet, withUser: activeUser, withPassword: activePassword, withUrl: activeUrl, withTypeCloud: typeCloud, activityIndicator: false)
+        let ocNetworking : OCnetworking = OCnetworking.init(delegate: self, metadataNet: metadataNet, withUser: activeUser, withPassword: activePassword, withUrl: activeUrl, withTypeCloud: typeCloud, activityIndicator: false, isCryptoCloudMode: isCryptoCloudMode!)
         networkingOperationQueue.addOperation(ocNetworking)
     }
 
@@ -531,7 +533,7 @@ extension DocumentPickerViewController {
                     metadataNet.session = k_upload_session_foreground
                     metadataNet.taskStatus = Int(k_taskStatusResume)
                     
-                    let ocNetworking : OCnetworking = OCnetworking.init(delegate: self!, metadataNet: metadataNet, withUser: self!.activeUser, withPassword: self!.activePassword, withUrl: self!.activeUrl, withTypeCloud: self!.typeCloud, activityIndicator: false)
+                    let ocNetworking : OCnetworking = OCnetworking.init(delegate: self!, metadataNet: metadataNet, withUser: self!.activeUser, withPassword: self!.activePassword, withUrl: self!.activeUrl, withTypeCloud: self!.typeCloud, activityIndicator: false, isCryptoCloudMode: self!.isCryptoCloudMode!)
                     self!.networkingOperationQueue.addOperation(ocNetworking)
                     
                     self!.hud.visibleHudTitle(NSLocalizedString("_uploading_", comment: ""), mode: MBProgressHUDMode.determinateHorizontalBar, color: self!.navigationController?.view.tintColor)
@@ -765,7 +767,7 @@ extension DocumentPickerViewController: UITableViewDataSource {
                 metadataNet.session = k_download_session_foreground
                 metadataNet.taskStatus = Int(k_taskStatusResume)
             
-                let ocNetworking : OCnetworking = OCnetworking.init(delegate: self, metadataNet: metadataNet, withUser: activeUser, withPassword: activePassword, withUrl: activeUrl, withTypeCloud: typeCloud, activityIndicator: false)
+                let ocNetworking : OCnetworking = OCnetworking.init(delegate: self, metadataNet: metadataNet, withUser: activeUser, withPassword: activePassword, withUrl: activeUrl, withTypeCloud: typeCloud, activityIndicator: false, isCryptoCloudMode: self.isCryptoCloudMode!)
                 networkingOperationQueue.addOperation(ocNetworking)
                 
                 hud.visibleHudTitle(NSLocalizedString("_loading_", comment: ""), mode: MBProgressHUDMode.determinateHorizontalBar, color: self.navigationController?.view.tintColor)

@@ -35,7 +35,7 @@
 
 @interface OCnetworking : NSOperation <CCNetworkingDelegate>
 
-- (id)initWithDelegate:(id <OCNetworkingDelegate>)delegate metadataNet:(CCMetadataNet *)metadataNet withUser:(NSString *)withUser withPassword:(NSString *)withPassword withUrl:(NSString *)withUrl withTypeCloud:(NSString *)withTypeCloud activityIndicator:(BOOL)activityIndicator;
+- (id)initWithDelegate:(id <OCNetworkingDelegate>)delegate metadataNet:(CCMetadataNet *)metadataNet withUser:(NSString *)withUser withPassword:(NSString *)withPassword withUrl:(NSString *)withUrl withTypeCloud:(NSString *)withTypeCloud activityIndicator:(BOOL)activityIndicator isCryptoCloudMode:(BOOL)isCryptoCloudMode;
 
 @property (nonatomic, weak) id <OCNetworkingDelegate> delegate;
 

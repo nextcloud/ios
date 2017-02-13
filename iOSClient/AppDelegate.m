@@ -1113,7 +1113,7 @@
         activityIndicator = YES;
     
     if ([_typeCloud isEqualToString:typeCloudOwnCloud] || [_typeCloud isEqualToString:typeCloudNextcloud])
-        operation = [[OCnetworking alloc] initWithDelegate:delegate metadataNet:metadataNet withUser:_activeUser withPassword:_activePassword withUrl:_activeUrl withTypeCloud:_typeCloud activityIndicator:activityIndicator];
+        operation = [[OCnetworking alloc] initWithDelegate:delegate metadataNet:metadataNet withUser:_activeUser withPassword:_activePassword withUrl:_activeUrl withTypeCloud:_typeCloud activityIndicator:activityIndicator isCryptoCloudMode:_isCryptoCloudMode];
     
     [operation setQueuePriority:metadataNet.priority];
     

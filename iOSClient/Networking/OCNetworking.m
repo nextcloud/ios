@@ -40,15 +40,15 @@
     NSURLSessionDownloadTask *_downloadTask;
     NSURLSessionUploadTask *_uploadTask;
     
+    BOOL _isCryptoCloudMode;
     BOOL _activityIndicator;
-    
     BOOL _hasServerForbiddenCharactersSupport;
 }
 @end
 
 @implementation OCnetworking
 
-- (id)initWithDelegate:(id <OCNetworkingDelegate>)delegate metadataNet:(CCMetadataNet *)metadataNet withUser:(NSString *)withUser withPassword:(NSString *)withPassword withUrl:(NSString *)withUrl withTypeCloud:(NSString *)withTypeCloud activityIndicator:(BOOL)activityIndicator
+- (id)initWithDelegate:(id <OCNetworkingDelegate>)delegate metadataNet:(CCMetadataNet *)metadataNet withUser:(NSString *)withUser withPassword:(NSString *)withPassword withUrl:(NSString *)withUrl withTypeCloud:(NSString *)withTypeCloud activityIndicator:(BOOL)activityIndicator isCryptoCloudMode:(BOOL)isCryptoCloudMode
 {
     self = [super init];
     
@@ -64,6 +64,7 @@
         _activeUrl = withUrl;
         _typeCloud = withTypeCloud;
         
+        _isCryptoCloudMode = isCryptoCloudMode;
         _activityIndicator = activityIndicator;
     }
     

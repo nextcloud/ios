@@ -330,9 +330,19 @@
 - (void)addNetworkingQueue:(CCMetadataNet *)metadataNet
 {
     id operation;
+    BOOL isCryptoCloudMode;
     
+    if ([[CCUtility getKeyChainPasscodeForUUID:[CCUtility getUUID]] length] == 0) {
+        
+        isCryptoCloudMode = NO;
+        
+    } else {
+        
+        isCryptoCloudMode = YES;
+    }
+
     if ([_typeCloud isEqualToString:typeCloudOwnCloud] || [_typeCloud isEqualToString:typeCloudNextcloud])
-        operation = [[OCnetworking alloc] initWithDelegate:self metadataNet:metadataNet withUser:_activeUser withPassword:_activePassword withUrl:_activeUrl withTypeCloud:_typeCloud activityIndicator:NO];
+        operation = [[OCnetworking alloc] initWithDelegate:self metadataNet:metadataNet withUser:_activeUser withPassword:_activePassword withUrl:_activeUrl withTypeCloud:_typeCloud activityIndicator:NO isCryptoCloudMode:isCryptoCloudMode];
     
     [operation setQueuePriority:metadataNet.priority];
     

@@ -39,6 +39,7 @@
     NSString *activeAccessToken;
     
     CCHud *_hud;
+    BOOL _isCryptoCloudMode;
 }
 @end
 
@@ -62,6 +63,16 @@
         typeCloud = recordAccount.typeCloud;
         activeUID = recordAccount.uid;
         activeAccessToken = recordAccount.token;
+        
+        // Crypto Mode
+        if ([[CCUtility getKeyChainPasscodeForUUID:[CCUtility getUUID]] length] == 0) {
+            
+            _isCryptoCloudMode = NO;
+            
+        } else {
+            
+            _isCryptoCloudMode = YES;
+        }
         
     } else {
         
@@ -225,7 +236,7 @@
 {
     if ([typeCloud isEqualToString:typeCloudOwnCloud] || [typeCloud isEqualToString:typeCloudNextcloud]) {
         
-        OCnetworking *operation = [[OCnetworking alloc] initWithDelegate:self metadataNet:metadataNet withUser:activeUser withPassword:activePassword withUrl:activeUrl withTypeCloud:typeCloud activityIndicator:NO];
+        OCnetworking *operation = [[OCnetworking alloc] initWithDelegate:self metadataNet:metadataNet withUser:activeUser withPassword:activePassword withUrl:activeUrl withTypeCloud:typeCloud activityIndicator:NO isCryptoCloudMode:_isCryptoCloudMode];
         
         _networkingOperationQueue.maxConcurrentOperationCount = k_maxConcurrentOperation;
         [_networkingOperationQueue addOperation:operation];

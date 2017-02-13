@@ -1214,7 +1214,7 @@
         
         NSError *error;
         
-        ocNet = [[OCnetworking alloc] initWithDelegate:self metadataNet:nil withUser:app.activeUser withPassword:app.activePassword withUrl:app.activeUrl withTypeCloud:app.typeCloud activityIndicator:NO];
+        ocNet = [[OCnetworking alloc] initWithDelegate:self metadataNet:nil withUser:app.activeUser withPassword:app.activePassword withUrl:app.activeUrl withTypeCloud:app.typeCloud activityIndicator:NO isCryptoCloudMode:app.isCryptoCloudMode];
     
         error = [ocNet readFileSync:folderPathName];
         if(!error)
