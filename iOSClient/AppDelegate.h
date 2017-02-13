@@ -149,6 +149,9 @@
 // Animated title _brand_
 @property BOOL isTitleBrandAnimated;
 
+// Is in Crypto Mode
+@property BOOL isCryptoCloudMode;
+
 // Setting Active Account
 - (void)settingActiveAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl activeUser:(NSString *)activeUser activePassword:(NSString *)activePassword activeUID:(NSString *)activeUID activeAccessToken:(NSString *)activeAccessToken typeCloud:(NSString *)typeCloud;
 

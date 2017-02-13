@@ -199,9 +199,12 @@
 
 + (NSString *)getKeyChainPasscodeForUUID:(NSString *)uuid
 {
-    if (!uuid) return nil;
+    if (!uuid) return @"";
     
     NSString *passcode = [UICKeyChainStore stringForKey:uuid service:k_serviceShareKeyChain];
+    
+    if (!passcode)
+        passcode = @"";
     
     return passcode;
 }

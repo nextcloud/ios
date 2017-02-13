@@ -136,7 +136,9 @@
 
 - (void)newAccount
 {
-    if ([app.activeAccount length] == 0 || [[CCUtility getKeyChainPasscodeForUUID:[CCUtility getUUID]] length] == 0) {
+    // REMOVECODE
+    //if ([app.activeAccount length] == 0 || [[CCUtility getKeyChainPasscodeForUUID:[CCUtility getUUID]] length] == 0) {
+    if ([app.activeAccount length] == 0) {
     
         CCLogin *viewController = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLogin"];
     

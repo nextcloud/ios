@@ -70,10 +70,12 @@ class CreateMenuAdd: NSObject {
             appDelegate.activeMain.returnCreate(Int(k_returnCreateFilePlain))
         })
         
-        actionSheet.addButton(withTitle: NSLocalizedString("_upload_encrypted_mode", comment: ""), image: UIImage(named: "actionSheetLock"), backgroundColor: colorLightGray, height: 50.0, type: AHKActionSheetButtonType.encrypted, handler: {(AHKActionSheet) -> Void in
-            self.createMenuEncrypted(view: view)
-        })
+        if appDelegate.isCryptoCloudMode {
         
+            actionSheet.addButton(withTitle: NSLocalizedString("_upload_encrypted_mode", comment: ""), image: UIImage(named: "actionSheetLock"), backgroundColor: colorLightGray, height: 50.0, type: AHKActionSheetButtonType.encrypted, handler: {(AHKActionSheet) -> Void in
+                self.createMenuEncrypted(view: view)
+            })
+        }
         actionSheet.show()
         
         CCUtility.setCreateMenuEncrypted(false)

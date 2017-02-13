@@ -66,12 +66,14 @@
         [self.intro showIntroCryptoCloud:2.0];
     }
     
+    //REMOVECODE
+    /*
     // Request : Passcode
     if ([CCUtility getIntro:@"1.0"] == YES && [[CCUtility getKeyChainPasscodeForUUID:[CCUtility getUUID]] length] == 0) {
         
         [self passcodeVC];
     }
-    
+     
     // Request : Send Passcode email
     if ([CCUtility getIntro:@"1.0"] == YES && [[CCUtility getKeyChainPasscodeForUUID:[CCUtility getUUID]] length] > 0 && [CCUtility getEmail] == nil && [app.activeAccount length] == 0) {
         
@@ -81,11 +83,17 @@
         
         [self presentViewController:navigationController animated:YES completion:nil];
     }
-    
+
+     
     // OK all - Close
     if ([CCUtility getIntro:@"1.0"] == YES && [[CCUtility getKeyChainPasscodeForUUID:[CCUtility getUUID]] length] > 0 && [app.activeAccount length] > 0) {
         
         [self loginCorrect];
+    }
+    */
+    
+    if ([CCUtility getIntro:@"1.0"] == YES && [app.activeAccount length] > 0) {
+         [self loginCorrect];
     }
 }
 
@@ -95,11 +103,15 @@
 
 - (IBAction)handleNextcloud:(id)sender
 {
+    //REMOVECODE
+    // Request CODE
+    /*
     if ([[CCUtility getKeyChainPasscodeForUUID:[CCUtility getUUID]] length] == 0) {
         
         [self passcodeVC];
         return;
     }
+    */
     
     CCLoginNCOC *loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
     

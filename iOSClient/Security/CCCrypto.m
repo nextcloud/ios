@@ -40,7 +40,6 @@
     return key;
 }
 
-
 - (void)autoInsertPasscodeUUID:(NSString *)uuid text:(NSString *)text
 {
     NSString *key;

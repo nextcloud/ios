@@ -257,7 +257,7 @@ extern NSString *const BKPasscodeKeychainServiceName;
 #define k_pageOfflineLocal                              @"Local"
 
 // Search
-#define k_minCharsSearch                                3
+#define k_minCharsSearch                                2
 
 // -----------------------------------------------------------------------------------------------------------
 // COLOR
@@ -281,7 +281,7 @@ extern NSString *const BKPasscodeKeychainServiceName;
 #define COLOR_GRAY [UIColor colorWithRed:65.0/255.0 green:64.0/255.0 blue:66.0/255.0 alpha:1.0]                         // #414042 - A 1.0
 #define COLOR_CLEAR [UIColor colorWithRed:65.0/255.0 green:64.0/255.0 blue:66.0/255.0 alpha:1.0]
 #define COLOR_BAR [UIColor colorWithRed:(248.0f/255.0f) green:(248.0f/255.0f) blue:(248.0f/255.0f) alpha:1.0]
-#define COLOR_SEPARATOR_TABLE [UIColor colorWithRed:246.0/255.0 green:246.0/255.0 blue:246.0/255.0 alpha:1]           // Grigio chiaro
+#define COLOR_SEPARATOR_TABLE [UIColor colorWithRed:246.0/255.0 green:246.0/255.0 blue:246.0/255.0 alpha:1]             // Grigio chiaro
 #define COLOR_NO_CONNECTION [UIColor colorWithRed:204.0/255.0 green:204.0/255.0 blue:204.0/255.0 alpha:1.0]
 #define COLOR_NAVBAR_IOS7 [UIColor colorWithRed:247.0/255.0 green:247.0/255.0 blue:247.0/255.0 alpha:1.0]
 

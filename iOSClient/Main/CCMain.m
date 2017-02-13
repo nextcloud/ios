@@ -309,6 +309,16 @@
         // This is Root
         _isRoot = YES;
         
+        // Crypto Mode
+        if ([[CCUtility getKeyChainPasscodeForUUID:[CCUtility getUUID]] length] == 0) {
+           
+            app.isCryptoCloudMode = NO;
+            
+        } else {
+         
+            app.isCryptoCloudMode = YES;
+        }
+        
         // go Home
         [self.navigationController popToRootViewControllerAnimated:NO];
         
@@ -3509,41 +3519,43 @@
                                                                            [self moveOpenWindow:[self.tableView indexPathsForSelectedRows]];
                                                                        }];
     
-    // ITEM ENCRYPTED ------------------------------------------------------------------------------------------------------
+    if (app.isCryptoCloudMode) {
     
-    if (app.encryptItem == nil) app.encryptItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_encrypted_selected_files_", nil)
-                                                                                     subtitle:@""
-                                                                                        image:[UIImage imageNamed:image_encryptedSelectedFiles]
-                                                                             highlightedImage:nil
-                                                                                       action:^(REMenuItem *item) {
-                                                                                           [self performSelector:@selector(encryptedSelectedFiles) withObject:nil];
-                                                                                       }];
-    else app.encryptItem = [app.encryptItem initWithTitle:NSLocalizedString(@"_encrypted_selected_files_", nil)
-                                                           subtitle:@""
-                                                              image:[UIImage imageNamed:image_encryptedSelectedFiles]
-                                                   highlightedImage:nil
-                                                             action:^(REMenuItem *item) {
-                                                                 [self performSelector:@selector(encryptedSelectedFiles) withObject:nil];
-                                                             }];
+        // ITEM ENCRYPTED ------------------------------------------------------------------------------------------------------
     
-    // ITEM DECRYPTED ----------------------------------------------------------------------------------------------------
+        if (app.encryptItem == nil) app.encryptItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_encrypted_selected_files_", nil)
+                                                                               subtitle:@""
+                                                                                  image:[UIImage imageNamed:image_encryptedSelectedFiles]
+                                                                       highlightedImage:nil
+                                                                                 action:^(REMenuItem *item) {
+                                                                                     [self performSelector:@selector(encryptedSelectedFiles) withObject:nil];
+                                                                                 }];
+        else app.encryptItem = [app.encryptItem initWithTitle:NSLocalizedString(@"_encrypted_selected_files_", nil)
+                                                     subtitle:@""
+                                                        image:[UIImage imageNamed:image_encryptedSelectedFiles]
+                                             highlightedImage:nil
+                                                       action:^(REMenuItem *item) {
+                                                           [self performSelector:@selector(encryptedSelectedFiles) withObject:nil];
+                                                       }];
     
-    if (app.decryptItem == nil) app.decryptItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_decrypted_selected_files_", nil)
-                                                                                           subtitle:@""
-                                                                                              image:[UIImage imageNamed:image_decryptedSelectedFiles]
-                                                                                   highlightedImage:nil
-                                                                                             action:^(REMenuItem *item) {
-                                                                                                 [self performSelector:@selector(decryptedSelectedFiles) withObject:nil];
-                                                                                             }];
-    else app.decryptItem = [app.decryptItem initWithTitle:NSLocalizedString(@"_decrypted_selected_files_", nil)
-                                                                 subtitle:@""
-                                                                    image:[UIImage imageNamed:image_decryptedSelectedFiles]
-                                                         highlightedImage:nil
-                                                                   action:^(REMenuItem *item) {
-                                                                       [self performSelector:@selector(decryptedSelectedFiles) withObject:nil];
-                                                                   }];
-
-
+        // ITEM DECRYPTED ----------------------------------------------------------------------------------------------------
+    
+        if (app.decryptItem == nil) app.decryptItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_decrypted_selected_files_", nil)
+                                                                               subtitle:@""
+                                                                                  image:[UIImage imageNamed:image_decryptedSelectedFiles]
+                                                                       highlightedImage:nil
+                                                                                 action:^(REMenuItem *item) {
+                                                                                     [self performSelector:@selector(decryptedSelectedFiles) withObject:nil];
+                                                                                 }];
+        else app.decryptItem = [app.decryptItem initWithTitle:NSLocalizedString(@"_decrypted_selected_files_", nil)
+                                                     subtitle:@""
+                                                        image:[UIImage imageNamed:image_decryptedSelectedFiles]
+                                             highlightedImage:nil
+                                                       action:^(REMenuItem *item) {
+                                                           [self performSelector:@selector(decryptedSelectedFiles) withObject:nil];
+                                                       }];
+    }
+    
     // ITEM DOWNLOAD ----------------------------------------------------------------------------------------------------
     
     if (app.downloadItem == nil) app.downloadItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_download_selected_files_", nil)
@@ -3581,10 +3593,17 @@
 
     // REMENU --------------------------------------------------------------------------------------------------------------
     
-    if (app.reSelectMenu == nil)
-        app.reSelectMenu = [[REMenu alloc] initWithItems:@[app.deleteItem,app.moveItem, app.encryptItem, app.decryptItem, app.downloadItem, app.saveItem]];
-    else
-        app.reSelectMenu = [app.reSelectMenu initWithItems:@[app.deleteItem,app.moveItem, app.encryptItem, app.decryptItem, app.downloadItem, app.saveItem]];
+    if (app.isCryptoCloudMode) {
+        if (app.reSelectMenu == nil)
+            app.reSelectMenu = [[REMenu alloc] initWithItems:@[app.deleteItem,app.moveItem, app.encryptItem, app.decryptItem, app.downloadItem, app.saveItem]];
+        else
+            app.reSelectMenu = [app.reSelectMenu initWithItems:@[app.deleteItem,app.moveItem, app.encryptItem, app.decryptItem, app.downloadItem, app.saveItem]];
+    } else {
+        if (app.reSelectMenu == nil)
+            app.reSelectMenu = [[REMenu alloc] initWithItems:@[app.deleteItem,app.moveItem, app.downloadItem, app.saveItem]];
+        else
+            app.reSelectMenu = [app.reSelectMenu initWithItems:@[app.deleteItem,app.moveItem, app.downloadItem, app.saveItem]];
+    }
     
     app.reSelectMenu.imageOffset = CGSizeMake(5, -1);
     
@@ -3684,7 +3703,11 @@
         UIMenuItem *pasteFilesItem = [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"_paste_files_", nil) action:@selector(pasteFiles:)];
         UIMenuItem *pasteFilesEncryptedItem = [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"_paste_files_encrypted_", nil) action:@selector(pasteFilesEncrypted:)];
         
-        [menuController setMenuItems:[NSArray arrayWithObjects:copyFileItem, copyFilesItem, openinFileItem, pasteFileItem, pasteFilesItem, pasteFileEncryptedItem, pasteFilesEncryptedItem, nil]];
+        if (app.isCryptoCloudMode)
+            [menuController setMenuItems:[NSArray arrayWithObjects:copyFileItem, copyFilesItem, openinFileItem, pasteFileItem, pasteFilesItem, pasteFileEncryptedItem, pasteFilesEncryptedItem, nil]];
+        else
+            [menuController setMenuItems:[NSArray arrayWithObjects:copyFileItem, copyFilesItem, openinFileItem, pasteFileItem, pasteFilesItem, nil]];
+
         [menuController setTargetRect:CGRectMake(touchPoint.x, touchPoint.y, 0.0f, 0.0f) inView:tableView];
         [menuController setMenuVisible:YES animated:YES];
     }
@@ -4187,7 +4210,7 @@
                                     }];
         }
         
-        if (!([_metadata.fileName isEqualToString:cameraUploadFolderName] == YES && [serverUrl isEqualToString:cameraUploadFolderPath] == YES) && !lockDirectory) {
+        if (!([_metadata.fileName isEqualToString:cameraUploadFolderName] == YES && [serverUrl isEqualToString:cameraUploadFolderPath] == YES) && !lockDirectory && app.isCryptoCloudMode) {
             
             [actionSheet addButtonWithTitle:titoloCriptaDecripta
                                       image:[UIImage imageNamed:image_actionSheetCrypto]
@@ -4391,18 +4414,21 @@
                                     }];
         }
 
-        [actionSheet addButtonWithTitle:titoloCriptaDecripta
-                                  image:[UIImage imageNamed:image_actionSheetCrypto]
-                        backgroundColor:[UIColor whiteColor]
-                                 height: 50.0
-                                   type:AHKActionSheetButtonTypeEncrypted
-                                handler:^(AHKActionSheet *as) {
+        if (app.isCryptoCloudMode) {
+            
+            [actionSheet addButtonWithTitle:titoloCriptaDecripta
+                                      image:[UIImage imageNamed:image_actionSheetCrypto]
+                            backgroundColor:[UIColor whiteColor]
+                                     height: 50.0
+                                       type:AHKActionSheetButtonTypeEncrypted
+                                    handler:^(AHKActionSheet *as) {
                                     
-                                    // close swipe
-                                    [self setEditing:NO animated:YES];
+                                        // close swipe
+                                        [self setEditing:NO animated:YES];
                                     
-                                    [self performSelector:@selector(cmdEncryptedDecryptedFile) withObject:nil];
-                                }];
+                                        [self performSelector:@selector(cmdEncryptedDecryptedFile) withObject:nil];
+                                    }];
+        }
         
         [actionSheet addButtonWithTitle:titoloOffline
                                   image:[UIImage imageNamed:image_actionSheetOffline]
