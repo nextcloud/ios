@@ -1269,7 +1269,7 @@
     }
     
     // add Offline
-    if ([selector isEqualToString:selectorAddOffline] && ![CCCoreData isOfflineDirectoryServerUrl:serverUrl activeAccount:app.activeAccount]) {
+    if ([selector isEqualToString:selectorAddOffline]) {
         [CCCoreData setOfflineLocalFileID:metadata.fileID offline:YES activeAccount:app.activeAccount];
         [self reloadDatasource:serverUrl fileID:metadata.fileID selector:selector];
     }
@@ -4408,28 +4408,25 @@
                                     [self performSelector:@selector(cmdEncryptedDecryptedFile) withObject:nil];
                                 }];
         
-        if (![CCCoreData isOfflineDirectoryServerUrl:serverUrl activeAccount:app.activeAccount]) {
-            
-            [actionSheet addButtonWithTitle:titoloOffline
-                                      image:[UIImage imageNamed:image_actionSheetOffline]
-                            backgroundColor:[UIColor whiteColor]
-                                     height: 50.0
-                                       type:AHKActionSheetButtonTypeDefault
-                                    handler:^(AHKActionSheet *as) {
+        [actionSheet addButtonWithTitle:titoloOffline
+                                  image:[UIImage imageNamed:image_actionSheetOffline]
+                        backgroundColor:[UIColor whiteColor]
+                                 height: 50.0
+                                   type:AHKActionSheetButtonTypeDefault
+                                handler:^(AHKActionSheet *as) {
                                     
-                                        // close swipe
-                                        [self setEditing:NO animated:YES];
+                                    // close swipe
+                                    [self setEditing:NO animated:YES];
                                     
-                                        if ([CCCoreData isOfflineLocalFileID:_metadata.fileID activeAccount:app.activeAccount]) {
+                                    if ([CCCoreData isOfflineLocalFileID:_metadata.fileID activeAccount:app.activeAccount]) {
                                         
-                                            [self removeOffline:_metadata];
+                                        [self removeOffline:_metadata];
                                         
-                                        } else {
+                                    } else {
                                         
-                                            [self addOffline:_metadata];
-                                        }
-                                    }];
-        }
+                                        [self addOffline:_metadata];
+                                    }
+                                }];
         
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_add_local_", nil)
                                   image:[UIImage imageNamed:image_actionSheetLocal]
