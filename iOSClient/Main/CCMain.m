@@ -3121,10 +3121,7 @@
         
         item.title = [record.account stringByTruncatingToWidth:self.view.bounds.size.width - 100 withFont:[UIFont systemFontOfSize:12.0] atEnd:YES];
         item.argument = record.account;
-        
-        if ([record.typeCloud isEqualToString:typeCloudNextcloud]) item.image = [UIImage imageNamed:image_typeCloudNextcloud];
-        if ([record.typeCloud isEqualToString:typeCloudOwnCloud]) item.image = [UIImage imageNamed:image_typeCloudOwnCloud];
-        
+        item.image = [UIImage imageNamed:image_typeCloudNextcloud];        
         item.target = self;
         item.action = @selector(changeDefaultAccount:);
         
