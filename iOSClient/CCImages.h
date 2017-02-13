@@ -57,7 +57,7 @@
 #define image_MenuOrdinamentoAscendente         @"MenuOrdinamentoAscendenteNextcloud"
 #define image_moveSelectedFiles                 @"moveSelectedFilesNextcloud"
 #define image_quickActionPhotos                 @"quickActionPhotosNextcloud"
-#define image_quickActionUploadClear            @"quickActionUploadClearNextcloud"
+#define image_quickActionUpload                 @"quickActionUploadNextcloud"
 #define image_quickActionUploadEncrypted        @"quickActionUploadEncryptedNextcloud"
 #define image_quickActionUploadOffline          @"quickActionUploadOfflineNextcloud"
 #define image_seleziona                         @"selezionaNextcloud"

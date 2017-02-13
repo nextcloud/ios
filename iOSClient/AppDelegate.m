@@ -485,20 +485,27 @@
     NSString *bundleId = [NSBundle mainBundle].bundleIdentifier;
 
     UIApplicationShortcutIcon *shortcutPhotosIcon = [UIApplicationShortcutIcon iconWithTemplateImageName:image_quickActionPhotos];
-    UIApplicationShortcutIcon *shortcutUploadClearIcon = [UIApplicationShortcutIcon iconWithTemplateImageName:image_quickActionUploadClear];
+    UIApplicationShortcutIcon *shortcutUploadIcon = [UIApplicationShortcutIcon iconWithTemplateImageName:image_quickActionUpload];
     UIApplicationShortcutIcon *shortcutUploadEncryptedIcon = [UIApplicationShortcutIcon iconWithTemplateImageName:image_quickActionUploadEncrypted];
     
     UIApplicationShortcutItem *shortcutPhotos = [[UIApplicationShortcutItem alloc] initWithType:[NSString stringWithFormat:@"%@.photos", bundleId] localizedTitle:NSLocalizedString(@"_photo_camera_", nil) localizedSubtitle:nil icon:shortcutPhotosIcon userInfo:nil];
 
-    UIApplicationShortcutItem *shortcutUploadClear = [[UIApplicationShortcutItem alloc] initWithType:[NSString stringWithFormat:@"%@.uploadClear", bundleId] localizedTitle:NSLocalizedString(@"_upload_file_", nil) localizedSubtitle:nil icon:shortcutUploadClearIcon userInfo:nil];
+    UIApplicationShortcutItem *shortcutUpload = [[UIApplicationShortcutItem alloc] initWithType:[NSString stringWithFormat:@"%@.upload", bundleId] localizedTitle:NSLocalizedString(@"_upload_file_", nil) localizedSubtitle:nil icon:shortcutUploadIcon userInfo:nil];
     
     UIApplicationShortcutItem *shortcutUploadEncrypted = [[UIApplicationShortcutItem alloc] initWithType:[NSString stringWithFormat:@"%@.uploadEncrypted", bundleId] localizedTitle:NSLocalizedString(@"_upload_encrypted_file_", nil) localizedSubtitle:nil icon:shortcutUploadEncryptedIcon userInfo:nil];
     
-    // add all items to an array
-    NSArray *items = @[shortcutUploadEncrypted, shortcutUploadClear, shortcutPhotos];
     
-    // add the array to our app
-    [UIApplication sharedApplication].shortcutItems = items;
+    if (app.isCryptoCloudMode) {
+        
+        // add the array to our app
+        [UIApplication sharedApplication].shortcutItems = @[shortcutUploadEncrypted, shortcutUpload, shortcutPhotos];
+
+    } else {
+
+        // add the array to our app
+        [UIApplication sharedApplication].shortcutItems = @[shortcutUpload, shortcutPhotos];
+
+    }
 }
 
 - (void)application:(UIApplication *)application performActionForShortcutItem:(UIApplicationShortcutItem *)shortcutItem completionHandler:(void (^)(BOOL))completionHandler
@@ -515,10 +522,10 @@
     NSString *bundleId = [NSBundle mainBundle].bundleIdentifier;
     
     NSString *shortcutPhotos = [NSString stringWithFormat:@"%@.photos", bundleId];
-    NSString *shortcutUploadClear = [NSString stringWithFormat:@"%@.uploadClear", bundleId];
+    NSString *shortcutUpload = [NSString stringWithFormat:@"%@.upload", bundleId];
     NSString *shortcutUploadEncrypted = [NSString stringWithFormat:@"%@.uploadEncrypted", bundleId];
         
-    if ([shortcutItem.type isEqualToString:shortcutUploadClear] && self.activeAccount) {
+    if ([shortcutItem.type isEqualToString:shortcutUpload] && self.activeAccount) {
         
         dispatch_async(dispatch_get_main_queue(), ^{
             

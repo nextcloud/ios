@@ -1000,7 +1000,7 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Change Password only Nextcloud ownCloud =====
+#pragma mark ===== Change Password =====
 #pragma --------------------------------------------------------------------------------------------
 
 - (void)changePasswordAccount

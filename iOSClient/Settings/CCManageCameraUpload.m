@@ -86,13 +86,16 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
 
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"camerauploadcryptatedphoto" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_upload_encry_camup_", nil)];
-    row.hidden = [NSString stringWithFormat:@"$%@==0", @"cameraupload"];
-    if ([CCCoreData getCameraUploadCryptatedPhotoActiveAccount:app.activeAccount] == YES) row.value = @1;
-    else row.value = @0;
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [section addFormRow:row];
-
+    if (app.isCryptoCloudMode) {
+        
+        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"camerauploadcryptatedphoto" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_upload_encry_camup_", nil)];
+        row.hidden = [NSString stringWithFormat:@"$%@==0", @"cameraupload"];
+        if ([CCCoreData getCameraUploadCryptatedPhotoActiveAccount:app.activeAccount] == YES) row.value = @1;
+        else row.value = @0;
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+        [section addFormRow:row];
+    }
+    
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"camerauploadwwanphoto" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_wifi_only_", nil)];
     row.hidden = [NSString stringWithFormat:@"$%@==0", @"cameraupload"];
     if ([CCCoreData getCameraUploadWWanPhotoActiveAccount:app.activeAccount] == YES) row.value = @1;
@@ -112,12 +115,15 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
     
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"camerauploadcryptatedvideo" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_upload_encry_camup_", nil)];
-    row.hidden = [NSString stringWithFormat:@"$%@==0", @"cameraupload"];
-    if ([CCCoreData getCameraUploadCryptatedVideoActiveAccount:app.activeAccount] == YES) row.value = @1;
-    else row.value = @0;
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [section addFormRow:row];
+    if (app.isCryptoCloudMode) {
+        
+        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"camerauploadcryptatedvideo" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_upload_encry_camup_", nil)];
+        row.hidden = [NSString stringWithFormat:@"$%@==0", @"cameraupload"];
+        if ([CCCoreData getCameraUploadCryptatedVideoActiveAccount:app.activeAccount] == YES) row.value = @1;
+        else row.value = @0;
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+        [section addFormRow:row];
+    }
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"camerauploadwwanvideo" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_wifi_only_", nil)];
     row.hidden = [NSString stringWithFormat:@"$%@==0", @"cameraupload"];
