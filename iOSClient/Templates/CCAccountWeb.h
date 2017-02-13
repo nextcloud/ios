@@ -27,6 +27,9 @@
 #import "CCTemplates.h"
 
 @protocol CCAccountWebDelegate <NSObject>
+
+- (void)readFolderWithForced:(BOOL)forced;
+
 @end
 
 @interface CCAccountWeb : XLFormViewController

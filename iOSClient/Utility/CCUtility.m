@@ -822,7 +822,7 @@
 
 + (void)insertTypeFileIconName:(CCMetadata *)metadata directory:(NSString *)directory cameraFolderName:(NSString *)cameraFolderName cameraFolderPath:(NSString *)cameraFolderPath
 {
-    if ([metadata.type isEqualToString: k_metadataType_model]) {
+    if ([metadata.type isEqualToString: k_metadataType_template]) {
         
         metadata.typeFile = k_metadataTypeFile_template;
         

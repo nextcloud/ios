@@ -192,7 +192,7 @@
     [data setObject: [CCUtility getNameCurrentDevice] forKey:@"namecurrentdevice"];
     [data setObject: k_versionProtocolPlist forKey:@"protocol"];
     [data setObject: title forKey:@"title"];
-    [data setObject: k_metadataType_model forKey:@"type"];
+    [data setObject: k_metadataType_template forKey:@"type"];
     [data setObject: uuid forKey:@"uuid"];
     [data setObject: [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"] forKey:@"version"];
 

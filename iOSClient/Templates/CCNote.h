@@ -27,6 +27,9 @@
 #import "CCTemplates.h"
 
 @protocol CCNoteDelegate <NSObject>
+
+- (void)readFolderWithForced:(BOOL)forced;
+
 @end
 
 @interface CCNote : ZSSRichTextEditor

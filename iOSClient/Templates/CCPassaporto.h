@@ -27,6 +27,9 @@
 #import "CCTemplates.h"
 
 @protocol CCPassaportoDelegate <NSObject>
+
+- (void)readFolderWithForced:(BOOL)forced;
+
 @end
 
 @interface CCPassaporto : XLFormViewController

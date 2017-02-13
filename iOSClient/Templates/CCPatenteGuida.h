@@ -27,6 +27,9 @@
 #import "CCTemplates.h"
 
 @protocol CCPatenteGuidaDelegate <NSObject>
+
+- (void)readFolderWithForced:(BOOL)forced;
+
 @end
 
 @interface CCPatenteGuida : XLFormViewController

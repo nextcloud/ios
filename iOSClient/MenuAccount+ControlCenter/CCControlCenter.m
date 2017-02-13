@@ -829,7 +829,7 @@
     // ----------------------------------------------------------------------------------------------------------
     
     // File Cyptated
-    if (metadata.cryptated && metadata.directory == NO && [metadata.type isEqualToString: k_metadataType_model] == NO) {
+    if (metadata.cryptated && metadata.directory == NO && [metadata.type isEqualToString: k_metadataType_template] == NO) {
         
         cell.statusImageView.image = [UIImage imageNamed:image_lock];
     }

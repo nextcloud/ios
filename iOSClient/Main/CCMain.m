@@ -2975,7 +2975,7 @@
     if ([metadata.type isEqualToString: k_metadataType_file])
         [[CCNetworking sharedNetworking] downloadFile:metadata serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorAddOffline selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
     
-    if ([metadata.type isEqualToString: k_metadataType_model])
+    if ([metadata.type isEqualToString: k_metadataType_template])
         [CCCoreData setOfflineLocalFileID:metadata.fileID offline:YES activeAccount:app.activeAccount];
     
     NSIndexPath *indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:metadata.fileID];
@@ -3003,7 +3003,7 @@
     if ([metadata.type isEqualToString: k_metadataType_file])
         [[CCNetworking sharedNetworking] downloadFile:metadata serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorAddLocal selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
     
-    if ([metadata.type isEqualToString: k_metadataType_model]) {
+    if ([metadata.type isEqualToString: k_metadataType_template]) {
         
         [CCUtility copyFileAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileName] toPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryLocal], metadata.fileName]];
         
@@ -4439,7 +4439,7 @@
     
     /******************************************* TEMPLATE *******************************************/
     
-    if ([_metadata.type isEqualToString: k_metadataType_model]) {
+    if ([_metadata.type isEqualToString: k_metadataType_template]) {
         
         iconHeader = [UIImage imageNamed:_metadata.iconName];
      
@@ -5036,7 +5036,7 @@
         [dateFormatter setDateStyle:NSDateFormatterShortStyle];
         [dateFormatter setTimeStyle:NSDateFormatterShortStyle];
         
-        if ([metadata.type isEqualToString: k_metadataType_model] && [dataFile isEqualToString:@" "] == NO && [lunghezzaFile isEqualToString:@" "] == NO)
+        if ([metadata.type isEqualToString: k_metadataType_template] && [dataFile isEqualToString:@" "] == NO && [lunghezzaFile isEqualToString:@" "] == NO)
             cell.labelInfoFile.text = [NSString stringWithFormat:@"%@", dataFile];
         
         if ([metadata.type isEqualToString: k_metadataType_file] && [dataFile isEqualToString:@" "] == NO && [lunghezzaFile isEqualToString:@" "] == NO) {
@@ -5093,7 +5093,7 @@
     // ----------------------------------------------------------------------------------------------------------
     
     // File Cyptated
-    if (metadata.cryptated && metadata.directory == NO && [metadata.type isEqualToString: k_metadataType_model] == NO) {
+    if (metadata.cryptated && metadata.directory == NO && [metadata.type isEqualToString: k_metadataType_template] == NO) {
      
         cell.statusImageView.image = [UIImage imageNamed:image_lock];
     }
@@ -5428,7 +5428,7 @@
     
         NSString* selector;
         
-        if ([_metadata.type isEqualToString: k_metadataType_model]) selector = selectorLoadModelView;
+        if ([_metadata.type isEqualToString: k_metadataType_template]) selector = selectorLoadModelView;
         else selector = selectorLoadPlist;
         
         [[CCNetworking sharedNetworking] downloadFile:_metadata serverUrl:serverUrl downloadData:NO downloadPlist:YES selector:selector selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
@@ -5437,7 +5437,7 @@
     }
         
     // se il plist è caricato ed è un modello aprilo
-    if ([_metadata.type isEqualToString:k_metadataType_model]) [self openModel:_metadata.model isNew:false];
+    if ([_metadata.type isEqualToString:k_metadataType_template]) [self openModel:_metadata.model isNew:false];
     
     // file
     if (_metadata.directory == NO && _metadata.errorPasscode == NO && [_metadata.type isEqualToString: k_metadataType_file]) {

@@ -81,7 +81,7 @@
     // Plus Button
     [app plusButtonVisibile:true];
     
-    [self reloadTable];
+    [self reloadDatasource];
 }
 
 // E' arrivato
@@ -91,6 +91,9 @@
     
     // cancell Progress
     [self.navigationController cancelCCProgress];
+    
+    // update Badge
+    [app updateApplicationIconBadgeNumber];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -195,7 +198,7 @@
 
 - (void)deleteFileOrFolderSuccess:(CCMetadataNet *)metadataNet
 {
-    [self reloadTable];
+    [self reloadDatasource];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -265,8 +268,8 @@
     else
         iconHeader = [UIImage imageNamed:self.metadata.iconName];
     
-    // NO Directory
-    if (_metadata.directory == NO) {
+    // NO Directory - NO Template
+    if (_metadata.directory == NO && [_metadata.type isEqualToString:k_metadataType_template] == NO) {
     
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_open_in_", nil)
                                   image:[UIImage imageNamed:image_actionSheetOpenIn]
@@ -310,7 +313,7 @@
                                     
                                     [self.tableView setEditing:NO animated:YES];
                                     
-                                    [self reloadTable];
+                                    [self reloadDatasource];
                                 }];
     }
     
@@ -343,7 +346,7 @@
                                                                    [[NSFileManager defaultManager] removeItemAtPath:iconPath error:nil];
                                                                }
                                                                
-                                                               [self reloadTable];
+                                                               [self reloadDatasource];
                                                            }]];
         
         
@@ -389,7 +392,12 @@
     return metadata;
 }
 
-- (void)reloadTable
+- (void)readFolderWithForced:(BOOL)forced
+{
+    [self reloadDatasource];
+}
+
+- (void)reloadDatasource
 {
     if ([_pageType isEqualToString:k_pageOfflineOffline]) {
         
@@ -518,7 +526,7 @@
         cell.fileImageView.image = [UIImage imageNamed:metadata.iconName];
     
     // it's encrypted ???
-    if (metadata.cryptated && [metadata.type isEqualToString: k_metadataType_model] == NO)
+    if (metadata.cryptated && [metadata.type isEqualToString: k_metadataType_template] == NO)
         cell.statusImageView.image = [UIImage imageNamed:image_lock];
     
     // it's in download mode
@@ -536,7 +544,7 @@
         NSString *date = [CCUtility dateDiff:metadata.date];
         NSString *length = [CCUtility transformedSize:metadata.size];
         
-        if ([metadata.type isEqualToString: k_metadataType_model])
+        if ([metadata.type isEqualToString: k_metadataType_template])
             cell.labelInfoFile.text = [NSString stringWithFormat:@"%@", date];
         
         if ([metadata.type isEqualToString: k_metadataType_file] || [metadata.type isEqualToString: k_metadataType_local])
@@ -565,7 +573,7 @@
             [self performSegueWithIdentifier:@"segueDetail" sender:self];
     }
     
-    if ([self.metadata.type isEqualToString: k_metadataType_model])
+    if ([self.metadata.type isEqualToString: k_metadataType_template])
         [self openModel:self.metadata];
     
     if (_metadata.directory)

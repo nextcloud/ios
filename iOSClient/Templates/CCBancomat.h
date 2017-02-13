@@ -27,6 +27,9 @@
 #import "CCTemplates.h"
 
 @protocol CCBancomatDelegate <NSObject>
+
+- (void)readFolderWithForced:(BOOL)forced;
+
 @end
 
 @interface CCBancomat : XLFormViewController

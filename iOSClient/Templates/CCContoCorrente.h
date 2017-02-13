@@ -27,6 +27,9 @@
 #import "CCTemplates.h"
 
 @protocol CCContoCorrenteDelegate <NSObject>
+
+- (void)readFolderWithForced:(BOOL)forced;
+
 @end
 
 @interface CCContoCorrente : XLFormViewController

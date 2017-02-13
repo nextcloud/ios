@@ -27,6 +27,9 @@
 #import "CCTemplates.h"
 
 @protocol CCCartaDiCreditoDelegate <NSObject>
+
+- (void)readFolderWithForced:(BOOL)forced;
+
 @end
 
 @interface CCCartaDiCredito : XLFormViewController

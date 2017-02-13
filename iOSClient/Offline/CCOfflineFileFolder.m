@@ -377,7 +377,7 @@
                 [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID] error:nil];
             }
             
-            if ([metadata.type isEqualToString: k_metadataType_model]) {
+            if ([metadata.type isEqualToString: k_metadataType_template]) {
                 
                 // remove model
                 [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileName] error:nil];
@@ -420,7 +420,7 @@
                 selector = selectorDownloadOffline;
             }
         
-            if ([metadata.type isEqualToString: k_metadataType_model]) {
+            if ([metadata.type isEqualToString: k_metadataType_template]) {
                 downloadPlist = YES;
                 selector = selectorLoadPlist;
             }

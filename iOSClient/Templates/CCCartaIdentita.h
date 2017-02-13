@@ -27,6 +27,9 @@
 #import "CCTemplates.h"
 
 @protocol CCCartaIdentitaDelegate <NSObject>
+
+- (void)readFolderWithForced:(BOOL)forced;
+
 @end
 
 @interface CCCartaIdentita : XLFormViewController
