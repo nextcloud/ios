@@ -72,7 +72,9 @@
     
     UIPreviewAction *previewAction1 = [UIPreviewAction actionWithTitle:NSLocalizedString(@"_open_in_", nil) style:UIPreviewActionStyleDefault handler:^(UIPreviewAction *action,  UIViewController *previewViewController){
         
-        [[CCNetworking sharedNetworking] downloadFile:_metadata serverUrl:_serverUrl downloadData:YES downloadPlist:NO selector:selectorOpenIn selectorPost:nil session:download_session taskStatus:taskStatusResume delegate:self.delegate];
+        NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:_metadata.account];
+        
+        [[CCNetworking sharedNetworking] downloadFile:_metadata serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorOpenIn selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self.delegate];
     }];
     
     return @[previewAction1];
@@ -95,7 +97,7 @@
 
 - (void)downloadThumbnailFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {    
-    [app messageNotification:@"_error_" description:message visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeError];
+    [app messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
     
     [self dismissViewControllerAnimated:YES completion:nil];
 }
@@ -104,18 +106,20 @@
 {
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
     
+    NSString *serverUrl = app.activeMain.serverUrl;
+    
     metadataNet.action = actionDownloadThumbnail;
     metadataNet.fileID = metadata.fileID;
     
     if ([metadata.typeCloud isEqualToString:typeCloudOwnCloud] || [metadata.typeCloud isEqualToString:typeCloudNextcloud])
-        metadataNet.fileName = [self returnFileNamePathFromFileName:metadata.fileName serverUrl:app.serverUrl];
+        metadataNet.fileName = [self returnFileNamePathFromFileName:metadata.fileName serverUrl:serverUrl];
     
     metadataNet.fileNameLocal = metadata.fileID;
     metadataNet.fileNamePrint = metadata.fileNamePrint;
     metadataNet.options = @"l";
     metadataNet.priority = NSOperationQueuePriorityLow;
     metadataNet.selector = selectorDownloadThumbnail;
-    metadataNet.serverUrl = app.serverUrl;
+    metadataNet.serverUrl = serverUrl;
     
     [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
 }

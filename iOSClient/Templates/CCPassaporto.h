@@ -33,12 +33,13 @@
 
 @property(nonatomic, weak) id <CCPassaportoDelegate> delegate;
 
-- (id)initWithDelegate:(id <CCPassaportoDelegate>)delegate fileName:(NSString *)fileName uuid:(NSString *)uuid rev:(NSString *)rev fileID:(NSString *)fileID modelReadOnly:(BOOL)modelReadOnly isLocal:(BOOL)isLocal;
+- (id)initWithDelegate:(id <CCPassaportoDelegate>)delegate fileName:(NSString *)fileName uuid:(NSString *)uuid rev:(NSString *)rev fileID:(NSString *)fileID modelReadOnly:(BOOL)modelReadOnly isLocal:(BOOL)isLocal serverUrl:(NSString *)serverUrl;
 
 @property (nonatomic, strong) NSString *fileName;
 @property (nonatomic, strong) NSString *uuid;
 @property (nonatomic, strong) NSString *rev;
 @property (nonatomic, strong) NSString *fileID;
+@property (nonatomic, strong) NSString *serverUrl;
 @property BOOL isLocal;
 
 @end

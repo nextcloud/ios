@@ -23,6 +23,7 @@
 
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
+#import <WebKit/WebKit.h>
 
 #import "UIImage+animatedGIF.h"
 #import "LMMediaPlayerView.h"
@@ -34,11 +35,7 @@
 #import "CCGraphics.h"
 #import "CCCoreData.h"
 
-@protocol CCDetailViewDelegate;
-
 @interface CCDetail : UIViewController <UIDocumentInteractionControllerDelegate, MWPhotoBrowserDelegate, ReaderViewControllerDelegate>
-
-@property (nonatomic, weak) id <CCDetailViewDelegate> delegate;
 
 @property (nonatomic, strong) CCMetadata *metadataDetail;
 @property BOOL sourceDirectoryLocal;
@@ -46,7 +43,7 @@
 @property (nonatomic, strong) NSDate *dateFilterQuery;
 
 // Document
-@property (nonatomic, strong) UIWebView *webView;
+@property (nonatomic, strong) WKWebView *webView;
 
 // Photo-Video
 @property (nonatomic, strong) NSMutableArray *dataSourceImagesVideos;
@@ -73,15 +70,6 @@
 - (void)downloadPhotoBrowserFailure:(NSInteger)errorCode;
 - (void)downloadPhotoBrowserSuccess:(CCMetadata *)metadataVar selector:(NSString *)selector;
 - (void)progressTask:(NSString *)fileID serverUrl:(NSString *)serverUrl cryptated:(BOOL)cryptated progress:(float)progress;
-
-- (void)deleteFileFailure:(NSInteger)errorCode;
-- (void)deleteFileSuccess:(CCMetadata *)metadataVar metadataNetVar:(CCMetadataNet *)metadataNetVar;
-
-@end
-
-@protocol CCDetailViewDelegate <NSObject>
-
-@optional - (void)deleteFileOrFolder:(CCMetadata *)metadata numFile:(NSInteger)numFile ofFile:(NSInteger)ofFile;
 
 @end
 

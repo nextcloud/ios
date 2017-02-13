@@ -128,7 +128,7 @@
 + (NSString *)dateDiff:(NSDate *) convertedDate;
 + (NSString *)transformedSize:(double)value;
 
-+ (NSString *)removeForbiddenCharacters:(NSString *)fileName;
++ (NSString *)removeForbiddenCharacters:(NSString *)fileName hasServerForbiddenCharactersSupport:(BOOL)hasServerForbiddenCharactersSupport;
 + (NSString *)stringAppendServerUrl:(NSString *)serverUrl addServerUrl:(NSString *)addServerUrl;
 
 + (NSString *)createID;

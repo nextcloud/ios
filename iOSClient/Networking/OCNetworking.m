@@ -217,20 +217,20 @@
         [self.delegate uploadTaskSave:uploadTask];
 }
 
-- (void)uploadFileSuccess:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost
+- (void)uploadFileSuccess:(CCMetadataNet *)metadataNet fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost
 {
     [self complete];
     
-    if ([self.delegate respondsToSelector:@selector(uploadFileSuccess:serverUrl:selector:selectorPost:)])
-        [self.delegate uploadFileSuccess:fileID serverUrl:serverUrl selector:selector selectorPost:selectorPost];
+    if ([self.delegate respondsToSelector:@selector(uploadFileSuccess:fileID:serverUrl:selector:selectorPost:)])
+        [self.delegate uploadFileSuccess:_metadataNet fileID:fileID serverUrl:serverUrl selector:selector selectorPost:selectorPost];
 }
 
-- (void)uploadFileFailure:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode
+- (void)uploadFileFailure:(CCMetadataNet *)metadataNet fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode
 {
     [self complete];
     
-    if ([self.delegate respondsToSelector:@selector(uploadFileFailure:serverUrl:selector:message:errorCode:)])
-        [self.delegate uploadFileFailure:fileID serverUrl:serverUrl selector:selector message:message errorCode:errorCode];
+    if ([self.delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
+        [self.delegate uploadFileFailure:_metadataNet fileID:fileID serverUrl:serverUrl selector:selector message:message errorCode:errorCode];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -312,7 +312,7 @@
         if ([items count] == 0) {
             
 #ifndef EXTENSION
-            [app messageNotification:@"Server error" description:@"Read Folder WebDAV : [items NULL] please fix" visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeError];
+            [app messageNotification:@"Server error" description:@"Read Folder WebDAV : [items NULL] please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
 #endif
 
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -342,9 +342,9 @@
         _metadataNet.directoryID = directoryID;
         
 #ifndef EXTENSION
-        NSString *home = [CCUtility getHomeServerUrlActiveUrl:_activeUrl typeCloud:_typeCloud];
+        NSString *root = [CCUtility getHomeServerUrlActiveUrl:_activeUrl typeCloud:_typeCloud];
         
-        if ([home isEqualToString:_metadataNet.serverUrl]) {
+        if ([root isEqualToString:_metadataNet.serverUrl]) {
             
             app.quotaUsed = itemDtoDirectory.quotaUsed;
             app.quotaAvailable = itemDtoDirectory.quotaAvailable;
@@ -368,19 +368,31 @@
                 // ----- BUG #942 ---------
                 if ([itemDto.etag length] == 0) {
 #ifndef EXTENSION
-                    [app messageNotification:@"Server error" description:@"Metadata etag absent, record excluded, please fix" visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeError];
+                    [app messageNotification:@"Server error" description:@"Metadata etag absent, record excluded, please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
 #endif
                     continue;
                 }
                 // ------------------------
                 
-                [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileNamePrint:itemDto.fileName serverUrl:_metadataNet.serverUrl directoryID:directoryID cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath activeAccount:_metadataNet.account directoryUser:directoryUser typeCloud:_typeCloud]];
+                if ([_metadataNet.selector isEqualToString:selectorSearch] && [itemDto.fileName.lowercaseString hasPrefix:_metadataNet.fileName.lowercaseString] && ![CCUtility isFileCryptated:itemDto.fileName]) {
+                    
+                    [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileNamePrint:itemDto.fileName serverUrl:_metadataNet.serverUrl directoryID:directoryID cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath activeAccount:_metadataNet.account directoryUser:directoryUser typeCloud:_typeCloud]];
+                }
+                
+                if ([_metadataNet.selector isEqualToString:selectorReadFolder]) {
+                    
+                    [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileNamePrint:itemDto.fileName serverUrl:_metadataNet.serverUrl directoryID:directoryID cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath activeAccount:_metadataNet.account directoryUser:directoryUser typeCloud:_typeCloud]];
+                }
             }
             
             dispatch_async(dispatch_get_main_queue(), ^{
-                                
-                if ([self.delegate respondsToSelector:@selector(readFolderSuccess:permissions:rev:metadatas:)])
+                
+                if ([_metadataNet.selector isEqualToString:selectorReadFolder] && [self.delegate respondsToSelector:@selector(readFolderSuccess:permissions:rev:metadatas:)])
                     [self.delegate readFolderSuccess:_metadataNet permissions:permissions rev:rev metadatas:metadatas];
+
+                if ([_metadataNet.selector isEqualToString:selectorSearch] && [self.delegate respondsToSelector:@selector(searchSuccess:metadatas:)])
+                    [self.delegate searchSuccess:_metadataNet metadatas:metadatas];
+        
             });
         });
         
@@ -392,9 +404,12 @@
         if (errorCode == 0)
             errorCode = error.code;
         
-        if ([self.delegate respondsToSelector:@selector(readFolderFailure:message:errorCode:)])
+        if ([_metadataNet.selector isEqualToString:selectorReadFolder] && [self.delegate respondsToSelector:@selector(readFolderFailure:message:errorCode:)])
             [self.delegate readFolderFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
         
+        if ([_metadataNet.selector isEqualToString:selectorSearch] && [self.delegate respondsToSelector:@selector(searchFailure:message:errorCode:)])
+            [self.delegate searchFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+
         // Request trusted certificated
         if ([error code] == NSURLErrorServerCertificateUntrusted)
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
@@ -558,8 +573,8 @@
     
     [communication moveFileOrFolder:origineURL toDestiny:destinazioneURL onCommunication:communication withForbiddenCharactersSupported:hasServerForbiddenCharactersSupport successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
-        if ([_metadataNet.selector isEqualToString:selectorRename] && [self.delegate respondsToSelector:@selector(renameSuccess:revTo:)])
-            [self.delegate renameSuccess:_metadataNet revTo:nil];
+        if ([_metadataNet.selector isEqualToString:selectorRename] && [self.delegate respondsToSelector:@selector(renameSuccess:)])
+            [self.delegate renameSuccess:_metadataNet];
         
         if ([_metadataNet.selector rangeOfString:selectorMove].location != NSNotFound && [self.delegate respondsToSelector:@selector(moveSuccess:revTo:)])
             [self.delegate moveSuccess:_metadataNet revTo:nil];
@@ -572,8 +587,8 @@
         if (errorCode == 0)
             errorCode = error.code;
         
-        if ([self.delegate respondsToSelector:@selector(moveFileOrFolderFailure:message:errorCode:)])
-            [self.delegate moveFileOrFolderFailure:_metadataNet message:[CCError manageErrorOC:response.statusCode error:error] errorCode:errorCode];
+        if ([self.delegate respondsToSelector:@selector(renameMoveFileOrFolderFailure:message:errorCode:)])
+            [self.delegate renameMoveFileOrFolderFailure:_metadataNet message:[CCError manageErrorOC:response.statusCode error:error] errorCode:errorCode];
         
         // Request trusted certificated
         if ([error code] == NSURLErrorServerCertificateUntrusted)
@@ -595,8 +610,8 @@
             message = NSLocalizedStringFromTable(@"_unknow_response_server_", @"Error", nil);
         }
         
-        if ([self.delegate respondsToSelector:@selector(moveFileOrFolderFailure:message:errorCode:)])
-            [self.delegate moveFileOrFolderFailure:_metadataNet message:message errorCode:error.code];
+        if ([self.delegate respondsToSelector:@selector(renameMoveFileOrFolderFailure:message:errorCode:)])
+            [self.delegate renameMoveFileOrFolderFailure:_metadataNet message:message errorCode:error.code];
 
         [self complete];
     }];
@@ -639,9 +654,9 @@
             metadata = [CCUtility trasformedOCFileToCCMetadata:itemDto fileNamePrint:_metadataNet.fileNamePrint serverUrl:_metadataNet.serverUrl directoryID:directoryID cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath activeAccount:_metadataNet.account directoryUser:directoryUser typeCloud:_typeCloud];
             
 #ifndef EXTENSION
-            NSString *home = [CCUtility getHomeServerUrlActiveUrl:_activeUrl typeCloud:_typeCloud];
+            NSString *root = [CCUtility getHomeServerUrlActiveUrl:_activeUrl typeCloud:_typeCloud];
             
-            if ([home isEqualToString:fileName]) {
+            if ([root isEqualToString:fileName]) {
                 
                 app.quotaUsed = itemDto.quotaUsed;
                 app.quotaAvailable = itemDto.quotaAvailable;
@@ -656,7 +671,7 @@
         if ([items count] == 0) {
        
 #ifndef EXTENSION
-            [app messageNotification:@"Server error" description:@"Read File WebDAV : [items NULL] please fix" visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeError];
+            [app messageNotification:@"Server error" description:@"Read File WebDAV : [items NULL] please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
 #endif
         }
         
@@ -847,7 +862,7 @@
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
 #ifndef EXTENSION
-        [app messageNotification:@"_error_" description:[CCError manageErrorOC:response.statusCode error:error] visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeError];
+        [app messageNotification:@"_error_" description:[CCError manageErrorOC:response.statusCode error:error] visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
 #endif
         
         NSInteger errorCode = response.statusCode;
@@ -882,7 +897,7 @@
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
 #ifndef EXTENSION
-        [app messageNotification:@"_error_" description:[CCError manageErrorOC:response.statusCode error:error] visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeError];
+        [app messageNotification:@"_error_" description:[CCError manageErrorOC:response.statusCode error:error] visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
 #endif
         
         NSInteger errorCode = response.statusCode;

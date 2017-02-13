@@ -423,10 +423,10 @@
         
         CCMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:key];
         
-        if ([metadata.session containsString:@"download"] && (metadata.sessionTaskIdentifierPlist != taskIdentifierDone))
+        if ([metadata.session containsString:@"download"] && (metadata.sessionTaskIdentifierPlist != k_taskIdentifierDone))
             continue;
         
-        if ([metadata.session containsString:@"upload"] && (metadata.sessionTaskIdentifier != taskIdentifierStop))
+        if ([metadata.session containsString:@"upload"] && (metadata.sessionTaskIdentifier != k_taskIdentifierStop))
             continue;
         
         [app.activeMain reloadTaskButton:metadata];
@@ -466,7 +466,7 @@
 
         CCMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:key];
         
-        if ([metadata.session containsString:@"upload"] && metadata.cryptated && ((metadata.sessionTaskIdentifier == taskIdentifierDone && metadata.sessionTaskIdentifierPlist >= 0) || (metadata.sessionTaskIdentifier >= 0 && metadata.sessionTaskIdentifierPlist == taskIdentifierDone)))
+        if ([metadata.session containsString:@"upload"] && metadata.cryptated && ((metadata.sessionTaskIdentifier == k_taskIdentifierDone && metadata.sessionTaskIdentifierPlist >= 0) || (metadata.sessionTaskIdentifier >= 0 && metadata.sessionTaskIdentifierPlist == k_taskIdentifierDone)))
             continue;
         
         [app.activeMain cancelTaskButton:metadata reloadTable:lastAndRefresh];
@@ -506,7 +506,7 @@
             continue;
         }
         
-        if ([metadata.session containsString:@"upload"] && metadata.cryptated && ((metadata.sessionTaskIdentifier == taskIdentifierDone && metadata.sessionTaskIdentifierPlist >= 0) || (metadata.sessionTaskIdentifier >= 0 && metadata.sessionTaskIdentifierPlist == taskIdentifierDone)))
+        if ([metadata.session containsString:@"upload"] && metadata.cryptated && ((metadata.sessionTaskIdentifier == k_taskIdentifierDone && metadata.sessionTaskIdentifierPlist >= 0) || (metadata.sessionTaskIdentifier >= 0 && metadata.sessionTaskIdentifierPlist == k_taskIdentifierDone)))
             continue;
         
         [app.activeMain stopTaskButton:metadata];
@@ -526,7 +526,7 @@
     
         NSArray *recordsTableMetadata = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND ((session CONTAINS 'upload') OR (session CONTAINS 'download' AND (sessionSelector != 'loadPlist')))", app.activeAccount] fieldOrder:@"sessionTaskIdentifier" ascending:YES];
     
-        _sectionDataSource  = [CCSection creataDataSourseSectionTableMetadata:recordsTableMetadata listProgressMetadata:app.listProgressMetadata groupByField:@"session" replaceDateToExifDate:NO activeAccount:app.activeAccount];
+        _sectionDataSource  = [CCSection creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:app.listProgressMetadata groupByField:@"session" replaceDateToExifDate:NO activeAccount:app.activeAccount];
     
         if ([_sectionDataSource.allRecordsDataSource count] == 0) _noRecord.hidden = NO;
         else _noRecord.hidden = YES;
@@ -768,14 +768,10 @@
     // colori e font
     if (metadata.cryptated) {
         cell.labelTitle.textColor = COLOR_ENCRYPTED;
-        //nameLabel.font = RalewayLight(13.0f);
         cell.labelInfoFile.textColor = [UIColor blackColor];
-        //detailLabel.font = RalewayLight(9.0f);
     } else {
         cell.labelTitle.textColor = COLOR_CLEAR;
-        //nameLabel.font = RalewayLight(13.0f);
         cell.labelInfoFile.textColor = [UIColor blackColor];
-        //detailLabel.font = RalewayLight(9.0f);
     }
     
     // ----------------------------------------------------------------------------------------------------------
@@ -833,7 +829,7 @@
     // ----------------------------------------------------------------------------------------------------------
     
     // File Cyptated
-    if (metadata.cryptated && metadata.directory == NO && [metadata.type isEqualToString:metadataType_model] == NO) {
+    if (metadata.cryptated && metadata.directory == NO && [metadata.type isEqualToString: k_metadataType_model] == NO) {
         
         cell.statusImageView.image = [UIImage imageNamed:image_lock];
     }
@@ -848,7 +844,7 @@
         else cell.statusImageView.image = [UIImage imageNamed:image_statusdownload];
         
         // Fai comparire il RELOAD e lo STOP solo se non è un Task Plist
-        if (metadata.sessionTaskIdentifierPlist == taskIdentifierDone) {
+        if (metadata.sessionTaskIdentifierPlist == k_taskIdentifierDone) {
             
             if (metadata.cryptated)[cell.cancelTaskButton setBackgroundImage:[UIImage imageNamed:image_stoptaskcrypto] forState:UIControlStateNormal];
             else [cell.cancelTaskButton setBackgroundImage:[UIImage imageNamed:image_stoptask] forState:UIControlStateNormal];
@@ -877,7 +873,7 @@
         // downloadFile Error
         // ----------------------------------------------------------------------------------------------------------
         
-        if (metadata.sessionTaskIdentifier == taskIdentifierError || metadata.sessionTaskIdentifierPlist == taskIdentifierError) {
+        if (metadata.sessionTaskIdentifier == k_taskIdentifierError || metadata.sessionTaskIdentifierPlist == k_taskIdentifierError) {
             
             cell.statusImageView.image = [UIImage imageNamed:image_statuserror];
             
@@ -901,7 +897,7 @@
         else [cell.cancelTaskButton setBackgroundImage:[UIImage imageNamed:image_removetask] forState:UIControlStateNormal];
         cell.cancelTaskButton.hidden = NO;
         
-        if (metadata.sessionTaskIdentifier == taskIdentifierStop) {
+        if (metadata.sessionTaskIdentifier == k_taskIdentifierStop) {
             
             if (metadata.cryptated)[cell.reloadTaskButton setBackgroundImage:[UIImage imageNamed:image_reloadtaskcrypto] forState:UIControlStateNormal];
             else [cell.reloadTaskButton setBackgroundImage:[UIImage imageNamed:image_reloadtask] forState:UIControlStateNormal];
@@ -942,7 +938,7 @@
         // uploadFileError
         // ----------------------------------------------------------------------------------------------------------
         
-        if (metadata.sessionTaskIdentifier == taskIdentifierError || metadata.sessionTaskIdentifierPlist == taskIdentifierError) {
+        if (metadata.sessionTaskIdentifier == k_taskIdentifierError || metadata.sessionTaskIdentifierPlist == k_taskIdentifierError) {
             
             cell.labelTitle.enabled = NO;
             cell.statusImageView.image = [UIImage imageNamed:image_statuserror];

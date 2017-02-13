@@ -33,7 +33,6 @@
 @property (nonatomic, weak) id <CCPeekPopDelegate> delegate;
 
 @property (nonatomic, weak) CCMetadata *metadata;
-@property (nonatomic, weak) NSString *serverUrl;
 
 @property (nonatomic, weak) IBOutlet UIImageView *imagePreview;
 

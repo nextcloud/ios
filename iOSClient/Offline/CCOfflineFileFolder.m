@@ -51,6 +51,7 @@
 #pragma mark ===== Read Folder Offline =====
 #pragma --------------------------------------------------------------------------------------------
 
+// MULTI THREAD
 - (void)readFolderOffline
 {
     if ([app.activeAccount length] == 0)
@@ -60,29 +61,31 @@
     if ([[app verifyExistsInQueuesDownloadSelector:selectorDownloadOffline] count] > 0)
         return;
     
-    NSString *father = @"";
-    NSArray *directories = [CCCoreData getOfflineDirectoryActiveAccount:app.activeAccount];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        
+        NSString *father = @"";
+        NSArray *directories = [CCCoreData getOfflineDirectoryActiveAccount:app.activeAccount];
     
-    for (TableDirectory *directory in directories) {
+        for (TableDirectory *directory in directories) {
         
-        if (![directory.serverUrl containsString:father]) {
+            if (![directory.serverUrl containsString:father]) {
         
-            father = directory.serverUrl;
+                father = directory.serverUrl;
             
-            CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
+                CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
         
-            metadataNet.action = actionReadFolder;
-            metadataNet.date = [NSDate date];
-            metadataNet.directoryID = directory.directoryID;
-            metadataNet.priority = NSOperationQueuePriorityVeryLow;
-            metadataNet.selector = selectorOfflineFolder;
-            metadataNet.serverUrl = directory.serverUrl;
+                metadataNet.action = actionReadFolder;
+                metadataNet.directoryID = directory.directoryID;
+                metadataNet.priority = NSOperationQueuePriorityVeryLow;
+                metadataNet.selector = selectorReadFolder;
+                metadataNet.serverUrl = directory.serverUrl;
         
-            [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+                [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
             
-            NSLog(@"[LOG] Read offline directory : %@", directory.serverUrl);
+                NSLog(@"[LOG] Read offline directory : %@", directory.serverUrl);
+            }
         }
-    }
+    });
 }
 
 //
@@ -123,7 +126,7 @@
     for (CCMetadataNet *metadataNet in metadatasNet)
         [serversUrlInDownload addObject:metadataNet.serverUrl];
     
-    /* Animation ON/OFF */
+    // Animation ON/OFF
     
     for (NSString *serverUrl in directory) {
         
@@ -158,7 +161,7 @@
     
     __block NSMutableArray *metadatasForOfflineFolder = [[NSMutableArray alloc] init];
     
-    if ([recordAccount.account isEqualToString:metadataNet.account] == NO && [metadataNet.selector isEqualToString:selectorOfflineFolder])
+    if ([recordAccount.account isEqualToString:metadataNet.account] == NO)
         return;
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
@@ -189,10 +192,13 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             
             // delete metadata not present
-            for (CCMetadata *metadata in metadatasNotPresents)
+            for (CCMetadata *metadata in metadatasNotPresents) {
+                
                 [CCCoreData deleteFile:metadata serverUrl:metadataNet.serverUrl directoryUser:app.directoryUser typeCloud:app.typeCloud activeAccount:app.activeAccount];
+            }
             
-            [app.activeMain getDataSourceWithReloadTableView:metadataNet.directoryID fileID:nil selector:nil];
+            if ([metadatasNotPresents count] > 0)
+                [app.activeMain reloadDatasource:metadataNet.serverUrl fileID:nil selector:nil];
             
         });
         
@@ -218,10 +224,10 @@
                 NSInteger typeFilename = [CCUtility getTypeFileName:metadata.fileName];
             
                 // reject crypto
-                if (typeFilename == metadataTypeFilenameCrypto) continue;
+                if (typeFilename == k_metadataTypeFilenameCrypto) continue;
             
                 // Verify if the plist is complited
-                if (typeFilename == metadataTypeFilenamePlist) {
+                if (typeFilename == k_metadataTypeFilenamePlist) {
                 
                     BOOL isCryptoComplete = NO;
                     NSString *fileNameCrypto = [CCUtility trasformedFileNamePlistInCrypto:metadata.fileName];
@@ -262,7 +268,7 @@
         }
         
         if ([metadatasForOfflineFolder count] > 0)
-            [self verifyChangeMedatas:metadatasForOfflineFolder serverUrl:metadataNet.serverUrl directoryID:metadataNet.directoryID account:metadataNet.account offline:YES];
+            [self verifyChangeMedatas:metadatasForOfflineFolder serverUrl:metadataNet.serverUrl account:metadataNet.account offline:YES];
     });
 }
 
@@ -274,26 +280,29 @@
 {
     if (app.activeAccount == nil || [CCUtility getHomeServerUrlActiveUrl:app.activeUrl typeCloud:app.typeCloud] == nil)
         return;
-        
-    NSArray *metadatas = [CCCoreData getOfflineLocalFileActiveAccount:app.activeAccount directoryUser:app.directoryUser];
     
-    for (CCMetadata *metadata in metadatas) {
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+
+        NSArray *metadatas = [CCCoreData getOfflineLocalFileActiveAccount:app.activeAccount directoryUser:app.directoryUser];
+    
+        for (CCMetadata *metadata in metadatas) {
         
-        NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:app.activeAccount];
-        if (serverUrl == nil) continue;
+            NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:app.activeAccount];
+            if (serverUrl == nil) continue;
         
-        CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
+            CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
         
-        metadataNet.action = actionReadFile;
-        metadataNet.fileID = metadata.fileID;
-        metadataNet.fileName = metadata.fileName;
-        metadataNet.fileNamePrint = metadata.fileNamePrint;
-        metadataNet.serverUrl = serverUrl;
-        metadataNet.selector = selectorReadFileOffline;
-        metadataNet.priority = NSOperationQueuePriorityVeryLow;
+            metadataNet.action = actionReadFile;
+            metadataNet.fileID = metadata.fileID;
+            metadataNet.fileName = metadata.fileName;
+            metadataNet.fileNamePrint = metadata.fileNamePrint;
+            metadataNet.serverUrl = serverUrl;
+            metadataNet.selector = selectorReadFileOffline;
+            metadataNet.priority = NSOperationQueuePriorityVeryLow;
         
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
-    }
+            [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+        }
+    });
 }
 
 - (void)readFileFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
@@ -312,7 +321,7 @@
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
         
-        [self verifyChangeMedatas:[[NSArray alloc] initWithObjects:metadata, nil] serverUrl:metadataNet.serverUrl directoryID:metadataNet.directoryID account:app.activeAccount offline:NO];
+        [self verifyChangeMedatas:[[NSArray alloc] initWithObjects:metadata, nil] serverUrl:metadataNet.serverUrl account:app.activeAccount offline:NO];
     });
 }
 
@@ -322,9 +331,10 @@
 
 
 // MULTI THREAD
-- (void)verifyChangeMedatas:(NSArray *)allRecordMetadatas serverUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID account:(NSString *)account offline:(BOOL)offline
+- (void)verifyChangeMedatas:(NSArray *)allRecordMetadatas serverUrl:(NSString *)serverUrl account:(NSString *)account offline:(BOOL)offline
 {
     NSMutableArray *metadatas = [[NSMutableArray alloc] init];
+    BOOL isOfflineDirectory = [CCCoreData isOfflineDirectoryServerUrl:serverUrl activeAccount:app.activeAccount];
     
     for (CCMetadata *metadata in allRecordMetadatas) {
         
@@ -342,10 +352,12 @@
         
         if (offline) {
             
-            // add flag offline
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [CCCoreData setOfflineLocalFileID:metadata.fileID offline:YES activeAccount:app.activeAccount];
-            });
+            // is Directory Offline && file is tagged offline ... ?? removed on offline
+            if (isOfflineDirectory && [record.offline boolValue] == YES) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [CCCoreData setOfflineLocalFileID:record.fileID offline:NO activeAccount:app.activeAccount];
+                });
+            }
             
             if (![record.rev isEqualToString:metadata.rev ])
                 changeRev = YES;
@@ -358,14 +370,14 @@
         
         if (changeRev) {
             
-            if ([metadata.type isEqualToString:metadataType_file]) {
+            if ([metadata.type isEqualToString: k_metadataType_file]) {
                 
                 // remove file and ico
                 [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID] error:nil];
                 [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID] error:nil];
             }
             
-            if ([metadata.type isEqualToString:metadataType_model]) {
+            if ([metadata.type isEqualToString: k_metadataType_model]) {
                 
                 // remove model
                 [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileName] error:nil];
@@ -377,12 +389,12 @@
     
     dispatch_async(dispatch_get_main_queue(), ^{
         if ([metadatas count])
-            [self offlineMetadatas:metadatas serverUrl:serverUrl directoryID:directoryID offline:offline];
+            [self offlineMetadatas:metadatas serverUrl:serverUrl offline:offline];
     });
 }
 
 // MAIN THREAD
-- (void)offlineMetadatas:(NSArray *)metadatas serverUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID offline:(BOOL)offline
+- (void)offlineMetadatas:(NSArray *)metadatas serverUrl:(NSString *)serverUrl offline:(BOOL)offline
 {
     // HUD
     if ([metadatas count] > 50 && offline) {
@@ -403,12 +415,12 @@
             if (isOffline)
                 selectorPost = selectorAddOffline;
         
-            if ([metadata.type isEqualToString:metadataType_file]) {
+            if ([metadata.type isEqualToString: k_metadataType_file]) {
                 downloadData = YES;
                 selector = selectorDownloadOffline;
             }
         
-            if ([metadata.type isEqualToString:metadataType_model]) {
+            if ([metadata.type isEqualToString: k_metadataType_model]) {
                 downloadPlist = YES;
                 selector = selectorLoadPlist;
             }
@@ -424,15 +436,15 @@
             metadataNet.selector = selector;
             metadataNet.selectorPost = selectorPost;
             metadataNet.serverUrl = serverUrl;
-            metadataNet.session = download_session;
-            metadataNet.taskStatus = taskStatusResume;
+            metadataNet.session = k_download_session;
+            metadataNet.taskStatus = k_taskStatusResume;
 
             [app addNetworkingOperationQueue:app.netQueueDownload delegate:app.activeMain metadataNet:metadataNet];
         }
     
         [[CCOfflineFileFolder sharedOfflineFileFolder] offlineFolderAnimationDirectory:[[NSArray alloc] initWithObjects:serverUrl, nil] callViewController:YES];
         
-        [app.activeMain getDataSourceWithReloadTableView:directoryID fileID:nil selector:nil];
+        [app.activeMain reloadDatasource:serverUrl fileID:nil selector:nil];
         
         [_hud hideHud];
     });

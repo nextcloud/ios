@@ -62,17 +62,17 @@
 #import "CCPatenteGuida.h"
 #import "JSAlertView.h"
 
-@interface CCMain : UITableViewController <UITableViewDataSource, UITableViewDelegate, UIActionSheetDelegate, UIGestureRecognizerDelegate, UIDocumentInteractionControllerDelegate, UIViewControllerPreviewingDelegate, CCMoveDelegate, CTAssetsPickerControllerDelegate, BKPasscodeViewControllerDelegate, UISplitViewControllerDelegate, UIPopoverControllerDelegate, CCNetworkingDelegate, CCShareOCDelegate, CCAccountWebDelegate, CCBancomatDelegate, CCCartaDiCreditoDelegate, CCCartaIdentitaDelegate, CCContoCorrenteDelegate, CCNoteDelegate, CCPassaportoDelegate, CCPatenteGuidaDelegate, CCDetailViewDelegate, CCPeekPopDelegate, UIDocumentMenuDelegate, UIDocumentPickerDelegate>
-
-@property (nonatomic ,strong) NSString *localServerUrl;
+@interface CCMain : UITableViewController <UITableViewDataSource, UITableViewDelegate, UIActionSheetDelegate, UIGestureRecognizerDelegate, UIDocumentInteractionControllerDelegate, UIViewControllerPreviewingDelegate, CCMoveDelegate, CTAssetsPickerControllerDelegate, BKPasscodeViewControllerDelegate, UISplitViewControllerDelegate, UIPopoverControllerDelegate, CCNetworkingDelegate, CCShareOCDelegate, CCAccountWebDelegate, CCBancomatDelegate, CCCartaDiCreditoDelegate, CCCartaIdentitaDelegate, CCContoCorrenteDelegate, CCNoteDelegate, CCPassaportoDelegate, CCPatenteGuidaDelegate, CCPeekPopDelegate, UIDocumentMenuDelegate, UIDocumentPickerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, UIScrollViewDelegate>
 
 @property BOOL isFolderEncrypted;
-@property (nonatomic, weak) NSString *titleMain;
-@property (nonatomic, weak) NSString *textBackButton;
 
-@property (nonatomic, weak) CCShareOC* shareOC;
+@property (nonatomic, strong) NSString *serverUrl;
+@property (nonatomic, strong) NSString *titleMain;
+@property (nonatomic, strong) NSString *textBackButton;
+
+@property (nonatomic, weak) CCShareOC *shareOC;
 @property (nonatomic, weak) CCDetail *detailViewController;
-@property (nonatomic, weak) CCLoginNCOC *loginVC;
+@property (nonatomic, strong) UISearchController *searchController;
 
 - (void)returnCreate:(NSInteger)type;
 
@@ -88,8 +88,8 @@
 - (void)cancelTaskButton:(CCMetadata *)metadata reloadTable:(BOOL)reloadTable;
 - (void)stopTaskButton:(CCMetadata *)metadata;
 
-- (void)getDataSourceWithReloadTableView;
-- (void)getDataSourceWithReloadTableView:(NSString *)directoryID fileID:(NSString *)fileID selector:(NSString *)selector;
+- (void)reloadDatasource;
+- (void)reloadDatasource:(NSString *)serverUrl fileID:(NSString *)fileID selector:(NSString *)selector;
 
 - (void)requestSharedByServer;
 - (void)requestServerInformation;
@@ -97,6 +97,8 @@
 - (void)offlineFolderGraphicsServerUrl:(NSString *)serverUrl animation:(BOOL)animation;
 
 - (void)clearDateReadDataSource:(NSNotification *)notification;
+
+- (void)cancelSearchBar;
 
 @end
 

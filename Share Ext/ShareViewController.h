@@ -27,6 +27,7 @@
 #import "AFURLSessionManager.h"
 #import "MBProgressHUD.h"
 #import "CCNetworking.h"
+#import "OCNetworking.h"
 #import "CCBKPasscode.h"
 #import "CCGlobal.h"
 #import "CCGraphics.h"
@@ -38,7 +39,7 @@
 
 #import "TableAccount.h"
 
-@interface ShareViewController : UIViewController <UITableViewDelegate, CCMoveDelegate, OCNetworkingDelegate, MBProgressHUDDelegate, BKPasscodeViewControllerDelegate, CCNetworkingDelegate>
+@interface ShareViewController : UIViewController <UITableViewDelegate, OCNetworkingDelegate, MBProgressHUDDelegate, BKPasscodeViewControllerDelegate, CCNetworkingDelegate, CCMoveDelegate>
 
 @property (nonatomic, strong) NSOperationQueue *networkingOperationQueue;
 
@@ -52,7 +53,6 @@
 @property (nonatomic, strong) NSString *typeCloud;
 @property (nonatomic, strong) NSString *serverUrl;
 
-@property (nonatomic ,strong) NSString *localServerUrl;
 @property BOOL localCryptated;
 
 @property (nonatomic, retain) NSMutableArray *filesName;

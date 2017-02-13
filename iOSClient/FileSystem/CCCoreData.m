@@ -202,7 +202,7 @@
     if (record) {
         
         if ([record.cameraUploadFolderName length] > 0 ) return record.cameraUploadFolderName;
-        else return folderDefaultCameraUpload;
+        else return k_folderDefaultCameraUpload;
         
     } else return @"";
 }
@@ -597,8 +597,8 @@
     TableMetadata *record = [TableMetadata MR_createEntityInContext:context];
 
     // set default value
-    metadata.sessionTaskIdentifier = taskIdentifierDone;
-    metadata.sessionTaskIdentifierPlist = taskIdentifierDone;
+    metadata.sessionTaskIdentifier = k_taskIdentifierDone;
+    metadata.sessionTaskIdentifierPlist = k_taskIdentifierDone;
     [record setValue:[NSDate date] forKey:@"dateRecord"];
 
     // Insert metdata -> entity
@@ -683,8 +683,8 @@
         if (sessionError) record.sessionError = sessionError;
         if (sessionSelector) record.sessionSelector = sessionSelector;
         if (sessionSelectorPost) record.sessionSelectorPost = sessionSelectorPost;
-        if (sessionTaskIdentifier != taskIdentifierNULL) record.sessionTaskIdentifier = [NSNumber numberWithInteger:sessionTaskIdentifier];
-        if (sessionTaskIdentifierPlist != taskIdentifierNULL) record.sessionTaskIdentifierPlist = [NSNumber numberWithInteger:sessionTaskIdentifierPlist];
+        if (sessionTaskIdentifier != k_taskIdentifierNULL) record.sessionTaskIdentifier = [NSNumber numberWithInteger:sessionTaskIdentifier];
+        if (sessionTaskIdentifierPlist != k_taskIdentifierNULL) record.sessionTaskIdentifierPlist = [NSNumber numberWithInteger:sessionTaskIdentifierPlist];
         
         [directoryIDs addObject:record.directoryID];
         
@@ -712,6 +712,13 @@
         return [self insertEntityInMetadata:record];
         
     } else return nil;
+}
+
++ (TableMetadata *)getTableMetadataWithPreficate:(NSPredicate *)predicate
+{
+    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
+    
+    return [TableMetadata MR_findFirstWithPredicate:predicate inContext:context];
 }
 
 + (NSArray *)getTableMetadataWithPredicate:(NSPredicate *)predicate context:(NSManagedObjectContext *)context
@@ -770,22 +777,22 @@
 
 + (NSArray *)getTableMetadataDownloadAccount:(NSString *)activeAccount
 {
-    return [self getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND ((session == %@) || (session == %@)) AND ((sessionTaskIdentifier != %i) OR (sessionTaskIdentifierPlist != %i))", activeAccount, download_session, download_session_foreground, taskIdentifierDone, taskIdentifierDone] context:nil];
+    return [self getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND ((session == %@) || (session == %@)) AND ((sessionTaskIdentifier != %i) OR (sessionTaskIdentifierPlist != %i))", activeAccount, k_download_session, k_download_session_foreground, k_taskIdentifierDone, k_taskIdentifierDone] context:nil];
 }
 
 + (NSArray *)getTableMetadataDownloadWWanAccount:(NSString *)activeAccount
 {
-    return [self getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (session == %@) AND ((sessionTaskIdentifier != %i) OR (sessionTaskIdentifierPlist != %i))", activeAccount, download_session_wwan, taskIdentifierDone, taskIdentifierDone] context:nil];
+    return [self getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (session == %@) AND ((sessionTaskIdentifier != %i) OR (sessionTaskIdentifierPlist != %i))", activeAccount, k_download_session_wwan, k_taskIdentifierDone, k_taskIdentifierDone] context:nil];
 }
 
 + (NSArray *)getTableMetadataUploadAccount:(NSString *)activeAccount
 {
-    return [self getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND ((session == %@) || (session == %@)) AND ((sessionTaskIdentifier != %i) OR (sessionTaskIdentifierPlist != %i))", activeAccount, upload_session, upload_session_foreground, taskIdentifierDone, taskIdentifierDone] context:nil];
+    return [self getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND ((session == %@) || (session == %@)) AND ((sessionTaskIdentifier != %i) OR (sessionTaskIdentifierPlist != %i))", activeAccount, k_upload_session, k_upload_session_foreground, k_taskIdentifierDone, k_taskIdentifierDone] context:nil];
 }
 
 + (NSArray *)getTableMetadataUploadWWanAccount:(NSString *)activeAccount
 {
-    return [self getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (session == %@) AND ((sessionTaskIdentifier != %i) OR (sessionTaskIdentifierPlist != %i))", activeAccount, upload_session_wwan, taskIdentifierDone, taskIdentifierDone] context:nil];
+    return [self getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (session == %@) AND ((sessionTaskIdentifier != %i) OR (sessionTaskIdentifierPlist != %i))", activeAccount, k_upload_session_wwan, k_taskIdentifierDone, k_taskIdentifierDone] context:nil];
 }
 
 + (NSArray *)getRecordsTableMetadataPhotosCameraUpload:(NSString *)serverUrl activeAccount:(NSString *)activeAccount
@@ -797,7 +804,7 @@
     
     for (TableDirectory *record in tableDirectoryes) {
         
-        NSArray *records = [TableMetadata MR_findAllWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND ((session == NULL) OR (session == '')) AND (type == 'file') AND ((typeFile == %@) OR (typeFile == %@))", activeAccount, record.directoryID, metadataTypeFile_image, metadataTypeFile_video] inContext:context];
+        NSArray *records = [TableMetadata MR_findAllWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND ((session == NULL) OR (session == '')) AND (type == 'file') AND ((typeFile == %@) OR (typeFile == %@))", activeAccount, record.directoryID, k_metadataTypeFile_image, k_metadataTypeFile_video] inContext:context];
         
         if ([records count] > 0)
             [recordsPhotosCameraUpload addObjectsFromArray:records];
@@ -908,10 +915,10 @@
                 // remove if in session
                 if ([recordMetadata.session length] >0) {
                     if (recordMetadata.sessionTaskIdentifier >= 0)
-                        [[CCNetworking sharedNetworking] settingSession:recordMetadata.session sessionTaskIdentifier:[recordMetadata.sessionTaskIdentifier integerValue] taskStatus:taskStatusCancel];
+                        [[CCNetworking sharedNetworking] settingSession:recordMetadata.session sessionTaskIdentifier:[recordMetadata.sessionTaskIdentifier integerValue] taskStatus: k_taskStatusCancel];
                     
                     if (recordMetadata.sessionTaskIdentifierPlist >= 0)
-                        [[CCNetworking sharedNetworking] settingSession:recordMetadata.session sessionTaskIdentifier:[recordMetadata.sessionTaskIdentifierPlist integerValue] taskStatus:taskStatusCancel];
+                        [[CCNetworking sharedNetworking] settingSession:recordMetadata.session sessionTaskIdentifier:[recordMetadata.sessionTaskIdentifierPlist integerValue] taskStatus: k_taskStatusCancel];
 
                 }
                 
@@ -1099,7 +1106,7 @@
         return [record1.serverUrl compare:record2.serverUrl];
         
     }];
-
+    
     return sortedRecordsTable;
 }
 
@@ -1490,7 +1497,7 @@
         metadataNet.selectorPost = record.selectorPost;
         metadataNet.serverUrl = record.serverUrl;
         metadataNet.session = record.session;
-        metadataNet.taskStatus = taskStatusResume;                          // Default
+        metadataNet.taskStatus = k_taskStatusResume;                          // Default
         
         [record MR_deleteEntityInContext:context];                          // Remove record
         [context MR_saveToPersistentStoreAndWait];
@@ -1741,15 +1748,16 @@
 #pragma mark ===== Offline =====
 #pragma --------------------------------------------------------------------------------------------
 
-+ (NSArray *)getHomeOfflineActiveAccount:(NSString *)activeAccount directoryUser:(NSString *)directoryUser
++ (NSArray *)getHomeOfflineActiveAccount:(NSString *)activeAccount directoryUser:(NSString *)directoryUser fieldOrder:(NSString *)fieldOrder ascending:(BOOL)ascending
 {
-    NSMutableArray *metadatas = [NSMutableArray new];
-    NSArray *directories = [self getOfflineDirectoryActiveAccount:activeAccount];
+    NSMutableArray *tableMetadatas = [NSMutableArray new];
+    NSArray *directoriesOffline = [self getOfflineDirectoryActiveAccount:activeAccount];
     NSString *father = @"";
+    NSSortDescriptor *descriptor;
 
     // Add directory
     
-    for (TableDirectory *directory in directories) {
+    for (TableDirectory *directory in directoriesOffline) {
         
         if (![directory.serverUrl containsString:father]) {
             
@@ -1762,37 +1770,39 @@
             if (upDir && directoryID && fileName) {
             
                 NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(directoryID == %@) AND (account == %@) AND (directory == 1) AND (fileNameData == %@)", directoryID, activeAccount, fileName];
-                CCMetadata *metadata = [self getMetadataWithPreficate:predicate context:nil];
-            
-                if (metadata)
-                    [metadatas addObject:metadata];
+                TableMetadata *tableMetadata = [self getTableMetadataWithPreficate:predicate];
+                
+                if (tableMetadata)
+                    [tableMetadatas addObject:tableMetadata];
             }
         }
     }
     
     // Add files
     
-    NSArray *files = [self getTableLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (offline == 1)", activeAccount] controlZombie:YES activeAccount:activeAccount directoryUser:directoryUser];
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (offline == 1)", activeAccount];
+    NSArray *localFiles = [CCCoreData getTableLocalFileWithPredicate:predicate];
     
-    for (TableLocalFile *file in files) {
+    for (TableLocalFile *localFile in localFiles) {
         
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", file.fileID, activeAccount];
-        CCMetadata *metadata = [self getMetadataWithPreficate:predicate context:nil];
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (fileID == %@)", activeAccount, localFile.fileID];
+        TableMetadata *tableMetadata = [self getTableMetadataWithPreficate:predicate];
         
-        if (metadata) {
-            
-            // verify if is not on directory offline
-            
-            NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(directoryID == %@) AND (offline == 1) AND (account == %@)", metadata.directoryID, activeAccount];
-            
-            TableDirectory *directory = [TableDirectory MR_findFirstWithPredicate:predicate];
-            
-            if (!directory)
-                [metadatas addObject:metadata];
-        }
+        if (tableMetadata)
+            [tableMetadatas addObject:tableMetadata];
     }
     
-    return (NSArray *)metadatas;
+    // Order
+    
+    if ([fieldOrder isEqualToString:@"fileName"]) descriptor = [[NSSortDescriptor alloc] initWithKey:@"fileNamePrint" ascending:ascending selector:@selector(localizedCaseInsensitiveCompare:)];
+    
+    else if ([fieldOrder isEqualToString:@"fileDate"]) descriptor = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:ascending selector:nil];
+    
+    else if ([fieldOrder isEqualToString:@"sessionTaskIdentifier"]) descriptor = [[NSSortDescriptor alloc] initWithKey:@"sessionTaskIdentifier" ascending:ascending selector:nil];
+    
+    else descriptor = [[NSSortDescriptor alloc] initWithKey:fieldOrder ascending:ascending selector:@selector(localizedCaseInsensitiveCompare:)];
+
+    return [tableMetadatas sortedArrayUsingDescriptors:[NSArray arrayWithObjects:descriptor, nil]];//[NSArray arrayWithArray:tableMetadatas];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1815,7 +1825,7 @@
     [self addLocalFile:metadata activeAccount:activeAccount];
     
     // EXIF
-    if ([metadata.typeFile isEqualToString:metadataTypeFile_image])
+    if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image])
         [CCExifGeo setExifLocalTableFileID:metadata directoryUser:directoryUser activeAccount:activeAccount];
     
     // Icon
@@ -1833,7 +1843,7 @@
     [self updateMetadata:metadata predicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", metadata.fileID, activeAccount] activeAccount:activeAccount activeUrl:activeUrl typeCloud:typeCloud context:nil];
     
     // se è un modello aggiorniamo anche nel FileSystem
-    if ([metadata.type isEqualToString:metadataType_model]){
+    if ([metadata.type isEqualToString: k_metadataType_model]){
         [self updateLocalFileModel:metadata activeAccount:activeAccount];
     }
 }
@@ -1993,7 +2003,7 @@
 + (void)moveCoreDataToGroup
 {
     NSString *applicationName = [[[NSBundle mainBundle] infoDictionary] valueForKey:(NSString *)kCFBundleNameKey];
-    NSURL *dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:capabilitiesGroups];
+    NSURL *dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:k_capabilitiesGroups];
     NSString *dirToPath = [[dirGroup URLByAppendingPathComponent:appDatabase] path];
 
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES);

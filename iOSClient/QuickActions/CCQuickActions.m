@@ -139,9 +139,9 @@
         }];
     }
     
-    if (imageSize > MaxDimensionUpload || (picker.selectedAssets.count >= (pickerControllerMax - _numTaskUploadInProgress))) {
+    if (imageSize > k_MaxDimensionUpload || (picker.selectedAssets.count >= (k_pickerControllerMax - _numTaskUploadInProgress))) {
         
-        [app messageNotification:@"_info_" description:@"_limited_dimension_" visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeInfo];
+        [app messageNotification:@"_info_" description:@"_limited_dimension_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo];
         
         return NO;
     }
@@ -169,9 +169,9 @@
 #pragma mark ===== Move =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)move:(NSString *)serverUrlTo title:(NSString *)title selectedMetadatas:(NSArray *)selectedMetadatas
+- (void)moveServerUrlTo:(NSString *)serverUrlTo title:(NSString *)title selectedMetadatas:(NSArray *)selectedMetadatas
 {    
-    [_mainVC uploadFileAsset:_assets serverUrl:serverUrlTo cryptated:_cryptated useSubFolder:NO session:upload_session];
+    [_mainVC uploadFileAsset:_assets serverUrl:serverUrlTo cryptated:_cryptated useSubFolder:NO session:k_upload_session];
 }
 
 - (void)moveOpenWindow:(NSArray *)indexPaths

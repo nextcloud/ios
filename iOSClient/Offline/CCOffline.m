@@ -45,8 +45,6 @@
 {
     if (self = [super initWithCoder:aDecoder])  {
         
-        //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadTable) name:@"reloadTableFavorite" object:nil];
-        
         app.activeOffline = self;
     }
     return self;
@@ -62,8 +60,8 @@
     [super viewDidLoad];
     
     // Create data model
-    _pageType = @[pageOfflineOffline, pageOfflineLocal];
-    _currentPageType = pageOfflineOffline;
+    _pageType = @[k_pageOfflineOffline, k_pageOfflineLocal];
+    _currentPageType = k_pageOfflineOffline;
     self.title = NSLocalizedString(@"_offline_", nil);
     
     // Create page view controller
@@ -80,7 +78,14 @@
     
     [self addChildViewController:_pageViewController];
     [self.view addSubview:_pageViewController.view];
-    [self.pageViewController didMoveToParentViewController:self];    
+    [self.pageViewController didMoveToParentViewController:self];
+    
+    // Enable swipe gesture only for page controller
+    for (UIScrollView *view in self.pageViewController.view.subviews) {
+        if ([view isKindOfClass:[UIScrollView class]]) {
+            view.scrollEnabled = NO;
+        }
+    }
 }
 
 // Apparirà
@@ -162,27 +167,27 @@
 {
     CCOfflinePageContent *vc = [self.pageViewController.viewControllers lastObject];
     
-    NSString *serverUrl = vc.localServerUrl;
+    NSString *serverUrl = vc.serverUrl;
     _currentPageType = vc.pageType;
 
-    if ([_currentPageType isEqualToString:pageOfflineOffline]) {
+    if ([_currentPageType isEqualToString:k_pageOfflineOffline]) {
         if (serverUrl)
             self.title = NSLocalizedString(@"_offline_", nil);
         else
             self.title = NSLocalizedString(@"_offline_", nil);
         
-        UITabBarItem *item = [self.tabBarController.tabBar.items objectAtIndex:TabBarApplicationIndexOffline];
+        UITabBarItem *item = [self.tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexOffline];
         item.selectedImage = [UIImage imageNamed:@"tabBarOffline"];
         item.image = [UIImage imageNamed:@"tabBarOffline"];
     }
     
-    if ([_currentPageType isEqualToString:pageOfflineLocal]) {
+    if ([_currentPageType isEqualToString:k_pageOfflineLocal]) {
         if ([serverUrl isEqualToString:[CCUtility getDirectoryLocal]])
             self.title = NSLocalizedString(@"_local_storage_", nil);
         else
             self.title = NSLocalizedString(@"_local_storage_", nil);
         
-        UITabBarItem *item = [self.tabBarController.tabBar.items objectAtIndex:TabBarApplicationIndexOffline];
+        UITabBarItem *item = [self.tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexOffline];
         item.selectedImage = [UIImage imageNamed:@"tabBarLocal"];
         item.image = [UIImage imageNamed:@"tabBarLocal"];
     }

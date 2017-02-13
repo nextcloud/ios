@@ -5,6 +5,7 @@
 #import "AHKActionSheet.h"
 #import "AppDelegate.h"
 #import "OCNetworking.h"
+#import "TWMessageBarManager.h"
 
 #import <OCCommunicationLib/OCNotifications.h>
 #import <OCCommunicationLib/OCNotificationsAction.h>

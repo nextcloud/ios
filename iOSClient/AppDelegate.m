@@ -41,6 +41,7 @@
 
 @interface AppDelegate ()
 {
+    
 }
 @end
 
@@ -59,7 +60,7 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {    
     NSString *dir;
-    NSURL *dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:capabilitiesGroups];
+    NSURL *dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:k_capabilitiesGroups];
     
     NSLog(@"[LOG] Start program group -----------------");
     NSLog(@"%@", dirGroup);    
@@ -111,29 +112,29 @@
         [self settingActiveAccount:recordAccount.account activeUrl:recordAccount.url activeUser:recordAccount.user activePassword:recordAccount.password activeUID:recordAccount.uid activeAccessToken:recordAccount.token typeCloud:recordAccount.typeCloud];
     }
     
-    // Operation Queue OC-DB Networking
+    // Operation Queue OC Networking
     _netQueue = [[NSOperationQueue alloc] init];
-    _netQueue.name = netQueueName;
-    _netQueue.maxConcurrentOperationCount = maxConcurrentOperation;
+    _netQueue.name = k_netQueueName;
+    _netQueue.maxConcurrentOperationCount = k_maxConcurrentOperation;
    
     _netQueueDownload = [[NSOperationQueue alloc] init];
-    _netQueueDownload.name = netQueueDownloadName;
-    _netQueueDownload.maxConcurrentOperationCount = maxConcurrentOperationDownloadUpload;
+    _netQueueDownload.name = k_netQueueDownloadName;
+    _netQueueDownload.maxConcurrentOperationCount = k_maxConcurrentOperationDownloadUpload;
 
     _netQueueDownloadWWan = [[NSOperationQueue alloc] init];
-    _netQueueDownloadWWan.name = netQueueDownloadWWanName;
-    _netQueueDownloadWWan.maxConcurrentOperationCount = maxConcurrentOperationDownloadUpload;
+    _netQueueDownloadWWan.name = k_netQueueDownloadWWanName;
+    _netQueueDownloadWWan.maxConcurrentOperationCount = k_maxConcurrentOperationDownloadUpload;
     
     _netQueueUpload = [[NSOperationQueue alloc] init];
-    _netQueueUpload.name = netQueueUploadName;
-    _netQueueUpload.maxConcurrentOperationCount = maxConcurrentOperationDownloadUpload;
+    _netQueueUpload.name = k_netQueueUploadName;
+    _netQueueUpload.maxConcurrentOperationCount = k_maxConcurrentOperationDownloadUpload;
     
     _netQueueUploadWWan = [[NSOperationQueue alloc] init];
-    _netQueueUploadWWan.name = netQueueUploadWWanName;
-    _netQueueUploadWWan.maxConcurrentOperationCount = maxConcurrentOperationDownloadUpload;
+    _netQueueUploadWWan.name = k_netQueueUploadWWanName;
+    _netQueueUploadWWan.maxConcurrentOperationCount = k_maxConcurrentOperationDownloadUpload;
     
     // Add notification change session
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(sessionChanged:) name:networkingSessionNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(sessionChanged:) name:k_networkingSessionNotification object:nil];
         
     // Initialization Share
     self.sharesID = [[NSMutableDictionary alloc] init];
@@ -146,7 +147,7 @@
     // Verify Session in progress and Init date task
     self.sessionDateLastDownloadTasks = [NSDate date];
     self.sessionDateLastUploadTasks = [NSDate date];
-    self.timerVerifySessionInProgress = [NSTimer scheduledTimerWithTimeInterval:timerVerifySession target:self selector:@selector(verifyDownloadUploadInProgress) userInfo:nil repeats:YES];
+    self.timerVerifySessionInProgress = [NSTimer scheduledTimerWithTimeInterval:k_timerVerifySession target:self selector:@selector(verifyDownloadUploadInProgress) userInfo:nil repeats:YES];
     
     // Background Fetch
     [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
@@ -165,7 +166,7 @@
     
     // Page Control
     UIPageControl *pageControl = [UIPageControl appearance];
-    pageControl.pageIndicatorTintColor = COLOR_SEPARATOR_TABLE;
+    pageControl.pageIndicatorTintColor = [UIColor whiteColor];
     pageControl.currentPageIndicatorTintColor = COLOR_NEXTCLOUD;
     pageControl.backgroundColor = COLOR_NAVBAR_IOS7; //[UIColor clearColor];
     
@@ -290,11 +291,11 @@
 {    
     // facciamo partire il timer per il controllo delle sessioni
     [self.timerVerifySessionInProgress invalidate];
-    self.timerVerifySessionInProgress = [NSTimer scheduledTimerWithTimeInterval:timerVerifySession target:self selector:@selector(verifyDownloadUploadInProgress) userInfo:nil repeats:YES];
+    self.timerVerifySessionInProgress = [NSTimer scheduledTimerWithTimeInterval:k_timerVerifySession target:self selector:@selector(verifyDownloadUploadInProgress) userInfo:nil repeats:YES];
     
     // refresh active Main
     if (_activeMain)
-        [_activeMain getDataSourceWithReloadTableView];
+        [_activeMain reloadDatasource];
     
     // Initializations
     [self applicationInitialized];
@@ -342,8 +343,6 @@
     // now
     dispatch_async(dispatch_get_main_queue(), ^{
         
-        //NSLog(@"[LOG] Read Folder for change Rev");
-        //[[NSNotificationCenter defaultCenter] postNotificationName:@"readFileSelfFolderRev" object:nil];
     });
 
     // 0.5 sec.
@@ -536,7 +535,7 @@
                             [nvc popToRootViewControllerAnimated:NO];
                     }
                     
-                    [tbc setSelectedIndex:TabBarApplicationIndexFile];
+                    [tbc setSelectedIndex: k_tabBarApplicationIndexFile];
                     
                 } else {
                     
@@ -544,7 +543,7 @@
                     [nvcDetail popToRootViewControllerAnimated:NO];
                     
                     UITabBarController *tbc = splitViewController.viewControllers.firstObject;
-                    [tbc setSelectedIndex:TabBarApplicationIndexFile];
+                    [tbc setSelectedIndex: k_tabBarApplicationIndexFile];
                 }
 
                 [_activeMain.navigationController popToRootViewControllerAnimated:NO];
@@ -575,7 +574,7 @@
                             [nvc popToRootViewControllerAnimated:NO];
                     }
                     
-                    [tbc setSelectedIndex:TabBarApplicationIndexFile];
+                    [tbc setSelectedIndex: k_tabBarApplicationIndexFile];
                     
                 } else {
                     
@@ -583,7 +582,7 @@
                     [nvcDetail popToRootViewControllerAnimated:NO];
                     
                     UITabBarController *tbc = splitViewController.viewControllers.firstObject;
-                    [tbc setSelectedIndex:TabBarApplicationIndexFile];
+                    [tbc setSelectedIndex: k_tabBarApplicationIndexFile];
                 }
                 
                 [_activeMain.navigationController popToRootViewControllerAnimated:NO];
@@ -612,7 +611,7 @@
                         [nvc popToRootViewControllerAnimated:NO];
                 }
             
-                [tbc setSelectedIndex:TabBarApplicationIndexPhotos];
+                [tbc setSelectedIndex: k_tabBarApplicationIndexPhotos];
 
             } else {
             
@@ -620,7 +619,7 @@
                 [nvcDetail popToRootViewControllerAnimated:NO];
             
                 UITabBarController *tbc = splitViewController.viewControllers.firstObject;
-                [tbc setSelectedIndex:TabBarApplicationIndexPhotos];
+                [tbc setSelectedIndex: k_tabBarApplicationIndexPhotos];
             }
         });
         
@@ -727,31 +726,31 @@
     [CCAspect aspectTabBar:tabBarController.tabBar hidden:NO];
     
     // File
-    item = [tabBarController.tabBar.items objectAtIndex:TabBarApplicationIndexFile];
+    item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexFile];
     [item setTitle:NSLocalizedString(@"_home_", nil)];
     item.image = [UIImage imageNamed:image_tabBarFile];
     item.selectedImage = [UIImage imageNamed:image_tabBarFile];
     
     // Offline
-    item = [tabBarController.tabBar.items objectAtIndex:TabBarApplicationIndexOffline];
+    item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexOffline];
     [item setTitle:NSLocalizedString(@"_offline_", nil)];
     item.image = [UIImage imageNamed:image_tabBarOffline];
     item.selectedImage = [UIImage imageNamed:image_tabBarOffline];
     
     // Hide (PLUS)
-    item = [tabBarController.tabBar.items objectAtIndex:TabBarApplicationIndexHide];
+    item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexHide];
     item.title = nil;
     item.image = nil;
     item.enabled = false;
     
     // Photos
-    item = [tabBarController.tabBar.items objectAtIndex:TabBarApplicationIndexPhotos];
+    item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexPhotos];
     [item setTitle:NSLocalizedString(@"_photo_camera_", nil)];
     item.image = [UIImage imageNamed:image_tabBarPhotos];
     item.selectedImage = [UIImage imageNamed:image_tabBarPhotos];
     
     // Settings
-    item = [tabBarController.tabBar.items objectAtIndex:TabBarApplicationIndexSettings];
+    item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexSettings];
     [item setTitle:NSLocalizedString(@"_settings_", nil)];
     item.image = [UIImage imageNamed:image_tabBarSettings];
     item.selectedImage = [UIImage imageNamed:image_tabBarSettings];
@@ -916,6 +915,9 @@
 
 - (BOOL)lockScreenManagerShouldShowLockScreen:(BKPasscodeLockScreenManager *)aManager
 {
+    // ServerUrl active
+    NSString *serverUrl = self.activeMain.serverUrl;
+    
     // fermiamo la data della sessione
     self.sessionePasscodeLock = nil;
     
@@ -926,7 +928,7 @@
     // se non c'è il passcode esci con NON attivare la richiesta password
     if ([[CCUtility getKeyChainPasscodeForUUID:[CCUtility getUUID]] length] == 0) return NO;
     // se non è attivo il OnlyLockDir esci con NON attivare la richiesta password
-    if ([CCUtility getOnlyLockDir] && ![CCCoreData isBlockZone:self.serverUrl activeAccount:self.activeAccount]) return NO;
+    if ([CCUtility getOnlyLockDir] && ![CCCoreData isBlockZone:serverUrl activeAccount:self.activeAccount]) return NO;
         
     return YES;
 }
@@ -968,7 +970,8 @@
         [aViewController dismissViewControllerAnimated:YES completion:nil];
         
         // start session Passcode Lock
-        if ([CCCoreData isBlockZone:self.serverUrl activeAccount:self.activeAccount])
+        NSString *serverUrl = self.activeMain.serverUrl;
+        if ([CCCoreData isBlockZone:serverUrl activeAccount:self.activeAccount])
             self.sessionePasscodeLock = [NSDate date];
     }
 }
@@ -994,7 +997,7 @@
         
         if (self.lastReachability == NO) {
             
-            [self messageNotification:@"_network_available_" description:nil visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeInfo];
+            [self messageNotification:@"_network_available_" description:nil visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo];
             
             if (_activeMain)
                 [_activeMain performSelector:@selector(requestServerInformation) withObject:nil afterDelay:3];
@@ -1007,7 +1010,7 @@
     } else {
         
         if (self.lastReachability == YES) {
-            [self messageNotification:@"_network_not_available_" description:nil visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeInfo];
+            [self messageNotification:@"_network_not_available_" description:nil visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo];
         }
         
         NSLog(@"[LOG] Reachability Changed: NOT Reachable");
@@ -1155,16 +1158,16 @@
     // Verify num error if selectorUploadAutomaticAll
     if ([selector isEqualToString:selectorUploadAutomaticAll]) {
     
-        NSUInteger count = [TableMetadata MR_countOfEntitiesWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (sessionSelector == %@) AND ((sessionTaskIdentifier == %i) OR (sessionTaskIdentifierPlist == %i))", app.activeAccount, selectorUploadAutomaticAll,taskIdentifierError, taskIdentifierError]];
+        NSUInteger count = [TableMetadata MR_countOfEntitiesWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (sessionSelector == %@) AND ((sessionTaskIdentifier == %i) OR (sessionTaskIdentifierPlist == %i))", app.activeAccount, selectorUploadAutomaticAll,k_taskIdentifierError, k_taskIdentifierError]];
         
 #ifdef DEBUG
         NSArray *records = [[NSArray alloc] init];
-        records = [TableMetadata MR_findAllWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (sessionSelector == %@) AND ((sessionTaskIdentifier == %i) OR (sessionTaskIdentifierPlist == %i))", app.activeAccount, selectorUploadAutomaticAll,taskIdentifierError, taskIdentifierError]];
+        records = [TableMetadata MR_findAllWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (sessionSelector == %@) AND ((sessionTaskIdentifier == %i) OR (sessionTaskIdentifierPlist == %i))", app.activeAccount, selectorUploadAutomaticAll,k_taskIdentifierError, k_taskIdentifierError]];
 #endif
         
         if (count >= 10) {
             
-            [app messageNotification:@"_error_" description:@"_too_errors_automatic_all_" visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeError];
+            [app messageNotification:@"_error_" description:@"_too_errors_automatic_all_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
             
             return;
         }
@@ -1193,15 +1196,15 @@
     
     if ([[UIApplication sharedApplication] applicationState] != UIApplicationStateBackground) {
         
-        NSLog(@"[LOG] Verify Download/Upload in progress now : %@ - Download %@ - Upload %@", [NSDate date], [self.sessionDateLastDownloadTasks dateByAddingTimeInterval:timerVerifySession], [self.sessionDateLastUploadTasks dateByAddingTimeInterval:timerVerifySession]);
+        NSLog(@"[LOG] Verify Download/Upload in progress now : %@ - Download %@ - Upload %@", [NSDate date], [self.sessionDateLastDownloadTasks dateByAddingTimeInterval:k_timerVerifySession], [self.sessionDateLastUploadTasks dateByAddingTimeInterval:k_timerVerifySession]);
         
-        if ([[NSDate date] compare:[self.sessionDateLastDownloadTasks dateByAddingTimeInterval:timerVerifySession]] == NSOrderedDescending) {
+        if ([[NSDate date] compare:[self.sessionDateLastDownloadTasks dateByAddingTimeInterval:k_timerVerifySession]] == NSOrderedDescending) {
             
             callVerifyDownload = YES;
             [[CCNetworking sharedNetworking] verifyDownloadInProgress];
         }
         
-        if ([[NSDate date] compare:[self.sessionDateLastUploadTasks dateByAddingTimeInterval:timerVerifySession]] == NSOrderedDescending) {
+        if ([[NSDate date] compare:[self.sessionDateLastUploadTasks dateByAddingTimeInterval:k_timerVerifySession]] == NSOrderedDescending) {
             
             callVerifyUpload = YES;
             [[CCNetworking sharedNetworking] verifyUploadInProgress];
@@ -1269,27 +1272,27 @@
     if ([[_listChangeTask objectForKey:metadata.fileID] isEqualToString:@"stopUpload"]) {
         
         // sessionTaskIdentifier on Stop
-        [CCCoreData setMetadataSession:nil sessionError:@"" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:taskIdentifierStop sessionTaskIdentifierPlist:taskIdentifierDone predicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", metadata.fileID, self.activeAccount] context:nil];
+        [CCCoreData setMetadataSession:nil sessionError:@"" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:k_taskIdentifierStop sessionTaskIdentifierPlist:k_taskIdentifierDone predicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", metadata.fileID, self.activeAccount] context:nil];
     }
     else if ([[_listChangeTask objectForKey:metadata.fileID] isEqualToString:@"reloadUpload"]) {
         
         // V 1.8 if upload_session_wwan change in upload_session
-        if ([metadata.session isEqualToString:upload_session_wwan])
-            metadata.session = upload_session;
+        if ([metadata.session isEqualToString:k_upload_session_wwan])
+            metadata.session = k_upload_session;
         
-        [[CCNetworking sharedNetworking] uploadFileMetadata:metadata taskStatus:taskStatusResume];
+        [[CCNetworking sharedNetworking] uploadFileMetadata:metadata taskStatus:k_taskStatusResume];
     }
     else if ([[_listChangeTask objectForKey:metadata.fileID] isEqualToString:@"reloadDownload"]) {
         
         BOOL downloadData = NO, downloadPlist = NO;
             
-        if (metadata.sessionTaskIdentifier != taskIdentifierDone) downloadData = YES;
-        if (metadata.sessionTaskIdentifierPlist != taskIdentifierDone) downloadPlist = YES;
+        if (metadata.sessionTaskIdentifier != k_taskIdentifierDone) downloadData = YES;
+        if (metadata.sessionTaskIdentifierPlist != k_taskIdentifierDone) downloadPlist = YES;
             
         NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account];
         
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-            [[CCNetworking sharedNetworking] downloadFile:metadata serverUrl:serverUrl downloadData:downloadData downloadPlist:downloadPlist selector:metadata.sessionSelector selectorPost:metadata.sessionSelectorPost session:download_session taskStatus:taskStatusResume delegate:nil];
+            [[CCNetworking sharedNetworking] downloadFile:metadata serverUrl:serverUrl downloadData:downloadData downloadPlist:downloadPlist selector:metadata.sessionSelector selectorPost:metadata.sessionSelectorPost session:k_download_session taskStatus:k_taskStatusResume delegate:nil];
         });
     }
     else if ([[_listChangeTask objectForKey:metadata.fileID] isEqualToString:@"cancelUpload"]) {
@@ -1302,7 +1305,7 @@
     }
     else if ([[_listChangeTask objectForKey:metadata.fileID] isEqualToString:@"cancelDownload"]) {
         
-        [CCCoreData setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier:taskIdentifierDone sessionTaskIdentifierPlist:taskIdentifierDone predicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", metadata.fileID, self.activeAccount] context:nil];
+        [CCCoreData setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier:k_taskIdentifierDone sessionTaskIdentifierPlist:k_taskIdentifierDone predicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", metadata.fileID, self.activeAccount] context:nil];
     }
     
     // remove ChangeTask (fileID) from the list
@@ -1316,8 +1319,9 @@
         [_activeDetail progressTask:nil serverUrl:nil cryptated:NO progress:0];
     
     // Refresh
-    if (_activeMain && [_listChangeTask count] == 0)
-        [_activeMain getDataSourceWithReloadTableView:metadata.directoryID fileID:nil selector:nil];
+    if (_activeMain && [_listChangeTask count] == 0) {
+        [_activeMain reloadDatasource:[CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account] fileID:nil selector:nil];
+    }
 }
 
 - (void)dropAutomaticUploadWithSelector:(NSString *)selector

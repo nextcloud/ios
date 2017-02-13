@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="11759" systemVersion="16C67" minimumToolsVersion="Xcode 7.0" sourceLanguage="Objective-C" userDefinedModelVersionIdentifier="cryptocloud">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="11759" systemVersion="16D32" minimumToolsVersion="Xcode 7.0" sourceLanguage="Objective-C" userDefinedModelVersionIdentifier="cryptocloud">
     <entity name="TableAccount" representedClassName="TableAccount" syncable="YES">
         <attribute name="account" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="active" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="NO" syncable="YES"/>
@@ -126,13 +126,13 @@
         <attribute name="shareUserAndGroup" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
     <elements>
-        <element name="TableAccount" positionX="-6174" positionY="153" width="171" height="420"/>
-        <element name="TableAutomaticUpload" positionX="-5967" positionY="306" width="128" height="180"/>
-        <element name="TableCertificates" positionX="-5976" positionY="297" width="128" height="75"/>
-        <element name="TableDirectory" positionX="-5465" positionY="426" width="128" height="240"/>
-        <element name="TableGPS" positionX="-5609" positionY="243" width="128" height="180"/>
-        <element name="TableLocalFile" positionX="-5472" positionY="153" width="135" height="240"/>
-        <element name="TableMetadata" positionX="-5949" positionY="162" width="162" height="525"/>
-        <element name="TableShare" positionX="-5976" positionY="297" width="128" height="135"/>
+        <element name="TableAccount" positionX="-6597" positionY="111" width="171" height="420"/>
+        <element name="TableAutomaticUpload" positionX="-6597" positionY="801" width="128" height="180"/>
+        <element name="TableCertificates" positionX="-6597" positionY="711" width="128" height="75"/>
+        <element name="TableDirectory" positionX="-6372" positionY="111" width="162" height="240"/>
+        <element name="TableGPS" positionX="-6597" positionY="990" width="128" height="180"/>
+        <element name="TableLocalFile" positionX="-6138" positionY="111" width="162" height="240"/>
+        <element name="TableMetadata" positionX="-6138" positionY="402" width="162" height="525"/>
+        <element name="TableShare" positionX="-6597" positionY="558" width="128" height="135"/>
     </elements>
 </model>

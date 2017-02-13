@@ -57,6 +57,7 @@
 "_close_"                   = "Close";
 "_postpone_"                = "Postpone";
 "_remove_"                  = "Remove";
+"_file_not_found_"          = "File not found";
 
 // App
 
@@ -394,6 +395,9 @@
 "_paste_files_"                 = "Paste files";
 "_paste_files_encrypted_"       = "Paste encrypted files";
 "_paste_cryptated_"             = "Paste encrypted file";
+
+"_search_this_folder_"          = "Search in this folder";
+"_search_all_folders_"          = "Search in all folders";
 
 // Security
 

@@ -42,7 +42,7 @@
 
 @interface CCSection : NSObject
 
-+ (CCSectionDataSource *)creataDataSourseSectionTableMetadata:(NSArray *)records listProgressMetadata:(NSMutableDictionary *)listProgressMetadata groupByField:(NSString *)groupByField replaceDateToExifDate:(BOOL)replaceDateToExifDate activeAccount:(NSString *)activeAccount;
++ (CCSectionDataSource *)creataDataSourseSectionMetadata:(NSArray *)records listProgressMetadata:(NSMutableDictionary *)listProgressMetadata groupByField:(NSString *)groupByField replaceDateToExifDate:(BOOL)replaceDateToExifDate activeAccount:(NSString *)activeAccount;
 
 + (void)removeAllObjectsSectionDataSource:(CCSectionDataSource *)sectionDataSource;
 

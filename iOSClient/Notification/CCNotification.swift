@@ -83,7 +83,7 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
                 self.appDelegate.addNetworkingOperationQueue(self.appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
             }
             
-            remove.backgroundColor = CCConstant.GlobalConstants.kColor_Cryptocloud
+            remove.backgroundColor = .green
  
             return [remove]
  
@@ -155,7 +155,7 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! CCNotificationCell
         
         let selectionColor : UIView = UIView.init()
-        selectionColor.backgroundColor = CCConstant.GlobalConstants.kColor_SelectBackgrond
+        selectionColor.backgroundColor = CCConstant.GlobalConstants.k_Color_SelectBackgrond
         cell.selectedBackgroundView = selectionColor
         
         if self.resultSearchController.isActive {
@@ -198,7 +198,7 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
 
     func setNotificationServerFailure(_ metadataNet: CCMetadataNet!, message: String!, errorCode: Int) {
         
-        appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(dismissAfterSecond), type: TWMessageBarMessageType.error)
+        appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error)
     }
     
     func setNotificationServerSuccess(_ metadataNet: CCMetadataNet!) {

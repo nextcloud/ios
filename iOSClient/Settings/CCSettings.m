@@ -153,7 +153,7 @@
     section = [XLFormSectionDescriptor formSection];
     [form addFormSection:section];
     
-    section.footerTitle = @"Nextcloud © 2016 T.W.S. Inc.";
+    section.footerTitle = @"Nextcloud © 2017 T.W.S. Inc.";
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"buttonLeftAligned" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_acknowledgements_", nil)];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
@@ -587,17 +587,17 @@
     switch (result)
     {
         case MFMailComposeResultCancelled:
-            [app messageNotification:@"_info_" description:@"_mail_deleted_" visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeSuccess];
+            [app messageNotification:@"_info_" description:@"_mail_deleted_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess];
             break;
         case MFMailComposeResultSaved:
-            [app messageNotification:@"_info_" description:@"_mail_saved_" visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeSuccess];
+            [app messageNotification:@"_info_" description:@"_mail_saved_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess];
             break;
         case MFMailComposeResultSent:
-            [app messageNotification:@"_info_" description:@"_mail_sent_" visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeSuccess];
+            [app messageNotification:@"_info_" description:@"_mail_sent_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess];
             break;
         case MFMailComposeResultFailed: {
             NSString *msg = [NSString stringWithFormat:NSLocalizedString(@"_mail_failure_", nil), [error localizedDescription]];
-            [app messageNotification:@"_error_" description:msg visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeError];
+            [app messageNotification:@"_error_" description:msg visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
         }
             break;
         default:
@@ -649,7 +649,7 @@
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.01 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
 
             [app cancelAllOperations];
-            [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
+            [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:k_taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
         
             [[NSURLCache sharedURLCache] setMemoryCapacity:0];
             [[NSURLCache sharedURLCache] setDiskCapacity:0];
@@ -684,7 +684,7 @@
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.01 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
             
             [app cancelAllOperations];
-            [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
+            [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:k_taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
 
             [[NSURLCache sharedURLCache] setMemoryCapacity:0];
             [[NSURLCache sharedURLCache] setDiskCapacity:0];
@@ -736,9 +736,7 @@
                 
                 [CCUtility setBlockCode:@""];
                 [CCCoreData setAllDirectoryUnLockForAccount:app.activeAccount];
-                CCMain *mainVC = [app.listMainVC objectForKey:app.serverUrl];
-                if (mainVC)
-                    [mainVC.tableView reloadData];
+                [app.activeMain.tableView reloadData];
             }
             
             // email Key EAS-256
@@ -751,9 +749,7 @@
                 // disable passcode
                 [CCUtility setBlockCode:@""];
                 [CCCoreData setAllDirectoryUnLockForAccount:app.activeAccount];
-                CCMain *mainVC = [app.listMainVC objectForKey:app.serverUrl];
-                if (mainVC)
-                    [mainVC.tableView reloadData];
+                [app.activeMain.tableView reloadData];
                 
                 [CCUtility setSimplyBlockCode:![CCUtility getSimplyBlockCode]];
                 
@@ -840,7 +836,7 @@
 - (void)emptyGroupApplicationSupport
 {
     NSString *file;
-    NSURL *dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:capabilitiesGroups];
+    NSURL *dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:k_capabilitiesGroups];
     NSString *dirIniziale = [[dirGroup URLByAppendingPathComponent:appApplicationSupport] path];
     
     NSDirectoryEnumerator *enumerator = [[NSFileManager defaultManager] enumeratorAtPath:dirIniziale];
@@ -936,7 +932,7 @@
 {
     [self deselectFormRow:sender];
 
-    NSURL *dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:capabilitiesGroups];
+    NSURL *dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:k_capabilitiesGroups];
     dirGroup = [dirGroup URLByAppendingPathComponent:@"Library"];
     dirGroup = [dirGroup URLByAppendingPathComponent:@"Application Support"];
     dirGroup = [dirGroup URLByAppendingPathComponent:@"Crypto Cloud"];

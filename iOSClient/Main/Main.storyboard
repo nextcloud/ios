@@ -406,7 +406,7 @@
             <objects>
                 <tableViewController storyboardIdentifier="CCMainVC" extendedLayoutIncludesOpaqueBars="YES" id="YJg-Xa-VYf" customClass="CCMain" sceneMemberID="viewController">
                     <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" allowsSelectionDuringEditing="YES" rowHeight="60" sectionHeaderHeight="22" sectionFooterHeight="22" id="7sT-6b-Pnh">
-                        <rect key="frame" x="0.0" y="64" width="375" height="603"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <sections/>
@@ -415,13 +415,21 @@
                             <outlet property="delegate" destination="YJg-Xa-VYf" id="Pwe-im-Vzk"/>
                         </connections>
                     </tableView>
-                    <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
                     <navigationItem key="navigationItem" id="TXe-bF-Uwk"/>
                     <connections>
+                        <outlet property="searchDisplayController" destination="xcf-VI-FqA" id="nZk-CY-UUL"/>
                         <segue destination="mtc-lf-PRo" kind="showDetail" identifier="segueDetail" id="YTW-Kz-l02"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="q78-1k-pga" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <searchDisplayController id="xcf-VI-FqA">
+                    <connections>
+                        <outlet property="delegate" destination="YJg-Xa-VYf" id="J25-Dg-BOy"/>
+                        <outlet property="searchContentsController" destination="YJg-Xa-VYf" id="f4n-7F-MTp"/>
+                        <outlet property="searchResultsDataSource" destination="YJg-Xa-VYf" id="Omt-3Z-A1J"/>
+                        <outlet property="searchResultsDelegate" destination="YJg-Xa-VYf" id="r6f-t7-MvO"/>
+                    </connections>
+                </searchDisplayController>
             </objects>
             <point key="canvasLocation" x="5214" y="1218"/>
         </scene>
@@ -641,6 +649,6 @@
         <image name="tabBarSettings" width="25" height="25"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="45n-bF-9RO"/>
+        <segue reference="YTW-Kz-l02"/>
     </inferredMetricsTieBreakers>
 </document>

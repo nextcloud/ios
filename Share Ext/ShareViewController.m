@@ -50,7 +50,7 @@
 
 -(void)viewDidLoad
 {
-    dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:capabilitiesGroups];
+    dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:k_capabilitiesGroups];
     
     [MagicalRecord setupCoreDataStackWithAutoMigratingSqliteStoreNamed:(id)[dirGroup URLByAppendingPathComponent:[appDatabase stringByAppendingPathComponent:@"cryptocloud"]]];
     [MagicalRecord setLoggingLevel:MagicalRecordLoggingLevelOff];
@@ -76,7 +76,7 @@
             
             // load
             
-            _localServerUrl = [CCUtility getServerUrlShareExt];
+            _serverUrl = [CCUtility getServerUrlShareExt];
             
             _destinyFolderButton.title = [NSString stringWithFormat:NSLocalizedString(@"_destiny_folder_", nil), [CCUtility getTitleServerUrlShareExt]];
             
@@ -88,8 +88,8 @@
             
             [CCUtility setActiveAccountShareExt:self.activeAccount];
 
-            _localServerUrl  = [CCUtility getHomeServerUrlActiveUrl:self.activeUrl typeCloud:self.typeCloud];
-            [CCUtility setServerUrlShareExt:self.localServerUrl];
+            _serverUrl  = [CCUtility getHomeServerUrlActiveUrl:self.activeUrl typeCloud:self.typeCloud];
+            [CCUtility setServerUrlShareExt:_serverUrl];
 
             _destinyFolderButton.title = [NSString stringWithFormat:NSLocalizedString(@"_destiny_folder_", nil), NSLocalizedString(@"_home_", nil)];
             [CCUtility setTitleServerUrlShareExt:NSLocalizedString(@"_home_", nil)];
@@ -103,8 +103,8 @@
     _filesSendCryptated = [[NSMutableArray alloc] init];
     _hud = [[CCHud alloc] initWithView:self.navigationController.view];
     
-    _networkingOperationQueue = [[NSOperationQueue alloc] init];
-    _networkingOperationQueue.name = netQueueName;
+    _networkingOperationQueue = [NSOperationQueue new];
+    _networkingOperationQueue.name = k_netQueueName;
     _networkingOperationQueue.maxConcurrentOperationCount = 1;
     
     [[CCNetworking sharedNetworking] settingDelegate:self];
@@ -193,10 +193,10 @@
     self.navigationItem.hidesBackButton = YES;
 }
 
-- (void)move:(NSString *)serverUrlTo title:(NSString *)title selectedMetadatas:(NSArray *)selectedMetadatas
+- (void)moveServerUrlTo:(NSString *)serverUrlTo title:(NSString *)title selectedMetadatas:(NSArray *)selectedMetadatas
 {
     if (serverUrlTo)
-        self.localServerUrl = serverUrlTo;
+        _serverUrl = serverUrlTo;
     
     if (title) {
         self.destinyFolderButton.title = [NSString stringWithFormat:NSLocalizedString(@"_destiny_folder_", nil), title];
@@ -207,7 +207,7 @@
     }
     
     [CCUtility setActiveAccountShareExt:self.activeAccount];
-    [CCUtility setServerUrlShareExt:self.localServerUrl];
+    [CCUtility setServerUrlShareExt:_serverUrl];
 }
 
 - (IBAction)destinyFolderButtonTapped:(UIBarButtonItem *)sender
@@ -239,9 +239,9 @@
         metadataNet.cryptated = _localCryptated;
         metadataNet.fileName = fileName;
         metadataNet.fileNamePrint = fileName;
-        metadataNet.serverUrl = _localServerUrl;
-        metadataNet.session = upload_session_foreground;
-        metadataNet.taskStatus = taskStatusResume;
+        metadataNet.serverUrl = _serverUrl;
+        metadataNet.session = k_upload_session_foreground;
+        metadataNet.taskStatus = k_taskStatusResume;
         
         [self addNetworkingQueue:metadataNet];
         
@@ -289,7 +289,7 @@
     [self.hud progress:progress];
 }
 
-- (void)uploadFileFailure:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode
+- (void)uploadFileFailure:(CCMetadataNet *)metadataNet fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode
 {
     [self.hud hideHud];
     
@@ -315,7 +315,7 @@
         [self closeShareViewController];
 }
 
-- (void)uploadFileSuccess:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost
+- (void)uploadFileSuccess:(CCMetadataNet *)metadataNet fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost
 {
     [self.hud hideHud];
     
@@ -450,8 +450,8 @@
         if (fileSize > 0 && ((UTTypeConformsTo(fileUTI, kUTTypeImage)) || (UTTypeConformsTo(fileUTI, kUTTypeMovie)))) {
             
             NSString *typeFile;
-            if (UTTypeConformsTo(fileUTI, kUTTypeImage)) typeFile = metadataTypeFile_image;
-            if (UTTypeConformsTo(fileUTI, kUTTypeMovie)) typeFile = metadataTypeFile_video;
+            if (UTTypeConformsTo(fileUTI, kUTTypeImage)) typeFile = k_metadataTypeFile_image;
+            if (UTTypeConformsTo(fileUTI, kUTTypeMovie)) typeFile = k_metadataTypeFile_video;
             
             [CCGraphics createNewImageFrom:file directoryUser:self.directoryUser fileNameTo:file fileNamePrint:nil size:@"m" imageForUpload:NO typeFile:typeFile writePreview:YES optimizedFileName:NO];
         }

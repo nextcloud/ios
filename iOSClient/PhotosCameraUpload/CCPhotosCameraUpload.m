@@ -25,7 +25,9 @@
 
 #import "AppDelegate.h"
 
-@interface CCPhotosCameraUpload ()
+#import "Nextcloud-Swift.h"
+
+@interface CCPhotosCameraUpload () <CCActionsDeleteDelegate>
 {
     CCMetadata *_metadata;
 
@@ -333,13 +335,13 @@
         
         if ([[NSFileManager defaultManager] fileExistsAtPath:fileNamePath]) {
             
-            if ([metadata.typeFile isEqualToString:metadataTypeFile_image]) {
+            if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image]) {
                 
                 NSData *data = [NSData dataWithData:UIImageJPEGRepresentation([UIImage imageWithContentsOfFile:fileNamePath], 0.9)];
                 [dataToShare addObject:data];
             }
             
-            if ([metadata.typeFile isEqualToString:metadataTypeFile_video]) {
+            if ([metadata.typeFile isEqualToString: k_metadataTypeFile_video]) {
                 
                 [dataToShare addObject:[NSURL fileURLWithPath:fileNamePath]];
             }
@@ -387,7 +389,7 @@
 
 - (void)downloadFileFailure:(NSInteger)errorCode
 {
-    [app messageNotification:@"_download_selected_files_" description:@"_error_download_photobrowser_" visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeError];
+    [app messageNotification:@"_download_selected_files_" description:@"_error_download_photobrowser_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
 }
 
 - (void)downloadFileSuccess:(CCMetadata *)metadata
@@ -424,21 +426,7 @@
 
 - (void)deleteFileOrFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    [_hud hideHud];
-    
-    if (errorCode == 404)
-        [self deleteFileOrFolderSuccess:metadataNet];
-    
-    if (message)
-        [app messageNotification:@"_delete_" description:message visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeError];
-    
-    // if detailViewController
-    if (self.detailViewController)
-            [self.detailViewController deleteFileFailure:errorCode];
-    
-    [_queueMetadatas removeAllObjects];
-    
-    [self reloadDatasource];
+    [self deleteFileOrFolderSuccess:metadataNet];
 }
 
 - (void)deleteFileOrFolderSuccess:(CCMetadataNet *)metadataNet
@@ -449,14 +437,6 @@
         
         [_hud hideHud];
 
-        CCMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", metadataNet.fileID, app.activeAccount] context:nil];
-    
-        if (metadata)
-            [CCCoreData deleteFile:metadata serverUrl:metadataNet.serverUrl directoryUser:app.directoryUser typeCloud:app.typeCloud activeAccount:app.activeAccount];
-    
-        if (self.detailViewController)
-            [self.detailViewController deleteFileSuccess:metadata metadataNetVar:metadataNet];
-    
         if ([_selectedMetadatas count] > 0) {
             
             [_selectedMetadatas removeObjectAtIndex:0];
@@ -479,44 +459,16 @@
 
 - (void)deleteFileOrFolder:(CCMetadata *)metadata numFile:(NSInteger)numFile ofFile:(NSInteger)ofFile
 {
-    if (metadata.cryptated == YES) {
-        
-        CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
-        
-        metadataNet.action = actionDeleteFileDirectory;
-        metadataNet.fileID = metadata.fileID;
-        metadataNet.fileNamePrint = metadata.fileNamePrint;
-        metadataNet.serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:app.activeAccount];
-        
-        // data crypto
-        metadataNet.fileName = metadata.fileNameData;
-        metadataNet.selector = selectorDeleteCrypto;
-        
-        [_queueMetadatas addObject:metadataNet.selector];
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
-        
-        // plist
-        metadataNet.fileName = metadata.fileName;
-        metadataNet.selector = selectorDeletePlist;
-        
-        [_queueMetadatas addObject:metadataNet.selector];
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
-        
-    } else  {
-        
-        CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
-        
-        metadataNet.action = actionDeleteFileDirectory;
-        metadataNet.fileID = metadata.fileID;
-        metadataNet.fileName = metadata.fileName;
-        metadataNet.fileNamePrint = metadata.fileNamePrint;
-        metadataNet.selector = selectorDelete;
-        metadataNet.serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:app.activeAccount];
-        
-        [_queueMetadatas addObject:metadataNet.selector];
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+    
+    if (metadata.cryptated) {
+        [_queueMetadatas addObject:selectorDeleteCrypto];
+        [_queueMetadatas addObject:selectorDeletePlist];
+    } else {
+        [_queueMetadatas addObject:selectorDelete];
     }
     
+    [[CCActions sharedInstance] deleteFileOrFolder:metadata delegate:self];
+
     [_hud visibleHudTitle:[NSString stringWithFormat:NSLocalizedString(@"_delete_file_n_", nil), ofFile - numFile + 1, ofFile] mode:MBProgressHUDModeIndeterminate color:nil];
 }
 
@@ -572,7 +524,7 @@
     // datasource
     NSArray *recordsTableMetadata = [CCCoreData getRecordsTableMetadataPhotosCameraUpload:serverUrl activeAccount:app.activeAccount];
     
-    _sectionDataSource = [CCSection creataDataSourseSectionTableMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:@"date" replaceDateToExifDate:YES activeAccount:app.activeAccount];
+    _sectionDataSource = [CCSection creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:@"date" replaceDateToExifDate:YES activeAccount:app.activeAccount];
         
     //if ([_sectionDataSource.allRecordsDataSource count] == 0)
     //    _dateReadDataSource = nil;
@@ -704,7 +656,7 @@
         if ([CCCoreData getLocalFileWithFileID:fileID activeAccount:app.activeAccount])
             [self cellSelect:YES indexPath:indexPath metadata:_metadata];
         else
-            [app messageNotification:@"_info_" description:@"_select_only_localfile_" visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeInfo];
+            [app messageNotification:@"_info_" description:@"_select_only_localfile_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo];
         
     } else {
         
@@ -770,11 +722,10 @@
     NSMutableArray *allRecordsDataSourceImagesVideos = [[NSMutableArray alloc] init];
     for (NSString *fileID in _sectionDataSource.allFileID) {
         CCMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:fileID];
-        if ([metadata.typeFile isEqualToString:metadataTypeFile_image] || [metadata.typeFile isEqualToString:metadataTypeFile_video])
+        if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image] || [metadata.typeFile isEqualToString: k_metadataTypeFile_video])
             [allRecordsDataSourceImagesVideos addObject:metadata];
     }
     
-    self.detailViewController.delegate = self;
     self.detailViewController.dataSourceImagesVideos = allRecordsDataSourceImagesVideos;
     self.detailViewController.metadataDetail = _metadata;
     self.detailViewController.dateFilterQuery = _metadata.date;
@@ -1119,7 +1070,7 @@
         
         // Full Upload ?
         if (assetsFull)
-            [app messageNotification:@"_error_" description:NSLocalizedStringFromTable(@"_not_possible_create_folder_", @"Error", nil) visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeInfo];
+            [app messageNotification:@"_error_" description:NSLocalizedStringFromTable(@"_not_possible_create_folder_", @"Error", nil) visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo];
         
         // START new request : initStateCameraUpload
         _AutomaticCameraUploadInProgress = NO;
@@ -1182,7 +1133,7 @@
                 [self endLoadingAssets];
                 
                 if (assetsFull)
-                    [app messageNotification:@"_error_" description:@"_error_createsubfolders_upload_" visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeInfo];
+                    [app messageNotification:@"_error_" description:@"_error_createsubfolders_upload_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo];
                 
                 return;
             }
@@ -1199,10 +1150,10 @@
         
         // Select type of session
         
-        if (assetMediaType == PHAssetMediaTypeImage && [CCCoreData getCameraUploadWWanPhotoActiveAccount:app.activeAccount] == NO) session = upload_session;
-        if (assetMediaType == PHAssetMediaTypeVideo && [CCCoreData getCameraUploadWWanVideoActiveAccount:app.activeAccount] == NO) session = upload_session;
-        if (assetMediaType == PHAssetMediaTypeImage && [CCCoreData getCameraUploadWWanPhotoActiveAccount:app.activeAccount]) session = upload_session_wwan;
-        if (assetMediaType == PHAssetMediaTypeVideo && [CCCoreData getCameraUploadWWanVideoActiveAccount:app.activeAccount]) session = upload_session_wwan;
+        if (assetMediaType == PHAssetMediaTypeImage && [CCCoreData getCameraUploadWWanPhotoActiveAccount:app.activeAccount] == NO) session = k_upload_session;
+        if (assetMediaType == PHAssetMediaTypeVideo && [CCCoreData getCameraUploadWWanVideoActiveAccount:app.activeAccount] == NO) session = k_upload_session;
+        if (assetMediaType == PHAssetMediaTypeImage && [CCCoreData getCameraUploadWWanPhotoActiveAccount:app.activeAccount]) session = k_upload_session_wwan;
+        if (assetMediaType == PHAssetMediaTypeVideo && [CCCoreData getCameraUploadWWanVideoActiveAccount:app.activeAccount]) session = k_upload_session_wwan;
 
         NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
         
@@ -1233,7 +1184,7 @@
         metadataNet.fileName = fileName;
         metadataNet.serverUrl = serverUrl;
         metadataNet.session = session;
-        metadataNet.taskStatus = taskStatusResume;
+        metadataNet.taskStatus = k_taskStatusResume;
         
         [CCCoreData addTableAutomaticUpload:metadataNet account:app.activeAccount context:nil];
         

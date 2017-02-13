@@ -26,11 +26,13 @@
 #import "AppDelegate.h"
 #import "CCMain.h"
 
+#import "Nextcloud-Swift.h"
+
 #define TOOLBAR_HEIGHT 49.0f
 
 #define alertRequestPasswordPDF 1
 
-@interface CCDetail ()
+@interface CCDetail () <CCActionsDeleteDelegate>
 {
     UIToolbar *_toolbar;
     
@@ -137,7 +139,6 @@
     if (_webView) {
             
         [_webView removeFromSuperview];
-        _webView.delegate = nil;
         _webView = nil;
     }
         
@@ -210,13 +211,13 @@
         });
     }
     
-    if ([self.metadataDetail.typeFile isEqualToString:metadataTypeFile_image] || [self.metadataDetail.typeFile isEqualToString:metadataTypeFile_video]) {
+    if ([self.metadataDetail.typeFile isEqualToString: k_metadataTypeFile_image] || [self.metadataDetail.typeFile isEqualToString: k_metadataTypeFile_video]) {
         
         self.edgesForExtendedLayout = UIRectEdgeAll;
         [self viewImage];
     }
     
-    if ([self.metadataDetail.typeFile isEqualToString:metadataTypeFile_audio]) {
+    if ([self.metadataDetail.typeFile isEqualToString: k_metadataTypeFile_audio]) {
         
         self.edgesForExtendedLayout = UIRectEdgeBottom;
         [self viewAudio];
@@ -224,7 +225,7 @@
         [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar hidden:NO];
     }
     
-    if ([self.metadataDetail.typeFile isEqualToString:metadataTypeFile_document]) {
+    if ([self.metadataDetail.typeFile isEqualToString: k_metadataTypeFile_document]) {
         
         NSString *ext = [[self.metadataDetail.fileNamePrint pathExtension] lowercaseString];
         
@@ -312,7 +313,12 @@
     NSString *ext=@"";
     ext = [CCUtility getExtension:self.metadataDetail.fileNamePrint];
     
-    self.webView = [[UIWebView alloc] initWithFrame:(CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height - TOOLBAR_HEIGHT))];
+    WKPreferences *wkPreferences = [[WKPreferences alloc] init];
+    wkPreferences.javaScriptEnabled = false;
+    WKWebViewConfiguration *wkConfig = [[WKWebViewConfiguration alloc] init];
+    wkConfig.preferences = wkPreferences;
+
+    self.webView = [[WKWebView alloc] initWithFrame:(CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height - TOOLBAR_HEIGHT)) configuration:wkConfig];
     self.webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
     [self.webView setBackgroundColor:[UIColor whiteColor]];
@@ -348,16 +354,13 @@
         if (error != nil) {
             NSLog(@"[LOG] loadURLWithString %@",[error localizedDescription]);
         }
-        NSString *mimeType = [headResponse MIMEType];
         
-        [self.webView loadData:[NSData dataWithContentsOfURL: [NSURL fileURLWithPath:fileName]] MIMEType:mimeType textEncodingName:@"utf-8" baseURL:[NSURL URLWithString:@""]];
-        
+        [self.webView loadRequest:[NSMutableURLRequest requestWithURL:[NSURL fileURLWithPath:fileName]]];
     } else {
         
         [self.webView loadRequest:[NSMutableURLRequest requestWithURL:[NSURL fileURLWithPath:fileName]]];
     }
     
-    [self.webView setScalesPageToFit:YES];
     [self.view addSubview:self.webView];
 }
 
@@ -394,7 +397,7 @@
             [self.photos addObject:[MWPhoto photoWithImage:[UIImage imageNamed:image_filePreviewDownload]]];
             
             MWPhoto *thumb = [MWPhoto photoWithImage:[UIImage imageNamed:image_filePreviewDownload]];
-            if ([metadata.typeFile isEqualToString:metadataTypeFile_video]) thumb.isVideo = YES;
+            if ([metadata.typeFile isEqualToString: k_metadataTypeFile_video]) thumb.isVideo = YES;
             [self.thumbs addObject:thumb];
         }
         
@@ -485,7 +488,7 @@
         
         if (metadata.fileID) {
             
-            if ([metadata.typeFile isEqualToString:metadataTypeFile_image]) {
+            if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image]) {
                 
                 NSString *fileImage = [NSString stringWithFormat:@"%@/%@", directory, metadata.fileID];
                 NSString *ext = [CCUtility getExtension:metadata.fileNamePrint];
@@ -519,7 +522,7 @@
                 }
             }
             
-            if ([metadata.typeFile isEqualToString:metadataTypeFile_video]) {
+            if ([metadata.typeFile isEqualToString: k_metadataTypeFile_video]) {
                 
                 if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", directory, metadata.fileID]]) {
                     
@@ -633,7 +636,7 @@
             if (image) {
                 
                 MWPhoto *thumb = [MWPhoto photoWithImage:image];
-                if ([metadata.typeFile isEqualToString:metadataTypeFile_video]) thumb.isVideo = YES;
+                if ([metadata.typeFile isEqualToString: k_metadataTypeFile_video]) thumb.isVideo = YES;
                 [self.thumbs replaceObjectAtIndex:index withObject:thumb];
             }
         }
@@ -673,14 +676,19 @@
 - (void)photoBrowser:(MWPhotoBrowser *)photoBrowser deleteButtonPressedForPhotoAtIndex:(NSUInteger)index deleteButton:(UIBarButtonItem *)deleteButton
 {
     CCMetadata *metadata = [self.dataSourceImagesVideos objectAtIndex:index];
-    if (metadata == nil || [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID]] == NO) return;
+    if (metadata == nil || [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID]] == NO) {
+        
+        [app messageNotification:@"_info_" description:@"_file_not_found_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo];
+        
+        return;
+    }
     
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_delete_", nil)
                                                          style:UIAlertActionStyleDestructive
                                                        handler:^(UIAlertAction *action) {
-                                                           [self.delegate deleteFileOrFolder:metadata numFile:1 ofFile:1];
+                                                           [[CCActions sharedInstance] deleteFileOrFolder:metadata delegate:self];
                                                        }]];
 
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil)
@@ -707,7 +715,7 @@
 
 - (void)downloadPhotoBrowserFailure:(NSInteger)errorCode
 {
-    [app messageNotification:@"_download_selected_files_" description:@"_error_download_photobrowser_" visible:YES delay:dismissAfterSecond type:TWMessageBarMessageTypeError];
+    [app messageNotification:@"_download_selected_files_" description:@"_error_download_photobrowser_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
     
     [self.photoBrowser reloadData];
     
@@ -757,7 +765,7 @@
 {
     NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account];
     
-    [[CCNetworking sharedNetworking] downloadFile:metadata serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorLoadViewImage selectorPost:nil session:download_session taskStatus:taskStatusResume delegate:nil];
+    [[CCNetworking sharedNetworking] downloadFile:metadata serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorLoadViewImage selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:nil];
 }
 
 - (void)insertGeocoderLocation:(NSNotification *)notification
@@ -938,21 +946,21 @@
 #pragma mark ===== Delete =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)deleteFileFailure:(NSInteger)errorCode
+- (void)deleteFileOrFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
     NSLog(@"[LOG] delete failure");
 }
 
-- (void)deleteFileSuccess:(CCMetadata *)metadataVar metadataNetVar:(CCMetadataNet *)metadataNetVar
+- (void)deleteFileOrFolderSuccess:(CCMetadataNet *)metadataNet
 {
     // if a message for a directory of these
-    if (![_dataSourceDirectoryID containsObject:metadataVar.directoryID])
+    if (![_dataSourceDirectoryID containsObject:metadataNet.metadata.directoryID])
         return;
     
     // if we are not in browserPhoto and it's removed photo/video in preview then "< Back"
-    if (!self.photoBrowser && [self.metadataDetail.fileID isEqualToString:metadataVar.fileID]) {
+    if (!self.photoBrowser && [self.metadataDetail.fileID isEqualToString:metadataNet.metadata.fileID]) {
         
-        if ([metadataVar.typeFile isEqualToString:metadataTypeFile_audio])
+        if ([metadataNet.metadata.typeFile isEqualToString: k_metadataTypeFile_audio])
             [app.player.mediaPlayer stop];
         
         NSArray *viewsToRemove = [self.view subviews];
@@ -974,7 +982,7 @@
             CCMetadata *metadata = [self.dataSourceImagesVideos objectAtIndex:index];
         
             // ricerca index
-            if ([metadataVar.fileID isEqualToString:metadata.fileID]) {
+            if ([metadataNet.metadata.fileID isEqualToString:metadata.fileID]) {
             
                 [self.dataSourceImagesVideos removeObjectAtIndex:index];
             
@@ -1036,7 +1044,7 @@
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_delete_", nil)
                                                          style:UIAlertActionStyleDestructive
                                                        handler:^(UIAlertAction *action) {
-                                                           [self.delegate deleteFileOrFolder:self.metadataDetail numFile:1 ofFile:1];
+                                                           [[CCActions sharedInstance] deleteFileOrFolder:self.metadataDetail delegate:self];
                                                        }]];
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil)

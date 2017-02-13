@@ -114,7 +114,7 @@
     
     if (sessionDownload == nil) {
         
-        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:download_session];
+        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:k_download_session];
         
         configuration.allowsCellularAccess = YES;
         configuration.sessionSendsLaunchEvents = YES;
@@ -123,7 +123,7 @@
         configuration.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
         
         sessionDownload = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
-        sessionDownload.sessionDescription = download_session;
+        sessionDownload.sessionDescription = k_download_session;
     }
     return sessionDownload;
 }
@@ -142,7 +142,7 @@
         configuration.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
     
         sessionDownloadForeground = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
-        sessionDownloadForeground.sessionDescription = download_session_foreground;
+        sessionDownloadForeground.sessionDescription = k_download_session_foreground;
     }
     return sessionDownloadForeground;
 }
@@ -153,7 +153,7 @@
     
     if (sessionWWanDownload == nil) {
         
-        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:download_session_wwan];
+        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:k_download_session_wwan];
         
         configuration.allowsCellularAccess = NO;
         configuration.sessionSendsLaunchEvents = YES;
@@ -162,7 +162,7 @@
         configuration.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
         
         sessionWWanDownload = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
-        sessionWWanDownload.sessionDescription = download_session_wwan;
+        sessionWWanDownload.sessionDescription = k_download_session_wwan;
     }
     return sessionWWanDownload;
 }
@@ -173,7 +173,7 @@
     
     if (sessionUpload == nil) {
         
-        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:upload_session];
+        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:k_upload_session];
         
         configuration.allowsCellularAccess = YES;
         configuration.sessionSendsLaunchEvents = YES;
@@ -182,7 +182,7 @@
         configuration.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
         
         sessionUpload = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
-        sessionUpload.sessionDescription = upload_session;
+        sessionUpload.sessionDescription = k_upload_session;
     }
     return sessionUpload;
 }
@@ -201,7 +201,7 @@
         configuration.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
         
         sessionUploadForeground = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
-        sessionUploadForeground.sessionDescription = upload_session_foreground;
+        sessionUploadForeground.sessionDescription = k_upload_session_foreground;
     }
     return sessionUploadForeground;
 }
@@ -212,7 +212,7 @@
     
     if (sessionWWanUpload == nil) {
         
-        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:upload_session_wwan];
+        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:k_upload_session_wwan];
         
         configuration.allowsCellularAccess = NO;
         configuration.sessionSendsLaunchEvents = YES;
@@ -221,7 +221,7 @@
         configuration.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
         
         sessionWWanUpload = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
-        sessionWWanUpload.sessionDescription = upload_session_wwan;
+        sessionWWanUpload.sessionDescription = k_upload_session_wwan;
     }
     return sessionWWanUpload;
 }
@@ -236,11 +236,11 @@
         
         configuration.allowsCellularAccess = YES;
         configuration.discretionary = NO;
-        configuration.HTTPMaximumConnectionsPerHost = maxConcurrentOperation;
+        configuration.HTTPMaximumConnectionsPerHost = k_maxConcurrentOperation;
         configuration.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
         
         OCURLSessionManager *networkSessionManager = [[OCURLSessionManager alloc] initWithSessionConfiguration:configuration];
-        [networkSessionManager.operationQueue setMaxConcurrentOperationCount:maxConcurrentOperation];
+        [networkSessionManager.operationQueue setMaxConcurrentOperationCount: k_maxConcurrentOperation];
         networkSessionManager.responseSerializer = [AFHTTPResponseSerializer serializer];
         
         sharedOCCommunication = [[OCCommunication alloc] initWithUploadSessionManager:nil andDownloadSessionManager:nil andNetworkSessionManager:networkSessionManager];
@@ -251,13 +251,13 @@
 
 - (NSURLSession *)getSessionfromSessionDescription:(NSString *)sessionDescription
 {
-    if ([sessionDescription isEqualToString:download_session]) return [self sessionDownload];
-    if ([sessionDescription isEqualToString:download_session_foreground]) return [self sessionDownloadForeground];
-    if ([sessionDescription isEqualToString:download_session_wwan]) return [self sessionWWanDownload];
+    if ([sessionDescription isEqualToString:k_download_session]) return [self sessionDownload];
+    if ([sessionDescription isEqualToString:k_download_session_foreground]) return [self sessionDownloadForeground];
+    if ([sessionDescription isEqualToString:k_download_session_wwan]) return [self sessionWWanDownload];
     
-    if ([sessionDescription isEqualToString:upload_session]) return [self sessionUpload];
-    if ([sessionDescription isEqualToString:upload_session_foreground]) return [self sessionUploadForeground];
-    if ([sessionDescription isEqualToString:upload_session_wwan]) return [self sessionWWanUpload];
+    if ([sessionDescription isEqualToString:k_upload_session]) return [self sessionUpload];
+    if ([sessionDescription isEqualToString:k_upload_session_foreground]) return [self sessionUploadForeground];
+    if ([sessionDescription isEqualToString:k_upload_session_wwan]) return [self sessionWWanUpload];
     
     return nil;
 }
@@ -279,23 +279,23 @@
         
         [[self sessionDownload] getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
             for (NSURLSessionTask *task in downloadTasks)
-                if (taskStatus == taskStatusCancel) [task cancel];
-                else if (taskStatus == taskStatusSuspend) [task suspend];
-                else if (taskStatus == taskStatusResume) [task resume];
+                if (taskStatus == k_taskStatusCancel) [task cancel];
+                else if (taskStatus == k_taskStatusSuspend) [task suspend];
+                else if (taskStatus == k_taskStatusResume) [task resume];
         }];
         
         [[self sessionDownloadForeground] getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
             for (NSURLSessionTask *task in downloadTasks)
-                if (taskStatus == taskStatusCancel) [task cancel];
-                else if (taskStatus == taskStatusSuspend) [task suspend];
-                else if (taskStatus == taskStatusResume) [task resume];
+                if (taskStatus == k_taskStatusCancel) [task cancel];
+                else if (taskStatus == k_taskStatusSuspend) [task suspend];
+                else if (taskStatus == k_taskStatusResume) [task resume];
         }];
         
         [[self sessionWWanDownload] getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
             for (NSURLSessionTask *task in downloadTasks)
-                if (taskStatus == taskStatusCancel) [task cancel];
-                else if (taskStatus == taskStatusSuspend) [task suspend];
-                else if (taskStatus == taskStatusResume) [task resume];
+                if (taskStatus == k_taskStatusCancel) [task cancel];
+                else if (taskStatus == k_taskStatusSuspend) [task suspend];
+                else if (taskStatus == k_taskStatusResume) [task resume];
         }];
     }
         
@@ -303,33 +303,33 @@
         
         [[self sessionUpload] getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
             for (NSURLSessionTask *task in uploadTasks)
-                if (taskStatus == taskStatusCancel) [task cancel];
-                else if (taskStatus == taskStatusSuspend) [task suspend];
-                else if (taskStatus == taskStatusResume) [task resume];
+                if (taskStatus == k_taskStatusCancel) [task cancel];
+                else if (taskStatus == k_taskStatusSuspend) [task suspend];
+                else if (taskStatus == k_taskStatusResume) [task resume];
         }];
         
         [[self sessionUploadForeground] getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
             for (NSURLSessionTask *task in uploadTasks)
-                if (taskStatus == taskStatusCancel) [task cancel];
-                else if (taskStatus == taskStatusSuspend) [task suspend];
-                else if (taskStatus == taskStatusResume) [task resume];
+                if (taskStatus == k_taskStatusCancel) [task cancel];
+                else if (taskStatus == k_taskStatusSuspend) [task suspend];
+                else if (taskStatus == k_taskStatusResume) [task resume];
         }];
         
         [[self sessionWWanUpload] getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
             for (NSURLSessionTask *task in uploadTasks)
-                if (taskStatus == taskStatusCancel) [task cancel];
-                else if (taskStatus == taskStatusSuspend) [task suspend];
-                else if (taskStatus == taskStatusResume) [task resume];
+                if (taskStatus == k_taskStatusCancel) [task cancel];
+                else if (taskStatus == k_taskStatusSuspend) [task suspend];
+                else if (taskStatus == k_taskStatusResume) [task resume];
         }];
     }
 
     // COREDATA FILE SYSTEM
     
-    if (download && taskStatus == taskStatusCancel) {
-        [CCCoreData setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier:taskIdentifierDone sessionTaskIdentifierPlist:taskIdentifierDone predicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (session CONTAINS 'download')", _activeAccount] context:_context];
+    if (download && taskStatus == k_taskStatusCancel) {
+        [CCCoreData setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier: k_taskIdentifierDone sessionTaskIdentifierPlist: k_taskIdentifierDone predicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (session CONTAINS 'download')", _activeAccount] context:_context];
     }
     
-    if (upload && taskStatus == taskStatusCancel) {
+    if (upload && taskStatus == k_taskStatusCancel) {
         [CCCoreData deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(session CONTAINS 'upload')"]];
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             [CCUtility removeAllFileID_UPLOAD_ActiveUser:activeUser activeUrl:activeUrl];
@@ -352,16 +352,16 @@
         if ([sessionDescription containsString:@"download"])
             for (NSURLSessionTask *task in downloadTasks)
                 if (task.taskIdentifier == sessionTaskIdentifier) {
-                    if (taskStatus == taskStatusCancel) [task cancel];
-                    else if (taskStatus == taskStatusSuspend) [task suspend];
-                    else if (taskStatus == taskStatusResume) [task resume];
+                    if (taskStatus == k_taskStatusCancel) [task cancel];
+                    else if (taskStatus == k_taskStatusSuspend) [task suspend];
+                    else if (taskStatus == k_taskStatusResume) [task resume];
                 }
         if ([sessionDescription containsString:@"upload"])
             for (NSURLSessionTask *task in uploadTasks)
                 if (task.taskIdentifier == sessionTaskIdentifier) {
-                    if (taskStatus == taskStatusCancel) [task cancel];
-                    else if (taskStatus == taskStatusSuspend) [task suspend];
-                    else if (taskStatus == taskStatusResume) [task resume];
+                    if (taskStatus == k_taskStatusCancel) [task cancel];
+                    else if (taskStatus == k_taskStatusSuspend) [task suspend];
+                    else if (taskStatus == k_taskStatusResume) [task resume];
                 }
     }];
 }
@@ -427,7 +427,7 @@
             NSDictionary *fields = [httpResponse allHeaderFields];
             
             if (errorCode == 0) {
-                rev = [CCUtility removeForbiddenCharacters:[fields objectForKey:@"OC-ETag"]];
+                rev = [CCUtility removeForbiddenCharacters:[fields objectForKey:@"OC-ETag"] hasServerForbiddenCharactersSupport:NO];
                 date = [dateFormatter dateFromString:[fields objectForKey:@"Date"]];
             }
         }
@@ -436,7 +436,7 @@
         
             // Notification change session
             NSArray *object = [[NSArray alloc] initWithObjects:session, metadata, task, nil];
-            [[NSNotificationCenter defaultCenter] postNotificationName:networkingSessionNotification object:object];
+            [[NSNotificationCenter defaultCenter] postNotificationName:k_networkingSessionNotification object:object];
         
             [self downloadFileSuccessFailure:fileName fileID:metadata.fileID rev:rev date:date serverUrl:serverUrl selector:metadata.sessionSelector selectorPost:metadata.sessionSelectorPost errorCode:errorCode];
         });
@@ -451,8 +451,8 @@
             NSDictionary *fields = [httpResponse allHeaderFields];
             
             if (errorCode == 0) {
-                fileID = [CCUtility removeForbiddenCharacters:[fields objectForKey:@"OC-FileId"]];
-                rev = [CCUtility removeForbiddenCharacters:[fields objectForKey:@"OC-ETag"]];
+                fileID = [CCUtility removeForbiddenCharacters:[fields objectForKey:@"OC-FileId"] hasServerForbiddenCharactersSupport:NO];
+                rev = [CCUtility removeForbiddenCharacters:[fields objectForKey:@"OC-ETag"] hasServerForbiddenCharactersSupport:NO];
                 date = [dateFormatter dateFromString:[fields objectForKey:@"Date"]];
             }
         }
@@ -461,7 +461,7 @@
             
             // Notification change session
             NSArray *object = [[NSArray alloc] initWithObjects:session, metadata, task, nil];
-            [[NSNotificationCenter defaultCenter] postNotificationName:networkingSessionNotification object:object];
+            [[NSNotificationCenter defaultCenter] postNotificationName:k_networkingSessionNotification object:object];
             
             [self uploadFileSuccessFailure:metadata fileName:fileName fileID:fileID rev:rev date:date serverUrl:serverUrl errorCode:errorCode];
         });
@@ -495,7 +495,7 @@
                 
                 NSLog(@"[LOG] Download file already exists %@ - %@", metadata.fileNameData, metadata.fileNamePrint);
                 
-                [CCCoreData setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier:taskIdentifierDone sessionTaskIdentifierPlist:taskIdentifierDone predicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", metadata.fileID, _activeAccount] context:_context];
+                [CCCoreData setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier: k_taskIdentifierDone sessionTaskIdentifierPlist: k_taskIdentifierDone predicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", metadata.fileID, _activeAccount] context:_context];
                 
                 if ([[self getDelegate:metadata.fileID] respondsToSelector:@selector(downloadFileSuccess:serverUrl:selector:selectorPost:)])
                     [[self getDelegate:metadata.fileID] downloadFileSuccess:metadata.fileID serverUrl:serverUrl selector:selector selectorPost:selectorPost];
@@ -504,12 +504,9 @@
             }
         }
         
-        // select type of session
-        metadata.session = session;
+        [self downloaURLSession:metadata.fileNameData fileNamePrint:metadata.fileNamePrint serverUrl:serverUrl fileID:metadata.fileID session:session taskStatus:taskStatus selector:selector];
         
-        [self downloaURLSession:metadata.fileNameData fileNamePrint:metadata.fileNamePrint serverUrl:serverUrl fileID:metadata.fileID session:metadata.session taskStatus:taskStatus selector:selector];
-        
-        [CCCoreData setMetadataSession:metadata.session sessionError:@"" sessionSelector:selector sessionSelectorPost:selectorPost sessionTaskIdentifier:taskIdentifierNULL sessionTaskIdentifierPlist:taskIdentifierNULL predicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)",metadata.fileID, _activeAccount] context:_context];
+        [CCCoreData setMetadataSession:session sessionError:@"" sessionSelector:selector sessionSelectorPost:selectorPost sessionTaskIdentifier: k_taskIdentifierNULL sessionTaskIdentifierPlist:k_taskIdentifierNULL predicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)",metadata.fileID, _activeAccount] context:_context];
     }
     
     if (downloadPlist) {
@@ -522,12 +519,9 @@
             return;
         }
         
-        // select tye of session
-        metadata.session = session;
+        [self downloaURLSession:metadata.fileName fileNamePrint:metadata.fileNamePrint serverUrl:serverUrl fileID:metadata.fileID session:session taskStatus:taskStatus selector:selector];
         
-        [self downloaURLSession:metadata.fileName fileNamePrint:metadata.fileNamePrint serverUrl:serverUrl fileID:metadata.fileID session:metadata.session taskStatus:taskStatus selector:selector];
-        
-        [CCCoreData setMetadataSession:metadata.session sessionError:@"" sessionSelector:selector sessionSelectorPost:selectorPost sessionTaskIdentifier:taskIdentifierNULL sessionTaskIdentifierPlist:taskIdentifierNULL predicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)",metadata.fileID, _activeAccount] context:_context];
+        [CCCoreData setMetadataSession:session sessionError:@"" sessionSelector:selector sessionSelectorPost:selectorPost sessionTaskIdentifier: k_taskIdentifierNULL sessionTaskIdentifierPlist: k_taskIdentifierNULL predicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)",metadata.fileID, _activeAccount] context:_context];
     }
 }
 
@@ -549,35 +543,35 @@
         [request setValue:authValue forHTTPHeaderField:@"Authorization"];
     }
     
-    if ([session isEqualToString:download_session]) sessionDownload = [self sessionDownload];
-    else if ([session isEqualToString:download_session_foreground]) sessionDownload = [self sessionDownloadForeground];
-    else if ([session isEqualToString:download_session_wwan]) sessionDownload = [self sessionWWanDownload];
+    if ([session isEqualToString:k_download_session]) sessionDownload = [self sessionDownload];
+    else if ([session isEqualToString:k_download_session_foreground]) sessionDownload = [self sessionDownloadForeground];
+    else if ([session isEqualToString:k_download_session_wwan]) sessionDownload = [self sessionWWanDownload];
     
     NSURLSessionDownloadTask *downloadTask = [sessionDownload downloadTaskWithRequest:request];
     
-    if (taskStatus == taskStatusCancel) [downloadTask cancel];
-    else if (taskStatus == taskStatusSuspend) [downloadTask suspend];
-    else if (taskStatus == taskStatusResume) [downloadTask resume];
+    if (taskStatus == k_taskStatusCancel) [downloadTask cancel];
+    else if (taskStatus == k_taskStatusSuspend) [downloadTask suspend];
+    else if (taskStatus == k_taskStatusResume) [downloadTask resume];
 
     if ([[self getDelegate:fileID] respondsToSelector:@selector(downloadTaskSave:)])
         [[self getDelegate:fileID] downloadTaskSave:downloadTask];
     
     if (downloadTask == nil) {
         
-        NSUInteger sessionTaskIdentifier = taskIdentifierNULL;
-        NSUInteger sessionTaskIdentifierPlist = taskIdentifierNULL;
+        NSUInteger sessionTaskIdentifier = k_taskIdentifierNULL;
+        NSUInteger sessionTaskIdentifierPlist = k_taskIdentifierNULL;
         
-        if ([CCUtility isFileNotCryptated:fileName] || [CCUtility isCryptoString:fileName]) sessionTaskIdentifier = taskIdentifierError;
-        if ([CCUtility isCryptoPlistString:fileName]) sessionTaskIdentifierPlist = taskIdentifierError;
+        if ([CCUtility isFileNotCryptated:fileName] || [CCUtility isCryptoString:fileName]) sessionTaskIdentifier = k_taskIdentifierError;
+        if ([CCUtility isCryptoPlistString:fileName]) sessionTaskIdentifierPlist = k_taskIdentifierError;
         
-        [CCCoreData setMetadataSession:nil sessionError:[NSString stringWithFormat:@"%@", @CCErrorTaskNil] sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:sessionTaskIdentifier sessionTaskIdentifierPlist:sessionTaskIdentifierPlist predicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, _activeAccount] context:_context];
+        [CCCoreData setMetadataSession:nil sessionError:[NSString stringWithFormat:@"%@", @k_CCErrorTaskNil] sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:sessionTaskIdentifier sessionTaskIdentifierPlist:sessionTaskIdentifierPlist predicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, _activeAccount] context:_context];
         
         NSLog(@"[LOG] downloadFileSession TaskIdentifier [error CCErrorTaskNil] - %@ - %@", fileName, fileNamePrint);
         
     } else {
         
-        NSUInteger sessionTaskIdentifier = taskIdentifierNULL;
-        NSUInteger sessionTaskIdentifierPlist = taskIdentifierNULL;
+        NSUInteger sessionTaskIdentifier = k_taskIdentifierNULL;
+        NSUInteger sessionTaskIdentifierPlist = k_taskIdentifierNULL;
         
         if ([CCUtility isCryptoString:fileName] || [CCUtility isFileNotCryptated:fileName]) sessionTaskIdentifier = downloadTask.taskIdentifier;
         if ([CCUtility isCryptoPlistString:fileName]) sessionTaskIdentifierPlist = downloadTask.taskIdentifier;
@@ -590,10 +584,8 @@
     dispatch_async(dispatch_get_main_queue(), ^{
     
         // Refresh datasource if is not a Plist
-        NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:_activeAccount];
-        
-        if ([_delegate respondsToSelector:@selector(getDataSourceWithReloadTableView:fileID:selector:)] && [CCUtility isCryptoPlistString:fileName] == NO)
-            [_delegate getDataSourceWithReloadTableView:directoryID fileID:fileID selector:selector];
+        if ([_delegate respondsToSelector:@selector(reloadDatasource:fileID:selector:)] && [CCUtility isCryptoPlistString:fileName] == NO)
+            [_delegate reloadDatasource:serverUrl fileID:fileID selector:selector];
     });
 }
 
@@ -604,7 +596,7 @@
     NSString *serverUrl = [self getServerUrlFromUrl:url];
     
     // if plist return
-    if ([CCUtility getTypeFileName:fileName] == metadataTypeFilenamePlist)
+    if ([CCUtility getTypeFileName:fileName] == k_metadataTypeFilenamePlist)
         return;
 
     float progress = (float) totalBytesWritten / (float)totalBytesExpectedToWrite;
@@ -674,11 +666,11 @@
         //
         if (errorCode == kCFURLErrorCancelled || [CCUtility isCryptoPlistString:fileName]) {
             
-            [CCCoreData setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier:taskIdentifierDone sessionTaskIdentifierPlist:taskIdentifierDone predicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, _activeAccount] context:_context];
+            [CCCoreData setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier: k_taskIdentifierDone sessionTaskIdentifierPlist: k_taskIdentifierDone predicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, _activeAccount] context:_context];
             
         } else {
             
-            [CCCoreData setMetadataSession:nil sessionError:[NSString stringWithFormat:@"%@", @(errorCode)] sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:taskIdentifierError sessionTaskIdentifierPlist:taskIdentifierNULL predicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, _activeAccount] context:_context];
+            [CCCoreData setMetadataSession:nil sessionError:[NSString stringWithFormat:@"%@", @(errorCode)] sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier: k_taskIdentifierError sessionTaskIdentifierPlist: k_taskIdentifierNULL predicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, _activeAccount] context:_context];
         }
         
         // Delegate downloadFileFailure:
@@ -694,10 +686,10 @@
         
         CCMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, _activeAccount] context:_context];
         
-        if ([CCUtility isCryptoString:fileName] || [CCUtility isFileNotCryptated:fileName]) metadata.sessionTaskIdentifier = taskIdentifierDone;
-        if ([CCUtility isCryptoPlistString:fileName]) metadata.sessionTaskIdentifierPlist = taskIdentifierDone;
+        if ([CCUtility isCryptoString:fileName] || [CCUtility isFileNotCryptated:fileName]) metadata.sessionTaskIdentifier = k_taskIdentifierDone;
+        if ([CCUtility isCryptoPlistString:fileName]) metadata.sessionTaskIdentifierPlist = k_taskIdentifierDone;
         
-        if (metadata.sessionTaskIdentifier == taskIdentifierDone && metadata.sessionTaskIdentifierPlist == taskIdentifierDone) {
+        if (metadata.sessionTaskIdentifier == k_taskIdentifierDone && metadata.sessionTaskIdentifierPlist == k_taskIdentifierDone) {
             
             [CCCoreData setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier:metadata.sessionTaskIdentifier sessionTaskIdentifierPlist:metadata.sessionTaskIdentifierPlist predicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, _activeAccount] context:_context];
             
@@ -733,8 +725,8 @@
     
     if (!result.count) {
         
-        if ([delegate respondsToSelector:@selector(uploadFileFailure:serverUrl:selector:message:errorCode:)])
-            [delegate uploadFileFailure:nil serverUrl:serverUrl selector:selector message:@"Internal error" errorCode:CCErrorInternalError];
+        if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
+            [delegate uploadFileFailure:nil fileID:nil serverUrl:serverUrl selector:selector message:@"Internal error" errorCode: k_CCErrorInternalError];
         return;
     }
     
@@ -821,8 +813,8 @@
     if (error) {
         
         // Error for uploadFileFailure
-        if ([delegate respondsToSelector:@selector(uploadFileFailure:serverUrl:selector:message:errorCode:)])
-            [delegate uploadFileFailure:nil serverUrl:serverUrl selector:selector message:@"_read_file_error_" errorCode:error.code];
+        if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
+            [delegate uploadFileFailure:nil fileID:nil serverUrl:serverUrl selector:selector message:@"_read_file_error_" errorCode:error.code];
         
     } else {
         
@@ -853,7 +845,7 @@
     CCMetadata *metadata = [CCUtility insertFileSystemInMetadata:fileName directory:_directoryUser activeAccount:_activeAccount cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath];
     
     //fileID
-    NSString *uploadID =  [uploadSessionID stringByAppendingString:[CCUtility createID]];
+    NSString *uploadID =  [k_uploadSessionID stringByAppendingString:[CCUtility createID]];
     
     //add delegate
     if (delegate)
@@ -875,11 +867,11 @@
         metadata.sessionSelector = selector;
         metadata.sessionSelectorPost = selectorPost;
         metadata.typeCloud = _typeCloud;
-        metadata.typeFile = metadataTypeFile_unknown;
+        metadata.typeFile = k_metadataTypeFile_unknown;
         
         [CCCoreData addMetadata:metadata activeAccount:_activeAccount activeUrl:_activeUrl typeCloud:_typeCloud context:_context];
         
-        [self uploadURLSession:fileName fileNamePrint:metadata.fileNamePrint serverUrl:serverUrl directoryID:metadata.directoryID sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist parentRev:parentRev selector:selector];
+        [self uploadURLSession:fileName fileNamePrint:metadata.fileNamePrint serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist parentRev:parentRev selector:selector];
     }
     
     else if (cryptated == YES) {
@@ -906,15 +898,15 @@
             metadata.sessionSelector = selector;
             metadata.sessionSelectorPost = selectorPost;
             metadata.typeCloud = _typeCloud;
-            metadata.typeFile = metadataTypeFile_template;
+            metadata.typeFile = k_metadataTypeFile_template;
             
             [CCCoreData addMetadata:metadata activeAccount:_activeAccount activeUrl:_activeUrl typeCloud:_typeCloud context:_context];
             
             // DATA
-            [self uploadURLSession:fileNameCrypto fileNamePrint:fileName serverUrl:serverUrl directoryID:metadata.directoryID sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist parentRev:parentRev selector:selector];
+            [self uploadURLSession:fileNameCrypto fileNamePrint:fileName serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist parentRev:parentRev selector:selector];
             
             // PLIST
-            [self uploadURLSession:[fileNameCrypto stringByAppendingString:@".plist"] fileNamePrint:fileName serverUrl:serverUrl directoryID:metadata.directoryID sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist parentRev:parentRev selector:selector];
+            [self uploadURLSession:[fileNameCrypto stringByAppendingString:@".plist"] fileNamePrint:fileName serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist parentRev:parentRev selector:selector];
         }
         
         if (template == NO) {
@@ -947,8 +939,8 @@
                     [alertWindow.rootViewController presentViewController:alertController animated:YES completion:nil];
                     
                     // Error for uploadFileFailure
-                    if ([[self getDelegate:uploadID] respondsToSelector:@selector(uploadFileFailure:serverUrl:selector:message:errorCode:)])
-                        [[self getDelegate:uploadID] uploadFileFailure:nil serverUrl:serverUrl selector:selector message:NSLocalizedString(@"_encrypt_error_", nil) errorCode:0];
+                    if ([[self getDelegate:uploadID] respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
+                        [[self getDelegate:uploadID] uploadFileFailure:nil fileID:nil serverUrl:serverUrl selector:selector message:NSLocalizedString(@"_encrypt_error_", nil) errorCode:0];
                 });
             
                 return;
@@ -968,7 +960,7 @@
             metadata.sessionSelectorPost = selectorPost;
             metadata.typeCloud = _typeCloud;
             metadata.title = [self getTitleFromPlistName:fileNameCrypto];
-            metadata.type = metadataType_file;
+            metadata.type = k_metadataType_file;
             
             if (errorCode == 403) {
                 
@@ -983,8 +975,8 @@
                         //    [CCCoreData setCameraUploadDateAssetType:assetMediaType assetDate:assetDate activeAccount:_activeAccount];
                         
                         // Error for uploadFileFailure
-                        if ([[self getDelegate:uploadID] respondsToSelector:@selector(uploadFileFailure:serverUrl:selector:message:errorCode:)])
-                            [[self getDelegate:uploadID] uploadFileFailure:nil serverUrl:serverUrl selector:selector message:NSLocalizedString(@"_file_already_exists_", nil) errorCode:403];
+                        if ([[self getDelegate:uploadID] respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
+                            [[self getDelegate:uploadID] uploadFileFailure:nil fileID:nil serverUrl:serverUrl selector:selector message:NSLocalizedString(@"_file_already_exists_", nil) errorCode:403];
                     });
                     
                     return;
@@ -1000,16 +992,16 @@
                     [CCGraphics createNewImageFrom:fileName directoryUser:_directoryUser fileNameTo:uploadID fileNamePrint:fileName size:@"m" imageForUpload:YES typeFile:metadata.typeFile writePreview:YES optimizedFileName:NO];
 #endif
 
-                    if ([metadata.typeFile isEqualToString:metadataTypeFile_image] || [metadata.typeFile isEqualToString:metadataTypeFile_video])
+                    if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image] || [metadata.typeFile isEqualToString: k_metadataTypeFile_video])
                         [crypto addPlistImage:[NSString stringWithFormat:@"%@/%@", _directoryUser, [fileNameCrypto stringByAppendingString:@".plist"]] fileNamePathImage:[NSTemporaryDirectory() stringByAppendingString:uploadID]];
                     
                     [CCCoreData addMetadata:metadata activeAccount:_activeAccount activeUrl:_activeUrl typeCloud:_typeCloud context:_context];
                     
                     // DATA
-                    [self uploadURLSession:fileNameCrypto fileNamePrint:fileName serverUrl:serverUrl directoryID:metadata.directoryID sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist parentRev:parentRev selector:selector];
+                    [self uploadURLSession:fileNameCrypto fileNamePrint:fileName serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist parentRev:parentRev selector:selector];
                     
                     // PLIST
-                    [self uploadURLSession:[fileNameCrypto stringByAppendingString:@".plist"] fileNamePrint:fileName serverUrl:serverUrl directoryID:metadata.directoryID sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist parentRev:parentRev selector:selector];
+                    [self uploadURLSession:[fileNameCrypto stringByAppendingString:@".plist"] fileNamePrint:fileName serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist parentRev:parentRev selector:selector];
                 }];
 
                 [alertController addAction:cancelAction];
@@ -1029,16 +1021,16 @@
                 [CCGraphics createNewImageFrom:fileName directoryUser:_directoryUser fileNameTo:uploadID fileNamePrint:fileName size:@"m" imageForUpload:YES typeFile:metadata.typeFile writePreview:YES optimizedFileName:NO];
 #endif
                 
-                if ([metadata.typeFile isEqualToString:metadataTypeFile_image] || [metadata.typeFile isEqualToString:metadataTypeFile_video])
+                if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image] || [metadata.typeFile isEqualToString: k_metadataTypeFile_video])
                     [crypto addPlistImage:[NSString stringWithFormat:@"%@/%@", _directoryUser, [fileNameCrypto stringByAppendingString:@".plist"]] fileNamePathImage:[NSTemporaryDirectory() stringByAppendingString:uploadID]];
                 
                 [CCCoreData addMetadata:metadata activeAccount:_activeAccount activeUrl:_activeUrl typeCloud:_typeCloud context:_context];
                 
                 // DATA
-                [self uploadURLSession:fileNameCrypto fileNamePrint:fileName serverUrl:serverUrl directoryID:metadata.directoryID sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist parentRev:parentRev selector:selector];
+                [self uploadURLSession:fileNameCrypto fileNamePrint:fileName serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist parentRev:parentRev selector:selector];
                 
                 // PLIST
-                [self uploadURLSession:[fileNameCrypto stringByAppendingString:@".plist"] fileNamePrint:fileName serverUrl:serverUrl directoryID:metadata.directoryID sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist parentRev:parentRev selector:selector];
+                [self uploadURLSession:[fileNameCrypto stringByAppendingString:@".plist"] fileNamePrint:fileName serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist parentRev:parentRev selector:selector];
             }
         }
     }
@@ -1057,7 +1049,7 @@
         metadata.sessionID = uploadID;
         metadata.sessionSelector = selector;
         metadata.sessionSelectorPost = selectorPost;
-        metadata.type = metadataType_file;
+        metadata.type = k_metadataType_file;
         metadata.typeCloud = _typeCloud;
         
         // File exists ???
@@ -1074,8 +1066,8 @@
                     //    [CCCoreData setCameraUploadDateAssetType:assetMediaType assetDate:assetDate activeAccount:_activeAccount];
                 
                     // Error for uploadFileFailure
-                    if ([[self getDelegate:uploadID] respondsToSelector:@selector(uploadFileFailure:serverUrl:selector:message:errorCode:)])
-                        [[self getDelegate:uploadID] uploadFileFailure:nil serverUrl:serverUrl selector:selector message:NSLocalizedString(@"_file_already_exists_", nil) errorCode:403];
+                    if ([[self getDelegate:uploadID] respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
+                        [[self getDelegate:uploadID] uploadFileFailure:nil fileID:nil serverUrl:serverUrl selector:selector message:NSLocalizedString(@"_file_already_exists_", nil) errorCode:403];
                 });
                 
                 return;
@@ -1092,7 +1084,7 @@
                 
                 [CCCoreData addMetadata:metadata activeAccount:_activeAccount activeUrl:_activeUrl typeCloud:_typeCloud context:_context];
                 
-                [self uploadURLSession:fileName fileNamePrint:fileName serverUrl:serverUrl directoryID:metadata.directoryID sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist parentRev:parentRev selector:selector];
+                [self uploadURLSession:fileName fileNamePrint:fileName serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist parentRev:parentRev selector:selector];
             }];
             
             [alertController addAction:cancelAction];
@@ -1115,7 +1107,7 @@
 #endif
             [CCCoreData addMetadata:metadata activeAccount:_activeAccount activeUrl:_activeUrl typeCloud:_typeCloud context:_context];
             
-            [self uploadURLSession:fileName fileNamePrint:fileName serverUrl:serverUrl directoryID:metadata.directoryID sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist parentRev:parentRev selector:selector];
+            [self uploadURLSession:fileName fileNamePrint:fileName serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist parentRev:parentRev selector:selector];
         }
     }
 }
@@ -1133,9 +1125,9 @@
         
             send = YES;
             
-            [self uploadURLSession:metadata.fileNameData fileNamePrint:metadata.fileNamePrint serverUrl:serverUrl directoryID:metadata.directoryID sessionID:metadata.sessionID session:metadata.session taskStatus:taskStatus assetDate:nil assetMediaType:0 cryptated:YES onlyPlist:NO parentRev:nil selector:metadata.sessionSelector];
+            [self uploadURLSession:metadata.fileNameData fileNamePrint:metadata.fileNamePrint serverUrl:serverUrl sessionID:metadata.sessionID session:metadata.session taskStatus:taskStatus assetDate:nil assetMediaType:0 cryptated:YES onlyPlist:NO parentRev:nil selector:metadata.sessionSelector];
             
-            [self uploadURLSession:metadata.fileName fileNamePrint:metadata.fileNamePrint serverUrl:serverUrl directoryID:metadata.directoryID sessionID:metadata.sessionID session:metadata.session taskStatus:taskStatus assetDate:nil assetMediaType:PHAssetMediaTypeUnknown cryptated:YES onlyPlist:NO parentRev:nil selector:metadata.sessionSelector];
+            [self uploadURLSession:metadata.fileName fileNamePrint:metadata.fileNamePrint serverUrl:serverUrl sessionID:metadata.sessionID session:metadata.session taskStatus:taskStatus assetDate:nil assetMediaType:PHAssetMediaTypeUnknown cryptated:YES onlyPlist:NO parentRev:nil selector:metadata.sessionSelector];
         }
         
     } else {
@@ -1145,7 +1137,7 @@
             
             send = YES;
             
-            [self uploadURLSession:metadata.fileName fileNamePrint:metadata.fileNamePrint serverUrl:serverUrl directoryID:metadata.directoryID sessionID:metadata.sessionID session:metadata.session taskStatus:taskStatus assetDate:nil assetMediaType:PHAssetMediaTypeUnknown cryptated:NO onlyPlist:NO parentRev:nil selector:metadata.sessionSelector];
+            [self uploadURLSession:metadata.fileName fileNamePrint:metadata.fileNamePrint serverUrl:serverUrl sessionID:metadata.sessionID session:metadata.session taskStatus:taskStatus assetDate:nil assetMediaType:PHAssetMediaTypeUnknown cryptated:NO onlyPlist:NO parentRev:nil selector:metadata.sessionSelector];
         }
     }
     
@@ -1154,7 +1146,7 @@
         NSLog(@"[LOG] Re-upload File : %@ - fileID : %@", metadata.fileNamePrint, metadata.fileID);
         
         // update Coredata
-        [CCCoreData setMetadataSession:nil sessionError:@"" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:taskIdentifierNULL sessionTaskIdentifierPlist:taskIdentifierNULL predicate:[NSPredicate predicateWithFormat:@"(sessionID == %@) AND (account == %@)", metadata.sessionID, _activeAccount] context:_context];
+        [CCCoreData setMetadataSession:nil sessionError:@"" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier: k_taskIdentifierNULL sessionTaskIdentifierPlist: k_taskIdentifierNULL predicate:[NSPredicate predicateWithFormat:@"(sessionID == %@) AND (account == %@)", metadata.sessionID, _activeAccount] context:_context];
         
     } else {
         
@@ -1167,7 +1159,7 @@
     }
 }
 
-- (void)uploadURLSession:(NSString *)fileName fileNamePrint:(NSString *)fileNamePrint serverUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID sessionID:(NSString*)sessionID session:(NSString *)session taskStatus:(NSInteger)taskStatus assetDate:(NSDate *)assetDate assetMediaType:(PHAssetMediaType)assetMediaType cryptated:(BOOL)cryptated onlyPlist:(BOOL)onlyPlist parentRev:(NSString *)parentRev selector:(NSString *)selector
+- (void)uploadURLSession:(NSString *)fileName fileNamePrint:(NSString *)fileNamePrint serverUrl:(NSString *)serverUrl sessionID:(NSString*)sessionID session:(NSString *)session taskStatus:(NSInteger)taskStatus assetDate:(NSDate *)assetDate assetMediaType:(PHAssetMediaType)assetMediaType cryptated:(BOOL)cryptated onlyPlist:(BOOL)onlyPlist parentRev:(NSString *)parentRev selector:(NSString *)selector
 {
     NSURLSession *sessionUpload;
     NSURL *url;
@@ -1207,8 +1199,8 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             
             // Error for uploadFileFailure
-            if ([[self getDelegate:sessionID] respondsToSelector:@selector(uploadFileFailure:serverUrl:selector:message:errorCode:)])
-                [[self getDelegate:sessionID] uploadFileFailure:sessionID serverUrl:serverUrl selector:selector message:NSLocalizedString(@"_file_not_present_", nil) errorCode:404];
+            if ([[self getDelegate:sessionID] respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
+                [[self getDelegate:sessionID] uploadFileFailure:nil fileID:sessionID serverUrl:serverUrl selector:selector message:NSLocalizedString(@"_file_not_present_", nil) errorCode:404];
             
             [CCCoreData deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(sessionID == %@) AND (account == %@)", sessionID, _activeAccount]];
         });
@@ -1216,15 +1208,15 @@
         return;
     }
     
-    if ([session isEqualToString:upload_session]) sessionUpload = [self sessionUpload];
-    else if ([session isEqualToString:upload_session_foreground]) sessionUpload = [self sessionUploadForeground];
-    else if ([session isEqualToString:upload_session_wwan]) sessionUpload = [self sessionWWanUpload];
+    if ([session isEqualToString:k_upload_session]) sessionUpload = [self sessionUpload];
+    else if ([session isEqualToString:k_upload_session_foreground]) sessionUpload = [self sessionUploadForeground];
+    else if ([session isEqualToString:k_upload_session_wwan]) sessionUpload = [self sessionWWanUpload];
 
     NSURLSessionUploadTask *uploadTask = [sessionUpload uploadTaskWithRequest:request fromFile:[NSURL fileURLWithPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, fileNameForUpload]]];
     
-    if (taskStatus == taskStatusCancel) [uploadTask cancel];
-    else if (taskStatus == taskStatusSuspend) [uploadTask suspend];
-    else if (taskStatus == taskStatusResume) [uploadTask resume];
+    if (taskStatus == k_taskStatusCancel) [uploadTask cancel];
+    else if (taskStatus == k_taskStatusSuspend) [uploadTask suspend];
+    else if (taskStatus == k_taskStatusResume) [uploadTask resume];
     
     if ([[self getDelegate:sessionID] respondsToSelector:@selector(uploadTaskSave:)])
         [[self getDelegate:sessionID] uploadTaskSave:uploadTask];
@@ -1233,20 +1225,20 @@
     
     if (uploadTask == nil) {
         
-        NSUInteger sessionTaskIdentifier = taskIdentifierNULL;
-        NSUInteger sessionTaskIdentifierPlist = taskIdentifierNULL;
+        NSUInteger sessionTaskIdentifier = k_taskIdentifierNULL;
+        NSUInteger sessionTaskIdentifierPlist = k_taskIdentifierNULL;
         
-        if ([CCUtility isFileNotCryptated:fileName] || [CCUtility isCryptoString:fileName]) sessionTaskIdentifier = taskIdentifierError;
-        if ([CCUtility isCryptoPlistString:fileName]) sessionTaskIdentifierPlist = taskIdentifierError;
+        if ([CCUtility isFileNotCryptated:fileName] || [CCUtility isCryptoString:fileName]) sessionTaskIdentifier = k_taskIdentifierError;
+        if ([CCUtility isCryptoPlistString:fileName]) sessionTaskIdentifierPlist = k_taskIdentifierError;
         
-        [CCCoreData setMetadataSession:session sessionError:[NSString stringWithFormat:@"%@", @CCErrorTaskNil] sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:sessionTaskIdentifier sessionTaskIdentifierPlist:sessionTaskIdentifierPlist predicate:[NSPredicate predicateWithFormat:@"(sessionID == %@) AND (account == %@)", sessionID, _activeAccount] context:_context];
+        [CCCoreData setMetadataSession:session sessionError:[NSString stringWithFormat:@"%@", @k_CCErrorTaskNil] sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:sessionTaskIdentifier sessionTaskIdentifierPlist:sessionTaskIdentifierPlist predicate:[NSPredicate predicateWithFormat:@"(sessionID == %@) AND (account == %@)", sessionID, _activeAccount] context:_context];
         
         NSLog(@"[LOG] Upload file TaskIdentifier [error CCErrorTaskNil] - %@ - %@", fileName, fileNamePrint);
         
     } else {
         
-        NSUInteger sessionTaskIdentifier = taskIdentifierNULL;
-        NSUInteger sessionTaskIdentifierPlist = taskIdentifierNULL;
+        NSUInteger sessionTaskIdentifier = k_taskIdentifierNULL;
+        NSUInteger sessionTaskIdentifierPlist = k_taskIdentifierNULL;
         
         if ([CCUtility isCryptoString:fileName] || [CCUtility isFileNotCryptated:fileName]) sessionTaskIdentifier = uploadTask.taskIdentifier;
         if ([CCUtility isCryptoPlistString:fileName]) sessionTaskIdentifierPlist = uploadTask.taskIdentifier;
@@ -1263,8 +1255,8 @@
     dispatch_async(dispatch_get_main_queue(), ^{
         
         // refresh main
-        if ([self.delegate respondsToSelector:@selector(getDataSourceWithReloadTableView:fileID:selector:)])
-            [self.delegate getDataSourceWithReloadTableView:directoryID fileID:nil selector:selector];
+        if ([self.delegate respondsToSelector:@selector(reloadDatasource:fileID:selector:)])
+            [self.delegate reloadDatasource:serverUrl fileID:nil selector:selector];
     });
 }
 
@@ -1288,7 +1280,7 @@
     NSString *serverUrl = [self getServerUrlFromUrl:url];
     
     // if plist return
-    if ([CCUtility getTypeFileName:fileName] == metadataTypeFilenamePlist)
+    if ([CCUtility getTypeFileName:fileName] == k_metadataTypeFilenamePlist)
         return;
     
     float progress = (float) totalBytesSent / (float)totalBytesExpectedToSend;
@@ -1328,19 +1320,19 @@
         // Mark error only if not Cancelled Task
         if (errorCode != kCFURLErrorCancelled)  {
 
-            NSUInteger sessionTaskIdentifier = taskIdentifierNULL;
-            NSUInteger sessionTaskIdentifierPlist = taskIdentifierNULL;
+            NSUInteger sessionTaskIdentifier = k_taskIdentifierNULL;
+            NSUInteger sessionTaskIdentifierPlist = k_taskIdentifierNULL;
         
-            if ([CCUtility isFileNotCryptated:fileName] || [CCUtility isCryptoString:fileName]) sessionTaskIdentifier = taskIdentifierError;
-            if ([CCUtility isCryptoPlistString:fileName]) sessionTaskIdentifierPlist = taskIdentifierError;
+            if ([CCUtility isFileNotCryptated:fileName] || [CCUtility isCryptoString:fileName]) sessionTaskIdentifier = k_taskIdentifierError;
+            if ([CCUtility isCryptoPlistString:fileName]) sessionTaskIdentifierPlist = k_taskIdentifierError;
         
             [CCCoreData setMetadataSession:nil sessionError:[NSString stringWithFormat:@"%@", @(errorCode)] sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:sessionTaskIdentifier sessionTaskIdentifierPlist:sessionTaskIdentifierPlist predicate:[NSPredicate predicateWithFormat:@"(sessionID == %@) AND (account == %@)", metadata.sessionID, _activeAccount] context:_context];
         }
         
         dispatch_async(dispatch_get_main_queue(), ^{
             
-            if ([[self getDelegate:sessionID] respondsToSelector:@selector(uploadFileFailure:serverUrl:selector:message:errorCode:)])
-                [[self getDelegate:sessionID] uploadFileFailure:fileID serverUrl:serverUrl selector:metadata.sessionSelector message:[CCError manageErrorKCF:errorCode withNumberError:YES] errorCode:errorCode];
+            if ([[self getDelegate:sessionID] respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
+                [[self getDelegate:sessionID] uploadFileFailure:nil fileID:fileID serverUrl:serverUrl selector:metadata.sessionSelector message:[CCError manageErrorKCF:errorCode withNumberError:YES] errorCode:errorCode];
         });
         
         return;
@@ -1352,10 +1344,10 @@
         metadata.fileID = fileID;
         metadata.rev = rev;
         metadata.date = date;
-        metadata.sessionTaskIdentifierPlist = taskIdentifierDone;
+        metadata.sessionTaskIdentifierPlist = k_taskIdentifierDone;
         
         if ([CCUtility isFileNotCryptated:fileName])
-            metadata.sessionTaskIdentifier = taskIdentifierDone;
+            metadata.sessionTaskIdentifier = k_taskIdentifierDone;
         
         // copy ico in new fileID
         [CCUtility copyFileAtPath:[NSString stringWithFormat:@"%@/%@.ico", _directoryUser, sessionID] toPath:[NSString stringWithFormat:@"%@/%@.ico", _directoryUser, fileID]];
@@ -1366,13 +1358,13 @@
     // CRYPTO
     if ([CCUtility isCryptoString:fileName]) {
         
-        metadata.sessionTaskIdentifier = taskIdentifierDone;
+        metadata.sessionTaskIdentifier = k_taskIdentifierDone;
         
         [CCCoreData updateMetadata:metadata predicate:[NSPredicate predicateWithFormat:@"(sessionID == %@) AND (account == %@)", sessionID, _activeAccount] activeAccount:_activeAccount activeUrl:_activeUrl typeCloud:_typeCloud context:_context];
     }
     
     // ALL TASK DONE (PLAIN/CRYPTO)
-    if (metadata.sessionTaskIdentifier == taskIdentifierDone && metadata.sessionTaskIdentifierPlist == taskIdentifierDone) {
+    if (metadata.sessionTaskIdentifier == k_taskIdentifierDone && metadata.sessionTaskIdentifierPlist == k_taskIdentifierDone) {
         
 #ifndef EXTENSION
         if (sessionID)
@@ -1403,7 +1395,7 @@
             [CCCoreData addLocalFile:metadata activeAccount:_activeAccount];
         
         // EXIF
-        if ([metadata.typeFile isEqualToString:metadataTypeFile_image])
+        if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image])
             [CCExifGeo setExifLocalTableFileID:metadata directoryUser:_directoryUser activeAccount:_activeAccount];
         
         // Create ICON
@@ -1431,8 +1423,8 @@
         
         dispatch_async(dispatch_get_main_queue(), ^{
             
-            if ([[self getDelegate:sessionID] respondsToSelector:@selector(uploadFileSuccess:serverUrl:selector:selectorPost:)])
-                [[self getDelegate:sessionID] uploadFileSuccess:metadata.fileID serverUrl:serverUrl selector:metadata.sessionSelector selectorPost:metadata.sessionSelectorPost];
+            if ([[self getDelegate:sessionID] respondsToSelector:@selector(uploadFileSuccess:fileID:serverUrl:selector:selectorPost:)])
+                [[self getDelegate:sessionID] uploadFileSuccess:nil fileID:metadata.fileID serverUrl:serverUrl selector:metadata.sessionSelector selectorPost:metadata.sessionSelectorPost];
         });
     }
 }
@@ -1479,12 +1471,12 @@
                 
                 NSLog(@"[LOG] NOT Find metadata Task [%i] fileID : %@ - filename : %@", metadata.sessionTaskIdentifier, metadata.fileID, metadata.fileNameData);
                 
-                [CCCoreData setMetadataSession:nil sessionError:[NSString stringWithFormat:@"%@", @CCErrorTaskDownloadNotFound] sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:taskIdentifierError sessionTaskIdentifierPlist:taskIdentifierNULL predicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", metadata.fileID, _activeAccount] context:_context];
+                [CCCoreData setMetadataSession:nil sessionError:[NSString stringWithFormat:@"%@", @k_CCErrorTaskDownloadNotFound] sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier: k_taskIdentifierError sessionTaskIdentifierPlist: k_taskIdentifierNULL predicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", metadata.fileID, _activeAccount] context:_context];
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
                     
-                    if ([self.delegate respondsToSelector:@selector(getDataSourceWithReloadTableView:fileID:selector:)])
-                        [self.delegate getDataSourceWithReloadTableView:metadata.directoryID fileID:metadata.fileID selector:nil];
+                    if ([self.delegate respondsToSelector:@selector(reloadDatasource:fileID:selector:)])
+                        [self.delegate reloadDatasource:[CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account] fileID:metadata.fileID selector:nil];
                 });
                 
             }
@@ -1494,12 +1486,12 @@
                 
                 NSLog(@"[LOG] NOT Find metadata TaskPlist [%i] fileID : %@ - filename : %@", metadata.sessionTaskIdentifierPlist, metadata.fileID, metadata.fileName);
                 
-                [CCCoreData setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier:taskIdentifierNULL sessionTaskIdentifierPlist:taskIdentifierDone predicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", metadata.fileID, _activeAccount] context:_context];
+                [CCCoreData setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier: k_taskIdentifierNULL sessionTaskIdentifierPlist: k_taskIdentifierDone predicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", metadata.fileID, _activeAccount] context:_context];
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
                     
-                    if ([self.delegate respondsToSelector:@selector(getDataSourceWithReloadTableView:fileID:selector:)])
-                        [self.delegate getDataSourceWithReloadTableView:metadata.directoryID fileID:metadata.fileID selector:nil];
+                    if ([self.delegate respondsToSelector:@selector(reloadDatasource:fileID:selector:)])
+                        [self.delegate reloadDatasource:[CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account] fileID:metadata.fileID selector:nil];
                 });
             }
             
@@ -1511,9 +1503,9 @@
 
 - (void)automaticDownloadInError
 {
-    NSMutableSet *directoryIDs = [[NSMutableSet alloc] init];
+    NSMutableSet *serversUrl = [[NSMutableSet alloc] init];
     
-    NSArray *records = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (session CONTAINS 'download') AND ((sessionTaskIdentifier == %i) OR (sessionTaskIdentifierPlist == %i))", _activeAccount, taskIdentifierError, taskIdentifierError] context:nil];
+    NSArray *records = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (session CONTAINS 'download') AND ((sessionTaskIdentifier == %i) OR (sessionTaskIdentifierPlist == %i))", _activeAccount, k_taskIdentifierError, k_taskIdentifierError] context:nil];
     
     NSLog(@"[LOG] Verify re download n. %lu", (unsigned long)[records count]);
     
@@ -1523,22 +1515,22 @@
         
         NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account];
             
-        if (metadata.sessionTaskIdentifier == taskIdentifierError)
-            [self downloadFile:metadata serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:metadata.sessionSelector selectorPost:nil session:download_session taskStatus:taskStatusResume delegate:nil];
+        if (metadata.sessionTaskIdentifier == k_taskIdentifierError)
+            [self downloadFile:metadata serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:metadata.sessionSelector selectorPost:nil session:k_download_session taskStatus: k_taskStatusResume delegate:nil];
             
-        if (metadata.sessionTaskIdentifierPlist == taskIdentifierError)
-            [self downloadFile:metadata serverUrl:serverUrl downloadData:NO downloadPlist:YES selector:metadata.sessionSelector selectorPost:nil session:download_session taskStatus:taskStatusResume delegate:nil];
+        if (metadata.sessionTaskIdentifierPlist == k_taskIdentifierError)
+            [self downloadFile:metadata serverUrl:serverUrl downloadData:NO downloadPlist:YES selector:metadata.sessionSelector selectorPost:nil session:k_download_session taskStatus: k_taskStatusResume delegate:nil];
             
-        [directoryIDs addObject:metadata.directoryID];
+        [serversUrl addObject:serverUrl];
             
         NSLog(@"[LOG] Re download file : %@ - %@ [%i %i]", metadata.fileName, metadata.fileNamePrint, metadata.sessionTaskIdentifier, metadata.sessionTaskIdentifierPlist);
     }
     
     dispatch_async(dispatch_get_main_queue(), ^{
         
-        for (NSString *directoryID in directoryIDs)
-            if ([self.delegate respondsToSelector:@selector(getDataSourceWithReloadTableView:fileID:selector:)])
-                [self.delegate getDataSourceWithReloadTableView:directoryID fileID:nil selector:nil];
+        for (NSString *serverUrl in serversUrl)
+            if ([self.delegate respondsToSelector:@selector(reloadDatasource:fileID:selector:)])
+                [self.delegate reloadDatasource:serverUrl fileID:nil selector:nil];
     });
 }
 
@@ -1594,7 +1586,7 @@
         // Notification change session
         dispatch_async(dispatch_get_main_queue(), ^{
             NSArray *object = [[NSArray alloc] initWithObjects:session, metadata, nil];
-            [[NSNotificationCenter defaultCenter] postNotificationName:networkingSessionNotification object:object];
+            [[NSNotificationCenter defaultCenter] postNotificationName:k_networkingSessionNotification object:object];
         });
     }
     
@@ -1605,7 +1597,7 @@
 {
     NSMutableSet *directoryIDs = [[NSMutableSet alloc] init];
     
-    NSArray *records = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (session CONTAINS 'upload') AND ((sessionTaskIdentifier == %i) OR (sessionTaskIdentifierPlist == %i))", _activeAccount, taskIdentifierError, taskIdentifierError] context:nil];
+    NSArray *records = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (session CONTAINS 'upload') AND ((sessionTaskIdentifier == %i) OR (sessionTaskIdentifierPlist == %i))", _activeAccount, k_taskIdentifierError, k_taskIdentifierError] context:nil];
     
     NSLog(@"[LOG] Verify re upload n. %lu", (unsigned long)[records count]);
     
@@ -1613,7 +1605,7 @@
         
         CCMetadata *metadata = [CCCoreData insertEntityInMetadata:record];
         
-        [self uploadFileMetadata:metadata taskStatus:taskStatusResume];
+        [self uploadFileMetadata:metadata taskStatus: k_taskStatusResume];
             
         [directoryIDs addObject:metadata.directoryID];
             
@@ -1623,8 +1615,8 @@
     dispatch_async(dispatch_get_main_queue(), ^{
         
         for (NSString *directoryID in directoryIDs)
-            if ([self.delegate respondsToSelector:@selector(getDataSourceWithReloadTableView:fileID:selector:)])
-                [self.delegate getDataSourceWithReloadTableView:directoryID fileID:nil selector:nil];
+            if ([self.delegate respondsToSelector:@selector(reloadDatasource:fileID:selector:)])
+                [self.delegate reloadDatasource:[CCCoreData getServerUrlFromDirectoryID:directoryID activeAccount:_activeAccount] fileID:nil selector:nil];
     });
 }
 
@@ -1662,7 +1654,7 @@
     CCMetadata *metadataTemp = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileName == %@) AND (directoryID == %@) AND (account == %@)", fileName , directoryID, _activeAccount] context:_context];
     
     // is completed ?
-    if (metadataTemp.sessionTaskIdentifier == taskIdentifierDone && metadataTemp.sessionTaskIdentifierPlist == taskIdentifierDone) {
+    if (metadataTemp.sessionTaskIdentifier == k_taskIdentifierDone && metadataTemp.sessionTaskIdentifierPlist == k_taskIdentifierDone) {
         
         [CCGraphics createNewImageFrom:metadata.fileID directoryUser:_directoryUser fileNameTo:metadata.fileID fileNamePrint:metadata.fileNamePrint size:@"m" imageForUpload:NO typeFile:metadata.typeFile writePreview:YES optimizedFileName:[CCUtility getOptimizedPhoto]];
         
@@ -1670,8 +1662,8 @@
         
         dispatch_async(dispatch_get_main_queue(), ^{
             
-            if ([self.delegate respondsToSelector:@selector(getDataSourceWithReloadTableView:fileID:selector:)])
-                [self.delegate getDataSourceWithReloadTableView:metadataTemp.directoryID fileID:metadataTemp.fileID selector:metadataNet.selector];
+            if ([self.delegate respondsToSelector:@selector(reloadDatasource:fileID:selector:)])
+                [self.delegate reloadDatasource:[CCCoreData getServerUrlFromDirectoryID:directoryID activeAccount:_activeAccount] fileID:metadataTemp.fileID selector:metadataNet.selector];
         });
         
     } else {
@@ -1698,7 +1690,7 @@
     
     NSInteger error;
     if (errorCode == kOCErrorServerPathNotFound)
-        error = CCErrorFileUploadNotFound;
+        error = k_CCErrorFileUploadNotFound;
     else
         error = errorCode;
     

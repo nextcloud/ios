@@ -39,7 +39,7 @@
 @property (nonatomic, strong) NSArray *selectedMetadatas;
 @property BOOL onlyClearDirectory;
 
-@property (nonatomic, strong) NSString *localServerUrl;
+@property (nonatomic, strong) NSString *serverUrl;
 @property (nonatomic, strong) CCMetadata *passMetadata;
 
 //BKPasscodeViewController
@@ -59,8 +59,6 @@
 
 @protocol CCMoveDelegate <NSObject>
 
-@optional
-
-- (void)move:(NSString *)serverUrlTo title:(NSString *)title selectedMetadatas:(NSArray *)selectedMetadatas;
+- (void)moveServerUrlTo:(NSString *)serverUrlTo title:(NSString *)title selectedMetadatas:(NSArray *)selectedMetadatas;
 
 @end

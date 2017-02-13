@@ -25,6 +25,7 @@
 
 #import "AppDelegate.h"
 #import "CCUtility.h"
+#import "NSString+TruncateToWidth.h"
 
 @implementation CCGraphics
 
@@ -126,14 +127,14 @@
     if (![[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileName]]) return nil;
     
     // only viedo / image
-    if (![typeFile isEqualToString:metadataTypeFile_image] && ![typeFile isEqualToString:metadataTypeFile_video]) return nil;
+    if (![typeFile isEqualToString: k_metadataTypeFile_image] && ![typeFile isEqualToString: k_metadataTypeFile_video]) return nil;
     
-    if ([typeFile isEqualToString:metadataTypeFile_image]) {
+    if ([typeFile isEqualToString: k_metadataTypeFile_image]) {
         
         originalImage = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@", directoryUser, fileName]];
     }
     
-    if ([typeFile isEqualToString:metadataTypeFile_video]) {
+    if ([typeFile isEqualToString: k_metadataTypeFile_video]) {
         
         // create symbolik link for read video file in temp
         [[NSFileManager defaultManager] removeItemAtPath:[NSTemporaryDirectory() stringByAppendingString:@"tempvideo.mp4"] error:nil];
@@ -187,7 +188,7 @@
     }
     
     // Optimized photos resolution
-    if ([typeFile isEqualToString:metadataTypeFile_image] && [ext isEqualToString:@"gif"] == NO && optimizedFileName && scaleImage && (originalImage.size.width > width || originalImage.size.height > height)) {
+    if ([typeFile isEqualToString: k_metadataTypeFile_image] && [ext isEqualToString:@"gif"] == NO && optimizedFileName && scaleImage && (originalImage.size.width > width || originalImage.size.height > height)) {
         
         // conversion scale proportion
         if (height > width) {
@@ -230,6 +231,34 @@
     if (image && fileID)
         [app.icoImagesCache setObject:image forKey:fileID];
 #endif
+}
+
++ (UIView *)navigationBarTitle:(NSString *)title image:(UIImage *)image frame:(CGRect)frame
+{
+    UIView *view = [UIView new];
+    UILabel *label = [UILabel new];
+        
+    title = [@" " stringByAppendingString:title];
+    NSInteger width = floor(frame.size.width/3);
+    if (width < 80)
+        width = 80;
+    label.text =  [title stringByTruncatingToWidth:width withFont:label.font atEnd:YES];
+    
+    label.textAlignment = NSTextAlignmentCenter;
+    [label sizeToFit];
+    label.center = view.center;
+    
+    UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
+    float imageAspect = imageView.image.size.width / imageView.image.size.height;
+    imageView.frame = CGRectMake(label.frame.origin.x-label.frame.size.height*imageAspect, label.frame.origin.y, label.frame.size.height*imageAspect, label.frame.size.height);
+    imageView.contentMode = UIViewContentModeScaleAspectFit;
+    
+    [view addSubview:label];
+    [view addSubview:imageView];
+    
+    [view sizeToFit];
+    
+    return view;
 }
 
 @end

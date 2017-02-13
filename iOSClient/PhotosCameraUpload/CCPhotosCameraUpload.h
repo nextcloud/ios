@@ -40,7 +40,7 @@
 #import "CCHud.h"
 #import "OCNetworking.h"
 
-@interface CCPhotosCameraUpload : UICollectionViewController <UICollectionViewDataSource, UICollectionViewDelegate, UIActionSheetDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, CCManageLocationDelegate, PHPhotoLibraryChangeObserver, CCDetailViewDelegate, OCNetworkingDelegate>
+@interface CCPhotosCameraUpload : UICollectionViewController <UICollectionViewDataSource, UICollectionViewDelegate, UIActionSheetDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, CCManageLocationDelegate, PHPhotoLibraryChangeObserver, OCNetworkingDelegate>
 
 @property (nonatomic, weak) CCDetail *detailViewController;
 @property (nonatomic, strong) PHFetchResult *assetsFetchResult;
