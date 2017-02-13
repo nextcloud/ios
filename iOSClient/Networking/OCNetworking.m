@@ -41,6 +41,8 @@
     NSURLSessionUploadTask *_uploadTask;
     
     BOOL _activityIndicator;
+    
+    BOOL _hasServerForbiddenCharactersSupport;
 }
 @end
 
@@ -127,6 +129,10 @@
             [[NSNotificationCenter defaultCenter] postNotificationName:@"setTitleCCMainYESAnimation" object:nil];
         });
     }
+    
+    _hasServerForbiddenCharactersSupport = app.hasServerForbiddenCharactersSupport;
+#else
+    _hasServerForbiddenCharactersSupport = YES;
 #endif
         
     if([self respondsToSelector:NSSelectorFromString(_metadataNet.action)])
@@ -425,14 +431,13 @@
 - (void)createFolder
 {
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    BOOL hasServerForbiddenCharactersSupport;
     
     NSString *nameFolderURL = [NSString stringWithFormat:@"%@/%@", _metadataNet.serverUrl, _metadataNet.fileName];
     
     [communication setCredentialsWithUser:_activeUser andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent:_typeCloud]];
     
-    [communication createFolder:nameFolderURL onCommunication:communication withForbiddenCharactersSupported:hasServerForbiddenCharactersSupport successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+    [communication createFolder:nameFolderURL onCommunication:communication withForbiddenCharactersSupported:_hasServerForbiddenCharactersSupport successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
         if ([self.delegate respondsToSelector:@selector(createFolderSuccess:)])
             [self.delegate createFolderSuccess:_metadataNet];
@@ -485,7 +490,6 @@
 - (NSError *)createFolderSync:(NSString *)folderPathName
 {
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    BOOL hasServerForbiddenCharactersSupport;
     __block NSError *returnError;
     
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
@@ -493,7 +497,7 @@
     [communication setCredentialsWithUser:_activeUser andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent:_typeCloud]];
     
-    [communication createFolder:folderPathName onCommunication:communication withForbiddenCharactersSupported:hasServerForbiddenCharactersSupport successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+    [communication createFolder:folderPathName onCommunication:communication withForbiddenCharactersSupported:_hasServerForbiddenCharactersSupport successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
         dispatch_semaphore_signal(semaphore);
         
@@ -563,7 +567,6 @@
 - (void)moveFileOrFolder
 {
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    BOOL hasServerForbiddenCharactersSupport;
     
     NSString *origineURL = [NSString stringWithFormat:@"%@/%@", _metadataNet.serverUrl, _metadataNet.fileName];
     NSString *destinazioneURL = [NSString stringWithFormat:@"%@/%@", _metadataNet.serverUrlTo, _metadataNet.fileNameTo];
@@ -571,7 +574,7 @@
     [communication setCredentialsWithUser:_activeUser andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent:_typeCloud]];
     
-    [communication moveFileOrFolder:origineURL toDestiny:destinazioneURL onCommunication:communication withForbiddenCharactersSupported:hasServerForbiddenCharactersSupport successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+    [communication moveFileOrFolder:origineURL toDestiny:destinazioneURL onCommunication:communication withForbiddenCharactersSupported:_hasServerForbiddenCharactersSupport successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
         if ([_metadataNet.selector isEqualToString:selectorRename] && [self.delegate respondsToSelector:@selector(renameSuccess:)])
             [self.delegate renameSuccess:_metadataNet];
