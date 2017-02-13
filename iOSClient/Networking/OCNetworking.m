@@ -372,6 +372,17 @@
                 OCFileDto *itemDto = [itemsSortedArray objectAtIndex:i];
                 itemDto.fileName = [itemDto.fileName stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
                 
+                // Not in Crypto Cloud Mode OR Search skip File Crypto
+                if (_isCryptoCloudMode == NO || [_metadataNet.selector isEqualToString:selectorSearch]) {
+                    
+                    NSString *fileName = itemDto.fileName;
+                    if (itemDto.isDirectory)
+                        fileName = [fileName substringToIndex:[fileName length] - 1];
+                
+                    if ([CCUtility isFileCryptated:fileName])
+                        continue;
+                }
+                
                 // ----- BUG #942 ---------
                 if ([itemDto.etag length] == 0) {
 #ifndef EXTENSION
@@ -381,7 +392,7 @@
                 }
                 // ------------------------
                 
-                if ([_metadataNet.selector isEqualToString:selectorSearch] && [itemDto.fileName.lowercaseString hasPrefix:_metadataNet.fileName.lowercaseString] && ![CCUtility isFileCryptated:itemDto.fileName]) {
+                if ([_metadataNet.selector isEqualToString:selectorSearch] && [itemDto.fileName.lowercaseString hasPrefix:_metadataNet.fileName.lowercaseString]) {
                     
                     [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileNamePrint:itemDto.fileName serverUrl:_metadataNet.serverUrl directoryID:directoryID cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath activeAccount:_metadataNet.account directoryUser:directoryUser typeCloud:_typeCloud]];
                 }
