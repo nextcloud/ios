@@ -33,7 +33,7 @@
 
 @property(nonatomic, weak) id <CCContoCorrenteDelegate> delegate;
 
-- (id)initWithDelegate:(id <CCContoCorrenteDelegate>)delegate fileName:(NSString *)fileName uuid:(NSString *)uuid rev:(NSString *)rev fileID:(NSString *)fileID modelReadOnly:(BOOL)modelReadOnly isLocal:(BOOL)isLocal serverUrl:(NSString *)serverUrl;
+- (id)initWithDelegate:(id <CCContoCorrenteDelegate>)delegate fileName:(NSString *)fileName uuid:(NSString *)uuid fileID:(NSString *)fileID isLocal:(BOOL)isLocal serverUrl:(NSString *)serverUrl;
 
 @property (nonatomic, strong) NSString *fileName;
 @property (nonatomic, strong) NSString *uuid;

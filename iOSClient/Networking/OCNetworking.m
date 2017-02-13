@@ -197,22 +197,22 @@
 
 - (void)uploadFile
 {
-    [[CCNetworking sharedNetworking] uploadFile:_metadataNet.fileName serverUrl:_metadataNet.serverUrl cryptated:_metadataNet.cryptated onlyPlist:NO session:_metadataNet.session taskStatus:_metadataNet.taskStatus selector:_metadataNet.selector selectorPost:_metadataNet.selectorPost parentRev:nil errorCode:_metadataNet.errorCode delegate:self];
+    [[CCNetworking sharedNetworking] uploadFile:_metadataNet.fileName serverUrl:_metadataNet.serverUrl cryptated:_metadataNet.cryptated onlyPlist:NO session:_metadataNet.session taskStatus:_metadataNet.taskStatus selector:_metadataNet.selector selectorPost:_metadataNet.selectorPost errorCode:_metadataNet.errorCode delegate:self];
 }
 
 - (void)uploadOnlyPlist
 {
-    [[CCNetworking sharedNetworking] uploadFile:_metadataNet.fileName serverUrl:_metadataNet.serverUrl cryptated:YES onlyPlist:YES session:_metadataNet.session taskStatus:_metadataNet.taskStatus selector:_metadataNet.selector selectorPost:_metadataNet.selectorPost parentRev:nil errorCode:_metadataNet.errorCode delegate:self];
+    [[CCNetworking sharedNetworking] uploadFile:_metadataNet.fileName serverUrl:_metadataNet.serverUrl cryptated:YES onlyPlist:YES session:_metadataNet.session taskStatus:_metadataNet.taskStatus selector:_metadataNet.selector selectorPost:_metadataNet.selectorPost errorCode:_metadataNet.errorCode delegate:self];
 }
 
 - (void)uploadAsset
 {
-    [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:_metadataNet.identifier fileName:_metadataNet.fileName serverUrl:_metadataNet.serverUrl cryptated:_metadataNet.cryptated session:_metadataNet.session taskStatus:_metadataNet.taskStatus selector:_metadataNet.selector selectorPost:_metadataNet.selectorPost parentRev:nil errorCode:_metadataNet.errorCode delegate:self];
+    [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:_metadataNet.identifier fileName:_metadataNet.fileName serverUrl:_metadataNet.serverUrl cryptated:_metadataNet.cryptated session:_metadataNet.session taskStatus:_metadataNet.taskStatus selector:_metadataNet.selector selectorPost:_metadataNet.selectorPost errorCode:_metadataNet.errorCode delegate:self];
 }
 
 - (void)uploadTemplate
 {
-    [[CCNetworking sharedNetworking] uploadTemplate:_metadataNet.fileNamePrint fileNameCrypto:_metadataNet.fileName serverUrl:_metadataNet.serverUrl session:_metadataNet.session taskStatus:_metadataNet.taskStatus selector:_metadataNet.selector selectorPost:_metadataNet.selectorPost parentRev:nil errorCode:_metadataNet.errorCode delegate:self];
+    [[CCNetworking sharedNetworking] uploadTemplate:_metadataNet.fileNamePrint fileNameCrypto:_metadataNet.fileName serverUrl:_metadataNet.serverUrl session:_metadataNet.session taskStatus:_metadataNet.taskStatus selector:_metadataNet.selector selectorPost:_metadataNet.selectorPost errorCode:_metadataNet.errorCode delegate:self];
 }
 
 - (void)uploadTaskSave:(NSURLSessionUploadTask *)uploadTask

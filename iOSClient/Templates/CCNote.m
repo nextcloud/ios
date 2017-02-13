@@ -36,7 +36,7 @@
 
 @implementation CCNote
 
-- (id)initWithDelegate:(id <CCNoteDelegate>)delegate fileName:(NSString *)fileName uuid:(NSString *)uuid rev:(NSString *)rev fileID:(NSString *)fileID modelReadOnly:(BOOL)modelReadOnly isLocal:(BOOL)isLocal serverUrl:(NSString *)serverUrl
+- (id)initWithDelegate:(id <CCNoteDelegate>)delegate fileName:(NSString *)fileName uuid:(NSString *)uuid fileID:(NSString *)fileID isLocal:(BOOL)isLocal serverUrl:(NSString *)serverUrl
 {
     self = [super init];
     
@@ -45,7 +45,6 @@
         self.delegate = delegate;
         self.fileName = fileName;
         self.isLocal = isLocal;
-        self.rev = rev;
         self.fileID = fileID;
         self.uuid = uuid;
         self.serverUrl = serverUrl;
@@ -57,9 +56,7 @@
             field = [crypto getDictionaryEncrypted:fileName uuid:uuid isLocal:isLocal directoryUser:app.directoryUser];
    
         self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelPressed:)];
-        
-        if (modelReadOnly) self.navigationItem.rightBarButtonItem = nil;
-        else self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave target:self action:@selector(savePressed:)];
+        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave target:self action:@selector(savePressed:)];
     }
     
     return self;
@@ -152,16 +149,22 @@
             metadataNet.fileName = [CCUtility trasformedFileNamePlistInCrypto:fileNameModel];
             metadataNet.fileNamePrint = _titolo;
             metadataNet.pathFolder = NSTemporaryDirectory();
-            metadataNet.rev = self.rev;
             metadataNet.session = k_upload_session_foreground;
             metadataNet.taskStatus = k_taskStatusResume;
             
-            // 2
-            [app addNetworkingOperationQueue:app.netQueue delegate:self.delegate metadataNet:metadataNet];
-            
-            [self dismissViewControllerAnimated:YES completion:nil];
+            [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
         }
     }
+}
+
+- (void)uploadFileFailure:(CCMetadataNet *)metadataNet fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode
+{
+    [app messageNotification:@"_upload_file_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
+}
+
+- (void)uploadFileSuccess:(CCMetadataNet *)metadataNet fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost
+{
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 @end

@@ -35,7 +35,7 @@
 
 @implementation CCBancomat
 
-- (id)initWithDelegate:(id <CCBancomatDelegate>)delegate fileName:(NSString *)fileName uuid:(NSString *)uuid rev:(NSString *)rev fileID:(NSString *)fileID modelReadOnly:(BOOL)modelReadOnly isLocal:(BOOL)isLocal serverUrl:(NSString *)serverUrl
+- (id)initWithDelegate:(id <CCBancomatDelegate>)delegate fileName:(NSString *)fileName uuid:(NSString *)uuid fileID:(NSString *)fileID isLocal:(BOOL)isLocal serverUrl:(NSString *)serverUrl
 {
     self = [super init];
     
@@ -44,7 +44,6 @@
         self.delegate = delegate;
         self.fileName = fileName;
         self.isLocal = isLocal;
-        self.rev = rev;
         self.fileID = fileID;
         self.uuid = uuid;
         self.serverUrl = serverUrl;
@@ -71,7 +70,6 @@
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textField.font"];
         row.value = [field objectForKey:@"titolo"];
         row.required = YES;
-        if (modelReadOnly) row.disabled = @YES;
         [section addFormRow:row];
 
         section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_add_atm_card_", nil)];
@@ -83,7 +81,6 @@
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textField.font"];
         row.value = [field objectForKey:@"nomebanca"];
-        if (modelReadOnly) row.disabled = @YES;
         [section addFormRow:row];
 
         // CODE
@@ -92,7 +89,6 @@
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textField.font"];
         row.value = [field objectForKey:@"code"];
-        if (modelReadOnly) row.disabled = @YES;
         [section addFormRow:row];
         
         // Secur Code
@@ -101,7 +97,6 @@
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textField.font"];
         row.value = [field objectForKey:@"securcode"];
-        if (modelReadOnly) row.disabled = @YES;
         [section addFormRow:row];
 
         // PIN
@@ -110,7 +105,6 @@
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textField.font"];
         row.value = [field objectForKey:@"pin"];
-        if (modelReadOnly) row.disabled = @YES;
         [section addFormRow:row];
         
         section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_notes_", nil)];
@@ -125,10 +119,7 @@
 
         self.form = form;
         self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelPressed:)];
-        
-        if (modelReadOnly) self.navigationItem.rightBarButtonItem = nil;
-        else self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave target:self action:@selector(savePressed:)];
-
+        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave target:self action:@selector(savePressed:)];
     }
     
     return self;
@@ -176,7 +167,6 @@
     
     NSArray *validationErrors = [self formValidationErrors];
     if (validationErrors.count > 0){
-        //NSError *error = [validationErrors firstObject];
         UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_error_", nil) message:NSLocalizedString(@"_enter_title_", nil) delegate:self cancelButtonTitle:NSLocalizedString(@"_ok_", nil) otherButtonTitles:nil];
         [alertView show];
         return;
@@ -196,15 +186,21 @@
         metadataNet.fileName = [CCUtility trasformedFileNamePlistInCrypto:fileNameModel];
         metadataNet.fileNamePrint = titolo.value;
         metadataNet.pathFolder = NSTemporaryDirectory();
-        metadataNet.rev = self.rev;
         metadataNet.session = k_upload_session_foreground;
         metadataNet.taskStatus = k_taskStatusResume;
         
-        // 2
-        [app addNetworkingOperationQueue:app.netQueue delegate:self.delegate metadataNet:metadataNet];
-        
-        [self dismissViewControllerAnimated:YES completion:nil];
+        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];        
     }
+}
+
+- (void)uploadFileFailure:(CCMetadataNet *)metadataNet fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode
+{
+    [app messageNotification:@"_upload_file_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
+}
+
+- (void)uploadFileSuccess:(CCMetadataNet *)metadataNet fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost
+{
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 @end

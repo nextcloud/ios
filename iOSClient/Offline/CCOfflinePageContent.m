@@ -602,34 +602,35 @@
 {
     UIViewController *viewController;
     BOOL isLocal = NO;
+    NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:app.activeAccount];
     
     if ([self.pageType isEqualToString:k_pageOfflineLocal])
         isLocal = YES;
     
     if ([metadata.model isEqualToString:@"cartadicredito"])
-        viewController = [[CCCartaDiCredito alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid rev:metadata.rev fileID:metadata.fileID modelReadOnly:true isLocal:isLocal serverUrl:_serverUrl];
+        viewController = [[CCCartaDiCredito alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid fileID:metadata.fileID isLocal:isLocal serverUrl:serverUrl];
     
     if ([metadata.model isEqualToString:@"bancomat"])
-        viewController = [[CCBancomat alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid rev:metadata.rev fileID:metadata.fileID modelReadOnly:true isLocal:isLocal serverUrl:_serverUrl];
+        viewController = [[CCBancomat alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid fileID:metadata.fileID isLocal:isLocal serverUrl:serverUrl];
     
     if ([metadata.model isEqualToString:@"contocorrente"])
-        viewController = [[CCContoCorrente alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid rev:metadata.rev fileID:metadata.fileID modelReadOnly:true isLocal:isLocal serverUrl:_serverUrl];
+        viewController = [[CCContoCorrente alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid fileID:metadata.fileID isLocal:isLocal serverUrl:serverUrl];
     
     if ([metadata.model isEqualToString:@"accountweb"])
-        viewController = [[CCAccountWeb alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid rev:metadata.rev fileID:metadata.fileID modelReadOnly:true isLocal:isLocal serverUrl:_serverUrl];
+        viewController = [[CCAccountWeb alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid fileID:metadata.fileID isLocal:isLocal serverUrl:serverUrl];
     
     if ([metadata.model isEqualToString:@"patenteguida"])
-        viewController = [[CCPatenteGuida alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid rev:metadata.rev fileID:metadata.fileID modelReadOnly:true isLocal:isLocal serverUrl:_serverUrl];
+        viewController = [[CCPatenteGuida alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid fileID:metadata.fileID isLocal:isLocal serverUrl:serverUrl];
     
     if ([metadata.model isEqualToString:@"cartaidentita"])
-        viewController = [[CCCartaIdentita alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid rev:metadata.rev fileID:metadata.fileID modelReadOnly:true isLocal:isLocal serverUrl:_serverUrl];
+        viewController = [[CCCartaIdentita alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid fileID:metadata.fileID isLocal:isLocal serverUrl:serverUrl];
     
     if ([metadata.model isEqualToString:@"passaporto"])
-        viewController = [[CCPassaporto alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid rev:metadata.rev fileID:metadata.fileID modelReadOnly:true isLocal:isLocal serverUrl:_serverUrl];
+        viewController = [[CCPassaporto alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid fileID:metadata.fileID isLocal:isLocal serverUrl:serverUrl];
     
     if ([metadata.model isEqualToString:@"note"]) {
         
-        viewController = [[CCNote alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid rev:metadata.rev fileID:metadata.fileID modelReadOnly:true isLocal:isLocal serverUrl:_serverUrl];
+        viewController = [[CCNote alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid fileID:metadata.fileID isLocal:isLocal serverUrl:serverUrl];
         
         UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
         

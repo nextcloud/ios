@@ -675,7 +675,7 @@
                 if ([data writeToFile:fileNamePath options:NSDataWritingAtomic error:&error]) {
                     
                     // Upload File
-                    [[CCNetworking sharedNetworking] uploadFile:fileName serverUrl:_serverUrl cryptated:_isPickerCriptate onlyPlist:NO session:k_upload_session taskStatus: k_taskStatusResume selector:nil selectorPost:nil parentRev:nil errorCode:0 delegate:nil];
+                    [[CCNetworking sharedNetworking] uploadFile:fileName serverUrl:_serverUrl cryptated:_isPickerCriptate onlyPlist:NO session:k_upload_session taskStatus: k_taskStatusResume selector:nil selectorPost:nil errorCode:0 delegate:nil];
                     
                 } else {
                     
@@ -807,8 +807,7 @@
 - (void)openModel:(NSString *)tipo isNew:(BOOL)isnew
 {
     UIViewController *viewController;
-    NSString *fileName, *uuid, *rev, *fileID, *serverUrl;
-    BOOL modelReadOnly, isLocal;
+    NSString *fileName, *uuid, *fileID, *serverUrl;
     
     NSIndexPath * index = [self.tableView indexPathForSelectedRow];
     [self.tableView deselectRowAtIndexPath:index animated:NO];
@@ -817,47 +816,41 @@
         
         fileName = nil;
         uuid = [CCUtility getUUID];
-        rev = nil;
         fileID = nil;
-        modelReadOnly = false;
-        isLocal = false;
         serverUrl = _serverUrl;
         
     } else {
         
         fileName = _metadata.fileName;
         uuid = _metadata.uuid;
-        rev = _metadata.rev;
         fileID = _metadata.fileID;
-        modelReadOnly = false;
-        isLocal = false;
         serverUrl = [CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:_metadata.account];
     }
     
     if ([tipo isEqualToString:@"cartadicredito"])
-        viewController = [[CCCartaDiCredito alloc] initWithDelegate:self fileName:fileName uuid:uuid rev:rev fileID:fileID modelReadOnly:modelReadOnly isLocal:isLocal serverUrl:serverUrl];
+        viewController = [[CCCartaDiCredito alloc] initWithDelegate:self fileName:fileName uuid:uuid fileID:fileID isLocal:NO serverUrl:serverUrl];
     
     if ([tipo isEqualToString:@"bancomat"])
-        viewController = [[CCBancomat alloc] initWithDelegate:self fileName:fileName uuid:uuid rev:rev fileID:fileID modelReadOnly:modelReadOnly isLocal:isLocal serverUrl:serverUrl];
+        viewController = [[CCBancomat alloc] initWithDelegate:self fileName:fileName uuid:uuid fileID:fileID  isLocal:NO serverUrl:serverUrl];
     
     if ([tipo isEqualToString:@"contocorrente"])
-        viewController = [[CCContoCorrente alloc] initWithDelegate:self fileName:fileName uuid:uuid rev:rev fileID:fileID modelReadOnly:modelReadOnly isLocal:isLocal serverUrl:serverUrl];
+        viewController = [[CCContoCorrente alloc] initWithDelegate:self fileName:fileName uuid:uuid fileID:fileID isLocal:NO serverUrl:serverUrl];
     
     if ([tipo isEqualToString:@"accountweb"])
-        viewController = [[CCAccountWeb alloc] initWithDelegate:self fileName:fileName uuid:uuid rev:rev fileID:fileID modelReadOnly:modelReadOnly isLocal:isLocal serverUrl:serverUrl];
+        viewController = [[CCAccountWeb alloc] initWithDelegate:self fileName:fileName uuid:uuid fileID:fileID isLocal:NO serverUrl:serverUrl];
     
     if ([tipo isEqualToString:@"patenteguida"])
-        viewController = [[CCPatenteGuida alloc] initWithDelegate:self fileName:fileName uuid:uuid rev:rev fileID:fileID modelReadOnly:modelReadOnly isLocal:isLocal serverUrl:serverUrl];
+        viewController = [[CCPatenteGuida alloc] initWithDelegate:self fileName:fileName uuid:uuid fileID:fileID isLocal:NO serverUrl:serverUrl];
     
     if ([tipo isEqualToString:@"cartaidentita"])
-        viewController = [[CCCartaIdentita alloc] initWithDelegate:self fileName:fileName uuid:uuid rev:rev fileID:fileID modelReadOnly:modelReadOnly isLocal:isLocal serverUrl:serverUrl];
+        viewController = [[CCCartaIdentita alloc] initWithDelegate:self fileName:fileName uuid:uuid fileID:fileID isLocal:NO serverUrl:serverUrl];
     
     if ([tipo isEqualToString:@"passaporto"])
-        viewController = [[CCPassaporto alloc] initWithDelegate:self fileName:fileName uuid:uuid rev:rev fileID:fileID modelReadOnly:modelReadOnly isLocal:isLocal serverUrl:serverUrl];
+        viewController = [[CCPassaporto alloc] initWithDelegate:self fileName:fileName uuid:uuid fileID:fileID isLocal:NO serverUrl:serverUrl];
     
     if ([tipo isEqualToString:@"note"]) {
         
-        viewController = [[CCNote alloc] initWithDelegate:self fileName:fileName uuid:uuid rev:rev fileID:fileID modelReadOnly:modelReadOnly isLocal:isLocal serverUrl:serverUrl];
+        viewController = [[CCNote alloc] initWithDelegate:self fileName:fileName uuid:uuid fileID:fileID isLocal:NO serverUrl:serverUrl];
         
         UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
         
@@ -2500,7 +2493,7 @@
         NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:app.activeAccount];
                 
         dispatch_async(dispatch_get_main_queue(), ^{
-            [[CCNetworking sharedNetworking] uploadFile:metadata.fileName serverUrl:serverUrl cryptated:YES onlyPlist:NO session:k_upload_session taskStatus:k_taskStatusResume selector:nil selectorPost:nil parentRev:nil errorCode:0 delegate:nil];
+            [[CCNetworking sharedNetworking] uploadFile:metadata.fileName serverUrl:serverUrl cryptated:YES onlyPlist:NO session:k_upload_session taskStatus:k_taskStatusResume selector:nil selectorPost:nil errorCode:0 delegate:nil];
             [self performSelector:@selector(reloadDatasource) withObject:nil];
         });
         
@@ -2522,7 +2515,7 @@
         NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:app.activeAccount];
         
         dispatch_async(dispatch_get_main_queue(), ^{
-            [[CCNetworking sharedNetworking] uploadFile:metadata.fileNamePrint serverUrl:serverUrl cryptated:NO onlyPlist:NO session:k_upload_session taskStatus:k_taskStatusResume selector:nil selectorPost:nil parentRev:nil errorCode:0 delegate:nil];
+            [[CCNetworking sharedNetworking] uploadFile:metadata.fileNamePrint serverUrl:serverUrl cryptated:NO onlyPlist:NO session:k_upload_session taskStatus:k_taskStatusResume selector:nil selectorPost:nil errorCode:0 delegate:nil];
             [self performSelector:@selector(reloadDatasource) withObject:nil];
         });
         
@@ -3906,7 +3899,7 @@
                 
                 [CCUtility copyFileAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, metadata.fileID] toPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileNamePrint]];
             
-                [[CCNetworking sharedNetworking] uploadFile:metadata.fileNamePrint serverUrl:_serverUrl cryptated:cryptated onlyPlist:NO session:k_upload_session taskStatus:k_taskStatusResume selector:nil selectorPost:nil parentRev:nil errorCode:0 delegate:nil];
+                [[CCNetworking sharedNetworking] uploadFile:metadata.fileNamePrint serverUrl:_serverUrl cryptated:cryptated onlyPlist:NO session:k_upload_session taskStatus:k_taskStatusResume selector:nil selectorPost:nil errorCode:0 delegate:nil];
             }
         }
     }

@@ -719,7 +719,7 @@
 #pragma mark =====  Upload =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)uploadFileFromAssetLocalIdentifier:(NSString *)localIdentifier fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl cryptated:(BOOL)cryptated session:(NSString *)session taskStatus:(NSInteger)taskStatus selector:(NSString *)selector selectorPost:(NSString *)selectorPost parentRev:(NSString *)parentRev errorCode:(NSInteger)errorCode delegate:(id)delegate
+- (void)uploadFileFromAssetLocalIdentifier:(NSString *)localIdentifier fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl cryptated:(BOOL)cryptated session:(NSString *)session taskStatus:(NSInteger)taskStatus selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorCode:(NSInteger)errorCode delegate:(id)delegate
 {
     PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[localIdentifier] options:nil];
     
@@ -818,21 +818,21 @@
         
     } else {
         
-        [self upload:fileName serverUrl:serverUrl cryptated:cryptated template:NO onlyPlist:NO assetFileName:assetFileName assetDate:assetDate assetMediaType:assetMediaType localIdentifier:localIdentifier session:session taskStatus:taskStatus selector:selector selectorPost:selectorPost parentRev:parentRev errorCode:errorCode delegate:delegate];
+        [self upload:fileName serverUrl:serverUrl cryptated:cryptated template:NO onlyPlist:NO assetFileName:assetFileName assetDate:assetDate assetMediaType:assetMediaType localIdentifier:localIdentifier session:session taskStatus:taskStatus selector:selector selectorPost:selectorPost errorCode:errorCode delegate:delegate];
     }
 }
 
-- (void)uploadFile:(NSString *)fileName serverUrl:(NSString *)serverUrl cryptated:(BOOL)cryptated onlyPlist:(BOOL)onlyPlist session:(NSString *)session taskStatus:(NSInteger)taskStatus selector:(NSString *)selector selectorPost:(NSString *)selectorPost parentRev:(NSString *)parentRev errorCode:(NSInteger)errorCode delegate:(id)delegate
+- (void)uploadFile:(NSString *)fileName serverUrl:(NSString *)serverUrl cryptated:(BOOL)cryptated onlyPlist:(BOOL)onlyPlist session:(NSString *)session taskStatus:(NSInteger)taskStatus selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorCode:(NSInteger)errorCode delegate:(id)delegate
 {
-    [self upload:fileName serverUrl:serverUrl cryptated:cryptated template:NO onlyPlist:onlyPlist assetFileName:nil assetDate:nil assetMediaType:PHAssetMediaTypeUnknown localIdentifier:nil session:session taskStatus:taskStatus selector:selector selectorPost:selectorPost parentRev:parentRev errorCode:errorCode delegate:delegate];
+    [self upload:fileName serverUrl:serverUrl cryptated:cryptated template:NO onlyPlist:onlyPlist assetFileName:nil assetDate:nil assetMediaType:PHAssetMediaTypeUnknown localIdentifier:nil session:session taskStatus:taskStatus selector:selector selectorPost:selectorPost  errorCode:errorCode delegate:delegate];
 }
 
-- (void)uploadTemplate:(NSString *)fileNamePrint fileNameCrypto:(NSString *)fileNameCrypto serverUrl:(NSString *)serverUrl session:(NSString *)session taskStatus:(NSInteger)taskStatus selector:(NSString *)selector selectorPost:(NSString *)selectorPost parentRev:(NSString *)parentRev errorCode:(NSInteger)errorCode delegate:(id)delegate
+- (void)uploadTemplate:(NSString *)fileNamePrint fileNameCrypto:(NSString *)fileNameCrypto serverUrl:(NSString *)serverUrl session:(NSString *)session taskStatus:(NSInteger)taskStatus selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorCode:(NSInteger)errorCode delegate:(id)delegate
 {
-    [self upload:fileNameCrypto serverUrl:serverUrl cryptated:YES template:YES onlyPlist:NO assetFileName:fileNamePrint assetDate:nil assetMediaType:PHAssetMediaTypeUnknown localIdentifier:nil session:session taskStatus:taskStatus selector:selector selectorPost:selectorPost parentRev:parentRev errorCode:errorCode delegate:delegate];
+    [self upload:fileNameCrypto serverUrl:serverUrl cryptated:YES template:YES onlyPlist:NO assetFileName:fileNamePrint assetDate:nil assetMediaType:PHAssetMediaTypeUnknown localIdentifier:nil session:session taskStatus:taskStatus selector:selector selectorPost:selectorPost errorCode:errorCode delegate:delegate];
 }
 
-- (void)upload:(NSString *)fileName serverUrl:(NSString *)serverUrl cryptated:(BOOL)cryptated template:(BOOL)template onlyPlist:(BOOL)onlyPlist assetFileName:(NSString *)assetFileName assetDate:(NSDate *)assetDate assetMediaType:(PHAssetMediaType)assetMediaType localIdentifier:(NSString *)localIdentifier session:(NSString *)session taskStatus:(NSInteger)taskStatus selector:(NSString *)selector selectorPost:(NSString *)selectorPost parentRev:(NSString *)parentRev errorCode:(NSInteger)errorCode delegate:(id)delegate
+- (void)upload:(NSString *)fileName serverUrl:(NSString *)serverUrl cryptated:(BOOL)cryptated template:(BOOL)template onlyPlist:(BOOL)onlyPlist assetFileName:(NSString *)assetFileName assetDate:(NSDate *)assetDate assetMediaType:(PHAssetMediaType)assetMediaType localIdentifier:(NSString *)localIdentifier session:(NSString *)session taskStatus:(NSInteger)taskStatus selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorCode:(NSInteger)errorCode delegate:(id)delegate
 {
     NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:_activeAccount];
     NSString *fileNameCrypto;
@@ -871,7 +871,7 @@
         
         [CCCoreData addMetadata:metadata activeAccount:_activeAccount activeUrl:_activeUrl typeCloud:_typeCloud context:_context];
         
-        [self uploadURLSession:fileName fileNamePrint:metadata.fileNamePrint serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist parentRev:parentRev selector:selector];
+        [self uploadURLSession:fileName fileNamePrint:metadata.fileNamePrint serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist selector:selector];
     }
     
     else if (cryptated == YES) {
@@ -903,10 +903,10 @@
             [CCCoreData addMetadata:metadata activeAccount:_activeAccount activeUrl:_activeUrl typeCloud:_typeCloud context:_context];
             
             // DATA
-            [self uploadURLSession:fileNameCrypto fileNamePrint:fileName serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist parentRev:parentRev selector:selector];
+            [self uploadURLSession:fileNameCrypto fileNamePrint:fileName serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist selector:selector];
             
             // PLIST
-            [self uploadURLSession:[fileNameCrypto stringByAppendingString:@".plist"] fileNamePrint:fileName serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist parentRev:parentRev selector:selector];
+            [self uploadURLSession:[fileNameCrypto stringByAppendingString:@".plist"] fileNamePrint:fileName serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist selector:selector];
         }
         
         if (template == NO) {
@@ -998,10 +998,10 @@
                     [CCCoreData addMetadata:metadata activeAccount:_activeAccount activeUrl:_activeUrl typeCloud:_typeCloud context:_context];
                     
                     // DATA
-                    [self uploadURLSession:fileNameCrypto fileNamePrint:fileName serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist parentRev:parentRev selector:selector];
+                    [self uploadURLSession:fileNameCrypto fileNamePrint:fileName serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist selector:selector];
                     
                     // PLIST
-                    [self uploadURLSession:[fileNameCrypto stringByAppendingString:@".plist"] fileNamePrint:fileName serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist parentRev:parentRev selector:selector];
+                    [self uploadURLSession:[fileNameCrypto stringByAppendingString:@".plist"] fileNamePrint:fileName serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist selector:selector];
                 }];
 
                 [alertController addAction:cancelAction];
@@ -1027,10 +1027,10 @@
                 [CCCoreData addMetadata:metadata activeAccount:_activeAccount activeUrl:_activeUrl typeCloud:_typeCloud context:_context];
                 
                 // DATA
-                [self uploadURLSession:fileNameCrypto fileNamePrint:fileName serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist parentRev:parentRev selector:selector];
+                [self uploadURLSession:fileNameCrypto fileNamePrint:fileName serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist selector:selector];
                 
                 // PLIST
-                [self uploadURLSession:[fileNameCrypto stringByAppendingString:@".plist"] fileNamePrint:fileName serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist parentRev:parentRev selector:selector];
+                [self uploadURLSession:[fileNameCrypto stringByAppendingString:@".plist"] fileNamePrint:fileName serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist selector:selector];
             }
         }
     }
@@ -1084,7 +1084,7 @@
                 
                 [CCCoreData addMetadata:metadata activeAccount:_activeAccount activeUrl:_activeUrl typeCloud:_typeCloud context:_context];
                 
-                [self uploadURLSession:fileName fileNamePrint:fileName serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist parentRev:parentRev selector:selector];
+                [self uploadURLSession:fileName fileNamePrint:fileName serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist selector:selector];
             }];
             
             [alertController addAction:cancelAction];
@@ -1107,7 +1107,7 @@
 #endif
             [CCCoreData addMetadata:metadata activeAccount:_activeAccount activeUrl:_activeUrl typeCloud:_typeCloud context:_context];
             
-            [self uploadURLSession:fileName fileNamePrint:fileName serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist parentRev:parentRev selector:selector];
+            [self uploadURLSession:fileName fileNamePrint:fileName serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist selector:selector];
         }
     }
 }
@@ -1125,9 +1125,9 @@
         
             send = YES;
             
-            [self uploadURLSession:metadata.fileNameData fileNamePrint:metadata.fileNamePrint serverUrl:serverUrl sessionID:metadata.sessionID session:metadata.session taskStatus:taskStatus assetDate:nil assetMediaType:0 cryptated:YES onlyPlist:NO parentRev:nil selector:metadata.sessionSelector];
+            [self uploadURLSession:metadata.fileNameData fileNamePrint:metadata.fileNamePrint serverUrl:serverUrl sessionID:metadata.sessionID session:metadata.session taskStatus:taskStatus assetDate:nil assetMediaType:0 cryptated:YES onlyPlist:NO selector:metadata.sessionSelector];
             
-            [self uploadURLSession:metadata.fileName fileNamePrint:metadata.fileNamePrint serverUrl:serverUrl sessionID:metadata.sessionID session:metadata.session taskStatus:taskStatus assetDate:nil assetMediaType:PHAssetMediaTypeUnknown cryptated:YES onlyPlist:NO parentRev:nil selector:metadata.sessionSelector];
+            [self uploadURLSession:metadata.fileName fileNamePrint:metadata.fileNamePrint serverUrl:serverUrl sessionID:metadata.sessionID session:metadata.session taskStatus:taskStatus assetDate:nil assetMediaType:PHAssetMediaTypeUnknown cryptated:YES onlyPlist:NO selector:metadata.sessionSelector];
         }
         
     } else {
@@ -1137,7 +1137,7 @@
             
             send = YES;
             
-            [self uploadURLSession:metadata.fileName fileNamePrint:metadata.fileNamePrint serverUrl:serverUrl sessionID:metadata.sessionID session:metadata.session taskStatus:taskStatus assetDate:nil assetMediaType:PHAssetMediaTypeUnknown cryptated:NO onlyPlist:NO parentRev:nil selector:metadata.sessionSelector];
+            [self uploadURLSession:metadata.fileName fileNamePrint:metadata.fileNamePrint serverUrl:serverUrl sessionID:metadata.sessionID session:metadata.session taskStatus:taskStatus assetDate:nil assetMediaType:PHAssetMediaTypeUnknown cryptated:NO onlyPlist:NO selector:metadata.sessionSelector];
         }
     }
     
@@ -1159,7 +1159,7 @@
     }
 }
 
-- (void)uploadURLSession:(NSString *)fileName fileNamePrint:(NSString *)fileNamePrint serverUrl:(NSString *)serverUrl sessionID:(NSString*)sessionID session:(NSString *)session taskStatus:(NSInteger)taskStatus assetDate:(NSDate *)assetDate assetMediaType:(PHAssetMediaType)assetMediaType cryptated:(BOOL)cryptated onlyPlist:(BOOL)onlyPlist parentRev:(NSString *)parentRev selector:(NSString *)selector
+- (void)uploadURLSession:(NSString *)fileName fileNamePrint:(NSString *)fileNamePrint serverUrl:(NSString *)serverUrl sessionID:(NSString*)sessionID session:(NSString *)session taskStatus:(NSInteger)taskStatus assetDate:(NSDate *)assetDate assetMediaType:(PHAssetMediaType)assetMediaType cryptated:(BOOL)cryptated onlyPlist:(BOOL)onlyPlist selector:(NSString *)selector
 {
     NSURLSession *sessionUpload;
     NSURL *url;
