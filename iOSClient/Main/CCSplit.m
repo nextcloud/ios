@@ -119,7 +119,7 @@
         
         self.intro = [[CCIntro alloc] initWithDelegate:self delegateView:self.view];
         
-        [self.intro showIntroVersion:self.version duration:1.0 review:NO];
+        //[self.intro showIntroVersion:self.version duration:1.0 review:NO];
     }
 }
 

@@ -60,24 +60,6 @@
     row.action.formSelector = @selector(intro:);
     [section addFormRow:row];
 
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"switchuser" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_help_switch_user_", nil)];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
-    row.action.formSelector = @selector(switchUser:);
-    [section addFormRow:row];
-
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"controlcenter" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_help_control_center_", nil)];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
-    row.action.formSelector = @selector(controlCenter:);
-    [section addFormRow:row];
-
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"copypaste" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_help_copy_paste_", nil)];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
-    row.action.formSelector = @selector(copypaste:);
-    [section addFormRow:row];
-
     section = [XLFormSectionDescriptor formSection];
     [form addFormSection:section];
     
@@ -111,48 +93,6 @@
     [self deselectFormRow:sender];
     
     [self.intro showIntroCryptoCloud:0.1];
-}
-
-- (void)share:(XLFormRowDescriptor *)sender
-{
-    [self deselectFormRow:sender];
-    
-    [self.intro showIntroVersion:@"1.91" duration:0.1 review:YES];
-}
-
-- (void)itunesshare:(XLFormRowDescriptor *)sender
-{
-    [self deselectFormRow:sender];
-    
-    [self.intro showIntroVersion:@"1.94" duration:0.1 review:YES];
-}
-
-- (void)shareExt:(XLFormRowDescriptor *)sender
-{
-    [self deselectFormRow:sender];
-    
-    [self.intro showIntroVersion:@"1.96" duration:0.1 review:YES];
-}
-
-- (void)switchUser:(XLFormRowDescriptor *)sender
-{
-    [self deselectFormRow:sender];
-    
-    [self.intro showIntroVersion:@"1.99" duration:0.1 review:YES];
-}
-
-- (void)controlCenter:(XLFormRowDescriptor *)sender
-{
-    [self deselectFormRow:sender];
-    
-    [self.intro showIntroVersion:@"2.0" duration:0.1 review:YES];
-}
-
-- (void)copypaste:(XLFormRowDescriptor *)sender
-{
-    [self deselectFormRow:sender];
-    
-    [self.intro showIntroVersion:@"2.10" duration:0.1 review:YES];
 }
 
 @end

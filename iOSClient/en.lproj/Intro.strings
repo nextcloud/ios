@@ -13,8 +13,7 @@
 "_intro_03_" = "ENCRYPTION KEY";
 "_intro_04_" = "In order to immediately start using _brand_ you will be asked to enter a encryption key (minimum 4 characters, maximum 64 characters). The combination will be required just once and it cannot be modified. Should you forget it, you will never be able to retrieve it and your files will remain encrypted. Should you re-install _brand_ or access to your data from another iPhone, use the same combination you entered the first time.";
 "_intro_05_" = "LOGIN";
-"_intro_06_" = "Afterwards, you can choose your favourite Cloud among those available (Dropbox, ownCloud), and create your own account by entering the requested data.";
-"_intro_06_Nextcloud_" = "Afterwards, you can create your own account by entering the requested data.";
+"_intro_06_" = "Afterwards, you can create your own account by entering the requested data.";
 "_intro_07_" = "_brand_";
 "_intro_08_" = "From now on, you will be able to see all the files stored in your Cloud. You will be able to rename, move, delete them, send them to other compatible programs installed in your iPhone, and much more.";
 "_intro_09_" = "OFFLINE & LOCAL STORAGE";
@@ -28,111 +27,9 @@
 "_intro_17_" = "PASSWORD LOCK";
 "_intro_18_" = "In order to  prevent other potential users of your iPhone from accessing your _brand_, you can activate the 'password lock' directly from the settings. The password lock can be modified, disabled, or even used to protect access to individual folders.";
 "_intro_19_" = "START";
-"_intro_20_" = "Good, you’re now ready to start using your _brand_. We remind you that you can find further information and news or contact us on the site: \n\n http://cryptocloud.twsweb.it \n\n Come and visit us!";
-"_intro_20_Nextcloud_" = "Good, you’re now ready to start using your _brand_. We remind you that you can find further information and news or contact us on the site: \n\n https://nextcloud.com \n\n Come and visit us!";
+"_intro_20_" = "Good, you’re now ready to start using your _brand_. We remind you that you can find further information and news or contact us on the site: \n\n https://nextcloud.com \n\n Come and visit us!";
 
 // Intro END
 
-"_intro_END_01_"    = "_brand_";
-"_intro_END_02_"    = "Good ! You’re now ready to start using your _brand_, follow us on Twitter : @Crypto_Cloud and leave your opinion on AppStore, it is important to us.";
-"_intro_END_02_Nextcloud_" = "Good ! You’re now ready to start using your _brand_, follow us on Twitter : @Nextclouders and leave your opinion on AppStore, it is important to us.";
-
-// Intro 1.90
-
-"_intro_190_00_"    = "New : Synchronization folders. \n\n Modify in 'Automatic uploading from the camera' : now you can choose whether to use the service in the background (default is now OFF). \n\n New menu 'Help in Settings' for reviewing helps and tutorials.";
-"_intro_190_01_"    = "SYNCHRONIZATION";
-"_intro_190_02_"    = "Now you can enable synchronization to folder. All files on the server will be downloaded and will always be updated and available, synchronization occurs whenever the folder will be updated.";
-"_intro_190_03_"    = "HOW TO";
-"_intro_190_04_"    = "Swipe on the folder to synchronize, choose 'More' and select option : Keep the folder synchronized. (Attention, if the folder contains many files it will take a long time and much bandwidth for the first synchronization !).";
-"_intro_190_05_"    = "BADGE";
-"_intro_190_06_"    = "Your synchronized folders now have a new badge that identifies them.";
-"_intro_190_07_"    = "SETTINGS";
-"_intro_190_08_"    = "A new option has been added to Settings.";
-"_intro_190_09_"    = "SYNCHRONIZATIONS FOLDERS";
-"_intro_190_10_"    = "Here you can activate synchronization 'only' if there is a Wi-Fi network; the list of active synchronizations is specified as well.";
-"_intro_190_11_"    = "DELETE SYNCHRONIZATIONS";
-"_intro_190_12_"    = "In addition to the menu 'Other' directly available from folder, here you can delete a synchronization. The deletion of a synchronization does not delete files locally.";
-
-// Intro 1.91
-
-"_intro_191_00_"    = "New options for sharing files or folders.";
-"_intro_191_01_"    = "SHARE";
-"_intro_191_02_"    = "Now you can share a file or folder and remove the share. For ownCloud accounts you can protect sharing with password and assign expiration date.";
-"_intro_191_03_"    = "HOW TO";
-"_intro_191_04_"    = "Swipe on the file or folder to share, choose 'More' and select option : Share. (Sharing is not activated on encrypted files or folders).";
-"_intro_191_05_"    = "SETTINGS";
-"_intro_191_06_"    = "A mask will appear where you can: disable/enable share link, push 'Send link to ...' for send link : via email - copy - open with other programs etc., and for OwnCloud protect with password or assign an expiration date. You always possible later deactivate/activate or modify any option.";
-"_intro_191_07_"    = "BADGE";
-"_intro_191_08_"    = "The shares now have a new badge visible on the right.";
-
-// Intro 1.94
-
-"_intro_194_00_"    = "Connecting to your iPhone or iPad through iTunes for file sharing. \n\n Fingerprint and 6 number for password.";
-"_intro_194_01_"    = "iTunes";
-"_intro_194_02_"    = "Connect your iPhone or iPad to iTunes, select App - File sharing and _brand_, you can now Add or Save the files on your Mac or PC.";
-"_intro_194_03_"    = "LOCAL STORAGE";
-"_intro_194_04_"    = "It is the 'Local storage' the area where is activate the sharing with iTunes.";
-"_intro_194_05_"    = "MORE";
-"_intro_194_06_"    = "Any file in the 'Local storage' can be uploaded on your Cloud or open with other compatible Apps.";
-"_intro_194_07_"    = "FINGERPRINT";
-"_intro_194_08_"    = "Now you can use the fingerprint reader (if your device has it) for enter the password, password that for the simple version is now to 6 numbers, go immediately to enter the new code.";
-
-// Intro 1.96
-
-"_intro_196_00_"    = "Share extension";
-"_intro_196_01_"    = "ACTIVATION";
-"_intro_196_02_"    = "On your iPhone go to Photo, select the image or video to share on the cloud, tap the 'Action'";
-"_intro_196_03_"    = "MORE";
-"_intro_196_04_"    = "All programs with which you can share will appear, if _brand_ doesn't appears tap 'more'";
-"_intro_196_05_"    = "ACTIVITY";
-"_intro_196_06_"    = "Looking _brand_, enable it and tap 'done'";
-"_intro_196_07_"    = "SHARE";
-"_intro_196_08_"    = "Now _brand_ is present among the App that you can use for sharing, tap it";
-"_intro_196_09_"    = "FOLDER";
-"_intro_196_10_"    = "Now you're ready to save the shared image, bottom tap folder: if you want to change the destination folder";
-"_intro_196_11_"    = "ENCRYPTED OR NOT";
-"_intro_196_12_"    = "Tap the symbol to switch saved encrypted or not";
-"_intro_196_13_"    = "SAVE";
-"_intro_196_14_"    = "At the end press Save to send everything to the cloud, or Cancel to exit, or swipe on the file you want to delete because it is not sent cloud (handy if you have selected multiple files but in the end you do not want them to send all)";
-"_intro_196_15_"    = "RECONNECT DROPBOX";
-"_intro_196_16_"    = "The development of extension for the shares has changed the policy to dropbox so need to re-perform the account login. Go immediately to Settings / Change your credentials, chosen your Dropbox account (if you have more of a challenge for everyone) and tap modify account, now just only confirm";
-"_intro_196_17_"    = "RESOURCE CONNECTION [ONLY OWNCLOUD]";
-"_intro_196_18_"    = "This symbol indicates that the resource is of another account, tap to see your permissions";
-"_intro_196_19_"    = "CHANGE PERMISSION [ONLY OWNCLOUD]";
-"_intro_196_20_"    = "In sharing your resources you can: \n\n1) Tap to delete the user/group \n\n2) Tap to change the permissions to him established";
-"_intro_196_21_"    = "PERMISSION AND INFORMATION [ONLY OWNCLOUD]";
-"_intro_196_22_"    = "Here is the mask to change permissions. Below you will see some information";
-
-// Intro 1.97
-
-"_intro_197_00_"    = "Possibility to delete the file directly in the preview \n\n Folder synchronization in the background \n\n ownCloud : available file preview";
-"_intro_197_01_"    = "Translate";
-"_intro_197_02_"    = "Translation problems with your language?\n\n Help us and write us at _mail_me_";
-
-// Intro 1.99
-
-"_intro_199_01_" = "Quickly switch between your accounts";
-"_intro_199_00_" = "Quickly switch between your accounts";
-"_intro_199_02_" = "Now you can quickly switch between your accounts. From home tap the _brand_ logo and choose the account (available when there is no activity)";
-
-// Intro 2.00
-
-"_intro_200_00_" = "_brand_ Control Center : looks and manage quickly the transfers";
-"_intro_200_01_" = "Open _brand_ Control Center";
-"_intro_200_02_" = "Place your finger on the navigation bar of _brand_ (as in figure)";
-"_intro_200_03_" = "Open _brand_ Control Center";
-"_intro_200_04_" = "Slide your finger down onto the screen to reveal _brand_ Control Center";
-"_intro_200_05_" = "Open _brand_ Control Center";
-"_intro_200_06_" = "Continue up to about half the screen or to the bottom, then release your finger";
-"_intro_200_07_" = "Open _brand_ Control Center";
-"_intro_200_08_" = "Here you can see if there are ongoing transfers";
-"_intro_200_09_" = "Close _brand_ Control Center";
-"_intro_200_10_" = "Place your finger in the final part of the _brand_ Control Center and slide your finger up onto the screen to close it";
-
-// Intro 2.10
-
-"_intro_210_00_" = "Copy / Paste files ";
-"_intro_210_01_" = "Copy files";
-"_intro_210_02_" = "Now you can finally copy any file or files, identify the files to be copied and perform a long press touch; if the files are successfully downloaded a menu is visualized as shown in figure";
-"_intro_210_03_" = "Paste files ";
-"_intro_210_04_" = "Now change folder or even account and perform a long press touch to paste a file in clear or in encrypted mode";
+"_intro_END_01_" = "_brand_";
+"_intro_END_02_" = "Good ! You’re now ready to start using your _brand_, follow us on Twitter : @Nextclouders and leave your opinion on AppStore, it is important to us.";

@@ -36,7 +36,6 @@
 @property (nonatomic, strong) UIView *rootView;
 
 - (void)showIntroCryptoCloud:(CGFloat)duration;
-- (void)showIntroVersion:(NSString *)version duration:(CGFloat)duration review:(BOOL)review;
 
 @end
 

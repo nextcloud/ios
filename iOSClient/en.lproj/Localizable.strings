@@ -109,8 +109,6 @@
 "_credentials_"             = "Credentials";
 "_manage_account_"          = "Manage account";
 "_modify_account_"          = "Modify account";
-"_add_owncloud_"            = "Add ownCloud account";
-"_add_dropbox_"             = "Add Dropbox account";
 "_add_nextcloud_"           = "Add Nextcloud account";
 "_delete_account_"          = "Delete account";
 "_want_delete_"             = "Do you really want to delete it?";
@@ -180,18 +178,10 @@
 "_optimized_photos_how_"    = "If your iPhone is low on space, full-resolution photos are automatically replaced with optimized versions. The full-resolution versions are stored in your Cloud.";
 "_upload_del_photos_how_"   = "Files will be removed from _brand_ memory after they’ve been uploaded to the Cloud. They will remain in the camera roll. Just download the files to see them.";
 
-// Manage Synchronizations [DISMISS]
-
-"_sync_wifi_how_"           = "The files in synchronized folders will be updated only when Wi-Fi is available";
-"_sync_active_"             = "Active synchronizations of folders";
-"_sync_active_footer_"      = "You can swipe to delete an active synchronization";
-
 // Login
 
 "_connect_server_anyway_"   = "Do you want to connect to the server anyway?";
 "_connection_error_"        = "Connection error";
-"_add_your_owncloud_"       = "Add your ownCloud account";
-"_add_your_dropbox_"        = "Add your Dropbox account";
 "_add_your_nextcloud_"      = "Add your Nextcloud account";
 "_key_aes_256_"             = "Encryption key passcode";
 
