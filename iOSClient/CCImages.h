@@ -121,6 +121,7 @@
 #define image_settingsCameraUpload              @"settingsCameraUpload"
 #define image_settingsClearCache                @"settingsClearCache"
 #define image_settingsCredentials               @"settingsCredentials"
+#define image_settingsCryptoCloud               @"settingsCryptoCloud"
 #define image_settingsExit                      @"settingsExit"
 #define image_settingsHelp                      @"settingsHelp"
 #define image_settingsKeyMail                   @"settingsKeyMail"
