@@ -1005,7 +1005,7 @@
 
 - (void) loginSuccess:(NSInteger)loginType
 {
-    
+    [self readFolderWithForced:YES];
 }
 
 - (void)changePasswordAccount
