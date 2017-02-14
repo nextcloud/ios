@@ -138,17 +138,27 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         self.tableView.separatorColor = UIColor(colorLiteralRed: 153.0/255.0, green: 153.0/255.0, blue: 153.0/255.0, alpha: 0.2)
         self.tableView.tableFooterView = UIView()
         
-        // Encrypted mode
-        encryptedButton.image = UIImage(named:image_shareExtEncrypt)?.withRenderingMode(.automatic)
-
-        // Color Button
-        if parameterEncrypted == true {
-            encryptedButton.tintColor = colorEncrypted
-        } else {
-            encryptedButton.tintColor = self.view.tintColor
+        // Crypto Cloud Mode
+        if isCryptoCloudMode == true {
             
+            // Encrypted mode
+            encryptedButton.image = UIImage(named:image_shareExtEncrypt)?.withRenderingMode(.automatic)
+            
+            // Color Button
+            if parameterEncrypted == true {
+                encryptedButton.tintColor = colorEncrypted
+            } else {
+                encryptedButton.tintColor = self.view.tintColor
+                
+            }
+            
+            saveButton.tintColor = encryptedButton.tintColor
+            
+        } else {
+            
+            encryptedButton.isEnabled = false
+            encryptedButton.tintColor = UIColor.clear
         }
-        saveButton.tintColor = encryptedButton.tintColor
         
         readFolder()
     }
