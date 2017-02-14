@@ -123,7 +123,9 @@
         [CCUtility setHint:(NSString *)rowHint.value];
     else
         [CCUtility setHint:@""];
-     
+    
+    [self.delegate closeSecurityOptions];
+    
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 

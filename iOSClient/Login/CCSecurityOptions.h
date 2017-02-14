@@ -39,4 +39,7 @@
 @end
 
 @protocol CCSecurityOptionsDelegate <NSObject>
+
+- (void)closeSecurityOptions;
+
 @end

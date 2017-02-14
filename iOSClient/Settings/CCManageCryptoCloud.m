@@ -50,7 +50,7 @@
     [form addFormSection:section];
     
     // Activation Crypto Cloud Mode
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"activate_cryptocloud" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_activation_crypto_cloud_", nil)];
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"activatecryptocloud" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_activation_crypto_cloud_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:[UIImage imageNamed:image_settingsCryptoCloud] forKey:@"imageView.image"];
     row.action.formSelector = @selector(activateCryptoCloud:);
@@ -77,7 +77,7 @@
     
     // Color
     [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar hidden:NO];
-    [CCAspect aspectTabBar:self.tabBarController.tabBar hidden:NO];    
+    [CCAspect aspectTabBar:self.tabBarController.tabBar hidden:NO];
 }
 
 // Apparirà
@@ -88,6 +88,8 @@
     // Color
     [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar hidden:NO];
     [CCAspect aspectTabBar:self.tabBarController.tabBar hidden:NO];
+    
+    [self reloadForm];
 }
 
 - (void)activateCryptoCloud:(XLFormRowDescriptor *)sender
@@ -113,6 +115,21 @@
 - (void)checkEncryptPass:(XLFormRowDescriptor *)sender
 {
     
+}
+
+- (void)closeSecurityOptions
+{
+    UIAlertView * alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_OK_", nil) message:@"Attivazione avvenuta correttamente, ora potrai usufruire di tutte le funzionalità aggiuntive. Ti ricordiamo che i file cifrati possono essere decifrati sono sui dispositivi iOS" delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
+    [alertView show];
+}
+
+- (void)activateSecurityOptions
+{
+    CCSecurityOptions *securityOptionsVC = [[CCSecurityOptions alloc] initWithDelegate:self];
+    UINavigationController *securityOptionsNC = [[UINavigationController alloc] initWithRootViewController:securityOptionsVC];
+    
+    [securityOptionsNC setModalPresentationStyle:UIModalPresentationFormSheet];
+    [self presentViewController:securityOptionsNC animated:YES completion:nil];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -147,8 +164,9 @@
                         // reload
                         [[NSNotificationCenter defaultCenter] postNotificationName:@"initializeMain" object:nil];
                         
-                        UIAlertView * alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_OK_", nil) message:@"Attivazione avvenuta correttamente, ora potrai usufruire di tutte le funzionalità aggiuntive. Ti ricordiamo che i file cifrati possono essere decifrati sono sui dispositivi iOS" delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
-                        [alertView show];
+                        // Request : Send Passcode email
+                        [self performSelector:@selector(activateSecurityOptions) withObject:nil afterDelay:0.1];
+
                     }
                 } else {
                 
@@ -228,5 +246,20 @@
 {
     [self dismissViewControllerAnimated:YES completion:nil];
 }
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark === Reload Form ===
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)reloadForm
+{
+    XLFormRowDescriptor *rowActivateCryptoCloud = [self.form formRowWithTag:@"activatecryptocloud"];
+    
+    if (app.isCryptoCloudMode)
+        rowActivateCryptoCloud.hidden = @(YES);
+        
+    [self.tableView reloadData];
+}
+
 
 @end
