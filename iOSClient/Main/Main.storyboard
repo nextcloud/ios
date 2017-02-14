@@ -58,7 +58,7 @@
                         <segue destination="sOS-YU-Cbr" kind="show" identifier="CCManageOptimizationsSegue" id="JoS-OK-Poe"/>
                         <segue destination="gTd-HL-PVY" kind="show" identifier="CCManageSynchronizationsSegue" id="MsD-Ag-XH5"/>
                         <segue destination="HU7-az-TgV" kind="show" identifier="CCManageHelpSegue" id="bfB-KM-85a"/>
-                        <segue destination="Zc0-jh-3hD" kind="show" identifier="CCManagePhotosSegue" id="BZx-hA-Ydj"/>
+                        <segue destination="Zc0-jh-3hD" kind="show" identifier="CCManageCryptoCloudSegue" id="BZx-hA-Ydj"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="wVn-RD-GD2" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -285,10 +285,10 @@
             </objects>
             <point key="canvasLocation" x="7213" y="3018"/>
         </scene>
-        <!--Manage Photos-->
+        <!--Manage Crypto Cloud-->
         <scene sceneID="cbW-au-eCe">
             <objects>
-                <viewController id="Zc0-jh-3hD" customClass="CCManagePhotos" sceneMemberID="viewController">
+                <viewController id="Zc0-jh-3hD" customClass="CCManageCryptoCloud" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="Mj6-7r-ybC"/>
                         <viewControllerLayoutGuide type="bottom" id="qyW-zc-26J"/>

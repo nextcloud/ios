@@ -78,18 +78,6 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
 
-    if (app.isCryptoCloudMode) {
-        
-        // Send aes-256 password via mail
-        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"sendmailencryptpass" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_encryptpass_by_email_", nil)];
-        [row.cellConfig setObject:@(NSTextAlignmentCenter) forKey:@"textLabel.textAlignment"];
-        [row.cellConfig setObject:COLOR_ENCRYPTED forKey:@"textLabel.textColor"];
-        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-        [row.cellConfig setObject:[UIImage imageNamed:image_settingsKeyMail] forKey:@"imageView.image"];
-        row.action.formSelector = @selector(checkEncryptPass:);
-        [section addFormRow:row];
-    }
-    
     // Section : CLOUD ACCOUNT --------------------------------------------------------------
     
     section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_cloud_account_", nil)];
@@ -157,7 +145,7 @@
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"cryptocloud" rowType:XLFormRowDescriptorTypeButton title:@"Crypto Cloud"];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:[UIImage imageNamed:image_settingsCryptoCloud] forKey:@"imageView.image"];
-    row.action.formSegueIdentifier = @"CCManageCryptoCloud";
+    row.action.formSegueIdentifier = @"CCManageCryptoCloudSegue";
     [section addFormRow:row];
     
     // Section : INFORMATION --------------------------------------------------------------

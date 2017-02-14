@@ -157,9 +157,13 @@
 "_upload_camera_create_subfolder_" = "Use subfolders";
 "_upload_camera_create_subfolder_footer_" = "Store in subfolders based on year and month";
 
+// Manage Crypto Cloud
+
+"_activation_crypto_cloud_" = "Activation Crypto Cloud";
+
 // Manage Photos
 
-"_change_folder_photos_" = "Change folder Photos";
+"_change_folder_photos_"    = "Change folder Photos";
 
 // Manage Help
 

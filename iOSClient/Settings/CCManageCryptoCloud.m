@@ -22,8 +22,101 @@
 //
 
 #import "CCManageCryptoCloud.h"
-#import "CCUtility.h"
+#import "AppDelegate.h"
 
 @implementation CCManageCryptoCloud
+
+- (id)initWithCoder:(NSCoder *)aDecoder
+{
+    self = [super initWithCoder:aDecoder];
+    
+    if (self) {
+        
+        [self initializeForm];
+    }
+    
+    return self;
+}
+
+- (void)initializeForm
+{
+    XLFormDescriptor *form ;
+    XLFormSectionDescriptor *section;
+    XLFormRowDescriptor *row;
+    
+    form = [XLFormDescriptor formDescriptorWithTitle:NSLocalizedString(@"Crypto Cloud", nil)];
+    
+    section = [XLFormSectionDescriptor formSection];
+    [form addFormSection:section];
+    
+    if (!app.isCryptoCloudMode) {
+        
+        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"activate_cryptocloud" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_activation_crypto_cloud_", nil)];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+        [row.cellConfig setObject:[UIImage imageNamed:image_settingsCryptoCloud] forKey:@"imageView.image"];
+        row.action.formSelector = @selector(activateCryptoCloud:);
+        [section addFormRow:row];
+    }
+    
+    if (app.isCryptoCloudMode) {
+        
+        // Send aes-256 password via mail
+        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"sendmailencryptpass" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_encryptpass_by_email_", nil)];
+        [row.cellConfig setObject:@(NSTextAlignmentCenter) forKey:@"textLabel.textAlignment"];
+        [row.cellConfig setObject:COLOR_ENCRYPTED forKey:@"textLabel.textColor"];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+        [row.cellConfig setObject:[UIImage imageNamed:image_settingsKeyMail] forKey:@"imageView.image"];
+        row.action.formSelector = @selector(checkEncryptPass:);
+        [section addFormRow:row];
+    }
+
+    section = [XLFormSectionDescriptor formSection];
+    [form addFormSection:section];
+    
+    self.form = form;
+}
+
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    
+    // Color
+    [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar hidden:NO];
+    [CCAspect aspectTabBar:self.tabBarController.tabBar hidden:NO];    
+}
+
+// Apparirà
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    
+    // Color
+    [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar hidden:NO];
+    [CCAspect aspectTabBar:self.tabBarController.tabBar hidden:NO];
+}
+
+- (void)activateCryptoCloud:(XLFormRowDescriptor *)sender
+{
+    [self deselectFormRow:sender];
+}
+
+- (void)checkEncryptPass:(XLFormRowDescriptor *)sender
+{
+    CCBKPasscode *viewController = [[CCBKPasscode alloc] initWithNibName:nil bundle:nil];
+    viewController.delegate = self;
+    viewController.fromType = CCBKPasscodeFromCheckCryptoKey;
+    viewController.type = BKPasscodeViewControllerCheckPasscodeType;
+    
+    viewController.passcodeStyle = BKPasscodeInputViewNormalPasscodeStyle;
+    viewController.passcodeInputView.maximumLength = 64;
+    
+    viewController.title = NSLocalizedString(@"_check_key_aes_256_", nil);
+    
+    viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
+    viewController.navigationItem.leftBarButtonItem.tintColor = COLOR_ENCRYPTED;
+    
+    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
+    [self presentViewController:navigationController animated:YES completion:nil];
+}
 
 @end

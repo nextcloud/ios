@@ -26,6 +26,7 @@
 #import "UIImage+animatedGIF.h"
 #import "CCCertificate.h"
 #import "OCNetworking.h"
+#import "CCIntro.h"
 
 @protocol CCLoginDelegate <NSObject>
 
@@ -33,7 +34,7 @@
 
 @end
 
-@interface CCLogin : UIViewController <UITextFieldDelegate, NSURLSessionTaskDelegate, NSURLSessionDelegate, CCCertificateDelegate, OCNetworkingDelegate>
+@interface CCLogin : UIViewController <UITextFieldDelegate, NSURLSessionTaskDelegate, NSURLSessionDelegate, CCCertificateDelegate, OCNetworkingDelegate, CCIntroDelegate>
 
 typedef enum {
     loginAdd = 0,
@@ -51,6 +52,8 @@ typedef enum {
 @property (nonatomic, weak) IBOutlet UIButton *login;
 @property (nonatomic, weak) IBOutlet UIButton *annulla;
 @property (nonatomic, weak) IBOutlet UIButton *toggleVisiblePassword;
+
+@property (nonatomic, strong) CCIntro *intro;
 
 @property enumLoginType loginType;
 

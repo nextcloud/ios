@@ -23,7 +23,12 @@
 
 #import "XLFormViewController.h"
 #import "XLForm.h"
+#import "BKPasscodeViewController.h"
+#import <MessageUI/MessageUI.h>
 
-@interface CCManageCryptoCloud : XLFormViewController
+@interface CCManageCryptoCloud : XLFormViewController <BKPasscodeViewControllerDelegate, MFMailComposeViewControllerDelegate>
+
+@property (nonatomic) NSUInteger failedAttempts;
+@property (strong, nonatomic) NSDate *lockUntilDate;
 
 @end

@@ -55,6 +55,12 @@
     [self inizialize];
 }
 
+// Apparirà
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+}
+
 // E' apparsa
 - (void)viewDidAppear:(BOOL)animated
 {
@@ -69,7 +75,6 @@
         [alertView show];
     }
 }
-
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
 {
@@ -88,7 +93,6 @@
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
 }
 
-
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== inizialization =====
 #pragma --------------------------------------------------------------------------------------------
@@ -99,7 +103,7 @@
     self.version = [CCUtility setVersionCryptoCloud];
     
     // view how to if exists
-    [self showIntro];
+    //[self showIntro];
     
     // init home
     [[NSNotificationCenter defaultCenter] postNotificationName:@"initializeMain" object:nil];
@@ -125,9 +129,7 @@
 
 - (void)introDidFinish:(EAIntroView *)introView wasSkipped:(BOOL)wasSkipped
 {
-    NSString *version = [CCUtility getVersionCryptoCloud];
-    
-    [CCUtility setIntro:version];
+    [CCUtility setIntro:[CCUtility getVersionCryptoCloud]];
 }
 
 #pragma --------------------------------------------------------------------------------------------

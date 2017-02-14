@@ -83,10 +83,36 @@
         [self testUrl];
 }
 
+// E' apparsa
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    
+    [self showIntro];
+}
+
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
 {
     [textField resignFirstResponder];
     return YES;
+}
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Intro =====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)showIntro
+{
+    if ([CCUtility getIntro:@"1.0"] == NO) {
+        
+        _intro = [[CCIntro alloc] initWithDelegate:self delegateView:self.view];
+        [_intro showIntroCryptoCloud:2.0];
+    }
+}
+
+- (void)introDidFinish:(EAIntroView *)introView wasSkipped:(BOOL)wasSkipped
+{
+    [CCUtility setIntro:@"1.0"];
 }
 
 #pragma --------------------------------------------------------------------------------------------
