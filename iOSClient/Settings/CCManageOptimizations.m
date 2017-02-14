@@ -22,7 +22,6 @@
 //
 
 #import "CCManageOptimizations.h"
-
 #import "CCUtility.h"
 
 @implementation CCManageOptimizations

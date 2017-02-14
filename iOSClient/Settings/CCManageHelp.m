@@ -22,7 +22,6 @@
 //
 
 #import "CCManageHelp.h"
-
 #import "CCUtility.h"
 
 @interface CCManageHelp ()

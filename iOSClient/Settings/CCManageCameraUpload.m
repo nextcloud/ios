@@ -22,7 +22,6 @@
 //
 
 #import "CCManageCameraUpload.h"
-
 #import "AppDelegate.h"
 
 @implementation CCManageCameraUpload

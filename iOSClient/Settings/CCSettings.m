@@ -22,7 +22,6 @@
 //
 
 #import "CCSettings.h"
-
 #import "AppDelegate.h"
 #import "CCMain.h"
 

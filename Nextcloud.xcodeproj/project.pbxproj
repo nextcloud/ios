@@ -592,6 +592,7 @@
 		F7F06ECD1DBFACC600099AE9 /* CTAssetThumbnailStacks.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F06E6E1DBFACC600099AE9 /* CTAssetThumbnailStacks.m */; };
 		F7F06ECF1DBFACC600099AE9 /* CTAssetThumbnailView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F06E701DBFACC600099AE9 /* CTAssetThumbnailView.m */; };
 		F7F06ED11DBFACC600099AE9 /* CTAssetsPicker.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7F06E721DBFACC600099AE9 /* CTAssetsPicker.strings */; };
+		F7F6AC4E1E525AD300E8EB45 /* CCManageCryptoCloud.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F6AC4D1E525AD300E8EB45 /* CCManageCryptoCloud.m */; };
 		F7F801031D98205A007537BC /* CCCertificate.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F801011D98205A007537BC /* CCCertificate.m */; };
 		F7F801051D98205A007537BC /* CCCertificate.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F801011D98205A007537BC /* CCCertificate.m */; };
 		F7FC7D561DC1F93800BB2C6A /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = F7FC7D551DC1F93800BB2C6A /* libz.tbd */; };
@@ -1572,6 +1573,8 @@
 		F7F06E841DBFACC600099AE9 /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/CTAssetsPicker.strings; sourceTree = "<group>"; };
 		F7F67BAD1A24D27800EE80DA /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		F7F67BB81A24D27800EE80DA /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		F7F6AC4C1E525AD300E8EB45 /* CCManageCryptoCloud.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCManageCryptoCloud.h; sourceTree = "<group>"; };
+		F7F6AC4D1E525AD300E8EB45 /* CCManageCryptoCloud.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCManageCryptoCloud.m; sourceTree = "<group>"; };
 		F7F801001D98205A007537BC /* CCCertificate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCCertificate.h; sourceTree = "<group>"; };
 		F7F801011D98205A007537BC /* CCCertificate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCCertificate.m; sourceTree = "<group>"; };
 		F7FC7D551DC1F93800BB2C6A /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
@@ -2869,6 +2872,8 @@
 				F7ACE42D1BAC0268006C0017 /* CCManageAccount.m */,
 				F7ACE42E1BAC0268006C0017 /* CCManageCameraUpload.h */,
 				F7ACE42F1BAC0268006C0017 /* CCManageCameraUpload.m */,
+				F7F6AC4C1E525AD300E8EB45 /* CCManageCryptoCloud.h */,
+				F7F6AC4D1E525AD300E8EB45 /* CCManageCryptoCloud.m */,
 				F7FEB6CE1BECADC100E7C415 /* CCManageHelp.h */,
 				F7FEB6CF1BECADC100E7C415 /* CCManageHelp.m */,
 				F7AB79EF1BB1A3AD00A82F32 /* CCManageOptimizations.h */,
@@ -4026,6 +4031,7 @@
 				F73CCDF51DC13776007E38D8 /* XLFormTextFieldCell.m in Sources */,
 				F77B0E701D118A16002130FE /* TableDirectory+CoreDataProperties.m in Sources */,
 				F77B0E711D118A16002130FE /* LMMediaItem.m in Sources */,
+				F7F6AC4E1E525AD300E8EB45 /* CCManageCryptoCloud.m in Sources */,
 				F77B0E731D118A16002130FE /* PPImageScrollingTableViewCell.m in Sources */,
 				F7659A2E1DC0B72F004860C4 /* EARestrictedScrollView.m in Sources */,
 				F77B0E741D118A16002130FE /* CCBancomat.m in Sources */,

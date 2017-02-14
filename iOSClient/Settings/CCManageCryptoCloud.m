@@ -1,9 +1,9 @@
 //
-//  CCSettings.h
+//  CCManageCryptoCloud.m
 //  Crypto Cloud Technology Nextcloud
 //
-//  Created by Marino Faggiana on 24/11/14.
-//  Copyright (c) 2014 TWS. All rights reserved.
+//  Created by Marino Faggiana on 13/02/17.
+//  Copyright (c) 2017 TWS. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
 //
@@ -21,22 +21,9 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#import <UIKit/UIKit.h>
-#import <MessageUI/MessageUI.h>
-#import "XLFormViewController.h"
-#import "XLForm.h"
-#import "BKPasscodeViewController.h"
+#import "CCManageCryptoCloud.h"
 #import "CCUtility.h"
-#import "CCHud.h"
 
-@interface CCSettings : XLFormViewController <BKPasscodeViewControllerDelegate, MFMailComposeViewControllerDelegate>
-
-@property (nonatomic) NSUInteger failedAttempts;
-
-@property (strong, nonatomic) NSDate *lockUntilDate;
-
-@property (nonatomic, strong) CCHud *hud;
-
-- (void)reloadForm;
+@implementation CCManageCryptoCloud
 
 @end

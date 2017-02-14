@@ -22,7 +22,6 @@
 //
 
 #import "CCManageAccount.h"
-
 #import "AppDelegate.h"
 #import "CCLoginNCOC.h"
 
