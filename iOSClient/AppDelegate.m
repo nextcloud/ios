@@ -1358,9 +1358,8 @@
         
     NSArray *splitedUrl = [url.path componentsSeparatedByString:@"/"];
     self.fileNameUpload = [NSString stringWithFormat:@"%@",[splitedUrl objectAtIndex:([splitedUrl count]-1)]];
-    NSString *passcode = [CCUtility getKeyChainPasscodeForUUID:[CCUtility getUUID]];
     
-    if (self.activeAccount && [passcode length]) {
+    if (self.activeAccount) {
         
         [[NSFileManager defaultManager]moveItemAtPath:[[NSHomeDirectory() stringByAppendingPathComponent:@"Documents/Inbox"] stringByAppendingPathComponent:self.fileNameUpload] toPath:[NSString stringWithFormat:@"%@/%@", self.directoryUser, self.fileNameUpload] error:nil];
         
