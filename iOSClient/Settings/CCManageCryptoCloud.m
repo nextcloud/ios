@@ -49,26 +49,21 @@
     section = [XLFormSectionDescriptor formSection];
     [form addFormSection:section];
     
-    if (!app.isCryptoCloudMode) {
-        
-        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"activate_cryptocloud" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_activation_crypto_cloud_", nil)];
-        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-        [row.cellConfig setObject:[UIImage imageNamed:image_settingsCryptoCloud] forKey:@"imageView.image"];
-        row.action.formSelector = @selector(activateCryptoCloud:);
-        [section addFormRow:row];
-    }
+    // Activation Crypto Cloud Mode
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"activate_cryptocloud" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_activation_crypto_cloud_", nil)];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[UIImage imageNamed:image_settingsCryptoCloud] forKey:@"imageView.image"];
+    row.action.formSelector = @selector(activateCryptoCloud:);
+    [section addFormRow:row];
     
-    if (app.isCryptoCloudMode) {
-        
-        // Send aes-256 password via mail
-        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"sendmailencryptpass" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_encryptpass_by_email_", nil)];
-        [row.cellConfig setObject:@(NSTextAlignmentCenter) forKey:@"textLabel.textAlignment"];
-        [row.cellConfig setObject:COLOR_ENCRYPTED forKey:@"textLabel.textColor"];
-        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-        [row.cellConfig setObject:[UIImage imageNamed:image_settingsKeyMail] forKey:@"imageView.image"];
-        row.action.formSelector = @selector(checkEncryptPass:);
-        [section addFormRow:row];
-    }
+    // Send aes-256 password via mail
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"sendmailencryptpass" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_encryptpass_by_email_", nil)];
+    [row.cellConfig setObject:@(NSTextAlignmentCenter) forKey:@"textLabel.textAlignment"];
+    [row.cellConfig setObject:COLOR_ENCRYPTED forKey:@"textLabel.textColor"];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[UIImage imageNamed:image_settingsKeyMail] forKey:@"imageView.image"];
+    row.action.formSelector = @selector(checkEncryptPass:);
+    [section addFormRow:row];
 
     section = [XLFormSectionDescriptor formSection];
     [form addFormSection:section];
@@ -98,25 +93,140 @@
 - (void)activateCryptoCloud:(XLFormRowDescriptor *)sender
 {
     [self deselectFormRow:sender];
-}
-
-- (void)checkEncryptPass:(XLFormRowDescriptor *)sender
-{
+    
     CCBKPasscode *viewController = [[CCBKPasscode alloc] initWithNibName:nil bundle:nil];
     viewController.delegate = self;
-    viewController.fromType = CCBKPasscodeFromCheckCryptoKey;
-    viewController.type = BKPasscodeViewControllerCheckPasscodeType;
     
+    viewController.type = BKPasscodeViewControllerNewPasscodeType;
     viewController.passcodeStyle = BKPasscodeInputViewNormalPasscodeStyle;
-    viewController.passcodeInputView.maximumLength = 64;
     
-    viewController.title = NSLocalizedString(@"_check_key_aes_256_", nil);
+    viewController.passcodeInputView.maximumLength = 64;
+    viewController.title = NSLocalizedString(@"_key_aes_256_", nil);
     
     viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
     viewController.navigationItem.leftBarButtonItem.tintColor = COLOR_ENCRYPTED;
     
     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
     [self presentViewController:navigationController animated:YES completion:nil];
+}
+
+- (void)checkEncryptPass:(XLFormRowDescriptor *)sender
+{
+    
+}
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark == BKPasscodeViewController ==
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)passcodeViewController:(BKPasscodeViewController *)aViewController didFinishWithPasscode:(NSString *)aPasscode
+{
+    switch (aViewController.type) {
+            
+        case BKPasscodeViewControllerNewPasscodeType:
+        case BKPasscodeViewControllerCheckPasscodeType: {
+            
+                // min passcode 4 chars
+                if ([aPasscode length] >= 4) {
+                
+                    [CCUtility setKeyChainPasscodeForUUID:[CCUtility getUUID] conPasscode:aPasscode];
+                
+                    // verify
+                    NSString *pwd = [CCUtility getKeyChainPasscodeForUUID:[CCUtility getUUID]];
+                
+                    if ([pwd isEqualToString:aPasscode] == NO || pwd == nil) {
+                    
+                        UIAlertView * alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_error_", nil) message:@"Fatal error writing key" delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
+                        [alertView show];
+                        
+                    } else {
+                
+                        // ok !!
+                        app.isCryptoCloudMode = YES;
+                        
+                        // reload
+                        [[NSNotificationCenter defaultCenter] postNotificationName:@"initializeMain" object:nil];
+                        
+                        UIAlertView * alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_OK_", nil) message:@"Attivazione avvenuta correttamente, ora potrai usufruire di tutte le funzionalità aggiuntive. Ti ricordiamo che i file cifrati possono essere decifrati sono sui dispositivi iOS" delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
+                        [alertView show];
+                    }
+                } else {
+                
+                    UIAlertView * alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_error_", nil) message:NSLocalizedString(@"_passcode_too_short_", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
+                    [alertView show];
+                }
+            
+                [aViewController dismissViewControllerAnimated:YES completion:nil];
+            }
+            break;
+            
+        case BKPasscodeViewControllerChangePasscodeType:
+            
+            if ([aPasscode length]) {
+                
+                // [CCUtility WriteDatiLogin:@"" ConNomeUtente:@"" ConPassword:@"" ConPassCode:aPasscode];
+                // [aViewController dismissViewControllerAnimated:YES completion:nil];
+            }
+            
+            self.failedAttempts = 0;
+            self.lockUntilDate = nil;
+            break;
+            
+        default:
+            break;
+    }
+}
+
+- (void)passcodeViewController:(BKPasscodeViewController *)aViewController authenticatePasscode:(NSString *)aPasscode resultHandler:(void (^)(BOOL))aResultHandler
+{
+    if ([aPasscode length]) {
+        
+        self.lockUntilDate = nil;
+        self.failedAttempts = 0;
+        aResultHandler(YES);
+        
+    } else {
+        
+        aResultHandler(NO);
+    }
+}
+
+- (void)passcodeViewControllerDidFailAttempt:(BKPasscodeViewController *)aViewController
+{
+    self.failedAttempts++;
+    
+    if (self.failedAttempts > 5) {
+        
+        NSTimeInterval timeInterval = 60;
+        
+        if (self.failedAttempts > 6) {
+            
+            NSUInteger multiplier = self.failedAttempts - 6;
+            
+            timeInterval = (5 * 60) * multiplier;
+            
+            if (timeInterval > 3600 * 24) {
+                timeInterval = 3600 * 24;
+            }
+        }
+        
+        self.lockUntilDate = [NSDate dateWithTimeIntervalSinceNow:timeInterval];
+    }
+}
+
+- (NSUInteger)passcodeViewControllerNumberOfFailedAttempts:(BKPasscodeViewController *)aViewController
+{
+    return self.failedAttempts;
+}
+
+- (NSDate *)passcodeViewControllerLockUntilDate:(BKPasscodeViewController *)aViewController
+{
+    return self.lockUntilDate;
+}
+
+- (void)passcodeViewCloseButtonPressed:(id)sender
+{
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 @end

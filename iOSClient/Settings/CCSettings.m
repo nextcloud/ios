@@ -313,7 +313,7 @@
     
     [CCUtility adminRemovePasscode];
     
-    exit(0);
+    app.isCryptoCloudMode = NO;
 }
 
 - (void)adminRemoveVersion:(XLFormRowDescriptor *)sender
