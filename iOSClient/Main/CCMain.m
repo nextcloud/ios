@@ -1005,13 +1005,10 @@
 
 - (void)changePasswordAccount
 {
-    CCLoginNCOC *loginVC;
+    CCLogin *loginVC;
 
     if ([app.typeCloud isEqualToString:typeCloudNextcloud])
         loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
-    
-    if ([app.typeCloud isEqualToString:typeCloudOwnCloud])
-        loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginOwnCloud"];
     
     [loginVC setModifyOnlyPassword:YES];
     [loginVC setTypeCloud:app.typeCloud];

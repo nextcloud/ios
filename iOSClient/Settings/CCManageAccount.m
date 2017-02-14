@@ -23,7 +23,7 @@
 
 #import "CCManageAccount.h"
 #import "AppDelegate.h"
-#import "CCLoginNCOC.h"
+#import "CCLogin.h"
 
 #define actionSheetCancellaAccount 1
 
@@ -135,25 +135,10 @@
     [app cancelAllOperations];
     [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:k_taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
     
-    CCLoginNCOC *loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
+    CCLogin *loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
     
     [loginVC setModifyOnlyPassword:NO];
     [loginVC setTypeCloud:typeCloudNextcloud];
-    
-    [self presentViewController:loginVC animated:YES completion:nil];
-}
-
-- (void)addAccountOwnCloud:(XLFormRowDescriptor *)sender
-{
-    [self deselectFormRow:sender];
-    
-    [app cancelAllOperations];
-    [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:k_taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
-
-    CCLoginNCOC *loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginOwnCloud"];
-    
-    [loginVC setModifyOnlyPassword:NO];
-    [loginVC setTypeCloud:typeCloudOwnCloud];
     
     [self presentViewController:loginVC animated:YES completion:nil];
 }
@@ -163,7 +148,7 @@
     // remove any message
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     
-    CCLogin *viewController = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLogin"];
+    CCLogin *viewController = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
     
     dispatch_async(dispatch_get_main_queue(), ^ {
         [self presentViewController:viewController animated:YES completion:nil];
@@ -184,14 +169,8 @@
     [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:k_taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
     
     if ([app.typeCloud isEqualToString:typeCloudNextcloud] || [app.typeCloud isEqualToString:typeCloudOwnCloud]) {
-    
-        if ([app.typeCloud isEqualToString:typeCloudNextcloud])
-            vcName = @"CCLoginNextcloud";
         
-        if ([app.typeCloud isEqualToString:typeCloudOwnCloud])
-            vcName = @"CCLoginOwnCloud";
-    
-        CCLoginNCOC *loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:vcName];
+        CCLogin *loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier: @"CCLoginNextcloud"];
         
         [loginVC setModifyOnlyPassword:YES];
         [loginVC setTypeCloud:app.typeCloud];

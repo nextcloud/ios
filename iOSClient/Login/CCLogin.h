@@ -2,7 +2,7 @@
 //  CCLogin.h
 //  Crypto Cloud Technology Nextcloud
 //
-//  Created by Marino Faggiana on 11/09/14.
+//  Created by Marino Faggiana on 09/04/15.
 //  Copyright (c) 2014 TWS. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
@@ -22,22 +22,29 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <Foundation/Foundation.h>
 
-#import "CCIntro.h"
-#import "CCUtility.h"
-#import "CCLoginNCOC.h"
-#import "CCBKPasscode.h"
-#import "CCSecurityOptions.h"
+#import "UIImage+animatedGIF.h"
+#import "CCCertificate.h"
+#import "OCNetworking.h"
 
-@interface CCLogin : UIViewController <BKPasscodeViewControllerDelegate, CCIntroDelegate, CCSecurityOptionsDelegate>
+@interface CCLogin : UIViewController <UITextFieldDelegate, NSURLSessionTaskDelegate, NSURLSessionDelegate, CCCertificateDelegate, OCNetworkingDelegate>
 
-@property NSUInteger failedAttempts;
-@property (nonatomic, strong) NSDate *lockUntilDate;
+{
+    UIAlertView *alertView;
+    UIView *rootView;
+}
 
-@property (nonatomic, weak) IBOutlet UIImageView *brand;
-@property (nonatomic, weak) IBOutlet UIButton *nextcloud;
+@property (nonatomic, weak) IBOutlet UITextField *user;
+@property (nonatomic, weak) IBOutlet UITextField *password;
+@property (nonatomic, weak) IBOutlet UITextField *baseUrl;
+@property (nonatomic, weak) IBOutlet UIImageView *loadingBaseUrl;
 
-@property (nonatomic, strong) CCIntro *intro;
+@property (nonatomic, weak) IBOutlet UIButton *login;
+@property (nonatomic, weak) IBOutlet UIButton *annulla;
+@property (nonatomic, weak) IBOutlet UIButton *toggleVisiblePassword;
+
+@property BOOL modifyOnlyPassword;
+@property (nonatomic, strong) NSString *typeCloud;
+@property (nonatomic, strong) UIViewController *viewController;
 
 @end

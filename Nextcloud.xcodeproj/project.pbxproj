@@ -247,7 +247,6 @@
 		F77B0E131D118A16002130FE /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A582D61A24DAB500E903D7 /* AppDelegate.m */; };
 		F77B0E141D118A16002130FE /* CCError.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B881C638A4C00DC4301 /* CCError.m */; };
 		F77B0E161D118A16002130FE /* AFViewShaker.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02B41C889183008DAB36 /* AFViewShaker.m */; };
-		F77B0E181D118A16002130FE /* CCLogin.m in Sources */ = {isa = PBXBuildFile; fileRef = F757D2A71BB3E7C40031FDD7 /* CCLogin.m */; };
 		F77B0E1B1D118A16002130FE /* CCGraphics.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B841C6388BC00DC4301 /* CCGraphics.m */; };
 		F77B0E1C1D118A16002130FE /* BKPasscodeDummyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02C01C889183008DAB36 /* BKPasscodeDummyViewController.m */; };
 		F77B0E1D1D118A16002130FE /* ReaderThumbQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0ECC1C889317008DAB36 /* ReaderThumbQueue.m */; };
@@ -533,7 +532,7 @@
 		F7BB14961D5B62C000ECEE68 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63061D5B3467004E2AA5 /* libcrypto.a */; };
 		F7BB14971D5B62C000ECEE68 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63071D5B3467004E2AA5 /* libssl.a */; };
 		F7BE6E2F1D2D5C3B00106933 /* CCQuickActions.m in Sources */ = {isa = PBXBuildFile; fileRef = F7BE6E2C1D2D5C3B00106933 /* CCQuickActions.m */; };
-		F7BF1B431D51E893000854F6 /* CCLoginNCOC.m in Sources */ = {isa = PBXBuildFile; fileRef = F7BF1B401D51E893000854F6 /* CCLoginNCOC.m */; };
+		F7BF1B431D51E893000854F6 /* CCLogin.m in Sources */ = {isa = PBXBuildFile; fileRef = F7BF1B401D51E893000854F6 /* CCLogin.m */; };
 		F7C00D471E2D0D0F0032160B /* CCCellOffline.m in Sources */ = {isa = PBXBuildFile; fileRef = F7C00D431E2D0D0F0032160B /* CCCellOffline.m */; };
 		F7C00D481E2D0D0F0032160B /* CCCellOffline.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7C00D441E2D0D0F0032160B /* CCCellOffline.xib */; };
 		F7C00D491E2D0D0F0032160B /* CCOffline.m in Sources */ = {isa = PBXBuildFile; fileRef = F7C00D461E2D0D0F0032160B /* CCOffline.m */; };
@@ -1292,8 +1291,6 @@
 		F7540F2A1D5B238600C3FFA8 /* x509.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = x509.h; sourceTree = "<group>"; };
 		F7540F2B1D5B238600C3FFA8 /* x509_vfy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = x509_vfy.h; sourceTree = "<group>"; };
 		F7540F2C1D5B238600C3FFA8 /* x509v3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = x509v3.h; sourceTree = "<group>"; };
-		F757D2A61BB3E7C40031FDD7 /* CCLogin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCLogin.h; sourceTree = "<group>"; };
-		F757D2A71BB3E7C40031FDD7 /* CCLogin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCLogin.m; sourceTree = "<group>"; };
 		F7596C771D128FC80092A6B8 /* Nextcloud.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Nextcloud.xcassets; sourceTree = "<group>"; };
 		F75ADF441DC75FFE008A7347 /* CCLogin.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = CCLogin.storyboard; sourceTree = "<group>"; };
 		F75CDBF51DF063AD00116AD0 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; name = .gitignore; path = ../.gitignore; sourceTree = "<group>"; };
@@ -1425,8 +1422,8 @@
 		F7B81D801C64E77F006D02DF /* CCCoreData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCCoreData.m; sourceTree = "<group>"; };
 		F7BE6E2B1D2D5C3B00106933 /* CCQuickActions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCQuickActions.h; sourceTree = "<group>"; };
 		F7BE6E2C1D2D5C3B00106933 /* CCQuickActions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCQuickActions.m; sourceTree = "<group>"; };
-		F7BF1B3F1D51E893000854F6 /* CCLoginNCOC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCLoginNCOC.h; sourceTree = "<group>"; };
-		F7BF1B401D51E893000854F6 /* CCLoginNCOC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCLoginNCOC.m; sourceTree = "<group>"; };
+		F7BF1B3F1D51E893000854F6 /* CCLogin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCLogin.h; sourceTree = "<group>"; };
+		F7BF1B401D51E893000854F6 /* CCLogin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCLogin.m; sourceTree = "<group>"; };
 		F7BFA4541E0693EE0010E44C /* cryptocloud 5.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "cryptocloud 5.xcdatamodel"; sourceTree = "<group>"; };
 		F7BFCCBE1B68C21900548E76 /* CCManageAsset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCManageAsset.h; sourceTree = "<group>"; };
 		F7BFCCBF1B68C21900548E76 /* CCManageAsset.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCManageAsset.m; sourceTree = "<group>"; };
@@ -2925,10 +2922,8 @@
 			isa = PBXGroup;
 			children = (
 				F75ADF441DC75FFE008A7347 /* CCLogin.storyboard */,
-				F757D2A61BB3E7C40031FDD7 /* CCLogin.h */,
-				F757D2A71BB3E7C40031FDD7 /* CCLogin.m */,
-				F7BF1B3F1D51E893000854F6 /* CCLoginNCOC.h */,
-				F7BF1B401D51E893000854F6 /* CCLoginNCOC.m */,
+				F7BF1B3F1D51E893000854F6 /* CCLogin.h */,
+				F7BF1B401D51E893000854F6 /* CCLogin.m */,
 				F7388E261CB27FE40031C19C /* CCSecurityOptions.h */,
 				F7388E271CB27FE40031C19C /* CCSecurityOptions.m */,
 			);
@@ -3928,7 +3923,6 @@
 				F73CCE191DC13776007E38D8 /* XLFormRegexValidator.m in Sources */,
 				F7F06E951DBFACC600099AE9 /* PHAsset+CTAssetsPickerController.m in Sources */,
 				F77B0E161D118A16002130FE /* AFViewShaker.m in Sources */,
-				F77B0E181D118A16002130FE /* CCLogin.m in Sources */,
 				F77B0E1B1D118A16002130FE /* CCGraphics.m in Sources */,
 				F73CCE071DC13776007E38D8 /* NSExpression+XLFormAdditions.m in Sources */,
 				F77B0E1C1D118A16002130FE /* BKPasscodeDummyViewController.m in Sources */,
@@ -4043,7 +4037,7 @@
 				F77B0E7B1D118A16002130FE /* CCPassaporto.m in Sources */,
 				F7F06EA51DBFACC600099AE9 /* CTAssetItemViewController.m in Sources */,
 				F7659A5A1DC0B760004860C4 /* PSTCollectionView.m in Sources */,
-				F7BF1B431D51E893000854F6 /* CCLoginNCOC.m in Sources */,
+				F7BF1B431D51E893000854F6 /* CCLogin.m in Sources */,
 				F77B0E7D1D118A16002130FE /* CYRTextStorage.m in Sources */,
 				F77B0E7E1D118A16002130FE /* ThumbsViewController.m in Sources */,
 				F77B0E801D118A16002130FE /* ZSSRichTextEditor.m in Sources */,

@@ -138,7 +138,19 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         self.tableView.separatorColor = UIColor(colorLiteralRed: 153.0/255.0, green: 153.0/255.0, blue: 153.0/255.0, alpha: 0.2)
         self.tableView.tableFooterView = UIView()
         
-        // Crypto Cloud Mode
+        // Get Crypto Cloud Mode
+        let password = CCUtility.getKeyChainPasscode(forUUID: CCUtility.getUUID())
+        
+        if password?.characters.count == 0 {
+            
+            isCryptoCloudMode = false
+            
+        } else {
+            
+            isCryptoCloudMode = true
+        }
+        
+        // Managed Crypto Cloud Mode
         if isCryptoCloudMode == true {
             
             // Encrypted mode

@@ -11,56 +11,9 @@
     </dependencies>
     <scenes>
         <!--Login-->
-        <scene sceneID="IVZ-Md-KoU">
-            <objects>
-                <viewController storyboardIdentifier="CCLogin" id="oPR-g1-XDa" customClass="CCLogin" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="xoq-cv-qyX"/>
-                        <viewControllerLayoutGuide type="bottom" id="UlD-ew-Lo3"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="Z1v-4b-0Rh">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="B7w-T7-jkG">
-                                <rect key="frame" x="16" y="359" width="300" height="60"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="300" id="64Q-qN-Vng"/>
-                                    <constraint firstAttribute="height" constant="60" id="PFP-Wy-f1y"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                                <state key="normal" title="          Nextcloud" image="newAccountNextcloud">
-                                    <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                </state>
-                                <connections>
-                                    <action selector="handleNextcloud:" destination="oPR-g1-XDa" eventType="touchUpInside" id="TBv-by-nV6"/>
-                                </connections>
-                            </button>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="cryptocloudlaunchscreen" translatesAutoresizingMaskIntoConstraints="NO" id="Wiv-CB-4tC">
-                                <rect key="frame" x="125" y="60" width="125" height="170"/>
-                            </imageView>
-                        </subviews>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                        <constraints>
-                            <constraint firstItem="Wiv-CB-4tC" firstAttribute="centerX" secondItem="Z1v-4b-0Rh" secondAttribute="centerX" id="KP3-6t-E1f"/>
-                            <constraint firstItem="B7w-T7-jkG" firstAttribute="leading" secondItem="Z1v-4b-0Rh" secondAttribute="leadingMargin" id="eRx-mo-gkj"/>
-                            <constraint firstItem="Wiv-CB-4tC" firstAttribute="top" secondItem="xoq-cv-qyX" secondAttribute="bottom" constant="40" id="fj7-a1-J1t"/>
-                            <constraint firstItem="B7w-T7-jkG" firstAttribute="top" secondItem="Wiv-CB-4tC" secondAttribute="bottom" constant="129" id="jBU-bo-KkM"/>
-                        </constraints>
-                    </view>
-                    <connections>
-                        <outlet property="brand" destination="Wiv-CB-4tC" id="Z0L-4I-2dj"/>
-                        <outlet property="nextcloud" destination="B7w-T7-jkG" id="q36-wu-sBn"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="sK9-Ew-RED" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="3071" y="-981"/>
-        </scene>
-        <!--LoginNCOC-->
         <scene sceneID="fVe-zF-WhZ">
             <objects>
-                <viewController storyboardIdentifier="CCLoginNextcloud" id="yj9-jo-WIn" customClass="CCLoginNCOC" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="CCLoginNextcloud" id="yj9-jo-WIn" customClass="CCLogin" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="3IQ-ds-9vR"/>
                         <viewControllerLayoutGuide type="bottom" id="olW-Hc-7Im"/>
@@ -218,14 +171,12 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dCU-1X-uQw" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3772" y="-982"/>
+            <point key="canvasLocation" x="3591" y="-1211"/>
         </scene>
     </scenes>
     <resources>
         <image name="ImageLoginNextcloud" width="300" height="200"/>
         <image name="baseurlNextcloud" width="25" height="25"/>
-        <image name="cryptocloudlaunchscreen" width="125" height="170"/>
-        <image name="newAccountNextcloud" width="50" height="50"/>
         <image name="passwordNextcloud" width="25" height="25"/>
         <image name="userNextcloud" width="25" height="25"/>
         <image name="visiblePassword" width="25" height="25"/>

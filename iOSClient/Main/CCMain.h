@@ -33,7 +33,7 @@
 #import "BKPasscodeViewController.h"
 #import "NSString+TruncateToWidth.h"
 #import "UINavigationController+CCProgress.h"
-#import "CCLoginNCOC.h"
+#import "CCLogin.h"
 #import "CCCellMain.h"
 #import "CCCellMainTransfer.h"
 #import "CCMove.h"
