@@ -54,8 +54,17 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:[UIImage imageNamed:image_settingsCryptoCloud] forKey:@"imageView.image"];
     row.action.formSelector = @selector(activateCryptoCloud:);
+    row.hidden = @(YES);
     [section addFormRow:row];
     
+    // Deactivation Crypto Cloud Mode
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"deactivatecryptocloud" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_deactivation_crypto_cloud_", nil)];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[UIImage imageNamed:image_settingsRemoveCryptoCloud] forKey:@"imageView.image"];
+    row.action.formSelector = @selector(disactivateCryptoCloud:);
+    row.hidden = @(YES);
+    [section addFormRow:row];
+
     // Send aes-256 password via mail
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"sendmailencryptpass" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_encryptpass_by_email_", nil)];
     [row.cellConfig setObject:@(NSTextAlignmentCenter) forKey:@"textLabel.textAlignment"];
@@ -63,6 +72,7 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:[UIImage imageNamed:image_settingsKeyMail] forKey:@"imageView.image"];
     row.action.formSelector = @selector(checkEncryptPass:);
+    row.hidden = @(YES);
     [section addFormRow:row];
 
     section = [XLFormSectionDescriptor formSection];
@@ -110,6 +120,11 @@
     
     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
     [self presentViewController:navigationController animated:YES completion:nil];
+}
+
+- (void)disactivateCryptoCloud:(XLFormRowDescriptor *)sender
+{
+    
 }
 
 - (void)checkEncryptPass:(XLFormRowDescriptor *)sender
@@ -253,13 +268,19 @@
 - (void)reloadForm
 {
     XLFormRowDescriptor *rowActivateCryptoCloud = [self.form formRowWithTag:@"activatecryptocloud"];
+    XLFormRowDescriptor *rowDeactivateCryptoCloud = [self.form formRowWithTag:@"deactivatecryptocloud"];
     XLFormRowDescriptor *rowSendMailEncryptPass = [self.form formRowWithTag:@"sendmailencryptpass"];
 
     if (app.isCryptoCloudMode) {
+        
         rowActivateCryptoCloud.hidden = @(YES);
+        rowDeactivateCryptoCloud.hidden = @(NO);
         rowSendMailEncryptPass.hidden = @(NO);
+        
     } else {
+        
         rowActivateCryptoCloud.hidden = @(NO);
+        rowDeactivateCryptoCloud.hidden = @(YES);
         rowSendMailEncryptPass.hidden = @(YES);
     }
 
