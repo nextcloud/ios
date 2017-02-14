@@ -134,7 +134,7 @@
 #pragma mark ===== newAccount =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void) loginSuccess:(NSInteger)loginType
+- (void)loginSuccess:(NSInteger)loginType
 {
     [[NSNotificationCenter defaultCenter] postNotificationName:@"initializeMain" object:nil];
 }
@@ -144,8 +144,9 @@
     if ([app.activeAccount length] == 0) {
     
         CCLogin *loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
+        loginVC.delegate = self;
         loginVC.loginType = loginAddForced;
-    
+        
         [self presentViewController:loginVC animated:YES completion:nil];
     }
 }

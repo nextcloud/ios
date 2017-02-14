@@ -274,9 +274,6 @@
 
 - (IBAction)handleAnnulla:(id)sender
 {
-    if ([self.delegate respondsToSelector:@selector(loginCancel:)])
-        [self.delegate loginCancel:_loginType];
-    
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 

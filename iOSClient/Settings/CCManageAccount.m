@@ -124,14 +124,10 @@
 #pragma mark === Delegate Login ===
 #pragma --------------------------------------------------------------------------------------------
 
-- (void) loginSuccess:(NSInteger)loginType
+- (void)loginSuccess:(NSInteger)loginType
 {
-    
-}
-
-- (void) loginCancel:(NSInteger)loginType
-{
-    
+    if (loginType == loginAddForced)
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"initializeMain" object:nil];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -146,6 +142,7 @@
     [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:k_taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
     
     CCLogin *loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
+    loginVC.delegate = self;
     loginVC.loginType = loginAdd;
     
     [self presentViewController:loginVC animated:YES completion:nil];
@@ -154,6 +151,7 @@
 - (void)addAccountFoced
 {
     CCLogin *loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
+    loginVC.delegate = self;
     loginVC.loginType = loginAddForced;
     
     dispatch_async(dispatch_get_main_queue(), ^ {
@@ -175,6 +173,7 @@
     if ([app.typeCloud isEqualToString:typeCloudNextcloud] || [app.typeCloud isEqualToString:typeCloudOwnCloud]) {
         
         CCLogin *loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier: @"CCLoginNextcloud"];
+        loginVC.delegate = self;
         loginVC.loginType = loginModifyPasswordUser;
         
         [self presentViewController:loginVC animated:YES completion:nil];
