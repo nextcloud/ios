@@ -392,7 +392,8 @@
                 }
                 // ------------------------
                 
-                if ([_metadataNet.selector isEqualToString:selectorSearch] && [itemDto.fileName.lowercaseString hasPrefix:_metadataNet.fileName.lowercaseString]) {
+                // Starting with [itemDto.fileName.lowercaseString hasPrefix:_metadataNet.fileName.lowercaseString]
+                if ([_metadataNet.selector isEqualToString:selectorSearch] && [itemDto.fileName.lowercaseString containsString:_metadataNet.fileName.lowercaseString]) {
                     
                     [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileNamePrint:itemDto.fileName serverUrl:_metadataNet.serverUrl directoryID:directoryID cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath activeAccount:_metadataNet.account directoryUser:directoryUser typeCloud:_typeCloud]];
                 }
