@@ -166,7 +166,6 @@
                         
                         // Request : Send Passcode email
                         [self performSelector:@selector(activateSecurityOptions) withObject:nil afterDelay:0.1];
-
                     }
                 } else {
                 
@@ -254,12 +253,17 @@
 - (void)reloadForm
 {
     XLFormRowDescriptor *rowActivateCryptoCloud = [self.form formRowWithTag:@"activatecryptocloud"];
-    
-    if (app.isCryptoCloudMode)
+    XLFormRowDescriptor *rowSendMailEncryptPass = [self.form formRowWithTag:@"sendmailencryptpass"];
+
+    if (app.isCryptoCloudMode) {
         rowActivateCryptoCloud.hidden = @(YES);
-        
+        rowSendMailEncryptPass.hidden = @(NO);
+    } else {
+        rowActivateCryptoCloud.hidden = @(NO);
+        rowSendMailEncryptPass.hidden = @(YES);
+    }
+
     [self.tableView reloadData];
 }
-
 
 @end
