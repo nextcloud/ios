@@ -26,6 +26,13 @@
 #import "CCUtility.h"
 #import "CCCoreData.h"
 
+@interface CCLogin ()
+{
+    UIAlertView *alertView;
+    UIView *rootView;
+}
+@end
+
 @implementation CCLogin
 
 - (void)viewDidLoad
@@ -48,23 +55,31 @@
     self.loadingBaseUrl.image = [UIImage animatedImageWithAnimatedGIFURL:[[NSBundle mainBundle] URLForResource: @"loading" withExtension:@"gif"]];
     self.loadingBaseUrl.hidden = YES;
     
-    if (_modifyOnlyPassword) {
+    if (_loginType == loginAdd) {
+        
+    }
+    
+    if (_loginType == loginAddForced) {
+        _annulla.hidden = YES;
+    }
+    
+    if (_loginType == loginModifyPasswordUser) {
         _baseUrl.userInteractionEnabled = NO;
         _baseUrl.textColor = [UIColor lightGrayColor];
         _user.userInteractionEnabled = NO;
         _user.textColor = [UIColor lightGrayColor];
     }
+    
+    [self.annulla setTitle:NSLocalizedString(@"_cancel_", nil) forState:UIControlStateNormal];
+    [self.login setTitle:NSLocalizedString(@"_login_", nil) forState:UIControlStateNormal];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
 
-    [self.annulla setTitle:NSLocalizedString(@"_cancel_", nil) forState:UIControlStateNormal];
-    [self.login setTitle:NSLocalizedString(@"_login_", nil) forState:UIControlStateNormal];
-    
     // verify URL
-    if (_modifyOnlyPassword && [self.baseUrl.text length] > 0)
+    if (_loginType == loginModifyPasswordUser && [self.baseUrl.text length] > 0)
         [self testUrl];
 }
 
@@ -72,12 +87,6 @@
 {
     [textField resignFirstResponder];
     return YES;
-}
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -90,7 +99,7 @@
     self.loadingBaseUrl.hidden = NO;
     
     NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:self.baseUrl.text] cachePolicy:0 timeoutInterval:20.0];
-    [request addValue:[CCUtility getUserAgent:_typeCloud] forHTTPHeaderField:@"User-Agent"];
+    [request addValue:[CCUtility getUserAgent:typeCloudNextcloud] forHTTPHeaderField:@"User-Agent"];
     
     NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
     NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
@@ -122,7 +131,7 @@
                     alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_connection_error_",nil) message:[error localizedDescription] delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
                     [alertView show];
                     
-                    if (!_modifyOnlyPassword)
+                    if (_loginType != loginModifyPasswordUser)
                         self.baseUrl.text = @"";
                 });
             }
@@ -140,7 +149,7 @@
 
 - (void)trustedCerticateDenied
 {
-    if (_modifyOnlyPassword)
+    if (_loginType == loginModifyPasswordUser)
         [self handleAnnulla:self];
 }
 
@@ -168,7 +177,7 @@
     if ([[self.baseUrl.text substringFromIndex:[self.baseUrl.text length] - 1] isEqualToString:@"/"])
         self.baseUrl.text = [self.baseUrl.text substringToIndex:[self.baseUrl.text length] - 1];
     
-    OCnetworking *ocNet = [[OCnetworking alloc] initWithDelegate:self metadataNet:nil withUser:self.user.text withPassword:self.password.text withUrl:nil withTypeCloud:_typeCloud activityIndicator:NO isCryptoCloudMode:NO];
+    OCnetworking *ocNet = [[OCnetworking alloc] initWithDelegate:self metadataNet:nil withUser:self.user.text withPassword:self.password.text withUrl:nil withTypeCloud:typeCloudNextcloud activityIndicator:NO isCryptoCloudMode:NO];
     NSError *error = [ocNet readFileSync:[NSString stringWithFormat:@"%@%@", self.baseUrl.text, webDAV]];
     
     if (!error) {
@@ -176,7 +185,7 @@
         // account
         NSString *account = [NSString stringWithFormat:@"%@ %@", self.user.text, self.baseUrl.text];
         
-        if (_modifyOnlyPassword) {
+        if (_loginType == loginModifyPasswordUser) {
             
             [CCCoreData updateAccount:account withPassword:self.password.text];
             
@@ -185,7 +194,7 @@
             [CCCoreData deleteAccount:account];
         
             // Add default account
-            [CCCoreData addAccount:account url:self.baseUrl.text user:self.user.text password:self.password.text uid:nil typeCloud:_typeCloud];
+            [CCCoreData addAccount:account url:self.baseUrl.text user:self.user.text password:self.password.text uid:nil typeCloud:typeCloudNextcloud];
         }
         
         TableAccount *tableAccount = [CCCoreData setActiveAccount:account];
@@ -195,11 +204,16 @@
             
             [app settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activePassword:tableAccount.password activeUID:nil activeAccessToken:nil typeCloud:tableAccount.typeCloud];
             
-            [self dismissViewControllerAnimated:YES completion:nil];
+            [self.delegate loginSuccess:_loginType];
+            
+            // close
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+                [self dismissViewControllerAnimated:YES completion:nil];
+            });
             
         } else {
             
-            if (_modifyOnlyPassword == NO)
+            if (_loginType != loginModifyPasswordUser)
                 [CCCoreData deleteAccount:account];
             
             alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_error_", nil) message:@"Fatal error writing database" delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
@@ -260,7 +274,8 @@
 
 - (IBAction)handleAnnulla:(id)sender
 {
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"messageLoginIncorrect" object:nil];
+    if ([self.delegate respondsToSelector:@selector(loginCancel:)])
+        [self.delegate loginCancel:_loginType];
     
     [self dismissViewControllerAnimated:YES completion:nil];
 }

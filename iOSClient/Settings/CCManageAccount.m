@@ -33,8 +33,6 @@
 {
     if (self = [super initWithCoder:aDecoder])  {
         
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(UpdateForm) name:@"updateFormManageAccount" object:nil];
-        
         [self initializeForm];
     }
     
@@ -74,7 +72,7 @@
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"addAccountNextcloud" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_add_nextcloud_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:[UIImage imageNamed:image_settingsAccountNextcloud] forKey:@"imageView.image"];
-    row.action.formSelector = @selector(addAccountNextcloud:);
+    row.action.formSelector = @selector(addAccount:);
     [section addFormRow:row];
     
     // delete Account
@@ -123,12 +121,24 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark === Aggiungi Account ===
+#pragma mark === Delegate Login ===
 #pragma --------------------------------------------------------------------------------------------
 
-/*** NEXTCLOUD ***/
+- (void) loginSuccess:(NSInteger)loginType
+{
+    
+}
 
-- (void)addAccountNextcloud:(XLFormRowDescriptor *)sender
+- (void) loginCancel:(NSInteger)loginType
+{
+    
+}
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark === Add Account ===
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)addAccount:(XLFormRowDescriptor *)sender
 {
     [self deselectFormRow:sender];
     
@@ -136,22 +146,18 @@
     [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:k_taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
     
     CCLogin *loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
-    
-    [loginVC setModifyOnlyPassword:NO];
-    [loginVC setTypeCloud:typeCloudNextcloud];
+    loginVC.loginType = loginAdd;
     
     [self presentViewController:loginVC animated:YES completion:nil];
 }
 
-- (void)openLoginSetupVC
-{    
-    // remove any message
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-    
-    CCLogin *viewController = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
+- (void)addAccountFoced
+{
+    CCLogin *loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
+    loginVC.loginType = loginAddForced;
     
     dispatch_async(dispatch_get_main_queue(), ^ {
-        [self presentViewController:viewController animated:YES completion:nil];
+        [self presentViewController:loginVC animated:YES completion:nil];
     });
 }
 
@@ -160,9 +166,7 @@
 #pragma --------------------------------------------------------------------------------------------
 
 - (void)modifyAccount:(XLFormRowDescriptor *)sender
-{
-    NSString *vcName;
-    
+{    
     [self deselectFormRow:sender];
     
     [app cancelAllOperations];
@@ -171,9 +175,7 @@
     if ([app.typeCloud isEqualToString:typeCloudNextcloud] || [app.typeCloud isEqualToString:typeCloudOwnCloud]) {
         
         CCLogin *loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier: @"CCLoginNextcloud"];
-        
-        [loginVC setModifyOnlyPassword:YES];
-        [loginVC setTypeCloud:app.typeCloud];
+        loginVC.loginType = loginModifyPasswordUser;
         
         [self presentViewController:loginVC animated:YES completion:nil];
     }
@@ -209,7 +211,7 @@
         
         if ([listAccount count] > 0) [self ChangeDefaultAccount:listAccount[0]];
         else {
-            [self openLoginSetupVC];
+            [self addAccountFoced];
             return;
         }
     }
@@ -278,7 +280,7 @@
     NSArray *listAccount = [CCCoreData getAllAccount];
     
     if (listAccount == nil) {
-        [self openLoginSetupVC];
+        [self addAccountFoced];
         return;
     }
     

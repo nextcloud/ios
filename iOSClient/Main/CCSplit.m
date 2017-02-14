@@ -22,8 +22,8 @@
 //
 
 #import "CCSplit.h"
-
 #import "AppDelegate.h"
+#import "CCLogin.h"
 
 @interface CCSplit ()
 {
@@ -134,13 +134,19 @@
 #pragma mark ===== newAccount =====
 #pragma --------------------------------------------------------------------------------------------
 
+- (void) loginSuccess:(NSInteger)loginType
+{
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"initializeMain" object:nil];
+}
+
 - (void)newAccount
 {
     if ([app.activeAccount length] == 0) {
     
-        CCLogin *viewController = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
+        CCLogin *loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
+        loginVC.loginType = loginAddForced;
     
-        [self presentViewController:viewController animated:YES completion:nil];
+        [self presentViewController:loginVC animated:YES completion:nil];
     }
 }
 

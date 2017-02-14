@@ -26,6 +26,6 @@
 #import "CCLogin.h"
 #import "CCCoreData.h"
 
-@interface CCManageAccount : XLFormViewController
+@interface CCManageAccount : XLFormViewController <CCLoginDelegate>
 
 @end

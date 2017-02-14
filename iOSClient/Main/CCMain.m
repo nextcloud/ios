@@ -1003,15 +1003,15 @@
 #pragma mark ===== Change Password =====
 #pragma --------------------------------------------------------------------------------------------
 
+- (void) loginSuccess:(NSInteger)loginType
+{
+    
+}
+
 - (void)changePasswordAccount
 {
-    CCLogin *loginVC;
-
-    if ([app.typeCloud isEqualToString:typeCloudNextcloud])
-        loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
-    
-    [loginVC setModifyOnlyPassword:YES];
-    [loginVC setTypeCloud:app.typeCloud];
+    CCLogin *loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
+    loginVC.loginType = loginModifyPasswordUser;
     
     [self presentViewController:loginVC animated:YES completion:nil];
 }

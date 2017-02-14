@@ -27,12 +27,22 @@
 #import "CCCertificate.h"
 #import "OCNetworking.h"
 
+@protocol CCLoginDelegate <NSObject>
+
+- (void) loginSuccess:(NSInteger)loginType;
+@optional - (void) loginCancel:(NSInteger)loginType;
+
+@end
+
 @interface CCLogin : UIViewController <UITextFieldDelegate, NSURLSessionTaskDelegate, NSURLSessionDelegate, CCCertificateDelegate, OCNetworkingDelegate>
 
-{
-    UIAlertView *alertView;
-    UIView *rootView;
-}
+typedef enum {
+    loginAdd = 0,
+    loginAddForced = 1,
+    loginModifyPasswordUser = 2
+} enumLoginType;
+
+@property (nonatomic, weak) id <CCLoginDelegate> delegate;
 
 @property (nonatomic, weak) IBOutlet UITextField *user;
 @property (nonatomic, weak) IBOutlet UITextField *password;
@@ -43,8 +53,6 @@
 @property (nonatomic, weak) IBOutlet UIButton *annulla;
 @property (nonatomic, weak) IBOutlet UIButton *toggleVisiblePassword;
 
-@property BOOL modifyOnlyPassword;
-@property (nonatomic, strong) NSString *typeCloud;
-@property (nonatomic, strong) UIViewController *viewController;
+@property enumLoginType loginType;
 
 @end
