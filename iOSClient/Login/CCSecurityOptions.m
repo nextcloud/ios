@@ -81,6 +81,8 @@
         [row.cellConfig setObject:COLOR_GRAY forKey:@"textField.textColor"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textField.font"];
+        row.value = [CCUtility getHint];
+
         [section addFormRow:row];
 
         self.form = form;
