@@ -70,7 +70,6 @@
     [metadata setThumbnailExists: self.thumbnailExists];
     [metadata setTitle: self.title];
     [metadata setType: self.type];
-    [metadata setTypeCloud: self.typeCloud];
     [metadata setTypeFile: self.typeFile];
     [metadata setUuid: self.uuid];
     
@@ -112,7 +111,6 @@
         _thumbnailExists = [decoder decodeBoolForKey:@"thumbnailExists"];
         _title = [decoder decodeObjectForKey:@"title"];
         _type = [decoder decodeObjectForKey:@"type"];
-        _typeCloud = [decoder decodeObjectForKey:@"typeCloud"];
         _typeFile = [decoder decodeObjectForKey:@"typeFile"];
         _uuid = [decoder decodeObjectForKey:@"uuid"];
     };
@@ -151,7 +149,6 @@
     [encoder encodeBool:_thumbnailExists forKey:@"thumbnailExists"];
     [encoder encodeObject:_title forKey:@"title"];
     [encoder encodeObject:_type forKey:@"type"];
-    [encoder encodeObject:_typeCloud forKey:@"typeCloud"];
     [encoder encodeObject:_typeFile forKey:@"typeFile"];
     [encoder encodeObject:_uuid forKey:@"uuid"];
 }

@@ -209,14 +209,14 @@
         if ([[rowDescriptor.value valueData] boolValue] == YES) {
                         
             // Create Folder cameraUpload
-            if (([app.typeCloud isEqualToString:typeCloudOwnCloud] || [app.typeCloud isEqualToString:typeCloudNextcloud]) && app.activeMain)
+            if (app.activeMain)
                 [app.activeMain createFolderCameraUpload];
             
             [CCCoreData setCameraUpload:YES activeAccount:app.activeAccount];
             
             // Default
             [CCCoreData setCameraUploadFolderName:nil activeAccount:app.activeAccount];
-            [CCCoreData setCameraUploadFolderPath:nil activeUrl:app.activeUrl typeCloud:app.typeCloud activeAccount:app.activeAccount];
+            [CCCoreData setCameraUploadFolderPath:nil activeUrl:app.activeUrl activeAccount:app.activeAccount];
             
             // verifichiamo che almeno uno dei servizi (foto video) siano attivi, in caso contrario attiviamo le foto
             if ([CCCoreData getCameraUploadPhotoActiveAccount:app.activeAccount] == NO && [CCCoreData getCameraUploadVideoActiveAccount:app.activeAccount] == NO)

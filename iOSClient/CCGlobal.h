@@ -30,8 +30,6 @@ extern NSString *const appDatabase;
 extern NSString *const appCertificates;
 
 extern NSString *const webDAV;
-extern NSString *const typeCloudNextcloud;
-extern NSString *const typeCloudOwnCloud;
 
 extern NSString *const appKeyCryptoCloud;
 extern NSString *const appSecretCryptoCloud;

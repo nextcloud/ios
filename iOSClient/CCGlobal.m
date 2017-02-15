@@ -30,8 +30,6 @@ NSString *const appCertificates = @"Library/Application Support/Certificates";
 
 // Cloud
 NSString *const webDAV = @"/remote.php/webdav";
-NSString *const typeCloudNextcloud = @"nextcloud";
-NSString *const typeCloudOwnCloud = @"owncloud";
 
 // BKPasscode
 NSString *const BKPasscodeKeychainServiceName = @"Crypto Cloud";

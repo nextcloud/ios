@@ -39,7 +39,8 @@
 {
     [super viewDidLoad];
     
-    if (([app.typeCloud isEqualToString:typeCloudNextcloud] || [app.typeCloud isEqualToString:typeCloudOwnCloud])&& app.activeAccount) {
+    if (app.activeAccount) {
+        
         self.baseUrl.text = app.activeUrl;
         self.user.text = app.activeUser;
     }
@@ -125,7 +126,7 @@
     self.loadingBaseUrl.hidden = NO;
     
     NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:self.baseUrl.text] cachePolicy:0 timeoutInterval:20.0];
-    [request addValue:[CCUtility getUserAgent:typeCloudNextcloud] forHTTPHeaderField:@"User-Agent"];
+    [request addValue:[CCUtility getUserAgent] forHTTPHeaderField:@"User-Agent"];
     
     NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
     NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
@@ -203,7 +204,7 @@
     if ([[self.baseUrl.text substringFromIndex:[self.baseUrl.text length] - 1] isEqualToString:@"/"])
         self.baseUrl.text = [self.baseUrl.text substringToIndex:[self.baseUrl.text length] - 1];
     
-    OCnetworking *ocNet = [[OCnetworking alloc] initWithDelegate:self metadataNet:nil withUser:self.user.text withPassword:self.password.text withUrl:nil withTypeCloud:typeCloudNextcloud activityIndicator:NO isCryptoCloudMode:NO];
+    OCnetworking *ocNet = [[OCnetworking alloc] initWithDelegate:self metadataNet:nil withUser:self.user.text withPassword:self.password.text withUrl:nil activityIndicator:NO isCryptoCloudMode:NO];
     NSError *error = [ocNet readFileSync:[NSString stringWithFormat:@"%@%@", self.baseUrl.text, webDAV]];
     
     if (!error) {
@@ -220,7 +221,7 @@
             [CCCoreData deleteAccount:account];
         
             // Add default account
-            [CCCoreData addAccount:account url:self.baseUrl.text user:self.user.text password:self.password.text uid:nil typeCloud:typeCloudNextcloud];
+            [CCCoreData addAccount:account url:self.baseUrl.text user:self.user.text password:self.password.text];
         }
         
         TableAccount *tableAccount = [CCCoreData setActiveAccount:account];
@@ -228,7 +229,7 @@
         // verifica
         if ([tableAccount.account isEqualToString:account]) {
             
-            [app settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activePassword:tableAccount.password activeUID:nil activeAccessToken:nil typeCloud:tableAccount.typeCloud];
+            [app settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activePassword:tableAccount.password];
             
             [self.delegate loginSuccess:_loginType];
             

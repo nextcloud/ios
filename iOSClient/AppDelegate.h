@@ -53,9 +53,6 @@
 @property (nonatomic, strong) NSString *activeUrl;
 @property (nonatomic, strong) NSString *activeUser;
 @property (nonatomic, strong) NSString *activePassword;
-@property (nonatomic, strong) NSString *activeUID;
-@property (nonatomic, strong) NSString *activeAccessToken;
-@property (nonatomic, strong) NSString *typeCloud;
 @property (nonatomic, strong) NSString *directoryUser;
 @property double quotaUsed;
 @property double quotaAvailable;
@@ -153,7 +150,7 @@
 @property BOOL isCryptoCloudMode;
 
 // Setting Active Account
-- (void)settingActiveAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl activeUser:(NSString *)activeUser activePassword:(NSString *)activePassword activeUID:(NSString *)activeUID activeAccessToken:(NSString *)activeAccessToken typeCloud:(NSString *)typeCloud;
+- (void)settingActiveAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl activeUser:(NSString *)activeUser activePassword:(NSString *)activePassword;
 
 // initializations 
 - (void)applicationInitialized;

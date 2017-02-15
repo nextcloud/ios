@@ -34,9 +34,6 @@
     NSString *activeUrl;
     NSString *activeUser;
     NSString *directoryUser;
-    NSString *typeCloud;
-    NSString *activeUID;
-    NSString *activeAccessToken;
     
     CCHud *_hud;
     BOOL _isCryptoCloudMode;
@@ -60,9 +57,6 @@
         activeUrl = recordAccount.url;
         activeUser = recordAccount.user;
         directoryUser = [CCUtility getDirectoryActiveUser:activeUser activeUrl:activeUrl];
-        typeCloud = recordAccount.typeCloud;
-        activeUID = recordAccount.uid;
-        activeAccessToken = recordAccount.token;
         
         // Crypto Mode
         if ([[CCUtility getKeyChainPasscodeForUUID:[CCUtility getUUID]] length] == 0) {
@@ -94,7 +88,7 @@
 
     if (![_serverUrl length]) {
         
-        _serverUrl = [CCUtility getHomeServerUrlActiveUrl:activeUrl typeCloud:typeCloud];
+        _serverUrl = [CCUtility getHomeServerUrlActiveUrl:activeUrl];
         UIImageView *image = [[UIImageView alloc] initWithImage:[UIImage imageNamed:image_brandNavigationController]];
         [self.navigationController.navigationBar.topItem setTitleView:image];
         self.title = @"Home";
@@ -234,13 +228,10 @@
 
 - (void)addNetworkingQueue:(CCMetadataNet *)metadataNet
 {
-    if ([typeCloud isEqualToString:typeCloudOwnCloud] || [typeCloud isEqualToString:typeCloudNextcloud]) {
+    OCnetworking *operation = [[OCnetworking alloc] initWithDelegate:self metadataNet:metadataNet withUser:activeUser withPassword:activePassword withUrl:activeUrl activityIndicator:NO isCryptoCloudMode:_isCryptoCloudMode];
         
-        OCnetworking *operation = [[OCnetworking alloc] initWithDelegate:self metadataNet:metadataNet withUser:activeUser withPassword:activePassword withUrl:activeUrl withTypeCloud:typeCloud activityIndicator:NO isCryptoCloudMode:_isCryptoCloudMode];
-        
-        _networkingOperationQueue.maxConcurrentOperationCount = k_maxConcurrentOperation;
-        [_networkingOperationQueue addOperation:operation];
-    }
+    _networkingOperationQueue.maxConcurrentOperationCount = k_maxConcurrentOperation;
+    [_networkingOperationQueue addOperation:operation];
 }
 
 // MARK: - Download File
@@ -251,7 +242,7 @@
 
         CCMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, activeAccount] context:nil];
 
-        [CCCoreData downloadFilePlist:metadata activeAccount:activeAccount activeUrl:activeUrl typeCloud:typeCloud directoryUser:directoryUser];
+        [CCCoreData downloadFilePlist:metadata activeAccount:activeAccount activeUrl:activeUrl directoryUser:directoryUser];
         
         [self.tableView reloadData];
     }
@@ -299,7 +290,7 @@
             if (isCryptoComplete == NO) continue;
         }
         
-        [CCCoreData addMetadata:metadata activeAccount:activeAccount activeUrl:activeUrl typeCloud:typeCloud context:nil];
+        [CCCoreData addMetadata:metadata activeAccount:activeAccount activeUrl:activeUrl context:nil];
         
         // if plist do not exists, download it !
         if ([CCUtility isCryptoPlistString:metadata.fileName] && [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, metadata.fileName]] == NO) {

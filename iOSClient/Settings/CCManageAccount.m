@@ -170,14 +170,11 @@
     [app cancelAllOperations];
     [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:k_taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
     
-    if ([app.typeCloud isEqualToString:typeCloudNextcloud] || [app.typeCloud isEqualToString:typeCloudOwnCloud]) {
+    CCLogin *loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier: @"CCLoginNextcloud"];
+    loginVC.delegate = self;
+    loginVC.loginType = loginModifyPasswordUser;
         
-        CCLogin *loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier: @"CCLoginNextcloud"];
-        loginVC.delegate = self;
-        loginVC.loginType = loginModifyPasswordUser;
-        
-        [self presentViewController:loginVC animated:YES completion:nil];
-    }
+    [self presentViewController:loginVC animated:YES completion:nil];
     
     [self UpdateForm];
 }
@@ -204,7 +201,7 @@
         [self deleteAccount:accountNow];
         
         // Clear active user
-        [app settingActiveAccount:nil activeUrl:nil activeUser:nil activePassword:nil activeUID:nil activeAccessToken:nil typeCloud:nil];
+        [app settingActiveAccount:nil activeUrl:nil activeUser:nil activePassword:nil];
         
         listAccount = [CCCoreData getAllAccount];
         
@@ -262,7 +259,7 @@
     // change account
     TableAccount *tableAccount = [CCCoreData setActiveAccount:account];
     if (tableAccount)
-        [app settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activePassword:tableAccount.password activeUID:tableAccount.uid activeAccessToken:tableAccount.token typeCloud:tableAccount.typeCloud];
+        [app settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activePassword:tableAccount.password];
  
     // Init home
     [[NSNotificationCenter defaultCenter] postNotificationName:@"initializeMain" object:nil];

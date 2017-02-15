@@ -35,7 +35,6 @@
     NSString *_activeUser;
     NSString *_activePassword;
     NSString *_activeUrl;
-    NSString *_typeCloud;
     
     NSURLSessionDownloadTask *_downloadTask;
     NSURLSessionUploadTask *_uploadTask;
@@ -48,7 +47,7 @@
 
 @implementation OCnetworking
 
-- (id)initWithDelegate:(id <OCNetworkingDelegate>)delegate metadataNet:(CCMetadataNet *)metadataNet withUser:(NSString *)withUser withPassword:(NSString *)withPassword withUrl:(NSString *)withUrl withTypeCloud:(NSString *)withTypeCloud activityIndicator:(BOOL)activityIndicator isCryptoCloudMode:(BOOL)isCryptoCloudMode
+- (id)initWithDelegate:(id <OCNetworkingDelegate>)delegate metadataNet:(CCMetadataNet *)metadataNet withUser:(NSString *)withUser withPassword:(NSString *)withPassword withUrl:(NSString *)withUrl activityIndicator:(BOOL)activityIndicator isCryptoCloudMode:(BOOL)isCryptoCloudMode
 {
     self = [super init];
     
@@ -62,7 +61,6 @@
         _activeUser = withUser;
         _activePassword = withPassword;
         _activeUrl = withUrl;
-        _typeCloud = withTypeCloud;
         
         _isCryptoCloudMode = isCryptoCloudMode;
         _activityIndicator = activityIndicator;
@@ -268,7 +266,7 @@
     }
 
     [communication setCredentialsWithUser:_activeUser andPassword:_activePassword];
-    [communication setUserAgent:[CCUtility getUserAgent:_typeCloud]];
+    [communication setUserAgent:[CCUtility getUserAgent]];
     
     [communication getRemoteThumbnailByServer:[_activeUrl stringByAppendingString:@"/"] ofFilePath:_metadataNet.fileName withWidth:width andHeight:height onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSData *thumbnail, NSString *redirectedServer) {
         
@@ -309,7 +307,7 @@
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     
     [communication setCredentialsWithUser:_activeUser andPassword:_activePassword];
-    [communication setUserAgent:[CCUtility getUserAgent:_typeCloud]];
+    [communication setUserAgent:[CCUtility getUserAgent]];
     
     [communication readFolder:_metadataNet.serverUrl withUserSessionToken:nil onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token) {
         
@@ -342,14 +340,14 @@
         NSString *directoryID = [CCCoreData addDirectory:_metadataNet.serverUrl date:date permissions:permissions activeAccount:_metadataNet.account];
             
         NSString *cameraFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:_metadataNet.account];
-        NSString *cameraFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:_metadataNet.account activeUrl:_activeUrl typeCloud:_typeCloud];
+        NSString *cameraFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:_metadataNet.account activeUrl:_activeUrl];
         NSString *directoryUser = [CCUtility getDirectoryActiveUser:_activeUser activeUrl:_activeUrl];
         
         // Update metadataNet.directoryID
         _metadataNet.directoryID = directoryID;
         
 #ifndef EXTENSION
-        NSString *root = [CCUtility getHomeServerUrlActiveUrl:_activeUrl typeCloud:_typeCloud];
+        NSString *root = [CCUtility getHomeServerUrlActiveUrl:_activeUrl];
         
         if ([root isEqualToString:_metadataNet.serverUrl]) {
             
@@ -395,12 +393,12 @@
                 // Starting with [itemDto.fileName.lowercaseString hasPrefix:_metadataNet.fileName.lowercaseString]
                 if ([_metadataNet.selector isEqualToString:selectorSearch] && [itemDto.fileName.lowercaseString containsString:_metadataNet.fileName.lowercaseString]) {
                     
-                    [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileNamePrint:itemDto.fileName serverUrl:_metadataNet.serverUrl directoryID:directoryID cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath activeAccount:_metadataNet.account directoryUser:directoryUser typeCloud:_typeCloud]];
+                    [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileNamePrint:itemDto.fileName serverUrl:_metadataNet.serverUrl directoryID:directoryID cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath activeAccount:_metadataNet.account directoryUser:directoryUser]];
                 }
                 
                 if ([_metadataNet.selector isEqualToString:selectorReadFolder]) {
                     
-                    [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileNamePrint:itemDto.fileName serverUrl:_metadataNet.serverUrl directoryID:directoryID cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath activeAccount:_metadataNet.account directoryUser:directoryUser typeCloud:_typeCloud]];
+                    [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileNamePrint:itemDto.fileName serverUrl:_metadataNet.serverUrl directoryID:directoryID cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath activeAccount:_metadataNet.account directoryUser:directoryUser]];
                 }
             }
             
@@ -448,7 +446,7 @@
     NSString *nameFolderURL = [NSString stringWithFormat:@"%@/%@", _metadataNet.serverUrl, _metadataNet.fileName];
     
     [communication setCredentialsWithUser:_activeUser andPassword:_activePassword];
-    [communication setUserAgent:[CCUtility getUserAgent:_typeCloud]];
+    [communication setUserAgent:[CCUtility getUserAgent]];
     
     [communication createFolder:nameFolderURL onCommunication:communication withForbiddenCharactersSupported:_hasServerForbiddenCharactersSupport successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
@@ -461,7 +459,7 @@
         
         NSString *message;
         
-        if (([_metadataNet.fileName isEqualToString:[CCCoreData getCameraUploadFolderNameActiveAccount:_metadataNet.account]] == YES && [_metadataNet.serverUrl isEqualToString:[CCCoreData getCameraUploadFolderPathActiveAccount:_metadataNet.account activeUrl:_activeUrl typeCloud:_typeCloud]] == YES))
+        if (([_metadataNet.fileName isEqualToString:[CCCoreData getCameraUploadFolderNameActiveAccount:_metadataNet.account]] == YES && [_metadataNet.serverUrl isEqualToString:[CCCoreData getCameraUploadFolderPathActiveAccount:_metadataNet.account activeUrl:_activeUrl]] == YES))
             message = nil;
         else
             message = [CCError manageErrorOC:response.statusCode error:error];
@@ -483,7 +481,7 @@
         
          NSString *message;
         
-        if (([_metadataNet.fileName isEqualToString:[CCCoreData getCameraUploadFolderNameActiveAccount:_metadataNet.account]] == YES && [_metadataNet.serverUrl isEqualToString:[CCCoreData getCameraUploadFolderPathActiveAccount:_metadataNet.account activeUrl:_activeUrl typeCloud:_typeCloud]] == YES))
+        if (([_metadataNet.fileName isEqualToString:[CCCoreData getCameraUploadFolderNameActiveAccount:_metadataNet.account]] == YES && [_metadataNet.serverUrl isEqualToString:[CCCoreData getCameraUploadFolderPathActiveAccount:_metadataNet.account activeUrl:_activeUrl]] == YES))
             message = nil;
         else {
             
@@ -508,7 +506,7 @@
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
     
     [communication setCredentialsWithUser:_activeUser andPassword:_activePassword];
-    [communication setUserAgent:[CCUtility getUserAgent:_typeCloud]];
+    [communication setUserAgent:[CCUtility getUserAgent]];
     
     [communication createFolder:folderPathName onCommunication:communication withForbiddenCharactersSupported:_hasServerForbiddenCharactersSupport successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
@@ -547,7 +545,7 @@
     NSString *serverFileUrl = [NSString stringWithFormat:@"%@/%@", _metadataNet.serverUrl, _metadataNet.fileName];
     
     [communication setCredentialsWithUser:_activeUser andPassword:_activePassword];
-    [communication setUserAgent:[CCUtility getUserAgent:_typeCloud]];
+    [communication setUserAgent:[CCUtility getUserAgent]];
     
     [communication deleteFileOrFolder:serverFileUrl onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
@@ -585,7 +583,7 @@
     NSString *destinazioneURL = [NSString stringWithFormat:@"%@/%@", _metadataNet.serverUrlTo, _metadataNet.fileNameTo];
     
     [communication setCredentialsWithUser:_activeUser andPassword:_activePassword];
-    [communication setUserAgent:[CCUtility getUserAgent:_typeCloud]];
+    [communication setUserAgent:[CCUtility getUserAgent]];
     
     [communication moveFileOrFolder:origineURL toDestiny:destinazioneURL onCommunication:communication withForbiddenCharactersSupported:_hasServerForbiddenCharactersSupport successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
@@ -649,7 +647,7 @@
         fileName = _metadataNet.serverUrl;
     
     [communication setCredentialsWithUser:_activeUser andPassword:_activePassword];
-    [communication setUserAgent:[CCUtility getUserAgent:_typeCloud]];
+    [communication setUserAgent:[CCUtility getUserAgent]];
     
     [communication readFile:fileName onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer) {
         
@@ -664,13 +662,13 @@
             
             NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:_metadataNet.serverUrl activeAccount:_metadataNet.account];
             NSString *cameraFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:_metadataNet.account];
-            NSString *cameraFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:_metadataNet.account activeUrl:_activeUrl typeCloud:_typeCloud];
+            NSString *cameraFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:_metadataNet.account activeUrl:_activeUrl];
             NSString *directoryUser = [CCUtility getDirectoryActiveUser:_activeUser activeUrl:_activeUrl];
         
-            metadata = [CCUtility trasformedOCFileToCCMetadata:itemDto fileNamePrint:_metadataNet.fileNamePrint serverUrl:_metadataNet.serverUrl directoryID:directoryID cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath activeAccount:_metadataNet.account directoryUser:directoryUser typeCloud:_typeCloud];
+            metadata = [CCUtility trasformedOCFileToCCMetadata:itemDto fileNamePrint:_metadataNet.fileNamePrint serverUrl:_metadataNet.serverUrl directoryID:directoryID cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath activeAccount:_metadataNet.account directoryUser:directoryUser];
             
 #ifndef EXTENSION
-            NSString *root = [CCUtility getHomeServerUrlActiveUrl:_activeUrl typeCloud:_typeCloud];
+            NSString *root = [CCUtility getHomeServerUrlActiveUrl:_activeUrl];
             
             if ([root isEqualToString:fileName]) {
                 
@@ -722,7 +720,7 @@
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
 
     [communication setCredentialsWithUser:_activeUser andPassword:_activePassword];
-    [communication setUserAgent:[CCUtility getUserAgent:_typeCloud]];
+    [communication setUserAgent:[CCUtility getUserAgent]];
     
     [communication readFile:filePathName onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer) {
         
@@ -762,7 +760,7 @@
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     
     [communication setCredentialsWithUser:_activeUser andPassword:_activePassword];
-    [communication setUserAgent:[CCUtility getUserAgent:_typeCloud]];
+    [communication setUserAgent:[CCUtility getUserAgent]];
     
     [communication readSharedByServer:[_activeUrl stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer) {
         
@@ -811,7 +809,7 @@
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
         
     [communication setCredentialsWithUser:_activeUser andPassword:_activePassword];
-    [communication setUserAgent:[CCUtility getUserAgent:_typeCloud]];
+    [communication setUserAgent:[CCUtility getUserAgent]];
     
     [communication shareFileOrFolderByServer:[_activeUrl stringByAppendingString:@"/"] andFileOrFolderPath:[_metadataNet.fileName encodeString:NSUTF8StringEncoding] andPassword:[_metadataNet.password encodeString:NSUTF8StringEncoding] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *token, NSString *redirectedServer) {
         
@@ -841,7 +839,7 @@
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     
     [communication setCredentialsWithUser:_activeUser andPassword:_activePassword];
-    [communication setUserAgent:[CCUtility getUserAgent:_typeCloud]];
+    [communication setUserAgent:[CCUtility getUserAgent]];
     
     [communication shareWith:_metadataNet.share shareeType:_metadataNet.shareeType inServer:[_activeUrl stringByAppendingString:@"/"] andFileOrFolderPath:[_metadataNet.fileName encodeString:NSUTF8StringEncoding] andPermissions:_metadataNet.sharePermission onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
@@ -869,7 +867,7 @@
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     
     [communication setCredentialsWithUser:_activeUser andPassword:_activePassword];
-    [communication setUserAgent:[CCUtility getUserAgent:_typeCloud]];
+    [communication setUserAgent:[CCUtility getUserAgent]];
     
     [communication updateShare:[_metadataNet.share intValue] ofServerPath:[_activeUrl stringByAppendingString:@"/"] withPasswordProtect:[_metadataNet.password encodeString:NSUTF8StringEncoding] andExpirationTime:_metadataNet.expirationTime andPermissions:_metadataNet.sharePermission onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
@@ -901,7 +899,7 @@
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     
     [communication setCredentialsWithUser:_activeUser andPassword:_activePassword];
-    [communication setUserAgent:[CCUtility getUserAgent:_typeCloud]];
+    [communication setUserAgent:[CCUtility getUserAgent]];
     
     [communication unShareFileOrFolderByServer:[_activeUrl stringByAppendingString:@"/"] andIdRemoteShared:[_metadataNet.share intValue] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
@@ -936,7 +934,7 @@
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     
     [communication setCredentialsWithUser:_activeUser andPassword:_activePassword];
-    [communication setUserAgent:[CCUtility getUserAgent:_typeCloud]];
+    [communication setUserAgent:[CCUtility getUserAgent]];
     
     [communication searchUsersAndGroupsWith:_metadataNet.options forPage:1 with:50 ofServer:[_activeUrl stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *itemList, NSString *redirectedServer) {
         
@@ -971,7 +969,7 @@
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     
     [communication setCredentialsWithUser:_activeUser andPassword:_activePassword];
-    [communication setUserAgent:[CCUtility getUserAgent:_typeCloud]];
+    [communication setUserAgent:[CCUtility getUserAgent]];
     
     [communication getNotificationsOfServer:[_activeUrl stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *listOfNotifications, NSString *redirectedServer) {
         
@@ -1002,7 +1000,7 @@
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     
     [communication setCredentialsWithUser:_activeUser andPassword:_activePassword];
-    [communication setUserAgent:[CCUtility getUserAgent:_typeCloud]];
+    [communication setUserAgent:[CCUtility getUserAgent]];
     
     NSString *type = _metadataNet.options;
     
@@ -1042,7 +1040,7 @@
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
     
     [communication setCredentialsWithUser:_activeUser andPassword:_activePassword];
-    [communication setUserAgent:[CCUtility getUserAgent:_typeCloud]];
+    [communication setUserAgent:[CCUtility getUserAgent]];
     
     [communication checkServer:serverUrl onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
@@ -1070,7 +1068,7 @@
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     
     [communication setCredentialsWithUser:_activeUser andPassword:_activePassword];
-    [communication setUserAgent:[CCUtility getUserAgent:_typeCloud]];
+    [communication setUserAgent:[CCUtility getUserAgent]];
     
     [communication getFeaturesSupportedByServer:[_activeUrl stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, BOOL hasShareSupport, BOOL hasShareeSupport, BOOL hasCookiesSupport, BOOL hasForbiddenCharactersSupport, BOOL hasCapabilitiesSupport, BOOL hasFedSharesOptionShareSupport, NSString *redirectedServer) {
         
@@ -1103,7 +1101,7 @@
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     
     [communication setCredentialsWithUser:_activeUser andPassword:_activePassword];
-    [communication setUserAgent:[CCUtility getUserAgent:_typeCloud]];
+    [communication setUserAgent:[CCUtility getUserAgent]];
     
     [communication getCapabilitiesOfServer:[_activeUrl stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, OCCapabilities *capabilities, NSString *redirectedServer) {
         

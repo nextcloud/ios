@@ -31,7 +31,7 @@
 #pragma mark ===== Account =====
 #pragma --------------------------------------------------------------------------------------------
 
-+ (void)addAccount:(NSString *)account url:(NSString *)url user:(NSString *)user password:(NSString *)password uid:(NSString*)uid typeCloud:(NSString *)typeCloud
++ (void)addAccount:(NSString *)account url:(NSString *)url user:(NSString *)user password:(NSString *)password
 {
     NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
     
@@ -53,8 +53,6 @@
     record.dateRecord = [NSDate date];
     record.optimization = [NSDate date];
     record.password = password;
-    record.typeCloud = typeCloud;
-    record.uid = uid;
     record.url = url;
     record.user = user;
     
@@ -108,18 +106,6 @@
     return [self getActiveAccount];
 }
 
-+ (TableAccount *)setActiveFirstAccountNextcloudOwncloud
-{
-    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
-        
-    TableAccount *record = [TableAccount MR_findFirstWithPredicate:[NSPredicate predicateWithFormat:@"(typeCloud == %@) OR (typeCloud == %@)", typeCloudNextcloud, typeCloudOwnCloud] inContext:context];
-    
-    if (record)
-        return [self setActiveAccount:record.account];
-    
-    return nil;
-}
-
 + (NSArray *)getAllAccount
 {
     NSMutableArray *accounts = [[NSMutableArray alloc] init];
@@ -127,7 +113,7 @@
     
     NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
     
-    records = [TableAccount MR_findAllWithPredicate:[NSPredicate predicateWithFormat:@"(typeCloud == %@) OR (typeCloud == %@)", typeCloudNextcloud, typeCloudOwnCloud] inContext:context];
+    records = [TableAccount MR_findAllInContext:context];
     
     for (TableAccount *tableAccount in records)
         [accounts addObject:tableAccount.account];
@@ -148,8 +134,8 @@
 
     NSSortDescriptor *descriptor = [[NSSortDescriptor alloc] initWithKey:@"account" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)];
     NSArray *records;
-        
-    records = [TableAccount MR_findAllWithPredicate:[NSPredicate predicateWithFormat:@"(typeCloud == %@) OR (typeCloud == %@)", typeCloudNextcloud, typeCloudOwnCloud] inContext:context];
+    
+    records = [TableAccount MR_findAllInContext:context];
     
     records = [NSMutableArray arrayWithArray:[records sortedArrayUsingDescriptors:[[NSArray alloc] initWithObjects:descriptor, nil]]];
     
@@ -162,36 +148,8 @@
 
     TableAccount *record = [TableAccount MR_findFirstByAttribute:@"active" withValue:[NSNumber numberWithBool:YES] inContext:context];
     
-    if ([record.typeCloud isEqualToString:typeCloudNextcloud] == NO && [record.typeCloud isEqualToString:typeCloudOwnCloud] == NO)
-        return [self setActiveFirstAccountNextcloudOwncloud];
-    
     if (record) return record;
     else return nil;
-}
-
-+ (NSString *)getTokenActiveAccount:(NSString *)activeAccount
-{
-    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
-
-    TableAccount *record = [TableAccount MR_findFirstWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@)", activeAccount] inContext:context];
-    
-    if (record) return record.token;
-    else return nil;
-}
-
-+ (void)setTokenAccount:(NSString *)token activeAccount:(NSString *)activeAccount
-{
-    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
-    
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@)", activeAccount];
-    TableAccount *record = [TableAccount MR_findFirstWithPredicate:predicate inContext:context];
-    
-    if (record) {
-        
-        record.token = token;
-        
-        [context MR_saveToPersistentStoreAndWait];
-    }
 }
 
 + (NSString *)getCameraUploadFolderNameActiveAccount:(NSString *)activeAccount
@@ -207,7 +165,7 @@
     } else return @"";
 }
 
-+ (NSString *)getCameraUploadFolderPathActiveAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl typeCloud:(NSString *)typeCloud
++ (NSString *)getCameraUploadFolderPathActiveAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl
 {
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@)", activeAccount];
     TableAccount *record = [TableAccount MR_findFirstWithPredicate:predicate];
@@ -215,15 +173,15 @@
     if (record) {
         
         if ([record.cameraUploadFolderPath length] > 0 ) return record.cameraUploadFolderPath;
-        else return [CCUtility getHomeServerUrlActiveUrl:activeUrl typeCloud:typeCloud];
+        else return [CCUtility getHomeServerUrlActiveUrl:activeUrl];
         
     } else return @"";
 }
 
-+ (NSString *)getCameraUploadFolderNamePathActiveAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl typeCloud:(NSString *)typeCloud
++ (NSString *)getCameraUploadFolderNamePathActiveAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl
 {
     NSString *cameraFolderName = [self getCameraUploadFolderNameActiveAccount:activeAccount];
-    NSString *cameraFolderPath = [self getCameraUploadFolderPathActiveAccount:activeAccount activeUrl:activeUrl typeCloud:typeCloud];
+    NSString *cameraFolderPath = [self getCameraUploadFolderPathActiveAccount:activeAccount activeUrl:activeUrl];
     
     NSString *folderPhotos = [CCUtility stringAppendServerUrl:cameraFolderPath addServerUrl:cameraFolderName];
     return folderPhotos;
@@ -516,10 +474,10 @@
     }];
 }
 
-+ (void)setCameraUploadFolderPath:(NSString *)pathName activeUrl:(NSString *)activeUrl typeCloud:(NSString *)typeCloud activeAccount:(NSString *)activeAccount
++ (void)setCameraUploadFolderPath:(NSString *)pathName activeUrl:(NSString *)activeUrl activeAccount:(NSString *)activeAccount
 {
     if (pathName == nil)
-        pathName = [self getCameraUploadFolderPathActiveAccount:activeAccount activeUrl:activeUrl typeCloud:typeCloud];
+        pathName = [self getCameraUploadFolderPathActiveAccount:activeAccount activeUrl:activeUrl];
     
     [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
         
@@ -580,7 +538,7 @@
 #pragma mark ===== Metadata =====
 #pragma --------------------------------------------------------------------------------------------
 
-+ (void)addMetadata:(CCMetadata *)metadata activeAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl typeCloud:(NSString *)typeCloud context:(NSManagedObjectContext *)context
++ (void)addMetadata:(CCMetadata *)metadata activeAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl context:(NSManagedObjectContext *)context
 {
     if (context == nil)
         context = [NSManagedObjectContext MR_context];
@@ -602,7 +560,7 @@
     [record setValue:[NSDate date] forKey:@"dateRecord"];
 
     // Insert metdata -> entity
-    [self insertMetadataInEntity:metadata recordMetadata:record activeAccount:activeAccount activeUrl:activeUrl typeCloud:typeCloud];
+    [self insertMetadataInEntity:metadata recordMetadata:record activeAccount:activeAccount activeUrl:activeUrl];
     
     // Aggiorniamo la data nella directory (ottimizzazione v 2.10)
     [self setDateReadDirectoryID:metadata.directoryID activeAccount:activeAccount];
@@ -648,7 +606,7 @@
     }];
 }
 
-+ (void)updateMetadata:(CCMetadata *)metadata predicate:(NSPredicate *)predicate activeAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl typeCloud:(NSString *)typeCloud context:(NSManagedObjectContext *)context
++ (void)updateMetadata:(CCMetadata *)metadata predicate:(NSPredicate *)predicate activeAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl context:(NSManagedObjectContext *)context
 {
     TableMetadata *record;
     
@@ -659,7 +617,7 @@
     
     if (record) {
         
-        [self insertMetadataInEntity:metadata recordMetadata:record activeAccount:activeAccount activeUrl:activeUrl typeCloud:typeCloud];
+        [self insertMetadataInEntity:metadata recordMetadata:record activeAccount:activeAccount activeUrl:activeUrl];
         
         // Aggiorniamo la data nella directory (ottimizzazione v 2.10)
         [self setDateReadDirectoryID:metadata.directoryID activeAccount:activeAccount];
@@ -1655,73 +1613,70 @@
     [sharesUserAndGroup removeAllObjects];
 }
 
-+ (void)updateShare:(NSDictionary *)items sharesLink:(NSMutableDictionary *)sharesLink sharesUserAndGroup:(NSMutableDictionary *)sharesUserAndGroup activeAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl typeCloud:(NSString *)typeCloud
++ (void)updateShare:(NSDictionary *)items sharesLink:(NSMutableDictionary *)sharesLink sharesUserAndGroup:(NSMutableDictionary *)sharesUserAndGroup activeAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl
 {
     // rimuovi tutte le condivisioni
     [self removeAllShareActiveAccount:activeAccount sharesLink:sharesLink sharesUserAndGroup:sharesUserAndGroup];
     
-    if ([typeCloud isEqualToString:typeCloudOwnCloud] || [typeCloud isEqualToString:typeCloudNextcloud]) {
+    NSMutableArray *itemsLink = [[NSMutableArray alloc] init];
+    NSMutableArray *itemsUsersAndGroups = [[NSMutableArray alloc] init];
         
-        NSMutableArray *itemsLink = [[NSMutableArray alloc] init];
-        NSMutableArray *itemsUsersAndGroups = [[NSMutableArray alloc] init];
+    for (NSString *idRemoteShared in items) {
+            
+        OCSharedDto *item = [items objectForKey:idRemoteShared];
+            
+        if (item.shareType == shareTypeLink) [itemsLink addObject:item];
+        if ([[item shareWith] length] > 0 && (item.shareType == shareTypeUser || item.shareType == shareTypeGroup || item.shareType == shareTypeRemote)) [itemsUsersAndGroups addObject:item];
+    }
         
-        for (NSString *idRemoteShared in items) {
+    // Link
+    for (OCSharedDto *item in itemsLink) {
             
-            OCSharedDto *item = [items objectForKey:idRemoteShared];
+        NSString *fullPath = [[CCUtility getHomeServerUrlActiveUrl:activeUrl] stringByAppendingString:item.path];
             
-            if (item.shareType == shareTypeLink) [itemsLink addObject:item];
-            if ([[item shareWith] length] > 0 && (item.shareType == shareTypeUser || item.shareType == shareTypeGroup || item.shareType == shareTypeRemote)) [itemsUsersAndGroups addObject:item];
-        }
+        NSString *fileName = [fullPath lastPathComponent];
+        NSString *serverUrl = [fullPath substringToIndex:([fullPath length]-[fileName length]-1)];
+        if ([serverUrl hasSuffix:@"/"]) serverUrl = [serverUrl substringToIndex:[serverUrl length] - 1];
+            
+        if ([@(item.idRemoteShared) stringValue])
+            [self setShareLink:[@(item.idRemoteShared) stringValue] fileName:fileName serverUrl:serverUrl sharesLink:sharesLink activeAccount:activeAccount];
+    }
         
-        // Link
-        for (OCSharedDto *item in itemsLink) {
-            
-            NSString *fullPath = [[CCUtility getHomeServerUrlActiveUrl:activeUrl typeCloud:typeCloud] stringByAppendingString:item.path];
-            
-            NSString *fileName = [fullPath lastPathComponent];
-            NSString *serverUrl = [fullPath substringToIndex:([fullPath length]-[fileName length]-1)];
-            if ([serverUrl hasSuffix:@"/"]) serverUrl = [serverUrl substringToIndex:[serverUrl length] - 1];
-            
-            if ([@(item.idRemoteShared) stringValue])
-                [self setShareLink:[@(item.idRemoteShared) stringValue] fileName:fileName serverUrl:serverUrl sharesLink:sharesLink activeAccount:activeAccount];
-        }
+    // Condivisioni
+    NSMutableDictionary *paths = [[NSMutableDictionary alloc] init];
         
-        // Condivisioni
-        NSMutableDictionary *paths = [[NSMutableDictionary alloc] init];
-        
-        // Creazione dizionario
-        for (OCSharedDto *item in itemsUsersAndGroups) {
+    // Creazione dizionario
+    for (OCSharedDto *item in itemsUsersAndGroups) {
             
-            if ([paths objectForKey:item.path]) {
+        if ([paths objectForKey:item.path]) {
                 
-                NSMutableArray *share = [paths objectForKey:item.path];
-                [share addObject:[@(item.idRemoteShared) stringValue]];
-                [paths setObject:share forKey:item.path];
+            NSMutableArray *share = [paths objectForKey:item.path];
+            [share addObject:[@(item.idRemoteShared) stringValue]];
+            [paths setObject:share forKey:item.path];
                 
-            } else {
+        } else {
                 
-                NSMutableArray *share = [[NSMutableArray alloc] initWithObjects:[@(item.idRemoteShared) stringValue], nil];
-                [paths setObject:share forKey:item.path];
-            }
+            NSMutableArray *share = [[NSMutableArray alloc] initWithObjects:[@(item.idRemoteShared) stringValue], nil];
+            [paths setObject:share forKey:item.path];
         }
+    }
         
-        // Scrittura su DB
-        for (NSString *path in paths) {
+    // Scrittura su DB
+    for (NSString *path in paths) {
             
-            NSArray *items = [paths objectForKey:path];
-            NSString *share = [items componentsJoinedByString:@","];
+        NSArray *items = [paths objectForKey:path];
+        NSString *share = [items componentsJoinedByString:@","];
             
-            NSLog(@"[LOG] share %@", share);
+        NSLog(@"[LOG] share %@", share);
             
-            NSString *fullPath = [[CCUtility getHomeServerUrlActiveUrl:activeUrl typeCloud:typeCloud] stringByAppendingString:path];
+        NSString *fullPath = [[CCUtility getHomeServerUrlActiveUrl:activeUrl] stringByAppendingString:path];
             
-            NSString *fileName = [fullPath lastPathComponent];
-            NSString *serverUrl = [fullPath substringToIndex:([fullPath length]-[fileName length]-1)];
-            if ([serverUrl hasSuffix:@"/"]) serverUrl = [serverUrl substringToIndex:[serverUrl length] - 1];
+        NSString *fileName = [fullPath lastPathComponent];
+        NSString *serverUrl = [fullPath substringToIndex:([fullPath length]-[fileName length]-1)];
+        if ([serverUrl hasSuffix:@"/"]) serverUrl = [serverUrl substringToIndex:[serverUrl length] - 1];
             
-            if (share)
-                [self setShareUserAndGroup:share fileName:fileName serverUrl:serverUrl sharesUserAndGroup:sharesUserAndGroup activeAccount:activeAccount];
-        }
+        if (share)
+            [self setShareUserAndGroup:share fileName:fileName serverUrl:serverUrl sharesUserAndGroup:sharesUserAndGroup activeAccount:activeAccount];
     }
 }
 
@@ -1834,13 +1789,13 @@
     return YES;
 }
 
-+ (void)downloadFilePlist:(CCMetadata *)metadata activeAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl typeCloud:(NSString *)typeCloud directoryUser:(NSString *)directoryUser
++ (void)downloadFilePlist:(CCMetadata *)metadata activeAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl directoryUser:(NSString *)directoryUser
 {
     // inseriamo le info nel plist
     [CCUtility insertInformationPlist:metadata directoryUser:directoryUser];
     
     // aggiorniamo il CCMetadata
-    [self updateMetadata:metadata predicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", metadata.fileID, activeAccount] activeAccount:activeAccount activeUrl:activeUrl typeCloud:typeCloud context:nil];
+    [self updateMetadata:metadata predicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", metadata.fileID, activeAccount] activeAccount:activeAccount activeUrl:activeUrl context:nil];
     
     // se è un template aggiorniamo anche nel FileSystem
     if ([metadata.type isEqualToString: k_metadataType_template]){
@@ -1848,7 +1803,7 @@
     }
 }
 
-+ (void)deleteFile:(CCMetadata *)metadata serverUrl:(NSString *)serverUrl directoryUser:(NSString *)directoryUser typeCloud:(NSString *)typeCloud activeAccount:(NSString *)activeAccount
++ (void)deleteFile:(CCMetadata *)metadata serverUrl:(NSString *)serverUrl directoryUser:(NSString *)directoryUser activeAccount:(NSString *)activeAccount
 {
     // ----------------------------------------- FILESYSTEM ------------------------------------------
     
@@ -1872,7 +1827,7 @@
 #pragma mark ===== Metadata <> Entity =====
 #pragma --------------------------------------------------------------------------------------------
 
-+ (void)insertMetadataInEntity:(CCMetadata *)metadata recordMetadata:(TableMetadata *)recordMetadata activeAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl typeCloud:(NSString *)typeCloud
++ (void)insertMetadataInEntity:(CCMetadata *)metadata recordMetadata:(TableMetadata *)recordMetadata activeAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl
 {
     if ([activeAccount length]) recordMetadata.account = activeAccount;
     recordMetadata.cryptated = [NSNumber numberWithBool:metadata.cryptated];
@@ -1908,11 +1863,10 @@
     recordMetadata.thumbnailExists = [NSNumber numberWithBool:metadata.thumbnailExists];
 
     if ([metadata.type length]) recordMetadata.type = metadata.type;
-    if ([metadata.typeCloud length]) recordMetadata.typeCloud = metadata.typeCloud;
     if ([metadata.uuid length]) recordMetadata.uuid = metadata.uuid;
 
     // inseriamo il typeFile e icona di default.
-    [CCUtility insertTypeFileIconName:metadata directory:[self getServerUrlFromDirectoryID:metadata.directoryID activeAccount:activeAccount] cameraFolderName:[self getCameraUploadFolderNameActiveAccount:activeAccount] cameraFolderPath:[self getCameraUploadFolderPathActiveAccount:activeAccount activeUrl:activeUrl typeCloud:typeCloud]];
+    [CCUtility insertTypeFileIconName:metadata directory:[self getServerUrlFromDirectoryID:metadata.directoryID activeAccount:activeAccount] cameraFolderName:[self getCameraUploadFolderNameActiveAccount:activeAccount] cameraFolderPath:[self getCameraUploadFolderPathActiveAccount:activeAccount activeUrl:activeUrl]];
     
     recordMetadata.typeFile = metadata.typeFile;
     recordMetadata.iconName = metadata.iconName;
@@ -1953,7 +1907,6 @@
     metadata.thumbnailExists = [recordMetadata.thumbnailExists boolValue];
     metadata.title = recordMetadata.title;
     metadata.type = recordMetadata.type;
-    metadata.typeCloud = recordMetadata.typeCloud;
     metadata.typeFile = recordMetadata.typeFile;
     metadata.uuid = recordMetadata.uuid;
     

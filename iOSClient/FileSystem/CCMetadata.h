@@ -55,7 +55,6 @@
 @property BOOL thumbnailExists;
 @property (nonatomic, strong) NSString *title;
 @property (nonatomic, strong) NSString *type;
-@property (nonatomic, strong) NSString *typeCloud;
 @property (nonatomic, strong) NSString *typeFile;
 @property (nonatomic, strong) NSString *uuid;
 

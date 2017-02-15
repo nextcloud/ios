@@ -519,7 +519,7 @@
     if (app.activeAccount == nil || app.activeUrl == nil) return;
     
     
-    NSString *serverUrl = [CCCoreData getCameraUploadFolderNamePathActiveAccount:app.activeAccount activeUrl:app.activeUrl typeCloud:app.typeCloud];
+    NSString *serverUrl = [CCCoreData getCameraUploadFolderNamePathActiveAccount:app.activeAccount activeUrl:app.activeUrl];
 
     // datasource
     NSArray *recordsTableMetadata = [CCCoreData getRecordsTableMetadataPhotosCameraUpload:serverUrl activeAccount:app.activeAccount];
@@ -1063,7 +1063,7 @@
     // STOP new request : initStateCameraUpload
     _AutomaticCameraUploadInProgress = YES;
     
-    NSString *folderPhotos = [CCCoreData getCameraUploadFolderNamePathActiveAccount:app.activeAccount activeUrl:app.activeUrl typeCloud:app.typeCloud];
+    NSString *folderPhotos = [CCCoreData getCameraUploadFolderNamePathActiveAccount:app.activeAccount activeUrl:app.activeUrl];
     
     // verify/create folder Camera Upload, if error exit
     if(![self createFolder:folderPhotos]) {
@@ -1111,7 +1111,7 @@
 {
     NSMutableArray *newItemsPHAssetToUpload = [[NSMutableArray alloc] init];
     
-    NSString *folderPhotos = [CCCoreData getCameraUploadFolderNamePathActiveAccount:app.activeAccount activeUrl:app.activeUrl typeCloud:app.typeCloud];
+    NSString *folderPhotos = [CCCoreData getCameraUploadFolderNamePathActiveAccount:app.activeAccount activeUrl:app.activeUrl];
     BOOL createSubfolders = [CCCoreData getCameraUploadCreateSubfolderActiveAccount:app.activeAccount];
     
     // Conversion from ALAsset -to-> PHAsset
@@ -1209,23 +1209,19 @@
 - (BOOL)createFolder:(NSString *)folderPathName
 {
     OCnetworking *ocNet;
+    NSError *error;
+        
+    ocNet = [[OCnetworking alloc] initWithDelegate:self metadataNet:nil withUser:app.activeUser withPassword:app.activePassword withUrl:app.activeUrl activityIndicator:NO isCryptoCloudMode:app.isCryptoCloudMode];
     
-    if ([app.typeCloud isEqualToString:typeCloudOwnCloud] || [app.typeCloud isEqualToString:typeCloudNextcloud]) {
+    error = [ocNet readFileSync:folderPathName];
+    if(!error)
+        return YES;
         
-        NSError *error;
+    error = [ocNet createFolderSync:folderPathName];
+    if (!error) {
         
-        ocNet = [[OCnetworking alloc] initWithDelegate:self metadataNet:nil withUser:app.activeUser withPassword:app.activePassword withUrl:app.activeUrl withTypeCloud:app.typeCloud activityIndicator:NO isCryptoCloudMode:app.isCryptoCloudMode];
-    
-        error = [ocNet readFileSync:folderPathName];
-        if(!error)
-            return YES;
-        
-        error = [ocNet createFolderSync:folderPathName];
-        if (!error) {
-        
-            [CCCoreData clearDateReadDirectory:[CCUtility deletingLastPathComponentFromServerUrl:folderPathName] activeAccount:app.activeAccount];
-            return YES;
-        }
+        [CCCoreData clearDateReadDirectory:[CCUtility deletingLastPathComponentFromServerUrl:folderPathName] activeAccount:app.activeAccount];
+        return YES;
     }
     
     return NO;

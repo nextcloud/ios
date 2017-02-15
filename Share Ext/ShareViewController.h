@@ -47,10 +47,8 @@
 @property (nonatomic, strong) NSString *activeUrl;
 @property (nonatomic, strong) NSString *activeUser;
 @property (nonatomic, strong) NSString *activePassword;
-@property (nonatomic, strong) NSString *activeUID;
 @property (nonatomic, strong) NSString *activeAccessToken;
 @property (nonatomic, strong) NSString *directoryUser;
-@property (nonatomic, strong) NSString *typeCloud;
 @property (nonatomic, strong) NSString *serverUrl;
 
 @property BOOL localCryptated;

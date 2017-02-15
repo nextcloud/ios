@@ -109,7 +109,7 @@ class CCActions: NSObject {
     
     func deleteFileOrFolderSuccess(_ metadataNet: CCMetadataNet) {
         
-        CCCoreData.deleteFile(metadataNet.metadata, serverUrl: metadataNet.serverUrl, directoryUser: appDelegate.directoryUser, typeCloud: appDelegate.typeCloud, activeAccount: appDelegate.activeAccount)
+        CCCoreData.deleteFile(metadataNet.metadata, serverUrl: metadataNet.serverUrl, directoryUser: appDelegate.directoryUser, activeAccount: appDelegate.activeAccount)
         
         metadataNet.delegate?.deleteFileOrFolderSuccess(metadataNet)
     }
@@ -118,7 +118,7 @@ class CCActions: NSObject {
         
         if errorCode == 404 {
             
-            CCCoreData.deleteFile(metadataNet.metadata, serverUrl: metadataNet.serverUrl, directoryUser: appDelegate.directoryUser, typeCloud: appDelegate.typeCloud, activeAccount: appDelegate.activeAccount)
+            CCCoreData.deleteFile(metadataNet.metadata, serverUrl: metadataNet.serverUrl, directoryUser: appDelegate.directoryUser, activeAccount: appDelegate.activeAccount)
         }
 
         if message.length > 0 {
@@ -213,7 +213,7 @@ class CCActions: NSObject {
             appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
             
             // delete file in filesystem
-            CCCoreData.deleteFile(metadata, serverUrl: serverUrl, directoryUser: appDelegate.directoryUser, typeCloud: appDelegate.typeCloud, activeAccount: appDelegate.activeAccount)
+            CCCoreData.deleteFile(metadata, serverUrl: serverUrl, directoryUser: appDelegate.directoryUser, activeAccount: appDelegate.activeAccount)
  
         } else {
  

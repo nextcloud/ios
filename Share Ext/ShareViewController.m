@@ -71,7 +71,6 @@
         _activeUrl = recordAccount.url;
         _activeUser = recordAccount.user;
         _directoryUser = [CCUtility getDirectoryActiveUser:self.activeUser activeUrl:self.activeUrl];
-        _typeCloud = recordAccount.typeCloud;
         
         if ([[CCUtility getKeyChainPasscodeForUUID:[CCUtility getUUID]] length] == 0) {
             
@@ -100,7 +99,7 @@
             
             [CCUtility setActiveAccountShareExt:self.activeAccount];
 
-            _serverUrl  = [CCUtility getHomeServerUrlActiveUrl:self.activeUrl typeCloud:self.typeCloud];
+            _serverUrl  = [CCUtility getHomeServerUrlActiveUrl:self.activeUrl];
             [CCUtility setServerUrlShareExt:_serverUrl];
 
             _destinyFolderButton.title = [NSString stringWithFormat:NSLocalizedString(@"_destiny_folder_", nil), NSLocalizedString(@"_home_", nil)];
@@ -345,8 +344,7 @@
 {
     id operation;
    
-    if ([_typeCloud isEqualToString:typeCloudOwnCloud] || [_typeCloud isEqualToString:typeCloudNextcloud])
-        operation = [[OCnetworking alloc] initWithDelegate:self metadataNet:metadataNet withUser:_activeUser withPassword:_activePassword withUrl:_activeUrl withTypeCloud:_typeCloud activityIndicator:NO isCryptoCloudMode:_isCryptoCloudMode];
+    operation = [[OCnetworking alloc] initWithDelegate:self metadataNet:metadataNet withUser:_activeUser withPassword:_activePassword withUrl:_activeUrl activityIndicator:NO isCryptoCloudMode:_isCryptoCloudMode];
     
     [operation setQueuePriority:metadataNet.priority];
     

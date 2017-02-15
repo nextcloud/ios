@@ -53,10 +53,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
     var activeUrl: String?
     var activeUser: String?
     var activePassword: String?
-    var activeUID: String?
-    var activeAccessToken: String?
     var directoryUser: String?
-    var typeCloud: String?
     
     var serverUrl: String?
     var thumbnailInLoading = [String: IndexPath]()
@@ -100,12 +97,11 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
             activePassword = record.password!
             activeUrl = record.url!
             activeUser = record.user!
-            typeCloud = record.typeCloud!
             directoryUser = CCUtility.getDirectoryActiveUser(activeUser, activeUrl: activeUrl)
             
             if (self.serverUrl == nil) {
             
-                self.serverUrl = CCUtility.getHomeServerUrlActiveUrl(activeUrl, typeCloud: typeCloud)
+                self.serverUrl = CCUtility.getHomeServerUrlActiveUrl(activeUrl)
                                 
             } else {
                 
@@ -256,7 +252,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         metadataNet.serverUrl = self.serverUrl
         metadataNet.selector = selectorReadFolder
         
-        let ocNetworking : OCnetworking = OCnetworking.init(delegate: self, metadataNet: metadataNet, withUser: activeUser, withPassword: activePassword, withUrl: activeUrl, withTypeCloud: typeCloud, activityIndicator: false, isCryptoCloudMode: isCryptoCloudMode!)
+        let ocNetworking : OCnetworking = OCnetworking.init(delegate: self, metadataNet: metadataNet, withUser: activeUser, withPassword: activePassword, withUrl: activeUrl, activityIndicator: false, isCryptoCloudMode: isCryptoCloudMode!)
         networkingOperationQueue.addOperation(ocNetworking)
         
         hud.visibleIndeterminateHud()
@@ -314,7 +310,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
             }
             
             // Add record
-            CCCoreData.add(metadata, activeAccount: activeAccount, activeUrl: activeUrl, typeCloud: typeCloud, context: nil)
+            CCCoreData.add(metadata, activeAccount: activeAccount, activeUrl: activeUrl, context: nil)
             
             // if plist do not exists, download it
             if CCUtility.isCryptoPlistString(metadata.fileName) && FileManager.default.fileExists(atPath: "\(directoryUser!)/\(metadata.fileName!)") == false {
@@ -330,7 +326,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
                 metadataNet.session = k_download_session_foreground
                 metadataNet.taskStatus = Int(k_taskStatusResume)
                 
-                let ocNetworking : OCnetworking = OCnetworking.init(delegate: self, metadataNet: metadataNet, withUser: activeUser, withPassword: activePassword, withUrl: activeUrl, withTypeCloud: typeCloud, activityIndicator: false, isCryptoCloudMode: isCryptoCloudMode!)
+                let ocNetworking : OCnetworking = OCnetworking.init(delegate: self, metadataNet: metadataNet, withUser: activeUser, withPassword: activePassword, withUrl: activeUrl, activityIndicator: false, isCryptoCloudMode: isCryptoCloudMode!)
                 networkingOperationQueue.addOperation(ocNetworking)
             }
         }
@@ -372,14 +368,14 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         
         metadataNet.action = actionDownloadThumbnail
         metadataNet.fileID = metadata.fileID
-        metadataNet.fileName = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: self.serverUrl, activeUrl: activeUrl, typeCloud: typeCloud)
+        metadataNet.fileName = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: self.serverUrl, activeUrl: activeUrl)
         metadataNet.fileNameLocal = metadata.fileID;
         metadataNet.fileNamePrint = metadata.fileNamePrint;
         metadataNet.options = "m";
         metadataNet.selector = selectorDownloadThumbnail;
         metadataNet.serverUrl = self.serverUrl
         
-        let ocNetworking : OCnetworking = OCnetworking.init(delegate: self, metadataNet: metadataNet, withUser: activeUser, withPassword: activePassword, withUrl: activeUrl, withTypeCloud: typeCloud, activityIndicator: false, isCryptoCloudMode: isCryptoCloudMode!)
+        let ocNetworking : OCnetworking = OCnetworking.init(delegate: self, metadataNet: metadataNet, withUser: activeUser, withPassword: activePassword, withUrl: activeUrl, activityIndicator: false, isCryptoCloudMode: isCryptoCloudMode!)
         networkingOperationQueue.addOperation(ocNetworking)
     }
 
@@ -445,7 +441,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
             
         case selectorLoadPlist :
             
-            CCCoreData.downloadFilePlist(metadata, activeAccount: activeAccount, activeUrl: activeUrl, typeCloud: typeCloud, directoryUser: directoryUser)
+            CCCoreData.downloadFilePlist(metadata, activeAccount: activeAccount, activeUrl: activeUrl,directoryUser: directoryUser)
             tableView.reloadData()
             
         default :
@@ -555,7 +551,7 @@ extension DocumentPickerViewController {
                     metadataNet.session = k_upload_session_foreground
                     metadataNet.taskStatus = Int(k_taskStatusResume)
                     
-                    let ocNetworking : OCnetworking = OCnetworking.init(delegate: self!, metadataNet: metadataNet, withUser: self!.activeUser, withPassword: self!.activePassword, withUrl: self!.activeUrl, withTypeCloud: self!.typeCloud, activityIndicator: false, isCryptoCloudMode: self!.isCryptoCloudMode!)
+                    let ocNetworking : OCnetworking = OCnetworking.init(delegate: self!, metadataNet: metadataNet, withUser: self!.activeUser, withPassword: self!.activePassword, withUrl: self!.activeUrl, activityIndicator: false, isCryptoCloudMode: self!.isCryptoCloudMode!)
                     self!.networkingOperationQueue.addOperation(ocNetworking)
                     
                     self!.hud.visibleHudTitle(NSLocalizedString("_uploading_", comment: ""), mode: MBProgressHUDMode.determinateHorizontalBar, color: self!.navigationController?.view.tintColor)
@@ -789,7 +785,7 @@ extension DocumentPickerViewController: UITableViewDataSource {
                 metadataNet.session = k_download_session_foreground
                 metadataNet.taskStatus = Int(k_taskStatusResume)
             
-                let ocNetworking : OCnetworking = OCnetworking.init(delegate: self, metadataNet: metadataNet, withUser: activeUser, withPassword: activePassword, withUrl: activeUrl, withTypeCloud: typeCloud, activityIndicator: false, isCryptoCloudMode: self.isCryptoCloudMode!)
+                let ocNetworking : OCnetworking = OCnetworking.init(delegate: self, metadataNet: metadataNet, withUser: activeUser, withPassword: activePassword, withUrl: activeUrl, activityIndicator: false, isCryptoCloudMode: self.isCryptoCloudMode!)
                 networkingOperationQueue.addOperation(ocNetworking)
                 
                 hud.visibleHudTitle(NSLocalizedString("_loading_", comment: ""), mode: MBProgressHUDMode.determinateHorizontalBar, color: self.navigationController?.view.tintColor)

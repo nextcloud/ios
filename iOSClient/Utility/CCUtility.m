@@ -378,15 +378,9 @@
 #pragma mark ===== Varius =====
 #pragma --------------------------------------------------------------------------------------------
 
-+ (NSString *)getUserAgent:(NSString *)typeCloud
++ (NSString *)getUserAgent
 {
     NSString *appVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
-    
-    if ([typeCloud isEqualToString:typeCloudOwnCloud])
-        return [NSString stringWithFormat:@"%@%@",@"Mozilla/5.0 (iOS) CryptoCloud-iOS/",appVersion];
-    
-    if ([typeCloud isEqualToString:typeCloudNextcloud])
-        return [NSString stringWithFormat:@"%@%@",@"Mozilla/5.0 (iOS) Nextcloud-iOS/",appVersion];
     
     return [NSString stringWithFormat:@"%@%@",@"Mozilla/5.0 (iOS) Nextcloud-iOS/",appVersion];
 }
@@ -525,16 +519,11 @@
     return fileName;
 }
 
-+ (NSString *)getHomeServerUrlActiveUrl:(NSString *)activeUrl typeCloud:(NSString *)typeCloud
++ (NSString *)getHomeServerUrlActiveUrl:(NSString *)activeUrl
 {
-    if (activeUrl == nil || typeCloud == nil) return nil;
+    if (activeUrl == nil) return nil;
     
-    NSString *home;
-        
-    if ([typeCloud isEqualToString:typeCloudOwnCloud] || [typeCloud isEqualToString:typeCloudNextcloud])
-        home = [activeUrl stringByAppendingString:webDAV];
-    
-    return home;
+    return [activeUrl stringByAppendingString:webDAV];
 }
 
 // Return path of User Crypto Cloud / <user dir>
@@ -677,9 +666,9 @@
     return [pather substringToIndex: [pather length] - 1];
 }
 
-+ (NSString *)returnFileNamePathFromFileName:(NSString *)metadataFileName serverUrl:(NSString *)serverUrl activeUrl:(NSString *)activeUrl typeCloud:(NSString *)typeCloud
++ (NSString *)returnFileNamePathFromFileName:(NSString *)metadataFileName serverUrl:(NSString *)serverUrl activeUrl:(NSString *)activeUrl
 {
-    NSString *fileName = [NSString stringWithFormat:@"%@/%@", [serverUrl stringByReplacingOccurrencesOfString:[CCUtility getHomeServerUrlActiveUrl:activeUrl typeCloud:typeCloud] withString:@""], metadataFileName];
+    NSString *fileName = [NSString stringWithFormat:@"%@/%@", [serverUrl stringByReplacingOccurrencesOfString:[CCUtility getHomeServerUrlActiveUrl:activeUrl] withString:@""], metadataFileName];
     
     if ([fileName hasPrefix:@"/"]) fileName = [fileName substringFromIndex:1];
     
@@ -770,7 +759,7 @@
 #pragma mark ===== CCMetadata =====
 #pragma --------------------------------------------------------------------------------------------
 
-+ (CCMetadata *)trasformedOCFileToCCMetadata:(OCFileDto *)itemDto fileNamePrint:(NSString *)fileNamePrint serverUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID cameraFolderName:(NSString *)cameraFolderName cameraFolderPath:(NSString *)cameraFolderPath activeAccount:(NSString *)activeAccount directoryUser:(NSString *)directoryUser typeCloud:(NSString *)typeCloud
++ (CCMetadata *)trasformedOCFileToCCMetadata:(OCFileDto *)itemDto fileNamePrint:(NSString *)fileNamePrint serverUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID cameraFolderName:(NSString *)cameraFolderName cameraFolderPath:(NSString *)cameraFolderPath activeAccount:(NSString *)activeAccount directoryUser:(NSString *)directoryUser
 {
     CCMetadata *metadata = [[CCMetadata alloc] init];
     
@@ -796,7 +785,6 @@
     metadata.title = @"";
     metadata.type = k_metadataType_file;
     metadata.typeFile = @"";
-    metadata.typeCloud = typeCloud;
     metadata.uuid = [CCUtility getUUID];
     
     switch ([self getTypeFileName:metadata.fileName]) {
@@ -837,15 +825,13 @@
         NSString *ext = (__bridge NSString *)fileExtension;
         ext = ext.uppercaseString;
         
-        // thumbnailExists for typeCloudOwnCloud
-        if ([metadata.typeCloud isEqualToString:typeCloudOwnCloud] || [metadata.typeCloud isEqualToString:typeCloudNextcloud]) {
+        // thumbnailExists
             
-            
-            if([ext isEqualToString:@"JPG"] || [ext isEqualToString:@"PNG"] || [ext isEqualToString:@"JPEG"] || [ext isEqualToString:@"GIF"] || [ext isEqualToString:@"BMP"] || [ext isEqualToString:@"MP3"]  || [ext isEqualToString:@"MOV"]  || [ext isEqualToString:@"MP4"]  || [ext isEqualToString:@"M4V"] || [ext isEqualToString:@"3GP"])
-                metadata.thumbnailExists = YES;
-            else
-                metadata.thumbnailExists = NO;
-        }
+        if([ext isEqualToString:@"JPG"] || [ext isEqualToString:@"PNG"] || [ext isEqualToString:@"JPEG"] || [ext isEqualToString:@"GIF"] || [ext isEqualToString:@"BMP"] || [ext isEqualToString:@"MP3"]  || [ext isEqualToString:@"MOV"]  || [ext isEqualToString:@"MP4"]  || [ext isEqualToString:@"M4V"] || [ext isEqualToString:@"3GP"])
+            metadata.thumbnailExists = YES;
+        else
+            metadata.thumbnailExists = NO;
+        
         // if wrong code, icon protect
         if (metadata.errorPasscode) {
             metadata.typeFile = k_metadataTypeFile_unknown;

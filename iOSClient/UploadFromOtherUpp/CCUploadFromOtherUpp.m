@@ -41,7 +41,7 @@
     self.navigationItem.rightBarButtonItem.title = NSLocalizedString(@"_cancel_", nil);
     self.title = [CCUtility localizableBrand:@"_crypto_cloud_upload_" table:nil];
     
-    serverUrlLocal= [CCUtility getHomeServerUrlActiveUrl:app.activeUrl typeCloud:app.typeCloud];
+    serverUrlLocal= [CCUtility getHomeServerUrlActiveUrl:app.activeUrl];
     destinationTitle = NSLocalizedString(@"_home_", nil);
 }
 

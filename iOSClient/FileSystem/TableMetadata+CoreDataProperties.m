@@ -54,7 +54,6 @@
 @dynamic thumbnailExists;
 @dynamic title;
 @dynamic type;
-@dynamic typeCloud;
 @dynamic typeFile;
 @dynamic uuid;
 

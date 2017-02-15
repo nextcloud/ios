@@ -45,9 +45,6 @@
 @dynamic dateRecord;
 @dynamic optimization;
 @dynamic password;
-@dynamic token;
-@dynamic typeCloud;
-@dynamic uid;
 @dynamic url;
 @dynamic user;
 

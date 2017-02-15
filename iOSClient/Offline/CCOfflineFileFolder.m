@@ -194,7 +194,7 @@
             // delete metadata not present
             for (CCMetadata *metadata in metadatasNotPresents) {
                 
-                [CCCoreData deleteFile:metadata serverUrl:metadataNet.serverUrl directoryUser:app.directoryUser typeCloud:app.typeCloud activeAccount:app.activeAccount];
+                [CCCoreData deleteFile:metadata serverUrl:metadataNet.serverUrl directoryUser:app.directoryUser activeAccount:app.activeAccount];
             }
             
             if ([metadatasNotPresents count] > 0)
@@ -213,7 +213,7 @@
                     
                     NSString *dir = [CCUtility stringAppendServerUrl:metadataNet.serverUrl addServerUrl:metadata.fileNameData];
                     
-                    [CCCoreData addMetadata:metadata activeAccount:app.activeAccount activeUrl:app.activeUrl typeCloud:app.typeCloud context:nil];
+                    [CCCoreData addMetadata:metadata activeAccount:app.activeAccount activeUrl:app.activeUrl context:nil];
                     
                     [[CCOfflineFileFolder sharedOfflineFileFolder] addOfflineFolder:dir];
 
@@ -278,7 +278,7 @@
 
 - (void)readFileOffline
 {
-    if (app.activeAccount == nil || [CCUtility getHomeServerUrlActiveUrl:app.activeUrl typeCloud:app.typeCloud] == nil)
+    if (app.activeAccount == nil || [CCUtility getHomeServerUrlActiveUrl:app.activeUrl] == nil)
         return;
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
@@ -417,7 +417,7 @@
                 selector = selectorLoadPlist;
             }
         
-            [CCCoreData addMetadata:metadata activeAccount:app.activeAccount activeUrl:serverUrl typeCloud:app.typeCloud context:nil];
+            [CCCoreData addMetadata:metadata activeAccount:app.activeAccount activeUrl:serverUrl context:nil];
         
             CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
             

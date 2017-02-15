@@ -123,7 +123,7 @@
 
 // ===== Varius =====
 
-+ (NSString *)getUserAgent:(NSString *)typeCloud;
++ (NSString *)getUserAgent;
 
 + (NSString *)dateDiff:(NSDate *) convertedDate;
 + (NSString *)transformedSize:(double)value;
@@ -134,7 +134,7 @@
 + (NSString *)createID;
 + (NSString *)createFileNameFromAsset:(PHAsset *)asset key:(NSString *)key;
 
-+ (NSString *)getHomeServerUrlActiveUrl:(NSString *)activeUrl typeCloud:(NSString *)typeCloud;
++ (NSString *)getHomeServerUrlActiveUrl:(NSString *)activeUrl;
 + (NSString *)getDirectoryActiveUser:(NSString *)activeUser activeUrl:(NSString *)activeUrl;
 + (NSString *)getOLDDirectoryActiveUser:(NSString *)activeUser activeUrl:(NSString *)activeUrl;
 + (NSString *)getDirectoryLocal;
@@ -147,7 +147,7 @@
 + (void)removeAllFileID_UPLOAD_ActiveUser:(NSString *)activeUser activeUrl:(NSString *)activeUrl;
 
 + (NSString *)deletingLastPathComponentFromServerUrl:(NSString *)serverUrl;
-+ (NSString *)returnFileNamePathFromFileName:(NSString *)metadataFileName serverUrl:(NSString *)serverUrl activeUrl:(NSString *)activeUrl typeCloud:(NSString *)typeCloud;
++ (NSString *)returnFileNamePathFromFileName:(NSString *)metadataFileName serverUrl:(NSString *)serverUrl activeUrl:(NSString *)activeUrl;
 
 + (void)sendMailEncryptPass:(NSString *)recipient validateEmail:(BOOL)validateEmail form:(id)form;
 
@@ -157,7 +157,7 @@
 
 // ===== CCMetadata =====
 
-+ (CCMetadata *)trasformedOCFileToCCMetadata:(OCFileDto *)itemDto fileNamePrint:(NSString *)fileNamePrint serverUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID cameraFolderName:(NSString *)cameraFolderName cameraFolderPath:(NSString *)cameraFolderPath activeAccount:(NSString *)activeAccount directoryUser:(NSString *)directoryUser typeCloud:(NSString *)typeCloud;
++ (CCMetadata *)trasformedOCFileToCCMetadata:(OCFileDto *)itemDto fileNamePrint:(NSString *)fileNamePrint serverUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID cameraFolderName:(NSString *)cameraFolderName cameraFolderPath:(NSString *)cameraFolderPath activeAccount:(NSString *)activeAccount directoryUser:(NSString *)directoryUser;
 
 + (void)insertTypeFileIconName:(CCMetadata *)metadata directory:(NSString *)directory cameraFolderName:(NSString *)cameraFolderName cameraFolderPath:(NSString *)cameraFolderPath;
 + (void)insertInformationPlist:(CCMetadata *)metadata directoryUser:(NSString *)directoryUser;

@@ -150,7 +150,7 @@
 #define image_tabBarSettings                    @"tabBarSettings"
 #define image_txt                               @"txt"
 #define image_txtcrypto                         @"txtcrypto"
-#define image_typeCloudNextcloud                @"typeCloudNextcloud"
+#define image_Nextcloud                         @"typeCloudNextcloud"
 #define image_typeFileCompress                  @"typeFileCompress"
 #define image_filetype_htlm                     @"filetype_html"
 #define image_filetype_htlm_crypto              @"filetype_html_crypto"

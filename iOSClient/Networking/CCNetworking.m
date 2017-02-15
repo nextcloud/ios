@@ -37,12 +37,9 @@
     
     NSString *_activeAccount;
     NSString *_activePassword;
-    NSString *_activeUID;
-    NSString *_activeAccessToken;
     NSString *_activeUser;
     NSString *_activeUrl;
     NSString *_directoryUser;
-    NSString *_typeCloud;
 }
 @end
 
@@ -96,12 +93,9 @@
     
     _activeAccount = tableAccount.account;
     _activePassword = tableAccount.password;
-    _activeUID = tableAccount.uid;
-    _activeAccessToken = tableAccount.token;
     _activeUser = tableAccount.user;
     _activeUrl = tableAccount.url;
     _directoryUser = [CCUtility getDirectoryActiveUser:_activeUser activeUrl:_activeUrl];
-    _typeCloud = tableAccount.typeCloud;
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -422,14 +416,11 @@
     
     if ([task isKindOfClass:[NSURLSessionDownloadTask class]]) {
         
-        if ([_typeCloud isEqualToString:typeCloudOwnCloud] || [_typeCloud isEqualToString:typeCloudNextcloud]) {
+        NSDictionary *fields = [httpResponse allHeaderFields];
             
-            NSDictionary *fields = [httpResponse allHeaderFields];
-            
-            if (errorCode == 0) {
-                rev = [CCUtility removeForbiddenCharacters:[fields objectForKey:@"OC-ETag"] hasServerForbiddenCharactersSupport:NO];
-                date = [dateFormatter dateFromString:[fields objectForKey:@"Date"]];
-            }
+        if (errorCode == 0) {
+            rev = [CCUtility removeForbiddenCharacters:[fields objectForKey:@"OC-ETag"] hasServerForbiddenCharactersSupport:NO];
+            date = [dateFormatter dateFromString:[fields objectForKey:@"Date"]];
         }
         
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -446,15 +437,12 @@
     
     if ([task isKindOfClass:[NSURLSessionUploadTask class]]) {
         
-        if ([_typeCloud isEqualToString:typeCloudOwnCloud] || [_typeCloud isEqualToString:typeCloudNextcloud]) {
+        NSDictionary *fields = [httpResponse allHeaderFields];
             
-            NSDictionary *fields = [httpResponse allHeaderFields];
-            
-            if (errorCode == 0) {
-                fileID = [CCUtility removeForbiddenCharacters:[fields objectForKey:@"OC-FileId"] hasServerForbiddenCharactersSupport:NO];
-                rev = [CCUtility removeForbiddenCharacters:[fields objectForKey:@"OC-ETag"] hasServerForbiddenCharactersSupport:NO];
-                date = [dateFormatter dateFromString:[fields objectForKey:@"Date"]];
-            }
+        if (errorCode == 0) {
+            fileID = [CCUtility removeForbiddenCharacters:[fields objectForKey:@"OC-FileId"] hasServerForbiddenCharactersSupport:NO];
+            rev = [CCUtility removeForbiddenCharacters:[fields objectForKey:@"OC-ETag"] hasServerForbiddenCharactersSupport:NO];
+            date = [dateFormatter dateFromString:[fields objectForKey:@"Date"]];
         }
         
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -531,17 +519,14 @@
     NSURL *url;
     NSMutableURLRequest *request;
     
-    if ([_typeCloud isEqualToString:typeCloudNextcloud] || [_typeCloud isEqualToString:typeCloudOwnCloud]) {
+    NSString *serverFileUrl = [[NSString stringWithFormat:@"%@/%@", serverUrl, fileName] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
         
-        NSString *serverFileUrl = [[NSString stringWithFormat:@"%@/%@", serverUrl, fileName] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    url = [NSURL URLWithString:serverFileUrl];
+    request = [NSMutableURLRequest requestWithURL:url];
         
-        url = [NSURL URLWithString:serverFileUrl];
-        request = [NSMutableURLRequest requestWithURL:url];
-        
-        NSData *authData = [[NSString stringWithFormat:@"%@:%@", _activeUser, _activePassword] dataUsingEncoding:NSUTF8StringEncoding];
-        NSString *authValue = [NSString stringWithFormat: @"Basic %@",[authData base64EncodedStringWithOptions:0]];
-        [request setValue:authValue forHTTPHeaderField:@"Authorization"];
-    }
+    NSData *authData = [[NSString stringWithFormat:@"%@:%@", _activeUser, _activePassword] dataUsingEncoding:NSUTF8StringEncoding];
+    NSString *authValue = [NSString stringWithFormat: @"Basic %@",[authData base64EncodedStringWithOptions:0]];
+    [request setValue:authValue forHTTPHeaderField:@"Authorization"];
     
     if ([session isEqualToString:k_download_session]) sessionDownload = [self sessionDownload];
     else if ([session isEqualToString:k_download_session_foreground]) sessionDownload = [self sessionDownloadForeground];
@@ -840,7 +825,7 @@
     
     // create Metadata
     NSString *cameraFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:_activeAccount];
-    NSString *cameraFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:_activeAccount activeUrl:_activeUrl typeCloud:_typeCloud];
+    NSString *cameraFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:_activeAccount activeUrl:_activeUrl];
     
     CCMetadata *metadata = [CCUtility insertFileSystemInMetadata:fileName directory:_directoryUser activeAccount:_activeAccount cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath];
     
@@ -866,10 +851,9 @@
         metadata.sessionID = uploadID;
         metadata.sessionSelector = selector;
         metadata.sessionSelectorPost = selectorPost;
-        metadata.typeCloud = _typeCloud;
         metadata.typeFile = k_metadataTypeFile_unknown;
         
-        [CCCoreData addMetadata:metadata activeAccount:_activeAccount activeUrl:_activeUrl typeCloud:_typeCloud context:_context];
+        [CCCoreData addMetadata:metadata activeAccount:_activeAccount activeUrl:_activeUrl context:_context];
         
         [self uploadURLSession:fileName fileNamePrint:metadata.fileNamePrint serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist selector:selector];
     }
@@ -897,10 +881,9 @@
             metadata.sessionID = uploadID;
             metadata.sessionSelector = selector;
             metadata.sessionSelectorPost = selectorPost;
-            metadata.typeCloud = _typeCloud;
             metadata.typeFile = k_metadataTypeFile_template;
             
-            [CCCoreData addMetadata:metadata activeAccount:_activeAccount activeUrl:_activeUrl typeCloud:_typeCloud context:_context];
+            [CCCoreData addMetadata:metadata activeAccount:_activeAccount activeUrl:_activeUrl context:_context];
             
             // DATA
             [self uploadURLSession:fileNameCrypto fileNamePrint:fileName serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist selector:selector];
@@ -958,7 +941,6 @@
             metadata.sessionID = uploadID;
             metadata.sessionSelector = selector;
             metadata.sessionSelectorPost = selectorPost;
-            metadata.typeCloud = _typeCloud;
             metadata.title = [self getTitleFromPlistName:fileNameCrypto];
             metadata.type = k_metadataType_file;
             
@@ -986,7 +968,7 @@
                     
                     // -- remove record --
                     CCMetadata *metadataDelete = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileName == %@) AND (directoryID == %@)", _activeAccount, [fileNameCrypto stringByAppendingString:@".plist"], directoryID] context:nil];
-                    [CCCoreData deleteFile:metadataDelete serverUrl:serverUrl directoryUser:_directoryUser typeCloud:_typeCloud activeAccount:_activeAccount];
+                    [CCCoreData deleteFile:metadataDelete serverUrl:serverUrl directoryUser:_directoryUser activeAccount:_activeAccount];
                     
 #ifndef EXTENSION
                     [CCGraphics createNewImageFrom:fileName directoryUser:_directoryUser fileNameTo:uploadID fileNamePrint:fileName size:@"m" imageForUpload:YES typeFile:metadata.typeFile writePreview:YES optimizedFileName:NO];
@@ -995,7 +977,7 @@
                     if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image] || [metadata.typeFile isEqualToString: k_metadataTypeFile_video])
                         [crypto addPlistImage:[NSString stringWithFormat:@"%@/%@", _directoryUser, [fileNameCrypto stringByAppendingString:@".plist"]] fileNamePathImage:[NSTemporaryDirectory() stringByAppendingString:uploadID]];
                     
-                    [CCCoreData addMetadata:metadata activeAccount:_activeAccount activeUrl:_activeUrl typeCloud:_typeCloud context:_context];
+                    [CCCoreData addMetadata:metadata activeAccount:_activeAccount activeUrl:_activeUrl context:_context];
                     
                     // DATA
                     [self uploadURLSession:fileNameCrypto fileNamePrint:fileName serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist selector:selector];
@@ -1024,7 +1006,7 @@
                 if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image] || [metadata.typeFile isEqualToString: k_metadataTypeFile_video])
                     [crypto addPlistImage:[NSString stringWithFormat:@"%@/%@", _directoryUser, [fileNameCrypto stringByAppendingString:@".plist"]] fileNamePathImage:[NSTemporaryDirectory() stringByAppendingString:uploadID]];
                 
-                [CCCoreData addMetadata:metadata activeAccount:_activeAccount activeUrl:_activeUrl typeCloud:_typeCloud context:_context];
+                [CCCoreData addMetadata:metadata activeAccount:_activeAccount activeUrl:_activeUrl context:_context];
                 
                 // DATA
                 [self uploadURLSession:fileNameCrypto fileNamePrint:fileName serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist selector:selector];
@@ -1050,7 +1032,6 @@
         metadata.sessionSelector = selector;
         metadata.sessionSelectorPost = selectorPost;
         metadata.type = k_metadataType_file;
-        metadata.typeCloud = _typeCloud;
         
         // File exists ???
         if (errorCode == 403) {
@@ -1077,12 +1058,12 @@
                 
                 // -- remove record --
                 CCMetadata *metadataDelete = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileName == %@) AND (directoryID == %@)", _activeAccount, fileName, directoryID] context:nil];
-                [CCCoreData deleteFile:metadataDelete serverUrl:serverUrl directoryUser:_directoryUser typeCloud:_typeCloud activeAccount:_activeAccount];
+                [CCCoreData deleteFile:metadataDelete serverUrl:serverUrl directoryUser:_directoryUser activeAccount:_activeAccount];
                 
                 // -- Go to Upload --
                 [CCGraphics createNewImageFrom:metadata.fileNamePrint directoryUser:_directoryUser fileNameTo:metadata.fileID fileNamePrint:metadata.fileNamePrint size:@"m" imageForUpload:YES typeFile:metadata.typeFile writePreview:YES optimizedFileName:NO];
                 
-                [CCCoreData addMetadata:metadata activeAccount:_activeAccount activeUrl:_activeUrl typeCloud:_typeCloud context:_context];
+                [CCCoreData addMetadata:metadata activeAccount:_activeAccount activeUrl:_activeUrl context:_context];
                 
                 [self uploadURLSession:fileName fileNamePrint:fileName serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist selector:selector];
             }];
@@ -1105,7 +1086,7 @@
 #ifndef EXTENSION
             [CCGraphics createNewImageFrom:metadata.fileNamePrint directoryUser:_directoryUser fileNameTo:metadata.fileID fileNamePrint:metadata.fileNamePrint size:@"m" imageForUpload:YES typeFile:metadata.typeFile writePreview:YES optimizedFileName:NO];
 #endif
-            [CCCoreData addMetadata:metadata activeAccount:_activeAccount activeUrl:_activeUrl typeCloud:_typeCloud context:_context];
+            [CCCoreData addMetadata:metadata activeAccount:_activeAccount activeUrl:_activeUrl context:_context];
             
             [self uploadURLSession:fileName fileNamePrint:fileName serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType cryptated:cryptated onlyPlist:onlyPlist selector:selector];
         }
@@ -1165,18 +1146,15 @@
     NSURL *url;
     NSMutableURLRequest *request;
     
-    if ([_typeCloud isEqualToString:typeCloudNextcloud] || [_typeCloud isEqualToString:typeCloudOwnCloud]) {
+    NSString *fileNamePath = [[NSString stringWithFormat:@"%@/%@", serverUrl, fileName] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
         
-        NSString *fileNamePath = [[NSString stringWithFormat:@"%@/%@", serverUrl, fileName] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    url = [NSURL URLWithString:fileNamePath];
+    request = [NSMutableURLRequest requestWithURL:url];
         
-        url = [NSURL URLWithString:fileNamePath];
-        request = [NSMutableURLRequest requestWithURL:url];
-        
-        NSData *authData = [[NSString stringWithFormat:@"%@:%@", _activeUser, _activePassword] dataUsingEncoding:NSUTF8StringEncoding];
-        NSString *authValue = [NSString stringWithFormat: @"Basic %@",[authData base64EncodedStringWithOptions:0]];
-        [request setHTTPMethod:@"PUT"];
-        [request setValue:authValue forHTTPHeaderField:@"Authorization"];
-    }
+    NSData *authData = [[NSString stringWithFormat:@"%@:%@", _activeUser, _activePassword] dataUsingEncoding:NSUTF8StringEncoding];
+    NSString *authValue = [NSString stringWithFormat: @"Basic %@",[authData base64EncodedStringWithOptions:0]];
+    [request setHTTPMethod:@"PUT"];
+    [request setValue:authValue forHTTPHeaderField:@"Authorization"];
     
     // Rename with the SessionID
     NSString *fileNameForUpload;
@@ -1352,7 +1330,7 @@
         // copy ico in new fileID
         [CCUtility copyFileAtPath:[NSString stringWithFormat:@"%@/%@.ico", _directoryUser, sessionID] toPath:[NSString stringWithFormat:@"%@/%@.ico", _directoryUser, fileID]];
         
-        [CCCoreData updateMetadata:metadata predicate:[NSPredicate predicateWithFormat:@"(sessionID == %@) AND (account == %@)", sessionID, _activeAccount] activeAccount:_activeAccount activeUrl:_activeUrl typeCloud:_typeCloud context:_context];
+        [CCCoreData updateMetadata:metadata predicate:[NSPredicate predicateWithFormat:@"(sessionID == %@) AND (account == %@)", sessionID, _activeAccount] activeAccount:_activeAccount activeUrl:_activeUrl context:_context];
     }
     
     // CRYPTO
@@ -1360,7 +1338,7 @@
         
         metadata.sessionTaskIdentifier = k_taskIdentifierDone;
         
-        [CCCoreData updateMetadata:metadata predicate:[NSPredicate predicateWithFormat:@"(sessionID == %@) AND (account == %@)", sessionID, _activeAccount] activeAccount:_activeAccount activeUrl:_activeUrl typeCloud:_typeCloud context:_context];
+        [CCCoreData updateMetadata:metadata predicate:[NSPredicate predicateWithFormat:@"(sessionID == %@) AND (account == %@)", sessionID, _activeAccount] activeAccount:_activeAccount activeUrl:_activeUrl context:_context];
     }
     
     // ALL TASK DONE (PLAIN/CRYPTO)
@@ -1377,7 +1355,7 @@
         metadata.sessionError = @"";
         metadata.sessionID = @"";
         
-        [CCCoreData updateMetadata:metadata predicate:[NSPredicate predicateWithFormat:@"(sessionID == %@) AND (account == %@)", sessionID, _activeAccount] activeAccount:_activeAccount activeUrl:_activeUrl typeCloud:_typeCloud context:_context];
+        [CCCoreData updateMetadata:metadata predicate:[NSPredicate predicateWithFormat:@"(sessionID == %@) AND (account == %@)", sessionID, _activeAccount] activeAccount:_activeAccount activeUrl:_activeUrl context:_context];
         
         // rename file sessionID -> fileID
         [CCUtility moveFileAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, sessionID]  toPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadata.fileID]];
@@ -1715,10 +1693,7 @@
 {
     NSString *fileName = [url lastPathComponent];
     
-    if ([_typeCloud isEqualToString:typeCloudOwnCloud] || [_typeCloud isEqualToString:typeCloudNextcloud]) {
-        
-        url = [url stringByReplacingOccurrencesOfString:[@"/" stringByAppendingString:fileName] withString:@""];
-    }
+    url = [url stringByReplacingOccurrencesOfString:[@"/" stringByAppendingString:fileName] withString:@""];
 
     return url;
 }

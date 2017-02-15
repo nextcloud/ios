@@ -21,9 +21,6 @@
         <attribute name="dateRecord" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="optimization" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="password" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="token" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="typeCloud" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="uid" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="url" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="user" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
@@ -113,7 +110,6 @@
         <attribute name="thumbnailExists" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="type" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="typeCloud" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="typeFile" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="uuid" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
@@ -126,13 +122,13 @@
         <attribute name="shareUserAndGroup" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
     <elements>
-        <element name="TableAccount" positionX="-6597" positionY="111" width="171" height="420"/>
+        <element name="TableAccount" positionX="-6597" positionY="111" width="171" height="373"/>
         <element name="TableAutomaticUpload" positionX="-6597" positionY="801" width="128" height="180"/>
         <element name="TableCertificates" positionX="-6597" positionY="711" width="128" height="75"/>
         <element name="TableDirectory" positionX="-6372" positionY="111" width="162" height="240"/>
         <element name="TableGPS" positionX="-6597" positionY="990" width="128" height="180"/>
         <element name="TableLocalFile" positionX="-6138" positionY="111" width="162" height="240"/>
-        <element name="TableMetadata" positionX="-6138" positionY="402" width="162" height="525"/>
+        <element name="TableMetadata" positionX="-6138" positionY="402" width="162" height="508"/>
         <element name="TableShare" positionX="-6597" positionY="558" width="128" height="135"/>
     </elements>
 </model>

@@ -109,7 +109,7 @@
 
     } else {
         
-        [self settingActiveAccount:recordAccount.account activeUrl:recordAccount.url activeUser:recordAccount.user activePassword:recordAccount.password activeUID:recordAccount.uid activeAccessToken:recordAccount.token typeCloud:recordAccount.typeCloud];
+        [self settingActiveAccount:recordAccount.account activeUrl:recordAccount.url activeUser:recordAccount.user activePassword:recordAccount.password];
     }
     
     // Operation Queue OC Networking
@@ -411,18 +411,14 @@
 #pragma mark ===== Setting Active Account =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)settingActiveAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl activeUser:(NSString *)activeUser activePassword:(NSString *)activePassword activeUID:(NSString *)activeUID activeAccessToken:(NSString *)activeAccessToken typeCloud:(NSString *)typeCloud
+- (void)settingActiveAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl activeUser:(NSString *)activeUser activePassword:(NSString *)activePassword
 {
     self.activeAccount = activeAccount;
     self.activeUrl = activeUrl;
     self.activeUser = activeUser;
     self.activePassword = activePassword;
-    self.typeCloud = typeCloud;
     
-    self.directoryUser = [CCUtility getDirectoryActiveUser:activeUser activeUrl:activeUrl];
-    
-    self.activeUID = activeUID;
-    self.activeAccessToken = activeAccessToken;
+    self.directoryUser = [CCUtility getDirectoryActiveUser:activeUser activeUrl:activeUrl];    
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -824,29 +820,25 @@
     // netQueueDownload
     for (NSOperation *operation in [app.netQueueDownload operations]) {
         
-        if ([app.typeCloud isEqualToString:typeCloudOwnCloud] || [app.typeCloud isEqualToString:typeCloudNextcloud])
-            if (((OCnetworking *)operation).isExecuting == NO) _queueNunDownload++;
+        if (((OCnetworking *)operation).isExecuting == NO) _queueNunDownload++;
     }
     
     // netQueueDownloadWWan
     for (NSOperation *operation in [app.netQueueDownloadWWan operations]) {
         
-        if ([app.typeCloud isEqualToString:typeCloudOwnCloud] || [app.typeCloud isEqualToString:typeCloudNextcloud])
-            if (((OCnetworking *)operation).isExecuting == NO) _queueNumDownloadWWan++;
+        if (((OCnetworking *)operation).isExecuting == NO) _queueNumDownloadWWan++;
     }
     
     // netQueueUpload
     for (NSOperation *operation in [app.netQueueUpload operations]) {
         
-        if ([app.typeCloud isEqualToString:typeCloudOwnCloud] || [app.typeCloud isEqualToString:typeCloudNextcloud])
-            if (((OCnetworking *)operation).isExecuting == NO) _queueNumUpload++;
+        if (((OCnetworking *)operation).isExecuting == NO) _queueNumUpload++;
     }
     
     // netQueueUploadWWan
     for (NSOperation *operation in [app.netQueueUploadWWan operations]) {
         
-        if ([app.typeCloud isEqualToString:typeCloudOwnCloud] || [app.typeCloud isEqualToString:typeCloudNextcloud])
-            if (((OCnetworking *)operation).isExecuting == NO) _queueNumUploadWWan++;
+        if (((OCnetworking *)operation).isExecuting == NO) _queueNumUploadWWan++;
     }
     
     // Total
@@ -1112,8 +1104,7 @@
     if (netQueue == _netQueue)
         activityIndicator = YES;
     
-    if ([_typeCloud isEqualToString:typeCloudOwnCloud] || [_typeCloud isEqualToString:typeCloudNextcloud])
-        operation = [[OCnetworking alloc] initWithDelegate:delegate metadataNet:metadataNet withUser:_activeUser withPassword:_activePassword withUrl:_activeUrl withTypeCloud:_typeCloud activityIndicator:activityIndicator isCryptoCloudMode:_isCryptoCloudMode];
+    operation = [[OCnetworking alloc] initWithDelegate:delegate metadataNet:metadataNet withUser:_activeUser withPassword:_activePassword withUrl:_activeUrl activityIndicator:activityIndicator isCryptoCloudMode:_isCryptoCloudMode];
     
     [operation setQueuePriority:metadataNet.priority];
     
@@ -1124,16 +1115,13 @@
 {
     NSMutableArray *metadatasNet = [[NSMutableArray alloc] init];
     
-    if ([app.typeCloud isEqualToString:typeCloudOwnCloud] || [app.typeCloud isEqualToString:typeCloudNextcloud]) {
+    for (OCnetworking *operation in [self.netQueueDownload operations])
+        if ([operation.metadataNet.selector isEqualToString:selector])
+            [metadatasNet addObject:[operation.metadataNet copy]];
         
-        for (OCnetworking *operation in [self.netQueueDownload operations])
-            if ([operation.metadataNet.selector isEqualToString:selector])
-                [metadatasNet addObject:[operation.metadataNet copy]];
-        
-        for (OCnetworking *operation in [self.netQueueDownloadWWan operations])
-            if ([operation.metadataNet.selector isEqualToString:selector])
-                [metadatasNet addObject:[operation.metadataNet copy]];
-    }
+    for (OCnetworking *operation in [self.netQueueDownloadWWan operations])
+        if ([operation.metadataNet.selector isEqualToString:selector])
+            [metadatasNet addObject:[operation.metadataNet copy]];
     
     return metadatasNet;
 }
@@ -1142,16 +1130,13 @@
 {
     NSMutableArray *metadatasNet = [[NSMutableArray alloc] init];
     
-    if ([app.typeCloud isEqualToString:typeCloudOwnCloud] || [app.typeCloud isEqualToString:typeCloudNextcloud]) {
+    for (OCnetworking *operation in [self.netQueueUpload operations])
+        if ([operation.metadataNet.selector isEqualToString:selector])
+            [metadatasNet addObject:[operation.metadataNet copy]];
         
-        for (OCnetworking *operation in [self.netQueueUpload operations])
-            if ([operation.metadataNet.selector isEqualToString:selector])
-                [metadatasNet addObject:[operation.metadataNet copy]];
-        
-        for (OCnetworking *operation in [self.netQueueUploadWWan operations])
-            if ([operation.metadataNet.selector isEqualToString:selector])
-                [metadatasNet addObject:[operation.metadataNet copy]];
-    }
+    for (OCnetworking *operation in [self.netQueueUploadWWan operations])
+        if ([operation.metadataNet.selector isEqualToString:selector])
+            [metadatasNet addObject:[operation.metadataNet copy]];
     
     return metadatasNet;
 }

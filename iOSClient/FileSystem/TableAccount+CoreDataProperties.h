@@ -47,9 +47,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nullable, nonatomic, retain) NSDate *dateRecord;
 @property (nullable, nonatomic, retain) NSDate *optimization;
 @property (nullable, nonatomic, retain) NSString *password;
-@property (nullable, nonatomic, retain) NSString *token;
-@property (nullable, nonatomic, retain) NSString *typeCloud;
-@property (nullable, nonatomic, retain) NSString *uid;
 @property (nullable, nonatomic, retain) NSString *url;
 @property (nullable, nonatomic, retain) NSString *user;
 

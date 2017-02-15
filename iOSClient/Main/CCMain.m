@@ -156,7 +156,7 @@
     }
 
     // Back Button
-    if ([_serverUrl isEqualToString:[CCUtility getHomeServerUrlActiveUrl:app.activeUrl typeCloud:app.typeCloud]])
+    if ([_serverUrl isEqualToString:[CCUtility getHomeServerUrlActiveUrl:app.activeUrl]])
         self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:image_brandNavigationController] style:UIBarButtonItemStylePlain target:nil action:nil];
     
     // reMenu Background
@@ -301,7 +301,7 @@
     _dateReadDataSource = nil;
     
     // test
-    if ([app.activeAccount length] == 0 || [app.activeUrl length] == 0 || [app.typeCloud length] == 0)
+    if ([app.activeAccount length] == 0 || [app.activeUrl length] == 0)
         return;
     
     if ([app.listMainVC count] == 0 || _isRoot) {
@@ -325,7 +325,7 @@
         // Remove search mode
         [self cancelSearchBar];
         
-        _serverUrl = [CCUtility getHomeServerUrlActiveUrl:app.activeUrl typeCloud:app.typeCloud];
+        _serverUrl = [CCUtility getHomeServerUrlActiveUrl:app.activeUrl];
         _isFolderEncrypted = NO;
         
         app.directoryUser = [CCUtility getDirectoryActiveUser:app.activeUser activeUrl:app.activeUrl];
@@ -497,7 +497,7 @@
     } else {
         
         // we are in home : LOGO BRAND
-        if ([_serverUrl isEqualToString:[CCUtility getHomeServerUrlActiveUrl:app.activeUrl typeCloud:app.typeCloud]]) {
+        if ([_serverUrl isEqualToString:[CCUtility getHomeServerUrlActiveUrl:app.activeUrl]]) {
             
             self.navigationItem.title = nil;
             
@@ -1144,22 +1144,19 @@
     app.hasServerForbiddenCharactersSupport = YES;
     app.hasServerShareSupport = YES;
     
-    if ([app.typeCloud isEqualToString:typeCloudOwnCloud] || [app.typeCloud isEqualToString:typeCloudNextcloud]) {
+    metadataNet.action = actionGetFeaturesSuppServer;
+    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
         
-        metadataNet.action = actionGetFeaturesSuppServer;
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+    metadataNet.action = actionGetCapabilities;
+    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
         
-        metadataNet.action = actionGetCapabilities;
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
-        
-        metadataNet.action = actionGetNotificationsOfServer;
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+    metadataNet.action = actionGetNotificationsOfServer;
+    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
 
-        metadataNet.action = actionReadFile;
-        metadataNet.selector = selectorReadFileQuota;
-        metadataNet.serverUrl = [CCUtility getHomeServerUrlActiveUrl:app.activeUrl typeCloud:app.typeCloud];
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
-    }
+    metadataNet.action = actionReadFile;
+    metadataNet.selector = selectorReadFileQuota;
+    metadataNet.serverUrl = [CCUtility getHomeServerUrlActiveUrl:app.activeUrl];
+    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1203,10 +1200,7 @@
     
     metadataNet.action = actionDownloadThumbnail;
     metadataNet.fileID = metadata.fileID;
-
-    if ([metadata.typeCloud isEqualToString:typeCloudOwnCloud] || [metadata.typeCloud isEqualToString:typeCloudNextcloud])
-        metadataNet.fileName = [CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:serverUrl activeUrl:app.activeUrl typeCloud:app.typeCloud];
-    
+    metadataNet.fileName = [CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:serverUrl activeUrl:app.activeUrl];
     metadataNet.fileNameLocal = metadata.fileID;
     metadataNet.fileNamePrint = metadata.fileNamePrint;
     metadataNet.options = @"m";
@@ -1227,7 +1221,7 @@
     
     // File do not exists on server, remove in local
     if (errorCode == kOCErrorServerPathNotFound || errorCode == kCFURLErrorBadServerResponse) {
-        [CCCoreData deleteFile:metadata serverUrl:serverUrl directoryUser:app.directoryUser typeCloud:app.typeCloud activeAccount:app.activeAccount];
+        [CCCoreData deleteFile:metadata serverUrl:serverUrl directoryUser:app.directoryUser activeAccount:app.activeAccount];
     }
     
     if ([selector isEqualToString:selectorLoadViewImage]) {
@@ -1383,7 +1377,7 @@
     // download and view a template
     if ([selector isEqualToString:selectorLoadModelView]) {
         
-        [CCCoreData downloadFilePlist:metadata activeAccount:app.activeAccount activeUrl:app.activeUrl typeCloud:app.typeCloud directoryUser:app.directoryUser];
+        [CCCoreData downloadFilePlist:metadata activeAccount:app.activeAccount activeUrl:app.activeUrl directoryUser:app.directoryUser];
         
         [self openModel:metadata.model isNew:false];
         
@@ -1393,16 +1387,14 @@
     //download file plist
     if ([selector isEqualToString:selectorLoadPlist]) {
         
-        [CCCoreData downloadFilePlist:metadata activeAccount:app.activeAccount activeUrl:app.activeUrl typeCloud:app.typeCloud directoryUser:app.directoryUser];
+        [CCCoreData downloadFilePlist:metadata activeAccount:app.activeAccount activeUrl:app.activeUrl directoryUser:app.directoryUser];
         
         long countSelectorLoadPlist = 0;
         
         for (NSOperation *operation in [app.netQueue operations]) {
             
-            if ([app.typeCloud isEqualToString:typeCloudOwnCloud] || [app.typeCloud isEqualToString:typeCloudNextcloud]) {
-                if ([((OCnetworking *)operation).metadataNet.selector isEqualToString:selectorLoadPlist])
-                    countSelectorLoadPlist++;
-            }
+            if ([((OCnetworking *)operation).metadataNet.selector isEqualToString:selectorLoadPlist])
+                countSelectorLoadPlist++;
         }
         
         if ((countSelectorLoadPlist == 0 || countSelectorLoadPlist % k_maxConcurrentOperation == 0) && [metadata.directoryID isEqualToString:[CCCoreData getDirectoryIDFromServerUrl:_serverUrl activeAccount:app.activeAccount]]) {
@@ -1553,7 +1545,7 @@
     // remove title (graphics)
     [self setTitleBackgroundTableView:nil];
 
-    NSString *folderPhotos = [CCCoreData getCameraUploadFolderNamePathActiveAccount:app.activeAccount activeUrl:app.activeUrl typeCloud:app.typeCloud];
+    NSString *folderPhotos = [CCCoreData getCameraUploadFolderNamePathActiveAccount:app.activeAccount activeUrl:app.activeUrl];
     NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:app.activeAccount];
     
     // Create if request the folder for Photos
@@ -1619,19 +1611,16 @@
             
             CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
             
-            if ([app.typeCloud isEqualToString:typeCloudNextcloud] || [app.typeCloud isEqualToString:typeCloudOwnCloud]) {
-            
-                metadataNet.action = actionReadFile;
-                metadataNet.identifier = asset.localIdentifier;
-                metadataNet.cryptated = cryptated;
-                metadataNet.fileName = fileName;
-                metadataNet.priority = NSOperationQueuePriorityVeryHigh;
-                metadataNet.session = session;
-                metadataNet.selector = selectorReadFileUploadFile;
-                metadataNet.serverUrl = serverUrl;
+            metadataNet.action = actionReadFile;
+            metadataNet.identifier = asset.localIdentifier;
+            metadataNet.cryptated = cryptated;
+            metadataNet.fileName = fileName;
+            metadataNet.priority = NSOperationQueuePriorityVeryHigh;
+            metadataNet.session = session;
+            metadataNet.selector = selectorReadFileUploadFile;
+            metadataNet.serverUrl = serverUrl;
                 
-                [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
-            }
+            [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
         }
     }
     
@@ -1809,7 +1798,7 @@
                 metadataDB.sessionTaskIdentifier = k_taskIdentifierDone;
                 metadataDB.sessionTaskIdentifierPlist = k_taskIdentifierDone;
                 
-                [CCCoreData updateMetadata:metadataDB predicate:[NSPredicate predicateWithFormat:@"(sessionID == %@) AND (account == %@)", sessionID, app.activeAccount] activeAccount:app.activeAccount activeUrl:app.activeUrl typeCloud:app.typeCloud context:nil];
+                [CCCoreData updateMetadata:metadataDB predicate:[NSPredicate predicateWithFormat:@"(sessionID == %@) AND (account == %@)", sessionID, app.activeAccount] activeAccount:app.activeAccount activeUrl:app.activeUrl context:nil];
                 
                 [CCCoreData addLocalFile:metadataDB activeAccount:app.activeAccount];
                 
@@ -1823,7 +1812,7 @@
         }
 
         // end test, insert in CoreData
-        [CCCoreData addMetadata:metadata activeAccount:app.activeAccount activeUrl:app.activeUrl typeCloud:app.typeCloud context:nil];
+        [CCCoreData addMetadata:metadata activeAccount:app.activeAccount activeUrl:app.activeUrl context:nil];
     }
     
     // read plist
@@ -2285,7 +2274,7 @@
     fileNameFolder = [CCUtility removeForbiddenCharacters:fileNameFolder hasServerForbiddenCharactersSupport:app.hasServerForbiddenCharactersSupport];
     if (![fileNameFolder length]) return;
     
-    if (folderCameraUpload) metadataNet.serverUrl = [CCCoreData getCameraUploadFolderPathActiveAccount:app.activeAccount activeUrl:app.activeUrl typeCloud:app.typeCloud];
+    if (folderCameraUpload) metadataNet.serverUrl = [CCCoreData getCameraUploadFolderPathActiveAccount:app.activeAccount activeUrl:app.activeUrl];
     else  metadataNet.serverUrl = _serverUrl;
     
     metadataNet.action = actionCreateFolder;
@@ -2746,9 +2735,9 @@
     if([record.account isEqualToString:metadataNet.account] == NO)
         return;
     
-    [CCCoreData updateShare:items sharesLink:app.sharesLink sharesUserAndGroup:app.sharesUserAndGroup activeAccount:app.activeAccount activeUrl:app.activeUrl typeCloud:app.typeCloud];
+    [CCCoreData updateShare:items sharesLink:app.sharesLink sharesUserAndGroup:app.sharesUserAndGroup activeAccount:app.activeAccount activeUrl:app.activeUrl];
     
-    if (openWindow && ([app.typeCloud isEqualToString:typeCloudOwnCloud] || [app.typeCloud isEqualToString:typeCloudNextcloud])) {
+    if (openWindow) {
             
         if (_shareOC) {
                 
@@ -2803,19 +2792,16 @@
 - (void)share:(CCMetadata *)metadata serverUrl:(NSString *)serverUrl password:(NSString *)password
 {
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
+    
+    metadataNet.action = actionShare;
+    metadataNet.fileID = metadata.fileID;
+    metadataNet.fileName = [CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:serverUrl activeUrl:app.activeUrl];
+    metadataNet.fileNamePrint = metadata.fileNamePrint;
+    metadataNet.password = password;
+    metadataNet.selector = selectorShare;
+    metadataNet.serverUrl = serverUrl;
         
-    if ([app.typeCloud isEqualToString:typeCloudOwnCloud] || [app.typeCloud isEqualToString:typeCloudNextcloud]) {
-        
-        metadataNet.action = actionShare;
-        metadataNet.fileID = metadata.fileID;
-        metadataNet.fileName = [CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:serverUrl activeUrl:app.activeUrl typeCloud:app.typeCloud];
-        metadataNet.fileNamePrint = metadata.fileNamePrint;
-        metadataNet.password = password;
-        metadataNet.selector = selectorShare;
-        metadataNet.serverUrl = serverUrl;
-        
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
-    }
+    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
 
     [_hud visibleHudTitle:NSLocalizedString(@"_creating_sharing_", nil) mode:MBProgressHUDModeIndeterminate color:nil];
 }
@@ -2826,11 +2812,8 @@
     
     // rimuoviamo la condivisione da db
     [CCCoreData unShare:metadataNet.share fileName:metadataNet.fileName serverUrl:metadataNet.serverUrl sharesLink:app.sharesLink sharesUserAndGroup:app.sharesUserAndGroup activeAccount:app.activeAccount];
-        
-    if ([app.typeCloud isEqualToString:typeCloudNextcloud] && _shareOC)
-        [_shareOC reloadData];
-
-    if ([app.typeCloud isEqualToString:typeCloudOwnCloud] && _shareOC)
+    
+    if (_shareOC)
         [_shareOC reloadData];
     
     [self tableViewReload];
@@ -2857,19 +2840,16 @@
 {
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
     
-    if ([app.typeCloud isEqualToString:typeCloudOwnCloud] || [app.typeCloud isEqualToString:typeCloudNextcloud]) {
+    metadataNet.action = actionUpdateShare;
+    metadataNet.fileID = metadata.fileID;
+    metadataNet.expirationTime = expirationTime;
+    metadataNet.password = password;
+    metadataNet.selector = selectorUpdateShare;
+    metadataNet.serverUrl = serverUrl;
+    metadataNet.share = share;
+    metadataNet.sharePermission = permission;
         
-        metadataNet.action = actionUpdateShare;
-        metadataNet.fileID = metadata.fileID;
-        metadataNet.expirationTime = expirationTime;
-        metadataNet.password = password;
-        metadataNet.selector = selectorUpdateShare;
-        metadataNet.serverUrl = serverUrl;
-        metadataNet.share = share;
-        metadataNet.sharePermission = permission;
-        
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
-    }
+    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
 
     [_hud visibleHudTitle:NSLocalizedString(@"_updating_sharing_", nil) mode:MBProgressHUDModeIndeterminate color:nil];
 }
@@ -2892,15 +2872,12 @@
 - (void)getUserAndGroup:(NSString *)find
 {
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
+    
+    metadataNet.action = actionGetUserAndGroup;
+    metadataNet.options = find;
+    metadataNet.selector = selectorGetUserAndGroup;
         
-    if ([app.typeCloud isEqualToString:typeCloudOwnCloud] || [app.typeCloud isEqualToString:typeCloudNextcloud]) {
-        
-        metadataNet.action = actionGetUserAndGroup;
-        metadataNet.options = find;
-        metadataNet.selector = selectorGetUserAndGroup;
-        
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
-    }
+    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
     
     [_hud visibleIndeterminateHud];
 }
@@ -2912,7 +2889,7 @@
     metadataNet.action = actionShareWith;
     metadataNet.fileID = metadata.fileID;
     metadataNet.directoryID = directoryID;
-    metadataNet.fileName = [CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:serverUrl activeUrl:app.activeUrl typeCloud:app.typeCloud];
+    metadataNet.fileName = [CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:serverUrl activeUrl:app.activeUrl];
     metadataNet.fileNamePrint = metadata.fileNamePrint;
     metadataNet.serverUrl = serverUrl;
     metadataNet.selector = selectorShare;
@@ -3129,7 +3106,7 @@
         
         item.title = [record.account stringByTruncatingToWidth:self.view.bounds.size.width - 100 withFont:[UIFont systemFontOfSize:12.0] atEnd:YES];
         item.argument = record.account;
-        item.image = [UIImage imageNamed:image_typeCloudNextcloud];        
+        item.image = [UIImage imageNamed:image_Nextcloud];
         item.target = self;
         item.action = @selector(changeDefaultAccount:);
         
@@ -3184,7 +3161,7 @@
     
         TableAccount *tableAccount = [CCCoreData setActiveAccount:[sender argument]];
         if (tableAccount)
-            [app settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activePassword:tableAccount.password activeUID:tableAccount.uid activeAccessToken:tableAccount.token typeCloud:tableAccount.typeCloud];
+            [app settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activePassword:tableAccount.password];
     
         // go to home sweet home
         [[NSNotificationCenter defaultCenter] postNotificationName:@"initializeMain" object:nil];
@@ -4150,7 +4127,7 @@
         
         NSString *dirServerUrl = [CCUtility stringAppendServerUrl:serverUrl addServerUrl:_metadata.fileNameData];
         NSString *upDir = [CCUtility deletingLastPathComponentFromServerUrl:dirServerUrl];
-        NSString *homeDir = [CCUtility getHomeServerUrlActiveUrl:app.activeUrl typeCloud:app.typeCloud];
+        NSString *homeDir = [CCUtility getHomeServerUrlActiveUrl:app.activeUrl];
         
         // Directory bloccata ?
         if ([CCCoreData isDirectoryLock:dirServerUrl activeAccount:app.activeAccount] && [[CCUtility getBlockCode] length] && app.sessionePasscodeLock == nil) lockDirectory = YES;
@@ -4158,7 +4135,7 @@
         iconHeader = [UIImage imageNamed:_metadata.iconName];
 
         NSString *cameraUploadFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:app.activeAccount];
-        NSString *cameraUploadFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:app.activeAccount activeUrl:app.activeUrl typeCloud:app.typeCloud];
+        NSString *cameraUploadFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:app.activeAccount activeUrl:app.activeUrl];
         
         
         
@@ -4269,10 +4246,10 @@
                                         [self setEditing:NO animated:YES];
                                         
                                         // Settings new folder Automatatic upload
-                                        NSString *oldPath = [CCCoreData getCameraUploadFolderPathActiveAccount:app.activeAccount activeUrl:app.activeUrl typeCloud:app.typeCloud];
+                                        NSString *oldPath = [CCCoreData getCameraUploadFolderPathActiveAccount:app.activeAccount activeUrl:app.activeUrl];
                                         
                                         [CCCoreData setCameraUploadFolderName:_metadata.fileName activeAccount:app.activeAccount];
-                                        [CCCoreData setCameraUploadFolderPath:serverUrl activeUrl:app.activeUrl typeCloud:app.typeCloud activeAccount:app.activeAccount];
+                                        [CCCoreData setCameraUploadFolderPath:serverUrl activeUrl:app.activeUrl activeAccount:app.activeAccount];
                                         
                                         [CCCoreData clearDateReadDirectory:oldPath activeAccount:app.activeAccount];
                                         

@@ -56,7 +56,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nullable, nonatomic, retain) NSNumber *thumbnailExists;
 @property (nullable, nonatomic, retain) NSString *title;
 @property (nullable, nonatomic, retain) NSString *type;
-@property (nullable, nonatomic, retain) NSString *typeCloud;
 @property (nullable, nonatomic, retain) NSString *typeFile;
 @property (nullable, nonatomic, retain) NSString *uuid;
 
