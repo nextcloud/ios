@@ -65,16 +65,6 @@
     row.hidden = @(YES);
     [section addFormRow:row];
 
-    // Send aes-256 password via mail
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"sendmailencryptpass" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_encryptpass_by_email_", nil)];
-    [row.cellConfig setObject:@(NSTextAlignmentCenter) forKey:@"textLabel.textAlignment"];
-    [row.cellConfig setObject:COLOR_ENCRYPTED forKey:@"textLabel.textColor"];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIImage imageNamed:image_settingsKeyMail] forKey:@"imageView.image"];
-    row.action.formSelector = @selector(checkEncryptPass:);
-    row.hidden = @(YES);
-    [section addFormRow:row];
-
     section = [XLFormSectionDescriptor formSection];
     [form addFormSection:section];
     
@@ -110,9 +100,10 @@
     viewController.delegate = self;
     
     viewController.type = BKPasscodeViewControllerNewPasscodeType;
+
     viewController.passcodeStyle = BKPasscodeInputViewNormalPasscodeStyle;
-    
     viewController.passcodeInputView.maximumLength = 64;
+    
     viewController.title = NSLocalizedString(@"_key_aes_256_", nil);
     
     viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
@@ -124,7 +115,21 @@
 
 - (void)disactivateCryptoCloud:(XLFormRowDescriptor *)sender
 {
+    CCBKPasscode *viewController = [[CCBKPasscode alloc] initWithNibName:nil bundle:nil];
+    viewController.delegate = self;
     
+    viewController.type = BKPasscodeViewControllerCheckPasscodeType;
+    
+    viewController.passcodeStyle = BKPasscodeInputViewNormalPasscodeStyle;
+    viewController.passcodeInputView.maximumLength = 64;
+    
+    viewController.title = NSLocalizedString(@"_check_key_aes_256_", nil);
+    
+    viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
+    viewController.navigationItem.leftBarButtonItem.tintColor = COLOR_ENCRYPTED;
+    
+    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
+    [self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)checkEncryptPass:(XLFormRowDescriptor *)sender
@@ -155,71 +160,81 @@
 {
     switch (aViewController.type) {
             
-        case BKPasscodeViewControllerNewPasscodeType:
-        case BKPasscodeViewControllerCheckPasscodeType: {
+        case BKPasscodeViewControllerNewPasscodeType: {
             
-                // min passcode 4 chars
-                if ([aPasscode length] >= 4) {
+            // min passcode 4 chars
+            if ([aPasscode length] >= 4) {
                 
-                    [CCUtility setKeyChainPasscodeForUUID:[CCUtility getUUID] conPasscode:aPasscode];
+                [CCUtility setKeyChainPasscodeForUUID:[CCUtility getUUID] conPasscode:aPasscode];
                 
-                    // verify
-                    NSString *pwd = [CCUtility getKeyChainPasscodeForUUID:[CCUtility getUUID]];
+                // verify
+                NSString *pwd = [CCUtility getKeyChainPasscodeForUUID:[CCUtility getUUID]];
                 
-                    if ([pwd isEqualToString:aPasscode] == NO || pwd == nil) {
+                if ([pwd isEqualToString:aPasscode] == NO || pwd == nil) {
                     
-                        UIAlertView * alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_error_", nil) message:@"Fatal error writing key" delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
-                        [alertView show];
+                    UIAlertView * alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_error_", nil) message:@"Fatal error writing key" delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
+                    [alertView show];
                         
-                    } else {
-                
-                        // ok !!
-                        app.isCryptoCloudMode = YES;
-                        
-                        // reload
-                        [[NSNotificationCenter defaultCenter] postNotificationName:@"initializeMain" object:nil];
-                        
-                        // Request : Send Passcode email
-                        [self performSelector:@selector(activateSecurityOptions) withObject:nil afterDelay:0.1];
-                    }
                 } else {
                 
-                    UIAlertView * alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_error_", nil) message:NSLocalizedString(@"_passcode_too_short_", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
-                    [alertView show];
+                    // Crypto Cloud Mode : Activated
+                    app.isCryptoCloudMode = YES;
+                        
+                    // force reload all directory for all users
+                    [CCCoreData clearAllDateReadDirectory];
+                        
+                    // Request : Send Passcode email
+                    [self performSelector:@selector(activateSecurityOptions) withObject:nil afterDelay:0.1];
                 }
-            
-                [aViewController dismissViewControllerAnimated:YES completion:nil];
-            }
-            break;
-            
-        case BKPasscodeViewControllerChangePasscodeType:
-            
-            if ([aPasscode length]) {
                 
-                // [CCUtility WriteDatiLogin:@"" ConNomeUtente:@"" ConPassword:@"" ConPassCode:aPasscode];
-                // [aViewController dismissViewControllerAnimated:YES completion:nil];
+            } else {
+                
+                UIAlertView * alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_error_", nil) message:NSLocalizedString(@"_passcode_too_short_", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
+                [alertView show];
             }
             
-            self.failedAttempts = 0;
-            self.lockUntilDate = nil;
-            break;
+            [aViewController dismissViewControllerAnimated:YES completion:nil];
+        }
+        break;
+        
+        case BKPasscodeViewControllerCheckPasscodeType: {
+            
+            // Crypto Cloud Mode : Deactivated
+            [CCUtility adminRemovePasscode];
+            app.isCryptoCloudMode = NO;
+            
+            // force reload all directory for all users
+            [CCCoreData clearAllDateReadDirectory];
+            
+            UIAlertView * alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_OK_", nil) message:@"Disattivazione avvenuta correttamente" delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
+            [alertView show];
+            
+            [aViewController dismissViewControllerAnimated:YES completion:nil];
+        }
+        break;
             
         default:
-            break;
+            
+        break;
     }
 }
 
 - (void)passcodeViewController:(BKPasscodeViewController *)aViewController authenticatePasscode:(NSString *)aPasscode resultHandler:(void (^)(BOOL))aResultHandler
 {
-    if ([aPasscode length]) {
+    if (aViewController.type == BKPasscodeViewControllerCheckPasscodeType) {
         
-        self.lockUntilDate = nil;
-        self.failedAttempts = 0;
-        aResultHandler(YES);
+        NSString *key = [CCUtility getKeyChainPasscodeForUUID:[CCUtility getUUID]];
         
-    } else {
-        
-        aResultHandler(NO);
+        if ([aPasscode isEqualToString:key]) {
+            
+            self.lockUntilDate = nil;
+            self.failedAttempts = 0;
+            aResultHandler(YES);
+            
+        } else {
+            
+            aResultHandler(NO);
+        }
     }
 }
 
