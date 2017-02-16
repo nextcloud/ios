@@ -29,6 +29,7 @@
 @class AFURLSessionManager;
 @class AFSecurityPolicy;
 @class OCCapabilities;
+@class OCUserProfile;
 
 @interface OCCommunication : NSObject
 
@@ -782,7 +783,7 @@ typedef enum {
 
 
 ///-----------------------------------
-/// @name set server Notification
+/// @name Set the server Notification
 ///-----------------------------------
 
 /**
@@ -795,6 +796,23 @@ typedef enum {
  */
 
 - (void) setNotificationServer:(NSString*)serverPath type:(NSString *)type onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest;
+
+#pragma mark -  User Profile
+
+///-----------------------------------
+/// @name Get User Profile
+///-----------------------------------
+
+/**
+ * Method read the notification of the server
+ *
+ * @param serverPath            -> NSString server
+ * @param type                  -> NSString "GET"
+ * @param sharedOCCommunication -> OCCommunication Singleton of communication to add the operation on the queue.
+ *
+ */
+
+- (void) getUserProfileOfServer:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, OCUserProfile *userProfile, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest;
 
 @end
 

@@ -205,6 +205,7 @@ extern NSString *const BKPasscodeKeychainServiceName;
 #define actionGetCapabilities                           @"getCapabilitiesOfServer"
 #define actionGetFeaturesSuppServer                     @"getFeaturesSupportedByServer"
 #define actionGetUserAndGroup                           @"getUserAndGroup"
+#define actionGetUserProfile                            @"getUserProfile"
 #define actionGetNotificationsOfServer                  @"getNotificationsOfServer"
 #define actionSetNotificationServer                     @"setNotificationServer"
 #define actionMoveFileOrFolder                          @"moveFileOrFolder"

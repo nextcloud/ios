@@ -1029,6 +1029,42 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
+#pragma mark =====  User Profile =====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)getUserProfile
+{
+    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+    
+    [communication setCredentialsWithUser:_activeUser andPassword:_activePassword];
+    [communication setUserAgent:[CCUtility getUserAgent]];
+    
+    [communication getUserProfileOfServer:[_activeUrl stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, OCUserProfile *userProfile, NSString *redirectedServer) {
+        
+        if ([self.delegate respondsToSelector:@selector(getUserProfileSuccess:userProfile:)])
+            [self.delegate getUserProfileSuccess:_metadataNet userProfile:userProfile];
+        
+        [self complete];
+        
+    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+        
+        NSInteger errorCode = response.statusCode;
+        if (errorCode == 0)
+            errorCode = error.code;
+        
+        if([self.delegate respondsToSelector:@selector(getUserProfileFailure:message:errorCode:)])
+            [self.delegate getUserProfileFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        
+        // Request trusted certificated
+        if ([error code] == NSURLErrorServerCertificateUntrusted)
+            [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
+        
+        [self complete];
+    }];
+}
+
+
+#pragma --------------------------------------------------------------------------------------------
 #pragma mark =====  Server =====
 #pragma --------------------------------------------------------------------------------------------
 

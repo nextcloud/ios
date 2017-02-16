@@ -1398,6 +1398,38 @@
     }];
 }
 
+#pragma mark - User Profile
+
+- (void) getUserProfileOfServer:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, OCUserProfile *userProfile, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
+    
+    serverPath = [serverPath stringByAppendingString:k_url_acces_remote_userprofile_api];
+    serverPath = [serverPath stringByAppendingString:self.user];
+    //serverPath = [NSString stringWithFormat:@"%@ -H \"%@\"",serverPath, @"OCS-APIRequest: true"];
+    //serverPath = [serverPath encodeString:NSUTF8StringEncoding];
+
+    OCWebDAVClient *request = [OCWebDAVClient new];
+    request = [self getRequestWithCredentials:request];
+    
+    [request getUserProfileOfServer:serverPath onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
+    
+        NSData *responseData = (NSData*) responseObject;
+        
+        //Parse
+        NSError *error;
+        NSDictionary *jsongParsed = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableContainers error:&error];
+        NSLog(@"[LOG] User Profile : %@",jsongParsed);
+        
+        OCUserProfile *userProfile;
+        
+        if (jsongParsed.allKeys > 0) {
+
+        }
+        
+    } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
+    
+        failureRequest(response, error, request.redirectedServer);
+    }];
+}
 
 #pragma mark - Clear Cache
 

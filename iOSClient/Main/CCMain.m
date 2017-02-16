@@ -1159,10 +1159,15 @@
     metadataNet.action = actionGetNotificationsOfServer;
     [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
 
+    metadataNet.action = actionGetUserProfile;
+    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+    
     metadataNet.action = actionReadFile;
     metadataNet.selector = selectorReadFileQuota;
     metadataNet.serverUrl = [CCUtility getHomeServerUrlActiveUrl:app.activeUrl];
     [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+    
+    
 }
 
 #pragma --------------------------------------------------------------------------------------------

@@ -56,6 +56,9 @@
 //Url to access to Remote Notification API
 #define k_url_acces_remote_notification_api @"ocs/v2.php/apps/notifications/api/v2/notifications"
 
+//Url to access to User Profile API
+#define k_url_acces_remote_userprofile_api @"ocs/v1.php/cloud/users/"
+
 //Version of the server that have share API
 #define k_version_support_shared [NSArray arrayWithObjects:  @"5", @"0", @"27", nil]
 
