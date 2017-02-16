@@ -515,9 +515,9 @@
 
 - (void)reloadDatasource
 {
-    // controlli
-    if (app.activeAccount == nil || app.activeUrl == nil) return;
-    
+    // test
+    if (app.activeAccount.length == 0 || app.activeUrl.length == 0)
+        return;
     
     NSString *serverUrl = [CCCoreData getCameraUploadFolderNamePathActiveAccount:app.activeAccount activeUrl:app.activeUrl];
 

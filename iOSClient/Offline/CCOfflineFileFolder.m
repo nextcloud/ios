@@ -278,7 +278,8 @@
 
 - (void)readFileOffline
 {
-    if (app.activeAccount == nil || [CCUtility getHomeServerUrlActiveUrl:app.activeUrl] == nil)
+    // test
+    if (app.activeAccount.length == 0 || [CCUtility getHomeServerUrlActiveUrl:app.activeUrl] == nil)
         return;
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{

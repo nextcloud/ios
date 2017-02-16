@@ -202,10 +202,13 @@
 {
     [super viewWillAppear:animated];
     
+    // test
+    if (app.activeAccount.length == 0)
+        return;
+    
     // Settings this folder & delegate & Loading datasource
-    if (app.activeAccount) {
-        app.directoryUser = [CCUtility getDirectoryActiveUser:app.activeUser activeUrl:app.activeUrl];
-    }
+    app.directoryUser = [CCUtility getDirectoryActiveUser:app.activeUser activeUrl:app.activeUrl];
+    
     [[CCNetworking sharedNetworking] settingDelegate:self];
     
     // Color
@@ -238,7 +241,7 @@
         
     } else {
         
-        if (app.activeAccount) {
+        if (app.activeAccount.length > 0) {
             
             // Load Datasource
             [self reloadDatasource:_serverUrl fileID:nil selector:nil];
@@ -301,7 +304,7 @@
     _dateReadDataSource = nil;
     
     // test
-    if ([app.activeAccount length] == 0 || [app.activeUrl length] == 0)
+    if (app.activeAccount.length == 0 || app.activeUrl.length == 0)
         return;
     
     if ([app.listMainVC count] == 0 || _isRoot) {
@@ -347,7 +350,7 @@
         [self readFolderWithForced:NO];
         
         // Load photo datasorce
-        if (app.activeAccount && app.activeUrl && app.activePhotosCameraUpload)
+        if (app.activePhotosCameraUpload)
             [app.activePhotosCameraUpload reloadDatasourceForced];
         
         // remove all of detail
@@ -1137,6 +1140,10 @@
 
 - (void)requestServerInformation
 {
+    // test
+    if (app.activeAccount.length == 0 || app.activeUrl.length == 0)
+        return;
+    
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
    
     [app.sharesID removeAllObjects];
@@ -4253,7 +4260,7 @@
                                         
                                         [CCCoreData clearDateReadDirectory:oldPath activeAccount:app.activeAccount];
                                         
-                                        if (app.activeAccount && app.activeUrl && app.activePhotosCameraUpload)
+                                        if (app.activeAccount.length > 0 && app.activeUrl.length > 0 && app.activePhotosCameraUpload)
                                             [app.activePhotosCameraUpload reloadDatasourceForced];
                                         
                                         [self readFolderWithForced:YES];
@@ -4604,7 +4611,8 @@
 
 - (void)reloadDatasource:(NSString *)serverUrl fileID:(NSString *)fileID selector:(NSString *)selector
 {
-    if (app.activeAccount == nil || app.activeUrl == nil || serverUrl == nil)
+    // test
+    if (app.activeAccount.length == 0 || app.activeUrl.length == 0 || serverUrl.length == 0)
         return;
     
     // Search Mode

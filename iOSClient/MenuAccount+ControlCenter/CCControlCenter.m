@@ -519,7 +519,8 @@
 
 - (void)reloadDatasource
 {
-    if (app.activeAccount == nil || app.activeUrl == nil)
+    // test
+    if (app.activeAccount.length == 0)
         return;
     
     if (_isOpen) {

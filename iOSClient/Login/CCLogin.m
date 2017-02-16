@@ -39,7 +39,7 @@
 {
     [super viewDidLoad];
     
-    if (app.activeAccount) {
+    if (app.activeAccount.length > 0) {
         
         self.baseUrl.text = app.activeUrl;
         self.user.text = app.activeUser;
