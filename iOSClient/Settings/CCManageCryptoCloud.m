@@ -44,7 +44,7 @@
     XLFormSectionDescriptor *section;
     XLFormRowDescriptor *row;
     
-    form = [XLFormDescriptor formDescriptorWithTitle:NSLocalizedString(@"Crypto Cloud", nil)];
+    form = [XLFormDescriptor formDescriptorWithTitle:NSLocalizedString(@"_crypto_cloud_system_", nil)];
     
     section = [XLFormSectionDescriptor formSection];
     [form addFormSection:section];

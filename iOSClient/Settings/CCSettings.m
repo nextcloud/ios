@@ -142,7 +142,7 @@
     [form addFormSection:section];
     
     // Crypto Cloud
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"cryptocloud" rowType:XLFormRowDescriptorTypeButton title:@"Crypto Cloud"];
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"cryptocloud" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_crypto_cloud_system_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:[UIImage imageNamed:image_settingsCryptoCloud] forKey:@"imageView.image"];
     row.action.formSegueIdentifier = @"CCManageCryptoCloudSegue";
