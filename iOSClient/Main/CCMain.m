@@ -164,7 +164,7 @@
     _reMenuBackgroundView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
     
     // if this is not Main (the Main uses inizializeMain)
-    if (_isRoot == NO && app.activeAccount) {
+    if (_isRoot == NO && app.activeAccount.length > 0) {
         
         // Settings this folder & delegate & Loading datasource
         app.directoryUser = [CCUtility getDirectoryActiveUser:app.activeUser activeUrl:app.activeUrl];
@@ -183,7 +183,6 @@
     app.controlCenter = (CCControlCenter *)self.navigationController;
     
     // Search
-    
     self.definesPresentationContext = YES;
     self.searchController.searchResultsUpdater = self;
     self.searchController.dimsBackgroundDuringPresentation = NO;
@@ -304,7 +303,7 @@
     _dateReadDataSource = nil;
     
     // test
-    if (app.activeAccount.length == 0 || app.activeUrl.length == 0)
+    if (app.activeAccount.length == 0)
         return;
     
     if ([app.listMainVC count] == 0 || _isRoot) {
@@ -1141,7 +1140,7 @@
 - (void)requestServerInformation
 {
     // test
-    if (app.activeAccount.length == 0 || app.activeUrl.length == 0)
+    if (app.activeAccount.length == 0)
         return;
     
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
@@ -4260,7 +4259,7 @@
                                         
                                         [CCCoreData clearDateReadDirectory:oldPath activeAccount:app.activeAccount];
                                         
-                                        if (app.activeAccount.length > 0 && app.activeUrl.length > 0 && app.activePhotosCameraUpload)
+                                        if (app.activeAccount.length > 0 && app.activePhotosCameraUpload)
                                             [app.activePhotosCameraUpload reloadDatasourceForced];
                                         
                                         [self readFolderWithForced:YES];
@@ -4612,7 +4611,7 @@
 - (void)reloadDatasource:(NSString *)serverUrl fileID:(NSString *)fileID selector:(NSString *)selector
 {
     // test
-    if (app.activeAccount.length == 0 || app.activeUrl.length == 0 || serverUrl.length == 0)
+    if (app.activeAccount.length == 0 || serverUrl.length == 0)
         return;
     
     // Search Mode

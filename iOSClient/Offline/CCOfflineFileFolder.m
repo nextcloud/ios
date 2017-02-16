@@ -54,7 +54,8 @@
 // MULTI THREAD
 - (void)readFolderOffline
 {
-    if ([app.activeAccount length] == 0)
+    // test
+    if (app.activeAccount.length == 0)
         return;
 
     // verify is offline procedure is in progress selectorDownloadOffline
@@ -279,7 +280,7 @@
 - (void)readFileOffline
 {
     // test
-    if (app.activeAccount.length == 0 || [CCUtility getHomeServerUrlActiveUrl:app.activeUrl] == nil)
+    if (app.activeAccount.length == 0)
         return;
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{

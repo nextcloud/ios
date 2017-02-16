@@ -117,7 +117,8 @@
 {
     BOOL isIntro = [CCUtility getIntro:self.version];
     
-    if ([app.activeAccount length] > 0  && isIntro == NO) {
+    // test
+    if (app.activeAccount.length > 0  && isIntro == NO) {
         
         //[self bannerHide];
         
@@ -143,7 +144,8 @@
 
 - (void)newAccount
 {
-    if ([app.activeAccount length] == 0) {
+    // test
+    if (app.activeAccount.length == 0) {
     
         CCLogin *loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
         loginVC.delegate = self;
