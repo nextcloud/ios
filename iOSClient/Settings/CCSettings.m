@@ -276,6 +276,7 @@
 #pragma mark === Admin ===
 #pragma --------------------------------------------------------------------------------------------
 
+/*
 - (void)adminRemoveVersion:(XLFormRowDescriptor *)sender
 {
     [self deselectFormRow:sender];
@@ -293,6 +294,7 @@
     
     [app handleShortCutItem:shortcutPhotos];
 }
+*/
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark === Chiamate dal Form ===
