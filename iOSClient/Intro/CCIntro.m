@@ -60,7 +60,7 @@
     if (height >= 1024) { titleIconPositionY = 100; titlePositionY = 290; descPositionY = 250; }
     
     EAIntroPage *page1 = [EAIntroPage page];
-    page1.title = [CCUtility localizableBrand:@"_intro_01_" table:@"Intro"]; // "BENVENUTO"
+    page1.title = [CCUtility localizableBrand:@"_intro_01_" table:@"Intro"];
     page1.titlePositionY = titlePositionY;
     page1.titleColor = COLOR_GRAY;
     page1.titleFont = [UIFont systemFontOfSize:20];
