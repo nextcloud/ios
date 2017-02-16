@@ -48,6 +48,7 @@
     
     section = [XLFormSectionDescriptor formSection];
     [form addFormSection:section];
+    section.footerTitle = NSLocalizedString(@"_footer_crypto_cloud_", nil);
     
     // Activation Crypto Cloud Mode
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"activatecryptocloud" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_activation_crypto_cloud_", nil)];
@@ -134,7 +135,8 @@
 
 - (void)closeCryptoCloudSecurity
 {
-    UIAlertView * alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_OK_", nil) message:@"Attivazione avvenuta correttamente, ora potrai usufruire di tutte le funzionalità aggiuntive. Ti ricordiamo che i file cifrati possono essere decifrati sono sui dispositivi iOS" delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
+    // @"Attivazione avvenuta correttamente, ora potrai usufruire di tutte le funzionalità aggiuntive. Ti ricordiamo che i file cifrati possono essere decifrati sono sui dispositivi iOS"
+    UIAlertView * alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_info_", nil) message:NSLocalizedString(@"_alert_activation_crypto_cloud_", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
     [alertView show];
 }
 
@@ -202,7 +204,7 @@
             [CCCoreData clearAllDateReadDirectory];
             [CCCoreData deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(cryptated == 1)"]];
             
-            UIAlertView * alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_OK_", nil) message:@"Disattivazione avvenuta correttamente" delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
+            UIAlertView * alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_info_", nil) message:NSLocalizedString(@"_alert_deactivation_crypto_cloud_", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
             [alertView show];
             
             [aViewController dismissViewControllerAnimated:YES completion:nil];

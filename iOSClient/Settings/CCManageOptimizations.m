@@ -66,7 +66,6 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
 
-    
     section = [XLFormSectionDescriptor formSection];
     [form addFormSection:section];
     

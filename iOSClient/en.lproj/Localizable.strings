@@ -159,8 +159,11 @@
 
 // Manage Crypto Cloud
 
-"_activation_crypto_cloud_"     = "Activation Crypto Cloud";
-"_deactivation_crypto_cloud_"   = "Deactivation Crypto Cloud";
+"_footer_crypto_cloud_"             = "XXX";
+"_alert_activation_crypto_cloud_"   = "XXX";
+"_alert_deactivation_crypto_cloud_" = "XXX";
+"_activation_crypto_cloud_"         = "Activation Crypto Cloud";
+"_deactivation_crypto_cloud_"       = "Deactivation Crypto Cloud";
 
 // Manage Photos
 
