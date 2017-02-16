@@ -215,28 +215,12 @@
     row.action.formSelector = @selector(esci:);
     [section addFormRow:row];
     
-    section = [XLFormSectionDescriptor formSection];
-    [form addFormSection:section];
-    
 #ifdef DEBUG
+    /*
     // Section : debug
     
     section = [XLFormSectionDescriptor formSectionWithTitle:@"Debug"];
     [form addFormSection:section];
-    
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"adminRemoveVersionIntro" rowType:XLFormRowDescriptorTypeButton title:@"Remove self-Version Intro"];
-    [row.cellConfig setObject:[UIColor redColor] forKey:@"textLabel.textColor"];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIImage imageNamed:image_settingsAdmin] forKey:@"imageView.image"];
-    row.action.formSelector = @selector(adminRemoveVersionIntro:);
-    [section addFormRow:row];
-    
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"adminRemovePasscode" rowType:XLFormRowDescriptorTypeButton title:@"Remove Passcode"];
-    [row.cellConfig setObject:[UIColor redColor] forKey:@"textLabel.textColor"];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIImage imageNamed:image_settingsAdmin] forKey:@"imageView.image"];
-    row.action.formSelector = @selector(adminRemovePasscode:);
-    [section addFormRow:row];
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"adminRemoveVersion" rowType:XLFormRowDescriptorTypeButton title:@"Remove Version"];
     [row.cellConfig setObject:[UIColor redColor] forKey:@"textLabel.textColor"];
@@ -245,19 +229,13 @@
     row.action.formSelector = @selector(adminRemoveVersion:);
     [section addFormRow:row];
     
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"copyGroupLocal" rowType:XLFormRowDescriptorTypeButton title:@"Copy Group to Local"];
-    [row.cellConfig setObject:[UIColor redColor] forKey:@"textLabel.textColor"];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIImage imageNamed:image_settingsAdmin] forKey:@"imageView.image"];
-    row.action.formSelector = @selector(copyDirGroupToLocal:);
-    [section addFormRow:row];
-    
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"quickActionPhotos" rowType:XLFormRowDescriptorTypeButton title:@"Quick Action Photos"];
     [row.cellConfig setObject:[UIColor redColor] forKey:@"textLabel.textColor"];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:[UIImage imageNamed:image_settingsAdmin] forKey:@"imageView.image"];
     row.action.formSelector = @selector(quickActionPhotos:);
     [section addFormRow:row];
+    */
 #endif
 
     self.form = form;
@@ -297,24 +275,6 @@
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark === Admin ===
 #pragma --------------------------------------------------------------------------------------------
-
-- (void)adminRemoveVersionIntro:(XLFormRowDescriptor *)sender
-{
-    [self deselectFormRow:sender];
-    
-    [CCUtility adminRemoveIntro];
-    
-    exit(0);
-}
-
-- (void)adminRemovePasscode:(XLFormRowDescriptor *)sender
-{
-    [self deselectFormRow:sender];
-    
-    [CCUtility adminRemovePasscode];
-    
-    app.isCryptoCloudMode = NO;
-}
 
 - (void)adminRemoveVersion:(XLFormRowDescriptor *)sender
 {
@@ -916,42 +876,6 @@
     }
     
     return @(count);
-}
-
-- (void)copyDirGroupToLocal:(XLFormRowDescriptor *)sender
-{
-    [self deselectFormRow:sender];
-
-    NSURL *dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:k_capabilitiesGroups];
-    dirGroup = [dirGroup URLByAppendingPathComponent:@"Library"];
-    dirGroup = [dirGroup URLByAppendingPathComponent:@"Application Support"];
-    dirGroup = [dirGroup URLByAppendingPathComponent:@"Crypto Cloud"];
-
-    NSArray *paths = [[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask];
-    NSURL *destination = [[paths lastObject] URLByAppendingPathComponent:@"group"];
-    
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    dateFormatter.dateFormat = @"hh:mm:ss";
-    [dateFormatter setTimeZone:[NSTimeZone systemTimeZone]];
-    
-    NSLog(@"[LOG] Open HUD %@",[dateFormatter stringFromDate:[NSDate date]]);
-    
-    [self.hud visibleIndeterminateHud];
-    
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.01 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void){
-    
-        NSLog(@"[LOG] Init copy %@",[dateFormatter stringFromDate:[NSDate date]]);
-        
-        [[NSFileManager defaultManager] removeItemAtURL:destination error:nil];
-    
-        NSError *copyError = nil;
-        if (![[NSFileManager defaultManager] copyItemAtURL:dirGroup toURL:destination error:&copyError]) {
-            NSLog(@"[LOG] Error copying files: %@", [copyError localizedDescription]);
-        }
-        
-        NSLog(@"[LOG] Fine copy %@",[dateFormatter stringFromDate:[NSDate date]]);
-        [self.hud hideHud];
-    });
 }
 
 @end
