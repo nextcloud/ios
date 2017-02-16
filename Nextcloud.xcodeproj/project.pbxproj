@@ -86,6 +86,7 @@
 		F72C63891DC14B0400FA5ED5 /* libMagicalRecord.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F7B61E9B1DC13C20009E938F /* libMagicalRecord.a */; };
 		F732BA061D76CE1500E9878B /* CCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F732BA041D76CE1500E9878B /* CCNetworking.m */; };
 		F732BA0B1D76DBA500E9878B /* CCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F732BA041D76CE1500E9878B /* CCNetworking.m */; };
+		F73C002F1E55D7DF00EEEFA7 /* CCManageCryptoCloudSecurity.m in Sources */ = {isa = PBXBuildFile; fileRef = F73C002E1E55D7DF00EEEFA7 /* CCManageCryptoCloudSecurity.m */; };
 		F73CCDD91DC13776007E38D8 /* XLFormBaseCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCD841DC13775007E38D8 /* XLFormBaseCell.m */; };
 		F73CCDDB1DC13776007E38D8 /* XLFormButtonCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCD861DC13775007E38D8 /* XLFormButtonCell.m */; };
 		F73CCDDD1DC13776007E38D8 /* XLFormCheckCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCD881DC13775007E38D8 /* XLFormCheckCell.m */; };
@@ -239,7 +240,6 @@
 		F77B0E041D118A16002130FE /* UIImage+animatedGIF.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F05581C889184008DAB36 /* UIImage+animatedGIF.m */; };
 		F77B0E051D118A16002130FE /* ReaderDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0EC01C889317008DAB36 /* ReaderDocument.m */; };
 		F77B0E071D118A16002130FE /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = F70F0F951C889487008DAB36 /* ioapi.c */; };
-		F77B0E0D1D118A16002130FE /* CCSecurityOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = F7388E271CB27FE40031C19C /* CCSecurityOptions.m */; };
 		F77B0E0E1D118A16002130FE /* REMenuItemView.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0C591C8892C5008DAB36 /* REMenuItemView.m */; };
 		F77B0E101D118A16002130FE /* MWGridViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0C8D1C8892DF008DAB36 /* MWGridViewController.m */; };
 		F77B0E111D118A16002130FE /* UIImage+Reflection.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04C81C889184008DAB36 /* UIImage+Reflection.m */; };
@@ -1100,8 +1100,8 @@
 		F73049B91CB567F000C7C320 /* NSString+TruncateToWidth.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+TruncateToWidth.m"; sourceTree = "<group>"; };
 		F732BA031D76CE1500E9878B /* CCNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCNetworking.h; sourceTree = "<group>"; };
 		F732BA041D76CE1500E9878B /* CCNetworking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCNetworking.m; sourceTree = "<group>"; };
-		F7388E261CB27FE40031C19C /* CCSecurityOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCSecurityOptions.h; sourceTree = "<group>"; };
-		F7388E271CB27FE40031C19C /* CCSecurityOptions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCSecurityOptions.m; sourceTree = "<group>"; };
+		F73C002D1E55D7DF00EEEFA7 /* CCManageCryptoCloudSecurity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCManageCryptoCloudSecurity.h; sourceTree = "<group>"; };
+		F73C002E1E55D7DF00EEEFA7 /* CCManageCryptoCloudSecurity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCManageCryptoCloudSecurity.m; sourceTree = "<group>"; };
 		F73CCD801DC13775007E38D8 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F73CCD831DC13775007E38D8 /* XLFormBaseCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLFormBaseCell.h; sourceTree = "<group>"; };
 		F73CCD841DC13775007E38D8 /* XLFormBaseCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLFormBaseCell.m; sourceTree = "<group>"; };
@@ -2871,6 +2871,8 @@
 				F7ACE42F1BAC0268006C0017 /* CCManageCameraUpload.m */,
 				F7F6AC4C1E525AD300E8EB45 /* CCManageCryptoCloud.h */,
 				F7F6AC4D1E525AD300E8EB45 /* CCManageCryptoCloud.m */,
+				F73C002D1E55D7DF00EEEFA7 /* CCManageCryptoCloudSecurity.h */,
+				F73C002E1E55D7DF00EEEFA7 /* CCManageCryptoCloudSecurity.m */,
 				F7FEB6CE1BECADC100E7C415 /* CCManageHelp.h */,
 				F7FEB6CF1BECADC100E7C415 /* CCManageHelp.m */,
 				F7AB79EF1BB1A3AD00A82F32 /* CCManageOptimizations.h */,
@@ -2924,8 +2926,6 @@
 				F75ADF441DC75FFE008A7347 /* CCLogin.storyboard */,
 				F7BF1B3F1D51E893000854F6 /* CCLogin.h */,
 				F7BF1B401D51E893000854F6 /* CCLogin.m */,
-				F7388E261CB27FE40031C19C /* CCSecurityOptions.h */,
-				F7388E271CB27FE40031C19C /* CCSecurityOptions.m */,
 			);
 			path = Login;
 			sourceTree = "<group>";
@@ -3906,7 +3906,6 @@
 				F7659A681DC0B760004860C4 /* PSTCollectionViewUpdateItem.m in Sources */,
 				F7C00D471E2D0D0F0032160B /* CCCellOffline.m in Sources */,
 				F77B0E071D118A16002130FE /* ioapi.c in Sources */,
-				F77B0E0D1D118A16002130FE /* CCSecurityOptions.m in Sources */,
 				F73CCDF11DC13776007E38D8 /* XLFormStepCounterCell.m in Sources */,
 				F73CCE1F1DC13776007E38D8 /* XLForm.m in Sources */,
 				F77B0E0E1D118A16002130FE /* REMenuItemView.m in Sources */,
@@ -4089,6 +4088,7 @@
 				F77B0EAA1D118A16002130FE /* zip.c in Sources */,
 				F77B0EAB1D118A16002130FE /* HRColorPickerViewController.m in Sources */,
 				F7F06EB51DBFACC600099AE9 /* CTAssetsGridViewController.m in Sources */,
+				F73C002F1E55D7DF00EEEFA7 /* CCManageCryptoCloudSecurity.m in Sources */,
 				F77B0EAC1D118A16002130FE /* MWGridCell.m in Sources */,
 				F7994B7C1D5B854C008525D9 /* TableCertificates.m in Sources */,
 				F7659A621DC0B760004860C4 /* PSTCollectionViewFlowLayout.m in Sources */,

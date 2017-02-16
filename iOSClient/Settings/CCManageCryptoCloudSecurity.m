@@ -1,5 +1,5 @@
 //
-//  CCSecurityOptions.m
+//  CCManageCryptoCloudSecurity.m
 //  Crypto Cloud Technology Nextcloud
 //
 //  Created by Marino Faggiana on 31/03/16.
@@ -21,20 +21,20 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#import "CCSecurityOptions.h"
+#import "CCManageCryptoCloudSecurity.h"
 
 #import "AppDelegate.h"
 
-@interface CCSecurityOptions()
+@interface CCManageCryptoCloudSecurity()
 {
     NSTimer* myTimer;
     NSMutableDictionary *field;
 }
 @end
 
-@implementation CCSecurityOptions
+@implementation CCManageCryptoCloudSecurity
 
-- (id)initWithDelegate:(id <CCSecurityOptionsDelegate>)delegate
+- (id)initWithDelegate:(id <CCManageCryptoCloudSecurityDelegate>)delegate
 {    
     self = [super init];
     
@@ -126,7 +126,7 @@
     else
         [CCUtility setHint:@""];
     
-    [self.delegate closeSecurityOptions];
+    [self.delegate closeCryptoCloudSecurity];
     
     [self dismissViewControllerAnimated:YES completion:nil];
 }

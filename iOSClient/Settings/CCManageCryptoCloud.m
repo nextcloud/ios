@@ -132,7 +132,7 @@
     [self presentViewController:navigationController animated:YES completion:nil];
 }
 
-- (void)closeSecurityOptions
+- (void)closeCryptoCloudSecurity
 {
     UIAlertView * alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_OK_", nil) message:@"Attivazione avvenuta correttamente, ora potrai usufruire di tutte le funzionalità aggiuntive. Ti ricordiamo che i file cifrati possono essere decifrati sono sui dispositivi iOS" delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
     [alertView show];
@@ -140,11 +140,11 @@
 
 - (void)activateSecurityOptions
 {
-    CCSecurityOptions *securityOptionsVC = [[CCSecurityOptions alloc] initWithDelegate:self];
-    UINavigationController *securityOptionsNC = [[UINavigationController alloc] initWithRootViewController:securityOptionsVC];
+    CCManageCryptoCloudSecurity *vc = [[CCManageCryptoCloudSecurity alloc] initWithDelegate:self];
+    UINavigationController *nc = [[UINavigationController alloc] initWithRootViewController:vc];
     
-    [securityOptionsNC setModalPresentationStyle:UIModalPresentationFormSheet];
-    [self presentViewController:securityOptionsNC animated:YES completion:nil];
+    [nc setModalPresentationStyle:UIModalPresentationFormSheet];
+    [self presentViewController:nc animated:YES completion:nil];
 }
 
 #pragma --------------------------------------------------------------------------------------------

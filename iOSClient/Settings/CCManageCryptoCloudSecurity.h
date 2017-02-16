@@ -1,5 +1,5 @@
 //
-//  CCSecurityOptions.h
+//  CCManageCryptoCloudSecurity.h
 //  Crypto Cloud Technology Nextcloud
 //
 //  Created by Marino Faggiana on 31/03/16.
@@ -28,18 +28,18 @@
 #import "XLForm.h"
 #import "CCUtility.h"
 
-@protocol CCSecurityOptionsDelegate;
+@protocol CCManageCryptoCloudSecurityDelegate;
 
-@interface CCSecurityOptions : XLFormViewController <MFMailComposeViewControllerDelegate>
+@interface CCManageCryptoCloudSecurity : XLFormViewController <MFMailComposeViewControllerDelegate>
 
-- (id)initWithDelegate:(id <CCSecurityOptionsDelegate>)delegate;
+- (id)initWithDelegate:(id <CCManageCryptoCloudSecurityDelegate>)delegate;
 
-@property(nonatomic, weak) id <CCSecurityOptionsDelegate> delegate;
+@property(nonatomic, weak) id <CCManageCryptoCloudSecurityDelegate> delegate;
 
 @end
 
-@protocol CCSecurityOptionsDelegate <NSObject>
+@protocol CCManageCryptoCloudSecurityDelegate <NSObject>
 
-- (void)closeSecurityOptions;
+- (void)closeCryptoCloudSecurity;
 
 @end
