@@ -8,26 +8,8 @@
 
 // Intro
 
-"_intro_01_" = "WELCOME";
-"_intro_02_" = "Based on the encryption AES-256, _brand_ will enable you to store all your private data (documents, templates, photos, videos, etc…) in your Cloud, thus keeping them safe from possible 'prying eyes'.";
-"_intro_03_" = "ENCRYPTION KEY";
-"_intro_04_" = "In order to immediately start using _brand_ you will be asked to enter a encryption key (minimum 4 characters, maximum 64 characters). The combination will be required just once and it cannot be modified. Should you forget it, you will never be able to retrieve it and your files will remain encrypted. Should you re-install _brand_ or access to your data from another iPhone, use the same combination you entered the first time.";
-"_intro_05_" = "LOGIN";
-"_intro_06_" = "Afterwards, you can create your own account by entering the requested data.";
-"_intro_07_" = "_brand_";
-"_intro_08_" = "From now on, you will be able to see all the files stored in your Cloud. You will be able to rename, move, delete them, send them to other compatible programs installed in your iPhone, and much more.";
-"_intro_09_" = "OFFLINE & LOCAL STORAGE";
-"_intro_10_" = "You can tag the most important files or folders as 'Offline', so that they are copied and will always remain synchronized on your iPhone and they can be consulted offline. In the 'Local storage' instead enter files that are no longer synchronized. In the 'Local storage' they will be decompress the compressed files you download from the cloud where you can also access it via iTunes.";
-"_intro_11_" = "ENCRYPT / DECRYPT";
-"_intro_12_" = "Any file can be encrypted or decrypted. The name of folders containing your files can be encrypted as well (so as to hide any possible hint at their contents).";
-"_intro_13_" = "ADD";
-"_intro_14_" = "Any kind of document, either in standard or in encrypted format, can be uploaded from _brand_ onto your Cloud. All encrypted files and folders will be marked in orange colour. If they are in preview mode, they will be identified by a 3 bullets orange label instead.";
-"_intro_15_" = "TEMPLATES";
-"_intro_16_" = "Templates for recording your confidential data (note, credit card, ATM card, bank accounts, passwords to websites, etc…) are available and they can be saved in your Cloud in encrypted mode as well.";
-"_intro_17_" = "PASSWORD LOCK";
-"_intro_18_" = "In order to  prevent other potential users of your iPhone from accessing your _brand_, you can activate the 'password lock' directly from the settings. The password lock can be modified, disabled, or even used to protect access to individual folders.";
-"_intro_19_" = "START";
-"_intro_20_" = "Good, you’re now ready to start using your _brand_. We remind you that you can find further information and news or contact us on the site: \n\n https://nextcloud.com \n\n Come and visit us!";
+"_intro_01_" = "START";
+"_intro_02_" = "Good, you’re now ready to start using your _brand_. We remind you that you can find further information and news or contact us on the site: \n\n https://nextcloud.com \n\n Come and visit us!";
 
 // Intro END
 
