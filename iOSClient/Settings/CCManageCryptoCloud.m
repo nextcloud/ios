@@ -132,11 +132,6 @@
     [self presentViewController:navigationController animated:YES completion:nil];
 }
 
-- (void)checkEncryptPass:(XLFormRowDescriptor *)sender
-{
-    
-}
-
 - (void)closeSecurityOptions
 {
     UIAlertView * alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_OK_", nil) message:@"Attivazione avvenuta correttamente, ora potrai usufruire di tutte le funzionalità aggiuntive. Ti ricordiamo che i file cifrati possono essere decifrati sono sui dispositivi iOS" delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
@@ -203,8 +198,9 @@
             [CCUtility adminRemovePasscode];
             app.isCryptoCloudMode = NO;
             
-            // force reload all directory for all users
+            // force reload all directory for all users and all metadata cryptated
             [CCCoreData clearAllDateReadDirectory];
+            [CCCoreData deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(cryptated == 1)"]];
             
             UIAlertView * alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_OK_", nil) message:@"Disattivazione avvenuta correttamente" delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
             [alertView show];
