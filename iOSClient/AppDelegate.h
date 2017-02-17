@@ -54,8 +54,6 @@
 @property (nonatomic, strong) NSString *activeUser;
 @property (nonatomic, strong) NSString *activePassword;
 @property (nonatomic, strong) NSString *directoryUser;
-@property double quotaUsed;
-@property double quotaAvailable;
 
 // next version ... ? ...
 @property double currentLatitude;

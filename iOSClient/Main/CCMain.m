@@ -1166,11 +1166,6 @@
 
     metadataNet.action = actionGetUserProfile;
     [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
-    
-    metadataNet.action = actionReadFile;
-    metadataNet.selector = selectorReadFileQuota;
-    metadataNet.serverUrl = [CCUtility getHomeServerUrlActiveUrl:app.activeUrl];
-    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1714,13 +1709,6 @@
             [app addNetworkingOperationQueue:app.netQueueUploadWWan delegate:self metadataNet:metadataNet];
         else
             [app addNetworkingOperationQueue:app.netQueueUpload delegate:self metadataNet:metadataNet];
-    }
-    
-    // Quota
-    if ([metadataNet.selector isEqualToString:selectorReadFileQuota]) {
-        
-        if (app.activeSettings)
-            [app.activeSettings reloadForm];        
     }
 }
 

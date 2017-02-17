@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="16C67" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="eRR-MW-ghy">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="16D32" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="eRR-MW-ghy">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -14,33 +14,33 @@
         <scene sceneID="dZP-R1-zZF">
             <objects>
                 <tableViewController id="c26-Us-IIn" customClass="CCNotification" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="90" sectionHeaderHeight="28" sectionFooterHeight="28" id="vzh-aE-2MF">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="120" sectionHeaderHeight="28" sectionFooterHeight="28" id="vzh-aE-2MF">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="Cell" rowHeight="120" id="R1c-h5-BOp" customClass="CCNotificationCell" customModule="Nextcloud" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="28" width="375" height="120"/>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="Cell" rowHeight="160" id="R1c-h5-BOp" customClass="CCNotificationCell" customModule="Nextcloud" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="28" width="375" height="160"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="R1c-h5-BOp" id="9Bv-1W-yVV">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="119.5"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="160"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pg1-7p-7Rz" userLabel="subject">
-                                            <rect key="frame" x="47" y="27" width="320" height="38"/>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pg1-7p-7Rz" userLabel="subject">
+                                            <rect key="frame" x="47" y="27" width="320" height="75"/>
                                             <constraints>
-                                                <constraint firstAttribute="height" constant="38" id="HIf-ra-ApH"/>
+                                                <constraint firstAttribute="height" constant="75" id="HIf-ra-ApH"/>
                                             </constraints>
-                                            <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9fz-sr-8Gv" userLabel="message">
-                                            <rect key="frame" x="47" y="70" width="320" height="44"/>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9fz-sr-8Gv" userLabel="message">
+                                            <rect key="frame" x="47" y="110" width="320" height="44"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="44" id="w3S-Mr-J41"/>
                                             </constraints>
-                                            <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                             <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                             <nil key="highlightedColor"/>
                                         </label>
@@ -66,7 +66,7 @@
                                         <constraint firstItem="YPu-No-c8x" firstAttribute="top" secondItem="9Bv-1W-yVV" secondAttribute="topMargin" constant="-6" id="Z41-Sh-h01"/>
                                         <constraint firstAttribute="trailingMargin" secondItem="YPu-No-c8x" secondAttribute="trailing" constant="2" id="ato-Mb-ehY"/>
                                         <constraint firstItem="9fz-sr-8Gv" firstAttribute="leading" secondItem="pg1-7p-7Rz" secondAttribute="leading" id="h4U-rq-Ehk"/>
-                                        <constraint firstItem="9fz-sr-8Gv" firstAttribute="top" secondItem="pg1-7p-7Rz" secondAttribute="bottom" constant="5" id="heM-QX-U30"/>
+                                        <constraint firstItem="9fz-sr-8Gv" firstAttribute="top" secondItem="pg1-7p-7Rz" secondAttribute="bottom" constant="8" id="heM-QX-U30"/>
                                         <constraint firstItem="YPu-No-c8x" firstAttribute="leading" secondItem="9Bv-1W-yVV" secondAttribute="leadingMargin" constant="41" id="oKi-mq-icZ"/>
                                         <constraint firstItem="pg1-7p-7Rz" firstAttribute="leading" secondItem="9Bv-1W-yVV" secondAttribute="leadingMargin" constant="39" id="wM1-G2-xgz"/>
                                     </constraints>
@@ -96,7 +96,7 @@
             <objects>
                 <navigationController storyboardIdentifier="CCNotification" automaticallyAdjustsScrollViewInsets="NO" id="eRR-MW-ghy" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="jDh-Ju-bUL">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="jDh-Ju-bUL">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>

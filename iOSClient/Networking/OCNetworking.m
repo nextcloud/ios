@@ -346,16 +346,6 @@
         // Update metadataNet.directoryID
         _metadataNet.directoryID = directoryID;
         
-#ifndef EXTENSION
-        NSString *root = [CCUtility getHomeServerUrlActiveUrl:_activeUrl];
-        
-        if ([root isEqualToString:_metadataNet.serverUrl]) {
-            
-            app.quotaUsed = itemDtoDirectory.quotaUsed;
-            app.quotaAvailable = itemDtoDirectory.quotaAvailable;
-        }
-#endif
-        
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
 
             NSArray *itemsSortedArray = [items sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
@@ -666,17 +656,7 @@
             NSString *directoryUser = [CCUtility getDirectoryActiveUser:_activeUser activeUrl:_activeUrl];
         
             metadata = [CCUtility trasformedOCFileToCCMetadata:itemDto fileNamePrint:_metadataNet.fileNamePrint serverUrl:_metadataNet.serverUrl directoryID:directoryID cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath activeAccount:_metadataNet.account directoryUser:directoryUser];
-            
-#ifndef EXTENSION
-            NSString *root = [CCUtility getHomeServerUrlActiveUrl:_activeUrl];
-            
-            if ([root isEqualToString:fileName]) {
-                
-                app.quotaUsed = itemDto.quotaUsed;
-                app.quotaAvailable = itemDto.quotaAvailable;
-            }
-#endif
-            
+                        
             if([self.delegate respondsToSelector:@selector(readFileSuccess:metadata:)])
                 [self.delegate readFileSuccess:_metadataNet metadata:metadata];
         }

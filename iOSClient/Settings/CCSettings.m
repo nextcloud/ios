@@ -24,6 +24,7 @@
 #import "CCSettings.h"
 #import "AppDelegate.h"
 #import "CCMain.h"
+#import "TableAccount+CoreDataClass.h"
 
 #define alertViewEsci 1
 #define alertViewAzzeraCache 2
@@ -97,6 +98,12 @@
     
     // username
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"usernamecloud" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_username_", nil)];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
+    [section addFormRow:row];
+    
+    // information
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"userinformation" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_information_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
     [section addFormRow:row];
@@ -314,6 +321,7 @@
     
     XLFormRowDescriptor *rowUrlCloud = [self.form formRowWithTag:@"urlcloud"];
     XLFormRowDescriptor *rowUserNameCloud = [self.form formRowWithTag:@"usernamecloud"];
+    XLFormRowDescriptor *rowUserInformation = [self.form formRowWithTag:@"userinformation"];
     XLFormRowDescriptor *rowQuota = [self.form formRowWithTag:@"quota"];
     
     // ------------------------------------------------------------------
@@ -329,12 +337,15 @@
     if ([CCUtility getSimplyBlockCode]) [rowSimplyPasscode setValue:@1]; else [rowSimplyPasscode setValue:@0];
     if ([CCUtility getOnlyLockDir]) [rowOnlyLockDir setValue:@1]; else [rowOnlyLockDir setValue:@0];
     
+    TableAccount *tableAccount = [CCCoreData getActiveAccount];
+    
     rowVersionServer.value =  [CCNetworking sharedNetworking].sharedOCCommunication.getCurrentServerVersion;
     rowUrlCloud.value = app.activeUrl;
-    rowUserNameCloud.value = app.activeUser;
+    rowUserNameCloud.value = [NSString stringWithFormat:@"%@ - %@",app.activeUser, tableAccount.displayName];
+    rowUserInformation.value = [NSString stringWithFormat:@"%@  %@",tableAccount.address, tableAccount.phone];
     
-    NSString *quota = [CCUtility transformedSize:(app.quotaAvailable + app.quotaUsed)];
-    NSString *quotaAvailable = [CCUtility transformedSize:(app.quotaAvailable)];
+    NSString *quota = [CCUtility transformedSize:[tableAccount.quotaTotal doubleValue]];
+    NSString *quotaAvailable = [CCUtility transformedSize:[tableAccount.quotaFree doubleValue]];
     
     rowQuota.value = [NSString stringWithFormat:@"%@ / %@ %@", quota, quotaAvailable, NSLocalizedString(@"_available_", nil)];
         

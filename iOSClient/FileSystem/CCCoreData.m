@@ -509,6 +509,7 @@
         TableAccount *record = [TableAccount MR_findFirstWithPredicate:predicate inContext:localContext];
         
         if (record) {
+            
             record.enabled = [NSNumber numberWithBool:userProfile.enabled];
             record.address = userProfile.address;
             record.displayName = userProfile.displayName;

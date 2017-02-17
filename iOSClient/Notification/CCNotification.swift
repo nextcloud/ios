@@ -132,11 +132,11 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
         
         if notification.message.characters.count > 0 {
             
-            return 120
+            return 160
             
         } else {
             
-            return 80
+            return 120
         }
     }
     
@@ -163,10 +163,13 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
         } else {
             
             let notification = appDelegate.listOfNotifications.object(at: indexPath.row) as! OCNotifications
+            let urlIcon = URL(string: notification.icon)
+            var image : UIImage?
             
-            let urlIcon = URL(string: notification.icon)!
-            let pathFileName = (appDelegate.directoryUser) + "/" + urlIcon.lastPathComponent
-            let image = UIImage(contentsOfFile: pathFileName)
+            if urlIcon != nil {
+                let pathFileName = (appDelegate.directoryUser) + "/" + (urlIcon?.lastPathComponent)!
+                image = UIImage(contentsOfFile: pathFileName)
+            }
             
             if image == nil {
                 
