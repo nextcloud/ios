@@ -277,7 +277,6 @@
     [CCAspect aspectTabBar:self.tabBarController.tabBar hidden:NO];
     
     [self reloadForm];
-    [self recalculateSize];
 }
 
 // E' apparsa
@@ -332,7 +331,7 @@
     XLFormRowDescriptor *rowUserEmail = [self.form formRowWithTag:@"useremail"];
     XLFormRowDescriptor *rowQuota = [self.form formRowWithTag:@"quota"];
     
-    XLFormRowDescriptor *rowChangeCredentials = [self.form formRowWithTag:@"changecredentials"];
+    //XLFormRowDescriptor *rowChangeCredentials = [self.form formRowWithTag:@"changecredentials"];
 
     // ------------------------------------------------------------------
     
@@ -351,6 +350,7 @@
     UIImage *avatar = [[UIImage alloc] initWithContentsOfFile:[NSString stringWithFormat:@"%@/avatar.png", app.directoryUser]];
     if (avatar) {
         
+        avatar =  [CCGraphics scaleImage:avatar toSize:CGSizeMake(50, 50)];
         APAvatarImageView *avatarImageView = [[APAvatarImageView alloc] initWithImage:avatar borderColor:[UIColor lightGrayColor] borderWidth:0.5];
         
         CGSize imageSize = avatarImageView.bounds.size;
@@ -367,13 +367,13 @@
     rowUrlCloud.value = app.activeUrl;
     rowUserNameCloud.value = app.activeUser;
     
-    if (tableAccount.displayName.length > 0 || tableAccount.address.length > 0 || tableAccount.phone.length > 0) {
+    if (avatar || tableAccount.displayName.length > 0 || tableAccount.address.length > 0 || tableAccount.phone.length > 0) {
         
         rowUserInformation.title = [NSString stringWithFormat:@"%@ %@ %@", tableAccount.displayName, tableAccount.address, tableAccount.phone];
         rowUserInformation.disabled = @YES;
-        [rowUserInformation.cellConfig setObject:avatar forKey:@"imageView.image"];
-        rowUserInformation.height = 100;
-        
+        if (avatar)
+            [rowUserInformation.cellConfig setObject:avatar forKey:@"imageView.image"];
+
     } else {
         
         rowUserInformation.title = NSLocalizedString(@"_information_", nil);
@@ -386,18 +386,6 @@
     NSString *quotaAvailable = [CCUtility transformedSize:[tableAccount.quotaFree doubleValue]];
     
     rowQuota.value = [NSString stringWithFormat:@"%@ / %@ %@", quota, quotaAvailable, NSLocalizedString(@"_available_", nil)];
-    
-    /*
-        [rowChangeCredentials.cellConfig setObject:avatarViewImage forKey:@"imageView.image"];
-        rowChangeCredentials.height = 50;
-        
-    } else {
-        
-        [rowChangeCredentials.cellConfig setObject:[UIImage imageNamed:image_settingsCredentials] forKey:@"imageView.image"];
-    }
-    */
-    
-    
     
     // -----------------------------------------------------------------
     
