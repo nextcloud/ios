@@ -106,8 +106,15 @@
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"userinformation" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_information_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
+    row.cellConfig[@"textLabel.numberOfLines"] = @0;
     [section addFormRow:row];
     
+    // email
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"useremail" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_email_", nil)];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
+    [section addFormRow:row];
+
     // quota
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"quota" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_quota_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
@@ -322,6 +329,7 @@
     XLFormRowDescriptor *rowUrlCloud = [self.form formRowWithTag:@"urlcloud"];
     XLFormRowDescriptor *rowUserNameCloud = [self.form formRowWithTag:@"usernamecloud"];
     XLFormRowDescriptor *rowUserInformation = [self.form formRowWithTag:@"userinformation"];
+    XLFormRowDescriptor *rowUserEmail = [self.form formRowWithTag:@"useremail"];
     XLFormRowDescriptor *rowQuota = [self.form formRowWithTag:@"quota"];
     
     // ------------------------------------------------------------------
@@ -341,8 +349,20 @@
     
     rowVersionServer.value =  [CCNetworking sharedNetworking].sharedOCCommunication.getCurrentServerVersion;
     rowUrlCloud.value = app.activeUrl;
-    rowUserNameCloud.value = [NSString stringWithFormat:@"%@ - %@",app.activeUser, tableAccount.displayName];
-    rowUserInformation.value = [NSString stringWithFormat:@"%@  %@",tableAccount.address, tableAccount.phone];
+    rowUserNameCloud.value = app.activeUser;
+    
+    if (tableAccount.displayName.length > 0 || tableAccount.address.length > 0 || tableAccount.phone.length > 0) {
+        
+        rowUserInformation.title = [NSString stringWithFormat:@"%@ %@ %@", tableAccount.displayName, tableAccount.address, tableAccount.phone];
+        rowUserInformation.disabled = @YES;
+        
+    } else {
+        
+        rowUserInformation.title = NSLocalizedString(@"_information_", nil);
+        rowUserInformation.disabled = @NO;
+    }
+    
+    rowUserEmail.value = tableAccount.email;
     
     NSString *quota = [CCUtility transformedSize:[tableAccount.quotaTotal doubleValue]];
     NSString *quotaAvailable = [CCUtility transformedSize:[tableAccount.quotaFree doubleValue]];
