@@ -1438,16 +1438,17 @@
             
             if (statusCode == kOCUserProfileAPISuccessful) {
                 
-                userProfile.address = [datas valueForKey:@"address"];
-                userProfile.displayName = [datas valueForKey:@"displayname"];
+                if ([datas valueForKey:@"address"]) userProfile.address = [datas valueForKey:@"address"];
+                if ([datas valueForKey:@"displayname"]) userProfile.displayName = [datas valueForKey:@"displayname"];
+                
                 userProfile.email = [datas valueForKey:@"email"];
-                if ([userProfile.email isKindOfClass:[NSNull class]])
-                    userProfile.email = @"";
+                if ([userProfile.email isKindOfClass:[NSNull class]]) userProfile.email = @"";
+                
                 userProfile.enabled = [[datas valueForKey:@"enabled"] boolValue];
-                userProfile.id = [datas valueForKey:@"id"];
-                userProfile.phone = [datas valueForKey:@"phone"];
-                userProfile.twitter = [datas valueForKey:@"twitter"];
-                userProfile.webpage = [datas valueForKey:@"webpage"];
+                if ([datas valueForKey:@"id"])  userProfile.id = [datas valueForKey:@"id"];
+                if ([datas valueForKey:@"phone"]) userProfile.phone = [datas valueForKey:@"phone"];
+                if ([datas valueForKey:@"twitter"]) userProfile.twitter = [datas valueForKey:@"twitter"];
+                if ([datas valueForKey:@"webpage"]) userProfile.webpage = [datas valueForKey:@"webpage"];
 
                 /* QUOTA */
                     

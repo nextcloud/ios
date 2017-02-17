@@ -25,4 +25,18 @@
 
 @implementation OCUserProfile
 
+- (id)init
+{
+    self = [super init];
+    
+    self.id = @"";
+    self.address = @"";
+    self.displayName = @"";
+    self.email = @"";
+    self.phone = @"";
+    self.twitter = @"";
+    self.webpage = @"";
+    
+    return self;
+}
 @end
