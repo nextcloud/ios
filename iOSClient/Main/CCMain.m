@@ -1115,6 +1115,11 @@
 #pragma mark ==== Request Server  ====
 #pragma --------------------------------------------------------------------------------------------
 
+- (void)getUserProfileSuccess:(CCMetadataNet *)metadataNet userProfile:(OCUserProfile *)userProfile
+{
+    [CCCoreData setUserProfileActiveAccount:metadataNet.account userProfile:userProfile];
+}
+
 - (void)getCapabilitiesOfServerSuccess:(OCCapabilities *)capabilities
 {
     app.capabilities = capabilities;
@@ -1166,8 +1171,6 @@
     metadataNet.selector = selectorReadFileQuota;
     metadataNet.serverUrl = [CCUtility getHomeServerUrlActiveUrl:app.activeUrl];
     [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
-    
-    
 }
 
 #pragma --------------------------------------------------------------------------------------------

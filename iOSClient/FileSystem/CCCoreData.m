@@ -501,6 +501,31 @@
     }];
 }
 
++ (void)setUserProfileActiveAccount:(NSString *)activeAccount userProfile:(OCUserProfile *)userProfile
+{
+    [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
+        
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@)", activeAccount];
+        TableAccount *record = [TableAccount MR_findFirstWithPredicate:predicate inContext:localContext];
+        
+        if (record) {
+            record.enabled = [NSNumber numberWithBool:userProfile.enabled];
+            record.address = userProfile.address;
+            record.displayName = userProfile.displayName;
+            record.email = userProfile.email;
+            record.phone = userProfile.phone;
+            record.twitter = userProfile.twitter;
+            record.webpage = userProfile.webpage;
+            
+            record.quota = [NSNumber numberWithDouble:userProfile.quota];
+            record.quotaFree = [NSNumber numberWithDouble:userProfile.quotaFree];
+            record.quotaRelative = [NSNumber numberWithDouble:userProfile.quotaRelative];
+            record.quotaTotal = [NSNumber numberWithDouble:userProfile.quotaTotal];
+            record.quotaUsed = [NSNumber numberWithDouble:userProfile.quotaUsed];
+        }
+    }];
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Certificates =====
 #pragma --------------------------------------------------------------------------------------------

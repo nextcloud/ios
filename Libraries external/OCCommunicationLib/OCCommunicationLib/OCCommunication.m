@@ -1441,6 +1441,8 @@
                 userProfile.address = [datas valueForKey:@"address"];
                 userProfile.displayName = [datas valueForKey:@"displayname"];
                 userProfile.email = [datas valueForKey:@"email"];
+                if ([userProfile.email isKindOfClass:[NSNull class]])
+                    userProfile.email = @"";
                 userProfile.enabled = [[datas valueForKey:@"enabled"] boolValue];
                 userProfile.id = [datas valueForKey:@"id"];
                 userProfile.phone = [datas valueForKey:@"phone"];

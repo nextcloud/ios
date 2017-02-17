@@ -32,6 +32,7 @@
 #import "CCUtility.h"
 #import "CCExifGeo.h"
 #import "CCGraphics.h"
+#import "OCUserProfile.h"
 
 #import "TableAccount+CoreDataClass.h"
 #import "TableCertificates+CoreDataClass.h"
@@ -90,6 +91,8 @@
 + (void)setCameraUploadFolderName:(NSString *)fileName activeAccount:(NSString *)activeAccount;
 + (void)setCameraUploadFolderPath:(NSString *)pathName activeUrl:(NSString *)activeUrl activeAccount:(NSString *)activeAccount;
 + (void)setCameraUploadSaveAlbum:(BOOL)saveAlbum activeAccount:(NSString *)activeAccount;
+
++ (void)setUserProfileActiveAccount:(NSString *)activeAccount userProfile:(OCUserProfile *)userProfile;
 
 // ===== Certificates =====
 
