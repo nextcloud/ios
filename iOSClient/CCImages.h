@@ -29,6 +29,7 @@
 #define image_attention                         @"attention"
 #define image_audio                             @"audio"
 #define image_audiocrypto                       @"audiocrypto"
+#define image_avatar                            @"avatar"
 #define image_bkfull                            @"bkfull"
 #define image_bkempty                           @"bkempty"
 #define image_brandCameraUpload                 @"nextcloudCameraUpload"

@@ -373,11 +373,14 @@
         rowUserInformation.disabled = @YES;
         if (avatar)
             [rowUserInformation.cellConfig setObject:avatar forKey:@"imageView.image"];
+        else
+            [rowUserInformation.cellConfig setObject:[UIImage imageNamed:image_avatar] forKey:@"imageView.image"];
 
     } else {
         
         rowUserInformation.title = NSLocalizedString(@"_information_", nil);
         rowUserInformation.disabled = @NO;
+        [rowUserInformation.cellConfig setObject:[UIImage imageNamed:image_avatar] forKey:@"imageView.image"];
     }
     
     rowUserEmail.value = tableAccount.email;
