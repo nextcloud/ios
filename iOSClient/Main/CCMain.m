@@ -1059,7 +1059,7 @@
 #pragma mark ==== Notification  ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)getNotificationsOfServerSuccess:(NSArray *)listOfNotifications
+- (void)getNotificationServerSuccess:(NSArray *)listOfNotifications
 {
     AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     NSString *old = @"", *new = @"";
@@ -1092,7 +1092,7 @@
         [self setUINavigationBarDefault];
 }
 
-- (void)getNotificationsOfServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+- (void)getNotificationServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {    
     // Update NavigationBar
     if (!_isSelectedMode)
@@ -1156,7 +1156,7 @@
     metadataNet.action = actionGetCapabilities;
     [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
         
-    metadataNet.action = actionGetNotificationsOfServer;
+    metadataNet.action = actionGetNotificationServer;
     [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
 
     metadataNet.action = actionGetUserProfile;

@@ -22,6 +22,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 //
+//
+//  Add : getNotificationServer & setNotificationServer
+//  Add : getUserProfileServer
+//
+//  Author Marino Faggiana <m.faggiana@twsweb.it>
+//
+
 
 #import "OCCommunication.h"
 #import "OCHTTPRequestOperation.h"
@@ -40,6 +47,7 @@
 #import "OCNotifications.h"
 #import "OCNotificationsAction.h"
 #import "OCRichObjectStrings.h"
+#import "OCUserProfile.h"
 
 @interface OCCommunication ()
 
@@ -1287,7 +1295,7 @@
 
 #pragma mark - Notification Server
 
-- (void) getNotificationsOfServer:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *listOfNotifications, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
+- (void) getNotificationServer:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *listOfNotifications, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
     serverPath = [serverPath encodeString:NSUTF8StringEncoding];
     serverPath = [serverPath stringByAppendingString:k_url_acces_remote_notification_api];
@@ -1295,7 +1303,7 @@
     OCWebDAVClient *request = [OCWebDAVClient new];
     request = [self getRequestWithCredentials:request];
     
-    [request getNotificationsOfServer:serverPath onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
+    [request getNotificationServer:serverPath onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
         
         NSData *responseData = (NSData*) responseObject;
         
@@ -1400,17 +1408,16 @@
 
 #pragma mark - User Profile
 
-- (void) getUserProfileOfServer:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, OCUserProfile *userProfile, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
+- (void) getUserProfileServer:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, OCUserProfile *userProfile, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
     serverPath = [serverPath stringByAppendingString:k_url_acces_remote_userprofile_api];
     serverPath = [serverPath stringByAppendingString:self.user];
-    //serverPath = [NSString stringWithFormat:@"%@ -H \"%@\"",serverPath, @"OCS-APIRequest: true"];
-    //serverPath = [serverPath encodeString:NSUTF8StringEncoding];
+    serverPath = [serverPath encodeString:NSUTF8StringEncoding];
 
     OCWebDAVClient *request = [OCWebDAVClient new];
     request = [self getRequestWithCredentials:request];
     
-    [request getUserProfileOfServer:serverPath onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
+    [request getUserProfileServer:serverPath onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
     
         NSData *responseData = (NSData*) responseObject;
         
@@ -1419,11 +1426,52 @@
         NSDictionary *jsongParsed = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableContainers error:&error];
         NSLog(@"[LOG] User Profile : %@",jsongParsed);
         
-        OCUserProfile *userProfile;
+        OCUserProfile *userProfile = [OCUserProfile new];
         
         if (jsongParsed.allKeys > 0) {
 
+            NSDictionary *ocs = [jsongParsed valueForKey:@"ocs"];
+            NSDictionary *meta = [ocs valueForKey:@"meta"];
+            NSDictionary *datas = [ocs valueForKey:@"data"];
+            
+            NSInteger statusCode = [[meta valueForKey:@"statuscode"] integerValue];
+            
+            if (statusCode == kOCUserProfileAPISuccessful) {
+                
+                userProfile.address = [datas valueForKey:@"address"];
+                userProfile.displayName = [datas valueForKey:@"displayname"];
+                userProfile.email = [datas valueForKey:@"email"];
+                userProfile.enabled = [[datas valueForKey:@"enabled"] boolValue];
+                userProfile.id = [datas valueForKey:@"id"];
+                userProfile.phone = [datas valueForKey:@"phone"];
+                userProfile.twitter = [datas valueForKey:@"twitter"];
+                userProfile.webpage = [datas valueForKey:@"webpage"];
+
+                /* QUOTA */
+                    
+                NSDictionary *quotaDic = [datas valueForKey:@"quota"];
+                
+                userProfile.quotaFree = [[quotaDic valueForKey:@"free"] doubleValue];
+                userProfile.quota = [[quotaDic valueForKey:@"quota"] doubleValue];
+                userProfile.quotaRelative = [[quotaDic valueForKey:@"relative"] doubleValue];
+                userProfile.quotaTotal = [[quotaDic valueForKey:@"total"] doubleValue];
+                userProfile.quotaUsed = [[quotaDic valueForKey:@"used"] doubleValue];
+                
+            } else {
+                
+                NSString *message = (NSString*)[meta objectForKey:@"message"];
+                
+                if ([message isKindOfClass:[NSNull class]]) {
+                    message = @"";
+                }
+                
+                NSError *error = [UtilsFramework getErrorWithCode:statusCode andCustomMessageFromTheServer:message];
+                failureRequest(response, error, request.redirectedServer);
+            }
         }
+        
+        //Return success
+        successRequest(response, userProfile, request.redirectedServer);
         
     } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
     

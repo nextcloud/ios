@@ -964,17 +964,17 @@
 #pragma mark =====  Notification =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)getNotificationsOfServer
+- (void)getNotificationServer
 {
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     
     [communication setCredentialsWithUser:_activeUser andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
-    [communication getNotificationsOfServer:[_activeUrl stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *listOfNotifications, NSString *redirectedServer) {
+    [communication getNotificationServer:[_activeUrl stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *listOfNotifications, NSString *redirectedServer) {
         
-        if ([self.delegate respondsToSelector:@selector(getNotificationsOfServerSuccess:)])
-            [self.delegate getNotificationsOfServerSuccess:listOfNotifications];
+        if ([self.delegate respondsToSelector:@selector(getNotificationServerSuccess:)])
+            [self.delegate getNotificationServerSuccess:listOfNotifications];
         
         [self complete];
         
@@ -984,8 +984,8 @@
         if (errorCode == 0)
             errorCode = error.code;
         
-        if([self.delegate respondsToSelector:@selector(getNotificationsOfServerFailure:message:errorCode:)])
-            [self.delegate getNotificationsOfServerFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        if([self.delegate respondsToSelector:@selector(getNotificationServerFailure:message:errorCode:)])
+            [self.delegate getNotificationServerFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
         
         // Request trusted certificated
         if ([error code] == NSURLErrorServerCertificateUntrusted)
@@ -1039,7 +1039,7 @@
     [communication setCredentialsWithUser:_activeUser andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
-    [communication getUserProfileOfServer:[_activeUrl stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, OCUserProfile *userProfile, NSString *redirectedServer) {
+    [communication getUserProfileServer:[_activeUrl stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, OCUserProfile *userProfile, NSString *redirectedServer) {
         
         if ([self.delegate respondsToSelector:@selector(getUserProfileSuccess:userProfile:)])
             [self.delegate getUserProfileSuccess:_metadataNet userProfile:userProfile];

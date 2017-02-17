@@ -93,8 +93,8 @@
 - (void)getInfoServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
 
 // Notification
-- (void)getNotificationsOfServerSuccess:(NSArray *)listOfNotifications;
-- (void)getNotificationsOfServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
+- (void)getNotificationServerSuccess:(NSArray *)listOfNotifications;
+- (void)getNotificationServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
 
 - (void)setNotificationServerSuccess:(CCMetadataNet *)metadataNet;
 - (void)setNotificationServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
