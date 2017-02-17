@@ -1118,7 +1118,12 @@
 - (void)getUserProfileSuccess:(CCMetadataNet *)metadataNet userProfile:(OCUserProfile *)userProfile
 {
     [CCCoreData setUserProfileActiveAccount:metadataNet.account userProfile:userProfile];
-}
+
+    NSString *address = [NSString stringWithFormat:@"%@/index.php/avatar/%@/64", app.activeUrl, app.activeUser];
+    UIImage *avatar = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:[address stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]]];
+    if (avatar)
+        [UIImagePNGRepresentation(avatar) writeToFile:[NSString stringWithFormat:@"%@/avatar.png", app.directoryUser] atomically:YES];
+    }
 
 - (void)getCapabilitiesOfServerSuccess:(OCCapabilities *)capabilities
 {

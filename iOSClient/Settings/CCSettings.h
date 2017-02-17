@@ -28,6 +28,7 @@
 #import "BKPasscodeViewController.h"
 #import "CCUtility.h"
 #import "CCHud.h"
+#import "APAvatarImageView.h"
 
 @interface CCSettings : XLFormViewController <BKPasscodeViewControllerDelegate, MFMailComposeViewControllerDelegate>
 
