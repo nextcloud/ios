@@ -3,7 +3,7 @@
 //
 
 #import <MagicalRecord/MagicalRecord.h>
-#import "TableAccount.h"
+#import "TableAccount+CoreDataClass.h"
 #import "CCNetworking.h"
 #import "OCNetworking.h"
 #import "CCCoreData.h"

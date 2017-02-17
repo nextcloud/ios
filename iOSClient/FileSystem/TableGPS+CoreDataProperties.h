@@ -1,41 +1,29 @@
 //
 //  TableGPS+CoreDataProperties.h
-//  Crypto Cloud Technology Nextcloud
+//  Nextcloud
 //
-//  Created by Marino Faggiana on 18/01/16.
-//  Copyright (c) 2014 TWS. All rights reserved.
-//
-//  Author Marino Faggiana <m.faggiana@twsweb.it>
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//  Created by Marino Faggiana on 17/02/17.
+//  Copyright © 2017 TWS. All rights reserved.
 //
 
-#import "TableGPS.h"
+#import "TableGPS+CoreDataClass.h"
+
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface TableGPS (CoreDataProperties)
 
-@property (nullable, nonatomic, retain) NSDate *dateRecord;
-@property (nullable, nonatomic, retain) NSString *latitude;
-@property (nullable, nonatomic, retain) NSString *location;
-@property (nullable, nonatomic, retain) NSString *longitude;
-@property (nullable, nonatomic, retain) NSString *placemarkAdministrativeArea;
-@property (nullable, nonatomic, retain) NSString *placemarkCountry;
-@property (nullable, nonatomic, retain) NSString *placemarkLocality;
-@property (nullable, nonatomic, retain) NSString *placemarkPostalCode;
-@property (nullable, nonatomic, retain) NSString *placemarkThoroughfare;
++ (NSFetchRequest<TableGPS *> *)fetchRequest;
+
+@property (nullable, nonatomic, copy) NSDate *dateRecord;
+@property (nullable, nonatomic, copy) NSString *latitude;
+@property (nullable, nonatomic, copy) NSString *location;
+@property (nullable, nonatomic, copy) NSString *longitude;
+@property (nullable, nonatomic, copy) NSString *placemarkAdministrativeArea;
+@property (nullable, nonatomic, copy) NSString *placemarkCountry;
+@property (nullable, nonatomic, copy) NSString *placemarkLocality;
+@property (nullable, nonatomic, copy) NSString *placemarkPostalCode;
+@property (nullable, nonatomic, copy) NSString *placemarkThoroughfare;
 
 @end
 

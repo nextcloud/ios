@@ -1,54 +1,54 @@
 //
 //  TableAccount+CoreDataProperties.h
-//  Crypto Cloud Technology Nextcloud
+//  Nextcloud
 //
-//  Created by Marino Faggiana on 18/01/16.
-//  Copyright (c) 2014 TWS. All rights reserved.
-//
-//  Author Marino Faggiana <m.faggiana@twsweb.it>
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//  Created by Marino Faggiana on 17/02/17.
+//  Copyright © 2017 TWS. All rights reserved.
 //
 
-#import "TableAccount.h"
+#import "TableAccount+CoreDataClass.h"
+
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface TableAccount (CoreDataProperties)
 
-@property (nullable, nonatomic, retain) NSString *account;
-@property (nullable, nonatomic, retain) NSNumber *active;
-@property (nullable, nonatomic, retain) NSNumber *cameraUpload;
-@property (nullable, nonatomic, retain) NSNumber *cameraUploadBackground;
-@property (nullable, nonatomic, retain) NSNumber *cameraUploadCreateSubfolder;
-@property (nullable, nonatomic, retain) NSNumber *cameraUploadCryptatedPhoto;
-@property (nullable, nonatomic, retain) NSNumber *cameraUploadCryptatedVideo;
-@property (nullable, nonatomic, retain) NSDate *cameraUploadDatePhoto;
-@property (nullable, nonatomic, retain) NSDate *cameraUploadDateVideo;
-@property (nullable, nonatomic, retain) NSString *cameraUploadFolderName;
-@property (nullable, nonatomic, retain) NSString *cameraUploadFolderPath;
-@property (nullable, nonatomic, retain) NSNumber *cameraUploadFull;
-@property (nullable, nonatomic, retain) NSNumber *cameraUploadPhoto;
-@property (nullable, nonatomic, retain) NSNumber *cameraUploadSaveAlbum;
-@property (nullable, nonatomic, retain) NSNumber *cameraUploadVideo;
-@property (nullable, nonatomic, retain) NSNumber *cameraUploadWWAnPhoto;
-@property (nullable, nonatomic, retain) NSNumber *cameraUploadWWAnVideo;
-@property (nullable, nonatomic, retain) NSDate *dateRecord;
-@property (nullable, nonatomic, retain) NSDate *optimization;
-@property (nullable, nonatomic, retain) NSString *password;
-@property (nullable, nonatomic, retain) NSString *url;
-@property (nullable, nonatomic, retain) NSString *user;
++ (NSFetchRequest<TableAccount *> *)fetchRequest;
+
+@property (nullable, nonatomic, copy) NSString *account;
+@property (nullable, nonatomic, copy) NSNumber *active;
+@property (nullable, nonatomic, copy) NSNumber *cameraUpload;
+@property (nullable, nonatomic, copy) NSNumber *cameraUploadBackground;
+@property (nullable, nonatomic, copy) NSNumber *cameraUploadCreateSubfolder;
+@property (nullable, nonatomic, copy) NSNumber *cameraUploadCryptatedPhoto;
+@property (nullable, nonatomic, copy) NSNumber *cameraUploadCryptatedVideo;
+@property (nullable, nonatomic, copy) NSDate *cameraUploadDatePhoto;
+@property (nullable, nonatomic, copy) NSDate *cameraUploadDateVideo;
+@property (nullable, nonatomic, copy) NSString *cameraUploadFolderName;
+@property (nullable, nonatomic, copy) NSString *cameraUploadFolderPath;
+@property (nullable, nonatomic, copy) NSNumber *cameraUploadFull;
+@property (nullable, nonatomic, copy) NSNumber *cameraUploadPhoto;
+@property (nullable, nonatomic, copy) NSNumber *cameraUploadSaveAlbum;
+@property (nullable, nonatomic, copy) NSNumber *cameraUploadVideo;
+@property (nullable, nonatomic, copy) NSNumber *cameraUploadWWAnPhoto;
+@property (nullable, nonatomic, copy) NSNumber *cameraUploadWWAnVideo;
+@property (nullable, nonatomic, copy) NSDate *dateRecord;
+@property (nullable, nonatomic, copy) NSDate *optimization;
+@property (nullable, nonatomic, copy) NSString *password;
+@property (nullable, nonatomic, copy) NSString *url;
+@property (nullable, nonatomic, copy) NSString *user;
+@property (nullable, nonatomic, copy) NSNumber *enabled;
+@property (nullable, nonatomic, copy) NSString *address;
+@property (nullable, nonatomic, copy) NSString *displayName;
+@property (nullable, nonatomic, copy) NSString *email;
+@property (nullable, nonatomic, copy) NSString *phone;
+@property (nullable, nonatomic, copy) NSString *twitter;
+@property (nullable, nonatomic, copy) NSString *webpage;
+@property (nullable, nonatomic, copy) NSNumber *quota;
+@property (nullable, nonatomic, copy) NSNumber *quotaFree;
+@property (nullable, nonatomic, copy) NSNumber *quotaRelative;
+@property (nullable, nonatomic, copy) NSNumber *quotaTotal;
+@property (nullable, nonatomic, copy) NSNumber *quotaUsed;
 
 @end
 

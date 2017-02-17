@@ -1,45 +1,33 @@
 //
 //  TableDirectory+CoreDataProperties.h
-//  Crypto Cloud Technology Nextcloud
+//  Nextcloud
 //
-//  Created by Marino Faggiana on 18/01/16.
-//  Copyright (c) 2014 TWS. All rights reserved.
-//
-//  Author Marino Faggiana <m.faggiana@twsweb.it>
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//  Created by Marino Faggiana on 17/02/17.
+//  Copyright © 2017 TWS. All rights reserved.
 //
 
-#import "TableDirectory.h"
+#import "TableDirectory+CoreDataClass.h"
+
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface TableDirectory (CoreDataProperties)
 
-@property (nullable, nonatomic, retain) NSString *account;
-@property (nullable, nonatomic, retain) NSDate *date;
-@property (nullable, nonatomic, retain) NSDate *dateReadDirectory;
-@property (nullable, nonatomic, retain) NSDate *dateRecord;
-@property (nullable, nonatomic, retain) NSString *directoryID;
-@property (nullable, nonatomic, retain) NSNumber *favorite;
-@property (nullable, nonatomic, retain) NSString *fileID;
-@property (nullable, nonatomic, retain) NSNumber *lock;
-@property (nullable, nonatomic, retain) NSNumber *offline;
-@property (nullable, nonatomic, retain) NSString *permissions;
-@property (nullable, nonatomic, retain) NSString *rev;
-@property (nullable, nonatomic, retain) NSString *serverUrl;
-@property (nullable, nonatomic, retain) NSNumber *synchronized;
++ (NSFetchRequest<TableDirectory *> *)fetchRequest;
+
+@property (nullable, nonatomic, copy) NSString *account;
+@property (nullable, nonatomic, copy) NSDate *date;
+@property (nullable, nonatomic, copy) NSDate *dateReadDirectory;
+@property (nullable, nonatomic, copy) NSDate *dateRecord;
+@property (nullable, nonatomic, copy) NSString *directoryID;
+@property (nullable, nonatomic, copy) NSNumber *favorite;
+@property (nullable, nonatomic, copy) NSString *fileID;
+@property (nullable, nonatomic, copy) NSNumber *lock;
+@property (nullable, nonatomic, copy) NSNumber *offline;
+@property (nullable, nonatomic, copy) NSString *permissions;
+@property (nullable, nonatomic, copy) NSString *rev;
+@property (nullable, nonatomic, copy) NSString *serverUrl;
+@property (nullable, nonatomic, copy) NSNumber *synchronized;
 
 @end
 

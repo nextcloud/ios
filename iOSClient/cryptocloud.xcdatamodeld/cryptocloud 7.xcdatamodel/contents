@@ -3,6 +3,7 @@
     <entity name="TableAccount" representedClassName="TableAccount" syncable="YES">
         <attribute name="account" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="active" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="address" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="cameraUpload" optional="YES" attributeType="Boolean" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="cameraUploadBackground" optional="YES" attributeType="Boolean" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="cameraUploadCreateSubfolder" optional="YES" attributeType="Boolean" usesScalarValueType="NO" syncable="YES"/>
@@ -19,10 +20,21 @@
         <attribute name="cameraUploadWWAnPhoto" optional="YES" attributeType="Boolean" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="cameraUploadWWAnVideo" optional="YES" attributeType="Boolean" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="dateRecord" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="displayName" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="email" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="enabled" optional="YES" attributeType="Boolean" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="optimization" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="password" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="phone" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="quota" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="quotaFree" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="quotaRelative" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="quotaTotal" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="quotaUsed" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="twitter" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="url" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="user" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="webpage" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
     <entity name="TableAutomaticUpload" representedClassName="TableAutomaticUpload" syncable="YES">
         <attribute name="account" optional="YES" attributeType="String" syncable="YES"/>
@@ -122,7 +134,7 @@
         <attribute name="shareUserAndGroup" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
     <elements>
-        <element name="TableAccount" positionX="-6597" positionY="111" width="171" height="373"/>
+        <element name="TableAccount" positionX="-6597" positionY="111" width="171" height="555"/>
         <element name="TableAutomaticUpload" positionX="-6597" positionY="801" width="128" height="180"/>
         <element name="TableCertificates" positionX="-6597" positionY="711" width="128" height="75"/>
         <element name="TableDirectory" positionX="-6372" positionY="111" width="162" height="240"/>

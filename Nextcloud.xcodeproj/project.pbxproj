@@ -7,6 +7,54 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F708CF6D1E56E8CC00271D8B /* TableMetadata+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF4E1E56E8CB00271D8B /* TableMetadata+CoreDataClass.m */; };
+		F708CF6E1E56E8CC00271D8B /* TableMetadata+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF4E1E56E8CB00271D8B /* TableMetadata+CoreDataClass.m */; };
+		F708CF6F1E56E8CC00271D8B /* TableMetadata+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF4E1E56E8CB00271D8B /* TableMetadata+CoreDataClass.m */; };
+		F708CF701E56E8CC00271D8B /* TableMetadata+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF501E56E8CB00271D8B /* TableMetadata+CoreDataProperties.m */; };
+		F708CF711E56E8CC00271D8B /* TableMetadata+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF501E56E8CB00271D8B /* TableMetadata+CoreDataProperties.m */; };
+		F708CF721E56E8CC00271D8B /* TableMetadata+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF501E56E8CB00271D8B /* TableMetadata+CoreDataProperties.m */; };
+		F708CF731E56E8CC00271D8B /* TableLocalFile+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF521E56E8CB00271D8B /* TableLocalFile+CoreDataClass.m */; };
+		F708CF741E56E8CC00271D8B /* TableLocalFile+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF521E56E8CB00271D8B /* TableLocalFile+CoreDataClass.m */; };
+		F708CF751E56E8CC00271D8B /* TableLocalFile+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF521E56E8CB00271D8B /* TableLocalFile+CoreDataClass.m */; };
+		F708CF761E56E8CC00271D8B /* TableLocalFile+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF541E56E8CB00271D8B /* TableLocalFile+CoreDataProperties.m */; };
+		F708CF771E56E8CC00271D8B /* TableLocalFile+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF541E56E8CB00271D8B /* TableLocalFile+CoreDataProperties.m */; };
+		F708CF781E56E8CC00271D8B /* TableLocalFile+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF541E56E8CB00271D8B /* TableLocalFile+CoreDataProperties.m */; };
+		F708CF791E56E8CC00271D8B /* TableGPS+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF561E56E8CB00271D8B /* TableGPS+CoreDataClass.m */; };
+		F708CF7A1E56E8CC00271D8B /* TableGPS+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF561E56E8CB00271D8B /* TableGPS+CoreDataClass.m */; };
+		F708CF7B1E56E8CC00271D8B /* TableGPS+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF561E56E8CB00271D8B /* TableGPS+CoreDataClass.m */; };
+		F708CF7C1E56E8CC00271D8B /* TableGPS+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF581E56E8CC00271D8B /* TableGPS+CoreDataProperties.m */; };
+		F708CF7D1E56E8CC00271D8B /* TableGPS+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF581E56E8CC00271D8B /* TableGPS+CoreDataProperties.m */; };
+		F708CF7E1E56E8CC00271D8B /* TableGPS+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF581E56E8CC00271D8B /* TableGPS+CoreDataProperties.m */; };
+		F708CF7F1E56E8CC00271D8B /* TableDirectory+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF5A1E56E8CC00271D8B /* TableDirectory+CoreDataClass.m */; };
+		F708CF801E56E8CC00271D8B /* TableDirectory+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF5A1E56E8CC00271D8B /* TableDirectory+CoreDataClass.m */; };
+		F708CF811E56E8CC00271D8B /* TableDirectory+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF5A1E56E8CC00271D8B /* TableDirectory+CoreDataClass.m */; };
+		F708CF821E56E8CC00271D8B /* TableDirectory+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF5C1E56E8CC00271D8B /* TableDirectory+CoreDataProperties.m */; };
+		F708CF831E56E8CC00271D8B /* TableDirectory+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF5C1E56E8CC00271D8B /* TableDirectory+CoreDataProperties.m */; };
+		F708CF841E56E8CC00271D8B /* TableDirectory+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF5C1E56E8CC00271D8B /* TableDirectory+CoreDataProperties.m */; };
+		F708CF851E56E8CC00271D8B /* TableShare+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF5E1E56E8CC00271D8B /* TableShare+CoreDataClass.m */; };
+		F708CF861E56E8CC00271D8B /* TableShare+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF5E1E56E8CC00271D8B /* TableShare+CoreDataClass.m */; };
+		F708CF871E56E8CC00271D8B /* TableShare+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF5E1E56E8CC00271D8B /* TableShare+CoreDataClass.m */; };
+		F708CF881E56E8CC00271D8B /* TableShare+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF601E56E8CC00271D8B /* TableShare+CoreDataProperties.m */; };
+		F708CF891E56E8CC00271D8B /* TableShare+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF601E56E8CC00271D8B /* TableShare+CoreDataProperties.m */; };
+		F708CF8A1E56E8CC00271D8B /* TableShare+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF601E56E8CC00271D8B /* TableShare+CoreDataProperties.m */; };
+		F708CF8B1E56E8CC00271D8B /* TableCertificates+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF621E56E8CC00271D8B /* TableCertificates+CoreDataClass.m */; };
+		F708CF8C1E56E8CC00271D8B /* TableCertificates+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF621E56E8CC00271D8B /* TableCertificates+CoreDataClass.m */; };
+		F708CF8D1E56E8CC00271D8B /* TableCertificates+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF621E56E8CC00271D8B /* TableCertificates+CoreDataClass.m */; };
+		F708CF8E1E56E8CC00271D8B /* TableCertificates+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF641E56E8CC00271D8B /* TableCertificates+CoreDataProperties.m */; };
+		F708CF8F1E56E8CC00271D8B /* TableCertificates+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF641E56E8CC00271D8B /* TableCertificates+CoreDataProperties.m */; };
+		F708CF901E56E8CC00271D8B /* TableCertificates+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF641E56E8CC00271D8B /* TableCertificates+CoreDataProperties.m */; };
+		F708CF911E56E8CC00271D8B /* TableAutomaticUpload+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF661E56E8CC00271D8B /* TableAutomaticUpload+CoreDataClass.m */; };
+		F708CF921E56E8CC00271D8B /* TableAutomaticUpload+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF661E56E8CC00271D8B /* TableAutomaticUpload+CoreDataClass.m */; };
+		F708CF931E56E8CC00271D8B /* TableAutomaticUpload+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF661E56E8CC00271D8B /* TableAutomaticUpload+CoreDataClass.m */; };
+		F708CF941E56E8CC00271D8B /* TableAutomaticUpload+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF681E56E8CC00271D8B /* TableAutomaticUpload+CoreDataProperties.m */; };
+		F708CF951E56E8CC00271D8B /* TableAutomaticUpload+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF681E56E8CC00271D8B /* TableAutomaticUpload+CoreDataProperties.m */; };
+		F708CF961E56E8CC00271D8B /* TableAutomaticUpload+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF681E56E8CC00271D8B /* TableAutomaticUpload+CoreDataProperties.m */; };
+		F708CF971E56E8CC00271D8B /* TableAccount+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF6A1E56E8CC00271D8B /* TableAccount+CoreDataClass.m */; };
+		F708CF981E56E8CC00271D8B /* TableAccount+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF6A1E56E8CC00271D8B /* TableAccount+CoreDataClass.m */; };
+		F708CF991E56E8CC00271D8B /* TableAccount+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF6A1E56E8CC00271D8B /* TableAccount+CoreDataClass.m */; };
+		F708CF9A1E56E8CC00271D8B /* TableAccount+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF6C1E56E8CC00271D8B /* TableAccount+CoreDataProperties.m */; };
+		F708CF9B1E56E8CC00271D8B /* TableAccount+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF6C1E56E8CC00271D8B /* TableAccount+CoreDataProperties.m */; };
+		F708CF9C1E56E8CC00271D8B /* TableAccount+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF6C1E56E8CC00271D8B /* TableAccount+CoreDataProperties.m */; };
 		F70A630B1D5B3467004E2AA5 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63061D5B3467004E2AA5 /* libcrypto.a */; };
 		F70A630F1D5B3467004E2AA5 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63071D5B3467004E2AA5 /* libssl.a */; };
 		F714526D1DC1523B0006A5D4 /* libMagicalRecord.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F7B61E9B1DC13C20009E938F /* libMagicalRecord.a */; };
@@ -22,7 +70,6 @@
 		F71459C41D12E3B700CAFEEC /* UIImage+Saving.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04CE1C889184008DAB36 /* UIImage+Saving.m */; };
 		F71459C51D12E3B700CAFEEC /* UIImage+Rotating.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04CC1C889184008DAB36 /* UIImage+Rotating.m */; };
 		F71459C61D12E3B700CAFEEC /* CCMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = F7C8C1731B482A920048180E /* CCMetadata.m */; };
-		F71459C81D12E3B700CAFEEC /* TableLocalFile.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B446471C4D29E300DBCC11 /* TableLocalFile.m */; };
 		F71459C91D12E3B700CAFEEC /* OCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F74D3DBE1BAC1941000BAE4B /* OCNetworking.m */; };
 		F71459CC1D12E3B700CAFEEC /* RNCryptorEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F05371C889184008DAB36 /* RNCryptorEngine.m */; };
 		F71459CD1D12E3B700CAFEEC /* AFViewShaker.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02B41C889183008DAB36 /* AFViewShaker.m */; };
@@ -32,30 +79,21 @@
 		F71459D21D12E3B700CAFEEC /* CCUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = F7053E3D1C639DF500741EA5 /* CCUtility.m */; };
 		F71459D31D12E3B700CAFEEC /* CCBKPasscode.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FE125D1BAC03FB0041924B /* CCBKPasscode.m */; };
 		F71459D51D12E3B700CAFEEC /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04841C889183008DAB36 /* MBProgressHUD.m */; };
-		F71459D61D12E3B700CAFEEC /* TableShare+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F7EC9CCC1C4FA803008122B5 /* TableShare+CoreDataProperties.m */; };
 		F71459D71D12E3B700CAFEEC /* BKPasscodeDummyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02C01C889183008DAB36 /* BKPasscodeDummyViewController.m */; };
-		F71459D81D12E3B700CAFEEC /* TableMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B446531C4D29E300DBCC11 /* TableMetadata.m */; };
 		F71459D91D12E3B700CAFEEC /* CCCrypto.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FE125F1BAC03FB0041924B /* CCCrypto.m */; };
-		F71459DA1D12E3B700CAFEEC /* TableShare.m in Sources */ = {isa = PBXBuildFile; fileRef = F7EC9CCE1C4FA803008122B5 /* TableShare.m */; };
-		F71459DC1D12E3B700CAFEEC /* TableDirectory+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B4464D1C4D29E300DBCC11 /* TableDirectory+CoreDataProperties.m */; };
 		F71459DD1D12E3B700CAFEEC /* CCCoreData.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B81D801C64E77F006D02DF /* CCCoreData.m */; };
 		F71459DE1D12E3B700CAFEEC /* BKPasscodeField.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02C21C889183008DAB36 /* BKPasscodeField.m */; };
-		F71459E01D12E3B700CAFEEC /* TableAccount.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B446571C4D29E300DBCC11 /* TableAccount.m */; };
 		F71459E11D12E3B700CAFEEC /* CCHud.m in Sources */ = {isa = PBXBuildFile; fileRef = F7514EDB1C7B1336008F3338 /* CCHud.m */; };
-		F71459E21D12E3B700CAFEEC /* TableAccount+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B446551C4D29E300DBCC11 /* TableAccount+CoreDataProperties.m */; };
 		F71459E41D12E3B700CAFEEC /* RNDecryptor.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F05391C889184008DAB36 /* RNDecryptor.m */; };
 		F71459E61D12E3B700CAFEEC /* NYXImagesHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04D41C889184008DAB36 /* NYXImagesHelper.m */; };
 		F71459E91D12E3B700CAFEEC /* UIImage+Enhancing.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04C21C889184008DAB36 /* UIImage+Enhancing.m */; };
 		F71459EA1D12E3B700CAFEEC /* CCCellShareExt.m in Sources */ = {isa = PBXBuildFile; fileRef = F7296A611C8880C9001A7809 /* CCCellShareExt.m */; };
-		F71459EB1D12E3B700CAFEEC /* TableMetadata+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B446511C4D29E300DBCC11 /* TableMetadata+CoreDataProperties.m */; };
 		F71459ED1D12E3B700CAFEEC /* UIImage+Masking.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04C61C889184008DAB36 /* UIImage+Masking.m */; };
-		F71459EF1D12E3B700CAFEEC /* TableGPS+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B446491C4D29E300DBCC11 /* TableGPS+CoreDataProperties.m */; };
 		F71459F01D12E3B700CAFEEC /* NSString+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02B11C889183008DAB36 /* NSString+Base64.m */; };
 		F71459F11D12E3B700CAFEEC /* CCMove.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D02A471C5F9E4400D6F972 /* CCMove.m */; };
 		F71459F31D12E3B700CAFEEC /* UIImage+Resizing.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04CA1C889184008DAB36 /* UIImage+Resizing.m */; };
 		F71459F41D12E3B700CAFEEC /* BKPasscodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02C91C889183008DAB36 /* BKPasscodeViewController.m */; };
 		F71459F51D12E3B700CAFEEC /* BKShiftingView.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02CB1C889183008DAB36 /* BKShiftingView.m */; };
-		F71459F61D12E3B700CAFEEC /* TableLocalFile+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B446451C4D29E300DBCC11 /* TableLocalFile+CoreDataProperties.m */; };
 		F71459F71D12E3B700CAFEEC /* CCGraphics.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B841C6388BC00DC4301 /* CCGraphics.m */; };
 		F71459F81D12E3B700CAFEEC /* BKTouchIDSwitchView.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02CF1C889183008DAB36 /* BKTouchIDSwitchView.m */; };
 		F71459FB1D12E3B700CAFEEC /* PPImageScrollingCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F05211C889184008DAB36 /* PPImageScrollingCellView.m */; };
@@ -66,10 +104,8 @@
 		F7145A021D12E3B700CAFEEC /* BKTouchIDManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02CD1C889183008DAB36 /* BKTouchIDManager.m */; };
 		F7145A041D12E3B700CAFEEC /* CCloadItemData.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7296A661C8880ED001A7809 /* CCloadItemData.swift */; };
 		F7145A081D12E3B700CAFEEC /* PPCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F051F1C889184008DAB36 /* PPCollectionViewCell.m */; };
-		F7145A091D12E3B700CAFEEC /* TableGPS.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B4464B1C4D29E300DBCC11 /* TableGPS.m */; };
 		F7145A0D1D12E3B700CAFEEC /* NSData+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02AD1C889183008DAB36 /* NSData+Base64.m */; };
 		F7145A0E1D12E3B700CAFEEC /* AESCrypt.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02AB1C889183008DAB36 /* AESCrypt.m */; };
-		F7145A0F1D12E3B700CAFEEC /* TableDirectory.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B4464F1C4D29E300DBCC11 /* TableDirectory.m */; };
 		F7145A111D12E3B700CAFEEC /* PPImageScrollingTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F05231C889184008DAB36 /* PPImageScrollingTableViewCell.m */; };
 		F7145A191D12E3B700CAFEEC /* Nextcloud.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7596C771D128FC80092A6B8 /* Nextcloud.xcassets */; };
 		F7145A1A1D12E3B700CAFEEC /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7F67BB81A24D27800EE80DA /* Images.xcassets */; };
@@ -149,22 +185,6 @@
 		F74344651E127DE9001CC831 /* CCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F732BA041D76CE1500E9878B /* CCNetworking.m */; };
 		F74344661E127E35001CC831 /* CCCoreData.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B81D801C64E77F006D02DF /* CCCoreData.m */; };
 		F74344671E127E38001CC831 /* CCMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = F7C8C1731B482A920048180E /* CCMetadata.m */; };
-		F74344681E127E3F001CC831 /* TableAutomaticUpload+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F771CD5B1E07F6620066F76D /* TableAutomaticUpload+CoreDataClass.m */; };
-		F74344691E127E42001CC831 /* TableAutomaticUpload+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F771CD5D1E07F6620066F76D /* TableAutomaticUpload+CoreDataProperties.m */; };
-		F743446A1E127E45001CC831 /* TableCertificates+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F7994B741D5B854C008525D9 /* TableCertificates+CoreDataProperties.m */; };
-		F743446B1E127E49001CC831 /* TableCertificates.m in Sources */ = {isa = PBXBuildFile; fileRef = F7994B761D5B854C008525D9 /* TableCertificates.m */; };
-		F743446C1E127E4B001CC831 /* TableLocalFile+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B446451C4D29E300DBCC11 /* TableLocalFile+CoreDataProperties.m */; };
-		F743446D1E127E4E001CC831 /* TableLocalFile.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B446471C4D29E300DBCC11 /* TableLocalFile.m */; };
-		F743446E1E127E51001CC831 /* TableGPS+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B446491C4D29E300DBCC11 /* TableGPS+CoreDataProperties.m */; };
-		F743446F1E127E53001CC831 /* TableGPS.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B4464B1C4D29E300DBCC11 /* TableGPS.m */; };
-		F74344701E127E56001CC831 /* TableDirectory+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B4464D1C4D29E300DBCC11 /* TableDirectory+CoreDataProperties.m */; };
-		F74344711E127E59001CC831 /* TableMetadata+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B446511C4D29E300DBCC11 /* TableMetadata+CoreDataProperties.m */; };
-		F74344721E127E5B001CC831 /* TableMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B446531C4D29E300DBCC11 /* TableMetadata.m */; };
-		F74344731E127E5E001CC831 /* TableAccount+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B446551C4D29E300DBCC11 /* TableAccount+CoreDataProperties.m */; };
-		F74344741E127E60001CC831 /* TableAccount.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B446571C4D29E300DBCC11 /* TableAccount.m */; };
-		F74344751E127E64001CC831 /* TableShare+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F7EC9CCC1C4FA803008122B5 /* TableShare+CoreDataProperties.m */; };
-		F74344761E127E67001CC831 /* TableShare.m in Sources */ = {isa = PBXBuildFile; fileRef = F7EC9CCE1C4FA803008122B5 /* TableShare.m */; };
-		F74344771E127E88001CC831 /* TableDirectory.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B4464F1C4D29E300DBCC11 /* TableDirectory.m */; };
 		F74344781E127E9E001CC831 /* CCExifGeo.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A54C351C6267B500E2C8BF /* CCExifGeo.m */; };
 		F74344791E127EA1001CC831 /* CCError.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B881C638A4C00DC4301 /* CCError.m */; };
 		F743447A1E127EA6001CC831 /* CCGraphics.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B841C6388BC00DC4301 /* CCGraphics.m */; };
@@ -219,16 +239,11 @@
 		F7676A7F1D5CB2A400DF734C /* icon-info@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F7676A751D5CB2A400DF734C /* icon-info@2x.png */; };
 		F7676A811D5CB2A400DF734C /* icon-success.png in Resources */ = {isa = PBXBuildFile; fileRef = F7676A761D5CB2A400DF734C /* icon-success.png */; };
 		F7676A831D5CB2A400DF734C /* icon-success@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F7676A771D5CB2A400DF734C /* icon-success@2x.png */; };
-		F771CD5E1E07F6620066F76D /* TableAutomaticUpload+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F771CD5B1E07F6620066F76D /* TableAutomaticUpload+CoreDataClass.m */; };
-		F771CD5F1E07F6620066F76D /* TableAutomaticUpload+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F771CD5B1E07F6620066F76D /* TableAutomaticUpload+CoreDataClass.m */; };
-		F771CD601E07F6620066F76D /* TableAutomaticUpload+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F771CD5D1E07F6620066F76D /* TableAutomaticUpload+CoreDataProperties.m */; };
-		F771CD611E07F6620066F76D /* TableAutomaticUpload+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F771CD5D1E07F6620066F76D /* TableAutomaticUpload+CoreDataProperties.m */; };
 		F77B0DF01D118A16002130FE /* UIImage+Resizing.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04CA1C889184008DAB36 /* UIImage+Resizing.m */; };
 		F77B0DF21D118A16002130FE /* CCUploadFromOtherUpp.m in Sources */ = {isa = PBXBuildFile; fileRef = F7956FCA1B4886E60085DEA3 /* CCUploadFromOtherUpp.m */; };
 		F77B0DF41D118A16002130FE /* CCMain.m in Sources */ = {isa = PBXBuildFile; fileRef = F70211FB1BAC56E9003FC03E /* CCMain.m */; };
 		F77B0DF51D118A16002130FE /* CCUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = F7053E3D1C639DF500741EA5 /* CCUtility.m */; };
 		F77B0DF71D118A16002130FE /* UIXToolbarView.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0EDC1C889317008DAB36 /* UIXToolbarView.m */; };
-		F77B0DF91D118A16002130FE /* TableMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B446531C4D29E300DBCC11 /* TableMetadata.m */; };
 		F77B0DFB1D118A16002130FE /* NYXProgressiveImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04D11C889184008DAB36 /* NYXProgressiveImageView.m */; };
 		F77B0DFC1D118A16002130FE /* ReaderDocumentOutline.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0EC21C889317008DAB36 /* ReaderDocumentOutline.m */; };
 		F77B0DFE1D118A16002130FE /* REMenuItem.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0C571C8892C5008DAB36 /* REMenuItem.m */; };
@@ -266,7 +281,6 @@
 		F77B0E301D118A16002130FE /* CCHud.m in Sources */ = {isa = PBXBuildFile; fileRef = F7514EDB1C7B1336008F3338 /* CCHud.m */; };
 		F77B0E311D118A16002130FE /* CCExifGeo.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A54C351C6267B500E2C8BF /* CCExifGeo.m */; };
 		F77B0E321D118A16002130FE /* HRCgUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0DE31C889300008DAB36 /* HRCgUtil.m */; };
-		F77B0E341D118A16002130FE /* TableAccount+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B446551C4D29E300DBCC11 /* TableAccount+CoreDataProperties.m */; };
 		F77B0E351D118A16002130FE /* NYXImagesHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04D41C889184008DAB36 /* NYXImagesHelper.m */; };
 		F77B0E361D118A16002130FE /* ZSSBarButtonItem.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0DEE1C889300008DAB36 /* ZSSBarButtonItem.m */; };
 		F77B0E391D118A16002130FE /* CCContoCorrente.m in Sources */ = {isa = PBXBuildFile; fileRef = F72137281BAFF0920012B613 /* CCContoCorrente.m */; };
@@ -283,7 +297,6 @@
 		F77B0E491D118A16002130FE /* UIImage+Saving.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04CE1C889184008DAB36 /* UIImage+Saving.m */; };
 		F77B0E4C1D118A16002130FE /* CCDetail.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D0E65F1BC5042E008D989A /* CCDetail.m */; };
 		F77B0E4D1D118A16002130FE /* CCCoreData.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B81D801C64E77F006D02DF /* CCCoreData.m */; };
-		F77B0E4E1D118A16002130FE /* TableDirectory.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B4464F1C4D29E300DBCC11 /* TableDirectory.m */; };
 		F77B0E4F1D118A16002130FE /* CCManageCameraUpload.m in Sources */ = {isa = PBXBuildFile; fileRef = F7ACE42F1BAC0268006C0017 /* CCManageCameraUpload.m */; };
 		F77B0E511D118A16002130FE /* UIImage+Filtering.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04C41C889184008DAB36 /* UIImage+Filtering.m */; };
 		F77B0E541D118A16002130FE /* CCMove.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D02A471C5F9E4400D6F972 /* CCMove.m */; };
@@ -302,24 +315,19 @@
 		F77B0E651D118A16002130FE /* LMMediaPlayerView.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0F411C889339008DAB36 /* LMMediaPlayerView.m */; };
 		F77B0E661D118A16002130FE /* NSString+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02B11C889183008DAB36 /* NSString+Base64.m */; };
 		F77B0E671D118A16002130FE /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F05261C889184008DAB36 /* Reachability.m */; };
-		F77B0E691D118A16002130FE /* TableShare.m in Sources */ = {isa = PBXBuildFile; fileRef = F7EC9CCE1C4FA803008122B5 /* TableShare.m */; };
 		F77B0E6A1D118A16002130FE /* RNDecryptor.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F05391C889184008DAB36 /* RNDecryptor.m */; };
 		F77B0E6B1D118A16002130FE /* ReaderThumbCache.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0EC81C889317008DAB36 /* ReaderThumbCache.m */; };
 		F77B0E6C1D118A16002130FE /* ReaderContentPage.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0EBA1C889317008DAB36 /* ReaderContentPage.m */; };
-		F77B0E701D118A16002130FE /* TableDirectory+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B4464D1C4D29E300DBCC11 /* TableDirectory+CoreDataProperties.m */; };
 		F77B0E711D118A16002130FE /* LMMediaItem.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0F351C889339008DAB36 /* LMMediaItem.m */; };
 		F77B0E731D118A16002130FE /* PPImageScrollingTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F05231C889184008DAB36 /* PPImageScrollingTableViewCell.m */; };
 		F77B0E741D118A16002130FE /* CCBancomat.m in Sources */ = {isa = PBXBuildFile; fileRef = F72137221BAFF0920012B613 /* CCBancomat.m */; };
 		F77B0E761D118A16002130FE /* ReaderViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0ED61C889317008DAB36 /* ReaderViewController.m */; };
-		F77B0E771D118A16002130FE /* TableShare+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F7EC9CCC1C4FA803008122B5 /* TableShare+CoreDataProperties.m */; };
 		F77B0E781D118A16002130FE /* ReaderThumbFetch.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0ECA1C889317008DAB36 /* ReaderThumbFetch.m */; };
-		F77B0E791D118A16002130FE /* TableGPS.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B4464B1C4D29E300DBCC11 /* TableGPS.m */; };
 		F77B0E7A1D118A16002130FE /* MWTapDetectingImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0C951C8892DF008DAB36 /* MWTapDetectingImageView.m */; };
 		F77B0E7B1D118A16002130FE /* CCPassaporto.m in Sources */ = {isa = PBXBuildFile; fileRef = F721372C1BAFF0920012B613 /* CCPassaporto.m */; };
 		F77B0E7D1D118A16002130FE /* CYRTextStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0DDB1C889300008DAB36 /* CYRTextStorage.m */; };
 		F77B0E7E1D118A16002130FE /* ThumbsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0EDA1C889317008DAB36 /* ThumbsViewController.m */; };
 		F77B0E801D118A16002130FE /* ZSSRichTextEditor.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0DF11C889300008DAB36 /* ZSSRichTextEditor.m */; };
-		F77B0E831D118A16002130FE /* TableLocalFile.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B446471C4D29E300DBCC11 /* TableLocalFile.m */; };
 		F77B0E851D118A16002130FE /* MWTapDetectingView.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0C971C8892DF008DAB36 /* MWTapDetectingView.m */; };
 		F77B0E871D118A16002130FE /* NSData+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02AD1C889183008DAB36 /* NSData+Base64.m */; };
 		F77B0E881D118A16002130FE /* MWZoomingScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0C991C8892DF008DAB36 /* MWZoomingScrollView.m */; };
@@ -351,15 +359,12 @@
 		F77B0EAE1D118A16002130FE /* BKPasscodeField.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02C21C889183008DAB36 /* BKPasscodeField.m */; };
 		F77B0EB11D118A16002130FE /* CCMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = F7C8C1731B482A920048180E /* CCMetadata.m */; };
 		F77B0EB21D118A16002130FE /* ReaderMainToolbar.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0EC61C889317008DAB36 /* ReaderMainToolbar.m */; };
-		F77B0EB31D118A16002130FE /* TableGPS+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B446491C4D29E300DBCC11 /* TableGPS+CoreDataProperties.m */; };
 		F77B0EB51D118A16002130FE /* RECommonFunctions.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0C511C8892C5008DAB36 /* RECommonFunctions.m */; };
 		F77B0EB61D118A16002130FE /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04841C889183008DAB36 /* MBProgressHUD.m */; };
 		F77B0EB71D118A16002130FE /* ReaderThumbRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0ED01C889317008DAB36 /* ReaderThumbRequest.m */; };
 		F77B0EB81D118A16002130FE /* CCAccountWeb.m in Sources */ = {isa = PBXBuildFile; fileRef = F721371E1BAFF0920012B613 /* CCAccountWeb.m */; };
 		F77B0EB91D118A16002130FE /* HRColorUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0DEC1C889300008DAB36 /* HRColorUtil.m */; };
 		F77B0EBA1D118A16002130FE /* UIImage+AHKAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0F5A1C889353008DAB36 /* UIImage+AHKAdditions.m */; };
-		F77B0EBB1D118A16002130FE /* TableMetadata+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B446511C4D29E300DBCC11 /* TableMetadata+CoreDataProperties.m */; };
-		F77B0EBD1D118A16002130FE /* TableAccount.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B446571C4D29E300DBCC11 /* TableAccount.m */; };
 		F77B0EBE1D118A16002130FE /* CCNote.m in Sources */ = {isa = PBXBuildFile; fileRef = F721372A1BAFF0920012B613 /* CCNote.m */; };
 		F77B0EBF1D118A16002130FE /* RNEncryptor.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F053B1C889184008DAB36 /* RNEncryptor.m */; };
 		F77B0EC01D118A16002130FE /* MWCaptionView.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0C881C8892DF008DAB36 /* MWCaptionView.m */; };
@@ -376,7 +381,6 @@
 		F77B0ED31D118A16002130FE /* PPImageScrollingCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F05211C889184008DAB36 /* PPImageScrollingCellView.m */; };
 		F77B0ED41D118A16002130FE /* LMMediaPlayerHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0F311C889339008DAB36 /* LMMediaPlayerHelper.m */; };
 		F77B0ED51D118A16002130FE /* PHAsset+Utility.m in Sources */ = {isa = PBXBuildFile; fileRef = F777F0311C29717F00CE81CB /* PHAsset+Utility.m */; };
-		F77B0ED81D118A16002130FE /* TableLocalFile+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B446451C4D29E300DBCC11 /* TableLocalFile+CoreDataProperties.m */; };
 		F77B0ED91D118A16002130FE /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F67BAD1A24D27800EE80DA /* main.m */; };
 		F77B0EEA1D118A16002130FE /* ZSSbold@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0D921C889300008DAB36 /* ZSSbold@2x.png */; };
 		F77B0EEB1D118A16002130FE /* ZSSrightjustify@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DC21C889300008DAB36 /* ZSSrightjustify@2x.png */; };
@@ -525,10 +529,6 @@
 		F78088EB1DD3A1DB005C5A7C /* cryptocloud.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = F78088E51DD3A1DB005C5A7C /* cryptocloud.xcdatamodeld */; };
 		F78BFED41D3111B800E513CF /* LaunchScreenNextcloud.xib in Resources */ = {isa = PBXBuildFile; fileRef = F78BFECA1D3111B800E513CF /* LaunchScreenNextcloud.xib */; };
 		F78BFEE11D31126B00E513CF /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F78BFEDE1D31126B00E513CF /* MainInterface.storyboard */; };
-		F7994B781D5B854C008525D9 /* TableCertificates+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F7994B741D5B854C008525D9 /* TableCertificates+CoreDataProperties.m */; };
-		F7994B7A1D5B854C008525D9 /* TableCertificates+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F7994B741D5B854C008525D9 /* TableCertificates+CoreDataProperties.m */; };
-		F7994B7C1D5B854C008525D9 /* TableCertificates.m in Sources */ = {isa = PBXBuildFile; fileRef = F7994B761D5B854C008525D9 /* TableCertificates.m */; };
-		F7994B7E1D5B854C008525D9 /* TableCertificates.m in Sources */ = {isa = PBXBuildFile; fileRef = F7994B761D5B854C008525D9 /* TableCertificates.m */; };
 		F7BB14961D5B62C000ECEE68 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63061D5B3467004E2AA5 /* libcrypto.a */; };
 		F7BB14971D5B62C000ECEE68 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63071D5B3467004E2AA5 /* libssl.a */; };
 		F7BE6E2F1D2D5C3B00106933 /* CCQuickActions.m in Sources */ = {isa = PBXBuildFile; fileRef = F7BE6E2C1D2D5C3B00106933 /* CCQuickActions.m */; };
@@ -724,6 +724,39 @@
 		F70211FB1BAC56E9003FC03E /* CCMain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCMain.m; sourceTree = "<group>"; };
 		F7053E3C1C639DF500741EA5 /* CCUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCUtility.h; sourceTree = "<group>"; };
 		F7053E3D1C639DF500741EA5 /* CCUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCUtility.m; sourceTree = "<group>"; };
+		F708CF181E56E6A900271D8B /* PickerFileProvider-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "PickerFileProvider-Bridging-Header.h"; sourceTree = "<group>"; };
+		F708CF4D1E56E8CB00271D8B /* TableMetadata+CoreDataClass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableMetadata+CoreDataClass.h"; sourceTree = "<group>"; };
+		F708CF4E1E56E8CB00271D8B /* TableMetadata+CoreDataClass.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableMetadata+CoreDataClass.m"; sourceTree = "<group>"; };
+		F708CF4F1E56E8CB00271D8B /* TableMetadata+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableMetadata+CoreDataProperties.h"; sourceTree = "<group>"; };
+		F708CF501E56E8CB00271D8B /* TableMetadata+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableMetadata+CoreDataProperties.m"; sourceTree = "<group>"; };
+		F708CF511E56E8CB00271D8B /* TableLocalFile+CoreDataClass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableLocalFile+CoreDataClass.h"; sourceTree = "<group>"; };
+		F708CF521E56E8CB00271D8B /* TableLocalFile+CoreDataClass.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableLocalFile+CoreDataClass.m"; sourceTree = "<group>"; };
+		F708CF531E56E8CB00271D8B /* TableLocalFile+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableLocalFile+CoreDataProperties.h"; sourceTree = "<group>"; };
+		F708CF541E56E8CB00271D8B /* TableLocalFile+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableLocalFile+CoreDataProperties.m"; sourceTree = "<group>"; };
+		F708CF551E56E8CB00271D8B /* TableGPS+CoreDataClass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableGPS+CoreDataClass.h"; sourceTree = "<group>"; };
+		F708CF561E56E8CB00271D8B /* TableGPS+CoreDataClass.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableGPS+CoreDataClass.m"; sourceTree = "<group>"; };
+		F708CF571E56E8CC00271D8B /* TableGPS+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableGPS+CoreDataProperties.h"; sourceTree = "<group>"; };
+		F708CF581E56E8CC00271D8B /* TableGPS+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableGPS+CoreDataProperties.m"; sourceTree = "<group>"; };
+		F708CF591E56E8CC00271D8B /* TableDirectory+CoreDataClass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableDirectory+CoreDataClass.h"; sourceTree = "<group>"; };
+		F708CF5A1E56E8CC00271D8B /* TableDirectory+CoreDataClass.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableDirectory+CoreDataClass.m"; sourceTree = "<group>"; };
+		F708CF5B1E56E8CC00271D8B /* TableDirectory+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableDirectory+CoreDataProperties.h"; sourceTree = "<group>"; };
+		F708CF5C1E56E8CC00271D8B /* TableDirectory+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableDirectory+CoreDataProperties.m"; sourceTree = "<group>"; };
+		F708CF5D1E56E8CC00271D8B /* TableShare+CoreDataClass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableShare+CoreDataClass.h"; sourceTree = "<group>"; };
+		F708CF5E1E56E8CC00271D8B /* TableShare+CoreDataClass.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableShare+CoreDataClass.m"; sourceTree = "<group>"; };
+		F708CF5F1E56E8CC00271D8B /* TableShare+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableShare+CoreDataProperties.h"; sourceTree = "<group>"; };
+		F708CF601E56E8CC00271D8B /* TableShare+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableShare+CoreDataProperties.m"; sourceTree = "<group>"; };
+		F708CF611E56E8CC00271D8B /* TableCertificates+CoreDataClass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableCertificates+CoreDataClass.h"; sourceTree = "<group>"; };
+		F708CF621E56E8CC00271D8B /* TableCertificates+CoreDataClass.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableCertificates+CoreDataClass.m"; sourceTree = "<group>"; };
+		F708CF631E56E8CC00271D8B /* TableCertificates+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableCertificates+CoreDataProperties.h"; sourceTree = "<group>"; };
+		F708CF641E56E8CC00271D8B /* TableCertificates+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableCertificates+CoreDataProperties.m"; sourceTree = "<group>"; };
+		F708CF651E56E8CC00271D8B /* TableAutomaticUpload+CoreDataClass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableAutomaticUpload+CoreDataClass.h"; sourceTree = "<group>"; };
+		F708CF661E56E8CC00271D8B /* TableAutomaticUpload+CoreDataClass.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableAutomaticUpload+CoreDataClass.m"; sourceTree = "<group>"; };
+		F708CF671E56E8CC00271D8B /* TableAutomaticUpload+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableAutomaticUpload+CoreDataProperties.h"; sourceTree = "<group>"; };
+		F708CF681E56E8CC00271D8B /* TableAutomaticUpload+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableAutomaticUpload+CoreDataProperties.m"; sourceTree = "<group>"; };
+		F708CF691E56E8CC00271D8B /* TableAccount+CoreDataClass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableAccount+CoreDataClass.h"; sourceTree = "<group>"; };
+		F708CF6A1E56E8CC00271D8B /* TableAccount+CoreDataClass.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableAccount+CoreDataClass.m"; sourceTree = "<group>"; };
+		F708CF6B1E56E8CC00271D8B /* TableAccount+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableAccount+CoreDataProperties.h"; sourceTree = "<group>"; };
+		F708CF6C1E56E8CC00271D8B /* TableAccount+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableAccount+CoreDataProperties.m"; sourceTree = "<group>"; };
 		F70A63061D5B3467004E2AA5 /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libcrypto.a; sourceTree = "<group>"; };
 		F70A63071D5B3467004E2AA5 /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libssl.a; sourceTree = "<group>"; };
 		F70F02AA1C889183008DAB36 /* AESCrypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AESCrypt.h; sourceTree = "<group>"; };
@@ -1349,10 +1382,6 @@
 		F76C3B841C6388BC00DC4301 /* CCGraphics.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCGraphics.m; sourceTree = "<group>"; };
 		F76C3B871C638A4C00DC4301 /* CCError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCError.h; sourceTree = "<group>"; };
 		F76C3B881C638A4C00DC4301 /* CCError.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCError.m; sourceTree = "<group>"; };
-		F771CD5A1E07F6620066F76D /* TableAutomaticUpload+CoreDataClass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableAutomaticUpload+CoreDataClass.h"; sourceTree = "<group>"; };
-		F771CD5B1E07F6620066F76D /* TableAutomaticUpload+CoreDataClass.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableAutomaticUpload+CoreDataClass.m"; sourceTree = "<group>"; };
-		F771CD5C1E07F6620066F76D /* TableAutomaticUpload+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableAutomaticUpload+CoreDataProperties.h"; sourceTree = "<group>"; };
-		F771CD5D1E07F6620066F76D /* TableAutomaticUpload+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableAutomaticUpload+CoreDataProperties.m"; sourceTree = "<group>"; };
 		F777F0301C29717F00CE81CB /* PHAsset+Utility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "PHAsset+Utility.h"; sourceTree = "<group>"; };
 		F777F0311C29717F00CE81CB /* PHAsset+Utility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "PHAsset+Utility.m"; sourceTree = "<group>"; };
 		F77D49A71DC238E500CDC568 /* loading@2x.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = "loading@2x.gif"; sourceTree = "<group>"; };
@@ -1378,10 +1407,6 @@
 		F7956FC91B4886E60085DEA3 /* CCUploadFromOtherUpp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCUploadFromOtherUpp.h; sourceTree = "<group>"; };
 		F7956FCA1B4886E60085DEA3 /* CCUploadFromOtherUpp.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCUploadFromOtherUpp.m; sourceTree = "<group>"; };
 		F7956FCB1B4886E60085DEA3 /* CCUploadFromOtherUpp.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = CCUploadFromOtherUpp.storyboard; sourceTree = "<group>"; };
-		F7994B731D5B854C008525D9 /* TableCertificates+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableCertificates+CoreDataProperties.h"; sourceTree = "<group>"; };
-		F7994B741D5B854C008525D9 /* TableCertificates+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableCertificates+CoreDataProperties.m"; sourceTree = "<group>"; };
-		F7994B751D5B854C008525D9 /* TableCertificates.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableCertificates.h; sourceTree = "<group>"; };
-		F7994B761D5B854C008525D9 /* TableCertificates.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TableCertificates.m; sourceTree = "<group>"; };
 		F7A54C341C6267B500E2C8BF /* CCExifGeo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCExifGeo.h; sourceTree = "<group>"; };
 		F7A54C351C6267B500E2C8BF /* CCExifGeo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCExifGeo.m; sourceTree = "<group>"; };
 		F7A582D61A24DAB500E903D7 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -1397,26 +1422,6 @@
 		F7ACE42F1BAC0268006C0017 /* CCManageCameraUpload.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCManageCameraUpload.m; sourceTree = "<group>"; };
 		F7ACE4301BAC0268006C0017 /* CCSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCSettings.h; sourceTree = "<group>"; };
 		F7ACE4311BAC0268006C0017 /* CCSettings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCSettings.m; sourceTree = "<group>"; };
-		F7B446441C4D29E300DBCC11 /* TableLocalFile+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableLocalFile+CoreDataProperties.h"; sourceTree = "<group>"; };
-		F7B446451C4D29E300DBCC11 /* TableLocalFile+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableLocalFile+CoreDataProperties.m"; sourceTree = "<group>"; };
-		F7B446461C4D29E300DBCC11 /* TableLocalFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableLocalFile.h; sourceTree = "<group>"; };
-		F7B446471C4D29E300DBCC11 /* TableLocalFile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TableLocalFile.m; sourceTree = "<group>"; };
-		F7B446481C4D29E300DBCC11 /* TableGPS+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableGPS+CoreDataProperties.h"; sourceTree = "<group>"; };
-		F7B446491C4D29E300DBCC11 /* TableGPS+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableGPS+CoreDataProperties.m"; sourceTree = "<group>"; };
-		F7B4464A1C4D29E300DBCC11 /* TableGPS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableGPS.h; sourceTree = "<group>"; };
-		F7B4464B1C4D29E300DBCC11 /* TableGPS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TableGPS.m; sourceTree = "<group>"; };
-		F7B4464C1C4D29E300DBCC11 /* TableDirectory+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableDirectory+CoreDataProperties.h"; sourceTree = "<group>"; };
-		F7B4464D1C4D29E300DBCC11 /* TableDirectory+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableDirectory+CoreDataProperties.m"; sourceTree = "<group>"; };
-		F7B4464E1C4D29E300DBCC11 /* TableDirectory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableDirectory.h; sourceTree = "<group>"; };
-		F7B4464F1C4D29E300DBCC11 /* TableDirectory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TableDirectory.m; sourceTree = "<group>"; };
-		F7B446501C4D29E300DBCC11 /* TableMetadata+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableMetadata+CoreDataProperties.h"; sourceTree = "<group>"; };
-		F7B446511C4D29E300DBCC11 /* TableMetadata+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableMetadata+CoreDataProperties.m"; sourceTree = "<group>"; };
-		F7B446521C4D29E300DBCC11 /* TableMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableMetadata.h; sourceTree = "<group>"; };
-		F7B446531C4D29E300DBCC11 /* TableMetadata.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TableMetadata.m; sourceTree = "<group>"; };
-		F7B446541C4D29E300DBCC11 /* TableAccount+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableAccount+CoreDataProperties.h"; sourceTree = "<group>"; };
-		F7B446551C4D29E300DBCC11 /* TableAccount+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableAccount+CoreDataProperties.m"; sourceTree = "<group>"; };
-		F7B446561C4D29E300DBCC11 /* TableAccount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableAccount.h; sourceTree = "<group>"; };
-		F7B446571C4D29E300DBCC11 /* TableAccount.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TableAccount.m; sourceTree = "<group>"; };
 		F7B61E861DC13C20009E938F /* MagicalRecord.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MagicalRecord.xcodeproj; path = "Libraries external/MagicalRecord/MagicalRecord.xcodeproj"; sourceTree = SOURCE_ROOT; };
 		F7B81D7F1C64E77F006D02DF /* CCCoreData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCCoreData.h; sourceTree = "<group>"; };
 		F7B81D801C64E77F006D02DF /* CCCoreData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCCoreData.m; sourceTree = "<group>"; };
@@ -1485,10 +1490,6 @@
 		F7DAE66D1E2E109F004EFA30 /* CCOfflineFileFolder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCOfflineFileFolder.m; sourceTree = "<group>"; };
 		F7DCA1B81D32BD4100E48D39 /* Share Ext Nextcloud.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = "Share Ext Nextcloud.entitlements"; path = "Share Ext/Share Ext Nextcloud.entitlements"; sourceTree = SOURCE_ROOT; };
 		F7E456D41C89D54A00BD63F0 /* Share Ext-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Share Ext-Bridging-Header.h"; sourceTree = "<group>"; };
-		F7EC9CCB1C4FA803008122B5 /* TableShare+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableShare+CoreDataProperties.h"; sourceTree = "<group>"; };
-		F7EC9CCC1C4FA803008122B5 /* TableShare+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableShare+CoreDataProperties.m"; sourceTree = "<group>"; };
-		F7EC9CCD1C4FA803008122B5 /* TableShare.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableShare.h; sourceTree = "<group>"; };
-		F7EC9CCE1C4FA803008122B5 /* TableShare.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TableShare.m; sourceTree = "<group>"; };
 		F7ECBA6C1E239DCD003E6328 /* CCCreateCloud.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CCCreateCloud.swift; sourceTree = "<group>"; };
 		F7EF0CAC1D9E95EC00A9D15E /* CCSharedDBSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = CCSharedDBSession.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		F7EF0CAD1D9E95F400A9D15E /* CCSharedDBSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = CCSharedDBSession.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
@@ -2823,38 +2824,38 @@
 		F77F86401B4ABF6D009F0A10 /* Table */ = {
 			isa = PBXGroup;
 			children = (
-				F771CD5A1E07F6620066F76D /* TableAutomaticUpload+CoreDataClass.h */,
-				F771CD5B1E07F6620066F76D /* TableAutomaticUpload+CoreDataClass.m */,
-				F771CD5C1E07F6620066F76D /* TableAutomaticUpload+CoreDataProperties.h */,
-				F771CD5D1E07F6620066F76D /* TableAutomaticUpload+CoreDataProperties.m */,
-				F7994B731D5B854C008525D9 /* TableCertificates+CoreDataProperties.h */,
-				F7994B741D5B854C008525D9 /* TableCertificates+CoreDataProperties.m */,
-				F7994B751D5B854C008525D9 /* TableCertificates.h */,
-				F7994B761D5B854C008525D9 /* TableCertificates.m */,
-				F7B446441C4D29E300DBCC11 /* TableLocalFile+CoreDataProperties.h */,
-				F7B446451C4D29E300DBCC11 /* TableLocalFile+CoreDataProperties.m */,
-				F7B446461C4D29E300DBCC11 /* TableLocalFile.h */,
-				F7B446471C4D29E300DBCC11 /* TableLocalFile.m */,
-				F7B446481C4D29E300DBCC11 /* TableGPS+CoreDataProperties.h */,
-				F7B446491C4D29E300DBCC11 /* TableGPS+CoreDataProperties.m */,
-				F7B4464A1C4D29E300DBCC11 /* TableGPS.h */,
-				F7B4464B1C4D29E300DBCC11 /* TableGPS.m */,
-				F7B4464C1C4D29E300DBCC11 /* TableDirectory+CoreDataProperties.h */,
-				F7B4464D1C4D29E300DBCC11 /* TableDirectory+CoreDataProperties.m */,
-				F7B4464E1C4D29E300DBCC11 /* TableDirectory.h */,
-				F7B4464F1C4D29E300DBCC11 /* TableDirectory.m */,
-				F7B446501C4D29E300DBCC11 /* TableMetadata+CoreDataProperties.h */,
-				F7B446511C4D29E300DBCC11 /* TableMetadata+CoreDataProperties.m */,
-				F7B446521C4D29E300DBCC11 /* TableMetadata.h */,
-				F7B446531C4D29E300DBCC11 /* TableMetadata.m */,
-				F7B446541C4D29E300DBCC11 /* TableAccount+CoreDataProperties.h */,
-				F7B446551C4D29E300DBCC11 /* TableAccount+CoreDataProperties.m */,
-				F7B446561C4D29E300DBCC11 /* TableAccount.h */,
-				F7B446571C4D29E300DBCC11 /* TableAccount.m */,
-				F7EC9CCB1C4FA803008122B5 /* TableShare+CoreDataProperties.h */,
-				F7EC9CCC1C4FA803008122B5 /* TableShare+CoreDataProperties.m */,
-				F7EC9CCD1C4FA803008122B5 /* TableShare.h */,
-				F7EC9CCE1C4FA803008122B5 /* TableShare.m */,
+				F708CF4D1E56E8CB00271D8B /* TableMetadata+CoreDataClass.h */,
+				F708CF4E1E56E8CB00271D8B /* TableMetadata+CoreDataClass.m */,
+				F708CF4F1E56E8CB00271D8B /* TableMetadata+CoreDataProperties.h */,
+				F708CF501E56E8CB00271D8B /* TableMetadata+CoreDataProperties.m */,
+				F708CF511E56E8CB00271D8B /* TableLocalFile+CoreDataClass.h */,
+				F708CF521E56E8CB00271D8B /* TableLocalFile+CoreDataClass.m */,
+				F708CF531E56E8CB00271D8B /* TableLocalFile+CoreDataProperties.h */,
+				F708CF541E56E8CB00271D8B /* TableLocalFile+CoreDataProperties.m */,
+				F708CF551E56E8CB00271D8B /* TableGPS+CoreDataClass.h */,
+				F708CF561E56E8CB00271D8B /* TableGPS+CoreDataClass.m */,
+				F708CF571E56E8CC00271D8B /* TableGPS+CoreDataProperties.h */,
+				F708CF581E56E8CC00271D8B /* TableGPS+CoreDataProperties.m */,
+				F708CF591E56E8CC00271D8B /* TableDirectory+CoreDataClass.h */,
+				F708CF5A1E56E8CC00271D8B /* TableDirectory+CoreDataClass.m */,
+				F708CF5B1E56E8CC00271D8B /* TableDirectory+CoreDataProperties.h */,
+				F708CF5C1E56E8CC00271D8B /* TableDirectory+CoreDataProperties.m */,
+				F708CF5D1E56E8CC00271D8B /* TableShare+CoreDataClass.h */,
+				F708CF5E1E56E8CC00271D8B /* TableShare+CoreDataClass.m */,
+				F708CF5F1E56E8CC00271D8B /* TableShare+CoreDataProperties.h */,
+				F708CF601E56E8CC00271D8B /* TableShare+CoreDataProperties.m */,
+				F708CF611E56E8CC00271D8B /* TableCertificates+CoreDataClass.h */,
+				F708CF621E56E8CC00271D8B /* TableCertificates+CoreDataClass.m */,
+				F708CF631E56E8CC00271D8B /* TableCertificates+CoreDataProperties.h */,
+				F708CF641E56E8CC00271D8B /* TableCertificates+CoreDataProperties.m */,
+				F708CF651E56E8CC00271D8B /* TableAutomaticUpload+CoreDataClass.h */,
+				F708CF661E56E8CC00271D8B /* TableAutomaticUpload+CoreDataClass.m */,
+				F708CF671E56E8CC00271D8B /* TableAutomaticUpload+CoreDataProperties.h */,
+				F708CF681E56E8CC00271D8B /* TableAutomaticUpload+CoreDataProperties.m */,
+				F708CF691E56E8CC00271D8B /* TableAccount+CoreDataClass.h */,
+				F708CF6A1E56E8CC00271D8B /* TableAccount+CoreDataClass.m */,
+				F708CF6B1E56E8CC00271D8B /* TableAccount+CoreDataProperties.h */,
+				F708CF6C1E56E8CC00271D8B /* TableAccount+CoreDataProperties.m */,
 			);
 			name = Table;
 			sourceTree = "<group>";
@@ -3142,6 +3143,7 @@
 				F74344211E1264EE001CC831 /* PickerFileProvider */,
 				F7FC7D651DC1F98700BB2C6A /* Products */,
 				F7FC7D541DC1F93700BB2C6A /* Frameworks */,
+				F708CF181E56E6A900271D8B /* PickerFileProvider-Bridging-Header.h */,
 			);
 			sourceTree = "<group>";
 		};
@@ -3369,6 +3371,7 @@
 					F743441F1E1264EE001CC831 = {
 						CreatedOnToolsVersion = 8.2.1;
 						DevelopmentTeam = 6JLRKY9ZV7;
+						LastSwiftMigration = 0820;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.Keychain = {
@@ -3727,76 +3730,76 @@
 			buildActionMask = 2147483647;
 			files = (
 				F71459B81D12E3B700CAFEEC /* CCError.m in Sources */,
+				F708CF7A1E56E8CC00271D8B /* TableGPS+CoreDataClass.m in Sources */,
 				F71459BA1D12E3B700CAFEEC /* NSString+TruncateToWidth.m in Sources */,
+				F708CF9B1E56E8CC00271D8B /* TableAccount+CoreDataProperties.m in Sources */,
 				F71459BB1D12E3B700CAFEEC /* NYXProgressiveImageView.m in Sources */,
+				F708CF981E56E8CC00271D8B /* TableAccount+CoreDataClass.m in Sources */,
 				F71459BC1D12E3B700CAFEEC /* Reachability.m in Sources */,
 				F71459BD1D12E3B700CAFEEC /* UIImage+animatedGIF.m in Sources */,
+				F708CF6E1E56E8CC00271D8B /* TableMetadata+CoreDataClass.m in Sources */,
 				F71459BE1D12E3B700CAFEEC /* UIImage+Reflection.m in Sources */,
 				F71459BF1D12E3B700CAFEEC /* RNEncryptor.m in Sources */,
+				F708CF891E56E8CC00271D8B /* TableShare+CoreDataProperties.m in Sources */,
 				F71459C21D12E3B700CAFEEC /* ShareViewController.m in Sources */,
 				F71459C31D12E3B700CAFEEC /* UIImage+Filtering.m in Sources */,
 				F71459C41D12E3B700CAFEEC /* UIImage+Saving.m in Sources */,
 				F71459C51D12E3B700CAFEEC /* UIImage+Rotating.m in Sources */,
-				F771CD611E07F6620066F76D /* TableAutomaticUpload+CoreDataProperties.m in Sources */,
 				F71459C61D12E3B700CAFEEC /* CCMetadata.m in Sources */,
-				F71459C81D12E3B700CAFEEC /* TableLocalFile.m in Sources */,
+				F708CF771E56E8CC00271D8B /* TableLocalFile+CoreDataProperties.m in Sources */,
 				F71459C91D12E3B700CAFEEC /* OCNetworking.m in Sources */,
 				F71459CC1D12E3B700CAFEEC /* RNCryptorEngine.m in Sources */,
 				F71459CD1D12E3B700CAFEEC /* AFViewShaker.m in Sources */,
 				F71459CE1D12E3B700CAFEEC /* NSData+CommonCrypto.m in Sources */,
 				F71459CF1D12E3B700CAFEEC /* BKPasscodeLockScreenManager.m in Sources */,
+				F708CF741E56E8CC00271D8B /* TableLocalFile+CoreDataClass.m in Sources */,
 				F71459D11D12E3B700CAFEEC /* BKPasscodeInputView.m in Sources */,
 				F71459D21D12E3B700CAFEEC /* CCUtility.m in Sources */,
-				F771CD5F1E07F6620066F76D /* TableAutomaticUpload+CoreDataClass.m in Sources */,
 				F71459D31D12E3B700CAFEEC /* CCBKPasscode.m in Sources */,
 				F71459D51D12E3B700CAFEEC /* MBProgressHUD.m in Sources */,
-				F71459D61D12E3B700CAFEEC /* TableShare+CoreDataProperties.m in Sources */,
 				F71459D71D12E3B700CAFEEC /* BKPasscodeDummyViewController.m in Sources */,
-				F71459D81D12E3B700CAFEEC /* TableMetadata.m in Sources */,
-				F7994B7E1D5B854C008525D9 /* TableCertificates.m in Sources */,
+				F708CF801E56E8CC00271D8B /* TableDirectory+CoreDataClass.m in Sources */,
 				F71459D91D12E3B700CAFEEC /* CCCrypto.m in Sources */,
 				F732BA0B1D76DBA500E9878B /* CCNetworking.m in Sources */,
-				F71459DA1D12E3B700CAFEEC /* TableShare.m in Sources */,
-				F71459DC1D12E3B700CAFEEC /* TableDirectory+CoreDataProperties.m in Sources */,
+				F708CF8C1E56E8CC00271D8B /* TableCertificates+CoreDataClass.m in Sources */,
 				F71459DD1D12E3B700CAFEEC /* CCCoreData.m in Sources */,
+				F708CF8F1E56E8CC00271D8B /* TableCertificates+CoreDataProperties.m in Sources */,
 				F71459DE1D12E3B700CAFEEC /* BKPasscodeField.m in Sources */,
-				F71459E01D12E3B700CAFEEC /* TableAccount.m in Sources */,
 				F71459E11D12E3B700CAFEEC /* CCHud.m in Sources */,
-				F71459E21D12E3B700CAFEEC /* TableAccount+CoreDataProperties.m in Sources */,
+				F708CF921E56E8CC00271D8B /* TableAutomaticUpload+CoreDataClass.m in Sources */,
 				F71459E41D12E3B700CAFEEC /* RNDecryptor.m in Sources */,
 				F71459E61D12E3B700CAFEEC /* NYXImagesHelper.m in Sources */,
 				F7C994331E3A92C500C2466C /* CCConstant.swift in Sources */,
 				F71459E91D12E3B700CAFEEC /* UIImage+Enhancing.m in Sources */,
 				F71459EA1D12E3B700CAFEEC /* CCCellShareExt.m in Sources */,
-				F71459EB1D12E3B700CAFEEC /* TableMetadata+CoreDataProperties.m in Sources */,
 				F73CCE321DC13798007E38D8 /* UICKeyChainStore.m in Sources */,
+				F708CF831E56E8CC00271D8B /* TableDirectory+CoreDataProperties.m in Sources */,
 				F71459ED1D12E3B700CAFEEC /* UIImage+Masking.m in Sources */,
-				F71459EF1D12E3B700CAFEEC /* TableGPS+CoreDataProperties.m in Sources */,
-				F7994B7A1D5B854C008525D9 /* TableCertificates+CoreDataProperties.m in Sources */,
 				F71459F01D12E3B700CAFEEC /* NSString+Base64.m in Sources */,
 				F7EF0CAF1D9E95F400A9D15E /* CCSharedDBSession.m in Sources */,
 				F71459F11D12E3B700CAFEEC /* CCMove.m in Sources */,
 				F71459F31D12E3B700CAFEEC /* UIImage+Resizing.m in Sources */,
 				F71459F41D12E3B700CAFEEC /* BKPasscodeViewController.m in Sources */,
 				F71459F51D12E3B700CAFEEC /* BKShiftingView.m in Sources */,
-				F71459F61D12E3B700CAFEEC /* TableLocalFile+CoreDataProperties.m in Sources */,
 				F71459F71D12E3B700CAFEEC /* CCGraphics.m in Sources */,
 				F71459F81D12E3B700CAFEEC /* BKTouchIDSwitchView.m in Sources */,
 				F7F801051D98205A007537BC /* CCCertificate.m in Sources */,
 				F71459FB1D12E3B700CAFEEC /* PPImageScrollingCellView.m in Sources */,
+				F708CF7D1E56E8CC00271D8B /* TableGPS+CoreDataProperties.m in Sources */,
 				F71459FE1D12E3B700CAFEEC /* CCExifGeo.m in Sources */,
+				F708CF861E56E8CC00271D8B /* TableShare+CoreDataClass.m in Sources */,
 				F71459FF1D12E3B700CAFEEC /* RNCryptor.m in Sources */,
 				F7145A001D12E3B700CAFEEC /* CCGlobal.m in Sources */,
 				F7145A011D12E3B700CAFEEC /* UIImage+Blurring.m in Sources */,
 				F7145A021D12E3B700CAFEEC /* BKTouchIDManager.m in Sources */,
 				F7145A041D12E3B700CAFEEC /* CCloadItemData.swift in Sources */,
+				F708CF951E56E8CC00271D8B /* TableAutomaticUpload+CoreDataProperties.m in Sources */,
 				F7145A081D12E3B700CAFEEC /* PPCollectionViewCell.m in Sources */,
-				F7145A091D12E3B700CAFEEC /* TableGPS.m in Sources */,
 				F7145A0D1D12E3B700CAFEEC /* NSData+Base64.m in Sources */,
 				F78088EB1DD3A1DB005C5A7C /* cryptocloud.xcdatamodeld in Sources */,
 				F7145A0E1D12E3B700CAFEEC /* AESCrypt.m in Sources */,
-				F7145A0F1D12E3B700CAFEEC /* TableDirectory.m in Sources */,
 				F7145A111D12E3B700CAFEEC /* PPImageScrollingTableViewCell.m in Sources */,
+				F708CF711E56E8CC00271D8B /* TableMetadata+CoreDataProperties.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3804,61 +3807,61 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F743446C1E127E4B001CC831 /* TableLocalFile+CoreDataProperties.m in Sources */,
 				F743445F1E127D4B001CC831 /* BKPasscodeViewController.m in Sources */,
 				F74344611E127D51001CC831 /* BKTouchIDManager.m in Sources */,
-				F743446A1E127E45001CC831 /* TableCertificates+CoreDataProperties.m in Sources */,
+				F708CF781E56E8CC00271D8B /* TableLocalFile+CoreDataProperties.m in Sources */,
+				F708CF931E56E8CC00271D8B /* TableAutomaticUpload+CoreDataClass.m in Sources */,
 				F74344801E127ED3001CC831 /* NSString+Base64.m in Sources */,
+				F708CF871E56E8CC00271D8B /* TableShare+CoreDataClass.m in Sources */,
 				F74344621E127D54001CC831 /* BKTouchIDSwitchView.m in Sources */,
-				F743446D1E127E4E001CC831 /* TableLocalFile.m in Sources */,
 				F743447A1E127EA6001CC831 /* CCGraphics.m in Sources */,
+				F708CF9C1E56E8CC00271D8B /* TableAccount+CoreDataProperties.m in Sources */,
+				F708CF811E56E8CC00271D8B /* TableDirectory+CoreDataClass.m in Sources */,
+				F708CF901E56E8CC00271D8B /* TableCertificates+CoreDataProperties.m in Sources */,
 				F743448C1E128010001CC831 /* CCCrypto.m in Sources */,
 				F725437C1E12A44A009BF4C2 /* CCSection.m in Sources */,
 				F74344651E127DE9001CC831 /* CCNetworking.m in Sources */,
 				F74344641E127DE6001CC831 /* OCNetworking.m in Sources */,
+				F708CF841E56E8CC00271D8B /* TableDirectory+CoreDataProperties.m in Sources */,
 				F743445B1E127D3B001CC831 /* BKPasscodeDummyViewController.m in Sources */,
-				F743446B1E127E49001CC831 /* TableCertificates.m in Sources */,
 				F743445D1E127D40001CC831 /* BKPasscodeInputView.m in Sources */,
 				F74344821E127F68001CC831 /* MBProgressHUD.m in Sources */,
-				F74344721E127E5B001CC831 /* TableMetadata.m in Sources */,
-				F74344681E127E3F001CC831 /* TableAutomaticUpload+CoreDataClass.m in Sources */,
+				F708CF7B1E56E8CC00271D8B /* TableGPS+CoreDataClass.m in Sources */,
 				F743444A1E126B4D001CC831 /* CCMove.m in Sources */,
-				F74344741E127E60001CC831 /* TableAccount.m in Sources */,
-				F74344771E127E88001CC831 /* TableDirectory.m in Sources */,
-				F74344711E127E59001CC831 /* TableMetadata+CoreDataProperties.m in Sources */,
 				F743448B1E12800D001CC831 /* CCCertificate.m in Sources */,
 				F743447D1E127ECB001CC831 /* AESCrypt.m in Sources */,
 				F743447E1E127ECE001CC831 /* NSData+Base64.m in Sources */,
 				F74344671E127E38001CC831 /* CCMetadata.m in Sources */,
-				F74344701E127E56001CC831 /* TableDirectory+CoreDataProperties.m in Sources */,
 				F74344781E127E9E001CC831 /* CCExifGeo.m in Sources */,
 				F74344171E1264EE001CC831 /* DocumentPickerViewController.swift in Sources */,
 				F74344811E127F49001CC831 /* AFViewShaker.m in Sources */,
 				F74344791E127EA1001CC831 /* CCError.m in Sources */,
-				F743446E1E127E51001CC831 /* TableGPS+CoreDataProperties.m in Sources */,
+				F708CF6F1E56E8CC00271D8B /* TableMetadata+CoreDataClass.m in Sources */,
 				F743447B1E127EAC001CC831 /* CCUtility.m in Sources */,
-				F74344761E127E67001CC831 /* TableShare.m in Sources */,
 				F74344871E127F95001CC831 /* UICKeyChainStore.m in Sources */,
-				F74344751E127E64001CC831 /* TableShare+CoreDataProperties.m in Sources */,
 				F743447F1E127ED1001CC831 /* NSData+CommonCrypto.m in Sources */,
+				F708CF8D1E56E8CC00271D8B /* TableCertificates+CoreDataClass.m in Sources */,
 				F74344891E127FC3001CC831 /* CCGlobal.m in Sources */,
 				F74344841E127F84001CC831 /* RNCryptorEngine.m in Sources */,
 				F74344851E127F86001CC831 /* RNDecryptor.m in Sources */,
-				F74344691E127E42001CC831 /* TableAutomaticUpload+CoreDataProperties.m in Sources */,
 				F74344881E127F9C001CC831 /* UIImage+animatedGIF.m in Sources */,
+				F708CF7E1E56E8CC00271D8B /* TableGPS+CoreDataProperties.m in Sources */,
 				F743448A1E127FF2001CC831 /* CCHud.m in Sources */,
 				F74344861E127F89001CC831 /* RNEncryptor.m in Sources */,
+				F708CF991E56E8CC00271D8B /* TableAccount+CoreDataClass.m in Sources */,
 				F743445C1E127D3D001CC831 /* BKPasscodeField.m in Sources */,
-				F743446F1E127E53001CC831 /* TableGPS.m in Sources */,
 				F7FC88FA1E140558006D0506 /* cryptocloud.xcdatamodeld in Sources */,
+				F708CF721E56E8CC00271D8B /* TableMetadata+CoreDataProperties.m in Sources */,
 				F743445E1E127D44001CC831 /* BKPasscodeLockScreenManager.m in Sources */,
 				F74344631E127D79001CC831 /* CCBKPasscode.m in Sources */,
+				F708CF8A1E56E8CC00271D8B /* TableShare+CoreDataProperties.m in Sources */,
 				F74344661E127E35001CC831 /* CCCoreData.m in Sources */,
 				F743447C1E127EB2001CC831 /* NSString+TruncateToWidth.m in Sources */,
-				F74344731E127E5E001CC831 /* TableAccount+CoreDataProperties.m in Sources */,
+				F708CF751E56E8CC00271D8B /* TableLocalFile+CoreDataClass.m in Sources */,
 				F7C994341E3A92C500C2466C /* CCConstant.swift in Sources */,
 				F74344601E127D4D001CC831 /* BKShiftingView.m in Sources */,
 				F74344831E127F80001CC831 /* RNCryptor.m in Sources */,
+				F708CF961E56E8CC00271D8B /* TableAutomaticUpload+CoreDataProperties.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3886,17 +3889,16 @@
 				F73CCDED1DC13776007E38D8 /* XLFormSelectorCell.m in Sources */,
 				F7F06E931DBFACC600099AE9 /* NSNumberFormatter+CTAssetsPickerController.m in Sources */,
 				F77B0DF71D118A16002130FE /* UIXToolbarView.m in Sources */,
-				F771CD601E07F6620066F76D /* TableAutomaticUpload+CoreDataProperties.m in Sources */,
 				F7C525A01E3B48B700FFE02C /* CCNotification.swift in Sources */,
-				F77B0DF91D118A16002130FE /* TableMetadata.m in Sources */,
 				F77B0DFB1D118A16002130FE /* NYXProgressiveImageView.m in Sources */,
-				F7994B781D5B854C008525D9 /* TableCertificates+CoreDataProperties.m in Sources */,
+				F708CF701E56E8CC00271D8B /* TableMetadata+CoreDataProperties.m in Sources */,
 				F77B0DFC1D118A16002130FE /* ReaderDocumentOutline.m in Sources */,
 				F77B0DFE1D118A16002130FE /* REMenuItem.m in Sources */,
 				F77B0DFF1D118A16002130FE /* OCNetworking.m in Sources */,
 				F77B0E001D118A16002130FE /* MWPhoto.m in Sources */,
 				F77B0E011D118A16002130FE /* RNCryptor.m in Sources */,
 				F77B0E021D118A16002130FE /* CCPhotosCameraUpload.m in Sources */,
+				F708CF6D1E56E8CC00271D8B /* TableMetadata+CoreDataClass.m in Sources */,
 				F77B0E031D118A16002130FE /* CCShareInfoCMOC.m in Sources */,
 				F77B0E041D118A16002130FE /* UIImage+animatedGIF.m in Sources */,
 				F73CCE301DC13798007E38D8 /* UICKeyChainStore.m in Sources */,
@@ -3913,6 +3915,9 @@
 				F73CCDFF1DC13776007E38D8 /* XLFormDescriptor.m in Sources */,
 				F77B0E101D118A16002130FE /* MWGridViewController.m in Sources */,
 				F77B0E111D118A16002130FE /* UIImage+Reflection.m in Sources */,
+				F708CF8B1E56E8CC00271D8B /* TableCertificates+CoreDataClass.m in Sources */,
+				F708CF7C1E56E8CC00271D8B /* TableGPS+CoreDataProperties.m in Sources */,
+				F708CF821E56E8CC00271D8B /* TableDirectory+CoreDataProperties.m in Sources */,
 				F77B0E121D118A16002130FE /* CCPatenteGuida.m in Sources */,
 				F7D6A0971D82DBFA0045AD1A /* CCMenu.m in Sources */,
 				F77B0E131D118A16002130FE /* AppDelegate.m in Sources */,
@@ -3929,12 +3934,15 @@
 				F7659A6E1DC0B760004860C4 /* PSTGridLayoutRow.m in Sources */,
 				F77B0E201D118A16002130FE /* CCShareUserOC.m in Sources */,
 				F77B0E211D118A16002130FE /* ThumbsMainToolbar.m in Sources */,
+				F708CF791E56E8CC00271D8B /* TableGPS+CoreDataClass.m in Sources */,
 				F73CCDF31DC13776007E38D8 /* XLFormSwitchCell.m in Sources */,
 				F720E01F1E48C73E001A4B9E /* CCActions.swift in Sources */,
 				F77B0E221D118A16002130FE /* CCManageLocation.m in Sources */,
 				F77B0E231D118A16002130FE /* CCSharePermissionOC.m in Sources */,
 				F77B0E241D118A16002130FE /* HRColorCursor.m in Sources */,
+				F708CF851E56E8CC00271D8B /* TableShare+CoreDataClass.m in Sources */,
 				F77B0E251D118A16002130FE /* BKPasscodeInputView.m in Sources */,
+				F708CF9A1E56E8CC00271D8B /* TableAccount+CoreDataProperties.m in Sources */,
 				F77B0E261D118A16002130FE /* ZSSTextView.m in Sources */,
 				F7253FCA1E38BAF20084135B /* JSAlertView.m in Sources */,
 				F77B0E271D118A16002130FE /* CYRLayoutManager.m in Sources */,
@@ -3952,7 +3960,6 @@
 				F7F06EB71DBFACC600099AE9 /* CTAssetsGridViewFooter.m in Sources */,
 				F7F06EB91DBFACC600099AE9 /* CTAssetsGridViewLayout.m in Sources */,
 				F7DA62AE1E41E666003E1740 /* CCOfflinePageContent.m in Sources */,
-				F77B0E341D118A16002130FE /* TableAccount+CoreDataProperties.m in Sources */,
 				F77B0E351D118A16002130FE /* NYXImagesHelper.m in Sources */,
 				F73CCE171DC13776007E38D8 /* XLFormTextView.m in Sources */,
 				F77B0E361D118A16002130FE /* ZSSBarButtonItem.m in Sources */,
@@ -3973,6 +3980,7 @@
 				F77B0E461D118A16002130FE /* BKPasscodeLockScreenManager.m in Sources */,
 				F77B0E481D118A16002130FE /* CCCrypto.m in Sources */,
 				F7D6A0911D82DBFA0045AD1A /* CCControlCenter.m in Sources */,
+				F708CF761E56E8CC00271D8B /* TableLocalFile+CoreDataProperties.m in Sources */,
 				F7659A6A1DC0B760004860C4 /* PSTGridLayoutInfo.m in Sources */,
 				F73CCE1D1DC13776007E38D8 /* XLFormValidator.m in Sources */,
 				F77B0E491D118A16002130FE /* UIImage+Saving.m in Sources */,
@@ -3982,7 +3990,6 @@
 				F7659A5E1DC0B760004860C4 /* PSTCollectionViewController.m in Sources */,
 				F7F801031D98205A007537BC /* CCCertificate.m in Sources */,
 				F7CE28881D1ACFA70025783C /* UINavigationController+CCProgress.m in Sources */,
-				F77B0E4E1D118A16002130FE /* TableDirectory.m in Sources */,
 				F77B0E4F1D118A16002130FE /* CCManageCameraUpload.m in Sources */,
 				F77B0E511D118A16002130FE /* UIImage+Filtering.m in Sources */,
 				F73CCDEB1DC13776007E38D8 /* XLFormSegmentedCell.m in Sources */,
@@ -4012,26 +4019,24 @@
 				F77B0E641D118A16002130FE /* UIWindow+AHKAdditions.m in Sources */,
 				F73CCE261DC13788007E38D8 /* UIScrollView+EmptyDataSet.m in Sources */,
 				F77B0E651D118A16002130FE /* LMMediaPlayerView.m in Sources */,
+				F708CF731E56E8CC00271D8B /* TableLocalFile+CoreDataClass.m in Sources */,
 				F77B0E661D118A16002130FE /* NSString+Base64.m in Sources */,
 				F77B0E671D118A16002130FE /* Reachability.m in Sources */,
-				F77B0E691D118A16002130FE /* TableShare.m in Sources */,
 				F77B0E6A1D118A16002130FE /* RNDecryptor.m in Sources */,
 				F73CCDF91DC13776007E38D8 /* XLFormOptionsObject.m in Sources */,
 				F77B0E6B1D118A16002130FE /* ReaderThumbCache.m in Sources */,
 				F77B0E6C1D118A16002130FE /* ReaderContentPage.m in Sources */,
+				F708CF941E56E8CC00271D8B /* TableAutomaticUpload+CoreDataProperties.m in Sources */,
 				F750374D1DBFA91A008FB480 /* ALView+PureLayout.m in Sources */,
 				F7F06E8F1DBFACC600099AE9 /* NSDateFormatter+CTAssetsPickerController.m in Sources */,
 				F73CCDF51DC13776007E38D8 /* XLFormTextFieldCell.m in Sources */,
-				F77B0E701D118A16002130FE /* TableDirectory+CoreDataProperties.m in Sources */,
 				F77B0E711D118A16002130FE /* LMMediaItem.m in Sources */,
 				F7F6AC4E1E525AD300E8EB45 /* CCManageCryptoCloud.m in Sources */,
 				F77B0E731D118A16002130FE /* PPImageScrollingTableViewCell.m in Sources */,
 				F7659A2E1DC0B72F004860C4 /* EARestrictedScrollView.m in Sources */,
 				F77B0E741D118A16002130FE /* CCBancomat.m in Sources */,
 				F77B0E761D118A16002130FE /* ReaderViewController.m in Sources */,
-				F77B0E771D118A16002130FE /* TableShare+CoreDataProperties.m in Sources */,
 				F77B0E781D118A16002130FE /* ReaderThumbFetch.m in Sources */,
-				F77B0E791D118A16002130FE /* TableGPS.m in Sources */,
 				F77B0E7A1D118A16002130FE /* MWTapDetectingImageView.m in Sources */,
 				F77B0E7B1D118A16002130FE /* CCPassaporto.m in Sources */,
 				F7F06EA51DBFACC600099AE9 /* CTAssetItemViewController.m in Sources */,
@@ -4042,8 +4047,8 @@
 				F77B0E801D118A16002130FE /* ZSSRichTextEditor.m in Sources */,
 				F7F06EC91DBFACC600099AE9 /* CTAssetsViewControllerTransition.m in Sources */,
 				F7659A661DC0B760004860C4 /* PSTCollectionViewLayout.m in Sources */,
-				F77B0E831D118A16002130FE /* TableLocalFile.m in Sources */,
 				F77B0E851D118A16002130FE /* MWTapDetectingView.m in Sources */,
+				F708CF911E56E8CC00271D8B /* TableAutomaticUpload+CoreDataClass.m in Sources */,
 				F75037511DBFA91A008FB480 /* NSLayoutConstraint+PureLayout.m in Sources */,
 				F73CCE151DC13776007E38D8 /* XLFormRowNavigationAccessoryView.m in Sources */,
 				F73CCDFB1DC13776007E38D8 /* XLFormOptionsViewController.m in Sources */,
@@ -4090,7 +4095,6 @@
 				F7F06EB51DBFACC600099AE9 /* CTAssetsGridViewController.m in Sources */,
 				F73C002F1E55D7DF00EEEFA7 /* CCManageCryptoCloudSecurity.m in Sources */,
 				F77B0EAC1D118A16002130FE /* MWGridCell.m in Sources */,
-				F7994B7C1D5B854C008525D9 /* TableCertificates.m in Sources */,
 				F7659A621DC0B760004860C4 /* PSTCollectionViewFlowLayout.m in Sources */,
 				F7F06EBD1DBFACC600099AE9 /* CTAssetsPageView.m in Sources */,
 				F77B0EAD1D118A16002130FE /* CCGlobal.m in Sources */,
@@ -4102,7 +4106,6 @@
 				F77B0EB11D118A16002130FE /* CCMetadata.m in Sources */,
 				F7F06E9D1DBFACC600099AE9 /* UIImage+CTAssetsPickerController.m in Sources */,
 				F77B0EB21D118A16002130FE /* ReaderMainToolbar.m in Sources */,
-				F77B0EB31D118A16002130FE /* TableGPS+CoreDataProperties.m in Sources */,
 				F73CCDEF1DC13776007E38D8 /* XLFormSliderCell.m in Sources */,
 				F77B0EB51D118A16002130FE /* RECommonFunctions.m in Sources */,
 				F73CCE111DC13776007E38D8 /* XLFormRightDetailCell.m in Sources */,
@@ -4111,13 +4114,13 @@
 				F77B0EB71D118A16002130FE /* ReaderThumbRequest.m in Sources */,
 				F7F06EB31DBFACC600099AE9 /* CTAssetsGridViewCell.m in Sources */,
 				F77B0EB81D118A16002130FE /* CCAccountWeb.m in Sources */,
+				F708CF7F1E56E8CC00271D8B /* TableDirectory+CoreDataClass.m in Sources */,
 				F77B0EB91D118A16002130FE /* HRColorUtil.m in Sources */,
 				F77B0EBA1D118A16002130FE /* UIImage+AHKAdditions.m in Sources */,
 				F73CCDD91DC13776007E38D8 /* XLFormBaseCell.m in Sources */,
+				F708CF881E56E8CC00271D8B /* TableShare+CoreDataProperties.m in Sources */,
 				F7F06EA71DBFACC600099AE9 /* CTAssetPlayButton.m in Sources */,
-				F77B0EBB1D118A16002130FE /* TableMetadata+CoreDataProperties.m in Sources */,
 				F73CCE031DC13776007E38D8 /* XLFormSectionDescriptor.m in Sources */,
-				F77B0EBD1D118A16002130FE /* TableAccount.m in Sources */,
 				F7676A641D5CB1B900DF734C /* TWMessageBarManager.m in Sources */,
 				F77B0EBE1D118A16002130FE /* CCNote.m in Sources */,
 				F77B0EBF1D118A16002130FE /* RNEncryptor.m in Sources */,
@@ -4132,6 +4135,8 @@
 				F77B0EC61D118A16002130FE /* CCCellMain.m in Sources */,
 				F77B0EC71D118A16002130FE /* AESCrypt.m in Sources */,
 				F73CCE091DC13776007E38D8 /* NSObject+XLFormAdditions.m in Sources */,
+				F708CF971E56E8CC00271D8B /* TableAccount+CoreDataClass.m in Sources */,
+				F708CF8E1E56E8CC00271D8B /* TableCertificates+CoreDataProperties.m in Sources */,
 				F7ECBA6D1E239DCD003E6328 /* CCCreateCloud.swift in Sources */,
 				F77B0ECB1D118A16002130FE /* HRBrightnessCursor.m in Sources */,
 				F77B0ECC1D118A16002130FE /* UIImage+Masking.m in Sources */,
@@ -4140,13 +4145,11 @@
 				F77B0ECF1D118A16002130FE /* CYRToken.m in Sources */,
 				F7F06EB11DBFACC600099AE9 /* CTAssetsGridView.m in Sources */,
 				F7D6A0931D82DBFA0045AD1A /* CCControlCenterCell.m in Sources */,
-				F771CD5E1E07F6620066F76D /* TableAutomaticUpload+CoreDataClass.m in Sources */,
 				F77B0ED11D118A16002130FE /* Acknowledgements.m in Sources */,
 				F77B0ED31D118A16002130FE /* PPImageScrollingCellView.m in Sources */,
 				F77B0ED41D118A16002130FE /* LMMediaPlayerHelper.m in Sources */,
 				F77B0ED51D118A16002130FE /* PHAsset+Utility.m in Sources */,
 				F7F06E991DBFACC600099AE9 /* PHImageManager+CTAssetsPickerController.m in Sources */,
-				F77B0ED81D118A16002130FE /* TableLocalFile+CoreDataProperties.m in Sources */,
 				F7F06EBB1DBFACC600099AE9 /* CTAssetsNavigationController.m in Sources */,
 				F77B0ED91D118A16002130FE /* main.m in Sources */,
 			);
@@ -4416,6 +4419,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CODE_SIGN_ENTITLEMENTS = PickerFileProvider/PickerFileProvider.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -4435,6 +4439,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG NC";
+				SWIFT_OBJC_BRIDGING_HEADER = "PickerFileProvider-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -4446,6 +4451,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CODE_SIGN_ENTITLEMENTS = PickerFileProvider/PickerFileProvider.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -4464,6 +4470,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = NC;
+				SWIFT_OBJC_BRIDGING_HEADER = "PickerFileProvider-Bridging-Header.h";
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

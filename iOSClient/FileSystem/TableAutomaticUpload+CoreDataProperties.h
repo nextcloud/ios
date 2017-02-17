@@ -2,8 +2,8 @@
 //  TableAutomaticUpload+CoreDataProperties.h
 //  Nextcloud
 //
-//  Created by Marino Faggiana on 19/12/16.
-//  Copyright © 2016 TWS. All rights reserved.
+//  Created by Marino Faggiana on 17/02/17.
+//  Copyright © 2017 TWS. All rights reserved.
 //
 
 #import "TableAutomaticUpload+CoreDataClass.h"

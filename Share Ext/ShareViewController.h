@@ -37,7 +37,7 @@
 #import "CCError.h"
 #import "CCHud.h"
 
-#import "TableAccount.h"
+#import "TableAccount+CoreDataClass.h"
 
 @interface ShareViewController : UIViewController <UITableViewDelegate, OCNetworkingDelegate, MBProgressHUDDelegate, BKPasscodeViewControllerDelegate, CCNetworkingDelegate, CCMoveDelegate>
 

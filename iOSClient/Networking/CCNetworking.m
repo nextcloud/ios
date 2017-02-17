@@ -25,8 +25,7 @@
 
 #import "AppDelegate.h"
 #import "CCCertificate.h"
-#import "TableAccount.h"
-
+#import "TableAccount+CoreDataClass.h"
 #import "NSDate+ISO8601.h"
 
 @interface CCNetworking ()

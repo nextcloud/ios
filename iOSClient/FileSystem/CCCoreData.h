@@ -33,13 +33,13 @@
 #import "CCExifGeo.h"
 #import "CCGraphics.h"
 
-#import "TableAccount.h"
-#import "TableCertificates.h"
-#import "TableMetadata.h"
-#import "TableDirectory.h"
-#import "TableLocalFile.h"
-#import "TableGPS.h"
-#import "TableShare.h"
+#import "TableAccount+CoreDataClass.h"
+#import "TableCertificates+CoreDataClass.h"
+#import "TableMetadata+CoreDataClass.h"
+#import "TableDirectory+CoreDataClass.h"
+#import "TableLocalFile+CoreDataClass.h"
+#import "TableGPS+CoreDataClass.h"
+#import "TableShare+CoreDataClass.h"
 #import "TableAutomaticUpload+CoreDataClass.h"
 
 @interface CCCoreData : NSObject
