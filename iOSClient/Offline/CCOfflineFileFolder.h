@@ -40,6 +40,6 @@
 
 - (void)verifyChangeMedatas:(NSArray *)allRecordMetadatas serverUrl:(NSString *)serverUrl account:(NSString *)account offline:(BOOL)offline;
 
-- (BOOL)offlineFolderAnimationDirectory:(NSArray *)directory callViewController:(BOOL)callViewController;
+- (BOOL)offlineFolderAnimationDirectory:(NSArray *)directory setGraphicsFolder:(BOOL)setGraphicsFolder;
 
 @end

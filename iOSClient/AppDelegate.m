@@ -393,7 +393,7 @@
         [directory addObject:record.serverUrl];
     
     if ([directory count] > 0)
-        [[CCOfflineFileFolder sharedOfflineFileFolder] offlineFolderAnimationDirectory:directory callViewController:YES];
+        [[CCOfflineFileFolder sharedOfflineFileFolder] offlineFolderAnimationDirectory:directory setGraphicsFolder:YES];
 
 // ONLY BACKGROUND
     

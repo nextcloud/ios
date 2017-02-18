@@ -5019,7 +5019,7 @@
             else cell.offlineImageView.image = [UIImage imageNamed:image_offline];
             
             // Animation synchronized gif
-            if ([[CCOfflineFileFolder sharedOfflineFileFolder] offlineFolderAnimationDirectory:[[NSArray alloc] initWithObjects:directoryServerUrl, nil] callViewController:NO]) {
+            if ([[CCOfflineFileFolder sharedOfflineFileFolder] offlineFolderAnimationDirectory:[[NSArray alloc] initWithObjects:directoryServerUrl, nil] setGraphicsFolder:NO]) {
                 
                 NSURL *myURL;
                 

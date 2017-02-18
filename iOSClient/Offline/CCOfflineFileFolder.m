@@ -114,14 +114,15 @@
 
 // Graphics Animation Offline Folders
 //
-// User return BOOL animation for 1 directory only
 //
 
-- (BOOL)offlineFolderAnimationDirectory:(NSArray *)directory callViewController:(BOOL)callViewController
+- (BOOL)offlineFolderAnimationDirectory:(NSArray *)directory setGraphicsFolder:(BOOL)setGraphicsFolder
 {
     BOOL animation = NO;
+    BOOL isAtLeastOneInAnimation = NO;
     NSMutableOrderedSet *serversUrlInDownload = [[NSMutableOrderedSet alloc] init];
     
+    // Active for download
     NSMutableArray *metadatasNet = [app verifyExistsInQueuesDownloadSelector:selectorDownloadOffline];
     
     for (CCMetadataNet *metadataNet in metadatasNet)
@@ -133,7 +134,10 @@
         
         animation = [serversUrlInDownload containsObject:serverUrl];
         
-        if (callViewController) {
+        if (animation)
+            isAtLeastOneInAnimation = YES;
+        
+        if (setGraphicsFolder) {
             
             NSString *serverUrlOffline = [CCUtility deletingLastPathComponentFromServerUrl:serverUrl];
             CCMain *viewController = [app.listMainVC objectForKey:serverUrlOffline];
@@ -142,7 +146,7 @@
         }
     }
     
-    return animation;
+    return isAtLeastOneInAnimation;
 }
 
 - (void)readFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
@@ -436,7 +440,7 @@
             [app addNetworkingOperationQueue:app.netQueueDownload delegate:app.activeMain metadataNet:metadataNet];
         }
     
-        [[CCOfflineFileFolder sharedOfflineFileFolder] offlineFolderAnimationDirectory:[[NSArray alloc] initWithObjects:serverUrl, nil] callViewController:YES];
+        [[CCOfflineFileFolder sharedOfflineFileFolder] offlineFolderAnimationDirectory:[[NSArray alloc] initWithObjects:serverUrl, nil] setGraphicsFolder:YES];
         
         [app.activeMain reloadDatasource:serverUrl fileID:nil selector:nil];
         
