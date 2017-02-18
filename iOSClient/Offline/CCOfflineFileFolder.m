@@ -211,6 +211,10 @@
         
         for (CCMetadata *metadata in metadatas) {
             
+            // reject cryptated
+            if (metadata.cryptated)
+                continue;
+            
             // dir recursive
             if (metadata.directory) {
                 
@@ -225,36 +229,6 @@
                 });
                 
             } else {
-            
-                NSInteger typeFilename = [CCUtility getTypeFileName:metadata.fileName];
-            
-                // reject crypto
-                if (typeFilename == k_metadataTypeFilenameCrypto) continue;
-            
-                // Verify if the plist is complited
-                if (typeFilename == k_metadataTypeFilenamePlist) {
-                
-                    BOOL isCryptoComplete = NO;
-                    NSString *fileNameCrypto = [CCUtility trasformedFileNamePlistInCrypto:metadata.fileName];
-                
-                    for (CCMetadata *completeMetadata in metadatas) {
-                    
-                        if (completeMetadata.cryptated == NO) continue;
-                        else  if ([completeMetadata.fileName isEqualToString:fileNameCrypto]) {
-                            isCryptoComplete = YES;
-                            break;
-                        }
-                    }
-                    if (isCryptoComplete == NO) continue;
-                }
-        
-                // Error password
-                if (metadata.errorPasscode)
-                    continue;
-            
-                // Plist not download
-                if (metadata.cryptated && [metadata.title length] == 0)
-                    continue;
             
                 // It's in session
                 BOOL recordInSession = NO;
