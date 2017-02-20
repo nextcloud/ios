@@ -56,7 +56,7 @@
     [super viewDidAppear:animated];
     
     // Color
-    [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar hidden:NO];
+    [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
     [CCAspect aspectTabBar:self.tabBarController.tabBar hidden:NO];
     
     [self.tableView reloadData];
@@ -168,7 +168,7 @@
     viewController.delegate = self;
     viewController.move.title = NSLocalizedString(@"_select_", nil);
     viewController.tintColor = COLOR_BRAND;
-    viewController.barTintColor = COLOR_BAR;
+    viewController.barTintColor = COLOR_NAVIGATIONBAR;
     viewController.tintColorTitle = COLOR_GRAY;
     viewController.networkingOperationQueue = app.netQueue;
 

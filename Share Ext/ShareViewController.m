@@ -166,7 +166,7 @@
     barTintColor = self.navigationController.navigationBar.barTintColor;
     tintColor = self.navigationController.navigationBar.tintColor;
     
-    if (barTintColor == nil) barTintColor = COLOR_NAVBAR_IOS7;
+    if (barTintColor == nil) barTintColor = COLOR_NAVIGATIONBAR;
     if (tintColor == nil) tintColor  = COLOR_GRAY;
     
     // Toolbar Color & navigationBar Color

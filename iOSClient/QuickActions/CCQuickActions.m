@@ -188,7 +188,7 @@
     _move.delegate = self;
     _move.selectedMetadatas = nil;
     _move.tintColor = COLOR_BRAND;
-    _move.barTintColor = COLOR_BAR;
+    _move.barTintColor = COLOR_NAVIGATIONBAR;
     _move.tintColorTitle = COLOR_GRAY;
     _move.networkingOperationQueue = app.netQueue;
     

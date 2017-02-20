@@ -90,7 +90,7 @@
     [templates setImageTitle:self.titolo conNavigationItem:self.navigationItem reachability:[app.reachability isReachable]];
         
     // Color
-    [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar hidden:NO];
+    [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
     
     self.view.backgroundColor = [UIColor whiteColor];
 }

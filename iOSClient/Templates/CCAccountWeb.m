@@ -128,7 +128,7 @@
     [templates setImageTitle:NSLocalizedString(@"_web_account_", nil) conNavigationItem:self.navigationItem reachability:[app.reachability isReachable]];
         
     // Color
-    [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar hidden:NO];
+    [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
 }
 
 - (void)viewDidAppear:(BOOL)animated

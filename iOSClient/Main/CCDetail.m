@@ -222,7 +222,8 @@
         self.edgesForExtendedLayout = UIRectEdgeBottom;
         [self viewAudio];
         [self createToolbar];
-        [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar hidden:NO];
+        [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
+
     }
     
     if ([self.metadataDetail.typeFile isEqualToString: k_metadataTypeFile_document]) {
@@ -234,14 +235,14 @@
             self.edgesForExtendedLayout = UIRectEdgeBottom;
             [self viewPDF:@""];
             [self createToolbar];
-            [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar hidden:NO];
-            
+            [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
+
         } else {
 
             self.edgesForExtendedLayout = UIRectEdgeBottom;
             [self viewDocument];
             [self createToolbar];
-            [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar hidden:NO];
+            [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
         }
     }
 }

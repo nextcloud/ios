@@ -23,6 +23,7 @@
 
 #import "CCManageHelp.h"
 #import "CCUtility.h"
+#import "AppDelegate.h"
 
 @interface CCManageHelp ()
 
@@ -70,7 +71,7 @@
     [super viewDidLoad];
     
     // Color
-    [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar hidden:NO];
+    [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
     [CCAspect aspectTabBar:self.tabBarController.tabBar hidden:NO];
     
     // Intro
@@ -83,7 +84,7 @@
     [super viewWillAppear:animated];
     
     // Color
-    [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar hidden:NO];
+    [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
     [CCAspect aspectTabBar:self.tabBarController.tabBar hidden:NO];
 }
 

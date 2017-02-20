@@ -22,6 +22,7 @@
 //
 
 #import "Acknowledgements.h"
+#import "AppDelegate.h"
 
 @implementation Acknowledgements
 
@@ -53,7 +54,7 @@
     [super viewDidAppear:animated];
     
     // Color
-    [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar hidden:NO];
+    [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
     
     [self.txtTermini setContentOffset:CGPointZero animated:NO];
     self.txtTermini.hidden = false;

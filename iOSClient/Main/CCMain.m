@@ -211,7 +211,7 @@
     [[CCNetworking sharedNetworking] settingDelegate:self];
     
     // Color
-    [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar hidden:NO];
+    [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:_isFolderEncrypted online:[app.reachability isReachable] hidden:NO];
     [CCAspect aspectTabBar:self.tabBarController.tabBar hidden:NO];
     
     // Menu e Bar
@@ -481,12 +481,7 @@
         return;
 
     // Color text self.navigationItem.title
-    if ([app.reachability isReachable] == NO)
-        [self.navigationController.navigationBar setTitleTextAttributes:@{NSForegroundColorAttributeName : COLOR_NO_CONNECTION}];
-    else if (_isFolderEncrypted)
-        [self.navigationController.navigationBar setTitleTextAttributes:@{NSForegroundColorAttributeName : COLOR_ENCRYPTED}];
-    else
-        [self.navigationController.navigationBar setTitleTextAttributes:@{NSForegroundColorAttributeName : COLOR_GRAY}];
+    [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:_isFolderEncrypted online:[app.reachability isReachable] hidden:NO];
 
     if (_isSelectedMode) {
         
@@ -585,7 +580,7 @@
 
 - (void)setUINavigationBarDefault
 {
-    [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar hidden:NO];
+    [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:_isFolderEncrypted online:[app.reachability isReachable] hidden:NO];
     
     UIBarButtonItem *buttonMore, *buttonNotification;
     
@@ -617,7 +612,7 @@
 
 - (void)setUINavigationBarSelected
 {
-    [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar hidden:NO];
+    [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:_isFolderEncrypted online:[app.reachability isReachable] hidden:NO];
     
     UIImage *icon = [UIImage imageNamed:image_more];
     UIBarButtonItem *buttonMore = [[UIBarButtonItem alloc] initWithImage:icon style:UIBarButtonItemStylePlain target:self action:@selector(toggleReSelectMenu)];
@@ -2236,7 +2231,7 @@
     viewController.move.title = NSLocalizedString(@"_move_", nil);
     viewController.selectedMetadatas = [self getMetadatasFromSelectedRows:indexPaths];
     viewController.tintColor = COLOR_BRAND;
-    viewController.barTintColor = COLOR_BAR;
+    viewController.barTintColor = COLOR_NAVIGATIONBAR;
     viewController.tintColorTitle = COLOR_GRAY;
     viewController.networkingOperationQueue = app.netQueue;
     
@@ -3407,7 +3402,7 @@
     app.reMainMenu.separatorHeight = 0.5;
     app.reMainMenu.separatorColor = COLOR_SEPARATOR_TABLE;
     
-    app.reMainMenu.backgroundColor = COLOR_BAR;
+    app.reMainMenu.backgroundColor = COLOR_NAVIGATIONBAR;
     app.reMainMenu.textColor = [UIColor blackColor];
     app.reMainMenu.textAlignment = NSTextAlignmentLeft;
     app.reMainMenu.textShadowColor = nil;
@@ -3598,7 +3593,7 @@
     app.reSelectMenu.separatorHeight = 0.5;
     app.reSelectMenu.separatorColor = COLOR_SEPARATOR_TABLE;
     
-    app.reSelectMenu.backgroundColor = COLOR_BAR;
+    app.reSelectMenu.backgroundColor = COLOR_NAVIGATIONBAR;
     app.reSelectMenu.textColor = [UIColor blackColor];
     app.reSelectMenu.textAlignment = NSTextAlignmentLeft;
     app.reSelectMenu.textShadowColor = nil;
@@ -4150,7 +4145,7 @@
         
         [actionSheet addButtonWithTitle: _metadata.fileNamePrint
                                   image: iconHeader
-                        backgroundColor: COLOR_NAVBAR_IOS7
+                        backgroundColor: COLOR_NAVIGATIONBAR
                                  height: 50.0
                                    type: AHKActionSheetButtonTypeDisabled
                                 handler: nil
@@ -4318,7 +4313,7 @@
         
         [actionSheet addButtonWithTitle: _metadata.fileNamePrint
                                   image: iconHeader
-                        backgroundColor: COLOR_NAVBAR_IOS7
+                        backgroundColor: COLOR_NAVIGATIONBAR
                                  height: 50.0
                                    type: AHKActionSheetButtonTypeDisabled
                                 handler: nil
@@ -4461,7 +4456,7 @@
      
         [actionSheet addButtonWithTitle: _metadata.fileNamePrint
                                   image: iconHeader
-                        backgroundColor: COLOR_NAVBAR_IOS7
+                        backgroundColor: COLOR_NAVIGATIONBAR
                                  height: 50.0
                                    type: AHKActionSheetButtonTypeDisabled
                                 handler: nil

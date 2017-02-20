@@ -261,14 +261,19 @@ extern NSString *const BKPasscodeKeychainServiceName;
 // COLOR
 // -----------------------------------------------------------------------------------------------------------
 
-// NEXTCLOUD COLOR
+// NEXTCLOUD COLOR [DEFAULT]
 #ifdef NC
+
 #define COLOR_BRAND               [UIColor colorWithRed:0.0/255.0 green:130.0/255.0 blue:201.0/255.0 alpha:1.0]
 #define COLOR_BRAND_MESSAGE       [UIColor colorWithRed:0.0/255.0 green:130.0/255.0 blue:201.0/255.0 alpha:0.90]
 #define COLOR_SELECT_BACKGROUND   [UIColor colorWithRed:0.0/255.0 green:130.0/255.0 blue:201.0/255.0 alpha:0.1]
 #define COLOR_TRANSFER_BACKGROUND [UIColor colorWithRed:178.0/255.0 green:244.0/255.0 blue:258.0/255.0 alpha:0.1]       // Blu chiarissimo
 #define COLOR_GROUPBY_BAR         [UIColor colorWithRed:0.0/255.0 green:130.0/255.0 blue:201.0/255.0 alpha:0.2]
 #define COLOR_GROUPBY_BAR_NO_BLUR [UIColor colorWithRed:0.0/255.0 green:130.0/255.0 blue:201.0/255.0 alpha:0.3]
+
+#define COLOR_BRAND_NAVIGATIONBAR [UIColor greenColor]; //[UIColor colorWithRed:(0.0/255.0) green:(130.0/255.0) blue:(201/255.0) alpha:1.0]
+#define COLOR_BRAND_NAVIGATIONBAR_TEXT [UIColor whiteColor]
+
 #endif
 
 // GENERAL COLOR
@@ -278,10 +283,11 @@ extern NSString *const BKPasscodeKeychainServiceName;
 #define COLOR_ENCRYPTED [UIColor colorWithRed:241.0/255.0 green:90.0/255.0 blue:34.0/255.0 alpha:1.0]                   // #F15A22 - A 1.0
 #define COLOR_GRAY [UIColor colorWithRed:65.0/255.0 green:64.0/255.0 blue:66.0/255.0 alpha:1.0]                         // #414042 - A 1.0
 #define COLOR_CLEAR [UIColor colorWithRed:65.0/255.0 green:64.0/255.0 blue:66.0/255.0 alpha:1.0]
-#define COLOR_BAR [UIColor colorWithRed:(248.0f/255.0f) green:(248.0f/255.0f) blue:(248.0f/255.0f) alpha:1.0]
-#define COLOR_SEPARATOR_TABLE [UIColor colorWithRed:246.0/255.0 green:246.0/255.0 blue:246.0/255.0 alpha:1]             // Grigio chiaro
+#define COLOR_NAVIGATIONBAR [UIColor colorWithRed:(247.0f/255.0f) green:(247.0f/255.0f) blue:(247.0f/255.0f) alpha:1.0]
+#define COLOR_NAVIGATIONBAR_TEXT [UIColor blackColor]
+#define COLOR_TABBAR [UIColor colorWithRed:(247.0f/255.0f) green:(247.0f/255.0f) blue:(247.0f/255.0f) alpha:1.0]
+#define COLOR_SEPARATOR_TABLE [UIColor colorWithRed:247.0/255.0 green:247.0/255.0 blue:247.0/255.0 alpha:1]             // iOS 7
 #define COLOR_NO_CONNECTION [UIColor colorWithRed:204.0/255.0 green:204.0/255.0 blue:204.0/255.0 alpha:1.0]
-#define COLOR_NAVBAR_IOS7 [UIColor colorWithRed:247.0/255.0 green:247.0/255.0 blue:247.0/255.0 alpha:1.0]
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -289,7 +295,7 @@ extern NSString *const BKPasscodeKeychainServiceName;
 
 @interface CCAspect : NSObject
 
-+ (void)aspectNavigationControllerBar:(UINavigationBar *)nav hidden:(BOOL)hidden;
++ (void)aspectNavigationControllerBar:(UINavigationBar *)nav encrypted:(BOOL)encrypted online:(BOOL)online hidden:(BOOL)hidden;
 + (void)aspectTabBar:(UITabBar *)tab hidden:(BOOL)hidden;
 
 @end

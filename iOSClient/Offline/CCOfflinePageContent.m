@@ -65,7 +65,7 @@
         _serverUrl = [CCUtility getDirectoryLocal];
     }
     
-    // Title
+    // Title & color
     self.title = _titleViewControl;
 }
 
@@ -75,7 +75,7 @@
     [super viewWillAppear:animated];
     
     // Color
-    [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar hidden:NO];
+    [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
     [CCAspect aspectTabBar:self.tabBarController.tabBar hidden:NO];
     
     // Plus Button

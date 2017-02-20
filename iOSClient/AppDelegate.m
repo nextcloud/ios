@@ -168,7 +168,7 @@
     UIPageControl *pageControl = [UIPageControl appearance];
     pageControl.pageIndicatorTintColor = [UIColor whiteColor];
     pageControl.currentPageIndicatorTintColor = COLOR_NEXTCLOUD;
-    pageControl.backgroundColor = COLOR_NAVBAR_IOS7; //[UIColor clearColor];
+    pageControl.backgroundColor = COLOR_NAVIGATIONBAR;
     
     // remove tmp & cache
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
