@@ -348,16 +348,13 @@
     // 0.5 sec.
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         
-        //
         NSLog(@"[LOG] Request Server Information");
-        //
+    
         if (_activeMain)
             [_activeMain requestServerInformation];
-        
-    });
     
-    // 1 sec.
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1.0 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        NSLog(@"[LOG] Initialize Camera Upload");
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"initStateCameraUpload" object:nil];
         
         NSLog(@"[LOG] read file Offline");
         [[CCOfflineFileFolder sharedOfflineFileFolder] readFileOffline];
@@ -365,13 +362,6 @@
         NSLog(@"[LOG] read folder offline");
         [[CCOfflineFileFolder sharedOfflineFileFolder] readFolderOffline];
         
-    });
-    
-    // 1.5 sec.
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        
-        NSLog(@"[LOG] Initialize Camera Upload");
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"initStateCameraUpload" object:nil];
     });
     
     // Initialize Camera Upload

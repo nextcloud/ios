@@ -35,7 +35,7 @@
     NSMutableArray *_queueMetadatas;
     NSMutableArray *_selectedMetadatas;
     NSUInteger _numSelectedMetadatas;
-    BOOL _AutomaticCameraUploadInProgress;      // START/STOP new request : initStateCameraUpload
+    //BOOL _AutomaticCameraUploadInProgress;      // START/STOP new request : initStateCameraUpload
     
     CCSectionDataSource *_sectionDataSource;
     
@@ -754,8 +754,8 @@
 
 - (void)initStateCameraUpload
 {
-    if (_AutomaticCameraUploadInProgress)
-        return;
+    //if (_AutomaticCameraUploadInProgress)
+    //    return;
     
     if([CCCoreData getCameraUploadActiveAccount:app.activeAccount]) {
         
@@ -1061,23 +1061,8 @@
         return;
     
     // STOP new request : initStateCameraUpload
-    _AutomaticCameraUploadInProgress = YES;
+    //_AutomaticCameraUploadInProgress = YES;
     
-    NSString *folderPhotos = [CCCoreData getCameraUploadFolderNamePathActiveAccount:app.activeAccount activeUrl:app.activeUrl];
-    
-    // verify/create folder Camera Upload, if error exit
-    if(![self createFolder:folderPhotos]) {
-        
-        // Full Upload ?
-        if (assetsFull)
-            [app messageNotification:@"_error_" description:NSLocalizedStringFromTable(@"_not_possible_create_folder_", @"Error", nil) visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo];
-        
-        // START new request : initStateCameraUpload
-        _AutomaticCameraUploadInProgress = NO;
-        
-        return;
-    }
-
     // Disable idle timer
     [[UIApplication sharedApplication] setIdleTimerDisabled: YES];
         
@@ -1122,8 +1107,21 @@
         PHAsset *asset = [fetchResult firstObject];
         [newItemsPHAssetToUpload addObject:asset];
     }
+    
+    // verify/create folder Camera Upload, if error exit
+    if(![self createFolder:folderPhotos]) {
         
-    // Use subfolders
+        // Full Upload ?
+        if (assetsFull)
+            [app messageNotification:@"_error_" description:NSLocalizedStringFromTable(@"_not_possible_create_folder_", @"Error", nil) visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo];
+        
+        // START new request : initStateCameraUpload
+        //_AutomaticCameraUploadInProgress = NO;
+        
+        return;
+    }
+    
+    // Use subfolders verify/create subfolder, if error exit
     if (createSubfolders) {
         
         for (NSString *dateSubFolder in [CCUtility createNameSubFolder:newItemsPHAssetToUpload]) {
@@ -1232,13 +1230,10 @@
     [_hud hideHud];
     
     // START new request : initStateCameraUpload
-    _AutomaticCameraUploadInProgress = NO;
+    //_AutomaticCameraUploadInProgress = NO;
     
     // Enable idle timer
     [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
-
-    // START new request : initStateCameraUpload
-    _AutomaticCameraUploadInProgress = NO;
 }
 
 @end
