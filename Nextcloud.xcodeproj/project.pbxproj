@@ -727,7 +727,6 @@
 		F70211FB1BAC56E9003FC03E /* CCMain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCMain.m; sourceTree = "<group>"; };
 		F7053E3C1C639DF500741EA5 /* CCUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCUtility.h; sourceTree = "<group>"; };
 		F7053E3D1C639DF500741EA5 /* CCUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCUtility.m; sourceTree = "<group>"; };
-		F708CF181E56E6A900271D8B /* PickerFileProvider-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "PickerFileProvider-Bridging-Header.h"; sourceTree = "<group>"; };
 		F708CF4D1E56E8CB00271D8B /* TableMetadata+CoreDataClass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableMetadata+CoreDataClass.h"; sourceTree = "<group>"; };
 		F708CF4E1E56E8CB00271D8B /* TableMetadata+CoreDataClass.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableMetadata+CoreDataClass.m"; sourceTree = "<group>"; };
 		F708CF4F1E56E8CB00271D8B /* TableMetadata+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableMetadata+CoreDataProperties.h"; sourceTree = "<group>"; };
@@ -1574,6 +1573,7 @@
 		F7F06E7B1DBFACC600099AE9 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/CTAssetsPicker.strings; sourceTree = "<group>"; };
 		F7F06E801DBFACC600099AE9 /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/CTAssetsPicker.strings; sourceTree = "<group>"; };
 		F7F06E841DBFACC600099AE9 /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/CTAssetsPicker.strings; sourceTree = "<group>"; };
+		F7F54CAB1E5AFF1E00E19C62 /* PickerFileProvider-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "PickerFileProvider-Bridging-Header.h"; sourceTree = "<group>"; };
 		F7F67BAD1A24D27800EE80DA /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		F7F67BB81A24D27800EE80DA /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		F7F6AC4C1E525AD300E8EB45 /* CCManageCryptoCloud.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCManageCryptoCloud.h; sourceTree = "<group>"; };
@@ -2602,6 +2602,7 @@
 		F74344211E1264EE001CC831 /* PickerFileProvider */ = {
 			isa = PBXGroup;
 			children = (
+				F7F54CAB1E5AFF1E00E19C62 /* PickerFileProvider-Bridging-Header.h */,
 				F74344241E1264EE001CC831 /* FileProvider.swift */,
 				F74344221E1264EE001CC831 /* Supporting Files */,
 			);
@@ -3158,7 +3159,6 @@
 				F74344211E1264EE001CC831 /* PickerFileProvider */,
 				F7FC7D651DC1F98700BB2C6A /* Products */,
 				F7FC7D541DC1F93700BB2C6A /* Frameworks */,
-				F708CF181E56E6A900271D8B /* PickerFileProvider-Bridging-Header.h */,
 			);
 			sourceTree = "<group>";
 		};
