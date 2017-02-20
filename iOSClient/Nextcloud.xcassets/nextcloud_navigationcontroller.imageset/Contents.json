@@ -2,8 +2,8 @@
   "images" : [
     {
       "idiom" : "universal",
-      "scale" : "1x",
-      "filename" : "nextcloud_navigationcontroller.png"
+      "filename" : "nextcloud_navigationcontroller.png",
+      "scale" : "1x"
     },
     {
       "idiom" : "universal",
@@ -12,8 +12,8 @@
     },
     {
       "idiom" : "universal",
-      "scale" : "3x",
-      "filename" : "nextcloud_navigationcontroller@3x.png"
+      "filename" : "nextcloud_navigationcontroller@3x copia.png",
+      "scale" : "3x"
     }
   ],
   "info" : {

@@ -1089,13 +1089,8 @@
 - (void)addNetworkingOperationQueue:(NSOperationQueue *)netQueue delegate:(id)delegate metadataNet:(CCMetadataNet *)metadataNet
 {
     id operation;
-    BOOL activityIndicator = NO;
     
-    // Activity Indicator
-    if (netQueue == _netQueue)
-        activityIndicator = YES;
-    
-    operation = [[OCnetworking alloc] initWithDelegate:delegate metadataNet:metadataNet withUser:_activeUser withPassword:_activePassword withUrl:_activeUrl activityIndicator:activityIndicator isCryptoCloudMode:_isCryptoCloudMode];
+    operation = [[OCnetworking alloc] initWithDelegate:delegate metadataNet:metadataNet withUser:_activeUser withPassword:_activePassword withUrl:_activeUrl isCryptoCloudMode:_isCryptoCloudMode];
     
     [operation setQueuePriority:metadataNet.priority];
     

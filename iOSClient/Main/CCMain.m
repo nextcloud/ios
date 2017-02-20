@@ -177,7 +177,7 @@
     }
 
     // Title
-    [self setTitleNOAnimation];
+    [self setTitle];
         
     // List Transfers
     app.controlCenter = (CCControlCenter *)self.navigationController;
@@ -460,20 +460,6 @@
     [_ImageTitleHomeCryptoCloud setUserInteractionEnabled:NO];
 }
 
-- (void)setTitleNOAnimation
-{
-    app.isTitleBrandAnimated = NO;
-
-    [self setTitle];
-}
-
-- (void)setTitleYESAnimation
-{
-    app.isTitleBrandAnimated = YES;
-    
-    [self setTitle];
-}
-
 - (void)setTitle
 {
     // PopGesture in progress [swipe gesture to switch between views]
@@ -498,21 +484,8 @@
             
             self.navigationItem.title = nil;
             
-            if (app.isTitleBrandAnimated) {
-                
-                NSArray *animationArray = [NSArray arrayWithObjects:[UIImage imageNamed:image_brandNavigationController1],[UIImage imageNamed:image_brandNavigationController2],[UIImage imageNamed:image_brandNavigationController3],[UIImage imageNamed:image_brandNavigationController2],nil];
-
-                _ImageTitleHomeCryptoCloud.animationImages = animationArray;
-                _ImageTitleHomeCryptoCloud.animationDuration = 0.9;
-                _ImageTitleHomeCryptoCloud.animationRepeatCount = -1;
-                
-                [_ImageTitleHomeCryptoCloud startAnimating];
-                
-            } else {
-                
-                if ([app.reachability isReachable] == NO) _ImageTitleHomeCryptoCloud = [[UIImageView alloc] initWithImage:[UIImage imageNamed:image_brandNavigationControllerOffline]];
-                else _ImageTitleHomeCryptoCloud = [[UIImageView alloc] initWithImage:[UIImage imageNamed:image_brandNavigationController]];
-            }
+            if ([app.reachability isReachable] == NO) _ImageTitleHomeCryptoCloud = [[UIImageView alloc] initWithImage:[UIImage imageNamed:image_brandNavigationControllerOffline]];
+            else _ImageTitleHomeCryptoCloud = [[UIImageView alloc] initWithImage:[UIImage imageNamed:image_brandNavigationController]];
             
             [_ImageTitleHomeCryptoCloud setUserInteractionEnabled:YES];
             UITapGestureRecognizer *singleTap =  [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(menuChangeUser)];
@@ -4782,7 +4755,7 @@
     else
         [self setUINavigationBarDefault];
     
-    [self setTitleNOAnimation];
+    [self setTitle];
 }
 
 - (void)tableViewReload
@@ -4797,7 +4770,7 @@
     [self setTableViewFooter];
     
     if (self.tableView.editing)
-        [self setTitleNOAnimation];
+        [self setTitle];
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -5369,7 +5342,7 @@
     // se siamo in modalità editing impostiamo il titolo dei selezioati e usciamo subito
     if (self.tableView.editing) {
         
-        [self setTitleNOAnimation];
+        [self setTitle];
         return;
     }
     
@@ -5473,7 +5446,7 @@
 
 - (void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(nonnull NSIndexPath *)indexPath
 {
-    [self setTitleNOAnimation];
+    [self setTitle];
 }
 
 #pragma --------------------------------------------------------------------------------------------

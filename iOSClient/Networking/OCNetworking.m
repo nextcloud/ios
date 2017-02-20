@@ -40,14 +40,13 @@
     NSURLSessionUploadTask *_uploadTask;
     
     BOOL _isCryptoCloudMode;
-    BOOL _activityIndicator;
     BOOL _hasServerForbiddenCharactersSupport;
 }
 @end
 
 @implementation OCnetworking
 
-- (id)initWithDelegate:(id <OCNetworkingDelegate>)delegate metadataNet:(CCMetadataNet *)metadataNet withUser:(NSString *)withUser withPassword:(NSString *)withPassword withUrl:(NSString *)withUrl activityIndicator:(BOOL)activityIndicator isCryptoCloudMode:(BOOL)isCryptoCloudMode
+- (id)initWithDelegate:(id <OCNetworkingDelegate>)delegate metadataNet:(CCMetadataNet *)metadataNet withUser:(NSString *)withUser withPassword:(NSString *)withPassword withUrl:(NSString *)withUrl isCryptoCloudMode:(BOOL)isCryptoCloudMode
 {
     self = [super init];
     
@@ -63,7 +62,6 @@
         _activeUrl = withUrl;
         
         _isCryptoCloudMode = isCryptoCloudMode;
-        _activityIndicator = activityIndicator;
     }
     
     return self;
@@ -121,14 +119,6 @@
 - (void)poolNetworking
 {
 #ifndef EXTENSION
-    // Animation network
-    if (_activityIndicator) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"setTitleCCMainYESAnimation" object:nil];
-        });
-    }
-    
     _hasServerForbiddenCharactersSupport = app.hasServerForbiddenCharactersSupport;
 #else
     _hasServerForbiddenCharactersSupport = YES;
@@ -143,17 +133,7 @@
 #pragma --------------------------------------------------------------------------------------------
 
 - (void)complete
-{
-#ifndef EXTENSION
-    // Animation network
-    if (_activityIndicator) {
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-            [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"setTitleCCMainNOAnimation" object:nil];
-        });
-    }
-#endif
-    
+{    
     [self finish];
 }
 

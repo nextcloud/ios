@@ -228,7 +228,7 @@
 
 - (void)addNetworkingQueue:(CCMetadataNet *)metadataNet
 {
-    OCnetworking *operation = [[OCnetworking alloc] initWithDelegate:self metadataNet:metadataNet withUser:activeUser withPassword:activePassword withUrl:activeUrl activityIndicator:NO isCryptoCloudMode:_isCryptoCloudMode];
+    OCnetworking *operation = [[OCnetworking alloc] initWithDelegate:self metadataNet:metadataNet withUser:activeUser withPassword:activePassword withUrl:activeUrl isCryptoCloudMode:_isCryptoCloudMode];
         
     _networkingOperationQueue.maxConcurrentOperationCount = k_maxConcurrentOperation;
     [_networkingOperationQueue addOperation:operation];

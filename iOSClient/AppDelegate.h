@@ -141,9 +141,6 @@
 // check isDeviceJailbroken
 @property BOOL isDeviceJailbroken;
 
-// Animated title _brand_
-@property BOOL isTitleBrandAnimated;
-
 // Is in Crypto Mode
 @property BOOL isCryptoCloudMode;
 
