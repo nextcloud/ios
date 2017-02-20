@@ -657,7 +657,7 @@
             backgroundColor = [UIColor colorWithRed:0.588 green:0.797 blue:0.000 alpha:0.90];
             break;
         case TWMessageBarMessageTypeInfo:
-            backgroundColor = COLOR_BRAND;
+            backgroundColor = COLOR_BACKGROUND_MESSAGE_INFO;
             break;
         default:
             break;

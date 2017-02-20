@@ -99,7 +99,7 @@
     
     _noRecord =[[UILabel alloc]init];
     _noRecord.backgroundColor=[UIColor clearColor];
-    _noRecord.textColor = COLOR_BRAND;
+    _noRecord.textColor = COLOR_CONTROL_CENTER;
     _noRecord.font = [UIFont systemFontOfSize:SIZE_FONT_NORECORD];
     _noRecord.textAlignment = NSTextAlignmentCenter;
     _noRecord.text = NSLocalizedString(@"_no_transfer_",nil);
@@ -130,7 +130,7 @@
     
     _endLine = [[UIView alloc] init];
     [_endLine setFrame:CGRectMake(0, 0, self.navigationBar.frame.size.width, 0)];
-    _endLine.backgroundColor = COLOR_BRAND;
+    _endLine.backgroundColor = COLOR_CONTROL_CENTER;
 
     [_mainView addSubview:_endLine];
     

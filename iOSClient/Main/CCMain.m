@@ -29,6 +29,7 @@
 #import <OCCommunicationLib/OCNotifications.h>
 #import <OCCommunicationLib/OCNotificationsAction.h>
 #import <OCCommunicationLib/OCFrameworkConstants.h>
+#import "CTAssetCheckmark.h"
 
 #import "Nextcloud-Swift.h"
 
@@ -439,7 +440,7 @@
 - (void)createRefreshControl
 {
     _refreshControl = [UIRefreshControl new];
-    _refreshControl.tintColor = COLOR_BRAND;
+    _refreshControl.tintColor = COLOR_REFRESH_CONTROL;
     [_refreshControl addTarget:self action:@selector(refreshControlTarget) forControlEvents:UIControlEventValueChanged];
     [self setRefreshControl:_refreshControl];
 }
@@ -688,11 +689,12 @@
 
 - (void)openAssetsPickerController
 {
-    CTAssetSelectionLabel *assetSelectionLabel = [CTAssetSelectionLabel appearance];
-    assetSelectionLabel.borderWidth = 1.0;
-    assetSelectionLabel.borderColor = COLOR_BRAND;
-    [assetSelectionLabel setMargin:2.0];
-    [assetSelectionLabel setTextAttributes:@{NSFontAttributeName : [UIFont systemFontOfSize:12.0], NSForegroundColorAttributeName : [UIColor whiteColor], NSBackgroundColorAttributeName : COLOR_BRAND}];
+    CTAssetCheckmark *checkmark = [CTAssetCheckmark appearance];
+    checkmark.tintColor = COLOR_BRAND;
+    [checkmark setMargin:0.0 forVerticalEdge:NSLayoutAttributeRight horizontalEdge:NSLayoutAttributeTop];
+    
+    UINavigationBar *navBar = [UINavigationBar appearanceWhenContainedIn:[CTAssetsPickerController class], nil];
+    [CCAspect aspectNavigationControllerBar:navBar encrypted:NO online:YES hidden:NO];
     
     [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status){
         dispatch_async(dispatch_get_main_queue(), ^{
