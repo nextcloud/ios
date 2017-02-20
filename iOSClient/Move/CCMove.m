@@ -107,8 +107,8 @@
     }
     
     // Toolbar Color
-    self.navigationController.navigationBar.barTintColor = self.barTintColor;
-    self.navigationController.navigationBar.tintColor = self.tintColor;
+    self.navigationController.navigationBar.barTintColor = COLOR_NAVIGATIONBAR;
+    self.navigationController.navigationBar.tintColor = COLOR_NAVIGATIONBAR_TEXT;
     
     self.navigationController.toolbar.barTintColor = COLOR_TABBAR;
     self.navigationController.toolbar.tintColor = COLOR_TABBAR_TEXT;

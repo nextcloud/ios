@@ -280,9 +280,9 @@ extern NSString *const BKPasscodeKeychainServiceName;
 #define COLOR_TABBAR                    [UIColor colorWithRed:247.0/255.0 green:247.0/255.0 blue:247.0/255.0 alpha:1]
 #define COLOR_TABBAR_TEXT               [UIColor colorWithRed:0.0/255.0 green:130.0/255.0 blue:201.0/255.0 alpha:1.0]
 
-#define COLOR_BACKGROUND_MENU           [UIColor colorWithRed:(247.0f/255.0f) green:(247.0f/255.0f) blue:(247.0f/255.0f) alpha:1.0]
+#define COLOR_BACKGROUND_MENU           [UIColor whiteColor]
 
-#define COLOR_BACKGROUND_PAGECONTROL    [UIColor colorWithRed:(247.0f/255.0f) green:(247.0f/255.0f) blue:(247.0f/255.0f) alpha:1.0]
+#define COLOR_BACKGROUND_PAGECONTROL    [UIColor colorWithRed:247.0/255.0 green:247.0/255.0 blue:247.0/255.0 alpha:1.0]
 #define COLOR_PAGECONTROL_INDICATOR     [UIColor colorWithRed:0.0/255.0 green:130.0/255.0 blue:201.0/255.0 alpha:1.0]
 
 #define COLOR_CRYPTOCLOUD               [UIColor colorWithRed:241.0/255.0 green:90.0/255.0 blue:34.0/255.0 alpha:1.0]
@@ -291,7 +291,7 @@ extern NSString *const BKPasscodeKeychainServiceName;
 
 #define COLOR_TEXT_NO_CONNECTION        [UIColor colorWithRed:204.0/255.0 green:204.0/255.0 blue:204.0/255.0 alpha:1.0]
 
-#define COLOR_SEPARATOR_TABLE           [UIColor colorWithRed:247.0/255.0 green:247.0/255.0 blue:247.0/255.0 alpha:1]                   // iOS 7
+#define COLOR_SEPARATOR_TABLE           [UIColor colorWithRed:247.0/255.0 green:247.0/255.0 blue:247.0/255.0 alpha:1.0]                 // iOS 7
 
 #define COLOR_BACKGROUND_MESSAGE_INFO   [UIColor colorWithRed:0.0/255.0 green:130.0/255.0 blue:201.0/255.0 alpha:1.0]
 #define COLOR_CONTROL_CENTER            [UIColor colorWithRed:0.0/255.0 green:130.0/255.0 blue:201.0/255.0 alpha:1.0]
