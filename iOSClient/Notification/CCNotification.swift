@@ -33,9 +33,13 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
         super.viewDidLoad()
         
         self.navigationController?.navigationBar.topItem?.title = NSLocalizedString("_notification_", comment: "")
+        self.navigationController?.navigationBar.barTintColor = CCConstant.GlobalConstants.k_Color_NavigationBar
+        self.navigationController?.navigationBar.tintColor = CCConstant.GlobalConstants.k_Color_NavigationBar_Text
+        self.navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: CCConstant.GlobalConstants.k_Color_NavigationBar_Text]
+
         self.navigationItem.setRightBarButton(UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(viewClose)), animated: true)
         
-        self.tableView.separatorColor = UIColor(colorLiteralRed: 153.0/255.0, green: 153.0/255.0, blue: 153.0/255.0, alpha: 0.2)
+        self.tableView.separatorColor = CCConstant.GlobalConstants.k_Color_Seperator
         self.tableView.tableFooterView = UIView()
 
         // Register to receive notification reload data

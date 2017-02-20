@@ -110,8 +110,8 @@
     self.navigationController.navigationBar.barTintColor = self.barTintColor;
     self.navigationController.navigationBar.tintColor = self.tintColor;
     
-    self.navigationController.toolbar.barTintColor = self.barTintColor;
-    self.navigationController.toolbar.tintColor = self.tintColor;
+    self.navigationController.toolbar.barTintColor = COLOR_TABBAR;
+    self.navigationController.toolbar.tintColor = COLOR_TABBAR_TEXT;
     
     // read folder
     [self readFolder];

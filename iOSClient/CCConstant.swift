@@ -35,6 +35,11 @@ class CCConstant: NSObject {
         
         static let k_Color_SelectBackgrond: UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 0.1)
         
+        static let k_Color_NavigationBar: UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)
+        
+        static let k_Color_NavigationBar_Text: UIColor = UIColor.white
+
+        
         // Response searchList
         
         static let kOrganizationFullName    = "FullName"
