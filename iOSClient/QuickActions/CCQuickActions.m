@@ -22,7 +22,7 @@
 //
 
 #import "CCQuickActions.h"
-
+#import "CTAssetCheckmark.h"
 #import "CCHud.h"
 #import "AppDelegate.h"
 #import "CCMain.h"
@@ -95,11 +95,12 @@
 
 - (void)openAssetsPickerController
 {
-    CTAssetSelectionLabel *assetSelectionLabel = [CTAssetSelectionLabel appearance];
-    assetSelectionLabel.borderWidth = 1.0;
-    assetSelectionLabel.borderColor = COLOR_BRAND;
-    [assetSelectionLabel setMargin:2.0];
-    [assetSelectionLabel setTextAttributes:@{NSFontAttributeName : [UIFont systemFontOfSize:12.0], NSForegroundColorAttributeName : [UIColor whiteColor], NSBackgroundColorAttributeName : COLOR_BRAND}];
+    CTAssetCheckmark *checkmark = [CTAssetCheckmark appearance];
+    checkmark.tintColor = COLOR_BRAND;
+    [checkmark setMargin:0.0 forVerticalEdge:NSLayoutAttributeRight horizontalEdge:NSLayoutAttributeTop];
+    
+    UINavigationBar *navBar = [UINavigationBar appearanceWhenContainedIn:[CTAssetsPickerController class], nil];
+    [CCAspect aspectNavigationControllerBar:navBar encrypted:NO online:YES hidden:NO];
     
     [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
         dispatch_async(dispatch_get_main_queue(), ^{

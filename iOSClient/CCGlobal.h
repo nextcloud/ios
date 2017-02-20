@@ -283,7 +283,7 @@ extern NSString *const BKPasscodeKeychainServiceName;
 #define COLOR_BACKGROUND_MENU           [UIColor colorWithRed:(247.0f/255.0f) green:(247.0f/255.0f) blue:(247.0f/255.0f) alpha:1.0]
 
 #define COLOR_BACKGROUND_PAGECONTROL    [UIColor colorWithRed:(247.0f/255.0f) green:(247.0f/255.0f) blue:(247.0f/255.0f) alpha:1.0]
-#define COLOR_PAGECONTROL_INDICATOR     [UIColor colorWithRed:(247.0f/255.0f) green:(247.0f/255.0f) blue:(247.0f/255.0f) alpha:1.0]
+#define COLOR_PAGECONTROL_INDICATOR     [UIColor colorWithRed:0.0/255.0 green:130.0/255.0 blue:201.0/255.0 alpha:1.0]
 
 #define COLOR_CRYPTOCLOUD               [UIColor colorWithRed:241.0/255.0 green:90.0/255.0 blue:34.0/255.0 alpha:1.0]
 
