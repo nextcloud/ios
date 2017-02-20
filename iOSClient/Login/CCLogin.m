@@ -73,6 +73,8 @@
     
     [self.annulla setTitle:NSLocalizedString(@"_cancel_", nil) forState:UIControlStateNormal];
     [self.login setTitle:NSLocalizedString(@"_login_", nil) forState:UIControlStateNormal];
+    
+    [self.baseUrl setKeyboardType:UIKeyboardTypeURL];
 }
 
 - (void)viewWillAppear:(BOOL)animated
