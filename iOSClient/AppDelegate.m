@@ -227,6 +227,7 @@
 
     navigationController.topViewController.navigationItem.leftBarButtonItem = splitViewController.displayModeButtonItem;
     splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeAllVisible;
+    [CCAspect aspectNavigationControllerBar:navigationController.navigationBar encrypted:NO online:YES hidden:NO];
     
     // Settings TabBar
     [self createTabBarController];
