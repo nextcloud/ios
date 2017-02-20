@@ -115,11 +115,11 @@
 {
     [super viewDidLoad];
     
-    // Color
-    [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
-    [CCAspect aspectTabBar:self.tabBarController.tabBar hidden:NO];
-    
     [self.view setTintColor:COLOR_BRAND];
+    self.view.backgroundColor = COLOR_NAVIGATIONBAR;
+    
+    [self.endButton setTitle:NSLocalizedString(@"_done_", nil) forState:UIControlStateNormal];
+    self.endButton.tintColor = COLOR_NAVIGATIONBAR_TEXT;
     
     [self reloadData];
     
@@ -127,8 +127,7 @@
     else self.fileImageView.image = [UIImage imageNamed:self.metadata.iconName];
     
     self.labelTitle.text = self.metadata.fileNamePrint;
-    [self.endButton setTitle:NSLocalizedString(@"_done_", nil) forState:UIControlStateNormal];
-    self.endButton.tintColor = [COLOR_BRAND colorWithAlphaComponent:0.8];
+    self.labelTitle.textColor = COLOR_NAVIGATIONBAR_TEXT;
     
     self.tableView.tableHeaderView = ({UIView *line = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 0.1 / UIScreen.mainScreen.scale)];
         line.backgroundColor = self.tableView.separatorColor;

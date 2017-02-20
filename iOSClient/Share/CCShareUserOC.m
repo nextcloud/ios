@@ -96,15 +96,11 @@
     
     self.selectedItems = [[NSMutableArray alloc] init];
     
-    // Color
-    [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
-    [CCAspect aspectTabBar:self.tabBarController.tabBar hidden:NO];
-    
-    // Done
-    [self.endButton setTitle:NSLocalizedString(@"_done_", nil) forState:UIControlStateNormal];
-    self.endButton.tintColor = [COLOR_BRAND colorWithAlphaComponent:0.8];
-    
     [self.view setTintColor:COLOR_BRAND];
+    self.view.backgroundColor = COLOR_NAVIGATIONBAR;
+    
+    [self.endButton setTitle:NSLocalizedString(@"_done_", nil) forState:UIControlStateNormal];
+    self.endButton.tintColor = COLOR_NAVIGATIONBAR_TEXT;
 }
 
 #pragma --------------------------------------------------------------------------------------------
