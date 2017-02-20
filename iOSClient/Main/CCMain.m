@@ -1567,7 +1567,7 @@
     // Create if request the folder for Photos
     if ((useSubFolder || [serverUrl isEqualToString:folderPhotos]) && [_serverUrl isEqualToString:serverUrl] == NO){
         
-        if(![app.activePhotosCameraUpload createFolder:folderPhotos]) {
+        if(![app.activePhotosCameraUpload automaticCreateFolder:folderPhotos]) {
             
             [_hud hideHud];
             
@@ -1582,7 +1582,7 @@
         
         for (NSString *dateSubFolder in [CCUtility createNameSubFolder:assets]) {
                 
-            if(![app.activePhotosCameraUpload createFolder:[NSString stringWithFormat:@"%@/%@", folderPhotos, dateSubFolder]]) {
+            if(![app.activePhotosCameraUpload automaticCreateFolder:[NSString stringWithFormat:@"%@/%@", folderPhotos, dateSubFolder]]) {
                 
                 [_hud hideHud];
                 

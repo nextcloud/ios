@@ -1109,7 +1109,7 @@
     }
     
     // verify/create folder Camera Upload, if error exit
-    if(![self createFolder:folderPhotos]) {
+    if(![self automaticCreateFolder:folderPhotos]) {
         
         // Full Upload ?
         if (assetsFull)
@@ -1126,7 +1126,7 @@
         
         for (NSString *dateSubFolder in [CCUtility createNameSubFolder:newItemsPHAssetToUpload]) {
             
-            if (![self createFolder:[NSString stringWithFormat:@"%@/%@", folderPhotos, dateSubFolder]]) {
+            if (![self automaticCreateFolder:[NSString stringWithFormat:@"%@/%@", folderPhotos, dateSubFolder]]) {
                 
                 [self endLoadingAssets];
                 
@@ -1204,25 +1204,45 @@
     [app updateApplicationIconBadgeNumber];
 }
 
-- (BOOL)createFolder:(NSString *)folderPathName
+- (BOOL)automaticCreateFolder:(NSString *)folderPathName
 {
-    OCnetworking *ocNet;
-    NSError *error;
+    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+    __block BOOL noError = YES;
         
-    ocNet = [[OCnetworking alloc] initWithDelegate:self metadataNet:nil withUser:app.activeUser withPassword:app.activePassword withUrl:app.activeUrl activityIndicator:NO isCryptoCloudMode:app.isCryptoCloudMode];
+    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+        
+    [communication setCredentialsWithUser:app.activeUser andPassword:app.activePassword];
+    [communication setUserAgent:[CCUtility getUserAgent]];
+        
+    [communication readFile:folderPathName onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer) {
+            
+        dispatch_semaphore_signal(semaphore);
+            
+    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+        
+        [communication createFolder:folderPathName onCommunication:communication withForbiddenCharactersSupported:app.hasServerForbiddenCharactersSupport successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+            
+            [CCCoreData clearDateReadDirectory:[CCUtility deletingLastPathComponentFromServerUrl:folderPathName] activeAccount:app.activeAccount];
+            
+            dispatch_semaphore_signal(semaphore);
+            
+        } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+            
+            noError = NO;
+            
+            dispatch_semaphore_signal(semaphore);
+            
+        } errorBeforeRequest:^(NSError *error) {
+            
+            noError = NO;
+            dispatch_semaphore_signal(semaphore);
+        }];
+    }];
+        
+    while (dispatch_semaphore_wait(semaphore, DISPATCH_TIME_NOW))
+        [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:k_timeout_webdav]];
     
-    error = [ocNet readFileSync:folderPathName];
-    if(!error)
-        return YES;
-        
-    error = [ocNet createFolderSync:folderPathName];
-    if (!error) {
-        
-        [CCCoreData clearDateReadDirectory:[CCUtility deletingLastPathComponentFromServerUrl:folderPathName] activeAccount:app.activeAccount];
-        return YES;
-    }
-    
-    return NO;
+    return noError;
 }
 
 -(void)endLoadingAssets

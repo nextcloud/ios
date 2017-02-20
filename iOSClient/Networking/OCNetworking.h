@@ -43,7 +43,6 @@
 @property (nonatomic, assign) BOOL isExecuting;
 @property (nonatomic, assign) BOOL isFinished;
 
-- (NSError *)createFolderSync:(NSString *)folderPathName;
 - (NSError *)readFileSync:(NSString *)filePathName;
 - (NSError *)checkServerSync:(NSString *)serverUrl;
 
