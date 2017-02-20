@@ -39,15 +39,15 @@ NSString *const BKPasscodeKeychainServiceName = @"Crypto Cloud";
 + (void)aspectNavigationControllerBar:(UINavigationBar *)nav encrypted:(BOOL)encrypted online:(BOOL)online hidden:(BOOL)hidden
 {
     nav.translucent = NO;
-    nav.barTintColor = COLOR_BRAND_NAVIGATIONBAR;
-    nav.tintColor = COLOR_BRAND_NAVIGATIONBAR_TEXT;
-    [nav setTitleTextAttributes:@{NSForegroundColorAttributeName : COLOR_BRAND_NAVIGATIONBAR_TEXT}];
+    nav.barTintColor = COLOR_NAVIGATIONBAR;
+    nav.tintColor = COLOR_NAVIGATIONBAR_TEXT;
+    [nav setTitleTextAttributes:@{NSForegroundColorAttributeName : COLOR_NAVIGATIONBAR_TEXT}];
 
     if (encrypted)
-        [nav setTitleTextAttributes:@{NSForegroundColorAttributeName : COLOR_ENCRYPTED}];
+        [nav setTitleTextAttributes:@{NSForegroundColorAttributeName : COLOR_CRYPTOCLOUD}];
     
     if (!online)
-        [nav setTitleTextAttributes:@{NSForegroundColorAttributeName : COLOR_GRAY}];
+        [nav setTitleTextAttributes:@{NSForegroundColorAttributeName : COLOR_TEXT_NO_CONNECTION}];
 
     nav.hidden = hidden;
     
@@ -58,7 +58,7 @@ NSString *const BKPasscodeKeychainServiceName = @"Crypto Cloud";
 {    
     tab.translucent = NO;
     tab.barTintColor = COLOR_TABBAR;
-    tab.tintColor = COLOR_BRAND;
+    tab.tintColor = COLOR_TABBAR_TEXT;
     
     tab.hidden = hidden;
     

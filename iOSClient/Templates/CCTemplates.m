@@ -33,7 +33,7 @@
 {
     UILabel* label=[[UILabel alloc] initWithFrame:CGRectMake(0,0, navItem.titleView.frame.size.width, 40)];
     label.text=titolo;
-    if (!reachability) label.textColor = COLOR_NO_CONNECTION;
+    if (!reachability) label.textColor = COLOR_TEXT_NO_CONNECTION;
     else label.textColor = [UIColor blackColor];
     label.backgroundColor =[UIColor clearColor];
     label.textAlignment = NSTextAlignmentCenter;

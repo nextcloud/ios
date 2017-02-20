@@ -98,7 +98,7 @@
         UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(0,0, self.navigationItem.titleView.frame.size.width, 40)];
         label.text = self.passMetadata.fileNamePrint;
         
-        if (self.passMetadata.cryptated) label.textColor = COLOR_ENCRYPTED;
+        if (self.passMetadata.cryptated) label.textColor = COLOR_CRYPTOCLOUD;
         else label.textColor = self.tintColorTitle;
         
         label.backgroundColor =[UIColor clearColor];
@@ -422,9 +422,9 @@
     
     // colors
     if (metadata.cryptated) {
-        cell.textLabel.textColor = COLOR_ENCRYPTED;
+        cell.textLabel.textColor = COLOR_CRYPTOCLOUD;
     } else {
-        cell.textLabel.textColor = COLOR_CLEAR;
+        cell.textLabel.textColor = COLOR_TEXT_ANTHRACITE;
     }
     
     cell.detailTextLabel.text = @"";
@@ -485,7 +485,7 @@
             
             viewController.title = NSLocalizedString(@"_folder_blocked_", nil);
             viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
-            viewController.navigationItem.leftBarButtonItem.tintColor = COLOR_ENCRYPTED;
+            viewController.navigationItem.leftBarButtonItem.tintColor = COLOR_CRYPTOCLOUD;
             
             UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:viewController];
             [self presentViewController:navController animated:YES completion:nil];

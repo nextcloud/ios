@@ -67,7 +67,7 @@
         
         // Title
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"titolo" rowType:XLFormRowDescriptorTypeText];
-        [row.cellConfig setObject:COLOR_ENCRYPTED forKey:@"textField.textColor"];
+        [row.cellConfig setObject:COLOR_CRYPTOCLOUD forKey:@"textField.textColor"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textField.font"];
         row.value = [field objectForKey:@"titolo"];
@@ -79,7 +79,7 @@
         
         // Nome Banca
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"nomebanca" rowType:XLFormRowDescriptorTypeText title:NSLocalizedString(@"_bank_name:_", nil)];
-        [row.cellConfig setObject:COLOR_GRAY forKey:@"textField.textColor"];
+        [row.cellConfig setObject:COLOR_TEXT_ANTHRACITE forKey:@"textField.textColor"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textField.font"];
         row.value = [field objectForKey:@"nomebanca"];
@@ -87,7 +87,7 @@
         
         // Nome Conognome
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"nomecognome" rowType:XLFormRowDescriptorTypeText title:NSLocalizedString(@"_name_surname:_", nil)];
-        [row.cellConfig setObject:COLOR_GRAY forKey:@"textField.textColor"];
+        [row.cellConfig setObject:COLOR_TEXT_ANTHRACITE forKey:@"textField.textColor"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textField.font"];
         row.value = [field objectForKey:@"nomecognome"];
@@ -95,7 +95,7 @@
         
         // Numero Conto
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"numeroconto" rowType:XLFormRowDescriptorTypeText title:NSLocalizedString(@"_account_n:_", nil)];
-        [row.cellConfig setObject:COLOR_GRAY forKey:@"textField.textColor"];
+        [row.cellConfig setObject:COLOR_TEXT_ANTHRACITE forKey:@"textField.textColor"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textField.font"];
         row.value = [field objectForKey:@"numeroconto"];
@@ -103,7 +103,7 @@
 
         // IBAN
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"iban" rowType:XLFormRowDescriptorTypeText title:NSLocalizedString(@"_iban:_", nil)];
-        [row.cellConfig setObject:COLOR_GRAY forKey:@"textField.textColor"];
+        [row.cellConfig setObject:COLOR_TEXT_ANTHRACITE forKey:@"textField.textColor"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textField.font"];
         row.value = [field objectForKey:@"iban"];
@@ -111,7 +111,7 @@
         
         // SWIFT
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"swift" rowType:XLFormRowDescriptorTypeText title:NSLocalizedString(@"_swift:_", nil)];
-        [row.cellConfig setObject:COLOR_GRAY forKey:@"textField.textColor"];
+        [row.cellConfig setObject:COLOR_TEXT_ANTHRACITE forKey:@"textField.textColor"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textField.font"];
         row.value = [field objectForKey:@"swift"];
@@ -119,7 +119,7 @@
 
         // Filiale
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"filiale" rowType:XLFormRowDescriptorTypeText title:NSLocalizedString(@"_agency:_", nil)];
-        [row.cellConfig setObject:COLOR_GRAY forKey:@"textField.textColor"];
+        [row.cellConfig setObject:COLOR_TEXT_ANTHRACITE forKey:@"textField.textColor"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textField.font"];
         row.value = [field objectForKey:@"filiale"];
@@ -131,7 +131,7 @@
         // Note
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"note" rowType:XLFormRowDescriptorTypeTextView];
         row.value = [field objectForKey:@"note"];
-        [row.cellConfig setObject:COLOR_GRAY forKey:@"textView.textColor"];
+        [row.cellConfig setObject:COLOR_TEXT_ANTHRACITE forKey:@"textView.textColor"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textView.font"];
         [section addFormRow:row];
 

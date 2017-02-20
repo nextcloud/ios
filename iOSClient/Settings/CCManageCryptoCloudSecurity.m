@@ -55,7 +55,7 @@
         
         // mail
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"mail" rowType:XLFormRowDescriptorTypeEmail title:NSLocalizedString(@"_email_", nil)];
-        [row.cellConfig setObject:COLOR_GRAY forKey:@"textField.textColor"];
+        [row.cellConfig setObject:COLOR_TEXT_ANTHRACITE forKey:@"textField.textColor"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textField.font"];
         [section addFormRow:row];
@@ -66,7 +66,7 @@
         // Send aes-256 password via mail
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"sendmailencryptpass" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_encryptpass_by_email_", nil)];
         [row.cellConfig setObject:@(NSTextAlignmentCenter) forKey:@"textLabel.textAlignment"];
-        [row.cellConfig setObject:COLOR_ENCRYPTED forKey:@"textLabel.textColor"];
+        [row.cellConfig setObject:COLOR_CRYPTOCLOUD forKey:@"textLabel.textColor"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
         [row.cellConfig setObject:[UIImage imageNamed:image_settingsKeyMail] forKey:@"imageView.image"];
         row.action.formSelector = @selector(sendMailEncryptPass:);
@@ -78,7 +78,7 @@
         
         // hint
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"hint" rowType:XLFormRowDescriptorTypeText title:NSLocalizedString(@"_hint_", nil)];
-        [row.cellConfig setObject:COLOR_GRAY forKey:@"textField.textColor"];
+        [row.cellConfig setObject:COLOR_TEXT_ANTHRACITE forKey:@"textField.textColor"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textField.font"];
         row.value = [CCUtility getHint];

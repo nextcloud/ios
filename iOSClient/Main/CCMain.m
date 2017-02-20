@@ -555,7 +555,7 @@
         
         if ([app.reachability isReachable] == NO) {
             messageLabel.text = NSLocalizedString(@"_comm_erro_pull_down_", nil);
-            messageLabel.textColor = COLOR_NO_CONNECTION;
+            messageLabel.textColor = COLOR_TEXT_NO_CONNECTION;
             messageLabel.font = [UIFont systemFontOfSize:14];
         } else {
             messageLabel.text = NSLocalizedString(title ,nil);
@@ -595,7 +595,7 @@
     if ([app.listOfNotifications count] > 0) {
         
         buttonNotification = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:image_notification] style:UIBarButtonItemStylePlain target:self action:@selector(viewNotification)];
-        buttonNotification.tintColor = COLOR_BRAND;
+        buttonNotification.tintColor = COLOR_NAVIGATIONBAR_TEXT;
         buttonNotification.enabled = true;
     }
     
@@ -2230,9 +2230,9 @@
     viewController.delegate = self;
     viewController.move.title = NSLocalizedString(@"_move_", nil);
     viewController.selectedMetadatas = [self getMetadatasFromSelectedRows:indexPaths];
-    viewController.tintColor = COLOR_BRAND;
+    viewController.tintColor = COLOR_NAVIGATIONBAR_TEXT;
     viewController.barTintColor = COLOR_NAVIGATIONBAR;
-    viewController.tintColorTitle = COLOR_GRAY;
+    viewController.tintColorTitle = COLOR_NAVIGATIONBAR_TEXT;
     viewController.networkingOperationQueue = app.netQueue;
     
     [navigationController setModalPresentationStyle:UIModalPresentationFormSheet];
@@ -2547,8 +2547,8 @@
         
         CCControlCenterCell *cell = (CCControlCenterCell *)[self.tableView cellForRowAtIndexPath:indexPath];
         
-        if (cryptated) cell.progressView.progressTintColor = COLOR_ENCRYPTED;
-        else cell.progressView.progressTintColor = COLOR_CLEAR;
+        if (cryptated) cell.progressView.progressTintColor = COLOR_CRYPTOCLOUD;
+        else cell.progressView.progressTintColor = COLOR_TEXT_ANTHRACITE;
         
         cell.progressView.hidden = NO;
         [cell.progressView setProgress:progress];
@@ -3402,7 +3402,7 @@
     app.reMainMenu.separatorHeight = 0.5;
     app.reMainMenu.separatorColor = COLOR_SEPARATOR_TABLE;
     
-    app.reMainMenu.backgroundColor = COLOR_NAVIGATIONBAR;
+    app.reMainMenu.backgroundColor = COLOR_BACKGROUND_MENU;
     app.reMainMenu.textColor = [UIColor blackColor];
     app.reMainMenu.textAlignment = NSTextAlignmentLeft;
     app.reMainMenu.textShadowColor = nil;
@@ -3593,7 +3593,7 @@
     app.reSelectMenu.separatorHeight = 0.5;
     app.reSelectMenu.separatorColor = COLOR_SEPARATOR_TABLE;
     
-    app.reSelectMenu.backgroundColor = COLOR_NAVIGATIONBAR;
+    app.reSelectMenu.backgroundColor = COLOR_BACKGROUND_MENU;
     app.reSelectMenu.textColor = [UIColor blackColor];
     app.reSelectMenu.textAlignment = NSTextAlignmentLeft;
     app.reSelectMenu.textShadowColor = nil;
@@ -4034,7 +4034,7 @@
 
         viewController.title = NSLocalizedString(@"_passcode_protection_", nil);
         viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
-        viewController.navigationItem.leftBarButtonItem.tintColor = COLOR_ENCRYPTED;
+        viewController.navigationItem.leftBarButtonItem.tintColor = COLOR_CRYPTOCLOUD;
         
         UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
         [self presentViewController:navigationController animated:YES completion:nil];
@@ -4114,10 +4114,10 @@
     
     actionSheet.automaticallyTintButtonImages = @(NO);
         
-    actionSheet.encryptedButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:14], NSForegroundColorAttributeName:COLOR_ENCRYPTED };
-    actionSheet.buttonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:14], NSForegroundColorAttributeName:COLOR_GRAY };
+    actionSheet.encryptedButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:14], NSForegroundColorAttributeName:COLOR_CRYPTOCLOUD };
+    actionSheet.buttonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:14], NSForegroundColorAttributeName:COLOR_TEXT_ANTHRACITE };
     actionSheet.cancelButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:COLOR_BRAND };
-    actionSheet.disableButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:12], NSForegroundColorAttributeName:COLOR_GRAY };
+    actionSheet.disableButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:12], NSForegroundColorAttributeName:COLOR_TEXT_ANTHRACITE };
     
     actionSheet.separatorColor = COLOR_SEPARATOR_TABLE;
     actionSheet.cancelButtonTitle = NSLocalizedString(@"_cancel_",nil);
@@ -4145,7 +4145,7 @@
         
         [actionSheet addButtonWithTitle: _metadata.fileNamePrint
                                   image: iconHeader
-                        backgroundColor: COLOR_NAVIGATIONBAR
+                        backgroundColor: COLOR_BACKGROUND_MENU
                                  height: 50.0
                                    type: AHKActionSheetButtonTypeDisabled
                                 handler: nil
@@ -4313,7 +4313,7 @@
         
         [actionSheet addButtonWithTitle: _metadata.fileNamePrint
                                   image: iconHeader
-                        backgroundColor: COLOR_NAVIGATIONBAR
+                        backgroundColor: COLOR_BACKGROUND_MENU
                                  height: 50.0
                                    type: AHKActionSheetButtonTypeDisabled
                                 handler: nil
@@ -4456,7 +4456,7 @@
      
         [actionSheet addButtonWithTitle: _metadata.fileNamePrint
                                   image: iconHeader
-                        backgroundColor: COLOR_NAVIGATIONBAR
+                        backgroundColor: COLOR_BACKGROUND_MENU
                                  height: 50.0
                                    type: AHKActionSheetButtonTypeDisabled
                                 handler: nil
@@ -4872,7 +4872,7 @@
     // Title
     UILabel *titleLabel=[[UILabel alloc]initWithFrame:CGRectMake(10, -12, 0, 44)];
     titleLabel.backgroundColor=[UIColor clearColor];
-    titleLabel.textColor = COLOR_GRAY;
+    titleLabel.textColor = COLOR_TEXT_ANTHRACITE;
     titleLabel.font = [UIFont systemFontOfSize:12];
     titleLabel.textAlignment = NSTextAlignmentLeft;
     titleLabel.text = titleSection;
@@ -4883,7 +4883,7 @@
     // Elements
     UILabel *elementLabel=[[UILabel alloc]initWithFrame:CGRectMake(shift, -12, 0, 44)];
     elementLabel.backgroundColor=[UIColor clearColor];
-    elementLabel.textColor = COLOR_GRAY;
+    elementLabel.textColor = COLOR_TEXT_ANTHRACITE;
     elementLabel.font = [UIFont systemFontOfSize:12];
     elementLabel.textAlignment = NSTextAlignmentRight;
     elementLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth;
@@ -4975,10 +4975,10 @@
     
     // colori e font
     if (metadata.cryptated) {
-        cell.labelTitle.textColor = COLOR_ENCRYPTED;
+        cell.labelTitle.textColor = COLOR_CRYPTOCLOUD;
         cell.labelInfoFile.textColor = [UIColor blackColor];
     } else {
-        cell.labelTitle.textColor = COLOR_CLEAR;
+        cell.labelTitle.textColor = COLOR_TEXT_ANTHRACITE;
         cell.labelInfoFile.textColor = [UIColor blackColor];
     }
     
@@ -5212,8 +5212,8 @@
         float progress = [[app.listProgressMetadata objectForKey:metadata.fileID] floatValue];
         if (progress > 0) {
             
-            if (metadata.cryptated) cell.progressView.progressTintColor = COLOR_ENCRYPTED;
-            else cell.progressView.progressTintColor = COLOR_CLEAR;
+            if (metadata.cryptated) cell.progressView.progressTintColor = COLOR_CRYPTOCLOUD;
+            else cell.progressView.progressTintColor = COLOR_TEXT_ANTHRACITE;
             
             cell.progressView.progress = progress;
             cell.progressView.hidden = NO;
@@ -5277,8 +5277,8 @@
         float progress = [[app.listProgressMetadata objectForKey:metadata.fileID] floatValue];
         if (progress > 0) {
             
-            if (metadata.cryptated) cell.progressView.progressTintColor = COLOR_ENCRYPTED;
-            else cell.progressView.progressTintColor = COLOR_CLEAR;
+            if (metadata.cryptated) cell.progressView.progressTintColor = COLOR_CRYPTOCLOUD;
+            else cell.progressView.progressTintColor = COLOR_TEXT_ANTHRACITE;
             
             cell.progressView.progress = progress;
             cell.progressView.hidden = NO;
@@ -5428,7 +5428,7 @@
         
         viewController.title = _brand_;
         viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
-        viewController.navigationItem.leftBarButtonItem.tintColor = COLOR_ENCRYPTED;
+        viewController.navigationItem.leftBarButtonItem.tintColor = COLOR_CRYPTOCLOUD;
 
         UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
             
@@ -5610,7 +5610,7 @@
             
             viewController.title = NSLocalizedString(@"_folder_blocked_", nil); 
             viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
-            viewController.navigationItem.leftBarButtonItem.tintColor = COLOR_ENCRYPTED;
+            viewController.navigationItem.leftBarButtonItem.tintColor = COLOR_CRYPTOCLOUD;
             
             UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:viewController];
             [self presentViewController:navController animated:YES completion:nil];

@@ -167,8 +167,8 @@
     // Page Control
     UIPageControl *pageControl = [UIPageControl appearance];
     pageControl.pageIndicatorTintColor = [UIColor whiteColor];
-    pageControl.currentPageIndicatorTintColor = COLOR_NEXTCLOUD;
-    pageControl.backgroundColor = COLOR_NAVIGATIONBAR;
+    pageControl.currentPageIndicatorTintColor = COLOR_PAGECONTROL_INDICATOR;
+    pageControl.backgroundColor = COLOR_BACKGROUND_PAGECONTROL;
     
     // remove tmp & cache
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -219,7 +219,7 @@
     // it is a device Jailbroken
     self.isDeviceJailbroken = isDeviceJailbroken();
 
-    [self.window setTintColor:COLOR_BRAND];
+    [self.window setTintColor:COLOR_NAVIGATIONBAR_TEXT];
     
     UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
     //UITabBarController *tabBarController = [splitViewController.viewControllers firstObject];
@@ -657,7 +657,7 @@
             backgroundColor = [UIColor colorWithRed:0.588 green:0.797 blue:0.000 alpha:0.90];
             break;
         case TWMessageBarMessageTypeInfo:
-            backgroundColor = COLOR_BRAND_MESSAGE;
+            backgroundColor = COLOR_BRAND;
             break;
         default:
             break;

@@ -579,7 +579,7 @@
         [self getGeoLocationForSection:indexPath.section];
         
         UILabel *titleLabel = (UILabel *)[headerView viewWithTag:100];
-        titleLabel.textColor = COLOR_GRAY;
+        titleLabel.textColor = COLOR_TEXT_ANTHRACITE;
         titleLabel.text = [CCUtility getTitleSectionDate:[_sectionDataSource.sections objectAtIndex:indexPath.section]];
 
         return headerView;

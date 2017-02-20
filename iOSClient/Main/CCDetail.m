@@ -711,7 +711,7 @@
     if (progress == 0)
         [self.navigationController cancelCCProgress];
     else
-        [self.navigationController setCCProgressPercentage:progress*100 andTintColor:COLOR_BRAND];
+        [self.navigationController setCCProgressPercentage:progress*100 andTintColor:COLOR_NAVIGATIONBAR_PROGRESS];
 }
 
 - (void)downloadPhotoBrowserFailure:(NSInteger)errorCode

@@ -62,11 +62,11 @@
     EAIntroPage *page1 = [EAIntroPage page];
     page1.title = [CCUtility localizableBrand:@"_intro_01_" table:@"Intro"];
     page1.titlePositionY = titlePositionY;
-    page1.titleColor = COLOR_GRAY;
+    page1.titleColor = COLOR_TEXT_ANTHRACITE;
     page1.titleFont = [UIFont systemFontOfSize:20];
     page1.desc = [CCUtility localizableBrand:@"_intro_02_" table:@"Intro"];
     page1.descPositionY = descPositionY;
-    page1.descColor = COLOR_GRAY;
+    page1.descColor = COLOR_TEXT_ANTHRACITE;
     page1.descFont = [UIFont systemFontOfSize:14];
     page1.titleIconView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"intro1Nextcloud"]];
     page1.bgImage = [UIImage imageNamed:@"bgbianco"];

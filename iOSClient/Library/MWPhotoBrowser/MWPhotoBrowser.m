@@ -226,9 +226,9 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
     }
     
     // color
-    self.navigationController.navigationBar.barTintColor = COLOR_BRAND_NAVIGATIONBAR;
-    self.navigationController.navigationBar.tintColor = COLOR_BRAND_NAVIGATIONBAR_TEXT;
-    [self.navigationController.navigationBar setTitleTextAttributes:@{NSForegroundColorAttributeName : COLOR_BRAND_NAVIGATIONBAR_TEXT}];
+    self.navigationController.navigationBar.barTintColor = COLOR_NAVIGATIONBAR;
+    self.navigationController.navigationBar.tintColor = COLOR_NAVIGATIONBAR_TEXT;
+    [self.navigationController.navigationBar setTitleTextAttributes:@{NSForegroundColorAttributeName : COLOR_NAVIGATIONBAR_TEXT}];
     
     // Toolbar items
     BOOL hasItems = NO;

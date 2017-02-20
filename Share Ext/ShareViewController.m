@@ -167,7 +167,7 @@
     tintColor = self.navigationController.navigationBar.tintColor;
     
     if (barTintColor == nil) barTintColor = COLOR_NAVIGATIONBAR;
-    if (tintColor == nil) tintColor  = COLOR_GRAY;
+    if (tintColor == nil) tintColor  = COLOR_NAVIGATIONBAR_TEXT;
     
     // Toolbar Color & navigationBar Color
     self.toolBar.barTintColor = barTintColor;
@@ -180,7 +180,7 @@
     if (self.localCryptated && _isCryptoCloudMode) {
         
         rightButtonUpload = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"_save_encrypted_", nil) style:UIBarButtonItemStylePlain target:self action:@selector(selectPost)];
-        [rightButtonUpload setTintColor:COLOR_ENCRYPTED];
+        [rightButtonUpload setTintColor:COLOR_CRYPTOCLOUD];
         
     } else {
         
@@ -191,7 +191,7 @@
     if (_isCryptoCloudMode) {
         UIImage *icon = [[UIImage imageNamed:image_shareExtEncrypt] imageWithRenderingMode:UIImageRenderingModeAutomatic];
         rightButtonEncrypt = [[UIBarButtonItem alloc] initWithImage:icon style:UIBarButtonItemStylePlain target:self action:@selector(changeEncrypt)];
-        if (self.localCryptated) [rightButtonEncrypt setTintColor:COLOR_ENCRYPTED];
+        if (self.localCryptated) [rightButtonEncrypt setTintColor:COLOR_CRYPTOCLOUD];
     }
     
     // Cancel
@@ -378,7 +378,7 @@
     viewController.touchIDManager = touchIDManager;
     viewController.title = @"Nextcloud";
     viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
-    viewController.navigationItem.leftBarButtonItem.tintColor = COLOR_ENCRYPTED;
+    viewController.navigationItem.leftBarButtonItem.tintColor = COLOR_CRYPTOCLOUD;
     
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:viewController];
     [self presentViewController:navController animated:YES completion:nil];

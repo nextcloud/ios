@@ -30,6 +30,8 @@
 {
     [super viewDidLoad];
     
+    [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
+    
     NSURL *rtfPath;
     
     //NSString * language = [[NSLocale preferredLanguages] objectAtIndex:0];
@@ -42,7 +44,6 @@
     self.txtTermini.attributedText = attributedStringWithRtf;
     
     self.automaticallyAdjustsScrollViewInsets = NO;
-    [self.navigationController.navigationBar setTintColor:COLOR_BRAND];
     self.view.backgroundColor = [UIColor whiteColor];
     self.title = NSLocalizedString(@"_acknowledgements_", nil);
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(cancelPressed)];

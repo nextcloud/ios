@@ -252,10 +252,10 @@
     
     actionSheet.automaticallyTintButtonImages = @(NO);
     
-    actionSheet.encryptedButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:14], NSForegroundColorAttributeName:COLOR_ENCRYPTED };
-    actionSheet.buttonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:14], NSForegroundColorAttributeName:COLOR_GRAY };
+    actionSheet.encryptedButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:14], NSForegroundColorAttributeName:COLOR_CRYPTOCLOUD };
+    actionSheet.buttonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:14], NSForegroundColorAttributeName:COLOR_TEXT_ANTHRACITE };
     actionSheet.cancelButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:COLOR_BRAND };
-    actionSheet.disableButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:12], NSForegroundColorAttributeName:COLOR_GRAY };
+    actionSheet.disableButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:12], NSForegroundColorAttributeName:COLOR_TEXT_ANTHRACITE };
     
     actionSheet.separatorColor = COLOR_SEPARATOR_TABLE;
     actionSheet.cancelButtonTitle = NSLocalizedString(@"_cancel_",nil);
@@ -505,10 +505,10 @@
     
     // color and font
     if (metadata.cryptated) {
-        cell.labelTitle.textColor = COLOR_ENCRYPTED;
+        cell.labelTitle.textColor = COLOR_CRYPTOCLOUD;
         cell.labelInfoFile.textColor = [UIColor blackColor];
     } else {
-        cell.labelTitle.textColor = COLOR_CLEAR;
+        cell.labelTitle.textColor = COLOR_TEXT_ANTHRACITE;
         cell.labelInfoFile.textColor = [UIColor blackColor];
     }
     

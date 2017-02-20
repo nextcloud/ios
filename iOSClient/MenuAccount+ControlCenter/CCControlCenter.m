@@ -383,8 +383,8 @@
         
         CCControlCenterCell *cell = (CCControlCenterCell *)[_tableView cellForRowAtIndexPath:indexPath];
     
-        if (cryptated) cell.progressView.progressTintColor = COLOR_ENCRYPTED;
-        else cell.progressView.progressTintColor = COLOR_CLEAR;
+        if (cryptated) cell.progressView.progressTintColor = COLOR_CRYPTOCLOUD;
+        else cell.progressView.progressTintColor = COLOR_TEXT_ANTHRACITE;
         
         cell.progressView.hidden = NO;
         [cell.progressView setProgress:progress];
@@ -599,7 +599,7 @@
     
     // title label on left
     UILabel *titleLabel=[[UILabel alloc]initWithFrame:CGRectMake(8, 3, 0, 13)];
-    titleLabel.textColor = COLOR_GRAY;
+    titleLabel.textColor = COLOR_TEXT_ANTHRACITE;
     titleLabel.font = [UIFont systemFontOfSize:9];
     titleLabel.textAlignment = NSTextAlignmentLeft;
     titleLabel.text = titleSection;
@@ -608,7 +608,7 @@
     
     // element (s) on right
     UILabel *elementLabel=[[UILabel alloc]initWithFrame:CGRectMake(-8, 3, 0, 13)];
-    elementLabel.textColor = COLOR_GRAY;
+    elementLabel.textColor = COLOR_TEXT_ANTHRACITE;
     elementLabel.font = [UIFont systemFontOfSize:9];
     elementLabel.textAlignment = NSTextAlignmentRight;
     elementLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth;
@@ -642,7 +642,7 @@
     UIView *view = [[UIView alloc] initWithFrame:CGRectZero];
     
     UILabel *titleFooterLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width, 18)];
-    titleFooterLabel.textColor = COLOR_GRAY;
+    titleFooterLabel.textColor = COLOR_TEXT_ANTHRACITE;
     titleFooterLabel.font = [UIFont systemFontOfSize:12];
     titleFooterLabel.textAlignment = NSTextAlignmentCenter;
 
@@ -768,10 +768,10 @@
     
     // colori e font
     if (metadata.cryptated) {
-        cell.labelTitle.textColor = COLOR_ENCRYPTED;
+        cell.labelTitle.textColor = COLOR_CRYPTOCLOUD;
         cell.labelInfoFile.textColor = [UIColor blackColor];
     } else {
-        cell.labelTitle.textColor = COLOR_CLEAR;
+        cell.labelTitle.textColor = COLOR_TEXT_ANTHRACITE;
         cell.labelInfoFile.textColor = [UIColor blackColor];
     }
     
@@ -863,8 +863,8 @@
         float progress = [[app.listProgressMetadata objectForKey:metadata.fileID] floatValue];
         if (progress > 0) {
             
-            if (metadata.cryptated) cell.progressView.progressTintColor = COLOR_ENCRYPTED;
-            else cell.progressView.progressTintColor = COLOR_CLEAR;
+            if (metadata.cryptated) cell.progressView.progressTintColor = COLOR_CRYPTOCLOUD;
+            else cell.progressView.progressTintColor = COLOR_TEXT_ANTHRACITE;
             
             cell.progressView.progress = progress;
             cell.progressView.hidden = NO;
@@ -928,8 +928,8 @@
         float progress = [[app.listProgressMetadata objectForKey:metadata.fileID] floatValue];
         if (progress > 0) {
             
-            if (metadata.cryptated) cell.progressView.progressTintColor = COLOR_ENCRYPTED;
-            else cell.progressView.progressTintColor = COLOR_CLEAR;
+            if (metadata.cryptated) cell.progressView.progressTintColor = COLOR_CRYPTOCLOUD;
+            else cell.progressView.progressTintColor = COLOR_TEXT_ANTHRACITE;
             
             cell.progressView.progress = progress;
             cell.progressView.hidden = NO;

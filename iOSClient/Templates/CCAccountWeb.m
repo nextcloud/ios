@@ -67,7 +67,7 @@
         
         // Title
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"titolo" rowType:XLFormRowDescriptorTypeText];
-        [row.cellConfig setObject:COLOR_ENCRYPTED forKey:@"textField.textColor"];
+        [row.cellConfig setObject:COLOR_CRYPTOCLOUD forKey:@"textField.textColor"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textField.font"];
         row.value = [field objectForKey:@"titolo"];
@@ -79,7 +79,7 @@
         
         // url
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"url" rowType:XLFormRowDescriptorTypeText title:NSLocalizedString(@"_url:_", nil)];
-        [row.cellConfig setObject:COLOR_GRAY forKey:@"textField.textColor"];
+        [row.cellConfig setObject:COLOR_TEXT_ANTHRACITE forKey:@"textField.textColor"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textField.font"];
         row.value = [field objectForKey:@"url"];
@@ -87,7 +87,7 @@
         
         // Login
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"login" rowType:XLFormRowDescriptorTypeText title:NSLocalizedString(@"_login:_", nil)];
-        [row.cellConfig setObject:COLOR_GRAY forKey:@"textField.textColor"];
+        [row.cellConfig setObject:COLOR_TEXT_ANTHRACITE forKey:@"textField.textColor"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textField.font"];
         row.value = [field objectForKey:@"login"];
@@ -95,7 +95,7 @@
         
         // Password
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"password" rowType:XLFormRowDescriptorTypeText title:NSLocalizedString(@"_password:_", nil)];
-        [row.cellConfig setObject:COLOR_GRAY forKey:@"textField.textColor"];
+        [row.cellConfig setObject:COLOR_TEXT_ANTHRACITE forKey:@"textField.textColor"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textField.font"];
         row.value = [field objectForKey:@"password"];
@@ -107,7 +107,7 @@
         // Note
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"note" rowType:XLFormRowDescriptorTypeTextView];
         row.value = [field objectForKey:@"note"];
-        [row.cellConfig setObject:COLOR_GRAY forKey:@"textView.textColor"];
+        [row.cellConfig setObject:COLOR_TEXT_ANTHRACITE forKey:@"textView.textColor"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textView.font"];
         [section addFormRow:row];
 

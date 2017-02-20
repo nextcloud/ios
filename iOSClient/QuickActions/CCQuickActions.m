@@ -187,9 +187,9 @@
 
     _move.delegate = self;
     _move.selectedMetadatas = nil;
-    _move.tintColor = COLOR_BRAND;
+    _move.tintColor = COLOR_NAVIGATIONBAR_TEXT;
     _move.barTintColor = COLOR_NAVIGATIONBAR;
-    _move.tintColorTitle = COLOR_GRAY;
+    _move.tintColorTitle = COLOR_NAVIGATIONBAR_TEXT;
     _move.networkingOperationQueue = app.netQueue;
     
     [navigationController setModalPresentationStyle:UIModalPresentationFormSheet];

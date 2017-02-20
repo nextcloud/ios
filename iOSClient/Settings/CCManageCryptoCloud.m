@@ -108,7 +108,7 @@
     viewController.title = NSLocalizedString(@"_key_aes_256_", nil);
     
     viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
-    viewController.navigationItem.leftBarButtonItem.tintColor = COLOR_ENCRYPTED;
+    viewController.navigationItem.leftBarButtonItem.tintColor = COLOR_CRYPTOCLOUD;
     
     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
     [self presentViewController:navigationController animated:YES completion:nil];
@@ -127,7 +127,7 @@
     viewController.title = NSLocalizedString(@"_check_key_aes_256_", nil);
     
     viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
-    viewController.navigationItem.leftBarButtonItem.tintColor = COLOR_ENCRYPTED;
+    viewController.navigationItem.leftBarButtonItem.tintColor = COLOR_CRYPTOCLOUD;
     
     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
     [self presentViewController:navigationController animated:YES completion:nil];

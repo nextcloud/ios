@@ -167,9 +167,9 @@
     CCMove *viewController = (CCMove *)navigationController.topViewController;
     viewController.delegate = self;
     viewController.move.title = NSLocalizedString(@"_select_", nil);
-    viewController.tintColor = COLOR_BRAND;
+    viewController.tintColor = COLOR_NAVIGATIONBAR_TEXT;
     viewController.barTintColor = COLOR_NAVIGATIONBAR;
-    viewController.tintColorTitle = COLOR_GRAY;
+    viewController.tintColorTitle = COLOR_NAVIGATIONBAR_TEXT;
     viewController.networkingOperationQueue = app.netQueue;
 
     [self presentViewController:navigationController animated:YES completion:nil];
