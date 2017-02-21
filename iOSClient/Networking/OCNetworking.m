@@ -120,6 +120,8 @@
 {
 #ifndef EXTENSION
     _hasServerForbiddenCharactersSupport = app.hasServerForbiddenCharactersSupport;
+    
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
 #else
     _hasServerForbiddenCharactersSupport = YES;
 #endif
@@ -135,6 +137,10 @@
 - (void)complete
 {    
     [self finish];
+    
+#ifndef EXTENSION
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+#endif
 }
 
 #pragma --------------------------------------------------------------------------------------------
