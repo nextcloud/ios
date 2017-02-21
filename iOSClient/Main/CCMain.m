@@ -1884,11 +1884,7 @@
         
         _searchFileName = fileName;
         
-        if ([_serverUrl isEqualToString:[CCUtility getHomeServerUrlActiveUrl:app.activeUrl]])
-            [[CCActions sharedInstance] search:_serverUrl fileName:_searchFileName delegate:self];
-        else
-            [[CCActions sharedInstance] search:_serverUrl fileName:_searchFileName delegate:self];
-
+        [[CCActions sharedInstance] search:_serverUrl fileName:_searchFileName delegate:self];
     }
     
     if (_searchResultMetadatas.count == 0 && fileName.length == 0) {
