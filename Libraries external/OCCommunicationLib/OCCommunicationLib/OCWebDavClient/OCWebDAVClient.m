@@ -258,14 +258,14 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     [operation resume];
 }
 
-- (void)mr_search:(NSString *)patf fileName:(NSString *)fileName depth:(NSUInteger)depth withUserSessionToken:(NSString*)token onCommunication:
+- (void)mr_search:(NSString *)path fileName:(NSString *)fileName depth:(NSUInteger)depth withUserSessionToken:(NSString*)token onCommunication:
 (OCCommunication *)sharedOCCommunication
             success:(void(^)(NSHTTPURLResponse *operation, id response, NSString *token))success
             failure:(void(^)(NSHTTPURLResponse *response, id  _Nullable responseObject, NSError *, NSString *token))failure {
     NSParameterAssert(success);
     
     _requestMethod = @"SEARCH";
-    NSMutableURLRequest *request = [self requestWithMethod:_requestMethod path:fileName parameters:nil];
+    NSMutableURLRequest *request = [self requestWithMethod:_requestMethod path:path parameters:nil];
     /*
      NSString *depthHeader = nil;
      if (depth <= 0)
@@ -280,7 +280,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
      [request setHTTPBody:[@"<?xml version=\"1.0\" encoding=\"UTF-8\"?><D:propfind xmlns:D=\"DAV:\"><D:prop><D:resourcetype/><D:getlastmodified/><size xmlns=\"http://owncloud.org/ns\"/><D:creationdate/><id xmlns=\"http://owncloud.org/ns\"/><D:getcontentlength/><D:displayname/><D:quota-available-bytes/><D:getetag/><permissions xmlns=\"http://owncloud.org/ns\"/><D:quota-used-bytes/><D:getcontenttype/></D:prop></D:propfind>" dataUsingEncoding:NSUTF8StringEncoding]];
      */
     
-    NSString *body = [NSString stringWithFormat:@"<?xml version=\"1.0\"?><d:searchrequest xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\"><d:basicsearch><d:select><d:prop><d:displayname/></d:prop></d:select><d:from><d:scope><d:href>/files/%@</d:href><d:depth>infinity</d:depth></d:scope></d:from><d:where><d:like><d:prop><d:displayname/></d:prop><d:literal>%@%%</d:literal></d:like></d:where></d:basicsearch></d:searchrequest>]",@"marino.faggiana",fileName];
+    NSString *body = [NSString stringWithFormat:@"<?xml version=\"1.0\"?><d:searchrequest xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\"><d:basicsearch><d:select><d:prop><d:displayname/></d:prop></d:select><d:from><d:scope><d:href>/files/%@</d:href><d:depth>infinity</d:depth></d:scope></d:from><d:where><d:like><d:prop><d:displayname/></d:prop><d:literal>%@%%</d:literal></d:like></d:where></d:basicsearch></d:searchrequest>]",@"admin",fileName];
     
     [request setHTTPBody:[body dataUsingEncoding:NSUTF8StringEncoding]];
     
