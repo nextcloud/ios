@@ -43,6 +43,10 @@
     
     serverUrlLocal= [CCUtility getHomeServerUrlActiveUrl:app.activeUrl];
     destinationTitle = NSLocalizedString(@"_home_", nil);
+    
+    // Color
+    [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
+    [CCAspect aspectTabBar:self.tabBarController.tabBar hidden:NO];
 }
 
 - (void)didReceiveMemoryWarning
@@ -54,10 +58,6 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    
-    // Color
-    [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
-    [CCAspect aspectTabBar:self.tabBarController.tabBar hidden:NO];
     
     [self.tableView reloadData];
 }
