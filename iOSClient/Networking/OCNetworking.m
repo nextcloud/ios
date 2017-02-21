@@ -412,6 +412,24 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Search =====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)search
+{
+    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+    
+    [communication setCredentialsWithUser:_activeUser andPassword:_activePassword];
+    [communication setUserAgent:[CCUtility getUserAgent]];
+    
+    [communication search:_metadataNet.fileName withUserSessionToken:nil onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token) {
+        //
+    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer) {
+        //
+    }];
+}
+
+#pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Create Folder =====
 #pragma --------------------------------------------------------------------------------------------
 

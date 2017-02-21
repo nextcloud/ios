@@ -460,6 +460,13 @@ typedef enum {
 - (void) setTaskDidSendBodyDataBlock: (void(^)(NSURLSession *session, NSURLSessionTask *task, int64_t bytesSent, int64_t totalBytesSent, int64_t totalBytesExpectedToSend)) block;
 
 
+
+- (void) search: (NSString *) fileName withUserSessionToken:(NSString *)token
+    onCommunication:(OCCommunication *)sharedOCCommunication
+     successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token)) successRequest
+     failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer)) failureRequest;
+
+
 #pragma mark - OC API Calls
 ///-----------------------------------
 /// @name getCurrentServerVersion

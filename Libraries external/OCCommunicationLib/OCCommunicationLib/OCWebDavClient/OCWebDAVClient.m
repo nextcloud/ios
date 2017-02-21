@@ -279,6 +279,40 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     [self mr_listPath:path depth:1 withUserSessionToken:token onCommunication:sharedOCCommunication success:success failure:failure];
 }
 
+- (void)search:(NSString *)fileName depth:(NSUInteger)depth withUserSessionToken:(NSString*)token onCommunication:
+(OCCommunication *)sharedOCCommunication
+            success:(void(^)(NSHTTPURLResponse *operation, id response, NSString *token))success
+            failure:(void(^)(NSHTTPURLResponse *response, id  _Nullable responseObject, NSError *, NSString *token))failure {
+    NSParameterAssert(success);
+    
+    _requestMethod = @"SEARCH";
+    NSMutableURLRequest *request = [self requestWithMethod:_requestMethod path:fileName parameters:nil];
+    /*
+    NSString *depthHeader = nil;
+    if (depth <= 0)
+        depthHeader = @"0";
+    else if (depth == 1)
+        depthHeader = @"1";
+    else
+        depthHeader = @"infinity";
+    [request setValue: depthHeader forHTTPHeaderField: @"Depth"];
+    
+    
+    [request setHTTPBody:[@"<?xml version=\"1.0\" encoding=\"UTF-8\"?><D:propfind xmlns:D=\"DAV:\"><D:prop><D:resourcetype/><D:getlastmodified/><size xmlns=\"http://owncloud.org/ns\"/><D:creationdate/><id xmlns=\"http://owncloud.org/ns\"/><D:getcontentlength/><D:displayname/><D:quota-available-bytes/><D:getetag/><permissions xmlns=\"http://owncloud.org/ns\"/><D:quota-used-bytes/><D:getcontenttype/></D:prop></D:propfind>" dataUsingEncoding:NSUTF8StringEncoding]];
+    */
+    
+    NSString *body = [NSString stringWithFormat:@"<?xml version=\"1.0\"?><d:searchrequest xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\"><d:basicsearch><d:select><d:prop><d:displayname/></d:prop></d:select><d:from><d:scope><d:href>/files/%@</d:href><d:depth>infinity</d:depth></d:scope></d:from><d:where><d:like><d:prop><d:displayname/></d:prop><d:literal>%@%%</d:literal></d:like></d:where></d:basicsearch></d:searchrequest>]",@"marino.faggiana",fileName];
+    
+    [request setHTTPBody:[body dataUsingEncoding:NSUTF8StringEncoding]];
+    
+    [request setValue:@"application/xml" forHTTPHeaderField:@"Content-Type"];
+    
+    
+    OCHTTPRequestOperation *operation = [self mr_operationWithRequest:request onCommunication:sharedOCCommunication withUserSessionToken:token success:success failure:failure];
+    [self setRedirectionBlockOnDatataskWithOCCommunication:sharedOCCommunication andSessionManager:sharedOCCommunication.networkSessionManager];
+    [operation resume];
+}
+
 - (NSURLSessionDownloadTask *)downloadWithSessionPath:(NSString *)remoteSource toPath:(NSString *)localDestination defaultPriority:(BOOL)defaultPriority onCommunication:(OCCommunication *)sharedOCCommunication progress:(void(^)(NSProgress *progress))downloadProgress success:(void(^)(NSURLResponse *response, NSURL *filePath))success failure:(void(^)(NSURLResponse *response, NSError *error))failure{
     
     NSMutableURLRequest *request = [self requestWithMethod:@"GET" path:remoteSource parameters:nil];
