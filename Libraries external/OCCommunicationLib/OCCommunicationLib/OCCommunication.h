@@ -460,6 +460,29 @@ typedef enum {
 - (void) setTaskDidSendBodyDataBlock: (void(^)(NSURLSession *session, NSURLSessionTask *task, int64_t bytesSent, int64_t totalBytesSent, int64_t totalBytesExpectedToSend)) block;
 
 
+///-----------------------------------
+/// @name Search
+///-----------------------------------
+
+/**
+ * Block to get the list of files/folders for a path
+ *
+ * @param path -> NSString with the url of the path
+ * Ex: http://www.myowncloudserver.com/owncloud/remote.php/webdav/Music
+ *
+ * @param token -> User Session token. To get this token you should be use "getUserSessionToken" method of UtilsFramework class
+ *  We use this token to be sure that the callbacks of the request are for the correct user. We need that when we use multiaccount.
+ *  if not you can leave as nil.
+ *
+ * @param sharedOCCommunication -> OCCommunication Singleton of communication to add the operation on the queue.
+ *
+ * @warning the "path" must not be on URL Encoding.
+ * Correct path: http://www.myowncloudserver.com/owncloud/remote.php/webdav/Other Folder/Music
+ * Wrong path: http://www.myowncloudserver.com/owncloud/remote.php/webdav/Other%20Folder/Music
+ *
+ * @param sharedOCCommunication -> OCCommunication Singleton of communication to add the operation on the queue.
+ *
+ */
 
 - (void) search: (NSString *) path fileName:(NSString *)fileName depth:(NSString *)depth withUserSessionToken:(NSString *)token
     onCommunication:(OCCommunication *)sharedOCCommunication
