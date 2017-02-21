@@ -191,11 +191,11 @@
     self.tableView.tableHeaderView = self.searchController.searchBar;
     self.searchController.searchBar.barTintColor = COLOR_SEPARATOR_TABLE;
     [self.searchController.searchBar sizeToFit];
-
-    if (_isRoot) self.searchController.searchBar.placeholder = NSLocalizedString(@"_search_this_folder_",nil);
-    else self.searchController.searchBar.placeholder = NSLocalizedString(@"_search_this_folder_",nil);
     
-    //self.searchController.searchBar.scopeButtonTitles = @[NSLocalizedString(@"_search_this_folder_",nil),NSLocalizedString(@"_search_all_folders_",nil)];
+    if ([CCCoreData getServerVersionActiveAccount:app.activeAccount] >= 12 && _isRoot)
+        self.searchController.searchBar.placeholder = NSLocalizedString(@"_search_all_folders_",nil);
+    else
+        self.searchController.searchBar.placeholder = NSLocalizedString(@"_search_this_folder_",nil);
 }
 
 // Apparirà
@@ -345,7 +345,7 @@
         
         // populate shared Link & User variable
         [CCCoreData populateSharesVariableFromDBActiveAccount:app.activeAccount sharesLink:app.sharesLink sharesUserAndGroup:app.sharesUserAndGroup];
-        
+
         // Load Datasource
         [self reloadDatasource:_serverUrl fileID:nil selector:nil];
 
@@ -1106,6 +1106,12 @@
     app.capabilities = capabilities;
     
     [CCCoreData setServerVersionActiveAccount:app.activeAccount versionMajor:capabilities.versionMajor versionMinor:capabilities.versionMinor versionMicro:capabilities.versionMicro];
+    
+    // Search placeholder
+    if (capabilities.versionMajor >= 12 && _isRoot)
+        self.searchController.searchBar.placeholder = NSLocalizedString(@"_search_all_folders_",nil);
+    else
+        self.searchController.searchBar.placeholder = NSLocalizedString(@"_search_this_folder_",nil);
 }
 
 - (void)getFeaturesSupportedByServerSuccess:(BOOL)hasCapabilitiesSupport hasForbiddenCharactersSupport:(BOOL)hasForbiddenCharactersSupport hasShareSupport:(BOOL)hasShareSupport hasShareeSupport:(BOOL)hasShareeSupport
