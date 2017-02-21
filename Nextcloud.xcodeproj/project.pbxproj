@@ -119,6 +119,10 @@
 		F720E01F1E48C73E001A4B9E /* CCActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F720E01E1E48C73E001A4B9E /* CCActions.swift */; };
 		F7253FCA1E38BAF20084135B /* JSAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7253FC91E38BAF20084135B /* JSAlertView.m */; };
 		F725437C1E12A44A009BF4C2 /* CCSection.m in Sources */ = {isa = PBXBuildFile; fileRef = F78F6FAF1CC8CCB700F4EA25 /* CCSection.m */; };
+		F72AAECA1E5C60C700BB17E1 /* AHKActionSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = F72AAEC31E5C60C700BB17E1 /* AHKActionSheet.m */; };
+		F72AAECB1E5C60C700BB17E1 /* AHKActionSheetViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F72AAEC51E5C60C700BB17E1 /* AHKActionSheetViewController.m */; };
+		F72AAECC1E5C60C700BB17E1 /* UIImage+AHKAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = F72AAEC71E5C60C700BB17E1 /* UIImage+AHKAdditions.m */; };
+		F72AAECD1E5C60C700BB17E1 /* UIWindow+AHKAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = F72AAEC91E5C60C700BB17E1 /* UIWindow+AHKAdditions.m */; };
 		F72C63891DC14B0400FA5ED5 /* libMagicalRecord.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F7B61E9B1DC13C20009E938F /* libMagicalRecord.a */; };
 		F732BA061D76CE1500E9878B /* CCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F732BA041D76CE1500E9878B /* CCNetworking.m */; };
 		F732BA0B1D76DBA500E9878B /* CCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F732BA041D76CE1500E9878B /* CCNetworking.m */; };
@@ -303,14 +307,12 @@
 		F77B0E581D118A16002130FE /* ReaderThumbView.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0ED41C889317008DAB36 /* ReaderThumbView.m */; };
 		F77B0E5A1D118A16002130FE /* ReaderContentTile.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0EBC1C889317008DAB36 /* ReaderContentTile.m */; };
 		F77B0E5B1D118A16002130FE /* UIImage+Rotating.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04CC1C889184008DAB36 /* UIImage+Rotating.m */; };
-		F77B0E5C1D118A16002130FE /* AHKActionSheetViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0F581C889353008DAB36 /* AHKActionSheetViewController.m */; };
 		F77B0E5D1D118A16002130FE /* UIImage+Blurring.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04C01C889184008DAB36 /* UIImage+Blurring.m */; };
 		F77B0E5E1D118A16002130FE /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = F70F0F991C889487008DAB36 /* unzip.c */; };
 		F77B0E5F1D118A16002130FE /* CCSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = F7ACE4311BAC0268006C0017 /* CCSettings.m */; };
 		F77B0E601D118A16002130FE /* CGPDFDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0EB61C889317008DAB36 /* CGPDFDocument.m */; };
 		F77B0E621D118A16002130FE /* REMenuContainerView.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0C551C8892C5008DAB36 /* REMenuContainerView.m */; };
 		F77B0E631D118A16002130FE /* CCShareOC.m in Sources */ = {isa = PBXBuildFile; fileRef = F768EAFC1BFB7CD800B6E341 /* CCShareOC.m */; };
-		F77B0E641D118A16002130FE /* UIWindow+AHKAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0F5C1C889353008DAB36 /* UIWindow+AHKAdditions.m */; };
 		F77B0E651D118A16002130FE /* LMMediaPlayerView.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0F411C889339008DAB36 /* LMMediaPlayerView.m */; };
 		F77B0E661D118A16002130FE /* NSString+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02B11C889183008DAB36 /* NSString+Base64.m */; };
 		F77B0E671D118A16002130FE /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F05261C889184008DAB36 /* Reachability.m */; };
@@ -342,7 +344,6 @@
 		F77B0E991D118A16002130FE /* PPCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F051F1C889184008DAB36 /* PPCollectionViewCell.m */; };
 		F77B0E9A1D118A16002130FE /* BKTouchIDSwitchView.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02CF1C889183008DAB36 /* BKTouchIDSwitchView.m */; };
 		F77B0E9B1D118A16002130FE /* CCBKPasscode.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FE125D1BAC03FB0041924B /* CCBKPasscode.m */; };
-		F77B0E9C1D118A16002130FE /* AHKActionSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0F561C889353008DAB36 /* AHKActionSheet.m */; };
 		F77B0E9D1D118A16002130FE /* HRColorPickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0DE81C889300008DAB36 /* HRColorPickerView.m */; };
 		F77B0E9F1D118A16002130FE /* mztools.c in Sources */ = {isa = PBXBuildFile; fileRef = F70F0F971C889487008DAB36 /* mztools.c */; };
 		F77B0EA61D118A16002130FE /* NSString+TruncateToWidth.m in Sources */ = {isa = PBXBuildFile; fileRef = F73049B91CB567F000C7C320 /* NSString+TruncateToWidth.m */; };
@@ -359,7 +360,6 @@
 		F77B0EB71D118A16002130FE /* ReaderThumbRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0ED01C889317008DAB36 /* ReaderThumbRequest.m */; };
 		F77B0EB81D118A16002130FE /* CCAccountWeb.m in Sources */ = {isa = PBXBuildFile; fileRef = F721371E1BAFF0920012B613 /* CCAccountWeb.m */; };
 		F77B0EB91D118A16002130FE /* HRColorUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0DEC1C889300008DAB36 /* HRColorUtil.m */; };
-		F77B0EBA1D118A16002130FE /* UIImage+AHKAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0F5A1C889353008DAB36 /* UIImage+AHKAdditions.m */; };
 		F77B0EBE1D118A16002130FE /* CCNote.m in Sources */ = {isa = PBXBuildFile; fileRef = F721372A1BAFF0920012B613 /* CCNote.m */; };
 		F77B0EBF1D118A16002130FE /* RNEncryptor.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F053B1C889184008DAB36 /* RNEncryptor.m */; };
 		F77B0EC11D118A16002130FE /* JBroken.m in Sources */ = {isa = PBXBuildFile; fileRef = F71EDBFD1C4B93ED00265D0C /* JBroken.m */; };
@@ -1013,14 +1013,6 @@
 		F70F0F3E1C889339008DAB36 /* LMMediaPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LMMediaPlayer.m; sourceTree = "<group>"; };
 		F70F0F401C889339008DAB36 /* LMMediaPlayerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LMMediaPlayerView.h; sourceTree = "<group>"; };
 		F70F0F411C889339008DAB36 /* LMMediaPlayerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LMMediaPlayerView.m; sourceTree = "<group>"; };
-		F70F0F551C889353008DAB36 /* AHKActionSheet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AHKActionSheet.h; sourceTree = "<group>"; };
-		F70F0F561C889353008DAB36 /* AHKActionSheet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AHKActionSheet.m; sourceTree = "<group>"; };
-		F70F0F571C889353008DAB36 /* AHKActionSheetViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AHKActionSheetViewController.h; sourceTree = "<group>"; };
-		F70F0F581C889353008DAB36 /* AHKActionSheetViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AHKActionSheetViewController.m; sourceTree = "<group>"; };
-		F70F0F591C889353008DAB36 /* UIImage+AHKAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+AHKAdditions.h"; sourceTree = "<group>"; };
-		F70F0F5A1C889353008DAB36 /* UIImage+AHKAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+AHKAdditions.m"; sourceTree = "<group>"; };
-		F70F0F5B1C889353008DAB36 /* UIWindow+AHKAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIWindow+AHKAdditions.h"; sourceTree = "<group>"; };
-		F70F0F5C1C889353008DAB36 /* UIWindow+AHKAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIWindow+AHKAdditions.m"; sourceTree = "<group>"; };
 		F70F0F941C889487008DAB36 /* crypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = crypt.h; sourceTree = "<group>"; };
 		F70F0F951C889487008DAB36 /* ioapi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ioapi.c; sourceTree = "<group>"; };
 		F70F0F961C889487008DAB36 /* ioapi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ioapi.h; sourceTree = "<group>"; };
@@ -1077,6 +1069,14 @@
 		F7296A611C8880C9001A7809 /* CCCellShareExt.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCCellShareExt.m; sourceTree = "<group>"; };
 		F7296A621C8880C9001A7809 /* CCCellShareExt.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CCCellShareExt.xib; sourceTree = "<group>"; };
 		F7296A661C8880ED001A7809 /* CCloadItemData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CCloadItemData.swift; sourceTree = "<group>"; };
+		F72AAEC21E5C60C700BB17E1 /* AHKActionSheet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AHKActionSheet.h; sourceTree = "<group>"; };
+		F72AAEC31E5C60C700BB17E1 /* AHKActionSheet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AHKActionSheet.m; sourceTree = "<group>"; };
+		F72AAEC41E5C60C700BB17E1 /* AHKActionSheetViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AHKActionSheetViewController.h; sourceTree = "<group>"; };
+		F72AAEC51E5C60C700BB17E1 /* AHKActionSheetViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AHKActionSheetViewController.m; sourceTree = "<group>"; };
+		F72AAEC61E5C60C700BB17E1 /* UIImage+AHKAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+AHKAdditions.h"; sourceTree = "<group>"; };
+		F72AAEC71E5C60C700BB17E1 /* UIImage+AHKAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+AHKAdditions.m"; sourceTree = "<group>"; };
+		F72AAEC81E5C60C700BB17E1 /* UIWindow+AHKAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIWindow+AHKAdditions.h"; sourceTree = "<group>"; };
+		F72AAEC91E5C60C700BB17E1 /* UIWindow+AHKAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIWindow+AHKAdditions.m"; sourceTree = "<group>"; };
 		F73049B81CB567F000C7C320 /* NSString+TruncateToWidth.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+TruncateToWidth.h"; sourceTree = "<group>"; };
 		F73049B91CB567F000C7C320 /* NSString+TruncateToWidth.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+TruncateToWidth.m"; sourceTree = "<group>"; };
 		F732BA031D76CE1500E9878B /* CCNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCNetworking.h; sourceTree = "<group>"; };
@@ -1675,7 +1675,6 @@
 				F70F02A91C889183008DAB36 /* AESCrypt-ObjC */,
 				F70F02B21C889183008DAB36 /* AFViewShaker */,
 				F744FA7B1E57333C00BFAB34 /* APAvatarImageView */,
-				F70F0F541C889353008DAB36 /* AHKActionSheet */,
 				F70F02BE1C889183008DAB36 /* BKPasscodeView */,
 				F7F06E291DBFACC600099AE9 /* CTAssetsPickerController */,
 				F73CCE221DC13788007E38D8 /* DZNEmptyDataSet */,
@@ -2199,21 +2198,6 @@
 			path = MediaPlayerView;
 			sourceTree = "<group>";
 		};
-		F70F0F541C889353008DAB36 /* AHKActionSheet */ = {
-			isa = PBXGroup;
-			children = (
-				F70F0F551C889353008DAB36 /* AHKActionSheet.h */,
-				F70F0F561C889353008DAB36 /* AHKActionSheet.m */,
-				F70F0F571C889353008DAB36 /* AHKActionSheetViewController.h */,
-				F70F0F581C889353008DAB36 /* AHKActionSheetViewController.m */,
-				F70F0F591C889353008DAB36 /* UIImage+AHKAdditions.h */,
-				F70F0F5A1C889353008DAB36 /* UIImage+AHKAdditions.m */,
-				F70F0F5B1C889353008DAB36 /* UIWindow+AHKAdditions.h */,
-				F70F0F5C1C889353008DAB36 /* UIWindow+AHKAdditions.m */,
-			);
-			path = AHKActionSheet;
-			sourceTree = "<group>";
-		};
 		F70F0F921C889487008DAB36 /* SSZipArchive */ = {
 			isa = PBXGroup;
 			children = (
@@ -2324,6 +2308,21 @@
 				F7296A621C8880C9001A7809 /* CCCellShareExt.xib */,
 			);
 			path = Cell;
+			sourceTree = "<group>";
+		};
+		F72AAEC11E5C60C700BB17E1 /* AHKActionSheet */ = {
+			isa = PBXGroup;
+			children = (
+				F72AAEC21E5C60C700BB17E1 /* AHKActionSheet.h */,
+				F72AAEC31E5C60C700BB17E1 /* AHKActionSheet.m */,
+				F72AAEC41E5C60C700BB17E1 /* AHKActionSheetViewController.h */,
+				F72AAEC51E5C60C700BB17E1 /* AHKActionSheetViewController.m */,
+				F72AAEC61E5C60C700BB17E1 /* UIImage+AHKAdditions.h */,
+				F72AAEC71E5C60C700BB17E1 /* UIImage+AHKAdditions.m */,
+				F72AAEC81E5C60C700BB17E1 /* UIWindow+AHKAdditions.h */,
+				F72AAEC91E5C60C700BB17E1 /* UIWindow+AHKAdditions.m */,
+			);
+			path = AHKActionSheet;
 			sourceTree = "<group>";
 		};
 		F72B60941A24F04E004EF66F /* Localizations */ = {
@@ -3082,6 +3081,7 @@
 		F7F54CAC1E5B143100E19C62 /* Library */ = {
 			isa = PBXGroup;
 			children = (
+				F72AAEC11E5C60C700BB17E1 /* AHKActionSheet */,
 				F7F54CAD1E5B14C700E19C62 /* MWPhotoBrowser */,
 			);
 			path = Library;
@@ -3913,6 +3913,7 @@
 				F7F06EA91DBFACC600099AE9 /* CTAssetScrollView.m in Sources */,
 				F73CCDED1DC13776007E38D8 /* XLFormSelectorCell.m in Sources */,
 				F7F06E931DBFACC600099AE9 /* NSNumberFormatter+CTAssetsPickerController.m in Sources */,
+				F72AAECC1E5C60C700BB17E1 /* UIImage+AHKAdditions.m in Sources */,
 				F77B0DF71D118A16002130FE /* UIXToolbarView.m in Sources */,
 				F7C525A01E3B48B700FFE02C /* CCNotification.swift in Sources */,
 				F77B0DFB1D118A16002130FE /* NYXProgressiveImageView.m in Sources */,
@@ -4030,7 +4031,6 @@
 				F7F06E8D1DBFACC600099AE9 /* NSBundle+CTAssetsPickerController.m in Sources */,
 				F73CCDDD1DC13776007E38D8 /* XLFormCheckCell.m in Sources */,
 				F73CCE0B1DC13776007E38D8 /* NSPredicate+XLFormAdditions.m in Sources */,
-				F77B0E5C1D118A16002130FE /* AHKActionSheetViewController.m in Sources */,
 				F73CCE131DC13776007E38D8 /* XLFormRightImageButton.m in Sources */,
 				F7DAE66E1E2E109F004EFA30 /* CCOfflineFileFolder.m in Sources */,
 				F77B0E5D1D118A16002130FE /* UIImage+Blurring.m in Sources */,
@@ -4042,7 +4042,6 @@
 				F77B0E601D118A16002130FE /* CGPDFDocument.m in Sources */,
 				F77B0E621D118A16002130FE /* REMenuContainerView.m in Sources */,
 				F77B0E631D118A16002130FE /* CCShareOC.m in Sources */,
-				F77B0E641D118A16002130FE /* UIWindow+AHKAdditions.m in Sources */,
 				F73CCE261DC13788007E38D8 /* UIScrollView+EmptyDataSet.m in Sources */,
 				F7F54D071E5B14C800E19C62 /* MWGridCell.m in Sources */,
 				F77B0E651D118A16002130FE /* LMMediaPlayerView.m in Sources */,
@@ -4082,9 +4081,11 @@
 				F77B0E8C1D118A16002130FE /* ReaderConstants.m in Sources */,
 				F77B0E8D1D118A16002130FE /* LMMediaPlayer.m in Sources */,
 				F77B0E8F1D118A16002130FE /* CCSection.m in Sources */,
+				F72AAECB1E5C60C700BB17E1 /* AHKActionSheetViewController.m in Sources */,
 				F77B0E901D118A16002130FE /* CCManageHelp.m in Sources */,
 				F77B0E911D118A16002130FE /* CCTemplates.m in Sources */,
 				F73CCDE11DC13776007E38D8 /* XLFormDatePickerCell.m in Sources */,
+				F72AAECD1E5C60C700BB17E1 /* UIWindow+AHKAdditions.m in Sources */,
 				F77B0E921D118A16002130FE /* CCCellMainTransfer.m in Sources */,
 				F73CCDE31DC13776007E38D8 /* XLFormImageCell.m in Sources */,
 				F77B0E941D118A16002130FE /* BKTouchIDManager.m in Sources */,
@@ -4101,7 +4102,6 @@
 				F77B0E9A1D118A16002130FE /* BKTouchIDSwitchView.m in Sources */,
 				F7F06ECB1DBFACC600099AE9 /* CTAssetThumbnailOverlay.m in Sources */,
 				F77B0E9B1D118A16002130FE /* CCBKPasscode.m in Sources */,
-				F77B0E9C1D118A16002130FE /* AHKActionSheet.m in Sources */,
 				F77B0E9D1D118A16002130FE /* HRColorPickerView.m in Sources */,
 				F7CE28851D1ACFA70025783C /* CCProgressView.m in Sources */,
 				F7C994321E3A92C500C2466C /* CCConstant.swift in Sources */,
@@ -4140,7 +4140,6 @@
 				F77B0EB81D118A16002130FE /* CCAccountWeb.m in Sources */,
 				F708CF7F1E56E8CC00271D8B /* TableDirectory+CoreDataClass.m in Sources */,
 				F77B0EB91D118A16002130FE /* HRColorUtil.m in Sources */,
-				F77B0EBA1D118A16002130FE /* UIImage+AHKAdditions.m in Sources */,
 				F73CCDD91DC13776007E38D8 /* XLFormBaseCell.m in Sources */,
 				F708CF881E56E8CC00271D8B /* TableShare+CoreDataProperties.m in Sources */,
 				F7F06EA71DBFACC600099AE9 /* CTAssetPlayButton.m in Sources */,
@@ -4169,6 +4168,7 @@
 				F77B0ECE1D118A16002130FE /* NSData+CommonCrypto.m in Sources */,
 				F7C00D491E2D0D0F0032160B /* CCOffline.m in Sources */,
 				F77B0ECF1D118A16002130FE /* CYRToken.m in Sources */,
+				F72AAECA1E5C60C700BB17E1 /* AHKActionSheet.m in Sources */,
 				F7F06EB11DBFACC600099AE9 /* CTAssetsGridView.m in Sources */,
 				F7D6A0931D82DBFA0045AD1A /* CCControlCenterCell.m in Sources */,
 				F77B0ED11D118A16002130FE /* Acknowledgements.m in Sources */,
