@@ -217,9 +217,11 @@
     // Menu e Bar
     [self createReMainMenu];
     [self createReSelectMenu];
+    
     if (_isSelectedMode)
         [self setUINavigationBarSelected];
-    else [self setUINavigationBarDefault];
+    else
+        [self setUINavigationBarDefault];
     
     // Plus Button
     [app plusButtonVisibile:true];
@@ -581,6 +583,7 @@
     
     // close Menu
     [app.reSelectMenu close];
+    [app.reMainMenu close];
 }
 
 - (void)setUINavigationBarSelected
