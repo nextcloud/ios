@@ -93,6 +93,7 @@
 + (void)setCameraUploadSaveAlbum:(BOOL)saveAlbum activeAccount:(NSString *)activeAccount;
 
 + (void)setUserProfileActiveAccount:(NSString *)activeAccount userProfile:(OCUserProfile *)userProfile;
++ (void)setServerVersionActiveAccount:(NSString *)activeAccount versionMajor:(NSInteger)versionMajor versionMinor:(NSInteger)versionMinor versionMicro:(NSInteger)versionMicro;
 
 // ===== Certificates =====
 

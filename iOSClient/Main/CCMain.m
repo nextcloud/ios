@@ -29,6 +29,8 @@
 #import <OCCommunicationLib/OCNotifications.h>
 #import <OCCommunicationLib/OCNotificationsAction.h>
 #import <OCCommunicationLib/OCFrameworkConstants.h>
+#import <OCCommunicationLib/OCCapabilities.h>
+
 #import "CTAssetCheckmark.h"
 
 #import "Nextcloud-Swift.h"
@@ -1103,7 +1105,7 @@
 {
     app.capabilities = capabilities;
     
-    
+    [CCCoreData setServerVersionActiveAccount:app.activeAccount versionMajor:capabilities.versionMajor versionMinor:capabilities.versionMinor versionMicro:capabilities.versionMicro];
 }
 
 - (void)getFeaturesSupportedByServerSuccess:(BOOL)hasCapabilitiesSupport hasForbiddenCharactersSupport:(BOOL)hasForbiddenCharactersSupport hasShareSupport:(BOOL)hasShareSupport hasShareeSupport:(BOOL)hasShareeSupport

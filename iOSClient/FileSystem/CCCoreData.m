@@ -527,6 +527,22 @@
     }];
 }
 
++ (void)setServerVersionActiveAccount:(NSString *)activeAccount versionMajor:(NSInteger)versionMajor versionMinor:(NSInteger)versionMinor versionMicro:(NSInteger)versionMicro
+{
+    [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
+        
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@)", activeAccount];
+        TableAccount *record = [TableAccount MR_findFirstWithPredicate:predicate inContext:localContext];
+
+        if (record) {
+            
+            record.versionMajor = [NSNumber numberWithInteger:versionMajor];
+            record.versionMinor = [NSNumber numberWithInteger:versionMinor];
+            record.versionMicro = [NSNumber numberWithInteger:versionMicro];
+        }
+    }];
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Certificates =====
 #pragma --------------------------------------------------------------------------------------------
