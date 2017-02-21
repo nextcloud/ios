@@ -271,7 +271,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     
     [request setHTTPBody:[body dataUsingEncoding:NSUTF8StringEncoding]];
     
-    [request setValue:@"application/xml" forHTTPHeaderField:@"Content-Type"];
+    [request setValue:@"text/xml" forHTTPHeaderField:@"Content-Type"];
     
     OCHTTPRequestOperation *operation = [self mr_operationWithRequest:request onCommunication:sharedOCCommunication withUserSessionToken:token success:success failure:failure];
     [self setRedirectionBlockOnDatataskWithOCCommunication:sharedOCCommunication andSessionManager:sharedOCCommunication.networkSessionManager];
