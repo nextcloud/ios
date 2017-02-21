@@ -258,7 +258,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     [operation resume];
 }
 
-- (void)mr_search:(NSString *)path fileName:(NSString *)fileName depth:(NSUInteger)depth withUserSessionToken:(NSString*)token onCommunication:
+- (void)mr_search:(NSString *)path fileName:(NSString *)fileName depth:(NSString *)depth withUserSessionToken:(NSString*)token onCommunication:
 (OCCommunication *)sharedOCCommunication
             success:(void(^)(NSHTTPURLResponse *operation, id response, NSString *token))success
             failure:(void(^)(NSHTTPURLResponse *response, id  _Nullable responseObject, NSError *, NSString *token))failure {
@@ -299,11 +299,11 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     [self mr_listPath:path depth:1 withUserSessionToken:token onCommunication:sharedOCCommunication success:success failure:failure];
 }
 
-- (void)search:(NSString *)path fileName:(NSString *)fileName
+- (void)search:(NSString *)path fileName:(NSString *)fileName depth:(NSString *)depth
  onCommunication:(OCCommunication *)sharedOCCommunication withUserSessionToken:(NSString *)token
          success:(void(^)(NSHTTPURLResponse *, id, NSString *token))success
          failure:(void(^)(NSHTTPURLResponse *, id  _Nullable responseObject, NSError *, NSString *token))failure {
-    [self mr_search:path fileName:fileName depth:1 withUserSessionToken:token onCommunication:sharedOCCommunication success:success failure:failure];
+    [self mr_search:path fileName:fileName depth:depth withUserSessionToken:token onCommunication:sharedOCCommunication success:success failure:failure];
 }
 
 - (NSURLSessionDownloadTask *)downloadWithSessionPath:(NSString *)remoteSource toPath:(NSString *)localDestination defaultPriority:(BOOL)defaultPriority onCommunication:(OCCommunication *)sharedOCCommunication progress:(void(^)(NSProgress *progress))downloadProgress success:(void(^)(NSURLResponse *response, NSURL *filePath))success failure:(void(^)(NSURLResponse *response, NSError *error))failure{

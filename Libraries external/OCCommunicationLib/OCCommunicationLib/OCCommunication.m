@@ -617,7 +617,7 @@
 ///-----------------------------------
 /// @name search
 ///-----------------------------------
-- (void) search: (NSString *) path fileName:(NSString *)fileName withUserSessionToken:(NSString *)token
+- (void) search: (NSString *) path fileName:(NSString *)fileName depth:(NSString *)depth withUserSessionToken:(NSString *)token
     onCommunication:(OCCommunication *)sharedOCCommunication
      successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token)) successRequest
      failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer)) failureRequest{
@@ -631,7 +631,7 @@
     OCWebDAVClient *request = [OCWebDAVClient new];
     request = [self getRequestWithCredentials:request];
     
-    [request search:path fileName:fileName onCommunication:sharedOCCommunication withUserSessionToken:token success:^(NSHTTPURLResponse *response, id responseObject, NSString *token) {
+    [request search:path fileName:fileName depth:depth onCommunication:sharedOCCommunication withUserSessionToken:token success:^(NSHTTPURLResponse *response, id responseObject, NSString *token) {
         if (successRequest) {
             NSData *responseData = (NSData*) responseObject;
             
