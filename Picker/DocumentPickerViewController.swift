@@ -128,7 +128,11 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         CCNetworking.shared().settingDelegate(self)
         hud = CCHud.init(view: self.navigationController?.view)
         
-        // COLOR_SEPARATOR_TABLE
+        // COLOR
+        self.navigationController?.navigationBar.barTintColor = CCConstant.GlobalConstants.k_Color_NavigationBar
+        self.navigationController?.navigationBar.tintColor = CCConstant.GlobalConstants.k_Color_NavigationBar_Text
+        self.navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: CCConstant.GlobalConstants.k_Color_NavigationBar_Text]
+        
         self.tableView.separatorColor = CCConstant.GlobalConstants.k_Color_Seperator
         self.tableView.tableFooterView = UIView()
         
