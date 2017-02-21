@@ -175,15 +175,18 @@
     }
     
     // No detail view present
-    UINavigationController *secondaryViewController = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"CCDetailNC"];
+    UINavigationController *secondaryNC = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"CCDetailNC"];
+    
+    // Color
+    [CCAspect aspectNavigationControllerBar:secondaryNC.navigationBar encrypted:NO online:YES hidden:NO];
     
     // Ensure back button is enabled
-    UIViewController *detailViewController = [secondaryViewController visibleViewController];
+    UIViewController *detailViewController = [secondaryNC visibleViewController];
     
     detailViewController.navigationItem.leftBarButtonItem = splitViewController.displayModeButtonItem;
     detailViewController.navigationItem.leftItemsSupplementBackButton = YES;
     
-    return secondaryViewController;
+    return secondaryNC;
 }
 
 - (UIViewController *)primaryViewControllerForExpandingSplitViewController:(UISplitViewController *)splitViewController
