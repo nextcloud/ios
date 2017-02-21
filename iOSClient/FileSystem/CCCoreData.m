@@ -304,6 +304,21 @@
     else return NO;
 }
 
++ (float)getServerVersionActiveAccount:(NSString *)activeAccount
+{
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@)", activeAccount];
+    TableAccount *record = [TableAccount MR_findFirstWithPredicate:predicate];
+
+    if (record) {
+        NSInteger versionMajor = [record.versionMajor integerValue];
+        NSInteger versionMinor = [record.versionMinor integerValue];
+        
+        return versionMajor + versionMinor/100;
+
+    } else
+        return 0.0;
+}
+
 + (void)setCameraUpload:(BOOL)state activeAccount:(NSString *)activeAccount
 {
     [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {

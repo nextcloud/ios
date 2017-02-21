@@ -74,6 +74,7 @@
 + (BOOL)getCameraUploadWWanPhotoActiveAccount:(NSString *)activeAccount;
 + (BOOL)getCameraUploadWWanVideoActiveAccount:(NSString *)activeAccount;
 + (BOOL)getCameraUploadSaveAlbumActiveAccount:(NSString *)activeAccount;
++ (float)getServerVersionActiveAccount:(NSString *)activeAccount;
 
 + (void)setCameraUpload:(BOOL)state activeAccount:(NSString *)activeAccount;
 + (void)setCameraUploadBackground:(BOOL)state activeAccount:(NSString *)activeAccount;

@@ -289,7 +289,9 @@ class CCActions: NSObject {
     
     func search(_ serverUrl : String?, fileName : String, delegate: AnyObject) {
         
-        if (serverUrl == nil) {
+        let versionServer = CCCoreData.getServerVersionActiveAccount(appDelegate.activeAccount)
+        
+        if (versionServer < 12.0) {
             
             let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
 
