@@ -74,8 +74,6 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         return queue
     }()
     
-    let colorEncrypted = UIColor(colorLiteralRed: 241.0/255.0, green: 90.0/255.0, blue: 34.0/255.0, alpha: 1)
-    
     var hud : CCHud!
     
     // MARK: - IBOutlets
@@ -131,7 +129,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         hud = CCHud.init(view: self.navigationController?.view)
         
         // COLOR_SEPARATOR_TABLE
-        self.tableView.separatorColor = UIColor(colorLiteralRed: 153.0/255.0, green: 153.0/255.0, blue: 153.0/255.0, alpha: 0.2)
+        self.tableView.separatorColor = CCConstant.GlobalConstants.k_Color_Seperator
         self.tableView.tableFooterView = UIView()
         
         // Get Crypto Cloud Mode
@@ -154,7 +152,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
             
             // Color Button
             if parameterEncrypted == true {
-                encryptedButton.tintColor = colorEncrypted
+                encryptedButton.tintColor = CCConstant.GlobalConstants.k_Color_Cryptocloud
             } else {
                 encryptedButton.tintColor = self.view.tintColor
                 
@@ -489,7 +487,7 @@ extension DocumentPickerViewController {
         parameterEncrypted = !parameterEncrypted!
         
         if parameterEncrypted == true {
-            encryptedButton.tintColor = colorEncrypted
+            encryptedButton.tintColor = CCConstant.GlobalConstants.k_Color_Cryptocloud
         } else {
             encryptedButton.tintColor = self.view.tintColor
         }
@@ -616,7 +614,7 @@ extension DocumentPickerViewController {
         viewController.touchIDManager = touchIDManager
         viewController.title = title
         viewController.navigationItem.leftBarButtonItem = UIBarButtonItem.init(barButtonSystemItem: UIBarButtonSystemItem.cancel, target: self, action: #selector(passcodeViewCloseButtonPressed(sender:)))
-        viewController.navigationItem.leftBarButtonItem?.tintColor = colorEncrypted
+        viewController.navigationItem.leftBarButtonItem?.tintColor = CCConstant.GlobalConstants.k_Color_Cryptocloud
         
         let navController = UINavigationController.init(rootViewController: viewController)
         self.present(navController, animated: true, completion: nil)
