@@ -102,8 +102,7 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializeMain:) name:@"initializeMain" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(clearDateReadDataSource:) name:@"clearDateReadDataSource" object:nil];
 
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setTitleNOAnimation) name:@"setTitleCCMainNOAnimation" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setTitleYESAnimation) name:@"setTitleCCMainYESAnimation" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setTitle) name:@"setTitleMain" object:nil];
     }
     
     return self;

@@ -1011,7 +1011,7 @@
     if ([self.reachability isReachableViaWiFi]) NSLog(@"[LOG] Reachability Changed: WiFi");
     if ([self.reachability isReachableViaWWAN]) NSLog(@"[LOG] Reachability Changed: WWAn");
     
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"setTitleCCMainNOAnimation" object:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"setTitleMain" object:nil];
 }
 
 #pragma --------------------------------------------------------------------------------------------
