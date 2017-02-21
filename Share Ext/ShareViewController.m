@@ -163,18 +163,11 @@
 {    
     UIBarButtonItem *rightButtonUpload, *rightButtonEncrypt, *leftButtonCancel;
     
-    barTintColor = self.navigationController.navigationBar.barTintColor;
-    tintColor = self.navigationController.navigationBar.tintColor;
+    self.navigationController.navigationBar.barTintColor = COLOR_NAVIGATIONBAR;
+    self.navigationController.navigationBar.tintColor = COLOR_NAVIGATIONBAR_TEXT;
     
-    if (barTintColor == nil) barTintColor = COLOR_NAVIGATIONBAR;
-    if (tintColor == nil) tintColor  = COLOR_NAVIGATIONBAR_TEXT;
-    
-    // Toolbar Color & navigationBar Color
-    self.toolBar.barTintColor = barTintColor;
-    self.toolBar.tintColor = tintColor;
-    
-    self.navigationController.navigationBar.barTintColor = barTintColor;
-    self.navigationController.navigationBar.tintColor = tintColor;
+    self.toolBar.barTintColor = COLOR_TABBAR;
+    self.toolBar.tintColor = COLOR_TABBAR_TEXT;
     
     // Upload
     if (self.localCryptated && _isCryptoCloudMode) {
