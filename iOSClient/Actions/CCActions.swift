@@ -287,7 +287,7 @@ class CCActions: NSObject {
     // MARK: Search
     // --------------------------------------------------------------------------------------------
     
-    func search(_ serverUrl : String?, fileName : String, delegate: AnyObject) {
+    func search(_ serverUrl : String, fileName : String, depth : String, delegate: AnyObject) {
         
         let versionServer = CCCoreData.getServerVersionActiveAccount(appDelegate.activeAccount)
         
@@ -300,7 +300,7 @@ class CCActions: NSObject {
             metadataNet.delegate = delegate
             metadataNet.fileName = fileName
             metadataNet.selector = selectorSearch
-            metadataNet.serverUrl = serverUrl!
+            metadataNet.serverUrl = serverUrl
 
             appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
             
@@ -313,8 +313,9 @@ class CCActions: NSObject {
             metadataNet.action = actionSearch
             metadataNet.delegate = delegate
             metadataNet.fileName = fileName
+            metadataNet.options = depth
             metadataNet.selector = selectorSearch
-            metadataNet.serverUrl = serverUrl!
+            metadataNet.serverUrl = serverUrl
 
             appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
         }

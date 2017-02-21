@@ -1883,8 +1883,12 @@
     if (fileName.length >= k_minCharsSearch && [fileName isEqualToString:_searchFileName] == NO) {
         
         _searchFileName = fileName;
+        NSString *depth = @"1";
         
-        [[CCActions sharedInstance] search:_serverUrl fileName:_searchFileName delegate:self];
+        if ([[CCUtility getHomeServerUrlActiveUrl:app.activeUrl] isEqualToString:_serverUrl])
+            depth = @"infinity";
+        
+        [[CCActions sharedInstance] search:_serverUrl fileName:_searchFileName depth:depth delegate:self];
     }
     
     if (_searchResultMetadatas.count == 0 && fileName.length == 0) {
