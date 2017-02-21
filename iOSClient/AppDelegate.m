@@ -169,7 +169,7 @@
     pageControl.pageIndicatorTintColor = [UIColor whiteColor];
     pageControl.currentPageIndicatorTintColor = COLOR_PAGECONTROL_INDICATOR;
     pageControl.backgroundColor = COLOR_BACKGROUND_PAGECONTROL;
-    [[UIBarButtonItem appearanceWhenContainedIn: [UISearchBar class], nil] setTintColor:COLOR_TEXT_ANTHRACITE];
+    //[[UIBarButtonItem appearanceWhenContainedIn: [UISearchBar class], nil] setTintColor:COLOR_TEXT_ANTHRACITE];
     
     // remove tmp & cache
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -220,7 +220,8 @@
     // it is a device Jailbroken
     self.isDeviceJailbroken = isDeviceJailbroken();
 
-    [self.window setTintColor:COLOR_NAVIGATIONBAR_TEXT];
+    // Tint Color GLOBAL WINDOW
+    [self.window setTintColor:COLOR_WINDOW_TINTCOLOR];
     
     UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
     //UITabBarController *tabBarController = [splitViewController.viewControllers firstObject];
