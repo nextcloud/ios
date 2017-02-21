@@ -182,7 +182,7 @@ extern NSString * _Nullable OCWebDAVModificationDateKey;
 
 
 
-- (void)search:(NSString * _Nonnull)fileName
+- (void)search:(NSString * _Nonnull)path fileName:(NSString * _Nonnull)fileName
  onCommunication:(OCCommunication * _Nonnull)sharedOCCommunication withUserSessionToken:(NSString * _Nonnull)token
          success:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull, id  _Nonnull, NSString * _Nonnull token))success
          failure:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull, id  _Nullable responseObject, NSError * _Nonnull, NSString * _Nonnull token))failure;

@@ -289,7 +289,7 @@ class CCActions: NSObject {
     
     func search(_ serverUrl : String?, fileName : String, delegate: AnyObject) {
         
-        if (serverUrl != nil) {
+        if (serverUrl == nil) {
             
             let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
 
@@ -305,6 +305,16 @@ class CCActions: NSObject {
         } else {
             
             // Search DAV API
+            
+            let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
+            
+            metadataNet.action = actionSearch
+            metadataNet.delegate = delegate
+            metadataNet.fileName = fileName
+            metadataNet.selector = selectorSearch
+            metadataNet.serverUrl = serverUrl!
+
+            appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
         }
     }
     
