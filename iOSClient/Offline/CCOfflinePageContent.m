@@ -130,13 +130,13 @@
 
 - (UIImage *)imageForEmptyDataSet:(UIScrollView *)scrollView
 {
-    if ([self.pageType isEqualToString:k_pageOfflineOffline])
-        return [UIImage imageNamed:image_brandOffline];
+    //if ([self.pageType isEqualToString:k_pageOfflineOffline])
+    //    return [UIImage imageNamed:image_brandOffline];
     
-    if ([self.pageType isEqualToString:k_pageOfflineLocal])
-        return [UIImage imageNamed:image_brandLocal];
+    //if ([self.pageType isEqualToString:k_pageOfflineLocal])
+    return [UIImage imageNamed:image_brandBackgroundLite];
     
-    return nil;
+    //return nil;
 }
 
 - (NSAttributedString *)titleForEmptyDataSet:(UIScrollView *)scrollView
@@ -144,10 +144,10 @@
     NSString *text;
     
     if ([self.pageType isEqualToString:k_pageOfflineOffline])
-        text = NSLocalizedString(@"_no_files_uploaded_", nil);
+        text = [NSString stringWithFormat:@"\n%@", @""]; //[NSString stringWithFormat:@"\n\n%@", NSLocalizedString(@"_no_files_uploaded_", nil)];
     
     if ([self.pageType isEqualToString:k_pageOfflineLocal])
-        text = NSLocalizedString(@"_no_files_uploaded_", nil);
+        text = [NSString stringWithFormat:@"\n%@", @""];
     
     NSDictionary *attributes = @{NSFontAttributeName:[UIFont boldSystemFontOfSize:20.0f], NSForegroundColorAttributeName:COLOR_BRAND};
     
@@ -159,10 +159,10 @@
     NSString *text;
     
     if ([self.pageType isEqualToString:k_pageOfflineOffline])
-        text = NSLocalizedString(@"_tutorial_offline_view_", nil);
+        text = [NSString stringWithFormat:@"%@", NSLocalizedString(@"_tutorial_offline_view_", nil)];
         
     if ([self.pageType isEqualToString:k_pageOfflineLocal])
-        text = NSLocalizedString(@"_tutorial_local_view_", nil);
+        text = [NSString stringWithFormat:@"%@", NSLocalizedString(@"_tutorial_local_view_", nil)];
     
     NSMutableParagraphStyle *paragraph = [NSMutableParagraphStyle new];
     paragraph.lineBreakMode = NSLineBreakByWordWrapping;

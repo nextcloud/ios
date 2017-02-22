@@ -208,9 +208,9 @@
 "_offline_"                     = "Offline";
 "_local_storage_"               = "Local storage";
 "_no_files_uploaded_"           = "No files uploaded";
-"_tutorial_favorite_view_"      = "Copy here the files that should be available offline. They will be synchronized with your cloud.";
-"_tutorial_offline_view_"       = "Copy here the files that should be available offline. They will be synchronized with your cloud.";
-"_tutorial_local_view_"         = "Copy here the files you want to have available offline, but that will no longer be synchronized with your cloud. \n\n You'll find the unpacked files from your cloud. \n\n Connect to iTunes to share these files.";
+"_tutorial_favorite_view_"      = "Copy here the files that should be available offline.\n\nThey will be synchronized with your cloud.";
+"_tutorial_offline_view_"       = "Copy here the files that should be available offline.\n\nThey will be synchronized with your cloud.";
+"_tutorial_local_view_"         = "You'll find the unpacked files from your cloud.\n\nConnect to iTunes to share these files.";
 "_more_"                        = "More";
 
 // Camera Upload

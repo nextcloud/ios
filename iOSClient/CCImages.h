@@ -40,7 +40,7 @@
 #define image_brandNavigationController2        @"nextcloud_navigationcontroller2"
 #define image_brandNavigationController3        @"nextcloud_navigationcontroller3"
 #define image_brandNavigationControllerOffline  @"nextcloud_navigationcontroller_offline"
-#define image_brandSfondoiPad                   @"nextcloud_sfondo_iPad"
+#define image_brandBackgroundLite               @"nextcloud_lite"
 #define image_checked                           @"checkedNextcloud"
 #define image_decryptedSelectedFiles            @"decryptedSelectedFilesNextcloud"
 #define image_deleteSelectedFiles               @"deleteSelectedFilesNextcloud"

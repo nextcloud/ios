@@ -78,7 +78,7 @@
 {
     [super viewDidLoad];
     
-    self.imageBackground.image = [UIImage imageNamed:image_brandSfondoiPad];
+    self.imageBackground.image = [UIImage imageNamed:image_brandBackgroundLite];
     
     if ([self.metadataDetail.fileName length] > 0 || [self.metadataDetail.directoryID length] > 0 || [self.metadataDetail.fileID length] > 0) {
     

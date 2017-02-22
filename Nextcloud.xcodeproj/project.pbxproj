@@ -2897,7 +2897,7 @@
 			path = Utility;
 			sourceTree = "<group>";
 		};
-		F7C00D411E2D0D0F0032160B /* Offline */ = {
+		F7C00D411E2D0D0F0032160B /* Offline - Synchronize */ = {
 			isa = PBXGroup;
 			children = (
 				F7C00D421E2D0D0F0032160B /* CCCellOffline.h */,
@@ -2910,6 +2910,7 @@
 				F7EC14791E5D9C0B0046F351 /* CCSynchronize.h */,
 				F7EC147A1E5D9C0B0046F351 /* CCSynchronize.m */,
 			);
+			name = "Offline - Synchronize";
 			path = Offline;
 			sourceTree = "<group>";
 		};
@@ -3196,7 +3197,7 @@
 				F7F9E3451BC26B19004B9223 /* Move */,
 				F74D3DB81BAC1941000BAE4B /* Networking */,
 				F7C5259A1E3B441D00FFE02C /* Notification */,
-				F7C00D411E2D0D0F0032160B /* Offline */,
+				F7C00D411E2D0D0F0032160B /* Offline - Synchronize */,
 				F7FCFFD51D70798C000E6E29 /* PeekPop */,
 				F719FDAE1CF06645004895D0 /* PhotosCameraUpload */,
 				F7BE6E2A1D2D5C3B00106933 /* QuickActions */,
