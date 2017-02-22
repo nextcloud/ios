@@ -423,9 +423,26 @@
     [communication setUserAgent:[CCUtility getUserAgent]];
     
     [communication search:_metadataNet.serverUrl fileName:_metadataNet.fileName depth:_metadataNet.options withUserSessionToken:nil onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token) {
-        //
+        
+        if ([self.delegate respondsToSelector:@selector(searchSuccess:metadatas:)])
+            [self.delegate searchSuccess:_metadataNet metadatas:nil];
+        
+        [self complete];
+        
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer) {
-        //
+        
+        NSInteger errorCode = response.statusCode;
+        if (errorCode == 0)
+            errorCode = error.code;
+
+        if ([self.delegate respondsToSelector:@selector(searchFailure:message:errorCode:)])
+            [self.delegate searchFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        
+        // Request trusted certificated
+        if ([error code] == NSURLErrorServerCertificateUntrusted)
+            [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
+        
+        [self complete];
     }];
 }
 

@@ -632,11 +632,10 @@
     request = [self getRequestWithCredentials:request];
     
     [request search:path fileName:fileName depth:depth user:_user onCommunication:sharedOCCommunication withUserSessionToken:token success:^(NSHTTPURLResponse *response, id responseObject, NSString *token) {
+        
         if (successRequest) {
-            NSData *responseData = (NSData*) responseObject;
             
-            //            NSString* newStr = [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding];
-            //            NSLog(@"newStrReadFolder: %@", newStr);
+            NSData *responseData = (NSData*) responseObject;
             
             OCXMLParser *parser = [[OCXMLParser alloc]init];
             [parser initParserWithData:responseData];
@@ -647,8 +646,10 @@
         }
         
     } failure:^(NSHTTPURLResponse *response, id responseData, NSError *error, NSString *token) {
+        
         NSLog(@"Failure");
         failureRequest(response, error, token, request.redirectedServer);
+        
     }];
 }
 
