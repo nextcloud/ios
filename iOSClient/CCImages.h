@@ -66,7 +66,7 @@
 #define image_settingsMail                      @"settingsMailNextcloud"
 #define image_settingsManagePhotos              @"settingsManagePhotosNextcloud"
 #define image_settingsManagePhotosChange        @"settingsManagePhotosChangeNextcloud"
-#define image_tabBarFile                        @"tabBarNextcloud"
+#define image_tabBarFile                        @"fileNextcloud"
 #define image_thumbs                            @"thumbsNextcloud"
 #define image_notification                      @"notification"
 
