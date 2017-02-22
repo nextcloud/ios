@@ -27,6 +27,7 @@
 #import "CCCertificate.h"
 #import "TableAccount+CoreDataClass.h"
 #import "NSDate+ISO8601.h"
+#import "NSString+Encode.h"
 
 @interface CCNetworking ()
 {
@@ -518,7 +519,7 @@
     NSURL *url;
     NSMutableURLRequest *request;
     
-    NSString *serverFileUrl = [[NSString stringWithFormat:@"%@/%@", serverUrl, fileName] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    NSString *serverFileUrl = [[NSString stringWithFormat:@"%@/%@", serverUrl, fileName] encodeString:NSUTF8StringEncoding];
         
     url = [NSURL URLWithString:serverFileUrl];
     request = [NSMutableURLRequest requestWithURL:url];
@@ -1144,8 +1145,8 @@
     NSURLSession *sessionUpload;
     NSURL *url;
     NSMutableURLRequest *request;
-    
-    NSString *fileNamePath = [[NSString stringWithFormat:@"%@/%@", serverUrl, fileName] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+        
+    NSString *fileNamePath = [[NSString stringWithFormat:@"%@/%@", serverUrl, fileName] encodeString:NSUTF8StringEncoding];
         
     url = [NSURL URLWithString:fileNamePath];
     request = [NSMutableURLRequest requestWithURL:url];
