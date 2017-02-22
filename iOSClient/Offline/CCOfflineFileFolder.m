@@ -173,25 +173,25 @@
         
         NSArray *recordsInSessions = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND (session != NULL) AND (session != '')", app.activeAccount, metadataNet.directoryID] context:nil];
         
-        // ----- Test metadata not present (DELETE) -----
+        // ----- Test : (DELETE) -----
         
         NSMutableArray *metadatasNotPresents = [[NSMutableArray alloc] init];
-        NSArray *metadatasInDB = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@)", app.activeAccount, metadataNet.directoryID] context:nil];
+        NSArray *tableMetadatasInDB = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND ((session == NULL) OR (session == ''))", app.activeAccount, metadataNet.directoryID] context:nil];
         
-        for (CCMetadata *metadataDB in metadatasInDB) {
+        for (TableMetadata *tableMetadataDB in tableMetadatasInDB) {
             
             BOOL fileIDFound = NO;
             
             for (CCMetadata *metadata in metadatas) {
                 
-                if ([metadataDB.fileID isEqualToString:metadata.fileID]) {
+                if ([tableMetadataDB.fileID isEqualToString:metadata.fileID]) {
                     fileIDFound = YES;
                     break;
                 }
             }
             
             if (!fileIDFound)
-                [metadatasNotPresents addObject:metadataDB];
+                [metadatasNotPresents addObject:[CCCoreData insertEntityInMetadata:tableMetadataDB]];
         }
         
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -207,7 +207,7 @@
             
         });
         
-        // ----- Search metadata for test change metadata (MODIFY) -----
+        // ----- Test : (MODIFY) -----
         
         for (CCMetadata *metadata in metadatas) {
             
