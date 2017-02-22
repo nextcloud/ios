@@ -272,12 +272,12 @@
 
 - (UIImage *)imageForEmptyDataSet:(UIScrollView *)scrollView
 {
-    return [UIImage imageNamed:image_brandCameraUpload];
+    return [UIImage imageNamed:image_brandBackgroundLite];
 }
 
 - (NSAttributedString *)titleForEmptyDataSet:(UIScrollView *)scrollView
 {
-    NSString *text = NSLocalizedString(@"_no_photo_load_", nil);
+    NSString *text = [NSString stringWithFormat:@"%@", @""];
     
     NSDictionary *attributes = @{NSFontAttributeName:[UIFont boldSystemFontOfSize:20.0f], NSForegroundColorAttributeName:COLOR_BRAND};
     
@@ -289,13 +289,16 @@
     NSMutableParagraphStyle *paragraph = [NSMutableParagraphStyle new];
     paragraph.lineBreakMode = NSLineBreakByWordWrapping;
     paragraph.alignment = NSTextAlignmentCenter;
-    
-    NSDictionary *attributes = @{NSFontAttributeName: [UIFont systemFontOfSize:14.0], NSForegroundColorAttributeName: [UIColor lightGrayColor], NSParagraphStyleAttributeName: paragraph};
+    NSString *text;
     
     if ([CCCoreData getCameraUploadActiveAccount:app.activeAccount])
-        return [[NSAttributedString alloc] initWithString:NSLocalizedString(@"_tutorial_photo_view_", nil) attributes:attributes];
+        text = [NSString stringWithFormat:@"\n%@", NSLocalizedString(@"_tutorial_photo_view_", nil)];
     else
-        return [[NSAttributedString alloc] initWithString:NSLocalizedString(@"_tutorial_camera_upload_view_", nil) attributes:attributes];
+        text = [NSString stringWithFormat:@"\n%@\n", NSLocalizedString(@"_tutorial_camera_upload_view_", nil)];
+    
+    NSDictionary *attributes = @{NSFontAttributeName: [UIFont systemFontOfSize:14.0], NSForegroundColorAttributeName: [UIColor lightGrayColor], NSParagraphStyleAttributeName: paragraph};
+
+    return [[NSAttributedString alloc] initWithString:text attributes:attributes];
 }
 
 - (UIImage *)buttonImageForEmptyDataSet:(UIScrollView *)scrollView forState:(UIControlState)state

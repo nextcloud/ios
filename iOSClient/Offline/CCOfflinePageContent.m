@@ -144,10 +144,10 @@
     NSString *text;
     
     if ([self.pageType isEqualToString:k_pageOfflineOffline])
-        text = [NSString stringWithFormat:@"\n%@", @""]; //[NSString stringWithFormat:@"\n\n%@", NSLocalizedString(@"_no_files_uploaded_", nil)];
+        text = [NSString stringWithFormat:@"%@", @""];
     
     if ([self.pageType isEqualToString:k_pageOfflineLocal])
-        text = [NSString stringWithFormat:@"\n%@", @""];
+        text = [NSString stringWithFormat:@"%@", @""];
     
     NSDictionary *attributes = @{NSFontAttributeName:[UIFont boldSystemFontOfSize:20.0f], NSForegroundColorAttributeName:COLOR_BRAND};
     
@@ -159,10 +159,10 @@
     NSString *text;
     
     if ([self.pageType isEqualToString:k_pageOfflineOffline])
-        text = [NSString stringWithFormat:@"%@", NSLocalizedString(@"_tutorial_offline_view_", nil)];
+        text = [NSString stringWithFormat:@"\n%@", NSLocalizedString(@"_tutorial_offline_view_", nil)];
         
     if ([self.pageType isEqualToString:k_pageOfflineLocal])
-        text = [NSString stringWithFormat:@"%@", NSLocalizedString(@"_tutorial_local_view_", nil)];
+        text = [NSString stringWithFormat:@"\n%@", NSLocalizedString(@"_tutorial_local_view_", nil)];
     
     NSMutableParagraphStyle *paragraph = [NSMutableParagraphStyle new];
     paragraph.lineBreakMode = NSLineBreakByWordWrapping;
