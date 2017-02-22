@@ -513,8 +513,8 @@
 		F7D6A0951D82DBFA0045AD1A /* CCControlCenterCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7D6A08D1D82DBFA0045AD1A /* CCControlCenterCell.xib */; };
 		F7D6A0971D82DBFA0045AD1A /* CCMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D6A08F1D82DBFA0045AD1A /* CCMenu.m */; };
 		F7DA62AE1E41E666003E1740 /* CCOfflinePageContent.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DA62AD1E41E666003E1740 /* CCOfflinePageContent.m */; };
-		F7DAE66E1E2E109F004EFA30 /* CCOfflineFileFolder.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DAE66D1E2E109F004EFA30 /* CCOfflineFileFolder.m */; };
 		F7DCA1C81D32BD4100E48D39 /* Share Ext Nextcloud.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = F7DCA1B81D32BD4100E48D39 /* Share Ext Nextcloud.entitlements */; };
+		F7EC147B1E5D9C0B0046F351 /* CCSynchronize.m in Sources */ = {isa = PBXBuildFile; fileRef = F7EC147A1E5D9C0B0046F351 /* CCSynchronize.m */; };
 		F7ECBA6D1E239DCD003E6328 /* CCCreateCloud.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7ECBA6C1E239DCD003E6328 /* CCCreateCloud.swift */; };
 		F7EF0CAF1D9E95F400A9D15E /* CCSharedDBSession.m in Sources */ = {isa = PBXBuildFile; fileRef = F7EF0CAD1D9E95F400A9D15E /* CCSharedDBSession.m */; };
 		F7F06E8D1DBFACC600099AE9 /* NSBundle+CTAssetsPickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F06E2E1DBFACC600099AE9 /* NSBundle+CTAssetsPickerController.m */; };
@@ -1436,10 +1436,10 @@
 		F7D96F0F1D99498700A587A5 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Error.strings; sourceTree = "<group>"; };
 		F7DA62AC1E41E666003E1740 /* CCOfflinePageContent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCOfflinePageContent.h; sourceTree = "<group>"; };
 		F7DA62AD1E41E666003E1740 /* CCOfflinePageContent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCOfflinePageContent.m; sourceTree = "<group>"; };
-		F7DAE66C1E2E109F004EFA30 /* CCOfflineFileFolder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCOfflineFileFolder.h; sourceTree = "<group>"; };
-		F7DAE66D1E2E109F004EFA30 /* CCOfflineFileFolder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCOfflineFileFolder.m; sourceTree = "<group>"; };
 		F7DCA1B81D32BD4100E48D39 /* Share Ext Nextcloud.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = "Share Ext Nextcloud.entitlements"; path = "Share Ext/Share Ext Nextcloud.entitlements"; sourceTree = SOURCE_ROOT; };
 		F7E456D41C89D54A00BD63F0 /* Share Ext-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Share Ext-Bridging-Header.h"; sourceTree = "<group>"; };
+		F7EC14791E5D9C0B0046F351 /* CCSynchronize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCSynchronize.h; sourceTree = "<group>"; };
+		F7EC147A1E5D9C0B0046F351 /* CCSynchronize.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCSynchronize.m; sourceTree = "<group>"; };
 		F7ECBA6C1E239DCD003E6328 /* CCCreateCloud.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CCCreateCloud.swift; sourceTree = "<group>"; };
 		F7EF0CAC1D9E95EC00A9D15E /* CCSharedDBSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = CCSharedDBSession.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		F7EF0CAD1D9E95F400A9D15E /* CCSharedDBSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = CCSharedDBSession.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
@@ -2907,8 +2907,8 @@
 				F7C00D461E2D0D0F0032160B /* CCOffline.m */,
 				F7DA62AC1E41E666003E1740 /* CCOfflinePageContent.h */,
 				F7DA62AD1E41E666003E1740 /* CCOfflinePageContent.m */,
-				F7DAE66C1E2E109F004EFA30 /* CCOfflineFileFolder.h */,
-				F7DAE66D1E2E109F004EFA30 /* CCOfflineFileFolder.m */,
+				F7EC14791E5D9C0B0046F351 /* CCSynchronize.h */,
+				F7EC147A1E5D9C0B0046F351 /* CCSynchronize.m */,
 			);
 			path = Offline;
 			sourceTree = "<group>";
@@ -4032,7 +4032,6 @@
 				F73CCDDD1DC13776007E38D8 /* XLFormCheckCell.m in Sources */,
 				F73CCE0B1DC13776007E38D8 /* NSPredicate+XLFormAdditions.m in Sources */,
 				F73CCE131DC13776007E38D8 /* XLFormRightImageButton.m in Sources */,
-				F7DAE66E1E2E109F004EFA30 /* CCOfflineFileFolder.m in Sources */,
 				F77B0E5D1D118A16002130FE /* UIImage+Blurring.m in Sources */,
 				F7C5259E1E3B45FA00FFE02C /* CCNotificationPushKey.swift in Sources */,
 				F7BE6E2F1D2D5C3B00106933 /* CCQuickActions.m in Sources */,
@@ -4133,6 +4132,7 @@
 				F73CCDEF1DC13776007E38D8 /* XLFormSliderCell.m in Sources */,
 				F77B0EB51D118A16002130FE /* RECommonFunctions.m in Sources */,
 				F73CCE111DC13776007E38D8 /* XLFormRightDetailCell.m in Sources */,
+				F7EC147B1E5D9C0B0046F351 /* CCSynchronize.m in Sources */,
 				F73CCDE71DC13776007E38D8 /* XLFormLeftRightSelectorCell.m in Sources */,
 				F77B0EB61D118A16002130FE /* MBProgressHUD.m in Sources */,
 				F77B0EB71D118A16002130FE /* ReaderThumbRequest.m in Sources */,

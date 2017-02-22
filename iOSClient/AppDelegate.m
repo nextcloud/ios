@@ -33,7 +33,7 @@
 #import "CCManageAsset.h"
 #import "CCGraphics.h"
 #import "CCPhotosCameraUpload.h"
-#import "CCOfflineFileFolder.h"
+#import "CCSynchronize.h"
 #import "CCMain.h"
 #import "CCDetail.h"
 
@@ -360,10 +360,10 @@
         [[NSNotificationCenter defaultCenter] postNotificationName:@"initStateCameraUpload" object:nil];
         
         NSLog(@"[LOG] read file Offline");
-        [[CCOfflineFileFolder sharedOfflineFileFolder] readFileOffline];
+        [[CCSynchronize sharedSynchronize] readFileOffline];
         
         NSLog(@"[LOG] read folder offline");
-        [[CCOfflineFileFolder sharedOfflineFileFolder] readFolderOffline];
+        [[CCSynchronize sharedSynchronize] readFolderOffline];
         
     });
     
@@ -386,7 +386,7 @@
         [directory addObject:record.serverUrl];
     
     if ([directory count] > 0)
-        [[CCOfflineFileFolder sharedOfflineFileFolder] offlineFolderAnimationDirectory:directory setGraphicsFolder:YES];
+        [[CCSynchronize sharedSynchronize] offlineFolderAnimationDirectory:directory setGraphicsFolder:YES];
 
 // ONLY BACKGROUND
     

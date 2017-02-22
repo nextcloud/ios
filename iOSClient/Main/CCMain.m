@@ -25,7 +25,7 @@
 
 #import "AppDelegate.h"
 #import "CCPhotosCameraUpload.h"
-#import "CCOfflineFileFolder.h"
+#import "CCSynchronize.h"
 #import <OCCommunicationLib/OCNotifications.h>
 #import <OCCommunicationLib/OCNotificationsAction.h>
 #import <OCCommunicationLib/OCFrameworkConstants.h>
@@ -405,7 +405,7 @@
 
         NSString *dir = [CCUtility stringAppendServerUrl:serverUrl addServerUrl:_metadata.fileNameData];
         
-        [[CCOfflineFileFolder sharedOfflineFileFolder] addOfflineFolder:dir];
+        [[CCSynchronize sharedSynchronize] addOfflineFolder:dir];
         
         [self performSelector:@selector(reloadDatasource) withObject:nil];
     }
@@ -1811,7 +1811,7 @@
     
     // File is changed ??
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
-        [[CCOfflineFileFolder sharedOfflineFileFolder] verifyChangeMedatas:metadatas serverUrl:metadataNet.serverUrl account:app.activeAccount offline:NO];
+        [[CCSynchronize sharedSynchronize] verifyChangeMedatas:metadatas serverUrl:metadataNet.serverUrl account:app.activeAccount offline:NO];
     });
 
     // this is the same directory
@@ -5009,7 +5009,7 @@
             else cell.offlineImageView.image = [UIImage imageNamed:image_offline];
             
             // Animation synchronized gif
-            if ([[CCOfflineFileFolder sharedOfflineFileFolder] offlineFolderAnimationDirectory:[[NSArray alloc] initWithObjects:directoryServerUrl, nil] setGraphicsFolder:NO]) {
+            if ([[CCSynchronize sharedSynchronize] offlineFolderAnimationDirectory:[[NSArray alloc] initWithObjects:directoryServerUrl, nil] setGraphicsFolder:NO]) {
                 
                 NSURL *myURL;
                 

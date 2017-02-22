@@ -1,5 +1,5 @@
 //
-//  CCOfflineFileFolder.m
+//  CCSynchronize.m
 //  Crypto Cloud Technology Nextcloud
 //
 //  Created by Marino Faggiana on 19/10/16.
@@ -21,29 +21,29 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#import "CCOfflineFileFolder.h"
+#import "CCSynchronize.h"
 
 #import "AppDelegate.h"
 #import "CCCoreData.h"
 #import "CCMain.h"
 
-@interface CCOfflineFileFolder ()
+@interface CCSynchronize ()
 {
     // local
 }
 @end
 
-@implementation CCOfflineFileFolder
+@implementation CCSynchronize
 
-+ (CCOfflineFileFolder *)sharedOfflineFileFolder{
-    static CCOfflineFileFolder *sharedOfflineFileFolder;
++ (CCSynchronize *)sharedSynchronize{
+    static CCSynchronize *sharedSynchronize;
     @synchronized(self)
     {
-        if (!sharedOfflineFileFolder) {
+        if (!sharedSynchronize) {
             
-            sharedOfflineFileFolder = [[CCOfflineFileFolder alloc] init];
+            sharedSynchronize = [[CCSynchronize alloc] init];
         }
-        return sharedOfflineFileFolder;
+        return sharedSynchronize;
     }
 }
 
@@ -224,7 +224,7 @@
                     
                     [CCCoreData addMetadata:metadata activeAccount:app.activeAccount activeUrl:app.activeUrl context:nil];
                     
-                    [[CCOfflineFileFolder sharedOfflineFileFolder] addOfflineFolder:dir];
+                    [[CCSynchronize sharedSynchronize] addOfflineFolder:dir];
 
                 });
                 
@@ -414,7 +414,7 @@
             [app addNetworkingOperationQueue:app.netQueueDownload delegate:app.activeMain metadataNet:metadataNet];
         }
     
-        [[CCOfflineFileFolder sharedOfflineFileFolder] offlineFolderAnimationDirectory:[[NSArray alloc] initWithObjects:serverUrl, nil] setGraphicsFolder:YES];
+        [[CCSynchronize sharedSynchronize] offlineFolderAnimationDirectory:[[NSArray alloc] initWithObjects:serverUrl, nil] setGraphicsFolder:YES];
         
         [app.activeMain reloadDatasource:serverUrl fileID:nil selector:nil];
         

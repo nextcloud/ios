@@ -24,7 +24,7 @@
 #import "CCOffline.h"
 
 #import "AppDelegate.h"
-#import "CCOfflineFileFolder.h"
+#import "CCSynchronize.h"
 
 #pragma GCC diagnostic ignored "-Wundeclared-selector"
 
