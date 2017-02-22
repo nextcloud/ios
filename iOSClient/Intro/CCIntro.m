@@ -60,21 +60,63 @@
     if (height >= 1024) { titleIconPositionY = 100; titlePositionY = 290; descPositionY = 250; }
     
     EAIntroPage *page1 = [EAIntroPage page];
-    page1.title = [CCUtility localizableBrand:@"_intro_01_" table:@"Intro"];
+    page1.title = [CCUtility localizableBrand:@"_intro_1_title_" table:@"Intro"];
     page1.titlePositionY = titlePositionY;
     page1.titleColor = COLOR_TEXT_ANTHRACITE;
     page1.titleFont = [UIFont systemFontOfSize:20];
-    page1.desc = [CCUtility localizableBrand:@"_intro_02_" table:@"Intro"];
+    page1.desc = [CCUtility localizableBrand:@"_intro_1_text_" table:@"Intro"];
     page1.descPositionY = descPositionY;
     page1.descColor = COLOR_TEXT_ANTHRACITE;
     page1.descFont = [UIFont systemFontOfSize:14];
-    page1.titleIconView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"intro1Nextcloud"]];
+    page1.titleIconView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"intro1"]];
     page1.bgImage = [UIImage imageNamed:@"bgbianco"];
     page1.titleIconPositionY = titleIconPositionY;
     page1.showTitleView = NO;
     
+    EAIntroPage *page2 = [EAIntroPage page];
+    page2.title = [CCUtility localizableBrand:@"_intro_2_title_" table:@"Intro"];
+    page2.titlePositionY = titlePositionY;
+    page2.titleColor = COLOR_TEXT_ANTHRACITE;
+    page2.titleFont = [UIFont systemFontOfSize:20];
+    page2.desc = [CCUtility localizableBrand:@"_intro_2_text_" table:@"Intro"];
+    page2.descPositionY = descPositionY;
+    page2.descColor = COLOR_TEXT_ANTHRACITE;
+    page2.descFont = [UIFont systemFontOfSize:14];
+    page2.titleIconView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"intro2"]];
+    page2.bgImage = [UIImage imageNamed:@"bgbianco"];
+    page2.titleIconPositionY = titleIconPositionY;
+    page2.showTitleView = NO;
+
+    EAIntroPage *page3 = [EAIntroPage page];
+    page3.title = [CCUtility localizableBrand:@"_intro_3_title_" table:@"Intro"];
+    page3.titlePositionY = titlePositionY;
+    page3.titleColor = COLOR_TEXT_ANTHRACITE;
+    page3.titleFont = [UIFont systemFontOfSize:20];
+    page3.desc = [CCUtility localizableBrand:@"_intro_3_text_" table:@"Intro"];
+    page3.descPositionY = descPositionY;
+    page3.descColor = COLOR_TEXT_ANTHRACITE;
+    page3.descFont = [UIFont systemFontOfSize:14];
+    page3.titleIconView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"intro3"]];
+    page3.bgImage = [UIImage imageNamed:@"bgbianco"];
+    page3.titleIconPositionY = titleIconPositionY;
+    page3.showTitleView = NO;
+
+    EAIntroPage *page4 = [EAIntroPage page];
+    page4.title = [CCUtility localizableBrand:@"_intro_4_title_" table:@"Intro"];
+    page4.titlePositionY = titlePositionY;
+    page4.titleColor = COLOR_TEXT_ANTHRACITE;
+    page4.titleFont = [UIFont systemFontOfSize:20];
+    page4.desc = [CCUtility localizableBrand:@"_intro_4_text_" table:@"Intro"];
+    page4.descPositionY = descPositionY;
+    page4.descColor = COLOR_TEXT_ANTHRACITE;
+    page4.descFont = [UIFont systemFontOfSize:14];
+    page4.titleIconView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"intro4"]];
+    page4.bgImage = [UIImage imageNamed:@"bgbianco"];
+    page4.titleIconPositionY = titleIconPositionY;
+    page4.showTitleView = NO;
+
     
-    EAIntroView *intro = [[EAIntroView alloc] initWithFrame:self.rootView.bounds andPages:@[page1]];
+    EAIntroView *intro = [[EAIntroView alloc] initWithFrame:self.rootView.bounds andPages:@[page1, page2, page3, page4]];
     //intro.backgroundColor = [UIColor whiteColor];
     intro.tapToNext = YES;
     intro.pageControl.pageIndicatorTintColor = [UIColor lightGrayColor];
