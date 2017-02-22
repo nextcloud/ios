@@ -258,26 +258,6 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     [operation resume];
 }
 
-- (void)mr_search:(NSString *)path fileName:(NSString *)fileName depth:(NSString *)depth user:(NSString *)user withUserSessionToken:(NSString*)token onCommunication:
-(OCCommunication *)sharedOCCommunication
-            success:(void(^)(NSHTTPURLResponse *operation, id response, NSString *token))success
-            failure:(void(^)(NSHTTPURLResponse *response, id  _Nullable responseObject, NSError *, NSString *token))failure {
-    NSParameterAssert(success);
-    
-    _requestMethod = @"SEARCH";
-    NSMutableURLRequest *request = [self requestWithMethod:_requestMethod path:path parameters:nil];
-    
-    NSString *body = [NSString stringWithFormat:@"<?xml version=\"1.0\"?><d:searchrequest xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\"><d:basicsearch><d:select><d:prop><d:displayname/></d:prop></d:select><d:from><d:scope><d:href>/files/%@</d:href><d:depth>infinity</d:depth></d:scope></d:from><d:where><d:like><d:prop><d:displayname/></d:prop><d:literal>%@</d:literal></d:like></d:where></d:basicsearch></d:searchrequest>", user, fileName];
-    
-    [request setHTTPBody:[body dataUsingEncoding:NSUTF8StringEncoding]];
-    
-    [request setValue:@"text/xml" forHTTPHeaderField:@"Content-Type"];
-    
-    OCHTTPRequestOperation *operation = [self mr_operationWithRequest:request onCommunication:sharedOCCommunication withUserSessionToken:token success:success failure:failure];
-    [self setRedirectionBlockOnDatataskWithOCCommunication:sharedOCCommunication andSessionManager:sharedOCCommunication.networkSessionManager];
-    [operation resume];
-}
-
 - (void)propertiesOfPath:(NSString *)path
          onCommunication: (OCCommunication *)sharedOCCommunication
                  success:(void(^)(NSHTTPURLResponse *, id ))success
@@ -299,11 +279,23 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     [self mr_listPath:path depth:1 withUserSessionToken:token onCommunication:sharedOCCommunication success:success failure:failure];
 }
 
-- (void)search:(NSString *)path fileName:(NSString *)fileName depth:(NSString *)depth user:(NSString *)user
- onCommunication:(OCCommunication *)sharedOCCommunication withUserSessionToken:(NSString *)token
-         success:(void(^)(NSHTTPURLResponse *, id, NSString *token))success
-         failure:(void(^)(NSHTTPURLResponse *, id  _Nullable responseObject, NSError *, NSString *token))failure {
-    [self mr_search:path fileName:fileName depth:depth user:user withUserSessionToken:token onCommunication:sharedOCCommunication success:success failure:failure];
+- (void)search:(NSString *)path fileName:(NSString *)fileName depth:(NSString *)depth user:(NSString *)user onCommunication:(OCCommunication *)sharedOCCommunication withUserSessionToken:(NSString *)token success:(void(^)(NSHTTPURLResponse *, id, NSString *token))success failure:(void(^)(NSHTTPURLResponse *, id  _Nullable responseObject, NSError *, NSString *token))failure {
+    
+    NSParameterAssert(success);
+    
+    _requestMethod = @"SEARCH";
+    
+    NSMutableURLRequest *request = [self requestWithMethod:_requestMethod path:path parameters:nil];
+    
+    NSString *body = [NSString stringWithFormat:@"<?xml version=\"1.0\"?><d:searchrequest xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\"><d:basicsearch><d:select><d:prop><d:displayname/></d:prop></d:select><d:from><d:scope><d:href>/files/%@</d:href><d:depth>infinity</d:depth></d:scope></d:from><d:where><d:like><d:prop><d:displayname/></d:prop><d:literal>%@</d:literal></d:like></d:where></d:basicsearch></d:searchrequest>", user, fileName];
+    
+    [request setHTTPBody:[body dataUsingEncoding:NSUTF8StringEncoding]];
+    
+    [request setValue:@"application/xml" forHTTPHeaderField:@"Content-Type"];
+    
+    OCHTTPRequestOperation *operation = [self mr_operationWithRequest:request onCommunication:sharedOCCommunication withUserSessionToken:token success:success failure:failure];
+    [self setRedirectionBlockOnDatataskWithOCCommunication:sharedOCCommunication andSessionManager:sharedOCCommunication.networkSessionManager];
+    [operation resume];
 }
 
 - (NSURLSessionDownloadTask *)downloadWithSessionPath:(NSString *)remoteSource toPath:(NSString *)localDestination defaultPriority:(BOOL)defaultPriority onCommunication:(OCCommunication *)sharedOCCommunication progress:(void(^)(NSProgress *progress))downloadProgress success:(void(^)(NSURLResponse *response, NSURL *filePath))success failure:(void(^)(NSURLResponse *response, NSError *error))failure{

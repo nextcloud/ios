@@ -617,10 +617,7 @@
 ///-----------------------------------
 /// @name search
 ///-----------------------------------
-- (void) search: (NSString *) path fileName:(NSString *)fileName depth:(NSString *)depth withUserSessionToken:(NSString *)token
-    onCommunication:(OCCommunication *)sharedOCCommunication
-     successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token)) successRequest
-     failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer)) failureRequest{
+- (void)search:(NSString *)path fileName:(NSString *)fileName depth:(NSString *)depth withUserSessionToken:(NSString *)token onCommunication:(OCCommunication *)sharedOCCommunication successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer)) failureRequest{
     
     if (!token){
         token = @"no token";
@@ -649,7 +646,6 @@
         
         NSLog(@"Failure");
         failureRequest(response, error, token, request.redirectedServer);
-        
     }];
 }
 
