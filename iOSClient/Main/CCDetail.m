@@ -160,6 +160,7 @@
     }
     
     [self.navigationController popToRootViewControllerAnimated:NO];
+    self.navigationController.navigationBarHidden = YES;
 }
 
 - (void)changeToDisplayMode
