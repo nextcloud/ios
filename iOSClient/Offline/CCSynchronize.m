@@ -331,12 +331,12 @@
         
         if (offline) {
             
-            if (![record.rev isEqualToString:metadata.rev ])
+            if (![record.rev isEqualToString:metadata.rev])
                 changeRev = YES;
             
         } else {
             
-            if (record && ![record.rev isEqualToString:metadata.rev ])
+            if (record && ![record.rev isEqualToString:metadata.rev])
                 changeRev = YES;
         }
         
