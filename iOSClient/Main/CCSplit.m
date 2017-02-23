@@ -67,13 +67,6 @@
     [super viewDidAppear:animated];
     
     [self newAccount];
-    
-    // Jailbroken
-    if (app.isDeviceJailbroken && [CCUtility getMessageJailbroken] == NO) {
-        [CCUtility setMessageJailbroken:YES];
-        UIAlertView * alertView = [[UIAlertView alloc] initWithTitle:@"Device Jailbroken" message:[CCUtility localizableBrand:@"_Device_Jailbroken_" table:nil] delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
-        [alertView show];
-    }
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator

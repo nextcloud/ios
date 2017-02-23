@@ -385,7 +385,6 @@
 "unknow"                        = "UNKNOWN";
 "video"                         = "VIDEO";
 
-"_Device_Jailbroken_"           = "Warning! Your device is Jailbroken, the operation of _brand_ does not appear to be entirely compatible !!";
 "_no_plist_pull_down_"          = "Encrypted files not updated, pull down to refresh";
 "_file_del_only_local_"         = "File not present on the server";
 

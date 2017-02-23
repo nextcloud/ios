@@ -217,9 +217,6 @@
         [application registerUserNotificationSettings:settings];
     }
     
-    // it is a device Jailbroken
-    self.isDeviceJailbroken = isDeviceJailbroken();
-
     // Tint Color GLOBAL WINDOW
     [self.window setTintColor:COLOR_WINDOW_TINTCOLOR];
     

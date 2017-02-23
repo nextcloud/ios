@@ -138,9 +138,6 @@
 // ico Image Cache
 @property (nonatomic, strong) NSMutableDictionary *icoImagesCache;
 
-// check isDeviceJailbroken
-@property BOOL isDeviceJailbroken;
-
 // Is in Crypto Mode
 @property BOOL isCryptoCloudMode;
 

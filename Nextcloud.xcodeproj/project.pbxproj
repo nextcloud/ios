@@ -362,7 +362,6 @@
 		F77B0EB91D118A16002130FE /* HRColorUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0DEC1C889300008DAB36 /* HRColorUtil.m */; };
 		F77B0EBE1D118A16002130FE /* CCNote.m in Sources */ = {isa = PBXBuildFile; fileRef = F721372A1BAFF0920012B613 /* CCNote.m */; };
 		F77B0EBF1D118A16002130FE /* RNEncryptor.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F053B1C889184008DAB36 /* RNEncryptor.m */; };
-		F77B0EC11D118A16002130FE /* JBroken.m in Sources */ = {isa = PBXBuildFile; fileRef = F71EDBFD1C4B93ED00265D0C /* JBroken.m */; };
 		F77B0EC21D118A16002130FE /* CCManageOptimizations.m in Sources */ = {isa = PBXBuildFile; fileRef = F7AB79F01BB1A3AD00A82F32 /* CCManageOptimizations.m */; };
 		F77B0EC31D118A16002130FE /* UIImage+Enhancing.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04C21C889184008DAB36 /* UIImage+Enhancing.m */; };
 		F77B0EC61D118A16002130FE /* CCCellMain.m in Sources */ = {isa = PBXBuildFile; fileRef = F70211F51BAC56E9003FC03E /* CCCellMain.m */; };
@@ -1040,8 +1039,6 @@
 		F719FDB11CF06645004895D0 /* CCPhotosCameraUpload.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCPhotosCameraUpload.h; sourceTree = "<group>"; };
 		F719FDB21CF06645004895D0 /* CCPhotosCameraUpload.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCPhotosCameraUpload.m; sourceTree = "<group>"; };
 		F71E67F61DC1F76F003BA52B /* ownCloud iOS library.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "ownCloud iOS library.xcodeproj"; path = "Libraries external/OCCommunicationLib/ownCloud iOS library.xcodeproj"; sourceTree = SOURCE_ROOT; };
-		F71EDBFC1C4B93ED00265D0C /* JBroken.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JBroken.h; sourceTree = "<group>"; };
-		F71EDBFD1C4B93ED00265D0C /* JBroken.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JBroken.m; sourceTree = "<group>"; };
 		F720E01E1E48C73E001A4B9E /* CCActions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CCActions.swift; path = Actions/CCActions.swift; sourceTree = "<group>"; };
 		F721371D1BAFF0920012B613 /* CCAccountWeb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCAccountWeb.h; sourceTree = "<group>"; };
 		F721371E1BAFF0920012B613 /* CCAccountWeb.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCAccountWeb.m; sourceTree = "<group>"; };
@@ -2889,8 +2886,6 @@
 				F76C3B841C6388BC00DC4301 /* CCGraphics.m */,
 				F7053E3C1C639DF500741EA5 /* CCUtility.h */,
 				F7053E3D1C639DF500741EA5 /* CCUtility.m */,
-				F71EDBFC1C4B93ED00265D0C /* JBroken.h */,
-				F71EDBFD1C4B93ED00265D0C /* JBroken.m */,
 				F73049B81CB567F000C7C320 /* NSString+TruncateToWidth.h */,
 				F73049B91CB567F000C7C320 /* NSString+TruncateToWidth.m */,
 			);
@@ -4152,7 +4147,6 @@
 				F7F06EBF1DBFACC600099AE9 /* CTAssetsPageViewController.m in Sources */,
 				F7F06EA11DBFACC600099AE9 /* CTAssetCollectionViewCell.m in Sources */,
 				F7F54D0D1E5B14C800E19C62 /* MWZoomingScrollView.m in Sources */,
-				F77B0EC11D118A16002130FE /* JBroken.m in Sources */,
 				F7F06EAD1DBFACC600099AE9 /* CTAssetSelectionLabel.m in Sources */,
 				F7659A701DC0B760004860C4 /* PSTGridLayoutSection.m in Sources */,
 				F77B0EC21D118A16002130FE /* CCManageOptimizations.m in Sources */,

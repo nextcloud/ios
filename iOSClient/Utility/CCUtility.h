@@ -66,7 +66,6 @@
 + (void)setGroupBySettings:(NSString *)groupby;
 
 + (void)setIntro:(NSString *)version;
-+ (void)setMessageJailbroken:(BOOL)message;
 
 + (void)setActiveAccountShareExt:(NSString *)activeAccount;
 + (void)setCryptatedShareExt:(BOOL)cryptated;
@@ -104,7 +103,6 @@
 
 + (BOOL)getIntro:(NSString *)version;
 + (NSString *)getIncrementalNumber;
-+ (BOOL)getMessageJailbroken;
 
 + (NSString *)getActiveAccountShareExt;
 + (BOOL)getCryptatedShareExt;

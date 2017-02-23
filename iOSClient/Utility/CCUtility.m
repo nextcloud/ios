@@ -141,12 +141,6 @@
     [UICKeyChainStore setString:@"true" forKey:version service:k_serviceShareKeyChain];
 }
 
-+ (void)setMessageJailbroken:(BOOL)message
-{
-    NSString *sMessage = (message) ? @"true" : @"false";
-    [UICKeyChainStore setString:sMessage forKey:@"jailbroken" service:k_serviceShareKeyChain];
-}
-
 + (void)setActiveAccountShareExt:(NSString *)activeAccount
 {
     [UICKeyChainStore setString:activeAccount forKey:@"activeAccountShareExt" service:k_serviceShareKeyChain];
@@ -317,11 +311,6 @@
     [UICKeyChainStore setString:[NSString stringWithFormat:@"%ld", number] forKey:@"incrementalnumber"];
     
     return [NSString stringWithFormat:@"%04ld", number];
-}
-
-+ (BOOL)getMessageJailbroken
-{
-    return [[UICKeyChainStore stringForKey:@"jailbroken" service:k_serviceShareKeyChain] boolValue];
 }
 
 + (NSString *)getActiveAccountShareExt
