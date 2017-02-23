@@ -207,7 +207,7 @@
         self.baseUrl.text = [self.baseUrl.text substringToIndex:[self.baseUrl.text length] - 1];
     
     OCnetworking *ocNet = [[OCnetworking alloc] initWithDelegate:self metadataNet:nil withUser:self.user.text withPassword:self.password.text withUrl:nil isCryptoCloudMode:NO];
-    NSError *error = [ocNet readFileSync:[NSString stringWithFormat:@"%@%@", self.baseUrl.text, webDAV]];
+    NSError *error = [ocNet checkServerSync:[NSString stringWithFormat:@"%@%@", self.baseUrl.text, webDAV]];
     
     if (!error) {
         
