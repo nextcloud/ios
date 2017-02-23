@@ -416,14 +416,8 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
     [NSObject cancelPreviousPerformRequestsWithTarget:self]; // Cancel any pending toggles from taps
     [self setControlsHidden:NO animated:NO permanent:YES];
     
-    // Status bar
-    if (!_leaveStatusBarAlone && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        [[UIApplication sharedApplication] setStatusBarStyle:_previousStatusBarStyle animated:animated];
-    }
-    
-	// Super
+   	// Super
 	[super viewWillDisappear:animated];
-    
 }
 
 - (void)willMoveToParentViewController:(UIViewController *)parent {

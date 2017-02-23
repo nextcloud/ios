@@ -44,7 +44,6 @@
     BOOL _previousNavBarHidden;
     BOOL _previousNavBarTranslucent;
     UIBarStyle _previousNavBarStyle;
-    UIStatusBarStyle _previousStatusBarStyle;
     UIColor *_previousNavBarTintColor;
     UIColor *_previousNavBarBarTintColor;
     UIBarButtonItem *_previousViewControllerBackButton;
