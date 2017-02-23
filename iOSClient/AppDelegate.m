@@ -25,7 +25,6 @@
 
 #import "iRate.h"
 #import "AFURLSessionManager.h"
-#import "JBroken.h"
 #import "CCNetworking.h"
 #import "CCCoreData.h"
 #import "CCCrypto.h"
