@@ -54,6 +54,8 @@
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"activatecryptocloud" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_activation_crypto_cloud_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:[UIImage imageNamed:image_settingsCryptoCloud] forKey:@"imageView.image"];
+    [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
+    [row.cellConfig setObject:COLOR_BRAND forKey:@"textLabel.textColor"];
     row.action.formSelector = @selector(activateCryptoCloud:);
     row.hidden = @(YES);
     [section addFormRow:row];
@@ -62,6 +64,8 @@
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"deactivatecryptocloud" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_deactivation_crypto_cloud_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:[UIImage imageNamed:image_settingsRemoveCryptoCloud] forKey:@"imageView.image"];
+    [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
+    [row.cellConfig setObject:COLOR_BRAND forKey:@"textLabel.textColor"];
     row.action.formSelector = @selector(disactivateCryptoCloud:);
     row.hidden = @(YES);
     [section addFormRow:row];
