@@ -47,7 +47,6 @@ import Foundation
 @objc protocol CCActionsDownloadThumbnailDelegate  {
     
     func downloadThumbnailSuccess(_ metadataNet: CCMetadataNet)
-    func downloadThumbnailFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger)
 }
 
 
@@ -348,6 +347,7 @@ class CCActions: NSObject {
         let serverUrl = CCCoreData.getServerUrl(fromDirectoryID: metadata.directoryID, activeAccount: appDelegate.activeAccount)
         
         metadataNet.action = actionDownloadThumbnail
+        metadataNet.delegate = delegate
         metadataNet.fileID = metadata.fileID
         metadataNet.fileName = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: serverUrl, activeUrl: appDelegate.activeUrl)
         metadataNet.fileNameLocal = metadata.fileID
@@ -367,7 +367,7 @@ class CCActions: NSObject {
     
     func downloadThumbnailFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger) {
         
-        metadataNet.delegate?.searchFailure(metadataNet, message: message, errorCode: errorCode)
+        NSLog("[LOG] Thumbnail Error \(metadataNet.fileName!) \(message) error %\(errorCode))")
     }
 
 }

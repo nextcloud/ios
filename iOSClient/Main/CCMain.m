@@ -43,7 +43,7 @@
 #define alertRename 3
 #define alertOfflineFolder 4
 
-@interface CCMain () <CCActionsDeleteDelegate, CCActionsRenameDelegate, CCActionsSearchDelegate>
+@interface CCMain () <CCActionsDeleteDelegate, CCActionsRenameDelegate, CCActionsSearchDelegate, CCActionsDownloadThumbnailDelegate>
 {
     CCMetadata *_metadataSegue;
     CCMetadata *_metadata;
@@ -1158,7 +1158,7 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ==== Download Thumbnail ====
+#pragma mark ==== Download Thumbnail Delegate ====
 #pragma --------------------------------------------------------------------------------------------
 
 - (void)downloadThumbnailSuccess:(CCMetadataNet *)metadataNet
@@ -1183,30 +1183,6 @@
             });
         }
      }
-}
-
-- (void)downloadThumbnailFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
-{
-    NSLog(@"[LOG] Thumbnail Error %@  %@ (error %ld)", metadataNet.fileName , message, (long)errorCode);
-}
-
-- (void)downloadThumbnail:(CCMetadata *)metadata
-{
-    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
-    
-    NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account];
-    
-    metadataNet.action = actionDownloadThumbnail;
-    metadataNet.fileID = metadata.fileID;
-    metadataNet.fileName = [CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:serverUrl activeUrl:app.activeUrl];
-    metadataNet.fileNameLocal = metadata.fileID;
-    metadataNet.fileNamePrint = metadata.fileNamePrint;
-    metadataNet.options = @"m";
-    metadataNet.priority = NSOperationQueuePriorityLow;
-    metadataNet.selector = selectorDownloadThumbnail;
-    metadataNet.serverUrl = serverUrl;
-    
-    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -5089,7 +5065,7 @@
         cell.fileImageView.image = [UIImage imageNamed:metadata.iconName];
         
         if (metadata.thumbnailExists)
-            [self downloadThumbnail:metadata];
+            [[CCActions sharedInstance] downloadTumbnail:metadata delegate:self];
     }
     
     // ----------------------------------------------------------------------------------------------------------
