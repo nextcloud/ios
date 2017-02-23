@@ -179,7 +179,10 @@
                         
                     // force reload all directory for all users
                     [CCCoreData clearAllDateReadDirectory];
-                        
+                    
+                    // 3D Touch
+                    [app configDynamicShortcutItems];
+
                     // Request : Send Passcode email
                     [self performSelector:@selector(activateSecurityOptions) withObject:nil afterDelay:0.1];
                 }
@@ -200,6 +203,9 @@
             [CCUtility adminRemovePasscode];
             app.isCryptoCloudMode = NO;
             
+            // 3D touch
+            [app configDynamicShortcutItems];
+
             // force reload all directory for all users and all metadata cryptated
             [CCCoreData clearAllDateReadDirectory];
             [CCCoreData deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(cryptated == 1)"]];

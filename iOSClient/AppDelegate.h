@@ -147,6 +147,8 @@
 // initializations 
 - (void)applicationInitialized;
 
+- (void)configDynamicShortcutItems;
+
 - (void)messageNotification:(NSString *)title description:(NSString *)description visible:(BOOL)visible delay:(NSTimeInterval)delay type:(TWMessageBarMessageType)type;
 - (void)updateApplicationIconBadgeNumber;
 - (BOOL)handleShortCutItem:(UIApplicationShortcutItem *)shortcutItem;
