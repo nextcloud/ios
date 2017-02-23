@@ -44,6 +44,13 @@ import Foundation
     func searchFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger)
 }
 
+@objc protocol CCActionsDownloadThumbnailDelegate  {
+    
+    func downloadThumbnailSuccess(_ metadataNet: CCMetadataNet)
+    func downloadThumbnailFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger)
+}
+
+
 class CCActions: NSObject {
     
     //MARK: Shared Instance
@@ -330,8 +337,41 @@ class CCActions: NSObject {
         
         metadataNet.delegate?.searchFailure(metadataNet, message: message, errorCode: errorCode)
     }
+    
+    // --------------------------------------------------------------------------------------------
+    // MARK: Download Tumbnail
+    // --------------------------------------------------------------------------------------------
+
+    func downloadTumbnail(_ metadata: CCMetadata, delegate: AnyObject) {
+        
+        let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
+        let serverUrl = CCCoreData.getServerUrl(fromDirectoryID: metadata.directoryID, activeAccount: appDelegate.activeAccount)
+        
+        metadataNet.action = actionDownloadThumbnail
+        metadataNet.fileID = metadata.fileID
+        metadataNet.fileName = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: serverUrl, activeUrl: appDelegate.activeUrl)
+        metadataNet.fileNameLocal = metadata.fileID
+        metadataNet.fileNamePrint = metadata.fileNamePrint
+        metadataNet.options = "m"
+        metadataNet.priority = Operation.QueuePriority.low.rawValue
+        metadataNet.selector = selectorDownloadThumbnail;
+        metadataNet.serverUrl = serverUrl;
+
+        appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
+    }
+
+    func downloadThumbnailSuccess(_ metadataNet: CCMetadataNet) {
+        
+        metadataNet.delegate?.downloadThumbnailSuccess(metadataNet)
+    }
+    
+    func downloadThumbnailFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger) {
+        
+        metadataNet.delegate?.searchFailure(metadataNet, message: message, errorCode: errorCode)
+    }
 
 }
+
 
 
 
