@@ -498,7 +498,7 @@
 
 "_destination_folder_"              = "Destination folder";
 "_use_folder_photos_"               = "Use the folder Photos as destination";
-"_rename_filename_"                 = "Rename file name";
+"_rename_filename_"                 = "Rename";
 "_filename_"                        = "File name";
 "_preview_filename_"                = "Example preview file name, you can use the mask MM,DD,YY fot the date";
 "_forbidden_characters_"            = "Invalid character in the file name";
