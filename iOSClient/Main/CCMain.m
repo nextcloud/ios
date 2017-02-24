@@ -5053,7 +5053,7 @@
         
         if (metadata.favorite) {
             
-            cell.offlineImageView.image = [[UIImage imageNamed:image_favorite] imageWithRenderingMode:UIImageRenderingModeAutomatic];
+            cell.offlineImageView.image = [UIImage imageNamed:image_favorite];
         }
 
     } else {
@@ -5159,7 +5159,7 @@
     
     if (metadata.favorite) {
         
-        cell.offlineImageView.image = [[UIImage imageNamed:image_favorite] imageWithRenderingMode:UIImageRenderingModeAutomatic];
+        cell.offlineImageView.image = [UIImage imageNamed:image_favorite];
     }
     
     // ----------------------------------------------------------------------------------------------------------
