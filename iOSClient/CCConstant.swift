@@ -29,7 +29,7 @@ class CCConstant: NSObject {
         
         // GLOBLE COLOR DEFINE
         
-        static let k_Color_Seperator: UIColor = UIColor(red: 247.0/255.0, green: 247.0/255.0, blue: 247.0/255.0, alpha: 1.0)
+        static let k_Color_Seperator: UIColor = UIColor(red: 235.0/255.0, green: 235.0/255.0, blue: 235.0/255.0, alpha: 1.0)
         
         static let k_Color_Cryptocloud: UIColor = UIColor(red: 241.0/255.0, green: 90.0/255.0, blue: 34.0/255.0, alpha: 1.0)
         

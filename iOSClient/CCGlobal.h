@@ -291,7 +291,7 @@ extern NSString *const BKPasscodeKeychainServiceName;
 
 #define COLOR_TEXT_NO_CONNECTION        [UIColor colorWithRed:204.0/255.0 green:204.0/255.0 blue:204.0/255.0 alpha:1.0]
 
-#define COLOR_SEPARATOR_TABLE           [UIColor colorWithRed:247.0/255.0 green:247.0/255.0 blue:247.0/255.0 alpha:1.0]                 // iOS 7
+#define COLOR_SEPARATOR_TABLE           [UIColor colorWithRed:235.0/255.0 green:235.0/255.0 blue:235.0/255.0 alpha:1.0]                 // iOS 7
 
 #define COLOR_BACKGROUND_MESSAGE_INFO   [UIColor colorWithRed:0.0/255.0 green:130.0/255.0 blue:201.0/255.0 alpha:1.0]
 #define COLOR_CONTROL_CENTER            [UIColor colorWithRed:0.0/255.0 green:130.0/255.0 blue:201.0/255.0 alpha:1.0]
