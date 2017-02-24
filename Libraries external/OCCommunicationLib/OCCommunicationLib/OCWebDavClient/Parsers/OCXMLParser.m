@@ -27,6 +27,9 @@
 //  Add Support for Quota
 //  quotaUsed and quotaAvailable
 //
+//  Add Support for Favorite
+//  isFavorite
+//
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
 //
 
@@ -236,6 +239,8 @@ NSString *OCCWebDAVURIKey           = @"uri";
         _currentFile.quotaUsed = (double)[_xmlChars doubleValue];
     } else if ([elementName isEqualToString:@"d:quota-available-bytes"]) {
         _currentFile.quotaAvailable = (double)[_xmlChars doubleValue];
+    } else if ([elementName isEqualToString:@"oc:favorite"]) {
+        _currentFile.isFavorite = [_xmlChars boolValue];
     }
 }
 

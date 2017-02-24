@@ -28,6 +28,9 @@
 //  Add Support for Quota
 //  quotaUsed and quotaAvailable
 //
+//  Add Support for Favorite
+//  isFavorite
+//
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
 //
 
@@ -45,5 +48,6 @@
 @property (nonatomic, copy) NSString *ocId;
 @property double quotaUsed;
 @property double quotaAvailable;
+@property BOOL isFavorite;
 
 @end
