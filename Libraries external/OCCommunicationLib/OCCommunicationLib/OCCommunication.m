@@ -36,6 +36,7 @@
 #import "OCXMLParser.h"
 #import "OCXMLSharedParser.h"
 #import "OCXMLServerErrorsParser.h"
+#import "OCXMLSearchParser.h"
 #import "NSString+Encode.h"
 #import "OCFrameworkConstants.h"
 #import "OCWebDAVClient.h"
