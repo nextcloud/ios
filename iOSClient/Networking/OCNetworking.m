@@ -461,7 +461,10 @@
     [communication setCredentialsWithUser:_activeUser andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent]];
         
-    [communication settingFavoriteServer:_activeUrl andFileOrFolderPath:_metadataNet.fileName favorite:YES withUserSessionToken:nil onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer, NSString *token) {
+    [communication settingFavoriteServer:_activeUrl andFileOrFolderPath:_metadataNet.fileName favorite:[_metadataNet.options boolValue] withUserSessionToken:nil onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer, NSString *token) {
+        
+        if ([self.delegate respondsToSelector:@selector(settingFavoriteSuccess:)])
+            [self.delegate settingFavoriteSuccess:_metadataNet];
         
         [self complete];
         
@@ -471,8 +474,8 @@
         if (errorCode == 0)
             errorCode = error.code;
         
-        //if ([self.delegate respondsToSelector:@selector(searchFailure:message:errorCode:)])
-        //    [self.delegate searchFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        if ([self.delegate respondsToSelector:@selector(settingFavoriteFailure:message:errorCode:)])
+            [self.delegate settingFavoriteFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
         
         // Request trusted certificated
         if ([error code] == NSURLErrorServerCertificateUntrusted)

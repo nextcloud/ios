@@ -80,6 +80,7 @@
 #define image_actionSheetReload                 @"reloadNextcloud"
 #define image_actionSheetOpenIn                 @"openInNextcloud"
 #define image_actionSheetOffline                @"actionSheetOffline"
+#define image_actionSheetFavorite               @"actionSheetFavorite"
 #define image_actionSheetLocal                  @"localStorageNextcloud"
 #define image_directory                         @"directory"
 #define image_directorycriptata                 @"directorycriptata"

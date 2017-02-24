@@ -43,7 +43,7 @@
 #define alertRename 3
 #define alertOfflineFolder 4
 
-@interface CCMain () <CCActionsDeleteDelegate, CCActionsRenameDelegate, CCActionsSearchDelegate, CCActionsDownloadThumbnailDelegate>
+@interface CCMain () <CCActionsDeleteDelegate, CCActionsRenameDelegate, CCActionsSearchDelegate, CCActionsDownloadThumbnailDelegate, CCActionsSettingFavoriteDelegate>
 {
     CCMetadata *_metadataSegue;
     CCMetadata *_metadata;
@@ -2929,22 +2929,27 @@
 #pragma mark ===== Favorite =====
 #pragma --------------------------------------------------------------------------------------------
 
+- (void)settingFavoriteSuccess:(CCMetadataNet *)metadataNet
+{
+    [CCCoreData SetMetadataFavoriteFileID:metadataNet.fileID favorite:[metadataNet.options boolValue] activeAccount:app.activeAccount context:nil];
+    _dateReadDataSource = nil;
+    [self reloadDatasource:metadataNet.serverUrl fileID:metadataNet.fileID selector:metadataNet.selector];
+}
+
+- (void)settingFavoriteFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+{
+}
+
 - (void)addFavorite:(CCMetadata *)metadata
 {
     NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account];
     
     [[CCNetworking sharedNetworking] downloadFile:metadata serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorAddFavorite selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
-    
-    NSIndexPath *indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:metadata.fileID];
-    if (indexPath) [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObjects:indexPath, nil] withRowAnimation:UITableViewRowAnimationAutomatic];
 }
 
 - (void)removeFavorite:(CCMetadata *)metadata
 {
-    //[CCCoreData setOfflineLocalFileID:metadata.fileID offline:NO activeAccount:app.activeAccount];
-    
-    //NSIndexPath *indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:metadata.fileID];
-    //if (indexPath) [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObjects:indexPath, nil] withRowAnimation:UITableViewRowAnimationAutomatic];
+    [[CCActions sharedInstance] settingFavorite:metadata favorite:NO delegate:self];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -4063,7 +4068,7 @@
     
     NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:_metadata.account];
     
-    NSString *titoloCriptaDecripta, *titoloOffline, *titoloLock, *titleOfflineFolder;
+    NSString *titoloCriptaDecripta, *titoloOffline, *titoloLock, *titleOfflineFolder, *titleFavorite;
     BOOL offlineFolder = NO;
     
     if (_metadata.cryptated) titoloCriptaDecripta = [NSString stringWithFormat:NSLocalizedString(@"_decrypt_", nil)];
@@ -4079,6 +4084,14 @@
         offlineFolder = YES;
         
     } else titleOfflineFolder = [NSString stringWithFormat:NSLocalizedString(@"_add_offline_", nil)];
+    
+    if (_metadata.favorite) {
+        
+        titleFavorite = [NSString stringWithFormat:NSLocalizedString(@"_remove_favorites_", nil)];
+    } else {
+        
+        titleFavorite = [NSString stringWithFormat:NSLocalizedString(@"_add_favorites_", nil)];
+    }
     
     if (_metadata.directory) {
         // calcolo lockServerUrl
@@ -4425,8 +4438,8 @@
         
         if (!_metadata.cryptated) {
             
-            [actionSheet addButtonWithTitle:@"favorite"
-                                      image:[UIImage imageNamed:image_actionSheetOffline]
+            [actionSheet addButtonWithTitle:titleFavorite
+                                      image:[UIImage imageNamed:image_actionSheetFavorite]
                             backgroundColor:[UIColor whiteColor]
                                      height: 50.0
                                        type:AHKActionSheetButtonTypeDefault
@@ -4435,9 +4448,10 @@
                                         // close swipe
                                         [self setEditing:NO animated:YES];
                                         
-                                        
-                                        [self addFavorite:_metadata];
-                                        
+                                        if (_metadata.favorite)
+                                            [self  removeFavorite:_metadata];
+                                        else
+                                            [self addFavorite:_metadata];
                                     }];
         }
 

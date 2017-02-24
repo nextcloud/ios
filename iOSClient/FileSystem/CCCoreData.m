@@ -713,6 +713,20 @@
     [context MR_saveToPersistentStoreAndWait];
 }
 
++ (void)SetMetadataFavoriteFileID:(NSString *)fileID favorite:(BOOL)favorite activeAccount:(NSString *)activeAccount context:(NSManagedObjectContext *)context
+{
+    if (context == nil)
+        context = [NSManagedObjectContext MR_defaultContext];
+    
+    TableMetadata *tableMetadata = [TableMetadata MR_findFirstWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileID == %@)", activeAccount, fileID] inContext:context];
+    
+    if (tableMetadata) {
+        tableMetadata.favorite = [NSNumber numberWithBool:favorite];
+        
+        [context MR_saveToPersistentStoreAndWait];
+    }
+}
+
 + (CCMetadata *)getMetadataWithPreficate:(NSPredicate *)predicate context:(NSManagedObjectContext *)context
 {
     if (context == nil)

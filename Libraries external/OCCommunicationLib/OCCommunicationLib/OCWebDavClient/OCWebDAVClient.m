@@ -307,7 +307,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     
     NSMutableURLRequest *request = [self requestWithMethod:_requestMethod path:serverFilePath parameters:nil];
     
-    NSString *body = [NSString stringWithFormat:@"<?xml version=\"1.0\"?><d:propertyupdate xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\"><d:set><d:prop><oc:favorite>%d</oc:favorite></d:prop></d:set></d:propertyupdate>", [NSNumber numberWithBool:favorite]];
+    NSString *body = [NSString stringWithFormat:@"<?xml version=\"1.0\"?><d:propertyupdate xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\"><d:set><d:prop><oc:favorite>%i</oc:favorite></d:prop></d:set></d:propertyupdate>", (favorite ? 1 : 0)];
                       
     [request setHTTPBody:[body dataUsingEncoding:NSUTF8StringEncoding]];
     

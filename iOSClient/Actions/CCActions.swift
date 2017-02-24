@@ -357,6 +357,7 @@ class CCActions: NSObject {
         metadataNet.fileName = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: serverUrl, activeUrl: appDelegate.activeUrl)
         metadataNet.fileNameLocal = metadata.fileID
         metadataNet.fileNamePrint = metadata.fileNamePrint
+        metadataNet.metadata = metadata
         metadataNet.options = "m"
         metadataNet.priority = Operation.QueuePriority.low.rawValue
         metadataNet.selector = selectorDownloadThumbnail;
@@ -388,6 +389,7 @@ class CCActions: NSObject {
         metadataNet.delegate = delegate
         metadataNet.fileID = metadata.fileID
         metadataNet.fileName = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: serverUrl, activeUrl: appDelegate.activeUrl)
+        metadataNet.metadata = metadata
         metadataNet.options = "\(favorite)"
         metadataNet.priority = Operation.QueuePriority.normal.rawValue
         metadataNet.selector = selectorAddFavorite
@@ -403,6 +405,8 @@ class CCActions: NSObject {
     
     func settingFavoriteFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger) {
         
+        appDelegate.messageNotification("_favorite_", description: message as String, visible: true, delay:TimeInterval(k_dismissAfterSecond), type:TWMessageBarMessageType.error)
+
         metadataNet.delegate?.settingFavoriteFailure(metadataNet, message: message, errorCode: errorCode)
     }
 
