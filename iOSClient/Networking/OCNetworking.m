@@ -451,6 +451,39 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Setting Favorite =====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)settingFavorite
+{
+    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+    
+    [communication setCredentialsWithUser:_activeUser andPassword:_activePassword];
+    [communication setUserAgent:[CCUtility getUserAgent]];
+        
+    [communication settingFavoriteServer:_activeUrl andFileOrFolderPath:_metadataNet.fileName favorite:YES withUserSessionToken:nil onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer, NSString *token) {
+        
+        [self complete];
+        
+    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer) {
+        
+        NSInteger errorCode = response.statusCode;
+        if (errorCode == 0)
+            errorCode = error.code;
+        
+        //if ([self.delegate respondsToSelector:@selector(searchFailure:message:errorCode:)])
+        //    [self.delegate searchFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        
+        // Request trusted certificated
+        if ([error code] == NSURLErrorServerCertificateUntrusted)
+            [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
+        
+        [self complete];
+    }];
+
+}
+
+#pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Create Folder =====
 #pragma --------------------------------------------------------------------------------------------
 

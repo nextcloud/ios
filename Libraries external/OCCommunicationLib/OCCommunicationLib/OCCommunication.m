@@ -649,6 +649,35 @@
     }];
 }
 
+///-----------------------------------
+/// @name Setting favorite
+///-----------------------------------
+- (void)settingFavoriteServer:(NSString *)serverPath andFileOrFolderPath:(NSString *)filePath favorite:(BOOL)favorite withUserSessionToken:(NSString *)token onCommunication:(OCCommunication *)sharedOCCommunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer, NSString *token)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer)) failureRequest {
+    
+    if (!token){
+        token = @"no token";
+    }
+    
+    serverPath = [NSString stringWithFormat:@"%@/remote.php/dav/files/%@/%@", serverPath, _user, filePath];
+    serverPath = [serverPath encodeString:NSUTF8StringEncoding];
+    
+    OCWebDAVClient *request = [OCWebDAVClient new];
+    request = [self getRequestWithCredentials:request];
+    
+    [request settingFavorite:serverPath favorite:favorite onCommunication:sharedOCCommunication withUserSessionToken:token success:^(NSHTTPURLResponse *response, id responseObject, NSString *token) {
+        
+        if (successRequest) {
+            //Return success
+            successRequest(response, request.redirectedServer, token);
+        }
+        
+    } failure:^(NSHTTPURLResponse *response, id responseData, NSError *error, NSString *token) {
+        
+        NSLog(@"Failure");
+        failureRequest(response, error, token, request.redirectedServer);
+    }];
+}
+
 #pragma mark - OC API Calls
 
 - (NSString *) getCurrentServerVersion {

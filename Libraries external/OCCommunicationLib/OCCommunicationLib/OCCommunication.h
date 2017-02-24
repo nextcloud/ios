@@ -466,6 +466,12 @@ typedef enum {
 
 - (void)search:(NSString *)path fileName:(NSString *)fileName depth:(NSString *)depth withUserSessionToken:(NSString *)token onCommunication:(OCCommunication *)sharedOCCommunication successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer)) failureRequest;
 
+///-----------------------------------
+/// @name Setting favorite
+///-----------------------------------
+
+- (void)settingFavoriteServer:(NSString *)serverPath andFileOrFolderPath:(NSString *)filePath favorite:(BOOL)favorite withUserSessionToken:(NSString *)token onCommunication:(OCCommunication *)sharedOCCommunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer, NSString *token)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer)) failureRequest;
+
 
 #pragma mark - OC API Calls
 

@@ -1237,6 +1237,12 @@
         [self reloadDatasource:serverUrl fileID:metadata.fileID selector:selector];
     }
     
+    // add Favorite
+    if ([selector isEqualToString:selectorAddFavorite]) {
+        
+        [[CCActions sharedInstance] settingFavorite:metadata favorite:YES delegate:self];
+    }
+    
     // add Offline
     if ([selector isEqualToString:selectorAddOffline]) {
         [CCCoreData setOfflineLocalFileID:metadata.fileID offline:YES activeAccount:app.activeAccount];
@@ -2920,20 +2926,36 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Favorite =====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)addFavorite:(CCMetadata *)metadata
+{
+    NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account];
+    
+    [[CCNetworking sharedNetworking] downloadFile:metadata serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorAddFavorite selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
+    
+    NSIndexPath *indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:metadata.fileID];
+    if (indexPath) [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObjects:indexPath, nil] withRowAnimation:UITableViewRowAnimationAutomatic];
+}
+
+- (void)removeFavorite:(CCMetadata *)metadata
+{
+    //[CCCoreData setOfflineLocalFileID:metadata.fileID offline:NO activeAccount:app.activeAccount];
+    
+    //NSIndexPath *indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:metadata.fileID];
+    //if (indexPath) [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObjects:indexPath, nil] withRowAnimation:UITableViewRowAnimationAutomatic];
+}
+
+#pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Offline =====
 #pragma --------------------------------------------------------------------------------------------
 
 - (void)addOffline:(CCMetadata *)metadata
 {
-    if (metadata.errorPasscode || !metadata.uuid) return;
-    
     NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account];
     
-    if ([metadata.type isEqualToString: k_metadataType_file])
-        [[CCNetworking sharedNetworking] downloadFile:metadata serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorAddOffline selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
-    
-    if ([metadata.type isEqualToString: k_metadataType_template])
-        [CCCoreData setOfflineLocalFileID:metadata.fileID offline:YES activeAccount:app.activeAccount];
+    [[CCNetworking sharedNetworking] downloadFile:metadata serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorAddOffline selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
     
     NSIndexPath *indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:metadata.fileID];
     if (indexPath) [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObjects:indexPath, nil] withRowAnimation:UITableViewRowAnimationAutomatic];
@@ -2946,6 +2968,7 @@
     NSIndexPath *indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:metadata.fileID];
     if (indexPath) [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObjects:indexPath, nil] withRowAnimation:UITableViewRowAnimationAutomatic];
 }
+
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Local =====
@@ -4399,6 +4422,25 @@
                                         }
                                     }];
         }
+        
+        if (!_metadata.cryptated) {
+            
+            [actionSheet addButtonWithTitle:@"favorite"
+                                      image:[UIImage imageNamed:image_actionSheetOffline]
+                            backgroundColor:[UIColor whiteColor]
+                                     height: 50.0
+                                       type:AHKActionSheetButtonTypeDefault
+                                    handler:^(AHKActionSheet *as) {
+                                        
+                                        // close swipe
+                                        [self setEditing:NO animated:YES];
+                                        
+                                        
+                                        [self addFavorite:_metadata];
+                                        
+                                    }];
+        }
+
         
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_add_local_", nil)
                                   image:[UIImage imageNamed:image_actionSheetLocal]

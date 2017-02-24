@@ -49,6 +49,11 @@ import Foundation
     func downloadThumbnailSuccess(_ metadataNet: CCMetadataNet)
 }
 
+@objc protocol CCActionsSettingFavoriteDelegate  {
+    
+    func settingFavoriteSuccess(_ metadataNet: CCMetadataNet)
+    func settingFavoriteFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger)
+}
 
 class CCActions: NSObject {
     
@@ -368,6 +373,37 @@ class CCActions: NSObject {
     func downloadThumbnailFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger) {
         
         NSLog("[LOG] Thumbnail Error \(metadataNet.fileName!) \(message) error %\(errorCode))")
+    }
+
+    // --------------------------------------------------------------------------------------------
+    // MARK: Setting Favorite
+    // --------------------------------------------------------------------------------------------
+    
+    func settingFavorite(_ metadata: CCMetadata, favorite: Bool, delegate: AnyObject) {
+        
+        let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
+        let serverUrl = CCCoreData.getServerUrl(fromDirectoryID: metadata.directoryID, activeAccount: appDelegate.activeAccount)
+        
+        metadataNet.action = actionSettingFavorite
+        metadataNet.delegate = delegate
+        metadataNet.fileID = metadata.fileID
+        metadataNet.fileName = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: serverUrl, activeUrl: appDelegate.activeUrl)
+        metadataNet.options = "\(favorite)"
+        metadataNet.priority = Operation.QueuePriority.normal.rawValue
+        metadataNet.selector = selectorAddFavorite
+        metadataNet.serverUrl = serverUrl;
+        
+        appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
+    }
+    
+    func settingFavoriteSuccess(_ metadataNet: CCMetadataNet) {
+        
+        metadataNet.delegate?.settingFavoriteSuccess(metadataNet)
+    }
+    
+    func settingFavoriteFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger) {
+        
+        metadataNet.delegate?.settingFavoriteFailure(metadataNet, message: message, errorCode: errorCode)
     }
 
 }

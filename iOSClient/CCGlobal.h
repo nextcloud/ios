@@ -153,8 +153,9 @@ extern NSString *const BKPasscodeKeychainServiceName;
 #define k_uploadSessionID                               @"ID_UPLOAD_"
 
 // Metadata.Net SELECTOR
-#define selectorAddOffline                              @"addOffline"
+#define selectorAddFavorite                             @"addFavorite"
 #define selectorAddLocal                                @"addLocal"
+#define selectorAddOffline                              @"addOffline"
 #define selectorCreateFolder                            @"createFolder"
 #define selectorDecryptFile                             @"decryptFile"
 #define selectorDelete                                  @"delete"
@@ -212,6 +213,7 @@ extern NSString *const BKPasscodeKeychainServiceName;
 #define actionReadFolder                                @"readFolder"
 #define actionReadShareServer                           @"readShareServer"
 #define actionSearch                                    @"search"
+#define actionSettingFavorite                           @"settingFavorite"
 #define actionShare                                     @"share"
 #define actionShareWith                                 @"shareWith"
 #define actionUnShare                                   @"unShare"
