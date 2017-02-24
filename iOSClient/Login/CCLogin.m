@@ -126,7 +126,11 @@
 {
     self.login.enabled = NO;
     self.loadingBaseUrl.hidden = NO;
-    
+  
+    // Check whether baseUrl contain protocol. If not add https:// by default.
+    if(![self.baseUrl.text hasPrefix:@"https"] && ![self.baseUrl.text hasPrefix:@"http"]) {
+      self.baseUrl.text = [NSString stringWithFormat:@"https://%@",self.baseUrl.text];
+    }
     NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:self.baseUrl.text] cachePolicy:0 timeoutInterval:20.0];
     [request addValue:[CCUtility getUserAgent] forHTTPHeaderField:@"User-Agent"];
     
@@ -159,9 +163,6 @@
                     
                     alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_connection_error_",nil) message:[error localizedDescription] delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
                     [alertView show];
-                    
-                    if (_loginType != loginModifyPasswordUser)
-                        self.baseUrl.text = @"";
                 });
             }
             
