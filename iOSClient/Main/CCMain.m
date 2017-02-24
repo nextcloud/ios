@@ -2942,9 +2942,16 @@
 
 - (void)addFavorite:(CCMetadata *)metadata
 {
-    NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account];
+    if (metadata.directory) {
+        
+        [[CCActions sharedInstance] settingFavorite:metadata favorite:YES delegate:self];
+        
+    } else {
     
-    [[CCNetworking sharedNetworking] downloadFile:metadata serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorAddFavorite selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
+        NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account];
+    
+        [[CCNetworking sharedNetworking] downloadFile:metadata serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorAddFavorite selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
+    }
 }
 
 - (void)removeFavorite:(CCMetadata *)metadata
@@ -4302,6 +4309,25 @@
                                     }];
         }
         
+        if (!lockDirectory && !_metadata.cryptated) {
+            
+            [actionSheet addButtonWithTitle:titleFavorite
+                                      image:[UIImage imageNamed:image_actionSheetFavorite]
+                            backgroundColor:[UIColor whiteColor]
+                                     height: 50.0
+                                       type:AHKActionSheetButtonTypeDefault
+                                    handler:^(AHKActionSheet *as) {
+                                        
+                                        // close swipe
+                                        [self setEditing:NO animated:YES];
+                                        
+                                        if (_metadata.favorite)
+                                            [self removeFavorite:_metadata];
+                                        else
+                                            [self addFavorite:_metadata];
+                                    }];
+        }
+        
         [actionSheet show];
     }
     
@@ -4454,7 +4480,6 @@
                                             [self addFavorite:_metadata];
                                     }];
         }
-
         
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_add_local_", nil)
                                   image:[UIImage imageNamed:image_actionSheetLocal]
@@ -4519,35 +4544,6 @@
                                     [self setEditing:NO animated:YES];
                                     
                                     [self moveOpenWindow:[[NSArray alloc] initWithObjects:indexPath, nil]];
-                                }];
-
-        [actionSheet addButtonWithTitle:titoloOffline
-                                  image:[UIImage imageNamed:image_actionSheetOffline]
-                        backgroundColor:[UIColor whiteColor]
-                                 height: 50.0
-                                   type:AHKActionSheetButtonTypeDefault
-                                handler:^(AHKActionSheet *as) {
-                                    
-                                    // close swipe
-                                    [self setEditing:NO animated:YES];
-                                    
-                                    if ([CCCoreData isOfflineLocalFileID:_metadata.fileID activeAccount:app.activeAccount])
-                                        [self removeOffline:_metadata];
-                                    else
-                                        [self addOffline:_metadata];
-                                }];
-
-        [actionSheet addButtonWithTitle:NSLocalizedString(@"_add_local_", nil)
-                                  image:[UIImage imageNamed:image_actionSheetLocal]
-                        backgroundColor:[UIColor whiteColor]
-                                 height: 50.0
-                                   type:AHKActionSheetButtonTypeDefault
-                                handler:^(AHKActionSheet *as) {
-                                    
-                                    // close swipe
-                                    [self setEditing:NO animated:YES];
-                                    
-                                    [self performSelector:@selector(addLocal:) withObject:_metadata];
                                 }];
 
         [actionSheet show];
@@ -5037,8 +5033,7 @@
         if (isOfflineDirectory) {
             
             // Image Offline
-            if (metadata.cryptated) cell.offlineImageView.image = [UIImage imageNamed:image_offlinecrypto];
-            else cell.offlineImageView.image = [UIImage imageNamed:image_offline];
+            cell.offlineImageView.image = [UIImage imageNamed:image_offline];
             
             // Animation synchronized gif
             if ([[CCSynchronize sharedSynchronize] offlineFolderAnimationDirectory:[[NSArray alloc] initWithObjects:directoryServerUrl, nil] setGraphicsFolder:NO]) {
@@ -5058,8 +5053,7 @@
         
         if (metadata.favorite) {
             
-            if (metadata.cryptated) cell.offlineImageView.image = [UIImage imageNamed:image_favoritecrypto];
-            else cell.offlineImageView.image = [UIImage imageNamed:image_favorite];
+            cell.offlineImageView.image = [[UIImage imageNamed:image_favorite] imageWithRenderingMode:UIImageRenderingModeAutomatic];
         }
 
     } else {
@@ -5156,8 +5150,7 @@
     
     if (isOfflineFile) {
         
-        if (metadata.cryptated) cell.offlineImageView.image = [UIImage imageNamed:image_offlinecrypto];
-        else cell.offlineImageView.image = [UIImage imageNamed:image_offline];
+        cell.offlineImageView.image = [UIImage imageNamed:image_offline];
     }
     
     // ----------------------------------------------------------------------------------------------------------
@@ -5166,8 +5159,7 @@
     
     if (metadata.favorite) {
         
-        if (metadata.cryptated) cell.offlineImageView.image = [UIImage imageNamed:image_favoritecrypto];
-        else cell.offlineImageView.image = [UIImage imageNamed:image_favorite];
+        cell.offlineImageView.image = [[UIImage imageNamed:image_favorite] imageWithRenderingMode:UIImageRenderingModeAutomatic];
     }
     
     // ----------------------------------------------------------------------------------------------------------
