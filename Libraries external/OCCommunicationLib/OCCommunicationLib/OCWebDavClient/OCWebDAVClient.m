@@ -288,7 +288,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     
     NSMutableURLRequest *request = [self requestWithMethod:_requestMethod path:path parameters:nil];
     
-    NSString *body = [NSString stringWithFormat:@"<?xml version=\"1.0\"?><d:searchrequest xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\"><d:basicsearch><d:select><d:prop><oc:fileid/><d:getcontenttype/><d:getetag/><oc:size/></d:prop></d:select><d:from><d:scope><d:href>/files/%@</d:href><d:depth>infinity</d:depth></d:scope></d:from><d:where><d:like><d:prop><d:displayname/></d:prop><d:literal>%%%@%%</d:literal></d:like></d:where><d:orderby/></d:basicsearch></d:searchrequest>", user, fileName];
+    NSString *body = [NSString stringWithFormat:@"<?xml version=\"1.0\"?><d:searchrequest xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\"><d:basicsearch><d:select><d:prop><oc:fileid/><d:getcontenttype/><d:getetag/><d:displayname/><d:creationdate/><oc:size/></d:prop></d:select><d:from><d:scope><d:href>/files/%@</d:href><d:depth>infinity</d:depth></d:scope></d:from><d:where><d:like><d:prop><d:displayname/></d:prop><d:literal>%%%@%%</d:literal></d:like></d:where><d:orderby/></d:basicsearch></d:searchrequest>", user, fileName];
     
     [request setHTTPBody:[body dataUsingEncoding:NSUTF8StringEncoding]];
     [request setValue:@"text/xml" forHTTPHeaderField:@"Content-Type"];

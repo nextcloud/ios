@@ -52,6 +52,7 @@
 		F704980E1E369EF6008F5BB6 /* OCNotificationsAction.m in Sources */ = {isa = PBXBuildFile; fileRef = F704980A1E369EF6008F5BB6 /* OCNotificationsAction.m */; };
 		F704980F1E369EF6008F5BB6 /* OCRichObjectStrings.m in Sources */ = {isa = PBXBuildFile; fileRef = F704980C1E369EF6008F5BB6 /* OCRichObjectStrings.m */; };
 		F73C00351E56098300EEEFA7 /* OCUserProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = F73C00341E56098300EEEFA7 /* OCUserProfile.m */; };
+		F754B7BE1E60D66B0027F21B /* OCXMLSearchParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F754B7BD1E60D66B0027F21B /* OCXMLSearchParser.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -147,6 +148,8 @@
 		F704980C1E369EF6008F5BB6 /* OCRichObjectStrings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCRichObjectStrings.m; sourceTree = "<group>"; };
 		F73C00331E56098300EEEFA7 /* OCUserProfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCUserProfile.h; sourceTree = "<group>"; };
 		F73C00341E56098300EEEFA7 /* OCUserProfile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCUserProfile.m; sourceTree = "<group>"; };
+		F754B7BC1E60D66B0027F21B /* OCXMLSearchParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OCXMLSearchParser.h; path = OCWebDavClient/Parsers/OCXMLSearchParser.h; sourceTree = "<group>"; };
+		F754B7BD1E60D66B0027F21B /* OCXMLSearchParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OCXMLSearchParser.m; path = OCWebDavClient/Parsers/OCXMLSearchParser.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -178,6 +181,8 @@
 			children = (
 				131C67B7187C3E360009030E /* OCXMLSharedParser.h */,
 				131C67B8187C3E360009030E /* OCXMLSharedParser.m */,
+				F754B7BC1E60D66B0027F21B /* OCXMLSearchParser.h */,
+				F754B7BD1E60D66B0027F21B /* OCXMLSearchParser.m */,
 				13AA863E187C3B9700A10927 /* OCXMLParser.h */,
 				13AA863F187C3B9700A10927 /* OCXMLParser.m */,
 				1345E45E1884213400153F14 /* OCXMLShareByLinkParser.h */,
@@ -451,6 +456,7 @@
 				F73C00351E56098300EEEFA7 /* OCUserProfile.m in Sources */,
 				EA7CC934183E150000B6A4B4 /* OCCommunication.m in Sources */,
 				F704980E1E369EF6008F5BB6 /* OCNotificationsAction.m in Sources */,
+				F754B7BE1E60D66B0027F21B /* OCXMLSearchParser.m in Sources */,
 				131C67B9187C3E360009030E /* OCXMLSharedParser.m in Sources */,
 				13AA8640187C3B9700A10927 /* OCXMLParser.m in Sources */,
 				EA7CC912183E146000B6A4B4 /* UtilsFramework.m in Sources */,
