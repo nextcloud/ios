@@ -1336,12 +1336,6 @@
 		F78088E71DD3A1DB005C5A7C /* cryptocloud 3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "cryptocloud 3.xcdatamodel"; sourceTree = "<group>"; };
 		F78088E81DD3A1DB005C5A7C /* cryptocloud 4.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "cryptocloud 4.xcdatamodel"; sourceTree = "<group>"; };
 		F78088E91DD3A1DB005C5A7C /* cryptocloud.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = cryptocloud.xcdatamodel; sourceTree = "<group>"; };
-		F7818A0F1D99480E00CD5029 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text; name = fr; path = fr.lproj/TTOpenInAppActivityLocalizable.string; sourceTree = "<group>"; };
-		F7818A101D99480E00CD5029 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/BKPasscodeView.strings; sourceTree = "<group>"; };
-		F7818A111D99480E00CD5029 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
-		F7818A121D99480F00CD5029 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		F7818A131D99480F00CD5029 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Intro.strings; sourceTree = "<group>"; };
-		F7818A141D99480F00CD5029 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Error.strings; sourceTree = "<group>"; };
 		F78316861C0CB3CA00C43975 /* CCShareUserOC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCShareUserOC.h; sourceTree = "<group>"; };
 		F78316871C0CB3CA00C43975 /* CCShareUserOC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCShareUserOC.m; sourceTree = "<group>"; };
 		F787E5581BC503ED00AFBFE1 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
@@ -1513,7 +1507,6 @@
 		F7F06E701DBFACC600099AE9 /* CTAssetThumbnailView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CTAssetThumbnailView.m; sourceTree = "<group>"; };
 		F7F06E761DBFACC600099AE9 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/CTAssetsPicker.strings; sourceTree = "<group>"; };
 		F7F06E771DBFACC600099AE9 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/CTAssetsPicker.strings; sourceTree = "<group>"; };
-		F7F06E7B1DBFACC600099AE9 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/CTAssetsPicker.strings; sourceTree = "<group>"; };
 		F7F06E801DBFACC600099AE9 /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/CTAssetsPicker.strings; sourceTree = "<group>"; };
 		F7F06E841DBFACC600099AE9 /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/CTAssetsPicker.strings; sourceTree = "<group>"; };
 		F7F54CAB1E5AFF1E00E19C62 /* PickerFileProvider-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "PickerFileProvider-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -3421,7 +3414,6 @@
 				nl,
 				en,
 				it,
-				fr,
 				de,
 			);
 			mainGroup = F7F67B9F1A24D27800EE80DA;
@@ -4203,7 +4195,6 @@
 				F7C1D8BB1D47781C00B89DEA /* nl */,
 				F7151A801D477A4B00E6AF45 /* en */,
 				F7151A861D477A5400E6AF45 /* it */,
-				F7818A101D99480E00CD5029 /* fr */,
 				F7D96F0B1D99498600A587A5 /* de */,
 			);
 			name = BKPasscodeView.strings;
@@ -4223,7 +4214,6 @@
 				F7C1D8BE1D47781D00B89DEA /* nl */,
 				F7151A831D477A4B00E6AF45 /* en */,
 				F7151A891D477A5500E6AF45 /* it */,
-				F7818A131D99480F00CD5029 /* fr */,
 				F7D96F0E1D99498700A587A5 /* de */,
 			);
 			name = Intro.strings;
@@ -4235,7 +4225,6 @@
 				F7C1D8BF1D47781D00B89DEA /* nl */,
 				F7151A841D477A4B00E6AF45 /* en */,
 				F7151A8A1D477A5500E6AF45 /* it */,
-				F7818A141D99480F00CD5029 /* fr */,
 				F7D96F0F1D99498700A587A5 /* de */,
 			);
 			name = Error.strings;
@@ -4247,7 +4236,6 @@
 				F7C1D8BA1D47781C00B89DEA /* nl */,
 				F7151A7F1D477A4B00E6AF45 /* en */,
 				F7151A851D477A5400E6AF45 /* it */,
-				F7818A0F1D99480E00CD5029 /* fr */,
 				F7D96F0A1D99498600A587A5 /* de */,
 			);
 			name = TTOpenInAppActivityLocalizable.string;
@@ -4259,7 +4247,6 @@
 				F7C1D8BD1D47781C00B89DEA /* nl */,
 				F7151A821D477A4B00E6AF45 /* en */,
 				F7151A881D477A5400E6AF45 /* it */,
-				F7818A121D99480F00CD5029 /* fr */,
 				F7D96F0D1D99498600A587A5 /* de */,
 			);
 			name = InfoPlist.strings;
@@ -4271,7 +4258,6 @@
 				F7C1D8BC1D47781C00B89DEA /* nl */,
 				F7151A811D477A4B00E6AF45 /* en */,
 				F7151A871D477A5400E6AF45 /* it */,
-				F7818A111D99480E00CD5029 /* fr */,
 				F7D96F0C1D99498600A587A5 /* de */,
 			);
 			name = Localizable.strings;
@@ -4282,7 +4268,6 @@
 			children = (
 				F7F06E761DBFACC600099AE9 /* de */,
 				F7F06E771DBFACC600099AE9 /* en */,
-				F7F06E7B1DBFACC600099AE9 /* fr */,
 				F7F06E801DBFACC600099AE9 /* it */,
 				F7F06E841DBFACC600099AE9 /* nl */,
 			);

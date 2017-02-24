@@ -27,7 +27,7 @@
 
 #import "Nextcloud-Swift.h"
 
-@interface CCPhotosCameraUpload () <CCActionsDeleteDelegate>
+@interface CCPhotosCameraUpload () <CCActionsDeleteDelegate, CCActionsDownloadThumbnailDelegate>
 {
     CCMetadata *_metadata;
 
@@ -507,6 +507,18 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
+#pragma mark ==== Download Thumbnail Delegate ====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)downloadThumbnailSuccess:(CCMetadataNet *)metadataNet
+{
+    NSIndexPath *indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:metadataNet.fileID];
+    
+    if (indexPath && [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadataNet.fileID]])
+        [self.collectionView reloadItemsAtIndexPaths:@[indexPath]];
+}
+
+#pragma --------------------------------------------------------------------------------------------
 #pragma mark ==== Collection ====
 #pragma --------------------------------------------------------------------------------------------
 
@@ -630,7 +642,11 @@
         
     } else {
         
+        // Thumbnail not present
         imageView.image = [UIImage imageNamed:image_photosDownload];
+        
+        if (metadata.thumbnailExists)
+            [[CCActions sharedInstance] downloadTumbnail:metadata delegate:self];
     }
     
     // Cheched

@@ -258,7 +258,7 @@
         
         TableAccount *recordAccount = [CCCoreData getActiveAccount];
         
-        if ([recordAccount.account isEqualToString:_metadataNet.account]) {
+        if ([recordAccount.account isEqualToString:_metadataNet.account] && [thumbnail length] > 0) {
         
             UIImage *thumbnailImage = [UIImage imageWithData:thumbnail];
             NSString *directoryUser = [CCUtility getDirectoryActiveUser:_activeUser activeUrl:_activeUrl];
@@ -267,6 +267,10 @@
 
             if ([self.delegate respondsToSelector:@selector(downloadThumbnailSuccess:)] && [_metadataNet.action isEqualToString:actionDownloadThumbnail])
                 [self.delegate downloadThumbnailSuccess:_metadataNet];
+        } else {
+            
+            if ([self.delegate respondsToSelector:@selector(downloadThumbnailFailure:message:errorCode:)] && [_metadataNet.action isEqualToString:actionDownloadThumbnail])
+                [self.delegate downloadThumbnailFailure:_metadataNet message:@"No data" errorCode:0];
         }
         
         [self complete];

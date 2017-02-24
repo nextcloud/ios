@@ -57,6 +57,7 @@
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"intro" rowType:XLFormRowDescriptorTypeButton title:[CCUtility localizableBrand:@"_help_intro_" table:nil]];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
+    [row.cellConfig setObject:COLOR_BRAND forKey:@"textLabel.textColor"];
     row.action.formSelector = @selector(intro:);
     [section addFormRow:row];
 
