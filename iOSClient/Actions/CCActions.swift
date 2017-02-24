@@ -323,7 +323,7 @@ class CCActions: NSObject {
             
             metadataNet.action = actionSearch
             metadataNet.delegate = delegate
-            metadataNet.fileName = "%\(fileName)%"
+            metadataNet.fileName = fileName
             metadataNet.options = depth
             metadataNet.selector = selectorSearch
             metadataNet.serverUrl = serverUrl

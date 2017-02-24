@@ -623,7 +623,14 @@
         token = @"no token";
     }
     
-    fileName = [fileName encodeString:NSUTF8StringEncoding];
+    path = [NSString stringWithFormat:@"%@/remote.php/dav", path];
+    path = [path encodeString:NSUTF8StringEncoding];
+    
+    //fileName = [fileName stringByAppendingString:@"%25"];
+    
+    //fileName = [fileName stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    
+    //fileName = [fileName encodeString:NSUTF8StringEncoding];
     
     OCWebDAVClient *request = [OCWebDAVClient new];
     request = [self getRequestWithCredentials:request];
