@@ -48,6 +48,7 @@
     [metadata setDirectory: self.directory];
     [metadata setDirectoryID: self.directoryID];
     [metadata setErrorPasscode: self.errorPasscode];
+    [metadata setFavorite: self.favorite];
     [metadata setFileID: self.fileID];
     [metadata setFileName: self.fileName];
     [metadata setFileNameData: self.fileNameData];
@@ -89,6 +90,7 @@
         _directory = [decoder decodeBoolForKey:@"directory"];
         _directoryID = [decoder decodeObjectForKey:@"directoryID"];
         _errorPasscode = [decoder decodeBoolForKey:@"errorPasscode"];
+        _favorite = [decoder decodeBoolForKey:@"favorite"];
         _fileID = [decoder decodeObjectForKey:@"fileID"];
         _fileName = [decoder decodeObjectForKey:@"fileName"];
         _fileNameData = [decoder decodeObjectForKey:@"fileNameData"];
@@ -127,6 +129,7 @@
     [encoder encodeBool:_directory forKey:@"directory"];
     [encoder encodeObject:_directoryID forKey:@"directoryID"];
     [encoder encodeBool:_errorPasscode forKey:@"errorPasscode"];
+    [encoder encodeBool:_directory forKey:@"favorite"];
     [encoder encodeObject:_fileID forKey:@"fileID"];
     [encoder encodeObject:_fileName forKey:@"fileName"];
     [encoder encodeObject:_fileNameData forKey:@"fileNameData"];

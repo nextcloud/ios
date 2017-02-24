@@ -22,6 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nullable, nonatomic, copy) NSNumber *directory;
 @property (nullable, nonatomic, copy) NSString *directoryID;
 @property (nullable, nonatomic, copy) NSNumber *errorPasscode;
+@property (nullable, nonatomic, copy) NSNumber *favorite;
 @property (nullable, nonatomic, copy) NSString *fileID;
 @property (nullable, nonatomic, copy) NSString *fileName;
 @property (nullable, nonatomic, copy) NSString *fileNameData;

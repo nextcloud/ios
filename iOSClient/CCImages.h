@@ -85,6 +85,8 @@
 #define image_directorycriptata                 @"directorycriptata"
 #define image_document                          @"document"
 #define image_documentcrypto                    @"documentcrypto"
+#define image_favorite                          @"favorite"
+#define image_favoritecrypto                    @"favoritecrypto"
 #define image_offline                           @"offline"
 #define image_offlinecrypto                     @"offlinecrypto"
 #define image_offlineTitle                      @"offlineTitle"

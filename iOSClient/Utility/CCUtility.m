@@ -757,6 +757,7 @@
     metadata.date = [NSDate dateWithTimeIntervalSince1970:itemDto.date];
     metadata.directory = itemDto.isDirectory;
     metadata.errorPasscode = false;
+    metadata.favorite = itemDto.isFavorite;
     metadata.fileID = itemDto.ocId;
     metadata.directoryID = directoryID;
     metadata.fileName = [CCUtility removeForbiddenCharacters:itemDto.fileName hasServerForbiddenCharactersSupport:YES];

@@ -4995,6 +4995,16 @@
                 cell.synchronizedImageView.image = [UIImage animatedImageWithAnimatedGIFURL:myURL];
             }
         }
+        
+        // ----------------------------------------------------------------------------------------------------------
+        // Favorite Folder
+        // ----------------------------------------------------------------------------------------------------------
+        
+        if (metadata.favorite) {
+            
+            if (metadata.cryptated) cell.offlineImageView.image = [UIImage imageNamed:image_favoritecrypto];
+            else cell.offlineImageView.image = [UIImage imageNamed:image_favorite];
+        }
 
     } else {
     
@@ -5092,6 +5102,16 @@
         
         if (metadata.cryptated) cell.offlineImageView.image = [UIImage imageNamed:image_offlinecrypto];
         else cell.offlineImageView.image = [UIImage imageNamed:image_offline];
+    }
+    
+    // ----------------------------------------------------------------------------------------------------------
+    // Favorite
+    // ----------------------------------------------------------------------------------------------------------
+    
+    if (metadata.favorite) {
+        
+        if (metadata.cryptated) cell.offlineImageView.image = [UIImage imageNamed:image_favoritecrypto];
+        else cell.offlineImageView.image = [UIImage imageNamed:image_favorite];
     }
     
     // ----------------------------------------------------------------------------------------------------------

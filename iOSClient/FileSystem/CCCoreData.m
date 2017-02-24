@@ -1891,6 +1891,7 @@
     if (metadata.date) recordMetadata.date = metadata.date;
     recordMetadata.directory = [NSNumber numberWithBool:metadata.directory];
     recordMetadata.errorPasscode = [NSNumber numberWithBool:metadata.errorPasscode];
+    recordMetadata.favorite = [NSNumber numberWithBool:metadata.favorite];
     if ([metadata.fileID length]) recordMetadata.fileID = metadata.fileID;
     if ([metadata.directoryID length]) recordMetadata.directoryID = metadata.directoryID;
     if ([metadata.fileName length]) recordMetadata.fileName = metadata.fileName;
@@ -1939,6 +1940,7 @@
     metadata.dateRecord = recordMetadata.dateRecord;
     metadata.directory = [recordMetadata.directory boolValue];
     metadata.errorPasscode = [recordMetadata.errorPasscode boolValue];
+    metadata.favorite = [recordMetadata.favorite boolValue];
     metadata.fileID = recordMetadata.fileID;
     metadata.directoryID = recordMetadata.directoryID;
     metadata.fileName = recordMetadata.fileName;

@@ -21,6 +21,7 @@
 @dynamic directory;
 @dynamic directoryID;
 @dynamic errorPasscode;
+@dynamic favorite;
 @dynamic fileID;
 @dynamic fileName;
 @dynamic fileNameData;

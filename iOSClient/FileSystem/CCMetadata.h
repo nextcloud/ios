@@ -33,6 +33,7 @@
 @property BOOL directory;
 @property (nonatomic, strong) NSString *directoryID;
 @property BOOL errorPasscode;
+@property BOOL favorite;
 @property (nonatomic, strong) NSString *fileID;
 @property (nonatomic, strong) NSString *fileName;
 @property (nonatomic, strong) NSString *fileNameData;
