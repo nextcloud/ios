@@ -5,7 +5,7 @@
 
 @implementation OCXMLSearchParser
 
-@synthesize searchList=_directoryList;
+@synthesize searchList=_searchList;
 @synthesize currentFile=_currentFile;
 
 /*
@@ -85,7 +85,7 @@
         //If has lenght, there are an item
         if ([_xmlChars length]) {
             //Create FileDto
-            _currentFile = [[OCFileDto alloc] init];
+            _currentFile = [OCFileDto new];
              _currentFile.isDirectory = NO;
             [_xmlBucket setObject:[_xmlChars copy] forKey:@"uri"];
             
@@ -112,36 +112,29 @@
                 }
             }
        
-      
-    
-        NSArray *foo = [_xmlChars componentsSeparatedByString: @"/"];
-        NSString *lastBit;
+            NSArray *foo = [_xmlChars componentsSeparatedByString: @"/"];
+            NSString *lastBit;
         
-        if([_xmlChars hasSuffix:@"/"]) {
-            lastBit = [foo objectAtIndex: [foo count]-2];
-            lastBit = [NSString stringWithFormat:@"%@/",lastBit];
-        } else {
-            lastBit = [foo objectAtIndex: [foo count]-1];
-        }
+            if([_xmlChars hasSuffix:@"/"]) {
+                lastBit = [foo objectAtIndex: [foo count]-2];
+                lastBit = [NSString stringWithFormat:@"%@/",lastBit];
+            } else {
+                lastBit = [foo objectAtIndex: [foo count]-1];
+            }
         
-        //NSString *lastBit = [_xmlChars substringFromIndex:_uriLength];
-        //NSLog(@"lastBit:- %@",lastBit);
-        if (isNotFirstFileOfList == YES) {
+        
             [_xmlBucket setObject:lastBit forKey:@"href"];
             _currentFile.fileName = lastBit;
+            
+            NSString *decodedFileName = [self decodeFromPercentEscapeString:self.currentFile.fileName];
+            NSString *decodedFilePath = [self decodeFromPercentEscapeString:self.currentFile.filePath];
+            
+            self.currentFile.fileName = [decodedFileName encodeString:NSUTF8StringEncoding];
+            self.currentFile.filePath = [decodedFilePath encodeString:NSUTF8StringEncoding];
         }
-            
-        NSString *decodedFileName = [self decodeFromPercentEscapeString:self.currentFile.fileName];
-        NSString *decodedFilePath = [self decodeFromPercentEscapeString:self.currentFile.filePath];
-            
-        self.currentFile.fileName = [decodedFileName encodeString:NSUTF8StringEncoding];
-        self.currentFile.filePath = [decodedFilePath encodeString:NSUTF8StringEncoding];
-            
-        isNotFirstFileOfList = YES;
-
-//        //NSLog(@"1 _xmlBucked :- %@",_xmlBucket);
-     }
+        
     } else if ([elementName isEqualToString:@"d:getlastmodified"]) {
+        
         //DATE
         // 'Thu, 30 Oct 2008 02:52:47 GMT'
         // Monday, 12-Jan-98 09:25:56 GMT
@@ -166,6 +159,7 @@
         _currentFile.ocId = _xmlChars;
         
     } else if ([elementName hasSuffix:@":getetag"] && [_xmlChars length]) {
+        
         //ETAG
         NSLog(@"getetag: %@", _xmlChars);
         
@@ -190,11 +184,10 @@
         _currentFile.isDirectory = YES;
         
     } else if ([elementName isEqualToString:@"d:response"]) {
-        //NSLog(@"2 _xmlBucked :- %@",_xmlBucket);
         
-        //Add to directoryList
-        [_directoryList addObject:_currentFile];
-        _currentFile = [[OCFileDto alloc] init];
+        //Add to searchList
+        [_searchList addObject:_currentFile];
+        _currentFile = [OCFileDto new];
 
         _xmlBucket = nil;
     } else if ([elementName isEqualToString:@"d:quota-used-bytes"]) {
