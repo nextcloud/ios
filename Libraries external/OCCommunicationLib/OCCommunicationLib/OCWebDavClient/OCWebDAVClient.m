@@ -294,7 +294,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     
     
     // OCFileDto
-    body = [body stringByAppendingString:@"<d:resourcetype/><oc:fileid/><d:getcontenttype/><d:getetag/><d:creationdate/><oc:size/><d:getcontentlength/><d:getlastmodified/><oc:id/><oc:permissions/><oc:favorite/><d:quota-available-bytes/><d:quota-used-bytes/>"];
+    body = [body stringByAppendingString:@"<d:resourcetype/><oc:fileid/><d:getcontenttype/><d:getetag/><d:creationdate/><oc:size/><d:getcontentlength/><d:getlastmodified/><oc:id/><oc:permissions/><d:quota-available-bytes/><d:quota-used-bytes/><oc:favorite/>"];
     
     
     body = [NSString stringWithFormat:@"%@</d:prop></d:select><d:from><d:scope><d:href>/files/%@</d:href><d:depth>infinity</d:depth></d:scope></d:from><d:where><d:like><d:prop><d:displayname/></d:prop><d:literal>%%%@%%</d:literal></d:like></d:where><d:orderby/></d:basicsearch></d:searchrequest>", body, user, fileName];

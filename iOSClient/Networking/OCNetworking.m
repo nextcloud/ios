@@ -301,7 +301,7 @@
     
     [communication readFolder:_metadataNet.serverUrl withUserSessionToken:nil onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token) {
         
-        NSMutableArray *metadatas = [[NSMutableArray alloc] init];
+        NSMutableArray *metadatas = [NSMutableArray new];
         
         // Check items > 0
         if ([items count] == 0) {
@@ -430,6 +430,41 @@
     
     [communication search:path fileName:_metadataNet.fileName depth:_metadataNet.options withUserSessionToken:nil onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token) {
         
+        NSMutableArray *metadatas = [NSMutableArray new];
+        
+        NSString *cameraFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:_metadataNet.account];
+        NSString *cameraFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:_metadataNet.account activeUrl:_activeUrl];
+        NSString *directoryUser = [CCUtility getDirectoryActiveUser:_activeUser activeUrl:_activeUrl];
+
+        for(OCFileDto *itemDto in items) {
+            
+            itemDto.fileName = [itemDto.fileName stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+            
+            // Not in Crypto Cloud file
+            NSString *fileName = itemDto.fileName;
+            if (itemDto.isDirectory)
+                fileName = [fileName substringToIndex:[fileName length] - 1];
+                
+            if ([CCUtility isFileCryptated:fileName])
+                continue;
+            
+            // ----- BUG #942 ---------
+            if ([itemDto.etag length] == 0) {
+#ifndef EXTENSION
+                [app messageNotification:@"Server error" description:@"Metadata etag absent, record excluded, please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
+#endif
+                continue;
+            }
+            // ------------------------
+            
+            NSString *serverUrl = [NSString stringWithFormat:@"%@/files/%@/", dav, _activeUser];
+            serverUrl = [itemDto.filePath stringByReplacingOccurrencesOfString:serverUrl withString:@""];
+            
+            NSString *directoryID = [CCCoreData addDirectory:serverUrl date:[NSDate date] permissions:itemDto.permissions activeAccount:_metadataNet.account];
+
+            [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileNamePrint:itemDto.fileName serverUrl:serverUrl directoryID:directoryID cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath activeAccount:_metadataNet.account directoryUser:directoryUser]];
+        }
+    
         if ([self.delegate respondsToSelector:@selector(searchSuccess:metadatas:)])
             [self.delegate searchSuccess:_metadataNet metadatas:nil];
         
