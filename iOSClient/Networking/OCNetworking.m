@@ -457,8 +457,17 @@
             }
             // ------------------------
             
-            NSString *serverUrl = [NSString stringWithFormat:@"%@/files/%@/", dav, _activeUser];
+            NSString *serverUrl = [NSString stringWithFormat:@"%@/files/%@", dav, _activeUser];
             serverUrl = [itemDto.filePath stringByReplacingOccurrencesOfString:serverUrl withString:@""];
+            
+            /* TRIM */
+            if ([serverUrl hasPrefix:@"/"])
+                serverUrl = [serverUrl substringFromIndex:1];
+            if ([serverUrl hasSuffix:@"/"])
+                serverUrl = [serverUrl substringToIndex:[serverUrl length] - 1];
+            /*      */
+            
+            serverUrl = [CCUtility stringAppendServerUrl:[_activeUrl stringByAppendingString:webDAV] addServerUrl:serverUrl];
             
             NSString *directoryID = [CCCoreData addDirectory:serverUrl date:[NSDate date] permissions:itemDto.permissions activeAccount:_metadataNet.account];
 
@@ -466,7 +475,7 @@
         }
     
         if ([self.delegate respondsToSelector:@selector(searchSuccess:metadatas:)])
-            [self.delegate searchSuccess:_metadataNet metadatas:nil];
+            [self.delegate searchSuccess:_metadataNet metadatas:metadatas];
         
         [self complete];
         

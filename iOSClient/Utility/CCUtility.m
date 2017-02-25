@@ -436,6 +436,7 @@
     NSString *result;
     
     if (serverUrl == nil || addServerUrl == nil) return nil;
+    if ([addServerUrl isEqualToString:@""]) return serverUrl;
     
     if ([serverUrl isEqualToString:@"/"]) result = [serverUrl stringByAppendingString:addServerUrl];
     else result = [NSString stringWithFormat:@"%@/%@", serverUrl, addServerUrl];
@@ -750,7 +751,7 @@
 
 + (CCMetadata *)trasformedOCFileToCCMetadata:(OCFileDto *)itemDto fileNamePrint:(NSString *)fileNamePrint serverUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID cameraFolderName:(NSString *)cameraFolderName cameraFolderPath:(NSString *)cameraFolderPath activeAccount:(NSString *)activeAccount directoryUser:(NSString *)directoryUser
 {
-    CCMetadata *metadata = [[CCMetadata alloc] init];
+    CCMetadata *metadata = [CCMetadata new];
     
     metadata.account = activeAccount;
     metadata.cryptated = NO;
