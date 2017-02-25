@@ -1847,7 +1847,7 @@
         metadataNet.directoryID = directoryID;
         metadataNet.priority = NSOperationQueuePriorityVeryHigh;
         metadataNet.selector = selectorReadFolder;
-        metadataNet.serverUrl = [CCCoreData getServerUrlFromDirectoryID:directoryID activeAccount:app.activeAccount];
+        metadataNet.serverUrl = serverUrl;
 
         [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
         
