@@ -307,13 +307,13 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     [operation resume];
 }
 
-- (void)settingFavorite:(NSString * _Nonnull)serverFilePath favorite:(BOOL)favorite onCommunication:(OCCommunication *)sharedOCCommunication withUserSessionToken:(NSString *)token success:(void(^)(NSHTTPURLResponse *, id, NSString *token))success failure:(void(^)(NSHTTPURLResponse *, id  _Nullable responseObject, NSError *, NSString *token))failure {
+- (void)settingFavorite:(NSString * _Nonnull)path favorite:(BOOL)favorite onCommunication:(OCCommunication *)sharedOCCommunication withUserSessionToken:(NSString *)token success:(void(^)(NSHTTPURLResponse *, id, NSString *token))success failure:(void(^)(NSHTTPURLResponse *, id  _Nullable responseObject, NSError *, NSString *token))failure {
     
     NSParameterAssert(success);
     
     _requestMethod = @"PROPPATCH";
     
-    NSMutableURLRequest *request = [self requestWithMethod:_requestMethod path:serverFilePath parameters:nil];
+    NSMutableURLRequest *request = [self requestWithMethod:_requestMethod path:path parameters:nil];
     
     NSString *body = [NSString stringWithFormat:@"<?xml version=\"1.0\"?><d:propertyupdate xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\"><d:set><d:prop><oc:favorite>%i</oc:favorite></d:prop></d:set></d:propertyupdate>", (favorite ? 1 : 0)];
                       

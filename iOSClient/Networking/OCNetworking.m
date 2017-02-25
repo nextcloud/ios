@@ -426,7 +426,9 @@
     [communication setCredentialsWithUser:_activeUser andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
-    [communication search:_activeUrl fileName:_metadataNet.fileName depth:_metadataNet.options withUserSessionToken:nil onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token) {
+    NSString *path = [_activeUrl stringByAppendingString:dav];
+    
+    [communication search:path fileName:_metadataNet.fileName depth:_metadataNet.options withUserSessionToken:nil onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token) {
         
         if ([self.delegate respondsToSelector:@selector(searchSuccess:metadatas:)])
             [self.delegate searchSuccess:_metadataNet metadatas:nil];
@@ -460,8 +462,10 @@
     
     [communication setCredentialsWithUser:_activeUser andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent]];
-        
-    [communication settingFavoriteServer:_activeUrl andFileOrFolderPath:_metadataNet.fileName favorite:[_metadataNet.options boolValue] withUserSessionToken:nil onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer, NSString *token) {
+    
+    NSString *path = [_activeUrl stringByAppendingString:dav];
+
+    [communication settingFavoriteServer:path andFileOrFolderPath:_metadataNet.fileName favorite:[_metadataNet.options boolValue] withUserSessionToken:nil onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer, NSString *token) {
         
         if ([self.delegate respondsToSelector:@selector(settingFavoriteSuccess:)])
             [self.delegate settingFavoriteSuccess:_metadataNet];

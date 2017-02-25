@@ -28,8 +28,9 @@ NSString *const appApplicationSupport = @"Library/Application Support";
 NSString *const appDatabase = @"Library/Application Support/Crypto Cloud";
 NSString *const appCertificates = @"Library/Application Support/Certificates";
 
-// DAV
+// webDAV & DAV
 NSString *const webDAV = @"/remote.php/webdav";
+NSString *const dav = @"/remote.php/dav";
 
 // BKPasscode
 NSString *const BKPasscodeKeychainServiceName = @"Crypto Cloud";
