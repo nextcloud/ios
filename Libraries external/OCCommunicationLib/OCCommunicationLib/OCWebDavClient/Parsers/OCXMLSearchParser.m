@@ -5,7 +5,7 @@
 
 @implementation OCXMLSearchParser
 
-@synthesize directoryList=_directoryList;
+@synthesize searchList=_directoryList;
 @synthesize currentFile=_currentFile;
 
 /*
@@ -14,7 +14,7 @@
  */
 - (void)initParserWithData: (NSData*)data{
     
-    _directoryList = [[NSMutableArray alloc]init];
+    _searchList = [NSMutableArray new];
     
     NSXMLParser *parser = [[NSXMLParser alloc] initWithData:data];
     [parser setDelegate:self];

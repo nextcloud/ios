@@ -627,12 +627,6 @@
     path = [NSString stringWithFormat:@"%@/remote.php/dav", path];
     path = [path encodeString:NSUTF8StringEncoding];
     
-    //fileName = [fileName stringByAppendingString:@"%25"];
-    
-    //fileName = [fileName stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    
-    //fileName = [fileName encodeString:NSUTF8StringEncoding];
-    
     OCWebDAVClient *request = [OCWebDAVClient new];
     request = [self getRequestWithCredentials:request];
     
@@ -642,17 +636,16 @@
             
             NSData *responseData = (NSData*) responseObject;
             
-            OCXMLParser *parser = [[OCXMLParser alloc]init];
+            OCXMLSearchParser *parser = [OCXMLSearchParser new];
             [parser initParserWithData:responseData];
-            NSMutableArray *directoryList = [parser.directoryList mutableCopy];
+            NSMutableArray *searchList = [parser.searchList mutableCopy];
             
             //Return success
-            successRequest(response, directoryList, request.redirectedServer, token);
+            successRequest(response, searchList, request.redirectedServer, token);
         }
         
     } failure:^(NSHTTPURLResponse *response, id responseData, NSError *error, NSString *token) {
         
-        NSLog(@"Failure");
         failureRequest(response, error, token, request.redirectedServer);
     }];
 }
