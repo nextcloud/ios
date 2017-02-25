@@ -2178,13 +2178,6 @@
 
 - (void)moveServerUrlTo:(NSString *)serverUrlTo title:(NSString *)title selectedMetadatas:(NSArray *)selectedMetadatas
 {
-    // Test
-    if ([_serverUrl isEqualToString:serverUrlTo]) {
-        
-        [self tableViewSelect:NO];
-        return;
-    }
-    
     [_selectedMetadatas removeAllObjects];
     [_queueSelector removeAllObjects];
     
