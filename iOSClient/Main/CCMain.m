@@ -5567,8 +5567,7 @@
     // if background return
     if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) return NO;
     
-    // se non siamo in primo piano o se non siamo nella stessa directory esci
-    if (self.view.window == NO || ([serverUrl isEqualToString:_serverUrl] == NO && serverUrl))
+    if (self.view.window == NO)
         return NO;
     
     // Collapsed ma siamo già in detail esci
