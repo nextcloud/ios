@@ -28,7 +28,7 @@
 
 @protocol CCCartaDiCreditoDelegate <NSObject>
 
-- (void)readFolderWithForced:(BOOL)forced;
+- (void)readFolderWithForced:(BOOL)forced serverUrl:(NSString *)serverUrl;
 
 @end
 

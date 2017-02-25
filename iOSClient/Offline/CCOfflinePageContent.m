@@ -392,11 +392,6 @@
     return metadata;
 }
 
-- (void)readFolderWithForced:(BOOL)forced
-{
-    [self reloadDatasource];
-}
-
 - (void)reloadDatasource
 {
     if ([_pageType isEqualToString:k_pageOfflineOffline]) {

@@ -217,7 +217,7 @@
         // remove the file
         [CCCoreData deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, app.activeAccount]];
         
-        [self.delegate readFolderWithForced:YES];
+        [self.delegate readFolderWithForced:YES serverUrl:self.serverUrl];
     }
 }
 

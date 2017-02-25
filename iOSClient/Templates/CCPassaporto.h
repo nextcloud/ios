@@ -28,7 +28,7 @@
 
 @protocol CCPassaportoDelegate <NSObject>
 
-- (void)readFolderWithForced:(BOOL)forced;
+- (void)readFolderWithForced:(BOOL)forced serverUrl:(NSString *)serverUrl;
 
 @end
 

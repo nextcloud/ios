@@ -175,7 +175,7 @@
         [self reloadDatasource:_serverUrl fileID:nil selector:nil];
         
         // Read Folder
-        [self readFolderWithForced:NO];
+        [self readFolderWithForced:NO serverUrl:_serverUrl];
     }
 
     // Title
@@ -250,7 +250,7 @@
             [self reloadDatasource:_serverUrl fileID:nil selector:nil];
             
             // Read Folder
-            [self readFolderWithForced:NO];
+            [self readFolderWithForced:NO serverUrl:_serverUrl];
         }
     }
 
@@ -350,7 +350,7 @@
         [self reloadDatasource:_serverUrl fileID:nil selector:nil];
 
         // Load Folder
-        [self readFolderWithForced:NO];
+        [self readFolderWithForced:NO serverUrl:_serverUrl];
         
         // Load photo datasorce
         if (app.activePhotosCameraUpload)
@@ -456,7 +456,7 @@
 
 - (void)refreshControlTarget
 {
-    [self readFolderWithForced:YES];
+    [self readFolderWithForced:YES serverUrl:_serverUrl];
     
     // Actuate `Peek` feedback (weak boom)
     AudioServicesPlaySystemSound(1519);
@@ -981,7 +981,7 @@
 
 - (void) loginSuccess:(NSInteger)loginType
 {
-    [self readFolderWithForced:YES];
+    [self readFolderWithForced:YES serverUrl:_serverUrl];
 }
 
 - (void)changePasswordAccount
@@ -1494,7 +1494,7 @@
     
     if ([selectorPost isEqualToString:selectorReadFolderForced] ) {
             
-        [self readFolderWithForced:YES];
+        [self readFolderWithForced:YES serverUrl:_serverUrl];
             
     } else {
     
@@ -1812,26 +1812,28 @@
     }
 }
 
-- (void)readFolderWithForced:(BOOL)forced
+- (void)readFolderWithForced:(BOOL)forced serverUrl:(NSString *)serverUrl
 {
     [self setTitleBackgroundTableView:nil];
  
     // init control
-    if (!_serverUrl || !app.activeAccount)
+    if (!serverUrl || !app.activeAccount)
         return;
     
     // Search Mode
     if (_isSearchMode) {
         
-        if (forced)
+        if (forced) {
             _reloadForcedFoderWhenSearchModeOff = YES;
+            _searchFileName = @"";                          // forced reload searchg
+        }
         
         [self updateSearchResultsForSearchController:self.searchController];
         
         return;
     }
     
-    NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:_serverUrl activeAccount:app.activeAccount];
+    NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:app.activeAccount];
     
     if ([CCCoreData isDirectoryOutOfDate:k_dayForceReadFolder directoryID:directoryID activeAccount:app.activeAccount] || forced) {
         
@@ -1894,7 +1896,7 @@
         
         _reloadForcedFoderWhenSearchModeOff = NO;
         
-        [self readFolderWithForced:YES];
+        [self readFolderWithForced:YES serverUrl:_serverUrl];
     }
 }
 
@@ -2006,7 +2008,7 @@
 
 - (void)renameSuccess:(CCMetadataNet *)metadataNet
 {
-    [self readFolderWithForced:YES];
+    [self readFolderWithForced:YES serverUrl:_serverUrl];
 }
 
 - (void)renameFile:(CCMetadata *)metadata fileName:(NSString *)fileName
@@ -2100,8 +2102,8 @@
         }
     
         // reload Datasource
-        if ([metadataNet.selectorPost isEqualToString:selectorReadFolderForced])
-            [self readFolderWithForced:YES];
+        if ([metadataNet.selectorPost isEqualToString:selectorReadFolderForced] || _isSearchMode)
+            [self readFolderWithForced:YES serverUrl:_serverUrl];
         else
             [self reloadDatasource];
 
@@ -2232,7 +2234,7 @@
     
     // Load Folder or the Datasource
     if ([metadataNet.selectorPost isEqualToString:selectorReadFolderForced]) {
-        [self readFolderWithForced:YES];
+        [self readFolderWithForced:YES serverUrl:_serverUrl];
     } else {
         [self reloadDatasource:metadataNet.serverUrl fileID:metadataNet.fileID selector:metadataNet.selector];
     }
@@ -3954,7 +3956,7 @@
                     // scriviamo il passcode
                     [CCUtility setKeyChainPasscodeForUUID:_metadata.uuid conPasscode:aPasscode];
                     
-                    [self readFolderWithForced:YES];
+                    [self readFolderWithForced:YES serverUrl:_serverUrl];
                     
                 } else {
                     
@@ -4264,7 +4266,7 @@
                                         if (app.activeAccount.length > 0 && app.activePhotosCameraUpload)
                                             [app.activePhotosCameraUpload reloadDatasourceForced];
                                         
-                                        [self readFolderWithForced:YES];
+                                        [self readFolderWithForced:YES serverUrl:_serverUrl];
                                     }];
         }
         
@@ -4637,7 +4639,7 @@
             
         } else {
             
-            [self readFolderWithForced:NO];
+            [self readFolderWithForced:NO serverUrl:serverUrl];
         }
         
         [self tableViewReload];
