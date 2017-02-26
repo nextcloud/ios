@@ -1897,6 +1897,8 @@
 
 - (void)searchFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
+    _searchFileName = @"";
+
     if (message)
         [app messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
 }
@@ -1942,7 +1944,10 @@
         
         [_hud hideHud];
         
-        [self reloadDatasource:metadataNet.serverUrl fileID:metadataNet.metadata.fileID selector:metadataNet.selector];
+        if (_isSearchMode)
+            [self readFolderWithForced:YES serverUrl:metadataNet.serverUrl];
+        else
+            [self reloadDatasource:metadataNet.serverUrl fileID:metadataNet.metadata.fileID selector:metadataNet.selector];
         
         // next
         if ([_selectedMetadatas count] > 0) {
@@ -2923,7 +2928,11 @@
 {
     [CCCoreData SetMetadataFavoriteFileID:metadataNet.fileID favorite:[metadataNet.options boolValue] activeAccount:app.activeAccount context:nil];
     _dateReadDataSource = nil;
-    [self reloadDatasource:metadataNet.serverUrl fileID:metadataNet.fileID selector:metadataNet.selector];
+    
+    if (_isSearchMode)
+        [self readFolderWithForced:YES serverUrl:metadataNet.serverUrl];
+    else
+        [self reloadDatasource:metadataNet.serverUrl fileID:metadataNet.fileID selector:metadataNet.selector];
 }
 
 - (void)settingFavoriteFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
