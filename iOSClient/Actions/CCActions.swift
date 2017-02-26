@@ -53,7 +53,9 @@ import Foundation
     
     func settingFavoriteSuccess(_ metadataNet: CCMetadataNet)
     func settingFavoriteFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger)
-    
+}
+
+@objc protocol CCActionsListingFavoritesDelegate  {
     func listingFavoritesSuccess(_ metadataNet: CCMetadataNet, metadatas: [Any])
     func listingFavoritesFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger)
 }
@@ -432,17 +434,16 @@ class CCActions: NSObject {
     
     func listingFavoritesSuccess(_ metadataNet: CCMetadataNet, metadatas: [CCMetadata]) {
         
-        metadataNet.delegate?.settingFavoriteSuccess(metadataNet)
+        metadataNet.delegate?.listingFavoritesSuccess(metadataNet, metadatas: metadatas)
     }
     
     func listingFavoritesFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger) {
         
         appDelegate.messageNotification("_favorite_", description: message as String, visible: true, delay:TimeInterval(k_dismissAfterSecond), type:TWMessageBarMessageType.error)
         
-        metadataNet.delegate?.settingFavoriteFailure(metadataNet, message: message, errorCode: errorCode)
+        metadataNet.delegate?.listingFavoritesFailure(metadataNet, message: message, errorCode: errorCode)
     }
 
-    
 }
 
 

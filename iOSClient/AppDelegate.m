@@ -38,7 +38,7 @@
 
 #import "Nextcloud-Swift.h"
 
-@interface AppDelegate ()
+@interface AppDelegate () <CCActionsListingFavoritesDelegate>
 {
     
 }
@@ -362,7 +362,7 @@
         [[CCSynchronize sharedSynchronize] readFolderOffline];
         
         NSLog(@"[LOG] Listning Favorites");
-        [[CCActions sharedInstance] listingFavorites:@"" delegate:self];
+        [[CCActions sharedInstance] listingFavorites:@"" delegate:self.activeOffline];
     });
     
     // Initialize Camera Upload

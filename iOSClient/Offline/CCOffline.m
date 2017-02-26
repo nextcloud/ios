@@ -22,13 +22,14 @@
 //
 
 #import "CCOffline.h"
-
 #import "AppDelegate.h"
 #import "CCSynchronize.h"
 
+#import "Nextcloud-Swift.h"
+
 #pragma GCC diagnostic ignored "-Wundeclared-selector"
 
-@interface CCOffline ()
+@interface CCOffline () <CCActionsListingFavoritesDelegate>
 {
     UIPageControl *pageControl;
 }
@@ -191,6 +192,20 @@
         item.selectedImage = [UIImage imageNamed:@"tabBarLocal"];
         item.image = [UIImage imageNamed:@"tabBarLocal"];
     }
+}
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Listing Favorite Delegate =====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)listingFavoritesSuccess:(CCMetadataNet *)metadataNet metadatas:(NSArray *)metadatas
+{
+    
+}
+
+- (void)listingFavoritesFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+{
+    
 }
 
 @end
