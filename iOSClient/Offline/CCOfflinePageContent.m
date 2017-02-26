@@ -392,6 +392,11 @@
     return metadata;
 }
 
+- (void)readFolderWithForced:(BOOL)forced serverUrl:(NSString *)serverUrl
+{
+    [self reloadDatasource];
+}
+
 - (void)reloadDatasource
 {
     if ([_pageType isEqualToString:k_pageOfflineOffline]) {
