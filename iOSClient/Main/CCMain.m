@@ -1720,24 +1720,24 @@
     
     NSArray *recordsInSessions;
     
-    if (!_isSearchMode) {
+    if (_isSearchMode) {
         
-        recordsInSessions = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@)", app.activeAccount] context:nil];
+        recordsInSessions = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (session != NULL) AND (session != '')", app.activeAccount] context:nil];
         
     } else {
         
         [CCCoreData deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND ((session == NULL) OR (session == ''))", app.activeAccount, metadataNet.directoryID]];
     
-        recordsInSessions = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@)", app.activeAccount, metadataNet.directoryID] context:nil];
+        recordsInSessions = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND (session != NULL) AND (session != '')", app.activeAccount, metadataNet.directoryID] context:nil];
 
         [CCCoreData setDateReadDirectoryID:metadataNet.directoryID activeAccount:app.activeAccount];
     }
     
     for (CCMetadata *metadata in metadatas) {
         
-        // Delete Record in Search Mode
+        // Delete Record only in Search Mode
         if (_isSearchMode)
-            [CCCoreData deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND (fileID = %@) AND ((session == NULL) OR (session == ''))", app.activeAccount, metadataNet.directoryID, metadataNet.fileID]];
+            [CCCoreData deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND (fileID = %@) AND ((session == NULL) OR (session == ''))", app.activeAccount, metadata.directoryID, metadata.fileID]];
         
         // type of file
         NSInteger typeFilename = [CCUtility getTypeFileName:metadata.fileName];
@@ -1767,8 +1767,8 @@
             
             CCMetadata *metadataDB = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND (fileName == %@)", app.activeAccount, metadataNet.directoryID, metadata.fileName] context:nil];
             
-            // Upload
-            if (metadataDB.session && [metadataDB.session rangeOfString:@"upload"].location != NSNotFound) {
+            // is in Upload
+            if (metadataDB.session && [metadataDB.session containsString:@"upload"]) {
                 
                 NSString *sessionID = metadataDB.sessionID;
                 
@@ -1794,7 +1794,8 @@
             }
             
             // download in progress
-            if (metadataDB.session && [metadataDB.session rangeOfString:@"download"].location != NSNotFound) continue;
+            if (metadataDB.session && [metadataDB.session containsString:@"download"])
+                continue;
         }
 
         // end test, insert in CoreData
