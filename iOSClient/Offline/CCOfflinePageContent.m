@@ -293,6 +293,22 @@
                                 }];
     }
     
+    // ONLY Root Favorites : Remove file/folder Favorites
+    if (_serverUrl == nil && [_pageType isEqualToString:k_pageOfflineFavorites]) {
+        
+        [actionSheet addButtonWithTitle:NSLocalizedString(@"_remove_favorites_", nil)
+                                  image:[UIImage imageNamed:image_actionSheetOffline]
+                        backgroundColor:[UIColor whiteColor]
+                                 height: 50.0
+                                   type:AHKActionSheetButtonTypeDefault
+                                handler:^(AHKActionSheet *as) {
+                                    
+                                    [self.tableView setEditing:NO animated:YES];
+                                    
+                                    [self reloadDatasource];
+                                }];
+    }
+
     // ONLY Root Offline : Remove file/folder offline
     if (_serverUrl == nil && [_pageType isEqualToString:k_pageOfflineOffline]) {
         
@@ -342,7 +358,7 @@
                                                              style:UIAlertActionStyleDestructive
                                                            handler:^(UIAlertAction *action) {
                                                                
-                                                               if ([_pageType isEqualToString:k_pageOfflineOffline]) {
+                                                               if ([_pageType isEqualToString:k_pageOfflineFavorites] || [_pageType isEqualToString:k_pageOfflineOffline]) {
                                                                    
                                                                    [[CCActions sharedInstance] deleteFileOrFolder:_metadata delegate:self];
                                                                }

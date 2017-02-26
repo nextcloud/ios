@@ -209,7 +209,7 @@
 "_offline_"                     = "Offline";
 "_local_storage_"               = "Local storage";
 "_no_files_uploaded_"           = "No files uploaded";
-"_tutorial_favorite_view_"      = "Copy here the files that should be available offline.\n\nThey will be synchronized with your cloud.";
+"_tutorial_favorite_view_"      = "Here is the list of files that you have selected as favorites.";
 "_tutorial_offline_view_"       = "Copy here the files that should be available offline.\n\nThey will be synchronized with your cloud.";
 "_tutorial_local_view_"         = "You'll find the unpacked files from your cloud.\n\nConnect to iTunes to share these files.";
 "_more_"                        = "More";
