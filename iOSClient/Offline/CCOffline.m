@@ -29,7 +29,7 @@
 
 #pragma GCC diagnostic ignored "-Wundeclared-selector"
 
-@interface CCOffline () <CCActionsListingFavoritesDelegate>
+@interface CCOffline ()
 {
     UIPageControl *pageControl;
 }
@@ -203,55 +203,6 @@
         item.selectedImage = [UIImage imageNamed:image_tabBarLocal];
         item.image = [UIImage imageNamed:image_tabBarLocal];
     }
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Listing Favorite Delegate =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)listingFavoritesSuccess:(CCMetadataNet *)metadataNet metadatas:(NSArray *)metadatas
-{
-    // verify active user
-    TableAccount *record = [CCCoreData getActiveAccount];
-    
-    if (![record.account isEqualToString:metadataNet.account])
-        return;
-
-    for (CCMetadata *metadata in metadatas) {
-        
-        // Delete Record NOT in session
-        [CCCoreData deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND (fileID = %@) AND ((session == NULL) OR (session == ''))", app.activeAccount, metadata.directoryID, metadata.fileID]];
-        
-        // type of file
-        NSInteger typeFilename = [CCUtility getTypeFileName:metadata.fileName];
-        
-        // if crypto do not insert
-        if (typeFilename == k_metadataTypeFilenameCrypto) continue;
-        
-        // verify if the record encrypted has plist + crypto
-        if (typeFilename == k_metadataTypeFilenamePlist && metadata.directory == NO) {
-            
-            BOOL isCryptoComplete = NO;
-            NSString *fileNameCrypto = [CCUtility trasformedFileNamePlistInCrypto:metadata.fileName];
-            
-            for (CCMetadata *completeMetadata in metadatas) {
-                
-                if (completeMetadata.cryptated == NO) continue;
-                else  if ([completeMetadata.fileName isEqualToString:fileNameCrypto]) {
-                    isCryptoComplete = YES;
-                    break;
-                }
-            }
-            if (isCryptoComplete == NO) continue;
-        }
-        
-        // end test, insert in CoreData
-        [CCCoreData addMetadata:metadata activeAccount:app.activeAccount activeUrl:app.activeUrl context:nil];
-    }
-}
-
-- (void)listingFavoritesFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
-{
 }
 
 @end

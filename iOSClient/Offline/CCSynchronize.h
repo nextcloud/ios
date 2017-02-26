@@ -33,10 +33,9 @@
 
 + (CCSynchronize *)sharedSynchronize;
 
-- (void)readFolderOffline;
+- (void)readListingFavorites;
+- (void)readOffline;
 - (void)addOfflineFolder:(NSString *)serverUrl;
-
-- (void)readFileOffline;
 
 - (void)verifyChangeMedatas:(NSArray *)allRecordMetadatas serverUrl:(NSString *)serverUrl account:(NSString *)account offline:(BOOL)offline;
 

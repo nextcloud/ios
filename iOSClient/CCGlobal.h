@@ -163,6 +163,7 @@ extern NSString *const BKPasscodeKeychainServiceName;
 #define selectorDeleteCrypto                            @"deleteCrypto"
 #define selectorDeletePlist                             @"deletePlist"
 #define selectorDownloadThumbnail                       @"downloadThumbnail"
+#define selectorDownloadFavorites                       @"downloadFavorites"
 #define selectorDownloadOffline                         @"downloadOffline"
 #define selectorEncryptFile                             @"encryptFile"
 #define selectorGetUserAndGroup                         @"getUserAndGroup"

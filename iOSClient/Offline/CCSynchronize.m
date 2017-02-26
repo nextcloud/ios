@@ -27,7 +27,10 @@
 #import "CCCoreData.h"
 #import "CCMain.h"
 
-@interface CCSynchronize ()
+#import "Nextcloud-Swift.h"
+
+
+@interface CCSynchronize () <CCActionsListingFavoritesDelegate>
 {
     // local
 }
@@ -48,16 +51,81 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Read Folder Offline =====
+#pragma mark ===== Read Listing Favorites =====
 #pragma --------------------------------------------------------------------------------------------
 
-// MULTI THREAD
-- (void)readFolderOffline
+- (void)readListingFavorites
 {
     // test
     if (app.activeAccount.length == 0)
         return;
+    
+    // verify is offline procedure is in progress selectorDownloadFavorites
+    if ([[app verifyExistsInQueuesDownloadSelector:selectorDownloadFavorites] count] > 0)
+        return;
+    
+    [[CCActions sharedInstance] listingFavorites:@"" delegate:self];
+}
 
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Listing Favorite Delegate =====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)listingFavoritesSuccess:(CCMetadataNet *)metadataNet metadatas:(NSArray *)metadatas
+{
+    // verify active user
+    TableAccount *record = [CCCoreData getActiveAccount];
+    
+    if (![record.account isEqualToString:metadataNet.account])
+        return;
+    
+    for (CCMetadata *metadata in metadatas) {
+        
+        // Delete Record NOT in session
+        [CCCoreData deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND (fileID = %@) AND ((session == NULL) OR (session == ''))", app.activeAccount, metadata.directoryID, metadata.fileID]];
+        
+        // type of file
+        NSInteger typeFilename = [CCUtility getTypeFileName:metadata.fileName];
+        
+        // if crypto do not insert
+        if (typeFilename == k_metadataTypeFilenameCrypto) continue;
+        
+        // verify if the record encrypted has plist + crypto
+        if (typeFilename == k_metadataTypeFilenamePlist && metadata.directory == NO) {
+            
+            BOOL isCryptoComplete = NO;
+            NSString *fileNameCrypto = [CCUtility trasformedFileNamePlistInCrypto:metadata.fileName];
+            
+            for (CCMetadata *completeMetadata in metadatas) {
+                
+                if (completeMetadata.cryptated == NO) continue;
+                else  if ([completeMetadata.fileName isEqualToString:fileNameCrypto]) {
+                    isCryptoComplete = YES;
+                    break;
+                }
+            }
+            if (isCryptoComplete == NO) continue;
+        }
+        
+        // end test, insert in CoreData
+        [CCCoreData addMetadata:metadata activeAccount:app.activeAccount activeUrl:app.activeUrl context:nil];
+    }
+}
+
+- (void)listingFavoritesFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+{
+}
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Read Offline =====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)readOffline
+{
+    // test
+    if (app.activeAccount.length == 0)
+        return;
+    
     // verify is offline procedure is in progress selectorDownloadOffline
     if ([[app verifyExistsInQueuesDownloadSelector:selectorDownloadOffline] count] > 0)
         return;
@@ -66,27 +134,43 @@
         
         NSString *father = @"";
         NSArray *directories = [CCCoreData getOfflineDirectoryActiveAccount:app.activeAccount];
-    
+
         for (TableDirectory *directory in directories) {
         
             if (![directory.serverUrl containsString:father]) {
-        
+             
                 father = directory.serverUrl;
-            
-                CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
-        
-                metadataNet.action = actionReadFolder;
-                metadataNet.directoryID = directory.directoryID;
-                metadataNet.priority = NSOperationQueuePriorityVeryLow;
-                metadataNet.selector = selectorReadFolder;
-                metadataNet.serverUrl = directory.serverUrl;
-        
-                [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
-            
-                NSLog(@"[LOG] Read offline directory : %@", directory.serverUrl);
+                [self readFolder:directory];
             }
         }
+        
+        NSArray *metadatas = [CCCoreData getOfflineLocalFileActiveAccount:app.activeAccount directoryUser:app.directoryUser];
+        
+        for (CCMetadata *metadata in metadatas) {
+            
+            [self readFile:metadata];
+        }
     });
+}
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Read Folder =====
+#pragma --------------------------------------------------------------------------------------------
+
+// MULTI THREAD
+- (void)readFolder:(TableDirectory *)directory
+{
+    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
+    
+    metadataNet.action = actionReadFolder;
+    metadataNet.directoryID = directory.directoryID;
+    metadataNet.priority = NSOperationQueuePriorityVeryLow;
+    metadataNet.selector = selectorReadFolder;
+    metadataNet.serverUrl = directory.serverUrl;
+        
+    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+            
+    NSLog(@"[LOG] Read offline directory : %@", directory.serverUrl);
 }
 
 //
@@ -255,34 +339,22 @@
 #pragma mark ===== Read File Offline =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)readFileOffline
+- (void)readFile:(CCMetadata *)metadata
 {
-    // test
-    if (app.activeAccount.length == 0)
-        return;
-    
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-
-        NSArray *metadatas = [CCCoreData getOfflineLocalFileActiveAccount:app.activeAccount directoryUser:app.directoryUser];
-    
-        for (CCMetadata *metadata in metadatas) {
+    NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:app.activeAccount];
+    if (serverUrl == nil) return;
         
-            NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:app.activeAccount];
-            if (serverUrl == nil) continue;
+    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
         
-            CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
+    metadataNet.action = actionReadFile;
+    metadataNet.fileID = metadata.fileID;
+    metadataNet.fileName = metadata.fileName;
+    metadataNet.fileNamePrint = metadata.fileNamePrint;
+    metadataNet.serverUrl = serverUrl;
+    metadataNet.selector = selectorReadFileOffline;
+    metadataNet.priority = NSOperationQueuePriorityVeryLow;
         
-            metadataNet.action = actionReadFile;
-            metadataNet.fileID = metadata.fileID;
-            metadataNet.fileName = metadata.fileName;
-            metadataNet.fileNamePrint = metadata.fileNamePrint;
-            metadataNet.serverUrl = serverUrl;
-            metadataNet.selector = selectorReadFileOffline;
-            metadataNet.priority = NSOperationQueuePriorityVeryLow;
-        
-            [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
-        }
-    });
+    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
 }
 
 - (void)readFileFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
