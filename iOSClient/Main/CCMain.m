@@ -2962,9 +2962,9 @@
     else
         [self reloadDatasource:metadataNet.serverUrl fileID:metadataNet.fileID selector:metadataNet.selector];
     
-    CCMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", metadata.fileID, app.activeAccount] context:nil];
+    CCMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", metadataNet.fileID, app.activeAccount] context:nil];
     
-    if (metadata.directory) {
+    if (metadata.directory && metadata.favorite) {
         
         NSString *dir = [CCUtility stringAppendServerUrl:metadataNet.serverUrl addServerUrl:metadata.fileNameData];
         
