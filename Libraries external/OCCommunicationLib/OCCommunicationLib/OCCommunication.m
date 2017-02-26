@@ -36,7 +36,7 @@
 #import "OCXMLParser.h"
 #import "OCXMLSharedParser.h"
 #import "OCXMLServerErrorsParser.h"
-#import "OCXMLSearchParser.h"
+#import "OCXMLListParser.h"
 #import "NSString+Encode.h"
 #import "OCFrameworkConstants.h"
 #import "OCWebDAVClient.h"
@@ -635,7 +635,7 @@
             
             NSData *responseData = (NSData*) responseObject;
             
-            OCXMLSearchParser *parser = [OCXMLSearchParser new];
+            OCXMLListParser *parser = [OCXMLListParser new];
             [parser initParserWithData:responseData];
             NSMutableArray *searchList = [parser.searchList mutableCopy];
             

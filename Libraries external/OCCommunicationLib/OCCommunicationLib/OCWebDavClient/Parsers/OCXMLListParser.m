@@ -1,9 +1,9 @@
 
 
-#import "OCXMLSearchParser.h"
+#import "OCXMLListParser.h"
 #import "NSString+Encode.h"
 
-@implementation OCXMLSearchParser
+@implementation OCXMLListParser
 
 @synthesize searchList=_searchList;
 @synthesize currentFile=_currentFile;

@@ -4,7 +4,7 @@
 #import "OCFileDto.h"
 
 
-@interface OCXMLSearchParser : NSObject <NSXMLParserDelegate>{
+@interface OCXMLListParser : NSObject <NSXMLParserDelegate>{
     
     NSMutableString *_xmlChars;
     NSMutableDictionary *_xmlBucket;
