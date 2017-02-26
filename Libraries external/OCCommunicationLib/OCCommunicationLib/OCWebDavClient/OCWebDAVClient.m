@@ -326,6 +326,35 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     [operation resume];
 }
 
+- (void)listingFavorites:(NSString *)path folder:(NSString *)folder user:(NSString *)user onCommunication:(OCCommunication *)sharedOCCommunication withUserSessionToken:(NSString *)token success:(void(^)(NSHTTPURLResponse *, id, NSString *token))success failure:(void(^)(NSHTTPURLResponse *, id  _Nullable responseObject, NSError *, NSString *token))failure {
+    
+    NSString *body;
+    
+    NSParameterAssert(success);
+    
+    _requestMethod = @"REPORT";
+    
+    //REPORT remote.php/dav/files/user/path/to/folder
+
+    path = [NSString stringWithFormat:@"%@/files/%@%@", path, user, folder];
+    
+    NSMutableURLRequest *request = [self requestWithMethod:_requestMethod path:path parameters:nil];
+    
+    body = @"<?xml version=\"1.0\"?><oc:filter-files xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\" xmlns:nc=\"http://nextcloud.org/ns\"><oc:filter-rules><oc:favorite>1</oc:favorite></oc:filter-rules><d:prop>"; //<oc:id/></d:prop></oc:filter-files>";
+    
+    // OCFileDto
+    body = [body stringByAppendingString:@"<d:resourcetype/><oc:fileid/><d:getcontenttype/><d:getetag/><d:creationdate/><oc:size/><d:getcontentlength/><d:getlastmodified/><oc:id/><oc:permissions/><d:quota-available-bytes/><d:quota-used-bytes/><oc:favorite/>"];
+    
+    body = [NSString stringWithFormat:@"%@</d:prop></oc:filter-files>", body];
+    
+    [request setHTTPBody:[body dataUsingEncoding:NSUTF8StringEncoding]];
+    [request setValue:@"text/xml" forHTTPHeaderField:@"Content-Type"];
+    
+    OCHTTPRequestOperation *operation = [self mr_operationWithRequest:request onCommunication:sharedOCCommunication withUserSessionToken:token success:success failure:failure];
+    [self setRedirectionBlockOnDatataskWithOCCommunication:sharedOCCommunication andSessionManager:sharedOCCommunication.networkSessionManager];
+    [operation resume];
+}
+
 - (NSURLSessionDownloadTask *)downloadWithSessionPath:(NSString *)remoteSource toPath:(NSString *)localDestination defaultPriority:(BOOL)defaultPriority onCommunication:(OCCommunication *)sharedOCCommunication progress:(void(^)(NSProgress *progress))downloadProgress success:(void(^)(NSURLResponse *response, NSURL *filePath))success failure:(void(^)(NSURLResponse *response, NSError *error))failure{
     
     NSMutableURLRequest *request = [self requestWithMethod:@"GET" path:remoteSource parameters:nil];

@@ -53,6 +53,9 @@ import Foundation
     
     func settingFavoriteSuccess(_ metadataNet: CCMetadataNet)
     func settingFavoriteFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger)
+    
+    func listingFavoritesSuccess(_ metadataNet: CCMetadataNet, metadatas: [Any])
+    func listingFavoritesFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger)
 }
 
 class CCActions: NSObject {
@@ -410,7 +413,39 @@ class CCActions: NSObject {
         metadataNet.delegate?.settingFavoriteFailure(metadataNet, message: message, errorCode: errorCode)
     }
 
+    // --------------------------------------------------------------------------------------------
+    // MARK: Linsting Favorites
+    // --------------------------------------------------------------------------------------------
+    
+    func listingFavorites(_ serverUrl : String, delegate: AnyObject) {
+        
+        let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
+        
+        metadataNet.action = actionListingFavorites
+        metadataNet.delegate = delegate
+        metadataNet.priority = Operation.QueuePriority.normal.rawValue
+        //metadataNet.selector = selectorAddFavorite
+        metadataNet.serverUrl = serverUrl
+        
+        appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
+    }
+    
+    func listingFavoritesSuccess(_ metadataNet: CCMetadataNet, metadatas: [CCMetadata]) {
+        
+        metadataNet.delegate?.settingFavoriteSuccess(metadataNet)
+    }
+    
+    func listingFavoritesFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger) {
+        
+        appDelegate.messageNotification("_favorite_", description: message as String, visible: true, delay:TimeInterval(k_dismissAfterSecond), type:TWMessageBarMessageType.error)
+        
+        metadataNet.delegate?.settingFavoriteFailure(metadataNet, message: message, errorCode: errorCode)
+    }
+
+    
 }
+
+
 
 
 

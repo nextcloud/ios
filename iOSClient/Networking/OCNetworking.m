@@ -535,6 +535,88 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Listing Favorites =====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)listingFavorites
+{
+    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+    
+    [communication setCredentialsWithUser:_activeUser andPassword:_activePassword];
+    [communication setUserAgent:[CCUtility getUserAgent]];
+    
+    NSString *path = [_activeUrl stringByAppendingString:dav];
+    NSString *folder = [_metadataNet.serverUrl stringByReplacingOccurrencesOfString:[CCUtility getHomeServerUrlActiveUrl:_activeUrl] withString:@""];
+    
+    [communication listingFavorites:path folder:folder withUserSessionToken:nil onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token) {
+        
+        NSMutableArray *metadatas = [NSMutableArray new];
+        
+        NSString *cameraFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:_metadataNet.account];
+        NSString *cameraFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:_metadataNet.account activeUrl:_activeUrl];
+        NSString *directoryUser = [CCUtility getDirectoryActiveUser:_activeUser activeUrl:_activeUrl];
+        
+        for(OCFileDto *itemDto in items) {
+            
+            itemDto.fileName = [itemDto.fileName stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+            
+            // Not in Crypto Cloud file
+            NSString *fileName = itemDto.fileName;
+            if (itemDto.isDirectory)
+                fileName = [fileName substringToIndex:[fileName length] - 1];
+            
+            if ([CCUtility isFileCryptated:fileName])
+                continue;
+            
+            // ----- BUG #942 ---------
+            if ([itemDto.etag length] == 0) {
+#ifndef EXTENSION
+                [app messageNotification:@"Server error" description:@"Metadata etag absent, record excluded, please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
+#endif
+                continue;
+            }
+            // ------------------------
+            
+            NSString *serverUrl = [NSString stringWithFormat:@"%@/files/%@", dav, _activeUser];
+            serverUrl = [itemDto.filePath stringByReplacingOccurrencesOfString:serverUrl withString:@""];
+            
+            /* TRIM */
+            if ([serverUrl hasPrefix:@"/"])
+                serverUrl = [serverUrl substringFromIndex:1];
+            if ([serverUrl hasSuffix:@"/"])
+                serverUrl = [serverUrl substringToIndex:[serverUrl length] - 1];
+            /*      */
+            
+            serverUrl = [CCUtility stringAppendServerUrl:[_activeUrl stringByAppendingString:webDAV] addServerUrl:serverUrl];
+            
+            NSString *directoryID = [CCCoreData addDirectory:serverUrl date:[NSDate date] permissions:itemDto.permissions activeAccount:_metadataNet.account];
+            
+            [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileNamePrint:itemDto.fileName serverUrl:serverUrl directoryID:directoryID cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath activeAccount:_metadataNet.account directoryUser:directoryUser]];
+        }
+        
+        if ([self.delegate respondsToSelector:@selector(listingFavoritesSuccess:metadatas:)])
+            [self.delegate listingFavoritesSuccess:_metadataNet metadatas:metadatas];
+        
+        [self complete];
+        
+    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer) {
+        
+        NSInteger errorCode = response.statusCode;
+        if (errorCode == 0)
+            errorCode = error.code;
+        
+        if ([self.delegate respondsToSelector:@selector(listingFavoritesFailure:message:errorCode:)])
+            [self.delegate listingFavoritesFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        
+        // Request trusted certificated
+        if ([error code] == NSURLErrorServerCertificateUntrusted)
+            [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
+        
+        [self complete];
+    }];
+}
+
+#pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Create Folder =====
 #pragma --------------------------------------------------------------------------------------------
 

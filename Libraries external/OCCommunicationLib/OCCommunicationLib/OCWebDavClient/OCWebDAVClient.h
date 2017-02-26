@@ -193,6 +193,14 @@ extern NSString * _Nullable OCWebDAVModificationDateKey;
 - (void)settingFavorite:(NSString * _Nonnull)path favorite:(BOOL)favorite onCommunication:(OCCommunication * _Nonnull)sharedOCCommunication withUserSessionToken:(NSString * _Nonnull)token success:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull, id  _Nonnull, NSString * _Nonnull token))success failure:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull, id  _Nullable responseObject, NSError * _Nonnull, NSString * _Nonnull token))failure;
 
 /**
+ 
+ */
+
+- (void)listingFavorites:(NSString * _Nonnull)path folder:(NSString * _Nonnull)folder user:(NSString * _Nonnull)user onCommunication:(OCCommunication * _Nonnull)sharedOCCommunication withUserSessionToken:(NSString * _Nonnull)token success:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull, id  _Nonnull, NSString * _Nonnull token))success failure:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull, id  _Nullable responseObject, NSError * _Nonnull, NSString * _Nonnull token))failure;
+
+
+
+/**
  Creates an `NSURLSessionDownloadTask` with the specified request for a local file.
  
  @param remoteSource is a string with the path of the file in the server 

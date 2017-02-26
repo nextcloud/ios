@@ -361,6 +361,8 @@
         NSLog(@"[LOG] read folder offline");
         [[CCSynchronize sharedSynchronize] readFolderOffline];
         
+        NSLog(@"[LOG] Listning Favorites");
+        [[CCActions sharedInstance] listingFavorites:@"" delegate:self];
     });
     
     // Initialize Camera Upload

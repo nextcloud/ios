@@ -678,6 +678,40 @@
     }];
 }
 
+///-----------------------------------
+/// @name Listing favorites
+///-----------------------------------
+- (void)listingFavorites:(NSString *)path folder:(NSString *)folder withUserSessionToken:(NSString *)token onCommunication:(OCCommunication *)sharedOCCommunication successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer)) failureRequest{
+    
+    if (!token){
+        token = @"no token";
+    }
+    
+    path = [path encodeString:NSUTF8StringEncoding];
+    
+    OCWebDAVClient *request = [OCWebDAVClient new];
+    request = [self getRequestWithCredentials:request];
+    
+    [request listingFavorites:path folder:folder user:_user onCommunication:sharedOCCommunication withUserSessionToken:token success:^(NSHTTPURLResponse *response, id responseObject, NSString *token) {
+        
+        if (successRequest) {
+            
+            NSData *responseData = (NSData*) responseObject;
+            
+            OCXMLListParser *parser = [OCXMLListParser new];
+            [parser initParserWithData:responseData];
+            NSMutableArray *searchList = [parser.searchList mutableCopy];
+            
+            //Return success
+            successRequest(response, searchList, request.redirectedServer, token);
+        }
+        
+    } failure:^(NSHTTPURLResponse *response, id responseData, NSError *error, NSString *token) {
+        
+        failureRequest(response, error, token, request.redirectedServer);
+    }];
+}
+
 #pragma mark - OC API Calls
 
 - (NSString *) getCurrentServerVersion {
