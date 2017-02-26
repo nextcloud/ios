@@ -1493,7 +1493,7 @@
     
     if ([selectorPost isEqualToString:selectorReadFolderForced] ) {
             
-        [self readFolderWithForced:YES serverUrl:_serverUrl];
+        [self readFolderWithForced:YES serverUrl:serverUrl];
             
     } else {
     
@@ -2098,7 +2098,7 @@
     
         // reload Datasource
         if ([metadataNet.selectorPost isEqualToString:selectorReadFolderForced] || _isSearchMode)
-            [self readFolderWithForced:YES serverUrl:_serverUrl];
+            [self readFolderWithForced:YES serverUrl:metadataNet.serverUrl];
         else
             [self reloadDatasource];
 
@@ -2229,7 +2229,7 @@
     
     // Load Folder or the Datasource
     if ([metadataNet.selectorPost isEqualToString:selectorReadFolderForced]) {
-        [self readFolderWithForced:YES serverUrl:_serverUrl];
+        [self readFolderWithForced:YES serverUrl:metadataNet.serverUrl];
     } else {
         [self reloadDatasource:metadataNet.serverUrl fileID:metadataNet.fileID selector:metadataNet.selector];
     }
