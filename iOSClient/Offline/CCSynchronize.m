@@ -160,7 +160,7 @@
 }
 
 // MULTI THREAD
-- (void)readFolderSuccess:(CCMetadataNet *)metadataNet permissions:(NSString *)permissions rev:(NSString *)rev metadatas:(NSArray *)metadatas
+- (void)readFolderSuccess:(CCMetadataNet *)metadataNet permissions:(NSString *)permissions metadatas:(NSArray *)metadatas
 {
     TableAccount *recordAccount = [CCCoreData getActiveAccount];
     

@@ -1706,7 +1706,7 @@
         [self changePasswordAccount];
 }
 
-- (void)readFolderSuccess:(CCMetadataNet *)metadataNet permissions:(NSString *)permissions rev:(NSString *)rev metadatas:(NSArray *)metadatas
+- (void)readFolderSuccess:(CCMetadataNet *)metadataNet permissions:(NSString *)permissions metadatas:(NSArray *)metadatas
 {
     // verify active user
     TableAccount *record = [CCCoreData getActiveAccount];
@@ -1715,15 +1715,29 @@
         return;
     
     // save father e update permission
-    _fatherPermission = permissions;
+    if(!_isSearchMode)
+        _fatherPermission = permissions;
     
-    [CCCoreData deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND ((session == NULL) OR (session == ''))", app.activeAccount, metadataNet.directoryID]];
+    NSArray *recordsInSessions;
     
-    NSArray *recordsInSessions = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@)", app.activeAccount, metadataNet.directoryID] context:nil];
+    if (!_isSearchMode) {
+        
+        recordsInSessions = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@)", app.activeAccount] context:nil];
+        
+    } else {
+        
+        [CCCoreData deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND ((session == NULL) OR (session == ''))", app.activeAccount, metadataNet.directoryID]];
+    
+        recordsInSessions = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@)", app.activeAccount, metadataNet.directoryID] context:nil];
 
-    [CCCoreData setDateReadDirectoryID:metadataNet.directoryID activeAccount:app.activeAccount];
+        [CCCoreData setDateReadDirectoryID:metadataNet.directoryID activeAccount:app.activeAccount];
+    }
     
     for (CCMetadata *metadata in metadatas) {
+        
+        // Delete Record in Search Mode
+        if (_isSearchMode)
+            [CCCoreData deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND (fileID = %@) AND ((session == NULL) OR (session == ''))", app.activeAccount, metadataNet.directoryID, metadataNet.fileID]];
         
         // type of file
         NSInteger typeFilename = [CCUtility getTypeFileName:metadata.fileName];
@@ -1792,11 +1806,16 @@
     
     // File is changed ??
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
-        [[CCSynchronize sharedSynchronize] verifyChangeMedatas:metadatas serverUrl:metadataNet.serverUrl account:app.activeAccount offline:NO];
+        if (!_isSearchMode)
+            [[CCSynchronize sharedSynchronize] verifyChangeMedatas:metadatas serverUrl:metadataNet.serverUrl account:app.activeAccount offline:NO];
     });
 
+    // Search Mode
+    if (_isSearchMode)
+        [self reloadDatasource:metadataNet.serverUrl fileID:nil selector:metadataNet.selector];
+    
     // this is the same directory
-    if ([metadataNet.serverUrl isEqualToString:_serverUrl]) {
+    if ([metadataNet.serverUrl isEqualToString:_serverUrl] && !_isSearchMode) {
         
         // reload
         [self reloadDatasource:metadataNet.serverUrl fileID:nil selector:metadataNet.selector];
@@ -1907,7 +1926,7 @@
 {
     _searchResultMetadatas = [[NSArray alloc] initWithArray:metadatas];
     
-    [self reloadDatasource:metadataNet.serverUrl fileID:nil selector:metadataNet.selector];
+    [self readFolderSuccess:metadataNet permissions:nil metadatas:metadatas];
 }
 
 - (void)cancelSearchBar
