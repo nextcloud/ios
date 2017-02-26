@@ -439,8 +439,6 @@ class CCActions: NSObject {
     
     func listingFavoritesFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger) {
         
-        appDelegate.messageNotification("_favorite_", description: message as String, visible: true, delay:TimeInterval(k_dismissAfterSecond), type:TWMessageBarMessageType.error)
-        
         metadataNet.delegate?.listingFavoritesFailure(metadataNet, message: message, errorCode: errorCode)
     }
 

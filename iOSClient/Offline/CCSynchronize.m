@@ -67,10 +67,6 @@
     [[CCActions sharedInstance] listingFavorites:@"" delegate:self];
 }
 
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Listing Favorite Delegate =====
-#pragma --------------------------------------------------------------------------------------------
-
 - (void)listingFavoritesSuccess:(CCMetadataNet *)metadataNet metadatas:(NSArray *)metadatas
 {
     // verify active user
@@ -109,6 +105,13 @@
         
         // end test, insert in CoreData
         [CCCoreData addMetadata:metadata activeAccount:app.activeAccount activeUrl:app.activeUrl context:nil];
+        
+        if (metadata.directory) {
+            NSString* serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:app.activeAccount];
+            [self readFolderServerUrl:serverUrl directoryID:metadata.directoryID];
+        } else {
+            [self readFile:metadata];
+        }
     }
 }
 
@@ -140,7 +143,7 @@
             if (![directory.serverUrl containsString:father]) {
              
                 father = directory.serverUrl;
-                [self readFolder:directory];
+                [self readFolderServerUrl:directory.serverUrl directoryID:directory.directoryID];
             }
         }
         
@@ -153,26 +156,6 @@
     });
 }
 
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Read Folder =====
-#pragma --------------------------------------------------------------------------------------------
-
-// MULTI THREAD
-- (void)readFolder:(TableDirectory *)directory
-{
-    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
-    
-    metadataNet.action = actionReadFolder;
-    metadataNet.directoryID = directory.directoryID;
-    metadataNet.priority = NSOperationQueuePriorityVeryLow;
-    metadataNet.selector = selectorReadFolder;
-    metadataNet.serverUrl = directory.serverUrl;
-        
-    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
-            
-    NSLog(@"[LOG] Read offline directory : %@", directory.serverUrl);
-}
-
 //
 // Add Folder offline
 //
@@ -182,15 +165,15 @@
     
     // Set offline directory
     [CCCoreData setOfflineDirectoryServerUrl:serverUrl offline:YES activeAccount:app.activeAccount];
-        
+    
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
-        
+    
     metadataNet.action = actionReadFolder;
     metadataNet.directoryID = directoryID;
     metadataNet.priority = NSOperationQueuePriorityVeryHigh;
     metadataNet.selector = selectorReadFolder;
     metadataNet.serverUrl = serverUrl;
-        
+    
     [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
     
     NSLog(@"[LOG] Read offline directory : %@", serverUrl);
@@ -231,6 +214,26 @@
     }
     
     return isAtLeastOneInAnimation;
+}
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Read Folder =====
+#pragma --------------------------------------------------------------------------------------------
+
+// MULTI THREAD
+- (void)readFolderServerUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID
+{
+    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
+    
+    metadataNet.action = actionReadFolder;
+    metadataNet.directoryID = directoryID;
+    metadataNet.priority = NSOperationQueuePriorityVeryLow;
+    metadataNet.selector = selectorReadFolder;
+    metadataNet.serverUrl = serverUrl;
+        
+    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+            
+    NSLog(@"[LOG] Read offline directory : %@", serverUrl);
 }
 
 - (void)readFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
@@ -336,7 +339,7 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Read File Offline =====
+#pragma mark ===== Read File =====
 #pragma --------------------------------------------------------------------------------------------
 
 - (void)readFile:(CCMetadata *)metadata
@@ -433,12 +436,12 @@
     
     dispatch_async(dispatch_get_main_queue(), ^{
         if ([metadatas count])
-            [self offlineMetadatas:metadatas serverUrl:serverUrl offline:offline];
+            [self SynchronizeMetadatas:metadatas serverUrl:serverUrl offline:offline];
     });
 }
 
 // MAIN THREAD
-- (void)offlineMetadatas:(NSArray *)metadatas serverUrl:(NSString *)serverUrl offline:(BOOL)offline
+- (void)SynchronizeMetadatas:(NSArray *)metadatas serverUrl:(NSString *)serverUrl offline:(BOOL)offline
 {
     // HUD
     if ([metadatas count] > 50 && offline) {
