@@ -67,6 +67,21 @@
     [[CCActions sharedInstance] listingFavorites:@"" delegate:self];
 }
 
+- (void)addFavoriteFolder:(NSString *)serverUrl
+{
+    NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:app.activeAccount];
+    
+    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
+    
+    metadataNet.action = actionReadFolder;
+    metadataNet.directoryID = directoryID;
+    metadataNet.priority = NSOperationQueuePriorityVeryHigh;
+    metadataNet.selector = selectorReadFolder;
+    metadataNet.serverUrl = serverUrl;
+    
+    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+}
+
 - (void)listingFavoritesSuccess:(CCMetadataNet *)metadataNet metadatas:(NSArray *)metadatas
 {
     // verify active user
@@ -107,9 +122,15 @@
         [CCCoreData addMetadata:metadata activeAccount:app.activeAccount activeUrl:app.activeUrl context:nil];
         
         if (metadata.directory) {
+            
             NSString* serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:app.activeAccount];
-            [self readFolderServerUrl:serverUrl directoryID:metadata.directoryID];
+            serverUrl = [CCUtility stringAppendServerUrl:serverUrl addServerUrl:metadata.fileNameData];
+            NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:app.activeAccount];
+            
+            [self readFolderServerUrl:serverUrl directoryID:directoryID];
+            
         } else {
+            
             [self readFile:metadata];
         }
     }
@@ -174,9 +195,7 @@
     metadataNet.selector = selectorReadFolder;
     metadataNet.serverUrl = serverUrl;
     
-    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
-    
-    NSLog(@"[LOG] Read offline directory : %@", serverUrl);
+    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];    
 }
 
 // Graphics Animation Offline Folders
@@ -307,12 +326,13 @@
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
                     
-                    NSString *dir = [CCUtility stringAppendServerUrl:metadataNet.serverUrl addServerUrl:metadata.fileNameData];
+                    NSString *serverUrl = [CCUtility stringAppendServerUrl:metadataNet.serverUrl addServerUrl:metadata.fileNameData];
+                    NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:app.activeAccount];
                     
                     [CCCoreData addMetadata:metadata activeAccount:app.activeAccount activeUrl:app.activeUrl context:nil];
                     
-                    [[CCSynchronize sharedSynchronize] addOfflineFolder:dir];
-
+                    [self readFolderServerUrl:serverUrl directoryID:directoryID];
+                    
                 });
                 
             } else {

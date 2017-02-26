@@ -35,6 +35,8 @@
 
 - (void)readListingFavorites;
 - (void)readOffline;
+
+- (void)addFavoriteFolder:(NSString *)serverUrl;
 - (void)addOfflineFolder:(NSString *)serverUrl;
 
 - (void)verifyChangeMedatas:(NSArray *)allRecordMetadatas serverUrl:(NSString *)serverUrl account:(NSString *)account offline:(BOOL)offline;

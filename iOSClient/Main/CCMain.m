@@ -2961,6 +2961,15 @@
         [self readFolderWithForced:YES serverUrl:metadataNet.serverUrl];
     else
         [self reloadDatasource:metadataNet.serverUrl fileID:metadataNet.fileID selector:metadataNet.selector];
+    
+    CCMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", metadata.fileID, app.activeAccount] context:nil];
+    
+    if (metadata.directory) {
+        
+        NSString *dir = [CCUtility stringAppendServerUrl:metadataNet.serverUrl addServerUrl:metadata.fileNameData];
+        
+        [[CCSynchronize sharedSynchronize] addFavoriteFolder:dir];
+    }
 }
 
 - (void)settingFavoriteFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
