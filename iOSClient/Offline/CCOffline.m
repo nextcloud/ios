@@ -61,9 +61,9 @@
     [super viewDidLoad];
     
     // Create data model
-    _pageType = @[k_pageOfflineOffline, k_pageOfflineLocal];
-    _currentPageType = k_pageOfflineOffline;
-    self.title = NSLocalizedString(@"_offline_", nil);
+    _pageType = @[k_pageOfflineFavorites, k_pageOfflineOffline, k_pageOfflineLocal];
+    _currentPageType = k_pageOfflineFavorites;
+    self.title = NSLocalizedString(@"_favorites_", nil);
     
     // Create page view controller
     self.pageViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"OfflinePageViewController"];
@@ -171,6 +171,17 @@
     NSString *serverUrl = vc.serverUrl;
     _currentPageType = vc.pageType;
 
+    if ([_currentPageType isEqualToString:k_pageOfflineFavorites]) {
+        if (serverUrl)
+            self.title = NSLocalizedString(@"_favorites_", nil);
+        else
+            self.title = NSLocalizedString(@"_favorites_", nil);
+        
+        UITabBarItem *item = [self.tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexOffline];
+        item.selectedImage = [UIImage imageNamed:image_tabBarFavorite];
+        item.image = [UIImage imageNamed:image_tabBarFavorite];
+    }
+
     if ([_currentPageType isEqualToString:k_pageOfflineOffline]) {
         if (serverUrl)
             self.title = NSLocalizedString(@"_offline_", nil);
@@ -178,8 +189,8 @@
             self.title = NSLocalizedString(@"_offline_", nil);
         
         UITabBarItem *item = [self.tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexOffline];
-        item.selectedImage = [UIImage imageNamed:@"tabBarOffline"];
-        item.image = [UIImage imageNamed:@"tabBarOffline"];
+        item.selectedImage = [UIImage imageNamed:image_tabBarOffline];
+        item.image = [UIImage imageNamed:image_tabBarOffline];
     }
     
     if ([_currentPageType isEqualToString:k_pageOfflineLocal]) {
@@ -189,8 +200,8 @@
             self.title = NSLocalizedString(@"_local_storage_", nil);
         
         UITabBarItem *item = [self.tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexOffline];
-        item.selectedImage = [UIImage imageNamed:@"tabBarLocal"];
-        item.image = [UIImage imageNamed:@"tabBarLocal"];
+        item.selectedImage = [UIImage imageNamed:image_tabBarLocal];
+        item.image = [UIImage imageNamed:image_tabBarLocal];
     }
 }
 
@@ -200,12 +211,47 @@
 
 - (void)listingFavoritesSuccess:(CCMetadataNet *)metadataNet metadatas:(NSArray *)metadatas
 {
+    // verify active user
+    TableAccount *record = [CCCoreData getActiveAccount];
     
+    if (![record.account isEqualToString:metadataNet.account])
+        return;
+
+    for (CCMetadata *metadata in metadatas) {
+        
+        // Delete Record NOT in session
+        [CCCoreData deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND (fileID = %@) AND ((session == NULL) OR (session == ''))", app.activeAccount, metadata.directoryID, metadata.fileID]];
+        
+        // type of file
+        NSInteger typeFilename = [CCUtility getTypeFileName:metadata.fileName];
+        
+        // if crypto do not insert
+        if (typeFilename == k_metadataTypeFilenameCrypto) continue;
+        
+        // verify if the record encrypted has plist + crypto
+        if (typeFilename == k_metadataTypeFilenamePlist && metadata.directory == NO) {
+            
+            BOOL isCryptoComplete = NO;
+            NSString *fileNameCrypto = [CCUtility trasformedFileNamePlistInCrypto:metadata.fileName];
+            
+            for (CCMetadata *completeMetadata in metadatas) {
+                
+                if (completeMetadata.cryptated == NO) continue;
+                else  if ([completeMetadata.fileName isEqualToString:fileNameCrypto]) {
+                    isCryptoComplete = YES;
+                    break;
+                }
+            }
+            if (isCryptoComplete == NO) continue;
+        }
+        
+        // end test, insert in CoreData
+        [CCCoreData addMetadata:metadata activeAccount:app.activeAccount activeUrl:app.activeUrl context:nil];
+    }
 }
 
 - (void)listingFavoritesFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    
 }
 
 @end

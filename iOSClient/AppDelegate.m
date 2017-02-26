@@ -355,14 +355,14 @@
         NSLog(@"[LOG] Initialize Camera Upload");
         [[NSNotificationCenter defaultCenter] postNotificationName:@"initStateCameraUpload" object:nil];
         
+        NSLog(@"[LOG] Listning Favorites");
+        [[CCActions sharedInstance] listingFavorites:@"" delegate:self.activeOffline];
+        
         NSLog(@"[LOG] read file Offline");
         [[CCSynchronize sharedSynchronize] readFileOffline];
         
         NSLog(@"[LOG] read folder offline");
         [[CCSynchronize sharedSynchronize] readFolderOffline];
-        
-        NSLog(@"[LOG] Listning Favorites");
-        [[CCActions sharedInstance] listingFavorites:@"" delegate:self.activeOffline];
     });
     
     // Initialize Camera Upload
@@ -725,11 +725,11 @@
     item.image = [UIImage imageNamed:image_tabBarFile];
     item.selectedImage = [UIImage imageNamed:image_tabBarFile];
     
-    // Offline
+    // Favorite
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexOffline];
-    [item setTitle:NSLocalizedString(@"_offline_", nil)];
-    item.image = [UIImage imageNamed:image_tabBarOffline];
-    item.selectedImage = [UIImage imageNamed:image_tabBarOffline];
+    [item setTitle:NSLocalizedString(@"_favorite_", nil)];
+    item.image = [UIImage imageNamed:image_tabBarFavorite];
+    item.selectedImage = [UIImage imageNamed:image_tabBarFavorite];
     
     // Hide (PLUS)
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexHide];

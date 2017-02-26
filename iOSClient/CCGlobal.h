@@ -255,6 +255,7 @@ extern NSString *const BKPasscodeKeychainServiceName;
 #define k_keyFileNameMaskAutomaticPhotos                @"fileNameMaskAutomaticPhotos"
 
 // Type of page Offline
+#define k_pageOfflineFavorites                          @"Favorites"
 #define k_pageOfflineOffline                            @"Offline"
 #define k_pageOfflineLocal                              @"Local"
 

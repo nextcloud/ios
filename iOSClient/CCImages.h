@@ -146,6 +146,7 @@
 #define image_statusuploadcrypto                @"statusuploadcrypto"
 #define image_stoptask                          @"stoptask"
 #define image_stoptaskcrypto                    @"stoptaskcrypto"
+#define image_tabBarFavorite                    @"tabBarFavorite"
 #define image_tabBarOffline                     @"tabBarOffline"
 #define image_tabBarLocal                       @"tabBarLocal"
 #define image_tabBarPhotos                      @"tabBarPhotos"

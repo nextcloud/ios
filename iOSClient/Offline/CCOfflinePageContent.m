@@ -57,6 +57,10 @@
     self.tableView.allowsMultipleSelectionDuringEditing = NO;
     
     // calculate _serverUrl
+    if ([self.pageType isEqualToString:k_pageOfflineFavorites] && !_serverUrl) {
+        _serverUrl = nil;
+    }
+    
     if ([self.pageType isEqualToString:k_pageOfflineOffline] && !_serverUrl) {
         _serverUrl = nil;
     }
@@ -143,6 +147,9 @@
 {
     NSString *text;
     
+    if ([self.pageType isEqualToString:k_pageOfflineFavorites])
+        text = [NSString stringWithFormat:@"%@", @""];
+    
     if ([self.pageType isEqualToString:k_pageOfflineOffline])
         text = [NSString stringWithFormat:@"%@", @""];
     
@@ -157,6 +164,9 @@
 - (NSAttributedString *)descriptionForEmptyDataSet:(UIScrollView *)scrollView
 {
     NSString *text;
+    
+    if ([self.pageType isEqualToString:k_pageOfflineFavorites])
+        text = [NSString stringWithFormat:@"\n%@", NSLocalizedString(@"_tutorial_favorite_view_", nil)];
     
     if ([self.pageType isEqualToString:k_pageOfflineOffline])
         text = [NSString stringWithFormat:@"\n%@", NSLocalizedString(@"_tutorial_offline_view_", nil)];
@@ -375,6 +385,11 @@
 {
     CCMetadata *metadata;
     
+    if ([_pageType isEqualToString:k_pageOfflineFavorites]) {
+        NSManagedObject *record = [dataSource objectAtIndex:indexPath.row];
+        metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", [record valueForKey:@"fileID"], app.activeAccount] context:nil];
+    }
+    
     if ([_pageType isEqualToString:k_pageOfflineOffline]) {
         
         NSManagedObject *record = [dataSource objectAtIndex:indexPath.row];
@@ -399,6 +414,30 @@
 
 - (void)reloadDatasource
 {
+    if ([_pageType isEqualToString:k_pageOfflineFavorites]) {
+        
+        NSMutableArray *metadatas = [NSMutableArray new];
+        NSArray *recordsTableMetadata ;
+        
+        if (!_serverUrl) {
+            
+            recordsTableMetadata = [CCCoreData  getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (favorite == 1)", app.activeAccount] context:nil];
+            
+        } else {
+            
+            NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:_serverUrl activeAccount:app.activeAccount];
+            recordsTableMetadata = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@)", app.activeAccount, directoryID] fieldOrder:[CCUtility getOrderSettings] ascending:[CCUtility getAscendingSettings]];
+        }
+        
+        CCSectionDataSource *sectionDataSource = [CCSection creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:nil replaceDateToExifDate:NO activeAccount:app.activeAccount];
+        
+        NSArray *fileIDs = [sectionDataSource.sectionArrayRow objectForKey:@"_none_"];
+        for (NSString *fileID in fileIDs)
+            [metadatas addObject:[sectionDataSource.allRecordsDataSource objectForKey:fileID]];
+        
+        dataSource = [NSArray arrayWithArray:metadatas];
+    }
+
     if ([_pageType isEqualToString:k_pageOfflineOffline]) {
         
         NSMutableArray *metadatas = [NSMutableArray new];
@@ -467,6 +506,16 @@
     selectionColor.backgroundColor = COLOR_SELECT_BACKGROUND;
     cell.selectedBackgroundView = selectionColor;
     
+    // i am in Favorites
+    if ([_pageType isEqualToString:k_pageOfflineFavorites]) {
+        
+        metadata = [dataSource objectAtIndex:indexPath.row];
+        cell.fileImageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]];
+        
+        if (_serverUrl == nil)
+            cell.offlineImageView.image = [UIImage imageNamed:image_favorite];
+    }
+
     // i am in Offline
     if ([_pageType isEqualToString:k_pageOfflineOffline]) {
         
@@ -581,7 +630,7 @@
     
     NSString *serverUrl;
     
-    if ([_pageType isEqualToString:k_pageOfflineOffline] && !_serverUrl) {
+    if (([_pageType isEqualToString:k_pageOfflineFavorites] || [_pageType isEqualToString:k_pageOfflineOffline]) && !_serverUrl) {
     
         serverUrl = [CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:app.activeAccount];
         
@@ -696,6 +745,14 @@
     }
     
     NSMutableArray *allRecordsDataSourceImagesVideos = [NSMutableArray new];
+    
+    if ([self.pageType isEqualToString:k_pageOfflineFavorites]) {
+        
+        for (CCMetadata *metadata in dataSource) {
+            if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image] || [metadata.typeFile isEqualToString: k_metadataTypeFile_video])
+                [allRecordsDataSourceImagesVideos addObject:metadata];
+        }
+    }
     
     if ([self.pageType isEqualToString:k_pageOfflineOffline]) {
         
