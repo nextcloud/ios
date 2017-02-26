@@ -82,7 +82,6 @@
     
     // Search
     BOOL _isSearchMode;
-    BOOL _reloadForcedFoderWhenSearchModeOff;
     NSString *_searchFileName;
     NSArray *_searchResultMetadatas;
 }
@@ -1824,7 +1823,9 @@
     if (_isSearchMode) {
         
         if (forced) {
-            _reloadForcedFoderWhenSearchModeOff = YES;
+            
+            [CCCoreData clearDateReadDirectory:serverUrl activeAccount:app.activeAccount];
+            
             _searchFileName = @"";                          // forced reload searchg
         }
         
@@ -1891,13 +1892,7 @@
 {
     [self cancelSearchBar];
     
-    // Need reload folder
-    if (_reloadForcedFoderWhenSearchModeOff) {
-        
-        _reloadForcedFoderWhenSearchModeOff = NO;
-        
-        [self readFolderWithForced:YES serverUrl:_serverUrl];
-    }
+    [self readFolderWithForced:NO serverUrl:_serverUrl];
 }
 
 - (void)searchFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
@@ -2008,7 +2003,7 @@
 
 - (void)renameSuccess:(CCMetadataNet *)metadataNet
 {
-    [self readFolderWithForced:YES serverUrl:_serverUrl];
+    [self readFolderWithForced:YES serverUrl:metadataNet.serverUrl];
 }
 
 - (void)renameFile:(CCMetadata *)metadata fileName:(NSString *)fileName
@@ -4266,7 +4261,7 @@
                                         if (app.activeAccount.length > 0 && app.activePhotosCameraUpload)
                                             [app.activePhotosCameraUpload reloadDatasourceForced];
                                         
-                                        [self readFolderWithForced:YES serverUrl:_serverUrl];
+                                        [self readFolderWithForced:YES serverUrl:serverUrl];
                                     }];
         }
         
