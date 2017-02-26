@@ -426,8 +426,9 @@
     [communication setUserAgent:[CCUtility getUserAgent]];
     
     NSString *path = [_activeUrl stringByAppendingString:dav];
-    
-    [communication search:path fileName:_metadataNet.fileName depth:_metadataNet.options withUserSessionToken:nil onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token) {
+    NSString *folder = [_metadataNet.serverUrl stringByReplacingOccurrencesOfString:[CCUtility getHomeServerUrlActiveUrl:_activeUrl] withString:@""];
+
+    [communication search:path folder:folder fileName:_metadataNet.fileName depth:_metadataNet.options withUserSessionToken:nil onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token) {
         
         NSMutableArray *metadatas = [NSMutableArray new];
         
