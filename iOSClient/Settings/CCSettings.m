@@ -103,19 +103,6 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
     [section addFormRow:row];
     
-    // information
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"userinformation" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_information_", nil)];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
-    row.cellConfig[@"textLabel.numberOfLines"] = @0;
-    [section addFormRow:row];
-    
-    // email
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"useremail" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_email_", nil)];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
-    [section addFormRow:row];
-
     // quota
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"quota" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_quota_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
@@ -129,7 +116,50 @@
     row.action.formSegueIdentifier = @"CCManageAccountSegue";
     [section addFormRow:row];
     
-    // Section --------------------------------------------------------------
+    // Section : USER INFORMATION -------------------------------------------
+    
+    section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_user_information_", nil)];
+    [form addFormSection:section];
+    
+    // Display Name
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"userdisplayname" rowType:XLFormRowDescriptorTypeInfo];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
+    row.cellConfig[@"textLabel.numberOfLines"] = @0;
+    [section addFormRow:row];
+    
+    // Address
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"useraddress" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_address_", nil)];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
+    [section addFormRow:row];
+
+    // Phone
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"userphone" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_phone_", nil)];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
+    [section addFormRow:row];
+
+    // Email
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"useremail" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_email_", nil)];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
+    [section addFormRow:row];
+
+    // Web
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"userweb" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_web_", nil)];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
+    [section addFormRow:row];
+    
+    // Web
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"usertwitter" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_twitter_", nil)];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
+    [section addFormRow:row];
+
+    
+    // Section AUTOMATIC UPLOAD OF CAMERA IMAGES ----------------------------
     
     section = [XLFormSectionDescriptor formSection];
     [form addFormSection:section];
@@ -140,7 +170,7 @@
     row.action.formSegueIdentifier = @"CCManageCameraUploadSegue";
     [section addFormRow:row];
 
-    // Section --------------------------------------------------------------
+    // Section OPTIMIZATIONS ------------------------------------------------
     
     section = [XLFormSectionDescriptor formSection];
     [form addFormSection:section];
@@ -151,7 +181,7 @@
     row.action.formSegueIdentifier = @"CCManageOptimizationsSegue";
     [section addFormRow:row];
 
-    // Section --------------------------------------------------------------
+    // Section CRYPTO CLOUD SYSTEM ------------------------------------------
     
     section = [XLFormSectionDescriptor formSection];
     [form addFormSection:section];
@@ -163,7 +193,7 @@
     row.action.formSegueIdentifier = @"CCManageCryptoCloudSegue";
     [section addFormRow:row];
     
-    // Section : INFORMATION --------------------------------------------------------------
+    // Section : INFORMATION ------------------------------------------------
 
     section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_information_", nil)];
     [form addFormSection:section];
@@ -198,7 +228,7 @@
     row.action.formSelector = @selector(sendMail:);
     [section addFormRow:row];
    
-    // Section --------------------------------------------------------------
+    // Section CLEAR CACHE -------------------------------------------------
     
     section = [XLFormSectionDescriptor formSection];
     [form addFormSection:section];
@@ -212,7 +242,7 @@
     row.action.formSelector = @selector(azzeraCache:);
     [section addFormRow:row];
 
-    // Section --------------------------------------------------------------
+    // Section EXIT --------------------------------------------------------
     
     section = [XLFormSectionDescriptor formSection];
     [form addFormSection:section];
@@ -321,12 +351,17 @@
     XLFormRowDescriptor *rowOnlyLockDir = [self.form formRowWithTag:@"onlylockdir"];
     
     XLFormRowDescriptor *rowVersionServer = [self.form formRowWithTag:@"versionserver"];
-    
     XLFormRowDescriptor *rowUrlCloud = [self.form formRowWithTag:@"urlcloud"];
     XLFormRowDescriptor *rowUserNameCloud = [self.form formRowWithTag:@"usernamecloud"];
-    XLFormRowDescriptor *rowUserInformation = [self.form formRowWithTag:@"userinformation"];
-    XLFormRowDescriptor *rowUserEmail = [self.form formRowWithTag:@"useremail"];
     XLFormRowDescriptor *rowQuota = [self.form formRowWithTag:@"quota"];
+
+    XLFormRowDescriptor *rowUserDisplayName = [self.form formRowWithTag:@"userdisplayname"];
+    XLFormRowDescriptor *rowUserAddress = [self.form formRowWithTag:@"useraddress"];
+    XLFormRowDescriptor *rowUserPhone = [self.form formRowWithTag:@"userphone"];
+    XLFormRowDescriptor *rowUserEmail = [self.form formRowWithTag:@"useremail"];
+    XLFormRowDescriptor *rowUserWeb = [self.form formRowWithTag:@"userweb"];
+    XLFormRowDescriptor *rowUserTwitter = [self.form formRowWithTag:@"usertwitter"];
+
     
     //XLFormRowDescriptor *rowChangeCredentials = [self.form formRowWithTag:@"changecredentials"];
 
@@ -363,29 +398,31 @@
     rowVersionServer.value =  [CCNetworking sharedNetworking].sharedOCCommunication.getCurrentServerVersion;
     rowUrlCloud.value = app.activeUrl;
     rowUserNameCloud.value = app.activeUser;
+    NSString *quota = [CCUtility transformedSize:[tableAccount.quotaTotal doubleValue]];
+    NSString *quotaAvailable = [CCUtility transformedSize:[tableAccount.quotaFree doubleValue]];
+    rowQuota.value = [NSString stringWithFormat:@"%@ / %@ %@", quota, quotaAvailable, NSLocalizedString(@"_available_", nil)];
     
-    if (avatar || tableAccount.displayName.length > 0 || tableAccount.address.length > 0 || tableAccount.phone.length > 0) {
+    if (avatar || tableAccount.displayName.length > 0) {
         
-        rowUserInformation.title = [NSString stringWithFormat:@"%@ %@ %@", tableAccount.displayName, tableAccount.address, tableAccount.phone];
-        rowUserInformation.disabled = @YES;
+        rowUserDisplayName.title = tableAccount.displayName;
+        rowUserDisplayName.disabled = @YES;
         if (avatar)
-            [rowUserInformation.cellConfig setObject:avatar forKey:@"imageView.image"];
+            [rowUserDisplayName.cellConfig setObject:avatar forKey:@"imageView.image"];
         else
-            [rowUserInformation.cellConfig setObject:[UIImage imageNamed:image_avatar] forKey:@"imageView.image"];
+            [rowUserDisplayName.cellConfig setObject:[UIImage imageNamed:image_avatar] forKey:@"imageView.image"];
 
     } else {
         
-        rowUserInformation.title = NSLocalizedString(@"_information_", nil);
-        rowUserInformation.disabled = @NO;
-        [rowUserInformation.cellConfig setObject:[UIImage imageNamed:image_avatar] forKey:@"imageView.image"];
+        rowUserDisplayName.title = @"";
+        rowUserDisplayName.disabled = @NO;
+        [rowUserDisplayName.cellConfig setObject:[UIImage imageNamed:image_avatar] forKey:@"imageView.image"];
     }
     
+    rowUserAddress.value = tableAccount.address;
+    rowUserPhone.value = tableAccount.phone;
     rowUserEmail.value = tableAccount.email;
-    
-    NSString *quota = [CCUtility transformedSize:[tableAccount.quotaTotal doubleValue]];
-    NSString *quotaAvailable = [CCUtility transformedSize:[tableAccount.quotaFree doubleValue]];
-    
-    rowQuota.value = [NSString stringWithFormat:@"%@ / %@ %@", quota, quotaAvailable, NSLocalizedString(@"_available_", nil)];
+    rowUserWeb.value = tableAccount.webpage;
+    rowUserTwitter.value = tableAccount.twitter;
     
     // -----------------------------------------------------------------
     
