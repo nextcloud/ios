@@ -24,7 +24,6 @@
 #import "CCSettings.h"
 #import "AppDelegate.h"
 #import "CCMain.h"
-#import "TableAccount+CoreDataClass.h"
 
 #define alertViewEsci 1
 #define alertViewAzzeraCache 2
@@ -53,7 +52,6 @@
     
     form = [XLFormDescriptor formDescriptorWithTitle:NSLocalizedString(@"_settings_", nil)];
     form.rowNavigationOptions = XLFormRowNavigationOptionNone;
-    
     
     // Section : PASSWORD --------------------------------------------------------------
     
@@ -107,6 +105,8 @@
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"quota" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_quota_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
+    [row.cellConfig setObject:[UIColor blackColor] forKey:@"detailTextLabel.textColor"];
+    [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
     [section addFormRow:row];
 
     // Change Account
@@ -152,7 +152,7 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
     [section addFormRow:row];
     
-    // Web
+    // Twitter
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"usertwitter" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_twitter_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
@@ -313,6 +313,35 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
+#pragma mark === TableView ===
+#pragma --------------------------------------------------------------------------------------------
+
+-(UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section
+{
+    if (section == 1) {
+        
+        UIView *view = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 0)];
+        view.backgroundColor = [UIColor clearColor];
+        
+        UIProgressView *progressView = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleDefault];
+        progressView.frame = CGRectMake(120, -67, self.tableView.frame.size.width-120-10, 0);
+        progressView.trackTintColor = [UIColor colorWithRed:247.0/255.0 green:247.0/255.0 blue:247.0/255.0 alpha:0.6];
+        progressView.progressTintColor = [UIColor colorWithRed:0.0/255.0 green:130.0/255.0 blue:201.0/255.0 alpha:0.4];
+
+        CGAffineTransform transform = CGAffineTransformMakeScale(1.0f, 10.0f);
+        progressView.transform = transform;
+        progressView.progress = [_tableAccount.quotaRelative floatValue] / 100;
+        
+        [view addSubview:progressView];
+        
+        return view;
+                                    
+    }
+    
+    return nil;
+}
+
+#pragma --------------------------------------------------------------------------------------------
 #pragma mark === Admin ===
 #pragma --------------------------------------------------------------------------------------------
 
@@ -393,18 +422,18 @@
         UIGraphicsEndImageContext();
     }
     
-    TableAccount *tableAccount = [CCCoreData getActiveAccount];
+    _tableAccount = [CCCoreData getActiveAccount];
     
     rowVersionServer.value =  [CCNetworking sharedNetworking].sharedOCCommunication.getCurrentServerVersion;
     rowUrlCloud.value = app.activeUrl;
     rowUserNameCloud.value = app.activeUser;
-    NSString *quota = [CCUtility transformedSize:[tableAccount.quotaTotal doubleValue]];
-    NSString *quotaAvailable = [CCUtility transformedSize:[tableAccount.quotaFree doubleValue]];
+    NSString *quota = [CCUtility transformedSize:[_tableAccount.quotaTotal doubleValue]];
+    NSString *quotaAvailable = [CCUtility transformedSize:[_tableAccount.quotaFree doubleValue]];
     rowQuota.value = [NSString stringWithFormat:@"%@ / %@ %@", quota, quotaAvailable, NSLocalizedString(@"_available_", nil)];
     
-    if (avatar || tableAccount.displayName.length > 0) {
+    if (avatar || _tableAccount.displayName.length > 0) {
         
-        rowUserDisplayName.title = tableAccount.displayName;
+        rowUserDisplayName.title = _tableAccount.displayName;
         rowUserDisplayName.disabled = @YES;
         if (avatar)
             [rowUserDisplayName.cellConfig setObject:avatar forKey:@"imageView.image"];
@@ -418,11 +447,11 @@
         [rowUserDisplayName.cellConfig setObject:[UIImage imageNamed:image_avatar] forKey:@"imageView.image"];
     }
     
-    rowUserAddress.value = tableAccount.address;
-    rowUserPhone.value = tableAccount.phone;
-    rowUserEmail.value = tableAccount.email;
-    rowUserWeb.value = tableAccount.webpage;
-    rowUserTwitter.value = tableAccount.twitter;
+    rowUserAddress.value = _tableAccount.address;
+    rowUserPhone.value = _tableAccount.phone;
+    rowUserEmail.value = _tableAccount.email;
+    rowUserWeb.value = _tableAccount.webpage;
+    rowUserTwitter.value = _tableAccount.twitter;
     
     // -----------------------------------------------------------------
     

@@ -29,9 +29,11 @@
 #import "CCUtility.h"
 #import "CCHud.h"
 #import "APAvatarImageView.h"
+#import "TableAccount+CoreDataClass.h"
 
 @interface CCSettings : XLFormViewController <BKPasscodeViewControllerDelegate, MFMailComposeViewControllerDelegate>
 
+@property (strong, nonatomic) TableAccount *tableAccount;
 @property (nonatomic) NSUInteger failedAttempts;
 
 @property (strong, nonatomic) NSDate *lockUntilDate;
