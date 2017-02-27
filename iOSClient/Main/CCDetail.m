@@ -26,7 +26,11 @@
 #import "AppDelegate.h"
 #import "CCMain.h"
 
-#import "Nextcloud-Swift.h"
+#ifdef CUSTOM_BUILD
+    #import "NextcloudCustom-Swift.h"
+#else
+    #import "Nextcloud-Swift.h"
+#endif
 
 #define TOOLBAR_HEIGHT 49.0f
 

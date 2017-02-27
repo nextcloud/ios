@@ -33,7 +33,11 @@
 
 #import "CTAssetCheckmark.h"
 
-#import "Nextcloud-Swift.h"
+#ifdef CUSTOM_BUILD
+    #import "NextcloudCustom-Swift.h"
+#else
+    #import "Nextcloud-Swift.h"
+#endif
 
 #pragma GCC diagnostic ignored "-Wundeclared-selector"
 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
