@@ -90,6 +90,8 @@
     if (![record.account isEqualToString:metadataNet.account])
         return;
     
+    NSString *father = @"";
+    
     for (CCMetadata *metadata in metadatas) {
         
         // Delete Record NOT in session
@@ -121,17 +123,25 @@
         // end test, insert in CoreData
         [CCCoreData addMetadata:metadata activeAccount:app.activeAccount activeUrl:app.activeUrl context:nil];
         
-        if (metadata.directory) {
+        // ---- Synchronized ----
+        
+        // Get ServerUrl
+        NSString* serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:app.activeAccount];
+        serverUrl = [CCUtility stringAppendServerUrl:serverUrl addServerUrl:metadata.fileNameData];
+        
+        if (![serverUrl containsString:father]) {
             
-            NSString* serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:app.activeAccount];
-            serverUrl = [CCUtility stringAppendServerUrl:serverUrl addServerUrl:metadata.fileNameData];
-            NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:app.activeAccount];
+            if (metadata.directory) {
+                
+                NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:app.activeAccount];
+                [self readFolderServerUrl:serverUrl directoryID:directoryID];
+                
+            } else {
+                
+                [self readFile:metadata];
+            }
             
-            [self readFolderServerUrl:serverUrl directoryID:directoryID];
-            
-        } else {
-            
-            [self readFile:metadata];
+            father = serverUrl;
         }
     }
 }

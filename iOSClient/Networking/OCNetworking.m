@@ -556,6 +556,18 @@
         NSString *cameraFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:_metadataNet.account activeUrl:_activeUrl];
         NSString *directoryUser = [CCUtility getDirectoryActiveUser:_activeUser activeUrl:_activeUrl];
         
+        // Order by fileNamePath
+        items = [items sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+            
+            OCFileDto *record1 = obj1, *record2 = obj2;
+            
+            NSString *path1 = [[record1.filePath stringByAppendingString:record1.fileName] lowercaseString];
+            NSString *path2 = [[record2.filePath stringByAppendingString:record2.fileName] lowercaseString];
+            
+            return [path1 compare:path2];
+            
+        }];
+        
         for(OCFileDto *itemDto in items) {
             
             itemDto.fileName = [itemDto.fileName stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
