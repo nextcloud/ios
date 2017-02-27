@@ -425,8 +425,7 @@ class CCActions: NSObject {
         
         metadataNet.action = actionListingFavorites
         metadataNet.delegate = delegate
-        metadataNet.priority = Operation.QueuePriority.normal.rawValue
-        //metadataNet.selector = selectorAddFavorite
+        metadataNet.priority = Operation.QueuePriority.veryHigh.rawValue
         metadataNet.serverUrl = serverUrl
         
         appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)

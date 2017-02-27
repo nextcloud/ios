@@ -341,10 +341,12 @@
 {
     // now
     dispatch_async(dispatch_get_main_queue(), ^{
-        
+       
+        NSLog(@"[LOG] Listning Favorites");
+        [[CCSynchronize sharedSynchronize] readListingFavorites];
     });
 
-    // 0.5 sec.
+    // after 0.5 sec.
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         
         NSLog(@"[LOG] Request Server Information");
@@ -354,9 +356,6 @@
     
         NSLog(@"[LOG] Initialize Camera Upload");
         [[NSNotificationCenter defaultCenter] postNotificationName:@"initStateCameraUpload" object:nil];
-        
-        NSLog(@"[LOG] Listning Favorites");
-        [[CCSynchronize sharedSynchronize] readListingFavorites];
         
         NSLog(@"[LOG] files Offline");
         [[CCSynchronize sharedSynchronize] readOffline];
@@ -1081,7 +1080,7 @@
     id operation;
     
     operation = [[OCnetworking alloc] initWithDelegate:delegate metadataNet:metadataNet withUser:_activeUser withPassword:_activePassword withUrl:_activeUrl isCryptoCloudMode:_isCryptoCloudMode];
-    
+        
     [operation setQueuePriority:metadataNet.priority];
     
     [netQueue addOperation:operation];

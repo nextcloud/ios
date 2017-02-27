@@ -95,37 +95,25 @@
         return;
     
     NSString *father = @"";
+    NSMutableArray *filesID = [NSMutableArray new];
     
     for (CCMetadata *metadata in metadatas) {
-        
-        // Delete Record NOT in session
-        [CCCoreData deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND (fileID = %@) AND ((session == NULL) OR (session == ''))", app.activeAccount, metadata.directoryID, metadata.fileID]];
         
         // type of file
         NSInteger typeFilename = [CCUtility getTypeFileName:metadata.fileName];
         
-        // if crypto do not insert
-        if (typeFilename == k_metadataTypeFilenameCrypto) continue;
-        
-        // verify if the record encrypted has plist + crypto
-        if (typeFilename == k_metadataTypeFilenamePlist && metadata.directory == NO) {
-            
-            BOOL isCryptoComplete = NO;
-            NSString *fileNameCrypto = [CCUtility trasformedFileNamePlistInCrypto:metadata.fileName];
-            
-            for (CCMetadata *completeMetadata in metadatas) {
-                
-                if (completeMetadata.cryptated == NO) continue;
-                else  if ([completeMetadata.fileName isEqualToString:fileNameCrypto]) {
-                    isCryptoComplete = YES;
-                    break;
-                }
-            }
-            if (isCryptoComplete == NO) continue;
-        }
+        // do not insert cryptated favorite file
+        if (typeFilename == k_metadataTypeFilenameCrypto || typeFilename == k_metadataTypeFilenamePlist)
+            continue;
+
+        // Delete Record NOT in session
+        [CCCoreData deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND (fileID = %@) AND ((session == NULL) OR (session == ''))", app.activeAccount, metadata.directoryID, metadata.fileID]];
         
         // end test, insert in CoreData
         [CCCoreData addMetadata:metadata activeAccount:app.activeAccount activeUrl:app.activeUrl context:nil];
+        
+        // insert for test NOT favorite
+        [filesID addObject:metadata.fileID];
         
         // ---- Synchronized ----
         
@@ -148,6 +136,13 @@
             father = serverUrl;
         }
     }
+    
+    // Verify remove favorite
+    NSArray *allRecordFavorite = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (favorite == 1)", app.activeAccount] context:nil];
+    
+    for (TableMetadata *tableMetadata in allRecordFavorite)
+        if (![filesID containsObject:tableMetadata.fileID])
+            [CCCoreData SetMetadataFavoriteFileID:tableMetadata.fileID favorite:NO activeAccount:app.activeAccount context:nil];
     
     [[NSNotificationCenter defaultCenter] postNotificationName:@"clearDateReadDataSource" object:nil];
 }
