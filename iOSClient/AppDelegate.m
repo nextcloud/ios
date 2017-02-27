@@ -381,7 +381,7 @@
         [directory addObject:record.serverUrl];
     
     if ([directory count] > 0)
-        [[CCSynchronize sharedSynchronize] offlineFolderAnimationDirectory:directory setGraphicsFolder:YES];
+        [[CCSynchronize sharedSynchronize] synchronizeFolderAnimationDirectory:directory setGraphicsFolder:YES];
 
 // ONLY BACKGROUND
     

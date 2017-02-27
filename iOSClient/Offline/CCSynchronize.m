@@ -60,8 +60,8 @@
     if (app.activeAccount.length == 0)
         return;
     
-    // verify is offline procedure is in progress selectorDownloadFavorites
-    if ([[app verifyExistsInQueuesDownloadSelector:selectorDownloadFavorites] count] > 0)
+    // verify is offline procedure is in progress selectorDownloadSynchronize
+    if ([[app verifyExistsInQueuesDownloadSelector:selectorDownloadSynchronize] count] > 0)
         return;
     
     [[CCActions sharedInstance] listingFavorites:@"" delegate:self];
@@ -160,8 +160,8 @@
     if (app.activeAccount.length == 0)
         return;
     
-    // verify is offline procedure is in progress selectorDownloadOffline
-    if ([[app verifyExistsInQueuesDownloadSelector:selectorDownloadOffline] count] > 0)
+    // verify is offline procedure is in progress selectorDownloadSynchronize
+    if ([[app verifyExistsInQueuesDownloadSelector:selectorDownloadSynchronize] count] > 0)
         return;
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
@@ -212,14 +212,14 @@
 //
 //
 
-- (BOOL)offlineFolderAnimationDirectory:(NSArray *)directory setGraphicsFolder:(BOOL)setGraphicsFolder
+- (BOOL)synchronizeFolderAnimationDirectory:(NSArray *)directory setGraphicsFolder:(BOOL)setGraphicsFolder
 {
     BOOL animation = NO;
     BOOL isAtLeastOneInAnimation = NO;
     NSMutableOrderedSet *serversUrlInDownload = [[NSMutableOrderedSet alloc] init];
     
     // Active for download
-    NSMutableArray *metadatasNet = [app verifyExistsInQueuesDownloadSelector:selectorDownloadOffline];
+    NSMutableArray *metadatasNet = [app verifyExistsInQueuesDownloadSelector:selectorDownloadSynchronize];
     
     for (CCMetadataNet *metadataNet in metadatasNet)
         [serversUrlInDownload addObject:metadataNet.serverUrl];
@@ -364,7 +364,7 @@
         }
         
         if ([metadatasForOfflineFolder count] > 0)
-            [self verifyChangeMedatas:metadatasForOfflineFolder serverUrl:metadataNet.serverUrl account:metadataNet.account offline:YES];
+            [self verifyChangeMedatas:metadatasForOfflineFolder serverUrl:metadataNet.serverUrl account:metadataNet.account synchronize:YES];
     });
 }
 
@@ -406,7 +406,7 @@
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
         
-        [self verifyChangeMedatas:[[NSArray alloc] initWithObjects:metadata, nil] serverUrl:metadataNet.serverUrl account:app.activeAccount offline:NO];
+        [self verifyChangeMedatas:[[NSArray alloc] initWithObjects:metadata, nil] serverUrl:metadataNet.serverUrl account:app.activeAccount synchronize:NO];
     });
 }
 
@@ -416,7 +416,7 @@
 
 
 // MULTI THREAD
-- (void)verifyChangeMedatas:(NSArray *)allRecordMetadatas serverUrl:(NSString *)serverUrl account:(NSString *)account offline:(BOOL)offline
+- (void)verifyChangeMedatas:(NSArray *)allRecordMetadatas serverUrl:(NSString *)serverUrl account:(NSString *)account synchronize:(BOOL)synchronize
 {
     NSMutableArray *metadatas = [[NSMutableArray alloc] init];
     
@@ -434,7 +434,7 @@
         
         TableLocalFile *record = [TableLocalFile MR_findFirstWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileID == %@)", app.activeAccount, metadata.fileID]];
         
-        if (offline) {
+        if (synchronize) {
             
             if (![record.rev isEqualToString:metadata.rev])
                 changeRev = YES;
@@ -466,15 +466,15 @@
     
     dispatch_async(dispatch_get_main_queue(), ^{
         if ([metadatas count])
-            [self SynchronizeMetadatas:metadatas serverUrl:serverUrl offline:offline];
+            [self SynchronizeMetadatas:metadatas serverUrl:serverUrl synchronize:synchronize];
     });
 }
 
 // MAIN THREAD
-- (void)SynchronizeMetadatas:(NSArray *)metadatas serverUrl:(NSString *)serverUrl offline:(BOOL)offline
+- (void)SynchronizeMetadatas:(NSArray *)metadatas serverUrl:(NSString *)serverUrl synchronize:(BOOL)synchronize
 {
     // HUD
-    if ([metadatas count] > 50 && offline) {
+    if ([metadatas count] > 50 && synchronize) {
         if (!_hud) _hud = [[CCHud alloc] initWithView:[[[UIApplication sharedApplication] delegate] window]];
         [_hud visibleIndeterminateHud];
     }
@@ -494,7 +494,7 @@
         
             if ([metadata.type isEqualToString: k_metadataType_file]) {
                 downloadData = YES;
-                selector = selectorDownloadOffline;
+                selector = selectorDownloadSynchronize;
             }
         
             if ([metadata.type isEqualToString: k_metadataType_template]) {
@@ -519,7 +519,7 @@
             [app addNetworkingOperationQueue:app.netQueueDownload delegate:app.activeMain metadataNet:metadataNet];
         }
     
-        [[CCSynchronize sharedSynchronize] offlineFolderAnimationDirectory:[[NSArray alloc] initWithObjects:serverUrl, nil] setGraphicsFolder:YES];
+        [[CCSynchronize sharedSynchronize] synchronizeFolderAnimationDirectory:[[NSArray alloc] initWithObjects:serverUrl, nil] setGraphicsFolder:YES];
         
         [app.activeMain reloadDatasource:serverUrl fileID:nil selector:nil];
         

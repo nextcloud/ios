@@ -1238,8 +1238,8 @@
         [self reloadDatasource:serverUrl fileID:metadata.fileID selector:selector];
     }
     
-    // Offline Directory
-    if ([selector isEqualToString:selectorDownloadOffline]) {
+    // Synchronized
+    if ([selector isEqualToString:selectorDownloadSynchronize]) {
         
         [self reloadDatasource:serverUrl fileID:metadata.fileID selector:selector];
     }
@@ -1816,7 +1816,7 @@
     // File is changed ??
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
         if (!_isSearchMode)
-            [[CCSynchronize sharedSynchronize] verifyChangeMedatas:metadatas serverUrl:metadataNet.serverUrl account:app.activeAccount offline:NO];
+            [[CCSynchronize sharedSynchronize] verifyChangeMedatas:metadatas serverUrl:metadataNet.serverUrl account:app.activeAccount synchronize:NO];
     });
 
     // Search Mode
@@ -4695,7 +4695,7 @@
     // Reload -> Self se non siamo nella dir appropriata cercala e se è in memoria reindirizza il reload
     if ([serverUrl isEqualToString:_serverUrl] == NO || _serverUrl == nil) {
         
-        if ([selector isEqualToString:selectorDownloadOffline]) {
+        if ([selector isEqualToString:selectorDownloadSynchronize]) {
             [app.controlCenter reloadDatasource];
         } else {
             CCMain *main = [app.listMainVC objectForKey:serverUrl];
@@ -5068,19 +5068,7 @@
         
         if (isOfflineDirectory) {
             
-            // Image Offline
             cell.offlineImageView.image = [UIImage imageNamed:image_offline];
-            
-            // Animation synchronized gif
-            if ([[CCSynchronize sharedSynchronize] offlineFolderAnimationDirectory:[[NSArray alloc] initWithObjects:directoryServerUrl, nil] setGraphicsFolder:NO]) {
-                
-                NSURL *myURL;
-                
-                if (metadata.cryptated) myURL = [[NSBundle mainBundle] URLForResource: @"synchronizedcrypto" withExtension:@"gif"];
-                else myURL = [[NSBundle mainBundle] URLForResource: @"synchronized" withExtension:@"gif"];
-                
-                cell.synchronizedImageView.image = [UIImage animatedImageWithAnimatedGIFURL:myURL];
-            }
         }
         
         // ----------------------------------------------------------------------------------------------------------
@@ -5090,6 +5078,17 @@
         if (metadata.favorite) {
             
             cell.offlineImageView.image = [UIImage imageNamed:image_favorite];
+        }
+        
+        // Animation synchronized gif
+        if ([[CCSynchronize sharedSynchronize] synchronizeFolderAnimationDirectory:[[NSArray alloc] initWithObjects:directoryServerUrl, nil] setGraphicsFolder:NO]) {
+            
+            NSURL *myURL;
+            
+            if (metadata.cryptated) myURL = [[NSBundle mainBundle] URLForResource: @"synchronizedcrypto" withExtension:@"gif"];
+            else myURL = [[NSBundle mainBundle] URLForResource: @"synchronized" withExtension:@"gif"];
+            
+            cell.synchronizedImageView.image = [UIImage animatedImageWithAnimatedGIFURL:myURL];
         }
 
     } else {
