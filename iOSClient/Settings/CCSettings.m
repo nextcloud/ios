@@ -102,13 +102,14 @@
     [section addFormRow:row];
     
     // quota
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"quota" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_quota_", nil)];
+    
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"quota" rowType:XLFormRowDescriptorTypeButton title:@""];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
-    [row.cellConfig setObject:[UIColor blackColor] forKey:@"detailTextLabel.textColor"];
+    [row.cellConfig setObject:@(NSTextAlignmentCenter) forKey:@"textLabel.textAlignment"];
     [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
+    row.action.formSelector = @selector(quota:);
     [section addFormRow:row];
-
+    
     // Change Account
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"changecredentials" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_change_credentials_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
@@ -324,9 +325,11 @@
         view.backgroundColor = [UIColor clearColor];
         
         UIProgressView *progressView = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleDefault];
-        progressView.frame = CGRectMake(120, -67, self.tableView.frame.size.width-120-10, 0);
+        progressView.frame = CGRectMake(10, -67, self.tableView.frame.size.width-10-10, 0);
         progressView.trackTintColor = [UIColor colorWithRed:247.0/255.0 green:247.0/255.0 blue:247.0/255.0 alpha:0.6];
         progressView.progressTintColor = [UIColor colorWithRed:0.0/255.0 green:130.0/255.0 blue:201.0/255.0 alpha:0.4];
+        progressView.layer.borderWidth = 0.05;
+        progressView.layer.borderColor = [COLOR_BRAND CGColor];
 
         CGAffineTransform transform = CGAffineTransformMakeScale(1.0f, 10.0f);
         progressView.transform = transform;
@@ -429,7 +432,7 @@
     rowUserNameCloud.value = app.activeUser;
     NSString *quota = [CCUtility transformedSize:[_tableAccount.quotaTotal doubleValue]];
     NSString *quotaAvailable = [CCUtility transformedSize:[_tableAccount.quotaFree doubleValue]];
-    rowQuota.value = [NSString stringWithFormat:@"%@ / %@ %@", quota, quotaAvailable, NSLocalizedString(@"_available_", nil)];
+    rowQuota.title = [NSString stringWithFormat:@"%@ / %@ %@", quota, quotaAvailable, NSLocalizedString(@"_available_", nil)];
     
     if (avatar || _tableAccount.displayName.length > 0) {
         
@@ -643,6 +646,11 @@
     alertView.tag = alertViewAzzeraCache;
     [alertView addButtonWithTitle:NSLocalizedString(@"_proceed_", nil)];
     [alertView show];
+}
+
+- (void)quota:(XLFormRowDescriptor *)sender
+{
+    [self deselectFormRow:sender];
 }
 
 #pragma --------------------------------------------------------------------------------------------
