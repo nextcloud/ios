@@ -176,7 +176,6 @@ extern NSString *const BKPasscodeKeychainServiceName;
 #define selectorOpenWindowShare                         @"openWindowShare"
 #define selectorReadFile                                @"readFile"
 #define selectorReadFileOffline                         @"readFileOffline"
-#define selectorReadFileFolder                          @"readFileFolder"
 #define selectorReadFileUploadFile                      @"readFileUploadFile"
 #define selectorReadFileVerifyUpload                    @"readFileVerifyUpload"
 #define selectorReadFolder                              @"readFolder"

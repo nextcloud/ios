@@ -1656,24 +1656,6 @@
 
 - (void)readFileSuccess:(CCMetadataNet *)metadataNet metadata:(CCMetadata *)metadata
 {
-    // ReadFile Folder for change rev
-    if ([metadataNet.selector isEqualToString:selectorReadFileFolder]) {
-        
-        NSString *rev = [CCCoreData getDirectoryRevFromServerUrl:metadataNet.serverUrl activeAccount:app.activeAccount];
-        
-        if (![metadata.rev isEqualToString:rev]) {
-            
-            NSLog(@"Change etag, force reload folder %@", metadataNet.serverUrl);
-            
-            [CCCoreData setDirectoryRev:metadata.rev serverUrl:metadataNet.serverUrl activeAccount:app.activeAccount];
-            [CCCoreData clearDateReadDirectory:metadataNet.serverUrl activeAccount:app.activeAccount];
-            
-            CCMain *viewController = [app.listMainVC objectForKey:metadataNet.serverUrl];
-            if (viewController)
-                [viewController clearDateReadDataSource:nil];
-        }
-    }
-    
     // UploadFile
     if ([metadataNet.selector isEqualToString:selectorReadFileUploadFile]) {
         
