@@ -33,6 +33,8 @@
 
 + (CCSynchronize *)sharedSynchronize;
 
+@property (nonatomic, strong) NSMutableOrderedSet *foldersInSynchronized;
+
 - (void)readListingFavorites;
 - (void)readOffline;
 

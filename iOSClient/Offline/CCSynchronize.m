@@ -38,13 +38,17 @@
 
 @implementation CCSynchronize
 
-+ (CCSynchronize *)sharedSynchronize{
++ (CCSynchronize *)sharedSynchronize {
+    
     static CCSynchronize *sharedSynchronize;
+    
     @synchronized(self)
     {
         if (!sharedSynchronize) {
             
-            sharedSynchronize = [[CCSynchronize alloc] init];
+            sharedSynchronize = [CCSynchronize new];
+            
+            sharedSynchronize.foldersInSynchronized = [NSMutableOrderedSet new];
         }
         return sharedSynchronize;
     }
@@ -216,9 +220,18 @@
 {
     BOOL animation = NO;
     BOOL isAtLeastOneInAnimation = NO;
-    NSMutableOrderedSet *serversUrlInDownload = [[NSMutableOrderedSet alloc] init];
+    NSMutableOrderedSet *serversUrlInDownload = [NSMutableOrderedSet new];
     
-    // Active for download
+    // test
+    if ([directory count] == 0 && [self.foldersInSynchronized count] == 0)
+        return isAtLeastOneInAnimation;
+    
+    if (directory)
+        [self.foldersInSynchronized addObjectsFromArray:directory];
+    else
+        directory = [[NSArray alloc] initWithArray:self.foldersInSynchronized.array];
+    
+    // Active in download
     NSMutableArray *metadatasNet = [app verifyExistsInQueuesDownloadSelector:selectorDownloadSynchronize];
     
     for (CCMetadataNet *metadataNet in metadatasNet)
@@ -232,13 +245,15 @@
         
         if (animation)
             isAtLeastOneInAnimation = YES;
+        else
+            [self.foldersInSynchronized removeObject:serverUrl];
         
         if (setGraphicsFolder) {
             
             NSString *serverUrlOffline = [CCUtility deletingLastPathComponentFromServerUrl:serverUrl];
             CCMain *viewController = [app.listMainVC objectForKey:serverUrlOffline];
             if (viewController)
-                [viewController offlineFolderGraphicsServerUrl:serverUrl animation:animation];
+                [viewController synchronizeFolderGraphicsServerUrl:serverUrl animation:animation];
         }
     }
     

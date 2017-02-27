@@ -5548,10 +5548,10 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Offline Folder Cell =====
+#pragma mark ===== Synchronize Folder Cell =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)offlineFolderGraphicsServerUrl:(NSString *)serverUrl animation:(BOOL)animation
+- (void)synchronizeFolderGraphicsServerUrl:(NSString *)serverUrl animation:(BOOL)animation
 {
     BOOL cryptated = NO;
     CCCellMain *cell;
