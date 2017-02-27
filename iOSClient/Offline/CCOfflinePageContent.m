@@ -28,7 +28,7 @@
 #import "Nextcloud-Swift.h"
 
 
-@interface CCOfflinePageContent () <CCActionsDeleteDelegate>
+@interface CCOfflinePageContent () <CCActionsDeleteDelegate, CCActionsSettingFavoriteDelegate>
 {
     NSArray *dataSource;
     BOOL _reloadDataSource;
@@ -212,6 +212,22 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Favorite <delegate> =====
+#pragma--------------------------------------------------------------------------------------------
+
+- (void)settingFavoriteFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+{
+    NSLog(@"[LOG] Remove Favorite error %@", message);
+}
+
+- (void)settingFavoriteSuccess:(CCMetadataNet *)metadataNet
+{
+    [CCCoreData SetMetadataFavoriteFileID:metadataNet.fileID favorite:[metadataNet.options boolValue] activeAccount:app.activeAccount context:nil];
+ 
+    [self reloadDatasource];
+}
+
+#pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Swipe Table -> menu =====
 #pragma--------------------------------------------------------------------------------------------
 
@@ -305,7 +321,7 @@
                                     
                                     [self.tableView setEditing:NO animated:YES];
                                     
-                                    [self reloadDatasource];
+                                    [[CCActions sharedInstance] settingFavorite:_metadata favorite:NO delegate:self];
                                 }];
     }
 
