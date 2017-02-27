@@ -102,7 +102,7 @@
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializeMain:) name:@"initializeMain" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(clearDateReadDataSource:) name:@"clearDateReadDataSource" object:nil];
-
+        
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setTitle) name:@"setTitleMain" object:nil];
     }
     
@@ -3073,52 +3073,44 @@
 
 - (void)orderTable:(NSString *)order
 {
+    [CCUtility setOrderSettings:order];
+    
     // Clear data-read of DataSource
     [[NSNotificationCenter defaultCenter] postNotificationName:@"clearDateReadDataSource" object:nil];
     
-    [CCUtility setOrderSettings:order];
-    
-    // refresh
-    [self reloadDatasource];
     // new menu
     [self createReMainMenu];
 }
 
 - (void)ascendingTable:(BOOL)ascending
 {
+    [CCUtility setAscendingSettings:ascending];
+    
     // Clear data-read of DataSource
     [[NSNotificationCenter defaultCenter] postNotificationName:@"clearDateReadDataSource" object:nil];
     
-    [CCUtility setAscendingSettings:ascending];
-    
-    // refresh
-    [self reloadDatasource];
     // new menu
     [self createReMainMenu];
 }
 
 - (void)directoryOnTop:(BOOL)directoryOnTop
 {
+    [CCUtility setDirectoryOnTop:directoryOnTop];
+    
     // Clear data-read of DataSource
     [[NSNotificationCenter defaultCenter] postNotificationName:@"clearDateReadDataSource" object:nil];
     
-    [CCUtility setDirectoryOnTop:directoryOnTop];
-    
-    // refresh
-    [self reloadDatasource];
     // new menu
     [self createReMainMenu];
 }
 
 - (void)tableGroupBy:(NSString *)groupBy
 {
+    [CCUtility setGroupBySettings:groupBy];
+    
     // Clear data-read of DataSource
     [[NSNotificationCenter defaultCenter] postNotificationName:@"clearDateReadDataSource" object:nil];
     
-    [CCUtility setGroupBySettings:groupBy];
-    
-    // refresh
-    [self reloadDatasource];
     // new menu
     [self createReMainMenu];
 }
@@ -4658,6 +4650,7 @@
 - (void)clearDateReadDataSource:(NSNotification *)notification
 {
     _dateReadDataSource = Nil;
+    [self reloadDatasource];
 }
 
 - (void)reloadDatasource
