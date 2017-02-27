@@ -262,20 +262,9 @@
         url = sharedLink;
         
     } else {
-        
-        //Token
-        NSString *firstNumber = [[CCNetworking sharedNetworking].sharedOCCommunication.getCurrentServerVersion substringToIndex:1];
-        
-        if (firstNumber.integerValue >= server_version_with_new_shared_schema) {
-            
-            // From ownCloud server version 8 on, a different share link scheme is used.
-            
-            url = [NSString stringWithFormat:@"%@/%@%@", app.activeUrl, k_share_link_middle_part_url_after_version_8, sharedLink];
-            
-        }else{
-            
-            url = [NSString stringWithFormat:@"%@/%@%@", app.activeUrl, k_share_link_middle_part_url_before_version_8, sharedLink];
-        }
+
+        url = [NSString stringWithFormat:@"%@/%@%@", app.activeUrl, k_share_link_middle_part_url_after_version_8, sharedLink];
+
     }
 
     NSArray *activityItems = @[[NSString stringWithFormat:@""], [NSURL URLWithString:url]];

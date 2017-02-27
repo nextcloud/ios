@@ -93,9 +93,7 @@ extern NSString *const BKPasscodeKeychainServiceName;
 // Picker select image
 #define k_pickerControllerMax                           100.0
 
-// define ownCloud IOS
-#define server_version_with_new_shared_schema 8
-#define k_share_link_middle_part_url_before_version_8   @"public.php?service=files&t="
+// define Nextcloud IOS
 #define k_share_link_middle_part_url_after_version_8    @"index.php/s/"
 
 // Constants to identify the different permissions of a file
