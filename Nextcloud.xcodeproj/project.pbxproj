@@ -5787,21 +5787,20 @@
 					"$(PROJECT_DIR)",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "$(SRCROOT)/iOSClient/CryptoCloud.pch";
+				GCC_PREFIX_HEADER = iOSClient/CryptoCloud.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					"NC=1",
 					"CUSTOM_BUILD=1",
 				);
-				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
+				HEADER_SEARCH_PATHS = "\"Libraries external\"/**";
 				INFOPLIST_FILE = iOSClient/NextcloudCustom.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				LIBRARY_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
+				LIBRARY_SEARCH_PATHS = "\"Libraries external\"/**";
 				OTHER_LDFLAGS = (
 					"-Obj-C",
 					"-all_load",
-					"$(inherited)",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.nextcloud.client;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -5835,21 +5834,20 @@
 					"$(PROJECT_DIR)",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "$(SRCROOT)/iOSClient/CryptoCloud.pch";
+				GCC_PREFIX_HEADER = iOSClient/CryptoCloud.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					"NC=1",
 					"CUSTOM_BUILD=1",
 				);
-				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
+				HEADER_SEARCH_PATHS = "\"Libraries external\"/**";
 				INFOPLIST_FILE = iOSClient/NextcloudCustom.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				LIBRARY_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
+				LIBRARY_SEARCH_PATHS = "\"Libraries external\"/**";
 				OTHER_LDFLAGS = (
 					"-Obj-C",
 					"-all_load",
-					"$(inherited)",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.nextcloud.client;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -5881,11 +5879,11 @@
 					"NC=1",
 					"CUSTOM_BUILD=1",
 				);
-				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
+				HEADER_SEARCH_PATHS = "\"Libraries external\"/**";
 				INFOPLIST_FILE = "Picker/PickerCustom-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				LIBRARY_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
+				LIBRARY_SEARCH_PATHS = "\"Libraries external\"/**";
 				PRODUCT_BUNDLE_IDENTIFIER = com.nextcloud.client.Picker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -5914,11 +5912,11 @@
 					"NC=1",
 					"CUSTOM_BUILD=1",
 				);
-				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
+				HEADER_SEARCH_PATHS = "\"Libraries external\"/**";
 				INFOPLIST_FILE = "Picker/PickerCustom-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				LIBRARY_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
+				LIBRARY_SEARCH_PATHS = "\"Libraries external\"/**";
 				PRODUCT_BUNDLE_IDENTIFIER = com.nextcloud.client.Picker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -6014,11 +6012,11 @@
 					"NC=1",
 					"CUSTOM_BUILD=1",
 				);
-				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
+				HEADER_SEARCH_PATHS = "\"Libraries external\"/**";
 				INFOPLIST_FILE = "Share Ext/Share Ext Nextcloud Custom-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				LIBRARY_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
+				LIBRARY_SEARCH_PATHS = "\"Libraries external\"/**";
 				OTHER_LDFLAGS = (
 					"-Obj-C",
 					"-all_load",
@@ -6055,11 +6053,11 @@
 					"NC=1",
 					"CUSTOM_BUILD=1",
 				);
-				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
+				HEADER_SEARCH_PATHS = "\"Libraries external\"/**";
 				INFOPLIST_FILE = "Share Ext/Share Ext Nextcloud Custom-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				LIBRARY_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
+				LIBRARY_SEARCH_PATHS = "\"Libraries external\"/**";
 				OTHER_LDFLAGS = (
 					"-Obj-C",
 					"-all_load",
@@ -6094,11 +6092,11 @@
 					"EXTENSION=1",
 					"NC=1",
 				);
-				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
+				HEADER_SEARCH_PATHS = "\"Libraries external\"/**";
 				INFOPLIST_FILE = "Share Ext/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				LIBRARY_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
+				LIBRARY_SEARCH_PATHS = "\"Libraries external\"/**";
 				OTHER_LDFLAGS = (
 					"-Obj-C",
 					"-all_load",
@@ -6134,11 +6132,11 @@
 					"EXTENSION=1",
 					"NC=1",
 				);
-				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
+				HEADER_SEARCH_PATHS = "\"Libraries external\"/**";
 				INFOPLIST_FILE = "Share Ext/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				LIBRARY_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
+				LIBRARY_SEARCH_PATHS = "\"Libraries external\"/**";
 				OTHER_LDFLAGS = (
 					"-Obj-C",
 					"-all_load",
@@ -6170,11 +6168,11 @@
 					"DEBUG=1",
 					"NC=1",
 				);
-				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
+				HEADER_SEARCH_PATHS = "\"Libraries external\"/**";
 				INFOPLIST_FILE = Picker/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				LIBRARY_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
+				LIBRARY_SEARCH_PATHS = "\"Libraries external\"/**";
 				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.Nextcloud.Picker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -6202,11 +6200,11 @@
 					"EXTENSION=1",
 					"NC=1",
 				);
-				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
+				HEADER_SEARCH_PATHS = "\"Libraries external\"/**";
 				INFOPLIST_FILE = Picker/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				LIBRARY_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
+				LIBRARY_SEARCH_PATHS = "\"Libraries external\"/**";
 				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.Nextcloud.Picker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -6299,11 +6297,11 @@
 					"$(inherited)",
 					"NC=1",
 				);
-				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
+				HEADER_SEARCH_PATHS = "\"Libraries external\"/**";
 				INFOPLIST_FILE = iOSClient/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				LIBRARY_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
+				LIBRARY_SEARCH_PATHS = "\"Libraries external\"/**";
 				OTHER_LDFLAGS = (
 					"-Obj-C",
 					"-all_load",
@@ -6342,11 +6340,11 @@
 					"$(inherited)",
 					"NC=1",
 				);
-				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
+				HEADER_SEARCH_PATHS = "\"Libraries external\"/**";
 				INFOPLIST_FILE = iOSClient/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				LIBRARY_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
+				LIBRARY_SEARCH_PATHS = "\"Libraries external\"/**";
 				OTHER_LDFLAGS = (
 					"-Obj-C",
 					"-all_load",
