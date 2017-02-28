@@ -726,6 +726,9 @@
 		F72C63891DC14B0400FA5ED5 /* libMagicalRecord.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F7B61E9B1DC13C20009E938F /* libMagicalRecord.a */; };
 		F732BA061D76CE1500E9878B /* CCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F732BA041D76CE1500E9878B /* CCNetworking.m */; };
 		F732BA0B1D76DBA500E9878B /* CCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F732BA041D76CE1500E9878B /* CCNetworking.m */; };
+		F738141F1E65A20C0011A45E /* Share Ext Nextcloud Custom.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 08DC3CAA1E6482BF00F036D3 /* Share Ext Nextcloud Custom.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		F73814211E65A2180011A45E /* PickerCustom.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 08DC3C371E647FD200F036D3 /* PickerCustom.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		F73814221E65A21D0011A45E /* PickerFileProviderCustom.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 08DC3C451E647FD700F036D3 /* PickerFileProviderCustom.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		F73C002F1E55D7DF00EEEFA7 /* CCManageCryptoCloudSecurity.m in Sources */ = {isa = PBXBuildFile; fileRef = F73C002E1E55D7DF00EEEFA7 /* CCManageCryptoCloudSecurity.m */; };
 		F73CCDD91DC13776007E38D8 /* XLFormBaseCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCD841DC13775007E38D8 /* XLFormBaseCell.m */; };
 		F73CCDDB1DC13776007E38D8 /* XLFormButtonCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCD861DC13775007E38D8 /* XLFormButtonCell.m */; };
@@ -1321,6 +1324,19 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		F73814201E65A20C0011A45E /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				F73814221E65A21D0011A45E /* PickerFileProviderCustom.appex in Embed App Extensions */,
+				F738141F1E65A20C0011A45E /* Share Ext Nextcloud Custom.appex in Embed App Extensions */,
+				F73814211E65A2180011A45E /* PickerCustom.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F77B0F981D118A16002130FE /* Embed App Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1341,12 +1357,9 @@
 		08DC3BD61E6472C200F036D3 /* NextcloudCustom.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NextcloudCustom.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		08DC3BE81E647E3F00F036D3 /* NextcloudCustom.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = NextcloudCustom.plist; sourceTree = "<group>"; };
 		08DC3C371E647FD200F036D3 /* PickerCustom.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = PickerCustom.appex; sourceTree = BUILT_PRODUCTS_DIR; };
-		08DC3C381E647FD200F036D3 /* PickerCustom-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "PickerCustom-Info.plist"; path = "/Users/mdjanic/Projects/nextcloud-ios/PickerCustom-Info.plist"; sourceTree = "<absolute>"; };
 		08DC3C451E647FD700F036D3 /* PickerFileProviderCustom.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = PickerFileProviderCustom.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		08DC3CAA1E6482BF00F036D3 /* Share Ext Nextcloud Custom.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Share Ext Nextcloud Custom.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
-		08DC3CB01E64879700F036D3 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
-		08DC3CBF1E64895500F036D3 /* Share Ext Nextcloud Custom-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Share Ext Nextcloud Custom-Info.plist"; sourceTree = "<group>"; };
-		08DC3CD01E6489FB00F036D3 /* PickerFileProviderCustom-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "PickerFileProviderCustom-Info.plist"; sourceTree = "<group>"; };
+		08DC3CB01E64879700F036D3 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../GoogleService-Info.plist"; sourceTree = "<group>"; };
 		08EA97441E6554FC004C83FA /* FirebaseAnalytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseAnalytics.framework; sourceTree = "<group>"; };
 		08EA97451E6554FC004C83FA /* FirebaseCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseCore.framework; sourceTree = "<group>"; };
 		08EA97461E6554FC004C83FA /* FirebaseInstanceID.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseInstanceID.framework; sourceTree = "<group>"; };
@@ -3656,6 +3669,16 @@
 			path = Create;
 			sourceTree = "<group>";
 		};
+		F7EF48401E659B770084BE38 /* Firebase */ = {
+			isa = PBXGroup;
+			children = (
+				08DC3CB01E64879700F036D3 /* GoogleService-Info.plist */,
+				08EA97561E655552004C83FA /* Firebase.h */,
+				08EA97571E655552004C83FA /* module.modulemap */,
+			);
+			name = Firebase;
+			sourceTree = "<group>";
+		};
 		F7F06E291DBFACC600099AE9 /* CTAssetsPickerController */ = {
 			isa = PBXGroup;
 			children = (
@@ -3831,7 +3854,6 @@
 		F7F67B9F1A24D27800EE80DA = {
 			isa = PBXGroup;
 			children = (
-				08DC3CB01E64879700F036D3 /* GoogleService-Info.plist */,
 				F7F67BAA1A24D27800EE80DA /* iOSClient */,
 				F7F67BAB1A24D27800EE80DA /* Supporting Files */,
 				F7C0F46D1C8880540059EC54 /* Share Ext */,
@@ -3841,22 +3863,18 @@
 				F7FC7D541DC1F93700BB2C6A /* Frameworks */,
 				08DC3BD61E6472C200F036D3 /* NextcloudCustom.app */,
 				08DC3C371E647FD200F036D3 /* PickerCustom.appex */,
-				08DC3CD01E6489FB00F036D3 /* PickerFileProviderCustom-Info.plist */,
-				08DC3C381E647FD200F036D3 /* PickerCustom-Info.plist */,
 				08DC3C451E647FD700F036D3 /* PickerFileProviderCustom.appex */,
 				08DC3CAA1E6482BF00F036D3 /* Share Ext Nextcloud Custom.appex */,
-				08DC3CBF1E64895500F036D3 /* Share Ext Nextcloud Custom-Info.plist */,
 			);
 			sourceTree = "<group>";
 		};
 		F7F67BAA1A24D27800EE80DA /* iOSClient */ = {
 			isa = PBXGroup;
 			children = (
-				08EA97561E655552004C83FA /* Firebase.h */,
-				08EA97571E655552004C83FA /* module.modulemap */,
 				F7B61E861DC13C20009E938F /* MagicalRecord.xcodeproj */,
 				F71E67F61DC1F76F003BA52B /* ownCloud iOS library.xcodeproj */,
 				F70F02A81C889183008DAB36 /* Libraries external */,
+				F7EF48401E659B770084BE38 /* Firebase */,
 				F7A582D71A24DAB500E903D7 /* AppDelegate.h */,
 				F7A582D61A24DAB500E903D7 /* AppDelegate.m */,
 				F7D722AA1D11B6DA009F1A35 /* CCImages.h */,
@@ -3983,6 +4001,7 @@
 				084215361E646E0200C8F4F3 /* Frameworks */,
 				0842153C1E646E0200C8F4F3 /* Resources */,
 				084215E11E646E0200C8F4F3 /* ShellScript */,
+				F73814201E65A20C0011A45E /* Embed App Extensions */,
 			);
 			buildRules = (
 			);
@@ -4219,9 +4238,9 @@
 				F74344111E1264ED001CC831 /* Picker */,
 				F743441F1E1264EE001CC831 /* PickerFileProvider */,
 				0842141C1E646E0200C8F4F3 /* NextcloudCustom */,
+				08DC3C4B1E6482BF00F036D3 /* Share Ext Nextcloud Custom */,
 				08DC3BEA1E647FD200F036D3 /* PickerCustom */,
 				08DC3C391E647FD700F036D3 /* PickerFileProviderCustom */,
-				08DC3C4B1E6482BF00F036D3 /* Share Ext Nextcloud Custom */,
 			);
 		};
 /* End PBXProject section */
@@ -5733,6 +5752,7 @@
 		084215E31E646E0200C8F4F3 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIconNextcloud;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
 				CLANG_ENABLE_MODULES = YES;
@@ -5754,7 +5774,7 @@
 					"NC=1",
 				);
 				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
-				INFOPLIST_FILE = NextcloudCustom.plist;
+				INFOPLIST_FILE = iOSClient/NextcloudCustom.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				LIBRARY_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
@@ -5779,6 +5799,7 @@
 		084215E41E646E0200C8F4F3 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIconNextcloud;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
 				CLANG_ENABLE_MODULES = YES;
@@ -5801,7 +5822,7 @@
 					"NC=1",
 				);
 				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
-				INFOPLIST_FILE = NextcloudCustom.plist;
+				INFOPLIST_FILE = iOSClient/NextcloudCustom.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				LIBRARY_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
@@ -5829,18 +5850,18 @@
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CODE_SIGN_ENTITLEMENTS = Picker/Picker.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "Apple Development IOS Push Services: it.twsweb.Nextcloud";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
-				GCC_PREFIX_HEADER = "$(SRCROOT)/iOSClient/CryptoCloud.pch";
+				GCC_PREFIX_HEADER = iOSClient/CryptoCloud.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"EXTENSION=1",
 					"DEBUG=1",
 					"NC=1",
 				);
 				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
-				INFOPLIST_FILE = "PickerCustom-Info.plist";
+				INFOPLIST_FILE = "Picker/PickerCustom-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				LIBRARY_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
@@ -5862,17 +5883,17 @@
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CODE_SIGN_ENTITLEMENTS = Picker/Picker.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "Apple Development IOS Push Services: it.twsweb.Nextcloud";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
-				GCC_PREFIX_HEADER = "$(SRCROOT)/iOSClient/CryptoCloud.pch";
+				GCC_PREFIX_HEADER = iOSClient/CryptoCloud.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"EXTENSION=1",
 					"NC=1",
 				);
 				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
-				INFOPLIST_FILE = "PickerCustom-Info.plist";
+				INFOPLIST_FILE = "Picker/PickerCustom-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				LIBRARY_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
@@ -5894,7 +5915,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CODE_SIGN_ENTITLEMENTS = PickerFileProvider/PickerFileProvider.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "Apple Development IOS Push Services: it.twsweb.Nextcloud";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
@@ -5903,7 +5924,7 @@
 					"EXTENSION=1",
 					"NC=1",
 				);
-				INFOPLIST_FILE = "PickerFileProviderCustom-Info.plist";
+				INFOPLIST_FILE = "PickerFileProvider/PickerFileProviderCustom-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
@@ -5926,7 +5947,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CODE_SIGN_ENTITLEMENTS = PickerFileProvider/PickerFileProvider.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "Apple Development IOS Push Services: it.twsweb.Nextcloud";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
@@ -5934,7 +5955,7 @@
 					"NC=1",
 					"EXTENSION=1",
 				);
-				INFOPLIST_FILE = "PickerFileProviderCustom-Info.plist";
+				INFOPLIST_FILE = "PickerFileProvider/PickerFileProviderCustom-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
@@ -5956,13 +5977,13 @@
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = "Share Ext/Share Ext Nextcloud.entitlements";
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "Apple Development IOS Push Services: it.twsweb.Nextcloud";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_PREFIX_HEADER = "$(SRCROOT)/iOSClient/CryptoCloud.pch";
+				GCC_PREFIX_HEADER = iOSClient/CryptoCloud.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					"EXTENSION=1",
@@ -5970,7 +5991,7 @@
 					CUSTOM_BUILD,
 				);
 				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
-				INFOPLIST_FILE = "Share Ext Nextcloud Custom-Info.plist";
+				INFOPLIST_FILE = "Share Ext/Share Ext Nextcloud Custom-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				LIBRARY_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
@@ -5997,13 +6018,13 @@
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = "Share Ext/Share Ext Nextcloud.entitlements";
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "Apple Development IOS Push Services: it.twsweb.Nextcloud";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_PREFIX_HEADER = "$(SRCROOT)/iOSClient/CryptoCloud.pch";
+				GCC_PREFIX_HEADER = iOSClient/CryptoCloud.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					"EXTENSION=1",
@@ -6011,7 +6032,7 @@
 					CUSTOM_BUILD,
 				);
 				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
-				INFOPLIST_FILE = "Share Ext Nextcloud Custom-Info.plist";
+				INFOPLIST_FILE = "Share Ext/Share Ext Nextcloud Custom-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				LIBRARY_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
@@ -6043,14 +6064,14 @@
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_PREFIX_HEADER = "$(SRCROOT)/iOSClient/CryptoCloud.pch";
+				GCC_PREFIX_HEADER = iOSClient/CryptoCloud.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					"EXTENSION=1",
 					"NC=1",
 				);
 				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
-				INFOPLIST_FILE = "$(SRCROOT)/Share Ext/Info.plist";
+				INFOPLIST_FILE = "Share Ext/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				LIBRARY_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
@@ -6083,14 +6104,14 @@
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_PREFIX_HEADER = "$(SRCROOT)/iOSClient/CryptoCloud.pch";
+				GCC_PREFIX_HEADER = iOSClient/CryptoCloud.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					"EXTENSION=1",
 					"NC=1",
 				);
 				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
-				INFOPLIST_FILE = "$(SRCROOT)/Share Ext/Info.plist";
+				INFOPLIST_FILE = "Share Ext/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				LIBRARY_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
@@ -6119,7 +6140,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
-				GCC_PREFIX_HEADER = "$(SRCROOT)/iOSClient/CryptoCloud.pch";
+				GCC_PREFIX_HEADER = iOSClient/CryptoCloud.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"EXTENSION=1",
 					"DEBUG=1",
@@ -6152,7 +6173,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
-				GCC_PREFIX_HEADER = "$(SRCROOT)/iOSClient/CryptoCloud.pch";
+				GCC_PREFIX_HEADER = iOSClient/CryptoCloud.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"EXTENSION=1",
 					"NC=1",
@@ -6249,13 +6270,13 @@
 				ENABLE_BITCODE = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "$(SRCROOT)/iOSClient/CryptoCloud.pch";
+				GCC_PREFIX_HEADER = iOSClient/CryptoCloud.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					"NC=1",
 				);
 				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
-				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Info.plist";
+				INFOPLIST_FILE = iOSClient/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				LIBRARY_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
@@ -6292,13 +6313,13 @@
 				ENABLE_BITCODE = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "$(SRCROOT)/iOSClient/CryptoCloud.pch";
+				GCC_PREFIX_HEADER = iOSClient/CryptoCloud.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					"NC=1",
 				);
 				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
-				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Info.plist";
+				INFOPLIST_FILE = iOSClient/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				LIBRARY_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
