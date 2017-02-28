@@ -36,7 +36,12 @@
 #import "CCMain.h"
 #import "CCDetail.h"
 
-#import "Nextcloud-Swift.h"
+#ifdef CUSTOM_BUILD
+    #import "NextcloudCustom-Swift.h"
+    #import "Firebase.h"
+#else
+    #import "Nextcloud-Swift.h"
+#endif
 
 @interface AppDelegate ()
 {
@@ -57,7 +62,18 @@
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
-{    
+{
+    #ifdef CUSTOM_BUILD
+        /*
+         In order for this to work, proper GoogleService-Info.plist must be included
+         */
+        @try {
+            [FIRApp configure];
+        } @catch (NSException *exception) {
+            NSLog(@"[LOG] Something went wrong while configuring Firebase");
+        }
+    #endif
+
     NSString *dir;
     NSURL *dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:k_capabilitiesGroups];
     

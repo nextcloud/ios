@@ -19,4 +19,10 @@ Documentation/
 .DS_Store
 .AppleDouble
 .LSOverride
+Pods/
+
+# Xcode
+xcuserdata/
+project.xcworkspace/
+DerivedData/
 

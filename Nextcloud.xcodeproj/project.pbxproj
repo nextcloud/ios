@@ -7,6 +7,606 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		084214241E646E0200C8F4F3 /* CTAssetsPickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F06E651DBFACC600099AE9 /* CTAssetsPickerController.m */; };
+		084214251E646E0200C8F4F3 /* UIImage+Resizing.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04CA1C889184008DAB36 /* UIImage+Resizing.m */; };
+		084214261E646E0200C8F4F3 /* CTAssetSelectionButton.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F06E4C1DBFACC600099AE9 /* CTAssetSelectionButton.m */; };
+		084214271E646E0200C8F4F3 /* XLFormPickerCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCD961DC13776007E38D8 /* XLFormPickerCell.m */; };
+		084214281E646E0200C8F4F3 /* CCUploadFromOtherUpp.m in Sources */ = {isa = PBXBuildFile; fileRef = F7956FCA1B4886E60085DEA3 /* CCUploadFromOtherUpp.m */; };
+		084214291E646E0200C8F4F3 /* CCMain.m in Sources */ = {isa = PBXBuildFile; fileRef = F70211FB1BAC56E9003FC03E /* CCMain.m */; };
+		0842142A1E646E0200C8F4F3 /* CCUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = F7053E3D1C639DF500741EA5 /* CCUtility.m */; };
+		0842142B1E646E0200C8F4F3 /* CTAssetScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F06E4A1DBFACC600099AE9 /* CTAssetScrollView.m */; };
+		0842142C1E646E0200C8F4F3 /* XLFormSelectorCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCD9A1DC13776007E38D8 /* XLFormSelectorCell.m */; };
+		0842142D1E646E0200C8F4F3 /* NSNumberFormatter+CTAssetsPickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F06E341DBFACC600099AE9 /* NSNumberFormatter+CTAssetsPickerController.m */; };
+		0842142E1E646E0200C8F4F3 /* UIImage+AHKAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = F72AAEC71E5C60C700BB17E1 /* UIImage+AHKAdditions.m */; };
+		0842142F1E646E0200C8F4F3 /* UIXToolbarView.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0EDC1C889317008DAB36 /* UIXToolbarView.m */; };
+		084214301E646E0200C8F4F3 /* CCNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C5259F1E3B48B700FFE02C /* CCNotification.swift */; };
+		084214311E646E0200C8F4F3 /* NYXProgressiveImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04D11C889184008DAB36 /* NYXProgressiveImageView.m */; };
+		084214321E646E0200C8F4F3 /* TableMetadata+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF501E56E8CB00271D8B /* TableMetadata+CoreDataProperties.m */; };
+		084214331E646E0200C8F4F3 /* ReaderDocumentOutline.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0EC21C889317008DAB36 /* ReaderDocumentOutline.m */; };
+		084214341E646E0200C8F4F3 /* UIImage+MWPhotoBrowser.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F54CE41E5B14C700E19C62 /* UIImage+MWPhotoBrowser.m */; };
+		084214351E646E0200C8F4F3 /* REMenuItem.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0C571C8892C5008DAB36 /* REMenuItem.m */; };
+		084214361E646E0200C8F4F3 /* MWPhoto.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F54CD81E5B14C700E19C62 /* MWPhoto.m */; };
+		084214371E646E0200C8F4F3 /* OCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F74D3DBE1BAC1941000BAE4B /* OCNetworking.m */; };
+		084214381E646E0200C8F4F3 /* RNCryptor.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F05351C889184008DAB36 /* RNCryptor.m */; };
+		084214391E646E0200C8F4F3 /* CCPhotosCameraUpload.m in Sources */ = {isa = PBXBuildFile; fileRef = F719FDB21CF06645004895D0 /* CCPhotosCameraUpload.m */; };
+		0842143A1E646E0200C8F4F3 /* TableMetadata+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF4E1E56E8CB00271D8B /* TableMetadata+CoreDataClass.m */; };
+		0842143B1E646E0200C8F4F3 /* CCShareInfoCMOC.m in Sources */ = {isa = PBXBuildFile; fileRef = F743B2C41C95BBE8006F5B4A /* CCShareInfoCMOC.m */; };
+		0842143C1E646E0200C8F4F3 /* UIImage+animatedGIF.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F05581C889184008DAB36 /* UIImage+animatedGIF.m */; };
+		0842143D1E646E0200C8F4F3 /* UICKeyChainStore.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCE2A1DC13798007E38D8 /* UICKeyChainStore.m */; };
+		0842143E1E646E0200C8F4F3 /* ReaderDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0EC01C889317008DAB36 /* ReaderDocument.m */; };
+		0842143F1E646E0200C8F4F3 /* CTAssetThumbnailStacks.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F06E6E1DBFACC600099AE9 /* CTAssetThumbnailStacks.m */; };
+		084214401E646E0200C8F4F3 /* NSIndexPath+PSTCollectionViewAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = F7659A3C1DC0B760004860C4 /* NSIndexPath+PSTCollectionViewAdditions.m */; };
+		084214411E646E0200C8F4F3 /* PSTCollectionViewUpdateItem.m in Sources */ = {isa = PBXBuildFile; fileRef = F7659A4E1DC0B760004860C4 /* PSTCollectionViewUpdateItem.m */; };
+		084214421E646E0200C8F4F3 /* MWCaptionView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F54CD11E5B14C700E19C62 /* MWCaptionView.m */; };
+		084214431E646E0200C8F4F3 /* CCCellOffline.m in Sources */ = {isa = PBXBuildFile; fileRef = F7C00D431E2D0D0F0032160B /* CCCellOffline.m */; };
+		084214441E646E0200C8F4F3 /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = F70F0F951C889487008DAB36 /* ioapi.c */; };
+		084214451E646E0200C8F4F3 /* XLFormStepCounterCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCD9E1DC13776007E38D8 /* XLFormStepCounterCell.m */; };
+		084214461E646E0200C8F4F3 /* XLForm.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCDD41DC13776007E38D8 /* XLForm.m */; };
+		084214471E646E0200C8F4F3 /* REMenuItemView.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0C591C8892C5008DAB36 /* REMenuItemView.m */; };
+		084214481E646E0200C8F4F3 /* CCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F732BA041D76CE1500E9878B /* CCNetworking.m */; };
+		084214491E646E0200C8F4F3 /* XLFormDescriptor.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCDAF1DC13776007E38D8 /* XLFormDescriptor.m */; };
+		0842144A1E646E0200C8F4F3 /* UIImage+Reflection.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04C81C889184008DAB36 /* UIImage+Reflection.m */; };
+		0842144B1E646E0200C8F4F3 /* TableCertificates+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF621E56E8CC00271D8B /* TableCertificates+CoreDataClass.m */; };
+		0842144C1E646E0200C8F4F3 /* MWTapDetectingView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F54CE01E5B14C700E19C62 /* MWTapDetectingView.m */; };
+		0842144D1E646E0200C8F4F3 /* TableGPS+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF581E56E8CC00271D8B /* TableGPS+CoreDataProperties.m */; };
+		0842144E1E646E0200C8F4F3 /* TableDirectory+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF5C1E56E8CC00271D8B /* TableDirectory+CoreDataProperties.m */; };
+		0842144F1E646E0200C8F4F3 /* CCPatenteGuida.m in Sources */ = {isa = PBXBuildFile; fileRef = F721372E1BAFF0920012B613 /* CCPatenteGuida.m */; };
+		084214501E646E0200C8F4F3 /* CCMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D6A08F1D82DBFA0045AD1A /* CCMenu.m */; };
+		084214511E646E0200C8F4F3 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A582D61A24DAB500E903D7 /* AppDelegate.m */; };
+		084214521E646E0200C8F4F3 /* NSArray+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F75037461DBFA91A008FB480 /* NSArray+PureLayout.m */; };
+		084214531E646E0200C8F4F3 /* CTAssetsGridSelectedView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F06E501DBFACC600099AE9 /* CTAssetsGridSelectedView.m */; };
+		084214541E646E0200C8F4F3 /* CCError.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B881C638A4C00DC4301 /* CCError.m */; };
+		084214551E646E0200C8F4F3 /* XLFormRegexValidator.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCDCD1DC13776007E38D8 /* XLFormRegexValidator.m */; };
+		084214561E646E0200C8F4F3 /* PHAsset+CTAssetsPickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F06E361DBFACC600099AE9 /* PHAsset+CTAssetsPickerController.m */; };
+		084214571E646E0200C8F4F3 /* AFViewShaker.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02B41C889183008DAB36 /* AFViewShaker.m */; };
+		084214581E646E0200C8F4F3 /* CCGraphics.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B841C6388BC00DC4301 /* CCGraphics.m */; };
+		084214591E646E0200C8F4F3 /* NSExpression+XLFormAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCDB91DC13776007E38D8 /* NSExpression+XLFormAdditions.m */; };
+		0842145A1E646E0200C8F4F3 /* BKPasscodeDummyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02C01C889183008DAB36 /* BKPasscodeDummyViewController.m */; };
+		0842145B1E646E0200C8F4F3 /* ReaderThumbQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0ECC1C889317008DAB36 /* ReaderThumbQueue.m */; };
+		0842145C1E646E0200C8F4F3 /* PSTGridLayoutRow.m in Sources */ = {isa = PBXBuildFile; fileRef = F7659A541DC0B760004860C4 /* PSTGridLayoutRow.m */; };
+		0842145D1E646E0200C8F4F3 /* CCShareUserOC.m in Sources */ = {isa = PBXBuildFile; fileRef = F78316871C0CB3CA00C43975 /* CCShareUserOC.m */; };
+		0842145E1E646E0200C8F4F3 /* ThumbsMainToolbar.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0ED81C889317008DAB36 /* ThumbsMainToolbar.m */; };
+		0842145F1E646E0200C8F4F3 /* TableGPS+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF561E56E8CB00271D8B /* TableGPS+CoreDataClass.m */; };
+		084214601E646E0200C8F4F3 /* XLFormSwitchCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCDA01DC13776007E38D8 /* XLFormSwitchCell.m */; };
+		084214611E646E0200C8F4F3 /* MWPhotoBrowser.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F54CDA1E5B14C700E19C62 /* MWPhotoBrowser.m */; };
+		084214621E646E0200C8F4F3 /* CCActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F720E01E1E48C73E001A4B9E /* CCActions.swift */; };
+		084214631E646E0200C8F4F3 /* CCManageLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = F7BFCCC11B68C21900548E76 /* CCManageLocation.m */; };
+		084214641E646E0200C8F4F3 /* CCSharePermissionOC.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CD0FFA1C8DDA7D006520C5 /* CCSharePermissionOC.m */; };
+		084214651E646E0200C8F4F3 /* HRColorCursor.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0DE51C889300008DAB36 /* HRColorCursor.m */; };
+		084214661E646E0200C8F4F3 /* TableShare+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF5E1E56E8CC00271D8B /* TableShare+CoreDataClass.m */; };
+		084214671E646E0200C8F4F3 /* BKPasscodeInputView.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02C41C889183008DAB36 /* BKPasscodeInputView.m */; };
+		084214681E646E0200C8F4F3 /* TableAccount+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF6C1E56E8CC00271D8B /* TableAccount+CoreDataProperties.m */; };
+		084214691E646E0200C8F4F3 /* ZSSTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0DF31C889300008DAB36 /* ZSSTextView.m */; };
+		0842146A1E646E0200C8F4F3 /* JSAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7253FC91E38BAF20084135B /* JSAlertView.m */; };
+		0842146B1E646E0200C8F4F3 /* CYRLayoutManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0DD91C889300008DAB36 /* CYRLayoutManager.m */; };
+		0842146C1E646E0200C8F4F3 /* NSArray+LMMediaPlayerShuffle.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0F2E1C889339008DAB36 /* NSArray+LMMediaPlayerShuffle.m */; };
+		0842146D1E646E0200C8F4F3 /* REMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0C531C8892C5008DAB36 /* REMenu.m */; };
+		0842146E1E646E0200C8F4F3 /* XLFormButtonCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCD861DC13775007E38D8 /* XLFormButtonCell.m */; };
+		0842146F1E646E0200C8F4F3 /* UICollectionView+CTAssetsPickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F06E3C1DBFACC600099AE9 /* UICollectionView+CTAssetsPickerController.m */; };
+		084214701E646E0200C8F4F3 /* CYRTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0DDD1C889300008DAB36 /* CYRTextView.m */; };
+		084214711E646E0200C8F4F3 /* LMMediaItemStreamingCache.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0F3B1C889339008DAB36 /* LMMediaItemStreamingCache.m */; };
+		084214721E646E0200C8F4F3 /* XLFormInlineSelectorCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCD921DC13776007E38D8 /* XLFormInlineSelectorCell.m */; };
+		084214731E646E0200C8F4F3 /* CCHud.m in Sources */ = {isa = PBXBuildFile; fileRef = F7514EDB1C7B1336008F3338 /* CCHud.m */; };
+		084214741E646E0200C8F4F3 /* CCExifGeo.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A54C351C6267B500E2C8BF /* CCExifGeo.m */; };
+		084214751E646E0200C8F4F3 /* HRCgUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0DE31C889300008DAB36 /* HRCgUtil.m */; };
+		084214761E646E0200C8F4F3 /* CTAssetsGridViewFooter.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F06E581DBFACC600099AE9 /* CTAssetsGridViewFooter.m */; };
+		084214771E646E0200C8F4F3 /* CTAssetsGridViewLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F06E5A1DBFACC600099AE9 /* CTAssetsGridViewLayout.m */; };
+		084214781E646E0200C8F4F3 /* CCOfflinePageContent.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DA62AD1E41E666003E1740 /* CCOfflinePageContent.m */; };
+		084214791E646E0200C8F4F3 /* NYXImagesHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04D41C889184008DAB36 /* NYXImagesHelper.m */; };
+		0842147A1E646E0200C8F4F3 /* XLFormTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCDCA1DC13776007E38D8 /* XLFormTextView.m */; };
+		0842147B1E646E0200C8F4F3 /* ZSSBarButtonItem.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0DEE1C889300008DAB36 /* ZSSBarButtonItem.m */; };
+		0842147C1E646E0200C8F4F3 /* CCContoCorrente.m in Sources */ = {isa = PBXBuildFile; fileRef = F72137281BAFF0920012B613 /* CCContoCorrente.m */; };
+		0842147D1E646E0200C8F4F3 /* RNCryptorEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F05371C889184008DAB36 /* RNCryptorEngine.m */; };
+		0842147E1E646E0200C8F4F3 /* CCCartaIdentita.m in Sources */ = {isa = PBXBuildFile; fileRef = F72137261BAFF0920012B613 /* CCCartaIdentita.m */; };
+		0842147F1E646E0200C8F4F3 /* PSTGridLayoutItem.m in Sources */ = {isa = PBXBuildFile; fileRef = F7659A521DC0B760004860C4 /* PSTGridLayoutItem.m */; };
+		084214801E646E0200C8F4F3 /* CTAssetCollectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F06E441DBFACC600099AE9 /* CTAssetCollectionViewController.m */; };
+		084214811E646E0200C8F4F3 /* CCSplit.m in Sources */ = {isa = PBXBuildFile; fileRef = F792A77C1BC7C45400C9388E /* CCSplit.m */; };
+		084214821E646E0200C8F4F3 /* ReaderMainPagebar.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0EC41C889317008DAB36 /* ReaderMainPagebar.m */; };
+		084214831E646E0200C8F4F3 /* ReaderThumbsView.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0ED21C889317008DAB36 /* ReaderThumbsView.m */; };
+		084214841E646E0200C8F4F3 /* XLFormViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCDAC1DC13776007E38D8 /* XLFormViewController.m */; };
+		084214851E646E0200C8F4F3 /* XLFormDateCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCD8A1DC13775007E38D8 /* XLFormDateCell.m */; };
+		084214861E646E0200C8F4F3 /* XLFormValidationStatus.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCDCF1DC13776007E38D8 /* XLFormValidationStatus.m */; };
+		084214871E646E0200C8F4F3 /* CCIntro.m in Sources */ = {isa = PBXBuildFile; fileRef = F744BE931BEBB2EE004FFF66 /* CCIntro.m */; };
+		084214881E646E0200C8F4F3 /* ReaderThumbRender.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0ECE1C889317008DAB36 /* ReaderThumbRender.m */; };
+		084214891E646E0200C8F4F3 /* BKPasscodeLockScreenManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02C61C889183008DAB36 /* BKPasscodeLockScreenManager.m */; };
+		0842148A1E646E0200C8F4F3 /* CCCrypto.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FE125F1BAC03FB0041924B /* CCCrypto.m */; };
+		0842148B1E646E0200C8F4F3 /* CCControlCenter.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D6A08A1D82DBFA0045AD1A /* CCControlCenter.m */; };
+		0842148C1E646E0200C8F4F3 /* TableLocalFile+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF541E56E8CB00271D8B /* TableLocalFile+CoreDataProperties.m */; };
+		0842148D1E646E0200C8F4F3 /* PSTGridLayoutInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = F7659A501DC0B760004860C4 /* PSTGridLayoutInfo.m */; };
+		0842148E1E646E0200C8F4F3 /* XLFormValidator.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCDD11DC13776007E38D8 /* XLFormValidator.m */; };
+		0842148F1E646E0200C8F4F3 /* UIImage+Saving.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04CE1C889184008DAB36 /* UIImage+Saving.m */; };
+		084214901E646E0200C8F4F3 /* XLFormRowDescriptor.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCDB21DC13776007E38D8 /* XLFormRowDescriptor.m */; };
+		084214911E646E0200C8F4F3 /* CCDetail.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D0E65F1BC5042E008D989A /* CCDetail.m */; };
+		084214921E646E0200C8F4F3 /* CCCoreData.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B81D801C64E77F006D02DF /* CCCoreData.m */; };
+		084214931E646E0200C8F4F3 /* PSTCollectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F7659A431DC0B760004860C4 /* PSTCollectionViewController.m */; };
+		084214941E646E0200C8F4F3 /* CCCertificate.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F801011D98205A007537BC /* CCCertificate.m */; };
+		084214951E646E0200C8F4F3 /* UINavigationController+CCProgress.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CE28821D1ACFA70025783C /* UINavigationController+CCProgress.m */; };
+		084214961E646E0200C8F4F3 /* CCManageCameraUpload.m in Sources */ = {isa = PBXBuildFile; fileRef = F7ACE42F1BAC0268006C0017 /* CCManageCameraUpload.m */; };
+		084214971E646E0200C8F4F3 /* UIImage+Filtering.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04C41C889184008DAB36 /* UIImage+Filtering.m */; };
+		084214981E646E0200C8F4F3 /* XLFormSegmentedCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCD981DC13776007E38D8 /* XLFormSegmentedCell.m */; };
+		084214991E646E0200C8F4F3 /* CCPeekPop.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FCFFDE1D707B83000E6E29 /* CCPeekPop.m */; };
+		0842149A1E646E0200C8F4F3 /* NSIndexSet+CTAssetsPickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F06E321DBFACC600099AE9 /* NSIndexSet+CTAssetsPickerController.m */; };
+		0842149B1E646E0200C8F4F3 /* CCMove.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D02A471C5F9E4400D6F972 /* CCMove.m */; };
+		0842149C1E646E0200C8F4F3 /* NSArray+XLFormAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCDB71DC13776007E38D8 /* NSArray+XLFormAdditions.m */; };
+		0842149D1E646E0200C8F4F3 /* SSZipArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0F9E1C889487008DAB36 /* SSZipArchive.m */; };
+		0842149E1E646E0200C8F4F3 /* ReaderThumbView.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0ED41C889317008DAB36 /* ReaderThumbView.m */; };
+		0842149F1E646E0200C8F4F3 /* ReaderContentTile.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0EBC1C889317008DAB36 /* ReaderContentTile.m */; };
+		084214A01E646E0200C8F4F3 /* UIImage+Rotating.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04CC1C889184008DAB36 /* UIImage+Rotating.m */; };
+		084214A11E646E0200C8F4F3 /* NSBundle+CTAssetsPickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F06E2E1DBFACC600099AE9 /* NSBundle+CTAssetsPickerController.m */; };
+		084214A21E646E0200C8F4F3 /* XLFormCheckCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCD881DC13775007E38D8 /* XLFormCheckCell.m */; };
+		084214A31E646E0200C8F4F3 /* NSPredicate+XLFormAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCDBD1DC13776007E38D8 /* NSPredicate+XLFormAdditions.m */; };
+		084214A41E646E0200C8F4F3 /* XLFormRightImageButton.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCDC61DC13776007E38D8 /* XLFormRightImageButton.m */; };
+		084214A51E646E0200C8F4F3 /* UIImage+Blurring.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04C01C889184008DAB36 /* UIImage+Blurring.m */; };
+		084214A61E646E0200C8F4F3 /* CCNotificationPushKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C5259D1E3B45FA00FFE02C /* CCNotificationPushKey.swift */; };
+		084214A71E646E0200C8F4F3 /* CCQuickActions.m in Sources */ = {isa = PBXBuildFile; fileRef = F7BE6E2C1D2D5C3B00106933 /* CCQuickActions.m */; };
+		084214A81E646E0200C8F4F3 /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = F70F0F991C889487008DAB36 /* unzip.c */; };
+		084214A91E646E0200C8F4F3 /* EAIntroView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7659A251DC0B726004860C4 /* EAIntroView.m */; };
+		084214AA1E646E0200C8F4F3 /* CCSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = F7ACE4311BAC0268006C0017 /* CCSettings.m */; };
+		084214AB1E646E0200C8F4F3 /* CGPDFDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0EB61C889317008DAB36 /* CGPDFDocument.m */; };
+		084214AC1E646E0200C8F4F3 /* REMenuContainerView.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0C551C8892C5008DAB36 /* REMenuContainerView.m */; };
+		084214AD1E646E0200C8F4F3 /* CCShareOC.m in Sources */ = {isa = PBXBuildFile; fileRef = F768EAFC1BFB7CD800B6E341 /* CCShareOC.m */; };
+		084214AE1E646E0200C8F4F3 /* UIScrollView+EmptyDataSet.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCE241DC13788007E38D8 /* UIScrollView+EmptyDataSet.m */; };
+		084214AF1E646E0200C8F4F3 /* MWGridCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F54CD41E5B14C700E19C62 /* MWGridCell.m */; };
+		084214B01E646E0200C8F4F3 /* LMMediaPlayerView.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0F411C889339008DAB36 /* LMMediaPlayerView.m */; };
+		084214B11E646E0200C8F4F3 /* TableLocalFile+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF521E56E8CB00271D8B /* TableLocalFile+CoreDataClass.m */; };
+		084214B21E646E0200C8F4F3 /* NSString+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02B11C889183008DAB36 /* NSString+Base64.m */; };
+		084214B31E646E0200C8F4F3 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F05261C889184008DAB36 /* Reachability.m */; };
+		084214B41E646E0200C8F4F3 /* RNDecryptor.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F05391C889184008DAB36 /* RNDecryptor.m */; };
+		084214B51E646E0200C8F4F3 /* XLFormOptionsObject.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCDA71DC13776007E38D8 /* XLFormOptionsObject.m */; };
+		084214B61E646E0200C8F4F3 /* ReaderThumbCache.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0EC81C889317008DAB36 /* ReaderThumbCache.m */; };
+		084214B71E646E0200C8F4F3 /* ReaderContentPage.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0EBA1C889317008DAB36 /* ReaderContentPage.m */; };
+		084214B81E646E0200C8F4F3 /* TableAutomaticUpload+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF681E56E8CC00271D8B /* TableAutomaticUpload+CoreDataProperties.m */; };
+		084214B91E646E0200C8F4F3 /* ALView+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F75037441DBFA91A008FB480 /* ALView+PureLayout.m */; };
+		084214BA1E646E0200C8F4F3 /* NSDateFormatter+CTAssetsPickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F06E301DBFACC600099AE9 /* NSDateFormatter+CTAssetsPickerController.m */; };
+		084214BB1E646E0200C8F4F3 /* XLFormTextFieldCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCDA21DC13776007E38D8 /* XLFormTextFieldCell.m */; };
+		084214BC1E646E0200C8F4F3 /* LMMediaItem.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0F351C889339008DAB36 /* LMMediaItem.m */; };
+		084214BD1E646E0200C8F4F3 /* CCManageCryptoCloud.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F6AC4D1E525AD300E8EB45 /* CCManageCryptoCloud.m */; };
+		084214BE1E646E0200C8F4F3 /* PPImageScrollingTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F05231C889184008DAB36 /* PPImageScrollingTableViewCell.m */; };
+		084214BF1E646E0200C8F4F3 /* EARestrictedScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7659A2C1DC0B72F004860C4 /* EARestrictedScrollView.m */; };
+		084214C01E646E0200C8F4F3 /* CCBancomat.m in Sources */ = {isa = PBXBuildFile; fileRef = F72137221BAFF0920012B613 /* CCBancomat.m */; };
+		084214C11E646E0200C8F4F3 /* ReaderViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0ED61C889317008DAB36 /* ReaderViewController.m */; };
+		084214C21E646E0200C8F4F3 /* ReaderThumbFetch.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0ECA1C889317008DAB36 /* ReaderThumbFetch.m */; };
+		084214C31E646E0200C8F4F3 /* CCPassaporto.m in Sources */ = {isa = PBXBuildFile; fileRef = F721372C1BAFF0920012B613 /* CCPassaporto.m */; };
+		084214C41E646E0200C8F4F3 /* CTAssetItemViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F06E461DBFACC600099AE9 /* CTAssetItemViewController.m */; };
+		084214C51E646E0200C8F4F3 /* PSTCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7659A3E1DC0B760004860C4 /* PSTCollectionView.m */; };
+		084214C61E646E0200C8F4F3 /* CCLogin.m in Sources */ = {isa = PBXBuildFile; fileRef = F7BF1B401D51E893000854F6 /* CCLogin.m */; };
+		084214C71E646E0200C8F4F3 /* CYRTextStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0DDB1C889300008DAB36 /* CYRTextStorage.m */; };
+		084214C81E646E0200C8F4F3 /* ThumbsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0EDA1C889317008DAB36 /* ThumbsViewController.m */; };
+		084214C91E646E0200C8F4F3 /* ZSSRichTextEditor.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0DF11C889300008DAB36 /* ZSSRichTextEditor.m */; };
+		084214CA1E646E0200C8F4F3 /* CTAssetsViewControllerTransition.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F06E6A1DBFACC600099AE9 /* CTAssetsViewControllerTransition.m */; };
+		084214CB1E646E0200C8F4F3 /* PSTCollectionViewLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F7659A4C1DC0B760004860C4 /* PSTCollectionViewLayout.m */; };
+		084214CC1E646E0200C8F4F3 /* TableAutomaticUpload+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF661E56E8CC00271D8B /* TableAutomaticUpload+CoreDataClass.m */; };
+		084214CD1E646E0200C8F4F3 /* NSLayoutConstraint+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F75037481DBFA91A008FB480 /* NSLayoutConstraint+PureLayout.m */; };
+		084214CE1E646E0200C8F4F3 /* XLFormRowNavigationAccessoryView.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCDC81DC13776007E38D8 /* XLFormRowNavigationAccessoryView.m */; };
+		084214CF1E646E0200C8F4F3 /* XLFormOptionsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCDA91DC13776007E38D8 /* XLFormOptionsViewController.m */; };
+		084214D01E646E0200C8F4F3 /* NSData+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02AD1C889183008DAB36 /* NSData+Base64.m */; };
+		084214D11E646E0200C8F4F3 /* CCCartaDiCredito.m in Sources */ = {isa = PBXBuildFile; fileRef = F72137241BAFF0920012B613 /* CCCartaDiCredito.m */; };
+		084214D21E646E0200C8F4F3 /* ReaderConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0EB81C889317008DAB36 /* ReaderConstants.m */; };
+		084214D31E646E0200C8F4F3 /* LMMediaPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0F3E1C889339008DAB36 /* LMMediaPlayer.m */; };
+		084214D41E646E0200C8F4F3 /* CCSection.m in Sources */ = {isa = PBXBuildFile; fileRef = F78F6FAF1CC8CCB700F4EA25 /* CCSection.m */; };
+		084214D51E646E0200C8F4F3 /* AHKActionSheetViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F72AAEC51E5C60C700BB17E1 /* AHKActionSheetViewController.m */; };
+		084214D61E646E0200C8F4F3 /* CCManageHelp.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FEB6CF1BECADC100E7C415 /* CCManageHelp.m */; };
+		084214D71E646E0200C8F4F3 /* CCTemplates.m in Sources */ = {isa = PBXBuildFile; fileRef = F72137301BAFF0920012B613 /* CCTemplates.m */; };
+		084214D81E646E0200C8F4F3 /* XLFormDatePickerCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCD8C1DC13775007E38D8 /* XLFormDatePickerCell.m */; };
+		084214D91E646E0200C8F4F3 /* UIWindow+AHKAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = F72AAEC91E5C60C700BB17E1 /* UIWindow+AHKAdditions.m */; };
+		084214DA1E646E0200C8F4F3 /* CCCellMainTransfer.m in Sources */ = {isa = PBXBuildFile; fileRef = F70211F81BAC56E9003FC03E /* CCCellMainTransfer.m */; };
+		084214DB1E646E0200C8F4F3 /* XLFormImageCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCD8F1DC13776007E38D8 /* XLFormImageCell.m */; };
+		084214DC1E646E0200C8F4F3 /* BKTouchIDManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02CD1C889183008DAB36 /* BKTouchIDManager.m */; };
+		084214DD1E646E0200C8F4F3 /* PSTCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F7659A401DC0B760004860C4 /* PSTCollectionViewCell.m */; };
+		084214DE1E646E0200C8F4F3 /* CCManageAsset.m in Sources */ = {isa = PBXBuildFile; fileRef = F7BFCCBF1B68C21900548E76 /* CCManageAsset.m */; };
+		084214DF1E646E0200C8F4F3 /* iRate.m in Sources */ = {isa = PBXBuildFile; fileRef = F7659A331DC0B737004860C4 /* iRate.m */; };
+		084214E01E646E0200C8F4F3 /* ReaderContentView.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0EBE1C889317008DAB36 /* ReaderContentView.m */; };
+		084214E11E646E0200C8F4F3 /* LMMediaItemQueueManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0F381C889339008DAB36 /* LMMediaItemQueueManager.m */; };
+		084214E21E646E0200C8F4F3 /* NSString+XLFormAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCDBF1DC13776007E38D8 /* NSString+XLFormAdditions.m */; };
+		084214E31E646E0200C8F4F3 /* UIView+XLFormAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCDC11DC13776007E38D8 /* UIView+XLFormAdditions.m */; };
+		084214E41E646E0200C8F4F3 /* CCManageAccount.m in Sources */ = {isa = PBXBuildFile; fileRef = F7ACE42D1BAC0268006C0017 /* CCManageAccount.m */; };
+		084214E51E646E0200C8F4F3 /* PPCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F051F1C889184008DAB36 /* PPCollectionViewCell.m */; };
+		084214E61E646E0200C8F4F3 /* CTAssetsPickerAccessDeniedView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F06E621DBFACC600099AE9 /* CTAssetsPickerAccessDeniedView.m */; };
+		084214E71E646E0200C8F4F3 /* BKTouchIDSwitchView.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02CF1C889183008DAB36 /* BKTouchIDSwitchView.m */; };
+		084214E81E646E0200C8F4F3 /* CTAssetThumbnailOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F06E6C1DBFACC600099AE9 /* CTAssetThumbnailOverlay.m */; };
+		084214E91E646E0200C8F4F3 /* CCBKPasscode.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FE125D1BAC03FB0041924B /* CCBKPasscode.m */; };
+		084214EA1E646E0200C8F4F3 /* HRColorPickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0DE81C889300008DAB36 /* HRColorPickerView.m */; };
+		084214EB1E646E0200C8F4F3 /* CCProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CE28801D1ACFA70025783C /* CCProgressView.m */; };
+		084214EC1E646E0200C8F4F3 /* CCConstant.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C994311E3A92C400C2466C /* CCConstant.swift */; };
+		084214ED1E646E0200C8F4F3 /* mztools.c in Sources */ = {isa = PBXBuildFile; fileRef = F70F0F971C889487008DAB36 /* mztools.c */; };
+		084214EE1E646E0200C8F4F3 /* CTAssetsPickerNoAssetsView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F06E681DBFACC600099AE9 /* CTAssetsPickerNoAssetsView.m */; };
+		084214EF1E646E0200C8F4F3 /* EAIntroPage.m in Sources */ = {isa = PBXBuildFile; fileRef = F7659A231DC0B726004860C4 /* EAIntroPage.m */; };
+		084214F01E646E0200C8F4F3 /* NSString+TruncateToWidth.m in Sources */ = {isa = PBXBuildFile; fileRef = F73049B91CB567F000C7C320 /* NSString+TruncateToWidth.m */; };
+		084214F11E646E0200C8F4F3 /* XLFormTextViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCDA41DC13776007E38D8 /* XLFormTextViewCell.m */; };
+		084214F21E646E0200C8F4F3 /* BKPasscodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02C91C889183008DAB36 /* BKPasscodeViewController.m */; };
+		084214F31E646E0200C8F4F3 /* cryptocloud.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = F78088E51DD3A1DB005C5A7C /* cryptocloud.xcdatamodeld */; };
+		084214F41E646E0200C8F4F3 /* PSTCollectionViewData.m in Sources */ = {isa = PBXBuildFile; fileRef = F7659A451DC0B760004860C4 /* PSTCollectionViewData.m */; };
+		084214F51E646E0200C8F4F3 /* BKShiftingView.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02CB1C889183008DAB36 /* BKShiftingView.m */; };
+		084214F61E646E0200C8F4F3 /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = F70F0F9B1C889487008DAB36 /* zip.c */; };
+		084214F71E646E0200C8F4F3 /* HRColorPickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0DEA1C889300008DAB36 /* HRColorPickerViewController.m */; };
+		084214F81E646E0200C8F4F3 /* CTAssetsGridViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F06E561DBFACC600099AE9 /* CTAssetsGridViewController.m */; };
+		084214F91E646E0200C8F4F3 /* CCManageCryptoCloudSecurity.m in Sources */ = {isa = PBXBuildFile; fileRef = F73C002E1E55D7DF00EEEFA7 /* CCManageCryptoCloudSecurity.m */; };
+		084214FA1E646E0200C8F4F3 /* PSTCollectionViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F7659A471DC0B760004860C4 /* PSTCollectionViewFlowLayout.m */; };
+		084214FB1E646E0200C8F4F3 /* CTAssetsPageView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F06E5E1DBFACC600099AE9 /* CTAssetsPageView.m */; };
+		084214FC1E646E0200C8F4F3 /* CCGlobal.m in Sources */ = {isa = PBXBuildFile; fileRef = F7C8C1911B482CEA0048180E /* CCGlobal.m */; };
+		084214FD1E646E0200C8F4F3 /* PSTCollectionViewItemKey.m in Sources */ = {isa = PBXBuildFile; fileRef = F7659A491DC0B760004860C4 /* PSTCollectionViewItemKey.m */; };
+		084214FE1E646E0200C8F4F3 /* CTAssetThumbnailView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F06E701DBFACC600099AE9 /* CTAssetThumbnailView.m */; };
+		084214FF1E646E0200C8F4F3 /* BKPasscodeField.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02C21C889183008DAB36 /* BKPasscodeField.m */; };
+		084215001E646E0200C8F4F3 /* CTAssetCheckmark.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F06E401DBFACC600099AE9 /* CTAssetCheckmark.m */; };
+		084215011E646E0200C8F4F3 /* MWGridViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F54CD61E5B14C700E19C62 /* MWGridViewController.m */; };
+		084215021E646E0200C8F4F3 /* PHAssetCollection+CTAssetsPickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F06E381DBFACC600099AE9 /* PHAssetCollection+CTAssetsPickerController.m */; };
+		084215031E646E0200C8F4F3 /* CCMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = F7C8C1731B482A920048180E /* CCMetadata.m */; };
+		084215041E646E0200C8F4F3 /* UIImage+CTAssetsPickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F06E3E1DBFACC600099AE9 /* UIImage+CTAssetsPickerController.m */; };
+		084215051E646E0200C8F4F3 /* ReaderMainToolbar.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0EC61C889317008DAB36 /* ReaderMainToolbar.m */; };
+		084215061E646E0200C8F4F3 /* XLFormSliderCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCD9C1DC13776007E38D8 /* XLFormSliderCell.m */; };
+		084215071E646E0200C8F4F3 /* RECommonFunctions.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0C511C8892C5008DAB36 /* RECommonFunctions.m */; };
+		084215081E646E0200C8F4F3 /* XLFormRightDetailCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCDC41DC13776007E38D8 /* XLFormRightDetailCell.m */; };
+		084215091E646E0200C8F4F3 /* CCSynchronize.m in Sources */ = {isa = PBXBuildFile; fileRef = F7EC147A1E5D9C0B0046F351 /* CCSynchronize.m */; };
+		0842150A1E646E0200C8F4F3 /* XLFormLeftRightSelectorCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCD941DC13776007E38D8 /* XLFormLeftRightSelectorCell.m */; };
+		0842150B1E646E0200C8F4F3 /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04841C889183008DAB36 /* MBProgressHUD.m */; };
+		0842150C1E646E0200C8F4F3 /* ReaderThumbRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0ED01C889317008DAB36 /* ReaderThumbRequest.m */; };
+		0842150D1E646E0200C8F4F3 /* CTAssetsGridViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F06E541DBFACC600099AE9 /* CTAssetsGridViewCell.m */; };
+		0842150E1E646E0200C8F4F3 /* CCAccountWeb.m in Sources */ = {isa = PBXBuildFile; fileRef = F721371E1BAFF0920012B613 /* CCAccountWeb.m */; };
+		0842150F1E646E0200C8F4F3 /* TableDirectory+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF5A1E56E8CC00271D8B /* TableDirectory+CoreDataClass.m */; };
+		084215101E646E0200C8F4F3 /* HRColorUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0DEC1C889300008DAB36 /* HRColorUtil.m */; };
+		084215111E646E0200C8F4F3 /* XLFormBaseCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCD841DC13775007E38D8 /* XLFormBaseCell.m */; };
+		084215121E646E0200C8F4F3 /* TableShare+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF601E56E8CC00271D8B /* TableShare+CoreDataProperties.m */; };
+		084215131E646E0200C8F4F3 /* CTAssetPlayButton.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F06E481DBFACC600099AE9 /* CTAssetPlayButton.m */; };
+		084215141E646E0200C8F4F3 /* XLFormSectionDescriptor.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCDB41DC13776007E38D8 /* XLFormSectionDescriptor.m */; };
+		084215151E646E0200C8F4F3 /* TWMessageBarManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F7676A621D5CB1B900DF734C /* TWMessageBarManager.m */; };
+		084215161E646E0200C8F4F3 /* CCNote.m in Sources */ = {isa = PBXBuildFile; fileRef = F721372A1BAFF0920012B613 /* CCNote.m */; };
+		084215171E646E0200C8F4F3 /* MWTapDetectingImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F54CDE1E5B14C700E19C62 /* MWTapDetectingImageView.m */; };
+		084215181E646E0200C8F4F3 /* RNEncryptor.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F053B1C889184008DAB36 /* RNEncryptor.m */; };
+		084215191E646E0200C8F4F3 /* CTAssetsPageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F06E601DBFACC600099AE9 /* CTAssetsPageViewController.m */; };
+		0842151A1E646E0200C8F4F3 /* CTAssetCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F06E421DBFACC600099AE9 /* CTAssetCollectionViewCell.m */; };
+		0842151B1E646E0200C8F4F3 /* MWZoomingScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F54CE21E5B14C700E19C62 /* MWZoomingScrollView.m */; };
+		0842151C1E646E0200C8F4F3 /* CTAssetSelectionLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F06E4E1DBFACC600099AE9 /* CTAssetSelectionLabel.m */; };
+		0842151D1E646E0200C8F4F3 /* PSTGridLayoutSection.m in Sources */ = {isa = PBXBuildFile; fileRef = F7659A561DC0B760004860C4 /* PSTGridLayoutSection.m */; };
+		0842151E1E646E0200C8F4F3 /* CCManageOptimizations.m in Sources */ = {isa = PBXBuildFile; fileRef = F7AB79F01BB1A3AD00A82F32 /* CCManageOptimizations.m */; };
+		0842151F1E646E0200C8F4F3 /* UIImage+Enhancing.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04C21C889184008DAB36 /* UIImage+Enhancing.m */; };
+		084215201E646E0200C8F4F3 /* CCCellMain.m in Sources */ = {isa = PBXBuildFile; fileRef = F70211F51BAC56E9003FC03E /* CCCellMain.m */; };
+		084215211E646E0200C8F4F3 /* AESCrypt.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02AB1C889183008DAB36 /* AESCrypt.m */; };
+		084215221E646E0200C8F4F3 /* APAvatarImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = F744FA7D1E57333C00BFAB34 /* APAvatarImageView.m */; };
+		084215231E646E0200C8F4F3 /* NSObject+XLFormAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCDBB1DC13776007E38D8 /* NSObject+XLFormAdditions.m */; };
+		084215241E646E0200C8F4F3 /* TableAccount+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF6A1E56E8CC00271D8B /* TableAccount+CoreDataClass.m */; };
+		084215251E646E0200C8F4F3 /* TableCertificates+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF641E56E8CC00271D8B /* TableCertificates+CoreDataProperties.m */; };
+		084215261E646E0200C8F4F3 /* CCCreateCloud.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7ECBA6C1E239DCD003E6328 /* CCCreateCloud.swift */; };
+		084215271E646E0200C8F4F3 /* HRBrightnessCursor.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0DE11C889300008DAB36 /* HRBrightnessCursor.m */; };
+		084215281E646E0200C8F4F3 /* UIImage+Masking.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04C61C889184008DAB36 /* UIImage+Masking.m */; };
+		084215291E646E0200C8F4F3 /* NSData+CommonCrypto.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02AF1C889183008DAB36 /* NSData+CommonCrypto.m */; };
+		0842152A1E646E0200C8F4F3 /* CCOffline.m in Sources */ = {isa = PBXBuildFile; fileRef = F7C00D461E2D0D0F0032160B /* CCOffline.m */; };
+		0842152B1E646E0200C8F4F3 /* CYRToken.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0DDF1C889300008DAB36 /* CYRToken.m */; };
+		0842152C1E646E0200C8F4F3 /* AHKActionSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = F72AAEC31E5C60C700BB17E1 /* AHKActionSheet.m */; };
+		0842152D1E646E0200C8F4F3 /* CTAssetsGridView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F06E521DBFACC600099AE9 /* CTAssetsGridView.m */; };
+		0842152E1E646E0200C8F4F3 /* CCControlCenterCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D6A08C1D82DBFA0045AD1A /* CCControlCenterCell.m */; };
+		0842152F1E646E0200C8F4F3 /* Acknowledgements.m in Sources */ = {isa = PBXBuildFile; fileRef = F7ACE42A1BAC0268006C0017 /* Acknowledgements.m */; };
+		084215301E646E0200C8F4F3 /* PPImageScrollingCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F05211C889184008DAB36 /* PPImageScrollingCellView.m */; };
+		084215311E646E0200C8F4F3 /* LMMediaPlayerHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0F311C889339008DAB36 /* LMMediaPlayerHelper.m */; };
+		084215321E646E0200C8F4F3 /* PHAsset+Utility.m in Sources */ = {isa = PBXBuildFile; fileRef = F777F0311C29717F00CE81CB /* PHAsset+Utility.m */; };
+		084215331E646E0200C8F4F3 /* PHImageManager+CTAssetsPickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F06E3A1DBFACC600099AE9 /* PHImageManager+CTAssetsPickerController.m */; };
+		084215341E646E0200C8F4F3 /* CTAssetsNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F06E5C1DBFACC600099AE9 /* CTAssetsNavigationController.m */; };
+		084215351E646E0200C8F4F3 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F67BAD1A24D27800EE80DA /* main.m */; };
+		084215371E646E0200C8F4F3 /* libownCloudiOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F71E67FC1DC1F76F003BA52B /* libownCloudiOS.a */; };
+		084215381E646E0200C8F4F3 /* libMagicalRecord.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F7B61E9B1DC13C20009E938F /* libMagicalRecord.a */; };
+		084215391E646E0200C8F4F3 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = F7FC7D551DC1F93800BB2C6A /* libz.tbd */; };
+		0842153A1E646E0200C8F4F3 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63061D5B3467004E2AA5 /* libcrypto.a */; };
+		0842153B1E646E0200C8F4F3 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63071D5B3467004E2AA5 /* libssl.a */; };
+		0842153D1E646E0200C8F4F3 /* CCLogin.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F75ADF441DC75FFE008A7347 /* CCLogin.storyboard */; };
+		0842153E1E646E0200C8F4F3 /* ZSSbold@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0D921C889300008DAB36 /* ZSSbold@2x.png */; };
+		0842153F1E646E0200C8F4F3 /* ZSSrightjustify@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DC21C889300008DAB36 /* ZSSrightjustify@2x.png */; };
+		084215401E646E0200C8F4F3 /* CCCellOffline.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7C00D441E2D0D0F0032160B /* CCCellOffline.xib */; };
+		084215411E646E0200C8F4F3 /* ZSSindent@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DAA1C889300008DAB36 /* ZSSindent@2x.png */; };
+		084215421E646E0200C8F4F3 /* ImageSelectedOn@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = F7F54CB71E5B14C700E19C62 /* ImageSelectedOn@3x.png */; };
+		084215431E646E0200C8F4F3 /* Reader-Mark-N@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0EAD1C889317008DAB36 /* Reader-Mark-N@2x.png */; };
+		084215441E646E0200C8F4F3 /* PlayButtonOverlayLarge.png in Resources */ = {isa = PBXBuildFile; fileRef = F7F54CBE1E5B14C700E19C62 /* PlayButtonOverlayLarge.png */; };
+		084215451E646E0200C8F4F3 /* VideoOverlay@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F7F54CCE1E5B14C700E19C62 /* VideoOverlay@2x.png */; };
+		084215461E646E0200C8F4F3 /* ZSSh4@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DA01C889300008DAB36 /* ZSSh4@2x.png */; };
+		084215471E646E0200C8F4F3 /* PlayButtonOverlayLarge@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F7F54CBF1E5B14C700E19C62 /* PlayButtonOverlayLarge@2x.png */; };
+		084215481E646E0200C8F4F3 /* loading@2x.gif in Resources */ = {isa = PBXBuildFile; fileRef = F77D49A71DC238E500CDC568 /* loading@2x.gif */; };
+		084215491E646E0200C8F4F3 /* ZSSunderline.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DCD1C889300008DAB36 /* ZSSunderline.png */; };
+		0842154A1E646E0200C8F4F3 /* PlayButtonOverlayLargeTap@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = F7F54CC31E5B14C700E19C62 /* PlayButtonOverlayLargeTap@3x.png */; };
+		0842154B1E646E0200C8F4F3 /* ZSSbgcolor.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0D8F1C889300008DAB36 /* ZSSbgcolor.png */; };
+		0842154C1E646E0200C8F4F3 /* Nextcloud.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7596C771D128FC80092A6B8 /* Nextcloud.xcassets */; };
+		0842154D1E646E0200C8F4F3 /* ZSSstrikethrough@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DC41C889300008DAB36 /* ZSSstrikethrough@2x.png */; };
+		0842154E1E646E0200C8F4F3 /* XLForm.bundle in Resources */ = {isa = PBXBuildFile; fileRef = F73CCDD51DC13776007E38D8 /* XLForm.bundle */; };
+		0842154F1E646E0200C8F4F3 /* ZSSinsertkeyword@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DAC1C889300008DAB36 /* ZSSinsertkeyword@2x.png */; };
+		084215501E646E0200C8F4F3 /* Reader-Mark-N.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0EAC1C889317008DAB36 /* Reader-Mark-N.png */; };
+		084215511E646E0200C8F4F3 /* ZSShorizontalrule.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DA51C889300008DAB36 /* ZSShorizontalrule.png */; };
+		084215521E646E0200C8F4F3 /* ZSSh3@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0D9E1C889300008DAB36 /* ZSSh3@2x.png */; };
+		084215531E646E0200C8F4F3 /* CCUploadFromOtherUpp.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7956FCB1B4886E60085DEA3 /* CCUploadFromOtherUpp.storyboard */; };
+		084215541E646E0200C8F4F3 /* ZSSinsertkeyword.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DAB1C889300008DAB36 /* ZSSinsertkeyword.png */; };
+		084215551E646E0200C8F4F3 /* icon-error@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F7676A731D5CB2A300DF734C /* icon-error@2x.png */; };
+		084215561E646E0200C8F4F3 /* LaunchScreenNextcloud.xib in Resources */ = {isa = PBXBuildFile; fileRef = F78BFECA1D3111B800E513CF /* LaunchScreenNextcloud.xib */; };
+		084215571E646E0200C8F4F3 /* ZSSoutdent@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DB81C889300008DAB36 /* ZSSoutdent@2x.png */; };
+		084215581E646E0200C8F4F3 /* ZSSindent.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DA91C889300008DAB36 /* ZSSindent.png */; };
+		084215591E646E0200C8F4F3 /* ZSSpicker.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DBB1C889300008DAB36 /* ZSSpicker.png */; };
+		0842155A1E646E0200C8F4F3 /* PlayButtonOverlayLargeTap@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F7F54CC21E5B14C700E19C62 /* PlayButtonOverlayLargeTap@2x.png */; };
+		0842155B1E646E0200C8F4F3 /* ZSSunderline@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DCE1C889300008DAB36 /* ZSSunderline@2x.png */; };
+		0842155C1E646E0200C8F4F3 /* Reader-Mark-Y.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0EAE1C889317008DAB36 /* Reader-Mark-Y.png */; };
+		0842155D1E646E0200C8F4F3 /* Reader-Mark-Y@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0EAF1C889317008DAB36 /* Reader-Mark-Y@2x.png */; };
+		0842155E1E646E0200C8F4F3 /* ZSSundo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DD01C889300008DAB36 /* ZSSundo@2x.png */; };
+		0842155F1E646E0200C8F4F3 /* BKPasscodeView.strings in Resources */ = {isa = PBXBuildFile; fileRef = F72B60911A24F00B004EF66F /* BKPasscodeView.strings */; };
+		084215601E646E0200C8F4F3 /* ZSSparagraph.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DB91C889300008DAB36 /* ZSSparagraph.png */; };
+		084215611E646E0200C8F4F3 /* ZSSorderedlist@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DB61C889300008DAB36 /* ZSSorderedlist@2x.png */; };
+		084215621E646E0200C8F4F3 /* ZSSitalic@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DAE1C889300008DAB36 /* ZSSitalic@2x.png */; };
+		084215631E646E0200C8F4F3 /* ZSSviewsource.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DD51C889300008DAB36 /* ZSSviewsource.png */; };
+		084215641E646E0200C8F4F3 /* ZSSforcejustify@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0D981C889300008DAB36 /* ZSSforcejustify@2x.png */; };
+		084215651E646E0200C8F4F3 /* ZSSh1@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0D9A1C889300008DAB36 /* ZSSh1@2x.png */; };
+		084215661E646E0200C8F4F3 /* CCControlCenterCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7D6A08D1D82DBFA0045AD1A /* CCControlCenterCell.xib */; };
+		084215671E646E0200C8F4F3 /* ImageSelectedSmallOn@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = F7F54CBD1E5B14C700E19C62 /* ImageSelectedSmallOn@3x.png */; };
+		084215681E646E0200C8F4F3 /* Intro.strings in Resources */ = {isa = PBXBuildFile; fileRef = F744BE9F1BEBB69F004FFF66 /* Intro.strings */; };
+		084215691E646E0200C8F4F3 /* UIBarButtonItemArrowLeft.png in Resources */ = {isa = PBXBuildFile; fileRef = F7F54CC41E5B14C700E19C62 /* UIBarButtonItemArrowLeft.png */; };
+		0842156A1E646E0200C8F4F3 /* CCPeekPop.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7FCFFD61D70798C000E6E29 /* CCPeekPop.storyboard */; };
+		0842156B1E646E0200C8F4F3 /* ZSSitalic.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DAD1C889300008DAB36 /* ZSSitalic.png */; };
+		0842156C1E646E0200C8F4F3 /* CTAssetsPicker.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7F06E721DBFACC600099AE9 /* CTAssetsPicker.strings */; };
+		0842156D1E646E0200C8F4F3 /* Reader-Email@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0EA91C889317008DAB36 /* Reader-Email@2x.png */; };
+		0842156E1E646E0200C8F4F3 /* PlayButtonOverlayLarge@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = F7F54CC01E5B14C700E19C62 /* PlayButtonOverlayLarge@3x.png */; };
+		0842156F1E646E0200C8F4F3 /* ZSSh2@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0D9C1C889300008DAB36 /* ZSSh2@2x.png */; };
+		084215701E646E0200C8F4F3 /* ZSSstrikethrough.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DC31C889300008DAB36 /* ZSSstrikethrough.png */; };
+		084215711E646E0200C8F4F3 /* ZSSh6.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DA31C889300008DAB36 /* ZSSh6.png */; };
+		084215721E646E0200C8F4F3 /* ZSSh3.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0D9D1C889300008DAB36 /* ZSSh3.png */; };
+		084215731E646E0200C8F4F3 /* Reader-Button-H.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0EA41C889317008DAB36 /* Reader-Button-H.png */; };
+		084215741E646E0200C8F4F3 /* ZSSh1.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0D991C889300008DAB36 /* ZSSh1.png */; };
+		084215751E646E0200C8F4F3 /* icon-info.png in Resources */ = {isa = PBXBuildFile; fileRef = F7676A741D5CB2A300DF734C /* icon-info.png */; };
+		084215761E646E0200C8F4F3 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F787E5581BC503ED00AFBFE1 /* Main.storyboard */; };
+		084215771E646E0200C8F4F3 /* ZSSleftjustify.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DB11C889300008DAB36 /* ZSSleftjustify.png */; };
+		084215781E646E0200C8F4F3 /* ZSSclearstyle@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0D961C889300008DAB36 /* ZSSclearstyle@2x.png */; };
+		084215791E646E0200C8F4F3 /* ZSSlink.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DB31C889300008DAB36 /* ZSSlink.png */; };
+		0842157A1E646E0200C8F4F3 /* ZSSsuperscript@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DC81C889300008DAB36 /* ZSSsuperscript@2x.png */; };
+		0842157B1E646E0200C8F4F3 /* ZSScenterjustify.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0D931C889300008DAB36 /* ZSScenterjustify.png */; };
+		0842157C1E646E0200C8F4F3 /* CCMove.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7D02A481C5F9E4400D6F972 /* CCMove.storyboard */; };
+		0842157D1E646E0200C8F4F3 /* UIBarButtonItemGrid.png in Resources */ = {isa = PBXBuildFile; fileRef = F7F54CCA1E5B14C700E19C62 /* UIBarButtonItemGrid.png */; };
+		0842157E1E646E0200C8F4F3 /* Reader-Thumbs.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0EB21C889317008DAB36 /* Reader-Thumbs.png */; };
+		0842157F1E646E0200C8F4F3 /* UIBarButtonItemArrowRight@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F7F54CC81E5B14C700E19C62 /* UIBarButtonItemArrowRight@2x.png */; };
+		084215801E646E0200C8F4F3 /* iRate.bundle in Resources */ = {isa = PBXBuildFile; fileRef = F7659A311DC0B737004860C4 /* iRate.bundle */; };
+		084215811E646E0200C8F4F3 /* ZSSkeyboard@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DB01C889300008DAB36 /* ZSSkeyboard@2x.png */; };
+		084215821E646E0200C8F4F3 /* VideoOverlay.png in Resources */ = {isa = PBXBuildFile; fileRef = F7F54CCD1E5B14C700E19C62 /* VideoOverlay.png */; };
+		084215831E646E0200C8F4F3 /* ImageSelectedOff.png in Resources */ = {isa = PBXBuildFile; fileRef = F7F54CB21E5B14C700E19C62 /* ImageSelectedOff.png */; };
+		084215841E646E0200C8F4F3 /* ZSSorderedlist.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DB51C889300008DAB36 /* ZSSorderedlist.png */; };
+		084215851E646E0200C8F4F3 /* ZSSsubscript@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DC61C889300008DAB36 /* ZSSsubscript@2x.png */; };
+		084215861E646E0200C8F4F3 /* editor.html in Resources */ = {isa = PBXBuildFile; fileRef = F70F0D8D1C889300008DAB36 /* editor.html */; };
+		084215871E646E0200C8F4F3 /* icon-info@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F7676A751D5CB2A400DF734C /* icon-info@2x.png */; };
+		084215881E646E0200C8F4F3 /* ZSSkeyboard.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DAF1C889300008DAB36 /* ZSSkeyboard.png */; };
+		084215891E646E0200C8F4F3 /* icon-error.png in Resources */ = {isa = PBXBuildFile; fileRef = F7676A721D5CB2A300DF734C /* icon-error.png */; };
+		0842158A1E646E0200C8F4F3 /* ZSStable@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DCA1C889300008DAB36 /* ZSStable@2x.png */; };
+		0842158B1E646E0200C8F4F3 /* ZSSredo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DC01C889300008DAB36 /* ZSSredo@2x.png */; };
+		0842158C1E646E0200C8F4F3 /* ZSSh5.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DA11C889300008DAB36 /* ZSSh5.png */; };
+		0842158D1E646E0200C8F4F3 /* ZSSquicklink@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DBE1C889300008DAB36 /* ZSSquicklink@2x.png */; };
+		0842158E1E646E0200C8F4F3 /* Reader-Export.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0EAA1C889317008DAB36 /* Reader-Export.png */; };
+		0842158F1E646E0200C8F4F3 /* ZSStextcolor@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DCC1C889300008DAB36 /* ZSStextcolor@2x.png */; };
+		084215901E646E0200C8F4F3 /* Reader-Button-N@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0EA71C889317008DAB36 /* Reader-Button-N@2x.png */; };
+		084215911E646E0200C8F4F3 /* Reader-Button-H@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0EA51C889317008DAB36 /* Reader-Button-H@2x.png */; };
+		084215921E646E0200C8F4F3 /* ZSSbgcolor@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0D901C889300008DAB36 /* ZSSbgcolor@2x.png */; };
+		084215931E646E0200C8F4F3 /* synchronized.gif in Resources */ = {isa = PBXBuildFile; fileRef = F76344751BF259A800188725 /* synchronized.gif */; };
+		084215941E646E0200C8F4F3 /* ZSSoutdent.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DB71C889300008DAB36 /* ZSSoutdent.png */; };
+		084215951E646E0200C8F4F3 /* ZSStextcolor.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DCB1C889300008DAB36 /* ZSStextcolor.png */; };
+		084215961E646E0200C8F4F3 /* PlayButtonOverlayLargeTap.png in Resources */ = {isa = PBXBuildFile; fileRef = F7F54CC11E5B14C700E19C62 /* PlayButtonOverlayLargeTap.png */; };
+		084215971E646E0200C8F4F3 /* ZSSimage.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DA71C889300008DAB36 /* ZSSimage.png */; };
+		084215981E646E0200C8F4F3 /* CCShare.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F768EB021BFB7EA900B6E341 /* CCShare.storyboard */; };
+		084215991E646E0200C8F4F3 /* Reader-Thumbs@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0EB31C889317008DAB36 /* Reader-Thumbs@2x.png */; };
+		0842159A1E646E0200C8F4F3 /* UIBarButtonItemGrid@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = F7F54CCC1E5B14C700E19C62 /* UIBarButtonItemGrid@3x.png */; };
+		0842159B1E646E0200C8F4F3 /* ImageSelectedOff@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = F7F54CB41E5B14C700E19C62 /* ImageSelectedOff@3x.png */; };
+		0842159C1E646E0200C8F4F3 /* ZSSquicklink.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DBD1C889300008DAB36 /* ZSSquicklink.png */; };
+		0842159D1E646E0200C8F4F3 /* ZSSh2.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0D9B1C889300008DAB36 /* ZSSh2.png */; };
+		0842159E1E646E0200C8F4F3 /* ZSSbold.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0D911C889300008DAB36 /* ZSSbold.png */; };
+		0842159F1E646E0200C8F4F3 /* ImageSelectedSmallOn.png in Resources */ = {isa = PBXBuildFile; fileRef = F7F54CBB1E5B14C700E19C62 /* ImageSelectedSmallOn.png */; };
+		084215A01E646E0200C8F4F3 /* Reader-Button-N.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0EA61C889317008DAB36 /* Reader-Button-N.png */; };
+		084215A11E646E0200C8F4F3 /* Error.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7B381BF1C074E3E004693F8 /* Error.strings */; };
+		084215A21E646E0200C8F4F3 /* ZSStable.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DC91C889300008DAB36 /* ZSStable.png */; };
+		084215A31E646E0200C8F4F3 /* synchronizedcrypto.gif in Resources */ = {isa = PBXBuildFile; fileRef = F76344761BF259A800188725 /* synchronizedcrypto.gif */; };
+		084215A41E646E0200C8F4F3 /* ImageSelectedSmallOff.png in Resources */ = {isa = PBXBuildFile; fileRef = F7F54CB81E5B14C700E19C62 /* ImageSelectedSmallOff.png */; };
+		084215A51E646E0200C8F4F3 /* TTOpenInAppActivityLocalizable.string in Resources */ = {isa = PBXBuildFile; fileRef = F7BFE0CA1B67925500F072A4 /* TTOpenInAppActivityLocalizable.string */; };
+		084215A61E646E0200C8F4F3 /* ZSSRichTextEditor.js in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DF01C889300008DAB36 /* ZSSRichTextEditor.js */; };
+		084215A71E646E0200C8F4F3 /* VideoOverlay@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = F7F54CCF1E5B14C700E19C62 /* VideoOverlay@3x.png */; };
+		084215A81E646E0200C8F4F3 /* UIBarButtonItemGrid@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F7F54CCB1E5B14C700E19C62 /* UIBarButtonItemGrid@2x.png */; };
+		084215A91E646E0200C8F4F3 /* ImageError@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = F7F54CB11E5B14C700E19C62 /* ImageError@3x.png */; };
+		084215AA1E646E0200C8F4F3 /* ZSSclearstyle.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0D951C889300008DAB36 /* ZSSclearstyle.png */; };
+		084215AB1E646E0200C8F4F3 /* ImagesIntro.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F744BE961BEBB31E004FFF66 /* ImagesIntro.xcassets */; };
+		084215AC1E646E0200C8F4F3 /* ImageError@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F7F54CB01E5B14C700E19C62 /* ImageError@2x.png */; };
+		084215AD1E646E0200C8F4F3 /* Reader-Print.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0EB01C889317008DAB36 /* Reader-Print.png */; };
+		084215AE1E646E0200C8F4F3 /* ImageSelectedSmallOff@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F7F54CB91E5B14C700E19C62 /* ImageSelectedSmallOff@2x.png */; };
+		084215AF1E646E0200C8F4F3 /* ZSSlink@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DB41C889300008DAB36 /* ZSSlink@2x.png */; };
+		084215B01E646E0200C8F4F3 /* Reader-Email.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0EA81C889317008DAB36 /* Reader-Email.png */; };
+		084215B11E646E0200C8F4F3 /* UIBarButtonItemArrowRight@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = F7F54CC91E5B14C700E19C62 /* UIBarButtonItemArrowRight@3x.png */; };
+		084215B21E646E0200C8F4F3 /* Acknowledgements.rtf in Resources */ = {isa = PBXBuildFile; fileRef = F7ACE42B1BAC0268006C0017 /* Acknowledgements.rtf */; };
+		084215B31E646E0200C8F4F3 /* ZSSunorderedlist.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DD31C889300008DAB36 /* ZSSunorderedlist.png */; };
+		084215B41E646E0200C8F4F3 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7E70DE91A24DE4100E1B66A /* Localizable.strings */; };
+		084215B51E646E0200C8F4F3 /* UIBarButtonItemArrowLeft@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F7F54CC51E5B14C700E19C62 /* UIBarButtonItemArrowLeft@2x.png */; };
+		084215B61E646E0200C8F4F3 /* ZSSh4.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0D9F1C889300008DAB36 /* ZSSh4.png */; };
+		084215B71E646E0200C8F4F3 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7C6D5F61BE371D800AC83AD /* InfoPlist.strings */; };
+		084215B81E646E0200C8F4F3 /* CCNotification.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7C525A11E3B6DA800FFE02C /* CCNotification.storyboard */; };
+		084215B91E646E0200C8F4F3 /* ZSSundo.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DCF1C889300008DAB36 /* ZSSundo.png */; };
+		084215BA1E646E0200C8F4F3 /* ZSSsubscript.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DC51C889300008DAB36 /* ZSSsubscript.png */; };
+		084215BB1E646E0200C8F4F3 /* ImageSelectedOn.png in Resources */ = {isa = PBXBuildFile; fileRef = F7F54CB51E5B14C700E19C62 /* ImageSelectedOn.png */; };
+		084215BC1E646E0200C8F4F3 /* CTAssetsPickerController.bundle in Resources */ = {isa = PBXBuildFile; fileRef = F7F06E631DBFACC600099AE9 /* CTAssetsPickerController.bundle */; };
+		084215BD1E646E0200C8F4F3 /* ZSShorizontalrule@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DA61C889300008DAB36 /* ZSShorizontalrule@2x.png */; };
+		084215BE1E646E0200C8F4F3 /* ZSSforcejustify.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0D971C889300008DAB36 /* ZSSforcejustify.png */; };
+		084215BF1E646E0200C8F4F3 /* ImageSelectedSmallOff@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = F7F54CBA1E5B14C700E19C62 /* ImageSelectedSmallOff@3x.png */; };
+		084215C01E646E0200C8F4F3 /* ZSSunorderedlist@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DD41C889300008DAB36 /* ZSSunorderedlist@2x.png */; };
+		084215C11E646E0200C8F4F3 /* ZSSleftjustify@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DB21C889300008DAB36 /* ZSSleftjustify@2x.png */; };
+		084215C21E646E0200C8F4F3 /* ImageSelectedOn@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F7F54CB61E5B14C700E19C62 /* ImageSelectedOn@2x.png */; };
+		084215C31E646E0200C8F4F3 /* icon-success.png in Resources */ = {isa = PBXBuildFile; fileRef = F7676A761D5CB2A400DF734C /* icon-success.png */; };
+		084215C41E646E0200C8F4F3 /* ZSSimage@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DA81C889300008DAB36 /* ZSSimage@2x.png */; };
+		084215C51E646E0200C8F4F3 /* ImageSelectedSmallOn@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F7F54CBC1E5B14C700E19C62 /* ImageSelectedSmallOn@2x.png */; };
+		084215C61E646E0200C8F4F3 /* ZSSunlink.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DD11C889300008DAB36 /* ZSSunlink.png */; };
+		084215C71E646E0200C8F4F3 /* ZSSredo.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DBF1C889300008DAB36 /* ZSSredo.png */; };
+		084215C81E646E0200C8F4F3 /* ImageError.png in Resources */ = {isa = PBXBuildFile; fileRef = F7F54CAF1E5B14C700E19C62 /* ImageError.png */; };
+		084215C91E646E0200C8F4F3 /* ZSSrightjustify.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DC11C889300008DAB36 /* ZSSrightjustify.png */; };
+		084215CA1E646E0200C8F4F3 /* UIBarButtonItemArrowLeft@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = F7F54CC61E5B14C700E19C62 /* UIBarButtonItemArrowLeft@3x.png */; };
+		084215CB1E646E0200C8F4F3 /* ZSSviewsource@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DD61C889300008DAB36 /* ZSSviewsource@2x.png */; };
+		084215CC1E646E0200C8F4F3 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7F67BB81A24D27800EE80DA /* Images.xcassets */; };
+		084215CD1E646E0200C8F4F3 /* ZSScenterjustify@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0D941C889300008DAB36 /* ZSScenterjustify@2x.png */; };
+		084215CE1E646E0200C8F4F3 /* ZSSparagraph@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DBA1C889300008DAB36 /* ZSSparagraph@2x.png */; };
+		084215CF1E646E0200C8F4F3 /* ZSSsuperscript.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DC71C889300008DAB36 /* ZSSsuperscript.png */; };
+		084215D01E646E0200C8F4F3 /* ZSSh5@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DA21C889300008DAB36 /* ZSSh5@2x.png */; };
+		084215D11E646E0200C8F4F3 /* Reader-Print@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0EB11C889317008DAB36 /* Reader-Print@2x.png */; };
+		084215D21E646E0200C8F4F3 /* icon-success@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F7676A771D5CB2A400DF734C /* icon-success@2x.png */; };
+		084215D31E646E0200C8F4F3 /* ImageSelectedOff@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F7F54CB31E5B14C700E19C62 /* ImageSelectedOff@2x.png */; };
+		084215D41E646E0200C8F4F3 /* Reader-Export@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0EAB1C889317008DAB36 /* Reader-Export@2x.png */; };
+		084215D51E646E0200C8F4F3 /* LMMediaPlayerView.bundle in Resources */ = {isa = PBXBuildFile; fileRef = F70F0F281C889339008DAB36 /* LMMediaPlayerView.bundle */; };
+		084215D61E646E0200C8F4F3 /* CCCellMain.xib in Resources */ = {isa = PBXBuildFile; fileRef = F70211F61BAC56E9003FC03E /* CCCellMain.xib */; };
+		084215D71E646E0200C8F4F3 /* CCCellMainTransfer.xib in Resources */ = {isa = PBXBuildFile; fileRef = F70211F91BAC56E9003FC03E /* CCCellMainTransfer.xib */; };
+		084215D81E646E0200C8F4F3 /* LMMediaPlayerView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F70F0F291C889339008DAB36 /* LMMediaPlayerView.xib */; };
+		084215D91E646E0200C8F4F3 /* ZSSunlink@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DD21C889300008DAB36 /* ZSSunlink@2x.png */; };
+		084215DA1E646E0200C8F4F3 /* ZSSpicker@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DBC1C889300008DAB36 /* ZSSpicker@2x.png */; };
+		084215DB1E646E0200C8F4F3 /* ZSSh6@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DA41C889300008DAB36 /* ZSSh6@2x.png */; };
+		084215DC1E646E0200C8F4F3 /* UIBarButtonItemArrowRight.png in Resources */ = {isa = PBXBuildFile; fileRef = F7F54CC71E5B14C700E19C62 /* UIBarButtonItemArrowRight.png */; };
+		08DC3BD51E64727E00F036D3 /* AdSupport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 08DC3BD41E64727E00F036D3 /* AdSupport.framework */; };
+		08DC3BE91E647E3F00F036D3 /* NextcloudCustom.plist in Resources */ = {isa = PBXBuildFile; fileRef = 08DC3BE81E647E3F00F036D3 /* NextcloudCustom.plist */; };
+		08DC3BED1E647FD200F036D3 /* BKPasscodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02C91C889183008DAB36 /* BKPasscodeViewController.m */; };
+		08DC3BEE1E647FD200F036D3 /* BKTouchIDManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02CD1C889183008DAB36 /* BKTouchIDManager.m */; };
+		08DC3BEF1E647FD200F036D3 /* TableLocalFile+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF541E56E8CB00271D8B /* TableLocalFile+CoreDataProperties.m */; };
+		08DC3BF01E647FD200F036D3 /* TableAutomaticUpload+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF661E56E8CC00271D8B /* TableAutomaticUpload+CoreDataClass.m */; };
+		08DC3BF11E647FD200F036D3 /* NSString+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02B11C889183008DAB36 /* NSString+Base64.m */; };
+		08DC3BF21E647FD200F036D3 /* TableShare+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF5E1E56E8CC00271D8B /* TableShare+CoreDataClass.m */; };
+		08DC3BF31E647FD200F036D3 /* BKTouchIDSwitchView.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02CF1C889183008DAB36 /* BKTouchIDSwitchView.m */; };
+		08DC3BF41E647FD200F036D3 /* CCGraphics.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B841C6388BC00DC4301 /* CCGraphics.m */; };
+		08DC3BF51E647FD200F036D3 /* TableAccount+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF6C1E56E8CC00271D8B /* TableAccount+CoreDataProperties.m */; };
+		08DC3BF61E647FD200F036D3 /* TableDirectory+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF5A1E56E8CC00271D8B /* TableDirectory+CoreDataClass.m */; };
+		08DC3BF71E647FD200F036D3 /* TableCertificates+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF641E56E8CC00271D8B /* TableCertificates+CoreDataProperties.m */; };
+		08DC3BF81E647FD200F036D3 /* CCCrypto.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FE125F1BAC03FB0041924B /* CCCrypto.m */; };
+		08DC3BF91E647FD200F036D3 /* CCSection.m in Sources */ = {isa = PBXBuildFile; fileRef = F78F6FAF1CC8CCB700F4EA25 /* CCSection.m */; };
+		08DC3BFA1E647FD200F036D3 /* CCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F732BA041D76CE1500E9878B /* CCNetworking.m */; };
+		08DC3BFB1E647FD200F036D3 /* OCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F74D3DBE1BAC1941000BAE4B /* OCNetworking.m */; };
+		08DC3BFC1E647FD200F036D3 /* TableDirectory+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF5C1E56E8CC00271D8B /* TableDirectory+CoreDataProperties.m */; };
+		08DC3BFD1E647FD200F036D3 /* BKPasscodeDummyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02C01C889183008DAB36 /* BKPasscodeDummyViewController.m */; };
+		08DC3BFE1E647FD200F036D3 /* BKPasscodeInputView.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02C41C889183008DAB36 /* BKPasscodeInputView.m */; };
+		08DC3BFF1E647FD200F036D3 /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04841C889183008DAB36 /* MBProgressHUD.m */; };
+		08DC3C001E647FD200F036D3 /* TableGPS+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF561E56E8CB00271D8B /* TableGPS+CoreDataClass.m */; };
+		08DC3C011E647FD200F036D3 /* CCMove.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D02A471C5F9E4400D6F972 /* CCMove.m */; };
+		08DC3C021E647FD200F036D3 /* CCCertificate.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F801011D98205A007537BC /* CCCertificate.m */; };
+		08DC3C031E647FD200F036D3 /* AESCrypt.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02AB1C889183008DAB36 /* AESCrypt.m */; };
+		08DC3C041E647FD200F036D3 /* NSData+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02AD1C889183008DAB36 /* NSData+Base64.m */; };
+		08DC3C051E647FD200F036D3 /* CCMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = F7C8C1731B482A920048180E /* CCMetadata.m */; };
+		08DC3C061E647FD200F036D3 /* CCExifGeo.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A54C351C6267B500E2C8BF /* CCExifGeo.m */; };
+		08DC3C071E647FD200F036D3 /* DocumentPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74344161E1264EE001CC831 /* DocumentPickerViewController.swift */; };
+		08DC3C081E647FD200F036D3 /* AFViewShaker.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02B41C889183008DAB36 /* AFViewShaker.m */; };
+		08DC3C091E647FD200F036D3 /* CCError.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B881C638A4C00DC4301 /* CCError.m */; };
+		08DC3C0A1E647FD200F036D3 /* TableMetadata+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF4E1E56E8CB00271D8B /* TableMetadata+CoreDataClass.m */; };
+		08DC3C0B1E647FD200F036D3 /* CCUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = F7053E3D1C639DF500741EA5 /* CCUtility.m */; };
+		08DC3C0C1E647FD200F036D3 /* UICKeyChainStore.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCE2A1DC13798007E38D8 /* UICKeyChainStore.m */; };
+		08DC3C0D1E647FD200F036D3 /* NSData+CommonCrypto.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02AF1C889183008DAB36 /* NSData+CommonCrypto.m */; };
+		08DC3C0E1E647FD200F036D3 /* TableCertificates+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF621E56E8CC00271D8B /* TableCertificates+CoreDataClass.m */; };
+		08DC3C0F1E647FD200F036D3 /* CCGlobal.m in Sources */ = {isa = PBXBuildFile; fileRef = F7C8C1911B482CEA0048180E /* CCGlobal.m */; };
+		08DC3C101E647FD200F036D3 /* RNCryptorEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F05371C889184008DAB36 /* RNCryptorEngine.m */; };
+		08DC3C111E647FD200F036D3 /* RNDecryptor.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F05391C889184008DAB36 /* RNDecryptor.m */; };
+		08DC3C121E647FD200F036D3 /* UIImage+animatedGIF.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F05581C889184008DAB36 /* UIImage+animatedGIF.m */; };
+		08DC3C131E647FD200F036D3 /* TableGPS+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF581E56E8CC00271D8B /* TableGPS+CoreDataProperties.m */; };
+		08DC3C141E647FD200F036D3 /* CCHud.m in Sources */ = {isa = PBXBuildFile; fileRef = F7514EDB1C7B1336008F3338 /* CCHud.m */; };
+		08DC3C151E647FD200F036D3 /* RNEncryptor.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F053B1C889184008DAB36 /* RNEncryptor.m */; };
+		08DC3C161E647FD200F036D3 /* TableAccount+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF6A1E56E8CC00271D8B /* TableAccount+CoreDataClass.m */; };
+		08DC3C171E647FD200F036D3 /* BKPasscodeField.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02C21C889183008DAB36 /* BKPasscodeField.m */; };
+		08DC3C181E647FD200F036D3 /* cryptocloud.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = F78088E51DD3A1DB005C5A7C /* cryptocloud.xcdatamodeld */; };
+		08DC3C191E647FD200F036D3 /* APAvatarImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = F744FA7D1E57333C00BFAB34 /* APAvatarImageView.m */; };
+		08DC3C1A1E647FD200F036D3 /* TableMetadata+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF501E56E8CB00271D8B /* TableMetadata+CoreDataProperties.m */; };
+		08DC3C1B1E647FD200F036D3 /* BKPasscodeLockScreenManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02C61C889183008DAB36 /* BKPasscodeLockScreenManager.m */; };
+		08DC3C1C1E647FD200F036D3 /* CCBKPasscode.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FE125D1BAC03FB0041924B /* CCBKPasscode.m */; };
+		08DC3C1D1E647FD200F036D3 /* TableShare+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF601E56E8CC00271D8B /* TableShare+CoreDataProperties.m */; };
+		08DC3C1E1E647FD200F036D3 /* CCCoreData.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B81D801C64E77F006D02DF /* CCCoreData.m */; };
+		08DC3C1F1E647FD200F036D3 /* NSString+TruncateToWidth.m in Sources */ = {isa = PBXBuildFile; fileRef = F73049B91CB567F000C7C320 /* NSString+TruncateToWidth.m */; };
+		08DC3C201E647FD200F036D3 /* TableLocalFile+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF521E56E8CB00271D8B /* TableLocalFile+CoreDataClass.m */; };
+		08DC3C211E647FD200F036D3 /* CCConstant.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C994311E3A92C400C2466C /* CCConstant.swift */; };
+		08DC3C221E647FD200F036D3 /* BKShiftingView.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02CB1C889183008DAB36 /* BKShiftingView.m */; };
+		08DC3C231E647FD200F036D3 /* RNCryptor.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F05351C889184008DAB36 /* RNCryptor.m */; };
+		08DC3C241E647FD200F036D3 /* TableAutomaticUpload+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF681E56E8CC00271D8B /* TableAutomaticUpload+CoreDataProperties.m */; };
+		08DC3C261E647FD200F036D3 /* libownCloudiOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F71E67FC1DC1F76F003BA52B /* libownCloudiOS.a */; };
+		08DC3C271E647FD200F036D3 /* libMagicalRecord.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F7B61E9B1DC13C20009E938F /* libMagicalRecord.a */; };
+		08DC3C281E647FD200F036D3 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63071D5B3467004E2AA5 /* libssl.a */; };
+		08DC3C291E647FD200F036D3 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63061D5B3467004E2AA5 /* libcrypto.a */; };
+		08DC3C2C1E647FD200F036D3 /* Nextcloud.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7596C771D128FC80092A6B8 /* Nextcloud.xcassets */; };
+		08DC3C2D1E647FD200F036D3 /* Error.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7B381BF1C074E3E004693F8 /* Error.strings */; };
+		08DC3C2E1E647FD200F036D3 /* BKPasscodeView.strings in Resources */ = {isa = PBXBuildFile; fileRef = F72B60911A24F00B004EF66F /* BKPasscodeView.strings */; };
+		08DC3C2F1E647FD200F036D3 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7E70DE91A24DE4100E1B66A /* Localizable.strings */; };
+		08DC3C301E647FD200F036D3 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7F67BB81A24D27800EE80DA /* Images.xcassets */; };
+		08DC3C311E647FD200F036D3 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F74344181E1264EE001CC831 /* MainInterface.storyboard */; };
+		08DC3C321E647FD200F036D3 /* CCMove.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7D02A481C5F9E4400D6F972 /* CCMove.storyboard */; };
+		08DC3C3C1E647FD700F036D3 /* FileProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74344241E1264EE001CC831 /* FileProvider.swift */; };
+		08DC3C3D1E647FD700F036D3 /* CCConstant.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C994311E3A92C400C2466C /* CCConstant.swift */; };
+		08DC3C4E1E6482BF00F036D3 /* CCError.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B881C638A4C00DC4301 /* CCError.m */; };
+		08DC3C4F1E6482BF00F036D3 /* TableGPS+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF561E56E8CB00271D8B /* TableGPS+CoreDataClass.m */; };
+		08DC3C501E6482BF00F036D3 /* NSString+TruncateToWidth.m in Sources */ = {isa = PBXBuildFile; fileRef = F73049B91CB567F000C7C320 /* NSString+TruncateToWidth.m */; };
+		08DC3C511E6482BF00F036D3 /* TableAccount+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF6C1E56E8CC00271D8B /* TableAccount+CoreDataProperties.m */; };
+		08DC3C521E6482BF00F036D3 /* NYXProgressiveImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04D11C889184008DAB36 /* NYXProgressiveImageView.m */; };
+		08DC3C531E6482BF00F036D3 /* TableAccount+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF6A1E56E8CC00271D8B /* TableAccount+CoreDataClass.m */; };
+		08DC3C541E6482BF00F036D3 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F05261C889184008DAB36 /* Reachability.m */; };
+		08DC3C551E6482BF00F036D3 /* UIImage+animatedGIF.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F05581C889184008DAB36 /* UIImage+animatedGIF.m */; };
+		08DC3C561E6482BF00F036D3 /* TableMetadata+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF4E1E56E8CB00271D8B /* TableMetadata+CoreDataClass.m */; };
+		08DC3C571E6482BF00F036D3 /* UIImage+Reflection.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04C81C889184008DAB36 /* UIImage+Reflection.m */; };
+		08DC3C581E6482BF00F036D3 /* RNEncryptor.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F053B1C889184008DAB36 /* RNEncryptor.m */; };
+		08DC3C591E6482BF00F036D3 /* TableShare+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF601E56E8CC00271D8B /* TableShare+CoreDataProperties.m */; };
+		08DC3C5A1E6482BF00F036D3 /* ShareViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F7C0F46F1C8880540059EC54 /* ShareViewController.m */; };
+		08DC3C5B1E6482BF00F036D3 /* UIImage+Filtering.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04C41C889184008DAB36 /* UIImage+Filtering.m */; };
+		08DC3C5C1E6482BF00F036D3 /* UIImage+Saving.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04CE1C889184008DAB36 /* UIImage+Saving.m */; };
+		08DC3C5D1E6482BF00F036D3 /* UIImage+Rotating.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04CC1C889184008DAB36 /* UIImage+Rotating.m */; };
+		08DC3C5E1E6482BF00F036D3 /* CCMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = F7C8C1731B482A920048180E /* CCMetadata.m */; };
+		08DC3C5F1E6482BF00F036D3 /* TableLocalFile+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF541E56E8CB00271D8B /* TableLocalFile+CoreDataProperties.m */; };
+		08DC3C601E6482BF00F036D3 /* OCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F74D3DBE1BAC1941000BAE4B /* OCNetworking.m */; };
+		08DC3C611E6482BF00F036D3 /* RNCryptorEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F05371C889184008DAB36 /* RNCryptorEngine.m */; };
+		08DC3C621E6482BF00F036D3 /* AFViewShaker.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02B41C889183008DAB36 /* AFViewShaker.m */; };
+		08DC3C631E6482BF00F036D3 /* NSData+CommonCrypto.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02AF1C889183008DAB36 /* NSData+CommonCrypto.m */; };
+		08DC3C641E6482BF00F036D3 /* BKPasscodeLockScreenManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02C61C889183008DAB36 /* BKPasscodeLockScreenManager.m */; };
+		08DC3C651E6482BF00F036D3 /* TableLocalFile+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF521E56E8CB00271D8B /* TableLocalFile+CoreDataClass.m */; };
+		08DC3C661E6482BF00F036D3 /* BKPasscodeInputView.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02C41C889183008DAB36 /* BKPasscodeInputView.m */; };
+		08DC3C671E6482BF00F036D3 /* CCUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = F7053E3D1C639DF500741EA5 /* CCUtility.m */; };
+		08DC3C681E6482BF00F036D3 /* CCBKPasscode.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FE125D1BAC03FB0041924B /* CCBKPasscode.m */; };
+		08DC3C691E6482BF00F036D3 /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04841C889183008DAB36 /* MBProgressHUD.m */; };
+		08DC3C6A1E6482BF00F036D3 /* APAvatarImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = F744FA7D1E57333C00BFAB34 /* APAvatarImageView.m */; };
+		08DC3C6B1E6482BF00F036D3 /* BKPasscodeDummyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02C01C889183008DAB36 /* BKPasscodeDummyViewController.m */; };
+		08DC3C6C1E6482BF00F036D3 /* TableDirectory+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF5A1E56E8CC00271D8B /* TableDirectory+CoreDataClass.m */; };
+		08DC3C6D1E6482BF00F036D3 /* CCCrypto.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FE125F1BAC03FB0041924B /* CCCrypto.m */; };
+		08DC3C6E1E6482BF00F036D3 /* CCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F732BA041D76CE1500E9878B /* CCNetworking.m */; };
+		08DC3C6F1E6482BF00F036D3 /* TableCertificates+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF621E56E8CC00271D8B /* TableCertificates+CoreDataClass.m */; };
+		08DC3C701E6482BF00F036D3 /* CCCoreData.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B81D801C64E77F006D02DF /* CCCoreData.m */; };
+		08DC3C711E6482BF00F036D3 /* TableCertificates+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF641E56E8CC00271D8B /* TableCertificates+CoreDataProperties.m */; };
+		08DC3C721E6482BF00F036D3 /* BKPasscodeField.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02C21C889183008DAB36 /* BKPasscodeField.m */; };
+		08DC3C731E6482BF00F036D3 /* CCHud.m in Sources */ = {isa = PBXBuildFile; fileRef = F7514EDB1C7B1336008F3338 /* CCHud.m */; };
+		08DC3C741E6482BF00F036D3 /* TableAutomaticUpload+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF661E56E8CC00271D8B /* TableAutomaticUpload+CoreDataClass.m */; };
+		08DC3C751E6482BF00F036D3 /* RNDecryptor.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F05391C889184008DAB36 /* RNDecryptor.m */; };
+		08DC3C761E6482BF00F036D3 /* NYXImagesHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04D41C889184008DAB36 /* NYXImagesHelper.m */; };
+		08DC3C771E6482BF00F036D3 /* CCConstant.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C994311E3A92C400C2466C /* CCConstant.swift */; };
+		08DC3C781E6482BF00F036D3 /* UIImage+Enhancing.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04C21C889184008DAB36 /* UIImage+Enhancing.m */; };
+		08DC3C791E6482BF00F036D3 /* CCCellShareExt.m in Sources */ = {isa = PBXBuildFile; fileRef = F7296A611C8880C9001A7809 /* CCCellShareExt.m */; };
+		08DC3C7A1E6482BF00F036D3 /* UICKeyChainStore.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCE2A1DC13798007E38D8 /* UICKeyChainStore.m */; };
+		08DC3C7B1E6482BF00F036D3 /* TableDirectory+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF5C1E56E8CC00271D8B /* TableDirectory+CoreDataProperties.m */; };
+		08DC3C7C1E6482BF00F036D3 /* UIImage+Masking.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04C61C889184008DAB36 /* UIImage+Masking.m */; };
+		08DC3C7D1E6482BF00F036D3 /* NSString+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02B11C889183008DAB36 /* NSString+Base64.m */; };
+		08DC3C7E1E6482BF00F036D3 /* CCSharedDBSession.m in Sources */ = {isa = PBXBuildFile; fileRef = F7EF0CAD1D9E95F400A9D15E /* CCSharedDBSession.m */; };
+		08DC3C7F1E6482BF00F036D3 /* CCMove.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D02A471C5F9E4400D6F972 /* CCMove.m */; };
+		08DC3C801E6482BF00F036D3 /* UIImage+Resizing.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04CA1C889184008DAB36 /* UIImage+Resizing.m */; };
+		08DC3C811E6482BF00F036D3 /* BKPasscodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02C91C889183008DAB36 /* BKPasscodeViewController.m */; };
+		08DC3C821E6482BF00F036D3 /* BKShiftingView.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02CB1C889183008DAB36 /* BKShiftingView.m */; };
+		08DC3C831E6482BF00F036D3 /* CCGraphics.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B841C6388BC00DC4301 /* CCGraphics.m */; };
+		08DC3C841E6482BF00F036D3 /* BKTouchIDSwitchView.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02CF1C889183008DAB36 /* BKTouchIDSwitchView.m */; };
+		08DC3C851E6482BF00F036D3 /* CCCertificate.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F801011D98205A007537BC /* CCCertificate.m */; };
+		08DC3C861E6482BF00F036D3 /* PPImageScrollingCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F05211C889184008DAB36 /* PPImageScrollingCellView.m */; };
+		08DC3C871E6482BF00F036D3 /* TableGPS+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF581E56E8CC00271D8B /* TableGPS+CoreDataProperties.m */; };
+		08DC3C881E6482BF00F036D3 /* CCExifGeo.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A54C351C6267B500E2C8BF /* CCExifGeo.m */; };
+		08DC3C891E6482BF00F036D3 /* TableShare+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF5E1E56E8CC00271D8B /* TableShare+CoreDataClass.m */; };
+		08DC3C8A1E6482BF00F036D3 /* RNCryptor.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F05351C889184008DAB36 /* RNCryptor.m */; };
+		08DC3C8B1E6482BF00F036D3 /* CCGlobal.m in Sources */ = {isa = PBXBuildFile; fileRef = F7C8C1911B482CEA0048180E /* CCGlobal.m */; };
+		08DC3C8C1E6482BF00F036D3 /* UIImage+Blurring.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04C01C889184008DAB36 /* UIImage+Blurring.m */; };
+		08DC3C8D1E6482BF00F036D3 /* BKTouchIDManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02CD1C889183008DAB36 /* BKTouchIDManager.m */; };
+		08DC3C8E1E6482BF00F036D3 /* CCloadItemData.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7296A661C8880ED001A7809 /* CCloadItemData.swift */; };
+		08DC3C8F1E6482BF00F036D3 /* TableAutomaticUpload+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF681E56E8CC00271D8B /* TableAutomaticUpload+CoreDataProperties.m */; };
+		08DC3C901E6482BF00F036D3 /* PPCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F051F1C889184008DAB36 /* PPCollectionViewCell.m */; };
+		08DC3C911E6482BF00F036D3 /* NSData+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02AD1C889183008DAB36 /* NSData+Base64.m */; };
+		08DC3C921E6482BF00F036D3 /* cryptocloud.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = F78088E51DD3A1DB005C5A7C /* cryptocloud.xcdatamodeld */; };
+		08DC3C931E6482BF00F036D3 /* AESCrypt.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02AB1C889183008DAB36 /* AESCrypt.m */; };
+		08DC3C941E6482BF00F036D3 /* PPImageScrollingTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F05231C889184008DAB36 /* PPImageScrollingTableViewCell.m */; };
+		08DC3C951E6482BF00F036D3 /* TableMetadata+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF501E56E8CB00271D8B /* TableMetadata+CoreDataProperties.m */; };
+		08DC3C971E6482BF00F036D3 /* libownCloudiOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F71E67FC1DC1F76F003BA52B /* libownCloudiOS.a */; };
+		08DC3C981E6482BF00F036D3 /* libMagicalRecord.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F7B61E9B1DC13C20009E938F /* libMagicalRecord.a */; };
+		08DC3C991E6482BF00F036D3 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63071D5B3467004E2AA5 /* libssl.a */; };
+		08DC3C9A1E6482BF00F036D3 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63061D5B3467004E2AA5 /* libcrypto.a */; };
+		08DC3C9D1E6482BF00F036D3 /* Nextcloud.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7596C771D128FC80092A6B8 /* Nextcloud.xcassets */; };
+		08DC3C9E1E6482BF00F036D3 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F78BFEDE1D31126B00E513CF /* MainInterface.storyboard */; };
+		08DC3C9F1E6482BF00F036D3 /* Share Ext Nextcloud.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = F7DCA1B81D32BD4100E48D39 /* Share Ext Nextcloud.entitlements */; };
+		08DC3CA01E6482BF00F036D3 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7F67BB81A24D27800EE80DA /* Images.xcassets */; };
+		08DC3CA11E6482BF00F036D3 /* CCMove.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7D02A481C5F9E4400D6F972 /* CCMove.storyboard */; };
+		08DC3CA21E6482BF00F036D3 /* BKPasscodeView.strings in Resources */ = {isa = PBXBuildFile; fileRef = F72B60911A24F00B004EF66F /* BKPasscodeView.strings */; };
+		08DC3CA31E6482BF00F036D3 /* Error.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7B381BF1C074E3E004693F8 /* Error.strings */; };
+		08DC3CA41E6482BF00F036D3 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7E70DE91A24DE4100E1B66A /* Localizable.strings */; };
+		08DC3CA51E6482BF00F036D3 /* CCCellShareExt.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7296A621C8880C9001A7809 /* CCCellShareExt.xib */; };
+		08DC3CB11E64879700F036D3 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 08DC3CB01E64879700F036D3 /* GoogleService-Info.plist */; };
+		08EA97481E6554FC004C83FA /* FirebaseAnalytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 08EA97441E6554FC004C83FA /* FirebaseAnalytics.framework */; };
+		08EA97491E6554FC004C83FA /* FirebaseCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 08EA97451E6554FC004C83FA /* FirebaseCore.framework */; };
+		08EA974A1E6554FC004C83FA /* FirebaseInstanceID.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 08EA97461E6554FC004C83FA /* FirebaseInstanceID.framework */; };
+		08EA974B1E6554FC004C83FA /* GoogleToolboxForMac.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 08EA97471E6554FC004C83FA /* GoogleToolboxForMac.framework */; };
 		F708CF6D1E56E8CC00271D8B /* TableMetadata+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF4E1E56E8CB00271D8B /* TableMetadata+CoreDataClass.m */; };
 		F708CF6E1E56E8CC00271D8B /* TableMetadata+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF4E1E56E8CB00271D8B /* TableMetadata+CoreDataClass.m */; };
 		F708CF6F1E56E8CC00271D8B /* TableMetadata+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF4E1E56E8CB00271D8B /* TableMetadata+CoreDataClass.m */; };
@@ -606,6 +1206,27 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		08DC3C471E64826300F036D3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F7F67BA01A24D27800EE80DA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 08DC3BEA1E647FD200F036D3;
+			remoteInfo = PickerCustom;
+		};
+		08DC3C491E64826600F036D3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F7F67BA01A24D27800EE80DA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 08DC3C391E647FD700F036D3;
+			remoteInfo = PickerFileProviderCustom;
+		};
+		08DC3CAC1E6482D600F036D3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F7F67BA01A24D27800EE80DA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 08DC3C4B1E6482BF00F036D3;
+			remoteInfo = "Share Ext Nextcloud Custom";
+		};
 		F7145A311D12E65F00CAFEEC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F7F67BA01A24D27800EE80DA /* Project object */;
@@ -716,6 +1337,22 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		08DC3BD41E64727E00F036D3 /* AdSupport.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AdSupport.framework; path = System/Library/Frameworks/AdSupport.framework; sourceTree = SDKROOT; };
+		08DC3BD61E6472C200F036D3 /* NextcloudCustom.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NextcloudCustom.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		08DC3BE81E647E3F00F036D3 /* NextcloudCustom.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = NextcloudCustom.plist; sourceTree = "<group>"; };
+		08DC3C371E647FD200F036D3 /* PickerCustom.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = PickerCustom.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		08DC3C381E647FD200F036D3 /* PickerCustom-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "PickerCustom-Info.plist"; path = "/Users/mdjanic/Projects/nextcloud-ios/PickerCustom-Info.plist"; sourceTree = "<absolute>"; };
+		08DC3C451E647FD700F036D3 /* PickerFileProviderCustom.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = PickerFileProviderCustom.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		08DC3CAA1E6482BF00F036D3 /* Share Ext Nextcloud Custom.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Share Ext Nextcloud Custom.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		08DC3CB01E64879700F036D3 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		08DC3CBF1E64895500F036D3 /* Share Ext Nextcloud Custom-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Share Ext Nextcloud Custom-Info.plist"; sourceTree = "<group>"; };
+		08DC3CD01E6489FB00F036D3 /* PickerFileProviderCustom-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "PickerFileProviderCustom-Info.plist"; sourceTree = "<group>"; };
+		08EA97441E6554FC004C83FA /* FirebaseAnalytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseAnalytics.framework; sourceTree = "<group>"; };
+		08EA97451E6554FC004C83FA /* FirebaseCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseCore.framework; sourceTree = "<group>"; };
+		08EA97461E6554FC004C83FA /* FirebaseInstanceID.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseInstanceID.framework; sourceTree = "<group>"; };
+		08EA97471E6554FC004C83FA /* GoogleToolboxForMac.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleToolboxForMac.framework; sourceTree = "<group>"; };
+		08EA97561E655552004C83FA /* Firebase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Firebase.h; sourceTree = "<group>"; };
+		08EA97571E655552004C83FA /* module.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
 		F70211F41BAC56E9003FC03E /* CCCellMain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCCellMain.h; sourceTree = "<group>"; };
 		F70211F51BAC56E9003FC03E /* CCCellMain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCCellMain.m; sourceTree = "<group>"; };
 		F70211F61BAC56E9003FC03E /* CCCellMain.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CCCellMain.xib; sourceTree = "<group>"; };
@@ -1583,6 +2220,52 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		084215361E646E0200C8F4F3 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				08EA97481E6554FC004C83FA /* FirebaseAnalytics.framework in Frameworks */,
+				08DC3BD51E64727E00F036D3 /* AdSupport.framework in Frameworks */,
+				08EA97491E6554FC004C83FA /* FirebaseCore.framework in Frameworks */,
+				084215371E646E0200C8F4F3 /* libownCloudiOS.a in Frameworks */,
+				084215381E646E0200C8F4F3 /* libMagicalRecord.a in Frameworks */,
+				08EA974B1E6554FC004C83FA /* GoogleToolboxForMac.framework in Frameworks */,
+				084215391E646E0200C8F4F3 /* libz.tbd in Frameworks */,
+				0842153A1E646E0200C8F4F3 /* libcrypto.a in Frameworks */,
+				08EA974A1E6554FC004C83FA /* FirebaseInstanceID.framework in Frameworks */,
+				0842153B1E646E0200C8F4F3 /* libssl.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		08DC3C251E647FD200F036D3 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				08DC3C261E647FD200F036D3 /* libownCloudiOS.a in Frameworks */,
+				08DC3C271E647FD200F036D3 /* libMagicalRecord.a in Frameworks */,
+				08DC3C281E647FD200F036D3 /* libssl.a in Frameworks */,
+				08DC3C291E647FD200F036D3 /* libcrypto.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		08DC3C3E1E647FD700F036D3 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		08DC3C961E6482BF00F036D3 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				08DC3C971E6482BF00F036D3 /* libownCloudiOS.a in Frameworks */,
+				08DC3C981E6482BF00F036D3 /* libMagicalRecord.a in Frameworks */,
+				08DC3C991E6482BF00F036D3 /* libssl.a in Frameworks */,
+				08DC3C9A1E6482BF00F036D3 /* libcrypto.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F7145A141D12E3B700CAFEEC /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -3148,6 +3831,7 @@
 		F7F67B9F1A24D27800EE80DA = {
 			isa = PBXGroup;
 			children = (
+				08DC3CB01E64879700F036D3 /* GoogleService-Info.plist */,
 				F7F67BAA1A24D27800EE80DA /* iOSClient */,
 				F7F67BAB1A24D27800EE80DA /* Supporting Files */,
 				F7C0F46D1C8880540059EC54 /* Share Ext */,
@@ -3155,12 +3839,21 @@
 				F74344211E1264EE001CC831 /* PickerFileProvider */,
 				F7FC7D651DC1F98700BB2C6A /* Products */,
 				F7FC7D541DC1F93700BB2C6A /* Frameworks */,
+				08DC3BD61E6472C200F036D3 /* NextcloudCustom.app */,
+				08DC3C371E647FD200F036D3 /* PickerCustom.appex */,
+				08DC3CD01E6489FB00F036D3 /* PickerFileProviderCustom-Info.plist */,
+				08DC3C381E647FD200F036D3 /* PickerCustom-Info.plist */,
+				08DC3C451E647FD700F036D3 /* PickerFileProviderCustom.appex */,
+				08DC3CAA1E6482BF00F036D3 /* Share Ext Nextcloud Custom.appex */,
+				08DC3CBF1E64895500F036D3 /* Share Ext Nextcloud Custom-Info.plist */,
 			);
 			sourceTree = "<group>";
 		};
 		F7F67BAA1A24D27800EE80DA /* iOSClient */ = {
 			isa = PBXGroup;
 			children = (
+				08EA97561E655552004C83FA /* Firebase.h */,
+				08EA97571E655552004C83FA /* module.modulemap */,
 				F7B61E861DC13C20009E938F /* MagicalRecord.xcodeproj */,
 				F71E67F61DC1F76F003BA52B /* ownCloud iOS library.xcodeproj */,
 				F70F02A81C889183008DAB36 /* Libraries external */,
@@ -3203,6 +3896,7 @@
 		F7F67BAB1A24D27800EE80DA /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				08DC3BE81E647E3F00F036D3 /* NextcloudCustom.plist */,
 				F7D154271E2392A300202FD9 /* Nextcloud-Bridging-Header.h */,
 				F75CDBF51DF063AD00116AD0 /* .gitignore */,
 				F7229B461DF71BA800E8C4E7 /* ChangeLog */,
@@ -3234,6 +3928,11 @@
 		F7FC7D541DC1F93700BB2C6A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				08EA97441E6554FC004C83FA /* FirebaseAnalytics.framework */,
+				08EA97451E6554FC004C83FA /* FirebaseCore.framework */,
+				08EA97461E6554FC004C83FA /* FirebaseInstanceID.framework */,
+				08EA97471E6554FC004C83FA /* GoogleToolboxForMac.framework */,
+				08DC3BD41E64727E00F036D3 /* AdSupport.framework */,
 				F7FC7D551DC1F93800BB2C6A /* libz.tbd */,
 			);
 			name = Frameworks;
@@ -3276,6 +3975,78 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		0842141C1E646E0200C8F4F3 /* NextcloudCustom */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 084215E21E646E0200C8F4F3 /* Build configuration list for PBXNativeTarget "NextcloudCustom" */;
+			buildPhases = (
+				084214231E646E0200C8F4F3 /* Sources */,
+				084215361E646E0200C8F4F3 /* Frameworks */,
+				0842153C1E646E0200C8F4F3 /* Resources */,
+				084215E11E646E0200C8F4F3 /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				08DC3CAD1E6482D600F036D3 /* PBXTargetDependency */,
+				08DC3C4A1E64826600F036D3 /* PBXTargetDependency */,
+				08DC3C481E64826300F036D3 /* PBXTargetDependency */,
+			);
+			name = NextcloudCustom;
+			productName = "Crypto Cloud";
+			productReference = 08DC3BD61E6472C200F036D3 /* NextcloudCustom.app */;
+			productType = "com.apple.product-type.application";
+		};
+		08DC3BEA1E647FD200F036D3 /* PickerCustom */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 08DC3C341E647FD200F036D3 /* Build configuration list for PBXNativeTarget "PickerCustom" */;
+			buildPhases = (
+				08DC3BEC1E647FD200F036D3 /* Sources */,
+				08DC3C251E647FD200F036D3 /* Frameworks */,
+				08DC3C2B1E647FD200F036D3 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PickerCustom;
+			productName = Picker;
+			productReference = 08DC3C371E647FD200F036D3 /* PickerCustom.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		08DC3C391E647FD700F036D3 /* PickerFileProviderCustom */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 08DC3C421E647FD700F036D3 /* Build configuration list for PBXNativeTarget "PickerFileProviderCustom" */;
+			buildPhases = (
+				08DC3C3B1E647FD700F036D3 /* Sources */,
+				08DC3C3E1E647FD700F036D3 /* Frameworks */,
+				08DC3C401E647FD700F036D3 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PickerFileProviderCustom;
+			productName = PickerFileProvider;
+			productReference = 08DC3C451E647FD700F036D3 /* PickerFileProviderCustom.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		08DC3C4B1E6482BF00F036D3 /* Share Ext Nextcloud Custom */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 08DC3CA71E6482BF00F036D3 /* Build configuration list for PBXNativeTarget "Share Ext Nextcloud Custom" */;
+			buildPhases = (
+				08DC3C4D1E6482BF00F036D3 /* Sources */,
+				08DC3C961E6482BF00F036D3 /* Frameworks */,
+				08DC3C9C1E6482BF00F036D3 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Share Ext Nextcloud Custom";
+			productName = "Share Ext";
+			productReference = 08DC3CAA1E6482BF00F036D3 /* Share Ext Nextcloud Custom.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		F71459B41D12E3B700CAFEEC /* Share Ext Nextcloud */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = F7145A251D12E3B700CAFEEC /* Build configuration list for PBXNativeTarget "Share Ext Nextcloud" */;
@@ -3359,6 +4130,18 @@
 				LastUpgradeCheck = 0800;
 				ORGANIZATIONNAME = TWS;
 				TargetAttributes = {
+					0842141C1E646E0200C8F4F3 = {
+						DevelopmentTeam = 6JLRKY9ZV7;
+					};
+					08DC3BEA1E647FD200F036D3 = {
+						DevelopmentTeam = 6JLRKY9ZV7;
+					};
+					08DC3C391E647FD700F036D3 = {
+						DevelopmentTeam = 6JLRKY9ZV7;
+					};
+					08DC3C4B1E6482BF00F036D3 = {
+						DevelopmentTeam = 6JLRKY9ZV7;
+					};
 					F71459B41D12E3B700CAFEEC = {
 						DevelopmentTeam = 6JLRKY9ZV7;
 						SystemCapabilities = {
@@ -3435,6 +4218,10 @@
 				F71459B41D12E3B700CAFEEC /* Share Ext Nextcloud */,
 				F74344111E1264ED001CC831 /* Picker */,
 				F743441F1E1264EE001CC831 /* PickerFileProvider */,
+				0842141C1E646E0200C8F4F3 /* NextcloudCustom */,
+				08DC3BEA1E647FD200F036D3 /* PickerCustom */,
+				08DC3C391E647FD700F036D3 /* PickerFileProviderCustom */,
+				08DC3C4B1E6482BF00F036D3 /* Share Ext Nextcloud Custom */,
 			);
 		};
 /* End PBXProject section */
@@ -3513,6 +4300,212 @@
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
+		0842153C1E646E0200C8F4F3 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0842153D1E646E0200C8F4F3 /* CCLogin.storyboard in Resources */,
+				0842153E1E646E0200C8F4F3 /* ZSSbold@2x.png in Resources */,
+				0842153F1E646E0200C8F4F3 /* ZSSrightjustify@2x.png in Resources */,
+				084215401E646E0200C8F4F3 /* CCCellOffline.xib in Resources */,
+				084215411E646E0200C8F4F3 /* ZSSindent@2x.png in Resources */,
+				084215421E646E0200C8F4F3 /* ImageSelectedOn@3x.png in Resources */,
+				084215431E646E0200C8F4F3 /* Reader-Mark-N@2x.png in Resources */,
+				084215441E646E0200C8F4F3 /* PlayButtonOverlayLarge.png in Resources */,
+				084215451E646E0200C8F4F3 /* VideoOverlay@2x.png in Resources */,
+				084215461E646E0200C8F4F3 /* ZSSh4@2x.png in Resources */,
+				084215471E646E0200C8F4F3 /* PlayButtonOverlayLarge@2x.png in Resources */,
+				084215481E646E0200C8F4F3 /* loading@2x.gif in Resources */,
+				084215491E646E0200C8F4F3 /* ZSSunderline.png in Resources */,
+				0842154A1E646E0200C8F4F3 /* PlayButtonOverlayLargeTap@3x.png in Resources */,
+				0842154B1E646E0200C8F4F3 /* ZSSbgcolor.png in Resources */,
+				0842154C1E646E0200C8F4F3 /* Nextcloud.xcassets in Resources */,
+				0842154D1E646E0200C8F4F3 /* ZSSstrikethrough@2x.png in Resources */,
+				0842154E1E646E0200C8F4F3 /* XLForm.bundle in Resources */,
+				0842154F1E646E0200C8F4F3 /* ZSSinsertkeyword@2x.png in Resources */,
+				084215501E646E0200C8F4F3 /* Reader-Mark-N.png in Resources */,
+				084215511E646E0200C8F4F3 /* ZSShorizontalrule.png in Resources */,
+				084215521E646E0200C8F4F3 /* ZSSh3@2x.png in Resources */,
+				084215531E646E0200C8F4F3 /* CCUploadFromOtherUpp.storyboard in Resources */,
+				084215541E646E0200C8F4F3 /* ZSSinsertkeyword.png in Resources */,
+				084215551E646E0200C8F4F3 /* icon-error@2x.png in Resources */,
+				084215561E646E0200C8F4F3 /* LaunchScreenNextcloud.xib in Resources */,
+				084215571E646E0200C8F4F3 /* ZSSoutdent@2x.png in Resources */,
+				084215581E646E0200C8F4F3 /* ZSSindent.png in Resources */,
+				084215591E646E0200C8F4F3 /* ZSSpicker.png in Resources */,
+				0842155A1E646E0200C8F4F3 /* PlayButtonOverlayLargeTap@2x.png in Resources */,
+				0842155B1E646E0200C8F4F3 /* ZSSunderline@2x.png in Resources */,
+				0842155C1E646E0200C8F4F3 /* Reader-Mark-Y.png in Resources */,
+				0842155D1E646E0200C8F4F3 /* Reader-Mark-Y@2x.png in Resources */,
+				0842155E1E646E0200C8F4F3 /* ZSSundo@2x.png in Resources */,
+				0842155F1E646E0200C8F4F3 /* BKPasscodeView.strings in Resources */,
+				084215601E646E0200C8F4F3 /* ZSSparagraph.png in Resources */,
+				084215611E646E0200C8F4F3 /* ZSSorderedlist@2x.png in Resources */,
+				084215621E646E0200C8F4F3 /* ZSSitalic@2x.png in Resources */,
+				084215631E646E0200C8F4F3 /* ZSSviewsource.png in Resources */,
+				084215641E646E0200C8F4F3 /* ZSSforcejustify@2x.png in Resources */,
+				084215651E646E0200C8F4F3 /* ZSSh1@2x.png in Resources */,
+				084215661E646E0200C8F4F3 /* CCControlCenterCell.xib in Resources */,
+				084215671E646E0200C8F4F3 /* ImageSelectedSmallOn@3x.png in Resources */,
+				084215681E646E0200C8F4F3 /* Intro.strings in Resources */,
+				084215691E646E0200C8F4F3 /* UIBarButtonItemArrowLeft.png in Resources */,
+				0842156A1E646E0200C8F4F3 /* CCPeekPop.storyboard in Resources */,
+				0842156B1E646E0200C8F4F3 /* ZSSitalic.png in Resources */,
+				0842156C1E646E0200C8F4F3 /* CTAssetsPicker.strings in Resources */,
+				0842156D1E646E0200C8F4F3 /* Reader-Email@2x.png in Resources */,
+				0842156E1E646E0200C8F4F3 /* PlayButtonOverlayLarge@3x.png in Resources */,
+				0842156F1E646E0200C8F4F3 /* ZSSh2@2x.png in Resources */,
+				084215701E646E0200C8F4F3 /* ZSSstrikethrough.png in Resources */,
+				084215711E646E0200C8F4F3 /* ZSSh6.png in Resources */,
+				084215721E646E0200C8F4F3 /* ZSSh3.png in Resources */,
+				084215731E646E0200C8F4F3 /* Reader-Button-H.png in Resources */,
+				084215741E646E0200C8F4F3 /* ZSSh1.png in Resources */,
+				084215751E646E0200C8F4F3 /* icon-info.png in Resources */,
+				084215761E646E0200C8F4F3 /* Main.storyboard in Resources */,
+				084215771E646E0200C8F4F3 /* ZSSleftjustify.png in Resources */,
+				084215781E646E0200C8F4F3 /* ZSSclearstyle@2x.png in Resources */,
+				084215791E646E0200C8F4F3 /* ZSSlink.png in Resources */,
+				0842157A1E646E0200C8F4F3 /* ZSSsuperscript@2x.png in Resources */,
+				0842157B1E646E0200C8F4F3 /* ZSScenterjustify.png in Resources */,
+				0842157C1E646E0200C8F4F3 /* CCMove.storyboard in Resources */,
+				0842157D1E646E0200C8F4F3 /* UIBarButtonItemGrid.png in Resources */,
+				08DC3CB11E64879700F036D3 /* GoogleService-Info.plist in Resources */,
+				0842157E1E646E0200C8F4F3 /* Reader-Thumbs.png in Resources */,
+				0842157F1E646E0200C8F4F3 /* UIBarButtonItemArrowRight@2x.png in Resources */,
+				084215801E646E0200C8F4F3 /* iRate.bundle in Resources */,
+				084215811E646E0200C8F4F3 /* ZSSkeyboard@2x.png in Resources */,
+				084215821E646E0200C8F4F3 /* VideoOverlay.png in Resources */,
+				084215831E646E0200C8F4F3 /* ImageSelectedOff.png in Resources */,
+				084215841E646E0200C8F4F3 /* ZSSorderedlist.png in Resources */,
+				084215851E646E0200C8F4F3 /* ZSSsubscript@2x.png in Resources */,
+				084215861E646E0200C8F4F3 /* editor.html in Resources */,
+				084215871E646E0200C8F4F3 /* icon-info@2x.png in Resources */,
+				084215881E646E0200C8F4F3 /* ZSSkeyboard.png in Resources */,
+				084215891E646E0200C8F4F3 /* icon-error.png in Resources */,
+				0842158A1E646E0200C8F4F3 /* ZSStable@2x.png in Resources */,
+				0842158B1E646E0200C8F4F3 /* ZSSredo@2x.png in Resources */,
+				0842158C1E646E0200C8F4F3 /* ZSSh5.png in Resources */,
+				0842158D1E646E0200C8F4F3 /* ZSSquicklink@2x.png in Resources */,
+				0842158E1E646E0200C8F4F3 /* Reader-Export.png in Resources */,
+				0842158F1E646E0200C8F4F3 /* ZSStextcolor@2x.png in Resources */,
+				084215901E646E0200C8F4F3 /* Reader-Button-N@2x.png in Resources */,
+				084215911E646E0200C8F4F3 /* Reader-Button-H@2x.png in Resources */,
+				084215921E646E0200C8F4F3 /* ZSSbgcolor@2x.png in Resources */,
+				084215931E646E0200C8F4F3 /* synchronized.gif in Resources */,
+				084215941E646E0200C8F4F3 /* ZSSoutdent.png in Resources */,
+				084215951E646E0200C8F4F3 /* ZSStextcolor.png in Resources */,
+				084215961E646E0200C8F4F3 /* PlayButtonOverlayLargeTap.png in Resources */,
+				084215971E646E0200C8F4F3 /* ZSSimage.png in Resources */,
+				084215981E646E0200C8F4F3 /* CCShare.storyboard in Resources */,
+				084215991E646E0200C8F4F3 /* Reader-Thumbs@2x.png in Resources */,
+				0842159A1E646E0200C8F4F3 /* UIBarButtonItemGrid@3x.png in Resources */,
+				0842159B1E646E0200C8F4F3 /* ImageSelectedOff@3x.png in Resources */,
+				0842159C1E646E0200C8F4F3 /* ZSSquicklink.png in Resources */,
+				0842159D1E646E0200C8F4F3 /* ZSSh2.png in Resources */,
+				0842159E1E646E0200C8F4F3 /* ZSSbold.png in Resources */,
+				0842159F1E646E0200C8F4F3 /* ImageSelectedSmallOn.png in Resources */,
+				084215A01E646E0200C8F4F3 /* Reader-Button-N.png in Resources */,
+				084215A11E646E0200C8F4F3 /* Error.strings in Resources */,
+				084215A21E646E0200C8F4F3 /* ZSStable.png in Resources */,
+				084215A31E646E0200C8F4F3 /* synchronizedcrypto.gif in Resources */,
+				084215A41E646E0200C8F4F3 /* ImageSelectedSmallOff.png in Resources */,
+				084215A51E646E0200C8F4F3 /* TTOpenInAppActivityLocalizable.string in Resources */,
+				084215A61E646E0200C8F4F3 /* ZSSRichTextEditor.js in Resources */,
+				084215A71E646E0200C8F4F3 /* VideoOverlay@3x.png in Resources */,
+				084215A81E646E0200C8F4F3 /* UIBarButtonItemGrid@2x.png in Resources */,
+				084215A91E646E0200C8F4F3 /* ImageError@3x.png in Resources */,
+				084215AA1E646E0200C8F4F3 /* ZSSclearstyle.png in Resources */,
+				084215AB1E646E0200C8F4F3 /* ImagesIntro.xcassets in Resources */,
+				084215AC1E646E0200C8F4F3 /* ImageError@2x.png in Resources */,
+				084215AD1E646E0200C8F4F3 /* Reader-Print.png in Resources */,
+				084215AE1E646E0200C8F4F3 /* ImageSelectedSmallOff@2x.png in Resources */,
+				084215AF1E646E0200C8F4F3 /* ZSSlink@2x.png in Resources */,
+				084215B01E646E0200C8F4F3 /* Reader-Email.png in Resources */,
+				084215B11E646E0200C8F4F3 /* UIBarButtonItemArrowRight@3x.png in Resources */,
+				084215B21E646E0200C8F4F3 /* Acknowledgements.rtf in Resources */,
+				084215B31E646E0200C8F4F3 /* ZSSunorderedlist.png in Resources */,
+				084215B41E646E0200C8F4F3 /* Localizable.strings in Resources */,
+				084215B51E646E0200C8F4F3 /* UIBarButtonItemArrowLeft@2x.png in Resources */,
+				084215B61E646E0200C8F4F3 /* ZSSh4.png in Resources */,
+				084215B71E646E0200C8F4F3 /* InfoPlist.strings in Resources */,
+				084215B81E646E0200C8F4F3 /* CCNotification.storyboard in Resources */,
+				084215B91E646E0200C8F4F3 /* ZSSundo.png in Resources */,
+				084215BA1E646E0200C8F4F3 /* ZSSsubscript.png in Resources */,
+				084215BB1E646E0200C8F4F3 /* ImageSelectedOn.png in Resources */,
+				084215BC1E646E0200C8F4F3 /* CTAssetsPickerController.bundle in Resources */,
+				084215BD1E646E0200C8F4F3 /* ZSShorizontalrule@2x.png in Resources */,
+				084215BE1E646E0200C8F4F3 /* ZSSforcejustify.png in Resources */,
+				084215BF1E646E0200C8F4F3 /* ImageSelectedSmallOff@3x.png in Resources */,
+				084215C01E646E0200C8F4F3 /* ZSSunorderedlist@2x.png in Resources */,
+				084215C11E646E0200C8F4F3 /* ZSSleftjustify@2x.png in Resources */,
+				084215C21E646E0200C8F4F3 /* ImageSelectedOn@2x.png in Resources */,
+				084215C31E646E0200C8F4F3 /* icon-success.png in Resources */,
+				084215C41E646E0200C8F4F3 /* ZSSimage@2x.png in Resources */,
+				084215C51E646E0200C8F4F3 /* ImageSelectedSmallOn@2x.png in Resources */,
+				084215C61E646E0200C8F4F3 /* ZSSunlink.png in Resources */,
+				084215C71E646E0200C8F4F3 /* ZSSredo.png in Resources */,
+				08DC3BE91E647E3F00F036D3 /* NextcloudCustom.plist in Resources */,
+				084215C81E646E0200C8F4F3 /* ImageError.png in Resources */,
+				084215C91E646E0200C8F4F3 /* ZSSrightjustify.png in Resources */,
+				084215CA1E646E0200C8F4F3 /* UIBarButtonItemArrowLeft@3x.png in Resources */,
+				084215CB1E646E0200C8F4F3 /* ZSSviewsource@2x.png in Resources */,
+				084215CC1E646E0200C8F4F3 /* Images.xcassets in Resources */,
+				084215CD1E646E0200C8F4F3 /* ZSScenterjustify@2x.png in Resources */,
+				084215CE1E646E0200C8F4F3 /* ZSSparagraph@2x.png in Resources */,
+				084215CF1E646E0200C8F4F3 /* ZSSsuperscript.png in Resources */,
+				084215D01E646E0200C8F4F3 /* ZSSh5@2x.png in Resources */,
+				084215D11E646E0200C8F4F3 /* Reader-Print@2x.png in Resources */,
+				084215D21E646E0200C8F4F3 /* icon-success@2x.png in Resources */,
+				084215D31E646E0200C8F4F3 /* ImageSelectedOff@2x.png in Resources */,
+				084215D41E646E0200C8F4F3 /* Reader-Export@2x.png in Resources */,
+				084215D51E646E0200C8F4F3 /* LMMediaPlayerView.bundle in Resources */,
+				084215D61E646E0200C8F4F3 /* CCCellMain.xib in Resources */,
+				084215D71E646E0200C8F4F3 /* CCCellMainTransfer.xib in Resources */,
+				084215D81E646E0200C8F4F3 /* LMMediaPlayerView.xib in Resources */,
+				084215D91E646E0200C8F4F3 /* ZSSunlink@2x.png in Resources */,
+				084215DA1E646E0200C8F4F3 /* ZSSpicker@2x.png in Resources */,
+				084215DB1E646E0200C8F4F3 /* ZSSh6@2x.png in Resources */,
+				084215DC1E646E0200C8F4F3 /* UIBarButtonItemArrowRight.png in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		08DC3C2B1E647FD200F036D3 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				08DC3C2C1E647FD200F036D3 /* Nextcloud.xcassets in Resources */,
+				08DC3C2D1E647FD200F036D3 /* Error.strings in Resources */,
+				08DC3C2E1E647FD200F036D3 /* BKPasscodeView.strings in Resources */,
+				08DC3C2F1E647FD200F036D3 /* Localizable.strings in Resources */,
+				08DC3C301E647FD200F036D3 /* Images.xcassets in Resources */,
+				08DC3C311E647FD200F036D3 /* MainInterface.storyboard in Resources */,
+				08DC3C321E647FD200F036D3 /* CCMove.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		08DC3C401E647FD700F036D3 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		08DC3C9C1E6482BF00F036D3 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				08DC3C9D1E6482BF00F036D3 /* Nextcloud.xcassets in Resources */,
+				08DC3C9E1E6482BF00F036D3 /* MainInterface.storyboard in Resources */,
+				08DC3C9F1E6482BF00F036D3 /* Share Ext Nextcloud.entitlements in Resources */,
+				08DC3CA01E6482BF00F036D3 /* Images.xcassets in Resources */,
+				08DC3CA11E6482BF00F036D3 /* CCMove.storyboard in Resources */,
+				08DC3CA21E6482BF00F036D3 /* BKPasscodeView.strings in Resources */,
+				08DC3CA31E6482BF00F036D3 /* Error.strings in Resources */,
+				08DC3CA41E6482BF00F036D3 /* Localizable.strings in Resources */,
+				08DC3CA51E6482BF00F036D3 /* CCCellShareExt.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F7145A181D12E3B700CAFEEC /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -3720,6 +4713,19 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		084215E11E646E0200C8F4F3 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "#!/bin/bash\n# buildNumber=$(/usr/libexec/PlistBuddy -c \"Print CFBundleVersion\" \"$INFOPLIST_FILE\")\n# buildNumber=$(echo $buildNumber | sed 's/0*//')\n# buildNumber=$(($buildNumber + 1))\n# buildNumber=$(printf \"%04d\" $buildNumber)\n# /usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $buildNumber\" \"$INFOPLIST_FILE\"";
+		};
 		F73B02C01DC0F1C900EC2C33 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -3736,6 +4742,438 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		084214231E646E0200C8F4F3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				084214241E646E0200C8F4F3 /* CTAssetsPickerController.m in Sources */,
+				084214251E646E0200C8F4F3 /* UIImage+Resizing.m in Sources */,
+				084214261E646E0200C8F4F3 /* CTAssetSelectionButton.m in Sources */,
+				084214271E646E0200C8F4F3 /* XLFormPickerCell.m in Sources */,
+				084214281E646E0200C8F4F3 /* CCUploadFromOtherUpp.m in Sources */,
+				084214291E646E0200C8F4F3 /* CCMain.m in Sources */,
+				0842142A1E646E0200C8F4F3 /* CCUtility.m in Sources */,
+				0842142B1E646E0200C8F4F3 /* CTAssetScrollView.m in Sources */,
+				0842142C1E646E0200C8F4F3 /* XLFormSelectorCell.m in Sources */,
+				0842142D1E646E0200C8F4F3 /* NSNumberFormatter+CTAssetsPickerController.m in Sources */,
+				0842142E1E646E0200C8F4F3 /* UIImage+AHKAdditions.m in Sources */,
+				0842142F1E646E0200C8F4F3 /* UIXToolbarView.m in Sources */,
+				084214301E646E0200C8F4F3 /* CCNotification.swift in Sources */,
+				084214311E646E0200C8F4F3 /* NYXProgressiveImageView.m in Sources */,
+				084214321E646E0200C8F4F3 /* TableMetadata+CoreDataProperties.m in Sources */,
+				084214331E646E0200C8F4F3 /* ReaderDocumentOutline.m in Sources */,
+				084214341E646E0200C8F4F3 /* UIImage+MWPhotoBrowser.m in Sources */,
+				084214351E646E0200C8F4F3 /* REMenuItem.m in Sources */,
+				084214361E646E0200C8F4F3 /* MWPhoto.m in Sources */,
+				084214371E646E0200C8F4F3 /* OCNetworking.m in Sources */,
+				084214381E646E0200C8F4F3 /* RNCryptor.m in Sources */,
+				084214391E646E0200C8F4F3 /* CCPhotosCameraUpload.m in Sources */,
+				0842143A1E646E0200C8F4F3 /* TableMetadata+CoreDataClass.m in Sources */,
+				0842143B1E646E0200C8F4F3 /* CCShareInfoCMOC.m in Sources */,
+				0842143C1E646E0200C8F4F3 /* UIImage+animatedGIF.m in Sources */,
+				0842143D1E646E0200C8F4F3 /* UICKeyChainStore.m in Sources */,
+				0842143E1E646E0200C8F4F3 /* ReaderDocument.m in Sources */,
+				0842143F1E646E0200C8F4F3 /* CTAssetThumbnailStacks.m in Sources */,
+				084214401E646E0200C8F4F3 /* NSIndexPath+PSTCollectionViewAdditions.m in Sources */,
+				084214411E646E0200C8F4F3 /* PSTCollectionViewUpdateItem.m in Sources */,
+				084214421E646E0200C8F4F3 /* MWCaptionView.m in Sources */,
+				084214431E646E0200C8F4F3 /* CCCellOffline.m in Sources */,
+				084214441E646E0200C8F4F3 /* ioapi.c in Sources */,
+				084214451E646E0200C8F4F3 /* XLFormStepCounterCell.m in Sources */,
+				084214461E646E0200C8F4F3 /* XLForm.m in Sources */,
+				084214471E646E0200C8F4F3 /* REMenuItemView.m in Sources */,
+				084214481E646E0200C8F4F3 /* CCNetworking.m in Sources */,
+				084214491E646E0200C8F4F3 /* XLFormDescriptor.m in Sources */,
+				0842144A1E646E0200C8F4F3 /* UIImage+Reflection.m in Sources */,
+				0842144B1E646E0200C8F4F3 /* TableCertificates+CoreDataClass.m in Sources */,
+				0842144C1E646E0200C8F4F3 /* MWTapDetectingView.m in Sources */,
+				0842144D1E646E0200C8F4F3 /* TableGPS+CoreDataProperties.m in Sources */,
+				0842144E1E646E0200C8F4F3 /* TableDirectory+CoreDataProperties.m in Sources */,
+				0842144F1E646E0200C8F4F3 /* CCPatenteGuida.m in Sources */,
+				084214501E646E0200C8F4F3 /* CCMenu.m in Sources */,
+				084214511E646E0200C8F4F3 /* AppDelegate.m in Sources */,
+				084214521E646E0200C8F4F3 /* NSArray+PureLayout.m in Sources */,
+				084214531E646E0200C8F4F3 /* CTAssetsGridSelectedView.m in Sources */,
+				084214541E646E0200C8F4F3 /* CCError.m in Sources */,
+				084214551E646E0200C8F4F3 /* XLFormRegexValidator.m in Sources */,
+				084214561E646E0200C8F4F3 /* PHAsset+CTAssetsPickerController.m in Sources */,
+				084214571E646E0200C8F4F3 /* AFViewShaker.m in Sources */,
+				084214581E646E0200C8F4F3 /* CCGraphics.m in Sources */,
+				084214591E646E0200C8F4F3 /* NSExpression+XLFormAdditions.m in Sources */,
+				0842145A1E646E0200C8F4F3 /* BKPasscodeDummyViewController.m in Sources */,
+				0842145B1E646E0200C8F4F3 /* ReaderThumbQueue.m in Sources */,
+				0842145C1E646E0200C8F4F3 /* PSTGridLayoutRow.m in Sources */,
+				0842145D1E646E0200C8F4F3 /* CCShareUserOC.m in Sources */,
+				0842145E1E646E0200C8F4F3 /* ThumbsMainToolbar.m in Sources */,
+				0842145F1E646E0200C8F4F3 /* TableGPS+CoreDataClass.m in Sources */,
+				084214601E646E0200C8F4F3 /* XLFormSwitchCell.m in Sources */,
+				084214611E646E0200C8F4F3 /* MWPhotoBrowser.m in Sources */,
+				084214621E646E0200C8F4F3 /* CCActions.swift in Sources */,
+				084214631E646E0200C8F4F3 /* CCManageLocation.m in Sources */,
+				084214641E646E0200C8F4F3 /* CCSharePermissionOC.m in Sources */,
+				084214651E646E0200C8F4F3 /* HRColorCursor.m in Sources */,
+				084214661E646E0200C8F4F3 /* TableShare+CoreDataClass.m in Sources */,
+				084214671E646E0200C8F4F3 /* BKPasscodeInputView.m in Sources */,
+				084214681E646E0200C8F4F3 /* TableAccount+CoreDataProperties.m in Sources */,
+				084214691E646E0200C8F4F3 /* ZSSTextView.m in Sources */,
+				0842146A1E646E0200C8F4F3 /* JSAlertView.m in Sources */,
+				0842146B1E646E0200C8F4F3 /* CYRLayoutManager.m in Sources */,
+				0842146C1E646E0200C8F4F3 /* NSArray+LMMediaPlayerShuffle.m in Sources */,
+				0842146D1E646E0200C8F4F3 /* REMenu.m in Sources */,
+				0842146E1E646E0200C8F4F3 /* XLFormButtonCell.m in Sources */,
+				0842146F1E646E0200C8F4F3 /* UICollectionView+CTAssetsPickerController.m in Sources */,
+				084214701E646E0200C8F4F3 /* CYRTextView.m in Sources */,
+				084214711E646E0200C8F4F3 /* LMMediaItemStreamingCache.m in Sources */,
+				084214721E646E0200C8F4F3 /* XLFormInlineSelectorCell.m in Sources */,
+				084214731E646E0200C8F4F3 /* CCHud.m in Sources */,
+				084214741E646E0200C8F4F3 /* CCExifGeo.m in Sources */,
+				084214751E646E0200C8F4F3 /* HRCgUtil.m in Sources */,
+				084214761E646E0200C8F4F3 /* CTAssetsGridViewFooter.m in Sources */,
+				084214771E646E0200C8F4F3 /* CTAssetsGridViewLayout.m in Sources */,
+				084214781E646E0200C8F4F3 /* CCOfflinePageContent.m in Sources */,
+				084214791E646E0200C8F4F3 /* NYXImagesHelper.m in Sources */,
+				0842147A1E646E0200C8F4F3 /* XLFormTextView.m in Sources */,
+				0842147B1E646E0200C8F4F3 /* ZSSBarButtonItem.m in Sources */,
+				0842147C1E646E0200C8F4F3 /* CCContoCorrente.m in Sources */,
+				0842147D1E646E0200C8F4F3 /* RNCryptorEngine.m in Sources */,
+				0842147E1E646E0200C8F4F3 /* CCCartaIdentita.m in Sources */,
+				0842147F1E646E0200C8F4F3 /* PSTGridLayoutItem.m in Sources */,
+				084214801E646E0200C8F4F3 /* CTAssetCollectionViewController.m in Sources */,
+				084214811E646E0200C8F4F3 /* CCSplit.m in Sources */,
+				084214821E646E0200C8F4F3 /* ReaderMainPagebar.m in Sources */,
+				084214831E646E0200C8F4F3 /* ReaderThumbsView.m in Sources */,
+				084214841E646E0200C8F4F3 /* XLFormViewController.m in Sources */,
+				084214851E646E0200C8F4F3 /* XLFormDateCell.m in Sources */,
+				084214861E646E0200C8F4F3 /* XLFormValidationStatus.m in Sources */,
+				084214871E646E0200C8F4F3 /* CCIntro.m in Sources */,
+				084214881E646E0200C8F4F3 /* ReaderThumbRender.m in Sources */,
+				084214891E646E0200C8F4F3 /* BKPasscodeLockScreenManager.m in Sources */,
+				0842148A1E646E0200C8F4F3 /* CCCrypto.m in Sources */,
+				0842148B1E646E0200C8F4F3 /* CCControlCenter.m in Sources */,
+				0842148C1E646E0200C8F4F3 /* TableLocalFile+CoreDataProperties.m in Sources */,
+				0842148D1E646E0200C8F4F3 /* PSTGridLayoutInfo.m in Sources */,
+				0842148E1E646E0200C8F4F3 /* XLFormValidator.m in Sources */,
+				0842148F1E646E0200C8F4F3 /* UIImage+Saving.m in Sources */,
+				084214901E646E0200C8F4F3 /* XLFormRowDescriptor.m in Sources */,
+				084214911E646E0200C8F4F3 /* CCDetail.m in Sources */,
+				084214921E646E0200C8F4F3 /* CCCoreData.m in Sources */,
+				084214931E646E0200C8F4F3 /* PSTCollectionViewController.m in Sources */,
+				084214941E646E0200C8F4F3 /* CCCertificate.m in Sources */,
+				084214951E646E0200C8F4F3 /* UINavigationController+CCProgress.m in Sources */,
+				084214961E646E0200C8F4F3 /* CCManageCameraUpload.m in Sources */,
+				084214971E646E0200C8F4F3 /* UIImage+Filtering.m in Sources */,
+				084214981E646E0200C8F4F3 /* XLFormSegmentedCell.m in Sources */,
+				084214991E646E0200C8F4F3 /* CCPeekPop.m in Sources */,
+				0842149A1E646E0200C8F4F3 /* NSIndexSet+CTAssetsPickerController.m in Sources */,
+				0842149B1E646E0200C8F4F3 /* CCMove.m in Sources */,
+				0842149C1E646E0200C8F4F3 /* NSArray+XLFormAdditions.m in Sources */,
+				0842149D1E646E0200C8F4F3 /* SSZipArchive.m in Sources */,
+				0842149E1E646E0200C8F4F3 /* ReaderThumbView.m in Sources */,
+				0842149F1E646E0200C8F4F3 /* ReaderContentTile.m in Sources */,
+				084214A01E646E0200C8F4F3 /* UIImage+Rotating.m in Sources */,
+				084214A11E646E0200C8F4F3 /* NSBundle+CTAssetsPickerController.m in Sources */,
+				084214A21E646E0200C8F4F3 /* XLFormCheckCell.m in Sources */,
+				084214A31E646E0200C8F4F3 /* NSPredicate+XLFormAdditions.m in Sources */,
+				084214A41E646E0200C8F4F3 /* XLFormRightImageButton.m in Sources */,
+				084214A51E646E0200C8F4F3 /* UIImage+Blurring.m in Sources */,
+				084214A61E646E0200C8F4F3 /* CCNotificationPushKey.swift in Sources */,
+				084214A71E646E0200C8F4F3 /* CCQuickActions.m in Sources */,
+				084214A81E646E0200C8F4F3 /* unzip.c in Sources */,
+				084214A91E646E0200C8F4F3 /* EAIntroView.m in Sources */,
+				084214AA1E646E0200C8F4F3 /* CCSettings.m in Sources */,
+				084214AB1E646E0200C8F4F3 /* CGPDFDocument.m in Sources */,
+				084214AC1E646E0200C8F4F3 /* REMenuContainerView.m in Sources */,
+				084214AD1E646E0200C8F4F3 /* CCShareOC.m in Sources */,
+				084214AE1E646E0200C8F4F3 /* UIScrollView+EmptyDataSet.m in Sources */,
+				084214AF1E646E0200C8F4F3 /* MWGridCell.m in Sources */,
+				084214B01E646E0200C8F4F3 /* LMMediaPlayerView.m in Sources */,
+				084214B11E646E0200C8F4F3 /* TableLocalFile+CoreDataClass.m in Sources */,
+				084214B21E646E0200C8F4F3 /* NSString+Base64.m in Sources */,
+				084214B31E646E0200C8F4F3 /* Reachability.m in Sources */,
+				084214B41E646E0200C8F4F3 /* RNDecryptor.m in Sources */,
+				084214B51E646E0200C8F4F3 /* XLFormOptionsObject.m in Sources */,
+				084214B61E646E0200C8F4F3 /* ReaderThumbCache.m in Sources */,
+				084214B71E646E0200C8F4F3 /* ReaderContentPage.m in Sources */,
+				084214B81E646E0200C8F4F3 /* TableAutomaticUpload+CoreDataProperties.m in Sources */,
+				084214B91E646E0200C8F4F3 /* ALView+PureLayout.m in Sources */,
+				084214BA1E646E0200C8F4F3 /* NSDateFormatter+CTAssetsPickerController.m in Sources */,
+				084214BB1E646E0200C8F4F3 /* XLFormTextFieldCell.m in Sources */,
+				084214BC1E646E0200C8F4F3 /* LMMediaItem.m in Sources */,
+				084214BD1E646E0200C8F4F3 /* CCManageCryptoCloud.m in Sources */,
+				084214BE1E646E0200C8F4F3 /* PPImageScrollingTableViewCell.m in Sources */,
+				084214BF1E646E0200C8F4F3 /* EARestrictedScrollView.m in Sources */,
+				084214C01E646E0200C8F4F3 /* CCBancomat.m in Sources */,
+				084214C11E646E0200C8F4F3 /* ReaderViewController.m in Sources */,
+				084214C21E646E0200C8F4F3 /* ReaderThumbFetch.m in Sources */,
+				084214C31E646E0200C8F4F3 /* CCPassaporto.m in Sources */,
+				084214C41E646E0200C8F4F3 /* CTAssetItemViewController.m in Sources */,
+				084214C51E646E0200C8F4F3 /* PSTCollectionView.m in Sources */,
+				084214C61E646E0200C8F4F3 /* CCLogin.m in Sources */,
+				084214C71E646E0200C8F4F3 /* CYRTextStorage.m in Sources */,
+				084214C81E646E0200C8F4F3 /* ThumbsViewController.m in Sources */,
+				084214C91E646E0200C8F4F3 /* ZSSRichTextEditor.m in Sources */,
+				084214CA1E646E0200C8F4F3 /* CTAssetsViewControllerTransition.m in Sources */,
+				084214CB1E646E0200C8F4F3 /* PSTCollectionViewLayout.m in Sources */,
+				084214CC1E646E0200C8F4F3 /* TableAutomaticUpload+CoreDataClass.m in Sources */,
+				084214CD1E646E0200C8F4F3 /* NSLayoutConstraint+PureLayout.m in Sources */,
+				084214CE1E646E0200C8F4F3 /* XLFormRowNavigationAccessoryView.m in Sources */,
+				084214CF1E646E0200C8F4F3 /* XLFormOptionsViewController.m in Sources */,
+				084214D01E646E0200C8F4F3 /* NSData+Base64.m in Sources */,
+				084214D11E646E0200C8F4F3 /* CCCartaDiCredito.m in Sources */,
+				084214D21E646E0200C8F4F3 /* ReaderConstants.m in Sources */,
+				084214D31E646E0200C8F4F3 /* LMMediaPlayer.m in Sources */,
+				084214D41E646E0200C8F4F3 /* CCSection.m in Sources */,
+				084214D51E646E0200C8F4F3 /* AHKActionSheetViewController.m in Sources */,
+				084214D61E646E0200C8F4F3 /* CCManageHelp.m in Sources */,
+				084214D71E646E0200C8F4F3 /* CCTemplates.m in Sources */,
+				084214D81E646E0200C8F4F3 /* XLFormDatePickerCell.m in Sources */,
+				084214D91E646E0200C8F4F3 /* UIWindow+AHKAdditions.m in Sources */,
+				084214DA1E646E0200C8F4F3 /* CCCellMainTransfer.m in Sources */,
+				084214DB1E646E0200C8F4F3 /* XLFormImageCell.m in Sources */,
+				084214DC1E646E0200C8F4F3 /* BKTouchIDManager.m in Sources */,
+				084214DD1E646E0200C8F4F3 /* PSTCollectionViewCell.m in Sources */,
+				084214DE1E646E0200C8F4F3 /* CCManageAsset.m in Sources */,
+				084214DF1E646E0200C8F4F3 /* iRate.m in Sources */,
+				084214E01E646E0200C8F4F3 /* ReaderContentView.m in Sources */,
+				084214E11E646E0200C8F4F3 /* LMMediaItemQueueManager.m in Sources */,
+				084214E21E646E0200C8F4F3 /* NSString+XLFormAdditions.m in Sources */,
+				084214E31E646E0200C8F4F3 /* UIView+XLFormAdditions.m in Sources */,
+				084214E41E646E0200C8F4F3 /* CCManageAccount.m in Sources */,
+				084214E51E646E0200C8F4F3 /* PPCollectionViewCell.m in Sources */,
+				084214E61E646E0200C8F4F3 /* CTAssetsPickerAccessDeniedView.m in Sources */,
+				084214E71E646E0200C8F4F3 /* BKTouchIDSwitchView.m in Sources */,
+				084214E81E646E0200C8F4F3 /* CTAssetThumbnailOverlay.m in Sources */,
+				084214E91E646E0200C8F4F3 /* CCBKPasscode.m in Sources */,
+				084214EA1E646E0200C8F4F3 /* HRColorPickerView.m in Sources */,
+				084214EB1E646E0200C8F4F3 /* CCProgressView.m in Sources */,
+				084214EC1E646E0200C8F4F3 /* CCConstant.swift in Sources */,
+				084214ED1E646E0200C8F4F3 /* mztools.c in Sources */,
+				084214EE1E646E0200C8F4F3 /* CTAssetsPickerNoAssetsView.m in Sources */,
+				084214EF1E646E0200C8F4F3 /* EAIntroPage.m in Sources */,
+				084214F01E646E0200C8F4F3 /* NSString+TruncateToWidth.m in Sources */,
+				084214F11E646E0200C8F4F3 /* XLFormTextViewCell.m in Sources */,
+				084214F21E646E0200C8F4F3 /* BKPasscodeViewController.m in Sources */,
+				084214F31E646E0200C8F4F3 /* cryptocloud.xcdatamodeld in Sources */,
+				084214F41E646E0200C8F4F3 /* PSTCollectionViewData.m in Sources */,
+				084214F51E646E0200C8F4F3 /* BKShiftingView.m in Sources */,
+				084214F61E646E0200C8F4F3 /* zip.c in Sources */,
+				084214F71E646E0200C8F4F3 /* HRColorPickerViewController.m in Sources */,
+				084214F81E646E0200C8F4F3 /* CTAssetsGridViewController.m in Sources */,
+				084214F91E646E0200C8F4F3 /* CCManageCryptoCloudSecurity.m in Sources */,
+				084214FA1E646E0200C8F4F3 /* PSTCollectionViewFlowLayout.m in Sources */,
+				084214FB1E646E0200C8F4F3 /* CTAssetsPageView.m in Sources */,
+				084214FC1E646E0200C8F4F3 /* CCGlobal.m in Sources */,
+				084214FD1E646E0200C8F4F3 /* PSTCollectionViewItemKey.m in Sources */,
+				084214FE1E646E0200C8F4F3 /* CTAssetThumbnailView.m in Sources */,
+				084214FF1E646E0200C8F4F3 /* BKPasscodeField.m in Sources */,
+				084215001E646E0200C8F4F3 /* CTAssetCheckmark.m in Sources */,
+				084215011E646E0200C8F4F3 /* MWGridViewController.m in Sources */,
+				084215021E646E0200C8F4F3 /* PHAssetCollection+CTAssetsPickerController.m in Sources */,
+				084215031E646E0200C8F4F3 /* CCMetadata.m in Sources */,
+				084215041E646E0200C8F4F3 /* UIImage+CTAssetsPickerController.m in Sources */,
+				084215051E646E0200C8F4F3 /* ReaderMainToolbar.m in Sources */,
+				084215061E646E0200C8F4F3 /* XLFormSliderCell.m in Sources */,
+				084215071E646E0200C8F4F3 /* RECommonFunctions.m in Sources */,
+				084215081E646E0200C8F4F3 /* XLFormRightDetailCell.m in Sources */,
+				084215091E646E0200C8F4F3 /* CCSynchronize.m in Sources */,
+				0842150A1E646E0200C8F4F3 /* XLFormLeftRightSelectorCell.m in Sources */,
+				0842150B1E646E0200C8F4F3 /* MBProgressHUD.m in Sources */,
+				0842150C1E646E0200C8F4F3 /* ReaderThumbRequest.m in Sources */,
+				0842150D1E646E0200C8F4F3 /* CTAssetsGridViewCell.m in Sources */,
+				0842150E1E646E0200C8F4F3 /* CCAccountWeb.m in Sources */,
+				0842150F1E646E0200C8F4F3 /* TableDirectory+CoreDataClass.m in Sources */,
+				084215101E646E0200C8F4F3 /* HRColorUtil.m in Sources */,
+				084215111E646E0200C8F4F3 /* XLFormBaseCell.m in Sources */,
+				084215121E646E0200C8F4F3 /* TableShare+CoreDataProperties.m in Sources */,
+				084215131E646E0200C8F4F3 /* CTAssetPlayButton.m in Sources */,
+				084215141E646E0200C8F4F3 /* XLFormSectionDescriptor.m in Sources */,
+				084215151E646E0200C8F4F3 /* TWMessageBarManager.m in Sources */,
+				084215161E646E0200C8F4F3 /* CCNote.m in Sources */,
+				084215171E646E0200C8F4F3 /* MWTapDetectingImageView.m in Sources */,
+				084215181E646E0200C8F4F3 /* RNEncryptor.m in Sources */,
+				084215191E646E0200C8F4F3 /* CTAssetsPageViewController.m in Sources */,
+				0842151A1E646E0200C8F4F3 /* CTAssetCollectionViewCell.m in Sources */,
+				0842151B1E646E0200C8F4F3 /* MWZoomingScrollView.m in Sources */,
+				0842151C1E646E0200C8F4F3 /* CTAssetSelectionLabel.m in Sources */,
+				0842151D1E646E0200C8F4F3 /* PSTGridLayoutSection.m in Sources */,
+				0842151E1E646E0200C8F4F3 /* CCManageOptimizations.m in Sources */,
+				0842151F1E646E0200C8F4F3 /* UIImage+Enhancing.m in Sources */,
+				084215201E646E0200C8F4F3 /* CCCellMain.m in Sources */,
+				084215211E646E0200C8F4F3 /* AESCrypt.m in Sources */,
+				084215221E646E0200C8F4F3 /* APAvatarImageView.m in Sources */,
+				084215231E646E0200C8F4F3 /* NSObject+XLFormAdditions.m in Sources */,
+				084215241E646E0200C8F4F3 /* TableAccount+CoreDataClass.m in Sources */,
+				084215251E646E0200C8F4F3 /* TableCertificates+CoreDataProperties.m in Sources */,
+				084215261E646E0200C8F4F3 /* CCCreateCloud.swift in Sources */,
+				084215271E646E0200C8F4F3 /* HRBrightnessCursor.m in Sources */,
+				084215281E646E0200C8F4F3 /* UIImage+Masking.m in Sources */,
+				084215291E646E0200C8F4F3 /* NSData+CommonCrypto.m in Sources */,
+				0842152A1E646E0200C8F4F3 /* CCOffline.m in Sources */,
+				0842152B1E646E0200C8F4F3 /* CYRToken.m in Sources */,
+				0842152C1E646E0200C8F4F3 /* AHKActionSheet.m in Sources */,
+				0842152D1E646E0200C8F4F3 /* CTAssetsGridView.m in Sources */,
+				0842152E1E646E0200C8F4F3 /* CCControlCenterCell.m in Sources */,
+				0842152F1E646E0200C8F4F3 /* Acknowledgements.m in Sources */,
+				084215301E646E0200C8F4F3 /* PPImageScrollingCellView.m in Sources */,
+				084215311E646E0200C8F4F3 /* LMMediaPlayerHelper.m in Sources */,
+				084215321E646E0200C8F4F3 /* PHAsset+Utility.m in Sources */,
+				084215331E646E0200C8F4F3 /* PHImageManager+CTAssetsPickerController.m in Sources */,
+				084215341E646E0200C8F4F3 /* CTAssetsNavigationController.m in Sources */,
+				084215351E646E0200C8F4F3 /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		08DC3BEC1E647FD200F036D3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				08DC3BED1E647FD200F036D3 /* BKPasscodeViewController.m in Sources */,
+				08DC3BEE1E647FD200F036D3 /* BKTouchIDManager.m in Sources */,
+				08DC3BEF1E647FD200F036D3 /* TableLocalFile+CoreDataProperties.m in Sources */,
+				08DC3BF01E647FD200F036D3 /* TableAutomaticUpload+CoreDataClass.m in Sources */,
+				08DC3BF11E647FD200F036D3 /* NSString+Base64.m in Sources */,
+				08DC3BF21E647FD200F036D3 /* TableShare+CoreDataClass.m in Sources */,
+				08DC3BF31E647FD200F036D3 /* BKTouchIDSwitchView.m in Sources */,
+				08DC3BF41E647FD200F036D3 /* CCGraphics.m in Sources */,
+				08DC3BF51E647FD200F036D3 /* TableAccount+CoreDataProperties.m in Sources */,
+				08DC3BF61E647FD200F036D3 /* TableDirectory+CoreDataClass.m in Sources */,
+				08DC3BF71E647FD200F036D3 /* TableCertificates+CoreDataProperties.m in Sources */,
+				08DC3BF81E647FD200F036D3 /* CCCrypto.m in Sources */,
+				08DC3BF91E647FD200F036D3 /* CCSection.m in Sources */,
+				08DC3BFA1E647FD200F036D3 /* CCNetworking.m in Sources */,
+				08DC3BFB1E647FD200F036D3 /* OCNetworking.m in Sources */,
+				08DC3BFC1E647FD200F036D3 /* TableDirectory+CoreDataProperties.m in Sources */,
+				08DC3BFD1E647FD200F036D3 /* BKPasscodeDummyViewController.m in Sources */,
+				08DC3BFE1E647FD200F036D3 /* BKPasscodeInputView.m in Sources */,
+				08DC3BFF1E647FD200F036D3 /* MBProgressHUD.m in Sources */,
+				08DC3C001E647FD200F036D3 /* TableGPS+CoreDataClass.m in Sources */,
+				08DC3C011E647FD200F036D3 /* CCMove.m in Sources */,
+				08DC3C021E647FD200F036D3 /* CCCertificate.m in Sources */,
+				08DC3C031E647FD200F036D3 /* AESCrypt.m in Sources */,
+				08DC3C041E647FD200F036D3 /* NSData+Base64.m in Sources */,
+				08DC3C051E647FD200F036D3 /* CCMetadata.m in Sources */,
+				08DC3C061E647FD200F036D3 /* CCExifGeo.m in Sources */,
+				08DC3C071E647FD200F036D3 /* DocumentPickerViewController.swift in Sources */,
+				08DC3C081E647FD200F036D3 /* AFViewShaker.m in Sources */,
+				08DC3C091E647FD200F036D3 /* CCError.m in Sources */,
+				08DC3C0A1E647FD200F036D3 /* TableMetadata+CoreDataClass.m in Sources */,
+				08DC3C0B1E647FD200F036D3 /* CCUtility.m in Sources */,
+				08DC3C0C1E647FD200F036D3 /* UICKeyChainStore.m in Sources */,
+				08DC3C0D1E647FD200F036D3 /* NSData+CommonCrypto.m in Sources */,
+				08DC3C0E1E647FD200F036D3 /* TableCertificates+CoreDataClass.m in Sources */,
+				08DC3C0F1E647FD200F036D3 /* CCGlobal.m in Sources */,
+				08DC3C101E647FD200F036D3 /* RNCryptorEngine.m in Sources */,
+				08DC3C111E647FD200F036D3 /* RNDecryptor.m in Sources */,
+				08DC3C121E647FD200F036D3 /* UIImage+animatedGIF.m in Sources */,
+				08DC3C131E647FD200F036D3 /* TableGPS+CoreDataProperties.m in Sources */,
+				08DC3C141E647FD200F036D3 /* CCHud.m in Sources */,
+				08DC3C151E647FD200F036D3 /* RNEncryptor.m in Sources */,
+				08DC3C161E647FD200F036D3 /* TableAccount+CoreDataClass.m in Sources */,
+				08DC3C171E647FD200F036D3 /* BKPasscodeField.m in Sources */,
+				08DC3C181E647FD200F036D3 /* cryptocloud.xcdatamodeld in Sources */,
+				08DC3C191E647FD200F036D3 /* APAvatarImageView.m in Sources */,
+				08DC3C1A1E647FD200F036D3 /* TableMetadata+CoreDataProperties.m in Sources */,
+				08DC3C1B1E647FD200F036D3 /* BKPasscodeLockScreenManager.m in Sources */,
+				08DC3C1C1E647FD200F036D3 /* CCBKPasscode.m in Sources */,
+				08DC3C1D1E647FD200F036D3 /* TableShare+CoreDataProperties.m in Sources */,
+				08DC3C1E1E647FD200F036D3 /* CCCoreData.m in Sources */,
+				08DC3C1F1E647FD200F036D3 /* NSString+TruncateToWidth.m in Sources */,
+				08DC3C201E647FD200F036D3 /* TableLocalFile+CoreDataClass.m in Sources */,
+				08DC3C211E647FD200F036D3 /* CCConstant.swift in Sources */,
+				08DC3C221E647FD200F036D3 /* BKShiftingView.m in Sources */,
+				08DC3C231E647FD200F036D3 /* RNCryptor.m in Sources */,
+				08DC3C241E647FD200F036D3 /* TableAutomaticUpload+CoreDataProperties.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		08DC3C3B1E647FD700F036D3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				08DC3C3C1E647FD700F036D3 /* FileProvider.swift in Sources */,
+				08DC3C3D1E647FD700F036D3 /* CCConstant.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		08DC3C4D1E6482BF00F036D3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				08DC3C4E1E6482BF00F036D3 /* CCError.m in Sources */,
+				08DC3C4F1E6482BF00F036D3 /* TableGPS+CoreDataClass.m in Sources */,
+				08DC3C501E6482BF00F036D3 /* NSString+TruncateToWidth.m in Sources */,
+				08DC3C511E6482BF00F036D3 /* TableAccount+CoreDataProperties.m in Sources */,
+				08DC3C521E6482BF00F036D3 /* NYXProgressiveImageView.m in Sources */,
+				08DC3C531E6482BF00F036D3 /* TableAccount+CoreDataClass.m in Sources */,
+				08DC3C541E6482BF00F036D3 /* Reachability.m in Sources */,
+				08DC3C551E6482BF00F036D3 /* UIImage+animatedGIF.m in Sources */,
+				08DC3C561E6482BF00F036D3 /* TableMetadata+CoreDataClass.m in Sources */,
+				08DC3C571E6482BF00F036D3 /* UIImage+Reflection.m in Sources */,
+				08DC3C581E6482BF00F036D3 /* RNEncryptor.m in Sources */,
+				08DC3C591E6482BF00F036D3 /* TableShare+CoreDataProperties.m in Sources */,
+				08DC3C5A1E6482BF00F036D3 /* ShareViewController.m in Sources */,
+				08DC3C5B1E6482BF00F036D3 /* UIImage+Filtering.m in Sources */,
+				08DC3C5C1E6482BF00F036D3 /* UIImage+Saving.m in Sources */,
+				08DC3C5D1E6482BF00F036D3 /* UIImage+Rotating.m in Sources */,
+				08DC3C5E1E6482BF00F036D3 /* CCMetadata.m in Sources */,
+				08DC3C5F1E6482BF00F036D3 /* TableLocalFile+CoreDataProperties.m in Sources */,
+				08DC3C601E6482BF00F036D3 /* OCNetworking.m in Sources */,
+				08DC3C611E6482BF00F036D3 /* RNCryptorEngine.m in Sources */,
+				08DC3C621E6482BF00F036D3 /* AFViewShaker.m in Sources */,
+				08DC3C631E6482BF00F036D3 /* NSData+CommonCrypto.m in Sources */,
+				08DC3C641E6482BF00F036D3 /* BKPasscodeLockScreenManager.m in Sources */,
+				08DC3C651E6482BF00F036D3 /* TableLocalFile+CoreDataClass.m in Sources */,
+				08DC3C661E6482BF00F036D3 /* BKPasscodeInputView.m in Sources */,
+				08DC3C671E6482BF00F036D3 /* CCUtility.m in Sources */,
+				08DC3C681E6482BF00F036D3 /* CCBKPasscode.m in Sources */,
+				08DC3C691E6482BF00F036D3 /* MBProgressHUD.m in Sources */,
+				08DC3C6A1E6482BF00F036D3 /* APAvatarImageView.m in Sources */,
+				08DC3C6B1E6482BF00F036D3 /* BKPasscodeDummyViewController.m in Sources */,
+				08DC3C6C1E6482BF00F036D3 /* TableDirectory+CoreDataClass.m in Sources */,
+				08DC3C6D1E6482BF00F036D3 /* CCCrypto.m in Sources */,
+				08DC3C6E1E6482BF00F036D3 /* CCNetworking.m in Sources */,
+				08DC3C6F1E6482BF00F036D3 /* TableCertificates+CoreDataClass.m in Sources */,
+				08DC3C701E6482BF00F036D3 /* CCCoreData.m in Sources */,
+				08DC3C711E6482BF00F036D3 /* TableCertificates+CoreDataProperties.m in Sources */,
+				08DC3C721E6482BF00F036D3 /* BKPasscodeField.m in Sources */,
+				08DC3C731E6482BF00F036D3 /* CCHud.m in Sources */,
+				08DC3C741E6482BF00F036D3 /* TableAutomaticUpload+CoreDataClass.m in Sources */,
+				08DC3C751E6482BF00F036D3 /* RNDecryptor.m in Sources */,
+				08DC3C761E6482BF00F036D3 /* NYXImagesHelper.m in Sources */,
+				08DC3C771E6482BF00F036D3 /* CCConstant.swift in Sources */,
+				08DC3C781E6482BF00F036D3 /* UIImage+Enhancing.m in Sources */,
+				08DC3C791E6482BF00F036D3 /* CCCellShareExt.m in Sources */,
+				08DC3C7A1E6482BF00F036D3 /* UICKeyChainStore.m in Sources */,
+				08DC3C7B1E6482BF00F036D3 /* TableDirectory+CoreDataProperties.m in Sources */,
+				08DC3C7C1E6482BF00F036D3 /* UIImage+Masking.m in Sources */,
+				08DC3C7D1E6482BF00F036D3 /* NSString+Base64.m in Sources */,
+				08DC3C7E1E6482BF00F036D3 /* CCSharedDBSession.m in Sources */,
+				08DC3C7F1E6482BF00F036D3 /* CCMove.m in Sources */,
+				08DC3C801E6482BF00F036D3 /* UIImage+Resizing.m in Sources */,
+				08DC3C811E6482BF00F036D3 /* BKPasscodeViewController.m in Sources */,
+				08DC3C821E6482BF00F036D3 /* BKShiftingView.m in Sources */,
+				08DC3C831E6482BF00F036D3 /* CCGraphics.m in Sources */,
+				08DC3C841E6482BF00F036D3 /* BKTouchIDSwitchView.m in Sources */,
+				08DC3C851E6482BF00F036D3 /* CCCertificate.m in Sources */,
+				08DC3C861E6482BF00F036D3 /* PPImageScrollingCellView.m in Sources */,
+				08DC3C871E6482BF00F036D3 /* TableGPS+CoreDataProperties.m in Sources */,
+				08DC3C881E6482BF00F036D3 /* CCExifGeo.m in Sources */,
+				08DC3C891E6482BF00F036D3 /* TableShare+CoreDataClass.m in Sources */,
+				08DC3C8A1E6482BF00F036D3 /* RNCryptor.m in Sources */,
+				08DC3C8B1E6482BF00F036D3 /* CCGlobal.m in Sources */,
+				08DC3C8C1E6482BF00F036D3 /* UIImage+Blurring.m in Sources */,
+				08DC3C8D1E6482BF00F036D3 /* BKTouchIDManager.m in Sources */,
+				08DC3C8E1E6482BF00F036D3 /* CCloadItemData.swift in Sources */,
+				08DC3C8F1E6482BF00F036D3 /* TableAutomaticUpload+CoreDataProperties.m in Sources */,
+				08DC3C901E6482BF00F036D3 /* PPCollectionViewCell.m in Sources */,
+				08DC3C911E6482BF00F036D3 /* NSData+Base64.m in Sources */,
+				08DC3C921E6482BF00F036D3 /* cryptocloud.xcdatamodeld in Sources */,
+				08DC3C931E6482BF00F036D3 /* AESCrypt.m in Sources */,
+				08DC3C941E6482BF00F036D3 /* PPImageScrollingTableViewCell.m in Sources */,
+				08DC3C951E6482BF00F036D3 /* TableMetadata+CoreDataProperties.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F71459B51D12E3B700CAFEEC /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -4171,6 +5609,21 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		08DC3C481E64826300F036D3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 08DC3BEA1E647FD200F036D3 /* PickerCustom */;
+			targetProxy = 08DC3C471E64826300F036D3 /* PBXContainerItemProxy */;
+		};
+		08DC3C4A1E64826600F036D3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 08DC3C391E647FD700F036D3 /* PickerFileProviderCustom */;
+			targetProxy = 08DC3C491E64826600F036D3 /* PBXContainerItemProxy */;
+		};
+		08DC3CAD1E6482D600F036D3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 08DC3C4B1E6482BF00F036D3 /* Share Ext Nextcloud Custom */;
+			targetProxy = 08DC3CAC1E6482D600F036D3 /* PBXContainerItemProxy */;
+		};
 		F7145A321D12E65F00CAFEEC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = F71459B41D12E3B700CAFEEC /* Share Ext Nextcloud */;
@@ -4277,6 +5730,305 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		084215E31E646E0200C8F4F3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIconNextcloud;
+				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = iOSClient/Nextcloud.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development IOS Push Services: it.twsweb.Nextcloud";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = "";
+				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
+				ENABLE_BITCODE = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SRCROOT)/iOSClient/CryptoCloud.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					CUSTOM_BUILD,
+					"NC=1",
+				);
+				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
+				INFOPLIST_FILE = NextcloudCustom.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				LIBRARY_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
+				OTHER_LDFLAGS = (
+					"-Obj-C",
+					"-all_load",
+					"$(inherited)",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.nextcloud.client;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "iOSClient/Nextcloud-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 3.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				USE_HEADERMAP = YES;
+				VERSIONING_SYSTEM = "";
+			};
+			name = Debug;
+		};
+		084215E41E646E0200C8F4F3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIconNextcloud;
+				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = iOSClient/Nextcloud.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development IOS Push Services: it.twsweb.Nextcloud";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = "";
+				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
+				ENABLE_BITCODE = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SRCROOT)/iOSClient/CryptoCloud.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					CUSTOM_BUILD,
+					"NC=1",
+				);
+				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
+				INFOPLIST_FILE = NextcloudCustom.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				LIBRARY_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
+				OTHER_LDFLAGS = (
+					"-Obj-C",
+					"-all_load",
+					"$(inherited)",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.nextcloud.client;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "iOSClient/Nextcloud-Bridging-Header.h";
+				SWIFT_VERSION = 3.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				USE_HEADERMAP = YES;
+				VERSIONING_SYSTEM = "";
+			};
+			name = Release;
+		};
+		08DC3C351E647FD200F036D3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
+				CODE_SIGN_ENTITLEMENTS = Picker/Picker.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
+				GCC_PREFIX_HEADER = "$(SRCROOT)/iOSClient/CryptoCloud.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"EXTENSION=1",
+					"DEBUG=1",
+					"NC=1",
+				);
+				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
+				INFOPLIST_FILE = "PickerCustom-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				LIBRARY_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
+				PRODUCT_BUNDLE_IDENTIFIER = com.nextcloud.client.Picker;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG NC";
+				SWIFT_OBJC_BRIDGING_HEADER = "Picker/Picker-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 3.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		08DC3C361E647FD200F036D3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
+				CODE_SIGN_ENTITLEMENTS = Picker/Picker.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
+				GCC_PREFIX_HEADER = "$(SRCROOT)/iOSClient/CryptoCloud.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"EXTENSION=1",
+					"NC=1",
+				);
+				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
+				INFOPLIST_FILE = "PickerCustom-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				LIBRARY_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
+				PRODUCT_BUNDLE_IDENTIFIER = com.nextcloud.client.Picker;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = NC;
+				SWIFT_OBJC_BRIDGING_HEADER = "Picker/Picker-Bridging-Header.h";
+				SWIFT_VERSION = 3.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		08DC3C431E647FD700F036D3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CODE_SIGN_ENTITLEMENTS = PickerFileProvider/PickerFileProvider.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"EXTENSION=1",
+					"NC=1",
+				);
+				INFOPLIST_FILE = "PickerFileProviderCustom-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.nextcloud.client.PickerFileProvider;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG NC";
+				SWIFT_OBJC_BRIDGING_HEADER = "PickerFileProvider/PickerFileProvider-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 3.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		08DC3C441E647FD700F036D3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CODE_SIGN_ENTITLEMENTS = PickerFileProvider/PickerFileProvider.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"NC=1",
+					"EXTENSION=1",
+				);
+				INFOPLIST_FILE = "PickerFileProviderCustom-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.nextcloud.client.PickerFileProvider;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = NC;
+				SWIFT_OBJC_BRIDGING_HEADER = "PickerFileProvider/PickerFileProvider-Bridging-Header.h";
+				SWIFT_VERSION = 3.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		08DC3CA81E6482BF00F036D3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				APPLICATION_EXTENSION_API_ONLY = NO;
+				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = "Share Ext/Share Ext Nextcloud.entitlements";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREFIX_HEADER = "$(SRCROOT)/iOSClient/CryptoCloud.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"EXTENSION=1",
+					"NC=1",
+					CUSTOM_BUILD,
+				);
+				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
+				INFOPLIST_FILE = "Share Ext Nextcloud Custom-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				LIBRARY_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
+				OTHER_LDFLAGS = (
+					"-Obj-C",
+					"-all_load",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.nextcloud.client.Share-Ext-Nextcloud-Custom";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "Share Ext/Share Ext-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 3.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				USE_HEADERMAP = YES;
+			};
+			name = Debug;
+		};
+		08DC3CA91E6482BF00F036D3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				APPLICATION_EXTENSION_API_ONLY = NO;
+				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = "Share Ext/Share Ext Nextcloud.entitlements";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREFIX_HEADER = "$(SRCROOT)/iOSClient/CryptoCloud.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"EXTENSION=1",
+					"NC=1",
+					CUSTOM_BUILD,
+				);
+				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
+				INFOPLIST_FILE = "Share Ext Nextcloud Custom-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				LIBRARY_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
+				OTHER_LDFLAGS = (
+					"-Obj-C",
+					"-all_load",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.nextcloud.client.Share-Ext-Nextcloud-Custom";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "Share Ext/Share Ext-Bridging-Header.h";
+				SWIFT_VERSION = 3.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				USE_HEADERMAP = YES;
+			};
+			name = Release;
+		};
 		F7145A261D12E3B700CAFEEC /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -4667,6 +6419,42 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		084215E21E646E0200C8F4F3 /* Build configuration list for PBXNativeTarget "NextcloudCustom" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				084215E31E646E0200C8F4F3 /* Debug */,
+				084215E41E646E0200C8F4F3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		08DC3C341E647FD200F036D3 /* Build configuration list for PBXNativeTarget "PickerCustom" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				08DC3C351E647FD200F036D3 /* Debug */,
+				08DC3C361E647FD200F036D3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		08DC3C421E647FD700F036D3 /* Build configuration list for PBXNativeTarget "PickerFileProviderCustom" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				08DC3C431E647FD700F036D3 /* Debug */,
+				08DC3C441E647FD700F036D3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		08DC3CA71E6482BF00F036D3 /* Build configuration list for PBXNativeTarget "Share Ext Nextcloud Custom" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				08DC3CA81E6482BF00F036D3 /* Debug */,
+				08DC3CA91E6482BF00F036D3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		F7145A251D12E3B700CAFEEC /* Build configuration list for PBXNativeTarget "Share Ext Nextcloud" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
