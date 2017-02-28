@@ -356,7 +356,7 @@
 {
     [_hud hideHud];
     
-    [CCCoreData addDirectory:[NSString stringWithFormat:@"%@/%@", metadataNet.serverUrl, metadataNet.fileName] date:[NSDate date] permissions:nil activeAccount:activeAccount];
+    [CCCoreData addDirectory:[NSString stringWithFormat:@"%@/%@", metadataNet.serverUrl, metadataNet.fileName] permissions:nil activeAccount:activeAccount];
     
     // Load Folder or the Datasource
     [self readFolder];

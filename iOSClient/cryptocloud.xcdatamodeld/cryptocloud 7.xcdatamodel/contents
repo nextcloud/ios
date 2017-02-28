@@ -54,7 +54,6 @@
     </entity>
     <entity name="TableDirectory" representedClassName="TableDirectory" syncable="YES">
         <attribute name="account" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="dateReadDirectory" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="directoryID" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="favorite" optional="YES" attributeType="Boolean" usesScalarValueType="NO" syncable="YES"/>
@@ -134,7 +133,7 @@
         <element name="TableAccount" positionX="-6597" positionY="111" width="171" height="585"/>
         <element name="TableAutomaticUpload" positionX="-6597" positionY="801" width="128" height="180"/>
         <element name="TableCertificates" positionX="-6597" positionY="711" width="128" height="60"/>
-        <element name="TableDirectory" positionX="-6372" positionY="111" width="162" height="225"/>
+        <element name="TableDirectory" positionX="-6372" positionY="111" width="162" height="210"/>
         <element name="TableGPS" positionX="-6597" positionY="990" width="128" height="165"/>
         <element name="TableLocalFile" positionX="-6138" positionY="111" width="162" height="225"/>
         <element name="TableMetadata" positionX="-6138" positionY="402" width="162" height="510"/>

@@ -870,7 +870,7 @@
 #pragma mark ===== Directory =====
 #pragma --------------------------------------------------------------------------------------------
 
-+ (NSString *)addDirectory:(NSString *)serverUrl date:(NSDate *)date permissions:(NSString *)permissions activeAccount:(NSString *)activeAccount
++ (NSString *)addDirectory:(NSString *)serverUrl permissions:(NSString *)permissions activeAccount:(NSString *)activeAccount
 {
     NSString *directoryID;
     
@@ -881,7 +881,6 @@
     if (record) {
      
         directoryID = record.directoryID;
-        record.date = date;
         record.permissions = permissions;
         
     } else {
@@ -889,7 +888,6 @@
         TableDirectory *record = [TableDirectory MR_createEntityInContext:context];
         
         record.account = activeAccount;
-        record.date = date;        
         record.directoryID = [CCUtility createID];
         directoryID = record.directoryID;
         record.permissions = permissions;
@@ -1040,7 +1038,7 @@
     TableDirectory *record = [TableDirectory MR_findFirstWithPredicate:predicate];
     if (record) return record.directoryID;
     else {
-        return [self addDirectory:serverUrl date:NULL permissions:nil activeAccount:activeAccount];
+        return [self addDirectory:serverUrl permissions:nil activeAccount:activeAccount];
     }
     return nil;
 }

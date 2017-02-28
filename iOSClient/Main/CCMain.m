@@ -2104,7 +2104,7 @@
             
             // Add new directory
             NSString *newDirectory = [NSString stringWithFormat:@"%@/%@", serverUrlTo, fileName];
-            [CCCoreData addDirectory:newDirectory date:[NSDate date] permissions:nil activeAccount:app.activeAccount];
+            [CCCoreData addDirectory:newDirectory permissions:nil activeAccount:app.activeAccount];
             
             // Check Offline
             if ([CCCoreData isOfflineDirectoryServerUrl:serverUrlTo activeAccount:app.activeAccount])
@@ -2236,7 +2236,7 @@
     
     NSString *newDirectory = [NSString stringWithFormat:@"%@/%@", metadataNet.serverUrl, metadataNet.fileName];
     
-    [CCCoreData addDirectory:newDirectory date:[NSDate date] permissions:nil activeAccount:app.activeAccount];
+    [CCCoreData addDirectory:newDirectory permissions:nil activeAccount:app.activeAccount];
     
     // Check Offline
     if ([CCCoreData isOfflineDirectoryServerUrl:_serverUrl activeAccount:app.activeAccount])

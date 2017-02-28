@@ -324,9 +324,9 @@
         // directory [0]
         OCFileDto *itemDtoDirectory = [items objectAtIndex:0];
         NSString *permissions = itemDtoDirectory.permissions;
-        NSDate *date = [NSDate dateWithTimeIntervalSince1970:itemDtoDirectory.date];
+        //NSDate *date = [NSDate dateWithTimeIntervalSince1970:itemDtoDirectory.date];
         
-        NSString *directoryID = [CCCoreData addDirectory:_metadataNet.serverUrl date:date permissions:permissions activeAccount:_metadataNet.account];
+        NSString *directoryID = [CCCoreData addDirectory:_metadataNet.serverUrl permissions:permissions activeAccount:_metadataNet.account];
             
         NSString *cameraFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:_metadataNet.account];
         NSString *cameraFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:_metadataNet.account activeUrl:_activeUrl];
@@ -353,10 +353,12 @@
                 if (_isCryptoCloudMode == NO || [_metadataNet.selector isEqualToString:selectorSearch]) {
                     
                     NSString *fileName = itemDto.fileName;
+                    
                     if (itemDto.isDirectory) {
+                        
                         fileName = [fileName substringToIndex:[fileName length] - 1];
                         NSString *serverUrl = [CCUtility stringAppendServerUrl:_metadataNet.serverUrl addFileName:fileName];
-                        [CCCoreData addDirectory:serverUrl date:[NSDate date] permissions:nil activeAccount:_metadataNet.account];
+                        [CCCoreData addDirectory:serverUrl permissions:nil activeAccount:_metadataNet.account];
                     }
                     
                     if ([CCUtility isFileCryptated:fileName])
@@ -472,7 +474,7 @@
             
             serverUrl = [CCUtility stringAppendServerUrl:[_activeUrl stringByAppendingString:webDAV] addFileName:serverUrl];
             
-            NSString *directoryID = [CCCoreData addDirectory:serverUrl date:[NSDate date] permissions:itemDto.permissions activeAccount:_metadataNet.account];
+            NSString *directoryID = [CCCoreData addDirectory:serverUrl permissions:itemDto.permissions activeAccount:_metadataNet.account];
 
             [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileNamePrint:itemDto.fileName serverUrl:serverUrl directoryID:directoryID cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath activeAccount:_metadataNet.account directoryUser:directoryUser]];
         }
@@ -604,7 +606,7 @@
             
             serverUrl = [CCUtility stringAppendServerUrl:[_activeUrl stringByAppendingString:webDAV] addFileName:serverUrl];
             
-            NSString *directoryID = [CCCoreData addDirectory:serverUrl date:[NSDate date] permissions:itemDto.permissions activeAccount:_metadataNet.account];
+            NSString *directoryID = [CCCoreData addDirectory:serverUrl permissions:itemDto.permissions activeAccount:_metadataNet.account];
             
             [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileNamePrint:itemDto.fileName serverUrl:serverUrl directoryID:directoryID cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath activeAccount:_metadataNet.account directoryUser:directoryUser]];
         }

@@ -127,7 +127,7 @@
 
 // ===== Directory =====
 
-+ (NSString *)addDirectory:(NSString *)serverUrl date:(NSDate *)date permissions:(NSString *)permissions activeAccount:(NSString *)activeAccount;
++ (NSString *)addDirectory:(NSString *)serverUrl permissions:(NSString *)permissions activeAccount:(NSString *)activeAccount;
 + (void)deleteDirectoryFromPredicate:(NSPredicate *)predicate;
 + (NSArray *)deleteDirectoryAndSubDirectory:(NSString *)serverUrl activeAccount:(NSString *)activeAccount;
 + (void)renameDirectory:(NSString *)serverUrl serverUrlTo:(NSString *)serverUrlTo activeAccount:(NSString *)activeAccount;
