@@ -444,6 +444,8 @@
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.01 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
         
+        NSString *oldDirectoryID, *serverUrl;
+
         for (CCMetadata *metadata in metadatas) {
         
             NSString *selector, *selectorPost;
@@ -464,7 +466,14 @@
                 downloadPlist = YES;
                 selector = selectorLoadPlist;
             }
-        
+            
+            // Clear date for dorce refresh view
+            if (![oldDirectoryID isEqualToString:metadata.directoryID]) {
+                serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:app.activeAccount];
+                oldDirectoryID = metadata.directoryID;
+                [CCCoreData clearDateReadDirectory:serverUrl activeAccount:app.activeAccount];
+            }
+            
             [CCCoreData addMetadata:metadata activeAccount:app.activeAccount activeUrl:serverUrl context:nil];
         
             CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
