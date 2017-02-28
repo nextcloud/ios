@@ -17,7 +17,6 @@
 @dynamic account;
 @dynamic date;
 @dynamic dateReadDirectory;
-@dynamic dateRecord;
 @dynamic directoryID;
 @dynamic favorite;
 @dynamic fileID;

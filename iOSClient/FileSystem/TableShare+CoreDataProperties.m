@@ -15,7 +15,6 @@
 }
 
 @dynamic account;
-@dynamic dateRecord;
 @dynamic fileName;
 @dynamic serverUrl;
 @dynamic shareLink;

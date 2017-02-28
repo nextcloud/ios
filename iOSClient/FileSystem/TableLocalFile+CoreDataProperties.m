@@ -16,7 +16,6 @@
 
 @dynamic account;
 @dynamic date;
-@dynamic dateRecord;
 @dynamic exifDate;
 @dynamic exifLatitude;
 @dynamic exifLongitude;

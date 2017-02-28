@@ -15,6 +15,5 @@
 }
 
 @dynamic certificateLocation;
-@dynamic dateRecord;
 
 @end

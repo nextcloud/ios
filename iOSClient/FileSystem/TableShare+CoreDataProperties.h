@@ -16,7 +16,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSFetchRequest<TableShare *> *)fetchRequest;
 
 @property (nullable, nonatomic, copy) NSString *account;
-@property (nullable, nonatomic, copy) NSDate *dateRecord;
 @property (nullable, nonatomic, copy) NSString *fileName;
 @property (nullable, nonatomic, copy) NSString *serverUrl;
 @property (nullable, nonatomic, copy) NSString *shareLink;

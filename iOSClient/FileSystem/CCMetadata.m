@@ -44,7 +44,6 @@
     [metadata setAccount: self.account];
     [metadata setCryptated: self.cryptated];
     [metadata setDate: self.date];
-    [metadata setDateRecord: self.dateRecord];
     [metadata setDirectory: self.directory];
     [metadata setDirectoryID: self.directoryID];
     [metadata setErrorPasscode: self.errorPasscode];
@@ -86,7 +85,6 @@
         _account = [decoder decodeObjectForKey:@"account"];
         _cryptated = [decoder decodeBoolForKey:@"cryptated"];
         _date = [decoder decodeObjectForKey:@"date"];
-        _dateRecord = [decoder decodeObjectForKey:@"dateRecord"];
         _directory = [decoder decodeBoolForKey:@"directory"];
         _directoryID = [decoder decodeObjectForKey:@"directoryID"];
         _errorPasscode = [decoder decodeBoolForKey:@"errorPasscode"];
@@ -125,7 +123,6 @@
     [encoder encodeObject:_account forKey:@"account"];
     [encoder encodeBool:_cryptated forKey:@"cryptated"];
     [encoder encodeObject:_date forKey:@"date"];
-    [encoder encodeObject:_dateRecord forKey:@"dateRecord"];
     [encoder encodeBool:_directory forKey:@"directory"];
     [encoder encodeObject:_directoryID forKey:@"directoryID"];
     [encoder encodeBool:_errorPasscode forKey:@"errorPasscode"];

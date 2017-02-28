@@ -17,7 +17,6 @@
 @dynamic account;
 @dynamic cryptated;
 @dynamic date;
-@dynamic dateRecord;
 @dynamic directory;
 @dynamic directoryID;
 @dynamic errorPasscode;

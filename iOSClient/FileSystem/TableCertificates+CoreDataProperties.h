@@ -16,7 +16,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSFetchRequest<TableCertificates *> *)fetchRequest;
 
 @property (nullable, nonatomic, copy) NSString *certificateLocation;
-@property (nullable, nonatomic, copy) NSDate *dateRecord;
 
 @end
 

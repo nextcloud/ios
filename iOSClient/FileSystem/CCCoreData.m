@@ -50,7 +50,6 @@
     record.cameraUploadWWAnPhoto = [NSNumber numberWithBool:NO];
     record.cameraUploadWWAnVideo = [NSNumber numberWithBool:NO];
         
-    record.dateRecord = [NSDate date];
     record.optimization = [NSDate date];
     record.password = password;
     record.url = url;
@@ -568,7 +567,6 @@
     
     TableCertificates *record = [TableCertificates MR_createEntityInContext:context];
     
-    record.dateRecord = [NSDate date];
     record.certificateLocation = certificateLocation;
     
     [context MR_saveToPersistentStoreAndWait];
@@ -614,7 +612,6 @@
     // set default value
     metadata.sessionTaskIdentifier = k_taskIdentifierDone;
     metadata.sessionTaskIdentifierPlist = k_taskIdentifierDone;
-    [record setValue:[NSDate date] forKey:@"dateRecord"];
 
     // Insert metdata -> entity
     [self insertMetadataInEntity:metadata recordMetadata:record activeAccount:activeAccount activeUrl:activeUrl];
@@ -894,7 +891,6 @@
         
         record.account = activeAccount;
         record.date = date;        
-        record.dateRecord = [NSDate date];
         record.directoryID = [CCUtility createID];
         directoryID = record.directoryID;
         record.permissions = permissions;
@@ -1277,7 +1273,6 @@
         
         record.account = activeAccount;
         record.date = metadata.date;
-        record.dateRecord = [NSDate date];
         record.fileID = metadata.fileID;
     
         record.exifDate = [NSDate date];
@@ -1557,7 +1552,6 @@
         
     if (!record) {
         record = [TableGPS MR_createEntityInContext:context];
-        record.dateRecord = [NSDate date];
     }
         
     record.latitude = latitude;
@@ -1602,7 +1596,6 @@
         TableShare *record = [TableShare MR_createEntityInContext:context];
         
         record.account = activeAccount;
-        record.dateRecord = [NSDate date];
         record.fileName = fileName;
         record.serverUrl = serverUrl;
         record.shareLink = share;
@@ -1630,7 +1623,6 @@
         TableShare *record = [TableShare MR_createEntityInContext:context];
         
         record.account = activeAccount;
-        record.dateRecord = [NSDate date];
         record.fileName = fileName;
         record.serverUrl = serverUrl;
         record.shareUserAndGroup = share;
@@ -1951,7 +1943,6 @@
     metadata.account = recordMetadata.account;
     metadata.cryptated = [recordMetadata.cryptated boolValue];
     metadata.date = recordMetadata.date;
-    metadata.dateRecord = recordMetadata.dateRecord;
     metadata.directory = [recordMetadata.directory boolValue];
     metadata.errorPasscode = [recordMetadata.errorPasscode boolValue];
     metadata.favorite = [recordMetadata.favorite boolValue];

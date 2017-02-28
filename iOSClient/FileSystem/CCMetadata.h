@@ -29,7 +29,6 @@
 @property (nonatomic, strong) NSString *account;
 @property BOOL cryptated;
 @property NSDate *date;
-@property NSDate *dateRecord;
 @property BOOL directory;
 @property (nonatomic, strong) NSString *directoryID;
 @property BOOL errorPasscode;

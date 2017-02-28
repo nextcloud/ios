@@ -15,7 +15,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSFetchRequest<TableGPS *> *)fetchRequest;
 
-@property (nullable, nonatomic, copy) NSDate *dateRecord;
 @property (nullable, nonatomic, copy) NSString *latitude;
 @property (nullable, nonatomic, copy) NSString *location;
 @property (nullable, nonatomic, copy) NSString *longitude;

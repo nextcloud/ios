@@ -32,7 +32,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nullable, nonatomic, copy) NSNumber *cameraUploadVideo;
 @property (nullable, nonatomic, copy) NSNumber *cameraUploadWWAnPhoto;
 @property (nullable, nonatomic, copy) NSNumber *cameraUploadWWAnVideo;
-@property (nullable, nonatomic, copy) NSDate *dateRecord;
 @property (nullable, nonatomic, copy) NSDate *optimization;
 @property (nullable, nonatomic, copy) NSString *password;
 @property (nullable, nonatomic, copy) NSString *url;

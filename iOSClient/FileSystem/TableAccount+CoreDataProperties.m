@@ -31,7 +31,6 @@
 @dynamic cameraUploadVideo;
 @dynamic cameraUploadWWAnPhoto;
 @dynamic cameraUploadWWAnVideo;
-@dynamic dateRecord;
 @dynamic optimization;
 @dynamic password;
 @dynamic url;

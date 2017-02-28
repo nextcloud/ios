@@ -14,7 +14,6 @@
 	return [[NSFetchRequest alloc] initWithEntityName:@"TableGPS"];
 }
 
-@dynamic dateRecord;
 @dynamic latitude;
 @dynamic location;
 @dynamic longitude;

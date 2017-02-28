@@ -18,7 +18,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nullable, nonatomic, copy) NSString *account;
 @property (nullable, nonatomic, copy) NSNumber *cryptated;
 @property (nullable, nonatomic, copy) NSDate *date;
-@property (nullable, nonatomic, copy) NSDate *dateRecord;
 @property (nullable, nonatomic, copy) NSNumber *directory;
 @property (nullable, nonatomic, copy) NSString *directoryID;
 @property (nullable, nonatomic, copy) NSNumber *errorPasscode;
