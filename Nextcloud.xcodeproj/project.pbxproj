@@ -513,7 +513,6 @@
 		08DC3C2E1E647FD200F036D3 /* BKPasscodeView.strings in Resources */ = {isa = PBXBuildFile; fileRef = F72B60911A24F00B004EF66F /* BKPasscodeView.strings */; };
 		08DC3C2F1E647FD200F036D3 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7E70DE91A24DE4100E1B66A /* Localizable.strings */; };
 		08DC3C301E647FD200F036D3 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7F67BB81A24D27800EE80DA /* Images.xcassets */; };
-		08DC3C311E647FD200F036D3 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F74344181E1264EE001CC831 /* MainInterface.storyboard */; };
 		08DC3C321E647FD200F036D3 /* CCMove.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7D02A481C5F9E4400D6F972 /* CCMove.storyboard */; };
 		08DC3C3C1E647FD700F036D3 /* FileProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74344241E1264EE001CC831 /* FileProvider.swift */; };
 		08DC3C3D1E647FD700F036D3 /* CCConstant.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C994311E3A92C400C2466C /* CCConstant.swift */; };
@@ -771,7 +770,6 @@
 		F73CCE301DC13798007E38D8 /* UICKeyChainStore.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCE2A1DC13798007E38D8 /* UICKeyChainStore.m */; };
 		F73CCE321DC13798007E38D8 /* UICKeyChainStore.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCE2A1DC13798007E38D8 /* UICKeyChainStore.m */; };
 		F74344171E1264EE001CC831 /* DocumentPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74344161E1264EE001CC831 /* DocumentPickerViewController.swift */; };
-		F743441A1E1264EE001CC831 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F74344181E1264EE001CC831 /* MainInterface.storyboard */; };
 		F74344251E1264EE001CC831 /* FileProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74344241E1264EE001CC831 /* FileProvider.swift */; };
 		F743444A1E126B4D001CC831 /* CCMove.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D02A471C5F9E4400D6F972 /* CCMove.m */; };
 		F743444B1E126B69001CC831 /* CCMove.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7D02A481C5F9E4400D6F972 /* CCMove.storyboard */; };
@@ -1206,6 +1204,8 @@
 		F7FC88FD1E141A3F006D0506 /* Error.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7B381BF1C074E3E004693F8 /* Error.strings */; };
 		F7FCFFD81D70798C000E6E29 /* CCPeekPop.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7FCFFD61D70798C000E6E29 /* CCPeekPop.storyboard */; };
 		F7FCFFE01D707B83000E6E29 /* CCPeekPop.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FCFFDE1D707B83000E6E29 /* CCPeekPop.m */; };
+		F7FD646F1E65A6ED003EE4D0 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7FD646D1E65A6ED003EE4D0 /* MainInterface.storyboard */; };
+		F7FD64701E65A6ED003EE4D0 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7FD646D1E65A6ED003EE4D0 /* MainInterface.storyboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1728,6 +1728,12 @@
 		F73049B91CB567F000C7C320 /* NSString+TruncateToWidth.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+TruncateToWidth.m"; sourceTree = "<group>"; };
 		F732BA031D76CE1500E9878B /* CCNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCNetworking.h; sourceTree = "<group>"; };
 		F732BA041D76CE1500E9878B /* CCNetworking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCNetworking.m; sourceTree = "<group>"; };
+		F73814261E65A52C0011A45E /* fr */ = {isa = PBXFileReference; lastKnownFileType = text; name = fr; path = fr.lproj/TTOpenInAppActivityLocalizable.string; sourceTree = "<group>"; };
+		F73814271E65A52C0011A45E /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/BKPasscodeView.strings; sourceTree = "<group>"; };
+		F73814281E65A52D0011A45E /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
+		F73814291E65A52D0011A45E /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		F738142A1E65A52D0011A45E /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Intro.strings; sourceTree = "<group>"; };
+		F738142B1E65A52D0011A45E /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Error.strings; sourceTree = "<group>"; };
 		F73C002D1E55D7DF00EEEFA7 /* CCManageCryptoCloudSecurity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCManageCryptoCloudSecurity.h; sourceTree = "<group>"; };
 		F73C002E1E55D7DF00EEEFA7 /* CCManageCryptoCloudSecurity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCManageCryptoCloudSecurity.m; sourceTree = "<group>"; };
 		F73CCD801DC13775007E38D8 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -1818,7 +1824,6 @@
 		F7416BAC1E2E2FBE00B261A1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F74344151E1264EE001CC831 /* Picker.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Picker.entitlements; sourceTree = "<group>"; };
 		F74344161E1264EE001CC831 /* DocumentPickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentPickerViewController.swift; sourceTree = "<group>"; };
-		F74344191E1264EE001CC831 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
 		F743441B1E1264EE001CC831 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F74344231E1264EE001CC831 /* PickerFileProvider.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PickerFileProvider.entitlements; sourceTree = "<group>"; };
 		F74344241E1264EE001CC831 /* FileProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileProvider.swift; sourceTree = "<group>"; };
@@ -2224,6 +2229,7 @@
 		F7FCFFD61D70798C000E6E29 /* CCPeekPop.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = CCPeekPop.storyboard; sourceTree = "<group>"; };
 		F7FCFFDD1D707B83000E6E29 /* CCPeekPop.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCPeekPop.h; sourceTree = "<group>"; };
 		F7FCFFDE1D707B83000E6E29 /* CCPeekPop.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCPeekPop.m; sourceTree = "<group>"; };
+		F7FD646E1E65A6ED003EE4D0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = MainInterface.storyboard; sourceTree = "<group>"; };
 		F7FE125C1BAC03FB0041924B /* CCBKPasscode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCBKPasscode.h; sourceTree = "<group>"; };
 		F7FE125D1BAC03FB0041924B /* CCBKPasscode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCBKPasscode.m; sourceTree = "<group>"; };
 		F7FE125E1BAC03FB0041924B /* CCCrypto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCCrypto.h; sourceTree = "<group>"; };
@@ -3197,9 +3203,9 @@
 		F74344131E1264EE001CC831 /* Picker */ = {
 			isa = PBXGroup;
 			children = (
+				F7FD646C1E65A6ED003EE4D0 /* Base.lproj */,
 				F74344161E1264EE001CC831 /* DocumentPickerViewController.swift */,
 				F74344521E126D06001CC831 /* Picker-Bridging-Header.h */,
-				F74344181E1264EE001CC831 /* MainInterface.storyboard */,
 				F74344141E1264EE001CC831 /* Supporting Files */,
 			);
 			path = Picker;
@@ -3915,6 +3921,7 @@
 			isa = PBXGroup;
 			children = (
 				08DC3BE81E647E3F00F036D3 /* NextcloudCustom.plist */,
+				F76344751BF259A800188725 /* synchronized.gif */,
 				F7D154271E2392A300202FD9 /* Nextcloud-Bridging-Header.h */,
 				F75CDBF51DF063AD00116AD0 /* .gitignore */,
 				F7229B461DF71BA800E8C4E7 /* ChangeLog */,
@@ -3923,7 +3930,6 @@
 				F7145A2E1D12E62B00CAFEEC /* Nextcloud.entitlements */,
 				F7416BAC1E2E2FBE00B261A1 /* Info.plist */,
 				F77D49A71DC238E500CDC568 /* loading@2x.gif */,
-				F76344751BF259A800188725 /* synchronized.gif */,
 				F76344761BF259A800188725 /* synchronizedcrypto.gif */,
 				F7F0617A1BAACDD300846525 /* CryptoCloud.pch */,
 				F7F67BAD1A24D27800EE80DA /* main.m */,
@@ -3975,6 +3981,14 @@
 				F7FCFFDE1D707B83000E6E29 /* CCPeekPop.m */,
 			);
 			path = PeekPop;
+			sourceTree = "<group>";
+		};
+		F7FD646C1E65A6ED003EE4D0 /* Base.lproj */ = {
+			isa = PBXGroup;
+			children = (
+				F7FD646D1E65A6ED003EE4D0 /* MainInterface.storyboard */,
+			);
+			path = Base.lproj;
 			sourceTree = "<group>";
 		};
 		F7FE125B1BAC03FB0041924B /* Security */ = {
@@ -4217,6 +4231,8 @@
 				en,
 				it,
 				de,
+				fr,
+				Base,
 			);
 			mainGroup = F7F67B9F1A24D27800EE80DA;
 			productRefGroup = F7F67B9F1A24D27800EE80DA;
@@ -4492,12 +4508,12 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F7FD64701E65A6ED003EE4D0 /* MainInterface.storyboard in Resources */,
 				08DC3C2C1E647FD200F036D3 /* Nextcloud.xcassets in Resources */,
 				08DC3C2D1E647FD200F036D3 /* Error.strings in Resources */,
 				08DC3C2E1E647FD200F036D3 /* BKPasscodeView.strings in Resources */,
 				08DC3C2F1E647FD200F036D3 /* Localizable.strings in Resources */,
 				08DC3C301E647FD200F036D3 /* Images.xcassets in Resources */,
-				08DC3C311E647FD200F036D3 /* MainInterface.storyboard in Resources */,
 				08DC3C321E647FD200F036D3 /* CCMove.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4545,12 +4561,12 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F7FD646F1E65A6ED003EE4D0 /* MainInterface.storyboard in Resources */,
 				F7D267871E157057005ACB7E /* Nextcloud.xcassets in Resources */,
 				F7FC88FD1E141A3F006D0506 /* Error.strings in Resources */,
 				F7FC88FB1E141A34006D0506 /* BKPasscodeView.strings in Resources */,
 				F7FC88FC1E141A39006D0506 /* Localizable.strings in Resources */,
 				F7D2677C1E157053005ACB7E /* Images.xcassets in Resources */,
-				F743441A1E1264EE001CC831 /* MainInterface.storyboard in Resources */,
 				F743444B1E126B69001CC831 /* CCMove.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -5668,16 +5684,9 @@
 				F7151A801D477A4B00E6AF45 /* en */,
 				F7151A861D477A5400E6AF45 /* it */,
 				F7D96F0B1D99498600A587A5 /* de */,
+				F73814271E65A52C0011A45E /* fr */,
 			);
 			name = BKPasscodeView.strings;
-			sourceTree = "<group>";
-		};
-		F74344181E1264EE001CC831 /* MainInterface.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				F74344191E1264EE001CC831 /* Base */,
-			);
-			name = MainInterface.storyboard;
 			sourceTree = "<group>";
 		};
 		F744BE9F1BEBB69F004FFF66 /* Intro.strings */ = {
@@ -5687,6 +5696,7 @@
 				F7151A831D477A4B00E6AF45 /* en */,
 				F7151A891D477A5500E6AF45 /* it */,
 				F7D96F0E1D99498700A587A5 /* de */,
+				F738142A1E65A52D0011A45E /* fr */,
 			);
 			name = Intro.strings;
 			sourceTree = "<group>";
@@ -5698,6 +5708,7 @@
 				F7151A841D477A4B00E6AF45 /* en */,
 				F7151A8A1D477A5500E6AF45 /* it */,
 				F7D96F0F1D99498700A587A5 /* de */,
+				F738142B1E65A52D0011A45E /* fr */,
 			);
 			name = Error.strings;
 			sourceTree = "<group>";
@@ -5709,6 +5720,7 @@
 				F7151A7F1D477A4B00E6AF45 /* en */,
 				F7151A851D477A5400E6AF45 /* it */,
 				F7D96F0A1D99498600A587A5 /* de */,
+				F73814261E65A52C0011A45E /* fr */,
 			);
 			name = TTOpenInAppActivityLocalizable.string;
 			sourceTree = "<group>";
@@ -5720,6 +5732,7 @@
 				F7151A821D477A4B00E6AF45 /* en */,
 				F7151A881D477A5400E6AF45 /* it */,
 				F7D96F0D1D99498600A587A5 /* de */,
+				F73814291E65A52D0011A45E /* fr */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -5731,6 +5744,7 @@
 				F7151A811D477A4B00E6AF45 /* en */,
 				F7151A871D477A5400E6AF45 /* it */,
 				F7D96F0C1D99498600A587A5 /* de */,
+				F73814281E65A52D0011A45E /* fr */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -5744,6 +5758,14 @@
 				F7F06E841DBFACC600099AE9 /* nl */,
 			);
 			name = CTAssetsPicker.strings;
+			sourceTree = "<group>";
+		};
+		F7FD646D1E65A6ED003EE4D0 /* MainInterface.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F7FD646E1E65A6ED003EE4D0 /* Base */,
+			);
+			name = MainInterface.storyboard;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
