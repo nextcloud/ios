@@ -447,7 +447,6 @@
 		084215DB1E646E0200C8F4F3 /* ZSSh6@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DA41C889300008DAB36 /* ZSSh6@2x.png */; };
 		084215DC1E646E0200C8F4F3 /* UIBarButtonItemArrowRight.png in Resources */ = {isa = PBXBuildFile; fileRef = F7F54CC71E5B14C700E19C62 /* UIBarButtonItemArrowRight.png */; };
 		08DC3BD51E64727E00F036D3 /* AdSupport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 08DC3BD41E64727E00F036D3 /* AdSupport.framework */; };
-		08DC3BE91E647E3F00F036D3 /* NextcloudCustom.plist in Resources */ = {isa = PBXBuildFile; fileRef = 08DC3BE81E647E3F00F036D3 /* NextcloudCustom.plist */; };
 		08DC3BED1E647FD200F036D3 /* BKPasscodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02C91C889183008DAB36 /* BKPasscodeViewController.m */; };
 		08DC3BEE1E647FD200F036D3 /* BKTouchIDManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02CD1C889183008DAB36 /* BKTouchIDManager.m */; };
 		08DC3BEF1E647FD200F036D3 /* TableLocalFile+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF541E56E8CB00271D8B /* TableLocalFile+CoreDataProperties.m */; };
@@ -4160,7 +4159,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0820;
-				LastUpgradeCheck = 0800;
+				LastUpgradeCheck = 0820;
 				ORGANIZATIONNAME = TWS;
 				TargetAttributes = {
 					0842141C1E646E0200C8F4F3 = {
@@ -4479,7 +4478,6 @@
 				084215C51E646E0200C8F4F3 /* ImageSelectedSmallOn@2x.png in Resources */,
 				084215C61E646E0200C8F4F3 /* ZSSunlink.png in Resources */,
 				084215C71E646E0200C8F4F3 /* ZSSredo.png in Resources */,
-				08DC3BE91E647E3F00F036D3 /* NextcloudCustom.plist in Resources */,
 				084215C81E646E0200C8F4F3 /* ImageError.png in Resources */,
 				084215C91E646E0200C8F4F3 /* ZSSrightjustify.png in Resources */,
 				084215CA1E646E0200C8F4F3 /* UIBarButtonItemArrowLeft@3x.png in Resources */,
