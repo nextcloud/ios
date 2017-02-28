@@ -5790,8 +5790,8 @@
 				GCC_PREFIX_HEADER = "$(SRCROOT)/iOSClient/CryptoCloud.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
-					CUSTOM_BUILD,
 					"NC=1",
+					"CUSTOM_BUILD=1",
 				);
 				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
 				INFOPLIST_FILE = iOSClient/NextcloudCustom.plist;
@@ -5838,8 +5838,8 @@
 				GCC_PREFIX_HEADER = "$(SRCROOT)/iOSClient/CryptoCloud.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
-					CUSTOM_BUILD,
 					"NC=1",
+					"CUSTOM_BUILD=1",
 				);
 				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
 				INFOPLIST_FILE = iOSClient/NextcloudCustom.plist;
@@ -5879,6 +5879,7 @@
 					"EXTENSION=1",
 					"DEBUG=1",
 					"NC=1",
+					"CUSTOM_BUILD=1",
 				);
 				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
 				INFOPLIST_FILE = "Picker/PickerCustom-Info.plist";
@@ -5911,6 +5912,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"EXTENSION=1",
 					"NC=1",
+					"CUSTOM_BUILD=1",
 				);
 				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
 				INFOPLIST_FILE = "Picker/PickerCustom-Info.plist";
@@ -5943,6 +5945,7 @@
 					"DEBUG=1",
 					"EXTENSION=1",
 					"NC=1",
+					"CUSTOM_BUILD=1",
 				);
 				INFOPLIST_FILE = "PickerFileProvider/PickerFileProviderCustom-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
@@ -5974,6 +5977,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"NC=1",
 					"EXTENSION=1",
+					"CUSTOM_BUILD=1",
 				);
 				INFOPLIST_FILE = "PickerFileProvider/PickerFileProviderCustom-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
@@ -6008,7 +6012,7 @@
 					"$(inherited)",
 					"EXTENSION=1",
 					"NC=1",
-					CUSTOM_BUILD,
+					"CUSTOM_BUILD=1",
 				);
 				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
 				INFOPLIST_FILE = "Share Ext/Share Ext Nextcloud Custom-Info.plist";
@@ -6049,7 +6053,7 @@
 					"$(inherited)",
 					"EXTENSION=1",
 					"NC=1",
-					CUSTOM_BUILD,
+					"CUSTOM_BUILD=1",
 				);
 				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/Libraries external\"/**";
 				INFOPLIST_FILE = "Share Ext/Share Ext Nextcloud Custom-Info.plist";

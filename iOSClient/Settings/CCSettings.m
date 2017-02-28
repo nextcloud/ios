@@ -24,6 +24,7 @@
 #import "CCSettings.h"
 #import "AppDelegate.h"
 #import "CCMain.h"
+#import "OCCapabilities.h"
 
 #define alertViewEsci 1
 #define alertViewAzzeraCache 2
@@ -425,7 +426,7 @@
     
     _tableAccount = [CCCoreData getActiveAccount];
     
-    rowVersionServer.value =  [CCNetworking sharedNetworking].sharedOCCommunication.getCurrentServerVersion;
+    rowVersionServer.value = [NSString stringWithFormat:@"%@", app.capabilities.versionString];
     rowUrlCloud.value = app.activeUrl;
     rowUserNameCloud.value = app.activeUser;
     NSString *quota = [CCUtility transformedSize:[_tableAccount.quotaTotal doubleValue]];
