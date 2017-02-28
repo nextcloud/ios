@@ -576,7 +576,8 @@
         for(OCFileDto *itemDto in items) {
             
             itemDto.fileName = [itemDto.fileName stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-            
+            itemDto.filePath = [itemDto.filePath stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+
             // Not in Crypto Cloud file
             NSString *fileName = itemDto.fileName;
             if (itemDto.isDirectory)
