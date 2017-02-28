@@ -508,7 +508,6 @@
 		08DC3C271E647FD200F036D3 /* libMagicalRecord.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F7B61E9B1DC13C20009E938F /* libMagicalRecord.a */; };
 		08DC3C281E647FD200F036D3 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63071D5B3467004E2AA5 /* libssl.a */; };
 		08DC3C291E647FD200F036D3 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63061D5B3467004E2AA5 /* libcrypto.a */; };
-		08DC3C2A1E647FD200F036D3 /* Pods_Picker.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F86A6EA6323FFB14F0164E4F /* Pods_Picker.framework */; };
 		08DC3C2C1E647FD200F036D3 /* Nextcloud.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7596C771D128FC80092A6B8 /* Nextcloud.xcassets */; };
 		08DC3C2D1E647FD200F036D3 /* Error.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7B381BF1C074E3E004693F8 /* Error.strings */; };
 		08DC3C2E1E647FD200F036D3 /* BKPasscodeView.strings in Resources */ = {isa = PBXBuildFile; fileRef = F72B60911A24F00B004EF66F /* BKPasscodeView.strings */; };
@@ -518,7 +517,6 @@
 		08DC3C321E647FD200F036D3 /* CCMove.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7D02A481C5F9E4400D6F972 /* CCMove.storyboard */; };
 		08DC3C3C1E647FD700F036D3 /* FileProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74344241E1264EE001CC831 /* FileProvider.swift */; };
 		08DC3C3D1E647FD700F036D3 /* CCConstant.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C994311E3A92C400C2466C /* CCConstant.swift */; };
-		08DC3C3F1E647FD700F036D3 /* Pods_PickerFileProvider.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 474F97D86F6B934687FB1130 /* Pods_PickerFileProvider.framework */; };
 		08DC3C4E1E6482BF00F036D3 /* CCError.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B881C638A4C00DC4301 /* CCError.m */; };
 		08DC3C4F1E6482BF00F036D3 /* TableGPS+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF561E56E8CB00271D8B /* TableGPS+CoreDataClass.m */; };
 		08DC3C501E6482BF00F036D3 /* NSString+TruncateToWidth.m in Sources */ = {isa = PBXBuildFile; fileRef = F73049B91CB567F000C7C320 /* NSString+TruncateToWidth.m */; };
@@ -595,7 +593,6 @@
 		08DC3C981E6482BF00F036D3 /* libMagicalRecord.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F7B61E9B1DC13C20009E938F /* libMagicalRecord.a */; };
 		08DC3C991E6482BF00F036D3 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63071D5B3467004E2AA5 /* libssl.a */; };
 		08DC3C9A1E6482BF00F036D3 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63061D5B3467004E2AA5 /* libcrypto.a */; };
-		08DC3C9B1E6482BF00F036D3 /* Pods_Share_Ext_Nextcloud.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4E855681C99B67CB9A430011 /* Pods_Share_Ext_Nextcloud.framework */; };
 		08DC3C9D1E6482BF00F036D3 /* Nextcloud.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7596C771D128FC80092A6B8 /* Nextcloud.xcassets */; };
 		08DC3C9E1E6482BF00F036D3 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F78BFEDE1D31126B00E513CF /* MainInterface.storyboard */; };
 		08DC3C9F1E6482BF00F036D3 /* Share Ext Nextcloud.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = F7DCA1B81D32BD4100E48D39 /* Share Ext Nextcloud.entitlements */; };
@@ -606,12 +603,10 @@
 		08DC3CA41E6482BF00F036D3 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7E70DE91A24DE4100E1B66A /* Localizable.strings */; };
 		08DC3CA51E6482BF00F036D3 /* CCCellShareExt.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7296A621C8880C9001A7809 /* CCCellShareExt.xib */; };
 		08DC3CB11E64879700F036D3 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 08DC3CB01E64879700F036D3 /* GoogleService-Info.plist */; };
-		08DC3CC01E64895500F036D3 /* Share Ext Nextcloud Custom-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 08DC3CBF1E64895500F036D3 /* Share Ext Nextcloud Custom-Info.plist */; };
-		08DC3CD11E6489FB00F036D3 /* PickerFileProviderCustom-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 08DC3CD01E6489FB00F036D3 /* PickerFileProviderCustom-Info.plist */; };
-		535A408B914DEA8BD1C27F53 /* Pods_Nextcloud_Custom.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D5FC216FD9E6D5390A09EBB1 /* Pods_Nextcloud_Custom.framework */; };
-		7BC64C3D53ABDACC6C003430 /* Pods_Nextcloud.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 80E3CB006BF15F8D334B4DDA /* Pods_Nextcloud.framework */; };
-		9AA123453235FD93A57A2515 /* Pods_Picker.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F86A6EA6323FFB14F0164E4F /* Pods_Picker.framework */; };
-		BD0413F364B10E53DA89D57E /* Pods_PickerFileProvider.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 474F97D86F6B934687FB1130 /* Pods_PickerFileProvider.framework */; };
+		08EA97481E6554FC004C83FA /* FirebaseAnalytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 08EA97441E6554FC004C83FA /* FirebaseAnalytics.framework */; };
+		08EA97491E6554FC004C83FA /* FirebaseCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 08EA97451E6554FC004C83FA /* FirebaseCore.framework */; };
+		08EA974A1E6554FC004C83FA /* FirebaseInstanceID.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 08EA97461E6554FC004C83FA /* FirebaseInstanceID.framework */; };
+		08EA974B1E6554FC004C83FA /* GoogleToolboxForMac.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 08EA97471E6554FC004C83FA /* GoogleToolboxForMac.framework */; };
 		F708CF6D1E56E8CC00271D8B /* TableMetadata+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF4E1E56E8CB00271D8B /* TableMetadata+CoreDataClass.m */; };
 		F708CF6E1E56E8CC00271D8B /* TableMetadata+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF4E1E56E8CB00271D8B /* TableMetadata+CoreDataClass.m */; };
 		F708CF6F1E56E8CC00271D8B /* TableMetadata+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF4E1E56E8CB00271D8B /* TableMetadata+CoreDataClass.m */; };
@@ -1208,7 +1203,6 @@
 		F7FC88FD1E141A3F006D0506 /* Error.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7B381BF1C074E3E004693F8 /* Error.strings */; };
 		F7FCFFD81D70798C000E6E29 /* CCPeekPop.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7FCFFD61D70798C000E6E29 /* CCPeekPop.storyboard */; };
 		F7FCFFE01D707B83000E6E29 /* CCPeekPop.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FCFFDE1D707B83000E6E29 /* CCPeekPop.m */; };
-		FF761511B347B04E13EE475B /* Pods_Share_Ext_Nextcloud.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4E855681C99B67CB9A430011 /* Pods_Share_Ext_Nextcloud.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1343,7 +1337,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		06ABB2792E0DE75CC58CB8DC /* Pods-Picker.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Picker.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Picker/Pods-Picker.debug.xcconfig"; sourceTree = "<group>"; };
 		08DC3BD41E64727E00F036D3 /* AdSupport.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AdSupport.framework; path = System/Library/Frameworks/AdSupport.framework; sourceTree = SDKROOT; };
 		08DC3BD61E6472C200F036D3 /* NextcloudCustom.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NextcloudCustom.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		08DC3BE81E647E3F00F036D3 /* NextcloudCustom.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = NextcloudCustom.plist; sourceTree = "<group>"; };
@@ -1354,19 +1347,12 @@
 		08DC3CB01E64879700F036D3 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		08DC3CBF1E64895500F036D3 /* Share Ext Nextcloud Custom-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Share Ext Nextcloud Custom-Info.plist"; sourceTree = "<group>"; };
 		08DC3CD01E6489FB00F036D3 /* PickerFileProviderCustom-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "PickerFileProviderCustom-Info.plist"; sourceTree = "<group>"; };
-		1084B572C529373B4EFF6A0C /* Pods-Share Ext Nextcloud.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Share Ext Nextcloud.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Share Ext Nextcloud/Pods-Share Ext Nextcloud.debug.xcconfig"; sourceTree = "<group>"; };
-		15C1A63E5889410D6D3AED0A /* Pods-Nextcloud.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Nextcloud.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Nextcloud/Pods-Nextcloud.debug.xcconfig"; sourceTree = "<group>"; };
-		296620D2863D499D6A8107AC /* Pods-Nextcloud Custom.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Nextcloud Custom.release.xcconfig"; path = "Pods/Target Support Files/Pods-Nextcloud Custom/Pods-Nextcloud Custom.release.xcconfig"; sourceTree = "<group>"; };
-		2D16006B1F3509DCCFDAA976 /* Pods-Share Ext Nextcloud.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Share Ext Nextcloud.release.xcconfig"; path = "Pods/Target Support Files/Pods-Share Ext Nextcloud/Pods-Share Ext Nextcloud.release.xcconfig"; sourceTree = "<group>"; };
-		472FCA14813CC2527753DDE0 /* Pods-PickerFileProvider.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PickerFileProvider.debug.xcconfig"; path = "Pods/Target Support Files/Pods-PickerFileProvider/Pods-PickerFileProvider.debug.xcconfig"; sourceTree = "<group>"; };
-		474F97D86F6B934687FB1130 /* Pods_PickerFileProvider.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PickerFileProvider.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		4E855681C99B67CB9A430011 /* Pods_Share_Ext_Nextcloud.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Share_Ext_Nextcloud.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		6CDDA88AEFACDA771404994C /* Pods-Nextcloud.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Nextcloud.release.xcconfig"; path = "Pods/Target Support Files/Pods-Nextcloud/Pods-Nextcloud.release.xcconfig"; sourceTree = "<group>"; };
-		80E3CB006BF15F8D334B4DDA /* Pods_Nextcloud.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Nextcloud.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		80E4079EA569B6F702D1065B /* Pods-Nextcloud Custom.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Nextcloud Custom.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Nextcloud Custom/Pods-Nextcloud Custom.debug.xcconfig"; sourceTree = "<group>"; };
-		A3454F69AC1B63B68577EC6F /* Pods-Picker.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Picker.release.xcconfig"; path = "Pods/Target Support Files/Pods-Picker/Pods-Picker.release.xcconfig"; sourceTree = "<group>"; };
-		BC4AFE71FEFB15075C23FCDB /* Pods-PickerFileProvider.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PickerFileProvider.release.xcconfig"; path = "Pods/Target Support Files/Pods-PickerFileProvider/Pods-PickerFileProvider.release.xcconfig"; sourceTree = "<group>"; };
-		D5FC216FD9E6D5390A09EBB1 /* Pods_Nextcloud_Custom.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Nextcloud_Custom.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		08EA97441E6554FC004C83FA /* FirebaseAnalytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseAnalytics.framework; sourceTree = "<group>"; };
+		08EA97451E6554FC004C83FA /* FirebaseCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseCore.framework; sourceTree = "<group>"; };
+		08EA97461E6554FC004C83FA /* FirebaseInstanceID.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseInstanceID.framework; sourceTree = "<group>"; };
+		08EA97471E6554FC004C83FA /* GoogleToolboxForMac.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleToolboxForMac.framework; sourceTree = "<group>"; };
+		08EA97561E655552004C83FA /* Firebase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Firebase.h; sourceTree = "<group>"; };
+		08EA97571E655552004C83FA /* module.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
 		F70211F41BAC56E9003FC03E /* CCCellMain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCCellMain.h; sourceTree = "<group>"; };
 		F70211F51BAC56E9003FC03E /* CCCellMain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCCellMain.m; sourceTree = "<group>"; };
 		F70211F61BAC56E9003FC03E /* CCCellMain.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CCCellMain.xib; sourceTree = "<group>"; };
@@ -2231,7 +2217,6 @@
 		F7FE125F1BAC03FB0041924B /* CCCrypto.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCCrypto.m; sourceTree = "<group>"; };
 		F7FEB6CE1BECADC100E7C415 /* CCManageHelp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCManageHelp.h; sourceTree = "<group>"; };
 		F7FEB6CF1BECADC100E7C415 /* CCManageHelp.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCManageHelp.m; sourceTree = "<group>"; };
-		F86A6EA6323FFB14F0164E4F /* Pods_Picker.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Picker.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -2239,13 +2224,16 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				08EA97481E6554FC004C83FA /* FirebaseAnalytics.framework in Frameworks */,
 				08DC3BD51E64727E00F036D3 /* AdSupport.framework in Frameworks */,
+				08EA97491E6554FC004C83FA /* FirebaseCore.framework in Frameworks */,
 				084215371E646E0200C8F4F3 /* libownCloudiOS.a in Frameworks */,
 				084215381E646E0200C8F4F3 /* libMagicalRecord.a in Frameworks */,
+				08EA974B1E6554FC004C83FA /* GoogleToolboxForMac.framework in Frameworks */,
 				084215391E646E0200C8F4F3 /* libz.tbd in Frameworks */,
 				0842153A1E646E0200C8F4F3 /* libcrypto.a in Frameworks */,
+				08EA974A1E6554FC004C83FA /* FirebaseInstanceID.framework in Frameworks */,
 				0842153B1E646E0200C8F4F3 /* libssl.a in Frameworks */,
-				535A408B914DEA8BD1C27F53 /* Pods_Nextcloud_Custom.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2257,7 +2245,6 @@
 				08DC3C271E647FD200F036D3 /* libMagicalRecord.a in Frameworks */,
 				08DC3C281E647FD200F036D3 /* libssl.a in Frameworks */,
 				08DC3C291E647FD200F036D3 /* libcrypto.a in Frameworks */,
-				08DC3C2A1E647FD200F036D3 /* Pods_Picker.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2265,7 +2252,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				08DC3C3F1E647FD700F036D3 /* Pods_PickerFileProvider.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2277,7 +2263,6 @@
 				08DC3C981E6482BF00F036D3 /* libMagicalRecord.a in Frameworks */,
 				08DC3C991E6482BF00F036D3 /* libssl.a in Frameworks */,
 				08DC3C9A1E6482BF00F036D3 /* libcrypto.a in Frameworks */,
-				08DC3C9B1E6482BF00F036D3 /* Pods_Share_Ext_Nextcloud.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2289,7 +2274,6 @@
 				F72C63891DC14B0400FA5ED5 /* libMagicalRecord.a in Frameworks */,
 				F70A630F1D5B3467004E2AA5 /* libssl.a in Frameworks */,
 				F70A630B1D5B3467004E2AA5 /* libcrypto.a in Frameworks */,
-				FF761511B347B04E13EE475B /* Pods_Share_Ext_Nextcloud.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2301,7 +2285,6 @@
 				F74344551E1277E2001CC831 /* libMagicalRecord.a in Frameworks */,
 				F74344591E12786C001CC831 /* libssl.a in Frameworks */,
 				F74344561E12784A001CC831 /* libcrypto.a in Frameworks */,
-				9AA123453235FD93A57A2515 /* Pods_Picker.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2309,7 +2292,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BD0413F364B10E53DA89D57E /* Pods_PickerFileProvider.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2322,30 +2304,12 @@
 				F7FC7D561DC1F93800BB2C6A /* libz.tbd in Frameworks */,
 				F7BB14961D5B62C000ECEE68 /* libcrypto.a in Frameworks */,
 				F7BB14971D5B62C000ECEE68 /* libssl.a in Frameworks */,
-				7BC64C3D53ABDACC6C003430 /* Pods_Nextcloud.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		7E03D143A1C21FF51EAA0117 /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				15C1A63E5889410D6D3AED0A /* Pods-Nextcloud.debug.xcconfig */,
-				6CDDA88AEFACDA771404994C /* Pods-Nextcloud.release.xcconfig */,
-				80E4079EA569B6F702D1065B /* Pods-Nextcloud Custom.debug.xcconfig */,
-				296620D2863D499D6A8107AC /* Pods-Nextcloud Custom.release.xcconfig */,
-				06ABB2792E0DE75CC58CB8DC /* Pods-Picker.debug.xcconfig */,
-				A3454F69AC1B63B68577EC6F /* Pods-Picker.release.xcconfig */,
-				472FCA14813CC2527753DDE0 /* Pods-PickerFileProvider.debug.xcconfig */,
-				BC4AFE71FEFB15075C23FCDB /* Pods-PickerFileProvider.release.xcconfig */,
-				1084B572C529373B4EFF6A0C /* Pods-Share Ext Nextcloud.debug.xcconfig */,
-				2D16006B1F3509DCCFDAA976 /* Pods-Share Ext Nextcloud.release.xcconfig */,
-			);
-			name = Pods;
-			sourceTree = "<group>";
-		};
 		F70211F31BAC56E9003FC03E /* Main */ = {
 			isa = PBXGroup;
 			children = (
@@ -3875,7 +3839,6 @@
 				F74344211E1264EE001CC831 /* PickerFileProvider */,
 				F7FC7D651DC1F98700BB2C6A /* Products */,
 				F7FC7D541DC1F93700BB2C6A /* Frameworks */,
-				7E03D143A1C21FF51EAA0117 /* Pods */,
 				08DC3BD61E6472C200F036D3 /* NextcloudCustom.app */,
 				08DC3C371E647FD200F036D3 /* PickerCustom.appex */,
 				08DC3CD01E6489FB00F036D3 /* PickerFileProviderCustom-Info.plist */,
@@ -3889,6 +3852,8 @@
 		F7F67BAA1A24D27800EE80DA /* iOSClient */ = {
 			isa = PBXGroup;
 			children = (
+				08EA97561E655552004C83FA /* Firebase.h */,
+				08EA97571E655552004C83FA /* module.modulemap */,
 				F7B61E861DC13C20009E938F /* MagicalRecord.xcodeproj */,
 				F71E67F61DC1F76F003BA52B /* ownCloud iOS library.xcodeproj */,
 				F70F02A81C889183008DAB36 /* Libraries external */,
@@ -3963,13 +3928,12 @@
 		F7FC7D541DC1F93700BB2C6A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				08EA97441E6554FC004C83FA /* FirebaseAnalytics.framework */,
+				08EA97451E6554FC004C83FA /* FirebaseCore.framework */,
+				08EA97461E6554FC004C83FA /* FirebaseInstanceID.framework */,
+				08EA97471E6554FC004C83FA /* GoogleToolboxForMac.framework */,
 				08DC3BD41E64727E00F036D3 /* AdSupport.framework */,
 				F7FC7D551DC1F93800BB2C6A /* libz.tbd */,
-				80E3CB006BF15F8D334B4DDA /* Pods_Nextcloud.framework */,
-				D5FC216FD9E6D5390A09EBB1 /* Pods_Nextcloud_Custom.framework */,
-				F86A6EA6323FFB14F0164E4F /* Pods_Picker.framework */,
-				474F97D86F6B934687FB1130 /* Pods_PickerFileProvider.framework */,
-				4E855681C99B67CB9A430011 /* Pods_Share_Ext_Nextcloud.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -4015,13 +3979,10 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 084215E21E646E0200C8F4F3 /* Build configuration list for PBXNativeTarget "NextcloudCustom" */;
 			buildPhases = (
-				753FA3D9677CE029EC9CC971 /* [CP] Check Pods Manifest.lock */,
 				084214231E646E0200C8F4F3 /* Sources */,
 				084215361E646E0200C8F4F3 /* Frameworks */,
 				0842153C1E646E0200C8F4F3 /* Resources */,
 				084215E11E646E0200C8F4F3 /* ShellScript */,
-				835929A152B46AA9BD3E3D0A /* [CP] Embed Pods Frameworks */,
-				F3C4F039194F165BB606E871 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -4039,11 +4000,9 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 08DC3C341E647FD200F036D3 /* Build configuration list for PBXNativeTarget "PickerCustom" */;
 			buildPhases = (
-				08DC3BEB1E647FD200F036D3 /* [CP] Check Pods Manifest.lock */,
 				08DC3BEC1E647FD200F036D3 /* Sources */,
 				08DC3C251E647FD200F036D3 /* Frameworks */,
 				08DC3C2B1E647FD200F036D3 /* Resources */,
-				08DC3C331E647FD200F036D3 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -4058,11 +4017,9 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 08DC3C421E647FD700F036D3 /* Build configuration list for PBXNativeTarget "PickerFileProviderCustom" */;
 			buildPhases = (
-				08DC3C3A1E647FD700F036D3 /* [CP] Check Pods Manifest.lock */,
 				08DC3C3B1E647FD700F036D3 /* Sources */,
 				08DC3C3E1E647FD700F036D3 /* Frameworks */,
 				08DC3C401E647FD700F036D3 /* Resources */,
-				08DC3C411E647FD700F036D3 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -4077,11 +4034,9 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 08DC3CA71E6482BF00F036D3 /* Build configuration list for PBXNativeTarget "Share Ext Nextcloud Custom" */;
 			buildPhases = (
-				08DC3C4C1E6482BF00F036D3 /* [CP] Check Pods Manifest.lock */,
 				08DC3C4D1E6482BF00F036D3 /* Sources */,
 				08DC3C961E6482BF00F036D3 /* Frameworks */,
 				08DC3C9C1E6482BF00F036D3 /* Resources */,
-				08DC3CA61E6482BF00F036D3 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -4096,11 +4051,9 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = F7145A251D12E3B700CAFEEC /* Build configuration list for PBXNativeTarget "Share Ext Nextcloud" */;
 			buildPhases = (
-				E3375F0A3A3EB69A4396ADB2 /* [CP] Check Pods Manifest.lock */,
 				F71459B51D12E3B700CAFEEC /* Sources */,
 				F7145A141D12E3B700CAFEEC /* Frameworks */,
 				F7145A181D12E3B700CAFEEC /* Resources */,
-				7E8156B60A0D47F2A2CE8348 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -4115,11 +4068,9 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = F743443C1E1264EE001CC831 /* Build configuration list for PBXNativeTarget "Picker" */;
 			buildPhases = (
-				2C13FA2DF266EB34257EA81E /* [CP] Check Pods Manifest.lock */,
 				F743440E1E1264ED001CC831 /* Sources */,
 				F743440F1E1264ED001CC831 /* Frameworks */,
 				F74344101E1264ED001CC831 /* Resources */,
-				562DE17D1A3184043DF511E5 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -4134,11 +4085,9 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = F743443B1E1264EE001CC831 /* Build configuration list for PBXNativeTarget "PickerFileProvider" */;
 			buildPhases = (
-				3911BDE0EFDFA5FB181D52E2 /* [CP] Check Pods Manifest.lock */,
 				F743441C1E1264EE001CC831 /* Sources */,
 				F743441D1E1264EE001CC831 /* Frameworks */,
 				F743441E1E1264EE001CC831 /* Resources */,
-				E3E3D9368DF2B0D59EC78AAE /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -4153,14 +4102,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = F77B0F9A1D118A16002130FE /* Build configuration list for PBXNativeTarget "Nextcloud" */;
 			buildPhases = (
-				1746299DABFB2B603FED0323 /* [CP] Check Pods Manifest.lock */,
 				F77B0DEF1D118A16002130FE /* Sources */,
 				F77B0EDC1D118A16002130FE /* Frameworks */,
 				F77B0EE91D118A16002130FE /* Resources */,
 				F77B0F981D118A16002130FE /* Embed App Extensions */,
 				F73B02C01DC0F1C900EC2C33 /* ShellScript */,
-				7992AD82E097EC33A88FF257 /* [CP] Embed Pods Frameworks */,
-				A289F9B72E571FB4FD5BC011 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -4541,7 +4487,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				08DC3CD11E6489FB00F036D3 /* PickerFileProviderCustom-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4552,7 +4497,6 @@
 				08DC3C9D1E6482BF00F036D3 /* Nextcloud.xcassets in Resources */,
 				08DC3C9E1E6482BF00F036D3 /* MainInterface.storyboard in Resources */,
 				08DC3C9F1E6482BF00F036D3 /* Share Ext Nextcloud.entitlements in Resources */,
-				08DC3CC01E64895500F036D3 /* Share Ext Nextcloud Custom-Info.plist in Resources */,
 				08DC3CA01E6482BF00F036D3 /* Images.xcassets in Resources */,
 				08DC3CA11E6482BF00F036D3 /* CCMove.storyboard in Resources */,
 				08DC3CA21E6482BF00F036D3 /* BKPasscodeView.strings in Resources */,
@@ -4781,276 +4725,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "#!/bin/bash\n# buildNumber=$(/usr/libexec/PlistBuddy -c \"Print CFBundleVersion\" \"$INFOPLIST_FILE\")\n# buildNumber=$(echo $buildNumber | sed 's/0*//')\n# buildNumber=$(($buildNumber + 1))\n# buildNumber=$(printf \"%04d\" $buildNumber)\n# /usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $buildNumber\" \"$INFOPLIST_FILE\"";
-		};
-		08DC3BEB1E647FD200F036D3 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
-			showEnvVarsInLog = 0;
-		};
-		08DC3C331E647FD200F036D3 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Picker/Pods-Picker-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		08DC3C3A1E647FD700F036D3 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
-			showEnvVarsInLog = 0;
-		};
-		08DC3C411E647FD700F036D3 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-PickerFileProvider/Pods-PickerFileProvider-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		08DC3C4C1E6482BF00F036D3 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
-			showEnvVarsInLog = 0;
-		};
-		08DC3CA61E6482BF00F036D3 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Share Ext Nextcloud/Pods-Share Ext Nextcloud-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		1746299DABFB2B603FED0323 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
-			showEnvVarsInLog = 0;
-		};
-		2C13FA2DF266EB34257EA81E /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
-			showEnvVarsInLog = 0;
-		};
-		3911BDE0EFDFA5FB181D52E2 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
-			showEnvVarsInLog = 0;
-		};
-		562DE17D1A3184043DF511E5 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Picker/Pods-Picker-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		753FA3D9677CE029EC9CC971 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
-			showEnvVarsInLog = 0;
-		};
-		7992AD82E097EC33A88FF257 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Nextcloud/Pods-Nextcloud-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		7E8156B60A0D47F2A2CE8348 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Share Ext Nextcloud/Pods-Share Ext Nextcloud-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		835929A152B46AA9BD3E3D0A /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Nextcloud Custom/Pods-Nextcloud Custom-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		A289F9B72E571FB4FD5BC011 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Nextcloud/Pods-Nextcloud-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		E3375F0A3A3EB69A4396ADB2 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
-			showEnvVarsInLog = 0;
-		};
-		E3E3D9368DF2B0D59EC78AAE /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-PickerFileProvider/Pods-PickerFileProvider-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		F3C4F039194F165BB606E871 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Nextcloud Custom/Pods-Nextcloud Custom-resources.sh\"\n";
-			showEnvVarsInLog = 0;
 		};
 		F73B02C01DC0F1C900EC2C33 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -6058,7 +5732,6 @@
 /* Begin XCBuildConfiguration section */
 		084215E31E646E0200C8F4F3 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 80E4079EA569B6F702D1065B /* Pods-Nextcloud Custom.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIconNextcloud;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
@@ -6069,7 +5742,10 @@
 				CURRENT_PROJECT_VERSION = "";
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
 				ENABLE_BITCODE = YES;
-				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(SRCROOT)/iOSClient/CryptoCloud.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -6102,7 +5778,6 @@
 		};
 		084215E41E646E0200C8F4F3 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 296620D2863D499D6A8107AC /* Pods-Nextcloud Custom.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIconNextcloud;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
@@ -6114,7 +5789,10 @@
 				CURRENT_PROJECT_VERSION = "";
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
 				ENABLE_BITCODE = YES;
-				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(SRCROOT)/iOSClient/CryptoCloud.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -6146,7 +5824,6 @@
 		};
 		08DC3C351E647FD200F036D3 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 06ABB2792E0DE75CC58CB8DC /* Pods-Picker.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -6180,7 +5857,6 @@
 		};
 		08DC3C361E647FD200F036D3 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = A3454F69AC1B63B68577EC6F /* Pods-Picker.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -6212,7 +5888,6 @@
 		};
 		08DC3C431E647FD700F036D3 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 472FCA14813CC2527753DDE0 /* Pods-PickerFileProvider.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -6245,7 +5920,6 @@
 		};
 		08DC3C441E647FD700F036D3 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = BC4AFE71FEFB15075C23FCDB /* Pods-PickerFileProvider.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -6276,7 +5950,6 @@
 		};
 		08DC3CA81E6482BF00F036D3 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1084B572C529373B4EFF6A0C /* Pods-Share Ext Nextcloud.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				APPLICATION_EXTENSION_API_ONLY = NO;
@@ -6318,7 +5991,6 @@
 		};
 		08DC3CA91E6482BF00F036D3 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2D16006B1F3509DCCFDAA976 /* Pods-Share Ext Nextcloud.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				APPLICATION_EXTENSION_API_ONLY = NO;
@@ -6359,7 +6031,6 @@
 		};
 		F7145A261D12E3B700CAFEEC /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1084B572C529373B4EFF6A0C /* Pods-Share Ext Nextcloud.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				APPLICATION_EXTENSION_API_ONLY = NO;
@@ -6400,7 +6071,6 @@
 		};
 		F7145A271D12E3B700CAFEEC /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2D16006B1F3509DCCFDAA976 /* Pods-Share Ext Nextcloud.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				APPLICATION_EXTENSION_API_ONLY = NO;
@@ -6440,7 +6110,6 @@
 		};
 		F743442D1E1264EE001CC831 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 06ABB2792E0DE75CC58CB8DC /* Pods-Picker.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -6474,7 +6143,6 @@
 		};
 		F743442E1E1264EE001CC831 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = A3454F69AC1B63B68577EC6F /* Pods-Picker.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -6506,7 +6174,6 @@
 		};
 		F743442F1E1264EE001CC831 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 472FCA14813CC2527753DDE0 /* Pods-PickerFileProvider.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -6539,7 +6206,6 @@
 		};
 		F74344301E1264EE001CC831 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = BC4AFE71FEFB15075C23FCDB /* Pods-PickerFileProvider.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -6570,7 +6236,6 @@
 		};
 		F77B0F9B1D118A16002130FE /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 15C1A63E5889410D6D3AED0A /* Pods-Nextcloud.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIconNextcloud;
@@ -6613,7 +6278,6 @@
 		};
 		F77B0F9C1D118A16002130FE /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6CDDA88AEFACDA771404994C /* Pods-Nextcloud.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIconNextcloud;
