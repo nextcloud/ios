@@ -339,7 +339,7 @@
                                         
                                         // remove tag offline for all folder/subfolder/file
                                         NSString *relativeRoot = [CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:app.activeAccount];
-                                        NSString *dirServerUrl = [CCUtility stringAppendServerUrl:relativeRoot addServerUrl:_metadata.fileNameData];
+                                        NSString *dirServerUrl = [CCUtility stringAppendServerUrl:relativeRoot addFileName:_metadata.fileNameData];
                                         NSArray *directories = [CCCoreData getOfflineDirectoryActiveAccount:app.activeAccount];
                                         
                                         for (TableDirectory *directory in directories)
@@ -671,7 +671,7 @@
         serverUrl = _serverUrl;
     }
         
-    vc.serverUrl = [CCUtility stringAppendServerUrl:serverUrl addServerUrl:_metadata.fileNameData];
+    vc.serverUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:_metadata.fileNameData];
     vc.pageType = _pageType;
     vc.titleViewControl = _metadata.fileNamePrint;
     

@@ -738,7 +738,7 @@ extension DocumentPickerViewController: UITableViewDataSource {
         cell.fileName.text = metadata.fileNamePrint
         
         // Status Image View
-        let lockServerUrl = CCUtility.stringAppendServerUrl(self.serverUrl!, addServerUrl: metadata.fileNameData)
+        let lockServerUrl = CCUtility.stringAppendServerUrl(self.serverUrl!, addFileName: metadata.fileNameData)
         
         var passcode: String? = CCUtility.getBlockCode()
         if passcode == nil {
@@ -803,7 +803,7 @@ extension DocumentPickerViewController: UITableViewDataSource {
                 dir = CCUtility.trasformedFileNamePlist(inCrypto: self.metadata?.fileName)
             }
             
-            serverUrlPush = CCUtility.stringAppendServerUrl(self.serverUrl!, addServerUrl: dir)
+            serverUrlPush = CCUtility.stringAppendServerUrl(self.serverUrl!, addFileName: dir)
 
             var passcode: String? = CCUtility.getBlockCode()
             if passcode == nil {

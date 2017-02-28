@@ -119,7 +119,7 @@
         
         // Get ServerUrl
         NSString* serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:app.activeAccount];
-        serverUrl = [CCUtility stringAppendServerUrl:serverUrl addServerUrl:metadata.fileNameData];
+        serverUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileNameData];
         
         if (![serverUrl containsString:father]) {
             
@@ -300,7 +300,7 @@
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
                     
-                    NSString *serverUrl = [CCUtility stringAppendServerUrl:metadataNet.serverUrl addServerUrl:metadata.fileNameData];
+                    NSString *serverUrl = [CCUtility stringAppendServerUrl:metadataNet.serverUrl addFileName:metadata.fileNameData];
                     NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:app.activeAccount];
                     
                     [CCCoreData addMetadata:metadata activeAccount:app.activeAccount activeUrl:app.activeUrl context:nil];

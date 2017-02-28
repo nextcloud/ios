@@ -458,7 +458,7 @@
     if (metadata.errorPasscode == NO) {
     
         // lockServerUrl
-        NSString *lockServerUrl = [CCUtility stringAppendServerUrl:_serverUrl addServerUrl:metadata.fileNameData];
+        NSString *lockServerUrl = [CCUtility stringAppendServerUrl:_serverUrl addFileName:metadata.fileNameData];
         
         // SE siamo in presenza di una directory bloccata E è attivo il block E la sessione PASSWORD Lock è senza data ALLORA chiediamo la password per procedere
         if ([CCCoreData isDirectoryLock:lockServerUrl activeAccount:activeAccount] && [[CCUtility getBlockCode] length] && controlPasscode) {
@@ -509,7 +509,7 @@
         viewController.networkingOperationQueue = _networkingOperationQueue;
 
         viewController.passMetadata = metadata;
-        viewController.serverUrl = [CCUtility stringAppendServerUrl:_serverUrl addServerUrl:nomeDir];
+        viewController.serverUrl = [CCUtility stringAppendServerUrl:_serverUrl addFileName:nomeDir];
     
         [self.navigationController pushViewController:viewController animated:YES];
     }

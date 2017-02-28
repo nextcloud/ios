@@ -127,7 +127,7 @@
 + (NSString *)transformedSize:(double)value;
 
 + (NSString *)removeForbiddenCharacters:(NSString *)fileName hasServerForbiddenCharactersSupport:(BOOL)hasServerForbiddenCharactersSupport;
-+ (NSString *)stringAppendServerUrl:(NSString *)serverUrl addServerUrl:(NSString *)addServerUrl;
++ (NSString *)stringAppendServerUrl:(NSString *)serverUrl addFileName:(NSString *)addFileName;
 
 + (NSString *)createID;
 + (NSString *)createFileNameFromAsset:(PHAsset *)asset key:(NSString *)key;

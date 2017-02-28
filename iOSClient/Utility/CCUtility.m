@@ -431,15 +431,15 @@
     return fileName;
 }
 
-+ (NSString*)stringAppendServerUrl:(NSString *)serverUrl addServerUrl:(NSString *)addServerUrl
++ (NSString*)stringAppendServerUrl:(NSString *)serverUrl addFileName:(NSString *)addFileName
 {
     NSString *result;
     
-    if (serverUrl == nil || addServerUrl == nil) return nil;
-    if ([addServerUrl isEqualToString:@""]) return serverUrl;
+    if (serverUrl == nil || addFileName == nil) return nil;
+    if ([addFileName isEqualToString:@""]) return serverUrl;
     
-    if ([serverUrl isEqualToString:@"/"]) result = [serverUrl stringByAppendingString:addServerUrl];
-    else result = [NSString stringWithFormat:@"%@/%@", serverUrl, addServerUrl];
+    if ([serverUrl isEqualToString:@"/"]) result = [serverUrl stringByAppendingString:addFileName];
+    else result = [NSString stringWithFormat:@"%@/%@", serverUrl, addFileName];
     
     return result;
 }

@@ -182,7 +182,7 @@
     NSString *cameraFolderName = [self getCameraUploadFolderNameActiveAccount:activeAccount];
     NSString *cameraFolderPath = [self getCameraUploadFolderPathActiveAccount:activeAccount activeUrl:activeUrl];
     
-    NSString *folderPhotos = [CCUtility stringAppendServerUrl:cameraFolderPath addServerUrl:cameraFolderName];
+    NSString *folderPhotos = [CCUtility stringAppendServerUrl:cameraFolderPath addFileName:cameraFolderName];
     return folderPhotos;
 }
 
@@ -881,7 +881,6 @@
     if (record) {
      
         directoryID = record.directoryID;
-        
         record.date = date;
         record.permissions = permissions;
         
@@ -1236,7 +1235,7 @@
                 
                 if([fileName isEqualToString:fileNameEntity]) {
                     
-                    NSString *lockServerUrl = [CCUtility stringAppendServerUrl:serverUrlEntity addServerUrl:fileNameEntity];
+                    NSString *lockServerUrl = [CCUtility stringAppendServerUrl:serverUrlEntity addFileName:fileNameEntity];
                     
                     BOOL risultato = [self isDirectoryLock:lockServerUrl activeAccount:activeAccount];
                     if (risultato) return YES;
@@ -1881,7 +1880,7 @@
     // se è una directory cancelliamo tutto quello che è della directory
     if (metadata.directory && serverUrl) {
         
-        NSString *dirForDelete = [CCUtility stringAppendServerUrl:serverUrl addServerUrl:metadata.fileNameData];
+        NSString *dirForDelete = [CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileNameData];
         [self deleteDirectoryAndSubDirectory:dirForDelete activeAccount:activeAccount];
     }
 }

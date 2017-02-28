@@ -406,7 +406,7 @@
         
         NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:_metadata.account];
 
-        NSString *dir = [CCUtility stringAppendServerUrl:serverUrl addServerUrl:_metadata.fileNameData];
+        NSString *dir = [CCUtility stringAppendServerUrl:serverUrl addFileName:_metadata.fileNameData];
         
         [[CCSynchronize sharedSynchronize] addOfflineFolder:dir];
         
@@ -2093,7 +2093,7 @@
         if (metadataNet.directory == YES) {
         
             // delete all dir / subdir
-            NSArray *directoryIDs = [CCCoreData deleteDirectoryAndSubDirectory:[CCUtility stringAppendServerUrl:metadataNet.serverUrl addServerUrl:fileName] activeAccount:app.activeAccount];
+            NSArray *directoryIDs = [CCCoreData deleteDirectoryAndSubDirectory:[CCUtility stringAppendServerUrl:metadataNet.serverUrl addFileName:fileName] activeAccount:app.activeAccount];
         
             // delete all metadata and local file in dir / subdir
             for (NSString *directoryIDDelete in directoryIDs)
@@ -2948,7 +2948,7 @@
     
     if (metadata.directory && metadata.favorite) {
         
-        NSString *dir = [CCUtility stringAppendServerUrl:metadataNet.serverUrl addServerUrl:metadata.fileNameData];
+        NSString *dir = [CCUtility stringAppendServerUrl:metadataNet.serverUrl addFileName:metadata.fileNameData];
         
         [[CCSynchronize sharedSynchronize] addFavoriteFolder:dir];
     }
@@ -3993,7 +3993,7 @@
             if (aViewController.fromType == CCBKPasscodeFromDisactivateDirectory) {
                 
                 NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:_metadata.account];
-                NSString *lockServerUrl = [CCUtility stringAppendServerUrl:serverUrl addServerUrl:_metadata.fileNameData];
+                NSString *lockServerUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:_metadata.fileNameData];
                 
                 if ([CCCoreData setDirectoryUnLock:lockServerUrl activeAccount:app.activeAccount] == NO) {
                     
@@ -4012,7 +4012,7 @@
 - (void)comandoLockPassword
 {
     NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:_metadata.account];
-    NSString *lockServerUrl = [CCUtility stringAppendServerUrl:serverUrl addServerUrl:_metadata.fileNameData];
+    NSString *lockServerUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:_metadata.fileNameData];
 
     // se non è abilitato il Lock Passcode esci
     if ([[CCUtility getBlockCode] length] == 0) {
@@ -4094,7 +4094,7 @@
     if ([CCCoreData isOfflineLocalFileID:_metadata.fileID activeAccount:app.activeAccount]) titoloOffline = [NSString stringWithFormat:NSLocalizedString(@"_remove_offline_", nil)];
     else titoloOffline = [NSString stringWithFormat:NSLocalizedString(@"_add_offline_", nil)];
     
-    NSString *offlineServerUrl = [CCUtility stringAppendServerUrl:serverUrl addServerUrl:_metadata.fileNameData];
+    NSString *offlineServerUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:_metadata.fileNameData];
     if (_metadata.directory && [CCCoreData isOfflineDirectoryServerUrl:offlineServerUrl activeAccount:app.activeAccount]) {
         
         titleOfflineFolder = [NSString stringWithFormat:NSLocalizedString(@"_remove_offline_", nil)];
@@ -4112,7 +4112,7 @@
     
     if (_metadata.directory) {
         // calcolo lockServerUrl
-        NSString *lockServerUrl = [CCUtility stringAppendServerUrl:serverUrl addServerUrl:_metadata.fileNameData];
+        NSString *lockServerUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:_metadata.fileNameData];
         
         if ([CCCoreData isDirectoryLock:lockServerUrl activeAccount:app.activeAccount]) titoloLock = [NSString stringWithFormat:NSLocalizedString(@"_remove_passcode_", nil)];
         else titoloLock = [NSString stringWithFormat:NSLocalizedString(@"_protect_passcode_", nil)];
@@ -4150,7 +4150,7 @@
         UIImage *iconHeader;
         BOOL lockDirectory = NO;
         
-        NSString *dirServerUrl = [CCUtility stringAppendServerUrl:serverUrl addServerUrl:_metadata.fileNameData];
+        NSString *dirServerUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:_metadata.fileNameData];
         NSString *upDir = [CCUtility deletingLastPathComponentFromServerUrl:dirServerUrl];
         NSString *homeDir = [CCUtility getHomeServerUrlActiveUrl:app.activeUrl];
         
@@ -4586,7 +4586,7 @@
     BOOL lockDirectory = NO;
     
     // Directory locked ?
-    NSString *lockServerUrl = [CCUtility stringAppendServerUrl:[CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:_metadata.account] addServerUrl:_metadata.fileNameData];
+    NSString *lockServerUrl = [CCUtility stringAppendServerUrl:[CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:_metadata.account] addFileName:_metadata.fileNameData];
     
     if ([CCCoreData isDirectoryLock:lockServerUrl activeAccount:app.activeAccount] && [[CCUtility getBlockCode] length] && app.sessionePasscodeLock == nil) lockDirectory = YES;
     
@@ -5032,7 +5032,7 @@
         // Offline Folder
         // ----------------------------------------------------------------------------------------------------------
         
-        NSString *directoryServerUrl = [CCUtility stringAppendServerUrl:serverUrl addServerUrl:metadata.fileNameData];
+        NSString *directoryServerUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileNameData];
         BOOL isOfflineDirectory = [CCCoreData isOfflineDirectoryServerUrl:directoryServerUrl activeAccount:app.activeAccount];
         
         // Verify Offline
@@ -5149,7 +5149,7 @@
     }
     
     // Directory con passcode lock attivato
-    NSString *lockServerUrl = [CCUtility stringAppendServerUrl:serverUrl addServerUrl:metadata.fileNameData];
+    NSString *lockServerUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileNameData];
     if (metadata.directory && ([CCCoreData isDirectoryLock:lockServerUrl activeAccount:app.activeAccount] && [[CCUtility getBlockCode] length])) cell.statusImageView.image = [UIImage imageNamed:image_passcode];
     
     // ----------------------------------------------------------------------------------------------------------
@@ -5538,7 +5538,7 @@
         if (recordMetadata.directory == NO)
             continue;
         
-        if ([[CCUtility stringAppendServerUrl:_serverUrl addServerUrl:recordMetadata.fileNameData] isEqualToString:serverUrl]) {
+        if ([[CCUtility stringAppendServerUrl:_serverUrl addFileName:recordMetadata.fileNameData] isEqualToString:serverUrl]) {
             
             NSIndexPath *indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:recordMetadata.fileID];
             cell = (CCCellMain *)[self.tableView cellForRowAtIndexPath:indexPath];
@@ -5627,7 +5627,7 @@
     if(self.tableView.editing == NO && _metadata.errorPasscode == NO){
         
         NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:_metadata.account];
-        NSString *lockServerUrl = [CCUtility stringAppendServerUrl:serverUrl addServerUrl:_metadata.fileNameData];
+        NSString *lockServerUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:_metadata.fileNameData];
         
         // SE siamo in presenza di una directory bloccata E è attivo il block E la sessione password Lock è senza data ALLORA chiediamo la password per procedere
         if ([CCCoreData isDirectoryLock:lockServerUrl activeAccount:app.activeAccount] && [[CCUtility getBlockCode] length] && app.sessionePasscodeLock == nil && controlPasscode) {
@@ -5666,7 +5666,7 @@
         if (_metadata.cryptated) nomeDir = [_metadata.fileName substringToIndex:[_metadata.fileName length]-6];
         else nomeDir = _metadata.fileName;
         
-        NSString *serverUrlPush = [CCUtility stringAppendServerUrl:serverUrl addServerUrl:nomeDir];
+        NSString *serverUrlPush = [CCUtility stringAppendServerUrl:serverUrl addFileName:nomeDir];
         
         CCMain *viewController = [app.listMainVC objectForKey:serverUrlPush];
         

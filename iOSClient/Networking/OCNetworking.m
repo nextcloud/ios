@@ -353,9 +353,12 @@
                 if (_isCryptoCloudMode == NO || [_metadataNet.selector isEqualToString:selectorSearch]) {
                     
                     NSString *fileName = itemDto.fileName;
-                    if (itemDto.isDirectory)
+                    if (itemDto.isDirectory) {
                         fileName = [fileName substringToIndex:[fileName length] - 1];
-                
+                        NSString *serverUrl = [CCUtility stringAppendServerUrl:_metadataNet.serverUrl addFileName:fileName];
+                        [CCCoreData addDirectory:serverUrl date:[NSDate date] permissions:nil activeAccount:_metadataNet.account];
+                    }
+                    
                     if ([CCUtility isFileCryptated:fileName])
                         continue;
                 }
@@ -467,7 +470,7 @@
                 serverUrl = [serverUrl substringToIndex:[serverUrl length] - 1];
             /*      */
             
-            serverUrl = [CCUtility stringAppendServerUrl:[_activeUrl stringByAppendingString:webDAV] addServerUrl:serverUrl];
+            serverUrl = [CCUtility stringAppendServerUrl:[_activeUrl stringByAppendingString:webDAV] addFileName:serverUrl];
             
             NSString *directoryID = [CCCoreData addDirectory:serverUrl date:[NSDate date] permissions:itemDto.permissions activeAccount:_metadataNet.account];
 
@@ -599,7 +602,7 @@
                 serverUrl = [serverUrl substringToIndex:[serverUrl length] - 1];
             /*      */
             
-            serverUrl = [CCUtility stringAppendServerUrl:[_activeUrl stringByAppendingString:webDAV] addServerUrl:serverUrl];
+            serverUrl = [CCUtility stringAppendServerUrl:[_activeUrl stringByAppendingString:webDAV] addFileName:serverUrl];
             
             NSString *directoryID = [CCCoreData addDirectory:serverUrl date:[NSDate date] permissions:itemDto.permissions activeAccount:_metadataNet.account];
             
