@@ -330,7 +330,6 @@
         progressView.progressTintColor = [UIColor colorWithRed:0.0/255.0 green:130.0/255.0 blue:201.0/255.0 alpha:0.4];
         progressView.layer.borderWidth = 0.05;
         progressView.layer.borderColor = [COLOR_BRAND CGColor];
-
         CGAffineTransform transform = CGAffineTransformMakeScale(1.0f, 10.0f);
         progressView.transform = transform;
         progressView.progress = [_tableAccount.quotaRelative floatValue] / 100;
@@ -338,7 +337,6 @@
         [view addSubview:progressView];
         
         return view;
-                                    
     }
     
     return nil;
