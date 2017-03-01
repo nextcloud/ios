@@ -1115,6 +1115,10 @@
 		F7D6A0931D82DBFA0045AD1A /* CCControlCenterTransferCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D6A08C1D82DBFA0045AD1A /* CCControlCenterTransferCell.m */; };
 		F7D6A0951D82DBFA0045AD1A /* CCControlCenterTransferCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7D6A08D1D82DBFA0045AD1A /* CCControlCenterTransferCell.xib */; };
 		F7D6A0971D82DBFA0045AD1A /* CCMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D6A08F1D82DBFA0045AD1A /* CCMenu.m */; };
+		F7D9C2F81E67746300865617 /* CCControlCenterActivityCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D9C2F61E67746300865617 /* CCControlCenterActivityCell.m */; };
+		F7D9C2F91E67746300865617 /* CCControlCenterActivityCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D9C2F61E67746300865617 /* CCControlCenterActivityCell.m */; };
+		F7D9C2FA1E67746300865617 /* CCControlCenterActivityCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7D9C2F71E67746300865617 /* CCControlCenterActivityCell.xib */; };
+		F7D9C2FB1E67746300865617 /* CCControlCenterActivityCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7D9C2F71E67746300865617 /* CCControlCenterActivityCell.xib */; };
 		F7DA62AE1E41E666003E1740 /* CCOfflinePageContent.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DA62AD1E41E666003E1740 /* CCOfflinePageContent.m */; };
 		F7DCA1C81D32BD4100E48D39 /* Share Ext Nextcloud.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = F7DCA1B81D32BD4100E48D39 /* Share Ext Nextcloud.entitlements */; };
 		F7EC147B1E5D9C0B0046F351 /* CCSynchronize.m in Sources */ = {isa = PBXBuildFile; fileRef = F7EC147A1E5D9C0B0046F351 /* CCSynchronize.m */; };
@@ -2100,6 +2104,9 @@
 		F7D96F0D1D99498600A587A5 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		F7D96F0E1D99498700A587A5 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Intro.strings; sourceTree = "<group>"; };
 		F7D96F0F1D99498700A587A5 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Error.strings; sourceTree = "<group>"; };
+		F7D9C2F51E67746300865617 /* CCControlCenterActivityCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCControlCenterActivityCell.h; sourceTree = "<group>"; };
+		F7D9C2F61E67746300865617 /* CCControlCenterActivityCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCControlCenterActivityCell.m; sourceTree = "<group>"; };
+		F7D9C2F71E67746300865617 /* CCControlCenterActivityCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CCControlCenterActivityCell.xib; sourceTree = "<group>"; };
 		F7DA62AC1E41E666003E1740 /* CCOfflinePageContent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCOfflinePageContent.h; sourceTree = "<group>"; };
 		F7DA62AD1E41E666003E1740 /* CCOfflinePageContent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCOfflinePageContent.m; sourceTree = "<group>"; };
 		F7DCA1B81D32BD4100E48D39 /* Share Ext Nextcloud.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = "Share Ext Nextcloud.entitlements"; path = "Share Ext/Share Ext Nextcloud.entitlements"; sourceTree = SOURCE_ROOT; };
@@ -3682,6 +3689,9 @@
 				F7D6A08D1D82DBFA0045AD1A /* CCControlCenterTransferCell.xib */,
 				F70FD1C51E67552700C0FDA6 /* CCControlCenterTransfer.h */,
 				F70FD1C61E67552700C0FDA6 /* CCControlCenterTransfer.m */,
+				F7D9C2F51E67746300865617 /* CCControlCenterActivityCell.h */,
+				F7D9C2F61E67746300865617 /* CCControlCenterActivityCell.m */,
+				F7D9C2F71E67746300865617 /* CCControlCenterActivityCell.xib */,
 				F70FD1C91E675F1500C0FDA6 /* CCControlCenterActivity.h */,
 				F70FD1CA1E675F1500C0FDA6 /* CCControlCenterActivity.m */,
 				F7D6A08E1D82DBFA0045AD1A /* CCMenu.h */,
@@ -4530,6 +4540,7 @@
 				084215D41E646E0200C8F4F3 /* Reader-Export@2x.png in Resources */,
 				084215D51E646E0200C8F4F3 /* LMMediaPlayerView.bundle in Resources */,
 				084215D61E646E0200C8F4F3 /* CCCellMain.xib in Resources */,
+				F7D9C2FB1E67746300865617 /* CCControlCenterActivityCell.xib in Resources */,
 				084215D71E646E0200C8F4F3 /* CCCellMainTransfer.xib in Resources */,
 				084215D81E646E0200C8F4F3 /* LMMediaPlayerView.xib in Resources */,
 				084215D91E646E0200C8F4F3 /* ZSSunlink@2x.png in Resources */,
@@ -4718,6 +4729,7 @@
 				F77B0F531D118A16002130FE /* ZSSbold.png in Resources */,
 				F7F54CF11E5B14C700E19C62 /* ImageSelectedSmallOn.png in Resources */,
 				F77B0F541D118A16002130FE /* Reader-Button-N.png in Resources */,
+				F7D9C2FA1E67746300865617 /* CCControlCenterActivityCell.xib in Resources */,
 				F77B0F551D118A16002130FE /* Error.strings in Resources */,
 				F77B0F561D118A16002130FE /* ZSStable.png in Resources */,
 				F77B0F571D118A16002130FE /* synchronizedcrypto.gif in Resources */,
@@ -4931,6 +4943,7 @@
 				084214911E646E0200C8F4F3 /* CCDetail.m in Sources */,
 				084214921E646E0200C8F4F3 /* CCCoreData.m in Sources */,
 				084214931E646E0200C8F4F3 /* PSTCollectionViewController.m in Sources */,
+				F7D9C2F91E67746300865617 /* CCControlCenterActivityCell.m in Sources */,
 				084214941E646E0200C8F4F3 /* CCCertificate.m in Sources */,
 				084214951E646E0200C8F4F3 /* UINavigationController+CCProgress.m in Sources */,
 				084214961E646E0200C8F4F3 /* CCManageCameraUpload.m in Sources */,
@@ -5526,6 +5539,7 @@
 				F77B0E4C1D118A16002130FE /* CCDetail.m in Sources */,
 				F77B0E4D1D118A16002130FE /* CCCoreData.m in Sources */,
 				F7659A5E1DC0B760004860C4 /* PSTCollectionViewController.m in Sources */,
+				F7D9C2F81E67746300865617 /* CCControlCenterActivityCell.m in Sources */,
 				F7F801031D98205A007537BC /* CCCertificate.m in Sources */,
 				F7CE28881D1ACFA70025783C /* UINavigationController+CCProgress.m in Sources */,
 				F77B0E4F1D118A16002130FE /* CCManageCameraUpload.m in Sources */,

@@ -238,8 +238,8 @@
         
     _sectionDataSource  = [CCSection creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:app.listProgressMetadata groupByField:@"session" replaceDateToExifDate:NO activeAccount:app.activeAccount];
         
-    //    if ([_sectionDataSource.allRecordsDataSource count] == 0) _noRecord.hidden = NO;
-    //    else _noRecord.hidden = YES;
+    //if ([_sectionDataSource.allRecordsDataSource count] == 0) _noRecord.hidden = NO;
+    //else _noRecord.hidden = YES;
     
     [_tableView reloadData];
     

@@ -9,7 +9,7 @@
 #import "CCControlCenterActivity.h"
 
 #import "AppDelegate.h"
-#import "CCControlCenterTransferCell.h"
+#import "CCControlCenterActivityCell.h"
 
 @implementation CCControlCenterActivity
 
@@ -31,7 +31,7 @@
     [super viewDidLoad];
     
     // Custom Cell
-    [_tableView registerNib:[UINib nibWithNibName:@"CCControlCenterTransferCell" bundle:nil] forCellReuseIdentifier:@"ControlCenterTransferCell"];
+    [_tableView registerNib:[UINib nibWithNibName:@"CCControlCenterActivityCell" bundle:nil] forCellReuseIdentifier:@"ControlCenterActivityCell"];
     
     _tableView.delegate = self;
     _tableView.dataSource = self;
@@ -65,7 +65,7 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    CCControlCenterTransferCell *cell = (CCControlCenterTransferCell *)[tableView dequeueReusableCellWithIdentifier:@"ControlCenterTransferCell" forIndexPath:indexPath];
+    CCControlCenterActivityCell *cell = (CCControlCenterActivityCell *)[tableView dequeueReusableCellWithIdentifier:@"ControlCenterActivityCell" forIndexPath:indexPath];
     
     return cell;
 }
