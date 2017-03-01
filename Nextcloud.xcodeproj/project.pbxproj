@@ -656,6 +656,8 @@
 		F70A630F1D5B3467004E2AA5 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63071D5B3467004E2AA5 /* libssl.a */; };
 		F70FD1C71E67552700C0FDA6 /* CCControlCenterTransfer.m in Sources */ = {isa = PBXBuildFile; fileRef = F70FD1C61E67552700C0FDA6 /* CCControlCenterTransfer.m */; };
 		F70FD1C81E67552700C0FDA6 /* CCControlCenterTransfer.m in Sources */ = {isa = PBXBuildFile; fileRef = F70FD1C61E67552700C0FDA6 /* CCControlCenterTransfer.m */; };
+		F70FD1CB1E675F1500C0FDA6 /* CCControlCenterActivity.m in Sources */ = {isa = PBXBuildFile; fileRef = F70FD1CA1E675F1500C0FDA6 /* CCControlCenterActivity.m */; };
+		F70FD1CC1E675F1500C0FDA6 /* CCControlCenterActivity.m in Sources */ = {isa = PBXBuildFile; fileRef = F70FD1CA1E675F1500C0FDA6 /* CCControlCenterActivity.m */; };
 		F714526D1DC1523B0006A5D4 /* libMagicalRecord.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F7B61E9B1DC13C20009E938F /* libMagicalRecord.a */; };
 		F71459B81D12E3B700CAFEEC /* CCError.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B881C638A4C00DC4301 /* CCError.m */; };
 		F71459BA1D12E3B700CAFEEC /* NSString+TruncateToWidth.m in Sources */ = {isa = PBXBuildFile; fileRef = F73049B91CB567F000C7C320 /* NSString+TruncateToWidth.m */; };
@@ -1690,6 +1692,8 @@
 		F70F0F9E1C889487008DAB36 /* SSZipArchive.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSZipArchive.m; sourceTree = "<group>"; };
 		F70FD1C51E67552700C0FDA6 /* CCControlCenterTransfer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCControlCenterTransfer.h; sourceTree = "<group>"; };
 		F70FD1C61E67552700C0FDA6 /* CCControlCenterTransfer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCControlCenterTransfer.m; sourceTree = "<group>"; };
+		F70FD1C91E675F1500C0FDA6 /* CCControlCenterActivity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCControlCenterActivity.h; sourceTree = "<group>"; };
+		F70FD1CA1E675F1500C0FDA6 /* CCControlCenterActivity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCControlCenterActivity.m; sourceTree = "<group>"; };
 		F7145A2E1D12E62B00CAFEEC /* Nextcloud.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = Nextcloud.entitlements; sourceTree = "<group>"; };
 		F7151A7F1D477A4B00E6AF45 /* en */ = {isa = PBXFileReference; lastKnownFileType = text; name = en; path = en.lproj/TTOpenInAppActivityLocalizable.string; sourceTree = "<group>"; };
 		F7151A801D477A4B00E6AF45 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/BKPasscodeView.strings; sourceTree = "<group>"; };
@@ -3678,6 +3682,8 @@
 				F7D6A08D1D82DBFA0045AD1A /* CCControlCenterTransferCell.xib */,
 				F70FD1C51E67552700C0FDA6 /* CCControlCenterTransfer.h */,
 				F70FD1C61E67552700C0FDA6 /* CCControlCenterTransfer.m */,
+				F70FD1C91E675F1500C0FDA6 /* CCControlCenterActivity.h */,
+				F70FD1CA1E675F1500C0FDA6 /* CCControlCenterActivity.m */,
 				F7D6A08E1D82DBFA0045AD1A /* CCMenu.h */,
 				F7D6A08F1D82DBFA0045AD1A /* CCMenu.m */,
 			);
@@ -4866,6 +4872,7 @@
 				084214581E646E0200C8F4F3 /* CCGraphics.m in Sources */,
 				084214591E646E0200C8F4F3 /* NSExpression+XLFormAdditions.m in Sources */,
 				0842145A1E646E0200C8F4F3 /* BKPasscodeDummyViewController.m in Sources */,
+				F70FD1CC1E675F1500C0FDA6 /* CCControlCenterActivity.m in Sources */,
 				0842145B1E646E0200C8F4F3 /* ReaderThumbQueue.m in Sources */,
 				0842145C1E646E0200C8F4F3 /* PSTGridLayoutRow.m in Sources */,
 				0842145D1E646E0200C8F4F3 /* CCShareUserOC.m in Sources */,
@@ -5460,6 +5467,7 @@
 				F77B0E1B1D118A16002130FE /* CCGraphics.m in Sources */,
 				F73CCE071DC13776007E38D8 /* NSExpression+XLFormAdditions.m in Sources */,
 				F77B0E1C1D118A16002130FE /* BKPasscodeDummyViewController.m in Sources */,
+				F70FD1CB1E675F1500C0FDA6 /* CCControlCenterActivity.m in Sources */,
 				F77B0E1D1D118A16002130FE /* ReaderThumbQueue.m in Sources */,
 				F7659A6E1DC0B760004860C4 /* PSTGridLayoutRow.m in Sources */,
 				F77B0E201D118A16002130FE /* CCShareUserOC.m in Sources */,

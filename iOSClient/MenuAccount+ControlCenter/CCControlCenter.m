@@ -22,8 +22,10 @@
 //
 
 #import "CCControlCenter.h"
-
 #import "CCControlCenterTransfer.h"
+
+#import "CCControlCenterActivity.h"
+
 #import "AppDelegate.h"
 #import "CCMain.h"
 #import "CCDetail.h"
@@ -361,50 +363,6 @@
         return nil;
     }
     
-    /*
-    if (index == 0) {
-        
-        CCControlCenterTransfer *pageContentViewController;
-
-        if ([self.controlCenterPagesContent count] >= index+1) {
-            
-            pageContentViewController = [self.controlCenterPagesContent objectAtIndex:index];
-            
-        } else {
-            
-            // Create a new view controller and pass suitable data.
-            pageContentViewController = [[UIStoryboard storyboardWithName: @"ControlCenter" bundle:[NSBundle mainBundle]]  instantiateViewControllerWithIdentifier:@"ControlCenterTransfer"];
-            [self.controlCenterPagesContent addObject:pageContentViewController];
-        }
-        
-        pageContentViewController.pageIndex = index;
-        pageContentViewController.pageType = self.pageType[index];
-        
-        return pageContentViewController;
-    }
-    
-    if (index == 1) {
-        
-        CCControlCenterTransfer *pageContentViewController;
-        
-        if ([self.controlCenterPagesContent count] >= index+1) {
-            
-            pageContentViewController = [self.controlCenterPagesContent objectAtIndex:index];
-            
-        } else {
-            
-            // Create a new view controller and pass suitable data.
-            pageContentViewController = [[UIStoryboard storyboardWithName: @"ControlCenter" bundle:[NSBundle mainBundle]]  instantiateViewControllerWithIdentifier:@"ControlCenterTransfer"];
-            [self.controlCenterPagesContent addObject:pageContentViewController];
-        }
-        
-        pageContentViewController.pageIndex = index;
-        pageContentViewController.pageType = self.pageType[index];
-        
-        return pageContentViewController;
-    }
-    */
-    
     UIViewController *pageContentViewController;
     
     if ([self.controlCenterPagesContent count] >= index+1) {
@@ -413,22 +371,17 @@
         
     } else {
         
-        // Create a new view controller and pass suitable data.
-        pageContentViewController = [[UIStoryboard storyboardWithName: @"ControlCenter" bundle:[NSBundle mainBundle]]  instantiateViewControllerWithIdentifier:@"ControlCenterTransfer"];
+        if (index == 0)
+            pageContentViewController = [[UIStoryboard storyboardWithName: @"ControlCenter" bundle:[NSBundle mainBundle]]  instantiateViewControllerWithIdentifier:@"ControlCenterTransfer"];
+        
+        if (index == 1)
+            pageContentViewController = [[UIStoryboard storyboardWithName: @"ControlCenter" bundle:[NSBundle mainBundle]]  instantiateViewControllerWithIdentifier:@"ControlCenterActivity"];
+        
         [self.controlCenterPagesContent addObject:pageContentViewController];
     }
     
-    if (index == 0) {
-        
-        ((CCControlCenterTransfer *) pageContentViewController).pageIndex = index;
-        ((CCControlCenterTransfer *) pageContentViewController).pageType = self.pageType[index];
-    }
-
-    if (index == 1) {
-        
-        ((CCControlCenterTransfer *) pageContentViewController).pageIndex = index;
-        ((CCControlCenterTransfer *) pageContentViewController).pageType = self.pageType[index];
-    }
+    ((CCControlCenterTransfer *) pageContentViewController).pageIndex = index;
+    ((CCControlCenterTransfer *) pageContentViewController).pageType = self.pageType[index];
     
     return pageContentViewController;
 }
