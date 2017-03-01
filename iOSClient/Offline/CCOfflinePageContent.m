@@ -661,7 +661,7 @@
 
 -(void)performSegueDirectoryWithControlPasscode
 {
-    CCOfflinePageContent *vc = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"OfflinePageContentViewController"];
+    CCOfflinePageContent *vc = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"OfflinePageContent"];
     
     NSString *serverUrl;
     

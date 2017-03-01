@@ -269,7 +269,6 @@
 		084215271E646E0200C8F4F3 /* HRBrightnessCursor.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0DE11C889300008DAB36 /* HRBrightnessCursor.m */; };
 		084215281E646E0200C8F4F3 /* UIImage+Masking.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04C61C889184008DAB36 /* UIImage+Masking.m */; };
 		084215291E646E0200C8F4F3 /* NSData+CommonCrypto.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02AF1C889183008DAB36 /* NSData+CommonCrypto.m */; };
-		0842152A1E646E0200C8F4F3 /* CCOffline.m in Sources */ = {isa = PBXBuildFile; fileRef = F7C00D461E2D0D0F0032160B /* CCOffline.m */; };
 		0842152B1E646E0200C8F4F3 /* CYRToken.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0DDF1C889300008DAB36 /* CYRToken.m */; };
 		0842152C1E646E0200C8F4F3 /* AHKActionSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = F72AAEC31E5C60C700BB17E1 /* AHKActionSheet.m */; };
 		0842152D1E646E0200C8F4F3 /* CTAssetsGridView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F06E521DBFACC600099AE9 /* CTAssetsGridView.m */; };
@@ -1095,7 +1094,6 @@
 		F7BF1B431D51E893000854F6 /* CCLogin.m in Sources */ = {isa = PBXBuildFile; fileRef = F7BF1B401D51E893000854F6 /* CCLogin.m */; };
 		F7C00D471E2D0D0F0032160B /* CCCellOffline.m in Sources */ = {isa = PBXBuildFile; fileRef = F7C00D431E2D0D0F0032160B /* CCCellOffline.m */; };
 		F7C00D481E2D0D0F0032160B /* CCCellOffline.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7C00D441E2D0D0F0032160B /* CCCellOffline.xib */; };
-		F7C00D491E2D0D0F0032160B /* CCOffline.m in Sources */ = {isa = PBXBuildFile; fileRef = F7C00D461E2D0D0F0032160B /* CCOffline.m */; };
 		F7C5259E1E3B45FA00FFE02C /* CCNotificationPushKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C5259D1E3B45FA00FFE02C /* CCNotificationPushKey.swift */; };
 		F7C525A01E3B48B700FFE02C /* CCNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C5259F1E3B48B700FFE02C /* CCNotification.swift */; };
 		F7C525A21E3B6DA800FFE02C /* CCNotification.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7C525A11E3B6DA800FFE02C /* CCNotification.storyboard */; };
@@ -1196,6 +1194,8 @@
 		F7F6AC4E1E525AD300E8EB45 /* CCManageCryptoCloud.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F6AC4D1E525AD300E8EB45 /* CCManageCryptoCloud.m */; };
 		F7F801031D98205A007537BC /* CCCertificate.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F801011D98205A007537BC /* CCCertificate.m */; };
 		F7F801051D98205A007537BC /* CCCertificate.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F801011D98205A007537BC /* CCCertificate.m */; };
+		F7FB5F131E66CDCB00389481 /* CCOfflineContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FB5F121E66CDCB00389481 /* CCOfflineContainer.m */; };
+		F7FB5F141E66CDCB00389481 /* CCOfflineContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FB5F121E66CDCB00389481 /* CCOfflineContainer.m */; };
 		F7FC7D561DC1F93800BB2C6A /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = F7FC7D551DC1F93800BB2C6A /* libz.tbd */; };
 		F7FC88FA1E140558006D0506 /* cryptocloud.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = F78088E51DD3A1DB005C5A7C /* cryptocloud.xcdatamodeld */; };
 		F7FC88FB1E141A34006D0506 /* BKPasscodeView.strings in Resources */ = {isa = PBXBuildFile; fileRef = F72B60911A24F00B004EF66F /* BKPasscodeView.strings */; };
@@ -2032,8 +2032,6 @@
 		F7C00D421E2D0D0F0032160B /* CCCellOffline.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCCellOffline.h; sourceTree = "<group>"; };
 		F7C00D431E2D0D0F0032160B /* CCCellOffline.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCCellOffline.m; sourceTree = "<group>"; };
 		F7C00D441E2D0D0F0032160B /* CCCellOffline.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CCCellOffline.xib; sourceTree = "<group>"; };
-		F7C00D451E2D0D0F0032160B /* CCOffline.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCOffline.h; sourceTree = "<group>"; };
-		F7C00D461E2D0D0F0032160B /* CCOffline.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCOffline.m; sourceTree = "<group>"; };
 		F7C00D4A1E2D10BB0032160B /* cryptocloud 7.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "cryptocloud 7.xcdatamodel"; sourceTree = "<group>"; };
 		F7C0F46E1C8880540059EC54 /* ShareViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = ShareViewController.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		F7C0F46F1C8880540059EC54 /* ShareViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = ShareViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
@@ -2224,6 +2222,8 @@
 		F7F6AC4D1E525AD300E8EB45 /* CCManageCryptoCloud.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCManageCryptoCloud.m; sourceTree = "<group>"; };
 		F7F801001D98205A007537BC /* CCCertificate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCCertificate.h; sourceTree = "<group>"; };
 		F7F801011D98205A007537BC /* CCCertificate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCCertificate.m; sourceTree = "<group>"; };
+		F7FB5F111E66CDCB00389481 /* CCOfflineContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCOfflineContainer.h; sourceTree = "<group>"; };
+		F7FB5F121E66CDCB00389481 /* CCOfflineContainer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCOfflineContainer.m; sourceTree = "<group>"; };
 		F7FC7D551DC1F93800BB2C6A /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		F7FCFFD61D70798C000E6E29 /* CCPeekPop.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = CCPeekPop.storyboard; sourceTree = "<group>"; };
 		F7FCFFDD1D707B83000E6E29 /* CCPeekPop.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCPeekPop.h; sourceTree = "<group>"; };
@@ -3592,8 +3592,8 @@
 				F7C00D421E2D0D0F0032160B /* CCCellOffline.h */,
 				F7C00D431E2D0D0F0032160B /* CCCellOffline.m */,
 				F7C00D441E2D0D0F0032160B /* CCCellOffline.xib */,
-				F7C00D451E2D0D0F0032160B /* CCOffline.h */,
-				F7C00D461E2D0D0F0032160B /* CCOffline.m */,
+				F7FB5F111E66CDCB00389481 /* CCOfflineContainer.h */,
+				F7FB5F121E66CDCB00389481 /* CCOfflineContainer.m */,
 				F7DA62AC1E41E666003E1740 /* CCOfflinePageContent.h */,
 				F7DA62AD1E41E666003E1740 /* CCOfflinePageContent.m */,
 				F7EC14791E5D9C0B0046F351 /* CCSynchronize.h */,
@@ -4864,6 +4864,7 @@
 				084214761E646E0200C8F4F3 /* CTAssetsGridViewFooter.m in Sources */,
 				084214771E646E0200C8F4F3 /* CTAssetsGridViewLayout.m in Sources */,
 				084214781E646E0200C8F4F3 /* CCOfflinePageContent.m in Sources */,
+				F7FB5F141E66CDCB00389481 /* CCOfflineContainer.m in Sources */,
 				084214791E646E0200C8F4F3 /* NYXImagesHelper.m in Sources */,
 				0842147A1E646E0200C8F4F3 /* XLFormTextView.m in Sources */,
 				0842147B1E646E0200C8F4F3 /* ZSSBarButtonItem.m in Sources */,
@@ -5041,7 +5042,6 @@
 				084215271E646E0200C8F4F3 /* HRBrightnessCursor.m in Sources */,
 				084215281E646E0200C8F4F3 /* UIImage+Masking.m in Sources */,
 				084215291E646E0200C8F4F3 /* NSData+CommonCrypto.m in Sources */,
-				0842152A1E646E0200C8F4F3 /* CCOffline.m in Sources */,
 				0842152B1E646E0200C8F4F3 /* CYRToken.m in Sources */,
 				0842152C1E646E0200C8F4F3 /* AHKActionSheet.m in Sources */,
 				0842152D1E646E0200C8F4F3 /* CTAssetsGridView.m in Sources */,
@@ -5447,6 +5447,7 @@
 				F7F06EB71DBFACC600099AE9 /* CTAssetsGridViewFooter.m in Sources */,
 				F7F06EB91DBFACC600099AE9 /* CTAssetsGridViewLayout.m in Sources */,
 				F7DA62AE1E41E666003E1740 /* CCOfflinePageContent.m in Sources */,
+				F7FB5F131E66CDCB00389481 /* CCOfflineContainer.m in Sources */,
 				F77B0E351D118A16002130FE /* NYXImagesHelper.m in Sources */,
 				F73CCE171DC13776007E38D8 /* XLFormTextView.m in Sources */,
 				F77B0E361D118A16002130FE /* ZSSBarButtonItem.m in Sources */,
@@ -5624,7 +5625,6 @@
 				F77B0ECB1D118A16002130FE /* HRBrightnessCursor.m in Sources */,
 				F77B0ECC1D118A16002130FE /* UIImage+Masking.m in Sources */,
 				F77B0ECE1D118A16002130FE /* NSData+CommonCrypto.m in Sources */,
-				F7C00D491E2D0D0F0032160B /* CCOffline.m in Sources */,
 				F77B0ECF1D118A16002130FE /* CYRToken.m in Sources */,
 				F72AAECA1E5C60C700BB17E1 /* AHKActionSheet.m in Sources */,
 				F7F06EB11DBFACC600099AE9 /* CTAssetsGridView.m in Sources */,

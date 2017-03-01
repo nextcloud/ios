@@ -1,5 +1,5 @@
 //
-//  CCOffline.h
+//  CCOfflineContainer.h
 //  Crypto Cloud Technology Nextcloud
 //
 //  Created by Marino Faggiana on 16/01/17.
@@ -25,7 +25,7 @@
 
 #import "CCOfflinePageContent.h"
 
-@interface CCOffline : UIViewController <UIPageViewControllerDataSource, UIPageViewControllerDelegate>
+@interface CCOfflineContainer : UIViewController <UIPageViewControllerDataSource, UIPageViewControllerDelegate>
 
 @property (strong, nonatomic) UIPageViewController *pageViewController;
 @property (strong, nonatomic) NSArray *pageType;

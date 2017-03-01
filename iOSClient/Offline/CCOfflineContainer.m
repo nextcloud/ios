@@ -1,5 +1,5 @@
 //
-//  CCOffline.m
+//  CCOfflineContainer.m
 //  Crypto Cloud Technology Nextcloud
 //
 //  Created by Marino Faggiana on 16/01/17.
@@ -21,7 +21,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#import "CCOffline.h"
+#import "CCOfflineContainer.h"
 #import "AppDelegate.h"
 #import "CCSynchronize.h"
 
@@ -33,14 +33,14 @@
 
 #pragma GCC diagnostic ignored "-Wundeclared-selector"
 
-@interface CCOffline ()
+@interface CCOfflineContainer ()
 {
     UIPageControl *pageControl;
 }
 
 @end
 
-@implementation CCOffline
+@implementation CCOfflineContainer
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Init =====
@@ -117,7 +117,7 @@
     }
     
     // Create a new view controller and pass suitable data.
-    CCOfflinePageContent *pageContentViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"OfflinePageContentViewController"];
+    CCOfflinePageContent *pageContentViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"OfflinePageContent"];
     
     pageContentViewController.pageIndex = index;
     pageContentViewController.pageType = self.pageType[index];
