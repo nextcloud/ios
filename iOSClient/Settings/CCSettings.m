@@ -430,8 +430,10 @@
     rowUrlCloud.value = app.activeUrl;
     rowUserNameCloud.value = app.activeUser;
     NSString *quota = [CCUtility transformedSize:[_tableAccount.quotaTotal doubleValue]];
-    NSString *quotaAvailable = [CCUtility transformedSize:[_tableAccount.quotaFree doubleValue]];
-    rowQuota.title = [NSString stringWithFormat:@"%@ / %@ %@", quota, quotaAvailable, NSLocalizedString(@"_available_", nil)];
+    //NSString *quotaAvailable = [CCUtility transformedSize:[_tableAccount.quotaFree doubleValue]];
+    NSString *quotaUsed = [CCUtility transformedSize:[_tableAccount.quotaUsed doubleValue]];
+    rowQuota.title = [NSString stringWithFormat:NSLocalizedString(@"_quota_using_", nil), quotaUsed, quota];
+    //rowQuota.title = [NSString stringWithFormat:@"%@ / %@ %@", quota, quotaAvailable, NSLocalizedString(@"_available_", nil)];
     
     if (avatar || _tableAccount.displayName.length > 0) {
         
