@@ -91,6 +91,10 @@
 - (void)getCapabilitiesOfServerSuccess:(OCCapabilities *)capabilities;
 - (void)getInfoServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
 
+// Activity
+- (void)getActivityServerSuccess:(NSArray *)listOfActivity;
+- (void)getActivityServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
+
 // Notification
 - (void)getNotificationServerSuccess:(NSArray *)listOfNotifications;
 - (void)getNotificationServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;

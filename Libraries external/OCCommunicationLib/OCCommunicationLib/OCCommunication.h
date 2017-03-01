@@ -823,6 +823,24 @@ typedef enum {
 
 - (void) setNotificationServer:(NSString*)serverPath type:(NSString *)type onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest;
 
+#pragma mark -  Server Activity
+
+///-----------------------------------
+/// @name Get the server Activity
+///-----------------------------------
+
+/**
+ * Method read the notification of the server
+ *
+ * @param serverPath            -> NSString server
+ * @param sharedOCCommunication -> OCCommunication Singleton of communication to add the operation on the queue.
+ *
+ * @return listOfActivity       -> OCActivity
+ *
+ */
+
+- (void) getActivityServer:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *listOfActivity, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest;
+
 #pragma mark -  User Profile
 
 ///-----------------------------------

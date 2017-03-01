@@ -200,6 +200,7 @@ extern NSString *const BKPasscodeKeychainServiceName;
 #define actionDeleteFileDirectory                       @"deleteFileOrFolder"
 #define actionDownloadFile                              @"downloadFile"
 #define actionDownloadThumbnail                         @"downloadThumbnail"
+#define actionGetActivityServer                         @"getActivityServer"
 #define actionGetCapabilities                           @"getCapabilitiesOfServer"
 #define actionGetFeaturesSuppServer                     @"getFeaturesSupportedByServer"
 #define actionGetUserAndGroup                           @"getUserAndGroup"

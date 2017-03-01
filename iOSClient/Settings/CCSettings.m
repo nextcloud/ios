@@ -435,6 +435,12 @@
     rowQuota.title = [NSString stringWithFormat:NSLocalizedString(@"_quota_using_", nil), quotaUsed, quota];
     //rowQuota.title = [NSString stringWithFormat:@"%@ / %@ %@", quota, quotaAvailable, NSLocalizedString(@"_available_", nil)];
     
+    /*
+     INFO (blue): < 90 - scale 0 --> e.g. 89% of 7,5 GB
+     WARNING (yellow): >= 90 and < 95 - scale 0 -->91% of 7,5 GB
+     CRITICAL (red): >= 95 - scale 1 -->96,2% of 7,5 GB
+    */
+    
     if (avatar || _tableAccount.displayName.length > 0) {
         
         rowUserDisplayName.title = _tableAccount.displayName;
