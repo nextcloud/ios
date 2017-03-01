@@ -1826,21 +1826,20 @@
 
 + (void)addActivity:(OCActivity *)activity account:(NSString *)account
 {
-    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
-    
-    TableActivity *record = [TableActivity MR_createEntityInContext:context];
-    
-    [TableActivity MR_deleteAllMatchingPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (idActivity == %d)", account, activity.idActivity] inContext:context];
-    [context MR_saveToPersistentStoreAndWait];
-    
-    record.account = account;
-    record.date = activity.date;
-    record.file = activity.file;
-    record.link = activity.link;
-    record.message = activity.message;
-    record.subject = activity.subject;
-    
-    [context MR_saveToPersistentStoreAndWait];
+    [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
+        
+        [TableActivity MR_deleteAllMatchingPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (idActivity == %d)", account, activity.idActivity] inContext:localContext];
+        
+        TableActivity *record = [TableActivity MR_createEntityInContext:localContext];
+
+        record.account = account;
+        record.idActivity = [NSNumber numberWithInteger:activity.idActivity];
+        record.date = activity.date;
+        record.file = activity.file;
+        record.link = activity.link;
+        record.message = activity.message;
+        record.subject = activity.subject;
+    }];
 }
 
 + (NSArray *)getAllTableActivityWithPredicate:(NSPredicate *)predicate
@@ -1852,8 +1851,6 @@
 
 + (NSInteger)getLastIDActivityActiveAccount:(NSString *)activeAccount
 {
-    //NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
-    
     NSNumber *lastID  = [TableActivity MR_aggregateOperation:@"max:" onAttribute:@"idActivity" withPredicate:[NSPredicate predicateWithFormat:@"(account == %@)", activeAccount]];
     
     return [lastID integerValue];

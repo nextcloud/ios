@@ -1124,7 +1124,7 @@
     [communication setCredentialsWithUser:_activeUser andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
-    [communication getActivityServer:[_activeUrl stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *listOfActivity, NSString *redirectedServer) {
+    [communication getActivityServer:[_activeUrl stringByAppendingString:@"/"] start:_metadataNet.options onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *listOfActivity, NSString *redirectedServer) {
         
         if ([self.delegate respondsToSelector:@selector(getActivityServerSuccess:)])
             [self.delegate getActivityServerSuccess:listOfActivity];

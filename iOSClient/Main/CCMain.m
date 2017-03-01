@@ -1186,6 +1186,7 @@
     NSInteger lastID = [CCCoreData getLastIDActivityActiveAccount:app.activeAccount];
     
     metadataNet.action = actionGetActivityServer;
+    metadataNet.options = [@(lastID) stringValue];;
     [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
 }
 
