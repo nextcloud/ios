@@ -8,6 +8,8 @@
 
 #import "CCControlCenterActivity.h"
 
+#import "CCControlCenterTransferCell.h"
+
 @implementation CCControlCenterActivity
 
 - (void)viewDidLoad {
@@ -21,6 +23,37 @@
     _tableView.dataSource = self;
     _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     _tableView.backgroundColor = [UIColor greenColor];
+}
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark - ==== Table ====
+#pragma --------------------------------------------------------------------------------------------
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 50;
+}
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return 0;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return 0;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    return 13.0f;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    CCControlCenterTransferCell *cell = (CCControlCenterTransferCell *)[tableView dequeueReusableCellWithIdentifier:@"ControlCenterTransferCell" forIndexPath:indexPath];
+    
+    return cell;
 }
 
 @end
