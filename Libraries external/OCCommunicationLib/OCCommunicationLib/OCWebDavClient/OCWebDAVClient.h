@@ -27,8 +27,11 @@
 //
 //  Add : getNotificationServer & setNotificationServer
 //  Add : getUserProfileServer
+//  Add : Support for Favorite
+//  Add : getActivityServer
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
+//  Copyright (c) 2017 TWS. All rights reserved.
 //
 
 
