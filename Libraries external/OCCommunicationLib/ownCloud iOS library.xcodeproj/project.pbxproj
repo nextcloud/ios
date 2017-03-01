@@ -53,6 +53,7 @@
 		F704980F1E369EF6008F5BB6 /* OCRichObjectStrings.m in Sources */ = {isa = PBXBuildFile; fileRef = F704980C1E369EF6008F5BB6 /* OCRichObjectStrings.m */; };
 		F73C00351E56098300EEEFA7 /* OCUserProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = F73C00341E56098300EEEFA7 /* OCUserProfile.m */; };
 		F785C1341E6316A500469BAC /* OCXMLListParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F785C1331E6316A500469BAC /* OCXMLListParser.m */; };
+		F7FB5F171E66E63B00389481 /* OCActivity.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FB5F161E66E63B00389481 /* OCActivity.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -150,6 +151,8 @@
 		F73C00341E56098300EEEFA7 /* OCUserProfile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCUserProfile.m; sourceTree = "<group>"; };
 		F785C1321E6316A500469BAC /* OCXMLListParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OCXMLListParser.h; path = OCWebDavClient/Parsers/OCXMLListParser.h; sourceTree = "<group>"; };
 		F785C1331E6316A500469BAC /* OCXMLListParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OCXMLListParser.m; path = OCWebDavClient/Parsers/OCXMLListParser.m; sourceTree = "<group>"; };
+		F7FB5F151E66E63B00389481 /* OCActivity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCActivity.h; sourceTree = "<group>"; };
+		F7FB5F161E66E63B00389481 /* OCActivity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCActivity.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -226,6 +229,8 @@
 		EA7CC89C183E11E600B6A4B4 /* OCCommunicationLib */ = {
 			isa = PBXGroup;
 			children = (
+				F7FB5F151E66E63B00389481 /* OCActivity.h */,
+				F7FB5F161E66E63B00389481 /* OCActivity.m */,
 				EAABAA30183E688900909831 /* OCFileDto.h */,
 				EAABAA31183E688900909831 /* OCFileDto.m */,
 				EA0599981BB96D14002C2864 /* OCShareUser.h */,
@@ -447,6 +452,7 @@
 				59A5B71F191907F100724BE3 /* AFNetworkReachabilityManager.m in Sources */,
 				EA7CC92E183E14A100B6A4B4 /* OCWebDAVClient.m in Sources */,
 				EAABAB1E1858594A00909831 /* OCChunkDto.m in Sources */,
+				F7FB5F171E66E63B00389481 /* OCActivity.m in Sources */,
 				EA73DC831B1C48EA00C3AC21 /* OCXMLServerErrorsParser.m in Sources */,
 				F785C1341E6316A500469BAC /* OCXMLListParser.m in Sources */,
 				1345E4601884213400153F14 /* OCXMLShareByLinkParser.m in Sources */,

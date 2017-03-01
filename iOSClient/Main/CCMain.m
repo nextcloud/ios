@@ -1166,6 +1166,9 @@
 
     metadataNet.action = actionGetUserProfile;
     [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+    
+    metadataNet.action = actionGetActivityServer;
+    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
 }
 
 #pragma --------------------------------------------------------------------------------------------

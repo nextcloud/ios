@@ -56,6 +56,9 @@
 //Url to access to Remote Notification API
 #define k_url_acces_remote_notification_api @"ocs/v2.php/apps/notifications/api/v2/notifications"
 
+//Url to access to Remote Activity API
+#define k_url_acces_remote_activity_api @"ocs/v2.php/cloud/activity"
+
 //Url to access to User Profile API
 #define k_url_acces_remote_userprofile_api @"ocs/v1.php/cloud/users/"
 

@@ -44,6 +44,7 @@
 #import "OCErrorMsg.h"
 #import "AFURLSessionManager.h"
 #import "OCShareUser.h"
+#import "OCActivity.h"
 #import "OCCapabilities.h"
 #import "OCNotifications.h"
 #import "OCNotificationsAction.h"
@@ -1509,7 +1510,7 @@
 - (void) getActivityServer:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *listOfActivity, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
 
     serverPath = [serverPath encodeString:NSUTF8StringEncoding];
-    serverPath = [serverPath stringByAppendingString:k_url_acces_remote_notification_api];
+    serverPath = [serverPath stringByAppendingString:k_url_acces_remote_activity_api];
     
     OCWebDAVClient *request = [OCWebDAVClient new];
     request = [self getRequestWithCredentials:request];
@@ -1521,9 +1522,53 @@
         //Parse
         NSError *error;
         NSDictionary *jsongParsed = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableContainers error:&error];
-        NSLog(@"[LOG] Notifications : %@",jsongParsed);
+        NSLog(@"[LOG] Activity : %@",jsongParsed);
         
-        NSMutableArray *listOfNotifications = [NSMutableArray new];
+        NSMutableArray *listOfActivity = [NSMutableArray new];
+        
+        if (jsongParsed.allKeys > 0) {
+            
+            NSDictionary *ocs = [jsongParsed valueForKey:@"ocs"];
+            NSDictionary *meta = [ocs valueForKey:@"meta"];
+            NSDictionary *datas = [ocs valueForKey:@"data"];
+            
+            NSInteger statusCode = [[meta valueForKey:@"statuscode"] integerValue];
+
+            if (statusCode == kOCNotificationAPINoContent || statusCode == kOCNotificationAPISuccessful) {
+                
+                for (NSDictionary *data in datas) {
+                    
+                    OCActivity *activity = [OCActivity new];
+                    
+                    activity.idActivity = [[data valueForKey:@"id"] integerValue];
+                    
+                    NSString *dateString = [data valueForKey:@"date"];
+                    NSISO8601DateFormatter *formatter = [[NSISO8601DateFormatter alloc] init];
+                    activity.date = [formatter dateFromString:dateString];
+
+                    activity.file = [data valueForKey:@"file"];
+                    activity.link = [data valueForKey:@"link"];
+                    activity.message = [data valueForKey:@"message"];
+                    activity.subject = [data valueForKey:@"subject"];
+                    
+                    [listOfActivity addObject:activity];
+                }
+                
+            } else {
+                
+                NSString *message = (NSString*)[meta objectForKey:@"message"];
+                
+                if ([message isKindOfClass:[NSNull class]]) {
+                    message = @"";
+                }
+                
+                NSError *error = [UtilsFramework getErrorWithCode:statusCode andCustomMessageFromTheServer:message];
+                failureRequest(response, error, request.redirectedServer);
+            }
+        }
+
+        //Return success
+        successRequest(response, listOfActivity, request.redirectedServer);
 
     } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
         failureRequest(response, error, request.redirectedServer);
