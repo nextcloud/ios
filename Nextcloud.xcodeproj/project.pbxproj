@@ -654,6 +654,8 @@
 		F708CF9C1E56E8CC00271D8B /* TableAccount+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF6C1E56E8CC00271D8B /* TableAccount+CoreDataProperties.m */; };
 		F70A630B1D5B3467004E2AA5 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63061D5B3467004E2AA5 /* libcrypto.a */; };
 		F70A630F1D5B3467004E2AA5 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63071D5B3467004E2AA5 /* libssl.a */; };
+		F70FD1C71E67552700C0FDA6 /* CCControlCenterTransfer.m in Sources */ = {isa = PBXBuildFile; fileRef = F70FD1C61E67552700C0FDA6 /* CCControlCenterTransfer.m */; };
+		F70FD1C81E67552700C0FDA6 /* CCControlCenterTransfer.m in Sources */ = {isa = PBXBuildFile; fileRef = F70FD1C61E67552700C0FDA6 /* CCControlCenterTransfer.m */; };
 		F714526D1DC1523B0006A5D4 /* libMagicalRecord.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F7B61E9B1DC13C20009E938F /* libMagicalRecord.a */; };
 		F71459B81D12E3B700CAFEEC /* CCError.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B881C638A4C00DC4301 /* CCError.m */; };
 		F71459BA1D12E3B700CAFEEC /* NSString+TruncateToWidth.m in Sources */ = {isa = PBXBuildFile; fileRef = F73049B91CB567F000C7C320 /* NSString+TruncateToWidth.m */; };
@@ -820,8 +822,6 @@
 		F750374D1DBFA91A008FB480 /* ALView+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F75037441DBFA91A008FB480 /* ALView+PureLayout.m */; };
 		F750374F1DBFA91A008FB480 /* NSArray+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F75037461DBFA91A008FB480 /* NSArray+PureLayout.m */; };
 		F75037511DBFA91A008FB480 /* NSLayoutConstraint+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F75037481DBFA91A008FB480 /* NSLayoutConstraint+PureLayout.m */; };
-		F75284931E671DE6003ACF39 /* CCControlCenterPageContent.m in Sources */ = {isa = PBXBuildFile; fileRef = F75284921E671DE6003ACF39 /* CCControlCenterPageContent.m */; };
-		F75284941E671DE6003ACF39 /* CCControlCenterPageContent.m in Sources */ = {isa = PBXBuildFile; fileRef = F75284921E671DE6003ACF39 /* CCControlCenterPageContent.m */; };
 		F7596C781D128FC80092A6B8 /* Nextcloud.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7596C771D128FC80092A6B8 /* Nextcloud.xcassets */; };
 		F75ADF451DC75FFE008A7347 /* CCLogin.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F75ADF441DC75FFE008A7347 /* CCLogin.storyboard */; };
 		F7659A271DC0B726004860C4 /* EAIntroPage.m in Sources */ = {isa = PBXBuildFile; fileRef = F7659A231DC0B726004860C4 /* EAIntroPage.m */; };
@@ -1688,6 +1688,8 @@
 		F70F0F9C1C889487008DAB36 /* zip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zip.h; sourceTree = "<group>"; };
 		F70F0F9D1C889487008DAB36 /* SSZipArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSZipArchive.h; sourceTree = "<group>"; };
 		F70F0F9E1C889487008DAB36 /* SSZipArchive.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSZipArchive.m; sourceTree = "<group>"; };
+		F70FD1C51E67552700C0FDA6 /* CCControlCenterTransfer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCControlCenterTransfer.h; sourceTree = "<group>"; };
+		F70FD1C61E67552700C0FDA6 /* CCControlCenterTransfer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCControlCenterTransfer.m; sourceTree = "<group>"; };
 		F7145A2E1D12E62B00CAFEEC /* Nextcloud.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = Nextcloud.entitlements; sourceTree = "<group>"; };
 		F7151A7F1D477A4B00E6AF45 /* en */ = {isa = PBXFileReference; lastKnownFileType = text; name = en; path = en.lproj/TTOpenInAppActivityLocalizable.string; sourceTree = "<group>"; };
 		F7151A801D477A4B00E6AF45 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/BKPasscodeView.strings; sourceTree = "<group>"; };
@@ -1867,8 +1869,6 @@
 		F750374B1DBFA91A008FB480 /* PureLayoutDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PureLayoutDefines.h; sourceTree = "<group>"; };
 		F7514EDA1C7B1336008F3338 /* CCHud.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCHud.h; sourceTree = "<group>"; };
 		F7514EDB1C7B1336008F3338 /* CCHud.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCHud.m; sourceTree = "<group>"; };
-		F75284911E671DE6003ACF39 /* CCControlCenterPageContent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCControlCenterPageContent.h; sourceTree = "<group>"; };
-		F75284921E671DE6003ACF39 /* CCControlCenterPageContent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCControlCenterPageContent.m; sourceTree = "<group>"; };
 		F7540EE21D5B238600C3FFA8 /* aes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aes.h; sourceTree = "<group>"; };
 		F7540EE31D5B238600C3FFA8 /* asn1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = asn1.h; sourceTree = "<group>"; };
 		F7540EE41D5B238600C3FFA8 /* asn1_mac.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = asn1_mac.h; sourceTree = "<group>"; };
@@ -3673,11 +3673,11 @@
 				F72AE40A1E67246200B3E477 /* ControlCenter.storyboard */,
 				F7D6A0891D82DBFA0045AD1A /* CCControlCenter.h */,
 				F7D6A08A1D82DBFA0045AD1A /* CCControlCenter.m */,
-				F75284911E671DE6003ACF39 /* CCControlCenterPageContent.h */,
-				F75284921E671DE6003ACF39 /* CCControlCenterPageContent.m */,
 				F7D6A08B1D82DBFA0045AD1A /* CCControlCenterTransferCell.h */,
 				F7D6A08C1D82DBFA0045AD1A /* CCControlCenterTransferCell.m */,
 				F7D6A08D1D82DBFA0045AD1A /* CCControlCenterTransferCell.xib */,
+				F70FD1C51E67552700C0FDA6 /* CCControlCenterTransfer.h */,
+				F70FD1C61E67552700C0FDA6 /* CCControlCenterTransfer.m */,
 				F7D6A08E1D82DBFA0045AD1A /* CCMenu.h */,
 				F7D6A08F1D82DBFA0045AD1A /* CCMenu.m */,
 			);
@@ -4951,6 +4951,7 @@
 				084214AC1E646E0200C8F4F3 /* REMenuContainerView.m in Sources */,
 				084214AD1E646E0200C8F4F3 /* CCShareOC.m in Sources */,
 				084214AE1E646E0200C8F4F3 /* UIScrollView+EmptyDataSet.m in Sources */,
+				F70FD1C81E67552700C0FDA6 /* CCControlCenterTransfer.m in Sources */,
 				084214AF1E646E0200C8F4F3 /* MWGridCell.m in Sources */,
 				084214B01E646E0200C8F4F3 /* LMMediaPlayerView.m in Sources */,
 				084214B11E646E0200C8F4F3 /* TableLocalFile+CoreDataClass.m in Sources */,
@@ -4973,7 +4974,6 @@
 				084214C21E646E0200C8F4F3 /* ReaderThumbFetch.m in Sources */,
 				084214C31E646E0200C8F4F3 /* CCPassaporto.m in Sources */,
 				084214C41E646E0200C8F4F3 /* CTAssetItemViewController.m in Sources */,
-				F75284941E671DE6003ACF39 /* CCControlCenterPageContent.m in Sources */,
 				084214C51E646E0200C8F4F3 /* PSTCollectionView.m in Sources */,
 				084214C61E646E0200C8F4F3 /* CCLogin.m in Sources */,
 				084214C71E646E0200C8F4F3 /* CYRTextStorage.m in Sources */,
@@ -5545,6 +5545,7 @@
 				F77B0E621D118A16002130FE /* REMenuContainerView.m in Sources */,
 				F77B0E631D118A16002130FE /* CCShareOC.m in Sources */,
 				F73CCE261DC13788007E38D8 /* UIScrollView+EmptyDataSet.m in Sources */,
+				F70FD1C71E67552700C0FDA6 /* CCControlCenterTransfer.m in Sources */,
 				F7F54D071E5B14C800E19C62 /* MWGridCell.m in Sources */,
 				F77B0E651D118A16002130FE /* LMMediaPlayerView.m in Sources */,
 				F708CF731E56E8CC00271D8B /* TableLocalFile+CoreDataClass.m in Sources */,
@@ -5567,7 +5568,6 @@
 				F77B0E781D118A16002130FE /* ReaderThumbFetch.m in Sources */,
 				F77B0E7B1D118A16002130FE /* CCPassaporto.m in Sources */,
 				F7F06EA51DBFACC600099AE9 /* CTAssetItemViewController.m in Sources */,
-				F75284931E671DE6003ACF39 /* CCControlCenterPageContent.m in Sources */,
 				F7659A5A1DC0B760004860C4 /* PSTCollectionView.m in Sources */,
 				F7BF1B431D51E893000854F6 /* CCLogin.m in Sources */,
 				F77B0E7D1D118A16002130FE /* CYRTextStorage.m in Sources */,

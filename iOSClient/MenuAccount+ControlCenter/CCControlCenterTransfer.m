@@ -6,7 +6,7 @@
 //  Copyright © 2017 TWS. All rights reserved.
 //
 
-#import "CCControlCenterPageContent.h"
+#import "CCControlCenterTransfer.h"
 
 #import "AppDelegate.h"
 #import "CCMain.h"
@@ -20,14 +20,14 @@
 #define upload 3
 #define uploadwwan 4
 
-@interface CCControlCenterPageContent ()
+@interface CCControlCenterTransfer ()
 {    
     // Datasource
     CCSectionDataSource *_sectionDataSource;
 }
 @end
 
-@implementation CCControlCenterPageContent
+@implementation CCControlCenterTransfer
 
 - (void)viewDidLoad {
     

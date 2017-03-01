@@ -23,7 +23,7 @@
 
 #import "CCControlCenter.h"
 
-#import "CCControlCenterPageContent.h"
+#import "CCControlCenterTransfer.h"
 #import "AppDelegate.h"
 #import "CCMain.h"
 #import "CCDetail.h"
@@ -37,11 +37,6 @@
 #define SIZE_FONT_NORECORD 18.0f
 
 #define ANIMATION_GESTURE 0.50f
-
-#define download 1
-#define downloadwwan 2
-#define upload 3
-#define uploadwwan 4
 
 @interface CCControlCenter ()
 {
@@ -96,7 +91,7 @@
     _pageViewController.dataSource = self;
     _pageViewController.delegate = self;
     
-    CCControlCenterPageContent *startingViewController = [self viewControllerAtIndex:0];
+    UIViewController *startingViewController = [self viewControllerAtIndex:0];
     NSArray *viewControllers = @[startingViewController];
     
     [_pageViewController setViewControllers:viewControllers direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
@@ -360,13 +355,57 @@
 #pragma mark ===== Page  =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (CCControlCenterPageContent *)viewControllerAtIndex:(NSUInteger)index
+- (UIViewController *)viewControllerAtIndex:(NSUInteger)index
 {
     if (([self.pageType count] == 0) || (index >= [self.pageType count])) {
         return nil;
     }
     
-    CCControlCenterPageContent *pageContentViewController;
+    /*
+    if (index == 0) {
+        
+        CCControlCenterTransfer *pageContentViewController;
+
+        if ([self.controlCenterPagesContent count] >= index+1) {
+            
+            pageContentViewController = [self.controlCenterPagesContent objectAtIndex:index];
+            
+        } else {
+            
+            // Create a new view controller and pass suitable data.
+            pageContentViewController = [[UIStoryboard storyboardWithName: @"ControlCenter" bundle:[NSBundle mainBundle]]  instantiateViewControllerWithIdentifier:@"ControlCenterTransfer"];
+            [self.controlCenterPagesContent addObject:pageContentViewController];
+        }
+        
+        pageContentViewController.pageIndex = index;
+        pageContentViewController.pageType = self.pageType[index];
+        
+        return pageContentViewController;
+    }
+    
+    if (index == 1) {
+        
+        CCControlCenterTransfer *pageContentViewController;
+        
+        if ([self.controlCenterPagesContent count] >= index+1) {
+            
+            pageContentViewController = [self.controlCenterPagesContent objectAtIndex:index];
+            
+        } else {
+            
+            // Create a new view controller and pass suitable data.
+            pageContentViewController = [[UIStoryboard storyboardWithName: @"ControlCenter" bundle:[NSBundle mainBundle]]  instantiateViewControllerWithIdentifier:@"ControlCenterTransfer"];
+            [self.controlCenterPagesContent addObject:pageContentViewController];
+        }
+        
+        pageContentViewController.pageIndex = index;
+        pageContentViewController.pageType = self.pageType[index];
+        
+        return pageContentViewController;
+    }
+    */
+    
+    UIViewController *pageContentViewController;
     
     if ([self.controlCenterPagesContent count] >= index+1) {
         
@@ -375,19 +414,28 @@
     } else {
         
         // Create a new view controller and pass suitable data.
-        pageContentViewController = [[UIStoryboard storyboardWithName: @"ControlCenter" bundle:[NSBundle mainBundle]]  instantiateViewControllerWithIdentifier:@"ControlCenterPageContent"];
+        pageContentViewController = [[UIStoryboard storyboardWithName: @"ControlCenter" bundle:[NSBundle mainBundle]]  instantiateViewControllerWithIdentifier:@"ControlCenterTransfer"];
         [self.controlCenterPagesContent addObject:pageContentViewController];
     }
     
-    pageContentViewController.pageIndex = index;
-    pageContentViewController.pageType = self.pageType[index];
+    if (index == 0) {
+        
+        ((CCControlCenterTransfer *) pageContentViewController).pageIndex = index;
+        ((CCControlCenterTransfer *) pageContentViewController).pageType = self.pageType[index];
+    }
+
+    if (index == 1) {
+        
+        ((CCControlCenterTransfer *) pageContentViewController).pageIndex = index;
+        ((CCControlCenterTransfer *) pageContentViewController).pageType = self.pageType[index];
+    }
     
     return pageContentViewController;
 }
 
 - (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerBeforeViewController:(UIViewController *)viewController
 {
-    NSUInteger index = ((CCControlCenterPageContent *) viewController).pageIndex;
+    NSUInteger index = ((CCControlCenterTransfer *) viewController).pageIndex;
     
     if ((index == 0) || (index == NSNotFound)) {
         return nil;
@@ -399,7 +447,7 @@
 
 - (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerAfterViewController:(UIViewController *)viewController
 {
-    NSUInteger index = ((CCControlCenterPageContent *) viewController).pageIndex;
+    NSUInteger index = ((CCControlCenterTransfer *) viewController).pageIndex;
     
     if (index == NSNotFound) {
         return nil;

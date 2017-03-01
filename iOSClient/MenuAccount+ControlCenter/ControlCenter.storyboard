@@ -17,11 +17,10 @@
             </objects>
             <point key="canvasLocation" x="6487" y="1218"/>
         </scene>
-        <!--Control Center Page Content-->
+        <!--Control Center Transfer-->
         <scene sceneID="Gv7-Uy-0Cg">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="U19-6b-Mxz" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <viewController storyboardIdentifier="ControlCenterPageContent" id="XDY-MZ-Gnz" customClass="CCControlCenterPageContent" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="ControlCenterTransfer" id="XDY-MZ-Gnz" customClass="CCControlCenterTransfer" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="uPE-Nb-KVS"/>
                         <viewControllerLayoutGuide type="bottom" id="zG1-N8-9Mo"/>
@@ -46,6 +45,7 @@
                         <outlet property="tableView" destination="cFo-AN-kZv" id="vLq-gh-way"/>
                     </connections>
                 </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="U19-6b-Mxz" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="7125.6000000000004" y="1217.5412293853074"/>
         </scene>

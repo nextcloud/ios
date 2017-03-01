@@ -1,5 +1,5 @@
 //
-//  CCControlCenterPageContent.h
+//  CCControlCenterTransfer.h
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 01/03/17.
@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface CCControlCenterPageContent : UIViewController <UITableViewDataSource, UITableViewDelegate>
+@interface CCControlCenterTransfer : UIViewController <UITableViewDataSource, UITableViewDelegate>
 
 @property NSUInteger pageIndex;
 @property (nonatomic, strong) NSString *pageType;
