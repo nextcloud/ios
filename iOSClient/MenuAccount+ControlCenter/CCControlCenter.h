@@ -24,11 +24,10 @@
 #import <UIKit/UIKit.h>
 
 #import "CCGlobal.h"
-#import "CCControlCenterTransferCell.h"
 #import "CCSection.h"
 #import "CCMetadata.h"
 
-@interface CCControlCenter : UINavigationController <UITableViewDataSource, UITableViewDelegate, UIPageViewControllerDataSource, UIPageViewControllerDelegate>
+@interface CCControlCenter : UINavigationController <UIPageViewControllerDataSource, UIPageViewControllerDelegate>
 
 @property (nonatomic) BOOL isPopGesture;
 @property (nonatomic) BOOL isOpen;
@@ -37,12 +36,7 @@
 @property (strong, nonatomic) NSArray *pageType;
 @property (strong, nonatomic) NSString *currentPageType;
 
-- (void)reloadDatasource;
-
 - (void)setControlCenterHidden:(BOOL)hidden;
-
-- (void)progressTask:(NSString *)fileID serverUrl:(NSString *)serverUrl cryptated:(BOOL)cryptated progress:(float)progress;
-
 - (void)enableSingleFingerTap:(SEL)selector target:(id)target;
 - (void)disableSingleFingerTap;
 

@@ -26,6 +26,7 @@
 #import "AppDelegate.h"
 #import "CCPhotosCameraUpload.h"
 #import "CCSynchronize.h"
+#import "CCControlCenterTransferCell.h"
 #import <OCCommunicationLib/OCActivity.h>
 #import <OCCommunicationLib/OCNotifications.h>
 #import <OCCommunicationLib/OCNotificationsAction.h>
@@ -4697,14 +4698,14 @@
     if ([serverUrl isEqualToString:_serverUrl] == NO || _serverUrl == nil) {
         
         if ([selector isEqualToString:selectorDownloadSynchronize]) {
-            [app.controlCenter reloadDatasource];
+//            [app.controlCenter reloadDatasource];
         } else {
             CCMain *main = [app.listMainVC objectForKey:serverUrl];
             if (main) {
                 [main reloadDatasource];
             } else {
                 [self tableViewReload];
-                [app.controlCenter reloadDatasource];
+//                [app.controlCenter reloadDatasource];
             }
         }
         
@@ -4714,7 +4715,7 @@
     // Offline folder ?
     _isOfflineServerUrl = [CCCoreData isOfflineDirectoryServerUrl:_serverUrl activeAccount:app.activeAccount];
     
-    [app.controlCenter reloadDatasource];
+ //   [app.controlCenter reloadDatasource];
     
     // Settaggio variabili per le ottimizzazioni
     _directoryGroupBy = [CCUtility getGroupBySettings];

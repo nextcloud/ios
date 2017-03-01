@@ -22,6 +22,8 @@
 //
 
 #import "CCOfflineContainer.h"
+
+#import "CCOfflinePageContent.h"
 #import "AppDelegate.h"
 #import "CCSynchronize.h"
 

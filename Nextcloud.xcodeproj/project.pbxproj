@@ -720,6 +720,8 @@
 		F72AAECB1E5C60C700BB17E1 /* AHKActionSheetViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F72AAEC51E5C60C700BB17E1 /* AHKActionSheetViewController.m */; };
 		F72AAECC1E5C60C700BB17E1 /* UIImage+AHKAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = F72AAEC71E5C60C700BB17E1 /* UIImage+AHKAdditions.m */; };
 		F72AAECD1E5C60C700BB17E1 /* UIWindow+AHKAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = F72AAEC91E5C60C700BB17E1 /* UIWindow+AHKAdditions.m */; };
+		F72AE40B1E67246200B3E477 /* ControlCenter.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F72AE40A1E67246200B3E477 /* ControlCenter.storyboard */; };
+		F72AE40C1E67246200B3E477 /* ControlCenter.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F72AE40A1E67246200B3E477 /* ControlCenter.storyboard */; };
 		F72C63891DC14B0400FA5ED5 /* libMagicalRecord.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F7B61E9B1DC13C20009E938F /* libMagicalRecord.a */; };
 		F732BA061D76CE1500E9878B /* CCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F732BA041D76CE1500E9878B /* CCNetworking.m */; };
 		F732BA0B1D76DBA500E9878B /* CCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F732BA041D76CE1500E9878B /* CCNetworking.m */; };
@@ -818,6 +820,8 @@
 		F750374D1DBFA91A008FB480 /* ALView+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F75037441DBFA91A008FB480 /* ALView+PureLayout.m */; };
 		F750374F1DBFA91A008FB480 /* NSArray+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F75037461DBFA91A008FB480 /* NSArray+PureLayout.m */; };
 		F75037511DBFA91A008FB480 /* NSLayoutConstraint+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F75037481DBFA91A008FB480 /* NSLayoutConstraint+PureLayout.m */; };
+		F75284931E671DE6003ACF39 /* CCControlCenterPageContent.m in Sources */ = {isa = PBXBuildFile; fileRef = F75284921E671DE6003ACF39 /* CCControlCenterPageContent.m */; };
+		F75284941E671DE6003ACF39 /* CCControlCenterPageContent.m in Sources */ = {isa = PBXBuildFile; fileRef = F75284921E671DE6003ACF39 /* CCControlCenterPageContent.m */; };
 		F7596C781D128FC80092A6B8 /* Nextcloud.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7596C771D128FC80092A6B8 /* Nextcloud.xcassets */; };
 		F75ADF451DC75FFE008A7347 /* CCLogin.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F75ADF441DC75FFE008A7347 /* CCLogin.storyboard */; };
 		F7659A271DC0B726004860C4 /* EAIntroPage.m in Sources */ = {isa = PBXBuildFile; fileRef = F7659A231DC0B726004860C4 /* EAIntroPage.m */; };
@@ -1735,6 +1739,7 @@
 		F72AAEC71E5C60C700BB17E1 /* UIImage+AHKAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+AHKAdditions.m"; sourceTree = "<group>"; };
 		F72AAEC81E5C60C700BB17E1 /* UIWindow+AHKAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIWindow+AHKAdditions.h"; sourceTree = "<group>"; };
 		F72AAEC91E5C60C700BB17E1 /* UIWindow+AHKAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIWindow+AHKAdditions.m"; sourceTree = "<group>"; };
+		F72AE40A1E67246200B3E477 /* ControlCenter.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = ControlCenter.storyboard; sourceTree = "<group>"; };
 		F73049B81CB567F000C7C320 /* NSString+TruncateToWidth.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+TruncateToWidth.h"; sourceTree = "<group>"; };
 		F73049B91CB567F000C7C320 /* NSString+TruncateToWidth.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+TruncateToWidth.m"; sourceTree = "<group>"; };
 		F732BA031D76CE1500E9878B /* CCNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCNetworking.h; sourceTree = "<group>"; };
@@ -1862,6 +1867,8 @@
 		F750374B1DBFA91A008FB480 /* PureLayoutDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PureLayoutDefines.h; sourceTree = "<group>"; };
 		F7514EDA1C7B1336008F3338 /* CCHud.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCHud.h; sourceTree = "<group>"; };
 		F7514EDB1C7B1336008F3338 /* CCHud.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCHud.m; sourceTree = "<group>"; };
+		F75284911E671DE6003ACF39 /* CCControlCenterPageContent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCControlCenterPageContent.h; sourceTree = "<group>"; };
+		F75284921E671DE6003ACF39 /* CCControlCenterPageContent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCControlCenterPageContent.m; sourceTree = "<group>"; };
 		F7540EE21D5B238600C3FFA8 /* aes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aes.h; sourceTree = "<group>"; };
 		F7540EE31D5B238600C3FFA8 /* asn1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = asn1.h; sourceTree = "<group>"; };
 		F7540EE41D5B238600C3FFA8 /* asn1_mac.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = asn1_mac.h; sourceTree = "<group>"; };
@@ -3663,8 +3670,11 @@
 		F7D6A0881D82DBFA0045AD1A /* MenuAccount+ControlCenter */ = {
 			isa = PBXGroup;
 			children = (
+				F72AE40A1E67246200B3E477 /* ControlCenter.storyboard */,
 				F7D6A0891D82DBFA0045AD1A /* CCControlCenter.h */,
 				F7D6A08A1D82DBFA0045AD1A /* CCControlCenter.m */,
+				F75284911E671DE6003ACF39 /* CCControlCenterPageContent.h */,
+				F75284921E671DE6003ACF39 /* CCControlCenterPageContent.m */,
 				F7D6A08B1D82DBFA0045AD1A /* CCControlCenterTransferCell.h */,
 				F7D6A08C1D82DBFA0045AD1A /* CCControlCenterTransferCell.m */,
 				F7D6A08D1D82DBFA0045AD1A /* CCControlCenterTransferCell.xib */,
@@ -4385,6 +4395,7 @@
 				084215551E646E0200C8F4F3 /* icon-error@2x.png in Resources */,
 				084215561E646E0200C8F4F3 /* LaunchScreenNextcloud.xib in Resources */,
 				084215571E646E0200C8F4F3 /* ZSSoutdent@2x.png in Resources */,
+				F72AE40C1E67246200B3E477 /* ControlCenter.storyboard in Resources */,
 				084215581E646E0200C8F4F3 /* ZSSindent.png in Resources */,
 				084215591E646E0200C8F4F3 /* ZSSpicker.png in Resources */,
 				0842155A1E646E0200C8F4F3 /* PlayButtonOverlayLargeTap@2x.png in Resources */,
@@ -4633,6 +4644,7 @@
 				F77B0F081D118A16002130FE /* ZSSunderline@2x.png in Resources */,
 				F77B0F0A1D118A16002130FE /* Reader-Mark-Y.png in Resources */,
 				F77B0F0C1D118A16002130FE /* Reader-Mark-Y@2x.png in Resources */,
+				F72AE40B1E67246200B3E477 /* ControlCenter.storyboard in Resources */,
 				F77B0F0D1D118A16002130FE /* ZSSundo@2x.png in Resources */,
 				F77B0F0E1D118A16002130FE /* BKPasscodeView.strings in Resources */,
 				F77B0F111D118A16002130FE /* ZSSparagraph.png in Resources */,
@@ -4961,6 +4973,7 @@
 				084214C21E646E0200C8F4F3 /* ReaderThumbFetch.m in Sources */,
 				084214C31E646E0200C8F4F3 /* CCPassaporto.m in Sources */,
 				084214C41E646E0200C8F4F3 /* CTAssetItemViewController.m in Sources */,
+				F75284941E671DE6003ACF39 /* CCControlCenterPageContent.m in Sources */,
 				084214C51E646E0200C8F4F3 /* PSTCollectionView.m in Sources */,
 				084214C61E646E0200C8F4F3 /* CCLogin.m in Sources */,
 				084214C71E646E0200C8F4F3 /* CYRTextStorage.m in Sources */,
@@ -5554,6 +5567,7 @@
 				F77B0E781D118A16002130FE /* ReaderThumbFetch.m in Sources */,
 				F77B0E7B1D118A16002130FE /* CCPassaporto.m in Sources */,
 				F7F06EA51DBFACC600099AE9 /* CTAssetItemViewController.m in Sources */,
+				F75284931E671DE6003ACF39 /* CCControlCenterPageContent.m in Sources */,
 				F7659A5A1DC0B760004860C4 /* PSTCollectionView.m in Sources */,
 				F7BF1B431D51E893000854F6 /* CCLogin.m in Sources */,
 				F77B0E7D1D118A16002130FE /* CYRTextStorage.m in Sources */,

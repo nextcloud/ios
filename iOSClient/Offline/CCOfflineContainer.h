@@ -23,7 +23,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import "CCOfflinePageContent.h"
 
 @interface CCOfflineContainer : UIViewController <UIPageViewControllerDataSource, UIPageViewControllerDelegate>
 

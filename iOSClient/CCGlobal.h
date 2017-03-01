@@ -257,6 +257,9 @@ extern NSString *const BKPasscodeKeychainServiceName;
 #define k_pageOfflineOffline                            @"Offline"
 #define k_pageOfflineLocal                              @"Local"
 
+#define k_pageControlCenterTransfer                     @"Transfer"
+#define k_pageControlCenterActivity                     @"Activity"
+
 // Search
 #define k_minCharsSearch                                2
 
