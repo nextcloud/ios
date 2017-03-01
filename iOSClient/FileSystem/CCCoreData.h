@@ -33,8 +33,10 @@
 #import "CCExifGeo.h"
 #import "CCGraphics.h"
 #import "OCUserProfile.h"
+#import "OCActivity.h"
 
 #import "TableAccount+CoreDataClass.h"
+#import "TableActivity+CoreDataClass.h"
 #import "TableCertificates+CoreDataClass.h"
 #import "TableMetadata+CoreDataClass.h"
 #import "TableDirectory+CoreDataClass.h"
@@ -203,6 +205,12 @@
 // ===== Offline =====
 
 + (NSArray *)getHomeOfflineActiveAccount:(NSString *)activeAccount directoryUser:(NSString *)directoryUser fieldOrder:(NSString *)fieldOrder ascending:(BOOL)ascending;
+
+// ===== Activity =====
+
++ (void)addActivity:(OCActivity *)activity account:(NSString *)account;
++ (NSArray *)getAllTableActivityWithPredicate:(NSPredicate *)predicate;
++ (NSInteger)getLastIDActivityActiveAccount:(NSString *)activeAccount;
 
 // ===== File System =====
 

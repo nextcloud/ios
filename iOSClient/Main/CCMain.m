@@ -1181,6 +1181,8 @@
     metadataNet.action = actionGetUserProfile;
     [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
     
+    NSInteger lastID = [CCCoreData getLastIDActivityActiveAccount:app.activeAccount];
+    
     metadataNet.action = actionGetActivityServer;
     [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
 }
