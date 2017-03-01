@@ -37,7 +37,7 @@
 #import "CCDetail.h"
 
 #ifdef CUSTOM_BUILD
-    //#import "NextcloudCustom-Swift.h"
+    #import "NextcloudCustom-Swift.h"
     #import "Firebase.h"
 #else
     #import "Nextcloud-Swift.h"
