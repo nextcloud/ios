@@ -235,6 +235,7 @@
 
 //+ (void)verifyVersionCoreData;
 
++ (void)flushTableActivityAccount:(NSString *)account;
 + (void)flushTableAutomaticUploadAccount:(NSString *)account selector:(NSString *)selector;
 + (void)flushTableDirectoryAccount:(NSString *)account;
 + (void)flushTableLocalFileAccount:(NSString *)account;

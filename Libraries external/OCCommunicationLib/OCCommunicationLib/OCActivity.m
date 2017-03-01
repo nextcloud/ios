@@ -25,4 +25,20 @@
 
 @implementation OCActivity
 
+- (id)init {
+    
+    self = [super init];
+    
+    if (self) {
+        
+        self.idActivity = 0;
+        self.file = @"";
+        self.link = @"";
+        self.message = @"";
+        self.subject = @"";
+    }
+    
+    return self;
+}
+
 @end

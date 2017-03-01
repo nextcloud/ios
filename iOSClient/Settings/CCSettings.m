@@ -775,6 +775,7 @@
             [CCCoreData flushTableDirectoryAccount:app.activeAccount];
             [CCCoreData flushTableLocalFileAccount:app.activeAccount];
             [CCCoreData flushTableMetadataAccount:app.activeAccount];
+            [CCCoreData flushTableActivityAccount:app.activeAccount];
             
             [self emptyUserDirectoryUser:app.activeUser url:app.activeUrl];
         

@@ -2131,6 +2131,22 @@
     }
 }
 
++ (void)flushTableActivityAccount:(NSString *)account
+{
+    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
+    
+    if (account) {
+        
+        [TableActivity MR_deleteAllMatchingPredicate:[NSPredicate predicateWithFormat:@"(account == %@)", account] inContext:context];
+        
+    } else {
+        
+        [TableActivity MR_truncateAllInContext:context];
+    }
+    
+    [context MR_saveToPersistentStoreAndWait];
+}
+
 + (void)flushTableAutomaticUploadAccount:(NSString *)account selector:(NSString *)selector
 {
     NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
@@ -2207,6 +2223,7 @@
     NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
     
     [TableAccount MR_truncateAllInContext:context];
+    [TableActivity MR_truncateAllInContext:context];
     [TableAutomaticUpload MR_truncateAllInContext:context];
     [TableCertificates MR_truncateAllInContext:context];
     [TableDirectory MR_truncateAllInContext:context];

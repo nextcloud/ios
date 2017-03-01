@@ -1043,7 +1043,9 @@
 
 - (void)getActivityServerSuccess:(NSArray *)listOfActivity
 {
-    
+    for (OCActivity *activity in listOfActivity) {
+        [CCCoreData addActivity:activity account:app.activeAccount];
+    }
 }
 
 - (void)getActivityServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode

@@ -1546,10 +1546,10 @@
                     NSISO8601DateFormatter *formatter = [[NSISO8601DateFormatter alloc] init];
                     activity.date = [formatter dateFromString:dateString];
 
-                    activity.file = [data valueForKey:@"file"];
-                    activity.link = [data valueForKey:@"link"];
-                    activity.message = [data valueForKey:@"message"];
-                    activity.subject = [data valueForKey:@"subject"];
+                    if ([data valueForKey:@"file"]    && ![[data valueForKey:@"file"]    isEqual:[NSNull null]]) activity.file    = [data valueForKey:@"file"];
+                    if ([data valueForKey:@"link"]    && ![[data valueForKey:@"link"]    isEqual:[NSNull null]]) activity.link    = [data valueForKey:@"link"];
+                    if ([data valueForKey:@"message"] && ![[data valueForKey:@"message"] isEqual:[NSNull null]]) activity.message = [data valueForKey:@"message"];
+                    if ([data valueForKey:@"subject"] && ![[data valueForKey:@"subject"] isEqual:[NSNull null]]) activity.subject = [data valueForKey:@"subject"];
                     
                     [listOfActivity addObject:activity];
                 }
