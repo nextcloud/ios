@@ -26,6 +26,7 @@
 #import "AppDelegate.h"
 #import "CCPhotosCameraUpload.h"
 #import "CCSynchronize.h"
+#import <OCCommunicationLib/OCActivity.h>
 #import <OCCommunicationLib/OCNotifications.h>
 #import <OCCommunicationLib/OCNotificationsAction.h>
 #import <OCCommunicationLib/OCFrameworkConstants.h>
@@ -1035,6 +1036,19 @@
 }
 
 #pragma mark -
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ==== Activity ====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)getActivityServerSuccess:(NSArray *)listOfActivity
+{
+    
+}
+
+- (void)getActivityServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+{
+}
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ==== Notification  ====

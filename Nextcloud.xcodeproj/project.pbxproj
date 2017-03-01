@@ -1196,6 +1196,10 @@
 		F7F801051D98205A007537BC /* CCCertificate.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F801011D98205A007537BC /* CCCertificate.m */; };
 		F7FB5F131E66CDCB00389481 /* CCOfflineContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FB5F121E66CDCB00389481 /* CCOfflineContainer.m */; };
 		F7FB5F141E66CDCB00389481 /* CCOfflineContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FB5F121E66CDCB00389481 /* CCOfflineContainer.m */; };
+		F7FB5F1C1E66EB7200389481 /* TableActivity+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FB5F191E66EB7200389481 /* TableActivity+CoreDataClass.m */; };
+		F7FB5F1D1E66EB7200389481 /* TableActivity+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FB5F191E66EB7200389481 /* TableActivity+CoreDataClass.m */; };
+		F7FB5F1E1E66EB7200389481 /* TableActivity+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FB5F1B1E66EB7200389481 /* TableActivity+CoreDataProperties.m */; };
+		F7FB5F1F1E66EB7200389481 /* TableActivity+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FB5F1B1E66EB7200389481 /* TableActivity+CoreDataProperties.m */; };
 		F7FC7D561DC1F93800BB2C6A /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = F7FC7D551DC1F93800BB2C6A /* libz.tbd */; };
 		F7FC88FA1E140558006D0506 /* cryptocloud.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = F78088E51DD3A1DB005C5A7C /* cryptocloud.xcdatamodeld */; };
 		F7FC88FB1E141A34006D0506 /* BKPasscodeView.strings in Resources */ = {isa = PBXBuildFile; fileRef = F72B60911A24F00B004EF66F /* BKPasscodeView.strings */; };
@@ -2224,6 +2228,10 @@
 		F7F801011D98205A007537BC /* CCCertificate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCCertificate.m; sourceTree = "<group>"; };
 		F7FB5F111E66CDCB00389481 /* CCOfflineContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCOfflineContainer.h; sourceTree = "<group>"; };
 		F7FB5F121E66CDCB00389481 /* CCOfflineContainer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCOfflineContainer.m; sourceTree = "<group>"; };
+		F7FB5F181E66EB7200389481 /* TableActivity+CoreDataClass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableActivity+CoreDataClass.h"; sourceTree = "<group>"; };
+		F7FB5F191E66EB7200389481 /* TableActivity+CoreDataClass.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableActivity+CoreDataClass.m"; sourceTree = "<group>"; };
+		F7FB5F1A1E66EB7200389481 /* TableActivity+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableActivity+CoreDataProperties.h"; sourceTree = "<group>"; };
+		F7FB5F1B1E66EB7200389481 /* TableActivity+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableActivity+CoreDataProperties.m"; sourceTree = "<group>"; };
 		F7FC7D551DC1F93800BB2C6A /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		F7FCFFD61D70798C000E6E29 /* CCPeekPop.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = CCPeekPop.storyboard; sourceTree = "<group>"; };
 		F7FCFFDD1D707B83000E6E29 /* CCPeekPop.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCPeekPop.h; sourceTree = "<group>"; };
@@ -3460,6 +3468,10 @@
 		F77F86401B4ABF6D009F0A10 /* Table */ = {
 			isa = PBXGroup;
 			children = (
+				F7FB5F181E66EB7200389481 /* TableActivity+CoreDataClass.h */,
+				F7FB5F191E66EB7200389481 /* TableActivity+CoreDataClass.m */,
+				F7FB5F1A1E66EB7200389481 /* TableActivity+CoreDataProperties.h */,
+				F7FB5F1B1E66EB7200389481 /* TableActivity+CoreDataProperties.m */,
 				F708CF4D1E56E8CB00271D8B /* TableMetadata+CoreDataClass.h */,
 				F708CF4E1E56E8CB00271D8B /* TableMetadata+CoreDataClass.m */,
 				F708CF4F1E56E8CB00271D8B /* TableMetadata+CoreDataProperties.h */,
@@ -4955,6 +4967,8 @@
 				084214D01E646E0200C8F4F3 /* NSData+Base64.m in Sources */,
 				084214D11E646E0200C8F4F3 /* CCCartaDiCredito.m in Sources */,
 				084214D21E646E0200C8F4F3 /* ReaderConstants.m in Sources */,
+				F7FB5F1D1E66EB7200389481 /* TableActivity+CoreDataClass.m in Sources */,
+				F7FB5F1F1E66EB7200389481 /* TableActivity+CoreDataProperties.m in Sources */,
 				084214D31E646E0200C8F4F3 /* LMMediaPlayer.m in Sources */,
 				084214D41E646E0200C8F4F3 /* CCSection.m in Sources */,
 				084214D51E646E0200C8F4F3 /* AHKActionSheetViewController.m in Sources */,
@@ -5538,6 +5552,8 @@
 				F77B0E871D118A16002130FE /* NSData+Base64.m in Sources */,
 				F77B0E8A1D118A16002130FE /* CCCartaDiCredito.m in Sources */,
 				F77B0E8C1D118A16002130FE /* ReaderConstants.m in Sources */,
+				F7FB5F1C1E66EB7200389481 /* TableActivity+CoreDataClass.m in Sources */,
+				F7FB5F1E1E66EB7200389481 /* TableActivity+CoreDataProperties.m in Sources */,
 				F77B0E8D1D118A16002130FE /* LMMediaPlayer.m in Sources */,
 				F77B0E8F1D118A16002130FE /* CCSection.m in Sources */,
 				F72AAECB1E5C60C700BB17E1 /* AHKActionSheetViewController.m in Sources */,
