@@ -77,6 +77,8 @@
 {
     [super viewDidLoad];
     
+    _controlCenterPagesContent = [NSMutableArray new];
+
     UIBlurEffect *effect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
     _mainView = [[UIVisualEffectView alloc] initWithEffect:effect];
     [_mainView setFrame:CGRectMake(0, 0, self.navigationBar.frame.size.width, 0)];
@@ -96,6 +98,7 @@
     
     CCControlCenterPageContent *startingViewController = [self viewControllerAtIndex:0];
     NSArray *viewControllers = @[startingViewController];
+    
     [_pageViewController setViewControllers:viewControllers direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
     [_pageViewController.view setFrame:CGRectMake(0, 0, self.navigationBar.frame.size.width, 0)];
     _pageViewController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth;
@@ -363,8 +366,18 @@
         return nil;
     }
     
-    // Create a new view controller and pass suitable data.
-    CCControlCenterPageContent *pageContentViewController = [[UIStoryboard storyboardWithName: @"ControlCenter" bundle:[NSBundle mainBundle]]  instantiateViewControllerWithIdentifier:@"ControlCenterPageContent"];
+    CCControlCenterPageContent *pageContentViewController;
+    
+    if ([self.controlCenterPagesContent count] >= index+1) {
+        
+        pageContentViewController = [self.controlCenterPagesContent objectAtIndex:index];
+        
+    } else {
+        
+        // Create a new view controller and pass suitable data.
+        pageContentViewController = [[UIStoryboard storyboardWithName: @"ControlCenter" bundle:[NSBundle mainBundle]]  instantiateViewControllerWithIdentifier:@"ControlCenterPageContent"];
+        [self.controlCenterPagesContent addObject:pageContentViewController];
+    }
     
     pageContentViewController.pageIndex = index;
     pageContentViewController.pageType = self.pageType[index];
