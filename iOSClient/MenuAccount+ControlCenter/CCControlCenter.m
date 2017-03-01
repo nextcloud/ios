@@ -89,7 +89,7 @@
     _tableView = [[UITableView alloc] init];
     [_tableView setFrame:CGRectMake(0, 0, self.navigationBar.frame.size.width, 0)];
     _tableView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    [_tableView registerNib:[UINib nibWithNibName:@"CCControlCenterCell" bundle:nil] forCellReuseIdentifier:@"CCControlCenterCell"];
+    [_tableView registerNib:[UINib nibWithNibName:@"CCControlCenterTransferCell" bundle:nil] forCellReuseIdentifier:@"ControlCenterTransferCell"];
     _tableView.delegate = self;
     _tableView.dataSource = self;
     _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
@@ -381,7 +381,7 @@
     
     if (indexPath && indexPath.row == 0) {
         
-        CCControlCenterCell *cell = (CCControlCenterCell *)[_tableView cellForRowAtIndexPath:indexPath];
+        CCControlCenterTransferCell *cell = (CCControlCenterTransferCell *)[_tableView cellForRowAtIndexPath:indexPath];
     
         if (cryptated) cell.progressView.progressTintColor = COLOR_CRYPTOCLOUD;
         else cell.progressView.progressTintColor = COLOR_TEXT_ANTHRACITE;
@@ -743,7 +743,7 @@
     NSString *fileID = [[_sectionDataSource.sectionArrayRow objectForKey:[_sectionDataSource.sections objectAtIndex:indexPath.section]] objectAtIndex:indexPath.row];
     CCMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:fileID];
     
-    CCControlCenterCell *cell = (CCControlCenterCell *)[tableView dequeueReusableCellWithIdentifier:@"CCControlCenterCell" forIndexPath:indexPath];
+    CCControlCenterTransferCell *cell = (CCControlCenterTransferCell *)[tableView dequeueReusableCellWithIdentifier:@"ControlCenterTransferCell" forIndexPath:indexPath];
     cell.backgroundColor = [UIColor clearColor];
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
         

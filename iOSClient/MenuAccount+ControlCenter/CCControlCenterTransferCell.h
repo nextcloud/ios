@@ -1,5 +1,5 @@
 //
-//  CCControlCenterCell.h
+//  CCControlCenterTransferCell.h
 //  Crypto Cloud Technology Nextcloud
 //
 //  Created by Marino Faggiana on 05/05/15.
@@ -23,7 +23,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface CCControlCenterCell : UITableViewCell
+@interface CCControlCenterTransferCell : UITableViewCell
 
 @property(nonatomic, weak) IBOutlet UIImageView *fileImageView;
 @property(nonatomic, weak) IBOutlet UIImageView *statusImageView;

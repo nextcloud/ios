@@ -2550,7 +2550,7 @@
     
     if (indexPath) {
         
-        CCControlCenterCell *cell = (CCControlCenterCell *)[self.tableView cellForRowAtIndexPath:indexPath];
+        CCControlCenterTransferCell *cell = (CCControlCenterTransferCell *)[self.tableView cellForRowAtIndexPath:indexPath];
         
         if (cryptated) cell.progressView.progressTintColor = COLOR_CRYPTOCLOUD;
         else cell.progressView.progressTintColor = COLOR_TEXT_ANTHRACITE;

@@ -272,7 +272,7 @@
 		0842152B1E646E0200C8F4F3 /* CYRToken.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0DDF1C889300008DAB36 /* CYRToken.m */; };
 		0842152C1E646E0200C8F4F3 /* AHKActionSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = F72AAEC31E5C60C700BB17E1 /* AHKActionSheet.m */; };
 		0842152D1E646E0200C8F4F3 /* CTAssetsGridView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F06E521DBFACC600099AE9 /* CTAssetsGridView.m */; };
-		0842152E1E646E0200C8F4F3 /* CCControlCenterCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D6A08C1D82DBFA0045AD1A /* CCControlCenterCell.m */; };
+		0842152E1E646E0200C8F4F3 /* CCControlCenterTransferCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D6A08C1D82DBFA0045AD1A /* CCControlCenterTransferCell.m */; };
 		0842152F1E646E0200C8F4F3 /* Acknowledgements.m in Sources */ = {isa = PBXBuildFile; fileRef = F7ACE42A1BAC0268006C0017 /* Acknowledgements.m */; };
 		084215301E646E0200C8F4F3 /* PPImageScrollingCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F05211C889184008DAB36 /* PPImageScrollingCellView.m */; };
 		084215311E646E0200C8F4F3 /* LMMediaPlayerHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0F311C889339008DAB36 /* LMMediaPlayerHelper.m */; };
@@ -326,7 +326,7 @@
 		084215631E646E0200C8F4F3 /* ZSSviewsource.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DD51C889300008DAB36 /* ZSSviewsource.png */; };
 		084215641E646E0200C8F4F3 /* ZSSforcejustify@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0D981C889300008DAB36 /* ZSSforcejustify@2x.png */; };
 		084215651E646E0200C8F4F3 /* ZSSh1@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0D9A1C889300008DAB36 /* ZSSh1@2x.png */; };
-		084215661E646E0200C8F4F3 /* CCControlCenterCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7D6A08D1D82DBFA0045AD1A /* CCControlCenterCell.xib */; };
+		084215661E646E0200C8F4F3 /* CCControlCenterTransferCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7D6A08D1D82DBFA0045AD1A /* CCControlCenterTransferCell.xib */; };
 		084215671E646E0200C8F4F3 /* ImageSelectedSmallOn@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = F7F54CBD1E5B14C700E19C62 /* ImageSelectedSmallOn@3x.png */; };
 		084215681E646E0200C8F4F3 /* Intro.strings in Resources */ = {isa = PBXBuildFile; fileRef = F744BE9F1BEBB69F004FFF66 /* Intro.strings */; };
 		084215691E646E0200C8F4F3 /* UIBarButtonItemArrowLeft.png in Resources */ = {isa = PBXBuildFile; fileRef = F7F54CC41E5B14C700E19C62 /* UIBarButtonItemArrowLeft.png */; };
@@ -1106,8 +1106,8 @@
 		F7D2677C1E157053005ACB7E /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7F67BB81A24D27800EE80DA /* Images.xcassets */; };
 		F7D267871E157057005ACB7E /* Nextcloud.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7596C771D128FC80092A6B8 /* Nextcloud.xcassets */; };
 		F7D6A0911D82DBFA0045AD1A /* CCControlCenter.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D6A08A1D82DBFA0045AD1A /* CCControlCenter.m */; };
-		F7D6A0931D82DBFA0045AD1A /* CCControlCenterCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D6A08C1D82DBFA0045AD1A /* CCControlCenterCell.m */; };
-		F7D6A0951D82DBFA0045AD1A /* CCControlCenterCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7D6A08D1D82DBFA0045AD1A /* CCControlCenterCell.xib */; };
+		F7D6A0931D82DBFA0045AD1A /* CCControlCenterTransferCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D6A08C1D82DBFA0045AD1A /* CCControlCenterTransferCell.m */; };
+		F7D6A0951D82DBFA0045AD1A /* CCControlCenterTransferCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7D6A08D1D82DBFA0045AD1A /* CCControlCenterTransferCell.xib */; };
 		F7D6A0971D82DBFA0045AD1A /* CCMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D6A08F1D82DBFA0045AD1A /* CCMenu.m */; };
 		F7DA62AE1E41E666003E1740 /* CCOfflinePageContent.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DA62AD1E41E666003E1740 /* CCOfflinePageContent.m */; };
 		F7DCA1C81D32BD4100E48D39 /* Share Ext Nextcloud.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = F7DCA1B81D32BD4100E48D39 /* Share Ext Nextcloud.entitlements */; };
@@ -2077,9 +2077,9 @@
 		F7D154271E2392A300202FD9 /* Nextcloud-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Nextcloud-Bridging-Header.h"; sourceTree = "<group>"; };
 		F7D6A0891D82DBFA0045AD1A /* CCControlCenter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCControlCenter.h; sourceTree = "<group>"; };
 		F7D6A08A1D82DBFA0045AD1A /* CCControlCenter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCControlCenter.m; sourceTree = "<group>"; };
-		F7D6A08B1D82DBFA0045AD1A /* CCControlCenterCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCControlCenterCell.h; sourceTree = "<group>"; };
-		F7D6A08C1D82DBFA0045AD1A /* CCControlCenterCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCControlCenterCell.m; sourceTree = "<group>"; };
-		F7D6A08D1D82DBFA0045AD1A /* CCControlCenterCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CCControlCenterCell.xib; sourceTree = "<group>"; };
+		F7D6A08B1D82DBFA0045AD1A /* CCControlCenterTransferCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCControlCenterTransferCell.h; sourceTree = "<group>"; };
+		F7D6A08C1D82DBFA0045AD1A /* CCControlCenterTransferCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCControlCenterTransferCell.m; sourceTree = "<group>"; };
+		F7D6A08D1D82DBFA0045AD1A /* CCControlCenterTransferCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CCControlCenterTransferCell.xib; sourceTree = "<group>"; };
 		F7D6A08E1D82DBFA0045AD1A /* CCMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCMenu.h; sourceTree = "<group>"; };
 		F7D6A08F1D82DBFA0045AD1A /* CCMenu.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCMenu.m; sourceTree = "<group>"; };
 		F7D722AA1D11B6DA009F1A35 /* CCImages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCImages.h; sourceTree = "<group>"; };
@@ -3665,9 +3665,9 @@
 			children = (
 				F7D6A0891D82DBFA0045AD1A /* CCControlCenter.h */,
 				F7D6A08A1D82DBFA0045AD1A /* CCControlCenter.m */,
-				F7D6A08B1D82DBFA0045AD1A /* CCControlCenterCell.h */,
-				F7D6A08C1D82DBFA0045AD1A /* CCControlCenterCell.m */,
-				F7D6A08D1D82DBFA0045AD1A /* CCControlCenterCell.xib */,
+				F7D6A08B1D82DBFA0045AD1A /* CCControlCenterTransferCell.h */,
+				F7D6A08C1D82DBFA0045AD1A /* CCControlCenterTransferCell.m */,
+				F7D6A08D1D82DBFA0045AD1A /* CCControlCenterTransferCell.xib */,
 				F7D6A08E1D82DBFA0045AD1A /* CCMenu.h */,
 				F7D6A08F1D82DBFA0045AD1A /* CCMenu.m */,
 			);
@@ -4399,7 +4399,7 @@
 				084215631E646E0200C8F4F3 /* ZSSviewsource.png in Resources */,
 				084215641E646E0200C8F4F3 /* ZSSforcejustify@2x.png in Resources */,
 				084215651E646E0200C8F4F3 /* ZSSh1@2x.png in Resources */,
-				084215661E646E0200C8F4F3 /* CCControlCenterCell.xib in Resources */,
+				084215661E646E0200C8F4F3 /* CCControlCenterTransferCell.xib in Resources */,
 				084215671E646E0200C8F4F3 /* ImageSelectedSmallOn@3x.png in Resources */,
 				084215681E646E0200C8F4F3 /* Intro.strings in Resources */,
 				084215691E646E0200C8F4F3 /* UIBarButtonItemArrowLeft.png in Resources */,
@@ -4641,7 +4641,7 @@
 				F77B0F141D118A16002130FE /* ZSSviewsource.png in Resources */,
 				F77B0F151D118A16002130FE /* ZSSforcejustify@2x.png in Resources */,
 				F77B0F171D118A16002130FE /* ZSSh1@2x.png in Resources */,
-				F7D6A0951D82DBFA0045AD1A /* CCControlCenterCell.xib in Resources */,
+				F7D6A0951D82DBFA0045AD1A /* CCControlCenterTransferCell.xib in Resources */,
 				F7F54CF31E5B14C700E19C62 /* ImageSelectedSmallOn@3x.png in Resources */,
 				F77B0F181D118A16002130FE /* Intro.strings in Resources */,
 				F7F54CFA1E5B14C700E19C62 /* UIBarButtonItemArrowLeft.png in Resources */,
@@ -5067,7 +5067,7 @@
 				0842152B1E646E0200C8F4F3 /* CYRToken.m in Sources */,
 				0842152C1E646E0200C8F4F3 /* AHKActionSheet.m in Sources */,
 				0842152D1E646E0200C8F4F3 /* CTAssetsGridView.m in Sources */,
-				0842152E1E646E0200C8F4F3 /* CCControlCenterCell.m in Sources */,
+				0842152E1E646E0200C8F4F3 /* CCControlCenterTransferCell.m in Sources */,
 				0842152F1E646E0200C8F4F3 /* Acknowledgements.m in Sources */,
 				084215301E646E0200C8F4F3 /* PPImageScrollingCellView.m in Sources */,
 				084215311E646E0200C8F4F3 /* LMMediaPlayerHelper.m in Sources */,
@@ -5660,7 +5660,7 @@
 				F77B0ECF1D118A16002130FE /* CYRToken.m in Sources */,
 				F72AAECA1E5C60C700BB17E1 /* AHKActionSheet.m in Sources */,
 				F7F06EB11DBFACC600099AE9 /* CTAssetsGridView.m in Sources */,
-				F7D6A0931D82DBFA0045AD1A /* CCControlCenterCell.m in Sources */,
+				F7D6A0931D82DBFA0045AD1A /* CCControlCenterTransferCell.m in Sources */,
 				F77B0ED11D118A16002130FE /* Acknowledgements.m in Sources */,
 				F77B0ED31D118A16002130FE /* PPImageScrollingCellView.m in Sources */,
 				F77B0ED41D118A16002130FE /* LMMediaPlayerHelper.m in Sources */,

@@ -24,14 +24,18 @@
 #import <UIKit/UIKit.h>
 
 #import "CCGlobal.h"
-#import "CCControlCenterCell.h"
+#import "CCControlCenterTransferCell.h"
 #import "CCSection.h"
 #import "CCMetadata.h"
 
-@interface CCControlCenter : UINavigationController <UITableViewDataSource, UITableViewDelegate>
+@interface CCControlCenter : UINavigationController <UITableViewDataSource, UITableViewDelegate, UIPageViewControllerDataSource, UIPageViewControllerDelegate>
 
 @property (nonatomic) BOOL isPopGesture;
 @property (nonatomic) BOOL isOpen;
+
+@property (strong, nonatomic) UIPageViewController *pageViewController;
+@property (strong, nonatomic) NSArray *pageType;
+@property (strong, nonatomic) NSString *currentPageType;
 
 - (void)reloadDatasource;
 

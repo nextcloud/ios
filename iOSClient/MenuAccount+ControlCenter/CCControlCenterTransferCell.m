@@ -1,5 +1,5 @@
 //
-//  CCControlCenterCell.m
+//  CCControlCenterTransferCell.m
 //  Crypto Cloud Technology Nextcloud
 //
 //  Created by Marino Faggiana on 05/05/15.
@@ -21,9 +21,9 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#import "CCControlCenterCell.h"
+#import "CCControlCenterTransferCell.h"
 
-@implementation CCControlCenterCell
+@implementation CCControlCenterTransferCell
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
