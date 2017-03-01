@@ -36,20 +36,18 @@
     // Custom Cell
     [_tableView registerNib:[UINib nibWithNibName:@"CCControlCenterTransferCell" bundle:nil] forCellReuseIdentifier:@"ControlCenterTransferCell"];
     
-   
     _tableView.delegate = self;
     _tableView.dataSource = self;
     _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     _tableView.backgroundColor = [UIColor redColor];
+    
+    [self reloadDatasource];
 }
 
 // Apparirà
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    
-    
-    [self reloadDatasource];
 }
 
 // E' arrivato
@@ -223,15 +221,12 @@
     if (app.activeAccount.length == 0)
         return;
     
-   // if (_isOpen) {
+    NSArray *recordsTableMetadata = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND ((session CONTAINS 'upload') OR (session CONTAINS 'download' AND (sessionSelector != 'loadPlist')))", app.activeAccount] fieldOrder:@"sessionTaskIdentifier" ascending:YES];
         
-        NSArray *recordsTableMetadata = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND ((session CONTAINS 'upload') OR (session CONTAINS 'download' AND (sessionSelector != 'loadPlist')))", app.activeAccount] fieldOrder:@"sessionTaskIdentifier" ascending:YES];
-        
-        _sectionDataSource  = [CCSection creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:app.listProgressMetadata groupByField:@"session" replaceDateToExifDate:NO activeAccount:app.activeAccount];
+    _sectionDataSource  = [CCSection creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:app.listProgressMetadata groupByField:@"session" replaceDateToExifDate:NO activeAccount:app.activeAccount];
         
     //    if ([_sectionDataSource.allRecordsDataSource count] == 0) _noRecord.hidden = NO;
     //    else _noRecord.hidden = YES;
-    //}
     
     [_tableView reloadData];
     

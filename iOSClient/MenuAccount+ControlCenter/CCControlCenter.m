@@ -85,19 +85,6 @@
     // TEST
     //_mainView.backgroundColor = [UIColor yellowColor];
     
-    /*
-    _tableView = [[UITableView alloc] init];
-    [_tableView setFrame:CGRectMake(0, 0, self.navigationBar.frame.size.width, 0)];
-    _tableView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    [_tableView registerNib:[UINib nibWithNibName:@"CCControlCenterTransferCell" bundle:nil] forCellReuseIdentifier:@"ControlCenterTransferCell"];
-    _tableView.delegate = self;
-    _tableView.dataSource = self;
-    _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    _tableView.backgroundColor = [UIColor clearColor];
-
-    [_mainView addSubview:_tableView];
-    */
-    
     // Create data model
     _pageType = @[k_pageControlCenterTransfer, k_pageControlCenterActivity];
     _currentPageType = k_pageControlCenterTransfer;
@@ -124,6 +111,7 @@
     _noRecord.hidden = YES;
 
     [_mainView addSubview:_noRecord];
+    
     
     _imageDrag = [[UIImageView alloc] init];
     [_imageDrag setFrame:CGRectMake(0, 0, self.navigationBar.frame.size.width, 0)];
@@ -243,7 +231,6 @@
             _mainView.frame = CGRectMake(0, 0, navigationBarW, currentPoint.y);
             _pageViewController.view.frame = CGRectMake(0, currentPoint.y - heightScreen + navigationBarH, navigationBarW, heightTableView);
             _noRecord.frame = CGRectMake(0, currentPoint.y - centerMaxH - TOOLBAR_TRANSFER_H, navigationBarW, SIZE_FONT_NORECORD+10);
-            //_toolbarTask.frame = CGRectMake(0, currentPoint.y - BORDER_TOUCH_UPDOWN - TOOLBAR_TRANSFER_H - TOOLBAR_ADD_BORDER/2, _mainView.frame.size.width, TOOLBAR_TRANSFER_H);
             _imageDrag.frame = CGRectMake(0, currentPoint.y - BORDER_TOUCH_UPDOWN, navigationBarW, BORDER_TOUCH_UPDOWN);
             _endLine.frame = CGRectMake(0, currentPoint.y - BORDER_TOUCH_UPDOWN, navigationBarW, 1);
         
@@ -314,7 +301,6 @@
     _mainView.frame = CGRectMake(0, 0, size.width, [self getMaxH]);
     _pageViewController.view.frame = CGRectMake(0, navigationBarH, _mainView.frame.size.width, _mainView.frame.size.height - navigationBarH - BORDER_TOUCH_UPDOWN - TOOLBAR_TRANSFER_H - TOOLBAR_ADD_BORDER);
     _noRecord.frame = CGRectMake(0, _mainView.frame.size.height / 2 - TOOLBAR_TRANSFER_H, _mainView.frame.size.width, SIZE_FONT_NORECORD+10);
-    //_toolbarTask.frame = CGRectMake(0, _mainView.frame.size.height - BORDER_TOUCH_UPDOWN - TOOLBAR_TRANSFER_H - TOOLBAR_ADD_BORDER/2, _mainView.frame.size.width, TOOLBAR_TRANSFER_H);
     _imageDrag.frame = CGRectMake(0, _mainView.frame.size.height - BORDER_TOUCH_UPDOWN, _mainView.frame.size.width, BORDER_TOUCH_UPDOWN);
     _endLine.frame = CGRectMake(0, _mainView.frame.size.height - BORDER_TOUCH_UPDOWN, _mainView.frame.size.width, 1);
     
