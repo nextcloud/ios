@@ -29,6 +29,19 @@
 
 @implementation CCControlCenterTransfer
 
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Init =====
+#pragma --------------------------------------------------------------------------------------------
+
+-  (id)initWithCoder:(NSCoder *)aDecoder
+{
+    if (self = [super initWithCoder:aDecoder])  {
+        
+        app.controlCenterTransfer = self;
+    }
+    return self;
+}
+
 - (void)viewDidLoad {
     
     [super viewDidLoad];

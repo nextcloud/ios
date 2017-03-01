@@ -595,7 +595,7 @@
  
 #ifndef EXTENSION
             // Control Center
- //           [app.controlCenter progressTask:_currentProgressMetadata.fileID serverUrl:serverUrl cryptated:_currentProgressMetadata.cryptated progress:progress];
+           [app.controlCenterTransfer progressTask:_currentProgressMetadata.fileID serverUrl:serverUrl cryptated:_currentProgressMetadata.cryptated progress:progress];
         
             // Detail
             if (app.activeDetail)
@@ -1274,7 +1274,7 @@
             
 #ifndef EXTENSION
             // Control Center
-     //       [app.controlCenter progressTask:_currentProgressMetadata.fileID serverUrl:serverUrl cryptated:_currentProgressMetadata.cryptated progress:progress];
+            [app.controlCenterTransfer progressTask:_currentProgressMetadata.fileID serverUrl:serverUrl cryptated:_currentProgressMetadata.cryptated progress:progress];
 #endif
             
             if ([self.delegate respondsToSelector:@selector(progressTask:serverUrl:cryptated:progress:)])

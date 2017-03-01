@@ -8,9 +8,23 @@
 
 #import "CCControlCenterActivity.h"
 
+#import "AppDelegate.h"
 #import "CCControlCenterTransferCell.h"
 
 @implementation CCControlCenterActivity
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Init =====
+#pragma --------------------------------------------------------------------------------------------
+
+-  (id)initWithCoder:(NSCoder *)aDecoder
+{
+    if (self = [super initWithCoder:aDecoder])  {
+        
+        app.controlCenterActivity = self;
+    }
+    return self;
+}
 
 - (void)viewDidLoad {
     

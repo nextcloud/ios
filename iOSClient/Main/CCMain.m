@@ -187,7 +187,7 @@
     [self setTitle];
         
     // List Transfers
-    app.controlCenter = (CCControlCenter *)self.navigationController;
+    //app.controlCenter = (CCControlCenter *)self.navigationController;
     
     // Search
     self.definesPresentationContext = YES;
@@ -4698,14 +4698,14 @@
     if ([serverUrl isEqualToString:_serverUrl] == NO || _serverUrl == nil) {
         
         if ([selector isEqualToString:selectorDownloadSynchronize]) {
-//            [app.controlCenter reloadDatasource];
+            [app.controlCenterTransfer reloadDatasource];
         } else {
             CCMain *main = [app.listMainVC objectForKey:serverUrl];
             if (main) {
                 [main reloadDatasource];
             } else {
                 [self tableViewReload];
-//                [app.controlCenter reloadDatasource];
+                [app.controlCenterTransfer reloadDatasource];
             }
         }
         
@@ -4715,7 +4715,7 @@
     // Offline folder ?
     _isOfflineServerUrl = [CCCoreData isOfflineDirectoryServerUrl:_serverUrl activeAccount:app.activeAccount];
     
- //   [app.controlCenter reloadDatasource];
+    [app.controlCenterTransfer reloadDatasource];
     
     // Settaggio variabili per le ottimizzazioni
     _directoryGroupBy = [CCUtility getGroupBySettings];

@@ -33,6 +33,8 @@
 #import "CCBKPasscode.h"
 #import "CCUtility.h"
 #import "CCControlCenter.h"
+#import "CCControlCenterTransfer.h"
+#import "CCControlCenterActivity.h"
 #import "CCDetail.h"
 #import "CCQuickActions.h"
 #import "CCMain.h"
@@ -114,6 +116,8 @@
 
 // List Transfert
 @property (nonatomic, retain) CCControlCenter *controlCenter;
+@property (nonatomic, retain) CCControlCenterTransfer *controlCenterTransfer;
+@property (nonatomic, retain) CCControlCenterActivity *controlCenterActivity;
 
 // List Change Task
 @property (nonatomic, retain) NSMutableDictionary *listChangeTask;
