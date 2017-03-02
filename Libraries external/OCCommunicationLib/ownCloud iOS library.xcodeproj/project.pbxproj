@@ -147,6 +147,8 @@
 		F704980A1E369EF6008F5BB6 /* OCNotificationsAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCNotificationsAction.m; sourceTree = "<group>"; };
 		F704980B1E369EF6008F5BB6 /* OCRichObjectStrings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCRichObjectStrings.h; sourceTree = "<group>"; };
 		F704980C1E369EF6008F5BB6 /* OCRichObjectStrings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCRichObjectStrings.m; sourceTree = "<group>"; };
+		F7202C8C1E6816C900C6D9AD /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		F7202C931E6817A400C6D9AD /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		F73C00331E56098300EEEFA7 /* OCUserProfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCUserProfile.h; sourceTree = "<group>"; };
 		F73C00341E56098300EEEFA7 /* OCUserProfile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCUserProfile.m; sourceTree = "<group>"; };
 		F785C1321E6316A500469BAC /* OCXMLListParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OCXMLListParser.h; path = OCWebDavClient/Parsers/OCXMLListParser.h; sourceTree = "<group>"; };
@@ -416,6 +418,8 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				ru,
+				pl,
 			);
 			mainGroup = EA7CC88E183E11E600B6A4B4;
 			productRefGroup = EA7CC898183E11E600B6A4B4 /* Products */;
@@ -509,6 +513,8 @@
 			isa = PBXVariantGroup;
 			children = (
 				EA7CC8B4183E11E600B6A4B4 /* en */,
+				F7202C8C1E6816C900C6D9AD /* ru */,
+				F7202C931E6817A400C6D9AD /* pl */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";

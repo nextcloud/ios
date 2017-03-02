@@ -1714,6 +1714,19 @@
 		F719FDB11CF06645004895D0 /* CCPhotosCameraUpload.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCPhotosCameraUpload.h; sourceTree = "<group>"; };
 		F719FDB21CF06645004895D0 /* CCPhotosCameraUpload.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCPhotosCameraUpload.m; sourceTree = "<group>"; };
 		F71E67F61DC1F76F003BA52B /* ownCloud iOS library.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "ownCloud iOS library.xcodeproj"; path = "Libraries external/OCCommunicationLib/ownCloud iOS library.xcodeproj"; sourceTree = SOURCE_ROOT; };
+		F7202C8D1E68171800C6D9AD /* ru */ = {isa = PBXFileReference; lastKnownFileType = text; name = ru; path = ru.lproj/TTOpenInAppActivityLocalizable.string; sourceTree = "<group>"; };
+		F7202C8E1E68171900C6D9AD /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/BKPasscodeView.strings; sourceTree = "<group>"; };
+		F7202C8F1E68171900C6D9AD /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
+		F7202C901E68171900C6D9AD /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		F7202C911E68171900C6D9AD /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Intro.strings; sourceTree = "<group>"; };
+		F7202C921E68171A00C6D9AD /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Error.strings; sourceTree = "<group>"; };
+		F7202C941E6817A400C6D9AD /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/CTAssetsPicker.strings; sourceTree = "<group>"; };
+		F7202C951E6817A400C6D9AD /* pl */ = {isa = PBXFileReference; lastKnownFileType = text; name = pl; path = pl.lproj/TTOpenInAppActivityLocalizable.string; sourceTree = "<group>"; };
+		F7202C961E6817A400C6D9AD /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/BKPasscodeView.strings; sourceTree = "<group>"; };
+		F7202C971E6817A500C6D9AD /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/Localizable.strings; sourceTree = "<group>"; };
+		F7202C981E6817A500C6D9AD /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		F7202C991E6817A500C6D9AD /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/Intro.strings; sourceTree = "<group>"; };
+		F7202C9A1E6817A500C6D9AD /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/Error.strings; sourceTree = "<group>"; };
 		F720E01E1E48C73E001A4B9E /* CCActions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CCActions.swift; path = Actions/CCActions.swift; sourceTree = "<group>"; };
 		F721371D1BAFF0920012B613 /* CCAccountWeb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCAccountWeb.h; sourceTree = "<group>"; };
 		F721371E1BAFF0920012B613 /* CCAccountWeb.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCAccountWeb.m; sourceTree = "<group>"; };
@@ -4278,6 +4291,8 @@
 				de,
 				fr,
 				Base,
+				ru,
+				pl,
 			);
 			mainGroup = F7F67B9F1A24D27800EE80DA;
 			productRefGroup = F7F67B9F1A24D27800EE80DA;
@@ -5751,6 +5766,8 @@
 				F7151A861D477A5400E6AF45 /* it */,
 				F7D96F0B1D99498600A587A5 /* de */,
 				F73814271E65A52C0011A45E /* fr */,
+				F7202C8E1E68171900C6D9AD /* ru */,
+				F7202C961E6817A400C6D9AD /* pl */,
 			);
 			name = BKPasscodeView.strings;
 			sourceTree = "<group>";
@@ -5763,6 +5780,8 @@
 				F7151A891D477A5500E6AF45 /* it */,
 				F7D96F0E1D99498700A587A5 /* de */,
 				F738142A1E65A52D0011A45E /* fr */,
+				F7202C911E68171900C6D9AD /* ru */,
+				F7202C991E6817A500C6D9AD /* pl */,
 			);
 			name = Intro.strings;
 			sourceTree = "<group>";
@@ -5775,6 +5794,8 @@
 				F7151A8A1D477A5500E6AF45 /* it */,
 				F7D96F0F1D99498700A587A5 /* de */,
 				F738142B1E65A52D0011A45E /* fr */,
+				F7202C921E68171A00C6D9AD /* ru */,
+				F7202C9A1E6817A500C6D9AD /* pl */,
 			);
 			name = Error.strings;
 			sourceTree = "<group>";
@@ -5787,6 +5808,8 @@
 				F7151A851D477A5400E6AF45 /* it */,
 				F7D96F0A1D99498600A587A5 /* de */,
 				F73814261E65A52C0011A45E /* fr */,
+				F7202C8D1E68171800C6D9AD /* ru */,
+				F7202C951E6817A400C6D9AD /* pl */,
 			);
 			name = TTOpenInAppActivityLocalizable.string;
 			sourceTree = "<group>";
@@ -5799,6 +5822,8 @@
 				F7151A881D477A5400E6AF45 /* it */,
 				F7D96F0D1D99498600A587A5 /* de */,
 				F73814291E65A52D0011A45E /* fr */,
+				F7202C901E68171900C6D9AD /* ru */,
+				F7202C981E6817A500C6D9AD /* pl */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -5811,6 +5836,8 @@
 				F7151A871D477A5400E6AF45 /* it */,
 				F7D96F0C1D99498600A587A5 /* de */,
 				F73814281E65A52D0011A45E /* fr */,
+				F7202C8F1E68171900C6D9AD /* ru */,
+				F7202C971E6817A500C6D9AD /* pl */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -5822,6 +5849,7 @@
 				F7F06E771DBFACC600099AE9 /* en */,
 				F7F06E801DBFACC600099AE9 /* it */,
 				F7F06E841DBFACC600099AE9 /* nl */,
+				F7202C941E6817A400C6D9AD /* pl */,
 			);
 			name = CTAssetsPicker.strings;
 			sourceTree = "<group>";
