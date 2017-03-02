@@ -23,7 +23,7 @@
 @interface CCControlCenterTransfer ()
 {    
     // Datasource
-    CCSectionDataSource *_sectionDataSource;
+    CCSectionDataSourceMetadata *_sectionDataSource;
 }
 @end
 
@@ -241,7 +241,7 @@
         
         NSArray *recordsTableMetadata = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND ((session CONTAINS 'upload') OR (session CONTAINS 'download' AND (sessionSelector != 'loadPlist')))", app.activeAccount] fieldOrder:@"sessionTaskIdentifier" ascending:YES];
         
-        _sectionDataSource  = [CCSection creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:app.listProgressMetadata groupByField:@"session" replaceDateToExifDate:NO activeAccount:app.activeAccount];
+        _sectionDataSource  = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:app.listProgressMetadata groupByField:@"session" replaceDateToExifDate:NO activeAccount:app.activeAccount];
         
         if ([_sectionDataSource.allRecordsDataSource count] == 0) {
             

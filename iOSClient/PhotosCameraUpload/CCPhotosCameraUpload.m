@@ -41,7 +41,7 @@
     NSUInteger _numSelectedMetadatas;
     //BOOL _AutomaticCameraUploadInProgress;      // START/STOP new request : initStateCameraUpload
     
-    CCSectionDataSource *_sectionDataSource;
+    CCSectionDataSourceMetadata *_sectionDataSource;
     
     CCHud *_hud;
 }
@@ -528,7 +528,7 @@
 
 - (void)reloadDatasourceForced
 {
-    [CCSection removeAllObjectsSectionDataSource:_sectionDataSource];
+    [CCSectionMetadata removeAllObjectsSectionDataSource:_sectionDataSource];
     [self reloadDatasource];
 }
 
@@ -543,7 +543,7 @@
     // datasource
     NSArray *recordsTableMetadata = [CCCoreData getRecordsTableMetadataPhotosCameraUpload:serverUrl activeAccount:app.activeAccount];
     
-    _sectionDataSource = [CCSection creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:@"date" replaceDateToExifDate:YES activeAccount:app.activeAccount];
+    _sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:@"date" replaceDateToExifDate:YES activeAccount:app.activeAccount];
         
     //if ([_sectionDataSource.allRecordsDataSource count] == 0)
     //    _dateReadDataSource = nil;

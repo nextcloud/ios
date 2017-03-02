@@ -27,7 +27,7 @@
 #import "CCCoreData.h"
 #import "CCExifGeo.h"
 
-@implementation CCSectionDataSource
+@implementation CCSectionDataSourceMetadata
 
 - (id)init {
     
@@ -51,12 +51,12 @@
 @end
 
 
-@implementation CCSection
+@implementation CCSectionMetadata
 
 //
 // orderByField : nil, date, typeFile
 //
-+ (CCSectionDataSource *)creataDataSourseSectionMetadata:(NSArray *)records listProgressMetadata:(NSMutableDictionary *)listProgressMetadata groupByField:(NSString *)groupByField replaceDateToExifDate:(BOOL)replaceDateToExifDate activeAccount:(NSString *)activeAccount
++ (CCSectionDataSourceMetadata *)creataDataSourseSectionMetadata:(NSArray *)records listProgressMetadata:(NSMutableDictionary *)listProgressMetadata groupByField:(NSString *)groupByField replaceDateToExifDate:(BOOL)replaceDateToExifDate activeAccount:(NSString *)activeAccount
 {
     id dataSection;
     long counterSessionDownload = 0;
@@ -64,7 +64,7 @@
     NSMutableArray *copyRecords = [[NSMutableArray alloc] init];
     NSMutableDictionary *dictionaryFileIDMetadataForIndexPath = [[NSMutableDictionary alloc] init];
     
-    CCSectionDataSource *sectionDataSource = [[CCSectionDataSource alloc] init];
+    CCSectionDataSourceMetadata *sectionDataSource = [CCSectionDataSourceMetadata new];
     
     /*
      Initialize datasource
@@ -229,7 +229,7 @@
     return sectionDataSource;
 }
 
-+ (void)removeAllObjectsSectionDataSource:(CCSectionDataSource *)sectionDataSource
++ (void)removeAllObjectsSectionDataSource:(CCSectionDataSourceMetadata *)sectionDataSource
 {
     [sectionDataSource.allRecordsDataSource removeAllObjects];
     [sectionDataSource.allFileID removeAllObjects];

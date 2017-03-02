@@ -23,7 +23,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface CCSectionDataSource : NSObject
+@interface CCSectionDataSourceMetadata : NSObject
     
 @property (nonatomic, strong) NSMutableDictionary *allRecordsDataSource;
 @property (nonatomic, strong) NSMutableArray *allFileID;
@@ -40,11 +40,11 @@
 
 @end
 
-@interface CCSection : NSObject
+@interface CCSectionMetadata : NSObject
 
-+ (CCSectionDataSource *)creataDataSourseSectionMetadata:(NSArray *)records listProgressMetadata:(NSMutableDictionary *)listProgressMetadata groupByField:(NSString *)groupByField replaceDateToExifDate:(BOOL)replaceDateToExifDate activeAccount:(NSString *)activeAccount;
++ (CCSectionDataSourceMetadata *)creataDataSourseSectionMetadata:(NSArray *)records listProgressMetadata:(NSMutableDictionary *)listProgressMetadata groupByField:(NSString *)groupByField replaceDateToExifDate:(BOOL)replaceDateToExifDate activeAccount:(NSString *)activeAccount;
 
-+ (void)removeAllObjectsSectionDataSource:(CCSectionDataSource *)sectionDataSource;
++ (void)removeAllObjectsSectionDataSource:(CCSectionDataSourceMetadata *)sectionDataSource;
 
 @end
 
