@@ -6,6 +6,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -27,13 +28,13 @@
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="cmY-iB-PWk">
                             <size key="itemSize" width="50" height="50"/>
-                            <size key="headerReferenceSize" width="50" height="24"/>
+                            <size key="headerReferenceSize" width="50" height="52"/>
                             <size key="footerReferenceSize" width="0.0" height="0.0"/>
                             <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                         </collectionViewFlowLayout>
                         <cells>
                             <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="cell" id="btw-Qo-oNg">
-                                <rect key="frame" x="0.0" y="24" width="50" height="50"/>
+                                <rect key="frame" x="0.0" y="52" width="50" height="50"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
                                     <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
@@ -48,17 +49,36 @@
                             </collectionViewCell>
                         </cells>
                         <collectionReusableView key="sectionHeaderView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="header" id="6Zg-lt-YR9">
-                            <rect key="frame" x="0.0" y="0.0" width="375" height="24"/>
+                            <rect key="frame" x="0.0" y="0.0" width="375" height="52"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <subviews>
-                                <label opaque="NO" userInteractionEnabled="NO" tag="100" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="CHD-zb-9Fb">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="24"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <label opaque="NO" userInteractionEnabled="NO" tag="100" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="CHD-zb-9Fb">
+                                    <rect key="frame" x="8" y="0.0" width="359" height="22"/>
+                                    <constraints>
+                                        <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="22" id="KNG-FZ-Mkw"/>
+                                    </constraints>
+                                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                    <nil key="textColor"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                                <label opaque="NO" userInteractionEnabled="NO" tag="101" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="suK-ZC-07d">
+                                    <rect key="frame" x="8" y="30" width="359" height="22"/>
+                                    <constraints>
+                                        <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="22" id="v2e-1C-t22"/>
+                                    </constraints>
                                     <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                     <nil key="textColor"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                             </subviews>
+                            <constraints>
+                                <constraint firstItem="CHD-zb-9Fb" firstAttribute="top" secondItem="6Zg-lt-YR9" secondAttribute="topMargin" constant="-8" id="E28-8I-PGy"/>
+                                <constraint firstAttribute="trailingMargin" secondItem="CHD-zb-9Fb" secondAttribute="trailing" id="LGu-oz-7Eo"/>
+                                <constraint firstAttribute="leadingMargin" secondItem="CHD-zb-9Fb" secondAttribute="leading" id="TE8-eb-tc2"/>
+                                <constraint firstAttribute="leadingMargin" secondItem="suK-ZC-07d" secondAttribute="leading" id="bsM-XS-4MA"/>
+                                <constraint firstItem="suK-ZC-07d" firstAttribute="top" secondItem="CHD-zb-9Fb" secondAttribute="bottom" constant="8" id="snE-f4-Nuo"/>
+                                <constraint firstAttribute="trailingMargin" secondItem="suK-ZC-07d" secondAttribute="trailing" id="uOW-VG-4zZ"/>
+                            </constraints>
                         </collectionReusableView>
                         <connections>
                             <outlet property="dataSource" destination="Sa9-Gr-Uug" id="TzW-IT-Zqv"/>
@@ -68,7 +88,7 @@
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="0k6-oO-NJC" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="7160.8000000000002" y="1646.6266866566718"/>
+            <point key="canvasLocation" x="7160.8000000000002" y="1667.3163418290856"/>
         </scene>
         <!--Control Center Transfer-->
         <scene sceneID="Gv7-Uy-0Cg">
