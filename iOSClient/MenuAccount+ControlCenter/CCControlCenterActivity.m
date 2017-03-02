@@ -114,10 +114,29 @@
     return [[_sectionDataSource.sectionArrayRow objectForKey:[_sectionDataSource.sections objectAtIndex:section]] count];
 }
 
+- (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
+{
+    if (kind == UICollectionElementKindSectionHeader) {
+        
+        UICollectionReusableView *headerView = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:@"header" forIndexPath:indexPath];
+        
+        //headerView.backgroundColor = COLOR_GROUPBY_BAR_NO_BLUR;
+        
+        UILabel *titleLabel = (UILabel *)[headerView viewWithTag:100];
+        titleLabel.textColor = COLOR_TEXT_ANTHRACITE;
+        titleLabel.text = [CCUtility getTitleSectionDate:[_sectionDataSource.sections objectAtIndex:indexPath.section]];
+        
+        return headerView;
+    }
+    
+    return nil;
+}
+
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"cell" forIndexPath:indexPath];
-
+    cell.backgroundColor = [UIColor clearColor];
+    
     NSArray *metadatasForKey = [_sectionDataSource.sectionArrayRow objectForKey:[_sectionDataSource.sections objectAtIndex:indexPath.section]];
     TableActivity *activity = [metadatasForKey objectAtIndex:indexPath.row];
 
