@@ -61,6 +61,8 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
+    [self reloadDatasource];
 }
 
 // E' arrivato
@@ -234,12 +236,15 @@
     if (app.activeAccount.length == 0)
         return;
     
-    NSArray *recordsTableMetadata = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND ((session CONTAINS 'upload') OR (session CONTAINS 'download' AND (sessionSelector != 'loadPlist')))", app.activeAccount] fieldOrder:@"sessionTaskIdentifier" ascending:YES];
+    if (app.controlCenter.isOpen) {
         
-    _sectionDataSource  = [CCSection creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:app.listProgressMetadata groupByField:@"session" replaceDateToExifDate:NO activeAccount:app.activeAccount];
+        NSArray *recordsTableMetadata = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND ((session CONTAINS 'upload') OR (session CONTAINS 'download' AND (sessionSelector != 'loadPlist')))", app.activeAccount] fieldOrder:@"sessionTaskIdentifier" ascending:YES];
         
-    //if ([_sectionDataSource.allRecordsDataSource count] == 0) _noRecord.hidden = NO;
-    //else _noRecord.hidden = YES;
+        _sectionDataSource  = [CCSection creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:app.listProgressMetadata groupByField:@"session" replaceDateToExifDate:NO activeAccount:app.activeAccount];
+        
+        //if ([_sectionDataSource.allRecordsDataSource count] == 0) _noRecord.hidden = NO;
+        //else _noRecord.hidden = YES;
+    }
     
     [_tableView reloadData];
     

@@ -32,13 +32,11 @@
 
 
 #define BORDER_TOUCH_UPDOWN 50.0f
-
 #define TOOLBAR_TRANSFER_H 0.0f
 #define TOOLBAR_ADD_BORDER 20.0f
-
 #define SIZE_FONT_NORECORD 18.0f
-
 #define ANIMATION_GESTURE 0.50f
+
 
 @interface CCControlCenter ()
 {
@@ -66,6 +64,7 @@
 {
     if (self = [super initWithCoder:aDecoder])  {
         
+        app.controlCenter = self;
     }
     return self;
 }
@@ -329,7 +328,7 @@
             
             _isOpen = YES;
 
-            //[self reloadDatasource];
+            [app.controlCenterTransfer reloadDatasource];
         }
         
     } else {
