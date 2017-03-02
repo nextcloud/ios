@@ -75,6 +75,7 @@
 }
 
 - (void)didReceiveMemoryWarning {
+    
     [super didReceiveMemoryWarning];
 }
 
@@ -242,8 +243,15 @@
         
         _sectionDataSource  = [CCSection creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:app.listProgressMetadata groupByField:@"session" replaceDateToExifDate:NO activeAccount:app.activeAccount];
         
-        //if ([_sectionDataSource.allRecordsDataSource count] == 0) _noRecord.hidden = NO;
-        //else _noRecord.hidden = YES;
+        if ([_sectionDataSource.allRecordsDataSource count] == 0) {
+            
+            app.controlCenter.noRecord.text = NSLocalizedString(@"_no_transfer_",nil);
+            app.controlCenter.noRecord.hidden = NO;
+            
+        } else {
+            
+            app.controlCenter.noRecord.hidden = YES;
+        }
     }
     
     [_tableView reloadData];

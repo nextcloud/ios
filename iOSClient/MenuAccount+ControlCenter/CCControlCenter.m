@@ -40,7 +40,6 @@
 @interface CCControlCenter ()
 {
     UIVisualEffectView *_mainView;
-    UILabel *_noRecord;
     UIImageView *_imageDrag;
     UIView *_endLine;
     
@@ -105,8 +104,6 @@
     _noRecord.textColor = COLOR_CONTROL_CENTER;
     _noRecord.font = [UIFont systemFontOfSize:SIZE_FONT_NORECORD];
     _noRecord.textAlignment = NSTextAlignmentCenter;
-    _noRecord.text = NSLocalizedString(@"_no_transfer_",nil);
-    _noRecord.hidden = YES;
 
     [_mainView addSubview:_noRecord];
     

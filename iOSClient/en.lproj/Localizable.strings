@@ -483,9 +483,10 @@
 
 "_destiny_folder_"                  = "Folder : %@";
 
-// List Transfers
+// Control Center
 
 "_no_transfer_"                     = "No transfer";
+"_transfers_"                       = "Transfers";
 
 // Offline
 

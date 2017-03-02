@@ -32,6 +32,7 @@
 @property (nonatomic) BOOL isPopGesture;
 @property (nonatomic) BOOL isOpen;
 
+@property (strong, nonatomic) UILabel *noRecord;
 @property (strong, nonatomic) UIPageViewController *pageViewController;
 @property (strong, nonatomic) NSArray *pageType;
 @property (strong, nonatomic) NSString *currentPageType;

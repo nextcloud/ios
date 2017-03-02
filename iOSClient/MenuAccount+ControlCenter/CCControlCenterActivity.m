@@ -39,6 +39,25 @@
     _tableView.backgroundColor = [UIColor greenColor];
 }
 
+// Apparirà
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    
+    app.controlCenter.noRecord.hidden = YES;
+}
+
+// E' arrivato
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+}
+
+- (void)didReceiveMemoryWarning {
+    
+    [super didReceiveMemoryWarning];
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark - ==== Table ====
 #pragma --------------------------------------------------------------------------------------------
