@@ -52,7 +52,7 @@
     _tableView.delegate = self;
     _tableView.dataSource = self;
     _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    _tableView.backgroundColor = [UIColor redColor];
+    _tableView.backgroundColor = [UIColor clearColor];
     
     [self reloadDatasource];
 }
