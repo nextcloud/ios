@@ -486,9 +486,9 @@
 // Control Center
 
 "_no_transfer_"                     = "No transfer";
-"_no_recent_"                       = "No recent";
+"_no_activity_"                     = "No activity";
 "_transfers_"                       = "Transfers";
-"_recent_"                          = "Recent";
+"_activity_"                        = "Activity";
 
 // Offline
 

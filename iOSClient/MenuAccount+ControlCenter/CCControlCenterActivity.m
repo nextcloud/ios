@@ -39,13 +39,14 @@
     
     _sectionDataSource = [NSArray new];
     
-    // Custom Cell
-    [_tableView registerNib:[UINib nibWithNibName:@"CCControlCenterActivityCell" bundle:nil] forCellReuseIdentifier:@"ControlCenterActivityCell"];
-    
+    // empty Data Source
+  
+    /*
     _tableView.delegate = self;
     _tableView.dataSource = self;
     _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     _tableView.backgroundColor = [UIColor clearColor];
+    */
 }
 
 // Apparirà
@@ -83,7 +84,7 @@
         
         if ([_sectionDataSource count] == 0) {
             
-            app.controlCenter.noRecord.text = NSLocalizedString(@"_no_recent_",nil);
+            app.controlCenter.noRecord.text = NSLocalizedString(@"_no_activity_",nil);
             app.controlCenter.noRecord.hidden = NO;
             
         } else {
@@ -92,7 +93,7 @@
         }
     }
     
-    [_tableView reloadData];
+    [self.collectionView reloadData];
     
     [app updateApplicationIconBadgeNumber];
 }
@@ -116,15 +117,18 @@
     return [_sectionDataSource count];
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    CCControlCenterActivityCell *cell = (CCControlCenterActivityCell *)[tableView dequeueReusableCellWithIdentifier:@"ControlCenterActivityCell" forIndexPath:indexPath];
+    UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"cell" forIndexPath:indexPath];
+
+    /*
     cell.backgroundColor = [UIColor clearColor];
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     
     TableActivity *activity = [_sectionDataSource objectAtIndex:indexPath.row];
     cell.labelTitle.text = activity.subject;
     cell.labelInfoFile.text  = [CCUtility dateDiff:activity.date];
+    */
     
     return cell;
 }

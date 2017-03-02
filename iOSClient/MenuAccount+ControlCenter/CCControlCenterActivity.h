@@ -8,11 +8,9 @@
 
 #import <Foundation/Foundation.h>
 
-@interface CCControlCenterActivity : UIViewController <UITableViewDataSource, UITableViewDelegate>
+@interface CCControlCenterActivity : UICollectionViewController <UICollectionViewDataSource, UICollectionViewDelegate>
 
 @property NSUInteger pageIndex;
 @property (nonatomic, strong) NSString *pageType;
-
-@property (nonatomic, weak) IBOutlet UITableView *tableView;
 
 @end
