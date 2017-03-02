@@ -67,6 +67,8 @@
 #define image_settingsManagePhotos              @"settingsManagePhotosNextcloud"
 #define image_settingsManagePhotosChange        @"settingsManagePhotosChangeNextcloud"
 #define image_tabBarFile                        @"fileNextcloud"
+#define image_tabBarActivity                    @"activity"
+#define image_tabBarTransfer                    @"transfer"
 #define image_thumbs                            @"thumbsNextcloud"
 #define image_notification                      @"notification"
 
