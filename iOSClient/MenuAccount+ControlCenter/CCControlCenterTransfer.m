@@ -62,13 +62,14 @@
 {
     [super viewWillAppear:animated];
     
-    [self reloadDatasource];
 }
 
 // E' arrivato
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
+    
+    [self reloadDatasource];
     
     // update Badge
     [app updateApplicationIconBadgeNumber];
