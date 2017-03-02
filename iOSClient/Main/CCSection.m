@@ -247,3 +247,58 @@
 @end
 
 
+@implementation CCSectionDataSourceActivity
+
+- (id)init {
+    
+    self = [super init];
+    
+    _sections = [NSMutableArray new];
+    _sectionArrayRow = [NSMutableDictionary new];
+
+    return self;
+}
+
+@end
+
+@implementation CCSectionActivity
+
++ (CCSectionDataSourceActivity *)creataDataSourseSectionActivity:(NSArray *)records activeAccount:(NSString *)activeAccount
+{
+    CCSectionDataSourceActivity *sectionDataSource = [CCSectionDataSourceActivity new];
+    NSDate *oldDate = [NSDate date];
+    
+    for (TableActivity *record in records) {
+        
+        NSDateComponents* comps = [[NSCalendar currentCalendar] components:NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay fromDate:record.date];
+        NSDate *date = [[NSCalendar currentCalendar] dateFromComponents:comps];
+        
+        if ([oldDate compare:date] != NSOrderedSame) {
+            
+            [sectionDataSource.sections addObject:date];
+            oldDate = date;
+        }
+        
+        NSMutableArray *activities = [sectionDataSource.sectionArrayRow objectForKey:date];
+        
+        if (activities) {
+            
+            // ROW ++
+            [activities addObject:record];
+            [sectionDataSource.sectionArrayRow setObject:activities forKey:date];
+            
+        } else {
+            
+            // SECTION ++
+            activities = [[NSMutableArray alloc] initWithObjects:record, nil];
+            [sectionDataSource.sectionArrayRow setObject:activities forKey:date];
+        }
+    }
+    
+    return sectionDataSource;
+}
+
+@end
+
+
+

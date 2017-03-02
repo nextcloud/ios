@@ -48,3 +48,17 @@
 
 @end
 
+// -----------------------------------
+
+@interface CCSectionDataSourceActivity : NSObject
+
+@property (nonatomic, strong) NSMutableArray *sections;
+@property (nonatomic, strong) NSMutableDictionary *sectionArrayRow;
+
+@end
+
+@interface CCSectionActivity : NSObject
+
++ (CCSectionDataSourceActivity *)creataDataSourseSectionActivity:(NSArray *)records activeAccount:(NSString *)activeAccount;
+
+@end

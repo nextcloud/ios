@@ -9,12 +9,12 @@
 #import "CCControlCenterActivity.h"
 
 #import "AppDelegate.h"
-#import "CCControlCenterActivityCell.h"
+#import "CCSection.h"
 
 @interface CCControlCenterActivity ()
 {
     // Datasource
-    NSArray *_sectionDataSource;
+    CCSectionDataSourceActivity *_sectionDataSource;
 }
 @end
 
@@ -37,7 +37,7 @@
     
     [super viewDidLoad];
     
-    _sectionDataSource = [NSArray new];
+    _sectionDataSource = [CCSectionDataSourceActivity new];
     
     // empty Data Source
   
@@ -80,9 +80,11 @@
     
     if (app.controlCenter.isOpen) {
         
-        _sectionDataSource  = [CCCoreData getAllTableActivityWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@)", app.activeAccount]];
+        NSArray *records = [CCCoreData getAllTableActivityWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@)", app.activeAccount]];
         
-        if ([_sectionDataSource count] == 0) {
+        _sectionDataSource = [CCSectionActivity creataDataSourseSectionActivity:records activeAccount:app.activeAccount];
+        
+        if ([records count] == 0) {
             
             app.controlCenter.noRecord.text = NSLocalizedString(@"_no_activity_",nil);
             app.controlCenter.noRecord.hidden = NO;
@@ -102,33 +104,23 @@
 #pragma mark - ==== Table ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
 {
-    return 50;
+    return [[_sectionDataSource.sectionArrayRow allKeys] count];
 }
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    return 1;
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
-    return [_sectionDataSource count];
+    return [[_sectionDataSource.sectionArrayRow objectForKey:[_sectionDataSource.sections objectAtIndex:section]] count];
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"cell" forIndexPath:indexPath];
 
-    /*
-    cell.backgroundColor = [UIColor clearColor];
-    cell.selectionStyle = UITableViewCellSelectionStyleNone;
-    
-    TableActivity *activity = [_sectionDataSource objectAtIndex:indexPath.row];
-    cell.labelTitle.text = activity.subject;
-    cell.labelInfoFile.text  = [CCUtility dateDiff:activity.date];
-    */
+    NSArray *metadatasForKey = [_sectionDataSource.sectionArrayRow objectForKey:[_sectionDataSource.sections objectAtIndex:indexPath.section]];
+    TableActivity *activity = [metadatasForKey objectAtIndex:indexPath.row];
+
     
     return cell;
 }
