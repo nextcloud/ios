@@ -11,6 +11,13 @@
 #import "AppDelegate.h"
 #import "CCControlCenterActivityCell.h"
 
+@interface CCControlCenterActivity ()
+{
+    // Datasource
+    NSArray *_sectionDataSource;
+}
+@end
+
 @implementation CCControlCenterActivity
 
 #pragma --------------------------------------------------------------------------------------------
@@ -30,13 +37,15 @@
     
     [super viewDidLoad];
     
+    _sectionDataSource = [NSArray new];
+    
     // Custom Cell
     [_tableView registerNib:[UINib nibWithNibName:@"CCControlCenterActivityCell" bundle:nil] forCellReuseIdentifier:@"ControlCenterActivityCell"];
     
     _tableView.delegate = self;
     _tableView.dataSource = self;
     _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    _tableView.backgroundColor = [UIColor greenColor];
+    _tableView.backgroundColor = [UIColor clearColor];
 }
 
 // Apparirà
@@ -44,7 +53,7 @@
 {
     [super viewWillAppear:animated];
     
-    app.controlCenter.noRecord.hidden = YES;
+    [self reloadDatasource];
 }
 
 // E' arrivato
@@ -59,6 +68,36 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
+#pragma mark - ==== Datasource ====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)reloadDatasource
+{
+    // test
+    if (app.activeAccount.length == 0)
+        return;
+    
+    if (app.controlCenter.isOpen) {
+        
+        _sectionDataSource  = [CCCoreData getAllTableActivityWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@)", app.activeAccount]];
+        
+        if ([_sectionDataSource count] == 0) {
+            
+            app.controlCenter.noRecord.text = NSLocalizedString(@"_no_recent_",nil);
+            app.controlCenter.noRecord.hidden = NO;
+            
+        } else {
+            
+            app.controlCenter.noRecord.hidden = YES;
+        }
+    }
+    
+    [_tableView reloadData];
+    
+    [app updateApplicationIconBadgeNumber];
+}
+
+#pragma --------------------------------------------------------------------------------------------
 #pragma mark - ==== Table ====
 #pragma --------------------------------------------------------------------------------------------
 
@@ -69,22 +108,23 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return 0;
+    return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return 0;
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
-{
-    return 13.0f;
+    return [_sectionDataSource count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     CCControlCenterActivityCell *cell = (CCControlCenterActivityCell *)[tableView dequeueReusableCellWithIdentifier:@"ControlCenterActivityCell" forIndexPath:indexPath];
+    cell.backgroundColor = [UIColor clearColor];
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    
+    TableActivity *activity = [_sectionDataSource objectAtIndex:indexPath.row];
+    cell.labelTitle.text = activity.subject;
+    cell.labelInfoFile.text  = [CCUtility dateDiff:activity.date];
     
     return cell;
 }

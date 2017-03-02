@@ -26,15 +26,9 @@
 @interface CCControlCenterActivityCell : UITableViewCell
 
 @property(nonatomic, weak) IBOutlet UIImageView *fileImageView;
-@property(nonatomic, weak) IBOutlet UIImageView *statusImageView;
 
 @property(nonatomic, weak) IBOutlet UILabel *labelTitle;
 @property(nonatomic, weak) IBOutlet UILabel *labelInfoFile;
-
-@property(nonatomic, weak) IBOutlet UIProgressView *progressView;
-@property(nonatomic, weak) IBOutlet UIButton *cancelTaskButton;
-@property(nonatomic, weak) IBOutlet UIButton *reloadTaskButton;
-@property(nonatomic, weak) IBOutlet UIButton *stopTaskButton;
 
 //Last position of the scroll of the swipe
 @property (nonatomic, assign) CGFloat lastContentOffset;

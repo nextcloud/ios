@@ -1846,7 +1846,13 @@
 {
     NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
     
-    return [TableActivity MR_findAllWithPredicate:predicate inContext:context];
+    NSArray *records = [TableActivity MR_findAllWithPredicate:predicate inContext:context];
+    
+    if ([records count] == 0) return nil;
+    
+    NSSortDescriptor *descriptor = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:NO selector:nil];
+
+    return [records sortedArrayUsingDescriptors:[NSArray arrayWithObjects:descriptor, nil]];
 }
 
 + (NSInteger)getLastIDActivityActiveAccount:(NSString *)activeAccount
