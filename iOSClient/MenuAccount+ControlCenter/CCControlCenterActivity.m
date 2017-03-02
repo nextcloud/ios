@@ -145,9 +145,11 @@
         UILabel *dataLabel = (UILabel *)[headerView viewWithTag:100];
         UILabel *subjectLabel = (UILabel *)[headerView viewWithTag:101];
         
+        [dataLabel setFont:[UIFont fontWithName:@"System" size:12]];
         dataLabel.textColor = COLOR_TEXT_ANTHRACITE;
         dataLabel.text =  [CCUtility getTitleSectionDate:date];
         
+        [subjectLabel setFont:[UIFont fontWithName:@"System" size:12]];
         subjectLabel.textColor = COLOR_TEXT_ANTHRACITE;
         subjectLabel.text = activity.subject;
         
