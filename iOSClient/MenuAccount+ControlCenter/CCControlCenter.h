@@ -32,14 +32,15 @@
 @property (nonatomic) BOOL isPopGesture;
 @property (nonatomic) BOOL isOpen;
 
-@property (strong, nonatomic) UILabel *noRecord;
-@property (strong, nonatomic) UIPageViewController *pageViewController;
-@property (strong, nonatomic) NSArray *pageType;
-@property (strong, nonatomic) NSString *currentPageType;
-@property (strong, nonatomic) NSMutableArray *controlCenterPagesContent;
 
 - (void)setControlCenterHidden:(BOOL)hidden;
 - (void)enableSingleFingerTap:(SEL)selector target:(id)target;
 - (void)disableSingleFingerTap;
 
+@property (strong, nonatomic) UILabel *labelMessageNoRecord;
+@property (strong, nonatomic) UIPageViewController *pageViewController;
+@property (strong, nonatomic) NSArray *pageType;
+@property (strong, nonatomic) NSMutableArray *controlCenterPagesContent;
+
+- (NSString *)getActivePage;
 @end

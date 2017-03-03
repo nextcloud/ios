@@ -41,6 +41,8 @@
     [super viewDidLoad];
     
     _sectionDataSource = [NSArray new];
+    
+    [self reloadDatasource];
 }
 
 // Apparirà
@@ -48,13 +50,15 @@
 {
     [super viewWillAppear:animated];
     
-    [self reloadDatasource];
+    app.controlCenter.labelMessageNoRecord.hidden = YES;
 }
 
 // E' arrivato
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
+    
+    [self reloadDatasource];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -78,20 +82,21 @@
         
         //_sectionDataSource = [CCSectionActivity creataDataSourseSectionActivity:records activeAccount:app.activeAccount];
         
-        if ([_sectionDataSource count] == 0) {
+        if ([[app.controlCenter getActivePage] isEqualToString:k_pageControlCenterActivity]) {
             
-            app.controlCenter.noRecord.text = NSLocalizedString(@"_no_activity_",nil);
-            app.controlCenter.noRecord.hidden = NO;
+            if ([_sectionDataSource count] == 0) {
+                
+                app.controlCenter.labelMessageNoRecord.text = NSLocalizedString(@"_no_activity_",nil);
+                app.controlCenter.labelMessageNoRecord.hidden = NO;
             
-        } else {
+            } else {
             
-            app.controlCenter.noRecord.hidden = YES;
+                app.controlCenter.labelMessageNoRecord.hidden = YES;
+            }
         }
     }
     
-    [self.collectionView reloadData];
-    
-    [app updateApplicationIconBadgeNumber];
+    [self.collectionView reloadData];    
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -158,8 +163,7 @@
             heightView = 60;
         
         headerView.frame = CGRectMake(headerView.frame.origin.x, headerView.frame.origin.y,  headerView.frame.size.width, heightView);
-        
-        headerView.backgroundColor = [UIColor greenColor];
+        //headerView.backgroundColor = [UIColor greenColor];
         
         return headerView;
     }

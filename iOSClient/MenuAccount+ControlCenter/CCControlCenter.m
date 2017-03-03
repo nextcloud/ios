@@ -83,29 +83,31 @@
     
     // Create data model
     _pageType = @[k_pageControlCenterTransfer, k_pageControlCenterActivity];
-    _currentPageType = k_pageControlCenterTransfer;
     
     // Create page view controller
     _pageViewController = [[UIStoryboard storyboardWithName: @"ControlCenter" bundle:[NSBundle mainBundle]] instantiateViewControllerWithIdentifier:@"ControlCenterPageViewController"];
     _pageViewController.dataSource = self;
     _pageViewController.delegate = self;
     
-    UIViewController *startingViewController = [self viewControllerAtIndex:0];
-    NSArray *viewControllers = @[startingViewController];
+    UIViewController *startingViewController;
+    NSArray *viewControllers;
     
+    startingViewController= [self viewControllerAtIndex:0];
+    viewControllers = @[startingViewController];
     [_pageViewController setViewControllers:viewControllers direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
+    
     [_pageViewController.view setFrame:CGRectMake(0, 0, self.navigationBar.frame.size.width, 0)];
     _pageViewController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth;
      
     [_mainView addSubview:_pageViewController.view];
     
-    _noRecord =[[UILabel alloc]init];
-    _noRecord.backgroundColor=[UIColor clearColor];
-    _noRecord.textColor = COLOR_CONTROL_CENTER;
-    _noRecord.font = [UIFont systemFontOfSize:SIZE_FONT_NORECORD];
-    _noRecord.textAlignment = NSTextAlignmentCenter;
+    _labelMessageNoRecord =[[UILabel alloc]init];
+    _labelMessageNoRecord.backgroundColor=[UIColor clearColor];
+    _labelMessageNoRecord.textColor = COLOR_CONTROL_CENTER;
+    _labelMessageNoRecord.font = [UIFont systemFontOfSize:SIZE_FONT_NORECORD];
+    _labelMessageNoRecord.textAlignment = NSTextAlignmentCenter;
 
-    [_mainView addSubview:_noRecord];
+    [_mainView addSubview:_labelMessageNoRecord];
     
     
     _imageDrag = [[UIImageView alloc] init];
@@ -225,7 +227,7 @@
         
             _mainView.frame = CGRectMake(0, 0, navigationBarW, currentPoint.y);
             _pageViewController.view.frame = CGRectMake(0, currentPoint.y - heightScreen + navigationBarH, navigationBarW, heightTableView);
-            _noRecord.frame = CGRectMake(0, currentPoint.y - centerMaxH, navigationBarW, SIZE_FONT_NORECORD+10);
+            _labelMessageNoRecord.frame = CGRectMake(0, currentPoint.y - centerMaxH, navigationBarW, SIZE_FONT_NORECORD+10);
             _imageDrag.frame = CGRectMake(0, currentPoint.y - BORDER_TOUCH_UPDOWN, navigationBarW, BORDER_TOUCH_UPDOWN);
             _endLine.frame = CGRectMake(0, currentPoint.y - BORDER_TOUCH_UPDOWN, navigationBarW, 1);
         
@@ -295,7 +297,7 @@
     
     _mainView.frame = CGRectMake(0, 0, size.width, [self getMaxH]);
     _pageViewController.view.frame = CGRectMake(0, navigationBarH, _mainView.frame.size.width, _mainView.frame.size.height - self.navigationBar.frame.size.height - BORDER_TOUCH_UPDOWN - TOOLBAR_ADD_BORDER);
-    _noRecord.frame = CGRectMake(0, _mainView.frame.size.height / 2, _mainView.frame.size.width, SIZE_FONT_NORECORD+10);
+    _labelMessageNoRecord.frame = CGRectMake(0, _mainView.frame.size.height / 2, _mainView.frame.size.width, SIZE_FONT_NORECORD+10);
     _imageDrag.frame = CGRectMake(0, _mainView.frame.size.height - BORDER_TOUCH_UPDOWN, _mainView.frame.size.width, BORDER_TOUCH_UPDOWN);
     _endLine.frame = CGRectMake(0, _mainView.frame.size.height - BORDER_TOUCH_UPDOWN, _mainView.frame.size.width, 1);
     
@@ -325,6 +327,7 @@
             _isOpen = YES;
 
             [app.controlCenterTransfer reloadDatasource];
+            [app.controlCenterActivity reloadDatasource];
         }
         
     } else {
@@ -448,11 +451,7 @@
 
     // Change Image
     
-    CCControlCenterTransfer *vc = [self.pageViewController.viewControllers lastObject];
-    
-    _currentPageType = vc.pageType;
-    
-    if ([_currentPageType isEqualToString:k_pageControlCenterActivity]) {
+    if ([[self getActivePage] isEqualToString:k_pageControlCenterActivity]) {
         
         self.title = NSLocalizedString(@"_activity_", nil);
         
@@ -462,7 +461,7 @@
         
     }
     
-    if ([_currentPageType isEqualToString:k_pageControlCenterTransfer]) {
+    if ([[self getActivePage] isEqualToString:k_pageControlCenterTransfer]) {
         
         self.title = NSLocalizedString(@"_transfers_", nil);
         
@@ -470,6 +469,13 @@
         item.selectedImage = [UIImage imageNamed:image_tabBarTransfer];
         item.image = [UIImage imageNamed:image_tabBarTransfer];
     }
+}
+
+- (NSString *)getActivePage
+{
+    CCControlCenterTransfer *vc = [self.pageViewController.viewControllers lastObject];
+    
+    return vc.pageType;
 }
 
 @end

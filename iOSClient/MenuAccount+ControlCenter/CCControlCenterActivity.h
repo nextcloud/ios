@@ -13,4 +13,6 @@
 @property NSUInteger pageIndex;
 @property (nonatomic, strong) NSString *pageType;
 
+- (void)reloadDatasource;
+
 @end

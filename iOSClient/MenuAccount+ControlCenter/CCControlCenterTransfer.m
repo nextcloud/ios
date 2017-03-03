@@ -62,6 +62,7 @@
 {
     [super viewWillAppear:animated];
     
+    app.controlCenter.labelMessageNoRecord.hidden = YES;
 }
 
 // E' arrivato
@@ -244,14 +245,17 @@
         
         _sectionDataSource  = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:app.listProgressMetadata groupByField:@"session" replaceDateToExifDate:NO activeAccount:app.activeAccount];
         
-        if ([_sectionDataSource.allRecordsDataSource count] == 0) {
+        if ([[app.controlCenter getActivePage] isEqualToString:k_pageControlCenterTransfer]) {
             
-            app.controlCenter.noRecord.text = NSLocalizedString(@"_no_transfer_",nil);
-            app.controlCenter.noRecord.hidden = NO;
+            if ([_sectionDataSource.allRecordsDataSource count] == 0) {
+                
+                app.controlCenter.labelMessageNoRecord.text = NSLocalizedString(@"_no_transfer_",nil);
+                app.controlCenter.labelMessageNoRecord.hidden = NO;
             
-        } else {
+            } else {
             
-            app.controlCenter.noRecord.hidden = YES;
+                app.controlCenter.labelMessageNoRecord.hidden = YES;
+            }
         }
     }
     
