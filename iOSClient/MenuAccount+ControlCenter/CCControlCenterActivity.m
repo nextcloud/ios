@@ -11,8 +11,8 @@
 #import "AppDelegate.h"
 #import "CCSection.h"
 
-#define fontSizeData    [UIFont systemFontOfSize:12]
-#define fontSizeSubject [UIFont systemFontOfSize:10]
+#define fontSizeData    [UIFont systemFontOfSize:16]
+#define fontSizeSubject [UIFont systemFontOfSize:14]
 
 @interface CCControlCenterActivity ()
 {
