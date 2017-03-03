@@ -11,11 +11,13 @@
 #import "AppDelegate.h"
 #import "CCSection.h"
 
+#define fontSizeData    [UIFont systemFontOfSize:12]
+#define fontSizeSubject [UIFont systemFontOfSize:10]
+
 @interface CCControlCenterActivity ()
 {
     // Datasource
     NSArray *_sectionDataSource;
-    NSDate *_oldDate;
 }
 @end
 
@@ -39,16 +41,6 @@
     [super viewDidLoad];
     
     _sectionDataSource = [NSArray new];
-    _oldDate = [NSDate date];
-    
-    // empty Data Source
-  
-    /*
-    _tableView.delegate = self;
-    _tableView.dataSource = self;
-    _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    _tableView.backgroundColor = [UIColor clearColor];
-    */
 }
 
 // Apparirà
@@ -113,8 +105,7 @@
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    //return [[_sectionDataSource.sectionArrayRow objectForKey:[_sectionDataSource.sections objectAtIndex:section]] count];
-    return 10;
+    return 0;
 }
 
 -(CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section
@@ -124,11 +115,15 @@
     UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, collectionView.frame.size.width , CGFLOAT_MAX)];
     subjectLabel.numberOfLines = 0;
     subjectLabel.lineBreakMode = NSLineBreakByWordWrapping;
-    [subjectLabel setFont:[UIFont fontWithName:@"System" size:12]];
+    [subjectLabel setFont:fontSizeSubject];
     subjectLabel.text = activity.subject;
     [subjectLabel sizeToFit];
 
-    return CGSizeMake(collectionView.frame.size.width, subjectLabel.frame.size.height+22+20);
+    int heightView = 50 + subjectLabel.frame.size.height;
+    if (heightView < 60)
+        heightView = 60;
+    
+    return CGSizeMake(collectionView.frame.size.width, heightView);
 }
 
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
@@ -144,21 +139,28 @@
         
         UILabel *dataLabel = (UILabel *)[headerView viewWithTag:100];
         UILabel *subjectLabel = (UILabel *)[headerView viewWithTag:101];
+        UIImageView *typeImage = (UIImageView *) [headerView viewWithTag:102];
         
-        [dataLabel setFont:[UIFont fontWithName:@"System" size:12]];
-        dataLabel.textColor = COLOR_TEXT_ANTHRACITE;
+        dataLabel.textColor = [UIColor colorWithRed:130.0/255.0 green:130.0/255.0 blue:130.0/255.0 alpha:1.0];
         dataLabel.text =  [CCUtility getTitleSectionDate:date];
+        [dataLabel setFont:fontSizeData];
         
-        [subjectLabel setFont:[UIFont fontWithName:@"System" size:12]];
+        if ([activity.type length] == 0 )
+            typeImage.image = [UIImage imageNamed:image_user];
+        
         subjectLabel.textColor = COLOR_TEXT_ANTHRACITE;
         subjectLabel.text = activity.subject;
+        [subjectLabel setFont:fontSizeSubject];
         
+        int heightView = 50 + [self getLabelHeight:subjectLabel];
         
-        CGFloat x = [self getLabelHeight:subjectLabel];
+        if (heightView < 60)
+            heightView = 60;
         
-        headerView.frame = CGRectMake(headerView.frame.origin.x, headerView.frame.origin.y, headerView.frame.size.width, 20 + dataLabel.frame.size.height + x);
-        headerView.backgroundColor = [UIColor redColor];
-
+        headerView.frame = CGRectMake(headerView.frame.origin.x, headerView.frame.origin.y,  headerView.frame.size.width, heightView);
+        
+        headerView.backgroundColor = [UIColor greenColor];
+        
         return headerView;
     }
     
@@ -169,10 +171,6 @@
 {
     UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"cell" forIndexPath:indexPath];
     cell.backgroundColor = [UIColor clearColor];
-    
-    //NSArray *metadatasForKey = [_sectionDataSource.sectionArrayRow objectForKey:[_sectionDataSource.sections objectAtIndex:indexPath.section]];
-    //TableActivity *activity = [metadatasForKey objectAtIndex:indexPath.row];
-
     
     return cell;
 }

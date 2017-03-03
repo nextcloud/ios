@@ -46,6 +46,7 @@
         <attribute name="link" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="message" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="subject" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="type" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
     <entity name="TableAutomaticUpload" representedClassName="TableAutomaticUpload" syncable="YES">
         <attribute name="account" optional="YES" attributeType="String" syncable="YES"/>
@@ -140,6 +141,7 @@
     </entity>
     <elements>
         <element name="TableAccount" positionX="-6597" positionY="111" width="171" height="585"/>
+        <element name="TableActivity" positionX="-6399" positionY="252" width="128" height="165"/>
         <element name="TableAutomaticUpload" positionX="-6597" positionY="801" width="128" height="180"/>
         <element name="TableCertificates" positionX="-6597" positionY="711" width="128" height="60"/>
         <element name="TableDirectory" positionX="-6372" positionY="111" width="162" height="210"/>
@@ -147,6 +149,5 @@
         <element name="TableLocalFile" positionX="-6138" positionY="111" width="162" height="225"/>
         <element name="TableMetadata" positionX="-6138" positionY="402" width="162" height="510"/>
         <element name="TableShare" positionX="-6597" positionY="558" width="128" height="120"/>
-        <element name="TableActivity" positionX="-6399" positionY="252" width="128" height="150"/>
     </elements>
 </model>

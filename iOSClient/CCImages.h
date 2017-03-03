@@ -71,6 +71,7 @@
 #define image_tabBarTransfer                    @"transfer"
 #define image_thumbs                            @"thumbsNextcloud"
 #define image_notification                      @"notification"
+#define image_user                              @"userNextcloud"
 
 #endif
 

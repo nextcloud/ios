@@ -21,5 +21,6 @@
 @dynamic link;
 @dynamic message;
 @dynamic subject;
+@dynamic type;
 
 @end
