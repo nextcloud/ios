@@ -3636,7 +3636,7 @@
 			path = Utility;
 			sourceTree = "<group>";
 		};
-		F7C00D411E2D0D0F0032160B /* Offline - Synchronize */ = {
+		F7C00D411E2D0D0F0032160B /* Favorite+Offline+Synchronize */ = {
 			isa = PBXGroup;
 			children = (
 				F7C00D421E2D0D0F0032160B /* CCCellOffline.h */,
@@ -3649,7 +3649,7 @@
 				F7EC14791E5D9C0B0046F351 /* CCSynchronize.h */,
 				F7EC147A1E5D9C0B0046F351 /* CCSynchronize.m */,
 			);
-			name = "Offline - Synchronize";
+			name = "Favorite+Offline+Synchronize";
 			path = Offline;
 			sourceTree = "<group>";
 		};
@@ -3690,7 +3690,7 @@
 			path = "UINavigationController+CCProgress";
 			sourceTree = "<group>";
 		};
-		F7D6A0881D82DBFA0045AD1A /* MenuAccount+ControlCenter */ = {
+		F7D6A0881D82DBFA0045AD1A /* ControlCenter+MenuAccount */ = {
 			isa = PBXGroup;
 			children = (
 				F72AE40A1E67246200B3E477 /* ControlCenter.storyboard */,
@@ -3706,6 +3706,7 @@
 				F7D6A08E1D82DBFA0045AD1A /* CCMenu.h */,
 				F7D6A08F1D82DBFA0045AD1A /* CCMenu.m */,
 			);
+			name = "ControlCenter+MenuAccount";
 			path = "MenuAccount+ControlCenter";
 			sourceTree = "<group>";
 		};
@@ -3952,11 +3953,11 @@
 				F7F54CAC1E5B143100E19C62 /* Library */,
 				F7BFFA621A24D7300044ED85 /* Login */,
 				F7BFCCBD1B68C21900548E76 /* ManageLocation+ManageAsset */,
-				F7D6A0881D82DBFA0045AD1A /* MenuAccount+ControlCenter */,
+				F7D6A0881D82DBFA0045AD1A /* ControlCenter+MenuAccount */,
 				F7F9E3451BC26B19004B9223 /* Move */,
 				F74D3DB81BAC1941000BAE4B /* Networking */,
 				F7C5259A1E3B441D00FFE02C /* Notification */,
-				F7C00D411E2D0D0F0032160B /* Offline - Synchronize */,
+				F7C00D411E2D0D0F0032160B /* Favorite+Offline+Synchronize */,
 				F7FCFFD51D70798C000E6E29 /* PeekPop */,
 				F719FDAE1CF06645004895D0 /* PhotosCameraUpload */,
 				F7BE6E2A1D2D5C3B00106933 /* QuickActions */,

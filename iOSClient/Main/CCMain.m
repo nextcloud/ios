@@ -509,13 +509,7 @@
             
         } else {
         
-            BOOL isOfflineDirectory = [CCCoreData isOfflineDirectoryServerUrl:_serverUrl activeAccount:app.activeAccount];
-            
-            if (isOfflineDirectory) {
-                self.navigationItem.titleView = [CCGraphics navigationBarTitle:_titleMain image:[UIImage imageNamed:image_offlineTitle] frame:self.navigationController.navigationBar.frame];
-                
-            } else
-                self.navigationItem.title = _titleMain;
+            self.navigationItem.title = _titleMain;
         }
     }
 }
