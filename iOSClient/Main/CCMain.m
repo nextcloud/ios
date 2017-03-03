@@ -1047,6 +1047,9 @@
     for (OCActivity *activity in listOfActivity) {
         [CCCoreData addActivity:activity account:app.activeAccount];
     }
+    
+    // Reload Activity Data Source
+    [app.controlCenterActivity reloadDatasource];
 }
 
 - (void)getActivityServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
@@ -1183,11 +1186,8 @@
 
     metadataNet.action = actionGetUserProfile;
     [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
-    
-    NSInteger lastID = [CCCoreData getLastIDActivityActiveAccount:app.activeAccount];
-    
+        
     metadataNet.action = actionGetActivityServer;
-    metadataNet.options = [@(lastID) stringValue];;
     [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
 }
 

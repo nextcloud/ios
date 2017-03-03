@@ -36,6 +36,7 @@
         self.link = @"";
         self.message = @"";
         self.subject = @"";
+        self.type = @"";
     }
     
     return self;
