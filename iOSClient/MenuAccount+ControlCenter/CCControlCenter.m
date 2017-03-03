@@ -330,7 +330,10 @@
     } else {
         
         _isOpen = NO;
+        
     }
+    
+    [self changeTabBarApplicationFileImage];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -426,7 +429,47 @@
 
 - (void)pageViewController:(UIPageViewController *)pageViewController didFinishAnimating:(BOOL)finished previousViewControllers:(NSArray<UIViewController *> *)previousViewControllers transitionCompleted:(BOOL)completed
 {
+    [self changeTabBarApplicationFileImage];
 }
 
+- (void)changeTabBarApplicationFileImage
+{
+    // Standard Image
+    if (!_isOpen) {
+        
+        self.title = NSLocalizedString(@"_home_", nil);
+
+        UITabBarItem *item = [self.tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexFile];
+        item.selectedImage = [UIImage imageNamed:image_tabBarFile];
+        item.image = [UIImage imageNamed:image_tabBarFile];
+        
+        return;
+    }
+
+    // Change Image
+    
+    CCControlCenterTransfer *vc = [self.pageViewController.viewControllers lastObject];
+    
+    _currentPageType = vc.pageType;
+    
+    if ([_currentPageType isEqualToString:k_pageControlCenterActivity]) {
+        
+        self.title = NSLocalizedString(@"_activity_", nil);
+        
+        UITabBarItem *item = [self.tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexFile];
+        item.selectedImage = [UIImage imageNamed:image_tabBarActivity];
+        item.image = [UIImage imageNamed:image_tabBarActivity];
+        
+    }
+    
+    if ([_currentPageType isEqualToString:k_pageControlCenterTransfer]) {
+        
+        self.title = NSLocalizedString(@"_transfers_", nil);
+        
+        UITabBarItem *item = [self.tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexFile];
+        item.selectedImage = [UIImage imageNamed:image_tabBarTransfer];
+        item.image = [UIImage imageNamed:image_tabBarTransfer];
+    }
+}
 
 @end
