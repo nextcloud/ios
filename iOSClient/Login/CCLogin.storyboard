@@ -162,6 +162,7 @@
                     <connections>
                         <outlet property="annulla" destination="bSU-bn-DlO" id="30o-yK-jjV"/>
                         <outlet property="baseUrl" destination="szn-G7-5sK" id="syP-Ff-tfS"/>
+                        <outlet property="imageBrand" destination="BpI-xK-1SU" id="0tB-69-RNs"/>
                         <outlet property="loadingBaseUrl" destination="oF7-f3-D2I" id="uel-s3-cAX"/>
                         <outlet property="login" destination="HQd-pF-3cE" id="dpI-ns-Ivh"/>
                         <outlet property="password" destination="jU7-Iw-XfU" id="OWi-V0-Eij"/>

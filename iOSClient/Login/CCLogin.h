@@ -44,6 +44,8 @@ typedef enum {
 
 @property (nonatomic, weak) id <CCLoginDelegate> delegate;
 
+@property (nonatomic, weak) IBOutlet UIImageView *imageBrand;
+
 @property (nonatomic, weak) IBOutlet UITextField *user;
 @property (nonatomic, weak) IBOutlet UITextField *password;
 @property (nonatomic, weak) IBOutlet UITextField *baseUrl;

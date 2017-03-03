@@ -21,8 +21,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifdef NC
-
+#define image_brandLogin                        @"ImageLoginNextcloud"
 #define image_launchscreen                      @"nextcloudlaunchscreen"
 #define image_activeCameraUpload_en             @"activeCameraUploadNextcloud_en"
 #define image_activeCameraUpload_it             @"activeCameraUploadNextcloud_it"
@@ -72,9 +71,6 @@
 #define image_thumbs                            @"thumbsNextcloud"
 #define image_notification                      @"notification"
 #define image_user                              @"userNextcloud"
-
-#endif
-
 #define image_actionSheetRename                 @"renameNextcloud"
 #define image_actionSheetMove                   @"moveNextcloud"
 #define image_actionSheetCrypto                 @"actionSheetCrypto"

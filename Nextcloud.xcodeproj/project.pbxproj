@@ -300,7 +300,6 @@
 		084215491E646E0200C8F4F3 /* ZSSunderline.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DCD1C889300008DAB36 /* ZSSunderline.png */; };
 		0842154A1E646E0200C8F4F3 /* PlayButtonOverlayLargeTap@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = F7F54CC31E5B14C700E19C62 /* PlayButtonOverlayLargeTap@3x.png */; };
 		0842154B1E646E0200C8F4F3 /* ZSSbgcolor.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0D8F1C889300008DAB36 /* ZSSbgcolor.png */; };
-		0842154C1E646E0200C8F4F3 /* Nextcloud.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7596C771D128FC80092A6B8 /* Nextcloud.xcassets */; };
 		0842154D1E646E0200C8F4F3 /* ZSSstrikethrough@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DC41C889300008DAB36 /* ZSSstrikethrough@2x.png */; };
 		0842154E1E646E0200C8F4F3 /* XLForm.bundle in Resources */ = {isa = PBXBuildFile; fileRef = F73CCDD51DC13776007E38D8 /* XLForm.bundle */; };
 		0842154F1E646E0200C8F4F3 /* ZSSinsertkeyword@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DAC1C889300008DAB36 /* ZSSinsertkeyword@2x.png */; };
@@ -506,7 +505,6 @@
 		08DC3C271E647FD200F036D3 /* libMagicalRecord.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F7B61E9B1DC13C20009E938F /* libMagicalRecord.a */; };
 		08DC3C281E647FD200F036D3 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63071D5B3467004E2AA5 /* libssl.a */; };
 		08DC3C291E647FD200F036D3 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63061D5B3467004E2AA5 /* libcrypto.a */; };
-		08DC3C2C1E647FD200F036D3 /* Nextcloud.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7596C771D128FC80092A6B8 /* Nextcloud.xcassets */; };
 		08DC3C2D1E647FD200F036D3 /* Error.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7B381BF1C074E3E004693F8 /* Error.strings */; };
 		08DC3C2E1E647FD200F036D3 /* BKPasscodeView.strings in Resources */ = {isa = PBXBuildFile; fileRef = F72B60911A24F00B004EF66F /* BKPasscodeView.strings */; };
 		08DC3C2F1E647FD200F036D3 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7E70DE91A24DE4100E1B66A /* Localizable.strings */; };
@@ -590,7 +588,6 @@
 		08DC3C981E6482BF00F036D3 /* libMagicalRecord.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F7B61E9B1DC13C20009E938F /* libMagicalRecord.a */; };
 		08DC3C991E6482BF00F036D3 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63071D5B3467004E2AA5 /* libssl.a */; };
 		08DC3C9A1E6482BF00F036D3 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63061D5B3467004E2AA5 /* libcrypto.a */; };
-		08DC3C9D1E6482BF00F036D3 /* Nextcloud.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7596C771D128FC80092A6B8 /* Nextcloud.xcassets */; };
 		08DC3C9E1E6482BF00F036D3 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F78BFEDE1D31126B00E513CF /* MainInterface.storyboard */; };
 		08DC3C9F1E6482BF00F036D3 /* Share Ext Nextcloud.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = F7DCA1B81D32BD4100E48D39 /* Share Ext Nextcloud.entitlements */; };
 		08DC3CA01E6482BF00F036D3 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7F67BB81A24D27800EE80DA /* Images.xcassets */; };
@@ -708,7 +705,6 @@
 		F7145A0D1D12E3B700CAFEEC /* NSData+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02AD1C889183008DAB36 /* NSData+Base64.m */; };
 		F7145A0E1D12E3B700CAFEEC /* AESCrypt.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02AB1C889183008DAB36 /* AESCrypt.m */; };
 		F7145A111D12E3B700CAFEEC /* PPImageScrollingTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F05231C889184008DAB36 /* PPImageScrollingTableViewCell.m */; };
-		F7145A191D12E3B700CAFEEC /* Nextcloud.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7596C771D128FC80092A6B8 /* Nextcloud.xcassets */; };
 		F7145A1A1D12E3B700CAFEEC /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7F67BB81A24D27800EE80DA /* Images.xcassets */; };
 		F7145A1C1D12E3B700CAFEEC /* CCMove.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7D02A481C5F9E4400D6F972 /* CCMove.storyboard */; };
 		F7145A1D1D12E3B700CAFEEC /* BKPasscodeView.strings in Resources */ = {isa = PBXBuildFile; fileRef = F72B60911A24F00B004EF66F /* BKPasscodeView.strings */; };
@@ -824,7 +820,6 @@
 		F750374D1DBFA91A008FB480 /* ALView+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F75037441DBFA91A008FB480 /* ALView+PureLayout.m */; };
 		F750374F1DBFA91A008FB480 /* NSArray+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F75037461DBFA91A008FB480 /* NSArray+PureLayout.m */; };
 		F75037511DBFA91A008FB480 /* NSLayoutConstraint+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F75037481DBFA91A008FB480 /* NSLayoutConstraint+PureLayout.m */; };
-		F7596C781D128FC80092A6B8 /* Nextcloud.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7596C771D128FC80092A6B8 /* Nextcloud.xcassets */; };
 		F75ADF451DC75FFE008A7347 /* CCLogin.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F75ADF441DC75FFE008A7347 /* CCLogin.storyboard */; };
 		F7659A271DC0B726004860C4 /* EAIntroPage.m in Sources */ = {isa = PBXBuildFile; fileRef = F7659A231DC0B726004860C4 /* EAIntroPage.m */; };
 		F7659A291DC0B726004860C4 /* EAIntroView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7659A251DC0B726004860C4 /* EAIntroView.m */; };
@@ -1110,7 +1105,6 @@
 		F7CE28851D1ACFA70025783C /* CCProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CE28801D1ACFA70025783C /* CCProgressView.m */; };
 		F7CE28881D1ACFA70025783C /* UINavigationController+CCProgress.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CE28821D1ACFA70025783C /* UINavigationController+CCProgress.m */; };
 		F7D2677C1E157053005ACB7E /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7F67BB81A24D27800EE80DA /* Images.xcassets */; };
-		F7D267871E157057005ACB7E /* Nextcloud.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7596C771D128FC80092A6B8 /* Nextcloud.xcassets */; };
 		F7D6A0911D82DBFA0045AD1A /* CCControlCenter.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D6A08A1D82DBFA0045AD1A /* CCControlCenter.m */; };
 		F7D6A0931D82DBFA0045AD1A /* CCControlCenterTransferCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D6A08C1D82DBFA0045AD1A /* CCControlCenterTransferCell.m */; };
 		F7D6A0951D82DBFA0045AD1A /* CCControlCenterTransferCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7D6A08D1D82DBFA0045AD1A /* CCControlCenterTransferCell.xib */; };
@@ -1967,7 +1961,6 @@
 		F7540F2A1D5B238600C3FFA8 /* x509.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = x509.h; sourceTree = "<group>"; };
 		F7540F2B1D5B238600C3FFA8 /* x509_vfy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = x509_vfy.h; sourceTree = "<group>"; };
 		F7540F2C1D5B238600C3FFA8 /* x509v3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = x509v3.h; sourceTree = "<group>"; };
-		F7596C771D128FC80092A6B8 /* Nextcloud.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Nextcloud.xcassets; sourceTree = "<group>"; };
 		F75ADF441DC75FFE008A7347 /* CCLogin.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = CCLogin.storyboard; sourceTree = "<group>"; };
 		F75CDBF51DF063AD00116AD0 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; name = .gitignore; path = ../.gitignore; sourceTree = "<group>"; };
 		F76344751BF259A800188725 /* synchronized.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = synchronized.gif; sourceTree = "<group>"; };
@@ -3944,7 +3937,6 @@
 				F7C994311E3A92C400C2466C /* CCConstant.swift */,
 				F78088E51DD3A1DB005C5A7C /* cryptocloud.xcdatamodeld */,
 				F7F67BB81A24D27800EE80DA /* Images.xcassets */,
-				F7596C771D128FC80092A6B8 /* Nextcloud.xcassets */,
 				F70211F31BAC56E9003FC03E /* Main */,
 				F720E02A1E48C74C001A4B9E /* Actions */,
 				F7ECBA6B1E239DCD003E6328 /* Create */,
@@ -4412,7 +4404,6 @@
 				084215491E646E0200C8F4F3 /* ZSSunderline.png in Resources */,
 				0842154A1E646E0200C8F4F3 /* PlayButtonOverlayLargeTap@3x.png in Resources */,
 				0842154B1E646E0200C8F4F3 /* ZSSbgcolor.png in Resources */,
-				0842154C1E646E0200C8F4F3 /* Nextcloud.xcassets in Resources */,
 				0842154D1E646E0200C8F4F3 /* ZSSstrikethrough@2x.png in Resources */,
 				0842154E1E646E0200C8F4F3 /* XLForm.bundle in Resources */,
 				0842154F1E646E0200C8F4F3 /* ZSSinsertkeyword@2x.png in Resources */,
@@ -4567,7 +4558,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				F7FD64701E65A6ED003EE4D0 /* MainInterface.storyboard in Resources */,
-				08DC3C2C1E647FD200F036D3 /* Nextcloud.xcassets in Resources */,
 				08DC3C2D1E647FD200F036D3 /* Error.strings in Resources */,
 				08DC3C2E1E647FD200F036D3 /* BKPasscodeView.strings in Resources */,
 				08DC3C2F1E647FD200F036D3 /* Localizable.strings in Resources */,
@@ -4587,7 +4577,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				08DC3C9D1E6482BF00F036D3 /* Nextcloud.xcassets in Resources */,
 				08DC3C9E1E6482BF00F036D3 /* MainInterface.storyboard in Resources */,
 				08DC3C9F1E6482BF00F036D3 /* Share Ext Nextcloud.entitlements in Resources */,
 				08DC3CA01E6482BF00F036D3 /* Images.xcassets in Resources */,
@@ -4603,7 +4592,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F7145A191D12E3B700CAFEEC /* Nextcloud.xcassets in Resources */,
 				F78BFEE11D31126B00E513CF /* MainInterface.storyboard in Resources */,
 				F7DCA1C81D32BD4100E48D39 /* Share Ext Nextcloud.entitlements in Resources */,
 				F7145A1A1D12E3B700CAFEEC /* Images.xcassets in Resources */,
@@ -4620,7 +4608,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				F7FD646F1E65A6ED003EE4D0 /* MainInterface.storyboard in Resources */,
-				F7D267871E157057005ACB7E /* Nextcloud.xcassets in Resources */,
 				F7FC88FD1E141A3F006D0506 /* Error.strings in Resources */,
 				F7FC88FB1E141A34006D0506 /* BKPasscodeView.strings in Resources */,
 				F7FC88FC1E141A39006D0506 /* Localizable.strings in Resources */,
@@ -4655,7 +4642,6 @@
 				F77B0EF21D118A16002130FE /* ZSSunderline.png in Resources */,
 				F7F54CF91E5B14C700E19C62 /* PlayButtonOverlayLargeTap@3x.png in Resources */,
 				F77B0EF51D118A16002130FE /* ZSSbgcolor.png in Resources */,
-				F7596C781D128FC80092A6B8 /* Nextcloud.xcassets in Resources */,
 				F77B0EF61D118A16002130FE /* ZSSstrikethrough@2x.png in Resources */,
 				F73CCE211DC13776007E38D8 /* XLForm.bundle in Resources */,
 				F77B0EF71D118A16002130FE /* ZSSinsertkeyword@2x.png in Resources */,

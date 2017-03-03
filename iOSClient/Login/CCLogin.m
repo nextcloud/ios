@@ -39,6 +39,8 @@
 {
     [super viewDidLoad];
     
+    self.imageBrand.image = [UIImage imageNamed:image_brandLogin];
+    
     if (app.activeAccount.length > 0) {
         
         self.baseUrl.text = app.activeUrl;
