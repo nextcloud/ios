@@ -294,15 +294,6 @@
     else return NO;
 }
 
-+ (BOOL)getCameraUploadSaveAlbumActiveAccount:(NSString *)activeAccount
-{
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@)", activeAccount];
-    TableAccount *record = [TableAccount MR_findFirstWithPredicate:predicate];
-    
-    if (record) return [record.cameraUploadSaveAlbum boolValue];
-    else return NO;
-}
-
 + (float)getServerVersionActiveAccount:(NSString *)activeAccount
 {
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@)", activeAccount];

@@ -1385,7 +1385,7 @@
             [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadata.fileID] error:nil];
         
         // Copy photo or video in the photo album for automatic upload
-        if ([metadata.localIdentifier length] > 0 && [CCCoreData getCameraUploadSaveAlbumActiveAccount:_activeAccount] && [metadata.sessionSelector isEqualToString:selectorUploadAutomatic]) {
+        if ([metadata.localIdentifier length] > 0 && [metadata.sessionSelector isEqualToString:selectorUploadAutomatic]) {
             
             PHAsset *asset;
             PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[metadata.localIdentifier] options:nil];

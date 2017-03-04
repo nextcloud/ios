@@ -156,18 +156,6 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
     
-    // Camera Upload save album
-    
-    section = [XLFormSectionDescriptor formSection];
-    [form addFormSection:section];
-    
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"camerauploadsavealbum" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_upload_camera_save_album_", nil)];
-    row.hidden = [NSString stringWithFormat:@"$%@==0", @"cameraupload"];
-    if ([CCCoreData getCameraUploadSaveAlbumActiveAccount:app.activeAccount]) row.value = @1;
-    else row.value = @0;
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [section addFormRow:row];
-
     // Camera Upload create subfolder
 
     section = [XLFormSectionDescriptor formSection];
@@ -175,7 +163,7 @@
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"camerauploadcreatesubfolder" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_upload_camera_create_subfolder_", nil)];
     row.hidden = [NSString stringWithFormat:@"$%@==0", @"cameraupload"];
-    if ([CCCoreData getCameraUploadSaveAlbumActiveAccount:app.activeAccount]) row.value = @1;
+    if ([CCCoreData getCameraUploadCreateSubfolderActiveAccount:app.activeAccount]) row.value = @1;
     else row.value = @0;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
@@ -338,11 +326,6 @@
         [CCCoreData setCameraUploadWWanVideo:[[rowDescriptor.value valueData] boolValue] activeAccount:app.activeAccount];
     }
     
-    if ([rowDescriptor.tag isEqualToString:@"camerauploadsavealbum"]) {
-        
-        [CCCoreData setCameraUploadSaveAlbum:[[rowDescriptor.value valueData] boolValue] activeAccount:app.activeAccount];
-    }
-    
     if ([rowDescriptor.tag isEqualToString:@"camerauploadcreatesubfolder"]) {
         
         [CCCoreData setCameraUploadCreateSubfolderActiveAccount:[[rowDescriptor.value valueData] boolValue] activeAccount:app.activeAccount];
@@ -371,8 +354,6 @@
     XLFormRowDescriptor *rowCamerauploadBackground = [self.form formRowWithTag:@"camerauploadbackground"];
     
     XLFormRowDescriptor *rowCamerauploadAllPhotos = [self.form formRowWithTag:@"camerauploadallphotos"];
-    
-    XLFormRowDescriptor *rowCamerauploadSaveAlbum = [self.form formRowWithTag:@"camerauploadsavealbum"];
     
     XLFormRowDescriptor *rowCamerauploadCreateSubfolder = [self.form formRowWithTag:@"camerauploadcreatesubfolder"];
 
@@ -406,9 +387,6 @@
     if ([CCCoreData getCameraUploadFullPhotosActiveAccount:app.activeAccount])
         [rowCamerauploadAllPhotos setValue:@1]; else [rowCamerauploadAllPhotos setValue:@0];
     
-    if ([CCCoreData getCameraUploadSaveAlbumActiveAccount:app.activeAccount])
-        [rowCamerauploadSaveAlbum setValue:@1]; else [rowCamerauploadSaveAlbum setValue:@0];
-    
     if ([CCCoreData getCameraUploadCreateSubfolderActiveAccount:app.activeAccount])
         [rowCamerauploadCreateSubfolder setValue:@1]; else [rowCamerauploadCreateSubfolder setValue:@0];
     
@@ -425,8 +403,6 @@
     rowCamerauploadBackground.hidden = [NSString stringWithFormat:@"$%@==0", @"cameraupload"];
     
     rowCamerauploadAllPhotos.hidden = [NSString stringWithFormat:@"$%@==0", @"cameraupload"];
-    
-    rowCamerauploadSaveAlbum.hidden = [NSString stringWithFormat:@"$%@==0", @"cameraupload"];
     
     rowCamerauploadCreateSubfolder.hidden = [NSString stringWithFormat:@"$%@==0", @"cameraupload"];
 
@@ -462,10 +438,6 @@
             else sectionName = @"";
             break;
         case 5:
-            if ([CCCoreData getCameraUploadActiveAccount:app.activeAccount]) sectionName = NSLocalizedString(@"_upload_camera_save_album_", nil);
-            else sectionName = @"";
-            break;
-        case 6:
             if ([CCCoreData getCameraUploadActiveAccount:app.activeAccount]) sectionName = NSLocalizedString(@"_upload_camera_create_subfolder_", nil);
             else sectionName = @"";
             break;
@@ -494,10 +466,6 @@
             else sectionName = @"";
             break;
         case 5:
-            if ([CCCoreData getCameraUploadActiveAccount:app.activeAccount]) sectionName =  [CCUtility localizableBrand:@"_upload_camera_save_album_footer_" table:nil];
-            else sectionName = @"";
-            break;
-        case 6:
             if ([CCCoreData getCameraUploadActiveAccount:app.activeAccount]) sectionName =  [CCUtility localizableBrand:@"_upload_camera_create_subfolder_footer_" table:nil];
             else sectionName = @"";
             break;
