@@ -718,7 +718,11 @@
     TableMetadata *tableMetadata = [TableMetadata MR_findFirstWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileID == %@)", activeAccount, fileID] inContext:context];
     
     if (tableMetadata) {
+        
         tableMetadata.favorite = [NSNumber numberWithBool:favorite];
+        
+        // Aggiorniamo la data nella directory (ottimizzazione v 2.10)
+        [self setDateReadDirectoryID:tableMetadata.directoryID activeAccount:activeAccount];
         
         [context MR_saveToPersistentStoreAndWait];
     }
