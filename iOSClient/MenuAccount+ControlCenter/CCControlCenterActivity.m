@@ -120,7 +120,7 @@
     UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, collectionView.frame.size.width , CGFLOAT_MAX)];
     subjectLabel.numberOfLines = 0;
     [subjectLabel setFont:fontSizeSubject];
-    subjectLabel.text = [activity.subject stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    subjectLabel.text = activity.subject;
     subjectLabel.lineBreakMode = NSLineBreakByWordWrapping;
     
     int heightView = 50 + [self getLabelHeight:subjectLabel];
