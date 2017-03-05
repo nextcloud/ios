@@ -120,8 +120,8 @@
     UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, collectionView.frame.size.width , CGFLOAT_MAX)];
     subjectLabel.numberOfLines = 0;
     [subjectLabel setFont:fontSizeSubject];
-    subjectLabel.text = activity.subject;
-    [subjectLabel sizeToFit];
+    subjectLabel.text = [activity.subject stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    subjectLabel.lineBreakMode = NSLineBreakByWordWrapping;
     
     int heightView = 50 + [self getLabelHeight:subjectLabel];
     
@@ -133,7 +133,6 @@
 
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
 {
-    
     UICollectionReusableView *headerView = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:@"header" forIndexPath:indexPath];
         
     TableActivity *activity = [_sectionDataSource objectAtIndex:indexPath.section];
@@ -153,8 +152,10 @@
         typeImage.image = [UIImage imageNamed:image_user];
         
     subjectLabel.textColor = COLOR_TEXT_ANTHRACITE;
-    subjectLabel.text = activity.subject;
+    subjectLabel.numberOfLines = 0;
     [subjectLabel setFont:fontSizeSubject];
+    subjectLabel.text = activity.subject;
+    subjectLabel.lineBreakMode = NSLineBreakByWordWrapping;
     
     //headerView.backgroundColor = [UIColor blueColor];
         
