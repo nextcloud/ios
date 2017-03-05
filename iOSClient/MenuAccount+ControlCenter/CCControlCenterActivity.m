@@ -110,6 +110,15 @@
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
+    /*
+    TableActivity *activity = [_sectionDataSource objectAtIndex:section];
+    
+    if ([activity.file length] > 0)
+        return 1;
+    else
+        return 0;
+    */
+    
     return 0;
 }
 
@@ -166,6 +175,15 @@
 {
     UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"cell" forIndexPath:indexPath];
     cell.backgroundColor = [UIColor clearColor];
+    
+    TableActivity *activity = [_sectionDataSource objectAtIndex:indexPath.section];
+    
+    NSString *dir = [activity.file stringByDeletingLastPathComponent];
+    NSString *fileName = [activity.file lastPathComponent];
+    
+    if ([dir length] > 0 && [fileName length] > 0) {
+        
+    }
     
     return cell;
 }
