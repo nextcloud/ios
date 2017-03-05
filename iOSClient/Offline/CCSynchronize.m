@@ -288,7 +288,6 @@
             
             if ([metadatasNotPresents count] > 0)
                 [app.activeMain reloadDatasource:metadataNet.serverUrl fileID:nil selector:nil];
-            
         });
         
         // ----- Test : (MODIFY) -----
@@ -302,16 +301,18 @@
             // dir recursive
             if (metadata.directory) {
                 
-                dispatch_async(dispatch_get_main_queue(), ^{
+                NSString *serverUrl = [CCUtility stringAppendServerUrl:metadataNet.serverUrl addFileName:metadata.fileNameData];
+                NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:app.activeAccount];
                     
-                    NSString *serverUrl = [CCUtility stringAppendServerUrl:metadataNet.serverUrl addFileName:metadata.fileNameData];
-                    NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:app.activeAccount];
+                // Verify if do not exists this Metadata
+                if (![CCCoreData getTableMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileID == %@)", metadataNet.account, metadata.fileID]]) {
                     
-                    [CCCoreData addMetadata:metadata activeAccount:app.activeAccount activeUrl:app.activeUrl context:nil];
-                    
-                    [self readFolderServerUrl:serverUrl directoryID:directoryID selector:metadataNet.selector];
-                    
-                });
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [CCCoreData addMetadata:metadata activeAccount:app.activeAccount activeUrl:app.activeUrl context:nil];
+                    });
+                }
+              
+                [self readFolderServerUrl:serverUrl directoryID:directoryID selector:metadataNet.selector];
                 
             } else {
             
@@ -334,12 +335,14 @@
                 }
                 
                 if ([metadataNet.selector isEqualToString:selectorReadFolderRefresh]) {
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        
-                        // Verify if do not exists this Metadata
-                        if (![CCCoreData getTableMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileID == %@)", metadataNet.account, metadata.fileID]])
+                    
+                    // Verify if do not exists this Metadata
+                    if (![CCCoreData getTableMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileID == %@)", metadataNet.account, metadata.fileID]]) {
+                    
+                        dispatch_async(dispatch_get_main_queue(), ^{
                             [CCCoreData addMetadata:metadata activeAccount:metadataNet.account activeUrl:metadataNet.serverUrl context:nil];
-                    });
+                        });
+                    }
                 }
             }
         }

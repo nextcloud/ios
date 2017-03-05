@@ -354,14 +354,18 @@
 //
 - (void)applicationInitialized
 {
-    // now
-    dispatch_async(dispatch_get_main_queue(), ^{
-       
-        NSLog(@"[LOG] Listning Favorites");
-        [[CCSynchronize sharedSynchronize] readListingFavorites];
-    });
+    // Execute : now
+    
+    NSLog(@"[LOG] Listning Favorites");
+    [[CCSynchronize sharedSynchronize] readListingFavorites];
+        
+    NSLog(@"[LOG] Update Folder Photo");
+    NSString *folderCameraUpload = [CCCoreData getCameraUploadFolderNamePathActiveAccount:self.activeAccount activeUrl:self.activeUrl];
+    if ([folderCameraUpload length] > 0)
+        [[CCSynchronize sharedSynchronize] readFolderServerUrl:folderCameraUpload directoryID:[CCCoreData getDirectoryIDFromServerUrl:folderCameraUpload activeAccount:self.activeAccount] selector:selectorReadFolderRefresh];
 
-    // after 0.5 sec.
+    // Execute : after 0.5 sec.
+    
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         
         NSLog(@"[LOG] Request Server Information");
@@ -374,13 +378,6 @@
         
         NSLog(@"[LOG] files Offline");
         [[CCSynchronize sharedSynchronize] readOffline];
-        
-        NSString *folderCameraUpload = [CCCoreData getCameraUploadFolderNamePathActiveAccount:self.activeAccount activeUrl:self.activeUrl];
-        if ([folderCameraUpload length] > 0) {
-            
-            NSLog(@"[LOG] Update Folder Photo");
-            [[CCSynchronize sharedSynchronize] readFolderServerUrl:folderCameraUpload directoryID:[CCCoreData getDirectoryIDFromServerUrl:folderCameraUpload activeAccount:self.activeAccount] selector:selectorReadFolderRefresh];
-        }
     });
     
     // Initialize Camera Upload
