@@ -224,7 +224,7 @@
     
     metadataNet.action = actionReadFolder;
     metadataNet.directoryID = directoryID;
-    metadataNet.priority = NSOperationQueuePriorityVeryLow;
+    metadataNet.priority = NSOperationQueuePriorityVeryHigh;
     metadataNet.selector = selector;
     metadataNet.serverUrl = serverUrl;
         
