@@ -180,6 +180,7 @@ extern NSString *const BKPasscodeKeychainServiceName;
 #define selectorReadFileVerifyUpload                    @"readFileVerifyUpload"
 #define selectorReadFolder                              @"readFolder"
 #define selectorReadFolderForced                        @"readFolderForced"
+#define selectorReadFolderRefresh                       @"readFolderRefresh"
 #define selectorReadShare                               @"readShare"
 #define selectorReload                                  @"reload"
 #define selectorRename                                  @"rename"

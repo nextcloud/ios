@@ -130,7 +130,7 @@
             if (metadata.directory) {
                 
                 NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:app.activeAccount];
-                [self readFolderServerUrl:serverUrl directoryID:directoryID];
+                [self readFolderServerUrl:serverUrl directoryID:directoryID selector:selectorReadFolder];
                 
             } else {
                 
@@ -179,7 +179,7 @@
             if (![directory.serverUrl containsString:father]) {
              
                 father = directory.serverUrl;
-                [self readFolderServerUrl:directory.serverUrl directoryID:directory.directoryID];
+                [self readFolderServerUrl:directory.serverUrl directoryID:directory.directoryID selector:selectorReadFolder];
             }
         }
         
@@ -218,14 +218,14 @@
 #pragma --------------------------------------------------------------------------------------------
 
 // MULTI THREAD
-- (void)readFolderServerUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID
+- (void)readFolderServerUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID selector:(NSString *)selector
 {
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
     
     metadataNet.action = actionReadFolder;
     metadataNet.directoryID = directoryID;
     metadataNet.priority = NSOperationQueuePriorityVeryLow;
-    metadataNet.selector = selectorReadFolder;
+    metadataNet.selector = selector;
     metadataNet.serverUrl = serverUrl;
         
     [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
@@ -248,7 +248,7 @@
 {
     TableAccount *recordAccount = [CCCoreData getActiveAccount];
     
-    __block NSMutableArray *metadatasForOfflineFolder = [[NSMutableArray alloc] init];
+    __block NSMutableArray *metadatasForVerifyChange = [[NSMutableArray alloc] init];
     
     if ([recordAccount.account isEqualToString:metadataNet.account] == NO)
         return;
@@ -309,7 +309,7 @@
                     
                     [CCCoreData addMetadata:metadata activeAccount:app.activeAccount activeUrl:app.activeUrl context:nil];
                     
-                    [self readFolderServerUrl:serverUrl directoryID:directoryID];
+                    [self readFolderServerUrl:serverUrl directoryID:directoryID selector:metadataNet.selector];
                     
                 });
                 
@@ -327,12 +327,12 @@
                     continue;
             
                 // Ohhhh INSERT
-                [metadatasForOfflineFolder addObject:metadata];
+                [metadatasForVerifyChange addObject:metadata];
             }
         }
         
-        if ([metadatasForOfflineFolder count] > 0)
-            [self verifyChangeMedatas:metadatasForOfflineFolder serverUrl:metadataNet.serverUrl account:metadataNet.account synchronize:YES];
+        if ([metadatasForVerifyChange count] > 0)
+            [self verifyChangeMedatas:metadatasForVerifyChange serverUrl:metadataNet.serverUrl account:metadataNet.account synchronize:YES];
     });
 }
 
