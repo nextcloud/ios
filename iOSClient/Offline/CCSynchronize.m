@@ -335,7 +335,10 @@
                 
                 if ([metadataNet.selector isEqualToString:selectorReadFolderRefresh]) {
                     dispatch_async(dispatch_get_main_queue(), ^{
-                        [CCCoreData addMetadata:metadata activeAccount:app.activeAccount activeUrl:metadataNet.serverUrl context:nil];
+                        
+                        // Verify if do not exists this Metadata
+                        if (![CCCoreData getTableMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileID == %@)", metadataNet.account, metadata.fileID]])
+                            [CCCoreData addMetadata:metadata activeAccount:metadataNet.account activeUrl:metadataNet.serverUrl context:nil];
                     });
                 }
             }
