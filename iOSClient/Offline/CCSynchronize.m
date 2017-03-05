@@ -227,9 +227,11 @@
     metadataNet.priority = NSOperationQueuePriorityVeryHigh;
     metadataNet.selector = selector;
     metadataNet.serverUrl = serverUrl;
-        
-    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
-            
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+    });
+    
     NSLog(@"[LOG] Read offline directory : %@", serverUrl);
 }
 
