@@ -248,7 +248,7 @@
 {
     TableAccount *recordAccount = [CCCoreData getActiveAccount];
     
-    __block NSMutableArray *metadatasForVerifyChange = [[NSMutableArray alloc] init];
+    __block NSMutableArray *metadatasForVerifyChange = [NSMutableArray new];
     
     if ([recordAccount.account isEqualToString:metadataNet.account] == NO)
         return;
@@ -315,19 +315,23 @@
                 
             } else {
             
-                // It's in session
-                BOOL recordInSession = NO;
-                for (TableMetadata *record in recordsInSessions) {
-                    if ([record.fileID isEqualToString:metadata.fileID]) {
-                        recordInSession = YES;
-                        break;
+                if ([metadataNet.selector isEqualToString:selectorReadFolder]) {
+                    
+                    // It's in session
+                    BOOL recordInSession = NO;
+                    for (TableMetadata *record in recordsInSessions) {
+                        if ([record.fileID isEqualToString:metadata.fileID]) {
+                            recordInSession = YES;
+                            break;
+                        }
                     }
-                }
-                if (recordInSession)
-                    continue;
+                    
+                    if (recordInSession)
+                        continue;
             
-                // Ohhhh INSERT
-                [metadatasForVerifyChange addObject:metadata];
+                    // Ohhhh INSERT
+                    [metadatasForVerifyChange addObject:metadata];
+                }
             }
         }
         

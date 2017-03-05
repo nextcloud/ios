@@ -45,4 +45,6 @@
 
 - (BOOL)synchronizeFolderAnimationDirectory:(NSArray *)directory setGraphicsFolder:(BOOL)setGraphicsFolder;
 
+- (void)readFolderServerUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID selector:(NSString *)selector;
+
 @end
