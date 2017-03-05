@@ -119,12 +119,12 @@
     
     UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, collectionView.frame.size.width , CGFLOAT_MAX)];
     subjectLabel.numberOfLines = 0;
-    subjectLabel.lineBreakMode = NSLineBreakByWordWrapping;
     [subjectLabel setFont:fontSizeSubject];
     subjectLabel.text = activity.subject;
     [subjectLabel sizeToFit];
-
-    int heightView = 50 + subjectLabel.frame.size.height;
+    
+    int heightView = 50 + [self getLabelHeight:subjectLabel];
+    
     if (heightView < 60)
         heightView = 60;
     
@@ -133,42 +133,32 @@
 
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
 {
-    if (kind == UICollectionElementKindSectionHeader) {
-        
-        UICollectionReusableView *headerView = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:@"header" forIndexPath:indexPath];
-        
-        TableActivity *activity = [_sectionDataSource objectAtIndex:indexPath.section];
-        
-        NSDateComponents* comps = [[NSCalendar currentCalendar] components:NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay fromDate:activity.date];
-        NSDate *date = [[NSCalendar currentCalendar] dateFromComponents:comps];
-        
-        UILabel *dataLabel = (UILabel *)[headerView viewWithTag:100];
-        UILabel *subjectLabel = (UILabel *)[headerView viewWithTag:101];
-        UIImageView *typeImage = (UIImageView *) [headerView viewWithTag:102];
-        
-        dataLabel.textColor = [UIColor colorWithRed:130.0/255.0 green:130.0/255.0 blue:130.0/255.0 alpha:1.0];
-        dataLabel.text =  [CCUtility getTitleSectionDate:date];
-        [dataLabel setFont:fontSizeData];
-        
-        if ([activity.type length] == 0 )
-            typeImage.image = [UIImage imageNamed:image_user];
-        
-        subjectLabel.textColor = COLOR_TEXT_ANTHRACITE;
-        subjectLabel.text = activity.subject;
-        [subjectLabel setFont:fontSizeSubject];
-        
-        int heightView = 50 + [self getLabelHeight:subjectLabel];
-        
-        if (heightView < 60)
-            heightView = 60;
-        
-        headerView.frame = CGRectMake(headerView.frame.origin.x, headerView.frame.origin.y,  headerView.frame.size.width, heightView);
-        //headerView.backgroundColor = [UIColor greenColor];
-        
-        return headerView;
-    }
     
-    return nil;
+    UICollectionReusableView *headerView = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:@"header" forIndexPath:indexPath];
+        
+    TableActivity *activity = [_sectionDataSource objectAtIndex:indexPath.section];
+        
+    NSDateComponents* comps = [[NSCalendar currentCalendar] components:NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay fromDate:activity.date];
+    NSDate *date = [[NSCalendar currentCalendar] dateFromComponents:comps];
+        
+    UILabel *dataLabel = (UILabel *)[headerView viewWithTag:100];
+    UILabel *subjectLabel = (UILabel *)[headerView viewWithTag:101];
+    UIImageView *typeImage = (UIImageView *) [headerView viewWithTag:102];
+        
+    dataLabel.textColor = [UIColor colorWithRed:130.0/255.0 green:130.0/255.0 blue:130.0/255.0 alpha:1.0];
+    dataLabel.text =  [CCUtility getTitleSectionDate:date];
+    [dataLabel setFont:fontSizeData];
+        
+    if ([activity.type length] == 0 )
+        typeImage.image = [UIImage imageNamed:image_user];
+        
+    subjectLabel.textColor = COLOR_TEXT_ANTHRACITE;
+    subjectLabel.text = activity.subject;
+    [subjectLabel setFont:fontSizeSubject];
+    
+    //headerView.backgroundColor = [UIColor blueColor];
+        
+    return headerView;
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
@@ -186,13 +176,16 @@
 
 - (CGFloat)getLabelHeight:(UILabel*)label
 {
-    CGSize constraint = CGSizeMake(label.frame.size.width, CGFLOAT_MAX);
-    CGSize size;
+    CGSize constraint = CGSizeMake(self.collectionView.frame.size.width, CGFLOAT_MAX);
+    
+    NSMutableParagraphStyle *paragraph = [[NSMutableParagraphStyle alloc] init];
+    paragraph.lineBreakMode = NSLineBreakByWordWrapping;
+    NSDictionary *attributes = @{NSFontAttributeName : label.font, NSParagraphStyleAttributeName: paragraph};
     
     NSStringDrawingContext *context = [[NSStringDrawingContext alloc] init];
-    CGSize boundingBox = [label.text boundingRectWithSize:constraint options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName:label.font} context:context].size;
+    CGSize boundingBox = [label.text boundingRectWithSize:constraint options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes context:context].size;
     
-    size = CGSizeMake(ceil(boundingBox.width), ceil(boundingBox.height));
+    CGSize size = CGSizeMake(ceil(boundingBox.width), ceil(boundingBox.height));
     
     return size.height;
 }
