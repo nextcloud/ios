@@ -332,6 +332,12 @@
                     // Ohhhh INSERT
                     [metadatasForVerifyChange addObject:metadata];
                 }
+                
+                if ([metadataNet.selector isEqualToString:selectorReadFolderRefresh]) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [CCCoreData addMetadata:metadata activeAccount:app.activeAccount activeUrl:metadataNet.serverUrl context:nil];
+                    });
+                }
             }
         }
         

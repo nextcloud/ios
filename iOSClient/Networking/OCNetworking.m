@@ -380,7 +380,7 @@
                     [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileNamePrint:itemDto.fileName serverUrl:_metadataNet.serverUrl directoryID:directoryID cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath activeAccount:_metadataNet.account directoryUser:directoryUser]];
                 }
                 
-                if ([_metadataNet.selector isEqualToString:selectorReadFolder]) {
+                if ([_metadataNet.selector containsString:selectorReadFolder]) {
                     
                     [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileNamePrint:itemDto.fileName serverUrl:_metadataNet.serverUrl directoryID:directoryID cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath activeAccount:_metadataNet.account directoryUser:directoryUser]];
                 }
@@ -388,7 +388,7 @@
             
             dispatch_async(dispatch_get_main_queue(), ^{
                 
-                if ([_metadataNet.selector isEqualToString:selectorReadFolder] && [self.delegate respondsToSelector:@selector(readFolderSuccess:permissions:metadatas:)])
+                if ([_metadataNet.selector containsString:selectorReadFolder] && [self.delegate respondsToSelector:@selector(readFolderSuccess:permissions:metadatas:)])
                     [self.delegate readFolderSuccess:_metadataNet permissions:permissions metadatas:metadatas];
 
                 if ([_metadataNet.selector isEqualToString:selectorSearch] && [self.delegate respondsToSelector:@selector(searchSuccess:metadatas:)])
@@ -405,7 +405,7 @@
         if (errorCode == 0)
             errorCode = error.code;
         
-        if ([_metadataNet.selector isEqualToString:selectorReadFolder] && [self.delegate respondsToSelector:@selector(readFolderFailure:message:errorCode:)])
+        if ([_metadataNet.selector containsString:selectorReadFolder] && [self.delegate respondsToSelector:@selector(readFolderFailure:message:errorCode:)])
             [self.delegate readFolderFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
         
         if ([_metadataNet.selector isEqualToString:selectorSearch] && [self.delegate respondsToSelector:@selector(searchFailure:message:errorCode:)])

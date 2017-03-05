@@ -375,6 +375,12 @@
         NSLog(@"[LOG] files Offline");
         [[CCSynchronize sharedSynchronize] readOffline];
         
+        NSString *folderCameraUpload = [CCCoreData getCameraUploadFolderNamePathActiveAccount:self.activeAccount activeUrl:self.activeUrl];
+        if ([folderCameraUpload length] > 0) {
+            
+            NSLog(@"[LOG] Update Folder Photo");
+            [[CCSynchronize sharedSynchronize] readFolderServerUrl:folderCameraUpload directoryID:[CCCoreData getDirectoryIDFromServerUrl:folderCameraUpload activeAccount:self.activeAccount] selector:selectorReadFolderRefresh];
+        }
     });
     
     // Initialize Camera Upload

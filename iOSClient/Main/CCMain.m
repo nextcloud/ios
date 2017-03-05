@@ -4183,8 +4183,6 @@
         NSString *cameraUploadFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:app.activeAccount];
         NSString *cameraUploadFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:app.activeAccount activeUrl:app.activeUrl];
         
-        
-        
         [actionSheet addButtonWithTitle: _metadata.fileNamePrint
                                   image: iconHeader
                         backgroundColor: COLOR_BACKGROUND_MENU
