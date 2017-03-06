@@ -724,13 +724,10 @@
 /* Begin PBXFileReference section */
 		08DC3BD41E64727E00F036D3 /* AdSupport.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AdSupport.framework; path = System/Library/Frameworks/AdSupport.framework; sourceTree = SDKROOT; };
 		08DC3BE81E647E3F00F036D3 /* NextcloudCustom.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = NextcloudCustom.plist; sourceTree = "<group>"; };
-		08DC3CB01E64879700F036D3 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../GoogleService-Info.plist"; sourceTree = "<group>"; };
 		08EA97441E6554FC004C83FA /* FirebaseAnalytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseAnalytics.framework; sourceTree = "<group>"; };
 		08EA97451E6554FC004C83FA /* FirebaseCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseCore.framework; sourceTree = "<group>"; };
 		08EA97461E6554FC004C83FA /* FirebaseInstanceID.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseInstanceID.framework; sourceTree = "<group>"; };
 		08EA97471E6554FC004C83FA /* GoogleToolboxForMac.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleToolboxForMac.framework; sourceTree = "<group>"; };
-		08EA97561E655552004C83FA /* Firebase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Firebase.h; sourceTree = "<group>"; };
-		08EA97571E655552004C83FA /* module.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
 		F70211F41BAC56E9003FC03E /* CCCellMain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCCellMain.h; sourceTree = "<group>"; };
 		F70211F51BAC56E9003FC03E /* CCCellMain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCCellMain.m; sourceTree = "<group>"; };
 		F70211F61BAC56E9003FC03E /* CCCellMain.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CCCellMain.xib; sourceTree = "<group>"; };
@@ -3031,16 +3028,6 @@
 			path = Create;
 			sourceTree = "<group>";
 		};
-		F7EF48401E659B770084BE38 /* Firebase */ = {
-			isa = PBXGroup;
-			children = (
-				08DC3CB01E64879700F036D3 /* GoogleService-Info.plist */,
-				08EA97561E655552004C83FA /* Firebase.h */,
-				08EA97571E655552004C83FA /* module.modulemap */,
-			);
-			name = Firebase;
-			sourceTree = "<group>";
-		};
 		F7F06E291DBFACC600099AE9 /* CTAssetsPickerController */ = {
 			isa = PBXGroup;
 			children = (
@@ -3232,7 +3219,6 @@
 				F7B61E861DC13C20009E938F /* MagicalRecord.xcodeproj */,
 				F71E67F61DC1F76F003BA52B /* ownCloud iOS library.xcodeproj */,
 				F70F02A81C889183008DAB36 /* Libraries external */,
-				F7EF48401E659B770084BE38 /* Firebase */,
 				F7A582D71A24DAB500E903D7 /* AppDelegate.h */,
 				F7A582D61A24DAB500E903D7 /* AppDelegate.m */,
 				F7D722AA1D11B6DA009F1A35 /* CCImages.h */,
@@ -4613,7 +4599,10 @@
 				CURRENT_PROJECT_VERSION = "";
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
 				ENABLE_BITCODE = YES;
-				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(PROJECT_DIR)/Libraries external/Firebase\"",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = iOSClient/CryptoCloud.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -4656,7 +4645,10 @@
 				CURRENT_PROJECT_VERSION = "";
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
 				ENABLE_BITCODE = YES;
-				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(PROJECT_DIR)/Libraries external/Firebase\"",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = iOSClient/CryptoCloud.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
