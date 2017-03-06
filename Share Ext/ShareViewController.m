@@ -24,7 +24,7 @@
 #import "ShareViewController.h"
 
 #ifdef CUSTOM_BUILD
-    #import "Share_Ext_Nextcloud_Custom-Swift.h"
+    #import "CustomShare.h"
 #else
     #import "Share_Ext_Nextcloud-Swift.h"
 #endif
