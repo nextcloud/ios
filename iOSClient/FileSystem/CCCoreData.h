@@ -130,7 +130,7 @@
 // ===== Directory =====
 
 + (NSString *)addDirectory:(NSString *)serverUrl permissions:(NSString *)permissions activeAccount:(NSString *)activeAccount;
-+ (void)updateDirectoryRevServerUrl:(NSString *)serverUrl rev:(NSString *)rev activeAccount:(NSString *)activeAccount;
++ (void)updateDirectoryEtagServerUrl:(NSString *)serverUrl etag:(NSString *)etag activeAccount:(NSString *)activeAccount;
 + (void)deleteDirectoryFromPredicate:(NSPredicate *)predicate;
 + (NSArray *)deleteDirectoryAndSubDirectory:(NSString *)serverUrl activeAccount:(NSString *)activeAccount;
 + (void)renameDirectory:(NSString *)serverUrl serverUrlTo:(NSString *)serverUrlTo activeAccount:(NSString *)activeAccount;

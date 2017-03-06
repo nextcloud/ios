@@ -894,7 +894,7 @@
     return directoryID;
 }
 
-+ (void)updateDirectoryRevServerUrl:(NSString *)serverUrl rev:(NSString *)rev activeAccount:(NSString *)activeAccount
++ (void)updateDirectoryEtagServerUrl:(NSString *)serverUrl etag:(NSString *)etag activeAccount:(NSString *)activeAccount
 {
     [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
         
@@ -902,7 +902,7 @@
         TableDirectory *record = [TableDirectory MR_findFirstWithPredicate:predicate inContext:localContext];
         
         if (record)
-            record.rev = rev;
+            record.rev = etag;
     }];
 }
 

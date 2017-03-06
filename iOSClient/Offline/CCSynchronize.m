@@ -246,7 +246,7 @@
 }
 
 // MULTI THREAD
-- (void)readFolderSuccess:(CCMetadataNet *)metadataNet permissions:(NSString *)permissions metadatas:(NSArray *)metadatas
+- (void)readFolderSuccess:(CCMetadataNet *)metadataNet permissions:(NSString *)permissions etag:(NSString *)etag metadatas:(NSArray *)metadatas
 {
     TableAccount *recordAccount = [CCCoreData getActiveAccount];
     
@@ -314,10 +314,15 @@
                     });
                 }
               
+                // Load if different etag
+                
                 TableDirectory *tableDirectory = [CCCoreData getTableDirectoryWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (serverUrl == %@)", metadataNet.account, serverUrl]];
-                NSLog(@"%@", tableDirectory.rev);
-            
-                [self readFolderServerUrl:serverUrl directoryID:directoryID selector:metadataNet.selector];
+                
+                if (![tableDirectory.rev isEqualToString:metadata.rev]) {
+                    
+                    [self readFolderServerUrl:serverUrl directoryID:directoryID selector:metadataNet.selector];
+                    [CCCoreData updateDirectoryEtagServerUrl:serverUrl etag:metadata.rev activeAccount:metadataNet.account];
+                }
                 
             } else {
             

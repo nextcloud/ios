@@ -312,8 +312,8 @@
 
             dispatch_async(dispatch_get_main_queue(), ^{
                 
-                if ([self.delegate respondsToSelector:@selector(readFolderSuccess:permissions:metadatas:)])
-                    [self.delegate readFolderSuccess:_metadataNet permissions:@"" metadatas:metadatas];
+                if ([self.delegate respondsToSelector:@selector(readFolderSuccess:permissions:etag:metadatas:)])
+                    [self.delegate readFolderSuccess:_metadataNet permissions:@"" etag:@"" metadatas:metadatas];
             });
 
             [self complete];
@@ -324,6 +324,7 @@
         // directory [0]
         OCFileDto *itemDtoDirectory = [items objectAtIndex:0];
         NSString *permissions = itemDtoDirectory.permissions;
+        NSString *etagDirectory = itemDtoDirectory.etag;
         //NSDate *date = [NSDate dateWithTimeIntervalSince1970:itemDtoDirectory.date];
         
         NSString *directoryID = [CCCoreData addDirectory:_metadataNet.serverUrl permissions:permissions activeAccount:_metadataNet.account];
@@ -388,8 +389,8 @@
             
             dispatch_async(dispatch_get_main_queue(), ^{
                 
-                if ([_metadataNet.selector containsString:selectorReadFolder] && [self.delegate respondsToSelector:@selector(readFolderSuccess:permissions:metadatas:)])
-                    [self.delegate readFolderSuccess:_metadataNet permissions:permissions metadatas:metadatas];
+                if ([_metadataNet.selector containsString:selectorReadFolder] && [self.delegate respondsToSelector:@selector(readFolderSuccess:permissions:etag:metadatas:)])
+                    [self.delegate readFolderSuccess:_metadataNet permissions:permissions etag:etagDirectory metadatas:metadatas];
 
                 if ([_metadataNet.selector isEqualToString:selectorSearch] && [self.delegate respondsToSelector:@selector(searchSuccess:metadatas:)])
                     [self.delegate searchSuccess:_metadataNet metadatas:metadatas];
