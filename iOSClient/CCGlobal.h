@@ -22,12 +22,14 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "CCStandardImages.h"
 
 #ifdef CUSTOM_BUILD
-
+    #import "CustomImages.h"
+    #import "CustomConstant.h"
 #else
-    #import "CCImages.h"
-    #import "CCConstant.h"
+    #import "CCNextcloudImages.h"
+    #import "CCNextcloudConstant.h"
 #endif
 
 extern NSString *const appApplicationSupport;

@@ -1,9 +1,9 @@
 //
-//  CCImages.h
-//  Crypto Cloud Technology Nextcloud
+//  CCStandardImages.h
+//  Nextcloud
 //
-//  Created by Marino Faggiana on 15/06/16.
-//  Copyright (c) 2014 TWS. All rights reserved.
+//  Created by Marino Faggiana on 06/03/17.
+//  Copyright © 2017 TWS. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
 //

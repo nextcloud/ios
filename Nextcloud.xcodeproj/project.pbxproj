@@ -1420,7 +1420,8 @@
 		F7C00D4A1E2D10BB0032160B /* cryptocloud 7.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "cryptocloud 7.xcdatamodel"; sourceTree = "<group>"; };
 		F7C0F46E1C8880540059EC54 /* ShareViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = ShareViewController.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		F7C0F46F1C8880540059EC54 /* ShareViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = ShareViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		F7C1CDB11E6DF5DD005D92BE /* CCConstant.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCConstant.h; sourceTree = "<group>"; };
+		F7C1CDB11E6DF5DD005D92BE /* CCNextcloudConstant.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCNextcloudConstant.h; sourceTree = "<group>"; };
+		F7C1CDCE1E6DFAD1005D92BE /* CCStandardImages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCStandardImages.h; sourceTree = "<group>"; };
 		F7C1D8BA1D47781C00B89DEA /* nl */ = {isa = PBXFileReference; lastKnownFileType = text; name = nl; path = nl.lproj/TTOpenInAppActivityLocalizable.string; sourceTree = "<group>"; };
 		F7C1D8BB1D47781C00B89DEA /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/BKPasscodeView.strings; sourceTree = "<group>"; };
 		F7C1D8BC1D47781C00B89DEA /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -1456,7 +1457,7 @@
 		F7D6A08D1D82DBFA0045AD1A /* CCControlCenterTransferCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CCControlCenterTransferCell.xib; sourceTree = "<group>"; };
 		F7D6A08E1D82DBFA0045AD1A /* CCMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCMenu.h; sourceTree = "<group>"; };
 		F7D6A08F1D82DBFA0045AD1A /* CCMenu.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCMenu.m; sourceTree = "<group>"; };
-		F7D722AA1D11B6DA009F1A35 /* CCImages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCImages.h; sourceTree = "<group>"; };
+		F7D722AA1D11B6DA009F1A35 /* CCNextcloudImages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCNextcloudImages.h; sourceTree = "<group>"; };
 		F7D96F0A1D99498600A587A5 /* de */ = {isa = PBXFileReference; lastKnownFileType = text; name = de; path = de.lproj/TTOpenInAppActivityLocalizable.string; sourceTree = "<group>"; };
 		F7D96F0B1D99498600A587A5 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/BKPasscodeView.strings; sourceTree = "<group>"; };
 		F7D96F0C1D99498600A587A5 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -3221,8 +3222,9 @@
 				F70F02A81C889183008DAB36 /* Libraries external */,
 				F7A582D71A24DAB500E903D7 /* AppDelegate.h */,
 				F7A582D61A24DAB500E903D7 /* AppDelegate.m */,
-				F7D722AA1D11B6DA009F1A35 /* CCImages.h */,
-				F7C1CDB11E6DF5DD005D92BE /* CCConstant.h */,
+				F7D722AA1D11B6DA009F1A35 /* CCNextcloudImages.h */,
+				F7C1CDCE1E6DFAD1005D92BE /* CCStandardImages.h */,
+				F7C1CDB11E6DF5DD005D92BE /* CCNextcloudConstant.h */,
 				F7C8C1901B482CEA0048180E /* CCGlobal.h */,
 				F7C8C1911B482CEA0048180E /* CCGlobal.m */,
 				F7C994311E3A92C400C2466C /* CCConstant.swift */,
