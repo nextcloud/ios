@@ -4303,6 +4303,12 @@
                                             [app.activePhotosCameraUpload reloadDatasourceForced];
                                         
                                         [self readFolderWithForced:YES serverUrl:serverUrl];
+                                        
+                                        NSLog(@"[LOG] Update Folder Photo");
+                                        NSString *folderCameraUpload = [CCCoreData getCameraUploadFolderNamePathActiveAccount:app.activeAccount activeUrl:app.activeUrl];
+                                        if ([folderCameraUpload length] > 0)
+                                            [[CCSynchronize sharedSynchronize] readFolderServerUrl:folderCameraUpload directoryID:[CCCoreData getDirectoryIDFromServerUrl:folderCameraUpload activeAccount:app.activeAccount] selector:selectorReadFolderRefresh];
+
                                     }];
         }
         
