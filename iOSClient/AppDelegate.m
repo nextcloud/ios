@@ -735,7 +735,7 @@
     
     // Favorite
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexOffline];
-    [item setTitle:NSLocalizedString(@"_favorite_", nil)];
+    [item setTitle:NSLocalizedString(@"_favorites_", nil)];
     item.image = [UIImage imageNamed:image_tabBarFavorite];
     item.selectedImage = [UIImage imageNamed:image_tabBarFavorite];
     
