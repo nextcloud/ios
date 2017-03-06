@@ -236,7 +236,6 @@
 "_access_photo_location_not_enabled_"       = "Access to Photos and Location not enabled";
 "_access_photo_location_not_enabled_msg_"   = "Please go to Setting and turn on Photo Access and Location Services to allow automatic camera photo/video uploads.";
 "_processing_send_camera_upload_"           = "Uploading camera photo ...";
-"_select_only_localfile_"                   = "File not downloaded yet";
 "_tutorial_photo_view_"                     = "No photos or videos loaded";
 "_create_full_upload_"                      = "Creating archive .. may take a long time, please wait";
 "_error_createsubfolders_upload_"           = "Error creating subfolders";

@@ -676,10 +676,7 @@
     
     if (_cellEditing) {
         
-        if ([CCCoreData getLocalFileWithFileID:fileID activeAccount:app.activeAccount])
-            [self cellSelect:YES indexPath:indexPath metadata:_metadata];
-        else
-            [app messageNotification:@"_info_" description:@"_select_only_localfile_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo];
+        [self cellSelect:YES indexPath:indexPath metadata:_metadata];
         
     } else {
         
