@@ -3,8 +3,8 @@
 #########################################################################
 #                                                                       #
 #       Title         - .gitignore file                                 #
-#       For           - iOS - Xcode7                                    #
-#       Updated on    - 01/Dicember/2016                                #
+#       For           - iOS - Xcode8                                    #
+#       Updated on    - 06/March/2017                                   #
 #                                                                       #
 #########################################################################
 
@@ -12,6 +12,7 @@
 xcuserdata/
 README.md
 Documentation/
+Custom/
 
 ########### OSX ###########
 # OS X temporary files that should never be committed
