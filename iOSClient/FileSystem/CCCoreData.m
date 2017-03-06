@@ -701,7 +701,7 @@
     [context MR_saveToPersistentStoreAndWait];
 }
 
-+ (void)SetMetadataFavoriteFileID:(NSString *)fileID favorite:(BOOL)favorite activeAccount:(NSString *)activeAccount context:(NSManagedObjectContext *)context
++ (void)setMetadataFavoriteFileID:(NSString *)fileID favorite:(BOOL)favorite activeAccount:(NSString *)activeAccount context:(NSManagedObjectContext *)context
 {
     if (context == nil)
         context = [NSManagedObjectContext MR_defaultContext];
@@ -876,7 +876,7 @@
     if (record) {
      
         directoryID = record.directoryID;
-        record.permissions = permissions;
+        if (permissions) record.permissions = permissions;
         
     } else {
         
@@ -885,13 +885,25 @@
         record.account = activeAccount;
         record.directoryID = [CCUtility createID];
         directoryID = record.directoryID;
-        record.permissions = permissions;
+        if (permissions) record.permissions = permissions;
         record.serverUrl = serverUrl;
     }
     
     [context MR_saveToPersistentStoreAndWait];
 
     return directoryID;
+}
+
++ (void)updateDirectoryRevServerUrl:(NSString *)serverUrl rev:(NSString *)rev activeAccount:(NSString *)activeAccount
+{
+    [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
+        
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(serverUrl == %@) AND (account == %@)", serverUrl, activeAccount];
+        TableDirectory *record = [TableDirectory MR_findFirstWithPredicate:predicate inContext:localContext];
+        
+        if (record)
+            record.rev = rev;
+    }];
 }
 
 + (void)deleteDirectoryFromPredicate:(NSPredicate *)predicate
@@ -979,6 +991,13 @@
     
         [context MR_saveToPersistentStoreAndWait];        
     }
+}
+
++ (TableDirectory *)getTableDirectoryWithPreficate:(NSPredicate *)predicate
+{
+    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
+    
+    return [TableDirectory MR_findFirstWithPredicate:predicate inContext:context];
 }
 
 + (NSDate *)getDateReadDirectoryID:(NSString *)directoryID activeAccount:(NSString *)activeAccount

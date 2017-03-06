@@ -327,7 +327,7 @@
         //NSDate *date = [NSDate dateWithTimeIntervalSince1970:itemDtoDirectory.date];
         
         NSString *directoryID = [CCCoreData addDirectory:_metadataNet.serverUrl permissions:permissions activeAccount:_metadataNet.account];
-            
+        
         NSString *cameraFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:_metadataNet.account];
         NSString *cameraFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:_metadataNet.account activeUrl:_activeUrl];
         NSString *directoryUser = [CCUtility getDirectoryActiveUser:_activeUser activeUrl:_activeUrl];

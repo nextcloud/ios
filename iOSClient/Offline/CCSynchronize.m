@@ -146,7 +146,7 @@
     
     for (TableMetadata *tableMetadata in allRecordFavorite)
         if (![filesID containsObject:tableMetadata.fileID])
-            [CCCoreData SetMetadataFavoriteFileID:tableMetadata.fileID favorite:NO activeAccount:app.activeAccount context:nil];
+            [CCCoreData setMetadataFavoriteFileID:tableMetadata.fileID favorite:NO activeAccount:app.activeAccount context:nil];
     
     [[NSNotificationCenter defaultCenter] postNotificationName:@"clearDateReadDataSource" object:nil];
 }
@@ -314,6 +314,9 @@
                     });
                 }
               
+                TableDirectory *tableDirectory = [CCCoreData getTableDirectoryWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (serverUrl == %@)", metadataNet.account, serverUrl]];
+                NSLog(@"%@", tableDirectory.rev);
+            
                 [self readFolderServerUrl:serverUrl directoryID:directoryID selector:metadataNet.selector];
                 
             } else {

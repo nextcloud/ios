@@ -2957,7 +2957,7 @@
 
 - (void)settingFavoriteSuccess:(CCMetadataNet *)metadataNet
 {
-    [CCCoreData SetMetadataFavoriteFileID:metadataNet.fileID favorite:[metadataNet.options boolValue] activeAccount:app.activeAccount context:nil];
+    [CCCoreData setMetadataFavoriteFileID:metadataNet.fileID favorite:[metadataNet.options boolValue] activeAccount:app.activeAccount context:nil];
     _dateReadDataSource = nil;
     
     if (_isSearchMode)
