@@ -9,6 +9,8 @@
 #########################################################################
 
 ############ Various settings ############
+*.xcodeproj
+!Nextcloud.xcodeproj
 xcuserdata/
 README.md
 Documentation/
