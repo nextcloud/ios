@@ -540,15 +540,22 @@
     
     NSString *serverUrl = [CCCoreData getCameraUploadFolderNamePathActiveAccount:app.activeAccount activeUrl:app.activeUrl];
 
-    // datasource
-    NSArray *recordsTableMetadata = [CCCoreData getRecordsTableMetadataPhotosCameraUpload:serverUrl activeAccount:app.activeAccount];
-    
-    _sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:@"date" replaceDateToExifDate:YES activeAccount:app.activeAccount];
+    if (_sectionDataSource) {
         
-    //if ([_sectionDataSource.allRecordsDataSource count] == 0)
-    //    _dateReadDataSource = nil;
-    
-    [self reloadCollection];
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+            
+            _sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:[CCCoreData getRecordsTableMetadataPhotosCameraUpload:serverUrl activeAccount:app.activeAccount] listProgressMetadata:nil groupByField:@"date" replaceDateToExifDate:YES activeAccount:app.activeAccount];
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self reloadCollection];
+            });
+        });
+
+    } else {
+        
+        _sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:[CCCoreData getRecordsTableMetadataPhotosCameraUpload:serverUrl activeAccount:app.activeAccount] listProgressMetadata:nil groupByField:@"date" replaceDateToExifDate:YES activeAccount:app.activeAccount];
+        [self reloadCollection];
+    }
 }
 
 - (void)reloadCollection
