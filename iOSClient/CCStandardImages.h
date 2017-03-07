@@ -70,6 +70,7 @@
 
 #define image_lock                              @"lock"
 
+#define image_MenuCreateFolder                  @"menuCreateFolder"
 #define image_MenuDirectoryOnTop                @"menuDirectoryOnTop"
 #define image_MenuGroupByAlphabetic             @"MenuGroupByAlphabetic"
 #define image_MenuGroupByDate                   @"MenuGroupByDate"
@@ -78,6 +79,11 @@
 #define image_MenuOrderByFileName               @"MenuOrderByFileName"
 #define image_MenuOrdinamentoDiscendente        @"MenuOrdinamentoDiscendente"
 #define image_MenuOrdinamentoAscendente         @"MenuOrdinamentoAscendente"
+#define image_MenuTemplate                      @"menuTemplate"
+#define image_MenuUploadFile                    @"menuUploadFile"
+#define image_MenuUploadFileCrypto              @"menuUploadFileCrypto"
+#define image_MenuUploadPhoto                   @"menuUploadPhoto"
+#define image_MenuUploadPlainMode               @"menuUploadPlainMode"
 #define image_moveSelectedFiles                 @"moveSelectedFiles"
 #define image_more                              @"more"
 #define image_movie                             @"movie"
