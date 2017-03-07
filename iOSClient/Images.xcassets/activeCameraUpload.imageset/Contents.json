@@ -2,18 +2,18 @@
   "images" : [
     {
       "idiom" : "universal",
-      "scale" : "1x",
-      "filename" : "activeCameraUploadNextcloud_en.png"
+      "filename" : "activeCameraUpload.png",
+      "scale" : "1x"
     },
     {
       "idiom" : "universal",
-      "filename" : "activeCameraUploadNextcloud_en@2x.png",
+      "filename" : "activeCameraUpload@2x.png",
       "scale" : "2x"
     },
     {
       "idiom" : "universal",
-      "scale" : "3x",
-      "filename" : "activeCameraUploadNextcloud_en@3x.png"
+      "filename" : "activeCameraUpload@3x.png",
+      "scale" : "3x"
     }
   ],
   "info" : {

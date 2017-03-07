@@ -238,6 +238,7 @@
 "_tutorial_photo_view_"                     = "No photos or videos loaded";
 "_create_full_upload_"                      = "Creating archive .. may take a long time, please wait";
 "_error_createsubfolders_upload_"           = "Error creating subfolders";
+"_activate_camera_upload_"                  = "Activate camera upload";
 
 // Template
 

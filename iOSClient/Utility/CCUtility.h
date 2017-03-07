@@ -180,4 +180,6 @@
 + (NSDate *)datetimeWithOutTime:(NSDate *)datDate;
 + (NSDate *)datetimeWithOutDate:(NSDate *)datDate;
 + (BOOL)isValidEmail:(NSString *)checkString;
++ (UIImage*)drawText:(NSString*)text inImage:(UIImage*)image atPoint:(CGPoint)point;
+
 @end
