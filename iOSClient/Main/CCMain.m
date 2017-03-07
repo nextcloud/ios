@@ -281,7 +281,7 @@
         [app.reSelectMenu close];
     }
     
-    // Close Menu change user
+    // Close Menu Logo
     [CCMenu dismissMenu];
 }
 
@@ -501,7 +501,7 @@
             else _ImageTitleHomeCryptoCloud = [[UIImageView alloc] initWithImage:[UIImage imageNamed:image_brandNavigationController]];
             
             [_ImageTitleHomeCryptoCloud setUserInteractionEnabled:YES];
-            UITapGestureRecognizer *singleTap =  [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(menuChangeUser)];
+            UITapGestureRecognizer *singleTap =  [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(menuLogo)];
             [singleTap setNumberOfTapsRequired:1];
             [_ImageTitleHomeCryptoCloud addGestureRecognizer:singleTap];
             
@@ -3121,13 +3121,15 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ==== Menu change User ====
+#pragma mark ==== Menu LOGO ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)menuChangeUser
+- (void)menuLogo
 {
     if (app.reSelectMenu.isOpen || app.reMainMenu.isOpen)
         return;
+    
+#ifndef NO_MULTIUSER
     
     if ([app.netQueue operationCount] > 0 || [app.netQueueDownload operationCount] > 0 || [app.netQueueDownloadWWan operationCount] > 0 || [app.netQueueUpload operationCount] > 0 || [app.netQueueUploadWWan operationCount] > 0 || [CCCoreData countTableAutomaticUploadForAccount:app.activeAccount selector:nil] > 0) {
         
@@ -3187,6 +3189,13 @@
     
     [CCMenu setTitleFont:[UIFont systemFontOfSize:12.0]];
     [CCMenu showMenuInView:self.navigationController.view fromRect:rect menuItems:menuArray withOptions:options];
+#endif
+    
+#if defined(MENU_BRAND) && defined(NO_MULTIUSER)
+    
+    
+#endif
+    
 }
 
 - (void)changeDefaultAccount:(CCMenuItem *)sender
