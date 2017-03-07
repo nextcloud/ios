@@ -54,28 +54,28 @@
                                     <action selector="handleButtonLogin:" destination="yj9-jo-WIn" eventType="touchUpInside" id="e6z-ip-PXo"/>
                                 </connections>
                             </button>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="baseurlNextcloud" translatesAutoresizingMaskIntoConstraints="NO" id="s9o-RX-XeS">
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="loginURL" translatesAutoresizingMaskIntoConstraints="NO" id="s9o-RX-XeS">
                                 <rect key="frame" x="7" y="160" width="25" height="25"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="25" id="fh1-RS-gPF"/>
                                     <constraint firstAttribute="height" constant="25" id="rDO-8n-TTv"/>
                                 </constraints>
                             </imageView>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="userNextcloud" translatesAutoresizingMaskIntoConstraints="NO" id="4OF-5u-Hd1">
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="loginUser" translatesAutoresizingMaskIntoConstraints="NO" id="4OF-5u-Hd1">
                                 <rect key="frame" x="7" y="198" width="25" height="25"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="25" id="FlR-Hd-bH5"/>
                                     <constraint firstAttribute="height" constant="25" id="ViZ-ks-cWQ"/>
                                 </constraints>
                             </imageView>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="passwordNextcloud" translatesAutoresizingMaskIntoConstraints="NO" id="7q8-rl-x2M">
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="loginPassword" translatesAutoresizingMaskIntoConstraints="NO" id="7q8-rl-x2M">
                                 <rect key="frame" x="7" y="236" width="25" height="25"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="25" id="P8q-8P-IZg"/>
                                     <constraint firstAttribute="width" constant="25" id="glL-CW-aF0"/>
                                 </constraints>
                             </imageView>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ImageLoginNextcloud" translatesAutoresizingMaskIntoConstraints="NO" id="BpI-xK-1SU">
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="BpI-xK-1SU">
                                 <rect key="frame" x="112" y="30" width="167" height="120"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="120" id="E9d-5O-bto"/>
@@ -176,10 +176,9 @@
         </scene>
     </scenes>
     <resources>
-        <image name="ImageLoginNextcloud" width="300" height="200"/>
-        <image name="baseurlNextcloud" width="25" height="25"/>
-        <image name="passwordNextcloud" width="25" height="25"/>
-        <image name="userNextcloud" width="25" height="25"/>
+        <image name="loginPassword" width="25" height="25"/>
+        <image name="loginURL" width="25" height="25"/>
+        <image name="loginUser" width="25" height="25"/>
         <image name="visiblePassword" width="25" height="25"/>
     </resources>
 </document>

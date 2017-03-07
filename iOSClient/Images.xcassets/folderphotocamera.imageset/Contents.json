@@ -3,17 +3,17 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "folderphotocamera.png"
+      "filename" : "folderphotocameraNextcloud.png"
     },
     {
       "idiom" : "universal",
-      "filename" : "folderphotocamera@2x.png",
+      "filename" : "folderphotocameraNextcloud@2x.png",
       "scale" : "2x"
     },
     {
       "idiom" : "universal",
       "scale" : "3x",
-      "filename" : "folderphotocamera@3x.png"
+      "filename" : "folderphotocameraNextcloud@3x.png"
     }
   ],
   "info" : {

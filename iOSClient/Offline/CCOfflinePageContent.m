@@ -137,13 +137,7 @@
 
 - (UIImage *)imageForEmptyDataSet:(UIScrollView *)scrollView
 {
-    //if ([self.pageType isEqualToString:k_pageOfflineOffline])
-    //    return [UIImage imageNamed:image_brandOffline];
-    
-    //if ([self.pageType isEqualToString:k_pageOfflineLocal])
     return [UIImage imageNamed:image_brandBackgroundLite];
-    
-    //return nil;
 }
 
 - (NSAttributedString *)titleForEmptyDataSet:(UIScrollView *)scrollView

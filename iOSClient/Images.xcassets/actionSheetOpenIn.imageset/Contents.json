@@ -2,18 +2,18 @@
   "images" : [
     {
       "idiom" : "universal",
-      "scale" : "1x",
-      "filename" : "actionSheetOpenIn.png"
+      "filename" : "openInNextcloud@1x.png",
+      "scale" : "1x"
     },
     {
       "idiom" : "universal",
-      "filename" : "actionSheetOpenIn@2x.png",
+      "filename" : "openInNextcloud@2x.png",
       "scale" : "2x"
     },
     {
       "idiom" : "universal",
-      "scale" : "3x",
-      "filename" : "actionSheetOpenIn@3x.png"
+      "filename" : "openInNextcloud@3x.png",
+      "scale" : "3x"
     }
   ],
   "info" : {
