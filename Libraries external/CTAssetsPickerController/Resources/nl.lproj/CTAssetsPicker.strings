@@ -1,49 +1,85 @@
-/* Navigation bar buttons */
-"Cancel" = "Annuleren";
-"Done" = "Gereed";
-
-/* Default title */
-"Photos" = "Foto's";
-
-/* No. of selected */
-"%@ Photo Selected" = "%@ foto geselecteerd";
-"%@ Photos Selected" = "%@ foto's geselecteerd";
-"%@ Video Selected" = "%@ video geselecteerd";
-"%@ Videos Selected" = "%@ video's geselecteerd";
+/* (No Commment) */
 "%@ Items Selected" = "%@ items geselecteerd";
 
-/* Album's footer */
+/* (No Commment) */
+"%@ Photo Selected" = "%@ foto geselecteerd";
+
+/* (No Commment) */
 "%@ Photos" = "%@ Foto's";
-"%@ Videos" = "%@ Video's";
+
+/* (No Commment) */
+"%@ Photos Selected" = "%@ foto's geselecteerd";
+
+/* (No Commment) */
 "%@ Photos, %@ Videos" = "%1$@ Foto's, %2$@ Videos";
 
-/* Assets index */
+/* (No Commment) */
+"%@ Video Selected" = "%@ video geselecteerd";
+
+/* (No Commment) */
+"%@ Videos" = "%@ Video's";
+
+/* (No Commment) */
+"%@ Videos Selected" = "%@ video's geselecteerd";
+
+/* (No Commment) */
 "%@ of %@" = "%1$@ op %2$@";
 
-/* Messages if privacy is not granted */
-"This app does not have access to your photos or videos." = "Deze App heeft geen toegang tot je foto's en video's.";
-"You can enable access in Privacy Settings." = "Je kan de applicatie toegang verlenen via Instellingen > Privacy.";
+/* (No Commment) */
+"Cancel" = "Annuleren";
 
-/* Messages if no assets */
-"No Photos or Videos" = "Geen foto's of video's";
+/* (No Commment) */
+"Cannot Play Stream Video" = "Kan video stream niet afspelen";
 
-/* The parameter will be replaced by the device model name */
-"You can take photos and videos using the camera, or sync photos and videos onto your %@\nusing iTunes." = "Je kunt foto's of video's nemen met je camera, of door je foto's en video's te synchroniseren met je %@n in iTunes.";
-"You can sync photos and videos onto your %@ using iTunes." = "Je kunt foto's en video's synchroniseren met je %@ in iTunes";
-
-/* Accessibility labels */
-"Play" = "Lezen";
-"Select" = "Select";
+/* (No Commment) */
 "Deselect" = "Deselecteren";
 
-/* Video duration spell out */
-"hours" = "uren";
+/* (No Commment) */
+"Done" = "Gereed";
+
+/* (No Commment) */
+"No Photos or Videos" = "Geen foto's of video's";
+
+/* (No Commment) */
+"OK" = "OK";
+
+/* (No Commment) */
+"Photos" = "Foto's";
+
+/* (No Commment) */
+"Play" = "Lezen";
+
+/* (No Commment) */
+"Select" = "Select";
+
+/* (No Commment) */
+"This app does not have access to your photos or videos." = "Deze App heeft geen toegang tot je foto's en video's.";
+
+/* (No Commment) */
+"You can enable access in Privacy Settings." = "Je kan de applicatie toegang verlenen via Instellingen > Privacy.";
+
+/* (No Commment) */
+"You can sync photos and videos onto your %@ using iTunes." = "Je kunt foto's en video's synchroniseren met je %@ in iTunes";
+
+/* (No Commment) */
+"You can take photos and videos using the camera, or sync photos and videos onto your %@
+using iTunes." = "Je kunt foto's of video's nemen met je camera, of door je foto's en video's te synchroniseren met je %@n in iTunes.";
+
+/* (No Commment) */
 "hour" = "uur";
-"minutes" = "minuten";
+
+/* (No Commment) */
+"hours" = "uren";
+
+/* (No Commment) */
 "minute" = "minuut";
-"seconds" = "seconden";
+
+/* (No Commment) */
+"minutes" = "minuten";
+
+/* (No Commment) */
 "second" = "seconde";
 
-/* Error message of playing stream video */
-"Cannot Play Stream Video" = "Kan video stream niet afspelen";
-"OK" = "OK";
+/* (No Commment) */
+"seconds" = "seconden";
+

@@ -1,0 +1,518 @@
+/*
+ Localizable.strings
+ Crypto Cloud - Nextcloud
+ 
+ Created by Marino Faggiana on 30/10/15.
+ Copyright © 2016 TWS. All rights reserved.
+ */
+
+// General
+
+"_cancel_"                  = "取消";
+"_upload_file_"             = "上传文件";
+"_download_file_"           = "下载文件";
+"_upload_encrypted_file_"   = "上传加密文件";
+"_loading_"                 = "加载";
+"_loading_num_"             = "加载文件 %i";
+"_loading_camera_upload_"   = "自动上传";
+"_uploading_"               = "上传中";
+"_synchronization_"         = "同步";
+"_delete_"                  = "删除";
+"_delete_file_n_"           = "删除文件 %i ／ %i";
+"_rename_"                  = "重命名";
+"_move_"                    = "移动";
+"_move_file_n_"             = "移动文件 %i ／ %i";
+"_create_folder_"           = "创建文件夹";
+"_creating_sharing_"        = "创建共享";
+"_updating_sharing_"        = "更新共享";
+"_removing_sharing_"        = "删除共享";
+"_add_"                     = "增加";
+"_login_"                   = "登录";
+"_save_"                    = "保存";
+"_save_encrypted_"          = "保存（加密）";
+"_warning_"                 = "警告";
+"_error_"                   = "错误";
+"_no_"                      = "否";
+"_yes_"                     = "是";
+"_select_"                  = "选择";
+"_crypto_cloud_upload_"     = "_brand_ - 上传";
+"_home_"                    = "文件";
+"_file_to_upload_"          = "上传文件";
+"_destination_"             = "目标";
+"_ok_"                      = "Ok";
+"_beta_version_"            = "Beta version";
+"_function_in_testing_"     = "功能测试中，遇到任何问题或故障请联系";
+"_done_"                    = "完成";
+"_passcode_too_short_"      = "密码不得小于四个字符";
+"_selected_"                = "已选择";
+"_scan_fingerprint_"        = "扫描指纹认证";
+"_no_active_account_"       = "帐号不存在";
+"_info_"                    = "信息";
+"_save_exit_"               = "是否要退出而不保存?";
+"_video_"                   = "视频";
+"_overwrite_"               = "覆盖";
+"_transfers_in_queue_"      = "传输中，请稍后 ...";
+"_too_errors_automatic_all_"= "太多的错误，去控制中心验证问题";
+"_create_folder_"           = "创建目录";
+"_close_"                   = "关闭";
+"_postpone_"                = "推迟";
+"_remove_"                  = "删除";
+"_file_not_found_"          = "文件不存在";
+
+// App
+
+"_synchronization_header_"  = "正在进行的加密报头同步 ...";
+"_network_available_"       = "网络可用";
+"_network_not_available_"   = "网络不可用";
+
+// Networking
+
+"_file_too_big_"            = "文件太大";
+"_file_too_big_max_100_"    = "文件太大 (最大 100 kb.)";
+"_...loading..._"           = ".. 加载中 ..";
+"_download_plist_"          = " ";
+"_no_reuploadfile_"         = "文件未找到，请刷新后重新上传。";
+"_file_already_exists_"     = "操作无法完成，已经存在同名文件。";
+"_read_file_error_"         = "文件读取错误";
+
+// Settings
+
+"_acknowledgements_"        = "鸣谢";
+"_settings_"                = "设置";
+"_passcode_"                = "密码";
+"_lock_active_"             = "锁定 : 启用";
+"_lock_not_active_"         = "锁定 : 停用";
+"_lock_protection_folder_"  = "仅为受保护文件夹锁定";
+"_url_"                     = "URL";
+"_username_"                = "用户名";
+"_change_credentials_"      = "切换帐户";
+"_wifi_only_"               = "仅在WIFI下使用";
+"_uploading_from_camera_"   = "自动上传照相机照片";
+"_app_version_"             = "应用版本";
+"_app_in_use_"              = "应用程序使用中";
+"_contact_by_email_"        = "通过电子邮件与我们联系";
+"_clear_cache_"             = "清理缓存 (%@ 已使用)";
+"_clear_cache_no_size_"     = "清理缓存";
+"_exit_"                    = "推出 _brand_";
+"_funct_not_enabled_"       = "功能未启用";
+"_passcode_activate_"       = "开启密码锁";
+"_disabling_passcode_"      = "不开启密码锁";
+"_want_exit_"               = "注意! _brand_ 将被重置为初始状态。继续吗?";
+"_proceed_"                 = "继续";
+"_delete_cache_"            = "清理缓存";
+"_want_delete_cache_"       = "确认清理缓存 (所有的本地文件和脱机文件将被清除)?";
+"_mail_deleted_"            = "邮件已删除";
+"_mail_saved_"              = "邮件已保存";
+"_mail_sent_"               = "邮件发送成功";
+"_mail_failure_"            = "邮件发送失败: %@";
+"_information_req_"         = "Information request";
+"_credentials_"             = "证书";
+"_manage_account_"          = "管理帐户";
+"_modify_account_"          = "修改帐户";
+"_add_nextcloud_"           = "增加Nextcloud帐户";
+"_delete_account_"          = "删除帐户";
+"_want_delete_"             = "确定要删除?";
+"_no_delete_"               = "不, 我后悔了";
+"_yes_delete_"              = "是滴, 删除";
+"_remove_cache_"            = "请稍等, 缓存清理中 ...";
+"_optimizations_"           = "优化";
+"_synchronizations_"        = "同步目录";
+"_version_server_"          = "服务器版本";
+"_check_key_aes_256_"       = "加密密钥";
+"_encryptpass_by_email_"    = "邮件发送密钥";
+"_title_mail_encryptpass_"  = "密钥 _brand_";
+"_text1_mail_encryptpass_"  = "您的密钥是";
+"_text2_mail_encryptpass_"  = "请妥善保管，谨防偷窥.";
+"_help_"                    = "帮助";
+"_lock_protection_simply_"  = "弱密码保护";
+"_change_simply_passcode_"  = "更改密码类型";
+"_quota_"                   = "配额";
+"_available_"               = "available";
+"_cloud_account_"           = "云帐户";
+"_information_"             = "信息";
+
+// Manage Camera Upload
+
+"_upload_camera_"           = "上传照片／视频";
+"_upload_camera_background_"= "上传背景图片";
+"_upload_foto_camera_"      = "上传相机照片";
+"_upload_encry_camup_"      = "加密后上传";
+"_upload_video_camera_"     = "上传相机视频";
+"_upload_automatic_photos_" = "自动上传相机照片";
+"_upload_automatic_videos_" = "自动上传相机视频";
+"_photo_folder_photocamera_"= "照片将被上传到云服务器上的'photos'目录下";
+"_upload_automatic_videos_footer_"  = "由于CPU使用的限制, 视频上传时， _brand_ 必须活跃在前台.";
+"_photo_folder_background_"         = "This option requires the use of GPS to trigger the detection of new photos in the camera roll once the location changes significantly";
+"_cameraupload_background_title_"   = "局限性";
+"_cameraupload_background_msg_"     = "Due to IOS restrictions, it is not yet possible to perform background processes, unless GPS services are activated. Once the cell in the cellular network is changed, the system wakes up _brand_ for a short time and checks for new photos to upload to the cloud.";
+"_upload_camera_change_location_"   = "更改目录";
+"_upload_camera_location_now_"      = "目录";
+"_upload_camera_location_default_"  = "恢复为默认目录";
+"_upload_camera_change_location_footer_" = "更改照片目录，用于“自动上传相机照片”（如果选项已启用）";
+"_camera_upload_not_select_home_"   = "选择一个目录";
+"_upload_camera_save_album_"        = "在相册中复制照片或视频";
+"_upload_camera_save_album_footer_" = "后自动发送的照片或视频，同时在相册保存一份：_brand_（不需要更多的相机空间）";
+"_upload_camera_fullphotos_"        = "上传所有相机照片、视频";
+"_upload_camera_fullphotos_footer_" = "在上传前选择";
+"_upload_camera_create_subfolder_" = "使用子目录";
+"_upload_camera_create_subfolder_footer_" = "根据年、月创建子目录";
+
+// Manage Crypto Cloud
+
+"_crypto_cloud_system_"             = "Crypto Cloud System";
+"_alert_activation_crypto_cloud_"   = "Crypto Cloud System activated correctly";
+"_alert_deactivation_crypto_cloud_" = "Crypto Cloud System deactivated correctly";
+"_activation_crypto_cloud_"         = "Activation Crypto Cloud System";
+"_deactivation_crypto_cloud_"       = "Deactivation Crypto Cloud System";
+"_footer_crypto_cloud_"             = "Based on the encryption AES-256, Crypto Cloud System will enable you to store all your private data (documents, templates, photos, videos, etc…) in your Cloud, thus keeping them safe from possible 'prying eyes'.\n\nYou will be asked to enter a encryption key (minimum 4 characters, maximum 64 characters). You will never be able to retrieve it and your files will remain encrypted. Should you re-install Nextcloud or access to your data from another iOS system, use the same combination.\n\nAny file can be encrypted or decrypted. The name of folders containing your files can be encrypted as well (so as to hide any possible hint at their contents).\n\nAny kind of document, either in standard or in encrypted format, can be uploaded from Nextcloud onto your Cloud. All encrypted files and folders will be marked in orange colour. If they are in preview mode, they will be identified by a 3 bullets orange label instead.\n\nTemplates for recording your confidential data (note, credit card, ATM card, bank accounts, passwords to websites, etc…) are available and they can be saved in your Cloud in encrypted mode as well.\n\nActive/Disactive whenever you want, but remember to always use the same encryption key.\n\nAt the moment the encrypted files with Crypto Cloud System can be viewed only with iOS system.";
+
+// Manage Photos
+
+"_change_folder_photos_"    = "Change folder Photos";
+
+// Manage Help
+
+"_help_tutorial_"           = "教程";
+"_help_intro_"              = "引言 _brand_";
+"_help_synchronizations_"   = "同步目录";
+"_help_share_"              = "共享文件或目录";
+"_help_itunes_share_"       = "iTunes文件共享和指纹";
+"_help_share_ext_"          = "共享扩展和共享权限";
+"_help_copy_paste_"         = "复制、粘贴文件";
+"_help_control_center_"     = "控制中心";
+"_help_switch_user_"        = "快速切换帐户";
+
+// Manage Optimizations
+
+"_optimized_photos_"        = "优化照片的分辨率";
+"_upload_del_photos_"       = "上传后删除文件";
+"_optimized_photos_how_"    = "如果您的iPhone空间不足，可以在本地保存优化后的照片，完整分辨率的版本将保存在服务器上。";
+"_upload_del_photos_how_"   = "上传成功后，文件将会被从_brand_中删除，只能通过下载来查看。";
+
+// Login
+
+"_connect_server_anyway_"   = "是否连接到服务器?";
+"_connection_error_"        = "连接错误";
+"_add_your_nextcloud_"      = "增加Nextcloud帐户";
+"_key_aes_256_"             = "密钥";
+
+"_security_init_required_hint_" = "加密密钥的密码提示（推荐）";
+"_hint_"                        = "提示";
+"_security_init_required_mail_" = "进入邮箱查看密钥。 如果您不能或不希望现在这样做，您可以稍后设置。";
+"_email_"                       = "邮件";
+"_title_form_security_init_"    = "安全选项";
+
+// offline
+
+"_favorites_"                   = "喜爱";
+"_offline_"                     = "离线";
+"_local_storage_"               = "本地存储";
+"_no_files_uploaded_"           = "没有文件被上传";
+"_tutorial_favorite_view_"      = "复制到这里的文件可以离线访问。\n\n将与云盘同步。";
+"_tutorial_offline_view_"       = "复制到这里的文件可以离线访问。\n\n将与云盘同步。";
+"_tutorial_local_view_"         = "你可以在云盘中找到解压后的文件。\n\n连接iTunes共享这些文件。";
+"_more_"                        = "更多";
+
+// Camera Upload
+
+"_pull_down_"                               = "下拉刷新";
+"_no_photo_load_"                           = "没有图片或视频";
+"_tutorial_camera_upload_view_"             = "没有视频或图片，可以通过设置‘自动上传相机照片’使照片和视频被自动上传";
+"_no_date_"                                 = "没有日期";
+"_today_"                                   = "今天";
+"_time_"                                    = "时间 : %@\n\n%@";
+"_location_not_enabled_"                    = "不允许获取地理位置";
+"_location_not_enabled_msg_"                = "请去设置和打开定位服务，允许相机照片、视频自动上传。";
+"_access_photo_not_enabled_"                = "访问照片没有被允许";
+"_access_photo_not_enabled_msg_"            = "请去设置打开照片访问权限，允许相机照片、视频自动上传。";
+"_access_photo_location_not_enabled_"       = "照片访问和定位服务没有启用";
+"_access_photo_location_not_enabled_msg_"   = "请去设置打开照片访问和定位服务，允许相机照片、视频自动上传。";
+"_processing_send_camera_upload_"           = "相机照片上传中 ...";
+"_select_only_localfile_"                   = "文件尚未下载";
+"_tutorial_photo_view_"                     = "没有加载任何照片或视频";
+"_create_full_upload_"                      = "建立档案..可能需要很长时间，请等待";
+"_error_createsubfolders_upload_"           = "创建子目录错误";
+
+// Template
+
+"_title_"                       = "标题";
+"_web_account_data_"            = "网络账户数据";
+"_url:_"                        = "网址 :";
+"_login:_"                      = "登陆 :";
+"_password:_"                   = "密码 :";
+"_notes_"                       = "便签";
+"_web_account_"                 = "网络账户";
+"_enter_title_"                 = "输入标题";
+"_add_folder_"                  = "创建目录";
+"_add_photos_videos_"           = "增加图片或视频";
+"_add_folder_encryptated_"      = "创建目录（名称加密）";
+"_add_encrypted_photo_video_"   = "增加图片或视频（加密）";
+"_add_credit_card_"             = "增加信用卡模板";
+"_add_atm_"                     = "增加银行卡模板";
+"_add_bank_account_"            = "增加银行账户模板";
+"_add_web_account_"             = "增加网络帐户";
+"_add_notes_"                   = "增加便签";
+"_add_driving_license_"         = "增加驾照模板";
+"_add_id_card_"                 = "增加身份证模板";
+"_add_passport_"                = "增加护照模板";
+"_add_atm_card_"                = "银行卡数据";
+"_bank_name:_"                  = "银行名 :";
+"_code:_"                       = "号码 :";
+"_security_code:_"              = "安全代码 :";
+"_pin:_"                        = "PIN :";
+"_atm_card_"                    = "银行卡";
+"_credi_card_data_"             = "信用卡数据";
+"_name_surname:_"               = "姓 :";
+"_expiry_date:_"                = "有效期 :";
+"_credit_card_"                 = "信用卡";
+"_id_card_"                     = "身份证";
+"_number:_"                     = "号码 :";
+"_place_of_birth:_"             = "出生地 :";
+"_date_of_birth:_"              = "生日 :";
+"_date_of_issue:_"              = "签发日期 :";
+"_date_of_expiry:_"             = "有效期 :";
+"_bank_account_data_"           = "银行账户数据";
+"_account_n:_"                  = "账号. :";
+"_iban:_"                       = "IBAN :";
+"_swift:_"                      = "SWIFT :";
+"_agency:_"                     = "代理 :";
+"_bank_account_"                = "银行账户";
+"_passport_"                    = "护照";
+"_driving_license_"             = "驾照";
+"_license_number:_"             = "编号 :";
+"_vehicle_types:_"              = "车辆类型 :";
+
+// Utility
+
+"_never_"                       = "从不";
+"_less_a_minute_"               = "不到一分钟前";
+"_minutes_ago_"                 = "%d 分钟前";
+"_hours_ago_"                   = "%d 小时前";
+"_days_ago_"                    = "%d 天前";
+"_over_30_days_"                = "超过30天";
+"_connection_internet_offline_" = "当前是离线状态，或者不在WIFI环境下";
+"_insert_password_"             = "输入密码";
+"_update_in_progress_"          = "版本更新，请稍等 ...";
+"_forbidden_characters_"        = "文件或文件夹名包含不允许的字符";
+"_mail_not_can_send_mail_"      = "没有配置帐户或输入的电子邮件地址不正确";
+
+// File
+
+"_photo_camera_"                = "照片";
+"_unzip_in_progress_"           = "正解压到本地 ...";
+"_file_unpacked_"               = "文件成功解压在本地";
+"_file_saved_local_"            = "文件已保存到本地。";
+"_file_not_present_"            = "错误，文件不存在，请重新加载。";
+"_order_by_date_"               = "按日期排序";
+"_current_order_name_"          = "(当前按名称排序)";
+"_order_by_name_"               = "按名称排序";
+"_current_order_date_"          = "(当前按日期排序)";
+"_sort_descending_"             = "按递减排序";
+"_current_sort_ascending_"      = "(当前按递增排序)";
+"_sort_ascending_"              = "按递增排序";
+"_current_sort_descending_"     = "(当前按递减排序)";
+"_delete_selected_files_"       = "删除文件";
+"_move_selected_files_"         = "移动文件";
+"_encrypted_selected_files_"    = "加密文件";
+"_decrypted_selected_files_"    = "解密文件";
+"_download_selected_files_"     = "下载文件";
+"_error_passcode_"              = "错误：错误的密码或密钥";
+"_error_operation_canc_"        = "错误：操作被取消";
+"_only_lock_passcode_"          = "仅可使用锁定密码激活，在设置中激活。";
+"_passcode_protection_"         = "密码保护";
+"_encrypt_"                     = "加密";
+"_decrypt_"                     = "解密";
+"_remove_favorites_"            = "从喜爱中删除";
+"_remove_offline_"              = "从离线中删除";
+"_add_favorites_"               = "增加到喜爱";
+"_add_offline_"                 = "增加到离线";
+"_remove_passcode_"             = "取消密码保护";
+"_protect_passcode_"            = "密码保护";
+"_share_"                       = "共享";
+"_reload_"                      = "重新加载";
+"_open_in_"                     = "在...中打开";
+"_add_local_"                   = "增加到本地";
+"_comm_erro_pull_down_"         = "与服务器通信错误，下拉刷新。";
+"_file_not_downloaded_"         = "文件没有被下载";
+"_file_not_uploaded_"           = "文件没有被上传";
+"_folders_"                     = "目录";
+"_folder_"                      = "目录";
+"_files_"                       = "文件";
+"_file_"                        = "文件";
+"_folder_blocked_"              = "Folder blocked";
+"_downloading_progress_"        = "启动文件下载 ...";
+"_encrypted_progress_"          = "加密 ...";
+"_decrypted_progress_"          = "解密 ...";
+"_no_file_pull_down_"           = "没有找到文件，上传文件或下拉刷新";
+"_browse_images_"               = "浏览图片";
+"_synchronized_folder_"         = "保持目录同步";
+"_remove_synchronized_folder_"  = "取消同步";
+"_synchronized_confirm_"        = "允许同步后，目录中的所有文件将会与服务器进行同步, 是否继续?";
+"_offline_folder_confirm_"      = "允许离线后，目录中的所有文件将会与服务器进行同步, 是否继续?";
+"_same_device_different_passcode_"  = "文件在同一个设备上，使用不同的密码加密过，使用新密码加密后，旧密码将无效。";
+"_file_encrypted_another_device_"   = "文件已经在另一台设备 [%@]上被加密, 输入密码解密。";
+"_file_not_found_reload_"       = "文件未找到，下拉刷新";
+"_title_section_download_"      = "下载";
+"_title_section_upload_"        = "上传";
+"_group_alphabetic_yes_"        = "✓ 按字母顺序分组";
+"_group_alphabetic_no_"         = "按字母顺序分组";
+"_group_typefile_yes_"          = "✓ 按文件类型分组";
+"_group_typefile_no_"           = "按文件类型分组";
+"_group_date_yes_"              = "✓ 按日期分组";
+"_group_date_no_"               = "按日期分组";
+"_element_"                     = "元素";
+"_elements_"                    = "元素";
+"_tite_footer_upload_wwan_"     = "  需要WIFI网络, %lu %@ 上传";
+"_tite_footer_upload_"          = "%lu %@ 上传";
+"_tite_footer_download_wwan_"   = "  需要WIFI网络, %lu %@ 下载";
+"_tite_footer_download_"        = "%lu %@ 下载";
+"_limited_dimension_"           = "超过最大允许尺寸";
+"_same_device_different_passcode_hint_" = "The file was encrypted by the same device but with different Passcode key encryption. Attention if the old Passcode is entered,files encrypted with the new Passcode will not be readable. \n\n Hint : %@";
+"_file_encrypted_another_device_hint_" = "The file was encrypted by another device [%@], enter the Passcode key encryption to read its contents. \n\n Hint : %@";
+"_save_selected_files_"         = "保存图片和视频到相册";
+"_file_not_saved_cameraroll_"   = "错误，文件未保存到相册";
+"_file_saved_cameraroll_"       = "文件保存到相册";
+"_directory_on_top_yes_"        = "✓ 目录置顶";
+"_directory_on_top_no_"         = "目录置顶";
+"_folder_automatic_upload_"     = "自动上传目录";
+
+"audio"                         = "声音";
+"compress"                      = "压缩包";
+"directory"                     = "目录";
+"document"                      = "文档";
+"image"                         = "图片";
+"template"                      = "模板";
+"unknow"                        = "其他";
+"video"                         = "视频";
+
+"_no_plist_pull_down_"          = "加密文件未更新，下拉刷新";
+"_file_del_only_local_"         = "文件在服务器上不存在";
+
+"_copy_file_"                   = "复制文件";
+"_copy_files_"                  = "复制文件";
+"_paste_file_"                  = "粘贴文件";
+"_paste_file_encrypted_"        = "粘贴加密文件";
+"_paste_files_"                 = "粘贴文件";
+"_paste_files_encrypted_"       = "粘贴加密文件";
+"_paste_cryptated_"             = "粘贴加密文件";
+
+"_search_this_folder_"          = "在当前目录中查找";
+"_search_all_folders_"          = "在所有目录中查找";
+
+// Security
+
+"_reload_folder_"               = "请刷新目录";
+"_encrypt_error_"               = "文件 %@ 加密过程中出错。 [%@]";
+"_decrypt_error_"               = "文件 %@ 解密过程中出错。[%@]";
+"_encryption_"                  = "加密 ...";
+"_decryption_"                  = "解密 ...";
+
+// CoreData
+
+"_required_new_database_"       = "Sorry for the inconvenience, but because of improvements it's required to re-login to get a new version of the database.";
+
+// Files Preview
+
+"_insert_password_pfd_"         = "被保护的PDF，请输入密码";
+"_password_pdf_error_"          = "密码错误";
+"_error_download_photobrowser_" = "错误，不能下载照片";
+
+// Share
+
+"_share_link_"                  = "分享链接";
+"_share_link_button_"           = "发送链接到 ...";
+"_password_"                    = "密码";
+"_share_password_"              = "密码保护链接";
+"_share_expirationdate_"        = "设置链接有效期";
+"_date_"                        = "日期";
+"_share_title_"                 = "分享";
+"_add_sharee_"                  = "增加用户或组";
+"_add_sharee_footer_"           = "您可以通过添加用户或组来共享此资源。删除共享删除所有用户和组";
+"_find_sharee_title_"           = "查找";
+"_find_sharee_"                 = "查找用户或组 ...";
+"_find_sharee_footer_"          = "输入要搜索的用户或组的名称（至少2个字符），然后返回，选择允许访问该共享的用户，然后点击‘完成’确认";
+"_user_is_group_"               = " (组)";
+"_direct_sharee_title_"         = "分享";
+"_direct_sharee_footer_"        = "请输入名称, 然后点击‘完成’确认";
+"_direct_sharee_"               = "输入用户名 ...";
+"_user_sharee_footer_"          = "点击更改全县";
+"_share_type_title_"            = "分享类型";
+"_share_type_user_"             = "用户";
+"_share_type_group_"            = "组";
+"_share_type_remote_"           = "远程";
+
+// Share Permission
+
+"_share_permission_title_"          = "权限";
+"_share_permission_edit_"           = "可编辑";
+"_share_permission_file_can_write_" = "可写";
+"_share_permission_create_"         = "可创建";
+"_share_permission_create_file_"    = "可创建文件";
+"_share_permission_create_folder_"  = "可创建目录";
+"_share_permission_change_"         = "可修改";
+"_share_permission_delete_"         = "可删除";
+"_share_permission_share_"          = "可共享";
+"_share_permission_rename_"         = "可重命名";
+"_share_permission_move_"           = "可移动";
+"_share_permission_info_"           = "共享信息";
+"_share_permission_path_"           = "文件、目录";
+"_share_permission_type_"           = "类型";
+"_share_permission_typeuser_"       = "用户";
+"_share_permission_typegroup_"      = "组";
+"_share_permission_typepubliclink_" = "链接";
+"_share_permission_typefederated_"  = "联合";
+"_share_permission_owner_"          = "所有者";
+"_share_permission_date_"           = "日期";
+"_share_permission_email_"          = "邮件通知";
+
+// ShareInfoCMOC
+
+"_type_resource_connect_you_"       = "你的分享";
+"_type_resource_external_"          = "外部存储";
+
+// Share Ext
+
+"_destiny_folder_"                  = "目录 : %@";
+
+// List Transfers
+
+"_no_transfer_"                     = "没有传输";
+
+// Offline
+
+"_create_synchronization_"          = "创建同步";
+
+// Create Cloud
+
+"_upload_photos_videos_"            = "上传照片或视频";
+"_upload_file_"                     = "上传文件";
+"_upload_encrypted_mode"            = "加密上传";
+"_upload_template_"                 = "上传模板";
+"_upload_plain_mode"                = "普通上传";
+
+// Document Picker
+
+"_save_document_picker_"            = "保存到这里";
+
+// CreateFormUploadAssets
+
+"_destination_folder_"              = "目标目录";
+"_use_folder_photos_"               = "使用目录照片作为目的地";
+"_rename_filename_"                 = "重命名";
+"_filename_"                        = "文件名";
+"_preview_filename_"                = "例如预览文件名，你可以用 MM,DD,YY 表示日期";
+"_forbidden_characters_"            = "文件名中有非法字符";
+
+// Notification
+
+"_notification_"                    = "通知";
+
+// -----------------------------------------------------------------------------------------------------------
+
+"Done"                          = "完成";
+"Select Photos"                 = "选择照片";
+"photo"                         = "照片";
+"photos"                        = "照片";
+"of"                            = "／";
+
+"%i of %i"                      = "%1$i ／ %2$i";

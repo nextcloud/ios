@@ -1,49 +1,85 @@
-/* Navigation bar buttons */
+/* (No Commment) */
+"%@ Items Selected" = "选择了 %@ 项目";
+
+/* (No Commment) */
+"%@ Photo Selected" = "选择了 %@ 张照片";
+
+/* (No Commment) */
+"%@ Photos" = "%@ 照片";
+
+/* (No Commment) */
+"%@ Photos Selected" = "选择了 %@ 张照片";
+
+/* (No Commment) */
+"%@ Photos, %@ Videos" = "%1$@ 张照片, %2$@ 个视频";
+
+/* (No Commment) */
+"%@ Video Selected" = "选择了 %@ 个视频";
+
+/* (No Commment) */
+"%@ Videos" = "%@ 个视频";
+
+/* (No Commment) */
+"%@ Videos Selected" = "选择了 %@ 个视频";
+
+/* (No Commment) */
+"%@ of %@" = "%1$@ ／ %2$@";
+
+/* (No Commment) */
 "Cancel" = "取消";
-"Done" = "完成";
 
-/* Default title */
-"Photos" = "照片";
+/* (No Commment) */
+"Cannot Play Stream Video" = "无法播放";
 
-/* No. of selected */
-"%@ Photo Selected" = "已选择%@张照片";
-"%@ Photos Selected" = "已选择%@张照片";
-"%@ Video Selected" = "已选择%@个视频";
-"%@ Videos Selected" = "已选择%@个视频";
-"%@ Items Selected" = "已选择%@项";
-
-/* Grid view footer */
-"%@ Photos" = "%@张照片";
-"%@ Videos" = "%@个视频";
-"%@ Photos, %@ Videos" = "%1$@张照片，%2$@个视频";
-
-/* Assets index */
-"%@ of %@" = "%1$@，共%2$@";
-
-/* Messages if privacy is not granted */
-"This app does not have access to your photos or videos." = "此应用程序对您的照片或视频没有访问权。";
-"You can enable access in Privacy Settings." = "您可以在隐私设置中启用访问权。";
-
-/* Messages if no assets */
-"No Photos or Videos" = "无照片或视频";
-
-/* The parameter will be replaced by the device model name */
-"You can take photos and videos using the camera, or sync photos and videos onto your %@\nusing iTunes." = "您可以使用摄像头拍摄照片和视频，或使用iTunes将照片和视频同步到您的%@上。\n";
-"You can sync photos and videos onto your %@ using iTunes." = "您可以使用iTunes将照片和视频同步到您的%@上。";
-
-/* Accessibility labels */
-"Play" = "播放";
-"Select" = "选择";
+/* (No Commment) */
 "Deselect" = "取消选择";
 
-/* Video duration spell out */
-"hours" = "小时";
-"hour" = "小时";
-"minutes" = "分钟";
-"minute" = "分钟";
-"seconds" = "秒";
-"second" = "秒";
+/* (No Commment) */
+"Done" = "完成";
 
-/* Error message of playing stream video */
-"Cannot Play Stream Video" = "无法播放影片";
-"OK" = "好";
+/* (No Commment) */
+"No Photos or Videos" = "没有照片或视频";
+
+/* (No Commment) */
+"OK" = "OK";
+
+/* (No Commment) */
+"Photos" = "照片";
+
+/* (No Commment) */
+"Play" = "播放";
+
+/* (No Commment) */
+"Select" = "选择";
+
+/* (No Commment) */
+"This app does not have access to your photos or videos." = "Deze App heeft geen toegang tot je foto's en video's.";
+
+/* (No Commment) */
+"You can enable access in Privacy Settings." = "Je kan de applicatie toegang verlenen via Instellingen > Privacy.";
+
+/* (No Commment) */
+"You can sync photos and videos onto your %@ using iTunes." = "Je kunt foto's en video's synchroniseren met je %@ in iTunes";
+
+/* (No Commment) */
+"You can take photos and videos using the camera, or sync photos and videos onto your %@
+using iTunes." = "Je kunt foto's of video's nemen met je camera, of door je foto's en video's te synchroniseren met je %@n in iTunes.";
+
+/* (No Commment) */
+"hour" = "uur";
+
+/* (No Commment) */
+"hours" = "uren";
+
+/* (No Commment) */
+"minute" = "minuut";
+
+/* (No Commment) */
+"minutes" = "minuten";
+
+/* (No Commment) */
+"second" = "seconde";
+
+/* (No Commment) */
+"seconds" = "seconden";
+
