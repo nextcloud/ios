@@ -365,9 +365,9 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         self.navigationItem.leftBarButtonItem = cancelButton
         self.navigationItem.rightBarButtonItem = saveButton
         
-        self.navigationController?.navigationBar.barTintColor = CCConstant.GlobalConstants.k_Color_NavigationBar
-        self.navigationController?.navigationBar.tintColor = CCConstant.GlobalConstants.k_Color_NavigationBar_Text
-        self.navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: CCConstant.GlobalConstants.k_Color_NavigationBar_Text]
+        self.navigationController?.navigationBar.barTintColor = Constant.GlobalConstants.k_Color_NavigationBar
+        self.navigationController?.navigationBar.tintColor = Constant.GlobalConstants.k_Color_NavigationBar_Text
+        self.navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: Constant.GlobalConstants.k_Color_NavigationBar_Text]
         
         self.tableView.separatorStyle = UITableViewCellSeparatorStyle.none
         
@@ -512,9 +512,9 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         let viewController : CCMove = navigationController.topViewController as! CCMove
         
         viewController.delegate = self;
-        viewController.tintColor = CCConstant.GlobalConstants.k_Color_NavigationBar_Text
-        viewController.barTintColor = CCConstant.GlobalConstants.k_Color_NavigationBar
-        viewController.tintColorTitle = CCConstant.GlobalConstants.k_Color_NavigationBar_Text
+        viewController.tintColor = Constant.GlobalConstants.k_Color_NavigationBar_Text
+        viewController.barTintColor = Constant.GlobalConstants.k_Color_NavigationBar
+        viewController.tintColorTitle = Constant.GlobalConstants.k_Color_NavigationBar_Text
         viewController.move.title = NSLocalizedString("_select_", comment: "");
         viewController.networkingOperationQueue =  appDelegate.netQueue
         
