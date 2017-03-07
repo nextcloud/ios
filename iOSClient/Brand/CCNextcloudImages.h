@@ -28,8 +28,4 @@
 #define image_brandNavigationControllerOffline  @"nextcloud_navigationcontroller_offline"
 #define image_brandBackgroundLite               @"nextcloud_lite"
 
-#define image_quickActionPhotos                 @"quickActionPhotosNextcloud"
-#define image_quickActionUpload                 @"quickActionUploadNextcloud"
-#define image_quickActionUploadEncrypted        @"quickActionUploadEncryptedNextcloud"
-
 #define image_Nextcloud                         @"typeCloudNextcloud"

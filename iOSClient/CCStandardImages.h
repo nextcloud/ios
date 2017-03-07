@@ -104,6 +104,10 @@
 #define image_photosDownload                    @"photosDownload"
 #define image_plist                             @"plist"
 
+#define image_quickActionPhotos                 @"quickActionPhotos"
+#define image_quickActionUpload                 @"quickActionUpload"
+#define image_quickActionUploadEncrypted        @"quickActionUploadEncrypted"
+
 #define image_reloadtask                        @"reloadtask"
 #define image_reloadtaskcrypto                  @"reloadtaskcrypto"
 #define image_removetask                        @"removetask"
