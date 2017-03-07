@@ -758,7 +758,7 @@
     item.selectedImage = [UIImage imageNamed:image_tabBarSettings];
     
     // Plus Button
-    UIImage *buttonImage = [UIImage imageNamed:@"Plus"];
+    UIImage *buttonImage = [UIImage imageNamed:image_tabBarPlus];    
     UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
     button.tag = 99;
     button.frame = CGRectMake(0.0, 0.0, buttonImage.size.width, buttonImage.size.height);

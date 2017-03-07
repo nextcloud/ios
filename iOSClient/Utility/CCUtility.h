@@ -180,5 +180,4 @@
 + (NSDate *)datetimeWithOutTime:(NSDate *)datDate;
 + (NSDate *)datetimeWithOutDate:(NSDate *)datDate;
 + (BOOL)isValidEmail:(NSString *)checkString;
-
 @end

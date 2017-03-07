@@ -21,12 +21,12 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+#define image_tabBarPlus                        @"tabBarPlusNextcloud"
+
 #define image_brandLogin                        @"nextcloudLogin"
 #define image_brandNavigationController         @"nextcloud_navigationcontroller"
 #define image_brandNavigationControllerOffline  @"nextcloud_navigationcontroller_offline"
 #define image_brandBackgroundLite               @"nextcloud_lite"
-
-#define image_launchscreen                      @"nextcloudlaunchscreen"
 
 #define image_quickActionPhotos                 @"quickActionPhotosNextcloud"
 #define image_quickActionUpload                 @"quickActionUploadNextcloud"
