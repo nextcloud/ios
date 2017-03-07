@@ -21,3 +21,12 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+#define image_brandLogin                        @"ImageLoginNextcloud"
+#define image_brandCameraUpload                 @"nextcloudCameraUpload"
+#define image_brandOffline                      @"nextcloudOffline"
+#define image_brandLocal                        @"nextcloudLocal"
+#define image_brandNavigationController         @"nextcloud_navigationcontroller"
+#define image_brandNavigationControllerOffline  @"nextcloud_navigationcontroller_offline"
+#define image_brandBackgroundLite               @"nextcloud_lite"
+
+#define image_launchscreen                      @"nextcloudlaunchscreen"

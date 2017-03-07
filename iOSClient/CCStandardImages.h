@@ -38,18 +38,8 @@
 #define image_audiocrypto                       @"audiocrypto"
 #define image_avatar                            @"avatar"
 
-#define image_brandLogin                        @"ImageLoginNextcloud"
 #define image_bkfull                            @"bkfull"
 #define image_bkempty                           @"bkempty"
-#define image_brandCameraUpload                 @"nextcloudCameraUpload"
-#define image_brandOffline                      @"nextcloudOffline"
-#define image_brandLocal                        @"nextcloudLocal"
-#define image_brandNavigationController         @"nextcloud_navigationcontroller"
-#define image_brandNavigationController1        @"nextcloud_navigationcontroller1"
-#define image_brandNavigationController2        @"nextcloud_navigationcontroller2"
-#define image_brandNavigationController3        @"nextcloud_navigationcontroller3"
-#define image_brandNavigationControllerOffline  @"nextcloud_navigationcontroller_offline"
-#define image_brandBackgroundLite               @"nextcloud_lite"
 
 #define image_checked                           @"checkedNextcloud"
 
@@ -77,7 +67,7 @@
 
 #define image_home                              @"home"
 
-#define image_launchscreen                      @"nextcloudlaunchscreen"
+
 #define image_lock                              @"lock"
 
 #define image_MenuDirectoryOnTop                @"menuDirectoryOnTopNextcloud"
