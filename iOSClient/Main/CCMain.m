@@ -539,7 +539,7 @@
             messageLabel.font = [UIFont systemFontOfSize:14];
         } else {
             messageLabel.text = NSLocalizedString(title ,nil);
-            messageLabel.textColor = [UIColor blackColor];
+            messageLabel.textColor = COLOR_TEXT_NO_CONNECTION;
             messageLabel.font = [UIFont systemFontOfSize:14];
         }
         
