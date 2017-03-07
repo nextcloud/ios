@@ -102,20 +102,19 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
     [section addFormRow:row];
     
-    // quota
-    
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"quota" rowType:XLFormRowDescriptorTypeButton title:@""];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:@(NSTextAlignmentCenter) forKey:@"textLabel.textAlignment"];
-    [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
-    row.action.formSelector = @selector(quota:);
-    [section addFormRow:row];
-    
     // Change Account
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"changecredentials" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_change_credentials_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:[UIImage imageNamed:image_settingsCredentials] forKey:@"imageView.image"];
     row.action.formSegueIdentifier = @"CCManageAccountSegue";
+    [section addFormRow:row];
+
+    // quota
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"quota" rowType:XLFormRowDescriptorTypeButton title:@""];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:@(NSTextAlignmentCenter) forKey:@"textLabel.textAlignment"];
+    [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
+    row.action.formSelector = @selector(quota:);
     [section addFormRow:row];
     
     // Section : USER INFORMATION -------------------------------------------
@@ -326,9 +325,9 @@
         view.backgroundColor = [UIColor clearColor];
         
         UIProgressView *progressView = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleDefault];
-        progressView.frame = CGRectMake(10, -67, self.tableView.frame.size.width-10-10, 0);
+        progressView.frame = CGRectMake(10, -23, self.tableView.frame.size.width-10-10, 0);
         progressView.trackTintColor = [UIColor colorWithRed:247.0/255.0 green:247.0/255.0 blue:247.0/255.0 alpha:0.6];
-        progressView.progressTintColor = [UIColor colorWithRed:0.0/255.0 green:130.0/255.0 blue:201.0/255.0 alpha:0.4];
+        progressView.progressTintColor = COLOR_PROGRESS_BAR_QUOTA;
         progressView.layer.borderWidth = 0.05;
         progressView.layer.borderColor = [COLOR_BRAND CGColor];
         CGAffineTransform transform = CGAffineTransformMakeScale(1.0f, 10.0f);
@@ -434,12 +433,6 @@
     NSString *quotaUsed = [CCUtility transformedSize:[_tableAccount.quotaUsed doubleValue]];
     rowQuota.title = [NSString stringWithFormat:NSLocalizedString(@"_quota_using_", nil), quotaUsed, quota];
     //rowQuota.title = [NSString stringWithFormat:@"%@ / %@ %@", quota, quotaAvailable, NSLocalizedString(@"_available_", nil)];
-    
-    /*
-     INFO (blue): < 90 - scale 0 --> e.g. 89% of 7,5 GB
-     WARNING (yellow): >= 90 and < 95 - scale 0 -->91% of 7,5 GB
-     CRITICAL (red): >= 95 - scale 1 -->96,2% of 7,5 GB
-    */
     
     if (avatar || _tableAccount.displayName.length > 0) {
         
