@@ -102,13 +102,15 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
     [section addFormRow:row];
     
+#ifndef NO_MULTIUSER
     // Change Account
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"changecredentials" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_change_credentials_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:[UIImage imageNamed:image_settingsCredentials] forKey:@"imageView.image"];
     row.action.formSegueIdentifier = @"CCManageAccountSegue";
     [section addFormRow:row];
-
+#endif
+    
     // quota
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"quota" rowType:XLFormRowDescriptorTypeButton title:@""];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
@@ -182,6 +184,7 @@
     row.action.formSegueIdentifier = @"CCManageOptimizationsSegue";
     [section addFormRow:row];
 
+#ifndef NO_CRYPTO_CLOUD_SYSTEM
     // Section CRYPTO CLOUD SYSTEM ------------------------------------------
     
     section = [XLFormSectionDescriptor formSection];
@@ -193,13 +196,14 @@
     [row.cellConfig setObject:[UIImage imageNamed:image_settingsCryptoCloud] forKey:@"imageView.image"];
     row.action.formSegueIdentifier = @"CCManageCryptoCloudSegue";
     [section addFormRow:row];
+#endif
     
     // Section : INFORMATION ------------------------------------------------
 
     section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_information_", nil)];
     [form addFormSection:section];
     NSString *versionApp = [NSString stringWithFormat:@"%@.%@", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"], [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
-    section.footerTitle = [NSString stringWithFormat:@"Nextcloud %@ © 2017 T.W.S. Inc.", versionApp];
+    section.footerTitle = [NSString stringWithFormat:_text_copyright_, versionApp];
     
     // Acknowledgements
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"buttonLeftAligned" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_acknowledgements_", nil)];

@@ -23,6 +23,12 @@
 
 #define _brand_                                         @"Nextcloud"
 #define _mail_me_                                       @"ios@nextcloud.com"
+#define _text_copyright_                                @"Nextcloud %@ © 2017 T.W.S. Inc."
+
+/*
+#define NO_MULTIUSER
+#define NO_CRYPTO_CLOUD_SYSTEM
+*/
 
 // -----------------------------------------------------------------------------------------------------------
 // COLOR
