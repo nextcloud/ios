@@ -1073,8 +1073,11 @@
         NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(serverUrl == %@) AND (account == %@)", serverUrl, activeAccount];
         TableDirectory *record = [TableDirectory MR_findFirstWithPredicate:predicate inContext:localContext];
         
-        if (record)
+        if (record) {
+            
             record.dateReadDirectory = NULL;
+            record.rev = @"";
+        }
     }];
 }
 
@@ -1084,8 +1087,11 @@
         
         NSArray *records = [TableDirectory MR_findAllInContext:localContext];
         
-        for (TableDirectory *record in records)
+        for (TableDirectory *record in records) {
+            
             record.dateReadDirectory = NULL;
+            record.rev = @"";
+        }
     }];
 }
 
