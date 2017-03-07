@@ -61,12 +61,12 @@
     [form addFormSection:section];
     
     // Modify Account
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"modifyAccount" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_modify_account_", nil)];
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"changePassword" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_change_password_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:[UIImage imageNamed:image_settingsAccountModify] forKey:@"imageView.image"];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
     [row.cellConfig setObject:COLOR_BRAND forKey:@"textLabel.textColor"];
-    row.action.formSelector = @selector(modifyAccount:);
+    row.action.formSelector = @selector(changePassword:);
     if (listAccount.count == 0) row.disabled = @YES;
     [section addFormRow:row];
 
@@ -168,7 +168,7 @@
 #pragma mark === Modify Account ===
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)modifyAccount:(XLFormRowDescriptor *)sender
+- (void)changePassword:(XLFormRowDescriptor *)sender
 {    
     [self deselectFormRow:sender];
     

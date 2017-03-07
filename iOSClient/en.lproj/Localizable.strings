@@ -100,7 +100,7 @@
 "_want_exit_"               = "Attention! _brand_ will be reset to the initial state. Continue?";
 "_proceed_"                 = "Proceed";
 "_delete_cache_"            = "Delete cache";
-"_want_delete_cache_"       = "Do you want to delete cache (will also delete all local files and reset the file offline)?";
+"_want_delete_cache_"       = "Do you want to delete cache ?";
 "_mail_deleted_"            = "Email deleted";
 "_mail_saved_"              = "Email saved";
 "_mail_sent_"               = "Email sent successfully";
@@ -108,7 +108,7 @@
 "_information_req_"         = "Information request";
 "_credentials_"             = "Credentials";
 "_manage_account_"          = "Manage account";
-"_modify_account_"          = "Modify account";
+"_change_password_"         = "Change password";
 "_add_nextcloud_"           = "Add Nextcloud account";
 "_delete_account_"          = "Delete account";
 "_want_delete_"             = "Do you really want to delete it?";
