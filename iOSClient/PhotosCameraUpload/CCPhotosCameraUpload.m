@@ -316,7 +316,7 @@
         else return [UIImage imageNamed:image_activeCameraUpload_en];
         */
         UIImage *imageButton = [UIImage imageNamed:image_activeCameraUpload];
-        UIImage *image = [CCUtility drawText:NSLocalizedString(@"_activate_camera_upload_", nil) inImage:imageButton atPoint:CGPointMake(0, imageButton.size.height/2-8)];
+        UIImage *image = [CCUtility drawText:NSLocalizedString(@"_activate_camera_upload_", nil) inImage:imageButton];
         
         return image;
         
