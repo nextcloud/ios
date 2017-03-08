@@ -376,7 +376,9 @@
         app.homeMain = self;
         
         // Initializations
-        [app applicationInitialized];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+            [app applicationInitialized];
+        });
         
     } else {
         
@@ -4191,7 +4193,8 @@
         
         UIImage *iconHeader;
         BOOL lockDirectory = NO;
-        
+        NSString *dirServerUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:_metadata.fileNameData];
+
         // Directory bloccata ?
         if ([CCCoreData isDirectoryLock:dirServerUrl activeAccount:app.activeAccount] && [[CCUtility getBlockCode] length] && app.sessionePasscodeLock == nil) lockDirectory = YES;
         
@@ -4329,7 +4332,6 @@
         
 #ifndef NO_OFFLINE
         
-        NSString *dirServerUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:_metadata.fileNameData];
         NSString *upDir = [CCUtility deletingLastPathComponentFromServerUrl:dirServerUrl];
         NSString *homeDir = [CCUtility getHomeServerUrlActiveUrl:app.activeUrl];
         

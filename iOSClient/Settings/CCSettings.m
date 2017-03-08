@@ -429,7 +429,7 @@
     
     _tableAccount = [CCCoreData getActiveAccount];
     
-    rowVersionServer.value = [NSString stringWithFormat:@"%lu.%lu.%lu", [_tableAccount.versionMajor integerValue], [_tableAccount.versionMinor integerValue], [_tableAccount.versionMicro integerValue]];
+    rowVersionServer.value = [NSString stringWithFormat:@"%lu.%lu.%lu",(unsigned long)[_tableAccount.versionMajor integerValue], (unsigned long)[_tableAccount.versionMinor integerValue], (unsigned long)[_tableAccount.versionMicro integerValue]];
     rowUrlCloud.value = app.activeUrl;
     rowUserNameCloud.value = app.activeUser;
     NSString *quota = [CCUtility transformedSize:[_tableAccount.quotaTotal doubleValue]];
