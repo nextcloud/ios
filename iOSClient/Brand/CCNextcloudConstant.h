@@ -24,17 +24,19 @@
 #define _brand_                                         @"Nextcloud"
 #define _mail_me_                                       @"ios@nextcloud.com"
 #define _text_copyright_                                @"Nextcloud %@ © 2017 T.W.S. Inc."
+#define _login_base_url_                                @"https://cloud.twsweb.it"
 
 /* Define option compiler */
 
-#define NO_OFFLINE
-
 /*
  #define NO_MULTIUSER
+ #define NO_REQUEST_LOGIN_URL
  #define NO_CRYPTO_CLOUD_SYSTEM
  #define NO_OFFLINE
  #define MENU_BRAND
-*/
+ */
+
+#define NO_OFFLINE
 
 // -----------------------------------------------------------------------------------------------------------
 // COLOR

@@ -41,11 +41,11 @@
     
     self.imageBrand.image = [UIImage imageNamed:image_brandLogin];
     
-    if (app.activeAccount.length > 0) {
-        
-        self.baseUrl.text = app.activeUrl;
-        self.user.text = app.activeUser;
-    }
+#ifdef NO_REQUEST_LOGIN_URL
+    _baseUrl.text = _login_base_url_;
+    _imageBaseUrl.hidden = YES;
+    _baseUrl.hidden = YES;
+#endif
     
     [self.baseUrl setDelegate:self];
     [self.password setDelegate:self];
@@ -67,8 +67,12 @@
     }
     
     if (_loginType == loginModifyPasswordUser) {
+        
+        _baseUrl.text = app.activeUrl;
         _baseUrl.userInteractionEnabled = NO;
         _baseUrl.textColor = [UIColor lightGrayColor];
+        
+        _user.text = app.activeUser;
         _user.userInteractionEnabled = NO;
         _user.textColor = [UIColor lightGrayColor];
     }

@@ -49,7 +49,13 @@ typedef enum {
 @property (nonatomic, weak) IBOutlet UITextField *user;
 @property (nonatomic, weak) IBOutlet UITextField *password;
 @property (nonatomic, weak) IBOutlet UITextField *baseUrl;
+
+@property (nonatomic, weak) IBOutlet UIImageView *imageBaseUrl;
+@property (nonatomic, weak) IBOutlet UIImageView *imageUser;
+@property (nonatomic, weak) IBOutlet UIImageView *imagePassword;
+
 @property (nonatomic, weak) IBOutlet UIImageView *loadingBaseUrl;
+
 
 @property (nonatomic, weak) IBOutlet UIButton *login;
 @property (nonatomic, weak) IBOutlet UIButton *annulla;
