@@ -1057,34 +1057,41 @@
 - (void)getNotificationServerSuccess:(NSArray *)listOfNotifications
 {
     AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-    NSString *old = @"", *new = @"";
     
-    // Order by date
-    NSArray *sortedListOfNotifications = [listOfNotifications sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
+        
+        // Order by date
+        NSArray *sortedListOfNotifications = [listOfNotifications sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
             
-        OCNotifications *notification1 = obj1, *notification2 = obj2;
+            OCNotifications *notification1 = obj1, *notification2 = obj2;
         
-        return [notification2.date compare: notification1.date];
+            return [notification2.date compare: notification1.date];
         
-    }];
+        }];
     
-    // verify if listOfNotifications is changed
-    for (OCNotifications *notification in listOfNotifications)
-        new = [new stringByAppendingString:@(notification.idNotification).stringValue];
-    for (OCNotifications *notification in appDelegate.listOfNotifications)
-        old = [old stringByAppendingString:@(notification.idNotification).stringValue];
+        // verify if listOfNotifications is changed
+        NSString *old = @"", *new = @"";
+        for (OCNotifications *notification in listOfNotifications)
+            new = [new stringByAppendingString:@(notification.idNotification).stringValue];
+        for (OCNotifications *notification in appDelegate.listOfNotifications)
+            old = [old stringByAppendingString:@(notification.idNotification).stringValue];
 
-    if (![new isEqualToString:old]) {
+        if (![new isEqualToString:old]) {
         
-        appDelegate.listOfNotifications = [[NSMutableArray alloc] initWithArray:sortedListOfNotifications];
+            appDelegate.listOfNotifications = [[NSMutableArray alloc] initWithArray:sortedListOfNotifications];
         
-        // reload Notification view
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"notificationReloadData" object:nil];
-    }
+            // reload Notification view
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [[NSNotificationCenter defaultCenter] postNotificationName:@"notificationReloadData" object:nil];
+            });
+        }
     
-    // Update NavigationBar
-    if (!_isSelectedMode)
-        [self setUINavigationBarDefault];
+        // Update NavigationBar
+        if (!_isSelectedMode) {
+            
+            [self performSelectorOnMainThread:@selector(setUINavigationBarDefault) withObject:nil waitUntilDone:NO];
+        }
+    });
 }
 
 - (void)getNotificationServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
@@ -1114,12 +1121,15 @@
 {
     [CCCoreData setUserProfileActiveAccount:metadataNet.account userProfile:userProfile];
 
-    NSString *address = [NSString stringWithFormat:@"%@/index.php/avatar/%@/128", app.activeUrl, app.activeUser];
-    UIImage *avatar = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:[address stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]]];
-    if (avatar)
-        [UIImagePNGRepresentation(avatar) writeToFile:[NSString stringWithFormat:@"%@/avatar.png", app.directoryUser] atomically:YES];
-    else
-        [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/avatar.png", app.directoryUser] error:nil];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
+        
+        NSString *address = [NSString stringWithFormat:@"%@/index.php/avatar/%@/128", app.activeUrl, app.activeUser];
+        UIImage *avatar = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:[address stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]]];
+        if (avatar)
+            [UIImagePNGRepresentation(avatar) writeToFile:[NSString stringWithFormat:@"%@/avatar.png", app.directoryUser] atomically:YES];
+        else
+            [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/avatar.png", app.directoryUser] error:nil];
+    });
 }
 
 - (void)getCapabilitiesOfServerSuccess:(OCCapabilities *)capabilities
@@ -4321,6 +4331,8 @@
                                     }];
         }
         
+#ifndef NO_OFFLINE
+        
         if (!lockDirectory && ([upDir isEqualToString:homeDir] || ![CCCoreData isOfflineDirectoryServerUrl:upDir activeAccount:app.activeAccount]) && !_metadata.cryptated) {
         
             [actionSheet addButtonWithTitle:titleOfflineFolder
@@ -4354,6 +4366,7 @@
                                         }
                                     }];
         }
+#endif
         
         if (!lockDirectory && !_metadata.cryptated) {
             
@@ -4485,6 +4498,8 @@
                                     }];
         }
         
+#ifndef NO_OFFLINE
+        
         if (!_metadata.cryptated) {
         
             [actionSheet addButtonWithTitle:titoloOffline
@@ -4507,6 +4522,7 @@
                                         }
                                     }];
         }
+#endif
         
         if (!_metadata.cryptated) {
             

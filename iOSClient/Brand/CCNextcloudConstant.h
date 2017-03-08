@@ -27,9 +27,12 @@
 
 /* Define option compiler */
 
+#define NO_OFFLINE
+
 /*
  #define NO_MULTIUSER
  #define NO_CRYPTO_CLOUD_SYSTEM
+ #define NO_OFFLINE
  #define MENU_BRAND
 */
 

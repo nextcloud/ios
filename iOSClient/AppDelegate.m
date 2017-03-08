@@ -376,8 +376,11 @@
         NSLog(@"[LOG] Initialize Camera Upload");
         [[NSNotificationCenter defaultCenter] postNotificationName:@"initStateCameraUpload" object:nil];
         
+#ifndef NO_OFFLINE
         NSLog(@"[LOG] files Offline");
         [[CCSynchronize sharedSynchronize] readOffline];
+#endif
+        
     });
     
     // Initialize Camera Upload

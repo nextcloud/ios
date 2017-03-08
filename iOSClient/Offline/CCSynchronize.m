@@ -232,7 +232,7 @@
         [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
     });
     
-    NSLog(@"[LOG] Read offline directory : %@", serverUrl);
+    NSLog(@"[LOG] %@ directory : %@", selector, serverUrl);
 }
 
 - (void)readFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
