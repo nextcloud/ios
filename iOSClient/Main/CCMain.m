@@ -4196,7 +4196,7 @@
         
         [actionSheet addButtonWithTitle: _metadata.fileNamePrint
                                   image: iconHeader
-                        backgroundColor: COLOR_BACKGROUND_MENU
+                        backgroundColor: COLOR_TABBAR
                                  height: 50.0
                                    type: AHKActionSheetButtonTypeDisabled
                                 handler: nil
@@ -4389,7 +4389,7 @@
         
         [actionSheet addButtonWithTitle: _metadata.fileNamePrint
                                   image: iconHeader
-                        backgroundColor: COLOR_BACKGROUND_MENU
+                        backgroundColor: COLOR_TABBAR
                                  height: 50.0
                                    type: AHKActionSheetButtonTypeDisabled
                                 handler: nil
@@ -4551,7 +4551,7 @@
      
         [actionSheet addButtonWithTitle: _metadata.fileNamePrint
                                   image: iconHeader
-                        backgroundColor: COLOR_BACKGROUND_MENU
+                        backgroundColor: COLOR_TABBAR
                                  height: 50.0
                                    type: AHKActionSheetButtonTypeDisabled
                                 handler: nil
