@@ -376,9 +376,7 @@
         app.homeMain = self;
         
         // Initializations
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-            [app applicationInitialized];
-        });
+        [app applicationInitialized];
         
     } else {
         
@@ -1635,7 +1633,7 @@
             metadataNet.identifier = asset.localIdentifier;
             metadataNet.cryptated = cryptated;
             metadataNet.fileName = fileName;
-            metadataNet.priority = NSOperationQueuePriorityVeryHigh;
+            metadataNet.priority = NSOperationQueuePriorityNormal;
             metadataNet.session = session;
             metadataNet.selector = selectorReadFileUploadFile;
             metadataNet.serverUrl = serverUrl;
@@ -1891,7 +1889,7 @@
         metadataNet.action = actionReadFolder;
         metadataNet.date = [NSDate date];
         metadataNet.directoryID = directoryID;
-        metadataNet.priority = NSOperationQueuePriorityVeryHigh;
+        metadataNet.priority = NSOperationQueuePriorityHigh;
         metadataNet.selector = selectorReadFolder;
         metadataNet.serverUrl = serverUrl;
 

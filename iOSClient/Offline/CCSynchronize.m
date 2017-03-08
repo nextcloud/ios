@@ -83,7 +83,7 @@
     
     metadataNet.action = actionReadFolder;
     metadataNet.directoryID = directoryID;
-    metadataNet.priority = NSOperationQueuePriorityVeryHigh;
+    metadataNet.priority = NSOperationQueuePriorityNormal;
     metadataNet.selector = selectorReadFolder;
     metadataNet.serverUrl = serverUrl;
     
@@ -206,7 +206,7 @@
     
     metadataNet.action = actionReadFolder;
     metadataNet.directoryID = directoryID;
-    metadataNet.priority = NSOperationQueuePriorityVeryHigh;
+    metadataNet.priority = NSOperationQueuePriorityNormal;
     metadataNet.selector = selectorReadFolder;
     metadataNet.serverUrl = serverUrl;
     
@@ -224,7 +224,7 @@
     
     metadataNet.action = actionReadFolder;
     metadataNet.directoryID = directoryID;
-    metadataNet.priority = NSOperationQueuePriorityVeryHigh;
+    metadataNet.priority = NSOperationQueuePriorityNormal;
     metadataNet.selector = selector;
     metadataNet.serverUrl = serverUrl;
     
@@ -379,7 +379,7 @@
     metadataNet.fileNamePrint = metadata.fileNamePrint;
     metadataNet.serverUrl = serverUrl;
     metadataNet.selector = selectorReadFileOffline;
-    metadataNet.priority = NSOperationQueuePriorityVeryLow;
+    metadataNet.priority = NSOperationQueuePriorityLow;
         
     [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
 }
