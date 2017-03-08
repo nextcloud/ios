@@ -67,7 +67,13 @@
     [super viewDidLoad];
     
     // Create data model
+
+#ifdef NO_OFFLINE
+    _pageType = @[k_pageOfflineFavorites, k_pageOfflineLocal];
+#else
     _pageType = @[k_pageOfflineFavorites, k_pageOfflineOffline, k_pageOfflineLocal];
+#endif
+    
     _currentPageType = k_pageOfflineFavorites;
     self.title = NSLocalizedString(@"_favorites_", nil);
     
@@ -173,15 +179,11 @@
 - (void)pageViewController:(UIPageViewController *)pageViewController didFinishAnimating:(BOOL)finished previousViewControllers:(NSArray<UIViewController *> *)previousViewControllers transitionCompleted:(BOOL)completed
 {
     CCOfflinePageContent *vc = [self.pageViewController.viewControllers lastObject];
-    
-    NSString *serverUrl = vc.serverUrl;
     _currentPageType = vc.pageType;
 
     if ([_currentPageType isEqualToString:k_pageOfflineFavorites]) {
-        if (serverUrl)
-            self.title = NSLocalizedString(@"_favorites_", nil);
-        else
-            self.title = NSLocalizedString(@"_favorites_", nil);
+        
+        self.title = NSLocalizedString(@"_favorites_", nil);
         
         UITabBarItem *item = [self.tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexOffline];
         item.selectedImage = [UIImage imageNamed:image_tabBarFavorite];
@@ -189,10 +191,8 @@
     }
 
     if ([_currentPageType isEqualToString:k_pageOfflineOffline]) {
-        if (serverUrl)
-            self.title = NSLocalizedString(@"_offline_", nil);
-        else
-            self.title = NSLocalizedString(@"_offline_", nil);
+        
+        self.title = NSLocalizedString(@"_offline_", nil);
         
         UITabBarItem *item = [self.tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexOffline];
         item.selectedImage = [UIImage imageNamed:image_tabBarOffline];
@@ -200,10 +200,8 @@
     }
     
     if ([_currentPageType isEqualToString:k_pageOfflineLocal]) {
-        if ([serverUrl isEqualToString:[CCUtility getDirectoryLocal]])
-            self.title = NSLocalizedString(@"_local_storage_", nil);
-        else
-            self.title = NSLocalizedString(@"_local_storage_", nil);
+        
+        self.title = NSLocalizedString(@"_local_storage_", nil);
         
         UITabBarItem *item = [self.tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexOffline];
         item.selectedImage = [UIImage imageNamed:image_tabBarLocal];

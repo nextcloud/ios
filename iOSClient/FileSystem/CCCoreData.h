@@ -227,9 +227,6 @@
 
 // ===== Routine for migrate =====
 
-+ (void)localTableCopyFavoriteToOffline;
-+ (void)directoryTableCopySynchronizedToOffline;
-
 // ===== Utility Database =====
 
 + (void)moveCoreDataToGroup;
