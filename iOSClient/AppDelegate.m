@@ -356,9 +356,6 @@
 {
     // Execute : now
     
-    NSLog(@"[LOG] Listning Favorites");
-    [[CCSynchronize sharedSynchronize] readListingFavorites];
-        
     NSLog(@"[LOG] Update Folder Photo");
     NSString *folderCameraUpload = [CCCoreData getCameraUploadFolderNamePathActiveAccount:self.activeAccount activeUrl:self.activeUrl];
     if ([folderCameraUpload length] > 0)
@@ -381,6 +378,8 @@
         [[CCSynchronize sharedSynchronize] readOffline];
 #endif
         
+        NSLog(@"[LOG] Listning Favorites");
+        [[CCSynchronize sharedSynchronize] readListingFavorites];        
     });
     
     // Initialize Camera Upload
