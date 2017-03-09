@@ -235,12 +235,13 @@
     NSInteger width = 0, height = 0;
     
     NSString *directoryUser = [CCUtility getDirectoryActiveUser:_activeUser activeUrl:_activeUrl];
+    NSString *dimOfThumbnail = (NSString *)_metadataNet.options;
     
-    if ([_metadataNet.options.lowercaseString isEqualToString:@"xs"])      { width = 32;   height = 32;  ext = @"ico"; }
-    else if ([_metadataNet.options.lowercaseString isEqualToString:@"s"])  { width = 64;   height = 64;  ext = @"ico"; }
-    else if ([_metadataNet.options.lowercaseString isEqualToString:@"m"])  { width = 128;  height = 128; ext = @"ico"; }
-    else if ([_metadataNet.options.lowercaseString isEqualToString:@"l"])  { width = 640;  height = 640; ext = @"pvw"; }
-    else if ([_metadataNet.options.lowercaseString isEqualToString:@"xl"]) { width = 1024; height = 1024; ext = @"pvw"; }
+    if ([dimOfThumbnail.lowercaseString isEqualToString:@"xs"])      { width = 32;   height = 32;  ext = @"ico"; }
+    else if ([dimOfThumbnail.lowercaseString isEqualToString:@"s"])  { width = 64;   height = 64;  ext = @"ico"; }
+    else if ([dimOfThumbnail.lowercaseString isEqualToString:@"m"])  { width = 128;  height = 128; ext = @"ico"; }
+    else if ([dimOfThumbnail.lowercaseString isEqualToString:@"l"])  { width = 640;  height = 640; ext = @"pvw"; }
+    else if ([dimOfThumbnail.lowercaseString isEqualToString:@"xl"]) { width = 1024; height = 1024; ext = @"pvw"; }
     
     if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.%@", directoryUser, _metadataNet.fileNameLocal, ext]]) {
         
@@ -1215,6 +1216,32 @@
         
         [self complete];
     }];
+}
+
+- (void)subscribingNextcloudServer
+{
+    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+    
+    [communication setCredentialsWithUser:_activeUser andPassword:_activePassword];
+    [communication setUserAgent:[CCUtility getUserAgent]];
+    
+    [communication subscribingNextcloudServerPush:_metadataNet.serverUrl pushTokenHash:@"" devicePublicKey:@"" onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+        
+        [self complete];
+        
+    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+        
+        NSInteger errorCode = response.statusCode;
+        if (errorCode == 0)
+            errorCode = error.code;
+    
+        // Request trusted certificated
+        if ([error code] == NSURLErrorServerCertificateUntrusted)
+            [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
+        
+        [self complete];
+    }];
+
 }
 
 #pragma --------------------------------------------------------------------------------------------

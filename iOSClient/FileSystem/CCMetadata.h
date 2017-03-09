@@ -86,7 +86,7 @@
 @property (nonatomic, strong) NSString *fileNamePrint;
 @property (nonatomic, strong) NSString *identifier;
 @property (nonatomic, strong) CCMetadata *metadata;
-@property (nonatomic, strong) NSString *options;
+@property (nonatomic, strong) id options;
 @property (nonatomic, strong) NSString *password;
 @property (nonatomic, strong) NSString *pathFolder;
 @property NSInteger priority;

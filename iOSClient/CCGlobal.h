@@ -218,6 +218,7 @@ extern NSString *const BKPasscodeKeychainServiceName;
 #define actionSettingFavorite                           @"settingFavorite"
 #define actionShare                                     @"share"
 #define actionShareWith                                 @"shareWith"
+#define actionSubscribingNextcloudServer                @"subscribingNextcloudServer"
 #define actionUnShare                                   @"unShare"
 #define actionUpdateShare                               @"updateShare"
 #define actionUploadFile                                @"uploadFile"
