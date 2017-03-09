@@ -366,7 +366,7 @@
         NSLog(@"[LOG] Initialize Camera Upload");
         [[NSNotificationCenter defaultCenter] postNotificationName:@"initStateCameraUpload" object:nil];
         
-#ifndef NO_OFFLINE
+#ifndef OPTION_OFFLINE_DISABLE
         NSLog(@"[LOG] files Offline");
         [[CCSynchronize sharedSynchronize] readOffline];
 #endif
@@ -426,6 +426,9 @@
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
+    
+#ifdef OPTION_NOTIFICATION_PUSH_ENABLE
+    
     NSDictionary *keys = [NSDictionary dictionaryWithContentsOfFile:[[NSBundle mainBundle] pathForResource:k_nextcloudDevicePushKey ofType:@"plist"]];
     
     NSString *devicePublicKey = [keys objectForKey:@"devicePublicKey"];
@@ -444,6 +447,9 @@
         metadataNet.options = options;
         [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
     }
+    
+#endif
+    
 }
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error

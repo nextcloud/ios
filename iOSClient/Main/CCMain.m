@@ -3154,7 +3154,7 @@
     if (app.reSelectMenu.isOpen || app.reMainMenu.isOpen)
         return;
     
-#ifndef NO_MULTIUSER
+#ifndef OPTION_MULTIUSER_DISABLE
     
     if ([app.netQueue operationCount] > 0 || [app.netQueueDownload operationCount] > 0 || [app.netQueueDownloadWWan operationCount] > 0 || [app.netQueueUpload operationCount] > 0 || [app.netQueueUploadWWan operationCount] > 0 || [CCCoreData countTableAutomaticUploadForAccount:app.activeAccount selector:nil] > 0) {
         
@@ -3216,7 +3216,7 @@
     [CCMenu showMenuInView:self.navigationController.view fromRect:rect menuItems:menuArray withOptions:options];
 #endif
     
-#if defined(MENU_BRAND) && defined(NO_MULTIUSER)
+#if defined(MENU_BRAND_ENABLE) && defined(OPTION_MULTIUSER_DISABLE)
     
     
 #endif
@@ -4341,7 +4341,7 @@
                                     }];
         }
         
-#ifndef NO_OFFLINE
+#ifndef OPTION_OFFLINE_DISABLE
         
         NSString *upDir = [CCUtility deletingLastPathComponentFromServerUrl:dirServerUrl];
         NSString *homeDir = [CCUtility getHomeServerUrlActiveUrl:app.activeUrl];
@@ -4511,7 +4511,7 @@
                                     }];
         }
         
-#ifndef NO_OFFLINE
+#ifndef OPTION_OFFLINE_DISABLE
         
         if (!_metadata.cryptated) {
         

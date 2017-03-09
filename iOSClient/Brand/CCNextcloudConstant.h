@@ -29,14 +29,16 @@
 /* Define option compiler */
 
 /*
- #define NO_MULTIUSER
+ #define OPTION_MULTIUSER_DISABLE
+ #define OPTION_CRYPTO_CLOUD_SYSTEM_DISABLE
+ #define OPTION_OFFLINE_DISABLE
+ #define OPTION_NOTIFICATION_PUSH_ENABLE
+
+ #define MENU_BRAND_ENABLE
  #define NO_REQUEST_LOGIN_URL
- #define NO_CRYPTO_CLOUD_SYSTEM
- #define NO_OFFLINE
- #define MENU_BRAND
  */
 
-#define NO_OFFLINE
+#define OPTION_OFFLINE_DISABLE
 
 // -----------------------------------------------------------------------------------------------------------
 // COLOR

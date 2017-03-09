@@ -102,7 +102,7 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
     [section addFormRow:row];
     
-#ifndef NO_MULTIUSER
+#ifndef OPTION_MULTIUSER_DISABLE
     // Change Account
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"changecredentials" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_change_credentials_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
@@ -184,7 +184,7 @@
     row.action.formSegueIdentifier = @"CCManageOptimizationsSegue";
     [section addFormRow:row];
 
-#ifndef NO_CRYPTO_CLOUD_SYSTEM
+#ifndef OPTION_CRYPTO_CLOUD_SYSTEM_DISABLE
     // Section CRYPTO CLOUD SYSTEM ------------------------------------------
     
     section = [XLFormSectionDescriptor formSection];

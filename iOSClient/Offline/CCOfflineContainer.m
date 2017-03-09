@@ -68,7 +68,7 @@
     
     // Create data model
 
-#ifdef NO_OFFLINE
+#ifdef OPTION_OFFLINE_DISABLE
     _pageType = @[k_pageOfflineFavorites, k_pageOfflineLocal];
 #else
     _pageType = @[k_pageOfflineFavorites, k_pageOfflineOffline, k_pageOfflineLocal];
