@@ -16,6 +16,7 @@ README.md
 Documentation/
 Custom/
 GoogleService-Info.plist
+devicepushkey.h
 
 ########### OSX ###########
 # OS X temporary files that should never be committed

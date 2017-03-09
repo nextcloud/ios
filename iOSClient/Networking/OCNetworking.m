@@ -1225,7 +1225,11 @@
     [communication setCredentialsWithUser:_activeUser andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
-    [communication subscribingNextcloudServerPush:_metadataNet.serverUrl pushTokenHash:@"" devicePublicKey:@"" onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+    NSDictionary *parameter = _metadataNet.options;
+    NSString *pushTokenHash = [parameter objectForKey:@"pushTokenHash"];
+    NSString *devicePublicKey = [parameter objectForKey:@"devicePublicKey"];
+    
+    [communication subscribingNextcloudServerPush:_metadataNet.serverUrl pushTokenHash:pushTokenHash devicePublicKey:devicePublicKey onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
         [self complete];
         
