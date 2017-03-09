@@ -128,6 +128,33 @@
         
     if([self respondsToSelector:NSSelectorFromString(_metadataNet.action)])
         [self performSelector:NSSelectorFromString(_metadataNet.action)];
+    
+    // Add Activity LOG
+    if ([_metadataNet.selector length] > 0) {
+        
+        OCActivity *activity = [OCActivity new];
+        NSString *file, *subject;
+        
+        if ([_metadataNet.fileName length] > 0) {
+            
+            file = [NSString stringWithFormat:@"%@/%@", _metadataNet.serverUrl, _metadataNet.fileName];
+            subject = [CCUtility returnFileNamePathFromFileName:_metadataNet.fileName serverUrl:_metadataNet.serverUrl activeUrl:_activeUrl];
+
+        } else {
+            
+            file = _metadataNet.serverUrl;
+            subject = [CCUtility returnFileNamePathFromFileName:@"" serverUrl:_metadataNet.serverUrl activeUrl:_activeUrl];
+        }
+        
+        activity.idActivity = 0;
+        activity.date = [NSDate date];
+        activity.file = file;
+        activity.subject = [NSString stringWithFormat:@"%@ : %@",_metadataNet.selector, subject] ;
+        activity.type = _metadataNet.action;
+        
+        [CCCoreData addActivity:activity account:_metadataNet.account];
+    }
+
 }
 
 #pragma --------------------------------------------------------------------------------------------

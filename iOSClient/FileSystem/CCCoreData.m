@@ -1848,7 +1848,8 @@
 {
     [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
         
-        [TableActivity MR_deleteAllMatchingPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (idActivity == %d)", account, activity.idActivity] inContext:localContext];
+        if (activity.idActivity != 0)
+            [TableActivity MR_deleteAllMatchingPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (idActivity == %d)", account, activity.idActivity] inContext:localContext];
         
         TableActivity *record = [TableActivity MR_createEntityInContext:localContext];
 
