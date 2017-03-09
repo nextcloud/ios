@@ -826,6 +826,23 @@ typedef enum {
 
 - (void) setNotificationServer:(NSString*)serverPath type:(NSString *)type onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest;
 
+///-----------------------------------
+/// @name Subscribing at the Nextcloud server
+///-----------------------------------
+
+/**
+ * Method subscribing at the Nextcloud server for the push
+ *
+ * @param serverPath            -> NSString server
+ * @param pushTokenHash         -> NSString sha512 hash of the PushToken for Apple Push Notification Service
+ * @param devicePublicKey       -> NSString devicePublicKey
+ * @param sharedOCCommunication -> OCCommunication Singleton of communication to add the operation on the queue.
+ *
+ */
+
+- (void)subscribingNextcloudServerPush:(NSString *)serverPath pushTokenHash:(NSString *)pushTokenHash devicePublicKey:(NSString *)devicePublicKey onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void (^)(NSHTTPURLResponse *, NSString *))successRequest failureRequest:(void (^)(NSHTTPURLResponse *, NSError *, NSString *))failureRequest;
+
+
 #pragma mark -  Server Activity
 
 ///-----------------------------------
