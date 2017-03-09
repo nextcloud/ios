@@ -742,9 +742,15 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     
     _requestMethod = @"POST";
     
-    NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
+    NSString *jsonQuery = [NSString stringWithFormat:@"?format=json"];
+    NSString *pushTokenHashParam = [NSString stringWithFormat:@"&pushTokenHash=%@",pushTokenHash];
+    NSString *devicePublicKeyParam = [NSString stringWithFormat:@"&devicePublicKey=%@",devicePublicKey];
+    
+    serverPath = [serverPath stringByAppendingString:jsonQuery];
+    serverPath = [serverPath stringByAppendingString:pushTokenHashParam];
+    serverPath = [serverPath stringByAppendingString:devicePublicKeyParam];
 
-    [request setHTTPBody:[[NSString stringWithFormat: @"pushTokenHash=%@&devicePublicKey=%@", pushTokenHash, devicePublicKey] dataUsingEncoding:NSUTF8StringEncoding]];
+    NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
 
     OCHTTPRequestOperation *operation = [self mr_operationWithRequest:request onCommunication:sharedOCCommunication success:success failure:failure];
     [self setRedirectionBlockOnDatataskWithOCCommunication:sharedOCCommunication andSessionManager:sharedOCCommunication.networkSessionManager];
