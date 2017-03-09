@@ -1229,7 +1229,7 @@
     NSString *pushTokenHash = [parameter objectForKey:@"pushTokenHash"];
     NSString *devicePublicKey = [parameter objectForKey:@"devicePublicKey"];
     
-    [communication subscribingNextcloudServerPush:_metadataNet.serverUrl pushTokenHash:pushTokenHash devicePublicKey:devicePublicKey onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+    [communication subscribingNextcloudServerPush:[_activeUrl stringByAppendingString:@"/"] pushTokenHash:pushTokenHash devicePublicKey:devicePublicKey onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
         [self complete];
         
