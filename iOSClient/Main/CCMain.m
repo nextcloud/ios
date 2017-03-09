@@ -2152,7 +2152,7 @@
 
         // Next file
         [_selectedMetadatas removeObjectAtIndex:0];
-        [self moveFileOrFolder:metadataNet.serverUrlTo];
+        [self performSelectorOnMainThread:@selector(moveFileOrFolder:) withObject:metadataNet.serverUrlTo waitUntilDone:NO];
     }
 }
 
@@ -2160,10 +2160,28 @@
 {
     if ([_selectedMetadatas count] > 0) {
         
-         CCMetadata *metadata = [_selectedMetadatas objectAtIndex:0];
+        CCMetadata *metadata = [_selectedMetadatas objectAtIndex:0];
         
         // Plain
         if (metadata.cryptated == NO) {
+            
+            OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:app.activeUser withPassword:app.activePassword withUrl:app.activeUrl isCryptoCloudMode:NO];
+            
+            NSError *error = [ocNetworking readFileSync:[NSString stringWithFormat:@"%@/%@", serverUrlTo, metadata.fileName]];
+            
+            if(!error) {
+                
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+                    
+                    UIAlertController * alert= [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:NSLocalizedString(@"_file_already_exists_", nil) preferredStyle:UIAlertControllerStyleAlert];
+                    UIAlertAction* ok = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
+                    }];
+                    [alert addAction:ok];
+                    [self presentViewController:alert animated:YES completion:nil];
+                });
+                
+                return;
+            }
             
             CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
             
@@ -2229,7 +2247,7 @@
     _selectedMetadatas = [[NSMutableArray alloc] initWithArray:selectedMetadatas];
     _numSelectedMetadatas = [_selectedMetadatas count];
     
-    [self moveFileOrFolder:serverUrlTo];
+    [self performSelectorOnMainThread:@selector(moveFileOrFolder:) withObject:serverUrlTo waitUntilDone:NO];
     [self tableViewSelect:NO];
 }
 
