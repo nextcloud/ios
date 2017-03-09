@@ -433,7 +433,17 @@
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
-    NSLog(@"DEVICE TOKEN = %@", deviceToken);
+    NSDictionary *keys = [NSDictionary dictionaryWithContentsOfFile:[[NSBundle mainBundle] pathForResource:k_nextcloudDevicePushKey ofType:@"plist"]];
+    
+    NSString *devicePublicKey = [keys objectForKey:@"devicePublicKey"];
+    NSString *deviceTokenString = [[[[deviceToken description] stringByReplacingOccurrencesOfString: @"<" withString: @""] stringByReplacingOccurrencesOfString: @">" withString: @""] stringByReplacingOccurrencesOfString: @" " withString: @""];
+    NSLog(@"DEVICE TOKEN = %@", deviceTokenString);
+    NSLog(@"DEVICE PUBLIC KEY = %@", devicePublicKey);
+    
+    
+    if ([devicePublicKey length] > 0 && [deviceTokenString length] > 0) {
+        
+    }
 }
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error

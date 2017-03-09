@@ -250,6 +250,7 @@
 		F7676A7F1D5CB2A400DF734C /* icon-info@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F7676A751D5CB2A400DF734C /* icon-info@2x.png */; };
 		F7676A811D5CB2A400DF734C /* icon-success.png in Resources */ = {isa = PBXBuildFile; fileRef = F7676A761D5CB2A400DF734C /* icon-success.png */; };
 		F7676A831D5CB2A400DF734C /* icon-success@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F7676A771D5CB2A400DF734C /* icon-success@2x.png */; };
+		F7724CB31E71960F005AD84C /* NextcloudDevicePushKey-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F7724CB21E71960F005AD84C /* NextcloudDevicePushKey-Info.plist */; };
 		F77B0DF01D118A16002130FE /* UIImage+Resizing.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04CA1C889184008DAB36 /* UIImage+Resizing.m */; };
 		F77B0DF21D118A16002130FE /* CCUploadFromOtherUpp.m in Sources */ = {isa = PBXBuildFile; fileRef = F7956FCA1B4886E60085DEA3 /* CCUploadFromOtherUpp.m */; };
 		F77B0DF41D118A16002130FE /* CCMain.m in Sources */ = {isa = PBXBuildFile; fileRef = F70211FB1BAC56E9003FC03E /* CCMain.m */; };
@@ -1369,6 +1370,7 @@
 		F76C3B841C6388BC00DC4301 /* CCGraphics.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCGraphics.m; sourceTree = "<group>"; };
 		F76C3B871C638A4C00DC4301 /* CCError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCError.h; sourceTree = "<group>"; };
 		F76C3B881C638A4C00DC4301 /* CCError.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCError.m; sourceTree = "<group>"; };
+		F7724CB21E71960F005AD84C /* NextcloudDevicePushKey-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "NextcloudDevicePushKey-Info.plist"; sourceTree = SOURCE_ROOT; };
 		F777F0301C29717F00CE81CB /* PHAsset+Utility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "PHAsset+Utility.h"; sourceTree = "<group>"; };
 		F777F0311C29717F00CE81CB /* PHAsset+Utility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "PHAsset+Utility.m"; sourceTree = "<group>"; };
 		F77D49A71DC238E500CDC568 /* loading@2x.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = "loading@2x.gif"; sourceTree = "<group>"; };
@@ -3271,6 +3273,7 @@
 				F76344751BF259A800188725 /* synchronized.gif */,
 				F7D154271E2392A300202FD9 /* Nextcloud-Bridging-Header.h */,
 				F75CDBF51DF063AD00116AD0 /* .gitignore */,
+				F7724CB21E71960F005AD84C /* NextcloudDevicePushKey-Info.plist */,
 				F7229B461DF71BA800E8C4E7 /* ChangeLog */,
 				F7229B491DF71BB300E8C4E7 /* AUTHORS */,
 				F78BFECA1D3111B800E513CF /* LaunchScreenNextcloud.xib */,
@@ -3752,6 +3755,7 @@
 				F77B0F5E1D118A16002130FE /* ZSSlink@2x.png in Resources */,
 				F77B0F5F1D118A16002130FE /* Reader-Email.png in Resources */,
 				F7F54CFF1E5B14C700E19C62 /* UIBarButtonItemArrowRight@3x.png in Resources */,
+				F7724CB31E71960F005AD84C /* NextcloudDevicePushKey-Info.plist in Resources */,
 				F77B0F611D118A16002130FE /* Acknowledgements.rtf in Resources */,
 				F77B0F621D118A16002130FE /* ZSSunorderedlist.png in Resources */,
 				F77B0F631D118A16002130FE /* Localizable.strings in Resources */,
