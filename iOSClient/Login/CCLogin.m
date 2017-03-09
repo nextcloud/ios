@@ -231,6 +231,29 @@
         
             // Add default account
             [CCCoreData addAccount:account url:self.baseUrl.text user:self.user.text password:self.password.text];
+            
+// ---------------------------------------
+//  *** DEFAULT OPTION ***
+// ---------------------------------------
+            
+#ifdef OPTION_AUTOMATIC_UPLOAD_ENABLE
+            
+            [CCCoreData setCameraUpload:YES activeAccount:account];
+            
+            // Default parameter
+            [CCCoreData setCameraUploadFolderName:nil activeAccount:account];
+            [CCCoreData setCameraUploadFolderPath:nil activeUrl:self.baseUrl.text activeAccount:account];
+            
+            [CCCoreData setCameraUploadPhoto:YES activeAccount:account];
+            [CCCoreData setCameraUploadDatePhoto:[NSDate date]];
+
+            [CCCoreData setCameraUploadVideo:YES activeAccount:account];
+            [CCCoreData setCameraUploadWWanVideo:YES activeAccount:account];
+            [CCCoreData setCameraUploadDateVideo:[NSDate date]];
+            
+            [CCCoreData setCameraUploadCreateSubfolderActiveAccount:YES activeAccount:account];
+#endif
+            
         }
         
         TableAccount *tableAccount = [CCCoreData setActiveAccount:account];
