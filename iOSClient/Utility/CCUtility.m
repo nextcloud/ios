@@ -921,8 +921,6 @@
     NSString *fileNamePlist, *temp, *passcode;
     NSError *error;
     
-    CCCrypto *crypto = [[CCCrypto alloc] init];
-    
     // find the plist
     // 1) directory temp
     // 2) directory serverUrl
@@ -942,9 +940,9 @@
     NSString *uuid = [data objectForKey:@"uuid"];
     
     // AutoInsert password if possible Versione 1.3
-    [crypto autoInsertPasscodeUUID:uuid text:title];
+    [[CCCrypto sharedManager] autoInsertPasscodeUUID:uuid text:title];
     
-    passcode = [crypto getKeyPasscode:uuid];
+    passcode = [[CCCrypto sharedManager] getKeyPasscode:uuid];
 
     metadata.cryptated = YES;
     metadata.directory = [[data objectForKey:@"dir"] boolValue];

@@ -1888,13 +1888,11 @@
 
 + (BOOL)downloadFile:(CCMetadata *)metadata directoryUser:(NSString *)directoryUser activeAccount:(NSString *)activeAccount
 {
-    CCCrypto *crypto = [[CCCrypto alloc] init];
-    
     // ----------------------------------------- FILESYSTEM ------------------------------------------
     
     // if encrypted, rewrite
     if (metadata.cryptated == YES)
-        if ([crypto decrypt:metadata.fileID fileNameDecrypted:metadata.fileID fileNamePrint:metadata.fileNamePrint password:[crypto getKeyPasscode:metadata.uuid] directoryUser:directoryUser] == 0) return NO;
+        if ([[CCCrypto sharedManager] decrypt:metadata.fileID fileNameDecrypted:metadata.fileID fileNamePrint:metadata.fileNamePrint password:[[CCCrypto sharedManager] getKeyPasscode:metadata.uuid] directoryUser:directoryUser] == 0) return NO;
     
     // ------------------------------------------ COREDATA -------------------------------------------
     

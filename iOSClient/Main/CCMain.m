@@ -2062,9 +2062,8 @@
 - (void)renameNote:(CCMetadata *)metadata fileName:(NSString *)fileName
 {
     CCTemplates *templates = [[CCTemplates alloc] init];
-    CCCrypto *crypto = [[CCCrypto alloc] init];
     
-    NSMutableDictionary *field = [crypto getDictionaryEncrypted:metadata.fileName uuid:metadata.uuid isLocal:NO directoryUser:app.directoryUser];
+    NSMutableDictionary *field = [[CCCrypto sharedManager] getDictionaryEncrypted:metadata.fileName uuid:metadata.uuid isLocal:NO directoryUser:app.directoryUser];
     NSString *fileNameModel = [templates salvaNote:[field objectForKey:@"note"] titolo:fileName fileName:metadata.fileName uuid:metadata.uuid];
     
     if (fileNameModel) {
@@ -2327,17 +2326,16 @@
 - (void)createFolderEncrypted:(NSString *)fileNameFolder
 {
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
-    CCCrypto *crypto = [[CCCrypto alloc] init];
     NSString *fileNamePlist;
     
     fileNameFolder = [CCUtility removeForbiddenCharacters:fileNameFolder hasServerForbiddenCharactersSupport:app.hasServerForbiddenCharactersSupport];
     if (![fileNameFolder length]) return;
     
-    NSString *title = [AESCrypt encrypt:fileNameFolder password:[crypto getKeyPasscode:[CCUtility getUUID]]];
+    NSString *title = [AESCrypt encrypt:fileNameFolder password:[[CCCrypto sharedManager] getKeyPasscode:[CCUtility getUUID]]];
 
-    fileNamePlist =  [crypto createFilenameEncryptor:fileNameFolder uuid:[CCUtility getUUID]];
+    fileNamePlist =  [[CCCrypto sharedManager] createFilenameEncryptor:fileNameFolder uuid:[CCUtility getUUID]];
     
-    [crypto createFilePlist:[NSTemporaryDirectory() stringByAppendingString:fileNamePlist] title:title len:0 directory:true uuid:[CCUtility getUUID] nameCurrentDevice:[CCUtility getNameCurrentDevice] icon:@""];
+    [[CCCrypto sharedManager] createFilePlist:[NSTemporaryDirectory() stringByAppendingString:fileNamePlist] title:title len:0 directory:true uuid:[CCUtility getUUID] nameCurrentDevice:[CCUtility getNameCurrentDevice] icon:@""];
     
     // Create folder
     metadataNet.action = actionCreateFolder;
@@ -2412,10 +2410,9 @@
         // ENCRYPTED
         
         CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
-        CCCrypto *crypto = [[CCCrypto alloc] init];
         
         // Create File Plist
-        NSString *fileNameCrypto = [crypto createFileDirectoryPlist:_metadata];
+        NSString *fileNameCrypto = [[CCCrypto sharedManager] createFileDirectoryPlist:_metadata];
         
         //-------------------------- RENAME -------------------------------------------//
         
@@ -4023,10 +4020,8 @@
             
             if (aViewController.fromType == CCBKPasscodeFromPasscode) {
                 
-                CCCrypto *crypto = [[CCCrypto alloc] init];
-                
                 // verifichiamo se il passcode è corretto per il seguente file -> UUID
-                if ([crypto verifyPasscode:aPasscode uuid:_metadata.uuid text:_metadata.title]) {
+                if ([[CCCrypto sharedManager] verifyPasscode:aPasscode uuid:_metadata.uuid text:_metadata.title]) {
                     
                     // scriviamo il passcode
                     [CCUtility setKeyChainPasscodeForUUID:_metadata.uuid conPasscode:aPasscode];
@@ -5508,8 +5503,7 @@
         if (!_metadata.uuid) return;
         
         // esiste un hint ??
-        CCCrypto *crypto = [[CCCrypto alloc] init];
-        NSString *hint = [crypto getHintFromFile:_metadata.fileName isLocal:NO directoryUser:app.directoryUser];
+        NSString *hint = [[CCCrypto sharedManager] getHintFromFile:_metadata.fileName isLocal:NO directoryUser:app.directoryUser];
         
         // qui !! la richiesta della nuova passcode
         if ([_metadata.uuid isEqualToString:[CCUtility getUUID]]) {

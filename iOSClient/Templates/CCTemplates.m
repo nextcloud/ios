@@ -48,7 +48,6 @@
 {
     NSString *fileNameModel = nil;
     NSData *data;
-    CCCrypto *crypto = [[CCCrypto alloc] init];
     
     NSMutableDictionary * result = [NSMutableDictionary dictionary];
     for (XLFormSectionDescriptor * section in form.formSections) {
@@ -71,15 +70,15 @@
     }
     
     // save the result
-    NSString *title = [AESCrypt encrypt:[result objectForKey:@"titolo"] password:[crypto getKeyPasscode:uuid]];
+    NSString *title = [AESCrypt encrypt:[result objectForKey:@"titolo"] password:[[CCCrypto sharedManager] getKeyPasscode:uuid]];
     if (fileName) {
         fileNameModel = fileName;
         // copy in memory for failure write
         data = [NSData dataWithContentsOfFile:[NSString stringWithFormat:@"%@/%@", uuid, fileName]];
     } else {
-        fileNameModel = [NSString stringWithFormat:@"%@.plist", [crypto createFilenameEncryptor:[result objectForKey:@"titolo"] uuid:uuid]];
+        fileNameModel = [NSString stringWithFormat:@"%@.plist", [[CCCrypto sharedManager] createFilenameEncryptor:[result objectForKey:@"titolo"] uuid:uuid]];
     }
-    if ([crypto createTemplatesPlist:fileNameModel title:title uuid:uuid icon:icona model:modello dictionary:result] == NO) {
+    if ([[CCCrypto sharedManager] createTemplatesPlist:fileNameModel title:title uuid:uuid icon:icona model:modello dictionary:result] == NO) {
         
         UIAlertView * alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_read_file_error_", nil) message:NSLocalizedString(@"_reload_folder_", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
         [alertView show];
@@ -99,22 +98,21 @@
     NSString *fileNameModel = nil;
     NSData *data;
     NSMutableDictionary * result = [NSMutableDictionary dictionary];
-    CCCrypto *crypto = [[CCCrypto alloc] init];
     
     [result setObject:(titolo ?: [NSNull null]) forKey:@"titolo"];
     [result setObject:(html ?: [NSNull null]) forKey:@"note"];
     
     // save the result
-    NSString *title = [AESCrypt encrypt:[result objectForKey:@"titolo"] password:[crypto getKeyPasscode:uuid]];
+    NSString *title = [AESCrypt encrypt:[result objectForKey:@"titolo"] password:[[CCCrypto sharedManager] getKeyPasscode:uuid]];
     if (fileName) {
         fileNameModel = fileName;
         // copy in memory for failure write
         data = [NSData dataWithContentsOfFile:[NSString stringWithFormat:@"%@/%@", uuid, fileName]];
     } else {
-        fileNameModel = [NSString stringWithFormat:@"%@.plist",[crypto createFilenameEncryptor:[result objectForKey:@"titolo"] uuid:uuid]];
+        fileNameModel = [NSString stringWithFormat:@"%@.plist",[[CCCrypto sharedManager] createFilenameEncryptor:[result objectForKey:@"titolo"] uuid:uuid]];
     }
     
-    if ([crypto createTemplatesPlist:fileNameModel title:title uuid:uuid icon:@"note" model:@"note" dictionary:result] == NO) {
+    if ([[CCCrypto sharedManager] createTemplatesPlist:fileNameModel title:title uuid:uuid icon:@"note" model:@"note" dictionary:result] == NO) {
         
         UIAlertView * alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_read_file_error_", nil) message:NSLocalizedString(@"_reload_folder_", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
         [alertView show];

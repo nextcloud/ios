@@ -25,6 +25,16 @@
 
 @implementation CCCrypto
 
+//Singleton
++ (id)sharedManager {
+    static CCCrypto *CCCrypto = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        CCCrypto = [[self alloc] init];
+    });
+    return CCCrypto;
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Encryption function =====
 #pragma --------------------------------------------------------------------------------------------
@@ -348,6 +358,23 @@
     }
 
     return len;
+}
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== SHA512 =====
+#pragma---------------------------------------------------------------------------------------------
+
+- (NSString *)createSHA512:(NSString *)string
+{
+    const char *cstr = [string cStringUsingEncoding:NSUTF8StringEncoding];
+    NSData *data = [NSData dataWithBytes:cstr length:string.length];
+    uint8_t digest[CC_SHA512_DIGEST_LENGTH];
+    CC_SHA512(data.bytes, (unsigned int)data.length, digest);
+    NSMutableString* output = [NSMutableString  stringWithCapacity:CC_SHA512_DIGEST_LENGTH * 2];
+    
+    for(int i = 0; i < CC_SHA512_DIGEST_LENGTH; i++)
+        [output appendFormat:@"%02x", digest[i]];
+    return output;
 }
 
 @end

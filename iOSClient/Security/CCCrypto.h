@@ -22,6 +22,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#include <CommonCrypto/CommonDigest.h>
 
 #import "AESCrypt.h"
 #import "RNEncryptor.h"
@@ -30,6 +31,8 @@
 #import "CCUtility.h"
 
 @interface CCCrypto : NSObject
+
++ (id)sharedManager;
 
 - (NSString *)getKeyPasscode:(NSString *)uuid;
 
@@ -56,5 +59,7 @@
 - (NSString *)encryptWithCreatePlist:(NSString *)fileName fileNameEncrypted:(NSString*)fileNameEncrypted passcode:(NSString *)passcode directoryUser:(NSString *)directoryUser;
 
 - (NSUInteger)decrypt:(NSString *)fileName fileNameDecrypted:(NSString*)fileNameDecrypted fileNamePrint:(NSString *)fileNamePrint password:(NSString *)password directoryUser:(NSString *)directoryUser;
+
+- (NSString *)createSHA512:(NSString *)string;
 
 @end

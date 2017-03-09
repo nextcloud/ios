@@ -50,11 +50,9 @@
         self.uuid = uuid;
         self.serverUrl = serverUrl;
         
-        CCCrypto *crypto = [[CCCrypto alloc] init];
-        
         // if fileName read Crypto File
         if (fileName)
-            field = [crypto getDictionaryEncrypted:fileName uuid:uuid isLocal:isLocal directoryUser:app.directoryUser];
+            field = [[CCCrypto sharedManager] getDictionaryEncrypted:fileName uuid:uuid isLocal:isLocal directoryUser:app.directoryUser];
    
         self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelPressed:)];
         self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave target:self action:@selector(savePressed:)];

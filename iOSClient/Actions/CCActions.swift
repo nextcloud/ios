@@ -151,7 +151,6 @@ class CCActions: NSObject {
     
     func renameFileOrFolder(_ metadata: CCMetadata, fileName: String, delegate: AnyObject) {
 
-        let crypto = CCCrypto.init()
         let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
         
         let fileName = CCUtility.removeForbiddenCharacters(fileName, hasServerForbiddenCharactersSupport: appDelegate.hasServerForbiddenCharactersSupport)!
@@ -167,6 +166,8 @@ class CCActions: NSObject {
         }
         
         if metadata.cryptated {
+            
+            let crypto = CCCrypto.sharedManager() as! CCCrypto
             
             // Encrypted
             

@@ -821,7 +821,6 @@
 {
     NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:_activeAccount];
     NSString *fileNameCrypto;
-    CCCrypto *crypto = [[CCCrypto alloc] init];
     
     // create Metadata
     NSString *cameraFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:_activeAccount];
@@ -894,9 +893,9 @@
         
         if (template == NO) {
         
-            NSString *passcode = [crypto getKeyPasscode:[CCUtility getUUID]];
+            NSString *passcode = [[CCCrypto sharedManager] getKeyPasscode:[CCUtility getUUID]];
         
-            fileNameCrypto = [crypto encryptWithCreatePlist:fileName fileNameEncrypted:fileName passcode:passcode directoryUser:_directoryUser];
+            fileNameCrypto = [[CCCrypto sharedManager] encryptWithCreatePlist:fileName fileNameEncrypted:fileName passcode:passcode directoryUser:_directoryUser];
         
             // Encrypted file error
             if (fileNameCrypto == nil) {
@@ -975,7 +974,7 @@
 #endif
 
                     if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image] || [metadata.typeFile isEqualToString: k_metadataTypeFile_video])
-                        [crypto addPlistImage:[NSString stringWithFormat:@"%@/%@", _directoryUser, [fileNameCrypto stringByAppendingString:@".plist"]] fileNamePathImage:[NSTemporaryDirectory() stringByAppendingString:uploadID]];
+                        [[CCCrypto sharedManager] addPlistImage:[NSString stringWithFormat:@"%@/%@", _directoryUser, [fileNameCrypto stringByAppendingString:@".plist"]] fileNamePathImage:[NSTemporaryDirectory() stringByAppendingString:uploadID]];
                     
                     [CCCoreData addMetadata:metadata activeAccount:_activeAccount activeUrl:_activeUrl context:_context];
                     
@@ -1004,7 +1003,7 @@
 #endif
                 
                 if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image] || [metadata.typeFile isEqualToString: k_metadataTypeFile_video])
-                    [crypto addPlistImage:[NSString stringWithFormat:@"%@/%@", _directoryUser, [fileNameCrypto stringByAppendingString:@".plist"]] fileNamePathImage:[NSTemporaryDirectory() stringByAppendingString:uploadID]];
+                    [[CCCrypto sharedManager] addPlistImage:[NSString stringWithFormat:@"%@/%@", _directoryUser, [fileNameCrypto stringByAppendingString:@".plist"]] fileNamePathImage:[NSTemporaryDirectory() stringByAppendingString:uploadID]];
                 
                 [CCCoreData addMetadata:metadata activeAccount:_activeAccount activeUrl:_activeUrl context:_context];
                 
