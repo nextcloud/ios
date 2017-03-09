@@ -224,13 +224,6 @@
         }
     }];
     
-    // permission request notification
-    if ([application respondsToSelector:@selector(registerUserNotificationSettings:)]) {
-        
-        UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeBadge|UIUserNotificationTypeAlert|UIUserNotificationTypeSound) categories:nil];
-        [application registerUserNotificationSettings:settings];
-    }
-    
     // Tint Color GLOBAL WINDOW
     [self.window setTintColor:COLOR_WINDOW_TINTCOLOR];
     

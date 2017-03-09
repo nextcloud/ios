@@ -500,7 +500,6 @@
 		F7BF1B431D51E893000854F6 /* CCLogin.m in Sources */ = {isa = PBXBuildFile; fileRef = F7BF1B401D51E893000854F6 /* CCLogin.m */; };
 		F7C00D471E2D0D0F0032160B /* CCCellOffline.m in Sources */ = {isa = PBXBuildFile; fileRef = F7C00D431E2D0D0F0032160B /* CCCellOffline.m */; };
 		F7C00D481E2D0D0F0032160B /* CCCellOffline.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7C00D441E2D0D0F0032160B /* CCCellOffline.xib */; };
-		F7C5259E1E3B45FA00FFE02C /* CCNotificationPushKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C5259D1E3B45FA00FFE02C /* CCNotificationPushKey.swift */; };
 		F7C525A01E3B48B700FFE02C /* CCNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C5259F1E3B48B700FFE02C /* CCNotification.swift */; };
 		F7C525A21E3B6DA800FFE02C /* CCNotification.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7C525A11E3B6DA800FFE02C /* CCNotification.storyboard */; };
 		F7CE28851D1ACFA70025783C /* CCProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CE28801D1ACFA70025783C /* CCProgressView.m */; };
@@ -1432,7 +1431,6 @@
 		F7C1D8BD1D47781C00B89DEA /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		F7C1D8BE1D47781D00B89DEA /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/Intro.strings; sourceTree = "<group>"; };
 		F7C1D8BF1D47781D00B89DEA /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/Error.strings; sourceTree = "<group>"; };
-		F7C5259D1E3B45FA00FFE02C /* CCNotificationPushKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CCNotificationPushKey.swift; path = Notification/CCNotificationPushKey.swift; sourceTree = "<group>"; };
 		F7C5259F1E3B48B700FFE02C /* CCNotification.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CCNotification.swift; path = Notification/CCNotification.swift; sourceTree = "<group>"; };
 		F7C525A11E3B6DA800FFE02C /* CCNotification.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = CCNotification.storyboard; path = Notification/CCNotification.storyboard; sourceTree = "<group>"; };
 		F7C8C1721B482A920048180E /* CCMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = CCMetadata.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -2983,7 +2981,6 @@
 		F7C5259A1E3B441D00FFE02C /* Notification */ = {
 			isa = PBXGroup;
 			children = (
-				F7C5259D1E3B45FA00FFE02C /* CCNotificationPushKey.swift */,
 				F7C5259F1E3B48B700FFE02C /* CCNotification.swift */,
 				F7C525A11E3B6DA800FFE02C /* CCNotification.storyboard */,
 			);
@@ -4113,7 +4110,6 @@
 				F73CCE0B1DC13776007E38D8 /* NSPredicate+XLFormAdditions.m in Sources */,
 				F73CCE131DC13776007E38D8 /* XLFormRightImageButton.m in Sources */,
 				F77B0E5D1D118A16002130FE /* UIImage+Blurring.m in Sources */,
-				F7C5259E1E3B45FA00FFE02C /* CCNotificationPushKey.swift in Sources */,
 				F7BE6E2F1D2D5C3B00106933 /* CCQuickActions.m in Sources */,
 				F77B0E5E1D118A16002130FE /* unzip.c in Sources */,
 				F7659A291DC0B726004860C4 /* EAIntroView.m in Sources */,
