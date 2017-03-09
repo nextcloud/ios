@@ -233,6 +233,25 @@ class CCActions: NSObject {
  
         } else {
  
+            let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: appDelegate.activeUser, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl, isCryptoCloudMode: false);
+            let error = ocNetworking?.readFileSync("\(serverUrl)/\(fileName)");
+            
+            // Verify if exists the fileName TO
+            if error == nil {
+                
+                let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: NSLocalizedString("_file_already_exists_", comment: ""), preferredStyle: UIAlertControllerStyle.alert)
+                
+                let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
+                    (result : UIAlertAction) -> Void in
+                }
+                
+                alertController.addAction(okAction)
+                
+                delegate.present(alertController, animated: true, completion: nil)
+                
+                return;
+            }
+            
             // Plain
             
             metadataNet.action = actionMoveFileOrFolder

@@ -54,7 +54,7 @@
         
         _delegate = delegate;
         
-        _metadataNet = [[CCMetadataNet alloc] init];
+        _metadataNet = [CCMetadataNet new];
         _metadataNet = [metadataNet copy];
         
         _activeUser = withUser;
