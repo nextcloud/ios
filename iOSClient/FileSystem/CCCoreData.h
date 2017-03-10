@@ -212,7 +212,6 @@
 
 + (void)addActivity:(OCActivity *)activity account:(NSString *)account;
 + (NSArray *)getAllTableActivityWithPredicate:(NSPredicate *)predicate;
-+ (NSInteger)getLastIDActivityActiveAccount:(NSString *)activeAccount;
 
 // ===== File System =====
 

@@ -1876,13 +1876,6 @@
     return [records sortedArrayUsingDescriptors:[NSArray arrayWithObjects:descriptor, nil]];
 }
 
-+ (NSInteger)getLastIDActivityActiveAccount:(NSString *)activeAccount
-{
-    NSNumber *lastID  = [TableActivity MR_aggregateOperation:@"max:" onAttribute:@"idActivity" withPredicate:[NSPredicate predicateWithFormat:@"(account == %@)", activeAccount]];
-    
-    return [lastID integerValue];
-}
-
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== File System =====
 #pragma --------------------------------------------------------------------------------------------
