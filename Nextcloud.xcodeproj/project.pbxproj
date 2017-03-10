@@ -501,6 +501,13 @@
 		F7B1FB4A1E72C0F4001781FE /* SwiftWebVCActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B1FB431E72C0F4001781FE /* SwiftWebVCActivity.swift */; };
 		F7B1FB4B1E72C0F4001781FE /* SwiftWebVCActivityChrome.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B1FB441E72C0F4001781FE /* SwiftWebVCActivityChrome.swift */; };
 		F7B1FB4C1E72C0F4001781FE /* SwiftWebVCActivitySafari.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B1FB451E72C0F4001781FE /* SwiftWebVCActivitySafari.swift */; };
+		F7B1FBC41E72E3D1001781FE /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7B1FBB11E72E3D1001781FE /* Media.xcassets */; };
+		F7B1FBC51E72E3D1001781FE /* SwiftWebVC.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7B1FBB31E72E3D1001781FE /* SwiftWebVC.strings */; };
+		F7B1FBC61E72E3D1001781FE /* SwiftModalWebVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B1FBBF1E72E3D1001781FE /* SwiftModalWebVC.swift */; };
+		F7B1FBC71E72E3D1001781FE /* SwiftWebVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B1FBC01E72E3D1001781FE /* SwiftWebVC.swift */; };
+		F7B1FBC81E72E3D1001781FE /* SwiftWebVCActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B1FBC11E72E3D1001781FE /* SwiftWebVCActivity.swift */; };
+		F7B1FBC91E72E3D1001781FE /* SwiftWebVCActivityChrome.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B1FBC21E72E3D1001781FE /* SwiftWebVCActivityChrome.swift */; };
+		F7B1FBCA1E72E3D1001781FE /* SwiftWebVCActivitySafari.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B1FBC31E72E3D1001781FE /* SwiftWebVCActivitySafari.swift */; };
 		F7BB14961D5B62C000ECEE68 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63061D5B3467004E2AA5 /* libcrypto.a */; };
 		F7BB14971D5B62C000ECEE68 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63071D5B3467004E2AA5 /* libssl.a */; };
 		F7BE6E2F1D2D5C3B00106933 /* CCQuickActions.m in Sources */ = {isa = PBXBuildFile; fileRef = F7BE6E2C1D2D5C3B00106933 /* CCQuickActions.m */; };
@@ -1428,6 +1435,23 @@
 		F7B1FB431E72C0F4001781FE /* SwiftWebVCActivity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftWebVCActivity.swift; sourceTree = "<group>"; };
 		F7B1FB441E72C0F4001781FE /* SwiftWebVCActivityChrome.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftWebVCActivityChrome.swift; sourceTree = "<group>"; };
 		F7B1FB451E72C0F4001781FE /* SwiftWebVCActivitySafari.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftWebVCActivitySafari.swift; sourceTree = "<group>"; };
+		F7B1FBB11E72E3D1001781FE /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
+		F7B1FBB41E72E3D1001781FE /* da */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = da; path = da.lproj/SwiftWebVC.strings; sourceTree = "<group>"; };
+		F7B1FBB51E72E3D1001781FE /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/SwiftWebVC.strings; sourceTree = "<group>"; };
+		F7B1FBB61E72E3D1001781FE /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/SwiftWebVC.strings; sourceTree = "<group>"; };
+		F7B1FBB71E72E3D1001781FE /* es-ES */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-ES"; path = "es-ES.lproj/SwiftWebVC.strings"; sourceTree = "<group>"; };
+		F7B1FBB81E72E3D1001781FE /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/SwiftWebVC.strings; sourceTree = "<group>"; };
+		F7B1FBB91E72E3D1001781FE /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/SwiftWebVC.strings; sourceTree = "<group>"; };
+		F7B1FBBA1E72E3D1001781FE /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/SwiftWebVC.strings; sourceTree = "<group>"; };
+		F7B1FBBB1E72E3D1001781FE /* pt */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pt; path = pt.lproj/SwiftWebVC.strings; sourceTree = "<group>"; };
+		F7B1FBBC1E72E3D1001781FE /* vi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = vi; path = vi.lproj/SwiftWebVC.strings; sourceTree = "<group>"; };
+		F7B1FBBD1E72E3D1001781FE /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/SwiftWebVC.strings"; sourceTree = "<group>"; };
+		F7B1FBBE1E72E3D1001781FE /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/SwiftWebVC.strings"; sourceTree = "<group>"; };
+		F7B1FBBF1E72E3D1001781FE /* SwiftModalWebVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftModalWebVC.swift; sourceTree = "<group>"; };
+		F7B1FBC01E72E3D1001781FE /* SwiftWebVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftWebVC.swift; sourceTree = "<group>"; };
+		F7B1FBC11E72E3D1001781FE /* SwiftWebVCActivity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftWebVCActivity.swift; sourceTree = "<group>"; };
+		F7B1FBC21E72E3D1001781FE /* SwiftWebVCActivityChrome.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftWebVCActivityChrome.swift; sourceTree = "<group>"; };
+		F7B1FBC31E72E3D1001781FE /* SwiftWebVCActivitySafari.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftWebVCActivitySafari.swift; sourceTree = "<group>"; };
 		F7B61E861DC13C20009E938F /* MagicalRecord.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MagicalRecord.xcodeproj; path = "Libraries external/MagicalRecord/MagicalRecord.xcodeproj"; sourceTree = SOURCE_ROOT; };
 		F7B81D7F1C64E77F006D02DF /* CCCoreData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCCoreData.h; sourceTree = "<group>"; };
 		F7B81D801C64E77F006D02DF /* CCCoreData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCCoreData.m; sourceTree = "<group>"; };
@@ -2924,6 +2948,36 @@
 			path = Strings;
 			sourceTree = "<group>";
 		};
+		F7B1FBAF1E72E3D1001781FE /* SwiftWebVC */ = {
+			isa = PBXGroup;
+			children = (
+				F7B1FBB01E72E3D1001781FE /* Resources */,
+				F7B1FBB21E72E3D1001781FE /* Strings */,
+				F7B1FBBF1E72E3D1001781FE /* SwiftModalWebVC.swift */,
+				F7B1FBC01E72E3D1001781FE /* SwiftWebVC.swift */,
+				F7B1FBC11E72E3D1001781FE /* SwiftWebVCActivity.swift */,
+				F7B1FBC21E72E3D1001781FE /* SwiftWebVCActivityChrome.swift */,
+				F7B1FBC31E72E3D1001781FE /* SwiftWebVCActivitySafari.swift */,
+			);
+			path = SwiftWebVC;
+			sourceTree = "<group>";
+		};
+		F7B1FBB01E72E3D1001781FE /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				F7B1FBB11E72E3D1001781FE /* Media.xcassets */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		F7B1FBB21E72E3D1001781FE /* Strings */ = {
+			isa = PBXGroup;
+			children = (
+				F7B1FBB31E72E3D1001781FE /* SwiftWebVC.strings */,
+			);
+			path = Strings;
+			sourceTree = "<group>";
+		};
 		F7B61E871DC13C20009E938F /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -3191,6 +3245,7 @@
 			isa = PBXGroup;
 			children = (
 				F72AAEC11E5C60C700BB17E1 /* AHKActionSheet */,
+				F7B1FBAF1E72E3D1001781FE /* SwiftWebVC */,
 				F7F54CAD1E5B14C700E19C62 /* MWPhotoBrowser */,
 			);
 			path = Library;
@@ -3742,6 +3797,7 @@
 				F7F54CF31E5B14C700E19C62 /* ImageSelectedSmallOn@3x.png in Resources */,
 				F77B0F181D118A16002130FE /* Intro.strings in Resources */,
 				F7F54CFA1E5B14C700E19C62 /* UIBarButtonItemArrowLeft.png in Resources */,
+				F7B1FBC51E72E3D1001781FE /* SwiftWebVC.strings in Resources */,
 				F7FCFFD81D70798C000E6E29 /* CCPeekPop.storyboard in Resources */,
 				F77B0F191D118A16002130FE /* ZSSitalic.png in Resources */,
 				F7F06ED11DBFACC600099AE9 /* CTAssetsPicker.strings in Resources */,
@@ -3759,6 +3815,7 @@
 				F77B0F2B1D118A16002130FE /* ZSSclearstyle@2x.png in Resources */,
 				F77B0F2C1D118A16002130FE /* ZSSlink.png in Resources */,
 				F77B0F2D1D118A16002130FE /* ZSSsuperscript@2x.png in Resources */,
+				F7B1FBC41E72E3D1001781FE /* Media.xcassets in Resources */,
 				F77B0F2E1D118A16002130FE /* ZSScenterjustify.png in Resources */,
 				F77B0F2F1D118A16002130FE /* CCMove.storyboard in Resources */,
 				F7F54D001E5B14C700E19C62 /* UIBarButtonItemGrid.png in Resources */,
@@ -4080,12 +4137,14 @@
 				F77B0E0E1D118A16002130FE /* REMenuItemView.m in Sources */,
 				F732BA061D76CE1500E9878B /* CCNetworking.m in Sources */,
 				F73CCDFF1DC13776007E38D8 /* XLFormDescriptor.m in Sources */,
+				F7B1FBC71E72E3D1001781FE /* SwiftWebVC.swift in Sources */,
 				F77B0E111D118A16002130FE /* UIImage+Reflection.m in Sources */,
 				F708CF8B1E56E8CC00271D8B /* TableCertificates+CoreDataClass.m in Sources */,
 				F7F54D0C1E5B14C800E19C62 /* MWTapDetectingView.m in Sources */,
 				F708CF7C1E56E8CC00271D8B /* TableGPS+CoreDataProperties.m in Sources */,
 				F708CF821E56E8CC00271D8B /* TableDirectory+CoreDataProperties.m in Sources */,
 				F77B0E121D118A16002130FE /* CCPatenteGuida.m in Sources */,
+				F7B1FBC61E72E3D1001781FE /* SwiftModalWebVC.swift in Sources */,
 				F7D6A0971D82DBFA0045AD1A /* CCMenu.m in Sources */,
 				F77B0E131D118A16002130FE /* AppDelegate.m in Sources */,
 				F750374F1DBFA91A008FB480 /* NSArray+PureLayout.m in Sources */,
@@ -4105,6 +4164,7 @@
 				F77B0E211D118A16002130FE /* ThumbsMainToolbar.m in Sources */,
 				F708CF791E56E8CC00271D8B /* TableGPS+CoreDataClass.m in Sources */,
 				F73CCDF31DC13776007E38D8 /* XLFormSwitchCell.m in Sources */,
+				F7B1FBCA1E72E3D1001781FE /* SwiftWebVCActivitySafari.swift in Sources */,
 				F7F54D0A1E5B14C800E19C62 /* MWPhotoBrowser.m in Sources */,
 				F720E01F1E48C73E001A4B9E /* CCActions.swift in Sources */,
 				F77B0E221D118A16002130FE /* CCManageLocation.m in Sources */,
@@ -4207,6 +4267,7 @@
 				F77B0E761D118A16002130FE /* ReaderViewController.m in Sources */,
 				F77B0E781D118A16002130FE /* ReaderThumbFetch.m in Sources */,
 				F77B0E7B1D118A16002130FE /* CCPassaporto.m in Sources */,
+				F7B1FBC91E72E3D1001781FE /* SwiftWebVCActivityChrome.swift in Sources */,
 				F7B1FB4A1E72C0F4001781FE /* SwiftWebVCActivity.swift in Sources */,
 				F7F06EA51DBFACC600099AE9 /* CTAssetItemViewController.m in Sources */,
 				F7659A5A1DC0B760004860C4 /* PSTCollectionView.m in Sources */,
@@ -4243,6 +4304,7 @@
 				F77B0E971D118A16002130FE /* LMMediaItemQueueManager.m in Sources */,
 				F73CCE0D1DC13776007E38D8 /* NSString+XLFormAdditions.m in Sources */,
 				F73CCE0F1DC13776007E38D8 /* UIView+XLFormAdditions.m in Sources */,
+				F7B1FBC81E72E3D1001781FE /* SwiftWebVCActivity.swift in Sources */,
 				F77B0E981D118A16002130FE /* CCManageAccount.m in Sources */,
 				F77B0E991D118A16002130FE /* PPCollectionViewCell.m in Sources */,
 				F7F06EC11DBFACC600099AE9 /* CTAssetsPickerAccessDeniedView.m in Sources */,
@@ -4391,6 +4453,24 @@
 				F7B1FB3E1E72C0F4001781FE /* vi */,
 				F7B1FB3F1E72C0F4001781FE /* zh-Hans */,
 				F7B1FB401E72C0F4001781FE /* zh-Hant */,
+			);
+			name = SwiftWebVC.strings;
+			sourceTree = "<group>";
+		};
+		F7B1FBB31E72E3D1001781FE /* SwiftWebVC.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F7B1FBB41E72E3D1001781FE /* da */,
+				F7B1FBB51E72E3D1001781FE /* de */,
+				F7B1FBB61E72E3D1001781FE /* en */,
+				F7B1FBB71E72E3D1001781FE /* es-ES */,
+				F7B1FBB81E72E3D1001781FE /* es */,
+				F7B1FBB91E72E3D1001781FE /* fr */,
+				F7B1FBBA1E72E3D1001781FE /* ja */,
+				F7B1FBBB1E72E3D1001781FE /* pt */,
+				F7B1FBBC1E72E3D1001781FE /* vi */,
+				F7B1FBBD1E72E3D1001781FE /* zh-Hans */,
+				F7B1FBBE1E72E3D1001781FE /* zh-Hant */,
 			);
 			name = SwiftWebVC.strings;
 			sourceTree = "<group>";
