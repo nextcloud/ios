@@ -737,8 +737,6 @@
         
         @autoreleasepool {
             
-            dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-            
             PHVideoRequestOptions *options = [[PHVideoRequestOptions alloc] init];
             options.version = PHVideoRequestOptionsVersionOriginal;
         
@@ -762,12 +760,22 @@
                     
                     error = [NSError errorWithDomain:@"it.twsweb.cryptocloud" code:kCFURLErrorFileDoesNotExist userInfo:nil];
                 }
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
                     
-                dispatch_semaphore_signal(semaphore);
+                    if (error) {
+                    
+                        // Error for uploadFileFailure
+                        if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
+                            [delegate uploadFileFailure:nil fileID:nil serverUrl:serverUrl selector:selector message:@"_read_file_error_" errorCode:error.code];
+                    
+                    } else {
+                    
+                        [self upload:fileName serverUrl:serverUrl cryptated:cryptated template:NO onlyPlist:NO assetFileName:assetFileName assetDate:assetDate assetMediaType:assetMediaType localIdentifier:localIdentifier session:session taskStatus:taskStatus selector:selector selectorPost:selectorPost errorCode:errorCode delegate:delegate];
+                    }
+                });
+                
             }];
-            
-            while (dispatch_semaphore_wait(semaphore, DISPATCH_TIME_NOW))
-                [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]];
         }
     }
     
@@ -780,30 +788,25 @@
 
         @autoreleasepool {
             
-            dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-            
             [[PHImageManager defaultManager] requestImageDataForAsset:asset options:nil resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
             
                 [imageData writeToFile:fileNamePath options:NSDataWritingAtomic error:&error];
                 
-                dispatch_semaphore_signal(semaphore);
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    
+                    if (error) {
+                    
+                        // Error for uploadFileFailure
+                        if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
+                            [delegate uploadFileFailure:nil fileID:nil serverUrl:serverUrl selector:selector message:@"_read_file_error_" errorCode:error.code];
+                    
+                    } else {
+                    
+                        [self upload:fileName serverUrl:serverUrl cryptated:cryptated template:NO onlyPlist:NO assetFileName:assetFileName assetDate:assetDate assetMediaType:assetMediaType localIdentifier:localIdentifier session:session taskStatus:taskStatus selector:selector selectorPost:selectorPost errorCode:errorCode delegate:delegate];
+                    }
+                });
             }];
-            
-            while (dispatch_semaphore_wait(semaphore, DISPATCH_TIME_NOW))
-                [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]];
-
         }
-    }
-    
-    if (error) {
-        
-        // Error for uploadFileFailure
-        if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
-            [delegate uploadFileFailure:nil fileID:nil serverUrl:serverUrl selector:selector message:@"_read_file_error_" errorCode:error.code];
-        
-    } else {
-        
-        [self upload:fileName serverUrl:serverUrl cryptated:cryptated template:NO onlyPlist:NO assetFileName:assetFileName assetDate:assetDate assetMediaType:assetMediaType localIdentifier:localIdentifier session:session taskStatus:taskStatus selector:selector selectorPost:selectorPost errorCode:errorCode delegate:delegate];
     }
 }
 

@@ -1545,8 +1545,6 @@
 //
 - (void)uploadFileAsset:(NSMutableArray *)assets serverUrl:(NSString *)serverUrl cryptated:(BOOL)cryptated useSubFolder:(BOOL)useSubFolder session:(NSString *)session
 {
-    [_hud visibleHudTitle:nil mode:MBProgressHUDModeIndeterminate color:nil];
-    
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.01 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void){
         [self performSelectorOnMainThread:@selector(uploadFileAssetBridge:) withObject:@[assets, serverUrl, [NSNumber numberWithBool:cryptated], [NSNumber numberWithBool:useSubFolder], session] waitUntilDone:NO];
     });
@@ -1571,8 +1569,6 @@
         
         if(![app.activePhotosCameraUpload automaticCreateFolder:folderPhotos]) {
             
-            [_hud hideHud];
-            
             [app messageNotification:@"_error_" description:@"_error_createsubfolders_upload_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo];
             
             return;
@@ -1585,8 +1581,6 @@
         for (NSString *dateSubFolder in [CCUtility createNameSubFolder:assets]) {
                 
             if(![app.activePhotosCameraUpload automaticCreateFolder:[NSString stringWithFormat:@"%@/%@", folderPhotos, dateSubFolder]]) {
-                
-                [_hud hideHud];
                 
                 [app messageNotification:@"_error_" description:@"_error_createsubfolders_upload_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo];
                     
@@ -1641,8 +1635,6 @@
             [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
         }
     }
-    
-    [_hud hideHud];
 }
 
 #pragma --------------------------------------------------------------------------------------------
