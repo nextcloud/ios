@@ -3306,9 +3306,16 @@
 
 - (void)goToWebVC:(CCMenuItem *)sender
 {
-    SwiftWebVC *webVC = [[SwiftWebVC alloc] initWithUrlString:sender.argument];
-    
-    [self.navigationController pushViewController:webVC animated:YES];
+    if (self.splitViewController.isCollapsed) {
+        
+        SwiftWebVC *webVC = [[SwiftWebVC alloc] initWithUrlString:sender.argument];
+        [self.navigationController pushViewController:webVC animated:YES];
+        
+    } else {
+        
+        SwiftModalWebVC *webVC = [[SwiftModalWebVC alloc] initWithUrlString:sender.argument];
+        [self presentViewController:webVC animated:YES completion:nil];
+    }
 }
 
 #pragma --------------------------------------------------------------------------------------------

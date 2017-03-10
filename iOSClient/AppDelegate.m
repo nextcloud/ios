@@ -427,7 +427,7 @@
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
     
-#ifdef OPTION_NOTIFICATION_PUSH_ENABLE
+#if defined(OPTION_NOTIFICATION_PUSH_ENABLE) || defined(DEBUG)
     
     NSDictionary *keys = [NSDictionary dictionaryWithContentsOfFile:[[NSBundle mainBundle] pathForResource:k_nextcloudDevicePushKey ofType:@"plist"]];
     
