@@ -32,7 +32,7 @@ public class SwiftModalWebVC: UINavigationController {
         self.init(request: URLRequest(url: pageURL), theme: theme)
     }
     
-    public init(request: URLRequest, theme: SwiftModalWebVCTheme = .lightBlue) {
+    public init(request: URLRequest, theme: SwiftModalWebVCTheme = .dark) {
         let webViewController = SwiftWebVC(aRequest: request)
         webViewController.storedStatusColor = UINavigationBar.appearance().barStyle
 
