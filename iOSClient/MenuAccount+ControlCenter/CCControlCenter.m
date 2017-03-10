@@ -268,7 +268,7 @@
     
         [coordinator animateAlongsideTransition:nil completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
         
-            [self openControlCenterToSize:size];
+            [self openControlCenterToSize];
         
             [self setControlCenterHidden: self.navigationBarHidden];
         }];
@@ -291,11 +291,11 @@
     return [UIScreen mainScreen].bounds.size.height - self.tabBarController.tabBar.frame.size.height;
 }
 
-- (void)openControlCenterToSize:(CGSize)size
+- (void)openControlCenterToSize
 {
     CGFloat navigationBarH = self.navigationBar.frame.size.height + [UIApplication sharedApplication].statusBarFrame.size.height;
     
-    _mainView.frame = CGRectMake(0, 0, size.width, [self getMaxH]);
+    _mainView.frame = CGRectMake(0, 0, self.navigationBar.frame.size.width, [self getMaxH]);
     _pageViewController.view.frame = CGRectMake(0, navigationBarH, _mainView.frame.size.width, _mainView.frame.size.height - self.navigationBar.frame.size.height - BORDER_TOUCH_UPDOWN - TOOLBAR_ADD_BORDER);
     _labelMessageNoRecord.frame = CGRectMake(0, _mainView.frame.size.height / 2, _mainView.frame.size.width, SIZE_FONT_NORECORD+10);
     _imageDrag.frame = CGRectMake(0, _mainView.frame.size.height - BORDER_TOUCH_UPDOWN, _mainView.frame.size.width, BORDER_TOUCH_UPDOWN);
