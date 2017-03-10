@@ -262,22 +262,26 @@
         // ----- Test : (DELETE) -----
         
         NSMutableArray *metadatasNotPresents = [[NSMutableArray alloc] init];
-        NSArray *tableMetadatasInDB = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND ((session == NULL) OR (session == ''))", app.activeAccount, metadataNet.directoryID] context:nil];
+        NSArray *tableMetadatas = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND ((session == NULL) OR (session == ''))", app.activeAccount, metadataNet.directoryID] context:nil];
         
-        for (TableMetadata *tableMetadataDB in tableMetadatasInDB) {
+        for (TableMetadata *tableMetadata in tableMetadatas) {
+            
+            // reject cryptated
+            if (tableMetadata.cryptated)
+                continue;
             
             BOOL fileIDFound = NO;
             
             for (CCMetadata *metadata in metadatas) {
                 
-                if ([tableMetadataDB.fileID isEqualToString:metadata.fileID]) {
+                if ([tableMetadata.fileID isEqualToString:metadata.fileID]) {
                     fileIDFound = YES;
                     break;
                 }
             }
             
             if (!fileIDFound)
-                [metadatasNotPresents addObject:[CCCoreData insertEntityInMetadata:tableMetadataDB]];
+                [metadatasNotPresents addObject:[CCCoreData insertEntityInMetadata:tableMetadata]];
         }
         
         dispatch_async(dispatch_get_main_queue(), ^{
