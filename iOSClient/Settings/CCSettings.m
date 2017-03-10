@@ -309,6 +309,7 @@
     [CCAspect aspectTabBar:self.tabBarController.tabBar hidden:NO];
     
     [self reloadForm];
+    [self recalculateSize];
 }
 
 // E' apparsa
@@ -475,9 +476,9 @@
 
         XLFormRowDescriptor *rowAzzeraCache = [self.form formRowWithTag:@"azzeracache"];
 
-        //NSString *size = [CCUtility transformedSize:[[self getUserDirectorySize] longValue]];
-        //rowAzzeraCache.title = [NSString stringWithFormat:NSLocalizedString(@"_clear_cache_", nil), size];
-        rowAzzeraCache.title = NSLocalizedString(@"_clear_cache_no_size_", nil);
+        NSString *size = [CCUtility transformedSize:[[self getUserDirectorySize] longValue]];
+        rowAzzeraCache.title = [NSString stringWithFormat:NSLocalizedString(@"_clear_cache_", nil), size];
+        //rowAzzeraCache.title = NSLocalizedString(@"_clear_cache_no_size_", nil);
         
         [self.tableView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];
 
