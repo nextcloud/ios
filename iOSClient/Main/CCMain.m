@@ -3216,6 +3216,7 @@
     
     [CCMenu setTitleFont:[UIFont systemFontOfSize:12.0]];
     [CCMenu showMenuInView:self.navigationController.view fromRect:rect menuItems:menuArray withOptions:options];
+    
 #endif
     
 #if defined(MENU_BRAND_ENABLE) && defined(OPTION_MULTIUSER_DISABLE)
@@ -3226,18 +3227,24 @@
     item.title = @"Example title ... N. 1";
     item.image = [UIImage imageNamed:image_notification];
     item.target = self;
+    item.action = @selector(goToWebVC:);
+    item.argument = @"https://www.nextcloud.com";
     [menuArray addObject:item];
 
     item = [CCMenuItem new];
     item.title = @"Example title ... N. 2";
     item.image = [UIImage imageNamed:image_notification];
     item.target = self;
+    item.action = @selector(goToWebVC:);
+    item.argument = @"https://www.nextcloud.com";
     [menuArray addObject:item];
     
     item = [CCMenuItem new];
     item.title = @"Example title ... N. 3";
     item.image = [UIImage imageNamed:image_notification];
     item.target = self;
+    item.action = @selector(goToWebVC:);
+    item.argument = @"https://www.nextcloud.com";
     [menuArray addObject:item];
     
     OptionalConfiguration options;
@@ -3295,6 +3302,13 @@
         
         [_ImageTitleHomeCryptoCloud setUserInteractionEnabled:YES];
     });
+}
+
+- (void)goToWebVC:(CCMenuItem *)sender
+{
+    SwiftWebVC *webVC = [[SwiftWebVC alloc] initWithUrlString:sender.argument];
+    
+    [self.navigationController pushViewController:webVC animated:YES];
 }
 
 #pragma --------------------------------------------------------------------------------------------

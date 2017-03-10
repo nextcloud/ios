@@ -494,6 +494,13 @@
 		F78088EB1DD3A1DB005C5A7C /* cryptocloud.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = F78088E51DD3A1DB005C5A7C /* cryptocloud.xcdatamodeld */; };
 		F78BFED41D3111B800E513CF /* LaunchScreenNextcloud.xib in Resources */ = {isa = PBXBuildFile; fileRef = F78BFECA1D3111B800E513CF /* LaunchScreenNextcloud.xib */; };
 		F78BFEE11D31126B00E513CF /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F78BFEDE1D31126B00E513CF /* MainInterface.storyboard */; };
+		F7B1FB461E72C0F4001781FE /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7B1FB331E72C0F4001781FE /* Media.xcassets */; };
+		F7B1FB471E72C0F4001781FE /* SwiftWebVC.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7B1FB351E72C0F4001781FE /* SwiftWebVC.strings */; };
+		F7B1FB481E72C0F4001781FE /* SwiftModalWebVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B1FB411E72C0F4001781FE /* SwiftModalWebVC.swift */; };
+		F7B1FB491E72C0F4001781FE /* SwiftWebVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B1FB421E72C0F4001781FE /* SwiftWebVC.swift */; };
+		F7B1FB4A1E72C0F4001781FE /* SwiftWebVCActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B1FB431E72C0F4001781FE /* SwiftWebVCActivity.swift */; };
+		F7B1FB4B1E72C0F4001781FE /* SwiftWebVCActivityChrome.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B1FB441E72C0F4001781FE /* SwiftWebVCActivityChrome.swift */; };
+		F7B1FB4C1E72C0F4001781FE /* SwiftWebVCActivitySafari.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B1FB451E72C0F4001781FE /* SwiftWebVCActivitySafari.swift */; };
 		F7BB14961D5B62C000ECEE68 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63061D5B3467004E2AA5 /* libcrypto.a */; };
 		F7BB14971D5B62C000ECEE68 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63071D5B3467004E2AA5 /* libssl.a */; };
 		F7BE6E2F1D2D5C3B00106933 /* CCQuickActions.m in Sources */ = {isa = PBXBuildFile; fileRef = F7BE6E2C1D2D5C3B00106933 /* CCQuickActions.m */; };
@@ -1404,6 +1411,23 @@
 		F7ACE42F1BAC0268006C0017 /* CCManageCameraUpload.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCManageCameraUpload.m; sourceTree = "<group>"; };
 		F7ACE4301BAC0268006C0017 /* CCSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCSettings.h; sourceTree = "<group>"; };
 		F7ACE4311BAC0268006C0017 /* CCSettings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCSettings.m; sourceTree = "<group>"; };
+		F7B1FB331E72C0F4001781FE /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
+		F7B1FB361E72C0F4001781FE /* da */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = da; path = da.lproj/SwiftWebVC.strings; sourceTree = "<group>"; };
+		F7B1FB371E72C0F4001781FE /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/SwiftWebVC.strings; sourceTree = "<group>"; };
+		F7B1FB381E72C0F4001781FE /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/SwiftWebVC.strings; sourceTree = "<group>"; };
+		F7B1FB391E72C0F4001781FE /* es-ES */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-ES"; path = "es-ES.lproj/SwiftWebVC.strings"; sourceTree = "<group>"; };
+		F7B1FB3A1E72C0F4001781FE /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/SwiftWebVC.strings; sourceTree = "<group>"; };
+		F7B1FB3B1E72C0F4001781FE /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/SwiftWebVC.strings; sourceTree = "<group>"; };
+		F7B1FB3C1E72C0F4001781FE /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/SwiftWebVC.strings; sourceTree = "<group>"; };
+		F7B1FB3D1E72C0F4001781FE /* pt */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pt; path = pt.lproj/SwiftWebVC.strings; sourceTree = "<group>"; };
+		F7B1FB3E1E72C0F4001781FE /* vi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = vi; path = vi.lproj/SwiftWebVC.strings; sourceTree = "<group>"; };
+		F7B1FB3F1E72C0F4001781FE /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/SwiftWebVC.strings"; sourceTree = "<group>"; };
+		F7B1FB401E72C0F4001781FE /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/SwiftWebVC.strings"; sourceTree = "<group>"; };
+		F7B1FB411E72C0F4001781FE /* SwiftModalWebVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftModalWebVC.swift; sourceTree = "<group>"; };
+		F7B1FB421E72C0F4001781FE /* SwiftWebVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftWebVC.swift; sourceTree = "<group>"; };
+		F7B1FB431E72C0F4001781FE /* SwiftWebVCActivity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftWebVCActivity.swift; sourceTree = "<group>"; };
+		F7B1FB441E72C0F4001781FE /* SwiftWebVCActivityChrome.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftWebVCActivityChrome.swift; sourceTree = "<group>"; };
+		F7B1FB451E72C0F4001781FE /* SwiftWebVCActivitySafari.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftWebVCActivitySafari.swift; sourceTree = "<group>"; };
 		F7B61E861DC13C20009E938F /* MagicalRecord.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MagicalRecord.xcodeproj; path = "Libraries external/MagicalRecord/MagicalRecord.xcodeproj"; sourceTree = SOURCE_ROOT; };
 		F7B81D7F1C64E77F006D02DF /* CCCoreData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCCoreData.h; sourceTree = "<group>"; };
 		F7B81D801C64E77F006D02DF /* CCCoreData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCCoreData.m; sourceTree = "<group>"; };
@@ -1728,6 +1752,7 @@
 				F7659A3A1DC0B760004860C4 /* PSTCollectionView */,
 				F70F0C4F1C8892C5008DAB36 /* REMenu */,
 				F70F05321C889184008DAB36 /* RNCryptor */,
+				F7B1FB311E72C0F4001781FE /* SwiftWebVC */,
 				F70F0F921C889487008DAB36 /* SSZipArchive */,
 				F7676A601D5CB1B900DF734C /* TWMessageBarManager */,
 				F73CCE271DC13798007E38D8 /* UICKeyChainStore */,
@@ -2869,6 +2894,36 @@
 			path = Settings;
 			sourceTree = "<group>";
 		};
+		F7B1FB311E72C0F4001781FE /* SwiftWebVC */ = {
+			isa = PBXGroup;
+			children = (
+				F7B1FB321E72C0F4001781FE /* Resources */,
+				F7B1FB341E72C0F4001781FE /* Strings */,
+				F7B1FB411E72C0F4001781FE /* SwiftModalWebVC.swift */,
+				F7B1FB421E72C0F4001781FE /* SwiftWebVC.swift */,
+				F7B1FB431E72C0F4001781FE /* SwiftWebVCActivity.swift */,
+				F7B1FB441E72C0F4001781FE /* SwiftWebVCActivityChrome.swift */,
+				F7B1FB451E72C0F4001781FE /* SwiftWebVCActivitySafari.swift */,
+			);
+			path = SwiftWebVC;
+			sourceTree = "<group>";
+		};
+		F7B1FB321E72C0F4001781FE /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				F7B1FB331E72C0F4001781FE /* Media.xcassets */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		F7B1FB341E72C0F4001781FE /* Strings */ = {
+			isa = PBXGroup;
+			children = (
+				F7B1FB351E72C0F4001781FE /* SwiftWebVC.strings */,
+			);
+			path = Strings;
+			sourceTree = "<group>";
+		};
 		F7B61E871DC13C20009E938F /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -3498,6 +3553,13 @@
 				ru,
 				pl,
 				es,
+				da,
+				"es-ES",
+				ja,
+				pt,
+				vi,
+				"zh-Hans",
+				"zh-Hant",
 			);
 			mainGroup = F7F67B9F1A24D27800EE80DA;
 			productRefGroup = F7F67B9F1A24D27800EE80DA;
@@ -3759,6 +3821,7 @@
 				F7F54CFB1E5B14C700E19C62 /* UIBarButtonItemArrowLeft@2x.png in Resources */,
 				F77B0F641D118A16002130FE /* ZSSh4.png in Resources */,
 				F77B0F671D118A16002130FE /* InfoPlist.strings in Resources */,
+				F7B1FB461E72C0F4001781FE /* Media.xcassets in Resources */,
 				F7C525A21E3B6DA800FFE02C /* CCNotification.storyboard in Resources */,
 				F77B0F6B1D118A16002130FE /* ZSSundo.png in Resources */,
 				F77B0F6C1D118A16002130FE /* ZSSsubscript.png in Resources */,
@@ -3791,6 +3854,7 @@
 				F77B0F861D118A16002130FE /* LMMediaPlayerView.bundle in Resources */,
 				F77B0F8A1D118A16002130FE /* CCCellMain.xib in Resources */,
 				F77B0F8C1D118A16002130FE /* CCCellMainTransfer.xib in Resources */,
+				F7B1FB471E72C0F4001781FE /* SwiftWebVC.strings in Resources */,
 				F77B0F8E1D118A16002130FE /* LMMediaPlayerView.xib in Resources */,
 				F77B0F8F1D118A16002130FE /* ZSSunlink@2x.png in Resources */,
 				F77B0F901D118A16002130FE /* ZSSpicker@2x.png in Resources */,
@@ -4006,6 +4070,7 @@
 				F77B0E051D118A16002130FE /* ReaderDocument.m in Sources */,
 				F7F06ECD1DBFACC600099AE9 /* CTAssetThumbnailStacks.m in Sources */,
 				F7659A581DC0B760004860C4 /* NSIndexPath+PSTCollectionViewAdditions.m in Sources */,
+				F7B1FB4B1E72C0F4001781FE /* SwiftWebVCActivityChrome.swift in Sources */,
 				F7659A681DC0B760004860C4 /* PSTCollectionViewUpdateItem.m in Sources */,
 				F7F54D061E5B14C800E19C62 /* MWCaptionView.m in Sources */,
 				F7C00D471E2D0D0F0032160B /* CCCellOffline.m in Sources */,
@@ -4054,6 +4119,7 @@
 				F77B0E291D118A16002130FE /* NSArray+LMMediaPlayerShuffle.m in Sources */,
 				F77B0E2A1D118A16002130FE /* REMenu.m in Sources */,
 				F73CCDDB1DC13776007E38D8 /* XLFormButtonCell.m in Sources */,
+				F7B1FB491E72C0F4001781FE /* SwiftWebVC.swift in Sources */,
 				F7F06E9B1DBFACC600099AE9 /* UICollectionView+CTAssetsPickerController.m in Sources */,
 				F77B0E2D1D118A16002130FE /* CYRTextView.m in Sources */,
 				F77B0E2F1D118A16002130FE /* LMMediaItemStreamingCache.m in Sources */,
@@ -4065,6 +4131,7 @@
 				F7F06EB91DBFACC600099AE9 /* CTAssetsGridViewLayout.m in Sources */,
 				F7DA62AE1E41E666003E1740 /* CCOfflinePageContent.m in Sources */,
 				F7FB5F131E66CDCB00389481 /* CCOfflineContainer.m in Sources */,
+				F7B1FB4C1E72C0F4001781FE /* SwiftWebVCActivitySafari.swift in Sources */,
 				F77B0E351D118A16002130FE /* NYXImagesHelper.m in Sources */,
 				F73CCE171DC13776007E38D8 /* XLFormTextView.m in Sources */,
 				F77B0E361D118A16002130FE /* ZSSBarButtonItem.m in Sources */,
@@ -4140,6 +4207,7 @@
 				F77B0E761D118A16002130FE /* ReaderViewController.m in Sources */,
 				F77B0E781D118A16002130FE /* ReaderThumbFetch.m in Sources */,
 				F77B0E7B1D118A16002130FE /* CCPassaporto.m in Sources */,
+				F7B1FB4A1E72C0F4001781FE /* SwiftWebVCActivity.swift in Sources */,
 				F7F06EA51DBFACC600099AE9 /* CTAssetItemViewController.m in Sources */,
 				F7659A5A1DC0B760004860C4 /* PSTCollectionView.m in Sources */,
 				F7BF1B431D51E893000854F6 /* CCLogin.m in Sources */,
@@ -4162,6 +4230,7 @@
 				F72AAECB1E5C60C700BB17E1 /* AHKActionSheetViewController.m in Sources */,
 				F77B0E901D118A16002130FE /* CCManageHelp.m in Sources */,
 				F77B0E911D118A16002130FE /* CCTemplates.m in Sources */,
+				F7B1FB481E72C0F4001781FE /* SwiftModalWebVC.swift in Sources */,
 				F73CCDE11DC13776007E38D8 /* XLFormDatePickerCell.m in Sources */,
 				F72AAECD1E5C60C700BB17E1 /* UIWindow+AHKAdditions.m in Sources */,
 				F77B0E921D118A16002130FE /* CCCellMainTransfer.m in Sources */,
@@ -4306,6 +4375,24 @@
 				F7202C9F1E6818B700C6D9AD /* es */,
 			);
 			name = Intro.strings;
+			sourceTree = "<group>";
+		};
+		F7B1FB351E72C0F4001781FE /* SwiftWebVC.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F7B1FB361E72C0F4001781FE /* da */,
+				F7B1FB371E72C0F4001781FE /* de */,
+				F7B1FB381E72C0F4001781FE /* en */,
+				F7B1FB391E72C0F4001781FE /* es-ES */,
+				F7B1FB3A1E72C0F4001781FE /* es */,
+				F7B1FB3B1E72C0F4001781FE /* fr */,
+				F7B1FB3C1E72C0F4001781FE /* ja */,
+				F7B1FB3D1E72C0F4001781FE /* pt */,
+				F7B1FB3E1E72C0F4001781FE /* vi */,
+				F7B1FB3F1E72C0F4001781FE /* zh-Hans */,
+				F7B1FB401E72C0F4001781FE /* zh-Hant */,
+			);
+			name = SwiftWebVC.strings;
 			sourceTree = "<group>";
 		};
 		F7B381BF1C074E3E004693F8 /* Error.strings */ = {
