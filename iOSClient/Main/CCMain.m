@@ -89,7 +89,7 @@
     // Search
     BOOL _isSearchMode;
     NSString *_searchFileName;
-    NSArray *_searchResultMetadatas;
+    NSMutableArray *_searchResultMetadatas;
     NSString *_depth;
 }
 @end
@@ -134,7 +134,7 @@
     _isViewDidLoad = YES;
     _fatherPermission = @"";
     _searchController = [[UISearchController alloc] initWithSearchResultsController:nil];
-    _searchResultMetadatas = [NSArray new];
+    _searchResultMetadatas = [NSMutableArray new];
     _searchFileName = @"";
     _depth = @"0";
     
@@ -1939,13 +1939,13 @@
             
         } else {
             
-            NSMutableArray *metadatas = [NSMutableArray new];
             NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:_serverUrl activeAccount:app.activeAccount];
             NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(directoryID == %@) AND (account == %@) AND (fileNamePrint CONTAINS[cd] %@)", directoryID, app.activeAccount, fileName];
             NSArray *records = [CCCoreData getTableMetadataWithPredicate:predicate context:nil];
             
+            [_searchResultMetadatas removeAllObjects];
             for (TableMetadata *record in records)
-                [metadatas addObject:[CCCoreData insertEntityInMetadata:record]];
+                [_searchResultMetadatas addObject:[CCCoreData insertEntityInMetadata:record]];
             
             CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
             
@@ -1955,7 +1955,7 @@
             metadataNet.selector = selectorSearch;
             metadataNet.serverUrl = _serverUrl;
 
-            [self readFolderSuccess:metadataNet permissions:@"" etag:@"" metadatas:metadatas];
+            [self readFolderSuccess:metadataNet permissions:@"" etag:@"" metadatas:_searchResultMetadatas];
         }
     }
     
@@ -1982,7 +1982,7 @@
 
 - (void)searchSuccess:(CCMetadataNet *)metadataNet metadatas:(NSArray *)metadatas
 {
-    _searchResultMetadatas = [[NSArray alloc] initWithArray:metadatas];
+    _searchResultMetadatas = [[NSMutableArray alloc] initWithArray:metadatas];
     
     [self readFolderSuccess:metadataNet permissions:nil etag:nil metadatas:metadatas];
 }
@@ -1997,7 +1997,7 @@
         _isSearchMode = NO;
         _searchFileName = @"";
         _dateReadDataSource = nil;
-        _searchResultMetadatas = [NSArray new];
+        _searchResultMetadatas = [NSMutableArray new];
         
         [self reloadDatasource];
     }
