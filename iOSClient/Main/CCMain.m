@@ -1983,7 +1983,8 @@
 - (void)searchBar:(UISearchBar *)searchBar selectedScopeButtonIndexDidChange:(NSInteger)selectedScope
 {
     NSString *title = [self.searchController.searchBar.scopeButtonTitles objectAtIndex:selectedScope];
-    
+    self.searchController.searchBar.placeholder = title;
+
     if ([title isEqualToString:NSLocalizedString(@"_search_this_folder_",nil)])
         _depth = @"0";
     
