@@ -419,7 +419,7 @@
     if (self.onlyClearDirectory) predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND (directory == 1) AND (cryptated == 0)", activeAccount, directoryID];
     else predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND (directory == 1)", activeAccount, directoryID];
 
-    CCMetadata *metadata = [CCCoreData getMetadataAtIndex:predicate fieldOrder:@"fileName" filterFileName:@"" ascending:YES objectAtIndex:indexPath.row];
+    CCMetadata *metadata = [CCCoreData getMetadataAtIndex:predicate fieldOrder:@"fileName" ascending:YES objectAtIndex:indexPath.row];
     
     // colors
     if (metadata.cryptated) {
@@ -453,7 +453,7 @@
     if (self.onlyClearDirectory) predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND (directory == 1) AND (cryptated == 0)", activeAccount, directoryID];
     else predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND (directory == 1)", activeAccount, directoryID];
     
-    CCMetadata *metadata = [CCCoreData getMetadataAtIndex:predicate fieldOrder:@"fileName" filterFileName:@"" ascending:YES objectAtIndex:index.row];
+    CCMetadata *metadata = [CCCoreData getMetadataAtIndex:predicate fieldOrder:@"fileName" ascending:YES objectAtIndex:index.row];
     
     if (metadata.errorPasscode == NO) {
     
