@@ -334,7 +334,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         }
         
         // Get Datasource
-        recordsTableMetadata = CCCoreData.getTableMetadata(with: NSPredicate(format: "(account == '\(activeAccount!)') AND (directoryID == '\(metadataNet.directoryID!)')"), fieldOrder: "fileName", ascending: true) as? [TableMetadata]
+        recordsTableMetadata = CCCoreData.getTableMetadata(with: NSPredicate(format: "(account == '\(activeAccount!)') AND (directoryID == '\(metadataNet.directoryID!)')"), fieldOrder: "fileName", filterFileName: "", ascending: true) as? [TableMetadata]
         
         tableView.reloadData()
         

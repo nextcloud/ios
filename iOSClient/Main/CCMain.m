@@ -1933,7 +1933,13 @@
         
         _searchFileName = fileName;
         
-        [[CCActions sharedInstance] search:_serverUrl fileName:_searchFileName depth:_depth delegate:self];
+        if (app.serverVersion >= 12) {
+            
+            [[CCActions sharedInstance] search:_serverUrl fileName:_searchFileName depth:_depth delegate:self];
+            
+        } else {
+            
+        }
     }
     
     if (_searchResultMetadatas.count == 0 && fileName.length == 0) {
@@ -4873,7 +4879,7 @@
     
         // Data Source
     
-        NSArray *recordsTableMetadata = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@)", app.activeAccount, [CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:app.activeAccount]] fieldOrder:[CCUtility getOrderSettings] ascending:[CCUtility getAscendingSettings]];
+        NSArray *recordsTableMetadata = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@)", app.activeAccount, [CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:app.activeAccount]] fieldOrder:[CCUtility getOrderSettings] filterFileName:@"" ascending:[CCUtility getAscendingSettings]];
     
         _sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:_directoryGroupBy replaceDateToExifDate:NO activeAccount:app.activeAccount];
         

@@ -749,7 +749,7 @@
     return [TableMetadata MR_findAllWithPredicate:predicate inContext:context];
 }
 
-+ (NSArray *)getTableMetadataWithPredicate:(NSPredicate *)predicate fieldOrder:(NSString *)fieldOrder ascending:(BOOL)ascending
++ (NSArray *)getTableMetadataWithPredicate:(NSPredicate *)predicate fieldOrder:(NSString *)fieldOrder filterFileName:(NSString *)filterFileName ascending:(BOOL)ascending
 {
     NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
     NSArray *records = [[NSArray alloc] init];
@@ -770,9 +770,9 @@
     return [records sortedArrayUsingDescriptors:[NSArray arrayWithObjects:descriptor, nil]];
 }
 
-+ (CCMetadata *)getMetadataAtIndex:(NSPredicate *)predicate fieldOrder:(NSString *)fieldOrder ascending:(BOOL)ascending objectAtIndex:(NSUInteger)index
++ (CCMetadata *)getMetadataAtIndex:(NSPredicate *)predicate fieldOrder:(NSString *)fieldOrder filterFileName:(NSString *)filterFileName ascending:(BOOL)ascending objectAtIndex:(NSUInteger)index
 {
-    NSArray *records = [self getTableMetadataWithPredicate:predicate fieldOrder:fieldOrder ascending:ascending];
+    NSArray *records = [self getTableMetadataWithPredicate:predicate fieldOrder:fieldOrder filterFileName:filterFileName ascending:ascending];
     
     TableMetadata *record = [records objectAtIndex:index];
     
