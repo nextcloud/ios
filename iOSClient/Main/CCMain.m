@@ -90,6 +90,7 @@
     BOOL _isSearchMode;
     NSString *_searchFileName;
     NSArray *_searchResultMetadatas;
+    NSString *_depth;
 }
 @end
 
@@ -135,6 +136,7 @@
     _searchController = [[UISearchController alloc] initWithSearchResultsController:nil];
     _searchResultMetadatas = [NSArray new];
     _searchFileName = @"";
+    _depth = @"0";
     
     // delegate
     self.tableView.delegate = self;
@@ -1164,6 +1166,7 @@
                 self.searchController.searchBar.placeholder = NSLocalizedString(@"_search_this_folder_",nil);
                 self.searchController.searchBar.scopeButtonTitles = nil;
             }
+            _depth = @"0";
         });
     }
     
@@ -1931,12 +1934,8 @@
     if (fileName.length >= k_minCharsSearch && [fileName isEqualToString:_searchFileName] == NO) {
         
         _searchFileName = fileName;
-        NSString *depth = @"1";
         
-        if ([[CCUtility getHomeServerUrlActiveUrl:app.activeUrl] isEqualToString:_serverUrl])
-            depth = @"infinity";
-        
-        [[CCActions sharedInstance] search:_serverUrl fileName:_searchFileName depth:depth delegate:self];
+        [[CCActions sharedInstance] search:_serverUrl fileName:_searchFileName depth:_depth delegate:self];
     }
     
     if (_searchResultMetadatas.count == 0 && fileName.length == 0) {
@@ -1985,10 +1984,15 @@
 
 - (void)searchBar:(UISearchBar *)searchBar selectedScopeButtonIndexDidChange:(NSInteger)selectedScope
 {
-    // self.searchDisplayController.searchBar.selectedScopeButtonIndex = 1;
-    //[self updateSearchResultsForSearchController:self.searchController];
-    NSLog(@"x");
+    NSString *title = [self.searchController.searchBar.scopeButtonTitles objectAtIndex:selectedScope];
+    
+    if ([title isEqualToString:NSLocalizedString(@"_search_all_folders_",nil)])
+        _depth = @"infinity";
+    
+    if ([title isEqualToString:NSLocalizedString(@"_search_sub_folder_",nil)])
+        _depth = @"1";
 }
+
 #pragma mark -
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Delete File or Folder =====
