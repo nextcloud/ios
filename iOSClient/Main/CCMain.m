@@ -202,18 +202,16 @@
     self.searchController.searchBar.barTintColor = COLOR_SEPARATOR_TABLE;
     [self.searchController.searchBar sizeToFit];
     self.searchController.searchBar.delegate = self;
-    
+    self.searchController.searchBar.placeholder = NSLocalizedString(@"_search_this_folder_",nil);
+
     if (app.serverVersion >= 12) {
         
         if (_isRoot)
-            self.searchController.searchBar.placeholder = NSLocalizedString(@"_search_all_folders_",nil);
+            self.searchController.searchBar.scopeButtonTitles = [NSArray arrayWithObjects:NSLocalizedString(@"_search_this_folder_",nil),NSLocalizedString(@"_search_all_folders_",nil), nil];
         else
-            self.searchController.searchBar.placeholder = NSLocalizedString(@"_search_sub_folder_",nil);
-        
-        self.searchController.searchBar.scopeButtonTitles = [NSArray arrayWithObjects:NSLocalizedString(@"_search_this_folder_",nil),self.searchController.searchBar.placeholder, nil];
-        
+            self.searchController.searchBar.scopeButtonTitles = [NSArray arrayWithObjects:NSLocalizedString(@"_search_this_folder_",nil),NSLocalizedString(@"_search_sub_folder_",nil), nil];
     } else {
-        self.searchController.searchBar.placeholder = NSLocalizedString(@"_search_this_folder_",nil);
+        
         self.searchController.searchBar.scopeButtonTitles = nil;
     }
 }
@@ -1986,11 +1984,17 @@
 {
     NSString *title = [self.searchController.searchBar.scopeButtonTitles objectAtIndex:selectedScope];
     
-    if ([title isEqualToString:NSLocalizedString(@"_search_all_folders_",nil)])
-        _depth = @"infinity";
+    if ([title isEqualToString:NSLocalizedString(@"_search_this_folder_",nil)])
+        _depth = @"0";
     
     if ([title isEqualToString:NSLocalizedString(@"_search_sub_folder_",nil)])
         _depth = @"1";
+    
+    if ([title isEqualToString:NSLocalizedString(@"_search_all_folders_",nil)])
+        _depth = @"infinity";
+    
+    _searchFileName = @"";
+    [self updateSearchResultsForSearchController:self.searchController];
 }
 
 #pragma mark -
