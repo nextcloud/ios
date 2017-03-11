@@ -1985,6 +1985,7 @@
 
 - (void)searchBar:(UISearchBar *)searchBar selectedScopeButtonIndexDidChange:(NSInteger)selectedScope
 {
+    // self.searchDisplayController.searchBar.selectedScopeButtonIndex = 1;
     //[self updateSearchResultsForSearchController:self.searchController];
     NSLog(@"x");
 }
