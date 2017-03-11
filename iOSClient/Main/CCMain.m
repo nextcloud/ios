@@ -1933,12 +1933,13 @@
         
         _searchFileName = fileName;
         
-        if (app.serverVersion >= 12) {
+        if (app.serverVersion >= 12 && ![_depth isEqualToString:@"0"]) {
             
             [[CCActions sharedInstance] search:_serverUrl fileName:_searchFileName depth:_depth delegate:self];
             
         } else {
             
+            [self readFolderSuccess:nil permissions:@"" etag:@"" metadatas:nil];
         }
     }
     
