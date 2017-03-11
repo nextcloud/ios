@@ -378,8 +378,8 @@
                 OCFileDto *itemDto = [itemsSortedArray objectAtIndex:i];
                 itemDto.fileName = [itemDto.fileName stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
                 
-                // Not in Crypto Cloud Mode OR Search skip File Crypto
-                if (_isCryptoCloudMode == NO || [_metadataNet.selector isEqualToString:selectorSearch]) {
+                // Not in Crypto Cloud Mode skip File Crypto
+                if (_isCryptoCloudMode == NO) {
                     
                     NSString *fileName = itemDto.fileName;
                     
@@ -403,26 +403,13 @@
                 }
                 // ------------------------
                 
-                // Starting with [itemDto.fileName.lowercaseString hasPrefix:_metadataNet.fileName.lowercaseString]
-                if ([_metadataNet.selector isEqualToString:selectorSearch] && [itemDto.fileName.lowercaseString containsString:_metadataNet.fileName.lowercaseString]) {
-                    
-                    [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileNamePrint:itemDto.fileName serverUrl:_metadataNet.serverUrl directoryID:directoryID cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath activeAccount:_metadataNet.account directoryUser:directoryUser]];
-                }
-                
-                if ([_metadataNet.selector containsString:selectorReadFolder]) {
-                    
-                    [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileNamePrint:itemDto.fileName serverUrl:_metadataNet.serverUrl directoryID:directoryID cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath activeAccount:_metadataNet.account directoryUser:directoryUser]];
-                }
+                [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileNamePrint:itemDto.fileName serverUrl:_metadataNet.serverUrl directoryID:directoryID cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath activeAccount:_metadataNet.account directoryUser:directoryUser]];
             }
             
             dispatch_async(dispatch_get_main_queue(), ^{
                 
-                if ([_metadataNet.selector containsString:selectorReadFolder] && [self.delegate respondsToSelector:@selector(readFolderSuccess:permissions:etag:metadatas:)])
+                if ([self.delegate respondsToSelector:@selector(readFolderSuccess:permissions:etag:metadatas:)])
                     [self.delegate readFolderSuccess:_metadataNet permissions:permissions etag:etagDirectory metadatas:metadatas];
-
-                if ([_metadataNet.selector isEqualToString:selectorSearch] && [self.delegate respondsToSelector:@selector(searchSuccess:metadatas:)])
-                    [self.delegate searchSuccess:_metadataNet metadatas:metadatas];
-        
             });
         });
         
@@ -434,12 +421,9 @@
         if (errorCode == 0)
             errorCode = error.code;
         
-        if ([_metadataNet.selector containsString:selectorReadFolder] && [self.delegate respondsToSelector:@selector(readFolderFailure:message:errorCode:)])
+        if ([self.delegate respondsToSelector:@selector(readFolderFailure:message:errorCode:)])
             [self.delegate readFolderFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
-        
-        if ([_metadataNet.selector isEqualToString:selectorSearch] && [self.delegate respondsToSelector:@selector(searchFailure:message:errorCode:)])
-            [self.delegate searchFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
-
+    
         // Request trusted certificated
         if ([error code] == NSURLErrorServerCertificateUntrusted)
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];

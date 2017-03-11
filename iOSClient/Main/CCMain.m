@@ -1939,6 +1939,12 @@
             
         } else {
             
+            NSMutableArray *metadatas = [NSMutableArray new];
+            NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:_serverUrl activeAccount:app.activeAccount];
+            NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(directoryID == %@) AND (account == %@) AND (fileNamePrint CONTAINS[cd] %@)", directoryID, app.activeAccount, fileName];
+            
+            NSArray *records = [CCCoreData getTableMetadataWithPredicate:predicate context:nil];
+            
             [self readFolderSuccess:nil permissions:@"" etag:@"" metadatas:nil];
         }
     }

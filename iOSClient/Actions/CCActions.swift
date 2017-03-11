@@ -325,36 +325,18 @@ class CCActions: NSObject {
     
     func search(_ serverUrl : String, fileName : String, depth : String, delegate: AnyObject) {
         
-        let versionServer = CCCoreData.getServerVersionMajorActiveAccount(appDelegate.activeAccount)
-        
-        if (versionServer < 12) {
+        // Search DAV API
             
-            let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
+        let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
+            
+        metadataNet.action = actionSearch
+        metadataNet.delegate = delegate
+        metadataNet.fileName = fileName
+        metadataNet.options = depth
+        metadataNet.selector = selectorSearch
+        metadataNet.serverUrl = serverUrl
 
-            metadataNet.action = actionReadFolder;
-            metadataNet.directoryID = CCCoreData.getDirectoryID(fromServerUrl: serverUrl, activeAccount: appDelegate.activeUser)
-            metadataNet.delegate = delegate
-            metadataNet.fileName = fileName
-            metadataNet.selector = selectorSearch
-            metadataNet.serverUrl = serverUrl
-
-            appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
-            
-        } else {
-            
-            // Search DAV API
-            
-            let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
-            
-            metadataNet.action = actionSearch
-            metadataNet.delegate = delegate
-            metadataNet.fileName = fileName
-            metadataNet.options = depth
-            metadataNet.selector = selectorSearch
-            metadataNet.serverUrl = serverUrl
-
-            appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
-        }
+        appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
     }
     
     func searchSuccess(_ metadataNet: CCMetadataNet, metadatas: [CCMetadata]) {
