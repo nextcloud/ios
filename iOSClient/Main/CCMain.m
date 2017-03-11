@@ -1942,10 +1942,20 @@
             NSMutableArray *metadatas = [NSMutableArray new];
             NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:_serverUrl activeAccount:app.activeAccount];
             NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(directoryID == %@) AND (account == %@) AND (fileNamePrint CONTAINS[cd] %@)", directoryID, app.activeAccount, fileName];
-            
             NSArray *records = [CCCoreData getTableMetadataWithPredicate:predicate context:nil];
             
-            [self readFolderSuccess:nil permissions:@"" etag:@"" metadatas:nil];
+            for (TableMetadata *record in records)
+                [metadatas addObject:[CCCoreData insertEntityInMetadata:record]];
+            
+            CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
+            
+            metadataNet.account = app.activeAccount;
+            metadataNet.action = actionUploadTemplate;
+            metadataNet.directoryID = directoryID;
+            metadataNet.selector = selectorSearch;
+            metadataNet.serverUrl = _serverUrl;
+
+            [self readFolderSuccess:metadataNet permissions:@"" etag:@"" metadatas:metadatas];
         }
     }
     
