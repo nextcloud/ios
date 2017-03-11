@@ -60,7 +60,7 @@
     
     BOOL _isPickerCriptate;              // if is cryptated image or video back from picker
     BOOL _isSelectedMode;
-    
+        
     NSMutableArray *_selectedMetadatas;
     NSMutableArray *_queueSelector;
     NSUInteger _numSelectedMetadatas;
@@ -183,6 +183,9 @@
         [self readFolderWithForced:NO serverUrl:_serverUrl];
     }
 
+    // Version Server
+    app.serverVersion = [CCCoreData getServerVersionMajorActiveAccount:app.activeAccount];
+    
     // Title
     [self setTitle];
         
@@ -196,14 +199,20 @@
     self.tableView.tableHeaderView = self.searchController.searchBar;
     self.searchController.searchBar.barTintColor = COLOR_SEPARATOR_TABLE;
     [self.searchController.searchBar sizeToFit];
+    self.searchController.searchBar.delegate = self;
     
-    if ([CCCoreData getServerVersionActiveAccount:app.activeAccount] >= 12) {
+    if (app.serverVersion >= 12) {
+        
         if (_isRoot)
             self.searchController.searchBar.placeholder = NSLocalizedString(@"_search_all_folders_",nil);
         else
             self.searchController.searchBar.placeholder = NSLocalizedString(@"_search_sub_folder_",nil);
+        
+        self.searchController.searchBar.scopeButtonTitles = [NSArray arrayWithObjects:NSLocalizedString(@"_search_this_folder_",nil),self.searchController.searchBar.placeholder, nil];
+        
     } else {
         self.searchController.searchBar.placeholder = NSLocalizedString(@"_search_this_folder_",nil);
+        self.searchController.searchBar.scopeButtonTitles = nil;
     }
 }
 
@@ -1136,17 +1145,30 @@
 {
     app.capabilities = capabilities;
     
-    [CCCoreData setServerVersionActiveAccount:app.activeAccount versionMajor:capabilities.versionMajor versionMinor:capabilities.versionMinor versionMicro:capabilities.versionMicro];
+    // Search bar if change version
+    if (app.serverVersion != capabilities.versionMajor) {
     
-    // Search placeholder
-    if (capabilities.versionMajor >= 12) {
-        if (_isRoot)
-            self.searchController.searchBar.placeholder = NSLocalizedString(@"_search_all_folders_",nil);
-        else
-            self.searchController.searchBar.placeholder = NSLocalizedString(@"_search_sub_folder_",nil);
-    } else {
-        self.searchController.searchBar.placeholder = NSLocalizedString(@"_search_this_folder_",nil);
+        [self cancelSearchBar];
+        
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.01 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+
+            if (capabilities.versionMajor >= 12) {
+                if (_isRoot)
+                    self.searchController.searchBar.placeholder = NSLocalizedString(@"_search_all_folders_",nil);
+                else
+                    self.searchController.searchBar.placeholder = NSLocalizedString(@"_search_sub_folder_",nil);
+                
+                self.searchController.searchBar.scopeButtonTitles = [NSArray arrayWithObjects:NSLocalizedString(@"_search_this_folder_",nil),self.searchController.searchBar.placeholder, nil];
+                
+            } else {
+                self.searchController.searchBar.placeholder = NSLocalizedString(@"_search_this_folder_",nil);
+                self.searchController.searchBar.scopeButtonTitles = nil;
+            }
+        });
     }
+    
+    [CCCoreData setServerVersionActiveAccount:app.activeAccount versionMajor:capabilities.versionMajor versionMinor:capabilities.versionMinor versionMicro:capabilities.versionMicro];
+    app.serverVersion = capabilities.versionMajor;
 }
 
 - (void)getFeaturesSupportedByServerSuccess:(BOOL)hasCapabilitiesSupport hasForbiddenCharactersSupport:(BOOL)hasForbiddenCharactersSupport hasShareSupport:(BOOL)hasShareSupport hasShareeSupport:(BOOL)hasShareeSupport
@@ -1961,6 +1983,11 @@
     }
 }
 
+- (void)searchBar:(UISearchBar *)searchBar selectedScopeButtonIndexDidChange:(NSInteger)selectedScope
+{
+    //[self updateSearchResultsForSearchController:self.searchController];
+    NSLog(@"x");
+}
 #pragma mark -
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Delete File or Folder =====

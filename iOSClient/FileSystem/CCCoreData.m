@@ -294,19 +294,18 @@
     else return NO;
 }
 
-+ (float)getServerVersionActiveAccount:(NSString *)activeAccount
++ (NSInteger)getServerVersionMajorActiveAccount:(NSString *)activeAccount
 {
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@)", activeAccount];
     TableAccount *record = [TableAccount MR_findFirstWithPredicate:predicate];
 
     if (record) {
-        NSInteger versionMajor = [record.versionMajor integerValue];
-        NSInteger versionMinor = [record.versionMinor integerValue];
         
-        return versionMajor + versionMinor/100;
+        NSInteger versionMajor = [record.versionMajor integerValue];
+        return versionMajor;
 
     } else
-        return 0.0;
+        return 0;
 }
 
 + (void)setCameraUpload:(BOOL)state activeAccount:(NSString *)activeAccount
