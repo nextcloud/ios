@@ -3124,6 +3124,7 @@
     if (indexPath) [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObjects:indexPath, nil] withRowAnimation:UITableViewRowAnimationAutomatic];
 }
 
+/*
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Reload =====
 #pragma --------------------------------------------------------------------------------------------
@@ -3134,6 +3135,7 @@
 
     [[CCNetworking sharedNetworking] downloadFile:metadata serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorReload selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
 }
+*/
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Open in... =====
@@ -4595,7 +4597,7 @@
                                     
                                     [self moveOpenWindow:[[NSArray alloc] initWithObjects:indexPath, nil]];
                                 }];
-        
+        /*
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_reload_", nil)
                                   image:[UIImage imageNamed:image_actionSheetReload]
                         backgroundColor:[UIColor whiteColor]
@@ -4608,6 +4610,7 @@
                                     
                                     [self performSelector:@selector(reloadFile:) withObject:_metadata];
                                 }];
+        */
         
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_open_in_", nil)
                                   image:[UIImage imageNamed:image_actionSheetOpenIn]
