@@ -3155,7 +3155,13 @@
 
 - (void)removeLocalFile:(CCMetadata *)metadata
 {
+    NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:_metadata.account];
+
+    [CCCoreData deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileID == %@)", app.activeAccount, metadata.fileID]];
     
+    [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID] error:nil];
+    
+    [self reloadDatasource:serverUrl fileID:metadata.fileID selector:nil];
 }
 
 #pragma --------------------------------------------------------------------------------------------
