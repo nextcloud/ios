@@ -3150,6 +3150,15 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Remove Local File =====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)removeLocalFile:(CCMetadata *)metadata
+{
+    
+}
+
+#pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Order Table & GroupBy & DirectoryOnTop =====
 #pragma --------------------------------------------------------------------------------------------
 
@@ -4299,6 +4308,8 @@
         else titoloLock = [NSString stringWithFormat:NSLocalizedString(@"_protect_passcode_", nil)];
     }
     
+    TableLocalFile *recordLocalFile = [CCCoreData getLocalFileWithFileID:_metadata.fileID activeAccount:app.activeAccount];
+
     /******************************************* AHKActionSheet *******************************************/
     
     UIImage *iconHeader;
@@ -4637,6 +4648,22 @@
                                     }];
         }
         
+        if (recordLocalFile) {
+        
+            [actionSheet addButtonWithTitle:NSLocalizedString(@"_remove_local_file_", nil)
+                                      image:[UIImage imageNamed:image_actionSheetRemoveLocal]
+                            backgroundColor:[UIColor whiteColor]
+                                     height: 50.0
+                                       type:AHKActionSheetButtonTypeDefault
+                                    handler:^(AHKActionSheet *as) {
+                                    
+                                        // close swipe
+                                        [self setEditing:NO animated:YES];
+                                    
+                                        [self performSelector:@selector(removeLocalFile:) withObject:_metadata];
+                                    }];
+        }
+
 #ifndef OPTION_OFFLINE_DISABLE
         
         if (!_metadata.cryptated) {

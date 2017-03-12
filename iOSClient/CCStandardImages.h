@@ -31,6 +31,7 @@
 #define image_actionSheetOffline                @"actionSheetOffline"
 #define image_actionSheetFavorite               @"actionSheetFavorite"
 #define image_actionSheetLocal                  @"localStorage"
+#define image_actionSheetRemoveLocal            @"actionSheetRemoveLocal"
 #define image_activeCameraUpload                @"activeCameraUpload"
 #define image_attention                         @"attention"
 #define image_audio                             @"audio"
