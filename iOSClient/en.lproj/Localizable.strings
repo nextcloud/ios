@@ -338,6 +338,7 @@
 "_share_"                       = "Share";
 "_reload_"                      = "Reload";
 "_open_in_"                     = "Open in...";
+"_remove_local_file_"           = "Remove it from the cache";
 "_add_local_"                   = "Add to local storage";
 "_comm_erro_pull_down_"         = "Attention communication error with the server, pull down to refresh.";
 "_file_not_downloaded_"         = "file not downloaded";
