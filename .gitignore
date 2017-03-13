@@ -17,6 +17,7 @@ Documentation/
 Custom/
 GoogleService-Info.plist
 NextcloudDevicePushKey-Info.plist
+*.pem
 
 ########### OSX ###########
 # OS X temporary files that should never be committed

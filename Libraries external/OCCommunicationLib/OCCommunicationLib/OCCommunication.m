@@ -1518,12 +1518,15 @@
     OCWebDAVClient *request = [OCWebDAVClient new];
     request = [self getRequestWithCredentials:request];
     
-    [request subscribingNextcloudServerPush:serverPath pushTokenHash:pushTokenHash devicePublicKey:devicePublicKey onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
+    [request subscribingNextcloudServerPush:serverPath authorizationToken:_password pushTokenHash:pushTokenHash devicePublicKey:devicePublicKey onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
         if (successRequest) {
             //Return success
             successRequest(response, request.redirectedServer);
         }
     } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
+        
+        NSLog(@"%@", response);
+        
         failureRequest(response, error, request.redirectedServer);
     }];
 }

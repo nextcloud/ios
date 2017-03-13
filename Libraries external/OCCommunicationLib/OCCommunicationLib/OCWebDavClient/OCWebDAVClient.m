@@ -736,22 +736,23 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     [operation resume];
 }
 
-- (void)subscribingNextcloudServerPush:(NSString *)serverPath pushTokenHash:(NSString *)pushTokenHash devicePublicKey:(NSString *)devicePublicKey onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *, id))success failure:(void(^)(NSHTTPURLResponse *, id  _Nullable responseObject, NSError *))failure {
+- (void)subscribingNextcloudServerPush:(NSString *)serverPath authorizationToken:(NSString *)authorizationToken pushTokenHash:(NSString *)pushTokenHash devicePublicKey:(NSString *)devicePublicKey onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *, id))success failure:(void(^)(NSHTTPURLResponse *, id  _Nullable responseObject, NSError *))failure {
     
     NSParameterAssert(success);
     
     _requestMethod = @"POST";
     
     NSString *jsonQuery = [NSString stringWithFormat:@"?format=json"];
-    NSString *pushTokenHashParam = [NSString stringWithFormat:@"&pushTokenHash=%@",pushTokenHash];
-    NSString *devicePublicKeyParam = [NSString stringWithFormat:@"&devicePublicKey=%@",devicePublicKey];
+    NSString *pushTokenHashParam = [NSString stringWithFormat:@"&pushTokenHash='%@'",pushTokenHash];
+    NSString *devicePublicKeyParam = [NSString stringWithFormat:@"&devicePublicKey='%@'",devicePublicKey];
     
     serverPath = [serverPath stringByAppendingString:jsonQuery];
     serverPath = [serverPath stringByAppendingString:pushTokenHashParam];
     serverPath = [serverPath stringByAppendingString:devicePublicKeyParam];
 
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
-
+    [request setValue:[NSString stringWithFormat:@"token %@", authorizationToken] forHTTPHeaderField:@"Authorization"];
+    
     OCHTTPRequestOperation *operation = [self mr_operationWithRequest:request onCommunication:sharedOCCommunication success:success failure:failure];
     [self setRedirectionBlockOnDatataskWithOCCommunication:sharedOCCommunication andSessionManager:sharedOCCommunication.networkSessionManager];
     [operation resume];

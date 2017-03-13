@@ -1233,7 +1233,7 @@
 {
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     
-    [communication setCredentialsWithUser:_activeUser andPassword:_activePassword];
+    communication.kindOfCredential = credentialNotSet;
     [communication setUserAgent:[CCUtility getUserAgent]];
     
     NSDictionary *parameter = _metadataNet.options;

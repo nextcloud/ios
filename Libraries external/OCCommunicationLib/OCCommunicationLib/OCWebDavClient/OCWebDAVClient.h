@@ -540,7 +540,7 @@ extern NSString * _Nullable OCWebDAVModificationDateKey;
  *
  */
 
-- (void)subscribingNextcloudServerPush:(NSString * _Nonnull)serverPath pushTokenHash:(NSString * _Nonnull)pushTokenHash devicePublicKey:(NSString * _Nonnull)devicePublicKey onCommunication:(OCCommunication * _Nonnull)sharedOCCommunication success:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull, id _Nonnull))success failure:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull, id  _Nullable responseObject, NSError * _Nonnull))failure;
+- (void)subscribingNextcloudServerPush:(NSString * _Nonnull)serverPath authorizationToken:(NSString * _Nonnull)authorizationToken pushTokenHash:(NSString * _Nonnull)pushTokenHash devicePublicKey:(NSString * _Nonnull)devicePublicKey onCommunication:(OCCommunication * _Nonnull)sharedOCCommunication success:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull, id _Nonnull))success failure:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull, id  _Nullable responseObject, NSError * _Nonnull))failure;
 
 ///-----------------------------------
 /// @name Get the server Notification
