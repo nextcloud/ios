@@ -1,3 +1,4 @@
+
 //
 //  OCWebDAVClient.m
 //  OCWebDAVClient
@@ -742,11 +743,12 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     
     _requestMethod = @"POST";
     
-    NSString *jsonQuery = [NSString stringWithFormat:@"?format=json"];
-    NSString *pushTokenHashParam = [NSString stringWithFormat:@"&pushTokenHash='%@'",pushTokenHash];
-    NSString *devicePublicKeyParam = [NSString stringWithFormat:@"&devicePublicKey='%@'",devicePublicKey];
+    pushTokenHash = [pushTokenHash stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
+    NSString *pushTokenHashParam = [NSString stringWithFormat:@"?pushTokenHash=%@",pushTokenHash];
     
-    serverPath = [serverPath stringByAppendingString:jsonQuery];
+    devicePublicKey = [devicePublicKey stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
+    NSString *devicePublicKeyParam = [NSString stringWithFormat:@"&devicePublicKey=%@",devicePublicKey];
+    
     serverPath = [serverPath stringByAppendingString:pushTokenHashParam];
     serverPath = [serverPath stringByAppendingString:devicePublicKeyParam];
 

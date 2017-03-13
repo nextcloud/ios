@@ -1513,9 +1513,6 @@
     serverPath = [serverPath encodeString:NSUTF8StringEncoding];
     serverPath = [serverPath stringByAppendingString:k_url_acces_remote_subscribing_nextcloud_server_api];
 
-    pushTokenHash = [pushTokenHash stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
-    devicePublicKey = [devicePublicKey stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
-    
     OCWebDAVClient *request = [OCWebDAVClient new];
     request = [self getRequestWithCredentials:request];
     
