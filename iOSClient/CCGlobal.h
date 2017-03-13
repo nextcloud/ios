@@ -267,7 +267,7 @@ extern NSString *const BKPasscodeKeychainServiceName;
 #define k_minCharsSearch                                2
 
 // Nextcloud Plist Key Push Service
-#define k_nextcloudDevicePushKey                        @"NextcloudDevicePushKey-Info"
+#define k_nextcloudDevicePushPublicKeyDev               @"aps_development_pubkey"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

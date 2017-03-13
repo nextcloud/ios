@@ -429,11 +429,12 @@
     
 #if defined(OPTION_NOTIFICATION_PUSH_ENABLE) || defined(DEBUG)
     
-    NSDictionary *keys = [NSDictionary dictionaryWithContentsOfFile:[[NSBundle mainBundle] pathForResource:k_nextcloudDevicePushKey ofType:@"plist"]];
-    
-    NSString *devicePublicKey = [keys objectForKey:@"devicePublicKey"];
     NSString *pushTokenString = [[[[deviceToken description] stringByReplacingOccurrencesOfString: @"<" withString: @""] stringByReplacingOccurrencesOfString: @">" withString: @""] stringByReplacingOccurrencesOfString: @" " withString: @""];
     NSString *pushTokenHash = [[CCCrypto sharedManager] createSHA512:pushTokenString];
+    
+    NSString *path = [[[NSBundle mainBundle] URLForResource:k_nextcloudDevicePushPublicKeyDev withExtension:@"pem"] absoluteString];
+    NSData *devicePublicKeyData = [NSData dataWithContentsOfURL:[NSURL URLWithString:path]];
+    NSString *devicePublicKey = [[NSString alloc] initWithData:devicePublicKeyData encoding:NSUTF8StringEncoding];
     
     NSLog(@"DEVICE TOKEN = %@", pushTokenString);
     NSLog(@"DEVICE PUBLIC KEY = %@", devicePublicKey);
@@ -441,6 +442,7 @@
     if ([devicePublicKey length] > 0 && [pushTokenHash length] > 0) {
         
         CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
+    
         NSDictionary *options = [[NSDictionary alloc] initWithObjectsAndKeys:pushTokenHash,@"pushTokenHash", devicePublicKey, @"devicePublicKey", nil];
         
         metadataNet.action = actionSubscribingNextcloudServer;
