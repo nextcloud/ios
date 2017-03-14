@@ -1499,11 +1499,14 @@
     request = [self getRequestWithCredentials:request];
     
     [request setNotificationServer:serverPath type:type onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
+        
         if (successRequest) {
             //Return success
             successRequest(response, request.redirectedServer);
         }
+        
     } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
+        
         failureRequest(response, error, request.redirectedServer);
     }];
 }
@@ -1537,7 +1540,7 @@
     }];
 }
 
-- (void)subscribingPushProxy:(NSString *)serverPath pushTokenHash:(NSString *)pushTokenHash deviceIdentifier:(NSString *)deviceIdentifier deviceIdentifierSignature:(NSString *)deviceIdentifierSignature devicePublicKey:(NSString *)devicePublicKey onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *publicKey, NSString *deviceIdentifier, NSString *signature, NSString *redirectedServer)) successRequest failureRequest:(void (^)(NSHTTPURLResponse *, NSError *, NSString *))failureRequest {
+- (void)subscribingPushProxy:(NSString *)serverPath authorizationToken:(NSString *)authorizationToken pushToken:(NSString *)pushToken deviceIdentifier:(NSString *)deviceIdentifier deviceIdentifierSignature:(NSString *)deviceIdentifierSignature userPublicKey:(NSString *)userPublicKey onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void (^)(NSHTTPURLResponse *, NSString *))successRequest failureRequest:(void (^)(NSHTTPURLResponse *, NSError *, NSString *))failureRequest {
     
     serverPath = [serverPath encodeString:NSUTF8StringEncoding];
     serverPath = [serverPath stringByAppendingString:k_url_acces_remote_subscribing_nextcloud_server_api];
@@ -1545,20 +1548,12 @@
     OCWebDAVClient *request = [OCWebDAVClient new];
     request = [self getRequestWithCredentials:request];
     
-    [request subscribingNextcloudServerPush:serverPath authorizationToken:_password pushTokenHash:pushTokenHash devicePublicKey:devicePublicKey onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
+    [request subscribingPushProxy:serverPath authorizationToken:_password pushToken:pushToken deviceIdentifier:deviceIdentifier deviceIdentifierSignature:deviceIdentifierSignature userPublicKey:userPublicKey onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
         
-        NSData *responseData = (NSData*) responseObject;
-        
-        //Parse
-        NSError *error;
-        NSDictionary *jsongParsed = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableContainers error:&error];
-        NSLog(@"[LOG] Subscribing at the Nextcloud server : %@",jsongParsed);
-        
-        NSString *publicKey = [jsongParsed objectForKey:@"publicKey"];
-        NSString *deviceIdentifier = [jsongParsed objectForKey:@"deviceIdentifier"];
-        NSString *signature = [jsongParsed objectForKey:@"signature"];
-        
-        successRequest(response, publicKey, deviceIdentifier, signature, request.redirectedServer);
+        if (successRequest) {
+            //Return success
+            successRequest(response, request.redirectedServer);
+        }
         
     } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
         
