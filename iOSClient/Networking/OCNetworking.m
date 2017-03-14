@@ -1237,12 +1237,25 @@
     [communication setUserAgent:[CCUtility getUserAgent]];
     
     NSDictionary *parameter = _metadataNet.options;
+    
+    NSString *pushToken = [parameter objectForKey:@"pushToken"];
     NSString *pushTokenHash = [parameter objectForKey:@"pushTokenHash"];
     NSString *devicePublicKey = [parameter objectForKey:@"devicePublicKey"];
     
     [communication subscribingNextcloudServerPush:_activeUrl pushTokenHash:pushTokenHash devicePublicKey:devicePublicKey onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *publicKey, NSString *deviceIdentifier, NSString *signature, NSString *redirectedServer) {
         
-        [self complete];
+        [communication subscribingPushProxy:_activeUrl pushToken:pushToken deviceIdentifier:deviceIdentifier deviceIdentifierSignature:signature userPublicKey:devicePublicKey onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *publicKey, NSString *deviceIdentifier, NSString *signature, NSString *redirectedServer) {
+            
+            NSLog(@"OK");
+            
+             [self complete];
+            
+        } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+           
+            NSLog(@"error");
+            
+             [self complete];
+        }];
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
