@@ -426,7 +426,6 @@
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
-    
 #if defined(OPTION_NOTIFICATION_PUSH_ENABLE) || defined(DEBUG)
     
     NSString *pushTokenString = [[[[deviceToken description] stringByReplacingOccurrencesOfString: @"<" withString: @""] stringByReplacingOccurrencesOfString: @">" withString: @""] stringByReplacingOccurrencesOfString: @" " withString: @""];
@@ -435,16 +434,7 @@
     NSDictionary *keys = [NSDictionary dictionaryWithContentsOfFile:[[NSBundle mainBundle] pathForResource:k_nextcloudDevicePushKey ofType:@"plist"]];
     NSString *devicePublicKey = [keys objectForKey:@"devicePublicKey"];
     
-    /*
-    NSString *path = [[[NSBundle mainBundle] URLForResource:k_nextcloudDevicePushPublicKeyDev withExtension:@"pem"] absoluteString];
-    NSData *devicePublicKeyData = [NSData dataWithContentsOfURL:[NSURL URLWithString:path]];
-    NSString *devicePublicKey = [[NSString alloc] initWithData:devicePublicKeyData encoding:NSUTF8StringEncoding];
-    
-    devicePublicKey = @"-----BEGIN%20PUBLIC%20KEY-----%0AMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAta6rACLhMTSBcixmPBUM%0AH5xQgHqmj6n8FQ77CBhzbmalg6fUnbTKXNXx0OJjv%2FaokO16z6Sh1rlVTVBj9sqI%0ATjuVnWn1VjORjbITF1bfF1IiACTPzhYMBAbbCxLHHR4XysM7YN52E%2FMgjMojr4OQ%0AZa9Z%2BW2PXE0Ut7Qq8zIMoTW7x5XQ5RFyLsoUUDvVc6sM08zX3M5tKRmwTxIYjiaF%0An12dqqioxnp8W6cih%2FGUiusJSEkjKj6uo0Dv9xsx3UFYifB8bCVja6zgak6uNQXJ%0Ax8wm6GzH%2FvsYyTRd8ayqiP5yrGKUqUWQEWGWMnvnYxR2UBkoIzjz3Q5gYLGpmsCR%0A3wIDAQAB%0A-----END%20PUBLIC%20KEY-----";
-    */
-    
     NSLog(@"DEVICE TOKEN = %@", pushTokenString);
-    NSLog(@"DEVICE PUBLIC KEY = %@", devicePublicKey);
     
     if ([devicePublicKey length] > 0 && [pushTokenHash length] > 0) {
         
@@ -458,7 +448,6 @@
     }
     
 #endif
-    
 }
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
