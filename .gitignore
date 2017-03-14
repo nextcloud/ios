@@ -16,7 +16,7 @@ README.md
 Documentation/
 Custom/
 GoogleService-Info.plist
-iOSClient/Brand/DevicePushKey-Info.plist
+iOSClient/Brand/Device*
 
 ########### OSX ###########
 # OS X temporary files that should never be committed
