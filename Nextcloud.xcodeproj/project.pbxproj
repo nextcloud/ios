@@ -494,7 +494,6 @@
 		F78088EB1DD3A1DB005C5A7C /* cryptocloud.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = F78088E51DD3A1DB005C5A7C /* cryptocloud.xcdatamodeld */; };
 		F78BFED41D3111B800E513CF /* LaunchScreenNextcloud.xib in Resources */ = {isa = PBXBuildFile; fileRef = F78BFECA1D3111B800E513CF /* LaunchScreenNextcloud.xib */; };
 		F78BFEE11D31126B00E513CF /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F78BFEDE1D31126B00E513CF /* MainInterface.storyboard */; };
-		F79160541E76EE3500F6214C /* aps_development_pubkey.pem in Resources */ = {isa = PBXBuildFile; fileRef = F79160531E76EE3500F6214C /* aps_development_pubkey.pem */; };
 		F7B1FBC41E72E3D1001781FE /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7B1FBB11E72E3D1001781FE /* Media.xcassets */; };
 		F7B1FBC51E72E3D1001781FE /* SwiftWebVC.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7B1FBB31E72E3D1001781FE /* SwiftWebVC.strings */; };
 		F7B1FBC61E72E3D1001781FE /* SwiftModalWebVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B1FBBF1E72E3D1001781FE /* SwiftModalWebVC.swift */; };
@@ -1392,7 +1391,6 @@
 		F78BFEDE1D31126B00E513CF /* MainInterface.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = MainInterface.storyboard; sourceTree = "<group>"; };
 		F78F6FAE1CC8CCB700F4EA25 /* CCSection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCSection.h; sourceTree = "<group>"; };
 		F78F6FAF1CC8CCB700F4EA25 /* CCSection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCSection.m; sourceTree = "<group>"; };
-		F79160531E76EE3500F6214C /* aps_development_pubkey.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = aps_development_pubkey.pem; sourceTree = SOURCE_ROOT; };
 		F792A77B1BC7C45400C9388E /* CCSplit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCSplit.h; sourceTree = "<group>"; };
 		F792A77C1BC7C45400C9388E /* CCSplit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCSplit.m; sourceTree = "<group>"; };
 		F7956FC91B4886E60085DEA3 /* CCUploadFromOtherUpp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCUploadFromOtherUpp.h; sourceTree = "<group>"; };
@@ -3328,7 +3326,6 @@
 				F7D154271E2392A300202FD9 /* Nextcloud-Bridging-Header.h */,
 				F75CDBF51DF063AD00116AD0 /* .gitignore */,
 				F7724CB21E71960F005AD84C /* NextcloudDevicePushKey-Info.plist */,
-				F79160531E76EE3500F6214C /* aps_development_pubkey.pem */,
 				F7229B461DF71BA800E8C4E7 /* ChangeLog */,
 				F7229B491DF71BB300E8C4E7 /* AUTHORS */,
 				F78BFECA1D3111B800E513CF /* LaunchScreenNextcloud.xib */,
@@ -3703,7 +3700,6 @@
 				F75ADF451DC75FFE008A7347 /* CCLogin.storyboard in Resources */,
 				F77B0EEA1D118A16002130FE /* ZSSbold@2x.png in Resources */,
 				F77B0EEB1D118A16002130FE /* ZSSrightjustify@2x.png in Resources */,
-				F79160541E76EE3500F6214C /* aps_development_pubkey.pem in Resources */,
 				F7C00D481E2D0D0F0032160B /* CCCellOffline.xib in Resources */,
 				F77B0EEC1D118A16002130FE /* ZSSindent@2x.png in Resources */,
 				F7F54CED1E5B14C700E19C62 /* ImageSelectedOn@3x.png in Resources */,
