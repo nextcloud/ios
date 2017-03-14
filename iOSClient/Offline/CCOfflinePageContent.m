@@ -228,6 +228,7 @@
 #pragma mark ===== Swipe Table -> menu =====
 #pragma--------------------------------------------------------------------------------------------
 
+/*
 // more
 - (NSString *)tableView:(UITableView *)tableView titleForSwipeAccessoryButtonForRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -405,6 +406,12 @@
 
     [self.tableView setEditing:NO animated:YES];
 }
+*/
+
+-(void)cellButtonDownWasTapped:(id)sender
+{
+    
+}
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ==== Table ====
@@ -575,6 +582,9 @@
             }
         }
     }
+    
+    // ButtonDown Tapped
+    [cell.buttonDown addTarget:self action:@selector(cellButtonDownWasTapped:) forControlEvents:UIControlEventTouchUpInside];
     
     // color and font
     if (metadata.cryptated) {
