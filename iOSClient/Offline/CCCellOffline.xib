@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11762" systemVersion="16C67" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11762" systemVersion="16D32" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -16,11 +16,11 @@
             <rect key="frame" x="0.0" y="0.0" width="600" height="60"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxY="YES"/>
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="2" id="sQq-jC-UEV">
-                <rect key="frame" x="0.0" y="0.0" width="600" height="59"/>
+                <rect key="frame" x="0.0" y="0.0" width="600" height="60"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <label opaque="NO" userInteractionEnabled="NO" tag="101" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QNC-8X-DAC">
-                        <rect key="frame" x="56" y="11" width="536" height="16"/>
+                        <rect key="frame" x="56" y="11" width="486" height="16"/>
                         <fontDescription key="fontDescription" type="system" pointSize="13"/>
                         <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <nil key="highlightedColor"/>
@@ -40,7 +40,7 @@
                         </constraints>
                     </imageView>
                     <label opaque="NO" userInteractionEnabled="NO" tag="102" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="p7I-KN-FVZ">
-                        <rect key="frame" x="56" y="39" width="536" height="12"/>
+                        <rect key="frame" x="56" y="39" width="485" height="12"/>
                         <fontDescription key="fontDescription" type="system" pointSize="10"/>
                         <color key="textColor" red="0.33333333333333331" green="0.33333333333333331" blue="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <nil key="highlightedColor"/>
@@ -52,11 +52,20 @@
                             <constraint firstAttribute="height" constant="15" id="aQq-XY-pNM"/>
                         </constraints>
                     </imageView>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6B9-Jc-esJ" userLabel="buttonDown">
+                        <rect key="frame" x="549" y="18" width="25" height="25"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="25" id="PcN-jN-71v"/>
+                            <constraint firstAttribute="width" constant="25" id="bAG-EX-HKe"/>
+                        </constraints>
+                        <state key="normal" title="Button" image="buttonDown"/>
+                    </button>
                 </subviews>
                 <constraints>
                     <constraint firstItem="p7I-KN-FVZ" firstAttribute="leading" secondItem="DQR-yN-JaH" secondAttribute="trailing" constant="4" id="2xR-G4-B2S"/>
                     <constraint firstItem="dhG-hb-z3n" firstAttribute="top" secondItem="sQq-jC-UEV" secondAttribute="topMargin" constant="31" id="4Zy-SY-nfT"/>
-                    <constraint firstItem="QNC-8X-DAC" firstAttribute="trailing" secondItem="sQq-jC-UEV" secondAttribute="trailingMargin" id="7zt-c0-CsI"/>
+                    <constraint firstItem="QNC-8X-DAC" firstAttribute="trailing" secondItem="sQq-jC-UEV" secondAttribute="trailingMargin" constant="-50" id="7zt-c0-CsI"/>
+                    <constraint firstItem="6B9-Jc-esJ" firstAttribute="centerY" secondItem="5" secondAttribute="centerY" id="EoB-vw-kgn"/>
                     <constraint firstAttribute="centerY" secondItem="5" secondAttribute="centerY" constant="-1.5" id="FQP-wg-vPF"/>
                     <constraint firstItem="DQR-yN-JaH" firstAttribute="top" secondItem="p7I-KN-FVZ" secondAttribute="top" id="K6B-gJ-8Fp"/>
                     <constraint firstItem="p7I-KN-FVZ" firstAttribute="leading" secondItem="5" secondAttribute="trailing" constant="8" symbolic="YES" id="K7G-0u-f8E"/>
@@ -64,21 +73,27 @@
                     <constraint firstItem="QNC-8X-DAC" firstAttribute="leading" secondItem="5" secondAttribute="trailing" constant="8" symbolic="YES" id="UYc-Al-a4h"/>
                     <constraint firstItem="dhG-hb-z3n" firstAttribute="leading" secondItem="sQq-jC-UEV" secondAttribute="leadingMargin" constant="-4" id="dNM-6x-zkx"/>
                     <constraint firstItem="5" firstAttribute="leading" secondItem="sQq-jC-UEV" secondAttribute="leadingMargin" id="ha0-VA-fF9"/>
-                    <constraint firstItem="p7I-KN-FVZ" firstAttribute="trailing" secondItem="sQq-jC-UEV" secondAttribute="trailingMargin" id="kaB-WS-bDl"/>
+                    <constraint firstItem="p7I-KN-FVZ" firstAttribute="trailing" secondItem="sQq-jC-UEV" secondAttribute="trailingMargin" constant="-51" id="kaB-WS-bDl"/>
                     <constraint firstItem="5" firstAttribute="top" secondItem="QNC-8X-DAC" secondAttribute="top" id="lyH-lh-z03"/>
+                    <constraint firstItem="6B9-Jc-esJ" firstAttribute="leading" secondItem="QNC-8X-DAC" secondAttribute="trailing" constant="7" id="mBS-nt-t6R"/>
                     <constraint firstItem="5" firstAttribute="top" secondItem="sQq-jC-UEV" secondAttribute="topMargin" constant="3" id="pRH-CQ-O4x"/>
                 </constraints>
             </tableViewCellContentView>
             <connections>
+                <outlet property="buttonDown" destination="6B9-Jc-esJ" id="tb8-y2-OM0"/>
                 <outlet property="fileImageView" destination="5" id="6"/>
                 <outlet property="labelInfoFile" destination="p7I-KN-FVZ" id="5Yb-hH-k73"/>
                 <outlet property="labelTitle" destination="QNC-8X-DAC" id="dFX-Cb-8IE"/>
                 <outlet property="offlineImageView" destination="dhG-hb-z3n" id="IGh-6c-M89"/>
                 <outlet property="statusImageView" destination="DQR-yN-JaH" id="UmC-pt-kjV"/>
+                <outletCollection property="constraints" destination="mBS-nt-t6R" id="4sz-P1-CPa"/>
             </connections>
             <point key="canvasLocation" x="316" y="128"/>
         </tableViewCell>
     </objects>
+    <resources>
+        <image name="buttonDown" width="25" height="25"/>
+    </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>
         <simulatedOrientationMetrics key="orientation"/>

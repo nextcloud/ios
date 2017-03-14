@@ -43,6 +43,15 @@
     // Configure the view for the selected state
 }
 
+- (void)layoutSubviews {
+    
+    [super layoutSubviews];
+    
+    for (NSLayoutConstraint *constraint in self.constraints) {
+        constraint.constant = self.frame.size.width - self.contentView.frame.size.width;
+    }
+}
+
 ///-----------------------------------
 /// @name scrollViewWillBeginDecelerating
 ///-----------------------------------

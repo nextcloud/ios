@@ -32,6 +32,10 @@
 @property(nonatomic, weak) IBOutlet UILabel *labelTitle;
 @property(nonatomic, weak) IBOutlet UILabel *labelInfoFile;
 
+@property(nonatomic, weak) IBOutlet UIButton *buttonDown;
+
+@property (strong, nonatomic) IBOutletCollection(NSLayoutConstraint) NSArray *constraints;
+
 //Last position of the scroll of the swipe
 @property (nonatomic, assign) CGFloat lastContentOffset;
 
