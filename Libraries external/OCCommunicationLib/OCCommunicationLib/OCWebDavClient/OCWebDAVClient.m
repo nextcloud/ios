@@ -743,24 +743,18 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     
     _requestMethod = @"POST";
     
-    /*
-     
-     pushTokenHash = [pushTokenHash stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
-     NSString *pushTokenHashParam = [NSString stringWithFormat:@"?pushTokenHash=%@",pushTokenHash];
-     
-     devicePublicKey = [devicePublicKey stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
-     NSString *devicePublicKeyParam = [NSString stringWithFormat:@"&devicePublicKey=%@",devicePublicKey];
-
-    */
-    
-    NSString *pushTokenHashParam = [NSString stringWithFormat:@"?pushTokenHash=%@",pushTokenHash];    
-    NSString *devicePublicKeyParam = [NSString stringWithFormat:@"&devicePublicKey=%@",devicePublicKey];
+    NSString *pushTokenHashParam = [NSString stringWithFormat:@"?pushTokenHash=%@",pushTokenHash];
+    NSString *devicePublicKeyParam = [NSString stringWithFormat:@"devicePublicKey=%@",devicePublicKey];
     
     serverPath = [serverPath stringByAppendingString:pushTokenHashParam];
-    serverPath = [serverPath stringByAppendingString:devicePublicKeyParam];
+    //serverPath = [serverPath stringByAppendingString:devicePublicKeyParam];
 
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
     [request setValue:[NSString stringWithFormat:@"token %@", authorizationToken] forHTTPHeaderField:@"Authorization"];
+    
+    NSData *requestBodyData = [devicePublicKeyParam dataUsingEncoding:NSUTF8StringEncoding];
+    
+    request.HTTPBody = requestBodyData;
     
     OCHTTPRequestOperation *operation = [self mr_operationWithRequest:request onCommunication:sharedOCCommunication success:success failure:failure];
     [self setRedirectionBlockOnDatataskWithOCCommunication:sharedOCCommunication andSessionManager:sharedOCCommunication.networkSessionManager];

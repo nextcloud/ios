@@ -434,6 +434,7 @@
     
     NSString *path = [[[NSBundle mainBundle] URLForResource:k_nextcloudDevicePushPublicKeyDev withExtension:@"pem"] absoluteString];
     NSData *devicePublicKeyData = [NSData dataWithContentsOfURL:[NSURL URLWithString:path]];
+    
     NSString *devicePublicKey = [[NSString alloc] initWithData:devicePublicKeyData encoding:NSUTF8StringEncoding];
     
     NSLog(@"DEVICE TOKEN = %@", pushTokenString);
