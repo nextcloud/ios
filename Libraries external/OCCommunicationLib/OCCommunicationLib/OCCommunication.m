@@ -1525,19 +1525,17 @@
         NSDictionary *jsongParsed = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableContainers error:&error];
         NSLog(@"[LOG] Subscribing at the Nextcloud server : %@",jsongParsed);
         
+        NSString *publicKey = [jsongParsed objectForKey:@"publicKey"];
+        NSString *deviceIdentifier = [jsongParsed objectForKey:@"deviceIdentifier"];
+        NSString *signature = [jsongParsed objectForKey:@"signature"];
         
-        if (successRequest) {
-            //Return success
-            //successRequest(response, request.redirectedServer);
-        }
+        successRequest(response, publicKey, deviceIdentifier, signature, request.redirectedServer);
         
     } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
                 
         failureRequest(response, error, request.redirectedServer);
     }];
 }
-
-
 
 #pragma mark - Activity
 
