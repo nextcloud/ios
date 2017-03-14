@@ -1413,6 +1413,18 @@
     }];
 }
 
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark =====  Utility =====
+#pragma --------------------------------------------------------------------------------------------
+
+- (NSString *)URLEncodeStringFromString:(NSString *)string
+{
+    static CFStringRef charset = CFSTR("!@#$%&*()+'\";:=,/?[] ");
+    CFStringRef str = (__bridge CFStringRef)string;
+    CFStringEncoding encoding = kCFStringEncodingUTF8;
+    return (NSString *)CFBridgingRelease(CFURLCreateStringByAddingPercentEscapes(NULL, str, NULL, charset, encoding));
+}
+
 @end
 
 #pragma --------------------------------------------------------------------------------------------
