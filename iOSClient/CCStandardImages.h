@@ -44,6 +44,7 @@
 #define image_checked                           @"checked"
 
 #define image_decryptedSelectedFiles            @"decryptedSelectedFiles"
+#define image_delete                            @"delete"
 #define image_deleteSelectedFiles               @"deleteSelectedFiles"
 #define image_directory                         @"directory"
 #define image_directorycriptata                 @"directorycriptata"

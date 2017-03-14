@@ -225,43 +225,51 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Swipe Table -> menu =====
+#pragma mark ===== menu =====
 #pragma--------------------------------------------------------------------------------------------
 
-/*
-// more
-- (NSString *)tableView:(UITableView *)tableView titleForSwipeAccessoryButtonForRowAtIndexPath:(NSIndexPath *)indexPath
+- (void)requestDeleteMetadata:(CCMetadata *)metadata indexPath:(NSIndexPath *)indexPath
 {
-    // No Local
-    if ([_pageType isEqualToString:k_pageOfflineLocal])
-        return nil;
     
-    // Root
-    if (_serverUrl == nil)
-        return NSLocalizedString(@"_more_", nil);
-    
-    // No Root
-    CCMetadata *metadata = [self setSelfMetadataFromIndexPath:indexPath];
-    
-    if (metadata.directory)
-        return nil;
-    else
-        return NSLocalizedString(@"_more_", nil);
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+        
+    [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_delete_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
+                                                               
+        if ([_pageType isEqualToString:k_pageOfflineFavorites] || [_pageType isEqualToString:k_pageOfflineOffline]) {
+                                                                   
+            [[CCActions sharedInstance] deleteFileOrFolder:_metadata delegate:self];
+        }
+                                                               
+        if ([_pageType isEqualToString:k_pageOfflineLocal]) {
+                                                                   
+            NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", _serverUrl, _metadata.fileNameData];
+            NSString *iconPath = [NSString stringWithFormat:@"%@/.%@.ico", _serverUrl, _metadata.fileNameData];
+                                                                   
+            [[NSFileManager defaultManager] removeItemAtPath:fileNamePath error:nil];
+            [[NSFileManager defaultManager] removeItemAtPath:iconPath error:nil];
+        }
+                                                               
+        [self reloadDatasource];
+    }]];
+        
+        
+    [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
+    }]];
+        
+    alertController.popoverPresentationController.sourceView = self.view;
+    alertController.popoverPresentationController.sourceRect = [self.tableView rectForRowAtIndexPath:indexPath];
+        
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+        [alertController.view layoutIfNeeded];
+        
+    [self presentViewController:alertController animated:YES completion:nil];
 }
 
-- (NSString *)tableView:(UITableView *)tableView titleForDeleteConfirmationButtonForRowAtIndexPath:(NSIndexPath *)indexPath
+-(void)cellButtonDownWasTapped:(id)sender
 {
-    return NSLocalizedString(@"_delete_", nil);
-}
-
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    return YES;
-}
-
-- (void)tableView:(UITableView *)tableView swipeAccessoryButtonPushedForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    _metadata = [self setSelfMetadataFromIndexPath:indexPath];
+    CGPoint touchPoint = [sender convertPoint:CGPointZero toView:self.tableView];
+    NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:touchPoint];
+    CCMetadata *metadata = [dataSource objectAtIndex:indexPath.row];
     
     AHKActionSheet *actionSheet = [[AHKActionSheet alloc] initWithView:self.view title:nil];
     
@@ -283,134 +291,72 @@
     
     actionSheet.separatorColor = COLOR_SEPARATOR_TABLE;
     actionSheet.cancelButtonTitle = NSLocalizedString(@"_cancel_",nil);
-
+    
     UIImage *iconHeader;
     
     // assegnamo l'immagine anteprima se esiste, altrimenti metti quella standars
-    if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/.%@.ico", _serverUrl, _metadata.fileNamePrint]])
-        iconHeader = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/.%@.ico", _serverUrl, _metadata.fileNamePrint]];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/.%@.ico", _serverUrl, metadata.fileNamePrint]])
+        iconHeader = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/.%@.ico", _serverUrl, metadata.fileNamePrint]];
     else
         iconHeader = [UIImage imageNamed:self.metadata.iconName];
     
     // NO Directory - NO Template
-    if (_metadata.directory == NO && [_metadata.type isEqualToString:k_metadataType_template] == NO) {
-    
-        [actionSheet addButtonWithTitle:NSLocalizedString(@"_open_in_", nil)
-                                  image:[UIImage imageNamed:image_actionSheetOpenIn]
-                        backgroundColor:[UIColor whiteColor]
-                                 height: 50.0
-                                   type:AHKActionSheetButtonTypeDefault
-                                handler:^(AHKActionSheet *as) {
-                                
-                                    [self.tableView setEditing:NO animated:YES];
-                                    [self openWith:_metadata];
-                                }];
+    if (metadata.directory == NO && [metadata.type isEqualToString:k_metadataType_template] == NO) {
+        
+        [actionSheet addButtonWithTitle:NSLocalizedString(@"_open_in_", nil) image:[UIImage imageNamed:image_actionSheetOpenIn] backgroundColor:[UIColor whiteColor] height: 50.0 type:AHKActionSheetButtonTypeDefault handler:^(AHKActionSheet *as) {
+                                    
+            [self.tableView setEditing:NO animated:YES];
+            [self openWith:metadata];
+        }];
     }
     
     // ONLY Root Favorites : Remove file/folder Favorites
     if (_serverUrl == nil && [_pageType isEqualToString:k_pageOfflineFavorites]) {
         
-        [actionSheet addButtonWithTitle:NSLocalizedString(@"_remove_favorites_", nil)
-                                  image:[UIImage imageNamed:image_actionSheetOffline]
-                        backgroundColor:[UIColor whiteColor]
-                                 height: 50.0
-                                   type:AHKActionSheetButtonTypeDefault
-                                handler:^(AHKActionSheet *as) {
+        [actionSheet addButtonWithTitle:NSLocalizedString(@"_remove_favorites_", nil) image:[UIImage imageNamed:image_actionSheetOffline] backgroundColor:[UIColor whiteColor] height: 50.0 type:AHKActionSheetButtonTypeDefault handler:^(AHKActionSheet *as) {
                                     
-                                    [self.tableView setEditing:NO animated:YES];
-                                    
-                                    [[CCActions sharedInstance] settingFavorite:_metadata favorite:NO delegate:self];
-                                }];
+            [self.tableView setEditing:NO animated:YES];
+            [[CCActions sharedInstance] settingFavorite:metadata favorite:NO delegate:self];
+        }];
     }
-
+    
     // ONLY Root Offline : Remove file/folder offline
     if (_serverUrl == nil && [_pageType isEqualToString:k_pageOfflineOffline]) {
         
-        [actionSheet addButtonWithTitle:NSLocalizedString(@"_remove_offline_", nil)
-                                  image:[UIImage imageNamed:image_actionSheetOffline]
-                        backgroundColor:[UIColor whiteColor]
-                                 height: 50.0
-                                   type:AHKActionSheetButtonTypeDefault
-                                handler:^(AHKActionSheet *as) {
+        [actionSheet addButtonWithTitle:NSLocalizedString(@"_remove_offline_", nil) image:[UIImage imageNamed:image_actionSheetOffline] backgroundColor:[UIColor whiteColor] height: 50.0 type:AHKActionSheetButtonTypeDefault handler:^(AHKActionSheet *as) {
                                     
-                                    if (_metadata.directory) {
+            if (metadata.directory) {
                                         
-                                        // remove tag offline for all folder/subfolder/file
-                                        NSString *relativeRoot = [CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:app.activeAccount];
-                                        NSString *dirServerUrl = [CCUtility stringAppendServerUrl:relativeRoot addFileName:_metadata.fileNameData];
-                                        NSArray *directories = [CCCoreData getOfflineDirectoryActiveAccount:app.activeAccount];
+                // remove tag offline for all folder/subfolder/file
+                NSString *relativeRoot = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:app.activeAccount];
+                NSString *dirServerUrl = [CCUtility stringAppendServerUrl:relativeRoot addFileName:metadata.fileNameData];
+                NSArray *directories = [CCCoreData getOfflineDirectoryActiveAccount:app.activeAccount];
                                         
-                                        for (TableDirectory *directory in directories)
-                                            if ([directory.serverUrl containsString:dirServerUrl]) {
-                                                [CCCoreData setOfflineDirectoryServerUrl:directory.serverUrl offline:NO activeAccount:app.activeAccount];
-                                                [CCCoreData removeOfflineAllFileFromServerUrl:directory.serverUrl activeAccount:app.activeAccount];
-                                            }
-
-                                    } else {
+                for (TableDirectory *directory in directories)
+                    if ([directory.serverUrl containsString:dirServerUrl]) {
+                        [CCCoreData setOfflineDirectoryServerUrl:directory.serverUrl offline:NO activeAccount:app.activeAccount];
+                        [CCCoreData removeOfflineAllFileFromServerUrl:directory.serverUrl activeAccount:app.activeAccount];
+                    }
                                         
-                                        [CCCoreData setOfflineLocalFileID:_metadata.fileID offline:NO activeAccount:app.activeAccount];
-                                    }
+            } else {
+                                        
+                [CCCoreData setOfflineLocalFileID:metadata.fileID offline:NO activeAccount:app.activeAccount];
+            }
                                     
-                                    [self.tableView setEditing:NO animated:YES];
+            [self.tableView setEditing:NO animated:YES];
                                     
-                                    [self reloadDatasource];
-                                }];
+            [self reloadDatasource];
+        }];
     }
+    
+    [actionSheet addButtonWithTitle:NSLocalizedString(@"_delete_", nil) image:[UIImage imageNamed:image_delete] backgroundColor:[UIColor whiteColor] height: 50.0 type:AHKActionSheetButtonTypeDestructive handler:^(AHKActionSheet *as) {
+        
+        [self requestDeleteMetadata:metadata indexPath:indexPath];
+    }];
+
     
     [actionSheet show];
-}
 
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    _metadata = [self setSelfMetadataFromIndexPath:indexPath];
-    
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        
-        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
-        
-        [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_delete_", nil)
-                                                             style:UIAlertActionStyleDestructive
-                                                           handler:^(UIAlertAction *action) {
-                                                               
-                                                               if ([_pageType isEqualToString:k_pageOfflineFavorites] || [_pageType isEqualToString:k_pageOfflineOffline]) {
-                                                                   
-                                                                   [[CCActions sharedInstance] deleteFileOrFolder:_metadata delegate:self];
-                                                               }
-                                                               
-                                                               if ([_pageType isEqualToString:k_pageOfflineLocal]) {
-                                                                   
-                                                                   NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", _serverUrl, _metadata.fileNameData];
-                                                                   NSString *iconPath = [NSString stringWithFormat:@"%@/.%@.ico", _serverUrl, _metadata.fileNameData];
-                                                                   
-                                                                   [[NSFileManager defaultManager] removeItemAtPath:fileNamePath error:nil];
-                                                                   [[NSFileManager defaultManager] removeItemAtPath:iconPath error:nil];
-                                                               }
-                                                               
-                                                               [self reloadDatasource];
-                                                           }]];
-        
-        
-        [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil)
-                                                             style:UIAlertActionStyleCancel
-                                                           handler:^(UIAlertAction *action) {
-                                                           }]];
-        
-        alertController.popoverPresentationController.sourceView = self.view;
-        alertController.popoverPresentationController.sourceRect = [self.tableView rectForRowAtIndexPath:indexPath];
-        
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
-            [alertController.view layoutIfNeeded];
-        
-        [self presentViewController:alertController animated:YES completion:nil];
-    }
-
-    [self.tableView setEditing:NO animated:YES];
-}
-*/
-
--(void)cellButtonDownWasTapped:(id)sender
-{
-    
 }
 
 #pragma --------------------------------------------------------------------------------------------
