@@ -432,7 +432,12 @@
     NSString *pushTokenHash = [[CCCrypto sharedManager] createSHA512:pushTokenString];
     
     NSDictionary *keys = [NSDictionary dictionaryWithContentsOfFile:[[NSBundle mainBundle] pathForResource:k_nextcloudDevicePushKey ofType:@"plist"]];
-    NSString *devicePublicKey = [keys objectForKey:@"devicePublicKey"];
+    
+#ifdef DEBUG
+    NSString *devicePublicKey = [keys objectForKey:@"devicePublicKeyDev"];
+#else
+    NSString *devicePublicKey = [keys objectForKey:@"devicePublicKeyDev"];
+#endif
     
     NSLog(@"DEVICE TOKEN = %@", pushTokenString);
     
