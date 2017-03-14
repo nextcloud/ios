@@ -743,10 +743,17 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     
     _requestMethod = @"POST";
     
-    pushTokenHash = [pushTokenHash stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
-    NSString *pushTokenHashParam = [NSString stringWithFormat:@"?pushTokenHash=%@",pushTokenHash];
+    /*
+     
+     pushTokenHash = [pushTokenHash stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
+     NSString *pushTokenHashParam = [NSString stringWithFormat:@"?pushTokenHash=%@",pushTokenHash];
+     
+     devicePublicKey = [devicePublicKey stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
+     NSString *devicePublicKeyParam = [NSString stringWithFormat:@"&devicePublicKey=%@",devicePublicKey];
+
+    */
     
-    devicePublicKey = [devicePublicKey stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
+    NSString *pushTokenHashParam = [NSString stringWithFormat:@"?pushTokenHash=%@",pushTokenHash];    
     NSString *devicePublicKeyParam = [NSString stringWithFormat:@"&devicePublicKey=%@",devicePublicKey];
     
     serverPath = [serverPath stringByAppendingString:pushTokenHashParam];
