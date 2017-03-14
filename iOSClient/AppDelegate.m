@@ -434,9 +434,9 @@
     NSDictionary *keys = [NSDictionary dictionaryWithContentsOfFile:[[NSBundle mainBundle] pathForResource:k_nextcloudDevicePushKey ofType:@"plist"]];
     
 #ifdef DEBUG
-    NSString *devicePublicKey = [keys objectForKey:@"devicePublicKeyDev"];
+    NSString *devicePublicKey = [keys objectForKey:@"devicePublicKeyDevelopment"];
 #else
-    NSString *devicePublicKey = [keys objectForKey:@"devicePublicKeyDev"];
+    NSString *devicePublicKey = [keys objectForKey:@"devicePublicKeyProduction"];
 #endif
     
     NSLog(@"DEVICE TOKEN = %@", pushTokenString);
