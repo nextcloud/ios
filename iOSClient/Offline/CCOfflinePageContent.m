@@ -228,22 +228,93 @@
 #pragma mark ===== menu =====
 #pragma--------------------------------------------------------------------------------------------
 
+- (void)openModel:(CCMetadata *)metadata
+{
+    UIViewController *viewController;
+    BOOL isLocal = NO;
+    NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:app.activeAccount];
+    
+    if ([self.pageType isEqualToString:k_pageOfflineLocal])
+        isLocal = YES;
+    
+    if ([metadata.model isEqualToString:@"cartadicredito"])
+        viewController = [[CCCartaDiCredito alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid fileID:metadata.fileID isLocal:isLocal serverUrl:serverUrl];
+    
+    if ([metadata.model isEqualToString:@"bancomat"])
+        viewController = [[CCBancomat alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid fileID:metadata.fileID isLocal:isLocal serverUrl:serverUrl];
+    
+    if ([metadata.model isEqualToString:@"contocorrente"])
+        viewController = [[CCContoCorrente alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid fileID:metadata.fileID isLocal:isLocal serverUrl:serverUrl];
+    
+    if ([metadata.model isEqualToString:@"accountweb"])
+        viewController = [[CCAccountWeb alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid fileID:metadata.fileID isLocal:isLocal serverUrl:serverUrl];
+    
+    if ([metadata.model isEqualToString:@"patenteguida"])
+        viewController = [[CCPatenteGuida alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid fileID:metadata.fileID isLocal:isLocal serverUrl:serverUrl];
+    
+    if ([metadata.model isEqualToString:@"cartaidentita"])
+        viewController = [[CCCartaIdentita alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid fileID:metadata.fileID isLocal:isLocal serverUrl:serverUrl];
+    
+    if ([metadata.model isEqualToString:@"passaporto"])
+        viewController = [[CCPassaporto alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid fileID:metadata.fileID isLocal:isLocal serverUrl:serverUrl];
+    
+    if ([metadata.model isEqualToString:@"note"]) {
+        
+        viewController = [[CCNote alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid fileID:metadata.fileID isLocal:isLocal serverUrl:serverUrl];
+        
+        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
+        
+        [self presentViewController:navigationController animated:YES completion:nil];
+        
+    } else {
+        
+        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
+        
+        [navigationController setModalPresentationStyle:UIModalPresentationFormSheet];
+        
+        [self presentViewController:navigationController animated:YES completion:nil];
+    }
+}
+
+- (void)openWith:(CCMetadata *)metadata
+{
+    NSString *fileNamePath;
+    
+    if ([_pageType isEqualToString:k_pageOfflineFavorites] || [_pageType isEqualToString:k_pageOfflineOffline])
+        fileNamePath = [NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID];
+    
+    if ([_pageType isEqualToString:k_pageOfflineLocal])
+        fileNamePath = [NSString stringWithFormat:@"%@/%@", _serverUrl, metadata.fileNameData];
+        
+    if ([[NSFileManager defaultManager] fileExistsAtPath:fileNamePath]) {
+        
+        [[NSFileManager defaultManager] removeItemAtPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileNamePrint] error:nil];
+        [[NSFileManager defaultManager] linkItemAtPath:fileNamePath toPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileNamePrint] error:nil];
+        
+        NSURL *url = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileNamePrint]];
+        
+        _docController = [UIDocumentInteractionController interactionControllerWithURL:url];
+        _docController.delegate = self;
+        
+        [_docController presentOptionsMenuFromRect:self.view.frame inView:self.view animated:YES];
+    }
+}
+
 - (void)requestDeleteMetadata:(CCMetadata *)metadata indexPath:(NSIndexPath *)indexPath
 {
-    
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
         
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_delete_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
                                                                
         if ([_pageType isEqualToString:k_pageOfflineFavorites] || [_pageType isEqualToString:k_pageOfflineOffline]) {
                                                                    
-            [[CCActions sharedInstance] deleteFileOrFolder:_metadata delegate:self];
+            [[CCActions sharedInstance] deleteFileOrFolder:metadata delegate:self];
         }
                                                                
         if ([_pageType isEqualToString:k_pageOfflineLocal]) {
                                                                    
-            NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", _serverUrl, _metadata.fileNameData];
-            NSString *iconPath = [NSString stringWithFormat:@"%@/.%@.ico", _serverUrl, _metadata.fileNameData];
+            NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", _serverUrl, metadata.fileNameData];
+            NSString *iconPath = [NSString stringWithFormat:@"%@/.%@.ico", _serverUrl, metadata.fileNameData];
                                                                    
             [[NSFileManager defaultManager] removeItemAtPath:fileNamePath error:nil];
             [[NSFileManager defaultManager] removeItemAtPath:iconPath error:nil];
@@ -269,7 +340,19 @@
 {
     CGPoint touchPoint = [sender convertPoint:CGPointZero toView:self.tableView];
     NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:touchPoint];
-    CCMetadata *metadata = [dataSource objectAtIndex:indexPath.row];
+    CCMetadata *metadata = [CCMetadata new];
+    
+    if ([_pageType isEqualToString:k_pageOfflineLocal]) {
+        
+        NSString *cameraFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:app.activeAccount];
+        NSString *cameraFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:app.activeAccount activeUrl:app.activeUrl];
+        
+        metadata = [CCUtility insertFileSystemInMetadata:[dataSource objectAtIndex:indexPath.row] directory:_serverUrl activeAccount:app.activeAccount cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath];
+        
+    } else {
+        
+        metadata = [dataSource objectAtIndex:indexPath.row];
+    }
     
     AHKActionSheet *actionSheet = [[AHKActionSheet alloc] initWithView:self.view title:nil];
     
@@ -291,14 +374,6 @@
     
     actionSheet.separatorColor = COLOR_SEPARATOR_TABLE;
     actionSheet.cancelButtonTitle = NSLocalizedString(@"_cancel_",nil);
-    
-    UIImage *iconHeader;
-    
-    // assegnamo l'immagine anteprima se esiste, altrimenti metti quella standars
-    if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/.%@.ico", _serverUrl, metadata.fileNamePrint]])
-        iconHeader = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/.%@.ico", _serverUrl, metadata.fileNamePrint]];
-    else
-        iconHeader = [UIImage imageNamed:self.metadata.iconName];
     
     // NO Directory - NO Template
     if (metadata.directory == NO && [metadata.type isEqualToString:k_metadataType_template] == NO) {
@@ -356,7 +431,6 @@
 
     
     [actionSheet show];
-
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -634,70 +708,6 @@
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Navigation ====
 #pragma --------------------------------------------------------------------------------------------
-
-- (void)openModel:(CCMetadata *)metadata
-{
-    UIViewController *viewController;
-    BOOL isLocal = NO;
-    NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:app.activeAccount];
-    
-    if ([self.pageType isEqualToString:k_pageOfflineLocal])
-        isLocal = YES;
-    
-    if ([metadata.model isEqualToString:@"cartadicredito"])
-        viewController = [[CCCartaDiCredito alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid fileID:metadata.fileID isLocal:isLocal serverUrl:serverUrl];
-    
-    if ([metadata.model isEqualToString:@"bancomat"])
-        viewController = [[CCBancomat alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid fileID:metadata.fileID isLocal:isLocal serverUrl:serverUrl];
-    
-    if ([metadata.model isEqualToString:@"contocorrente"])
-        viewController = [[CCContoCorrente alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid fileID:metadata.fileID isLocal:isLocal serverUrl:serverUrl];
-    
-    if ([metadata.model isEqualToString:@"accountweb"])
-        viewController = [[CCAccountWeb alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid fileID:metadata.fileID isLocal:isLocal serverUrl:serverUrl];
-    
-    if ([metadata.model isEqualToString:@"patenteguida"])
-        viewController = [[CCPatenteGuida alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid fileID:metadata.fileID isLocal:isLocal serverUrl:serverUrl];
-    
-    if ([metadata.model isEqualToString:@"cartaidentita"])
-        viewController = [[CCCartaIdentita alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid fileID:metadata.fileID isLocal:isLocal serverUrl:serverUrl];
-    
-    if ([metadata.model isEqualToString:@"passaporto"])
-        viewController = [[CCPassaporto alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid fileID:metadata.fileID isLocal:isLocal serverUrl:serverUrl];
-    
-    if ([metadata.model isEqualToString:@"note"]) {
-        
-        viewController = [[CCNote alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid fileID:metadata.fileID isLocal:isLocal serverUrl:serverUrl];
-        
-        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
-        
-        [self presentViewController:navigationController animated:YES completion:nil];
-        
-    } else {
-        
-        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
-        
-        [navigationController setModalPresentationStyle:UIModalPresentationFormSheet];
-        
-        [self presentViewController:navigationController animated:YES completion:nil];
-    }
-}
-
-- (void)openWith:(CCMetadata *)metadata
-{
-    if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID]]) {
-    
-        [[NSFileManager defaultManager] removeItemAtPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileNamePrint] error:nil];
-        [[NSFileManager defaultManager] linkItemAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID] toPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileNamePrint] error:nil];
-    
-        NSURL *url = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileNamePrint]];
-    
-        _docController = [UIDocumentInteractionController interactionControllerWithURL:url];
-        _docController.delegate = self;
-    
-        [_docController presentOptionsMenuFromRect:self.view.frame inView:self.view animated:YES];
-    }
-}
 
 - (BOOL)shouldPerformSegue
 {
