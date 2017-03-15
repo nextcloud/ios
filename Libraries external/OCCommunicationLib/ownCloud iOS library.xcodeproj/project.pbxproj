@@ -153,6 +153,8 @@
 		F73C00341E56098300EEEFA7 /* OCUserProfile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCUserProfile.m; sourceTree = "<group>"; };
 		F785C1321E6316A500469BAC /* OCXMLListParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OCXMLListParser.h; path = OCWebDavClient/Parsers/OCXMLListParser.h; sourceTree = "<group>"; };
 		F785C1331E6316A500469BAC /* OCXMLListParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OCXMLListParser.m; path = OCWebDavClient/Parsers/OCXMLListParser.m; sourceTree = "<group>"; };
+		F7BEC5431E7982330048500A /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-BR"; path = "pt-BR.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		F7BEC54C1E7983AF0048500A /* zh-Hans-CN */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans-CN"; path = "zh-Hans-CN.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		F7FB5F151E66E63B00389481 /* OCActivity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCActivity.h; sourceTree = "<group>"; };
 		F7FB5F161E66E63B00389481 /* OCActivity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCActivity.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -421,6 +423,8 @@
 				ru,
 				pl,
 				is,
+				"pt-BR",
+				"zh-Hans-CN",
 			);
 			mainGroup = EA7CC88E183E11E600B6A4B4;
 			productRefGroup = EA7CC898183E11E600B6A4B4 /* Products */;
@@ -516,6 +520,8 @@
 				EA7CC8B4183E11E600B6A4B4 /* en */,
 				F7202C8C1E6816C900C6D9AD /* ru */,
 				F7202C931E6817A400C6D9AD /* pl */,
+				F7BEC5431E7982330048500A /* pt-BR */,
+				F7BEC54C1E7983AF0048500A /* zh-Hans-CN */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
