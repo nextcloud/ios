@@ -1242,10 +1242,14 @@
     NSString *pushTokenHash = [parameter objectForKey:@"pushTokenHash"];
     NSString *devicePublicKey = [parameter objectForKey:@"devicePublicKey"];
     
+    // encode URL
+    devicePublicKey = [CCUtility URLEncodeStringFromString:devicePublicKey];
+    
     [communication subscribingNextcloudServerPush:_activeUrl pushTokenHash:pushTokenHash devicePublicKey:devicePublicKey onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *publicKey, NSString *deviceIdentifier, NSString *signature, NSString *redirectedServer) {
         
-        deviceIdentifier = [self URLEncodeStringFromString:deviceIdentifier];
-        signature = [self URLEncodeStringFromString:signature];
+        // encode URL
+        deviceIdentifier = [CCUtility URLEncodeStringFromString:deviceIdentifier];
+        signature = [CCUtility URLEncodeStringFromString:signature];
     
         [communication subscribingPushProxy:_push_notification_server_ pushToken:pushToken deviceIdentifier:deviceIdentifier deviceIdentifierSignature:signature userPublicKey:devicePublicKey onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *publicKey, NSString *deviceIdentifier, NSString *signature, NSString *redirectedServer) {
             
@@ -1409,18 +1413,6 @@
 
         [self complete];
     }];
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark =====  Utility =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (NSString *)URLEncodeStringFromString:(NSString *)string
-{
-    static CFStringRef charset = CFSTR("!@#$%&*()+'\";:=,/?[] ");
-    CFStringRef str = (__bridge CFStringRef)string;
-    CFStringEncoding encoding = kCFStringEncodingUTF8;
-    return (NSString *)CFBridgingRelease(CFURLCreateStringByAddingPercentEscapes(NULL, str, NULL, charset, encoding));
 }
 
 @end
