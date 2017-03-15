@@ -426,7 +426,7 @@
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
-#if defined(OPTION_NOTIFICATION_PUSH_ENABLE) || defined(DEBUG)
+#if defined(OPTION_NOTIFICATION_PUSH_ENABLE)
     
     NSString *pushToken = [[[[deviceToken description] stringByReplacingOccurrencesOfString: @"<" withString: @""] stringByReplacingOccurrencesOfString: @">" withString: @""] stringByReplacingOccurrencesOfString: @" " withString: @""];
     NSString *pushTokenHash = [[CCCrypto sharedManager] createSHA512:pushToken];
