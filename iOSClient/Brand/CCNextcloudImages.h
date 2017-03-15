@@ -28,4 +28,4 @@
 #define image_brandNavigationControllerOffline  @"nextcloud_navigationcontroller_offline"
 #define image_brandBackgroundLite               @"nextcloud_lite"
 
-#define image_Nextcloud                         @"typeCloudNextcloud"
+#define image_NextcloudMenuChangeAccount        @"typeCloudNextcloud"

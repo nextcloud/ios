@@ -3244,7 +3244,7 @@
         
         item.title = [record.account stringByTruncatingToWidth:self.view.bounds.size.width - 100 withFont:[UIFont systemFontOfSize:12.0] atEnd:YES];
         item.argument = record.account;
-        item.image = [UIImage imageNamed:image_Nextcloud];
+        item.image = [UIImage imageNamed:image_NextcloudMenuChangeAccount];
         item.target = self;
         item.action = @selector(changeDefaultAccount:);
         
