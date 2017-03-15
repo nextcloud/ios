@@ -420,6 +420,7 @@
 				en,
 				ru,
 				pl,
+				is,
 			);
 			mainGroup = EA7CC88E183E11E600B6A4B4;
 			productRefGroup = EA7CC898183E11E600B6A4B4 /* Products */;
