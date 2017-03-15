@@ -431,12 +431,12 @@
     NSString *pushToken = [[[[deviceToken description] stringByReplacingOccurrencesOfString: @"<" withString: @""] stringByReplacingOccurrencesOfString: @">" withString: @""] stringByReplacingOccurrencesOfString: @" " withString: @""];
     NSString *pushTokenHash = [[CCCrypto sharedManager] createSHA512:pushToken];
     
-    NSDictionary *keys = [NSDictionary dictionaryWithContentsOfFile:[[NSBundle mainBundle] pathForResource:k_nextcloudDevicePushKey ofType:@"plist"]];
+    NSDictionary *devicePushKey = [NSDictionary dictionaryWithContentsOfFile:[[NSBundle mainBundle] pathForResource:k_nextcloudDevicePushKey ofType:@"plist"]];
     
 #ifdef DEBUG
-    NSString *devicePublicKey = [keys objectForKey:@"devicePublicKeyDevelopment"];
+    NSString *devicePublicKey = [devicePushKey objectForKey:@"devicePublicKeyDevelopment"];
 #else
-    NSString *devicePublicKey = [keys objectForKey:@"devicePublicKeyProduction"];
+    NSString *devicePublicKey = [devicePushKey objectForKey:@"devicePublicKeyProduction"];
 #endif
     
     NSLog(@"DEVICE TOKEN = %@", pushToken);
