@@ -1244,12 +1244,10 @@
     
     [communication subscribingNextcloudServerPush:_activeUrl pushTokenHash:pushTokenHash devicePublicKey:devicePublicKey onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *publicKey, NSString *deviceIdentifier, NSString *signature, NSString *redirectedServer) {
         
-        static CFStringRef charset = CFSTR("!@#$%&*()+'\";:=,/?[] ");
-        CFStringRef str = (__bridge CFStringRef)publicKey;
-        CFStringEncoding encoding = kCFStringEncodingUTF8;
-        publicKey = (NSString *)CFBridgingRelease(CFURLCreateStringByAddingPercentEscapes(NULL, str, NULL, charset, encoding));
+        deviceIdentifier = [self URLEncodeStringFromString:deviceIdentifier];
+        signature = [self URLEncodeStringFromString:signature];
     
-        [communication subscribingPushProxy:_activeUrl pushToken:pushTokenHash deviceIdentifier:deviceIdentifier deviceIdentifierSignature:signature userPublicKey:devicePublicKey onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *publicKey, NSString *deviceIdentifier, NSString *signature, NSString *redirectedServer) {
+        [communication subscribingPushProxy:_push_notification_server_ pushToken:pushToken deviceIdentifier:deviceIdentifier deviceIdentifierSignature:signature userPublicKey:devicePublicKey onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *publicKey, NSString *deviceIdentifier, NSString *signature, NSString *redirectedServer) {
             
             NSLog(@"OK");
             

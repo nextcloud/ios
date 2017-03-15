@@ -21,10 +21,11 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#define _brand_                                         @"Nextcloud"
-#define _mail_me_                                       @"ios@nextcloud.com"
-#define _text_copyright_                                @"Nextcloud %@ © 2017 T.W.S. Inc."
-#define _login_base_url_                                @"https://cloud.twsweb.it"
+#define _brand_                         @"Nextcloud"
+#define _mail_me_                       @"ios@nextcloud.com"
+#define _text_copyright_                @"Nextcloud %@ © 2017 T.W.S. Inc."
+#define _login_base_url_                @"https://cloud.twsweb.it"
+#define _push_notification_server_      @"https://push-notifications.nextcloud.com"
 
 /* Define option compiler */
 
