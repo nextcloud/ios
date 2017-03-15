@@ -1253,18 +1253,32 @@
     
         [communication subscribingPushProxy:_push_notification_server_ pushToken:pushToken deviceIdentifier:deviceIdentifier deviceIdentifierSignature:signature userPublicKey:devicePublicKey onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *publicKey, NSString *deviceIdentifier, NSString *signature, NSString *redirectedServer) {
             
-            NSLog(@"OK");
+            NSLog(@"Service registered.");
             
             [self complete];
             
         } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
            
-            NSLog(@"error");
+#if !defined(EXTENSION) && defined(DEBUG)
+            [app messageNotification:@"Subscribing Nextcloud Server Proxy Push Error" description:[error.userInfo valueForKey:@"NSLocalizedDescription"] visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
+#endif
+
+            NSInteger errorCode = response.statusCode;
+            if (errorCode == 0)
+                errorCode = error.code;
             
+            // Request trusted certificated
+            if ([error code] == NSURLErrorServerCertificateUntrusted)
+                [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
+
             [self complete];
         }];
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+        
+#if !defined(EXTENSION) && defined(DEBUG)
+        [app messageNotification:@"Subscribing Nextcloud Server Push Error" description:[error.userInfo valueForKey:@"NSLocalizedDescription"] visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
+#endif
         
         NSInteger errorCode = response.statusCode;
         if (errorCode == 0)
