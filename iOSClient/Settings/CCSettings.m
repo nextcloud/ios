@@ -187,7 +187,7 @@
     
     section = [XLFormSectionDescriptor formSection];
     [form addFormSection:section];
-    section.footerTitle = [NSString stringWithFormat:NSLocalizedString(@"_favorite_folders_offline_footer_", nil), _brand_];
+    section.footerTitle = NSLocalizedString(@"_favorite_folders_offline_footer_", nil);
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"favoritefoldersoffline" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_favorite_folders_offline_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];

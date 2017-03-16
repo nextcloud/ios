@@ -138,7 +138,7 @@
 "_user_twitter_"            = "Twitter";
 "_quota_using_"             = "You are using %@ of %@";
 "_favorite_folders_offline_"           = "All favorite folders available offline";
-"_favorite_folders_offline_footer_"    = "Making all favorite folders available offline may take a long time with a high memory occupation. The sync will run at next start of %@";
+"_favorite_folders_offline_footer_"    = "Making all favorite folders available offline may take a long time with a high memory occupation.";
 
 // Manage Camera Upload
 
