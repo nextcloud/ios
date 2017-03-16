@@ -95,35 +95,8 @@
     //  setting version
     self.version = [CCUtility setVersionCryptoCloud];
     
-    // view how to if exists
-    //[self showIntro];
-    
     // init home
     [[NSNotificationCenter defaultCenter] postNotificationName:@"initializeMain" object:nil];
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Intro =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)showIntro
-{
-    BOOL isIntro = [CCUtility getIntro:self.version];
-    
-    // test
-    if (app.activeAccount.length > 0  && isIntro == NO) {
-        
-        //[self bannerHide];
-        
-        self.intro = [[CCIntro alloc] initWithDelegate:self delegateView:self.view];
-        
-        //[self.intro showIntroVersion:self.version duration:1.0 review:NO];
-    }
-}
-
-- (void)introDidFinish:(EAIntroView *)introView wasSkipped:(BOOL)wasSkipped
-{
-    [CCUtility setIntro:[CCUtility getVersionCryptoCloud]];
 }
 
 #pragma --------------------------------------------------------------------------------------------

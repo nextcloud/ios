@@ -70,6 +70,7 @@
     if (listAccount.count == 0) row.disabled = @YES;
     [section addFormRow:row];
 
+#ifndef OPTION_MULTIUSER_DISABLE
     // New Account nextcloud
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"addAccountNextcloud" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_add_nextcloud_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
@@ -78,6 +79,7 @@
     [row.cellConfig setObject:COLOR_BRAND forKey:@"textLabel.textColor"];
     row.action.formSelector = @selector(addAccount:);
     [section addFormRow:row];
+#endif
     
     // delete Account
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"delAccount" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_delete_account_", nil)];
