@@ -32,9 +32,6 @@ NSString *const appCertificates = @"Library/Application Support/Certificates";
 NSString *const webDAV = @"/remote.php/webdav";
 NSString *const dav = @"/remote.php/dav";
 
-// BKPasscode
-NSString *const BKPasscodeKeychainServiceName = @"Crypto Cloud";
-
 @implementation CCAspect
 
 + (void)aspectNavigationControllerBar:(UINavigationBar *)nav encrypted:(BOOL)encrypted online:(BOOL)online hidden:(BOOL)hidden

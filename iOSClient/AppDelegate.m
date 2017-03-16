@@ -431,7 +431,7 @@
     NSString *pushToken = [[[[deviceToken description] stringByReplacingOccurrencesOfString: @"<" withString: @""] stringByReplacingOccurrencesOfString: @">" withString: @""] stringByReplacingOccurrencesOfString: @" " withString: @""];
     NSString *pushTokenHash = [[CCCrypto sharedManager] createSHA512:pushToken];
     
-    NSDictionary *devicePushKey = [NSDictionary dictionaryWithContentsOfFile:[[NSBundle mainBundle] pathForResource:k_nextcloudDevicePushKey ofType:@"plist"]];
+    NSDictionary *devicePushKey = [NSDictionary dictionaryWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"DevicePushKey-Info" ofType:@"plist"]];
     
 #ifdef DEBUG
     NSString *devicePublicKey = [devicePushKey objectForKey:@"devicePublicKeyDevelopment"];
@@ -970,7 +970,7 @@
         viewController.passcodeInputView.maximumLength = 64;
     }
 
-    viewController.touchIDManager = [[BKTouchIDManager alloc] initWithKeychainServiceName:BKPasscodeKeychainServiceName];
+    viewController.touchIDManager = [[BKTouchIDManager alloc] initWithKeychainServiceName: k_serviceShareKeyChain];
     viewController.touchIDManager.promptText = [CCUtility localizableBrand:@"_scan_fingerprint_" table:nil];
 
     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];

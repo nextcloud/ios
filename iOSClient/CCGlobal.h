@@ -44,8 +44,6 @@ extern NSString *const appSecretCryptoCloud;
 extern NSString *const urlBaseDownloadDB;
 extern NSString *const urlBaseUploadDB;
 
-extern NSString *const BKPasscodeKeychainServiceName;
-
 #ifndef EXTENSION
 
 //AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
@@ -104,15 +102,6 @@ extern NSString *const BKPasscodeKeychainServiceName;
 #define k_permission_can_rename                         @"N"
 #define k_permission_can_move                           @"V"
 
-// Session
-#define k_download_session                              @"it.twsweb.download.session"
-#define k_download_session_foreground                   @"it.twsweb.download.sessionforeground"
-#define k_download_session_wwan                         @"it.twsweb.download.sessionwwan"
-
-#define k_upload_session                                @"it.twsweb.upload.session"
-#define k_upload_session_foreground                     @"it.twsweb.upload.sessionforeground"
-#define k_upload_session_wwan                           @"it.twsweb.upload.sessionwwan"
-
 #define k_networkingSessionNotification                 @"networkingSessionNotification"
 
 // TaskIdentifier
@@ -128,13 +117,6 @@ extern NSString *const BKPasscodeKeychainServiceName;
 #define k_taskStatusSuspend                             -3
 
 #define k_timerVerifySession                            15.0
-
-// OperationQueue
-#define k_netQueueName                                  @"it.twsweb.cryptocloud.queue"
-#define k_netQueueDownloadName                          @"it.twsweb.cryptocloud.queueDownload"
-#define k_netQueueDownloadWWanName                      @"it.twsweb.cryptocloud.queueDownloadWWan"
-#define k_netQueueUploadName                            @"it.twsweb.cryptocloud.queueUpload"
-#define k_netQueueUploadWWanName                        @"it.twsweb.cryptocloud.queueUploadWWan"
 
 #define k_maxConcurrentOperation                        10
 #define k_maxConcurrentOperationDownloadUpload          10
@@ -261,9 +243,6 @@ extern NSString *const BKPasscodeKeychainServiceName;
 
 // Search
 #define k_minCharsSearch                                2
-
-// Nextcloud Plist Key Push Service
-#define k_nextcloudDevicePushKey                        @"DevicePushKey-Info"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -33,6 +33,21 @@
 #define k_serviceShareKeyChain          @"Crypto Cloud"
 #define k_metadataKeyedUnarchiver       @"it.twsweb.Crypto-Cloud.metadata"
 
+// Session
+#define k_download_session              @"it.twsweb.download.session"
+#define k_download_session_foreground   @"it.twsweb.download.sessionforeground"
+#define k_download_session_wwan         @"it.twsweb.download.sessionwwan"
+#define k_upload_session                @"it.twsweb.upload.session"
+#define k_upload_session_foreground     @"it.twsweb.upload.sessionforeground"
+#define k_upload_session_wwan           @"it.twsweb.upload.sessionwwan"
+
+// OperationQueue
+#define k_netQueueName                  @"it.twsweb.cryptocloud.queue"
+#define k_netQueueDownloadName          @"it.twsweb.cryptocloud.queueDownload"
+#define k_netQueueDownloadWWanName      @"it.twsweb.cryptocloud.queueDownloadWWan"
+#define k_netQueueUploadName            @"it.twsweb.cryptocloud.queueUpload"
+#define k_netQueueUploadWWanName        @"it.twsweb.cryptocloud.queueUploadWWan"
+
 /* Define option compiler */
 
 /*

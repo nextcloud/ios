@@ -567,7 +567,7 @@
         viewController.passcodeInputView.maximumLength = 64;
     }
     
-    BKTouchIDManager *touchIDManager = [[BKTouchIDManager alloc] initWithKeychainServiceName:BKPasscodeKeychainServiceName];
+    BKTouchIDManager *touchIDManager = [[BKTouchIDManager alloc] initWithKeychainServiceName:k_serviceShareKeyChain];
     touchIDManager.promptText = NSLocalizedString(@"_scan_fingerprint_", nil);
     viewController.touchIDManager = touchIDManager;
     
@@ -600,7 +600,7 @@
             viewController.passcodeInputView.maximumLength = 64;
         }
         
-        BKTouchIDManager *touchIDManager = [[BKTouchIDManager alloc] initWithKeychainServiceName:BKPasscodeKeychainServiceName];
+        BKTouchIDManager *touchIDManager = [[BKTouchIDManager alloc] initWithKeychainServiceName:k_serviceShareKeyChain];
         touchIDManager.promptText = NSLocalizedString(@"_scan_fingerprint_", nil);
         viewController.touchIDManager = touchIDManager;
 
@@ -632,7 +632,7 @@
             viewController.passcodeInputView.maximumLength = 64;
         }
         
-        BKTouchIDManager *touchIDManager = [[BKTouchIDManager alloc] initWithKeychainServiceName:BKPasscodeKeychainServiceName];
+        BKTouchIDManager *touchIDManager = [[BKTouchIDManager alloc] initWithKeychainServiceName:k_serviceShareKeyChain];
         touchIDManager.promptText = NSLocalizedString(@"_scan_fingerprint_", nil);
         viewController.touchIDManager = touchIDManager;
         

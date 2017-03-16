@@ -613,7 +613,7 @@ extension DocumentPickerViewController {
             viewController.passcodeInputView.maximumLength = 64
         }
         
-        let touchIDManager = BKTouchIDManager.init(keychainServiceName: BKPasscodeKeychainServiceName)
+        let touchIDManager = BKTouchIDManager.init(keychainServiceName: k_serviceShareKeyChain)
         touchIDManager?.promptText = NSLocalizedString("_scan_fingerprint_", comment: "")
         viewController.touchIDManager = touchIDManager
         viewController.title = title
