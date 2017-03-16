@@ -944,8 +944,6 @@
     if ([[CCUtility getBlockCode] length] == 0) return NO;
     // se non c'è attivo un account esci con NON attivare la richiesta password
     if ([self.activeAccount length] == 0) return NO;
-    // se non c'è il passcode esci con NON attivare la richiesta password
-    if ([[CCUtility getKeyChainPasscodeForUUID:[CCUtility getUUID]] length] == 0) return NO;
     // se non è attivo il OnlyLockDir esci con NON attivare la richiesta password
     if ([CCUtility getOnlyLockDir] && ![CCCoreData isBlockZone:serverUrl activeAccount:self.activeAccount]) return NO;
         
