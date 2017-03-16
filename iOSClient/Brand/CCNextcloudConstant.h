@@ -31,7 +31,7 @@
 // Capabilities Group & Service Key Share
 #define k_capabilitiesGroups            @"group.it.twsweb.Crypto-Cloud"
 #define k_serviceShareKeyChain          @"Crypto Cloud"
-#define k_metadataKeyedUnarchiver       @"it.twsweb.Crypto-Cloud.CCMetadata"
+#define k_metadataKeyedUnarchiver       @"it.twsweb.Crypto-Cloud.metadata"
 
 /* Define option compiler */
 
