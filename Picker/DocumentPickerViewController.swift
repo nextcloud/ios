@@ -186,7 +186,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         }
         
         if CCUtility.getOnlyLockDir() == false && parameterPasscodeCorrect == false {
-            openBKPasscode("Nextcloud")
+            openBKPasscode(_brand_)
         }
     }
     

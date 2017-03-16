@@ -1260,7 +1260,7 @@
         } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
            
 #if !defined(EXTENSION) && defined(DEBUG)
-            [app messageNotification:@"Subscribing Nextcloud Server Proxy Push Error" description:[error.userInfo valueForKey:@"NSLocalizedDescription"] visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
+            [app messageNotification:@"Subscribing Server Proxy Push Error" description:[error.userInfo valueForKey:@"NSLocalizedDescription"] visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
 #endif
 
             NSInteger errorCode = response.statusCode;
@@ -1277,7 +1277,7 @@
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
 #if !defined(EXTENSION) && defined(DEBUG)
-        [app messageNotification:@"Subscribing Nextcloud Server Push Error" description:[error.userInfo valueForKey:@"NSLocalizedDescription"] visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
+        [app messageNotification:@"Subscribing Server Push Error" description:[error.userInfo valueForKey:@"NSLocalizedDescription"] visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
 #endif
         
         NSInteger errorCode = response.statusCode;

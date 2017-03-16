@@ -75,7 +75,7 @@
                                     <constraint firstAttribute="width" constant="25" id="glL-CW-aF0"/>
                                 </constraints>
                             </imageView>
-                            <textField opaque="NO" clipsSubviews="YES" tag="1" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="https://nextcloud.yourdomain.com" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="szn-G7-5sK">
+                            <textField opaque="NO" clipsSubviews="YES" tag="1" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="https://www.yourdomain.com" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="szn-G7-5sK">
                                 <rect key="frame" x="50" y="158" width="273" height="30"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="30" id="I2v-Zr-IWf"/>

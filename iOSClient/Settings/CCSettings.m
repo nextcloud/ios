@@ -697,7 +697,7 @@
     // Email Recipents
     NSArray *toRecipents;
     
-    messageBody = [NSString stringWithFormat:@"\n\n\nNextcloud Version %@ (%@)", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"], [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
+    messageBody = [NSString stringWithFormat:@"\n\n\n%@ Version %@ (%@)", _brand_,[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"], [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
     toRecipents = [NSArray arrayWithObject:_mail_me_];
     
     MFMailComposeViewController *mc = [[MFMailComposeViewController alloc] init];
