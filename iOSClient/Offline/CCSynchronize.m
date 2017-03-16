@@ -78,13 +78,19 @@
 - (void)addFavoriteFolder:(NSString *)serverUrl
 {
     NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:app.activeAccount];
-    
+    NSString *selector;
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
     
     metadataNet.action = actionReadFolder;
     metadataNet.directoryID = directoryID;
     metadataNet.priority = NSOperationQueuePriorityNormal;
-    metadataNet.selector = selectorReadFolder;
+    
+    if ([CCUtility getFavoriteFoldersOffline])
+        selector = selectorReadFolder;
+    else
+        selector = selectorReadFolderRefresh;
+    
+    metadataNet.selector = selector;
     metadataNet.serverUrl = serverUrl;
     
     [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
@@ -130,7 +136,14 @@
             if (metadata.directory) {
                 
                 NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:app.activeAccount];
-                [self readFolderServerUrl:serverUrl directoryID:directoryID selector:selectorReadFolder];
+                NSString *selector;
+                
+                if ([CCUtility getFavoriteFoldersOffline])
+                    selector = selectorReadFolder;
+                else
+                    selector = selectorReadFolderRefresh;
+                
+                [self readFolderServerUrl:serverUrl directoryID:directoryID selector:selector];
                 
             } else {
                 

@@ -82,6 +82,8 @@
 
 + (void)setCreateMenuEncrypted:(BOOL)encrypted;
 
++ (void)setFavoriteFoldersOffline:(BOOL)encrypted;
+
 // GET
 
 + (NSString *)getKeyChainPasscodeForUUID:(NSString *)uuid;
@@ -118,6 +120,8 @@
 + (NSString *)getFileNameMask:(NSString *)key;
 
 + (BOOL)getCreateMenuEncrypted;
+
++ (BOOL)getFavoriteFoldersOffline;
 
 // ===== Varius =====
 

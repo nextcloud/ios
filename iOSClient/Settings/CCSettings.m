@@ -161,7 +161,6 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
     [section addFormRow:row];
 
-    
     // Section AUTOMATIC UPLOAD OF CAMERA IMAGES ----------------------------
     
     section = [XLFormSectionDescriptor formSection];
@@ -182,6 +181,16 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:[UIImage imageNamed:image_settingsOptimizations] forKey:@"imageView.image"];
     row.action.formSegueIdentifier = @"CCManageOptimizationsSegue";
+    [section addFormRow:row];
+
+    // Section FOLDERS FAVORITES OFFLINE ------------------------------------
+    
+    section = [XLFormSectionDescriptor formSection];
+    [form addFormSection:section];
+    section.footerTitle = [NSString stringWithFormat:NSLocalizedString(@"_favorite_folders_offline_footer_", nil), _brand_];
+    
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"favoritefoldersoffline" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_favorite_folders_offline_", nil)];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
 
 #ifndef OPTION_CRYPTO_CLOUD_SYSTEM_DISABLE
@@ -384,7 +393,8 @@
     XLFormRowDescriptor *rowBloccoPasscode = [self.form formRowWithTag:@"bloccopasscode"];
     XLFormRowDescriptor *rowSimplyPasscode = [self.form formRowWithTag:@"simplypasscode"];
     XLFormRowDescriptor *rowOnlyLockDir = [self.form formRowWithTag:@"onlylockdir"];
-    
+    XLFormRowDescriptor *rowFavoriteFoldersOffline = [self.form formRowWithTag:@"favoritefoldersoffline"];
+
     XLFormRowDescriptor *rowVersionServer = [self.form formRowWithTag:@"versionserver"];
     XLFormRowDescriptor *rowUrlCloud = [self.form formRowWithTag:@"urlcloud"];
     XLFormRowDescriptor *rowUserNameCloud = [self.form formRowWithTag:@"usernamecloud"];
@@ -412,6 +422,7 @@
     
     if ([CCUtility getSimplyBlockCode]) [rowSimplyPasscode setValue:@1]; else [rowSimplyPasscode setValue:@0];
     if ([CCUtility getOnlyLockDir]) [rowOnlyLockDir setValue:@1]; else [rowOnlyLockDir setValue:@0];
+    if ([CCUtility getFavoriteFoldersOffline]) [rowFavoriteFoldersOffline setValue:@1]; else [rowFavoriteFoldersOffline setValue:@0];
     
     // Avatar
     UIImage *avatar = [[UIImage alloc] initWithContentsOfFile:[NSString stringWithFormat:@"%@/avatar.png", app.directoryUser]];
@@ -506,6 +517,16 @@
         else
             [self changeSimplyPassword];
     }
+    
+    if ([rowDescriptor.tag isEqualToString:@"favoritefoldersoffline"]) {
+        
+        if ([[rowDescriptor.value valueData] boolValue] == YES) {
+            [CCUtility setFavoriteFoldersOffline:true];
+        } else {
+            [CCUtility setFavoriteFoldersOffline:false];
+        }
+    }
+
 }
 
 - (void)checkEncryptPass:(XLFormRowDescriptor *)sender

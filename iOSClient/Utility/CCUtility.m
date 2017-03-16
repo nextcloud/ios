@@ -189,6 +189,13 @@
     [UICKeyChainStore setString:sEncrypted forKey:@"createMenuEncrypted" service:k_serviceShareKeyChain];
 }
 
++ (void)setFavoriteFoldersOffline:(BOOL)encrypted
+{
+    NSString *sFavoriteFoldersOffline = (encrypted) ? @"true" : @"false";
+    [UICKeyChainStore setString:sFavoriteFoldersOffline forKey:@"favoriteFolderOffline" service:k_serviceShareKeyChain];
+}
+
+
 #pragma ------------------------------ GET
 
 + (NSString *)getKeyChainPasscodeForUUID:(NSString *)uuid
@@ -361,6 +368,11 @@
 + (BOOL)getCreateMenuEncrypted
 {
     return [[UICKeyChainStore stringForKey:@"createMenuEncrypted" service:k_serviceShareKeyChain] boolValue];
+}
+
++ (BOOL)getFavoriteFoldersOffline
+{
+    return [[UICKeyChainStore stringForKey:@"favoriteFolderOffline" service:k_serviceShareKeyChain] boolValue];
 }
 
 #pragma --------------------------------------------------------------------------------------------
