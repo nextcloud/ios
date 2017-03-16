@@ -281,7 +281,7 @@
     
     LMMediaItem *item = [[LMMediaItem alloc] initWithInfo:@{LMMediaItemInfoURLKey:[NSURL fileURLWithPath:fileName], LMMediaItemInfoContentTypeKey:@(LMMediaItemContentTypeVideo)}];
     item.title = self.metadataDetail.fileNamePrint;
-    item.artist = _brand_;
+    item.artist = k_brand;
     
     [app.player.mediaPlayer removeAllMediaInQueue];
     [app.player.mediaPlayer addMedia:item];

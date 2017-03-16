@@ -42,7 +42,7 @@
     self.imageBrand.image = [UIImage imageNamed:image_brandLogin];
     
 #ifdef NO_REQUEST_LOGIN_URL
-    _baseUrl.text = _login_base_url_;
+    _baseUrl.text = k_loginBaseUrl;
     _imageBaseUrl.hidden = YES;
     _baseUrl.hidden = YES;
 #endif

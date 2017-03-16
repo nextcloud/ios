@@ -3956,11 +3956,11 @@
         
         if ([items count] == 1) {
             
-            // key : it.twsweb.Crypto-Cloud.CCMetadata      Value : (NSData) metadata
+            // Value : (NSData) metadata
             
             NSDictionary *dic = [items objectAtIndex:0];
             
-            NSData *dataMetadata = [dic objectForKey:@"it.twsweb.Crypto-Cloud.CCMetadata"];
+            NSData *dataMetadata = [dic objectForKey: k_metadataKeyedUnarchiver];
             CCMetadata *metadata = [NSKeyedUnarchiver unarchiveObjectWithData:dataMetadata];
             
             TableAccount *account = [CCCoreData getTableAccountFromAccount:metadata.account];
@@ -3987,9 +3987,9 @@
         
         for (NSDictionary *dic in items) {
             
-            // key : it.twsweb.Crypto-Cloud.CCMetadata      Value : (NSData) metadata
+            // Value : (NSData) metadata
             
-            NSData *dataMetadata = [dic objectForKey:@"it.twsweb.Crypto-Cloud.CCMetadata"];
+            NSData *dataMetadata = [dic objectForKey: k_metadataKeyedUnarchiver];
             CCMetadata *metadata = [NSKeyedUnarchiver unarchiveObjectWithData:dataMetadata];
             
             TableAccount *account = [CCCoreData getTableAccountFromAccount:metadata.account];
@@ -4057,9 +4057,9 @@
     UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
     NSMutableArray *items = [[NSMutableArray alloc] initWithArray:pasteboard.items];
     
-    // key : it.twsweb.Crypto-Cloud.CCMetadata      Value : (NSData) metadata
+    // Value : (NSData) metadata
     
-    NSDictionary *item = [NSDictionary dictionaryWithObjectsAndKeys:[NSKeyedArchiver archivedDataWithRootObject:metadata], @"it.twsweb.Crypto-Cloud.CCMetadata",nil];
+    NSDictionary *item = [NSDictionary dictionaryWithObjectsAndKeys:[NSKeyedArchiver archivedDataWithRootObject:metadata], k_metadataKeyedUnarchiver,nil];
     [items addObject:item];
     
     [pasteboard setItems:items];
@@ -4102,10 +4102,9 @@
 {
     for (NSDictionary *dic in items) {
         
-        // key   : it.twsweb.Crypto-Cloud.CCMetadata
         // Value : (NSData) metadata
         
-        NSData *dataMetadata = [dic objectForKey:@"it.twsweb.Crypto-Cloud.CCMetadata"];
+        NSData *dataMetadata = [dic objectForKey: k_metadataKeyedUnarchiver];
         CCMetadata *metadata = [NSKeyedUnarchiver unarchiveObjectWithData:dataMetadata];
             
         TableAccount *account = [CCCoreData getTableAccountFromAccount:metadata.account];
@@ -5698,7 +5697,7 @@
         viewController.type = BKPasscodeViewControllerCheckPasscodeType;
         viewController.inputViewTitlePassword = NO;
         
-        viewController.title = _brand_;
+        viewController.title = k_brand;
         viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
         viewController.navigationItem.leftBarButtonItem.tintColor = COLOR_CRYPTOCLOUD;
 

@@ -60,10 +60,6 @@ extern NSString *const BKPasscodeKeychainServiceName;
 // UUID
 #define k_UUID_SIM                                      @"4BACFE4A-61A6-44B1-9A85-13FD167565AB"
 
-// Capabilities Group & Service Key Share
-#define k_capabilitiesGroups                            @"group.it.twsweb.Crypto-Cloud"
-#define k_serviceShareKeyChain                          @"Crypto Cloud"
-
 #define k_dismissAfterSecond                            4
 
 #define k_MaxDimensionUpload                            524288000       // 500 MB

@@ -955,7 +955,7 @@
     CCBKPasscode *viewController = [[CCBKPasscode alloc] initWithNibName:nil bundle:nil];
     viewController.type = BKPasscodeViewControllerCheckPasscodeType;
     viewController.delegate = self;
-    viewController.title = _brand_;
+    viewController.title = k_brand;
     viewController.fromType = CCBKPasscodeFromLockScreen;
     viewController.inputViewTitlePassword = YES;
     

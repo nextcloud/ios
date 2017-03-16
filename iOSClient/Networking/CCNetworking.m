@@ -1394,9 +1394,9 @@
             if(result.count){
                 asset = result[0];
                 
-                [asset saveToAlbum:_brand_ completionBlock:^(BOOL success) {
-                    if (success) NSLog(@"[LOG] Insert file %@ in %@", metadata.fileNamePrint, _brand_);
-                    else NSLog(@"[LOG] File %@ do not insert in %@", metadata.fileNamePrint, _brand_);
+                [asset saveToAlbum:k_brand completionBlock:^(BOOL success) {
+                    if (success) NSLog(@"[LOG] Insert file %@ in %@", metadata.fileNamePrint, k_brand);
+                    else NSLog(@"[LOG] File %@ do not insert in %@", metadata.fileNamePrint, k_brand);
                 }];
             }
         }

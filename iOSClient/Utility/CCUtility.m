@@ -729,8 +729,8 @@
     else
         translate = NSLocalizedString(localize, nil);
     
-    translate = [translate stringByReplacingOccurrencesOfString:@"_brand_" withString:_brand_];
-    translate = [translate stringByReplacingOccurrencesOfString:@"_mail_me_" withString:_mail_me_];
+    translate = [translate stringByReplacingOccurrencesOfString:@"_brand_" withString:k_brand];
+    translate = [translate stringByReplacingOccurrencesOfString:@"_mail_me_" withString:k_mailMe];
     
     return translate;
 }

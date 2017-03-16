@@ -186,7 +186,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         }
         
         if CCUtility.getOnlyLockDir() == false && parameterPasscodeCorrect == false {
-            openBKPasscode(_brand_)
+            openBKPasscode(k_brand)
         }
     }
     
