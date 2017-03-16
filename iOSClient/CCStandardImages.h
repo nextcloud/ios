@@ -130,6 +130,7 @@
 #define image_settingsClearCache                @"settingsClearCache"
 #define image_settingsCredentials               @"settingsCredentials"
 #define image_settingsCryptoCloud               @"settingsCryptoCloud"
+#define image_settingsFavoriteFoldersOffline    @"settingsFavoriteFoldersOffline"
 #define image_settingsRemoveCryptoCloud         @"settingsRemoveCryptoCloud"
 #define image_settingsExit                      @"settingsExit"
 #define image_settingsHelp                      @"settingsHelp"

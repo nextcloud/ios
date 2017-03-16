@@ -190,6 +190,7 @@
     section.footerTitle = NSLocalizedString(@"_favorite_folders_offline_footer_", nil);
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"favoritefoldersoffline" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_favorite_folders_offline_", nil)];
+    [row.cellConfig setObject:[UIImage imageNamed:image_settingsFavoriteFoldersOffline] forKey:@"imageView.image"];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
 
