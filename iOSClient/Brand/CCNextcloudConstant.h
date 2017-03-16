@@ -34,19 +34,19 @@
 #define k_metadataKeyedUnarchiver       @"it.twsweb.Crypto-Cloud.metadata"
 
 // Session
-#define k_download_session              @"it.twsweb.download.session"
-#define k_download_session_foreground   @"it.twsweb.download.sessionforeground"
-#define k_download_session_wwan         @"it.twsweb.download.sessionwwan"
-#define k_upload_session                @"it.twsweb.upload.session"
-#define k_upload_session_foreground     @"it.twsweb.upload.sessionforeground"
-#define k_upload_session_wwan           @"it.twsweb.upload.sessionwwan"
+#define k_download_session              @"it.twsweb.Crypto-Cloud.download.session"
+#define k_download_session_foreground   @"it.twsweb.Crypto-Cloud.download.sessionforeground"
+#define k_download_session_wwan         @"it.twsweb.Crypto-Cloud.download.sessionwwan"
+#define k_upload_session                @"it.twsweb.Crypto-Cloud.upload.session"
+#define k_upload_session_foreground     @"it.twsweb.Crypto-Cloud.upload.sessionforeground"
+#define k_upload_session_wwan           @"it.twsweb.Crypto-Cloud.upload.sessionwwan"
 
 // OperationQueue
-#define k_netQueueName                  @"it.twsweb.cryptocloud.queue"
-#define k_netQueueDownloadName          @"it.twsweb.cryptocloud.queueDownload"
-#define k_netQueueDownloadWWanName      @"it.twsweb.cryptocloud.queueDownloadWWan"
-#define k_netQueueUploadName            @"it.twsweb.cryptocloud.queueUpload"
-#define k_netQueueUploadWWanName        @"it.twsweb.cryptocloud.queueUploadWWan"
+#define k_netQueueName                  @"it.twsweb.Crypto-Cloud.queue"
+#define k_netQueueDownloadName          @"it.twsweb.Crypto-Cloud.queue.download"
+#define k_netQueueDownloadWWanName      @"it.twsweb.Crypto-Cloud.queue.downloadwwan"
+#define k_netQueueUploadName            @"it.twsweb.Crypto-Cloud.queue.upload"
+#define k_netQueueUploadWWanName        @"it.twsweb.Crypto-Cloud.queue.uploadwwan"
 
 /* Define option compiler */
 
