@@ -457,7 +457,7 @@
             
         } else {
             
-            if (record && ![record.rev isEqualToString:metadata.rev])
+            if (record && ![record.rev isEqualToString:metadata.rev]) // it must be in TableRecord
                 changeRev = YES;
         }
         
