@@ -231,7 +231,7 @@
 - (void)downloadThumbnailSuccess:(CCMetadataNet *)metadataNet
 {
     // i am in Favorites
-    if ([_pageType isEqualToString:k_pageOfflineFavorites])
+    if ([_pageType isEqualToString:k_pageOfflineFavorites] || [_pageType isEqualToString:k_pageOfflineOffline])
         [self reloadDatasource];
 }
 
@@ -594,6 +594,9 @@
         
         if (_serverUrl == nil)
             cell.offlineImageView.image = [UIImage imageNamed:image_offline];
+        
+        if (cell.fileImageView.image == nil && metadata.thumbnailExists)
+            [[CCActions sharedInstance] downloadTumbnail:metadata delegate:self];
     }
     
     // i am in local
