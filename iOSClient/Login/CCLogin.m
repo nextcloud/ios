@@ -40,6 +40,7 @@
     [super viewDidLoad];
     
     self.imageBrand.image = [UIImage imageNamed:image_brandLogin];
+    self.login.backgroundColor = COLOR_BRAND;
     
 #ifdef NO_REQUEST_LOGIN_URL
     _baseUrl.text = k_loginBaseUrl;
