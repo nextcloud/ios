@@ -1072,7 +1072,7 @@
         NSPredicate *predicate;
         
         if ([serverUrl length] > 0)
-             predicate = [NSPredicate predicateWithFormat:@"(serverUrl == %@) AND (account == %@)", serverUrl, activeAccount];
+            predicate = [NSPredicate predicateWithFormat:@"(serverUrl == %@) AND (account == %@)", serverUrl, activeAccount];
         
         if ([directoryID length] > 0)
             predicate = [NSPredicate predicateWithFormat:@"(directoryID == %@) AND (account == %@)", directoryID, activeAccount];

@@ -225,6 +225,17 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
+#pragma mark ==== Download Thumbnail Delegate ====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)downloadThumbnailSuccess:(CCMetadataNet *)metadataNet
+{
+    // i am in Favorites
+    if ([_pageType isEqualToString:k_pageOfflineFavorites])
+        [self reloadDatasource];
+}
+
+#pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== menu =====
 #pragma--------------------------------------------------------------------------------------------
 
@@ -570,6 +581,9 @@
         
         if (_serverUrl == nil)
             cell.offlineImageView.image = [UIImage imageNamed:image_favorite];
+        
+        if (cell.fileImageView.image == nil && metadata.thumbnailExists)
+            [[CCActions sharedInstance] downloadTumbnail:metadata delegate:self];
     }
 
     // i am in Offline

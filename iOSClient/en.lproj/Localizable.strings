@@ -58,6 +58,8 @@
 "_postpone_"                = "Postpone";
 "_remove_"                  = "Remove";
 "_file_not_found_"          = "File not found";
+"_confirm_"                 = "Confirm";
+"_continue_"                = "Do you want to continue ?";
 
 // App
 

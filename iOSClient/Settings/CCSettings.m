@@ -522,24 +522,24 @@
         
         if ([[rowDescriptor.value valueData] boolValue] == YES) {
             
-            [CCUtility setFavoriteFoldersOffline:true];
+            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_confirm_", nil) message:NSLocalizedString(@"_continue_", nil) preferredStyle:UIAlertControllerStyleActionSheet];
             
-            NSArray *recordsTableMetadata = [CCCoreData  getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (favorite == 1)", app.activeAccount] context:nil];
-            NSMutableSet *directoriesID = [NSMutableSet new];
+            [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
+                [CCUtility setFavoriteFoldersOffline:true];
+                [self synchronizeFavorites];
+            }]];
             
-            for (TableMetadata *record in recordsTableMetadata)
-                [directoriesID addObject:record.directoryID];
+            [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
+                [self reloadForm];
+            }]];
             
-            for (NSString *directoryID in directoriesID)
-                [CCCoreData clearDateReadAccount:app.activeAccount serverUrl:nil directoryID:directoryID];
-            
-            [[CCSynchronize sharedSynchronize] readListingFavorites];
-            
+            [self presentViewController:alertController animated:YES completion:nil];
+
         } else {
+            
             [CCUtility setFavoriteFoldersOffline:false];
         }
     }
-
 }
 
 - (void)checkEncryptPass:(XLFormRowDescriptor *)sender
@@ -690,6 +690,29 @@
 - (void)quota:(XLFormRowDescriptor *)sender
 {
     [self deselectFormRow:sender];
+}
+
+- (void)synchronizeFavorites
+{
+    NSArray *recordsTableMetadata = [CCCoreData  getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (favorite == 1)", app.activeAccount] context:nil];
+    
+    for (TableMetadata *record in recordsTableMetadata) {
+        
+        if (!record.directoryID)
+            continue;
+        
+        NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:record.directoryID activeAccount:app.activeAccount];
+        serverUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:record.fileNamePrint];
+        
+        NSArray *TableDirectories = [CCCoreData getDirectoryIDsFromBeginsWithServerUrl:serverUrl activeAccount:app.activeAccount];
+        
+        for (TableDirectory *tableDirecory in TableDirectories) {
+            NSLog(@"%@", tableDirecory.serverUrl);
+            [CCCoreData clearDateReadAccount:app.activeAccount serverUrl:nil directoryID:tableDirecory.directoryID];
+        }
+    }
+    
+    [[CCSynchronize sharedSynchronize] readListingFavorites];
 }
 
 #pragma --------------------------------------------------------------------------------------------
