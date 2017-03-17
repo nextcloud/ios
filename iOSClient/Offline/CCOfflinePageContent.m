@@ -42,7 +42,6 @@
 
 - (void)viewDidLoad
 {
-    
     [super viewDidLoad];
     
     // Custom Cell
@@ -61,17 +60,14 @@
     self.tableView.allowsMultipleSelectionDuringEditing = NO;
     
     // calculate _serverUrl
-    if ([self.pageType isEqualToString:k_pageOfflineFavorites] && !_serverUrl) {
+    if ([self.pageType isEqualToString:k_pageOfflineFavorites] && !_serverUrl)
         _serverUrl = nil;
-    }
     
-    if ([self.pageType isEqualToString:k_pageOfflineOffline] && !_serverUrl) {
+    if ([self.pageType isEqualToString:k_pageOfflineOffline] && !_serverUrl)
         _serverUrl = nil;
-    }
     
-    if ([self.pageType isEqualToString:k_pageOfflineLocal] && !_serverUrl) {
+    if ([self.pageType isEqualToString:k_pageOfflineLocal] && !_serverUrl)
         _serverUrl = [CCUtility getDirectoryLocal];
-    }
     
     // Title & color
     self.title = _titleViewControl;
@@ -145,10 +141,7 @@
 {
     NSString *text;
     
-    if ([self.pageType isEqualToString:k_pageOfflineFavorites])
-        text = [NSString stringWithFormat:@"%@", @""];
-    
-    if ([self.pageType isEqualToString:k_pageOfflineOffline])
+    if ([self.pageType isEqualToString:k_pageOfflineFavorites] || [self.pageType isEqualToString:k_pageOfflineOffline])
         text = [NSString stringWithFormat:@"%@", @""];
     
     if ([self.pageType isEqualToString:k_pageOfflineLocal])
@@ -453,17 +446,12 @@
 {
     CCMetadata *metadata;
     
-    if ([_pageType isEqualToString:k_pageOfflineFavorites]) {
-        NSManagedObject *record = [dataSource objectAtIndex:indexPath.row];
-        metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", [record valueForKey:@"fileID"], app.activeAccount] context:nil];
-    }
-    
-    if ([_pageType isEqualToString:k_pageOfflineOffline]) {
+    if ([_pageType isEqualToString:k_pageOfflineFavorites] || [_pageType isEqualToString:k_pageOfflineOffline]) {
         
         NSManagedObject *record = [dataSource objectAtIndex:indexPath.row];
         metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", [record valueForKey:@"fileID"], app.activeAccount] context:nil];
     }
-    
+
     if ([_pageType isEqualToString:k_pageOfflineLocal]) {
         
         NSString *cameraFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:app.activeAccount];
@@ -574,32 +562,25 @@
     selectionColor.backgroundColor = COLOR_SELECT_BACKGROUND;
     cell.selectedBackgroundView = selectionColor;
     
-    // i am in Favorites
-    if ([_pageType isEqualToString:k_pageOfflineFavorites]) {
+    // i am in Favorites OR i am in Offline
+    if ([_pageType isEqualToString:k_pageOfflineFavorites] || [_pageType isEqualToString:k_pageOfflineOffline]) {
         
         metadata = [dataSource objectAtIndex:indexPath.row];
+        
         cell.fileImageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]];
         
-        if (_serverUrl == nil)
-            cell.offlineImageView.image = [UIImage imageNamed:image_favorite];
+        if (_serverUrl == nil) {
+            
+            if ([_pageType isEqualToString:k_pageOfflineFavorites])
+                cell.offlineImageView.image = [UIImage imageNamed:image_favorite];
+            if ([_pageType isEqualToString:k_pageOfflineOffline])
+                cell.offlineImageView.image = [UIImage imageNamed:image_offline];
+        }
         
         if (cell.fileImageView.image == nil && metadata.thumbnailExists)
             [[CCActions sharedInstance] downloadTumbnail:metadata delegate:self];
     }
 
-    // i am in Offline
-    if ([_pageType isEqualToString:k_pageOfflineOffline]) {
-        
-        metadata = [dataSource objectAtIndex:indexPath.row];
-        cell.fileImageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]];
-        
-        if (_serverUrl == nil)
-            cell.offlineImageView.image = [UIImage imageNamed:image_offline];
-        
-        if (cell.fileImageView.image == nil && metadata.thumbnailExists)
-            [[CCActions sharedInstance] downloadTumbnail:metadata delegate:self];
-    }
-    
     // i am in local
     if ([_pageType isEqualToString:k_pageOfflineLocal]) {
         
@@ -686,17 +667,32 @@
     _metadata = [self setSelfMetadataFromIndexPath:indexPath];
     
     // if is in download [do not touch]
-    if ([_metadata.session length] > 0 && [_metadata.session rangeOfString:@"download"].location != NSNotFound) return;
+    if ([_metadata.session length] > 0 && [_metadata.session containsString:@"download"])
+        return;
     
+    // File
     if (([_metadata.type isEqualToString: k_metadataType_file] || [_metadata.type isEqualToString: k_metadataType_local]) && _metadata.directory == NO) {
         
-        if ([self shouldPerformSegue])
-            [self performSegueWithIdentifier:@"segueDetail" sender:self];
+        if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, _metadata.fileID]]) {
+            
+            // File exists
+            if ([self shouldPerformSegue])
+                [self performSegueWithIdentifier:@"segueDetail" sender:self];
+
+        } else {
+            
+            // File do not exists
+            NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:_metadata.account];
+
+            [[CCNetworking sharedNetworking] downloadFile:_metadata serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorLoadFileView selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
+        }
     }
     
+    // Model
     if ([self.metadata.type isEqualToString: k_metadataType_template])
         [self openModel:self.metadata];
     
+    // Directory
     if (_metadata.directory)
         [self performSegueDirectoryWithControlPasscode];
 }
@@ -759,15 +755,7 @@
     
     NSMutableArray *allRecordsDataSourceImagesVideos = [NSMutableArray new];
     
-    if ([self.pageType isEqualToString:k_pageOfflineFavorites]) {
-        
-        for (CCMetadata *metadata in dataSource) {
-            if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image] || [metadata.typeFile isEqualToString: k_metadataTypeFile_video])
-                [allRecordsDataSourceImagesVideos addObject:metadata];
-        }
-    }
-    
-    if ([self.pageType isEqualToString:k_pageOfflineOffline]) {
+    if ([self.pageType isEqualToString:k_pageOfflineFavorites] || [self.pageType isEqualToString:k_pageOfflineOffline]) {
         
         for (CCMetadata *metadata in dataSource) {
             if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image] || [metadata.typeFile isEqualToString: k_metadataTypeFile_video])
