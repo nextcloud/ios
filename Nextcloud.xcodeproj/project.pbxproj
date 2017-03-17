@@ -508,9 +508,6 @@
 		F7C00D481E2D0D0F0032160B /* CCCellOffline.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7C00D441E2D0D0F0032160B /* CCCellOffline.xib */; };
 		F7C525A01E3B48B700FFE02C /* CCNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C5259F1E3B48B700FFE02C /* CCNotification.swift */; };
 		F7C525A21E3B6DA800FFE02C /* CCNotification.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7C525A11E3B6DA800FFE02C /* CCNotification.storyboard */; };
-		F7C742C21E7BD01F00D9C973 /* iOSClient.plist in Resources */ = {isa = PBXBuildFile; fileRef = F7C742C11E7BD01F00D9C973 /* iOSClient.plist */; };
-		F7C742D21E7BD35B00D9C973 /* Share.plist in Resources */ = {isa = PBXBuildFile; fileRef = F7C742D11E7BD35B00D9C973 /* Share.plist */; };
-		F7C742D61E7BD44400D9C973 /* Picker.plist in Resources */ = {isa = PBXBuildFile; fileRef = F7C742D51E7BD44400D9C973 /* Picker.plist */; };
 		F7C742D81E7BD5C900D9C973 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7C742D71E7BD5C900D9C973 /* MainInterface.storyboard */; };
 		F7CE28851D1ACFA70025783C /* CCProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CE28801D1ACFA70025783C /* CCProgressView.m */; };
 		F7CE28881D1ACFA70025783C /* UINavigationController+CCProgress.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CE28821D1ACFA70025783C /* UINavigationController+CCProgress.m */; };
@@ -1215,9 +1212,7 @@
 		F73CCE291DC13798007E38D8 /* UICKeyChainStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICKeyChainStore.h; sourceTree = "<group>"; };
 		F73CCE2A1DC13798007E38D8 /* UICKeyChainStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UICKeyChainStore.m; sourceTree = "<group>"; };
 		F74344161E1264EE001CC831 /* DocumentPickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentPickerViewController.swift; sourceTree = "<group>"; };
-		F74344231E1264EE001CC831 /* PickerFileProvider.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PickerFileProvider.entitlements; sourceTree = "<group>"; };
 		F74344241E1264EE001CC831 /* FileProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileProvider.swift; sourceTree = "<group>"; };
-		F74344261E1264EE001CC831 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F74344521E126D06001CC831 /* Picker-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Picker-Bridging-Header.h"; sourceTree = "<group>"; };
 		F74344901E128E8F001CC831 /* Picker.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = Picker.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		F74344911E128E96001CC831 /* PickerFileProvider.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = PickerFileProvider.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1460,12 +1455,10 @@
 		F7C5259F1E3B48B700FFE02C /* CCNotification.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CCNotification.swift; path = Notification/CCNotification.swift; sourceTree = "<group>"; };
 		F7C525A11E3B6DA800FFE02C /* CCNotification.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = CCNotification.storyboard; path = Notification/CCNotification.storyboard; sourceTree = "<group>"; };
 		F7C742C01E7BD01F00D9C973 /* iOSClient.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = iOSClient.entitlements; sourceTree = "<group>"; };
-		F7C742C11E7BD01F00D9C973 /* iOSClient.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = iOSClient.plist; sourceTree = "<group>"; };
 		F7C742D01E7BD35B00D9C973 /* Share.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = Share.entitlements; sourceTree = "<group>"; };
-		F7C742D11E7BD35B00D9C973 /* Share.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Share.plist; sourceTree = "<group>"; };
 		F7C742D41E7BD44400D9C973 /* Picker.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = Picker.entitlements; sourceTree = "<group>"; };
-		F7C742D51E7BD44400D9C973 /* Picker.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Picker.plist; sourceTree = "<group>"; };
 		F7C742D71E7BD5C900D9C973 /* MainInterface.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = MainInterface.storyboard; sourceTree = "<group>"; };
+		F7C742E61E7BD71A00D9C973 /* PickerFileProvider.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = PickerFileProvider.entitlements; sourceTree = "<group>"; };
 		F7C8C1721B482A920048180E /* CCMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = CCMetadata.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		F7C8C1731B482A920048180E /* CCMetadata.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = CCMetadata.m; sourceTree = "<group>"; };
 		F7C8C1901B482CEA0048180E /* CCGlobal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCGlobal.h; sourceTree = "<group>"; };
@@ -2582,18 +2575,8 @@
 			children = (
 				F7F54CAB1E5AFF1E00E19C62 /* PickerFileProvider-Bridging-Header.h */,
 				F74344241E1264EE001CC831 /* FileProvider.swift */,
-				F74344221E1264EE001CC831 /* Supporting Files */,
 			);
 			path = PickerFileProvider;
-			sourceTree = "<group>";
-		};
-		F74344221E1264EE001CC831 /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				F74344261E1264EE001CC831 /* Info.plist */,
-				F74344231E1264EE001CC831 /* PickerFileProvider.entitlements */,
-			);
-			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
 		F744BE911BEBB2EE004FFF66 /* Intro */ = {
@@ -3036,11 +3019,9 @@
 			isa = PBXGroup;
 			children = (
 				F7C742C01E7BD01F00D9C973 /* iOSClient.entitlements */,
-				F7C742C11E7BD01F00D9C973 /* iOSClient.plist */,
+				F7C742E61E7BD71A00D9C973 /* PickerFileProvider.entitlements */,
 				F7C742D01E7BD35B00D9C973 /* Share.entitlements */,
-				F7C742D11E7BD35B00D9C973 /* Share.plist */,
 				F7C742D41E7BD44400D9C973 /* Picker.entitlements */,
-				F7C742D51E7BD44400D9C973 /* Picker.plist */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -3659,7 +3640,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F7C742D21E7BD35B00D9C973 /* Share.plist in Resources */,
 				F78BFEE11D31126B00E513CF /* MainInterface.storyboard in Resources */,
 				F7145A1A1D12E3B700CAFEEC /* Images.xcassets in Resources */,
 				F7145A1C1D12E3B700CAFEEC /* CCMove.storyboard in Resources */,
@@ -3679,7 +3659,6 @@
 				F7FC88FB1E141A34006D0506 /* BKPasscodeView.strings in Resources */,
 				F7FC88FC1E141A39006D0506 /* Localizable.strings in Resources */,
 				F7D2677C1E157053005ACB7E /* Images.xcassets in Resources */,
-				F7C742D61E7BD44400D9C973 /* Picker.plist in Resources */,
 				F743444B1E126B69001CC831 /* CCMove.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3838,7 +3817,6 @@
 				F77B0F7A1D118A16002130FE /* ZSSredo.png in Resources */,
 				F7F54CE51E5B14C700E19C62 /* ImageError.png in Resources */,
 				F77B0F7B1D118A16002130FE /* ZSSrightjustify.png in Resources */,
-				F7C742C21E7BD01F00D9C973 /* iOSClient.plist in Resources */,
 				F7F54CFC1E5B14C700E19C62 /* UIBarButtonItemArrowLeft@3x.png in Resources */,
 				F77B0F7C1D118A16002130FE /* ZSSviewsource@2x.png in Resources */,
 				F77B0F7D1D118A16002130FE /* Images.xcassets in Resources */,
@@ -4625,7 +4603,7 @@
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CODE_SIGN_ENTITLEMENTS = PickerFileProvider/PickerFileProvider.entitlements;
+				CODE_SIGN_ENTITLEMENTS = iOSClient/Brand/PickerFileProvider.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEBUG_INFORMATION_FORMAT = dwarf;
@@ -4635,7 +4613,7 @@
 					"EXTENSION=1",
 					"NC=1",
 				);
-				INFOPLIST_FILE = PickerFileProvider/Info.plist;
+				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/PickerFileProvider.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
@@ -4657,7 +4635,7 @@
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CODE_SIGN_ENTITLEMENTS = PickerFileProvider/PickerFileProvider.entitlements;
+				CODE_SIGN_ENTITLEMENTS = iOSClient/Brand/PickerFileProvider.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
@@ -4666,7 +4644,7 @@
 					"NC=1",
 					"EXTENSION=1",
 				);
-				INFOPLIST_FILE = PickerFileProvider/Info.plist;
+				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/PickerFileProvider.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
