@@ -4482,7 +4482,7 @@
 					"-Obj-C",
 					"-all_load",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "it.twsweb.Nextcloud.Share-Ext-Nextcloud";
+				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.Nextcloud.Share;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "Share Ext/Share Ext-Bridging-Header.h";
@@ -4522,7 +4522,7 @@
 					"-Obj-C",
 					"-all_load",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "it.twsweb.Nextcloud.Share-Ext-Nextcloud";
+				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.Nextcloud.Share;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "Share Ext/Share Ext-Bridging-Header.h";
