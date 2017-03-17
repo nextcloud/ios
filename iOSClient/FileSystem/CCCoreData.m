@@ -1866,6 +1866,7 @@
         record.link = activity.link;
         record.message = activity.message;
         record.subject = activity.subject;
+        record.verbose = [NSNumber numberWithInteger:activity.verbose];
     }];
 }
 

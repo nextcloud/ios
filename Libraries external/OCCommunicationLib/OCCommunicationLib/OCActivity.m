@@ -37,6 +37,7 @@
         self.message = @"";
         self.subject = @"";
         self.type = @"";
+        self.verbose = 0;
     }
     
     return self;

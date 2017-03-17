@@ -22,5 +22,6 @@
 @dynamic message;
 @dynamic subject;
 @dynamic type;
+@dynamic verbose;
 
 @end
