@@ -42,11 +42,11 @@
 #define k_upload_session_wwan           @"it.twsweb.Crypto-Cloud.upload.sessionwwan"
 
 // OperationQueue
-#define k_netQueueName                  @"it.twsweb.Crypto-Cloud.queue"
-#define k_netQueueDownloadName          @"it.twsweb.Crypto-Cloud.queue.download"
-#define k_netQueueDownloadWWanName      @"it.twsweb.Crypto-Cloud.queue.downloadwwan"
-#define k_netQueueUploadName            @"it.twsweb.Crypto-Cloud.queue.upload"
-#define k_netQueueUploadWWanName        @"it.twsweb.Crypto-Cloud.queue.uploadwwan"
+#define k_queue                         @"it.twsweb.Crypto-Cloud.queue"
+#define k_download_queue                @"it.twsweb.Crypto-Cloud.download.queue"
+#define k_download_queuewwan            @"it.twsweb.Crypto-Cloud.download.queuewwan"
+#define k_upload_queue                  @"it.twsweb.Crypto-Cloud.upload.queue"
+#define k_upload_queuewwan              @"it.twsweb.Crypto-Cloud.upload.queuewwan"
 
 /* Define option compiler */
 

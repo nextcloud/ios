@@ -68,7 +68,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
     lazy var networkingOperationQueue: OperationQueue = {
         
         var queue = OperationQueue()
-        queue.name = k_netQueueName
+        queue.name = k_queue
         queue.maxConcurrentOperationCount = 10
         
         return queue

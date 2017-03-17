@@ -129,23 +129,23 @@
     
     // Operation Queue OC Networking
     _netQueue = [[NSOperationQueue alloc] init];
-    _netQueue.name = k_netQueueName;
+    _netQueue.name = k_queue;
     _netQueue.maxConcurrentOperationCount = k_maxConcurrentOperation;
    
     _netQueueDownload = [[NSOperationQueue alloc] init];
-    _netQueueDownload.name = k_netQueueDownloadName;
+    _netQueueDownload.name = k_download_queue;
     _netQueueDownload.maxConcurrentOperationCount = k_maxConcurrentOperationDownloadUpload;
 
     _netQueueDownloadWWan = [[NSOperationQueue alloc] init];
-    _netQueueDownloadWWan.name = k_netQueueDownloadWWanName;
+    _netQueueDownloadWWan.name = k_download_queuewwan;
     _netQueueDownloadWWan.maxConcurrentOperationCount = k_maxConcurrentOperationDownloadUpload;
     
     _netQueueUpload = [[NSOperationQueue alloc] init];
-    _netQueueUpload.name = k_netQueueUploadName;
+    _netQueueUpload.name = k_upload_queue;
     _netQueueUpload.maxConcurrentOperationCount = k_maxConcurrentOperationDownloadUpload;
     
     _netQueueUploadWWan = [[NSOperationQueue alloc] init];
-    _netQueueUploadWWan.name = k_netQueueUploadWWanName;
+    _netQueueUploadWWan.name = k_upload_queuewwan;
     _netQueueUploadWWan.maxConcurrentOperationCount = k_maxConcurrentOperationDownloadUpload;
     
     // Add notification change session

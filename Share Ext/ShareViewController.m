@@ -119,7 +119,7 @@
     _hud = [[CCHud alloc] initWithView:self.navigationController.view];
     
     _networkingOperationQueue = [NSOperationQueue new];
-    _networkingOperationQueue.name = k_netQueueName;
+    _networkingOperationQueue.name = k_queue;
     _networkingOperationQueue.maxConcurrentOperationCount = 1;
     
     [[CCNetworking sharedNetworking] settingDelegate:self];
