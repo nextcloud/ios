@@ -6,33 +6,39 @@ file_filter = <lang>.lproj/BKPasscodeView.strings
 source_file = en.lproj/BKPasscodeView.strings
 source_lang = en
 type = STRINGS
+lang_map = pt_BR: pt-BR, zh_CN: zh-CN
 
 [nextcloud.ios-error]
 file_filter = <lang>.lproj/Error.strings
 source_file = en.lproj/Error.strings
 source_lang = en
 type = STRINGS
+lang_map = pt_BR: pt-BR, zh_CN: zh-CN
 
 [nextcloud.ios-infoplist]
 file_filter = <lang>.lproj/InfoPlist.strings
 source_file = en.lproj/InfoPlist.strings
 source_lang = en
 type = STRINGS
+lang_map = pt_BR: pt-BR, zh_CN: zh-CN
 
 [nextcloud.ios-intro]
 file_filter = <lang>.lproj/Intro.strings
 source_file = en.lproj/Intro.strings
 source_lang = en
 type = STRINGS
+lang_map = pt_BR: pt-BR, zh_CN: zh-CN
 
 [nextcloud.ios-localizable]
 file_filter = <lang>.lproj/Localizable.strings
 source_file = en.lproj/Localizable.strings
 source_lang = en
 type = STRINGS
+lang_map = pt_BR: pt-BR, zh_CN: zh-CN
 
 [nextcloud.ios-openinappactivity]
 file_filter = <lang>.lproj/TTOpenInAppActivityLocalizable.string
 source_file = en.lproj/TTOpenInAppActivityLocalizable.string
 source_lang = en
 type = STRINGS
+lang_map = pt_BR: pt-BR, zh_CN: zh-CN
