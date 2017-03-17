@@ -26,7 +26,7 @@
 #ifdef CUSTOM_BUILD
     #import "CustomShare.h"
 #else
-    #import "Share_Ext_Nextcloud-Swift.h"
+    #import "Share-Swift.h"
 #endif
 
 @import MobileCoreServices;

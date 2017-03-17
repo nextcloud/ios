@@ -220,7 +220,7 @@
 		F744FA7E1E57333C00BFAB34 /* APAvatarImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = F744FA7D1E57333C00BFAB34 /* APAvatarImageView.m */; };
 		F744FA7F1E57333C00BFAB34 /* APAvatarImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = F744FA7D1E57333C00BFAB34 /* APAvatarImageView.m */; };
 		F744FA801E57333C00BFAB34 /* APAvatarImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = F744FA7D1E57333C00BFAB34 /* APAvatarImageView.m */; };
-		F749E4E91DC1FB38009BA2FD /* Share Ext Nextcloud.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = F7CE8AFB1DC1F8D8009CAE48 /* Share Ext Nextcloud.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		F749E4E91DC1FB38009BA2FD /* Share.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = F7CE8AFB1DC1F8D8009CAE48 /* Share.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		F750374D1DBFA91A008FB480 /* ALView+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F75037441DBFA91A008FB480 /* ALView+PureLayout.m */; };
 		F750374F1DBFA91A008FB480 /* NSArray+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F75037461DBFA91A008FB480 /* NSArray+PureLayout.m */; };
 		F75037511DBFA91A008FB480 /* NSLayoutConstraint+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F75037481DBFA91A008FB480 /* NSLayoutConstraint+PureLayout.m */; };
@@ -517,7 +517,7 @@
 		F7D6A0951D82DBFA0045AD1A /* CCControlCenterTransferCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7D6A08D1D82DBFA0045AD1A /* CCControlCenterTransferCell.xib */; };
 		F7D6A0971D82DBFA0045AD1A /* CCMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D6A08F1D82DBFA0045AD1A /* CCMenu.m */; };
 		F7DA62AE1E41E666003E1740 /* CCOfflinePageContent.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DA62AD1E41E666003E1740 /* CCOfflinePageContent.m */; };
-		F7DCA1C81D32BD4100E48D39 /* Share Ext Nextcloud.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = F7DCA1B81D32BD4100E48D39 /* Share Ext Nextcloud.entitlements */; };
+		F7DCA1C81D32BD4100E48D39 /* Share.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = F7DCA1B81D32BD4100E48D39 /* Share.entitlements */; };
 		F7EC147B1E5D9C0B0046F351 /* CCSynchronize.m in Sources */ = {isa = PBXBuildFile; fileRef = F7EC147A1E5D9C0B0046F351 /* CCSynchronize.m */; };
 		F7ECBA6D1E239DCD003E6328 /* CCCreateCloud.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7ECBA6C1E239DCD003E6328 /* CCCreateCloud.swift */; };
 		F7EF0CAF1D9E95F400A9D15E /* CCSharedDBSession.m in Sources */ = {isa = PBXBuildFile; fileRef = F7EF0CAD1D9E95F400A9D15E /* CCSharedDBSession.m */; };
@@ -722,7 +722,7 @@
 			files = (
 				F74344921E128EB0001CC831 /* Picker.appex in Embed App Extensions */,
 				F74344931E128EB4001CC831 /* PickerFileProvider.appex in Embed App Extensions */,
-				F749E4E91DC1FB38009BA2FD /* Share Ext Nextcloud.appex in Embed App Extensions */,
+				F749E4E91DC1FB38009BA2FD /* Share.appex in Embed App Extensions */,
 			);
 			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1213,7 +1213,7 @@
 		F73CCE281DC13798007E38D8 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F73CCE291DC13798007E38D8 /* UICKeyChainStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICKeyChainStore.h; sourceTree = "<group>"; };
 		F73CCE2A1DC13798007E38D8 /* UICKeyChainStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UICKeyChainStore.m; sourceTree = "<group>"; };
-		F7416BAB1E2E2FA900B261A1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F7416BAB1E2E2FA900B261A1 /* Share.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Share.plist; sourceTree = "<group>"; };
 		F74344151E1264EE001CC831 /* Picker.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Picker.entitlements; sourceTree = "<group>"; };
 		F74344161E1264EE001CC831 /* DocumentPickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentPickerViewController.swift; sourceTree = "<group>"; };
 		F743441B1E1264EE001CC831 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -1474,7 +1474,7 @@
 		F7CE28811D1ACFA70025783C /* UINavigationController+CCProgress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UINavigationController+CCProgress.h"; sourceTree = "<group>"; };
 		F7CE28821D1ACFA70025783C /* UINavigationController+CCProgress.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UINavigationController+CCProgress.m"; sourceTree = "<group>"; };
 		F7CE8AFA1DC1F8D8009CAE48 /* Nextcloud.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Nextcloud.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		F7CE8AFB1DC1F8D8009CAE48 /* Share Ext Nextcloud.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Share Ext Nextcloud.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F7CE8AFB1DC1F8D8009CAE48 /* Share.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = Share.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		F7D02A461C5F9E4400D6F972 /* CCMove.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCMove.h; sourceTree = "<group>"; };
 		F7D02A471C5F9E4400D6F972 /* CCMove.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCMove.m; sourceTree = "<group>"; };
 		F7D02A481C5F9E4400D6F972 /* CCMove.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = CCMove.storyboard; sourceTree = "<group>"; };
@@ -1496,7 +1496,7 @@
 		F7D96F0F1D99498700A587A5 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Error.strings; sourceTree = "<group>"; };
 		F7DA62AC1E41E666003E1740 /* CCOfflinePageContent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCOfflinePageContent.h; sourceTree = "<group>"; };
 		F7DA62AD1E41E666003E1740 /* CCOfflinePageContent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCOfflinePageContent.m; sourceTree = "<group>"; };
-		F7DCA1B81D32BD4100E48D39 /* Share Ext Nextcloud.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = "Share Ext Nextcloud.entitlements"; path = "Share Ext/Share Ext Nextcloud.entitlements"; sourceTree = SOURCE_ROOT; };
+		F7DCA1B81D32BD4100E48D39 /* Share.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; name = Share.entitlements; path = "Share Ext/Share.entitlements"; sourceTree = SOURCE_ROOT; };
 		F7E456D41C89D54A00BD63F0 /* Share Ext-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Share Ext-Bridging-Header.h"; sourceTree = "<group>"; };
 		F7EC14791E5D9C0B0046F351 /* CCSynchronize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCSynchronize.h; sourceTree = "<group>"; };
 		F7EC147A1E5D9C0B0046F351 /* CCSynchronize.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCSynchronize.m; sourceTree = "<group>"; };
@@ -2569,8 +2569,8 @@
 		F7416BAD1E2E2FEF00B261A1 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				F7DCA1B81D32BD4100E48D39 /* Share Ext Nextcloud.entitlements */,
-				F7416BAB1E2E2FA900B261A1 /* Info.plist */,
+				F7DCA1B81D32BD4100E48D39 /* Share.entitlements */,
+				F7416BAB1E2E2FA900B261A1 /* Share.plist */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -3013,7 +3013,7 @@
 			path = Offline;
 			sourceTree = "<group>";
 		};
-		F7C0F46D1C8880540059EC54 /* Share Ext */ = {
+		F7C0F46D1C8880540059EC54 /* Share */ = {
 			isa = PBXGroup;
 			children = (
 				F7296A5F1C8880C9001A7809 /* Cell */,
@@ -3026,6 +3026,7 @@
 				F7E456D41C89D54A00BD63F0 /* Share Ext-Bridging-Header.h */,
 				F7416BAD1E2E2FEF00B261A1 /* Supporting Files */,
 			);
+			name = Share;
 			path = "Share Ext";
 			sourceTree = "<group>";
 		};
@@ -3280,7 +3281,7 @@
 			children = (
 				F7F67BAA1A24D27800EE80DA /* iOSClient */,
 				F7F67BAB1A24D27800EE80DA /* Supporting Files */,
-				F7C0F46D1C8880540059EC54 /* Share Ext */,
+				F7C0F46D1C8880540059EC54 /* Share */,
 				F74344131E1264EE001CC831 /* Picker */,
 				F74344211E1264EE001CC831 /* PickerFileProvider */,
 				F7FC7D651DC1F98700BB2C6A /* Products */,
@@ -3375,7 +3376,7 @@
 			isa = PBXGroup;
 			children = (
 				F7CE8AFA1DC1F8D8009CAE48 /* Nextcloud.app */,
-				F7CE8AFB1DC1F8D8009CAE48 /* Share Ext Nextcloud.appex */,
+				F7CE8AFB1DC1F8D8009CAE48 /* Share.appex */,
 				F74344901E128E8F001CC831 /* Picker.appex */,
 				F74344911E128E96001CC831 /* PickerFileProvider.appex */,
 			);
@@ -3416,9 +3417,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		F71459B41D12E3B700CAFEEC /* Share Ext Nextcloud */ = {
+		F71459B41D12E3B700CAFEEC /* Share */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = F7145A251D12E3B700CAFEEC /* Build configuration list for PBXNativeTarget "Share Ext Nextcloud" */;
+			buildConfigurationList = F7145A251D12E3B700CAFEEC /* Build configuration list for PBXNativeTarget "Share" */;
 			buildPhases = (
 				F71459B51D12E3B700CAFEEC /* Sources */,
 				F7145A141D12E3B700CAFEEC /* Frameworks */,
@@ -3428,9 +3429,9 @@
 			);
 			dependencies = (
 			);
-			name = "Share Ext Nextcloud";
+			name = Share;
 			productName = "Share Ext";
-			productReference = F7CE8AFB1DC1F8D8009CAE48 /* Share Ext Nextcloud.appex */;
+			productReference = F7CE8AFB1DC1F8D8009CAE48 /* Share.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 		F74344111E1264ED001CC831 /* Picker */ = {
@@ -3585,7 +3586,7 @@
 			projectRoot = "";
 			targets = (
 				F77B0DEB1D118A16002130FE /* Nextcloud */,
-				F71459B41D12E3B700CAFEEC /* Share Ext Nextcloud */,
+				F71459B41D12E3B700CAFEEC /* Share */,
 				F74344111E1264ED001CC831 /* Picker */,
 				F743441F1E1264EE001CC831 /* PickerFileProvider */,
 			);
@@ -3671,7 +3672,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F78BFEE11D31126B00E513CF /* MainInterface.storyboard in Resources */,
-				F7DCA1C81D32BD4100E48D39 /* Share Ext Nextcloud.entitlements in Resources */,
+				F7DCA1C81D32BD4100E48D39 /* Share.entitlements in Resources */,
 				F7145A1A1D12E3B700CAFEEC /* Images.xcassets in Resources */,
 				F7145A1C1D12E3B700CAFEEC /* CCMove.storyboard in Resources */,
 				F7145A1D1D12E3B700CAFEEC /* BKPasscodeView.strings in Resources */,
@@ -4340,7 +4341,7 @@
 /* Begin PBXTargetDependency section */
 		F7145A321D12E65F00CAFEEC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = F71459B41D12E3B700CAFEEC /* Share Ext Nextcloud */;
+			target = F71459B41D12E3B700CAFEEC /* Share */;
 			targetProxy = F7145A311D12E65F00CAFEEC /* PBXContainerItemProxy */;
 		};
 		F74344281E1264EE001CC831 /* PBXTargetDependency */ = {
@@ -4500,7 +4501,7 @@
 				APPLICATION_EXTENSION_API_ONLY = NO;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_ENTITLEMENTS = "Share Ext/Share Ext Nextcloud.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "Share Ext/Share.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEBUG_INFORMATION_FORMAT = dwarf;
@@ -4514,7 +4515,7 @@
 					"NC=1",
 				);
 				HEADER_SEARCH_PATHS = "\"Libraries external\"/**";
-				INFOPLIST_FILE = "Share Ext/Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/Share Ext/Share.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				LIBRARY_SEARCH_PATHS = "\"Libraries external\"/**";
@@ -4540,7 +4541,7 @@
 				APPLICATION_EXTENSION_API_ONLY = NO;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_ENTITLEMENTS = "Share Ext/Share Ext Nextcloud.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "Share Ext/Share.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
@@ -4554,7 +4555,7 @@
 					"NC=1",
 				);
 				HEADER_SEARCH_PATHS = "\"Libraries external\"/**";
-				INFOPLIST_FILE = "Share Ext/Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/Share Ext/Share.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				LIBRARY_SEARCH_PATHS = "\"Libraries external\"/**";
@@ -4883,7 +4884,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		F7145A251D12E3B700CAFEEC /* Build configuration list for PBXNativeTarget "Share Ext Nextcloud" */ = {
+		F7145A251D12E3B700CAFEEC /* Build configuration list for PBXNativeTarget "Share" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				F7145A261D12E3B700CAFEEC /* Debug */,
