@@ -189,10 +189,10 @@
     [UICKeyChainStore setString:sEncrypted forKey:@"createMenuEncrypted" service:k_serviceShareKeyChain];
 }
 
-+ (void)setFavoriteFoldersOffline:(BOOL)encrypted
++ (void)setFavoriteOffline:(BOOL)encrypted
 {
-    NSString *sFavoriteFoldersOffline = (encrypted) ? @"true" : @"false";
-    [UICKeyChainStore setString:sFavoriteFoldersOffline forKey:@"favoriteFolderOffline" service:k_serviceShareKeyChain];
+    NSString *sFavoriteOffline = (encrypted) ? @"true" : @"false";
+    [UICKeyChainStore setString:sFavoriteOffline forKey:@"favoriteOffline" service:k_serviceShareKeyChain];
 }
 
 
@@ -370,9 +370,9 @@
     return [[UICKeyChainStore stringForKey:@"createMenuEncrypted" service:k_serviceShareKeyChain] boolValue];
 }
 
-+ (BOOL)getFavoriteFoldersOffline
++ (BOOL)getFavoriteOffline
 {
-    return [[UICKeyChainStore stringForKey:@"favoriteFolderOffline" service:k_serviceShareKeyChain] boolValue];
+    return [[UICKeyChainStore stringForKey:@"favoriteOffline" service:k_serviceShareKeyChain] boolValue];
 }
 
 #pragma --------------------------------------------------------------------------------------------

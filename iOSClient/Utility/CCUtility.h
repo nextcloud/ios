@@ -82,7 +82,7 @@
 
 + (void)setCreateMenuEncrypted:(BOOL)encrypted;
 
-+ (void)setFavoriteFoldersOffline:(BOOL)encrypted;
++ (void)setFavoriteOffline:(BOOL)encrypted;
 
 // GET
 
@@ -121,7 +121,7 @@
 
 + (BOOL)getCreateMenuEncrypted;
 
-+ (BOOL)getFavoriteFoldersOffline;
++ (BOOL)getFavoriteOffline;
 
 // ===== Varius =====
 

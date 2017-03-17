@@ -139,8 +139,8 @@
 "_user_web_"                = "Website";
 "_user_twitter_"            = "Twitter";
 "_quota_using_"             = "You are using %@ of %@";
-"_favorite_folders_offline_"           = "Favorite folders available offline";
-"_favorite_folders_offline_footer_"    = "Making all favorite folders available offline may take a long time with a high memory occupation.";
+"_favorite_offline_"        = "Favorites available offline";
+"_favorite_offline_footer_" = "Making all favorites available offline may take a long time with a high memory occupation.";
 
 // Manage Camera Upload
 

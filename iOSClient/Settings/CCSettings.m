@@ -186,10 +186,10 @@
     
     section = [XLFormSectionDescriptor formSection];
     [form addFormSection:section];
-    section.footerTitle = NSLocalizedString(@"_favorite_folders_offline_footer_", nil);
+    section.footerTitle = NSLocalizedString(@"_favorite_offline_footer_", nil);
     
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"favoritefoldersoffline" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_favorite_folders_offline_", nil)];
-    [row.cellConfig setObject:[UIImage imageNamed:image_settingsFavoriteFoldersOffline] forKey:@"imageView.image"];
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"favoriteoffline" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_favorite_offline_", nil)];
+    [row.cellConfig setObject:[UIImage imageNamed:image_settingsFavoriteOffline] forKey:@"imageView.image"];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
 
@@ -393,7 +393,7 @@
     XLFormRowDescriptor *rowBloccoPasscode = [self.form formRowWithTag:@"bloccopasscode"];
     XLFormRowDescriptor *rowSimplyPasscode = [self.form formRowWithTag:@"simplypasscode"];
     XLFormRowDescriptor *rowOnlyLockDir = [self.form formRowWithTag:@"onlylockdir"];
-    XLFormRowDescriptor *rowFavoriteFoldersOffline = [self.form formRowWithTag:@"favoritefoldersoffline"];
+    XLFormRowDescriptor *rowFavoriteOffline = [self.form formRowWithTag:@"favoriteoffline"];
 
     XLFormRowDescriptor *rowVersionServer = [self.form formRowWithTag:@"versionserver"];
     XLFormRowDescriptor *rowUrlCloud = [self.form formRowWithTag:@"urlcloud"];
@@ -422,7 +422,7 @@
     
     if ([CCUtility getSimplyBlockCode]) [rowSimplyPasscode setValue:@1]; else [rowSimplyPasscode setValue:@0];
     if ([CCUtility getOnlyLockDir]) [rowOnlyLockDir setValue:@1]; else [rowOnlyLockDir setValue:@0];
-    if ([CCUtility getFavoriteFoldersOffline]) [rowFavoriteFoldersOffline setValue:@1]; else [rowFavoriteFoldersOffline setValue:@0];
+    if ([CCUtility getFavoriteOffline]) [rowFavoriteOffline setValue:@1]; else [rowFavoriteOffline setValue:@0];
     
     // Avatar
     UIImage *avatar = [[UIImage alloc] initWithContentsOfFile:[NSString stringWithFormat:@"%@/avatar.png", app.directoryUser]];
@@ -518,14 +518,14 @@
             [self changeSimplyPassword];
     }
     
-    if ([rowDescriptor.tag isEqualToString:@"favoritefoldersoffline"]) {
+    if ([rowDescriptor.tag isEqualToString:@"favoriteoffline"]) {
         
         if ([[rowDescriptor.value valueData] boolValue] == YES) {
             
             UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_confirm_", nil) message:NSLocalizedString(@"_continue_", nil) preferredStyle:UIAlertControllerStyleActionSheet];
             
             [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
-                [CCUtility setFavoriteFoldersOffline:true];
+                [CCUtility setFavoriteOffline:true];
                 [self synchronizeFavorites];
             }]];
             
@@ -537,7 +537,7 @@
 
         } else {
             
-            [CCUtility setFavoriteFoldersOffline:false];
+            [CCUtility setFavoriteOffline:false];
         }
     }
 }
@@ -696,19 +696,23 @@
 {
     NSArray *recordsTableMetadata = [CCCoreData  getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (favorite == 1)", app.activeAccount] context:nil];
     
-    for (TableMetadata *record in recordsTableMetadata) {
+    for (TableMetadata *tableMetadata in recordsTableMetadata) {
         
-        if (!record.directoryID)
-            continue;
+        if (tableMetadata.directory) {
         
-        NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:record.directoryID activeAccount:app.activeAccount];
-        serverUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:record.fileNamePrint];
+            NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:tableMetadata.directoryID activeAccount:app.activeAccount];
+            serverUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:tableMetadata.fileNamePrint];
         
-        NSArray *TableDirectories = [CCCoreData getDirectoryIDsFromBeginsWithServerUrl:serverUrl activeAccount:app.activeAccount];
+            NSArray *TableDirectories = [CCCoreData getDirectoryIDsFromBeginsWithServerUrl:serverUrl activeAccount:app.activeAccount];
         
-        for (TableDirectory *tableDirecory in TableDirectories) {
-            NSLog(@"%@", tableDirecory.serverUrl);
-            [CCCoreData clearDateReadAccount:app.activeAccount serverUrl:nil directoryID:tableDirecory.directoryID];
+            for (TableDirectory *tableDirecory in TableDirectories) {
+                NSLog(@"%@", tableDirecory.serverUrl);
+                [CCCoreData clearDateReadAccount:app.activeAccount serverUrl:nil directoryID:tableDirecory.directoryID];
+            }
+            
+        } else {
+            
+            [CCCoreData clearDateReadAccount:app.activeAccount serverUrl:nil directoryID:tableMetadata.directoryID];
         }
     }
     

@@ -85,7 +85,7 @@
     metadataNet.directoryID = directoryID;
     metadataNet.priority = NSOperationQueuePriorityNormal;
     
-    if ([CCUtility getFavoriteFoldersOffline])
+    if ([CCUtility getFavoriteOffline])
         selector = selectorReadFolder;
     else
         selector = selectorReadFolderRefresh;
@@ -138,7 +138,7 @@
                 NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:app.activeAccount];
                 NSString *selector;
                 
-                if ([CCUtility getFavoriteFoldersOffline])
+                if ([CCUtility getFavoriteOffline])
                     selector = selectorReadFolder;
                 else
                     selector = selectorReadFolderRefresh;
