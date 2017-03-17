@@ -508,6 +508,7 @@
 		F7C00D481E2D0D0F0032160B /* CCCellOffline.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7C00D441E2D0D0F0032160B /* CCCellOffline.xib */; };
 		F7C525A01E3B48B700FFE02C /* CCNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C5259F1E3B48B700FFE02C /* CCNotification.swift */; };
 		F7C525A21E3B6DA800FFE02C /* CCNotification.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7C525A11E3B6DA800FFE02C /* CCNotification.storyboard */; };
+		F7C742C21E7BD01F00D9C973 /* iOSClient.plist in Resources */ = {isa = PBXBuildFile; fileRef = F7C742C11E7BD01F00D9C973 /* iOSClient.plist */; };
 		F7CE28851D1ACFA70025783C /* CCProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CE28801D1ACFA70025783C /* CCProgressView.m */; };
 		F7CE28881D1ACFA70025783C /* UINavigationController+CCProgress.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CE28821D1ACFA70025783C /* UINavigationController+CCProgress.m */; };
 		F7D2677C1E157053005ACB7E /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7F67BB81A24D27800EE80DA /* Images.xcassets */; };
@@ -1045,7 +1046,6 @@
 		F70FD1C61E67552700C0FDA6 /* CCControlCenterTransfer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCControlCenterTransfer.m; sourceTree = "<group>"; };
 		F70FD1C91E675F1500C0FDA6 /* CCControlCenterActivity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCControlCenterActivity.h; sourceTree = "<group>"; };
 		F70FD1CA1E675F1500C0FDA6 /* CCControlCenterActivity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCControlCenterActivity.m; sourceTree = "<group>"; };
-		F7145A2E1D12E62B00CAFEEC /* Nextcloud.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = Nextcloud.entitlements; sourceTree = "<group>"; };
 		F7151A7F1D477A4B00E6AF45 /* en */ = {isa = PBXFileReference; lastKnownFileType = text; name = en; path = en.lproj/TTOpenInAppActivityLocalizable.string; sourceTree = "<group>"; };
 		F7151A801D477A4B00E6AF45 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/BKPasscodeView.strings; sourceTree = "<group>"; };
 		F7151A811D477A4B00E6AF45 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -1214,7 +1214,6 @@
 		F73CCE291DC13798007E38D8 /* UICKeyChainStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICKeyChainStore.h; sourceTree = "<group>"; };
 		F73CCE2A1DC13798007E38D8 /* UICKeyChainStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UICKeyChainStore.m; sourceTree = "<group>"; };
 		F7416BAB1E2E2FA900B261A1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		F7416BAC1E2E2FBE00B261A1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F74344151E1264EE001CC831 /* Picker.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Picker.entitlements; sourceTree = "<group>"; };
 		F74344161E1264EE001CC831 /* DocumentPickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentPickerViewController.swift; sourceTree = "<group>"; };
 		F743441B1E1264EE001CC831 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -1462,6 +1461,8 @@
 		F7C1D8BF1D47781D00B89DEA /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/Error.strings; sourceTree = "<group>"; };
 		F7C5259F1E3B48B700FFE02C /* CCNotification.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CCNotification.swift; path = Notification/CCNotification.swift; sourceTree = "<group>"; };
 		F7C525A11E3B6DA800FFE02C /* CCNotification.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = CCNotification.storyboard; path = Notification/CCNotification.storyboard; sourceTree = "<group>"; };
+		F7C742C01E7BD01F00D9C973 /* iOSClient.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = iOSClient.entitlements; sourceTree = "<group>"; };
+		F7C742C11E7BD01F00D9C973 /* iOSClient.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = iOSClient.plist; sourceTree = "<group>"; };
 		F7C8C1721B482A920048180E /* CCMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = CCMetadata.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		F7C8C1731B482A920048180E /* CCMetadata.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = CCMetadata.m; sourceTree = "<group>"; };
 		F7C8C1901B482CEA0048180E /* CCGlobal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCGlobal.h; sourceTree = "<group>"; };
@@ -3032,6 +3033,8 @@
 			isa = PBXGroup;
 			children = (
 				F7F7638B1E783EF6009FED20 /* DevicePushKey-Info.plist */,
+				F7C742C01E7BD01F00D9C973 /* iOSClient.entitlements */,
+				F7C742C11E7BD01F00D9C973 /* iOSClient.plist */,
 				F7274FEC1E6EB6F400C241B6 /* Constant.swift */,
 				F7C1CDDA1E6DFC6F005D92BE /* CCNextcloudConstant.h */,
 				F7C1CDDB1E6DFC6F005D92BE /* CCNextcloudImages.h */,
@@ -3335,8 +3338,6 @@
 				F7229B461DF71BA800E8C4E7 /* ChangeLog */,
 				F7229B491DF71BB300E8C4E7 /* AUTHORS */,
 				F78BFECA1D3111B800E513CF /* LaunchScreenNextcloud.xib */,
-				F7145A2E1D12E62B00CAFEEC /* Nextcloud.entitlements */,
-				F7416BAC1E2E2FBE00B261A1 /* Info.plist */,
 				F77D49A71DC238E500CDC568 /* loading@2x.gif */,
 				F76344761BF259A800188725 /* synchronizedcrypto.gif */,
 				F7F0617A1BAACDD300846525 /* CryptoCloud.pch */,
@@ -3847,6 +3848,7 @@
 				F77B0F7A1D118A16002130FE /* ZSSredo.png in Resources */,
 				F7F54CE51E5B14C700E19C62 /* ImageError.png in Resources */,
 				F77B0F7B1D118A16002130FE /* ZSSrightjustify.png in Resources */,
+				F7C742C21E7BD01F00D9C973 /* iOSClient.plist in Resources */,
 				F7F54CFC1E5B14C700E19C62 /* UIBarButtonItemArrowLeft@3x.png in Resources */,
 				F77B0F7C1D118A16002130FE /* ZSSviewsource@2x.png in Resources */,
 				F77B0F7D1D118A16002130FE /* Images.xcassets in Resources */,
@@ -4703,7 +4705,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIconNextcloud;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_ENTITLEMENTS = iOSClient/Nextcloud.entitlements;
+				CODE_SIGN_ENTITLEMENTS = iOSClient/Brand/iOSClient.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development IOS Push Services: it.twsweb.Nextcloud";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = "";
@@ -4717,7 +4719,7 @@
 					"NC=1",
 				);
 				HEADER_SEARCH_PATHS = "\"Libraries external\"/**";
-				INFOPLIST_FILE = iOSClient/Info.plist;
+				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/iOSClient.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				LIBRARY_SEARCH_PATHS = "\"Libraries external\"/**";
@@ -4745,7 +4747,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIconNextcloud;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_ENTITLEMENTS = iOSClient/Nextcloud.entitlements;
+				CODE_SIGN_ENTITLEMENTS = iOSClient/Brand/iOSClient.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development IOS Push Services: it.twsweb.Nextcloud";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
@@ -4760,7 +4762,7 @@
 					"NC=1",
 				);
 				HEADER_SEARCH_PATHS = "\"Libraries external\"/**";
-				INFOPLIST_FILE = iOSClient/Info.plist;
+				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/iOSClient.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				LIBRARY_SEARCH_PATHS = "\"Libraries external\"/**";
