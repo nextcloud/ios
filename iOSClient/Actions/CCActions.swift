@@ -23,13 +23,13 @@
 
 import Foundation
 
-@objc protocol CCActionsDeleteDelegate  {
+@objc protocol CCActionsDeleteDelegate {
     
     func deleteFileOrFolderSuccess(_ metadataNet: CCMetadataNet)
     func deleteFileOrFolderFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger)
 }
 
-@objc protocol CCActionsRenameDelegate  {
+@objc protocol CCActionsRenameDelegate {
 
     func renameSuccess(_ metadataNet: CCMetadataNet)
     func renameMoveFileOrFolderFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger)
@@ -38,24 +38,25 @@ import Foundation
     func uploadFileFailure(_ metadataNet: CCMetadataNet, fileID: String, serverUrl: String, selector: String, message: String, errorCode: NSInteger)
 }
 
-@objc protocol CCActionsSearchDelegate  {
+@objc protocol CCActionsSearchDelegate {
     
     func searchSuccess(_ metadataNet: CCMetadataNet, metadatas: [Any])
     func searchFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger)
 }
 
-@objc protocol CCActionsDownloadThumbnailDelegate  {
+@objc protocol CCActionsDownloadThumbnailDelegate {
     
     func downloadThumbnailSuccess(_ metadataNet: CCMetadataNet)
 }
 
-@objc protocol CCActionsSettingFavoriteDelegate  {
+@objc protocol CCActionsSettingFavoriteDelegate {
     
     func settingFavoriteSuccess(_ metadataNet: CCMetadataNet)
     func settingFavoriteFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger)
 }
 
-@objc protocol CCActionsListingFavoritesDelegate  {
+@objc protocol CCActionsListingFavoritesDelegate {
+    
     func listingFavoritesSuccess(_ metadataNet: CCMetadataNet, metadatas: [Any])
     func listingFavoritesFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger)
 }
@@ -421,7 +422,7 @@ class CCActions: NSObject {
     // MARK: Linsting Favorites
     // --------------------------------------------------------------------------------------------
     
-    func listingFavorites(_ serverUrl : String, delegate: AnyObject) {
+    func listingFavorites(_ serverUrl: String, delegate: AnyObject) {
         
         let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
         

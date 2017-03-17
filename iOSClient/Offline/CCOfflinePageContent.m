@@ -40,7 +40,8 @@
 
 @implementation CCOfflinePageContent
 
-- (void)viewDidLoad {
+- (void)viewDidLoad
+{
     
     [super viewDidLoad];
     
