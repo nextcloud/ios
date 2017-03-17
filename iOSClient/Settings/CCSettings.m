@@ -25,6 +25,7 @@
 #import "AppDelegate.h"
 #import "CCMain.h"
 #import "OCCapabilities.h"
+#import "CCSynchronize.h"
 
 #define alertViewEsci 1
 #define alertViewAzzeraCache 2
@@ -520,7 +521,20 @@
     if ([rowDescriptor.tag isEqualToString:@"favoritefoldersoffline"]) {
         
         if ([[rowDescriptor.value valueData] boolValue] == YES) {
+            
             [CCUtility setFavoriteFoldersOffline:true];
+            
+            NSArray *recordsTableMetadata = [CCCoreData  getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (favorite == 1)", app.activeAccount] context:nil];
+            NSMutableSet *directoriesID = [NSMutableSet new];
+            
+            for (TableMetadata *record in recordsTableMetadata)
+                [directoriesID addObject:record.directoryID];
+            
+            for (NSString *directoryID in directoriesID)
+                [CCCoreData clearDateReadAccount:app.activeAccount serverUrl:nil directoryID:directoryID];
+            
+            [[CCSynchronize sharedSynchronize] readListingFavorites];
+            
         } else {
             [CCUtility setFavoriteFoldersOffline:false];
         }

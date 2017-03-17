@@ -1065,11 +1065,18 @@
     else return nil;
 }
 
-+ (void)clearDateReadDirectory:(NSString *)serverUrl activeAccount:(NSString *)activeAccount
++ (void)clearDateReadAccount:(NSString *)activeAccount serverUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID
 {
     [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
         
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(serverUrl == %@) AND (account == %@)", serverUrl, activeAccount];
+        NSPredicate *predicate;
+        
+        if ([serverUrl length] > 0)
+             predicate = [NSPredicate predicateWithFormat:@"(serverUrl == %@) AND (account == %@)", serverUrl, activeAccount];
+        
+        if ([directoryID length] > 0)
+            predicate = [NSPredicate predicateWithFormat:@"(directoryID == %@) AND (account == %@)", directoryID, activeAccount];
+        
         TableDirectory *record = [TableDirectory MR_findFirstWithPredicate:predicate inContext:localContext];
         
         if (record) {

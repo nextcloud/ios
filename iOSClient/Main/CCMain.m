@@ -1882,7 +1882,7 @@
         
         if (forced) {
             
-            [CCCoreData clearDateReadDirectory:serverUrl activeAccount:app.activeAccount];
+            [CCCoreData clearDateReadAccount:app.activeAccount serverUrl:serverUrl directoryID:nil];
             
             _searchFileName = @"";                          // forced reload searchg
         }
@@ -4470,7 +4470,7 @@
                                         [CCCoreData setCameraUploadFolderName:_metadata.fileName activeAccount:app.activeAccount];
                                         [CCCoreData setCameraUploadFolderPath:serverUrl activeUrl:app.activeUrl activeAccount:app.activeAccount];
                                         
-                                        [CCCoreData clearDateReadDirectory:oldPath activeAccount:app.activeAccount];
+                                        [CCCoreData clearDateReadAccount:app.activeAccount serverUrl:oldPath directoryID:nil];
                                         
                                         if (app.activeAccount.length > 0 && app.activePhotosCameraUpload)
                                             [app.activePhotosCameraUpload reloadDatasourceForced];

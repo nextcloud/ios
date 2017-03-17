@@ -146,7 +146,7 @@
 + (NSString *)getDirectoryIDFromServerUrl:(NSString *)serverUrl activeAccount:(NSString *)activeAccount;
 + (NSString *)getServerUrlFromDirectoryID:(NSString *)directoryID activeAccount:(NSString *)activeAccount;
 
-+ (void)clearDateReadDirectory:(NSString *)serverUrl activeAccount:(NSString *)activeAccount;
++ (void)clearDateReadAccount:(NSString *)activeAccount serverUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID;
 + (void)clearAllDateReadDirectory;
 
 + (BOOL)isDirectoryOutOfDate:(int)numAddDay directoryID:(NSString *)directoryID activeAccount:(NSString *)activeAccount;

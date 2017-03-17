@@ -518,7 +518,7 @@
             if (![oldDirectoryID isEqualToString:metadata.directoryID]) {
                 serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:app.activeAccount];
                 oldDirectoryID = metadata.directoryID;
-                [CCCoreData clearDateReadDirectory:serverUrl activeAccount:app.activeAccount];
+                [CCCoreData clearDateReadAccount:app.activeAccount serverUrl:serverUrl directoryID:nil];
             }
             
             [CCCoreData addMetadata:metadata activeAccount:app.activeAccount activeUrl:serverUrl context:nil];
