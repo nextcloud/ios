@@ -219,7 +219,7 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ==== Download Thumbnail Delegate ====
+#pragma mark ==== Download Thumbnail <Delegate> ====
 #pragma --------------------------------------------------------------------------------------------
 
 - (void)downloadThumbnailSuccess:(CCMetadataNet *)metadataNet
@@ -227,6 +227,28 @@
     // i am in Favorites
     if ([_pageType isEqualToString:k_pageOfflineFavorites] || [_pageType isEqualToString:k_pageOfflineOffline])
         [self reloadDatasource];
+}
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ==== Download <Delegate> ====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)downloadFileFailure:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode
+{
+    [app updateApplicationIconBadgeNumber];
+
+    [app messageNotification:@"_download_file_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
+}
+
+- (void)downloadFileSuccess:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost
+{
+    _metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, app.activeAccount] context:nil];
+    
+    // File exists
+    if ([self shouldPerformSegue])
+        [self performSegueWithIdentifier:@"segueDetail" sender:self];
+    
+    [app updateApplicationIconBadgeNumber];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -632,7 +654,7 @@
         cell.statusImageView.image = [UIImage imageNamed:image_lock];
     
     // it's in download mode
-    if ([metadata.session length] > 0 && [metadata.session rangeOfString:@"download"].location != NSNotFound)
+    if ([metadata.session length] > 0 && [metadata.session containsString:@"download"])
         cell.statusImageView.image = [UIImage imageNamed:image_attention];
     
     // text and length
