@@ -26,7 +26,7 @@
 #import "AppDelegate.h"
 
 #ifdef CUSTOM_BUILD
-    #import "Custom.h"
+    #import "CustomSwift.h"
 #else
     #import "Nextcloud-Swift.h"
 #endif

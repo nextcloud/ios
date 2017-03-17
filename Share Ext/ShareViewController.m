@@ -24,7 +24,7 @@
 #import "ShareViewController.h"
 
 #ifdef CUSTOM_BUILD
-    #import "CustomShare.h"
+    #import "CustomSwiftShare.h"
 #else
     #import "Share-Swift.h"
 #endif
