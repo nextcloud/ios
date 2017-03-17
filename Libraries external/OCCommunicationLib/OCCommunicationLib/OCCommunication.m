@@ -1606,7 +1606,6 @@
                     if ([data valueForKey:@"link"]    && ![[data valueForKey:@"link"]    isEqual:[NSNull null]]) activity.link    = [data valueForKey:@"link"];
                     if ([data valueForKey:@"message"] && ![[data valueForKey:@"message"] isEqual:[NSNull null]]) activity.message = [data valueForKey:@"message"];
                     if ([data valueForKey:@"subject"] && ![[data valueForKey:@"subject"] isEqual:[NSNull null]]) activity.subject = [data valueForKey:@"subject"];
-                    if ([data valueForKey:@"type"] && ![[data valueForKey:@"type"] isEqual:[NSNull null]]) activity.subject = [data valueForKey:@"type"];
                     
                     [listOfActivity addObject:activity];
                 }
