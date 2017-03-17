@@ -352,7 +352,7 @@
     NSLog(@"[LOG] Update Folder Photo");
     NSString *folderCameraUpload = [CCCoreData getCameraUploadFolderNamePathActiveAccount:self.activeAccount activeUrl:self.activeUrl];
     if ([folderCameraUpload length] > 0)
-        [[CCSynchronize sharedSynchronize] readFolderServerUrl:folderCameraUpload directoryID:[CCCoreData getDirectoryIDFromServerUrl:folderCameraUpload activeAccount:self.activeAccount] selector:selectorReadFolderRefresh];
+        [[CCSynchronize sharedSynchronize] readFolderServerUrl:folderCameraUpload directoryID:[CCCoreData getDirectoryIDFromServerUrl:folderCameraUpload activeAccount:self.activeAccount] selector:selectorReadFolder];
 
     // Execute : after 0.5 sec.
     

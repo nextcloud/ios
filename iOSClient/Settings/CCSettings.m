@@ -698,22 +698,17 @@
     
     for (TableMetadata *tableMetadata in recordsTableMetadata) {
         
-        if (tableMetadata.directory) {
+        if ([tableMetadata.directory boolValue]) {
         
             NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:tableMetadata.directoryID activeAccount:app.activeAccount];
             serverUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:tableMetadata.fileNamePrint];
         
             NSArray *TableDirectories = [CCCoreData getDirectoryIDsFromBeginsWithServerUrl:serverUrl activeAccount:app.activeAccount];
         
-            for (TableDirectory *tableDirecory in TableDirectories) {
-                NSLog(@"%@", tableDirecory.serverUrl);
+            for (TableDirectory *tableDirecory in TableDirectories)
                 [CCCoreData clearDateReadAccount:app.activeAccount serverUrl:nil directoryID:tableDirecory.directoryID];
-            }
             
-        } else {
-            
-            [CCCoreData clearDateReadAccount:app.activeAccount serverUrl:nil directoryID:tableMetadata.directoryID];
-        }
+        } 
     }
     
     [[CCSynchronize sharedSynchronize] readListingFavorites];

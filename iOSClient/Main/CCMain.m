@@ -1846,7 +1846,7 @@
     // File is changed ??
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
         if (!_isSearchMode)
-            [[CCSynchronize sharedSynchronize] verifyChangeMedatas:metadatas serverUrl:metadataNet.serverUrl account:app.activeAccount synchronize:NO];
+            [[CCSynchronize sharedSynchronize] verifyChangeMedatas:metadatas serverUrl:metadataNet.serverUrl account:app.activeAccount withDownload:NO];
     });
 
     // Search Mode
@@ -4480,7 +4480,7 @@
                                         NSLog(@"[LOG] Update Folder Photo");
                                         NSString *folderCameraUpload = [CCCoreData getCameraUploadFolderNamePathActiveAccount:app.activeAccount activeUrl:app.activeUrl];
                                         if ([folderCameraUpload length] > 0)
-                                            [[CCSynchronize sharedSynchronize] readFolderServerUrl:folderCameraUpload directoryID:[CCCoreData getDirectoryIDFromServerUrl:folderCameraUpload activeAccount:app.activeAccount] selector:selectorReadFolderRefresh];
+                                            [[CCSynchronize sharedSynchronize] readFolderServerUrl:folderCameraUpload directoryID:[CCCoreData getDirectoryIDFromServerUrl:folderCameraUpload activeAccount:app.activeAccount] selector:selectorReadFolder];
 
                                     }];
         }

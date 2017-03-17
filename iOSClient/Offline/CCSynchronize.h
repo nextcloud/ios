@@ -41,7 +41,7 @@
 - (void)addFavoriteFolder:(NSString *)serverUrl;
 - (void)addOfflineFolder:(NSString *)serverUrl;
 
-- (void)verifyChangeMedatas:(NSArray *)allRecordMetadatas serverUrl:(NSString *)serverUrl account:(NSString *)account synchronize:(BOOL)synchronize;
+- (void)verifyChangeMedatas:(NSArray *)allRecordMetadatas serverUrl:(NSString *)serverUrl account:(NSString *)account withDownload:(BOOL)withDownload;
 
 - (BOOL)synchronizeFolderAnimationDirectory:(NSArray *)directory setGraphicsFolder:(BOOL)setGraphicsFolder;
 
