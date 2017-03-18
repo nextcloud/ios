@@ -35,6 +35,7 @@
         self.file = @"";
         self.link = @"";
         self.message = @"";
+        self.session = @"";
         self.subject = @"";
         self.type = @"";
         self.verbose = 0;

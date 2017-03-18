@@ -45,6 +45,7 @@
         <attribute name="idActivity" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="link" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="message" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="session" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="subject" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="type" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="verbose" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
@@ -142,7 +143,7 @@
     </entity>
     <elements>
         <element name="TableAccount" positionX="-6597" positionY="111" width="171" height="585"/>
-        <element name="TableActivity" positionX="-6399" positionY="252" width="128" height="180"/>
+        <element name="TableActivity" positionX="-6399" positionY="252" width="128" height="195"/>
         <element name="TableAutomaticUpload" positionX="-6597" positionY="801" width="128" height="180"/>
         <element name="TableCertificates" positionX="-6597" positionY="711" width="128" height="60"/>
         <element name="TableDirectory" positionX="-6372" positionY="111" width="162" height="210"/>

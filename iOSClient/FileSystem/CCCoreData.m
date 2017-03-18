@@ -1866,8 +1866,27 @@
         record.link = activity.link;
         record.message = activity.message;
         record.subject = activity.subject;
+        record.type = activity.type;
         record.verbose = [NSNumber numberWithInteger:activity.verbose];
     }];
+}
+
++ (void)addActivityFile:(NSString *)file subject:(NSString *)subject type:(NSString *)type verbose:(NSInteger)verbose account:(NSString *)account
+{
+    [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
+        
+        TableActivity *record = [TableActivity MR_createEntityInContext:localContext];
+        
+        record.account = account;
+        record.idActivity = 0;
+        record.date = [NSDate date];
+        record.file = file;
+        record.subject = subject;
+        record.type = type;
+        record.verbose = [NSNumber numberWithInteger:verbose];
+
+        
+   }];
 }
 
 + (NSArray *)getAllTableActivityWithPredicate:(NSPredicate *)predicate

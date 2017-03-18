@@ -20,6 +20,7 @@
 @dynamic file;
 @dynamic link;
 @dynamic message;
+@dynamic session;
 @dynamic subject;
 @dynamic type;
 @dynamic verbose;
