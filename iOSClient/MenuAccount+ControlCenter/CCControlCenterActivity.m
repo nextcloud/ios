@@ -157,7 +157,7 @@
     dataLabel.text =  [CCUtility getTitleSectionDate:date];
     [dataLabel setFont:fontSizeData];
         
-    if ([activity.type length] == 0 )
+    if (activity.type == 0)
         typeImage.image = [UIImage imageNamed:image_user];
         
     subjectLabel.textColor = COLOR_TEXT_ANTHRACITE;

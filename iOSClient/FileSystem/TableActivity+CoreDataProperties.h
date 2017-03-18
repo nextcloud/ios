@@ -23,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nullable, nonatomic, copy) NSString *message;
 @property (nullable, nonatomic, copy) NSString *session;
 @property (nullable, nonatomic, copy) NSString *subject;
-@property (nullable, nonatomic, copy) NSString *type;
+@property (nullable, nonatomic, copy) NSNumber *type;
 @property (nullable, nonatomic, copy) NSNumber *verbose;
 
 @end

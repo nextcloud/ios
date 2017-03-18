@@ -1866,12 +1866,10 @@
         record.link = activity.link;
         record.message = activity.message;
         record.subject = activity.subject;
-        record.type = activity.type;
-        record.verbose = [NSNumber numberWithInteger:activity.verbose];
     }];
 }
 
-+ (void)addActivityFile:(NSString *)file subject:(NSString *)subject session:(NSString *)session type:(NSString *)type verbose:(NSInteger)verbose account:(NSString *)account
++ (void)addActivityFile:(NSString *)file subject:(NSString *)subject message:(NSString *)message session:(NSString *)session type:(NSInteger)type verbose:(NSInteger)verbose account:(NSString *)account
 {
     [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
         
@@ -1881,9 +1879,10 @@
         record.idActivity = 0;
         record.date = [NSDate date];
         record.file = file;
+        record.message = message;
         record.session = session;
         record.subject = subject;
-        record.type = type;
+        record.type = [NSNumber numberWithInteger:type];
         record.verbose = [NSNumber numberWithInteger:verbose];
    }];
 }

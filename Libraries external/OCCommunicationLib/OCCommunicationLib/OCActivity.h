@@ -32,7 +32,7 @@
 @property (nonatomic, strong) NSString *message;
 @property (nonatomic, strong) NSString *session;
 @property (nonatomic, strong) NSString *subject;
-@property (nonatomic, strong) NSString *type;
+@property NSInteger type;
 @property NSInteger verbose;
 
 @end

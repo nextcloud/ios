@@ -243,6 +243,14 @@ extern NSString *const urlBaseUploadDB;
 // Search
 #define k_minCharsSearch                                2
 
+// Activity
+#define k_activityVerboseServer                         0
+#define k_activityVerboseClient                         1
+#define k_activityVerboseClientDebug                    2
+#define k_activityTypeInfo                              @"info"
+#define k_activityTypeSucces                            @"success"
+#define k_activityTypeFailure                           @"error"
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 

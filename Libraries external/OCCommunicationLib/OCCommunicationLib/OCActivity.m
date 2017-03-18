@@ -37,7 +37,7 @@
         self.message = @"";
         self.session = @"";
         self.subject = @"";
-        self.type = @"";
+        self.type = 0;
         self.verbose = 0;
     }
     
