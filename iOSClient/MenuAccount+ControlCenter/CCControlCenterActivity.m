@@ -78,10 +78,10 @@
     
     if (app.controlCenter.isOpen) {
         
-         _sectionDataSource = [CCCoreData getAllTableActivityWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (idActivity != 0)", app.activeAccount]];
+         //_sectionDataSource = [CCCoreData getAllTableActivityWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (idActivity != 0)", app.activeAccount]];
         
-        //_sectionDataSource = [CCSectionActivity creataDataSourseSectionActivity:records activeAccount:app.activeAccount];
-        
+        _sectionDataSource = [CCCoreData getAllTableActivityWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@)", app.activeAccount]];
+                
         if ([[app.controlCenter getActivePage] isEqualToString:k_pageControlCenterActivity]) {
             
             if ([_sectionDataSource count] == 0) {
@@ -158,7 +158,13 @@
     [dataLabel setFont:fontSizeData];
     
     if ([activity.type length] == 0 || [activity.type isEqualToString:k_activityTypeInfo])
-        typeImage.image = [UIImage imageNamed:image_user];
+        typeImage.image = [UIImage imageNamed:@"activityTypeInfo"];
+    
+    if ([activity.type isEqualToString:k_activityTypeSucces])
+        typeImage.image = [UIImage imageNamed:@"activityTypeSuccess"];
+    
+    if ([activity.type isEqualToString:k_activityTypeFailure])
+        typeImage.image = [UIImage imageNamed:@"activityTypeFailure"];
         
     subjectLabel.textColor = COLOR_TEXT_ANTHRACITE;
     subjectLabel.numberOfLines = 0;

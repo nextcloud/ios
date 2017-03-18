@@ -140,11 +140,13 @@
             
             _fileActivityLog = [NSString stringWithFormat:@"%@/%@", _metadataNet.serverUrl, _metadataNet.fileName];
             _messageActivityLog = [CCUtility returnFileNamePathFromFileName:_metadataNet.fileName serverUrl:_metadataNet.serverUrl activeUrl:_activeUrl];
+            _subjectActivityLog = _metadataNet.action;
 
         } else {
             
             _fileActivityLog = _metadataNet.serverUrl;
             _messageActivityLog = [CCUtility returnFileNamePathFromFileName:@"" serverUrl:_metadataNet.serverUrl activeUrl:_activeUrl];
+            _subjectActivityLog = _metadataNet.action;
         }
     }
 }
@@ -168,7 +170,7 @@
 
 - (void)createActivityType:(NSString *)type Verbose:(NSInteger)verbose
 {
-    [CCCoreData addActivityFile:_fileActivityLog subject:[NSString stringWithFormat:@"%@ : %@",_metadataNet.selector, _subjectActivityLog] message:_metadataNet.action session:[CCUtility createRandomString:16] type:type verbose:verbose account:_metadataNet.account];
+    [CCCoreData addActivityFile:_fileActivityLog subject:_metadataNet.selector message:_metadataNet.action session:[CCUtility createRandomString:16] type:type verbose:verbose account:_metadataNet.account];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -429,6 +431,7 @@
         if ([error code] == NSURLErrorServerCertificateUntrusted)
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
         
+        [self createActivityType:k_activityTypeFailure Verbose:k_activityVerboseClientDebug];
         [self complete];
     }];
 }
