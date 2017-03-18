@@ -126,13 +126,14 @@
 {
     TableActivity *activity = [_sectionDataSource objectAtIndex:section];
     
-    UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, collectionView.frame.size.width , CGFLOAT_MAX)];
-    subjectLabel.numberOfLines = 0;
-    [subjectLabel setFont:fontSizeSubject];
-    subjectLabel.text = activity.note;
-    subjectLabel.lineBreakMode = NSLineBreakByWordWrapping;
-    
-    int heightView = 50 + [self getLabelHeight:subjectLabel];
+    UILabel *noteLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, collectionView.frame.size.width , CGFLOAT_MAX)];
+    noteLabel.numberOfLines = 0;
+    [noteLabel setFont:fontSizeSubject];
+    noteLabel.text = activity.note;
+    noteLabel.lineBreakMode = NSLineBreakByWordWrapping;
+    int heighNoteLabel = [self getLabelHeight:noteLabel];
+
+    int heightView = 60 + heighNoteLabel + (heighNoteLabel/5);
     
     if (heightView < 60)
         heightView = 60;
@@ -149,29 +150,38 @@
     NSDateComponents* comps = [[NSCalendar currentCalendar] components:NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay fromDate:activity.date];
     NSDate *date = [[NSCalendar currentCalendar] dateFromComponents:comps];
         
-    UILabel *dataLabel = (UILabel *)[headerView viewWithTag:100];
-    UILabel *subjectLabel = (UILabel *)[headerView viewWithTag:101];
-    UIImageView *typeImage = (UIImageView *) [headerView viewWithTag:102];
-        
-    dataLabel.textColor = [UIColor colorWithRed:130.0/255.0 green:130.0/255.0 blue:130.0/255.0 alpha:1.0];
-    NSString *strigDate = [CCUtility getTitleSectionDate:date];
-    dataLabel.text = [NSString stringWithFormat:@"%@ %@", strigDate, activity.action];
-    [dataLabel setFont:fontSizeData];
+    UILabel *dateLabel = (UILabel *)[headerView viewWithTag:100];
+    UILabel *actionLabel = (UILabel *)[headerView viewWithTag:101];
+    UILabel *noteLabel = (UILabel *)[headerView viewWithTag:102];
+    UIImageView *typeImage = (UIImageView *) [headerView viewWithTag:103];
     
-    if ([activity.type length] == 0 || [activity.type isEqualToString:k_activityTypeInfo])
+    [dateLabel setFont:fontSizeData];
+    dateLabel.textColor = [UIColor colorWithRed:130.0/255.0 green:130.0/255.0 blue:130.0/255.0 alpha:1.0];
+    dateLabel.text = [CCUtility getTitleSectionDate:date];
+    
+    [actionLabel setFont:fontSizeData];
+    actionLabel.text = activity.action;
+
+    if ([activity.type length] == 0 || [activity.type isEqualToString:k_activityTypeInfo]) {
+        actionLabel.textColor = COLOR_BRAND;
         typeImage.image = [UIImage imageNamed:@"activityTypeInfo"];
+    }
     
-    if ([activity.type isEqualToString:k_activityTypeSucces])
+    if ([activity.type isEqualToString:k_activityTypeSucces]) {
+        actionLabel.textColor = [UIColor greenColor];
         typeImage.image = [UIImage imageNamed:@"activityTypeSuccess"];
+    }
     
-    if ([activity.type isEqualToString:k_activityTypeFailure])
+    if ([activity.type isEqualToString:k_activityTypeFailure]) {
+        actionLabel.textColor = [UIColor redColor];
         typeImage.image = [UIImage imageNamed:@"activityTypeFailure"];
-        
-    subjectLabel.textColor = COLOR_TEXT_ANTHRACITE;
-    subjectLabel.numberOfLines = 0;
-    [subjectLabel setFont:fontSizeSubject];
-    subjectLabel.text = activity.note;
-    subjectLabel.lineBreakMode = NSLineBreakByWordWrapping;
+    }
+    
+    [noteLabel setFont:fontSizeSubject];
+    noteLabel.textColor = COLOR_TEXT_ANTHRACITE;
+    noteLabel.numberOfLines = 0;
+    noteLabel.lineBreakMode = NSLineBreakByWordWrapping;
+    noteLabel.text = activity.note;
     
     //headerView.backgroundColor = [UIColor blueColor];
         
