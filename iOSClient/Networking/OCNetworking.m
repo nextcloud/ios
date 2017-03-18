@@ -166,7 +166,7 @@
 #pragma mark ===== Activity LOG =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)createActivityType:(NSInteger)type Verbose:(NSInteger)verbose
+- (void)createActivityType:(NSString *)type Verbose:(NSInteger)verbose
 {
     [CCCoreData addActivityFile:_fileActivityLog subject:[NSString stringWithFormat:@"%@ : %@",_metadataNet.selector, _subjectActivityLog] message:_metadataNet.action session:[CCUtility createRandomString:16] type:type verbose:verbose account:_metadataNet.account];
 }

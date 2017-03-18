@@ -156,8 +156,8 @@
     dataLabel.textColor = [UIColor colorWithRed:130.0/255.0 green:130.0/255.0 blue:130.0/255.0 alpha:1.0];
     dataLabel.text =  [CCUtility getTitleSectionDate:date];
     [dataLabel setFont:fontSizeData];
-        
-    if (activity.type == 0)
+    
+    if ([activity.type length] == 0 || [activity.type isEqualToString:k_activityTypeInfo])
         typeImage.image = [UIImage imageNamed:image_user];
         
     subjectLabel.textColor = COLOR_TEXT_ANTHRACITE;
