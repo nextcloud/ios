@@ -1864,8 +1864,7 @@
         record.date = activity.date;
         record.file = activity.file;
         record.link = activity.link;
-        record.message = activity.message;
-        record.subject = activity.subject;
+        record.note = activity.subject;
     }];
 }
 
@@ -1879,9 +1878,7 @@
         record.idActivity = 0;
         record.date = [NSDate date];
         record.file = file;
-        record.message = message;
         record.session = session;
-        record.subject = subject;
         record.type = type;
         record.verbose = [NSNumber numberWithInteger:verbose];
    }];

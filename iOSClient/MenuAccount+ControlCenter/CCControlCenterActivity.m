@@ -129,7 +129,7 @@
     UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, collectionView.frame.size.width , CGFLOAT_MAX)];
     subjectLabel.numberOfLines = 0;
     [subjectLabel setFont:fontSizeSubject];
-    subjectLabel.text = activity.subject;
+    subjectLabel.text = activity.note;
     subjectLabel.lineBreakMode = NSLineBreakByWordWrapping;
     
     int heightView = 50 + [self getLabelHeight:subjectLabel];
@@ -169,7 +169,7 @@
     subjectLabel.textColor = COLOR_TEXT_ANTHRACITE;
     subjectLabel.numberOfLines = 0;
     [subjectLabel setFont:fontSizeSubject];
-    subjectLabel.text = activity.subject;
+    subjectLabel.text = activity.note;
     subjectLabel.lineBreakMode = NSLineBreakByWordWrapping;
     
     //headerView.backgroundColor = [UIColor blueColor];

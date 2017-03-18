@@ -16,13 +16,13 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSFetchRequest<TableActivity *> *)fetchRequest;
 
 @property (nullable, nonatomic, copy) NSString *account;
-@property (nullable, nonatomic, copy) NSNumber *idActivity;
+@property (nullable, nonatomic, copy) NSString *action;
 @property (nullable, nonatomic, copy) NSDate *date;
 @property (nullable, nonatomic, copy) NSString *file;
+@property (nullable, nonatomic, copy) NSNumber *idActivity;
 @property (nullable, nonatomic, copy) NSString *link;
-@property (nullable, nonatomic, copy) NSString *message;
+@property (nullable, nonatomic, copy) NSString *note;
 @property (nullable, nonatomic, copy) NSString *session;
-@property (nullable, nonatomic, copy) NSString *subject;
 @property (nullable, nonatomic, copy) NSString *type;
 @property (nullable, nonatomic, copy) NSNumber *verbose;
 

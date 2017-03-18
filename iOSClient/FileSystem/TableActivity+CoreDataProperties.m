@@ -15,13 +15,13 @@
 }
 
 @dynamic account;
-@dynamic idActivity;
+@dynamic action;
 @dynamic date;
 @dynamic file;
+@dynamic idActivity;
 @dynamic link;
-@dynamic message;
+@dynamic note;
 @dynamic session;
-@dynamic subject;
 @dynamic type;
 @dynamic verbose;
 

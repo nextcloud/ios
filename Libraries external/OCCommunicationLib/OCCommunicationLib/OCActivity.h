@@ -30,10 +30,7 @@
 @property (nonatomic, strong) NSString *file;
 @property (nonatomic, strong) NSString *link;
 @property (nonatomic, strong) NSString *message;
-@property (nonatomic, strong) NSString *session;
 @property (nonatomic, strong) NSString *subject;
-@property (nonatomic, strong) NSString *type;
-@property NSInteger verbose;
 
 @end
 
