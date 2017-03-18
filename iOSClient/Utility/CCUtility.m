@@ -456,14 +456,12 @@
     return result;
 }
 
-+ (NSString *)createID
++ (NSString *)createRandomString:(int)numChars
 {
-    int numeroCaratteri = 16;
-    
     NSString *letters = @"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    NSMutableString *randomString = [NSMutableString stringWithCapacity: numeroCaratteri];
+    NSMutableString *randomString = [NSMutableString stringWithCapacity: numChars];
     
-    for (int i=0; i < numeroCaratteri; i++) {
+    for (int i=0; i < numChars; i++) {
         [randomString appendFormat: @"%C", [letters characterAtIndex: arc4random_uniform((unsigned int)[letters length]) % [letters length]]];
     }
     

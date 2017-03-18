@@ -133,7 +133,7 @@
 + (NSString *)removeForbiddenCharacters:(NSString *)fileName hasServerForbiddenCharactersSupport:(BOOL)hasServerForbiddenCharactersSupport;
 + (NSString *)stringAppendServerUrl:(NSString *)serverUrl addFileName:(NSString *)addFileName;
 
-+ (NSString *)createID;
++ (NSString *)createRandomString:(int)numChars;
 + (NSString *)createFileNameFromAsset:(PHAsset *)asset key:(NSString *)key;
 
 + (NSString *)getHomeServerUrlActiveUrl:(NSString *)activeUrl;

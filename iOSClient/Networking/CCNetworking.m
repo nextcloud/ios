@@ -832,7 +832,7 @@
     CCMetadata *metadata = [CCUtility insertFileSystemInMetadata:fileName directory:_directoryUser activeAccount:_activeAccount cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath];
     
     //fileID
-    NSString *uploadID =  [k_uploadSessionID stringByAppendingString:[CCUtility createID]];
+    NSString *uploadID =  [k_uploadSessionID stringByAppendingString:[CCUtility createRandomString:16]];
     
     //add delegate
     if (delegate)

@@ -882,7 +882,7 @@
         TableDirectory *record = [TableDirectory MR_createEntityInContext:context];
         
         record.account = activeAccount;
-        record.directoryID = [CCUtility createID];
+        record.directoryID = [CCUtility createRandomString:16];
         directoryID = record.directoryID;
         if (permissions) record.permissions = permissions;
         record.serverUrl = serverUrl;
@@ -1871,7 +1871,7 @@
     }];
 }
 
-+ (void)addActivityFile:(NSString *)file subject:(NSString *)subject type:(NSString *)type verbose:(NSInteger)verbose account:(NSString *)account
++ (void)addActivityFile:(NSString *)file subject:(NSString *)subject session:(NSString *)session type:(NSString *)type verbose:(NSInteger)verbose account:(NSString *)account
 {
     [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
         
@@ -1881,11 +1881,10 @@
         record.idActivity = 0;
         record.date = [NSDate date];
         record.file = file;
+        record.session = session;
         record.subject = subject;
         record.type = type;
         record.verbose = [NSNumber numberWithInteger:verbose];
-
-        
    }];
 }
 
