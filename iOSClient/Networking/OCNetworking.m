@@ -168,9 +168,9 @@
 #pragma mark ===== Activity LOG =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)createActivityType:(NSString *)type Verbose:(NSInteger)verbose
+- (void)createActivityType:(NSString *)type Verbose:(NSInteger)verbose note:(NSString *)note
 {
-    [CCCoreData addActivityFile:_fileActivityLog subject:_metadataNet.selector message:_metadataNet.action session:[CCUtility createRandomString:16] type:type verbose:verbose account:_metadataNet.account];
+    [CCCoreData addActivityFile:_fileActivityLog action:_metadataNet.action note:note session:[CCUtility createRandomString:16] type:type verbose:verbose account:_metadataNet.account];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -431,7 +431,8 @@
         if ([error code] == NSURLErrorServerCertificateUntrusted)
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
         
-        [self createActivityType:k_activityTypeFailure Verbose:k_activityVerboseClientDebug];
+        [self createActivityType:k_activityTypeFailure Verbose:k_activityVerboseClientDebug note:[error.userInfo valueForKey:@"NSLocalizedDescription"]];
+        
         [self complete];
     }];
 }

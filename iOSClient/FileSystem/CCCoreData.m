@@ -1868,16 +1868,16 @@
     }];
 }
 
-+ (void)addActivityFile:(NSString *)file subject:(NSString *)subject message:(NSString *)message session:(NSString *)session type:(NSString *)type verbose:(NSInteger)verbose account:(NSString *)account
++ (void)addActivityFile:(NSString *)file action:(NSString *)action note:(NSString *)note session:(NSString *)session type:(NSString *)type verbose:(NSInteger)verbose account:(NSString *)account
 {
     [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
         
         TableActivity *record = [TableActivity MR_createEntityInContext:localContext];
         
         record.account = account;
-        record.idActivity = 0;
         record.date = [NSDate date];
         record.file = file;
+        record.note = note;
         record.session = session;
         record.type = type;
         record.verbose = [NSNumber numberWithInteger:verbose];

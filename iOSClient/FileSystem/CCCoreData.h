@@ -211,7 +211,7 @@
 // ===== Activity =====
 
 + (void)addActivity:(OCActivity *)activity account:(NSString *)account;
-+ (void)addActivityFile:(NSString *)file subject:(NSString *)subject message:(NSString *)message session:(NSString *)session type:(NSString *)type verbose:(NSInteger)verbose account:(NSString *)account;
++ (void)addActivityFile:(NSString *)file action:(NSString *)action note:(NSString *)note session:(NSString *)session type:(NSString *)type verbose:(NSInteger)verbose account:(NSString *)account;
 + (NSArray *)getAllTableActivityWithPredicate:(NSPredicate *)predicate;
 
 // ===== File System =====
