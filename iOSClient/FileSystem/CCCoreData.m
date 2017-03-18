@@ -1860,11 +1860,15 @@
         TableActivity *record = [TableActivity MR_createEntityInContext:localContext];
 
         record.account = account;
-        record.idActivity = [NSNumber numberWithInteger:activity.idActivity];
+        record.action = @"Server";
         record.date = activity.date;
         record.file = activity.file;
+        record.idActivity = [NSNumber numberWithInteger:activity.idActivity];
         record.link = activity.link;
         record.note = activity.subject;
+        record.session = @"";
+        record.type = k_activityTypeInfo;
+        record.verbose = [NSNumber numberWithInteger:k_activityVerboseServer];
     }];
 }
 
@@ -1875,8 +1879,11 @@
         TableActivity *record = [TableActivity MR_createEntityInContext:localContext];
         
         record.account = account;
+        record.action = action;
         record.date = [NSDate date];
         record.file = file;
+        record.idActivity = 0;
+        record.link = @"";
         record.note = note;
         record.session = session;
         record.type = type;

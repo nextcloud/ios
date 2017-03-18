@@ -41,10 +41,6 @@
     
     BOOL _isCryptoCloudMode;
     BOOL _hasServerForbiddenCharactersSupport;
-    
-    NSString *_fileActivityLog;
-    NSString *_messageActivityLog;
-    NSString *_subjectActivityLog;
 }
 @end
 
@@ -132,23 +128,6 @@
         
     if([self respondsToSelector:NSSelectorFromString(_metadataNet.action)])
         [self performSelector:NSSelectorFromString(_metadataNet.action)];
-    
-    // Activity LOG
-    if ([_metadataNet.selector length] > 0) {
-        
-        if ([_metadataNet.fileName length] > 0) {
-            
-            _fileActivityLog = [NSString stringWithFormat:@"%@/%@", _metadataNet.serverUrl, _metadataNet.fileName];
-            _messageActivityLog = [CCUtility returnFileNamePathFromFileName:_metadataNet.fileName serverUrl:_metadataNet.serverUrl activeUrl:_activeUrl];
-            _subjectActivityLog = _metadataNet.action;
-
-        } else {
-            
-            _fileActivityLog = _metadataNet.serverUrl;
-            _messageActivityLog = [CCUtility returnFileNamePathFromFileName:@"" serverUrl:_metadataNet.serverUrl activeUrl:_activeUrl];
-            _subjectActivityLog = _metadataNet.action;
-        }
-    }
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -162,15 +141,6 @@
 #ifndef EXTENSION
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
 #endif
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Activity LOG =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)createActivityType:(NSString *)type Verbose:(NSInteger)verbose note:(NSString *)note
-{
-    [CCCoreData addActivityFile:_fileActivityLog action:_metadataNet.action note:note session:[CCUtility createRandomString:16] type:type verbose:verbose account:_metadataNet.account];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -431,7 +401,8 @@
         if ([error code] == NSURLErrorServerCertificateUntrusted)
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
         
-        [self createActivityType:k_activityTypeFailure Verbose:k_activityVerboseClientDebug note:[error.userInfo valueForKey:@"NSLocalizedDescription"]];
+        // Activity
+        [CCCoreData addActivityFile:_metadataNet.serverUrl action:_metadataNet.action note:[error.userInfo valueForKey:@"NSLocalizedDescription"] session:[CCUtility createRandomString:16] type:k_activityTypeFailure verbose:k_activityVerboseClientDebug account:_metadataNet.account];
         
         [self complete];
     }];

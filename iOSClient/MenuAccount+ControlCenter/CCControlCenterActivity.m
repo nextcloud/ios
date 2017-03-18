@@ -154,7 +154,8 @@
     UIImageView *typeImage = (UIImageView *) [headerView viewWithTag:102];
         
     dataLabel.textColor = [UIColor colorWithRed:130.0/255.0 green:130.0/255.0 blue:130.0/255.0 alpha:1.0];
-    dataLabel.text =  [CCUtility getTitleSectionDate:date];
+    NSString *strigDate = [CCUtility getTitleSectionDate:date];
+    dataLabel.text = [NSString stringWithFormat:@"%@ %@", strigDate, activity.action];
     [dataLabel setFont:fontSizeData];
     
     if ([activity.type length] == 0 || [activity.type isEqualToString:k_activityTypeInfo])
@@ -197,7 +198,6 @@
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark - ==== Utility ====
 #pragma --------------------------------------------------------------------------------------------
-
 
 - (CGFloat)getLabelHeight:(UILabel*)label
 {
