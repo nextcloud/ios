@@ -402,7 +402,7 @@
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
         
         // Activity
-        [CCCoreData addActivityFile:_metadataNet.serverUrl action:_metadataNet.action note:[error.userInfo valueForKey:@"NSLocalizedDescription"] session:[CCUtility createRandomString:16] type:k_activityTypeFailure verbose:k_activityVerboseClientDebug account:_metadataNet.account];
+        [CCCoreData addActivityFile:_metadataNet.serverUrl action:@"Read Folder" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] session:[CCUtility createRandomString:16] type:k_activityTypeFailure verbose:k_activityVerboseClientDebug account:_metadataNet.account];
         
         [self complete];
     }];

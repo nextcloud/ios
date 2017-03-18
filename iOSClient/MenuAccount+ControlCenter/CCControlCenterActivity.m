@@ -12,7 +12,8 @@
 #import "CCSection.h"
 
 #define fontSizeData    [UIFont systemFontOfSize:16]
-#define fontSizeSubject [UIFont systemFontOfSize:14]
+#define fontSizeAction  [UIFont systemFontOfSize:15]
+#define fontSizeNote    [UIFont systemFontOfSize:14]
 
 @interface CCControlCenterActivity ()
 {
@@ -128,15 +129,15 @@
     
     UILabel *noteLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, collectionView.frame.size.width , CGFLOAT_MAX)];
     noteLabel.numberOfLines = 0;
-    [noteLabel setFont:fontSizeSubject];
+    [noteLabel setFont:fontSizeNote];
     noteLabel.text = activity.note;
     noteLabel.lineBreakMode = NSLineBreakByWordWrapping;
     int heighNoteLabel = [self getLabelHeight:noteLabel];
 
-    int heightView = 60 + heighNoteLabel + (heighNoteLabel/5);
+    int heightView = 80 + heighNoteLabel + (heighNoteLabel/5);
     
-    if (heightView < 60)
-        heightView = 60;
+    if (heightView < 80)
+        heightView = 80;
     
     return CGSizeMake(collectionView.frame.size.width, heightView);
 }
@@ -159,8 +160,8 @@
     dateLabel.textColor = [UIColor colorWithRed:130.0/255.0 green:130.0/255.0 blue:130.0/255.0 alpha:1.0];
     dateLabel.text = [CCUtility getTitleSectionDate:date];
     
-    [actionLabel setFont:fontSizeData];
-    actionLabel.text = activity.action;
+    [actionLabel setFont:fontSizeAction];
+    actionLabel.text = [NSString stringWithFormat:@"%@ %@", activity.action, activity.file];
 
     if ([activity.type length] == 0 || [activity.type isEqualToString:k_activityTypeInfo]) {
         actionLabel.textColor = COLOR_BRAND;
@@ -177,7 +178,7 @@
         typeImage.image = [UIImage imageNamed:@"activityTypeFailure"];
     }
     
-    [noteLabel setFont:fontSizeSubject];
+    [noteLabel setFont:fontSizeNote];
     noteLabel.textColor = COLOR_TEXT_ANTHRACITE;
     noteLabel.numberOfLines = 0;
     noteLabel.lineBreakMode = NSLineBreakByWordWrapping;

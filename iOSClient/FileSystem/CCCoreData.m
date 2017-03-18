@@ -1860,7 +1860,7 @@
         TableActivity *record = [TableActivity MR_createEntityInContext:localContext];
 
         record.account = account;
-        record.action = @"Server";
+        record.action = @"Server Activity";
         record.date = activity.date;
         record.file = activity.file;
         record.idActivity = [NSNumber numberWithInteger:activity.idActivity];
