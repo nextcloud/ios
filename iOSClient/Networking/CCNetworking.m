@@ -634,6 +634,10 @@
         [app.listProgressMetadata removeObjectForKey:fileID];
 #endif
     
+    // Progress Task
+    NSDictionary* userInfo = @{@"fileID": (fileID), @"serverUrl": (serverUrl), @"cryptated": ([NSNumber numberWithBool:NO]), @"progress": ([NSNumber numberWithFloat:0.0])};
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"NotificationProgressTask" object:nil userInfo:userInfo];
+
     if (errorCode != 0) {
         
         //
@@ -1277,6 +1281,10 @@
 - (void)uploadFileSuccessFailure:(CCMetadata *)metadata fileName:(NSString *)fileName fileID:(NSString *)fileID rev:(NSString *)rev date:(NSDate *)date serverUrl:(NSString *)serverUrl errorCode:(NSInteger)errorCode
 {
     NSString *sessionID = metadata.sessionID;
+    
+    // Progress Task
+    NSDictionary* userInfo = @{@"fileID": (fileID), @"serverUrl": (serverUrl), @"cryptated": ([NSNumber numberWithBool:NO]), @"progress": ([NSNumber numberWithFloat:0.0])};
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"NotificationProgressTask" object:nil userInfo:userInfo];
     
     // ERRORE
     if (errorCode != 0) {

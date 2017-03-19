@@ -274,9 +274,6 @@
 
     // Title
     [self setTitle];
-    
-    // cancell Progress
-    [self.navigationController cancelCCProgress];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -292,6 +289,9 @@
     
     // Close Menu Logo
     [CCMenu dismissMenu];
+    
+    // Clear Progress Bar
+    [self.navigationController cancelCCProgress];
 }
 
 - (void)didReceiveMemoryWarning

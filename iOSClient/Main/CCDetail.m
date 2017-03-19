@@ -729,8 +729,6 @@
     [app messageNotification:@"_download_selected_files_" description:@"_error_download_photobrowser_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
     
     [self.photoBrowser reloadData];
-    
-    [self.navigationController cancelCCProgress];
 }
 
 - (void)downloadPhotoBrowserSuccess:(CCMetadata *)metadataVar selector:(NSString *)selector
@@ -767,9 +765,7 @@
     } else {
         
         _reload = YES;
-    }
-    
-    [self.navigationController cancelCCProgress];
+    }    
 }
 
 - (void)downloadPhotoBrowser:(CCMetadata *)metadata
