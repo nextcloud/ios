@@ -179,11 +179,20 @@
     // Email Subject
     NSString *emailTitle = NSLocalizedString(@"_information_req_", nil);
     // Email Content
-    NSString *messageBody = @"\n\n";
+    NSString *messageBody;
+    // File Attachment
+    NSString *fileAttachment = @"";
     // Email Recipents
     NSArray *toRecipents;
     
-    NSArray *activities = [CCCoreData getAllTableActivityWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (verbose == %lu)", app.activeAccount, k_activityVerboseDefault]];
+    NSArray *activities = [CCCoreData getAllTableActivityWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (verbose == %lu)", app.activeAccount, k_activityVerboseDebug]];
+    
+    if ([activities count] == 0) {
+        
+        [app messageNotification:@"_info_" description:@"No activity debug found" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo];
+        return;
+    }
+    
     for (TableActivity *activity in activities) {
         
         NSString *date, *type, *actionFile, *note;
@@ -198,21 +207,35 @@
         
         note = [activity.note stringByPaddingToLength:150 withString:@" " startingAtIndex:0];
         
-        messageBody = [messageBody stringByAppendingString:[NSString stringWithFormat:@"| %@ | %@ | %@ | %@ |\n", date, type, actionFile, note]];
+        fileAttachment = [fileAttachment stringByAppendingString:[NSString stringWithFormat:@"| %@ | %@ | %@ | %@ |\n", date, type, actionFile, note]];
     }
     
-    messageBody = [messageBody stringByAppendingString:[NSString stringWithFormat:@"\n\n\n%@ Version %@ (%@)", k_brand,[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"], [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]]];
+    messageBody = [NSString stringWithFormat:@"\n\n\n%@ Version %@ (%@)", k_brand,[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"], [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
     
-    toRecipents = [NSArray arrayWithObject:k_mailMe];
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    NSError *error;
     
-    MFMailComposeViewController *mc = [[MFMailComposeViewController alloc] init];
-    mc.mailComposeDelegate = self;
-    [mc setSubject:emailTitle];
-    [mc setMessageBody:messageBody isHTML:NO];
-    [mc setToRecipients:toRecipents];
-    
-    // Present mail view controller on screen
-    [self presentViewController:mc animated:YES completion:NULL];
+    if ([fileAttachment writeToFile:[documentsDirectory stringByAppendingPathComponent:@"activity.txt"] atomically:YES encoding:NSUTF8StringEncoding error:&error]) {
+        
+        toRecipents = [NSArray arrayWithObject:k_mailMe];
+        
+        MFMailComposeViewController *mc = [[MFMailComposeViewController alloc] init];
+        mc.mailComposeDelegate = self;
+        [mc setSubject:emailTitle];
+        [mc setMessageBody:messageBody isHTML:NO];
+        [mc setToRecipients:toRecipents];
+        
+        NSData *noteData = [NSData dataWithContentsOfFile:[documentsDirectory stringByAppendingPathComponent:@"activity.txt"]];
+        [mc addAttachmentData:noteData mimeType:@"text/plain" fileName:@"activity.txt"];
+        
+        // Present mail view controller on screen
+        [self presentViewController:mc animated:YES completion:NULL];
+        
+    } else {
+        
+        [app messageNotification:@"_error_" description:@"Impossible create file body" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
+    }
 }
 
 #pragma --------------------------------------------------------------------------------------------
