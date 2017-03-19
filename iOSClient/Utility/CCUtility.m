@@ -189,12 +189,17 @@
     [UICKeyChainStore setString:sEncrypted forKey:@"createMenuEncrypted" service:k_serviceShareKeyChain];
 }
 
-+ (void)setFavoriteOffline:(BOOL)encrypted
++ (void)setFavoriteOffline:(BOOL)offline
 {
-    NSString *sFavoriteOffline = (encrypted) ? @"true" : @"false";
+    NSString *sFavoriteOffline = (offline) ? @"true" : @"false";
     [UICKeyChainStore setString:sFavoriteOffline forKey:@"favoriteOffline" service:k_serviceShareKeyChain];
 }
 
++ (void)setActivityVerboseDebug:(BOOL)debug
+{
+    NSString *sActivityVerboseDebug = (debug) ? @"true" : @"false";
+    [UICKeyChainStore setString:sActivityVerboseDebug forKey:@"activityVerboseDebug" service:k_serviceShareKeyChain];
+}
 
 #pragma ------------------------------ GET
 
@@ -373,6 +378,11 @@
 + (BOOL)getFavoriteOffline
 {
     return [[UICKeyChainStore stringForKey:@"favoriteOffline" service:k_serviceShareKeyChain] boolValue];
+}
+
++ (BOOL)getActivityVerboseDebug
+{
+    return [[UICKeyChainStore stringForKey:@"activityVerboseDebug" service:k_serviceShareKeyChain] boolValue];
 }
 
 #pragma --------------------------------------------------------------------------------------------

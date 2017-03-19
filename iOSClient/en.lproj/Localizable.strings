@@ -183,15 +183,10 @@
 
 // Manage Help
 
-"_help_tutorial_"           = "Tutorial";
-"_help_intro_"              = "Introduction _brand_";
-"_help_synchronizations_"   = "Synchronized folders";
-"_help_share_"              = "Sharing files or folders";
-"_help_itunes_share_"       = "iTunes files sharing & Fingerprint";
-"_help_share_ext_"          = "Share extension & Share permission";
-"_help_copy_paste_"         = "Copy & Paste Files";
-"_help_control_center_"     = "Control Center";
-"_help_switch_user_"        = "Quickly switch between your accounts";
+"_help_tutorial_"               = "Tutorial";
+"_help_intro_"                  = "Introduction _brand_";
+"_help_debug_section_"          = "Debug";
+"_help_debug_Activity_verbose_" = "Activity verbose debug";
 
 // Manage Optimizations
 

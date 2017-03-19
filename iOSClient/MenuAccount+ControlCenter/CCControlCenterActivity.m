@@ -12,7 +12,7 @@
 #import "CCSection.h"
 
 #define fontSizeData    [UIFont systemFontOfSize:16]
-#define fontSizeAction  [UIFont systemFontOfSize:15]
+#define fontSizeAction  [UIFont systemFontOfSize:14]
 #define fontSizeNote    [UIFont systemFontOfSize:14]
 
 @interface CCControlCenterActivity ()

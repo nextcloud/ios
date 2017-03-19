@@ -61,6 +61,15 @@
     row.action.formSelector = @selector(intro:);
     [section addFormRow:row];
 
+    section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_help_debug_section_", nil)];
+    [form addFormSection:section];
+    
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"activityVerboseDebug" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_help_debug_Activity_verbose_", nil)];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    if ([CCUtility getActivityVerboseDebug]) row.value = @"1";
+    else row.value = @"0";
+    [section addFormRow:row];
+
     section = [XLFormSectionDescriptor formSection];
     [form addFormSection:section];
     
@@ -89,6 +98,20 @@
     [CCAspect aspectTabBar:self.tabBarController.tabBar hidden:NO];
 }
 
+- (void)formRowDescriptorValueHasChanged:(XLFormRowDescriptor *)rowDescriptor oldValue:(id)oldValue newValue:(id)newValue
+{
+    [super formRowDescriptorValueHasChanged:rowDescriptor oldValue:oldValue newValue:newValue];
+    
+    if ([rowDescriptor.tag isEqualToString:@"activityVerboseDebug"]) {
+        
+        if ([[rowDescriptor.value valueData] boolValue] == YES) {
+            [CCUtility setActivityVerboseDebug:true];
+        } else {
+            [CCUtility setActivityVerboseDebug:false];
+        }
+    }
+}
+    
 - (void)intro:(XLFormRowDescriptor *)sender
 {
     [self deselectFormRow:sender];

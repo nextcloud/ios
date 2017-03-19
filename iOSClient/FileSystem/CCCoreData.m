@@ -1860,7 +1860,7 @@
         TableActivity *record = [TableActivity MR_createEntityInContext:localContext];
 
         record.account = account;
-        record.action = @"Server Activity";
+        record.action = @"Activity";
         record.date = activity.date;
         record.file = activity.file;
         record.idActivity = [NSNumber numberWithInteger:activity.idActivity];
@@ -1868,7 +1868,7 @@
         record.note = activity.subject;
         record.session = @"";
         record.type = k_activityTypeInfo;
-        record.verbose = [NSNumber numberWithInteger:k_activityVerboseServer];
+        record.verbose = [NSNumber numberWithInteger:k_activityVerboseDefault];
     }];
 }
 
