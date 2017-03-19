@@ -76,8 +76,16 @@
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
     [row.cellConfig setObject:COLOR_BRAND forKey:@"textLabel.textColor"];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIImage imageNamed:image_settingsKeyMail] forKey:@"imageView.image"];
+    [row.cellConfig setObject:[UIImage imageNamed:image_settingsSendActivity] forKey:@"imageView.image"];
     row.action.formSelector = @selector(sendMail:);
+    [section addFormRow:row];
+
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"clearActivityLog" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_help_debug_Activity_clear_", nil)];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[UIColor redColor] forKey:@"textLabel.textColor"];
+    [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
+    [row.cellConfig setObject:[UIImage imageNamed:image_settingsClearActivity] forKey:@"imageView.image"];
+    row.action.formSelector = @selector(clearActivity:);
     [section addFormRow:row];
 
 
@@ -173,6 +181,8 @@
     // Email Recipents
     NSArray *toRecipents;
     
+    
+    
     messageBody = [NSString stringWithFormat:@"\n\n\n%@ Version %@ (%@)", k_brand,[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"], [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
     toRecipents = [NSArray arrayWithObject:k_mailMe];
     
@@ -184,6 +194,22 @@
     
     // Present mail view controller on screen
     [self presentViewController:mc animated:YES completion:NULL];
+}
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark === Clear ===
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)clearActivity:(XLFormRowDescriptor *)sender
+{
+    [self deselectFormRow:sender];
+    
+    [CCCoreData flushTableActivityAccount:app.activeAccount];
+    
+    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
+    
+    metadataNet.action = actionGetActivityServer;
+    [app addNetworkingOperationQueue:app.netQueue delegate:app.activeMain metadataNet:metadataNet];
 }
 
 @end

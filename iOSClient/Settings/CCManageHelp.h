@@ -25,7 +25,7 @@
 #import "XLForm.h"
 #import "CCIntro.h"
 
-@interface CCManageHelp : XLFormViewController <CCIntroDelegate>
+@interface CCManageHelp : XLFormViewController <CCIntroDelegate, MFMailComposeViewControllerDelegate>
 
 @property (nonatomic, strong) CCIntro *intro;
 

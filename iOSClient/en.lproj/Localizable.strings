@@ -188,6 +188,7 @@
 "_help_debug_section_"          = "Debug";
 "_help_debug_Activity_verbose_" = "Activity verbose debug";
 "_help_debug_Activity_mail_"    = "Send activity debug at Mail";
+"_help_debug_Activity_clear_"   = "Clear activity";
 
 // Manage Optimizations
 
