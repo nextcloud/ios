@@ -174,16 +174,35 @@
 
 - (void)sendMail:(XLFormRowDescriptor *)sender
 {
+    [self deselectFormRow:sender];
+    
     // Email Subject
     NSString *emailTitle = NSLocalizedString(@"_information_req_", nil);
     // Email Content
-    NSString *messageBody;
+    NSString *messageBody = @"\n\n";
     // Email Recipents
     NSArray *toRecipents;
     
+    NSArray *activities = [CCCoreData getAllTableActivityWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (verbose == %lu)", app.activeAccount, k_activityVerboseDefault]];
+    for (TableActivity *activity in activities) {
+        
+        NSString *date, *type, *actionFile, *note;
+        
+        date = [[NSDateFormatter localizedStringFromDate:activity.date dateStyle:NSDateFormatterShortStyle timeStyle:NSDateFormatterMediumStyle] stringByPaddingToLength:22 withString:@" " startingAtIndex:0];
+        
+        if ([activity.type isEqual: k_activityTypeInfo])    type = @"Info   ";
+        if ([activity.type isEqual: k_activityTypeSuccess]) type = @"Success";
+        if ([activity.type isEqual: k_activityTypeFailure]) type = @"Failure";
+        
+        actionFile = [[NSString stringWithFormat:@"%@ %@", activity.action, activity.file] stringByPaddingToLength:100 withString:@" " startingAtIndex:0];
+        
+        note = [activity.note stringByPaddingToLength:150 withString:@" " startingAtIndex:0];
+        
+        messageBody = [messageBody stringByAppendingString:[NSString stringWithFormat:@"| %@ | %@ | %@ | %@ |\n", date, type, actionFile, note]];
+    }
     
+    messageBody = [messageBody stringByAppendingString:[NSString stringWithFormat:@"\n\n\n%@ Version %@ (%@)", k_brand,[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"], [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]]];
     
-    messageBody = [NSString stringWithFormat:@"\n\n\n%@ Version %@ (%@)", k_brand,[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"], [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
     toRecipents = [NSArray arrayWithObject:k_mailMe];
     
     MFMailComposeViewController *mc = [[MFMailComposeViewController alloc] init];
