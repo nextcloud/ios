@@ -1255,7 +1255,7 @@
     CCMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, app.activeAccount] context:nil];
     
     // Activity
-    [CCCoreData addActivityFile:metadata.fileNamePrint action:@"Download File" note:[NSString stringWithFormat:@"Selector : %@ - Error : %@", selector, message] session:[CCUtility createRandomString:16] type:k_activityTypeFailure verbose:k_activityVerboseDebug account:metadata.account];
+    [CCCoreData addActivityFile:metadata.fileNamePrint action:@"Download File" note:[NSString stringWithFormat:@"Selector : %@ Error : %@", selector, message] session:[CCUtility createRandomString:16] type:k_activityTypeFailure verbose:k_activityVerboseDebug account:metadata.account];
 
     // File do not exists on server, remove in local
     if (errorCode == kOCErrorServerPathNotFound || errorCode == kCFURLErrorBadServerResponse) {
@@ -1530,6 +1530,9 @@
 
 - (void)uploadFileFailure:(CCMetadataNet *)metadataNet fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode
 {
+    // Activity
+    [CCCoreData addActivityFile:metadataNet.fileName action:@"Upload File" note:[NSString stringWithFormat:@"Selector : %@ Error : %@", selector, message] session:[CCUtility createRandomString:16] type:k_activityTypeFailure verbose:k_activityVerboseDebug account:metadataNet.account];
+
     // Automatic upload
     if([selector isEqualToString:selectorUploadAutomatic] || [selector isEqualToString:selectorUploadAutomaticAll])
         [app loadTableAutomaticUploadForSelector:selector];
@@ -1555,6 +1558,9 @@
 
 - (void)uploadFileSuccess:(CCMetadataNet *)metadataNet fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost
 {
+    // Activity
+    [CCCoreData addActivityFile:metadataNet.fileName action:@"Upload File" note:[NSString stringWithFormat:@"Selector : %@", selector] session:[CCUtility createRandomString:16] type:k_activityTypeSuccess verbose:k_activityVerboseDebug account:metadataNet.account];
+    
     // Automatic upload
     if([selector isEqualToString:selectorUploadAutomatic] || [selector isEqualToString:selectorUploadAutomaticAll])
         [app loadTableAutomaticUploadForSelector:selector];

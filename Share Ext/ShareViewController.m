@@ -303,6 +303,9 @@
 {
     [self.hud hideHud];
     
+    // Activity
+    [CCCoreData addActivityFile:metadataNet.fileName action:@"Upload File" note:[NSString stringWithFormat:@"Selector : %@ Error : %@", selector, message] session:[CCUtility createRandomString:16] type:k_activityTypeFailure verbose:k_activityVerboseDebug account:metadataNet.account];
+    
     // remove file 
     [CCCoreData deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, _activeAccount]];
     
@@ -330,6 +333,9 @@
     [self.hud hideHud];
     
     CCMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, _activeAccount] context:nil];
+    
+    // Activity
+    [CCCoreData addActivityFile:metadataNet.fileName action:@"Upload File" note:[NSString stringWithFormat:@"Selector : %@", selector] session:[CCUtility createRandomString:16] type:k_activityTypeSuccess verbose:k_activityVerboseDebug account:metadataNet.account];
     
     [self.filesName removeObject:metadata.fileNamePrint];
     [self.shareTable performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];

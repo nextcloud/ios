@@ -399,6 +399,9 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         
         hud.hideHud()
         
+        // Activity
+        CCCoreData.addActivityFile(fileID, action: "Download File Document Picker", note: "Selector : \(selector) Error : \(message)", session: CCUtility.createRandomString(16), type: k_activityTypeFailure, verbose: Int(k_activityVerboseDebug), account: self.activeAccount)
+
         if selector == selectorLoadFileView && errorCode != -999 {
             
             let alert = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: message, preferredStyle: .alert)
@@ -415,6 +418,9 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         hud.hideHud()
         
         let metadata = CCCoreData.getMetadataWithPreficate(NSPredicate(format: "(account == '\(activeAccount!)') AND (fileID == '\(fileID!)')"), context: nil)
+        
+        // Activity
+        CCCoreData.addActivityFile(metadata!.fileName, action: "Download File Document Picker", note: "Selector : \(selector)", session: CCUtility.createRandomString(16), type: k_activityTypeSuccess, verbose: Int(k_activityVerboseDebug), account: metadata!.account)
         
         switch selector {
             
@@ -459,6 +465,9 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         
         hud.hideHud()
         
+        // Activity
+        CCCoreData.addActivityFile(metadataNet.fileName, action: "Upload File Document Picker", note: "Selector : \(selector) Error : \(message)", session: CCUtility.createRandomString(16), type: k_activityTypeFailure, verbose: Int(k_activityVerboseDebug), account: metadataNet.account)
+        
         // remove file
         CCCoreData.deleteMetadata(with: NSPredicate(format: "(account == '\(activeAccount!)') AND (fileID == '\(fileID)')"))
         
@@ -477,6 +486,9 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
     func uploadFileSuccess(_ metadataNet: CCMetadataNet, fileID: String, serverUrl: String, selector: String, selectorPost: String) {
         
         hud.hideHud()
+        
+        // Activity
+        CCCoreData.addActivityFile(metadataNet.fileName, action: "Upload File Document Picker", note: "Selector : \(selector)", session: CCUtility.createRandomString(16), type: k_activityTypeSuccess, verbose: Int(k_activityVerboseDebug), account: metadataNet.account)
         
         dismissGrantingAccess(to: self.destinationURL)
     }
