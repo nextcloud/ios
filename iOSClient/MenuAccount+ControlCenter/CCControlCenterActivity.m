@@ -11,7 +11,7 @@
 #import "AppDelegate.h"
 #import "CCSection.h"
 
-#define fontSizeData    [UIFont systemFontOfSize:16]
+#define fontSizeData    [UIFont boldSystemFontOfSize:15]
 #define fontSizeAction  [UIFont systemFontOfSize:14]
 #define fontSizeNote    [UIFont systemFontOfSize:14]
 
@@ -172,17 +172,24 @@
     [actionLabel setFont:fontSizeAction];
     actionLabel.text = [NSString stringWithFormat:@"%@ %@", activity.action, activity.file];
 
-    if ([activity.type length] == 0 || [activity.type isEqualToString:k_activityTypeInfo]) {
+    if ([activity.type isEqualToString:k_activityTypeInfo]) {
+        
         actionLabel.textColor = COLOR_BRAND;
-        typeImage.image = [UIImage imageNamed:@"activityTypeInfo"];
+        
+        if ([activity.verbose integerValue] == k_activityVerboseDebug)
+            typeImage.image = [UIImage imageNamed:@"activityTypeInfo"];
+        else
+            typeImage.image = [UIImage imageNamed:@"activityTypeInfoServer"];
     }
     
     if ([activity.type isEqualToString:k_activityTypeSuccess]) {
+        
         actionLabel.textColor = [UIColor colorWithRed:87.0/255.0 green:187.0/255.0 blue:57.0/255.0 alpha:1.0];;
         typeImage.image = [UIImage imageNamed:@"activityTypeSuccess"];
     }
     
     if ([activity.type isEqualToString:k_activityTypeFailure]) {
+        
         actionLabel.textColor = [UIColor redColor];
         typeImage.image = [UIImage imageNamed:@"activityTypeFailure"];
     }
