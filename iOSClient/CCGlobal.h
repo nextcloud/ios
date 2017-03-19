@@ -250,6 +250,22 @@ extern NSString *const urlBaseUploadDB;
 #define k_activityTypeSuccess                           @"success"
 #define k_activityTypeFailure                           @"error"
 
+#define k_activityDebugActionDownload                   @"Download"
+#define k_activityDebugActionDownloadPicker             @"Download Picker"
+#define k_activityDebugActionUpload                     @"Upload"
+#define k_activityDebugActionUploadPicker               @"Upload Picker"
+#define k_activityDebugActionUploadShare                @"Upload Share"
+#define k_activityDebugActionAutomaticUpload            @"Automatic Upload"
+#define k_activityDebugActionReadFolder                 @"Read Folder"
+#define k_activityDebugActionGetNotification            @"Get Notification Server"
+#define k_activityDebugActionPushProxy                  @"Subscribing Push Proxy"
+#define k_activityDebugActionServerPush                 @"Subscribing Server Push"
+#define k_activityDebugActionFeatures                   @"Features Supported By Server"
+#define k_activityDebugActionCapabilities               @"Capabilities Of Server"
+
+
+
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 

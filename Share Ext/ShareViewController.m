@@ -304,7 +304,7 @@
     [self.hud hideHud];
     
     // Activity
-    [CCCoreData addActivityFile:metadataNet.fileName action:@"Upload File" note:[NSString stringWithFormat:@"Selector : %@ Error : %@", selector, message] type:k_activityTypeFailure verbose:k_activityVerboseDebug account:metadataNet.account];
+    [CCCoreData addActivityFile:metadataNet.fileName action:k_activityDebugActionUploadShare note:[NSString stringWithFormat:@"Selector : %@ Error : %@", selector, message] type:k_activityTypeFailure verbose:k_activityVerboseDebug account:metadataNet.account];
     
     // remove file 
     [CCCoreData deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, _activeAccount]];
@@ -335,7 +335,7 @@
     CCMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, _activeAccount] context:nil];
     
     // Activity
-    [CCCoreData addActivityFile:metadataNet.fileName action:@"Upload File" note:[NSString stringWithFormat:@"Selector : %@", selector] type:k_activityTypeSuccess verbose:k_activityVerboseDebug account:metadataNet.account];
+    [CCCoreData addActivityFile:metadataNet.fileName action:k_activityDebugActionUploadShare note:[NSString stringWithFormat:@"Selector : %@", selector] type:k_activityTypeSuccess verbose:k_activityVerboseDebug account:metadataNet.account];
     
     [self.filesName removeObject:metadata.fileNamePrint];
     [self.shareTable performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];

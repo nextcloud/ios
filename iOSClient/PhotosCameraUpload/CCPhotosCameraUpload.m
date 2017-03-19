@@ -1094,7 +1094,7 @@
         return;
     
     // Activity
-    [CCCoreData addActivityFile:@"" action:@"Automatic Upload" note:[NSString stringWithFormat:@"Number : %lu", [newItemsToUpload count]] type:k_activityTypeInfo verbose:k_activityVerboseDebug account:app.activeAccount];
+    [CCCoreData addActivityFile:@"" action:k_activityDebugActionAutomaticUpload note:[NSString stringWithFormat:@"Number : %lu", [newItemsToUpload count]] type:k_activityTypeInfo verbose:k_activityVerboseDebug account:app.activeAccount];
     
     // STOP new request : initStateCameraUpload
     //_AutomaticCameraUploadInProgress = YES;
@@ -1157,7 +1157,7 @@
         //_AutomaticCameraUploadInProgress = NO;
         
         // Activity
-        [CCCoreData addActivityFile:@"" action:@"Automatic Upload" note:description type:k_activityTypeFailure verbose:k_activityVerboseDebug account:app.activeAccount];
+        [CCCoreData addActivityFile:@"" action:k_activityDebugActionAutomaticUpload note:description type:k_activityTypeFailure verbose:k_activityVerboseDebug account:app.activeAccount];
         
         return;
     }
@@ -1175,7 +1175,7 @@
                     [app messageNotification:@"_error_" description:@"_error_createsubfolders_upload_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo];
                 
                 // Activity
-                [CCCoreData addActivityFile:@"" action:@"Automatic Upload" note:NSLocalizedString(@"_error_createsubfolders_upload_",nil) type:k_activityTypeFailure verbose:k_activityVerboseDebug account:app.activeAccount];
+                [CCCoreData addActivityFile:@"" action:k_activityDebugActionAutomaticUpload note:NSLocalizedString(@"_error_createsubfolders_upload_",nil) type:k_activityTypeFailure verbose:k_activityVerboseDebug account:app.activeAccount];
                 
                 return;
             }
@@ -1234,7 +1234,7 @@
         NSString *media = @"";
         if (assetMediaType == PHAssetMediaTypeImage) media = @"Image";
         if (assetMediaType == PHAssetMediaTypeVideo) media = @"Video";
-        [CCCoreData addActivityFile:[NSString stringWithFormat:@"%@/%@", serverUrl, fileName] action:@"Automatic Upload" note:[NSString stringWithFormat:@"Add TableAutomaticUpload on Session : %@, Set Data asset %@", session, media] type:k_activityTypeInfo verbose:k_activityVerboseDebug account:app.activeAccount];
+        [CCCoreData addActivityFile:fileName action:k_activityDebugActionAutomaticUpload note:[NSString stringWithFormat:@"Add TableAutomaticUpload on Session : %@, Set Data asset %@", session, media] type:k_activityTypeInfo verbose:k_activityVerboseDebug account:app.activeAccount];
         
         // Upldate Camera Upload data  
         if ([metadataNet.selector isEqualToString:selectorUploadAutomatic])
