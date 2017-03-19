@@ -5,6 +5,7 @@
 //  Created by Shawn Gryschuk on 2013-09-19.
 //  Copyright (c) 2013 Shawn Gryschuk. All rights reserved.
 //
+//  Modify Marino Faggiana
 
 #import "UINavigationController+CCProgress.h"
 #import "CCProgressView.h"

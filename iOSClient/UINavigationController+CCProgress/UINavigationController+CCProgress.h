@@ -1,10 +1,11 @@
 //
-//  UINavigationController+CCProgress.h
+//  UINavigationController+SGProgress.h
 //  NavigationProgress
 //
-//  Created by Marino Faggiana on 22/06/16.
-//  Copyright (c) 2016 TWS. All rights reserved.
+//  Created by Shawn Gryschuk on 2013-09-19.
+//  Copyright (c) 2013 Shawn Gryschuk. All rights reserved.
 //
+//  Modify Marino Faggiana
 
 #import <UIKit/UIKit.h>
 
