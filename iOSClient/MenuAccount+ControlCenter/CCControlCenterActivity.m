@@ -170,6 +170,7 @@
     }
     
     [actionLabel setFont:fontSizeAction];
+    [actionLabel sizeToFit];
     actionLabel.text = [NSString stringWithFormat:@"%@ %@", activity.action, activity.file];
 
     if ([activity.type isEqualToString:k_activityTypeInfo]) {
@@ -195,6 +196,7 @@
     }
     
     [noteLabel setFont:fontSizeNote];
+    [noteLabel sizeToFit];
     noteLabel.textColor = COLOR_TEXT_ANTHRACITE;
     noteLabel.numberOfLines = 0;
     noteLabel.lineBreakMode = NSLineBreakByWordWrapping;
