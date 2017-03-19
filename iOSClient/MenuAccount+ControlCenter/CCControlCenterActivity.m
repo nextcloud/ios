@@ -177,8 +177,8 @@
         typeImage.image = [UIImage imageNamed:@"activityTypeInfo"];
     }
     
-    if ([activity.type isEqualToString:k_activityTypeSucces]) {
-        actionLabel.textColor = [UIColor greenColor];
+    if ([activity.type isEqualToString:k_activityTypeSuccess]) {
+        actionLabel.textColor = [UIColor colorWithRed:87.0/255.0 green:187.0/255.0 blue:57.0/255.0 alpha:1.0];;
         typeImage.image = [UIImage imageNamed:@"activityTypeSuccess"];
     }
     

@@ -244,6 +244,9 @@
 {
     _metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, app.activeAccount] context:nil];
     
+    // Activity
+    [CCCoreData addActivityFile:_metadata.fileNamePrint action:@"Download File" note:[NSString stringWithFormat:@"Selector : %@", selector] session:[CCUtility createRandomString:16] type:k_activityTypeSuccess verbose:k_activityVerboseDebug account:_metadata.account];
+    
     // File exists
     if ([self shouldPerformSegue])
         [self performSegueWithIdentifier:@"segueDetail" sender:self];
