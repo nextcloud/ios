@@ -264,6 +264,7 @@
 {
     if (_isOpen) {
     
+        /*
         [self setControlCenterHidden:YES];
     
         [coordinator animateAlongsideTransition:nil completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
@@ -272,8 +273,9 @@
         
             [self setControlCenterHidden: self.navigationBarHidden];
         }];
+        */
         
-        //[self closeControlCenter];
+        [self closeControlCenter];
     }
     
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
@@ -305,18 +307,17 @@
     [self setIsOpen:YES];
 }
 
-/*
- - (void)closeControlCenterToSize:(CGSize)size
- {
- _mainView.frame = CGRectMake(0, 0, size.width, 0);
- _tableView.frame = CGRectMake(0, 0, _mainView.frame.size.width, 0);
- _noRecord.frame = CGRectMake(0, 0, _mainView.frame.size.width, 0);
- _imageDrag.frame = CGRectMake(0, 0, _mainView.frame.size.width, 0);
- _endLine.frame = CGRectMake(0, 0, _mainView.frame.size.width, 0);
+- (void)closeControlCenter
+{
+    _mainView.frame = CGRectMake(0, 0, self.navigationBar.frame.size.width, 0);
+    _pageViewController.view.frame = CGRectMake(0, 0, _mainView.frame.size.width, 0);
+    _labelMessageNoRecord.frame = CGRectMake(0, 0, _mainView.frame.size.width, 0);
+    _imageDrag.frame = CGRectMake(0, 0, _mainView.frame.size.width, 0);
+    _endLine.frame = CGRectMake(0, 0, _mainView.frame.size.width, 0);
  
- panNavigationBar.enabled = YES;
- }
- */
+    panNavigationBar.enabled = YES;
+    [self setIsOpen:NO];
+}
 
 - (void)setIsOpen:(BOOL)setOpen
 {
