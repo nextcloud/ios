@@ -161,7 +161,7 @@
     
     if ([CCUtility getActivityVerboseDebug]) {
         
-        dateLabel.text = [NSDateFormatter localizedStringFromDate:activity.date dateStyle:NSDateFormatterMediumStyle timeStyle:NSDateFormatterMediumStyle];
+        dateLabel.text = [NSDateFormatter localizedStringFromDate:activity.date dateStyle:NSDateFormatterFullStyle timeStyle:NSDateFormatterMediumStyle];
         
     } else {
         
