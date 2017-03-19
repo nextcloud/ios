@@ -1254,6 +1254,9 @@
 {
     CCMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, app.activeAccount] context:nil];
     
+    // Activity
+    [CCCoreData addActivityFile:metadata.fileNamePrint action:@"Download File" note:[NSString stringWithFormat:@"Selector : %@ - Error : %@", selector, message] session:[CCUtility createRandomString:16] type:k_activityTypeFailure verbose:k_activityVerboseDebug account:metadata.account];
+
     // File do not exists on server, remove in local
     if (errorCode == kOCErrorServerPathNotFound || errorCode == kCFURLErrorBadServerResponse) {
         [CCCoreData deleteFile:metadata serverUrl:serverUrl directoryUser:app.directoryUser activeAccount:app.activeAccount];
