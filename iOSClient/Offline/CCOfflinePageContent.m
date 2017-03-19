@@ -92,10 +92,7 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    
-    // cancell Progress
-    [self.navigationController cancelCCProgress];
-    
+        
     // update Badge
     [app updateApplicationIconBadgeNumber];
 }

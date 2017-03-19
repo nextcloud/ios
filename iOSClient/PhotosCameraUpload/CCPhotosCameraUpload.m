@@ -104,9 +104,7 @@
 // E' arrivato
 - (void)viewDidAppear:(BOOL)animated
 {
-    [super viewDidAppear:animated];
-    
-    [self.navigationController cancelCCProgress];
+    [super viewDidAppear:animated];    
 }
 
 - (void)didReceiveMemoryWarning

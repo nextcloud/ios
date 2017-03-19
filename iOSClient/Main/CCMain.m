@@ -288,10 +288,7 @@
     }
     
     // Close Menu Logo
-    [CCMenu dismissMenu];
-    
-    // Clear Progress Bar
-    [self.navigationController cancelCCProgress];
+    [CCMenu dismissMenu];    
 }
 
 - (void)didReceiveMemoryWarning
