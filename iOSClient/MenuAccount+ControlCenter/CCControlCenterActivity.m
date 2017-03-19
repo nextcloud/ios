@@ -150,10 +150,7 @@
     UICollectionReusableView *headerView = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:@"header" forIndexPath:indexPath];
         
     TableActivity *activity = [_sectionDataSource objectAtIndex:indexPath.section];
-        
-    NSDateComponents* comps = [[NSCalendar currentCalendar] components:NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay fromDate:activity.date];
-    NSDate *date = [[NSCalendar currentCalendar] dateFromComponents:comps];
-        
+    
     UILabel *dateLabel = (UILabel *)[headerView viewWithTag:100];
     UILabel *actionLabel = (UILabel *)[headerView viewWithTag:101];
     UILabel *noteLabel = (UILabel *)[headerView viewWithTag:102];
@@ -162,10 +159,15 @@
     [dateLabel setFont:fontSizeData];
     dateLabel.textColor = [UIColor colorWithRed:100.0/255.0 green:100.0/255.0 blue:100.0/255.0 alpha:1.0];
     
-    if ([CCUtility getActivityVerboseDebug])
-        dateLabel.text = [NSDateFormatter localizedStringFromDate:date dateStyle:NSDateFormatterMediumStyle timeStyle:NSDateFormatterMediumStyle];
-    else
-        dateLabel.text = [CCUtility getTitleSectionDate:date];
+    if ([CCUtility getActivityVerboseDebug]) {
+        
+        dateLabel.text = [NSDateFormatter localizedStringFromDate:activity.date dateStyle:NSDateFormatterMediumStyle timeStyle:NSDateFormatterMediumStyle];
+        
+    } else {
+        
+        NSDateComponents* comps = [[NSCalendar currentCalendar] components:NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay fromDate:activity.date];
+        dateLabel.text = [CCUtility getTitleSectionDate:[[NSCalendar currentCalendar] dateFromComponents:comps]];
+    }
     
     [actionLabel setFont:fontSizeAction];
     actionLabel.text = [NSString stringWithFormat:@"%@ %@", activity.action, activity.file];
