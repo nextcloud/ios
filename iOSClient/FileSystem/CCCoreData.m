@@ -1888,6 +1888,8 @@
         record.session = session;
         record.type = type;
         record.verbose = [NSNumber numberWithInteger:verbose];
+        
+        NSLog(@"[LOG] %@ %@ - %@", action, file, note);
    }];
 }
 
