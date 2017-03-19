@@ -1093,6 +1093,9 @@
     if ([newItemsToUpload count] == 0)
         return;
     
+    // Activity
+    [CCCoreData addActivityFile:@"" action:@"Automatic Upload" note:[NSString stringWithFormat:@"Number : %lu", [newItemsToUpload count]] type:k_activityTypeInfo verbose:k_activityVerboseDebug account:app.activeAccount];
+    
     // STOP new request : initStateCameraUpload
     //_AutomaticCameraUploadInProgress = YES;
     
@@ -1144,12 +1147,17 @@
     // verify/create folder Camera Upload, if error exit
     if(![self automaticCreateFolder:folderPhotos]) {
         
+        NSString *description = NSLocalizedStringFromTable(@"_not_possible_create_folder_", @"Error", nil);
+        
         // Full Upload ?
         if (assetsFull)
-            [app messageNotification:@"_error_" description:NSLocalizedStringFromTable(@"_not_possible_create_folder_", @"Error", nil) visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo];
+            [app messageNotification:@"_error_" description:description visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo];
         
         // START new request : initStateCameraUpload
         //_AutomaticCameraUploadInProgress = NO;
+        
+        // Activity
+        [CCCoreData addActivityFile:@"" action:@"Automatic Upload" note:description type:k_activityTypeFailure verbose:k_activityVerboseDebug account:app.activeAccount];
         
         return;
     }
@@ -1165,6 +1173,9 @@
                 
                 if (assetsFull)
                     [app messageNotification:@"_error_" description:@"_error_createsubfolders_upload_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo];
+                
+                // Activity
+                [CCCoreData addActivityFile:@"" action:@"Automatic Upload" note:NSLocalizedString(@"_error_createsubfolders_upload_",nil) type:k_activityTypeFailure verbose:k_activityVerboseDebug account:app.activeAccount];
                 
                 return;
             }
@@ -1217,7 +1228,13 @@
         metadataNet.session = session;
         metadataNet.taskStatus = k_taskStatusResume;
         
-        [CCCoreData addTableAutomaticUpload:metadataNet account:app.activeAccount context:nil];
+        [CCCoreData addTableAutomaticUpload:metadataNet account:app.activeAccount];
+        
+        // Activity
+        NSString *media = @"";
+        if (assetMediaType == PHAssetMediaTypeImage) media = @"Image";
+        if (assetMediaType == PHAssetMediaTypeVideo) media = @"Video";
+        [CCCoreData addActivityFile:[NSString stringWithFormat:@"%@/%@", serverUrl, fileName] action:@"Automatic Upload" note:[NSString stringWithFormat:@"Add TableAutomaticUpload on Session : %@, Set Data asset %@", session, media] type:k_activityTypeInfo verbose:k_activityVerboseDebug account:app.activeAccount];
         
         // Upldate Camera Upload data  
         if ([metadataNet.selector isEqualToString:selectorUploadAutomatic])

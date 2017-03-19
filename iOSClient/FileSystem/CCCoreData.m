@@ -1501,10 +1501,9 @@
 #pragma mark ===== Automatic Upload =====
 #pragma --------------------------------------------------------------------------------------------
 
-+ (void)addTableAutomaticUpload:(CCMetadataNet *)metadataNet account:(NSString *)account context:(NSManagedObjectContext *)context
++ (void)addTableAutomaticUpload:(CCMetadataNet *)metadataNet account:(NSString *)account
 {
-    if (context == nil)
-        context = [NSManagedObjectContext MR_context];
+    NSManagedObjectContext *context = [NSManagedObjectContext MR_context];
     
     // Delete record if exists
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (fileName == %@) AND (serverUrl == %@) AND (selector == %@)", account, metadataNet.fileName, metadataNet.serverUrl, metadataNet.selector];
@@ -1544,7 +1543,7 @@
         metadataNet.selectorPost = record.selectorPost;
         metadataNet.serverUrl = record.serverUrl;
         metadataNet.session = record.session;
-        metadataNet.taskStatus = k_taskStatusResume;                          // Default
+        metadataNet.taskStatus = k_taskStatusResume;                        // Default
         
         [record MR_deleteEntityInContext:context];                          // Remove record
         [context MR_saveToPersistentStoreAndWait];
