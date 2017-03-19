@@ -69,7 +69,6 @@
 
 - (void)downloadPhotoBrowserFailure:(NSInteger)errorCode;
 - (void)downloadPhotoBrowserSuccess:(CCMetadata *)metadataVar selector:(NSString *)selector;
-- (void)progressTask:(NSString *)fileID serverUrl:(NSString *)serverUrl cryptated:(BOOL)cryptated progress:(float)progress;
 
 @end
 

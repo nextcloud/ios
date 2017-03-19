@@ -82,8 +82,6 @@
 
 - (void)uploadFileAsset:(NSMutableArray *)assets serverUrl:(NSString *)serverUrl cryptated:(BOOL)cryptated useSubFolder:(BOOL)useSubFolder session:(NSString *)session;
 
-- (void)progressTask:(NSString *)fileID serverUrl:(NSString *)serverUrl cryptated:(BOOL)cryptated progress:(float)progress;
-
 - (void)reloadTaskButton:(CCMetadata *)metadata;
 - (void)cancelTaskButton:(CCMetadata *)metadata reloadTable:(BOOL)reloadTable;
 - (void)stopTaskButton:(CCMetadata *)metadata;

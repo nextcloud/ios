@@ -589,17 +589,10 @@
     dispatch_async(dispatch_get_main_queue(), ^{
         
         if (_currentProgressMetadata) {
- 
-#ifndef EXTENSION
-            // Control Center
-           [app.controlCenterTransfer progressTask:_currentProgressMetadata.fileID serverUrl:serverUrl cryptated:_currentProgressMetadata.cryptated progress:progress];
-        
-            // Detail
-            if (app.activeDetail)
-                [app.activeDetail progressTask:_currentProgressMetadata.fileID serverUrl:serverUrl cryptated:_currentProgressMetadata.cryptated progress:progress];
-#endif
-            if ([self.delegate respondsToSelector:@selector(progressTask:serverUrl:cryptated:progress:)])
-                [self.delegate progressTask:_currentProgressMetadata.fileID serverUrl:serverUrl cryptated:_currentProgressMetadata.cryptated progress:progress];
+            
+            NSDictionary* userInfo = @{@"fileID": (_currentProgressMetadata.fileID), @"serverUrl": (serverUrl), @"cryptated": ([NSNumber numberWithBool:_currentProgressMetadata.cryptated]), @"progress": ([NSNumber numberWithFloat:progress])};
+            
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"NotificationProgressTask" object:nil userInfo:userInfo];
         }
     });
 }
@@ -1271,13 +1264,12 @@
         
         if (_currentProgressMetadata) {
             
-#ifndef EXTENSION
-            // Control Center
-            [app.controlCenterTransfer progressTask:_currentProgressMetadata.fileID serverUrl:serverUrl cryptated:_currentProgressMetadata.cryptated progress:progress];
-#endif
-            
-            if ([self.delegate respondsToSelector:@selector(progressTask:serverUrl:cryptated:progress:)])
-                [self.delegate progressTask:_currentProgressMetadata.fileID serverUrl:serverUrl cryptated:_currentProgressMetadata.cryptated progress:progress];
+            if (_currentProgressMetadata) {
+                
+                NSDictionary* userInfo = @{@"fileID": (_currentProgressMetadata.fileID), @"serverUrl": (serverUrl), @"cryptated": ([NSNumber numberWithBool:_currentProgressMetadata.cryptated]), @"progress": ([NSNumber numberWithFloat:progress])};
+                
+                [[NSNotificationCenter defaultCenter] postNotificationName:@"NotificationProgressTask" object:nil userInfo:userInfo];
+            }
         }
     });
 }

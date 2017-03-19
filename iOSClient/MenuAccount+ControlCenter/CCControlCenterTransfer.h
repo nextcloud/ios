@@ -16,6 +16,5 @@
 @property (nonatomic, weak) IBOutlet UITableView *tableView;
 
 - (void)reloadDatasource;
-- (void)progressTask:(NSString *)fileID serverUrl:(NSString *)serverUrl cryptated:(BOOL)cryptated progress:(float)progress;
 
 @end

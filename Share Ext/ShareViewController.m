@@ -114,6 +114,8 @@
         }
     }
 
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(triggerProgressTask:) name:@"NotificationProgressTask" object:nil];
+    
     _filesName = [[NSMutableArray alloc] init];
     _filesSendCryptated = [[NSMutableArray alloc] init];
     _hud = [[CCHud alloc] initWithView:self.navigationController.view];
@@ -294,8 +296,11 @@
 #pragma mark ======================= NetWorking ==================================
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)progressTask:(NSString *)fileID serverUrl:(NSString *)serverUrl cryptated:(BOOL)cryptated progress:(float)progress
+- (void)triggerProgressTask:(NSNotification *)notification
 {
+    NSDictionary *dict = notification.userInfo;
+    float progress = [[dict valueForKey:@"progress"] floatValue];
+
     [self.hud progress:progress];
 }
 

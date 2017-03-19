@@ -38,6 +38,8 @@
     if (self = [super initWithCoder:aDecoder])  {
         
         app.controlCenterTransfer = self;
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(triggerProgressTask:) name:@"NotificationProgressTask" object:nil];
     }
     return self;
 }
@@ -85,9 +87,14 @@
 #pragma mark - ===== Progress & Task Button =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)progressTask:(NSString *)fileID serverUrl:(NSString *)serverUrl cryptated:(BOOL)cryptated progress:(float)progress;
+- (void)triggerProgressTask:(NSNotification *)notification
 {
-    // Chech
+    NSDictionary *dict = notification.userInfo;
+    NSString *fileID = [dict valueForKey:@"fileID"];
+    BOOL cryptated = [[dict valueForKey:@"cryptated"] boolValue];
+    float progress = [[dict valueForKey:@"progress"] floatValue];
+    
+    // Check
     if (!fileID)
         return;
     

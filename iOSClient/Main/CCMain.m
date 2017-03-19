@@ -109,8 +109,8 @@
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializeMain:) name:@"initializeMain" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(clearDateReadDataSource:) name:@"clearDateReadDataSource" object:nil];
-        
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setTitle) name:@"setTitleMain" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(triggerProgressTask:) name:@"NotificationProgressTask" object:nil];
     }
     
     return self;
@@ -2621,17 +2621,23 @@
 #pragma mark ===== Progress & Task Button =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)progressTask:(NSString *)fileID serverUrl:(NSString *)serverUrl cryptated:(BOOL)cryptated progress:(float)progress;
+- (void)triggerProgressTask:(NSNotification *)notification
 {
+    NSDictionary *dict = notification.userInfo;
+    NSString *fileID = [dict valueForKey:@"fileID"];
+    NSString *serverUrl = [dict valueForKey:@"serverUrl"];
+    BOOL cryptated = [[dict valueForKey:@"cryptated"] boolValue];
+    float progress = [[dict valueForKey:@"progress"] floatValue];
+    
     // Check
     if (!fileID)
         return;
     
     [app.listProgressMetadata setObject:[NSNumber numberWithFloat:progress] forKey:fileID];
-
+    
     if (![serverUrl isEqualToString:_serverUrl])
         return;
-
+    
     NSIndexPath *indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:fileID];
     
     if (indexPath) {

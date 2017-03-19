@@ -1269,6 +1269,8 @@
 
 - (void)changeTask:(CCMetadata *)metadata
 {
+    NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account];
+    
     if ([[_listChangeTask objectForKey:metadata.fileID] isEqualToString:@"stopUpload"]) {
         
         // sessionTaskIdentifier on Stop
@@ -1288,8 +1290,6 @@
             
         if (metadata.sessionTaskIdentifier != k_taskIdentifierDone) downloadData = YES;
         if (metadata.sessionTaskIdentifierPlist != k_taskIdentifierDone) downloadPlist = YES;
-            
-        NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account];
         
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
             [[CCNetworking sharedNetworking] downloadFile:metadata serverUrl:serverUrl downloadData:downloadData downloadPlist:downloadPlist selector:metadata.sessionSelector selectorPost:metadata.sessionSelectorPost session:k_download_session taskStatus:k_taskStatusResume delegate:nil];
@@ -1314,10 +1314,11 @@
     // delete progress
     [_listProgressMetadata removeObjectForKey:metadata.fileID];
     
-    // Detail
-    if (_activeDetail)
-        [_activeDetail progressTask:nil serverUrl:nil cryptated:NO progress:0];
+    // Progress Task
+    NSDictionary* userInfo = @{@"fileID": (metadata.fileID), @"serverUrl": (serverUrl), @"cryptated": ([NSNumber numberWithBool:NO]), @"progress": ([NSNumber numberWithFloat:0.0])};
     
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"NotificationProgressTask" object:nil userInfo:userInfo];
+
     // Refresh
     if (_activeMain && [_listChangeTask count] == 0) {
         [_activeMain reloadDatasource:[CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account] fileID:nil selector:nil];

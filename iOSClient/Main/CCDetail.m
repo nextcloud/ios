@@ -60,6 +60,8 @@
     if (self = [super initWithCoder:aDecoder])  {
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(insertGeocoderLocation:) name:@"insertGeocoderLocation" object:nil];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(triggerProgressTask:) name:@"NotificationProgressTask" object:nil];
 
         self.metadataDetail = [[CCMetadata alloc] init];
         self.photos = [[NSMutableArray alloc] init];
@@ -711,8 +713,11 @@
     [self.parentViewController presentViewController:alertController animated:YES completion:NULL];
 }
 
-- (void)progressTask:(NSString *)fileID serverUrl:(NSString *)serverUrl cryptated:(BOOL)cryptated progress:(float)progress
+- (void)triggerProgressTask:(NSNotification *)notification
 {
+    NSDictionary *dict = notification.userInfo;
+    float progress = [[dict valueForKey:@"progress"] floatValue];
+    
     if (progress == 0)
         [self.navigationController cancelCCProgress];
     else
