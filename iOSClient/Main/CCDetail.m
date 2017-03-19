@@ -120,9 +120,7 @@
     
     // remove all
     if (self.isMovingFromParentViewController)
-        [self removeAllView];
-    
-    [self.navigationController cancelCCProgress];
+        [self removeAllView];    
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
