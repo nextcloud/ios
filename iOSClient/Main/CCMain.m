@@ -1287,8 +1287,8 @@
     
     if (metadata == nil) return;
 
-    // reload
-    if ([selector isEqualToString:selectorReload]) {
+    // Download
+    if ([selector isEqualToString:selectorDownloadFile]) {
         [self reloadDatasource:serverUrl fileID:metadata.fileID selector:selector];
     }
     
@@ -1484,7 +1484,7 @@
                 
                 NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account];
                 
-                [[CCNetworking sharedNetworking] downloadFile:metadata serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorReload selectorPost:nil session:k_download_session taskStatus: k_taskStatusResume delegate:self];
+                [[CCNetworking sharedNetworking] downloadFile:metadata serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorDownloadFile selectorPost:nil session:k_download_session taskStatus: k_taskStatusResume delegate:self];
             }
         }
         
@@ -3123,19 +3123,6 @@
     NSIndexPath *indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:metadata.fileID];
     if (indexPath) [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObjects:indexPath, nil] withRowAnimation:UITableViewRowAnimationAutomatic];
 }
-
-/*
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Reload =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)reloadFile:(CCMetadata *)metadata
-{
-    NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account];
-
-    [[CCNetworking sharedNetworking] downloadFile:metadata serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorReload selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
-}
-*/
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Open in... =====
