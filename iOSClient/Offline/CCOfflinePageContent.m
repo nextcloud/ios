@@ -238,7 +238,7 @@
     CCMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, app.activeAccount] context:nil];
     
     // Activity
-    [CCCoreData addActivityFile:metadata.fileNamePrint action:@"Download File" note:[NSString stringWithFormat:@"Selector : %@ - Error : %@", selector, message] session:[CCUtility createRandomString:16] type:k_activityTypeFailure verbose:k_activityVerboseDebug account:metadata.account];
+    [CCCoreData addActivityFile:metadata.fileNamePrint action:@"Download File" note:[NSString stringWithFormat:@"Selector : %@ - Error : %@", selector, message] type:k_activityTypeFailure verbose:k_activityVerboseDebug account:metadata.account];
     
     [app messageNotification:@"_download_file_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
     
@@ -250,7 +250,7 @@
     _metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, app.activeAccount] context:nil];
     
     // Activity
-    [CCCoreData addActivityFile:_metadata.fileNamePrint action:@"Download File" note:[NSString stringWithFormat:@"Selector : %@", selector] session:[CCUtility createRandomString:16] type:k_activityTypeSuccess verbose:k_activityVerboseDebug account:_metadata.account];
+    [CCCoreData addActivityFile:_metadata.fileNamePrint action:@"Download File" note:[NSString stringWithFormat:@"Selector : %@", selector] type:k_activityTypeSuccess verbose:k_activityVerboseDebug account:_metadata.account];
     
     // File exists
     if ([self shouldPerformSegue])

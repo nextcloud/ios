@@ -286,7 +286,7 @@
             [self.delegate downloadThumbnailFailure:_metadataNet message:[CCError manageErrorOC:response.statusCode error:error] errorCode:errorCode];
         
         // Activity
-        [CCCoreData addActivityFile:_metadataNet.fileName action:@"Get Thumbnail" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] session:[CCUtility createRandomString:16] type:k_activityTypeFailure verbose:k_activityVerboseDebug account:_metadataNet.account];
+        [CCCoreData addActivityFile:_metadataNet.fileName action:@"Get Thumbnail" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseDebug account:_metadataNet.account];
         
         [self complete];
     }];
@@ -405,7 +405,7 @@
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
         
         // Activity
-        [CCCoreData addActivityFile:_metadataNet.serverUrl action:@"Read Folder" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] session:[CCUtility createRandomString:16] type:k_activityTypeFailure verbose:k_activityVerboseDebug account:_metadataNet.account];
+        [CCCoreData addActivityFile:_metadataNet.serverUrl action:@"Read Folder" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseDebug account:_metadataNet.account];
         
         [self complete];
     }];
@@ -1172,7 +1172,7 @@
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
         
         // Activity
-        [CCCoreData addActivityFile:_activeUrl action:@"Get Notification Server" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] session:[CCUtility createRandomString:16] type:k_activityTypeFailure verbose:k_activityVerboseDebug account:_metadataNet.account];
+        [CCCoreData addActivityFile:_activeUrl action:@"Get Notification Server" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseDebug account:_metadataNet.account];
         
         [self complete];
     }];
@@ -1236,7 +1236,7 @@
         [communication subscribingPushProxy:k_pushNotificationServer pushToken:pushToken deviceIdentifier:deviceIdentifier deviceIdentifierSignature:signature userPublicKey:devicePublicKey onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *publicKey, NSString *deviceIdentifier, NSString *signature, NSString *redirectedServer) {
             
             // Activity
-            [CCCoreData addActivityFile:k_pushNotificationServer action:@"Subscribing Push Proxy" note:@"Service registered." session:[CCUtility createRandomString:16] type:k_activityTypeSuccess verbose:k_activityVerboseDebug account:_metadataNet.account];
+            [CCCoreData addActivityFile:k_pushNotificationServer action:@"Subscribing Push Proxy" note:@"Service registered." type:k_activityTypeSuccess verbose:k_activityVerboseDebug account:_metadataNet.account];
             
             [self complete];
             
@@ -1251,7 +1251,7 @@
                 [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
 
             // Activity
-            [CCCoreData addActivityFile:k_pushNotificationServer action:@"Subscribing Push Proxy" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] session:[CCUtility createRandomString:16] type:k_activityTypeFailure verbose:k_activityVerboseDebug account:_metadataNet.account];
+            [CCCoreData addActivityFile:k_pushNotificationServer action:@"Subscribing Push Proxy" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseDebug account:_metadataNet.account];
 
             [self complete];
         }];
@@ -1267,7 +1267,7 @@
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
         
         // Activity
-        [CCCoreData addActivityFile:_activeUrl action:@"Subscribing Server Push" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] session:[CCUtility createRandomString:16] type:k_activityTypeFailure verbose:k_activityVerboseDebug account:_metadataNet.account];
+        [CCCoreData addActivityFile:_activeUrl action:@"Subscribing Server Push" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseDebug account:_metadataNet.account];
 
         [self complete];
     }];
@@ -1374,7 +1374,7 @@
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
         
         // Activity
-        [CCCoreData addActivityFile:_activeUrl action:@"Features Supported By Server" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] session:[CCUtility createRandomString:16] type:k_activityTypeFailure verbose:k_activityVerboseDebug account:_metadataNet.account];
+        [CCCoreData addActivityFile:_activeUrl action:@"Features Supported By Server" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseDebug account:_metadataNet.account];
 
         [self complete];
     }];
@@ -1410,7 +1410,7 @@
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
 
         // Activity
-        [CCCoreData addActivityFile:_activeUrl action:@"Capabilities Of Server" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] session:[CCUtility createRandomString:16] type:k_activityTypeFailure verbose:k_activityVerboseDebug account:_metadataNet.account];
+        [CCCoreData addActivityFile:_activeUrl action:@"Capabilities Of Server" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseDebug account:_metadataNet.account];
         
         [self complete];
     }];

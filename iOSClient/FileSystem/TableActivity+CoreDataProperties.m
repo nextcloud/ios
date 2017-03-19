@@ -21,7 +21,6 @@
 @dynamic idActivity;
 @dynamic link;
 @dynamic note;
-@dynamic session;
 @dynamic type;
 @dynamic verbose;
 
