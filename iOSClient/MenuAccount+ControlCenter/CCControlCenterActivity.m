@@ -81,8 +81,11 @@
         
          //_sectionDataSource = [CCCoreData getAllTableActivityWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (idActivity != 0)", app.activeAccount]];
         
-        _sectionDataSource = [CCCoreData getAllTableActivityWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@)", app.activeAccount]];
-                
+        if ([CCUtility getActivityVerboseDebug])
+            _sectionDataSource = [CCCoreData getAllTableActivityWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@)", app.activeAccount]];
+        else
+            _sectionDataSource = [CCCoreData getAllTableActivityWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (verbose == %lu)", app.activeAccount, k_activityVerboseDefault]];
+        
         if ([[app.controlCenter getActivePage] isEqualToString:k_pageControlCenterActivity]) {
             
             if ([_sectionDataSource count] == 0) {
@@ -134,10 +137,10 @@
     noteLabel.lineBreakMode = NSLineBreakByWordWrapping;
     int heighNoteLabel = [self getLabelHeight:noteLabel];
 
-    int heightView = 80 + heighNoteLabel + (heighNoteLabel/5);
+    int heightView = 90 + heighNoteLabel + (heighNoteLabel/5);
     
-    if (heightView < 80)
-        heightView = 80;
+    if (heightView < 90)
+        heightView = 90;
     
     return CGSizeMake(collectionView.frame.size.width, heightView);
 }
@@ -157,8 +160,12 @@
     UIImageView *typeImage = (UIImageView *) [headerView viewWithTag:103];
     
     [dateLabel setFont:fontSizeData];
-    dateLabel.textColor = [UIColor colorWithRed:130.0/255.0 green:130.0/255.0 blue:130.0/255.0 alpha:1.0];
-    dateLabel.text = [CCUtility getTitleSectionDate:date];
+    dateLabel.textColor = [UIColor colorWithRed:100.0/255.0 green:100.0/255.0 blue:100.0/255.0 alpha:1.0];
+    
+    if ([CCUtility getActivityVerboseDebug])
+        dateLabel.text = [NSDateFormatter localizedStringFromDate:date dateStyle:NSDateFormatterMediumStyle timeStyle:NSDateFormatterMediumStyle];
+    else
+        dateLabel.text = [CCUtility getTitleSectionDate:date];
     
     [actionLabel setFont:fontSizeAction];
     actionLabel.text = [NSString stringWithFormat:@"%@ %@", activity.action, activity.file];
