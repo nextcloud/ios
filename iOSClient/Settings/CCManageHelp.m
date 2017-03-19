@@ -58,6 +58,7 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
     [row.cellConfig setObject:COLOR_BRAND forKey:@"textLabel.textColor"];
+    [row.cellConfig setObject:[UIImage imageNamed:image_settingsIntroduction] forKey:@"imageView.image"];
     row.action.formSelector = @selector(intro:);
     [section addFormRow:row];
 
@@ -66,9 +67,19 @@
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"activityVerboseDebug" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_help_debug_Activity_verbose_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[UIImage imageNamed:image_settingsDebug] forKey:@"imageView.image"];
     if ([CCUtility getActivityVerboseDebug]) row.value = @"1";
     else row.value = @"0";
     [section addFormRow:row];
+    
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"sendMailDebug" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_help_debug_Activity_mail_", nil)];
+    [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
+    [row.cellConfig setObject:COLOR_BRAND forKey:@"textLabel.textColor"];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[UIImage imageNamed:image_settingsKeyMail] forKey:@"imageView.image"];
+    row.action.formSelector = @selector(sendMail:);
+    [section addFormRow:row];
+
 
     section = [XLFormSectionDescriptor formSection];
     [form addFormSection:section];
@@ -111,12 +122,68 @@
         }
     }
 }
-    
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark === Intro ===
+#pragma --------------------------------------------------------------------------------------------
+
 - (void)intro:(XLFormRowDescriptor *)sender
 {
     [self deselectFormRow:sender];
     
     [self.intro showIntroCryptoCloud:0.1];
+}
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark === Mail ===
+#pragma --------------------------------------------------------------------------------------------
+
+- (void) mailComposeController:(MFMailComposeViewController *)vc didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error
+{
+    switch (result)
+    {
+        case MFMailComposeResultCancelled:
+            [app messageNotification:@"_info_" description:@"_mail_deleted_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess];
+            break;
+        case MFMailComposeResultSaved:
+            [app messageNotification:@"_info_" description:@"_mail_saved_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess];
+            break;
+        case MFMailComposeResultSent:
+            [app messageNotification:@"_info_" description:@"_mail_sent_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess];
+            break;
+        case MFMailComposeResultFailed: {
+            NSString *msg = [NSString stringWithFormat:NSLocalizedString(@"_mail_failure_", nil), [error localizedDescription]];
+            [app messageNotification:@"_error_" description:msg visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
+        }
+            break;
+        default:
+            break;
+    }
+    
+    // Close the Mail Interface
+    [self dismissViewControllerAnimated:YES completion:NULL];
+}
+
+- (void)sendMail:(XLFormRowDescriptor *)sender
+{
+    // Email Subject
+    NSString *emailTitle = NSLocalizedString(@"_information_req_", nil);
+    // Email Content
+    NSString *messageBody;
+    // Email Recipents
+    NSArray *toRecipents;
+    
+    messageBody = [NSString stringWithFormat:@"\n\n\n%@ Version %@ (%@)", k_brand,[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"], [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
+    toRecipents = [NSArray arrayWithObject:k_mailMe];
+    
+    MFMailComposeViewController *mc = [[MFMailComposeViewController alloc] init];
+    mc.mailComposeDelegate = self;
+    [mc setSubject:emailTitle];
+    [mc setMessageBody:messageBody isHTML:NO];
+    [mc setToRecipients:toRecipents];
+    
+    // Present mail view controller on screen
+    [self presentViewController:mc animated:YES completion:NULL];
 }
 
 @end

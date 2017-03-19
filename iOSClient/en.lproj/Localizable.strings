@@ -187,6 +187,7 @@
 "_help_intro_"                  = "Introduction _brand_";
 "_help_debug_section_"          = "Debug";
 "_help_debug_Activity_verbose_" = "Activity verbose debug";
+"_help_debug_Activity_mail_"    = "Send activity debug at Mail";
 
 // Manage Optimizations
 
