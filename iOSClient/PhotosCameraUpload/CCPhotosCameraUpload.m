@@ -61,6 +61,8 @@
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setupCameraUploadFull) name:@"setupCameraUploadFull" object:nil];
         
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(triggerProgressTask:) name:@"NotificationProgressTask" object:nil];
+        
         app.activePhotosCameraUpload = self;
     }
     
@@ -526,6 +528,17 @@
     
     if (indexPath && [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadataNet.fileID]])
         [self.collectionView reloadItemsAtIndexPaths:@[indexPath]];
+}
+
+- (void)triggerProgressTask:(NSNotification *)notification
+{
+    NSDictionary *dict = notification.userInfo;
+    float progress = [[dict valueForKey:@"progress"] floatValue];
+    
+    if (progress == 0)
+        [self.navigationController cancelCCProgress];
+    else
+        [self.navigationController setCCProgressPercentage:progress*100 andTintColor:COLOR_NAVIGATIONBAR_PROGRESS];
 }
 
 #pragma --------------------------------------------------------------------------------------------
