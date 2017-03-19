@@ -493,6 +493,8 @@
 		F78088EB1DD3A1DB005C5A7C /* cryptocloud.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = F78088E51DD3A1DB005C5A7C /* cryptocloud.xcdatamodeld */; };
 		F78BFED41D3111B800E513CF /* LaunchScreenNextcloud.xib in Resources */ = {isa = PBXBuildFile; fileRef = F78BFECA1D3111B800E513CF /* LaunchScreenNextcloud.xib */; };
 		F78BFEE11D31126B00E513CF /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F78BFEDE1D31126B00E513CF /* MainInterface.storyboard */; };
+		F7A13A031E7F3D5D00016680 /* CCProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A13A001E7F3D5D00016680 /* CCProgressView.m */; };
+		F7A13A041E7F3D5D00016680 /* UINavigationController+CCProgress.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A13A021E7F3D5D00016680 /* UINavigationController+CCProgress.m */; };
 		F7B1FBC41E72E3D1001781FE /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7B1FBB11E72E3D1001781FE /* Media.xcassets */; };
 		F7B1FBC51E72E3D1001781FE /* SwiftWebVC.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7B1FBB31E72E3D1001781FE /* SwiftWebVC.strings */; };
 		F7B1FBC61E72E3D1001781FE /* SwiftModalWebVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B1FBBF1E72E3D1001781FE /* SwiftModalWebVC.swift */; };
@@ -509,8 +511,6 @@
 		F7C525A01E3B48B700FFE02C /* CCNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C5259F1E3B48B700FFE02C /* CCNotification.swift */; };
 		F7C525A21E3B6DA800FFE02C /* CCNotification.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7C525A11E3B6DA800FFE02C /* CCNotification.storyboard */; };
 		F7C742D81E7BD5C900D9C973 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7C742D71E7BD5C900D9C973 /* MainInterface.storyboard */; };
-		F7CE28851D1ACFA70025783C /* CCProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CE28801D1ACFA70025783C /* CCProgressView.m */; };
-		F7CE28881D1ACFA70025783C /* UINavigationController+CCProgress.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CE28821D1ACFA70025783C /* UINavigationController+CCProgress.m */; };
 		F7D2677C1E157053005ACB7E /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7F67BB81A24D27800EE80DA /* Images.xcassets */; };
 		F7D6A0911D82DBFA0045AD1A /* CCControlCenter.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D6A08A1D82DBFA0045AD1A /* CCControlCenter.m */; };
 		F7D6A0931D82DBFA0045AD1A /* CCControlCenterTransferCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D6A08C1D82DBFA0045AD1A /* CCControlCenterTransferCell.m */; };
@@ -1387,6 +1387,10 @@
 		F7956FC91B4886E60085DEA3 /* CCUploadFromOtherUpp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCUploadFromOtherUpp.h; sourceTree = "<group>"; };
 		F7956FCA1B4886E60085DEA3 /* CCUploadFromOtherUpp.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCUploadFromOtherUpp.m; sourceTree = "<group>"; };
 		F7956FCB1B4886E60085DEA3 /* CCUploadFromOtherUpp.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = CCUploadFromOtherUpp.storyboard; sourceTree = "<group>"; };
+		F7A139FF1E7F3D5D00016680 /* CCProgressView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCProgressView.h; sourceTree = "<group>"; };
+		F7A13A001E7F3D5D00016680 /* CCProgressView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCProgressView.m; sourceTree = "<group>"; };
+		F7A13A011E7F3D5D00016680 /* UINavigationController+CCProgress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UINavigationController+CCProgress.h"; sourceTree = "<group>"; };
+		F7A13A021E7F3D5D00016680 /* UINavigationController+CCProgress.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UINavigationController+CCProgress.m"; sourceTree = "<group>"; };
 		F7A54C341C6267B500E2C8BF /* CCExifGeo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCExifGeo.h; sourceTree = "<group>"; };
 		F7A54C351C6267B500E2C8BF /* CCExifGeo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCExifGeo.m; sourceTree = "<group>"; };
 		F7A582D61A24DAB500E903D7 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -1465,10 +1469,6 @@
 		F7C8C1911B482CEA0048180E /* CCGlobal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCGlobal.m; sourceTree = "<group>"; };
 		F7CD0FF91C8DDA7D006520C5 /* CCSharePermissionOC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCSharePermissionOC.h; sourceTree = "<group>"; };
 		F7CD0FFA1C8DDA7D006520C5 /* CCSharePermissionOC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCSharePermissionOC.m; sourceTree = "<group>"; };
-		F7CE287F1D1ACFA70025783C /* CCProgressView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCProgressView.h; sourceTree = "<group>"; };
-		F7CE28801D1ACFA70025783C /* CCProgressView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCProgressView.m; sourceTree = "<group>"; };
-		F7CE28811D1ACFA70025783C /* UINavigationController+CCProgress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UINavigationController+CCProgress.h"; sourceTree = "<group>"; };
-		F7CE28821D1ACFA70025783C /* UINavigationController+CCProgress.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UINavigationController+CCProgress.m"; sourceTree = "<group>"; };
 		F7CE8AFA1DC1F8D8009CAE48 /* Nextcloud.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Nextcloud.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F7CE8AFB1DC1F8D8009CAE48 /* Share.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = Share.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		F7D02A461C5F9E4400D6F972 /* CCMove.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCMove.h; sourceTree = "<group>"; };
@@ -2841,6 +2841,17 @@
 			name = Table;
 			sourceTree = "<group>";
 		};
+		F7A139FE1E7F3D5D00016680 /* CCProgress */ = {
+			isa = PBXGroup;
+			children = (
+				F7A139FF1E7F3D5D00016680 /* CCProgressView.h */,
+				F7A13A001E7F3D5D00016680 /* CCProgressView.m */,
+				F7A13A011E7F3D5D00016680 /* UINavigationController+CCProgress.h */,
+				F7A13A021E7F3D5D00016680 /* UINavigationController+CCProgress.m */,
+			);
+			path = CCProgress;
+			sourceTree = "<group>";
+		};
 		F7ACE4281BAC0268006C0017 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
@@ -3026,17 +3037,6 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		F7CE287E1D1ACFA70025783C /* UINavigationController+CCProgress */ = {
-			isa = PBXGroup;
-			children = (
-				F7CE287F1D1ACFA70025783C /* CCProgressView.h */,
-				F7CE28801D1ACFA70025783C /* CCProgressView.m */,
-				F7CE28811D1ACFA70025783C /* UINavigationController+CCProgress.h */,
-				F7CE28821D1ACFA70025783C /* UINavigationController+CCProgress.m */,
-			);
-			path = "UINavigationController+CCProgress";
-			sourceTree = "<group>";
-		};
 		F7D6A0881D82DBFA0045AD1A /* ControlCenter+MenuAccount */ = {
 			isa = PBXGroup;
 			children = (
@@ -3175,6 +3175,7 @@
 			isa = PBXGroup;
 			children = (
 				F72AAEC11E5C60C700BB17E1 /* AHKActionSheet */,
+				F7A139FE1E7F3D5D00016680 /* CCProgress */,
 				F7B1FBAF1E72E3D1001781FE /* SwiftWebVC */,
 				F7F54CAD1E5B14C700E19C62 /* MWPhotoBrowser */,
 			);
@@ -3297,7 +3298,6 @@
 				F7ACE4281BAC0268006C0017 /* Settings */,
 				F728CE741BF6322C00E69702 /* Share */,
 				F721371B1BAFF0920012B613 /* Templates */,
-				F7CE287E1D1ACFA70025783C /* UINavigationController+CCProgress */,
 				F70784811A2C8A0D00AC9FFF /* UploadFromOtherUpp */,
 				F7BFFA991A24D7BB0044ED85 /* Utility */,
 			);
@@ -4067,6 +4067,7 @@
 				F7D6A0971D82DBFA0045AD1A /* CCMenu.m in Sources */,
 				F77B0E131D118A16002130FE /* AppDelegate.m in Sources */,
 				F750374F1DBFA91A008FB480 /* NSArray+PureLayout.m in Sources */,
+				F7A13A031E7F3D5D00016680 /* CCProgressView.m in Sources */,
 				F7F06EAF1DBFACC600099AE9 /* CTAssetsGridSelectedView.m in Sources */,
 				F77B0E141D118A16002130FE /* CCError.m in Sources */,
 				F73CCE191DC13776007E38D8 /* XLFormRegexValidator.m in Sources */,
@@ -4137,7 +4138,6 @@
 				F77B0E4D1D118A16002130FE /* CCCoreData.m in Sources */,
 				F7659A5E1DC0B760004860C4 /* PSTCollectionViewController.m in Sources */,
 				F7F801031D98205A007537BC /* CCCertificate.m in Sources */,
-				F7CE28881D1ACFA70025783C /* UINavigationController+CCProgress.m in Sources */,
 				F77B0E4F1D118A16002130FE /* CCManageCameraUpload.m in Sources */,
 				F77B0E511D118A16002130FE /* UIImage+Filtering.m in Sources */,
 				F73CCDEB1DC13776007E38D8 /* XLFormSegmentedCell.m in Sources */,
@@ -4227,7 +4227,6 @@
 				F7F06ECB1DBFACC600099AE9 /* CTAssetThumbnailOverlay.m in Sources */,
 				F77B0E9B1D118A16002130FE /* CCBKPasscode.m in Sources */,
 				F77B0E9D1D118A16002130FE /* HRColorPickerView.m in Sources */,
-				F7CE28851D1ACFA70025783C /* CCProgressView.m in Sources */,
 				F77B0E9F1D118A16002130FE /* mztools.c in Sources */,
 				F7F06EC71DBFACC600099AE9 /* CTAssetsPickerNoAssetsView.m in Sources */,
 				F7659A271DC0B726004860C4 /* EAIntroPage.m in Sources */,
@@ -4239,6 +4238,7 @@
 				F77B0EA81D118A16002130FE /* BKShiftingView.m in Sources */,
 				F77B0EAA1D118A16002130FE /* zip.c in Sources */,
 				F77B0EAB1D118A16002130FE /* HRColorPickerViewController.m in Sources */,
+				F7A13A041E7F3D5D00016680 /* UINavigationController+CCProgress.m in Sources */,
 				F7F06EB51DBFACC600099AE9 /* CTAssetsGridViewController.m in Sources */,
 				F73C002F1E55D7DF00EEEFA7 /* CCManageCryptoCloudSecurity.m in Sources */,
 				F7659A621DC0B760004860C4 /* PSTCollectionViewFlowLayout.m in Sources */,
