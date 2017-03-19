@@ -37,9 +37,9 @@
 {
     if (self = [super initWithCoder:aDecoder])  {
         
-        app.controlCenterTransfer = self;
-        
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(triggerProgressTask:) name:@"NotificationProgressTask" object:nil];
+        
+        app.controlCenterTransfer = self;
     }
     return self;
 }
