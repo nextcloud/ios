@@ -82,7 +82,7 @@
 
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"clearActivityLog" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_help_Activity_clear_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIColor redColor] forKey:@"textLabel.textColor"];
+    [row.cellConfig setObject:COLOR_BRAND forKey:@"textLabel.textColor"];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
     [row.cellConfig setObject:[UIImage imageNamed:image_settingsClearActivity] forKey:@"imageView.image"];
     row.action.formSelector = @selector(clearActivity:);
