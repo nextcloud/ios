@@ -426,9 +426,11 @@
         dispatch_async(dispatch_get_main_queue(), ^{
         
             // Notification change session
-            NSArray *object = [[NSArray alloc] initWithObjects:session, metadata, task, nil];
-            [[NSNotificationCenter defaultCenter] postNotificationName:k_networkingSessionNotification object:object];
-        
+            if (session && metadata && task) {
+                NSArray *object = [[NSArray alloc] initWithObjects:session, metadata, task, nil];
+                [[NSNotificationCenter defaultCenter] postNotificationName:k_networkingSessionNotification object:object];
+            }
+            
             [self downloadFileSuccessFailure:fileName fileID:metadata.fileID rev:rev date:date serverUrl:serverUrl selector:metadata.sessionSelector selectorPost:metadata.sessionSelectorPost errorCode:errorCode];
         });
     }
@@ -448,8 +450,10 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             
             // Notification change session
-            NSArray *object = [[NSArray alloc] initWithObjects:session, metadata, task, nil];
-            [[NSNotificationCenter defaultCenter] postNotificationName:k_networkingSessionNotification object:object];
+            if (session && metadata && task) {
+                NSArray *object = [[NSArray alloc] initWithObjects:session, metadata, task, nil];
+                [[NSNotificationCenter defaultCenter] postNotificationName:k_networkingSessionNotification object:object];
+            }
             
             [self uploadFileSuccessFailure:metadata fileName:fileName fileID:fileID rev:rev date:date serverUrl:serverUrl errorCode:errorCode];
         });
