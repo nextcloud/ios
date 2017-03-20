@@ -84,7 +84,7 @@
 
 + (void)setFavoriteOffline:(BOOL)offline;
 
-+ (void)setActivityVerboseDebug:(BOOL)debug;
++ (void)setActivityVerboseHigh:(BOOL)debug;
 
 // GET
 
@@ -125,7 +125,7 @@
 
 + (BOOL)getFavoriteOffline;
 
-+ (BOOL)getActivityVerboseDebug;
++ (BOOL)getActivityVerboseHigh;
 
 // ===== Varius =====
 

@@ -195,10 +195,10 @@
     [UICKeyChainStore setString:sFavoriteOffline forKey:@"favoriteOffline" service:k_serviceShareKeyChain];
 }
 
-+ (void)setActivityVerboseDebug:(BOOL)debug
++ (void)setActivityVerboseHigh:(BOOL)high
 {
-    NSString *sActivityVerboseDebug = (debug) ? @"true" : @"false";
-    [UICKeyChainStore setString:sActivityVerboseDebug forKey:@"activityVerboseDebug" service:k_serviceShareKeyChain];
+    NSString *sHigh = (high) ? @"true" : @"false";
+    [UICKeyChainStore setString:sHigh forKey:@"activityVerboseHigh" service:k_serviceShareKeyChain];
 }
 
 #pragma ------------------------------ GET
@@ -380,9 +380,9 @@
     return [[UICKeyChainStore stringForKey:@"favoriteOffline" service:k_serviceShareKeyChain] boolValue];
 }
 
-+ (BOOL)getActivityVerboseDebug
++ (BOOL)getActivityVerboseHigh
 {
-    return [[UICKeyChainStore stringForKey:@"activityVerboseDebug" service:k_serviceShareKeyChain] boolValue];
+    return [[UICKeyChainStore stringForKey:@"activityVerboseHigh" service:k_serviceShareKeyChain] boolValue];
 }
 
 #pragma --------------------------------------------------------------------------------------------

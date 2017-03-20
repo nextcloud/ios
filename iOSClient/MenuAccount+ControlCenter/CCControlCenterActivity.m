@@ -81,7 +81,7 @@
         
          //_sectionDataSource = [CCCoreData getAllTableActivityWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (idActivity != 0)", app.activeAccount]];
         
-        if ([CCUtility getActivityVerboseDebug])
+        if ([CCUtility getActivityVerboseHigh])
             _sectionDataSource = [CCCoreData getAllTableActivityWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@)", app.activeAccount]];
         else
             _sectionDataSource = [CCCoreData getAllTableActivityWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (verbose == %lu)", app.activeAccount, k_activityVerboseDefault]];
@@ -159,7 +159,7 @@
     [dateLabel setFont:fontSizeData];
     dateLabel.textColor = [UIColor colorWithRed:100.0/255.0 green:100.0/255.0 blue:100.0/255.0 alpha:1.0];
     
-    if ([CCUtility getActivityVerboseDebug]) {
+    if ([CCUtility getActivityVerboseHigh]) {
         
         dateLabel.text = [NSDateFormatter localizedStringFromDate:activity.date dateStyle:NSDateFormatterFullStyle timeStyle:NSDateFormatterMediumStyle];
         
@@ -177,7 +177,7 @@
         
         actionLabel.textColor = COLOR_BRAND;
         
-        if ([activity.verbose integerValue] == k_activityVerboseDebug)
+        if ([activity.verbose integerValue] == k_activityVerboseHigh)
             typeImage.image = [UIImage imageNamed:@"activityTypeInfo"];
         else
             typeImage.image = [UIImage imageNamed:@"activityTypeInfoServer"];

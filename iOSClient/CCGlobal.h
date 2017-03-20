@@ -245,7 +245,7 @@ extern NSString *const urlBaseUploadDB;
 
 // Activity
 #define k_activityVerboseDefault                        0
-#define k_activityVerboseDebug                          1
+#define k_activityVerboseHigh                           1
 #define k_activityTypeInfo                              @"info"
 #define k_activityTypeSuccess                           @"success"
 #define k_activityTypeFailure                           @"error"

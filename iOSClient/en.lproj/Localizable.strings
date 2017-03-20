@@ -178,30 +178,30 @@
 
 // Manage Photos
 
-"_change_folder_photos_"    = "Change folder Photos";
+"_change_folder_photos_"        = "Change folder Photos";
 
 // Manage Help
 
 "_help_tutorial_"               = "Tutorial";
 "_help_intro_"                  = "Introduction _brand_";
-"_help_debug_section_"          = "Debug";
-"_help_debug_Activity_verbose_" = "Activity verbose debug";
-"_help_debug_Activity_mail_"    = "Send activity debug @Mail";
-"_help_debug_Activity_clear_"   = "Clear activity";
+"_help_activity_section_"       = "Activity";
+"_help_Activity_verbose_"       = "Activity verbose high";
+"_help_Activity_mail_"          = "Send activity @Mail";
+"_help_Activity_clear_"         = "Clear activity";
 
 // Manage Optimizations
 
-"_optimized_photos_"        = "Optimized photos resolution";
-"_upload_del_photos_"       = "Remove files after upload";
-"_optimized_photos_how_"    = "If your iPhone is low on space, full-resolution photos are automatically replaced with optimized versions. The full-resolution versions are stored in your Cloud.";
-"_upload_del_photos_how_"   = "Files will be removed from _brand_ memory after they’ve been uploaded to the Cloud. They will remain in the camera roll. Just download the files to see them.";
+"_optimized_photos_"            = "Optimized photos resolution";
+"_upload_del_photos_"           = "Remove files after upload";
+"_optimized_photos_how_"        = "If your iPhone is low on space, full-resolution photos are automatically replaced with optimized versions. The full-resolution versions are stored in your Cloud.";
+"_upload_del_photos_how_"       = "Files will be removed from _brand_ memory after they’ve been uploaded to the Cloud. They will remain in the camera roll. Just download the files to see them.";
 
 // Login
 
-"_connect_server_anyway_"   = "Do you want to connect to the server anyway?";
-"_connection_error_"        = "Connection error";
-"_add_your_nextcloud_"      = "Add your Nextcloud account";
-"_key_aes_256_"             = "Encryption key passcode";
+"_connect_server_anyway_"       = "Do you want to connect to the server anyway?";
+"_connection_error_"            = "Connection error";
+"_add_your_nextcloud_"          = "Add your Nextcloud account";
+"_key_aes_256_"                 = "Encryption key passcode";
 
 "_security_init_required_hint_" = "Hint for encryption key passcode (Recommended)";
 "_hint_"                        = "Hint";

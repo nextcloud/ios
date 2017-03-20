@@ -62,17 +62,17 @@
     row.action.formSelector = @selector(intro:);
     [section addFormRow:row];
 
-    section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_help_debug_section_", nil)];
+    section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_help_activity_section_", nil)];
     [form addFormSection:section];
     
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"activityVerboseDebug" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_help_debug_Activity_verbose_", nil)];
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"activityVerboseHigh" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_help_Activity_verbose_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:[UIImage imageNamed:image_settingsDebug] forKey:@"imageView.image"];
-    if ([CCUtility getActivityVerboseDebug]) row.value = @"1";
+    if ([CCUtility getActivityVerboseHigh]) row.value = @"1";
     else row.value = @"0";
     [section addFormRow:row];
     
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"sendMailDebug" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_help_debug_Activity_mail_", nil)];
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"sendMailActivity" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_help_Activity_mail_", nil)];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
     [row.cellConfig setObject:COLOR_BRAND forKey:@"textLabel.textColor"];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
@@ -80,7 +80,7 @@
     row.action.formSelector = @selector(sendMail:);
     [section addFormRow:row];
 
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"clearActivityLog" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_help_debug_Activity_clear_", nil)];
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"clearActivityLog" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_help_Activity_clear_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:[UIColor redColor] forKey:@"textLabel.textColor"];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
@@ -121,12 +121,12 @@
 {
     [super formRowDescriptorValueHasChanged:rowDescriptor oldValue:oldValue newValue:newValue];
     
-    if ([rowDescriptor.tag isEqualToString:@"activityVerboseDebug"]) {
+    if ([rowDescriptor.tag isEqualToString:@"activityVerboseHigh"]) {
         
         if ([[rowDescriptor.value valueData] boolValue] == YES) {
-            [CCUtility setActivityVerboseDebug:true];
+            [CCUtility setActivityVerboseHigh:true];
         } else {
-            [CCUtility setActivityVerboseDebug:false];
+            [CCUtility setActivityVerboseHigh:false];
         }
     }
 }
@@ -185,11 +185,11 @@
     // Email Recipents
     NSArray *toRecipents;
     
-    NSArray *activities = [CCCoreData getAllTableActivityWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (verbose == %lu)", app.activeAccount, k_activityVerboseDebug]];
+    NSArray *activities = [CCCoreData getAllTableActivityWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (verbose == %lu)", app.activeAccount, k_activityVerboseHigh]];
     
     if ([activities count] == 0) {
         
-        [app messageNotification:@"_info_" description:@"No activity debug found" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo];
+        [app messageNotification:@"_info_" description:@"No activity found" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo];
         return;
     }
     
