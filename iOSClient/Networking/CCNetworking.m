@@ -426,7 +426,7 @@
         dispatch_async(dispatch_get_main_queue(), ^{
         
             // Notification change session
-            if (session && metadata && task) {
+            if (metadata) {
                 NSArray *object = [[NSArray alloc] initWithObjects:session, metadata, task, nil];
                 [[NSNotificationCenter defaultCenter] postNotificationName:k_networkingSessionNotification object:object];
             }
@@ -450,7 +450,7 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             
             // Notification change session
-            if (session && metadata && task) {
+            if (metadata) {
                 NSArray *object = [[NSArray alloc] initWithObjects:session, metadata, task, nil];
                 [[NSNotificationCenter defaultCenter] postNotificationName:k_networkingSessionNotification object:object];
             }
