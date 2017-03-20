@@ -676,8 +676,21 @@
         if ([metadata.type isEqualToString: k_metadataType_template])
             cell.labelInfoFile.text = [NSString stringWithFormat:@"%@", date];
         
-        if ([metadata.type isEqualToString: k_metadataType_file] || [metadata.type isEqualToString: k_metadataType_local])
-            cell.labelInfoFile.text = [NSString stringWithFormat:@"%@, %@", date, length];
+        if ([metadata.type isEqualToString: k_metadataType_file] || [metadata.type isEqualToString: k_metadataType_local]) {
+            
+            BOOL fileExists = NO;
+            
+            if ([_pageType isEqualToString:k_pageOfflineLocal])
+                fileExists = [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", _serverUrl, metadata.fileName]];
+            
+            if ([_pageType isEqualToString:k_pageOfflineFavorites] || [_pageType isEqualToString:k_pageOfflineOffline])
+                fileExists = [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID]];
+            
+            if (fileExists)
+                cell.labelInfoFile.text = [NSString stringWithFormat:@"%@ • %@", date, length];
+            else
+                cell.labelInfoFile.text = [NSString stringWithFormat:@"%@ ◦ %@", date, length];
+        }
         
         cell.accessoryType = UITableViewCellAccessoryNone;
         
@@ -700,18 +713,27 @@
     // File
     if (([_metadata.type isEqualToString: k_metadataType_file] || [_metadata.type isEqualToString: k_metadataType_local]) && _metadata.directory == NO) {
         
-        if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, _metadata.fileID]]) {
+        // i am in local
+        if ([_pageType isEqualToString:k_pageOfflineLocal]) {
             
-            // File exists
             if ([self shouldPerformSegue])
                 [self performSegueWithIdentifier:@"segueDetail" sender:self];
 
         } else {
             
-            // File do not exists
-            NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:_metadata.account];
+            if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, _metadata.fileID]]) {
+            
+                // File exists
+                if ([self shouldPerformSegue])
+                    [self performSegueWithIdentifier:@"segueDetail" sender:self];
 
-            [[CCNetworking sharedNetworking] downloadFile:_metadata serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorLoadFileView selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
+            } else {
+            
+                // File do not exists
+                NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:_metadata.account];
+
+                [[CCNetworking sharedNetworking] downloadFile:_metadata serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorLoadFileView selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
+            }
         }
     }
     
