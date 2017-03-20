@@ -346,6 +346,9 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
     func downloadThumbnailFailure(_ metadataNet: CCMetadataNet!, message: String!, errorCode: Int) {
         
         NSLog("[LOG] Thumbnail Error \(metadataNet.fileName) \(message) (error \(errorCode))");
+        
+        // Activity
+        CCCoreData.addActivityFile(metadataNet.fileID, action: k_activityDebugActionDownloadThumbnail, note: "Selector : \(metadataNet.selector!) Error : \(message)", type: k_activityTypeFailure, verbose: Int(k_activityVerboseHigh), account: self.activeAccount)
     }
     
     func downloadThumbnailSuccess(_ metadataNet: CCMetadataNet!) {
@@ -400,7 +403,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         hud.hideHud()
         
         // Activity
-        CCCoreData.addActivityFile(fileID, action: k_activityDebugActionDownloadPicker, note: "Selector : \(selector) Error : \(message)", type: k_activityTypeFailure, verbose: Int(k_activityVerboseDefault), account: self.activeAccount)
+        CCCoreData.addActivityFile(fileID, action: k_activityDebugActionDownloadPicker, note: "Selector : \(selector!) Error : \(message)", type: k_activityTypeFailure, verbose: Int(k_activityVerboseDefault), account: self.activeAccount)
 
         if selector == selectorLoadFileView && errorCode != -999 {
             
@@ -420,7 +423,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         let metadata = CCCoreData.getMetadataWithPreficate(NSPredicate(format: "(account == '\(activeAccount!)') AND (fileID == '\(fileID!)')"), context: nil)
         
         // Activity
-        CCCoreData.addActivityFile(metadata!.fileName, action: k_activityDebugActionDownloadPicker, note: "Selector : \(selector)", type: k_activityTypeSuccess, verbose: Int(k_activityVerboseDefault), account: metadata!.account)
+        CCCoreData.addActivityFile(metadata!.fileName, action: k_activityDebugActionDownloadPicker, note: "Selector : \(selector!)", type: k_activityTypeSuccess, verbose: Int(k_activityVerboseDefault), account: metadata!.account)
         
         switch selector {
             

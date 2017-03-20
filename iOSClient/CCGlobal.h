@@ -252,6 +252,7 @@ extern NSString *const urlBaseUploadDB;
 
 #define k_activityDebugActionDownload                   @"Download"
 #define k_activityDebugActionDownloadPicker             @"Download Picker"
+#define k_activityDebugActionDownloadThumbnail          @"Download Thumbnail"
 #define k_activityDebugActionUpload                     @"Upload"
 #define k_activityDebugActionUploadPicker               @"Upload Picker"
 #define k_activityDebugActionUploadShare                @"Upload Share"
