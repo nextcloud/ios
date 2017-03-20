@@ -1405,17 +1405,10 @@
 		F7ACE4301BAC0268006C0017 /* CCSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCSettings.h; sourceTree = "<group>"; };
 		F7ACE4311BAC0268006C0017 /* CCSettings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCSettings.m; sourceTree = "<group>"; };
 		F7B1FBB11E72E3D1001781FE /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
-		F7B1FBB41E72E3D1001781FE /* da */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = da; path = da.lproj/SwiftWebVC.strings; sourceTree = "<group>"; };
 		F7B1FBB51E72E3D1001781FE /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/SwiftWebVC.strings; sourceTree = "<group>"; };
 		F7B1FBB61E72E3D1001781FE /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/SwiftWebVC.strings; sourceTree = "<group>"; };
-		F7B1FBB71E72E3D1001781FE /* es-ES */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-ES"; path = "es-ES.lproj/SwiftWebVC.strings"; sourceTree = "<group>"; };
 		F7B1FBB81E72E3D1001781FE /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/SwiftWebVC.strings; sourceTree = "<group>"; };
 		F7B1FBB91E72E3D1001781FE /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/SwiftWebVC.strings; sourceTree = "<group>"; };
-		F7B1FBBA1E72E3D1001781FE /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/SwiftWebVC.strings; sourceTree = "<group>"; };
-		F7B1FBBB1E72E3D1001781FE /* pt */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pt; path = pt.lproj/SwiftWebVC.strings; sourceTree = "<group>"; };
-		F7B1FBBC1E72E3D1001781FE /* vi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = vi; path = vi.lproj/SwiftWebVC.strings; sourceTree = "<group>"; };
-		F7B1FBBD1E72E3D1001781FE /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/SwiftWebVC.strings"; sourceTree = "<group>"; };
-		F7B1FBBE1E72E3D1001781FE /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/SwiftWebVC.strings"; sourceTree = "<group>"; };
 		F7B1FBBF1E72E3D1001781FE /* SwiftModalWebVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftModalWebVC.swift; sourceTree = "<group>"; };
 		F7B1FBC01E72E3D1001781FE /* SwiftWebVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftWebVC.swift; sourceTree = "<group>"; };
 		F7B1FBC11E72E3D1001781FE /* SwiftWebVCActivity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftWebVCActivity.swift; sourceTree = "<group>"; };
@@ -3524,13 +3517,6 @@
 				ru,
 				pl,
 				es,
-				da,
-				"es-ES",
-				ja,
-				pt,
-				vi,
-				"zh-Hans",
-				"zh-Hant",
 				is,
 				"pt-BR",
 			);
@@ -4355,17 +4341,10 @@
 		F7B1FBB31E72E3D1001781FE /* SwiftWebVC.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
-				F7B1FBB41E72E3D1001781FE /* da */,
 				F7B1FBB51E72E3D1001781FE /* de */,
 				F7B1FBB61E72E3D1001781FE /* en */,
-				F7B1FBB71E72E3D1001781FE /* es-ES */,
 				F7B1FBB81E72E3D1001781FE /* es */,
 				F7B1FBB91E72E3D1001781FE /* fr */,
-				F7B1FBBA1E72E3D1001781FE /* ja */,
-				F7B1FBBB1E72E3D1001781FE /* pt */,
-				F7B1FBBC1E72E3D1001781FE /* vi */,
-				F7B1FBBD1E72E3D1001781FE /* zh-Hans */,
-				F7B1FBBE1E72E3D1001781FE /* zh-Hant */,
 			);
 			name = SwiftWebVC.strings;
 			sourceTree = "<group>";
