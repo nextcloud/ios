@@ -144,7 +144,7 @@
 // Manage Camera Upload
 
 "_upload_camera_"           = "Upload camera photos/videos";
-"_upload_camera_background_"= "Upload background images";
+"_upload_camera_background_"= "Upload images in the background";
 "_upload_foto_camera_"      = "Upload camera photos";
 "_upload_encry_camup_"      = "Upload encrypted files";
 "_upload_video_camera_"     = "Upload camera videos";
