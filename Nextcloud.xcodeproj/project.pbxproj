@@ -451,7 +451,6 @@
 		F77B0F551D118A16002130FE /* Error.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7B381BF1C074E3E004693F8 /* Error.strings */; };
 		F77B0F561D118A16002130FE /* ZSStable.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DC91C889300008DAB36 /* ZSStable.png */; };
 		F77B0F571D118A16002130FE /* synchronizedcrypto.gif in Resources */ = {isa = PBXBuildFile; fileRef = F76344761BF259A800188725 /* synchronizedcrypto.gif */; };
-		F77B0F581D118A16002130FE /* TTOpenInAppActivityLocalizable.string in Resources */ = {isa = PBXBuildFile; fileRef = F7BFE0CA1B67925500F072A4 /* TTOpenInAppActivityLocalizable.string */; };
 		F77B0F591D118A16002130FE /* ZSSRichTextEditor.js in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DF01C889300008DAB36 /* ZSSRichTextEditor.js */; };
 		F77B0F5B1D118A16002130FE /* ZSSclearstyle.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0D951C889300008DAB36 /* ZSSclearstyle.png */; };
 		F77B0F5C1D118A16002130FE /* ImagesIntro.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F744BE961BEBB31E004FFF66 /* ImagesIntro.xcassets */; };
@@ -1044,13 +1043,11 @@
 		F70FD1C61E67552700C0FDA6 /* CCControlCenterTransfer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCControlCenterTransfer.m; sourceTree = "<group>"; };
 		F70FD1C91E675F1500C0FDA6 /* CCControlCenterActivity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCControlCenterActivity.h; sourceTree = "<group>"; };
 		F70FD1CA1E675F1500C0FDA6 /* CCControlCenterActivity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCControlCenterActivity.m; sourceTree = "<group>"; };
-		F7151A7F1D477A4B00E6AF45 /* en */ = {isa = PBXFileReference; lastKnownFileType = text; name = en; path = en.lproj/TTOpenInAppActivityLocalizable.string; sourceTree = "<group>"; };
 		F7151A801D477A4B00E6AF45 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/BKPasscodeView.strings; sourceTree = "<group>"; };
 		F7151A811D477A4B00E6AF45 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F7151A821D477A4B00E6AF45 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		F7151A831D477A4B00E6AF45 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Intro.strings; sourceTree = "<group>"; };
 		F7151A841D477A4B00E6AF45 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Error.strings; sourceTree = "<group>"; };
-		F7151A851D477A5400E6AF45 /* it */ = {isa = PBXFileReference; lastKnownFileType = text; name = it; path = it.lproj/TTOpenInAppActivityLocalizable.string; sourceTree = "<group>"; };
 		F7151A861D477A5400E6AF45 /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/BKPasscodeView.strings; sourceTree = "<group>"; };
 		F7151A871D477A5400E6AF45 /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F7151A881D477A5400E6AF45 /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -1059,20 +1056,17 @@
 		F719FDB11CF06645004895D0 /* CCPhotosCameraUpload.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCPhotosCameraUpload.h; sourceTree = "<group>"; };
 		F719FDB21CF06645004895D0 /* CCPhotosCameraUpload.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCPhotosCameraUpload.m; sourceTree = "<group>"; };
 		F71E67F61DC1F76F003BA52B /* ownCloud iOS library.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "ownCloud iOS library.xcodeproj"; path = "Libraries external/OCCommunicationLib/ownCloud iOS library.xcodeproj"; sourceTree = SOURCE_ROOT; };
-		F7202C8D1E68171800C6D9AD /* ru */ = {isa = PBXFileReference; lastKnownFileType = text; name = ru; path = ru.lproj/TTOpenInAppActivityLocalizable.string; sourceTree = "<group>"; };
 		F7202C8E1E68171900C6D9AD /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/BKPasscodeView.strings; sourceTree = "<group>"; };
 		F7202C8F1E68171900C6D9AD /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F7202C901E68171900C6D9AD /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		F7202C911E68171900C6D9AD /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Intro.strings; sourceTree = "<group>"; };
 		F7202C921E68171A00C6D9AD /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Error.strings; sourceTree = "<group>"; };
 		F7202C941E6817A400C6D9AD /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/CTAssetsPicker.strings; sourceTree = "<group>"; };
-		F7202C951E6817A400C6D9AD /* pl */ = {isa = PBXFileReference; lastKnownFileType = text; name = pl; path = pl.lproj/TTOpenInAppActivityLocalizable.string; sourceTree = "<group>"; };
 		F7202C961E6817A400C6D9AD /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/BKPasscodeView.strings; sourceTree = "<group>"; };
 		F7202C971E6817A500C6D9AD /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F7202C981E6817A500C6D9AD /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		F7202C991E6817A500C6D9AD /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/Intro.strings; sourceTree = "<group>"; };
 		F7202C9A1E6817A500C6D9AD /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/Error.strings; sourceTree = "<group>"; };
-		F7202C9B1E6818B600C6D9AD /* es */ = {isa = PBXFileReference; lastKnownFileType = text; name = es; path = es.lproj/TTOpenInAppActivityLocalizable.string; sourceTree = "<group>"; };
 		F7202C9C1E6818B700C6D9AD /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/BKPasscodeView.strings; sourceTree = "<group>"; };
 		F7202C9D1E6818B700C6D9AD /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F7202C9E1E6818B700C6D9AD /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -1117,7 +1111,6 @@
 		F72AE40A1E67246200B3E477 /* ControlCenter.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = ControlCenter.storyboard; sourceTree = "<group>"; };
 		F73049B81CB567F000C7C320 /* NSString+TruncateToWidth.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+TruncateToWidth.h"; sourceTree = "<group>"; };
 		F73049B91CB567F000C7C320 /* NSString+TruncateToWidth.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+TruncateToWidth.m"; sourceTree = "<group>"; };
-		F732B2D61E802B71002B7D75 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = text; name = "pt-BR"; path = "pt-BR.lproj/TTOpenInAppActivityLocalizable.string"; sourceTree = "<group>"; };
 		F732B2D71E802B71002B7D75 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-BR"; path = "pt-BR.lproj/BKPasscodeView.strings"; sourceTree = "<group>"; };
 		F732B2D81E802B71002B7D75 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-BR"; path = "pt-BR.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		F732B2D91E802B72002B7D75 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-BR"; path = "pt-BR.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
@@ -1125,7 +1118,6 @@
 		F732B2DB1E802B72002B7D75 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-BR"; path = "pt-BR.lproj/Error.strings"; sourceTree = "<group>"; };
 		F732BA031D76CE1500E9878B /* CCNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCNetworking.h; sourceTree = "<group>"; };
 		F732BA041D76CE1500E9878B /* CCNetworking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCNetworking.m; sourceTree = "<group>"; };
-		F73814261E65A52C0011A45E /* fr */ = {isa = PBXFileReference; lastKnownFileType = text; name = fr; path = fr.lproj/TTOpenInAppActivityLocalizable.string; sourceTree = "<group>"; };
 		F73814271E65A52C0011A45E /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/BKPasscodeView.strings; sourceTree = "<group>"; };
 		F73814281E65A52D0011A45E /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F73814291E65A52D0011A45E /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -1434,7 +1426,6 @@
 		F7B81D801C64E77F006D02DF /* CCCoreData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCCoreData.m; sourceTree = "<group>"; };
 		F7BE6E2B1D2D5C3B00106933 /* CCQuickActions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCQuickActions.h; sourceTree = "<group>"; };
 		F7BE6E2C1D2D5C3B00106933 /* CCQuickActions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCQuickActions.m; sourceTree = "<group>"; };
-		F7BEC53D1E7981720048500A /* is */ = {isa = PBXFileReference; lastKnownFileType = text; name = is; path = is.lproj/TTOpenInAppActivityLocalizable.string; sourceTree = "<group>"; };
 		F7BEC53E1E7981720048500A /* is */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = is; path = is.lproj/BKPasscodeView.strings; sourceTree = "<group>"; };
 		F7BEC53F1E7981720048500A /* is */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = is; path = is.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F7BEC5401E7981720048500A /* is */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = is; path = is.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -1456,7 +1447,6 @@
 		F7C1CDCE1E6DFAD1005D92BE /* CCStandardImages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCStandardImages.h; sourceTree = "<group>"; };
 		F7C1CDDA1E6DFC6F005D92BE /* CCNextcloudConstant.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCNextcloudConstant.h; sourceTree = "<group>"; };
 		F7C1CDDB1E6DFC6F005D92BE /* CCNextcloudImages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCNextcloudImages.h; sourceTree = "<group>"; };
-		F7C1D8BA1D47781C00B89DEA /* nl */ = {isa = PBXFileReference; lastKnownFileType = text; name = nl; path = nl.lproj/TTOpenInAppActivityLocalizable.string; sourceTree = "<group>"; };
 		F7C1D8BB1D47781C00B89DEA /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/BKPasscodeView.strings; sourceTree = "<group>"; };
 		F7C1D8BC1D47781C00B89DEA /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F7C1D8BD1D47781C00B89DEA /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -1490,7 +1480,6 @@
 		F7D6A08D1D82DBFA0045AD1A /* CCControlCenterTransferCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CCControlCenterTransferCell.xib; sourceTree = "<group>"; };
 		F7D6A08E1D82DBFA0045AD1A /* CCMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCMenu.h; sourceTree = "<group>"; };
 		F7D6A08F1D82DBFA0045AD1A /* CCMenu.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCMenu.m; sourceTree = "<group>"; };
-		F7D96F0A1D99498600A587A5 /* de */ = {isa = PBXFileReference; lastKnownFileType = text; name = de; path = de.lproj/TTOpenInAppActivityLocalizable.string; sourceTree = "<group>"; };
 		F7D96F0B1D99498600A587A5 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/BKPasscodeView.strings; sourceTree = "<group>"; };
 		F7D96F0C1D99498600A587A5 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F7D96F0D1D99498600A587A5 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -2395,7 +2384,6 @@
 		F72B60941A24F04E004EF66F /* Localizations */ = {
 			isa = PBXGroup;
 			children = (
-				F7BFE0CA1B67925500F072A4 /* TTOpenInAppActivityLocalizable.string */,
 				F72B60911A24F00B004EF66F /* BKPasscodeView.strings */,
 				F7E70DE91A24DE4100E1B66A /* Localizable.strings */,
 				F7C6D5F61BE371D800AC83AD /* InfoPlist.strings */,
@@ -3787,7 +3775,6 @@
 				F77B0F561D118A16002130FE /* ZSStable.png in Resources */,
 				F77B0F571D118A16002130FE /* synchronizedcrypto.gif in Resources */,
 				F7F54CEE1E5B14C700E19C62 /* ImageSelectedSmallOff.png in Resources */,
-				F77B0F581D118A16002130FE /* TTOpenInAppActivityLocalizable.string in Resources */,
 				F77B0F591D118A16002130FE /* ZSSRichTextEditor.js in Resources */,
 				F7F54D051E5B14C800E19C62 /* VideoOverlay@3x.png in Resources */,
 				F7F54D011E5B14C700E19C62 /* UIBarButtonItemGrid@2x.png in Resources */,
@@ -4398,23 +4385,6 @@
 				F732B2DB1E802B72002B7D75 /* pt-BR */,
 			);
 			name = Error.strings;
-			sourceTree = "<group>";
-		};
-		F7BFE0CA1B67925500F072A4 /* TTOpenInAppActivityLocalizable.string */ = {
-			isa = PBXVariantGroup;
-			children = (
-				F7C1D8BA1D47781C00B89DEA /* nl */,
-				F7151A7F1D477A4B00E6AF45 /* en */,
-				F7151A851D477A5400E6AF45 /* it */,
-				F7D96F0A1D99498600A587A5 /* de */,
-				F73814261E65A52C0011A45E /* fr */,
-				F7202C8D1E68171800C6D9AD /* ru */,
-				F7202C951E6817A400C6D9AD /* pl */,
-				F7202C9B1E6818B600C6D9AD /* es */,
-				F7BEC53D1E7981720048500A /* is */,
-				F732B2D61E802B71002B7D75 /* pt-BR */,
-			);
-			name = TTOpenInAppActivityLocalizable.string;
 			sourceTree = "<group>";
 		};
 		F7C6D5F61BE371D800AC83AD /* InfoPlist.strings */ = {
