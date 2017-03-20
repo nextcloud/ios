@@ -1168,7 +1168,7 @@
         //_AutomaticCameraUploadInProgress = NO;
         
         // Activity
-        [CCCoreData addActivityFile:@"" action:k_activityDebugActionAutomaticUpload note:description type:k_activityTypeFailure verbose:k_activityVerboseHigh account:app.activeAccount];
+        [CCCoreData addActivityFile:@"" action:k_activityDebugActionAutomaticUpload note:description type:k_activityTypeFailure verbose:k_activityVerboseDefault account:app.activeAccount];
         
         return;
     }
@@ -1186,7 +1186,7 @@
                     [app messageNotification:@"_error_" description:@"_error_createsubfolders_upload_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo];
                 
                 // Activity
-                [CCCoreData addActivityFile:@"" action:k_activityDebugActionAutomaticUpload note:NSLocalizedString(@"_error_createsubfolders_upload_",nil) type:k_activityTypeFailure verbose:k_activityVerboseHigh account:app.activeAccount];
+                [CCCoreData addActivityFile:@"" action:k_activityDebugActionAutomaticUpload note:NSLocalizedString(@"_error_createsubfolders_upload_",nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault account:app.activeAccount];
                 
                 return;
             }

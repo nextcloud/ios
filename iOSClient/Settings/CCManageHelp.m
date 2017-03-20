@@ -185,7 +185,7 @@
     // Email Recipents
     NSArray *toRecipents;
     
-    NSArray *activities = [CCCoreData getAllTableActivityWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (verbose == %lu)", app.activeAccount, k_activityVerboseHigh]];
+    NSArray *activities = [CCCoreData getAllTableActivityWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@)", app.activeAccount]];
     
     if ([activities count] == 0) {
         

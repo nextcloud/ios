@@ -400,7 +400,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         hud.hideHud()
         
         // Activity
-        CCCoreData.addActivityFile(fileID, action: k_activityDebugActionDownloadPicker, note: "Selector : \(selector) Error : \(message)", type: k_activityTypeFailure, verbose: Int(k_activityVerboseHigh), account: self.activeAccount)
+        CCCoreData.addActivityFile(fileID, action: k_activityDebugActionDownloadPicker, note: "Selector : \(selector) Error : \(message)", type: k_activityTypeFailure, verbose: Int(k_activityVerboseDefault), account: self.activeAccount)
 
         if selector == selectorLoadFileView && errorCode != -999 {
             
@@ -420,7 +420,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         let metadata = CCCoreData.getMetadataWithPreficate(NSPredicate(format: "(account == '\(activeAccount!)') AND (fileID == '\(fileID!)')"), context: nil)
         
         // Activity
-        CCCoreData.addActivityFile(metadata!.fileName, action: k_activityDebugActionDownloadPicker, note: "Selector : \(selector)", type: k_activityTypeSuccess, verbose: Int(k_activityVerboseHigh), account: metadata!.account)
+        CCCoreData.addActivityFile(metadata!.fileName, action: k_activityDebugActionDownloadPicker, note: "Selector : \(selector)", type: k_activityTypeSuccess, verbose: Int(k_activityVerboseDefaul), account: metadata!.account)
         
         switch selector {
             
@@ -466,7 +466,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         hud.hideHud()
         
         // Activity
-        CCCoreData.addActivityFile(metadataNet.fileName, action: k_activityDebugActionUploadPicker, note: "Selector : \(selector) Error : \(message)", type: k_activityTypeFailure, verbose: Int(k_activityVerboseHigh), account: metadataNet.account)
+        CCCoreData.addActivityFile(metadataNet.fileName, action: k_activityDebugActionUploadPicker, note: "Selector : \(selector) Error : \(message)", type: k_activityTypeFailure, verbose: Int(k_activityVerboseDefault), account: metadataNet.account)
         
         // remove file
         CCCoreData.deleteMetadata(with: NSPredicate(format: "(account == '\(activeAccount!)') AND (fileID == '\(fileID)')"))
