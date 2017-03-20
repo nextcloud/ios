@@ -117,7 +117,7 @@
 
 #define image_seleziona                         @"seleziona"
 #define image_saveSelectedFiles                 @"saveSelectedFiles"
-#define image_settingsDebug                     @"settingsDebug"
+#define image_settingsActivityHigh              @"settingsActivityHigh"
 #define image_settingsIntroduction              @"settingsIntroduction"
 #define image_settingsSendActivity              @"settingsSendActivity"
 #define image_settingsClearActivity             @"settingsClearActivity"
