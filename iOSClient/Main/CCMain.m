@@ -4603,20 +4603,6 @@
                                     
                                     [self moveOpenWindow:[[NSArray alloc] initWithObjects:indexPath, nil]];
                                 }];
-        /*
-        [actionSheet addButtonWithTitle:NSLocalizedString(@"_reload_", nil)
-                                  image:[UIImage imageNamed:image_actionSheetReload]
-                        backgroundColor:[UIColor whiteColor]
-                                 height: 50.0
-                                   type:AHKActionSheetButtonTypeDefault
-                                handler:^(AHKActionSheet *as) {
-                                    
-                                    // close swipe
-                                    [self setEditing:NO animated:YES];
-                                    
-                                    [self performSelector:@selector(reloadFile:) withObject:_metadata];
-                                }];
-        */
         
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_open_in_", nil)
                                   image:[UIImage imageNamed:image_actionSheetOpenIn]
@@ -4663,7 +4649,7 @@
                                     }];
         }
         
-        if (recordLocalFile) {
+        if (recordLocalFile || [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, _metadata.fileID]]) {
         
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_remove_local_file_", nil)
                                       image:[UIImage imageNamed:image_actionSheetRemoveLocal]
