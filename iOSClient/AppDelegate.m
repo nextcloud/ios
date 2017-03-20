@@ -211,19 +211,6 @@
     //[[AVAudioSession sharedInstance] setActive:YES error:nil];
     [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
     
-    // permission request camera roll
-    ALAssetsLibrary *lib = [[ALAssetsLibrary alloc] init];
-    
-    [lib enumerateGroupsWithTypes:ALAssetsGroupSavedPhotos usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
-        //NSLog(@"[LOG] %li",(long)[group numberOfAssets]);
-    } failureBlock:^(NSError *error) {
-        if (error.code == ALAssetsLibraryAccessUserDeniedError) {
-            NSLog(@"[LOG] user denied access, code: %li",(long)error.code);
-        }else{
-            NSLog(@"[LOG] Other error code: %li",(long)error.code);
-        }
-    }];
-    
     // Tint Color GLOBAL WINDOW
     [self.window setTintColor:COLOR_WINDOW_TINTCOLOR];
     

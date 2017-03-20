@@ -184,7 +184,20 @@
     [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
     [CCAspect aspectTabBar:self.tabBarController.tabBar hidden:NO];
     
-    //
+    // Request permission for camera roll access
+    [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
+        switch (status) {
+            case PHAuthorizationStatusRestricted:
+                NSLog(@"[LOG] user can't grant access to camera roll");
+                break;
+            case PHAuthorizationStatusDenied:
+                NSLog(@"[LOG] user denied access to camera roll");
+                break;
+            default:
+                break;
+        }
+    }];
+
     [self reloadForm];
 }
 
