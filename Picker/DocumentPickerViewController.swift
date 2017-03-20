@@ -420,7 +420,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         let metadata = CCCoreData.getMetadataWithPreficate(NSPredicate(format: "(account == '\(activeAccount!)') AND (fileID == '\(fileID!)')"), context: nil)
         
         // Activity
-        CCCoreData.addActivityFile(metadata!.fileName, action: k_activityDebugActionDownloadPicker, note: "Selector : \(selector)", type: k_activityTypeSuccess, verbose: Int(k_activityVerboseDefaul), account: metadata!.account)
+        CCCoreData.addActivityFile(metadata!.fileName, action: k_activityDebugActionDownloadPicker, note: "Selector : \(selector)", type: k_activityTypeSuccess, verbose: Int(k_activityVerboseDefault), account: metadata!.account)
         
         switch selector {
             
