@@ -130,17 +130,15 @@
 {
     TableActivity *activity = [_sectionDataSource objectAtIndex:section];
     
-    UILabel *noteLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, collectionView.frame.size.width , CGFLOAT_MAX)];
+    UILabel *noteLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, collectionView.frame.size.width - 100, CGFLOAT_MAX)];
     noteLabel.numberOfLines = 0;
     [noteLabel setFont:fontSizeNote];
+    [noteLabel sizeToFit];
     noteLabel.text = activity.note;
     noteLabel.lineBreakMode = NSLineBreakByWordWrapping;
     int heighNoteLabel = [self getLabelHeight:noteLabel];
 
     int heightView = 90 + heighNoteLabel + (heighNoteLabel/5);
-    
-    if (heightView < 90)
-        heightView = 90;
     
     return CGSizeMake(collectionView.frame.size.width, heightView);
 }

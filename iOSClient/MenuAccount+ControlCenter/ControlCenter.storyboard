@@ -28,13 +28,13 @@
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="cmY-iB-PWk">
                             <size key="itemSize" width="50" height="50"/>
-                            <size key="headerReferenceSize" width="50" height="120"/>
+                            <size key="headerReferenceSize" width="50" height="103"/>
                             <size key="footerReferenceSize" width="0.0" height="0.0"/>
                             <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                         </collectionViewFlowLayout>
                         <cells>
                             <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="cell" id="btw-Qo-oNg">
-                                <rect key="frame" x="0.0" y="120" width="50" height="50"/>
+                                <rect key="frame" x="0.0" y="103" width="50" height="50"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
                                     <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
@@ -49,7 +49,7 @@
                             </collectionViewCell>
                         </cells>
                         <collectionReusableView key="sectionHeaderView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="header" id="6Zg-lt-YR9">
-                            <rect key="frame" x="0.0" y="0.0" width="375" height="120"/>
+                            <rect key="frame" x="0.0" y="0.0" width="375" height="103"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <subviews>
                                 <label opaque="NO" userInteractionEnabled="NO" tag="100" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="CHD-zb-9Fb">
@@ -78,9 +78,9 @@
                                     </constraints>
                                 </imageView>
                                 <label opaque="NO" userInteractionEnabled="NO" tag="102" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="suK-ZC-07d">
-                                    <rect key="frame" x="46" y="63" width="321" height="30"/>
+                                    <rect key="frame" x="46" y="68" width="321" height="40"/>
                                     <constraints>
-                                        <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="30" id="v2e-1C-t22"/>
+                                        <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="40" id="v2e-1C-t22"/>
                                     </constraints>
                                     <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                     <nil key="textColor"/>
@@ -98,7 +98,7 @@
                                 <constraint firstItem="qKB-Ig-OvH" firstAttribute="leading" secondItem="CHD-zb-9Fb" secondAttribute="leading" id="bpL-29-hDV"/>
                                 <constraint firstAttribute="leadingMargin" secondItem="suK-ZC-07d" secondAttribute="leading" constant="-38" id="bsM-XS-4MA"/>
                                 <constraint firstAttribute="trailingMargin" secondItem="suK-ZC-07d" secondAttribute="trailing" id="uOW-VG-4zZ"/>
-                                <constraint firstItem="suK-ZC-07d" firstAttribute="top" secondItem="qKB-Ig-OvH" secondAttribute="bottom" constant="15" id="yvL-e2-SY8"/>
+                                <constraint firstItem="suK-ZC-07d" firstAttribute="top" secondItem="qKB-Ig-OvH" secondAttribute="bottom" constant="20" id="yvL-e2-SY8"/>
                             </constraints>
                         </collectionReusableView>
                         <connections>
