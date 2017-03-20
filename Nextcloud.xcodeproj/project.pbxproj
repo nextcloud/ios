@@ -1117,6 +1117,12 @@
 		F72AE40A1E67246200B3E477 /* ControlCenter.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = ControlCenter.storyboard; sourceTree = "<group>"; };
 		F73049B81CB567F000C7C320 /* NSString+TruncateToWidth.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+TruncateToWidth.h"; sourceTree = "<group>"; };
 		F73049B91CB567F000C7C320 /* NSString+TruncateToWidth.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+TruncateToWidth.m"; sourceTree = "<group>"; };
+		F732B2D61E802B71002B7D75 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = text; name = "pt-BR"; path = "pt-BR.lproj/TTOpenInAppActivityLocalizable.string"; sourceTree = "<group>"; };
+		F732B2D71E802B71002B7D75 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-BR"; path = "pt-BR.lproj/BKPasscodeView.strings"; sourceTree = "<group>"; };
+		F732B2D81E802B71002B7D75 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-BR"; path = "pt-BR.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		F732B2D91E802B72002B7D75 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-BR"; path = "pt-BR.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		F732B2DA1E802B72002B7D75 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-BR"; path = "pt-BR.lproj/Intro.strings"; sourceTree = "<group>"; };
+		F732B2DB1E802B72002B7D75 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-BR"; path = "pt-BR.lproj/Error.strings"; sourceTree = "<group>"; };
 		F732BA031D76CE1500E9878B /* CCNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCNetworking.h; sourceTree = "<group>"; };
 		F732BA041D76CE1500E9878B /* CCNetworking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCNetworking.m; sourceTree = "<group>"; };
 		F73814261E65A52C0011A45E /* fr */ = {isa = PBXFileReference; lastKnownFileType = text; name = fr; path = fr.lproj/TTOpenInAppActivityLocalizable.string; sourceTree = "<group>"; };
@@ -3538,6 +3544,7 @@
 				"zh-Hans",
 				"zh-Hant",
 				is,
+				"pt-BR",
 			);
 			mainGroup = F7F67B9F1A24D27800EE80DA;
 			productRefGroup = F7F67B9F1A24D27800EE80DA;
@@ -4336,6 +4343,7 @@
 				F7202C961E6817A400C6D9AD /* pl */,
 				F7202C9C1E6818B700C6D9AD /* es */,
 				F7BEC53E1E7981720048500A /* is */,
+				F732B2D71E802B71002B7D75 /* pt-BR */,
 			);
 			name = BKPasscodeView.strings;
 			sourceTree = "<group>";
@@ -4352,6 +4360,7 @@
 				F7202C991E6817A500C6D9AD /* pl */,
 				F7202C9F1E6818B700C6D9AD /* es */,
 				F7BEC5411E7981720048500A /* is */,
+				F732B2DA1E802B72002B7D75 /* pt-BR */,
 			);
 			name = Intro.strings;
 			sourceTree = "<group>";
@@ -4386,6 +4395,7 @@
 				F7202C9A1E6817A500C6D9AD /* pl */,
 				F7202CA01E6818B700C6D9AD /* es */,
 				F7BEC5421E7981720048500A /* is */,
+				F732B2DB1E802B72002B7D75 /* pt-BR */,
 			);
 			name = Error.strings;
 			sourceTree = "<group>";
@@ -4402,6 +4412,7 @@
 				F7202C951E6817A400C6D9AD /* pl */,
 				F7202C9B1E6818B600C6D9AD /* es */,
 				F7BEC53D1E7981720048500A /* is */,
+				F732B2D61E802B71002B7D75 /* pt-BR */,
 			);
 			name = TTOpenInAppActivityLocalizable.string;
 			sourceTree = "<group>";
@@ -4418,6 +4429,7 @@
 				F7202C981E6817A500C6D9AD /* pl */,
 				F7202C9E1E6818B700C6D9AD /* es */,
 				F7BEC5401E7981720048500A /* is */,
+				F732B2D91E802B72002B7D75 /* pt-BR */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -4434,6 +4446,7 @@
 				F7202C971E6817A500C6D9AD /* pl */,
 				F7202C9D1E6818B700C6D9AD /* es */,
 				F7BEC53F1E7981720048500A /* is */,
+				F732B2D81E802B71002B7D75 /* pt-BR */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
