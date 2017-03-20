@@ -5287,8 +5287,7 @@
 
     } else {
     
-        // è un file
-                
+        // File                
         dataFile = [CCUtility dateDiff:metadata.date];
         lunghezzaFile = [CCUtility transformedSize:metadata.size];
         

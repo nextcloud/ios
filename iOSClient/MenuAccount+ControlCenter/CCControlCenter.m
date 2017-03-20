@@ -148,7 +148,7 @@
     CGFloat navigationBarH = self.navigationBar.frame.size.height + [UIApplication sharedApplication].statusBarFrame.size.height;
     CGFloat navigationBarW = self.navigationBar.frame.size.width;
     CGFloat heightScreen = [UIScreen mainScreen].bounds.size.height - self.tabBarController.tabBar.frame.size.height;
-    CGFloat heightTableView = [UIScreen mainScreen].bounds.size.height - self.tabBarController.tabBar.frame.size.height - self.navigationBar.frame.size.height - BORDER_TOUCH_UPDOWN - TOOLBAR_ADD_BORDER;
+    CGFloat heightTableView = heightScreen - navigationBarH - BORDER_TOUCH_UPDOWN;
 
     float centerMaxH = [self getMaxH] / 2;
     float step = [self getMaxH] / 10;
