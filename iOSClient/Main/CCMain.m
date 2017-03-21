@@ -214,6 +214,9 @@
         
         self.searchController.searchBar.scopeButtonTitles = nil;
     }
+    
+    // Hide Search Filed on Load
+    [self.tableView setContentOffset:CGPointMake(0, self.searchController.searchBar.frame.size.height - self.tableView.contentOffset.y)];
 }
 
 // Apparirà
