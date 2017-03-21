@@ -205,7 +205,9 @@
         
         actionFile = [[NSString stringWithFormat:@"%@ %@", activity.action, activity.file] stringByPaddingToLength:100 withString:@" " startingAtIndex:0];
         
-        note = [activity.note stringByPaddingToLength:150 withString:@" " startingAtIndex:0];
+        if (activity.idActivity == 0) note = [NSString stringWithFormat:@"%@ Selector: %@", activity.note, activity.selector];
+        else note = activity.note;
+        note = [note stringByPaddingToLength:200 withString:@" " startingAtIndex:0];
         
         fileAttachment = [fileAttachment stringByAppendingString:[NSString stringWithFormat:@"| %@ | %@ | %@ | %@ |\n", date, type, actionFile, note]];
     }
