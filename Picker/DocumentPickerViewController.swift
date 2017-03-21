@@ -346,9 +346,6 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
     func downloadThumbnailFailure(_ metadataNet: CCMetadataNet!, message: String!, errorCode: Int) {
         
         NSLog("[LOG] Thumbnail Error \(metadataNet.fileName) \(message) (error \(errorCode))");
-        
-        // Activity
-        CCCoreData.addActivityFile(metadataNet.fileID, action: k_activityDebugActionDownloadThumbnail, note: "Selector : \(metadataNet.selector!) Error : \(message)", type: k_activityTypeFailure, verbose: Int(k_activityVerboseHigh), account: self.activeAccount)
     }
     
     func downloadThumbnailSuccess(_ metadataNet: CCMetadataNet!) {
@@ -402,9 +399,6 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         
         hud.hideHud()
         
-        // Activity
-        CCCoreData.addActivityFile(fileID, action: k_activityDebugActionDownloadPicker, note: "Selector : \(selector!) Error : \(message)", type: k_activityTypeFailure, verbose: Int(k_activityVerboseDefault), account: self.activeAccount)
-
         if selector == selectorLoadFileView && errorCode != -999 {
             
             let alert = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: message, preferredStyle: .alert)
@@ -421,9 +415,6 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         hud.hideHud()
         
         let metadata = CCCoreData.getMetadataWithPreficate(NSPredicate(format: "(account == '\(activeAccount!)') AND (fileID == '\(fileID!)')"), context: nil)
-        
-        // Activity
-        CCCoreData.addActivityFile(metadata!.fileName, action: k_activityDebugActionDownloadPicker, note: "Selector : \(selector!)", type: k_activityTypeSuccess, verbose: Int(k_activityVerboseDefault), account: metadata!.account)
         
         switch selector {
             
@@ -468,9 +459,6 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         
         hud.hideHud()
         
-        // Activity
-        CCCoreData.addActivityFile(metadataNet.fileName, action: k_activityDebugActionUploadPicker, note: "Selector : \(selector) Error : \(message)", type: k_activityTypeFailure, verbose: Int(k_activityVerboseDefault), account: metadataNet.account)
-        
         // remove file
         CCCoreData.deleteMetadata(with: NSPredicate(format: "(account == '\(activeAccount!)') AND (fileID == '\(fileID)')"))
         
@@ -489,10 +477,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
     func uploadFileSuccess(_ metadataNet: CCMetadataNet, fileID: String, serverUrl: String, selector: String, selectorPost: String) {
         
         hud.hideHud()
-        
-        // Activity
-        CCCoreData.addActivityFile(metadataNet.fileName, action: k_activityDebugActionUploadPicker, note: "Selector : \(selector)", type: k_activityTypeSuccess, verbose: Int(k_activityVerboseHigh), account: metadataNet.account)
-        
+                
         dismissGrantingAccess(to: self.destinationURL)
     }
 }

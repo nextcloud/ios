@@ -1876,7 +1876,9 @@
         
         TableActivity *record = [TableActivity MR_createEntityInContext:localContext];
         
-        record.account = account;
+        if (!account) record.account = @"";
+        else record.account = account;
+        
         record.action = action;
         record.date = [NSDate date];
         record.file = file;

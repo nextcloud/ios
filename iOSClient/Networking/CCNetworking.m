@@ -382,7 +382,7 @@
     NSString *serverUrl = [self getServerUrlFromUrl:url];
     
     CCMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(session = %@) AND ((sessionTaskIdentifier == %i) OR (sessionTaskIdentifierPlist == %i))",session.sessionDescription, task.taskIdentifier, task.taskIdentifier] context:_context];
-    
+
     NSInteger errorCode;
     NSString *fileID = metadata.fileID;
     NSString *rev = metadata.rev;
@@ -419,8 +419,17 @@
         NSDictionary *fields = [httpResponse allHeaderFields];
             
         if (errorCode == 0) {
+            
             rev = [CCUtility removeForbiddenCharacters:[fields objectForKey:@"OC-ETag"] hasServerForbiddenCharactersSupport:NO];
             date = [dateFormatter dateFromString:[fields objectForKey:@"Date"]];
+
+            // Activity
+            [CCCoreData addActivityFile:fileName action:k_activityDebugActionDownload note:[NSString stringWithFormat:@"Server : %@", serverUrl] type:k_activityTypeSuccess verbose:k_activityVerboseDefault account:metadata.account];
+            
+        } else {
+            
+            // Activity
+            [CCCoreData addActivityFile:fileName action:k_activityDebugActionDownload note:[NSString stringWithFormat:@"Server : %@ Error : %@", serverUrl, [error localizedDescription]] type:k_activityTypeFailure verbose:k_activityVerboseDefault account:metadata.account];
         }
         
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -442,9 +451,18 @@
         NSDictionary *fields = [httpResponse allHeaderFields];
             
         if (errorCode == 0) {
+            
             fileID = [CCUtility removeForbiddenCharacters:[fields objectForKey:@"OC-FileId"] hasServerForbiddenCharactersSupport:NO];
             rev = [CCUtility removeForbiddenCharacters:[fields objectForKey:@"OC-ETag"] hasServerForbiddenCharactersSupport:NO];
             date = [dateFormatter dateFromString:[fields objectForKey:@"Date"]];
+            
+            // Activity
+            [CCCoreData addActivityFile:fileName action:k_activityDebugActionUpload note:[NSString stringWithFormat:@"Server : %@", serverUrl] type:k_activityTypeSuccess verbose:k_activityVerboseDefault account:metadata.account];
+
+        } else {
+            
+            // Activity
+            [CCCoreData addActivityFile:fileName action:k_activityDebugActionUpload note:[NSString stringWithFormat:@"Server : %@ Error : %@", serverUrl, [error localizedDescription]] type:k_activityTypeFailure verbose:k_activityVerboseDefault account:metadata.account];
         }
         
         dispatch_async(dispatch_get_main_queue(), ^{

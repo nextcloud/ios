@@ -84,7 +84,7 @@
         if ([CCUtility getActivityVerboseHigh])
             _sectionDataSource = [CCCoreData getAllTableActivityWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@)", app.activeAccount]];
         else
-            _sectionDataSource = [CCCoreData getAllTableActivityWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (verbose == %lu)", app.activeAccount, k_activityVerboseDefault]];
+            _sectionDataSource = [CCCoreData getAllTableActivityWithPredicate:[NSPredicate predicateWithFormat:@"((account == %@) || (account == '')) AND (verbose == %lu)", app.activeAccount, k_activityVerboseDefault]];
         
         if ([[app.controlCenter getActivePage] isEqualToString:k_pageControlCenterActivity]) {
             

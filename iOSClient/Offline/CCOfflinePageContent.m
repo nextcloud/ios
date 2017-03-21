@@ -231,12 +231,7 @@
 #pragma --------------------------------------------------------------------------------------------
 
 - (void)downloadFileFailure:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode
-{
-    CCMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, app.activeAccount] context:nil];
-    
-    // Activity
-    [CCCoreData addActivityFile:metadata.fileNamePrint action:k_activityDebugActionDownload note:[NSString stringWithFormat:@"Selector : %@ - Error : %@", selector, message] type:k_activityTypeFailure verbose:k_activityVerboseDefault account:metadata.account];
-    
+{    
     [app messageNotification:@"_download_file_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
     
     [app updateApplicationIconBadgeNumber];
@@ -245,9 +240,6 @@
 - (void)downloadFileSuccess:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost
 {
     _metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, app.activeAccount] context:nil];
-    
-    // Activity
-    [CCCoreData addActivityFile:_metadata.fileNamePrint action:k_activityDebugActionDownload note:[NSString stringWithFormat:@"Selector : %@", selector] type:k_activityTypeSuccess verbose:k_activityVerboseDefault account:_metadata.account];
     
     // File exists
     if ([self shouldPerformSegue])
