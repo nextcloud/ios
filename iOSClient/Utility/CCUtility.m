@@ -1263,18 +1263,21 @@
 
 + (UIImage*)drawText:(NSString*)text inImage:(UIImage*)image
 {
-    NSDictionary* attributes = @{NSFontAttributeName: [UIFont systemFontOfSize:14], NSForegroundColorAttributeName:[UIColor whiteColor]};
+    NSDictionary* attributes = @{NSFontAttributeName: [UIFont systemFontOfSize:26], NSForegroundColorAttributeName:[UIColor whiteColor]};
     NSAttributedString* attributedString = [[NSAttributedString alloc] initWithString:text attributes:attributes];
     
     int x = image.size.width/2 - attributedString.size.width/2;
-    int y = image.size.height/2-8;
+    int y = image.size.height/2 - attributedString.size.height/2;
     
     UIGraphicsBeginImageContext(image.size);
+    
     [image drawInRect:CGRectMake(0,0,image.size.width,image.size.height)];
     CGRect rect = CGRectMake(x, y, image.size.width, image.size.height);
     [[UIColor whiteColor] set];
     [text drawInRect:CGRectIntegral(rect) withAttributes:attributes];
     UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
+    newImage = [UIImage imageWithCGImage:newImage.CGImage scale:2 orientation:UIImageOrientationUp];
+
     UIGraphicsEndImageContext();
     
     return newImage;
