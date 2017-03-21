@@ -4314,6 +4314,7 @@
 				F732B2D71E802B71002B7D75 /* pt-BR */,
 			);
 			name = BKPasscodeView.strings;
+			path = "Supporting Files";
 			sourceTree = "<group>";
 		};
 		F732B3351E8045A1002B7D75 /* SwiftWebVC.strings */ = {
@@ -4331,6 +4332,7 @@
 				F732B3401E8045DF002B7D75 /* pt-BR */,
 			);
 			name = SwiftWebVC.strings;
+			path = "Supporting Files";
 			sourceTree = "<group>";
 		};
 		F744BE9F1BEBB69F004FFF66 /* Intro.strings */ = {
@@ -4348,6 +4350,7 @@
 				F732B2DA1E802B72002B7D75 /* pt-BR */,
 			);
 			name = Intro.strings;
+			path = "Supporting Files";
 			sourceTree = "<group>";
 		};
 		F75797AC1E81356C00187A1B /* CTAssetsPicker.strings */ = {
@@ -4365,6 +4368,7 @@
 				F75797B71E81364C00187A1B /* pt-BR */,
 			);
 			name = CTAssetsPicker.strings;
+			path = "Supporting Files";
 			sourceTree = "<group>";
 		};
 		F7B381BF1C074E3E004693F8 /* Error.strings */ = {
@@ -4382,6 +4386,7 @@
 				F732B2DB1E802B72002B7D75 /* pt-BR */,
 			);
 			name = Error.strings;
+			path = "Supporting Files";
 			sourceTree = "<group>";
 		};
 		F7C6D5F61BE371D800AC83AD /* InfoPlist.strings */ = {
@@ -4399,6 +4404,7 @@
 				F732B2D91E802B72002B7D75 /* pt-BR */,
 			);
 			name = InfoPlist.strings;
+			path = "Supporting Files";
 			sourceTree = "<group>";
 		};
 		F7E70DE91A24DE4100E1B66A /* Localizable.strings */ = {
@@ -4416,6 +4422,7 @@
 				F732B2D81E802B71002B7D75 /* pt-BR */,
 			);
 			name = Localizable.strings;
+			path = "Supporting Files";
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
