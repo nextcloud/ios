@@ -76,15 +76,11 @@
 		F71459CC1D12E3B700CAFEEC /* RNCryptorEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F05371C889184008DAB36 /* RNCryptorEngine.m */; };
 		F71459CD1D12E3B700CAFEEC /* AFViewShaker.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02B41C889183008DAB36 /* AFViewShaker.m */; };
 		F71459CE1D12E3B700CAFEEC /* NSData+CommonCrypto.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02AF1C889183008DAB36 /* NSData+CommonCrypto.m */; };
-		F71459CF1D12E3B700CAFEEC /* BKPasscodeLockScreenManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02C61C889183008DAB36 /* BKPasscodeLockScreenManager.m */; };
-		F71459D11D12E3B700CAFEEC /* BKPasscodeInputView.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02C41C889183008DAB36 /* BKPasscodeInputView.m */; };
 		F71459D21D12E3B700CAFEEC /* CCUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = F7053E3D1C639DF500741EA5 /* CCUtility.m */; };
 		F71459D31D12E3B700CAFEEC /* CCBKPasscode.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FE125D1BAC03FB0041924B /* CCBKPasscode.m */; };
 		F71459D51D12E3B700CAFEEC /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04841C889183008DAB36 /* MBProgressHUD.m */; };
-		F71459D71D12E3B700CAFEEC /* BKPasscodeDummyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02C01C889183008DAB36 /* BKPasscodeDummyViewController.m */; };
 		F71459D91D12E3B700CAFEEC /* CCCrypto.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FE125F1BAC03FB0041924B /* CCCrypto.m */; };
 		F71459DD1D12E3B700CAFEEC /* CCCoreData.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B81D801C64E77F006D02DF /* CCCoreData.m */; };
-		F71459DE1D12E3B700CAFEEC /* BKPasscodeField.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02C21C889183008DAB36 /* BKPasscodeField.m */; };
 		F71459E11D12E3B700CAFEEC /* CCHud.m in Sources */ = {isa = PBXBuildFile; fileRef = F7514EDB1C7B1336008F3338 /* CCHud.m */; };
 		F71459E41D12E3B700CAFEEC /* RNDecryptor.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F05391C889184008DAB36 /* RNDecryptor.m */; };
 		F71459E61D12E3B700CAFEEC /* NYXImagesHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04D41C889184008DAB36 /* NYXImagesHelper.m */; };
@@ -94,16 +90,12 @@
 		F71459F01D12E3B700CAFEEC /* NSString+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02B11C889183008DAB36 /* NSString+Base64.m */; };
 		F71459F11D12E3B700CAFEEC /* CCMove.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D02A471C5F9E4400D6F972 /* CCMove.m */; };
 		F71459F31D12E3B700CAFEEC /* UIImage+Resizing.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04CA1C889184008DAB36 /* UIImage+Resizing.m */; };
-		F71459F41D12E3B700CAFEEC /* BKPasscodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02C91C889183008DAB36 /* BKPasscodeViewController.m */; };
-		F71459F51D12E3B700CAFEEC /* BKShiftingView.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02CB1C889183008DAB36 /* BKShiftingView.m */; };
 		F71459F71D12E3B700CAFEEC /* CCGraphics.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B841C6388BC00DC4301 /* CCGraphics.m */; };
-		F71459F81D12E3B700CAFEEC /* BKTouchIDSwitchView.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02CF1C889183008DAB36 /* BKTouchIDSwitchView.m */; };
 		F71459FB1D12E3B700CAFEEC /* PPImageScrollingCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F05211C889184008DAB36 /* PPImageScrollingCellView.m */; };
 		F71459FE1D12E3B700CAFEEC /* CCExifGeo.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A54C351C6267B500E2C8BF /* CCExifGeo.m */; };
 		F71459FF1D12E3B700CAFEEC /* RNCryptor.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F05351C889184008DAB36 /* RNCryptor.m */; };
 		F7145A001D12E3B700CAFEEC /* CCGlobal.m in Sources */ = {isa = PBXBuildFile; fileRef = F7C8C1911B482CEA0048180E /* CCGlobal.m */; };
 		F7145A011D12E3B700CAFEEC /* UIImage+Blurring.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04C01C889184008DAB36 /* UIImage+Blurring.m */; };
-		F7145A021D12E3B700CAFEEC /* BKTouchIDManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02CD1C889183008DAB36 /* BKTouchIDManager.m */; };
 		F7145A041D12E3B700CAFEEC /* CCloadItemData.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7296A661C8880ED001A7809 /* CCloadItemData.swift */; };
 		F7145A081D12E3B700CAFEEC /* PPCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F051F1C889184008DAB36 /* PPCollectionViewCell.m */; };
 		F7145A0D1D12E3B700CAFEEC /* NSData+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02AD1C889183008DAB36 /* NSData+Base64.m */; };
@@ -134,6 +126,30 @@
 		F732BA061D76CE1500E9878B /* CCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F732BA041D76CE1500E9878B /* CCNetworking.m */; };
 		F732BA0B1D76DBA500E9878B /* CCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F732BA041D76CE1500E9878B /* CCNetworking.m */; };
 		F73C002F1E55D7DF00EEEFA7 /* CCManageCryptoCloudSecurity.m in Sources */ = {isa = PBXBuildFile; fileRef = F73C002E1E55D7DF00EEEFA7 /* CCManageCryptoCloudSecurity.m */; };
+		F73CC0691E813DFF006E3047 /* BKPasscodeDummyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CC0591E813DFF006E3047 /* BKPasscodeDummyViewController.m */; };
+		F73CC06A1E813DFF006E3047 /* BKPasscodeDummyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CC0591E813DFF006E3047 /* BKPasscodeDummyViewController.m */; };
+		F73CC06B1E813DFF006E3047 /* BKPasscodeDummyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CC0591E813DFF006E3047 /* BKPasscodeDummyViewController.m */; };
+		F73CC06C1E813DFF006E3047 /* BKPasscodeField.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CC05B1E813DFF006E3047 /* BKPasscodeField.m */; };
+		F73CC06D1E813DFF006E3047 /* BKPasscodeField.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CC05B1E813DFF006E3047 /* BKPasscodeField.m */; };
+		F73CC06E1E813DFF006E3047 /* BKPasscodeField.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CC05B1E813DFF006E3047 /* BKPasscodeField.m */; };
+		F73CC06F1E813DFF006E3047 /* BKPasscodeInputView.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CC05D1E813DFF006E3047 /* BKPasscodeInputView.m */; };
+		F73CC0701E813DFF006E3047 /* BKPasscodeInputView.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CC05D1E813DFF006E3047 /* BKPasscodeInputView.m */; };
+		F73CC0711E813DFF006E3047 /* BKPasscodeInputView.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CC05D1E813DFF006E3047 /* BKPasscodeInputView.m */; };
+		F73CC0721E813DFF006E3047 /* BKPasscodeLockScreenManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CC05F1E813DFF006E3047 /* BKPasscodeLockScreenManager.m */; };
+		F73CC0731E813DFF006E3047 /* BKPasscodeLockScreenManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CC05F1E813DFF006E3047 /* BKPasscodeLockScreenManager.m */; };
+		F73CC0741E813DFF006E3047 /* BKPasscodeLockScreenManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CC05F1E813DFF006E3047 /* BKPasscodeLockScreenManager.m */; };
+		F73CC0751E813DFF006E3047 /* BKPasscodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CC0621E813DFF006E3047 /* BKPasscodeViewController.m */; };
+		F73CC0761E813DFF006E3047 /* BKPasscodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CC0621E813DFF006E3047 /* BKPasscodeViewController.m */; };
+		F73CC0771E813DFF006E3047 /* BKPasscodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CC0621E813DFF006E3047 /* BKPasscodeViewController.m */; };
+		F73CC0781E813DFF006E3047 /* BKShiftingView.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CC0641E813DFF006E3047 /* BKShiftingView.m */; };
+		F73CC0791E813DFF006E3047 /* BKShiftingView.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CC0641E813DFF006E3047 /* BKShiftingView.m */; };
+		F73CC07A1E813DFF006E3047 /* BKShiftingView.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CC0641E813DFF006E3047 /* BKShiftingView.m */; };
+		F73CC07B1E813DFF006E3047 /* BKTouchIDManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CC0661E813DFF006E3047 /* BKTouchIDManager.m */; };
+		F73CC07C1E813DFF006E3047 /* BKTouchIDManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CC0661E813DFF006E3047 /* BKTouchIDManager.m */; };
+		F73CC07D1E813DFF006E3047 /* BKTouchIDManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CC0661E813DFF006E3047 /* BKTouchIDManager.m */; };
+		F73CC07E1E813DFF006E3047 /* BKTouchIDSwitchView.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CC0681E813DFF006E3047 /* BKTouchIDSwitchView.m */; };
+		F73CC07F1E813DFF006E3047 /* BKTouchIDSwitchView.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CC0681E813DFF006E3047 /* BKTouchIDSwitchView.m */; };
+		F73CC0801E813DFF006E3047 /* BKTouchIDSwitchView.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CC0681E813DFF006E3047 /* BKTouchIDSwitchView.m */; };
 		F73CCDD91DC13776007E38D8 /* XLFormBaseCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCD841DC13775007E38D8 /* XLFormBaseCell.m */; };
 		F73CCDDB1DC13776007E38D8 /* XLFormButtonCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCD861DC13775007E38D8 /* XLFormButtonCell.m */; };
 		F73CCDDD1DC13776007E38D8 /* XLFormCheckCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCD881DC13775007E38D8 /* XLFormCheckCell.m */; };
@@ -182,14 +198,6 @@
 		F74344551E1277E2001CC831 /* libMagicalRecord.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F7B61E9B1DC13C20009E938F /* libMagicalRecord.a */; };
 		F74344561E12784A001CC831 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63061D5B3467004E2AA5 /* libcrypto.a */; };
 		F74344591E12786C001CC831 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63071D5B3467004E2AA5 /* libssl.a */; };
-		F743445B1E127D3B001CC831 /* BKPasscodeDummyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02C01C889183008DAB36 /* BKPasscodeDummyViewController.m */; };
-		F743445C1E127D3D001CC831 /* BKPasscodeField.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02C21C889183008DAB36 /* BKPasscodeField.m */; };
-		F743445D1E127D40001CC831 /* BKPasscodeInputView.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02C41C889183008DAB36 /* BKPasscodeInputView.m */; };
-		F743445E1E127D44001CC831 /* BKPasscodeLockScreenManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02C61C889183008DAB36 /* BKPasscodeLockScreenManager.m */; };
-		F743445F1E127D4B001CC831 /* BKPasscodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02C91C889183008DAB36 /* BKPasscodeViewController.m */; };
-		F74344601E127D4D001CC831 /* BKShiftingView.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02CB1C889183008DAB36 /* BKShiftingView.m */; };
-		F74344611E127D51001CC831 /* BKTouchIDManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02CD1C889183008DAB36 /* BKTouchIDManager.m */; };
-		F74344621E127D54001CC831 /* BKTouchIDSwitchView.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02CF1C889183008DAB36 /* BKTouchIDSwitchView.m */; };
 		F74344631E127D79001CC831 /* CCBKPasscode.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FE125D1BAC03FB0041924B /* CCBKPasscode.m */; };
 		F74344641E127DE6001CC831 /* OCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F74D3DBE1BAC1941000BAE4B /* OCNetworking.m */; };
 		F74344651E127DE9001CC831 /* CCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F732BA041D76CE1500E9878B /* CCNetworking.m */; };
@@ -274,14 +282,12 @@
 		F77B0E141D118A16002130FE /* CCError.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B881C638A4C00DC4301 /* CCError.m */; };
 		F77B0E161D118A16002130FE /* AFViewShaker.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02B41C889183008DAB36 /* AFViewShaker.m */; };
 		F77B0E1B1D118A16002130FE /* CCGraphics.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B841C6388BC00DC4301 /* CCGraphics.m */; };
-		F77B0E1C1D118A16002130FE /* BKPasscodeDummyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02C01C889183008DAB36 /* BKPasscodeDummyViewController.m */; };
 		F77B0E1D1D118A16002130FE /* ReaderThumbQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0ECC1C889317008DAB36 /* ReaderThumbQueue.m */; };
 		F77B0E201D118A16002130FE /* CCShareUserOC.m in Sources */ = {isa = PBXBuildFile; fileRef = F78316871C0CB3CA00C43975 /* CCShareUserOC.m */; };
 		F77B0E211D118A16002130FE /* ThumbsMainToolbar.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0ED81C889317008DAB36 /* ThumbsMainToolbar.m */; };
 		F77B0E221D118A16002130FE /* CCManageLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = F7BFCCC11B68C21900548E76 /* CCManageLocation.m */; };
 		F77B0E231D118A16002130FE /* CCSharePermissionOC.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CD0FFA1C8DDA7D006520C5 /* CCSharePermissionOC.m */; };
 		F77B0E241D118A16002130FE /* HRColorCursor.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0DE51C889300008DAB36 /* HRColorCursor.m */; };
-		F77B0E251D118A16002130FE /* BKPasscodeInputView.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02C41C889183008DAB36 /* BKPasscodeInputView.m */; };
 		F77B0E261D118A16002130FE /* ZSSTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0DF31C889300008DAB36 /* ZSSTextView.m */; };
 		F77B0E271D118A16002130FE /* CYRLayoutManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0DD91C889300008DAB36 /* CYRLayoutManager.m */; };
 		F77B0E291D118A16002130FE /* NSArray+LMMediaPlayerShuffle.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0F2E1C889339008DAB36 /* NSArray+LMMediaPlayerShuffle.m */; };
@@ -301,7 +307,6 @@
 		F77B0E431D118A16002130FE /* ReaderThumbsView.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0ED21C889317008DAB36 /* ReaderThumbsView.m */; };
 		F77B0E441D118A16002130FE /* CCIntro.m in Sources */ = {isa = PBXBuildFile; fileRef = F744BE931BEBB2EE004FFF66 /* CCIntro.m */; };
 		F77B0E451D118A16002130FE /* ReaderThumbRender.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0ECE1C889317008DAB36 /* ReaderThumbRender.m */; };
-		F77B0E461D118A16002130FE /* BKPasscodeLockScreenManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02C61C889183008DAB36 /* BKPasscodeLockScreenManager.m */; };
 		F77B0E481D118A16002130FE /* CCCrypto.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FE125F1BAC03FB0041924B /* CCCrypto.m */; };
 		F77B0E491D118A16002130FE /* UIImage+Saving.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04CE1C889184008DAB36 /* UIImage+Saving.m */; };
 		F77B0E4C1D118A16002130FE /* CCDetail.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D0E65F1BC5042E008D989A /* CCDetail.m */; };
@@ -342,23 +347,18 @@
 		F77B0E901D118A16002130FE /* CCManageHelp.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FEB6CF1BECADC100E7C415 /* CCManageHelp.m */; };
 		F77B0E911D118A16002130FE /* CCTemplates.m in Sources */ = {isa = PBXBuildFile; fileRef = F72137301BAFF0920012B613 /* CCTemplates.m */; };
 		F77B0E921D118A16002130FE /* CCCellMainTransfer.m in Sources */ = {isa = PBXBuildFile; fileRef = F70211F81BAC56E9003FC03E /* CCCellMainTransfer.m */; };
-		F77B0E941D118A16002130FE /* BKTouchIDManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02CD1C889183008DAB36 /* BKTouchIDManager.m */; };
 		F77B0E951D118A16002130FE /* CCManageAsset.m in Sources */ = {isa = PBXBuildFile; fileRef = F7BFCCBF1B68C21900548E76 /* CCManageAsset.m */; };
 		F77B0E961D118A16002130FE /* ReaderContentView.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0EBE1C889317008DAB36 /* ReaderContentView.m */; };
 		F77B0E971D118A16002130FE /* LMMediaItemQueueManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0F381C889339008DAB36 /* LMMediaItemQueueManager.m */; };
 		F77B0E981D118A16002130FE /* CCManageAccount.m in Sources */ = {isa = PBXBuildFile; fileRef = F7ACE42D1BAC0268006C0017 /* CCManageAccount.m */; };
 		F77B0E991D118A16002130FE /* PPCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F051F1C889184008DAB36 /* PPCollectionViewCell.m */; };
-		F77B0E9A1D118A16002130FE /* BKTouchIDSwitchView.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02CF1C889183008DAB36 /* BKTouchIDSwitchView.m */; };
 		F77B0E9B1D118A16002130FE /* CCBKPasscode.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FE125D1BAC03FB0041924B /* CCBKPasscode.m */; };
 		F77B0E9D1D118A16002130FE /* HRColorPickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0DE81C889300008DAB36 /* HRColorPickerView.m */; };
 		F77B0E9F1D118A16002130FE /* mztools.c in Sources */ = {isa = PBXBuildFile; fileRef = F70F0F971C889487008DAB36 /* mztools.c */; };
 		F77B0EA61D118A16002130FE /* NSString+TruncateToWidth.m in Sources */ = {isa = PBXBuildFile; fileRef = F73049B91CB567F000C7C320 /* NSString+TruncateToWidth.m */; };
-		F77B0EA71D118A16002130FE /* BKPasscodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02C91C889183008DAB36 /* BKPasscodeViewController.m */; };
-		F77B0EA81D118A16002130FE /* BKShiftingView.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02CB1C889183008DAB36 /* BKShiftingView.m */; };
 		F77B0EAA1D118A16002130FE /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = F70F0F9B1C889487008DAB36 /* zip.c */; };
 		F77B0EAB1D118A16002130FE /* HRColorPickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0DEA1C889300008DAB36 /* HRColorPickerViewController.m */; };
 		F77B0EAD1D118A16002130FE /* CCGlobal.m in Sources */ = {isa = PBXBuildFile; fileRef = F7C8C1911B482CEA0048180E /* CCGlobal.m */; };
-		F77B0EAE1D118A16002130FE /* BKPasscodeField.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02C21C889183008DAB36 /* BKPasscodeField.m */; };
 		F77B0EB11D118A16002130FE /* CCMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = F7C8C1731B482A920048180E /* CCMetadata.m */; };
 		F77B0EB21D118A16002130FE /* ReaderMainToolbar.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0EC61C889317008DAB36 /* ReaderMainToolbar.m */; };
 		F77B0EB51D118A16002130FE /* RECommonFunctions.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0C511C8892C5008DAB36 /* RECommonFunctions.m */; };
@@ -786,23 +786,6 @@
 		F70F02B11C889183008DAB36 /* NSString+Base64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Base64.m"; sourceTree = "<group>"; };
 		F70F02B31C889183008DAB36 /* AFViewShaker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFViewShaker.h; sourceTree = "<group>"; };
 		F70F02B41C889183008DAB36 /* AFViewShaker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFViewShaker.m; sourceTree = "<group>"; };
-		F70F02BF1C889183008DAB36 /* BKPasscodeDummyViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKPasscodeDummyViewController.h; sourceTree = "<group>"; };
-		F70F02C01C889183008DAB36 /* BKPasscodeDummyViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKPasscodeDummyViewController.m; sourceTree = "<group>"; };
-		F70F02C11C889183008DAB36 /* BKPasscodeField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKPasscodeField.h; sourceTree = "<group>"; };
-		F70F02C21C889183008DAB36 /* BKPasscodeField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKPasscodeField.m; sourceTree = "<group>"; };
-		F70F02C31C889183008DAB36 /* BKPasscodeInputView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKPasscodeInputView.h; sourceTree = "<group>"; };
-		F70F02C41C889183008DAB36 /* BKPasscodeInputView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKPasscodeInputView.m; sourceTree = "<group>"; };
-		F70F02C51C889183008DAB36 /* BKPasscodeLockScreenManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKPasscodeLockScreenManager.h; sourceTree = "<group>"; };
-		F70F02C61C889183008DAB36 /* BKPasscodeLockScreenManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKPasscodeLockScreenManager.m; sourceTree = "<group>"; };
-		F70F02C71C889183008DAB36 /* BKPasscodeUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKPasscodeUtils.h; sourceTree = "<group>"; };
-		F70F02C81C889183008DAB36 /* BKPasscodeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKPasscodeViewController.h; sourceTree = "<group>"; };
-		F70F02C91C889183008DAB36 /* BKPasscodeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKPasscodeViewController.m; sourceTree = "<group>"; };
-		F70F02CA1C889183008DAB36 /* BKShiftingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKShiftingView.h; sourceTree = "<group>"; };
-		F70F02CB1C889183008DAB36 /* BKShiftingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKShiftingView.m; sourceTree = "<group>"; };
-		F70F02CC1C889183008DAB36 /* BKTouchIDManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKTouchIDManager.h; sourceTree = "<group>"; };
-		F70F02CD1C889183008DAB36 /* BKTouchIDManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKTouchIDManager.m; sourceTree = "<group>"; };
-		F70F02CE1C889183008DAB36 /* BKTouchIDSwitchView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKTouchIDSwitchView.h; sourceTree = "<group>"; };
-		F70F02CF1C889183008DAB36 /* BKTouchIDSwitchView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKTouchIDSwitchView.m; sourceTree = "<group>"; };
 		F70F04831C889183008DAB36 /* MBProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MBProgressHUD.h; sourceTree = "<group>"; };
 		F70F04841C889183008DAB36 /* MBProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MBProgressHUD.m; sourceTree = "<group>"; };
 		F70F04BF1C889184008DAB36 /* UIImage+Blurring.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+Blurring.h"; sourceTree = "<group>"; };
@@ -1134,6 +1117,23 @@
 		F738142B1E65A52D0011A45E /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Error.strings; sourceTree = "<group>"; };
 		F73C002D1E55D7DF00EEEFA7 /* CCManageCryptoCloudSecurity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCManageCryptoCloudSecurity.h; sourceTree = "<group>"; };
 		F73C002E1E55D7DF00EEEFA7 /* CCManageCryptoCloudSecurity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCManageCryptoCloudSecurity.m; sourceTree = "<group>"; };
+		F73CC0581E813DFF006E3047 /* BKPasscodeDummyViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKPasscodeDummyViewController.h; sourceTree = "<group>"; };
+		F73CC0591E813DFF006E3047 /* BKPasscodeDummyViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKPasscodeDummyViewController.m; sourceTree = "<group>"; };
+		F73CC05A1E813DFF006E3047 /* BKPasscodeField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKPasscodeField.h; sourceTree = "<group>"; };
+		F73CC05B1E813DFF006E3047 /* BKPasscodeField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKPasscodeField.m; sourceTree = "<group>"; };
+		F73CC05C1E813DFF006E3047 /* BKPasscodeInputView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKPasscodeInputView.h; sourceTree = "<group>"; };
+		F73CC05D1E813DFF006E3047 /* BKPasscodeInputView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKPasscodeInputView.m; sourceTree = "<group>"; };
+		F73CC05E1E813DFF006E3047 /* BKPasscodeLockScreenManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKPasscodeLockScreenManager.h; sourceTree = "<group>"; };
+		F73CC05F1E813DFF006E3047 /* BKPasscodeLockScreenManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKPasscodeLockScreenManager.m; sourceTree = "<group>"; };
+		F73CC0601E813DFF006E3047 /* BKPasscodeUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKPasscodeUtils.h; sourceTree = "<group>"; };
+		F73CC0611E813DFF006E3047 /* BKPasscodeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKPasscodeViewController.h; sourceTree = "<group>"; };
+		F73CC0621E813DFF006E3047 /* BKPasscodeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKPasscodeViewController.m; sourceTree = "<group>"; };
+		F73CC0631E813DFF006E3047 /* BKShiftingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKShiftingView.h; sourceTree = "<group>"; };
+		F73CC0641E813DFF006E3047 /* BKShiftingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKShiftingView.m; sourceTree = "<group>"; };
+		F73CC0651E813DFF006E3047 /* BKTouchIDManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKTouchIDManager.h; sourceTree = "<group>"; };
+		F73CC0661E813DFF006E3047 /* BKTouchIDManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKTouchIDManager.m; sourceTree = "<group>"; };
+		F73CC0671E813DFF006E3047 /* BKTouchIDSwitchView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKTouchIDSwitchView.h; sourceTree = "<group>"; };
+		F73CC0681E813DFF006E3047 /* BKTouchIDSwitchView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKTouchIDSwitchView.m; sourceTree = "<group>"; };
 		F73CCD801DC13775007E38D8 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F73CCD831DC13775007E38D8 /* XLFormBaseCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLFormBaseCell.h; sourceTree = "<group>"; };
 		F73CCD841DC13775007E38D8 /* XLFormBaseCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLFormBaseCell.m; sourceTree = "<group>"; };
@@ -1735,7 +1735,6 @@
 				F70F02A91C889183008DAB36 /* AESCrypt-ObjC */,
 				F70F02B21C889183008DAB36 /* AFViewShaker */,
 				F744FA7B1E57333C00BFAB34 /* APAvatarImageView */,
-				F70F02BE1C889183008DAB36 /* BKPasscodeView */,
 				F7F06E291DBFACC600099AE9 /* CTAssetsPickerController */,
 				F73CCE221DC13788007E38D8 /* DZNEmptyDataSet */,
 				F7659A211DC0B726004860C4 /* EAIntroView */,
@@ -1785,30 +1784,6 @@
 				F70F02B41C889183008DAB36 /* AFViewShaker.m */,
 			);
 			path = AFViewShaker;
-			sourceTree = "<group>";
-		};
-		F70F02BE1C889183008DAB36 /* BKPasscodeView */ = {
-			isa = PBXGroup;
-			children = (
-				F70F02BF1C889183008DAB36 /* BKPasscodeDummyViewController.h */,
-				F70F02C01C889183008DAB36 /* BKPasscodeDummyViewController.m */,
-				F70F02C11C889183008DAB36 /* BKPasscodeField.h */,
-				F70F02C21C889183008DAB36 /* BKPasscodeField.m */,
-				F70F02C31C889183008DAB36 /* BKPasscodeInputView.h */,
-				F70F02C41C889183008DAB36 /* BKPasscodeInputView.m */,
-				F70F02C51C889183008DAB36 /* BKPasscodeLockScreenManager.h */,
-				F70F02C61C889183008DAB36 /* BKPasscodeLockScreenManager.m */,
-				F70F02C71C889183008DAB36 /* BKPasscodeUtils.h */,
-				F70F02C81C889183008DAB36 /* BKPasscodeViewController.h */,
-				F70F02C91C889183008DAB36 /* BKPasscodeViewController.m */,
-				F70F02CA1C889183008DAB36 /* BKShiftingView.h */,
-				F70F02CB1C889183008DAB36 /* BKShiftingView.m */,
-				F70F02CC1C889183008DAB36 /* BKTouchIDManager.h */,
-				F70F02CD1C889183008DAB36 /* BKTouchIDManager.m */,
-				F70F02CE1C889183008DAB36 /* BKTouchIDSwitchView.h */,
-				F70F02CF1C889183008DAB36 /* BKTouchIDSwitchView.m */,
-			);
-			path = BKPasscodeView;
 			sourceTree = "<group>";
 		};
 		F70F04821C889183008DAB36 /* MBProgressHUD */ = {
@@ -2397,6 +2372,30 @@
 				F7B381BF1C074E3E004693F8 /* Error.strings */,
 			);
 			name = Localizations;
+			sourceTree = "<group>";
+		};
+		F73CC0571E813DFF006E3047 /* BKPasscodeView */ = {
+			isa = PBXGroup;
+			children = (
+				F73CC0581E813DFF006E3047 /* BKPasscodeDummyViewController.h */,
+				F73CC0591E813DFF006E3047 /* BKPasscodeDummyViewController.m */,
+				F73CC05A1E813DFF006E3047 /* BKPasscodeField.h */,
+				F73CC05B1E813DFF006E3047 /* BKPasscodeField.m */,
+				F73CC05C1E813DFF006E3047 /* BKPasscodeInputView.h */,
+				F73CC05D1E813DFF006E3047 /* BKPasscodeInputView.m */,
+				F73CC05E1E813DFF006E3047 /* BKPasscodeLockScreenManager.h */,
+				F73CC05F1E813DFF006E3047 /* BKPasscodeLockScreenManager.m */,
+				F73CC0601E813DFF006E3047 /* BKPasscodeUtils.h */,
+				F73CC0611E813DFF006E3047 /* BKPasscodeViewController.h */,
+				F73CC0621E813DFF006E3047 /* BKPasscodeViewController.m */,
+				F73CC0631E813DFF006E3047 /* BKShiftingView.h */,
+				F73CC0641E813DFF006E3047 /* BKShiftingView.m */,
+				F73CC0651E813DFF006E3047 /* BKTouchIDManager.h */,
+				F73CC0661E813DFF006E3047 /* BKTouchIDManager.m */,
+				F73CC0671E813DFF006E3047 /* BKTouchIDSwitchView.h */,
+				F73CC0681E813DFF006E3047 /* BKTouchIDSwitchView.m */,
+			);
+			path = BKPasscodeView;
 			sourceTree = "<group>";
 		};
 		F73CCD7F1DC13775007E38D8 /* XLForm */ = {
@@ -3157,6 +3156,7 @@
 			isa = PBXGroup;
 			children = (
 				F72AAEC11E5C60C700BB17E1 /* AHKActionSheet */,
+				F73CC0571E813DFF006E3047 /* BKPasscodeView */,
 				F7A139FE1E7F3D5D00016680 /* CCProgress */,
 				F7B1FBAF1E72E3D1001781FE /* SwiftWebVC */,
 				F7F54CAD1E5B14C700E19C62 /* MWPhotoBrowser */,
@@ -3839,6 +3839,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F71459B81D12E3B700CAFEEC /* CCError.m in Sources */,
+				F73CC0701E813DFF006E3047 /* BKPasscodeInputView.m in Sources */,
 				F708CF7A1E56E8CC00271D8B /* TableGPS+CoreDataClass.m in Sources */,
 				F71459BA1D12E3B700CAFEEC /* NSString+TruncateToWidth.m in Sources */,
 				F708CF9B1E56E8CC00271D8B /* TableAccount+CoreDataProperties.m in Sources */,
@@ -3849,10 +3850,14 @@
 				F71459BD1D12E3B700CAFEEC /* UIImage+animatedGIF.m in Sources */,
 				F708CF6E1E56E8CC00271D8B /* TableMetadata+CoreDataClass.m in Sources */,
 				F71459BE1D12E3B700CAFEEC /* UIImage+Reflection.m in Sources */,
+				F73CC06D1E813DFF006E3047 /* BKPasscodeField.m in Sources */,
 				F71459BF1D12E3B700CAFEEC /* RNEncryptor.m in Sources */,
 				F708CF891E56E8CC00271D8B /* TableShare+CoreDataProperties.m in Sources */,
 				F71459C21D12E3B700CAFEEC /* ShareViewController.m in Sources */,
 				F71459C31D12E3B700CAFEEC /* UIImage+Filtering.m in Sources */,
+				F73CC0731E813DFF006E3047 /* BKPasscodeLockScreenManager.m in Sources */,
+				F73CC06A1E813DFF006E3047 /* BKPasscodeDummyViewController.m in Sources */,
+				F73CC07C1E813DFF006E3047 /* BKTouchIDManager.m in Sources */,
 				F71459C41D12E3B700CAFEEC /* UIImage+Saving.m in Sources */,
 				F71459C51D12E3B700CAFEEC /* UIImage+Rotating.m in Sources */,
 				F7FB5F201E66F0A400389481 /* TableActivity+CoreDataClass.m in Sources */,
@@ -3862,21 +3867,18 @@
 				F71459CC1D12E3B700CAFEEC /* RNCryptorEngine.m in Sources */,
 				F71459CD1D12E3B700CAFEEC /* AFViewShaker.m in Sources */,
 				F71459CE1D12E3B700CAFEEC /* NSData+CommonCrypto.m in Sources */,
-				F71459CF1D12E3B700CAFEEC /* BKPasscodeLockScreenManager.m in Sources */,
 				F708CF741E56E8CC00271D8B /* TableLocalFile+CoreDataClass.m in Sources */,
-				F71459D11D12E3B700CAFEEC /* BKPasscodeInputView.m in Sources */,
+				F73CC0791E813DFF006E3047 /* BKShiftingView.m in Sources */,
 				F71459D21D12E3B700CAFEEC /* CCUtility.m in Sources */,
 				F71459D31D12E3B700CAFEEC /* CCBKPasscode.m in Sources */,
 				F71459D51D12E3B700CAFEEC /* MBProgressHUD.m in Sources */,
 				F744FA7F1E57333C00BFAB34 /* APAvatarImageView.m in Sources */,
-				F71459D71D12E3B700CAFEEC /* BKPasscodeDummyViewController.m in Sources */,
 				F708CF801E56E8CC00271D8B /* TableDirectory+CoreDataClass.m in Sources */,
 				F71459D91D12E3B700CAFEEC /* CCCrypto.m in Sources */,
 				F732BA0B1D76DBA500E9878B /* CCNetworking.m in Sources */,
 				F708CF8C1E56E8CC00271D8B /* TableCertificates+CoreDataClass.m in Sources */,
 				F71459DD1D12E3B700CAFEEC /* CCCoreData.m in Sources */,
 				F708CF8F1E56E8CC00271D8B /* TableCertificates+CoreDataProperties.m in Sources */,
-				F71459DE1D12E3B700CAFEEC /* BKPasscodeField.m in Sources */,
 				F71459E11D12E3B700CAFEEC /* CCHud.m in Sources */,
 				F708CF921E56E8CC00271D8B /* TableAutomaticUpload+CoreDataClass.m in Sources */,
 				F71459E41D12E3B700CAFEEC /* RNDecryptor.m in Sources */,
@@ -3891,10 +3893,7 @@
 				F7EF0CAF1D9E95F400A9D15E /* CCSharedDBSession.m in Sources */,
 				F71459F11D12E3B700CAFEEC /* CCMove.m in Sources */,
 				F71459F31D12E3B700CAFEEC /* UIImage+Resizing.m in Sources */,
-				F71459F41D12E3B700CAFEEC /* BKPasscodeViewController.m in Sources */,
-				F71459F51D12E3B700CAFEEC /* BKShiftingView.m in Sources */,
 				F71459F71D12E3B700CAFEEC /* CCGraphics.m in Sources */,
-				F71459F81D12E3B700CAFEEC /* BKTouchIDSwitchView.m in Sources */,
 				F7F801051D98205A007537BC /* CCCertificate.m in Sources */,
 				F71459FB1D12E3B700CAFEEC /* PPImageScrollingCellView.m in Sources */,
 				F708CF7D1E56E8CC00271D8B /* TableGPS+CoreDataProperties.m in Sources */,
@@ -3903,9 +3902,10 @@
 				F71459FF1D12E3B700CAFEEC /* RNCryptor.m in Sources */,
 				F7145A001D12E3B700CAFEEC /* CCGlobal.m in Sources */,
 				F7145A011D12E3B700CAFEEC /* UIImage+Blurring.m in Sources */,
-				F7145A021D12E3B700CAFEEC /* BKTouchIDManager.m in Sources */,
 				F7145A041D12E3B700CAFEEC /* CCloadItemData.swift in Sources */,
 				F708CF951E56E8CC00271D8B /* TableAutomaticUpload+CoreDataProperties.m in Sources */,
+				F73CC07F1E813DFF006E3047 /* BKTouchIDSwitchView.m in Sources */,
+				F73CC0761E813DFF006E3047 /* BKPasscodeViewController.m in Sources */,
 				F7145A081D12E3B700CAFEEC /* PPCollectionViewCell.m in Sources */,
 				F7145A0D1D12E3B700CAFEEC /* NSData+Base64.m in Sources */,
 				F78088EB1DD3A1DB005C5A7C /* cryptocloud.xcdatamodeld in Sources */,
@@ -3919,13 +3919,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F743445F1E127D4B001CC831 /* BKPasscodeViewController.m in Sources */,
-				F74344611E127D51001CC831 /* BKTouchIDManager.m in Sources */,
 				F708CF781E56E8CC00271D8B /* TableLocalFile+CoreDataProperties.m in Sources */,
 				F708CF931E56E8CC00271D8B /* TableAutomaticUpload+CoreDataClass.m in Sources */,
 				F74344801E127ED3001CC831 /* NSString+Base64.m in Sources */,
 				F708CF871E56E8CC00271D8B /* TableShare+CoreDataClass.m in Sources */,
-				F74344621E127D54001CC831 /* BKTouchIDSwitchView.m in Sources */,
 				F743447A1E127EA6001CC831 /* CCGraphics.m in Sources */,
 				F708CF9C1E56E8CC00271D8B /* TableAccount+CoreDataProperties.m in Sources */,
 				F708CF811E56E8CC00271D8B /* TableDirectory+CoreDataClass.m in Sources */,
@@ -3934,9 +3931,8 @@
 				F725437C1E12A44A009BF4C2 /* CCSection.m in Sources */,
 				F74344651E127DE9001CC831 /* CCNetworking.m in Sources */,
 				F74344641E127DE6001CC831 /* OCNetworking.m in Sources */,
+				F73CC07A1E813DFF006E3047 /* BKShiftingView.m in Sources */,
 				F708CF841E56E8CC00271D8B /* TableDirectory+CoreDataProperties.m in Sources */,
-				F743445B1E127D3B001CC831 /* BKPasscodeDummyViewController.m in Sources */,
-				F743445D1E127D40001CC831 /* BKPasscodeInputView.m in Sources */,
 				F74344821E127F68001CC831 /* MBProgressHUD.m in Sources */,
 				F708CF7B1E56E8CC00271D8B /* TableGPS+CoreDataClass.m in Sources */,
 				F743444A1E126B4D001CC831 /* CCMove.m in Sources */,
@@ -3944,6 +3940,7 @@
 				F743447D1E127ECB001CC831 /* AESCrypt.m in Sources */,
 				F743447E1E127ECE001CC831 /* NSData+Base64.m in Sources */,
 				F74344671E127E38001CC831 /* CCMetadata.m in Sources */,
+				F73CC0741E813DFF006E3047 /* BKPasscodeLockScreenManager.m in Sources */,
 				F74344781E127E9E001CC831 /* CCExifGeo.m in Sources */,
 				F74344171E1264EE001CC831 /* DocumentPickerViewController.swift in Sources */,
 				F74344811E127F49001CC831 /* AFViewShaker.m in Sources */,
@@ -3951,28 +3948,31 @@
 				F708CF6F1E56E8CC00271D8B /* TableMetadata+CoreDataClass.m in Sources */,
 				F743447B1E127EAC001CC831 /* CCUtility.m in Sources */,
 				F74344871E127F95001CC831 /* UICKeyChainStore.m in Sources */,
+				F73CC0711E813DFF006E3047 /* BKPasscodeInputView.m in Sources */,
+				F73CC07D1E813DFF006E3047 /* BKTouchIDManager.m in Sources */,
 				F743447F1E127ED1001CC831 /* NSData+CommonCrypto.m in Sources */,
 				F708CF8D1E56E8CC00271D8B /* TableCertificates+CoreDataClass.m in Sources */,
 				F74344891E127FC3001CC831 /* CCGlobal.m in Sources */,
+				F73CC06E1E813DFF006E3047 /* BKPasscodeField.m in Sources */,
 				F74344841E127F84001CC831 /* RNCryptorEngine.m in Sources */,
 				F74344851E127F86001CC831 /* RNDecryptor.m in Sources */,
 				F74344881E127F9C001CC831 /* UIImage+animatedGIF.m in Sources */,
 				F708CF7E1E56E8CC00271D8B /* TableGPS+CoreDataProperties.m in Sources */,
+				F73CC0771E813DFF006E3047 /* BKPasscodeViewController.m in Sources */,
 				F7274FEF1E6EB6F400C241B6 /* Constant.swift in Sources */,
 				F743448A1E127FF2001CC831 /* CCHud.m in Sources */,
 				F74344861E127F89001CC831 /* RNEncryptor.m in Sources */,
+				F73CC06B1E813DFF006E3047 /* BKPasscodeDummyViewController.m in Sources */,
 				F708CF991E56E8CC00271D8B /* TableAccount+CoreDataClass.m in Sources */,
-				F743445C1E127D3D001CC831 /* BKPasscodeField.m in Sources */,
 				F7FC88FA1E140558006D0506 /* cryptocloud.xcdatamodeld in Sources */,
 				F744FA801E57333C00BFAB34 /* APAvatarImageView.m in Sources */,
 				F708CF721E56E8CC00271D8B /* TableMetadata+CoreDataProperties.m in Sources */,
-				F743445E1E127D44001CC831 /* BKPasscodeLockScreenManager.m in Sources */,
 				F74344631E127D79001CC831 /* CCBKPasscode.m in Sources */,
 				F708CF8A1E56E8CC00271D8B /* TableShare+CoreDataProperties.m in Sources */,
 				F74344661E127E35001CC831 /* CCCoreData.m in Sources */,
+				F73CC0801E813DFF006E3047 /* BKTouchIDSwitchView.m in Sources */,
 				F743447C1E127EB2001CC831 /* NSString+TruncateToWidth.m in Sources */,
 				F708CF751E56E8CC00271D8B /* TableLocalFile+CoreDataClass.m in Sources */,
-				F74344601E127D4D001CC831 /* BKShiftingView.m in Sources */,
 				F7FB5F211E66F0A400389481 /* TableActivity+CoreDataClass.m in Sources */,
 				F74344831E127F80001CC831 /* RNCryptor.m in Sources */,
 				F708CF961E56E8CC00271D8B /* TableAutomaticUpload+CoreDataProperties.m in Sources */,
@@ -4050,7 +4050,6 @@
 				F77B0E161D118A16002130FE /* AFViewShaker.m in Sources */,
 				F77B0E1B1D118A16002130FE /* CCGraphics.m in Sources */,
 				F73CCE071DC13776007E38D8 /* NSExpression+XLFormAdditions.m in Sources */,
-				F77B0E1C1D118A16002130FE /* BKPasscodeDummyViewController.m in Sources */,
 				F70FD1CB1E675F1500C0FDA6 /* CCControlCenterActivity.m in Sources */,
 				F77B0E1D1D118A16002130FE /* ReaderThumbQueue.m in Sources */,
 				F7274FED1E6EB6F400C241B6 /* Constant.swift in Sources */,
@@ -4062,11 +4061,11 @@
 				F7B1FBCA1E72E3D1001781FE /* SwiftWebVCActivitySafari.swift in Sources */,
 				F7F54D0A1E5B14C800E19C62 /* MWPhotoBrowser.m in Sources */,
 				F720E01F1E48C73E001A4B9E /* CCActions.swift in Sources */,
+				F73CC0721E813DFF006E3047 /* BKPasscodeLockScreenManager.m in Sources */,
 				F77B0E221D118A16002130FE /* CCManageLocation.m in Sources */,
 				F77B0E231D118A16002130FE /* CCSharePermissionOC.m in Sources */,
 				F77B0E241D118A16002130FE /* HRColorCursor.m in Sources */,
 				F708CF851E56E8CC00271D8B /* TableShare+CoreDataClass.m in Sources */,
-				F77B0E251D118A16002130FE /* BKPasscodeInputView.m in Sources */,
 				F708CF9A1E56E8CC00271D8B /* TableAccount+CoreDataProperties.m in Sources */,
 				F77B0E261D118A16002130FE /* ZSSTextView.m in Sources */,
 				F7253FCA1E38BAF20084135B /* JSAlertView.m in Sources */,
@@ -4101,8 +4100,8 @@
 				F73CCE1B1DC13776007E38D8 /* XLFormValidationStatus.m in Sources */,
 				F77B0E441D118A16002130FE /* CCIntro.m in Sources */,
 				F77B0E451D118A16002130FE /* ReaderThumbRender.m in Sources */,
-				F77B0E461D118A16002130FE /* BKPasscodeLockScreenManager.m in Sources */,
 				F77B0E481D118A16002130FE /* CCCrypto.m in Sources */,
+				F73CC0781E813DFF006E3047 /* BKShiftingView.m in Sources */,
 				F7D6A0911D82DBFA0045AD1A /* CCControlCenter.m in Sources */,
 				F708CF761E56E8CC00271D8B /* TableLocalFile+CoreDataProperties.m in Sources */,
 				F7659A6A1DC0B760004860C4 /* PSTGridLayoutInfo.m in Sources */,
@@ -4122,6 +4121,7 @@
 				F73CCE051DC13776007E38D8 /* NSArray+XLFormAdditions.m in Sources */,
 				F77B0E551D118A16002130FE /* SSZipArchive.m in Sources */,
 				F77B0E581D118A16002130FE /* ReaderThumbView.m in Sources */,
+				F73CC0691E813DFF006E3047 /* BKPasscodeDummyViewController.m in Sources */,
 				F77B0E5A1D118A16002130FE /* ReaderContentTile.m in Sources */,
 				F77B0E5B1D118A16002130FE /* UIImage+Rotating.m in Sources */,
 				F7F06E8D1DBFACC600099AE9 /* NSBundle+CTAssetsPickerController.m in Sources */,
@@ -4132,6 +4132,7 @@
 				F7BE6E2F1D2D5C3B00106933 /* CCQuickActions.m in Sources */,
 				F77B0E5E1D118A16002130FE /* unzip.c in Sources */,
 				F7659A291DC0B726004860C4 /* EAIntroView.m in Sources */,
+				F73CC07E1E813DFF006E3047 /* BKTouchIDSwitchView.m in Sources */,
 				F77B0E5F1D118A16002130FE /* CCSettings.m in Sources */,
 				F77B0E601D118A16002130FE /* CGPDFDocument.m in Sources */,
 				F77B0E621D118A16002130FE /* REMenuContainerView.m in Sources */,
@@ -4143,7 +4144,9 @@
 				F708CF731E56E8CC00271D8B /* TableLocalFile+CoreDataClass.m in Sources */,
 				F77B0E661D118A16002130FE /* NSString+Base64.m in Sources */,
 				F77B0E671D118A16002130FE /* Reachability.m in Sources */,
+				F73CC06F1E813DFF006E3047 /* BKPasscodeInputView.m in Sources */,
 				F77B0E6A1D118A16002130FE /* RNDecryptor.m in Sources */,
+				F73CC0751E813DFF006E3047 /* BKPasscodeViewController.m in Sources */,
 				F73CCDF91DC13776007E38D8 /* XLFormOptionsObject.m in Sources */,
 				F77B0E6B1D118A16002130FE /* ReaderThumbCache.m in Sources */,
 				F77B0E6C1D118A16002130FE /* ReaderContentPage.m in Sources */,
@@ -4186,7 +4189,6 @@
 				F72AAECD1E5C60C700BB17E1 /* UIWindow+AHKAdditions.m in Sources */,
 				F77B0E921D118A16002130FE /* CCCellMainTransfer.m in Sources */,
 				F73CCDE31DC13776007E38D8 /* XLFormImageCell.m in Sources */,
-				F77B0E941D118A16002130FE /* BKTouchIDManager.m in Sources */,
 				F7659A5C1DC0B760004860C4 /* PSTCollectionViewCell.m in Sources */,
 				F77B0E951D118A16002130FE /* CCManageAsset.m in Sources */,
 				F7659A391DC0B737004860C4 /* iRate.m in Sources */,
@@ -4198,7 +4200,6 @@
 				F77B0E981D118A16002130FE /* CCManageAccount.m in Sources */,
 				F77B0E991D118A16002130FE /* PPCollectionViewCell.m in Sources */,
 				F7F06EC11DBFACC600099AE9 /* CTAssetsPickerAccessDeniedView.m in Sources */,
-				F77B0E9A1D118A16002130FE /* BKTouchIDSwitchView.m in Sources */,
 				F7F06ECB1DBFACC600099AE9 /* CTAssetThumbnailOverlay.m in Sources */,
 				F77B0E9B1D118A16002130FE /* CCBKPasscode.m in Sources */,
 				F77B0E9D1D118A16002130FE /* HRColorPickerView.m in Sources */,
@@ -4207,10 +4208,8 @@
 				F7659A271DC0B726004860C4 /* EAIntroPage.m in Sources */,
 				F77B0EA61D118A16002130FE /* NSString+TruncateToWidth.m in Sources */,
 				F73CCDF71DC13776007E38D8 /* XLFormTextViewCell.m in Sources */,
-				F77B0EA71D118A16002130FE /* BKPasscodeViewController.m in Sources */,
 				F78088EA1DD3A1DB005C5A7C /* cryptocloud.xcdatamodeld in Sources */,
 				F7659A601DC0B760004860C4 /* PSTCollectionViewData.m in Sources */,
-				F77B0EA81D118A16002130FE /* BKShiftingView.m in Sources */,
 				F77B0EAA1D118A16002130FE /* zip.c in Sources */,
 				F77B0EAB1D118A16002130FE /* HRColorPickerViewController.m in Sources */,
 				F7A13A041E7F3D5D00016680 /* UINavigationController+CCProgress.m in Sources */,
@@ -4220,8 +4219,8 @@
 				F7F06EBD1DBFACC600099AE9 /* CTAssetsPageView.m in Sources */,
 				F77B0EAD1D118A16002130FE /* CCGlobal.m in Sources */,
 				F7659A641DC0B760004860C4 /* PSTCollectionViewItemKey.m in Sources */,
+				F73CC07B1E813DFF006E3047 /* BKTouchIDManager.m in Sources */,
 				F7F06ECF1DBFACC600099AE9 /* CTAssetThumbnailView.m in Sources */,
-				F77B0EAE1D118A16002130FE /* BKPasscodeField.m in Sources */,
 				F7F06E9F1DBFACC600099AE9 /* CTAssetCheckmark.m in Sources */,
 				F7F54D081E5B14C800E19C62 /* MWGridViewController.m in Sources */,
 				F7F06E971DBFACC600099AE9 /* PHAssetCollection+CTAssetsPickerController.m in Sources */,
@@ -4271,6 +4270,7 @@
 				F77B0ED11D118A16002130FE /* Acknowledgements.m in Sources */,
 				F77B0ED31D118A16002130FE /* PPImageScrollingCellView.m in Sources */,
 				F77B0ED41D118A16002130FE /* LMMediaPlayerHelper.m in Sources */,
+				F73CC06C1E813DFF006E3047 /* BKPasscodeField.m in Sources */,
 				F77B0ED51D118A16002130FE /* PHAsset+Utility.m in Sources */,
 				F7F06E991DBFACC600099AE9 /* PHImageManager+CTAssetsPickerController.m in Sources */,
 				F7F06EBB1DBFACC600099AE9 /* CTAssetsNavigationController.m in Sources */,
