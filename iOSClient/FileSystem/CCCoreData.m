@@ -1870,7 +1870,7 @@
     }];
 }
 
-+ (void)addActivityFile:(NSString *)file action:(NSString *)action note:(NSString *)note type:(NSString *)type verbose:(NSInteger)verbose account:(NSString *)account
++ (void)addActivityFile:(NSString *)file action:(NSString *)action selector:(NSString *)selector note:(NSString *)note type:(NSString *)type verbose:(NSInteger)verbose account:(NSString *)account
 {
     [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
         
@@ -1885,6 +1885,7 @@
         record.idActivity = 0;
         record.link = @"";
         record.note = note;
+        record.selector = selector;
         record.type = type;
         record.verbose = [NSNumber numberWithInteger:verbose];
         
