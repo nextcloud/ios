@@ -130,19 +130,23 @@
 {
     TableActivity *activity = [_sectionDataSource objectAtIndex:section];
     
-    UILabel *noteLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, collectionView.frame.size.width - 100, CGFLOAT_MAX)];
-    noteLabel.numberOfLines = 0;
-    [noteLabel setFont:fontSizeNote];
-    [noteLabel sizeToFit];
+    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, collectionView.frame.size.width - 40, CGFLOAT_MAX)];
+    label.numberOfLines = 0;
+    label.lineBreakMode = NSLineBreakByWordWrapping;
+    [label sizeToFit];
     
-    if ([CCUtility getActivityVerboseHigh] && activity.idActivity == 0) noteLabel.text = [NSString stringWithFormat:@"%@ Selector : %@", activity.note, activity.selector];
-    else noteLabel.text = activity.note;
+    // Action
+    [label setFont:fontSizeAction];
+    label.text = [NSString stringWithFormat:@"%@ %@", activity.action, activity.file];
+    int heightAction = [self getLabelHeight:label];
     
-    noteLabel.lineBreakMode = NSLineBreakByWordWrapping;
-    
-    int heighNoteLabel = [self getLabelHeight:noteLabel];
+    // Note
+    [label setFont:fontSizeNote];
+    if ([CCUtility getActivityVerboseHigh] && activity.idActivity == 0) label.text = [NSString stringWithFormat:@"%@ Selector: %@", activity.note, activity.selector];
+    else label.text = activity.note;
+    int heightNote = [self getLabelHeight:label];
 
-    int heightView = 200;
+    int heightView = 40 + heightAction + heightNote;
     
     return CGSizeMake(collectionView.frame.size.width, heightView);
 }
