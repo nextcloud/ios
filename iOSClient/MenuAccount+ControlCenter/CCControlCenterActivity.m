@@ -135,7 +135,7 @@
     [noteLabel setFont:fontSizeNote];
     [noteLabel sizeToFit];
     
-    if ([activity.verbose integerValue] == k_activityVerboseHigh) noteLabel.text = [NSString stringWithFormat:@"%@ Selector : %@", activity.note, activity.selector];
+    if ([CCUtility getActivityVerboseHigh]) noteLabel.text = [NSString stringWithFormat:@"%@ Selector : %@", activity.note, activity.selector];
     else noteLabel.text = activity.note;
     
     noteLabel.lineBreakMode = NSLineBreakByWordWrapping;
@@ -203,7 +203,7 @@
     noteLabel.numberOfLines = 0;
     noteLabel.lineBreakMode = NSLineBreakByWordWrapping;
     
-    if ([activity.verbose integerValue] == k_activityVerboseHigh) noteLabel.text = [NSString stringWithFormat:@"%@ Selector : %@", activity.note, activity.selector];
+    if ([CCUtility getActivityVerboseHigh]) noteLabel.text = [NSString stringWithFormat:@"%@ Selector: %@", activity.note, activity.selector];
     else noteLabel.text = activity.note;
 
     //headerView.backgroundColor = [UIColor blueColor];
