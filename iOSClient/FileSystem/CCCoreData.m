@@ -1865,6 +1865,8 @@
         record.idActivity = [NSNumber numberWithInteger:activity.idActivity];
         record.link = activity.link;
         record.note = activity.subject;
+        record.selector = @"";
+        record.session = @"";
         record.type = k_activityTypeInfo;
         record.verbose = [NSNumber numberWithInteger:k_activityVerboseDefault];
     }];
@@ -1886,6 +1888,7 @@
         record.link = @"";
         record.note = note;
         record.selector = selector;
+        record.session = @"";
         record.type = type;
         record.verbose = [NSNumber numberWithInteger:verbose];
         

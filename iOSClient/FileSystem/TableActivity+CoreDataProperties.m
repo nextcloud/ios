@@ -22,6 +22,7 @@
 @dynamic link;
 @dynamic note;
 @dynamic selector;
+@dynamic session;
 @dynamic type;
 @dynamic verbose;
 
