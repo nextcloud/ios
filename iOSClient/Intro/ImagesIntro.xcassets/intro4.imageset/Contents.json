@@ -2,18 +2,18 @@
   "images" : [
     {
       "idiom" : "universal",
-      "scale" : "1x",
-      "filename" : "intro10Nextcloud.png"
+      "filename" : "intro4.png",
+      "scale" : "1x"
     },
     {
       "idiom" : "universal",
-      "filename" : "intro10Nextcloud@2x.png",
+      "filename" : "intro4@2x.png",
       "scale" : "2x"
     },
     {
       "idiom" : "universal",
-      "scale" : "3x",
-      "filename" : "intro10Nextcloud@3x.png"
+      "filename" : "intro4@3x.png",
+      "scale" : "3x"
     }
   ],
   "info" : {
