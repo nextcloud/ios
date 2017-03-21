@@ -1866,13 +1866,13 @@
         record.link = activity.link;
         record.note = activity.subject;
         record.selector = @"";
-        record.session = @"";
+        record.serverUrl = @"";
         record.type = k_activityTypeInfo;
         record.verbose = [NSNumber numberWithInteger:k_activityVerboseDefault];
     }];
 }
 
-+ (void)addActivityClient:(NSString *)file action:(NSString *)action selector:(NSString *)selector note:(NSString *)note type:(NSString *)type verbose:(NSInteger)verbose account:(NSString *)account
++ (void)addActivityClient:(NSString *)file serverUrl:(NSString *)serverUrl action:(NSString *)action selector:(NSString *)selector note:(NSString *)note type:(NSString *)type verbose:(NSInteger)verbose account:(NSString *)account
 {
     [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
         
@@ -1888,7 +1888,7 @@
         record.link = @"";
         record.note = note;
         record.selector = selector;
-        record.session = @"";
+        record.serverUrl = serverUrl;
         record.type = type;
         record.verbose = [NSNumber numberWithInteger:verbose];
    }];

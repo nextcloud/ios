@@ -22,7 +22,7 @@
 @dynamic link;
 @dynamic note;
 @dynamic selector;
-@dynamic session;
+@dynamic serverUrl;
 @dynamic type;
 @dynamic verbose;
 

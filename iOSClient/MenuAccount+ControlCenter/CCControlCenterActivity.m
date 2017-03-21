@@ -114,6 +114,10 @@
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
+    TableActivity *activity = [_sectionDataSource objectAtIndex:section];
+    
+   // if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", activity.note, activity.file]])
+    
     /*
     TableActivity *activity = [_sectionDataSource objectAtIndex:section];
     

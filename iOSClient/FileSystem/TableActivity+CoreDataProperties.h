@@ -23,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nullable, nonatomic, copy) NSString *link;
 @property (nullable, nonatomic, copy) NSString *note;
 @property (nullable, nonatomic, copy) NSString *selector;
-@property (nullable, nonatomic, copy) NSString *session;
+@property (nullable, nonatomic, copy) NSString *serverUrl;
 @property (nullable, nonatomic, copy) NSString *type;
 @property (nullable, nonatomic, copy) NSNumber *verbose;
 
