@@ -123,7 +123,7 @@
     TableActivity *activity = [_sectionDataSource objectAtIndex:section];
     
     if ([activity.action isEqual: k_activityDebugActionDownload] || [activity.action isEqual: k_activityDebugActionUpload]) {
-     
+        
         if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, activity.fileID]])
             return 1;
         else
@@ -162,64 +162,64 @@
 {
     if (kind == UICollectionElementKindSectionHeader) {
     
-    UICollectionReusableView *headerView = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:@"header" forIndexPath:indexPath];
+        UICollectionReusableView *headerView = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:@"header" forIndexPath:indexPath];
         
-    TableActivity *activity = [_sectionDataSource objectAtIndex:indexPath.section];
+        TableActivity *activity = [_sectionDataSource objectAtIndex:indexPath.section];
     
-    UILabel *dateLabel = (UILabel *)[headerView viewWithTag:100];
-    UILabel *actionLabel = (UILabel *)[headerView viewWithTag:101];
-    UILabel *noteLabel = (UILabel *)[headerView viewWithTag:102];
-    UIImageView *typeImage = (UIImageView *) [headerView viewWithTag:103];
+        UILabel *dateLabel = (UILabel *)[headerView viewWithTag:100];
+        UILabel *actionLabel = (UILabel *)[headerView viewWithTag:101];
+        UILabel *noteLabel = (UILabel *)[headerView viewWithTag:102];
+        UIImageView *typeImage = (UIImageView *) [headerView viewWithTag:103];
     
-    [dateLabel setFont:fontSizeData];
-    dateLabel.textColor = [UIColor colorWithRed:100.0/255.0 green:100.0/255.0 blue:100.0/255.0 alpha:1.0];
+        [dateLabel setFont:fontSizeData];
+        dateLabel.textColor = [UIColor colorWithRed:100.0/255.0 green:100.0/255.0 blue:100.0/255.0 alpha:1.0];
     
-    if ([CCUtility getActivityVerboseHigh]) {
+        if ([CCUtility getActivityVerboseHigh]) {
         
-        dateLabel.text = [NSDateFormatter localizedStringFromDate:activity.date dateStyle:NSDateFormatterFullStyle timeStyle:NSDateFormatterMediumStyle];
+            dateLabel.text = [NSDateFormatter localizedStringFromDate:activity.date dateStyle:NSDateFormatterFullStyle timeStyle:NSDateFormatterMediumStyle];
         
-    } else {
+        } else {
         
-        NSDateComponents* comps = [[NSCalendar currentCalendar] components:NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay fromDate:activity.date];
-        dateLabel.text = [CCUtility getTitleSectionDate:[[NSCalendar currentCalendar] dateFromComponents:comps]];
-    }
+            NSDateComponents* comps = [[NSCalendar currentCalendar] components:NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay fromDate:activity.date];
+            dateLabel.text = [CCUtility getTitleSectionDate:[[NSCalendar currentCalendar] dateFromComponents:comps]];
+        }
     
-    [actionLabel setFont:fontSizeAction];
-    [actionLabel sizeToFit];
-    actionLabel.text = [NSString stringWithFormat:@"%@ %@", activity.action, activity.file];
+        [actionLabel setFont:fontSizeAction];
+        [actionLabel sizeToFit];
+        actionLabel.text = [NSString stringWithFormat:@"%@ %@", activity.action, activity.file];
 
-    if ([activity.type isEqualToString:k_activityTypeInfo]) {
+        if ([activity.type isEqualToString:k_activityTypeInfo]) {
         
-        actionLabel.textColor = COLOR_BRAND;
+            actionLabel.textColor = COLOR_BRAND;
         
-        if (activity.idActivity == 0)
-            typeImage.image = [UIImage imageNamed:@"activityTypeInfo"];
-        else
-            typeImage.image = [UIImage imageNamed:@"activityTypeInfoServer"];
-    }
+            if (activity.idActivity == 0)
+                typeImage.image = [UIImage imageNamed:@"activityTypeInfo"];
+            else
+                typeImage.image = [UIImage imageNamed:@"activityTypeInfoServer"];
+        }
     
-    if ([activity.type isEqualToString:k_activityTypeSuccess]) {
+        if ([activity.type isEqualToString:k_activityTypeSuccess]) {
         
-        actionLabel.textColor = [UIColor colorWithRed:87.0/255.0 green:187.0/255.0 blue:57.0/255.0 alpha:1.0];;
-        typeImage.image = [UIImage imageNamed:@"activityTypeSuccess"];
-    }
+            actionLabel.textColor = [UIColor colorWithRed:87.0/255.0 green:187.0/255.0 blue:57.0/255.0 alpha:1.0];;
+            typeImage.image = [UIImage imageNamed:@"activityTypeSuccess"];
+        }
     
-    if ([activity.type isEqualToString:k_activityTypeFailure]) {
+        if ([activity.type isEqualToString:k_activityTypeFailure]) {
         
-        actionLabel.textColor = [UIColor redColor];
-        typeImage.image = [UIImage imageNamed:@"activityTypeFailure"];
-    }
+            actionLabel.textColor = [UIColor redColor];
+            typeImage.image = [UIImage imageNamed:@"activityTypeFailure"];
+        }
     
-    [noteLabel setFont:fontSizeNote];
-    [noteLabel sizeToFit];
-    noteLabel.textColor = COLOR_TEXT_ANTHRACITE;
-    noteLabel.numberOfLines = 0;
-    noteLabel.lineBreakMode = NSLineBreakByWordWrapping;
+        [noteLabel setFont:fontSizeNote];
+        [noteLabel sizeToFit];
+        noteLabel.textColor = COLOR_TEXT_ANTHRACITE;
+        noteLabel.numberOfLines = 0;
+        noteLabel.lineBreakMode = NSLineBreakByWordWrapping;
     
-    if ([CCUtility getActivityVerboseHigh] && activity.idActivity == 0) noteLabel.text = [NSString stringWithFormat:@"%@ Selector: %@", activity.note, activity.selector];
-    else noteLabel.text = activity.note;
+        if ([CCUtility getActivityVerboseHigh] && activity.idActivity == 0) noteLabel.text = [NSString stringWithFormat:@"%@ Selector: %@", activity.note, activity.selector];
+        else noteLabel.text = activity.note;
         
-    return headerView;
+        return headerView;
     }
     
     if (kind == UICollectionElementKindSectionFooter) {

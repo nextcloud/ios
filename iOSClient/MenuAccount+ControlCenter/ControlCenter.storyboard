@@ -29,7 +29,7 @@
                         <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="cmY-iB-PWk">
                             <size key="itemSize" width="40" height="40"/>
                             <size key="headerReferenceSize" width="50" height="92"/>
-                            <size key="footerReferenceSize" width="50" height="10"/>
+                            <size key="footerReferenceSize" width="50" height="5"/>
                             <inset key="sectionInset" minX="48" minY="5" maxX="0.0" maxY="0.0"/>
                         </collectionViewFlowLayout>
                         <cells>
@@ -102,7 +102,7 @@
                             </constraints>
                         </collectionReusableView>
                         <collectionReusableView key="sectionFooterView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="footer" id="Bco-Ec-4yL">
-                            <rect key="frame" x="0.0" y="137" width="375" height="10"/>
+                            <rect key="frame" x="0.0" y="137" width="375" height="5"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         </collectionReusableView>
                         <connections>

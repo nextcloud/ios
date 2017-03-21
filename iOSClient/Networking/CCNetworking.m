@@ -457,7 +457,7 @@
             date = [dateFormatter dateFromString:[fields objectForKey:@"Date"]];
             
             // Activity
-            [CCCoreData addActivityClient:fileName fileID:metadata.fileID action:k_activityDebugActionUpload selector:metadata.sessionSelector note:serverUrl type:k_activityTypeSuccess verbose:k_activityVerboseDefault account:metadata.account];
+            [CCCoreData addActivityClient:fileName fileID:fileID action:k_activityDebugActionUpload selector:metadata.sessionSelector note:serverUrl type:k_activityTypeSuccess verbose:k_activityVerboseDefault account:metadata.account];
 
         } else {
             
