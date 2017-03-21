@@ -1,6 +1,6 @@
 # [Nextcloud](https://nextcloud.com)  iOS app
 
-[<img src="https://nextcloud.com/media/mobile.gif?x16328&x16328" 
+[<img src="https://nextcloud.com/wp-content/themes/next/assets/img/clients/mobile/ios.gif" 
       alt="Download from App Storey" 
       height="400">](https://itunes.apple.com/us/app/nextcloud/id1125420102?mt=8)
 
