@@ -225,6 +225,7 @@
 		F750374D1DBFA91A008FB480 /* ALView+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F75037441DBFA91A008FB480 /* ALView+PureLayout.m */; };
 		F750374F1DBFA91A008FB480 /* NSArray+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F75037461DBFA91A008FB480 /* NSArray+PureLayout.m */; };
 		F75037511DBFA91A008FB480 /* NSLayoutConstraint+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F75037481DBFA91A008FB480 /* NSLayoutConstraint+PureLayout.m */; };
+		F75797AE1E81356C00187A1B /* CTAssetsPicker.strings in Resources */ = {isa = PBXBuildFile; fileRef = F75797AC1E81356C00187A1B /* CTAssetsPicker.strings */; };
 		F75ADF451DC75FFE008A7347 /* CCLogin.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F75ADF441DC75FFE008A7347 /* CCLogin.storyboard */; };
 		F7659A271DC0B726004860C4 /* EAIntroPage.m in Sources */ = {isa = PBXBuildFile; fileRef = F7659A231DC0B726004860C4 /* EAIntroPage.m */; };
 		F7659A291DC0B726004860C4 /* EAIntroView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7659A251DC0B726004860C4 /* EAIntroView.m */; };
@@ -553,7 +554,6 @@
 		F7F06ECB1DBFACC600099AE9 /* CTAssetThumbnailOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F06E6C1DBFACC600099AE9 /* CTAssetThumbnailOverlay.m */; };
 		F7F06ECD1DBFACC600099AE9 /* CTAssetThumbnailStacks.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F06E6E1DBFACC600099AE9 /* CTAssetThumbnailStacks.m */; };
 		F7F06ECF1DBFACC600099AE9 /* CTAssetThumbnailView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F06E701DBFACC600099AE9 /* CTAssetThumbnailView.m */; };
-		F7F06ED11DBFACC600099AE9 /* CTAssetsPicker.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7F06E721DBFACC600099AE9 /* CTAssetsPicker.strings */; };
 		F7F54CE51E5B14C700E19C62 /* ImageError.png in Resources */ = {isa = PBXBuildFile; fileRef = F7F54CAF1E5B14C700E19C62 /* ImageError.png */; };
 		F7F54CE61E5B14C700E19C62 /* ImageError@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F7F54CB01E5B14C700E19C62 /* ImageError@2x.png */; };
 		F7F54CE71E5B14C700E19C62 /* ImageError@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = F7F54CB11E5B14C700E19C62 /* ImageError@3x.png */; };
@@ -1115,12 +1115,6 @@
 		F732B2D91E802B72002B7D75 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-BR"; path = "pt-BR.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		F732B2DA1E802B72002B7D75 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-BR"; path = "pt-BR.lproj/Intro.strings"; sourceTree = "<group>"; };
 		F732B2DB1E802B72002B7D75 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-BR"; path = "pt-BR.lproj/Error.strings"; sourceTree = "<group>"; };
-		F732B32F1E804308002B7D75 /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/CTAssetsPicker.strings; sourceTree = "<group>"; };
-		F732B3301E80434B002B7D75 /* is */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = is; path = is.lproj/CTAssetsPicker.strings; sourceTree = "<group>"; };
-		F732B3311E8043A1002B7D75 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-BR"; path = "pt-BR.lproj/CTAssetsPicker.strings"; sourceTree = "<group>"; };
-		F732B3321E8043B1002B7D75 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/CTAssetsPicker.strings; sourceTree = "<group>"; };
-		F732B3331E8043B5002B7D75 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/CTAssetsPicker.strings; sourceTree = "<group>"; };
-		F732B3341E8043B8002B7D75 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/CTAssetsPicker.strings; sourceTree = "<group>"; };
 		F732B3361E8045A1002B7D75 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/SwiftWebVC.strings; sourceTree = "<group>"; };
 		F732B3381E8045CB002B7D75 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/SwiftWebVC.strings; sourceTree = "<group>"; };
 		F732B3391E8045CF002B7D75 /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/SwiftWebVC.strings; sourceTree = "<group>"; };
@@ -1324,6 +1318,16 @@
 		F7540F2A1D5B238600C3FFA8 /* x509.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = x509.h; sourceTree = "<group>"; };
 		F7540F2B1D5B238600C3FFA8 /* x509_vfy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = x509_vfy.h; sourceTree = "<group>"; };
 		F7540F2C1D5B238600C3FFA8 /* x509v3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = x509v3.h; sourceTree = "<group>"; };
+		F75797AD1E81356C00187A1B /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/CTAssetsPicker.strings; sourceTree = "<group>"; };
+		F75797AF1E81359500187A1B /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/CTAssetsPicker.strings; sourceTree = "<group>"; };
+		F75797B01E8135AB00187A1B /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/CTAssetsPicker.strings; sourceTree = "<group>"; };
+		F75797B11E81363C00187A1B /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/CTAssetsPicker.strings; sourceTree = "<group>"; };
+		F75797B21E81363F00187A1B /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/CTAssetsPicker.strings; sourceTree = "<group>"; };
+		F75797B31E81364100187A1B /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/CTAssetsPicker.strings; sourceTree = "<group>"; };
+		F75797B41E81364400187A1B /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/CTAssetsPicker.strings; sourceTree = "<group>"; };
+		F75797B51E81364700187A1B /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/CTAssetsPicker.strings; sourceTree = "<group>"; };
+		F75797B61E81364A00187A1B /* is */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = is; path = is.lproj/CTAssetsPicker.strings; sourceTree = "<group>"; };
+		F75797B71E81364C00187A1B /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-BR"; path = "pt-BR.lproj/CTAssetsPicker.strings"; sourceTree = "<group>"; };
 		F75ADF441DC75FFE008A7347 /* CCLogin.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = CCLogin.storyboard; sourceTree = "<group>"; };
 		F75CDBF51DF063AD00116AD0 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; name = .gitignore; path = ../.gitignore; sourceTree = "<group>"; };
 		F76344751BF259A800188725 /* synchronized.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = synchronized.gif; sourceTree = "<group>"; };
@@ -1568,10 +1572,6 @@
 		F7F06E6E1DBFACC600099AE9 /* CTAssetThumbnailStacks.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CTAssetThumbnailStacks.m; sourceTree = "<group>"; };
 		F7F06E6F1DBFACC600099AE9 /* CTAssetThumbnailView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CTAssetThumbnailView.h; sourceTree = "<group>"; };
 		F7F06E701DBFACC600099AE9 /* CTAssetThumbnailView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CTAssetThumbnailView.m; sourceTree = "<group>"; };
-		F7F06E761DBFACC600099AE9 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/CTAssetsPicker.strings; sourceTree = "<group>"; };
-		F7F06E771DBFACC600099AE9 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/CTAssetsPicker.strings; sourceTree = "<group>"; };
-		F7F06E801DBFACC600099AE9 /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/CTAssetsPicker.strings; sourceTree = "<group>"; };
-		F7F06E841DBFACC600099AE9 /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/CTAssetsPicker.strings; sourceTree = "<group>"; };
 		F7F54CAB1E5AFF1E00E19C62 /* PickerFileProvider-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "PickerFileProvider-Bridging-Header.h"; sourceTree = "<group>"; };
 		F7F54CAF1E5B14C700E19C62 /* ImageError.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ImageError.png; sourceTree = "<group>"; };
 		F7F54CB01E5B14C700E19C62 /* ImageError@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ImageError@2x.png"; sourceTree = "<group>"; };
@@ -2388,6 +2388,7 @@
 		F72B60941A24F04E004EF66F /* Localizations */ = {
 			isa = PBXGroup;
 			children = (
+				F75797AC1E81356C00187A1B /* CTAssetsPicker.strings */,
 				F732B3351E8045A1002B7D75 /* SwiftWebVC.strings */,
 				F72B60911A24F00B004EF66F /* BKPasscodeView.strings */,
 				F7E70DE91A24DE4100E1B66A /* Localizable.strings */,
@@ -3121,7 +3122,6 @@
 				F7F06E6E1DBFACC600099AE9 /* CTAssetThumbnailStacks.m */,
 				F7F06E6F1DBFACC600099AE9 /* CTAssetThumbnailView.h */,
 				F7F06E701DBFACC600099AE9 /* CTAssetThumbnailView.m */,
-				F7F06E711DBFACC600099AE9 /* Resources */,
 			);
 			path = CTAssetsPickerController;
 			sourceTree = "<group>";
@@ -3151,14 +3151,6 @@
 				F7F06E3E1DBFACC600099AE9 /* UIImage+CTAssetsPickerController.m */,
 			);
 			path = Categories;
-			sourceTree = "<group>";
-		};
-		F7F06E711DBFACC600099AE9 /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				F7F06E721DBFACC600099AE9 /* CTAssetsPicker.strings */,
-			);
-			path = Resources;
 			sourceTree = "<group>";
 		};
 		F7F54CAC1E5B143100E19C62 /* Library */ = {
@@ -3705,7 +3697,6 @@
 				F7F54CFA1E5B14C700E19C62 /* UIBarButtonItemArrowLeft.png in Resources */,
 				F7FCFFD81D70798C000E6E29 /* CCPeekPop.storyboard in Resources */,
 				F77B0F191D118A16002130FE /* ZSSitalic.png in Resources */,
-				F7F06ED11DBFACC600099AE9 /* CTAssetsPicker.strings in Resources */,
 				F77B0F1C1D118A16002130FE /* Reader-Email@2x.png in Resources */,
 				F7F54CF61E5B14C700E19C62 /* PlayButtonOverlayLarge@3x.png in Resources */,
 				F77B0F1D1D118A16002130FE /* ZSSh2@2x.png in Resources */,
@@ -3815,6 +3806,7 @@
 				F77B0F8A1D118A16002130FE /* CCCellMain.xib in Resources */,
 				F77B0F8C1D118A16002130FE /* CCCellMainTransfer.xib in Resources */,
 				F77B0F8E1D118A16002130FE /* LMMediaPlayerView.xib in Resources */,
+				F75797AE1E81356C00187A1B /* CTAssetsPicker.strings in Resources */,
 				F77B0F8F1D118A16002130FE /* ZSSunlink@2x.png in Resources */,
 				F7F7638C1E783EF6009FED20 /* DevicePushKey-Info.plist in Resources */,
 				F77B0F901D118A16002130FE /* ZSSpicker@2x.png in Resources */,
@@ -4358,6 +4350,23 @@
 			name = Intro.strings;
 			sourceTree = "<group>";
 		};
+		F75797AC1E81356C00187A1B /* CTAssetsPicker.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F75797AD1E81356C00187A1B /* en */,
+				F75797AF1E81359500187A1B /* de */,
+				F75797B01E8135AB00187A1B /* es */,
+				F75797B11E81363C00187A1B /* nl */,
+				F75797B21E81363F00187A1B /* it */,
+				F75797B31E81364100187A1B /* fr */,
+				F75797B41E81364400187A1B /* ru */,
+				F75797B51E81364700187A1B /* pl */,
+				F75797B61E81364A00187A1B /* is */,
+				F75797B71E81364C00187A1B /* pt-BR */,
+			);
+			name = CTAssetsPicker.strings;
+			sourceTree = "<group>";
+		};
 		F7B381BF1C074E3E004693F8 /* Error.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -4407,23 +4416,6 @@
 				F732B2D81E802B71002B7D75 /* pt-BR */,
 			);
 			name = Localizable.strings;
-			sourceTree = "<group>";
-		};
-		F7F06E721DBFACC600099AE9 /* CTAssetsPicker.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				F7F06E761DBFACC600099AE9 /* de */,
-				F7F06E771DBFACC600099AE9 /* en */,
-				F7F06E801DBFACC600099AE9 /* it */,
-				F7F06E841DBFACC600099AE9 /* nl */,
-				F732B32F1E804308002B7D75 /* pl */,
-				F732B3301E80434B002B7D75 /* is */,
-				F732B3311E8043A1002B7D75 /* pt-BR */,
-				F732B3321E8043B1002B7D75 /* fr */,
-				F732B3331E8043B5002B7D75 /* ru */,
-				F732B3341E8043B8002B7D75 /* es */,
-			);
-			name = CTAssetsPicker.strings;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
