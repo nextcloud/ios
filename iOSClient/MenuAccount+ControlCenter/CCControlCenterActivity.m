@@ -142,7 +142,7 @@
     
     int heighNoteLabel = [self getLabelHeight:noteLabel];
 
-    int heightView = 90 + heighNoteLabel + (heighNoteLabel/5);
+    int heightView = 200;
     
     return CGSizeMake(collectionView.frame.size.width, heightView);
 }
