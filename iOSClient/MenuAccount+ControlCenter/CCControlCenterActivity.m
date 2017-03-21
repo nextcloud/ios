@@ -112,12 +112,7 @@
     return [_sectionDataSource count];
 }
 
-/*
-- (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout insetForSectionAtIndex:(NSInteger)section
-{
-    return UIEdgeInsetsMake(40, 10, 0, 0);
-}
-*/
+
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
     TableActivity *activity = [_sectionDataSource objectAtIndex:section];
