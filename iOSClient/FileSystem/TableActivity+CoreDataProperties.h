@@ -19,11 +19,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nullable, nonatomic, copy) NSString *action;
 @property (nullable, nonatomic, copy) NSDate *date;
 @property (nullable, nonatomic, copy) NSString *file;
+@property (nullable, nonatomic, copy) NSString *fileID;
 @property (nullable, nonatomic, copy) NSNumber *idActivity;
 @property (nullable, nonatomic, copy) NSString *link;
 @property (nullable, nonatomic, copy) NSString *note;
 @property (nullable, nonatomic, copy) NSString *selector;
-@property (nullable, nonatomic, copy) NSString *serverUrl;
 @property (nullable, nonatomic, copy) NSString *type;
 @property (nullable, nonatomic, copy) NSNumber *verbose;
 

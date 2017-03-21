@@ -384,7 +384,7 @@ class CCActions: NSObject {
         NSLog("[LOG] Thumbnail Error \(metadataNet.fileName!) \(message) error %\(errorCode))")
         
         // Activity
-        CCCoreData.addActivityClient(metadataNet.fileID, serverUrl: "", action: k_activityDebugActionDownloadThumbnail, selector: metadataNet.selector! , note: "Error: \(message)", type: k_activityTypeFailure, verbose: Int(k_activityVerboseHigh), account: appDelegate.activeAccount)
+        CCCoreData.addActivityClient(metadataNet.fileID, fileID: "", action: k_activityDebugActionDownloadThumbnail, selector: metadataNet.selector! , note: "Error: \(message)", type: k_activityTypeFailure, verbose: Int(k_activityVerboseHigh), account: appDelegate.activeAccount)
     }
 
     // --------------------------------------------------------------------------------------------

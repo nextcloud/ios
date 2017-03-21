@@ -116,16 +116,13 @@
 {
     TableActivity *activity = [_sectionDataSource objectAtIndex:section];
     
-   // if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", activity.note, activity.file]])
-    
-    /*
-    TableActivity *activity = [_sectionDataSource objectAtIndex:section];
-    
-    if ([activity.file length] > 0)
-        return 1;
-    else
-        return 0;
-    */
+    if ([activity.action isEqual: k_activityDebugActionDownload] || [activity.action isEqual: k_activityDebugActionUpload]) {
+     
+        if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, activity.fileID]])
+            return 1;
+        else
+            return 0;
+    }
     
     return 0;
 }
@@ -223,15 +220,11 @@
 {
     UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"cell" forIndexPath:indexPath];
     cell.backgroundColor = [UIColor clearColor];
-    
+    UIImageView *imageView = (UIImageView *)[cell viewWithTag:104];
+
     TableActivity *activity = [_sectionDataSource objectAtIndex:indexPath.section];
     
-    NSString *dir = [activity.file stringByDeletingLastPathComponent];
-    NSString *fileName = [activity.file lastPathComponent];
-    
-    if ([dir length] > 0 && [fileName length] > 0) {
-        
-    }
+    imageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, activity.fileID]];
     
     return cell;
 }

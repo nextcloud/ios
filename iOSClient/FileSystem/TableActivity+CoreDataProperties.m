@@ -18,11 +18,11 @@
 @dynamic action;
 @dynamic date;
 @dynamic file;
+@dynamic fileID;
 @dynamic idActivity;
 @dynamic link;
 @dynamic note;
 @dynamic selector;
-@dynamic serverUrl;
 @dynamic type;
 @dynamic verbose;
 

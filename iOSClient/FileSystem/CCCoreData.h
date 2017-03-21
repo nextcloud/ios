@@ -211,7 +211,7 @@
 // ===== Activity =====
 
 + (void)addActivityServer:(OCActivity *)activity account:(NSString *)account;
-+ (void)addActivityClient:(NSString *)file serverUrl:(NSString *)serverUrl action:(NSString *)action selector:(NSString *)selector note:(NSString *)note type:(NSString *)type verbose:(NSInteger)verbose account:(NSString *)account;
++ (void)addActivityClient:(NSString *)file fileID:(NSString *)fileID action:(NSString *)action selector:(NSString *)selector note:(NSString *)note type:(NSString *)type verbose:(NSInteger)verbose account:(NSString *)account;
 + (NSArray *)getAllTableActivityWithPredicate:(NSPredicate *)predicate;
 
 // ===== File System =====
