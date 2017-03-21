@@ -135,7 +135,7 @@
     [noteLabel setFont:fontSizeNote];
     [noteLabel sizeToFit];
     
-    if ([CCUtility getActivityVerboseHigh]) noteLabel.text = [NSString stringWithFormat:@"%@ Selector : %@", activity.note, activity.selector];
+    if ([CCUtility getActivityVerboseHigh] && activity.idActivity == 0) noteLabel.text = [NSString stringWithFormat:@"%@ Selector : %@", activity.note, activity.selector];
     else noteLabel.text = activity.note;
     
     noteLabel.lineBreakMode = NSLineBreakByWordWrapping;
@@ -179,7 +179,7 @@
         
         actionLabel.textColor = COLOR_BRAND;
         
-        if ([activity.verbose integerValue] == k_activityVerboseHigh)
+        if (activity.idActivity == 0)
             typeImage.image = [UIImage imageNamed:@"activityTypeInfo"];
         else
             typeImage.image = [UIImage imageNamed:@"activityTypeInfoServer"];
@@ -203,7 +203,7 @@
     noteLabel.numberOfLines = 0;
     noteLabel.lineBreakMode = NSLineBreakByWordWrapping;
     
-    if ([CCUtility getActivityVerboseHigh]) noteLabel.text = [NSString stringWithFormat:@"%@ Selector: %@", activity.note, activity.selector];
+    if ([CCUtility getActivityVerboseHigh] && activity.idActivity == 0) noteLabel.text = [NSString stringWithFormat:@"%@ Selector: %@", activity.note, activity.selector];
     else noteLabel.text = activity.note;
 
     //headerView.backgroundColor = [UIColor blueColor];
