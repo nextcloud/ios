@@ -65,14 +65,14 @@
     section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_help_activity_section_", nil)];
     [form addFormSection:section];
     
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"activityVerboseHigh" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_help_Activity_verbose_", nil)];
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"activityVerboseHigh" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_help_activity_verbose_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:[UIImage imageNamed:image_settingsActivityHigh] forKey:@"imageView.image"];
     if ([CCUtility getActivityVerboseHigh]) row.value = @"1";
     else row.value = @"0";
     [section addFormRow:row];
     
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"sendMailActivity" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_help_Activity_mail_", nil)];
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"sendMailActivity" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_help_activity_mail_", nil)];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
     [row.cellConfig setObject:COLOR_BRAND forKey:@"textLabel.textColor"];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
@@ -80,7 +80,7 @@
     row.action.formSelector = @selector(sendMail:);
     [section addFormRow:row];
 
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"clearActivityLog" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_help_Activity_clear_", nil)];
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"clearActivityLog" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_help_activity_clear_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:COLOR_BRAND forKey:@"textLabel.textColor"];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
