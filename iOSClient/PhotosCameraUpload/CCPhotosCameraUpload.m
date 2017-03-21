@@ -317,6 +317,7 @@
         */
         UIImage *imageButton = [UIImage imageNamed:image_activeCameraUpload];
         UIImage *image = [CCUtility drawText:NSLocalizedString(@"_activate_camera_upload_", nil) inImage:imageButton];
+        image = [UIImage imageWithCGImage:image.CGImage scale:2 orientation:UIImageOrientationUp];
         
         return image;
         

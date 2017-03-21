@@ -1263,7 +1263,7 @@
 
 + (UIImage*)drawText:(NSString*)text inImage:(UIImage*)image
 {
-    NSDictionary* attributes = @{NSFontAttributeName: [UIFont boldSystemFontOfSize:12], NSForegroundColorAttributeName:[UIColor whiteColor]};
+    NSDictionary* attributes = @{NSFontAttributeName: [UIFont systemFontOfSize:14], NSForegroundColorAttributeName:[UIColor whiteColor]};
     NSAttributedString* attributedString = [[NSAttributedString alloc] initWithString:text attributes:attributes];
     
     int x = image.size.width/2 - attributedString.size.width/2;
