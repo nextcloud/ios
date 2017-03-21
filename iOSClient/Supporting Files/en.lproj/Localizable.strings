@@ -519,12 +519,12 @@
 
 "_notification_"                    = "Notification";
 
-// -----------------------------------------------------------------------------------------------------------
+// Photo Browser
 
-"Done"                          = "Done";
-"Select Photos"                 = "Select Photos";
-"photo"                         = "photo";
-"photos"                        = "photos";
-"of"                            = "of";
+"Done"                              = "Done";
+"Select Photos"                     = "Select Photos";
+"photo"                             = "photo";
+"photos"                            = "photos";
+"of"                                = "of";
+"%i of %i"                          = "%1$i of %2$i";
 
-"%i of %i"                      = "%1$i of %2$i";
