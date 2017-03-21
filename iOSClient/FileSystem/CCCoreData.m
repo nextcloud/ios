@@ -1849,7 +1849,7 @@
 #pragma mark ===== Activity =====
 #pragma --------------------------------------------------------------------------------------------
 
-+ (void)addActivity:(OCActivity *)activity account:(NSString *)account
++ (void)addActivityServer:(OCActivity *)activity account:(NSString *)account
 {
     [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
         
@@ -1872,7 +1872,7 @@
     }];
 }
 
-+ (void)addActivityFile:(NSString *)file action:(NSString *)action selector:(NSString *)selector note:(NSString *)note type:(NSString *)type verbose:(NSInteger)verbose account:(NSString *)account
++ (void)addActivityClient:(NSString *)file action:(NSString *)action selector:(NSString *)selector note:(NSString *)note type:(NSString *)type verbose:(NSInteger)verbose account:(NSString *)account
 {
     [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
         
@@ -1891,8 +1891,6 @@
         record.session = @"";
         record.type = type;
         record.verbose = [NSNumber numberWithInteger:verbose];
-        
-        NSLog(@"[LOG] %@ %@ - %@", action, file, note);
    }];
 }
 

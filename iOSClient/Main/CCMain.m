@@ -1045,7 +1045,7 @@
 - (void)getActivityServerSuccess:(NSArray *)listOfActivity
 {
     for (OCActivity *activity in listOfActivity) {
-        [CCCoreData addActivity:activity account:app.activeAccount];
+        [CCCoreData addActivityServer:activity account:app.activeAccount];
     }
     
     // Reload Activity Data Source
