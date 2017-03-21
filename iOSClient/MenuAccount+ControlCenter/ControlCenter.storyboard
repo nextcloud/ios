@@ -29,7 +29,7 @@
                         <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="cmY-iB-PWk">
                             <size key="itemSize" width="40" height="40"/>
                             <size key="headerReferenceSize" width="50" height="92"/>
-                            <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                            <size key="footerReferenceSize" width="50" height="10"/>
                             <inset key="sectionInset" minX="48" minY="5" maxX="0.0" maxY="0.0"/>
                         </collectionViewFlowLayout>
                         <cells>
@@ -101,6 +101,10 @@
                                 <constraint firstItem="LU0-Y8-8hN" firstAttribute="top" secondItem="6Zg-lt-YR9" secondAttribute="topMargin" constant="25" id="nBW-yd-hLP"/>
                             </constraints>
                         </collectionReusableView>
+                        <collectionReusableView key="sectionFooterView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="footer" id="Bco-Ec-4yL">
+                            <rect key="frame" x="0.0" y="137" width="375" height="10"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        </collectionReusableView>
                         <connections>
                             <outlet property="dataSource" destination="Sa9-Gr-Uug" id="TzW-IT-Zqv"/>
                             <outlet property="delegate" destination="Sa9-Gr-Uug" id="zNO-J2-Q7Q"/>
@@ -108,10 +112,6 @@
                     </collectionView>
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="0k6-oO-NJC" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <collectionReusableView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="LjN-nr-KKS">
-                    <rect key="frame" x="0.0" y="0.0" width="375" height="50"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                </collectionReusableView>
             </objects>
             <point key="canvasLocation" x="7160.8000000000002" y="1686.2068965517242"/>
         </scene>

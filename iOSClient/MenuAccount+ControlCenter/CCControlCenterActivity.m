@@ -160,6 +160,8 @@
 
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
 {
+    if (kind == UICollectionElementKindSectionHeader) {
+    
     UICollectionReusableView *headerView = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:@"header" forIndexPath:indexPath];
         
     TableActivity *activity = [_sectionDataSource objectAtIndex:indexPath.section];
@@ -216,10 +218,18 @@
     
     if ([CCUtility getActivityVerboseHigh] && activity.idActivity == 0) noteLabel.text = [NSString stringWithFormat:@"%@ Selector: %@", activity.note, activity.selector];
     else noteLabel.text = activity.note;
-
-    //headerView.backgroundColor = [UIColor blueColor];
         
     return headerView;
+    }
+    
+    if (kind == UICollectionElementKindSectionFooter) {
+        
+        UICollectionReusableView *footerView = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:@"footer" forIndexPath:indexPath];
+        
+        return footerView;
+    }
+    
+    return nil;
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
