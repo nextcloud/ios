@@ -1673,16 +1673,16 @@
                 
                 for (NSDictionary *data in datas) {
                     
-                    OCExternalSites *externalSite = [OCExternalSites new];
+                    OCExternalSites *externalSites = [OCExternalSites new];
                     
-                    externalSite.idExternalSite = [[data valueForKey:@"id"] integerValue];
+                    externalSites.idExternalSite = [[data valueForKey:@"id"] integerValue];
     
-                    if ([data valueForKey:@"icon"] && ![[data valueForKey:@"icon"] isEqual:[NSNull null]]) externalSite.icon = [data valueForKey:@"icon"];
-                    if ([data valueForKey:@"lang"] && ![[data valueForKey:@"lang"] isEqual:[NSNull null]]) externalSite.lang = [data valueForKey:@"lang"];
-                    if ([data valueForKey:@"name"] && ![[data valueForKey:@"name"] isEqual:[NSNull null]]) externalSite.name = [data valueForKey:@"name"];
-                    if ([data valueForKey:@"url"]  && ![[data valueForKey:@"url"]  isEqual:[NSNull null]]) externalSite.url  = [data valueForKey:@"url"];
+                    if ([data valueForKey:@"icon"] && ![[data valueForKey:@"icon"] isEqual:[NSNull null]]) externalSites.icon = [data valueForKey:@"icon"];
+                    if ([data valueForKey:@"lang"] && ![[data valueForKey:@"lang"] isEqual:[NSNull null]]) externalSites.lang = [data valueForKey:@"lang"];
+                    if ([data valueForKey:@"name"] && ![[data valueForKey:@"name"] isEqual:[NSNull null]]) externalSites.name = [data valueForKey:@"name"];
+                    if ([data valueForKey:@"url"]  && ![[data valueForKey:@"url"]  isEqual:[NSNull null]]) externalSites.url  = [data valueForKey:@"url"];
                     
-                    [listOfExternalSites addObject:externalSite];
+                    [listOfExternalSites addObject:externalSites];
                 }
                 
             } else {

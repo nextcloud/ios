@@ -79,6 +79,7 @@
 #define image_MenuOrderByFileName               @"MenuOrderByFileName"
 #define image_MenuOrdinamentoDiscendente        @"MenuOrdinamentoDiscendente"
 #define image_MenuOrdinamentoAscendente         @"MenuOrdinamentoAscendente"
+#define image_MenuExternalSites                 @"menuExternalSites"
 #define image_MenuTemplate                      @"menuTemplate"
 #define image_MenuUploadFile                    @"menuUploadFile"
 #define image_MenuUploadFileCrypto              @"menuUploadFileCrypto"

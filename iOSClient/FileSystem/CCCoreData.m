@@ -1908,6 +1908,48 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== External Sites =====
+#pragma --------------------------------------------------------------------------------------------
+
++ (void)addExternalSites:(OCExternalSites *)externalSites account:(NSString *)account
+{
+    [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
+        
+        TableExternalSites *record = [TableExternalSites MR_createEntityInContext:localContext];
+        
+        record.account = account;
+        
+        record.idExternalSite = [NSNumber numberWithInteger:externalSites.idExternalSite];
+        record.icon = externalSites.icon;
+        record.lang = externalSites.lang;
+        record.name = externalSites.name;
+        record.url = externalSites.url;
+    }];
+}
+
++ (void)deleteAllExternalSitesForAccount:(NSString *)account
+{
+    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
+    
+    [TableExternalSites MR_deleteAllMatchingPredicate:[NSPredicate predicateWithFormat:@"(account == %@)", account] inContext:context];
+    
+    [context MR_saveToPersistentStoreAndWait];
+}
+
++ (NSArray *)getAllTableExternalSitesWithPredicate:(NSPredicate *)predicate
+{
+    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
+    
+    NSArray *records = [TableExternalSites MR_findAllWithPredicate:predicate inContext:context];
+    
+    if ([records count] == 0) return nil;
+    
+    NSSortDescriptor *descriptor = [[NSSortDescriptor alloc] initWithKey:@"idExternalSite" ascending:YES selector:nil];
+    
+    return [records sortedArrayUsingDescriptors:[NSArray arrayWithObjects:descriptor, nil]];
+}
+
+#pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== File System =====
 #pragma --------------------------------------------------------------------------------------------
 

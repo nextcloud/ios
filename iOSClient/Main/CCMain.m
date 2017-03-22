@@ -1048,7 +1048,10 @@
 
 - (void)getExternalSitesServerSuccess:(NSArray *)listOfExternalSites
 {
+    [CCCoreData deleteAllExternalSitesForAccount:app.activeAccount];
     
+    for (OCExternalSites *tableExternalSites in listOfExternalSites)
+        [CCCoreData addExternalSites:tableExternalSites account:app.activeAccount];
 }
 
 - (void)getExternalSitesServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
@@ -3244,6 +3247,63 @@
     
     NSMutableArray *menuArray = [NSMutableArray new];
     
+    NSArray *externalSites = [CCCoreData getAllTableExternalSitesWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@)", app.activeAccount]];
+    
+    // External Sites Present
+    
+    if([externalSites count] > 0) {
+        
+        CCMenuItem *item;
+        
+        for (TableExternalSites *tableExternalSites in externalSites) {
+            
+            item = [CCMenuItem new];
+            item.title = tableExternalSites.name;
+            item.image = [UIImage imageNamed:image_MenuExternalSites];
+            item.target = self;
+            item.action = @selector(goToWebVC:);
+            item.argument = tableExternalSites.url;
+            [menuArray addObject:item];
+        }
+        
+        if ([menuArray count] > 0) {
+            
+            OptionalConfiguration options;
+            Color textColor, backgroundColor;
+            
+            textColor.R = 0;
+            textColor.G = 0;
+            textColor.B = 0;
+            
+            backgroundColor.R = 1;
+            backgroundColor.G = 1;
+            backgroundColor.B = 1;
+            
+            NSInteger originY = 60;
+            
+            options.arrowSize = 9;
+            options.marginXSpacing = 7;
+            options.marginYSpacing = 10;
+            options.intervalSpacing = 20;
+            options.menuCornerRadius = 6.5;
+            options.maskToBackground = NO;
+            options.shadowOfMenu = YES;
+            options.hasSeperatorLine = YES;
+            options.seperatorLineHasInsets = YES;
+            options.textColor = textColor;
+            options.menuBackgroundColor = backgroundColor;
+            
+            CGRect rect = self.view.frame;
+            rect.origin.y = rect.origin.y + originY;
+            rect.size.height = rect.size.height - originY;
+            
+            [CCMenu setTitleFont:[UIFont systemFontOfSize:12.0]];
+            [CCMenu showMenuInView:self.navigationController.view fromRect:rect menuItems:menuArray withOptions:options];
+        }
+        
+        return;
+    }
+
 #ifndef OPTION_MULTIUSER_DISABLE
     
     if ([app.netQueue operationCount] > 0 || [app.netQueueDownload operationCount] > 0 || [app.netQueueDownloadWWan operationCount] > 0 || [app.netQueueUpload operationCount] > 0 || [app.netQueueUploadWWan operationCount] > 0 || [CCCoreData countTableAutomaticUploadForAccount:app.activeAccount selector:nil] > 0) {
@@ -3306,69 +3366,6 @@
     [CCMenu showMenuInView:self.navigationController.view fromRect:rect menuItems:menuArray withOptions:options];
     
 #endif
-    
-#if defined(MENU_BRAND_ENABLE)
-    
-    CCMenuItem *item;
-    
-    item = [CCMenuItem new];
-    item.title = @"Example title ... N. 1";
-    item.image = [UIImage imageNamed:image_notification];
-    item.target = self;
-    item.action = @selector(goToWebVC:);
-    item.argument = @"https://www.nextcloud.com";
-    [menuArray addObject:item];
-
-    item = [CCMenuItem new];
-    item.title = @"Example title ... N. 2";
-    item.image = [UIImage imageNamed:image_notification];
-    item.target = self;
-    item.action = @selector(goToWebVC:);
-    item.argument = @"https://www.nextcloud.com";
-    [menuArray addObject:item];
-    
-    item = [CCMenuItem new];
-    item.title = @"Example title ... N. 3";
-    item.image = [UIImage imageNamed:image_notification];
-    item.target = self;
-    item.action = @selector(goToWebVC:);
-    item.argument = @"https://www.nextcloud.com";
-    [menuArray addObject:item];
-    
-    OptionalConfiguration options;
-    Color textColor, backgroundColor;
-    
-    textColor.R = 0;
-    textColor.G = 0;
-    textColor.B = 0;
-    
-    backgroundColor.R = 1;
-    backgroundColor.G = 1;
-    backgroundColor.B = 1;
-    
-    NSInteger originY = 60;
-    
-    options.arrowSize = 9;
-    options.marginXSpacing = 7;
-    options.marginYSpacing = 10;
-    options.intervalSpacing = 20;
-    options.menuCornerRadius = 6.5;
-    options.maskToBackground = NO;
-    options.shadowOfMenu = YES;
-    options.hasSeperatorLine = YES;
-    options.seperatorLineHasInsets = YES;
-    options.textColor = textColor;
-    options.menuBackgroundColor = backgroundColor;
-    
-    CGRect rect = self.view.frame;
-    rect.origin.y = rect.origin.y + originY;
-    rect.size.height = rect.size.height - originY;
-    
-    [CCMenu setTitleFont:[UIFont systemFontOfSize:12.0]];
-    [CCMenu showMenuInView:self.navigationController.view fromRect:rect menuItems:menuArray withOptions:options];
-    
-#endif
-    
 }
 
 - (void)changeDefaultAccount:(CCMenuItem *)sender
