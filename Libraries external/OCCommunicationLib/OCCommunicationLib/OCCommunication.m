@@ -1252,7 +1252,6 @@
     OCWebDAVClient *request = [OCWebDAVClient new];
     request = [self getRequestWithCredentials:request];
     
-    
     [request getCapabilitiesOfServer:serverPath onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
         
         NSData *responseData = (NSData*) responseObject;
@@ -1345,6 +1344,15 @@
             capabilities.isFilesSharingAllowUserSendSharesToOtherServersEnabled = filesSharingAllowUserSendSharesToOtherServersEnabledNumber.boolValue;
             capabilities.isFilesSharingAllowUserReceiveSharesToOtherServersEnabled = filesSharingAllowUserReceiveSharesToOtherServersEnabledNumber.boolValue;
             
+            // EXTERNAL SITES
+            
+            NSDictionary *externalSitesDic = [capabilitiesDict valueForKey:@"external"];
+            if (externalSitesDic) {
+                NSArray *externalSitesArray = [externalSitesDic valueForKey:@"v1"];
+                if (externalSitesArray)
+                    if ([[externalSitesArray objectAtIndex:0] isEqualToString:@"sites"])
+                        capabilities.isExternalSitesServerEnabled = YES;
+            }
             //FILES
             
             NSDictionary *files = [capabilitiesDict valueForKey:@"files"];
@@ -1649,7 +1657,7 @@
         //Parse
         NSError *error;
         NSDictionary *jsongParsed = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableContainers error:&error];
-        NSLog(@"[LOG] Activity : %@",jsongParsed);
+        NSLog(@"[LOG] External Sites : %@",jsongParsed);
         
         NSMutableArray *listOfExternalSites = [NSMutableArray new];
         
@@ -1665,20 +1673,16 @@
                 
                 for (NSDictionary *data in datas) {
                     
-                    OCActivity *activity = [OCActivity new];
+                    OCExternalSites *externalSite = [OCExternalSites new];
                     
-                    activity.idActivity = [[data valueForKey:@"id"] integerValue];
+                    externalSite.idExternalSite = [[data valueForKey:@"id"] integerValue];
+    
+                    if ([data valueForKey:@"icon"] && ![[data valueForKey:@"icon"] isEqual:[NSNull null]]) externalSite.icon = [data valueForKey:@"icon"];
+                    if ([data valueForKey:@"lang"] && ![[data valueForKey:@"lang"] isEqual:[NSNull null]]) externalSite.lang = [data valueForKey:@"lang"];
+                    if ([data valueForKey:@"name"] && ![[data valueForKey:@"name"] isEqual:[NSNull null]]) externalSite.name = [data valueForKey:@"name"];
+                    if ([data valueForKey:@"url"]  && ![[data valueForKey:@"url"]  isEqual:[NSNull null]]) externalSite.url  = [data valueForKey:@"url"];
                     
-                    NSString *dateString = [data valueForKey:@"date"];
-                    NSISO8601DateFormatter *formatter = [[NSISO8601DateFormatter alloc] init];
-                    activity.date = [formatter dateFromString:dateString];
-                    
-                    if ([data valueForKey:@"file"]    && ![[data valueForKey:@"file"]    isEqual:[NSNull null]]) activity.file    = [data valueForKey:@"file"];
-                    if ([data valueForKey:@"link"]    && ![[data valueForKey:@"link"]    isEqual:[NSNull null]]) activity.link    = [data valueForKey:@"link"];
-                    if ([data valueForKey:@"message"] && ![[data valueForKey:@"message"] isEqual:[NSNull null]]) activity.message = [data valueForKey:@"message"];
-                    if ([data valueForKey:@"subject"] && ![[data valueForKey:@"subject"] isEqual:[NSNull null]]) activity.subject = [data valueForKey:@"subject"];
-                    
-                    [listOfExternalSites addObject:activity];
+                    [listOfExternalSites addObject:externalSite];
                 }
                 
             } else {

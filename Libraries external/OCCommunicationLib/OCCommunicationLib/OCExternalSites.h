@@ -25,7 +25,7 @@
 
 @interface OCExternalSites : NSObject
 
-@property NSInteger idExternalSites;
+@property NSInteger idExternalSite;
 @property (nonatomic, strong) NSString *name;
 @property (nonatomic, strong) NSString *url;
 @property (nonatomic, strong) NSString *lang;

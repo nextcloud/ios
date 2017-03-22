@@ -31,7 +31,7 @@
     
     if (self) {
         
-        self.idExternalSites = 0;
+        self.idExternalSite = 0;
         self.name = @"";
         self.url = @"";
         self.lang = @"";

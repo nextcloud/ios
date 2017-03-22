@@ -49,6 +49,8 @@
 @property (nonatomic) BOOL isFilesSharingAllowUserSendSharesToOtherServersEnabled;
 @property (nonatomic) BOOL isFilesSharingAllowUserReceiveSharesToOtherServersEnabled;
 
+// External sites
+@property (nonatomic) BOOL isExternalSitesServerEnabled;
 
 /*FILES*/
 @property (nonatomic) BOOL isFileBigFileChunkingEnabled;

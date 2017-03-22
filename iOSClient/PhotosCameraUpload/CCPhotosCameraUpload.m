@@ -1101,7 +1101,7 @@
         return;
     
     // Activity
-    [CCCoreData addActivityClient:@"" fileID:@"" action:k_activityDebugActionAutomaticUpload selector:@"" note:[NSString stringWithFormat:@"Number: %lu", [newItemsToUpload count]] type:k_activityTypeInfo verbose:k_activityVerboseHigh account:app.activeAccount];
+    [CCCoreData addActivityClient:@"" fileID:@"" action:k_activityDebugActionAutomaticUpload selector:@"" note:[NSString stringWithFormat:@"Number: %lu", (unsigned long)[newItemsToUpload count]] type:k_activityTypeInfo verbose:k_activityVerboseHigh account:app.activeAccount];
     
     // STOP new request : initStateCameraUpload
     //_AutomaticCameraUploadInProgress = YES;
