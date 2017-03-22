@@ -49,6 +49,7 @@
 		F704980F1E369EF6008F5BB6 /* OCRichObjectStrings.m in Sources */ = {isa = PBXBuildFile; fileRef = F704980C1E369EF6008F5BB6 /* OCRichObjectStrings.m */; };
 		F73C00351E56098300EEEFA7 /* OCUserProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = F73C00341E56098300EEEFA7 /* OCUserProfile.m */; };
 		F785C1341E6316A500469BAC /* OCXMLListParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F785C1331E6316A500469BAC /* OCXMLListParser.m */; };
+		F7E7D4B61E826FA000315A90 /* OCExternalSites.m in Sources */ = {isa = PBXBuildFile; fileRef = F7E7D4B51E826FA000315A90 /* OCExternalSites.m */; };
 		F7FB5F171E66E63B00389481 /* OCActivity.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FB5F161E66E63B00389481 /* OCActivity.m */; };
 /* End PBXBuildFile section */
 
@@ -140,6 +141,8 @@
 		F73C00341E56098300EEEFA7 /* OCUserProfile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCUserProfile.m; sourceTree = "<group>"; };
 		F785C1321E6316A500469BAC /* OCXMLListParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OCXMLListParser.h; path = OCWebDavClient/Parsers/OCXMLListParser.h; sourceTree = "<group>"; };
 		F785C1331E6316A500469BAC /* OCXMLListParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OCXMLListParser.m; path = OCWebDavClient/Parsers/OCXMLListParser.m; sourceTree = "<group>"; };
+		F7E7D4B41E826FA000315A90 /* OCExternalSites.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCExternalSites.h; sourceTree = "<group>"; };
+		F7E7D4B51E826FA000315A90 /* OCExternalSites.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCExternalSites.m; sourceTree = "<group>"; };
 		F7FB5F151E66E63B00389481 /* OCActivity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCActivity.h; sourceTree = "<group>"; };
 		F7FB5F161E66E63B00389481 /* OCActivity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCActivity.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -219,6 +222,8 @@
 			children = (
 				F7FB5F151E66E63B00389481 /* OCActivity.h */,
 				F7FB5F161E66E63B00389481 /* OCActivity.m */,
+				F7E7D4B41E826FA000315A90 /* OCExternalSites.h */,
+				F7E7D4B51E826FA000315A90 /* OCExternalSites.m */,
 				EAABAA30183E688900909831 /* OCFileDto.h */,
 				EAABAA31183E688900909831 /* OCFileDto.m */,
 				EA0599981BB96D14002C2864 /* OCShareUser.h */,
@@ -422,6 +427,7 @@
 				F704980D1E369EF6008F5BB6 /* OCNotifications.m in Sources */,
 				F73C00351E56098300EEEFA7 /* OCUserProfile.m in Sources */,
 				EA7CC934183E150000B6A4B4 /* OCCommunication.m in Sources */,
+				F7E7D4B61E826FA000315A90 /* OCExternalSites.m in Sources */,
 				F704980E1E369EF6008F5BB6 /* OCNotificationsAction.m in Sources */,
 				131C67B9187C3E360009030E /* OCXMLSharedParser.m in Sources */,
 				13AA8640187C3B9700A10927 /* OCXMLParser.m in Sources */,

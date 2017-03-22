@@ -62,6 +62,9 @@
 //Url to access to Remote Activity API
 #define k_url_acces_remote_activity_api @"ocs/v2.php/cloud/activity"
 
+//Url to access to External sites API
+#define k_url_acces_external_sites_api @"ocs/v2.php/apps/external/api/v1"
+
 //Url to access to User Profile API
 #define k_url_acces_remote_userprofile_api @"ocs/v1.php/cloud/users/"
 

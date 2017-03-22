@@ -186,6 +186,7 @@ extern NSString *const urlBaseUploadDB;
 #define actionGetUserProfile                            @"getUserProfile"
 #define actionGetNotificationServer                     @"getNotificationServer"
 #define actionSetNotificationServer                     @"setNotificationServer"
+#define actionGetExternalSitesServer                    @"getExternalSitesServer"
 #define actionListingFavorites                          @"listingFavorites"
 #define actionMoveFileOrFolder                          @"moveFileOrFolder"
 #define actionReadFile                                  @"readFile"

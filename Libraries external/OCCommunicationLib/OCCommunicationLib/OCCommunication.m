@@ -48,6 +48,7 @@
 #import "AFURLSessionManager.h"
 #import "OCShareUser.h"
 #import "OCActivity.h"
+#import "OCExternalSites.h"
 #import "OCCapabilities.h"
 #import "OCNotifications.h"
 #import "OCNotificationsAction.h"
@@ -1630,6 +1631,78 @@
         failureRequest(response, error, request.redirectedServer);
     }];
 }
+
+
+#pragma mark - External sites
+
+- (void) getExternalSitesServer:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *listOfExternalSites, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
+    serverPath = [serverPath encodeString:NSUTF8StringEncoding];
+    serverPath = [serverPath stringByAppendingString:k_url_acces_external_sites_api];
+    
+    OCWebDAVClient *request = [OCWebDAVClient new];
+    request = [self getRequestWithCredentials:request];
+    
+    [request getExternalSitesServer:serverPath onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
+        
+        NSData *responseData = (NSData*) responseObject;
+        
+        //Parse
+        NSError *error;
+        NSDictionary *jsongParsed = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableContainers error:&error];
+        NSLog(@"[LOG] Activity : %@",jsongParsed);
+        
+        NSMutableArray *listOfExternalSites = [NSMutableArray new];
+        
+        if (jsongParsed.allKeys > 0) {
+            
+            NSDictionary *ocs = [jsongParsed valueForKey:@"ocs"];
+            NSDictionary *meta = [ocs valueForKey:@"meta"];
+            NSDictionary *datas = [ocs valueForKey:@"data"];
+            
+            NSInteger statusCode = [[meta valueForKey:@"statuscode"] integerValue];
+            
+            if (statusCode == kOCNotificationAPINoContent || statusCode == kOCNotificationAPISuccessful) {
+                
+                for (NSDictionary *data in datas) {
+                    
+                    OCActivity *activity = [OCActivity new];
+                    
+                    activity.idActivity = [[data valueForKey:@"id"] integerValue];
+                    
+                    NSString *dateString = [data valueForKey:@"date"];
+                    NSISO8601DateFormatter *formatter = [[NSISO8601DateFormatter alloc] init];
+                    activity.date = [formatter dateFromString:dateString];
+                    
+                    if ([data valueForKey:@"file"]    && ![[data valueForKey:@"file"]    isEqual:[NSNull null]]) activity.file    = [data valueForKey:@"file"];
+                    if ([data valueForKey:@"link"]    && ![[data valueForKey:@"link"]    isEqual:[NSNull null]]) activity.link    = [data valueForKey:@"link"];
+                    if ([data valueForKey:@"message"] && ![[data valueForKey:@"message"] isEqual:[NSNull null]]) activity.message = [data valueForKey:@"message"];
+                    if ([data valueForKey:@"subject"] && ![[data valueForKey:@"subject"] isEqual:[NSNull null]]) activity.subject = [data valueForKey:@"subject"];
+                    
+                    [listOfExternalSites addObject:activity];
+                }
+                
+            } else {
+                
+                NSString *message = (NSString*)[meta objectForKey:@"message"];
+                
+                if ([message isKindOfClass:[NSNull class]]) {
+                    message = @"";
+                }
+                
+                NSError *error = [UtilsFramework getErrorWithCode:statusCode andCustomMessageFromTheServer:message];
+                failureRequest(response, error, request.redirectedServer);
+            }
+        }
+        
+        //Return success
+        successRequest(response, listOfExternalSites, request.redirectedServer);
+        
+    } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
+        failureRequest(response, error, request.redirectedServer);
+    }];
+}
+
+
 
 #pragma mark - User Profile
 
