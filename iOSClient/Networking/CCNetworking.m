@@ -429,7 +429,7 @@
         } else {
             
             // Activity
-            [CCCoreData addActivityClient:fileName fileID:metadata.fileID action:k_activityDebugActionDownload selector:metadata.sessionSelector note:[NSString stringWithFormat:@"Server: %@ Error: %@", serverUrl, [error localizedDescription]] type:k_activityTypeFailure verbose:k_activityVerboseDefault account:metadata.account];
+            [CCCoreData addActivityClient:fileName fileID:metadata.fileID action:k_activityDebugActionDownload selector:metadata.sessionSelector note:[NSString stringWithFormat:@"Server: %@ Error: %@", serverUrl, [CCError manageErrorKCF:errorCode withNumberError:YES]] type:k_activityTypeFailure verbose:k_activityVerboseDefault account:metadata.account];
         }
         
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -462,7 +462,7 @@
         } else {
             
             // Activity
-            [CCCoreData addActivityClient:fileName fileID:metadata.fileID action:k_activityDebugActionUpload selector:metadata.sessionSelector note:[NSString stringWithFormat:@"Server: %@ Error: %@", serverUrl, [error localizedDescription]] type:k_activityTypeFailure verbose:k_activityVerboseDefault account:metadata.account];
+            [CCCoreData addActivityClient:fileName fileID:metadata.fileID action:k_activityDebugActionUpload selector:metadata.sessionSelector note:[NSString stringWithFormat:@"Server: %@ Error: %@", serverUrl, [CCError manageErrorKCF:errorCode withNumberError:YES]] type:k_activityTypeFailure verbose:k_activityVerboseDefault account:metadata.account];
         }
         
         dispatch_async(dispatch_get_main_queue(), ^{
