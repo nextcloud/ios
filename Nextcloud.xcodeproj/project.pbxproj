@@ -126,6 +126,12 @@
 		F732BA061D76CE1500E9878B /* CCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F732BA041D76CE1500E9878B /* CCNetworking.m */; };
 		F732BA0B1D76DBA500E9878B /* CCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F732BA041D76CE1500E9878B /* CCNetworking.m */; };
 		F73C002F1E55D7DF00EEEFA7 /* CCManageCryptoCloudSecurity.m in Sources */ = {isa = PBXBuildFile; fileRef = F73C002E1E55D7DF00EEEFA7 /* CCManageCryptoCloudSecurity.m */; };
+		F73C41501E82E51F000137C0 /* TableExternalSites+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F73C414D1E82E51F000137C0 /* TableExternalSites+CoreDataClass.m */; };
+		F73C41511E82E51F000137C0 /* TableExternalSites+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F73C414D1E82E51F000137C0 /* TableExternalSites+CoreDataClass.m */; };
+		F73C41521E82E51F000137C0 /* TableExternalSites+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F73C414D1E82E51F000137C0 /* TableExternalSites+CoreDataClass.m */; };
+		F73C41531E82E51F000137C0 /* TableExternalSites+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F73C414F1E82E51F000137C0 /* TableExternalSites+CoreDataProperties.m */; };
+		F73C41541E82E51F000137C0 /* TableExternalSites+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F73C414F1E82E51F000137C0 /* TableExternalSites+CoreDataProperties.m */; };
+		F73C41551E82E51F000137C0 /* TableExternalSites+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F73C414F1E82E51F000137C0 /* TableExternalSites+CoreDataProperties.m */; };
 		F73CC0691E813DFF006E3047 /* BKPasscodeDummyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CC0591E813DFF006E3047 /* BKPasscodeDummyViewController.m */; };
 		F73CC06A1E813DFF006E3047 /* BKPasscodeDummyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CC0591E813DFF006E3047 /* BKPasscodeDummyViewController.m */; };
 		F73CC06B1E813DFF006E3047 /* BKPasscodeDummyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CC0591E813DFF006E3047 /* BKPasscodeDummyViewController.m */; };
@@ -1117,6 +1123,10 @@
 		F738142B1E65A52D0011A45E /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Error.strings; sourceTree = "<group>"; };
 		F73C002D1E55D7DF00EEEFA7 /* CCManageCryptoCloudSecurity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCManageCryptoCloudSecurity.h; sourceTree = "<group>"; };
 		F73C002E1E55D7DF00EEEFA7 /* CCManageCryptoCloudSecurity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCManageCryptoCloudSecurity.m; sourceTree = "<group>"; };
+		F73C414C1E82E51F000137C0 /* TableExternalSites+CoreDataClass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableExternalSites+CoreDataClass.h"; sourceTree = "<group>"; };
+		F73C414D1E82E51F000137C0 /* TableExternalSites+CoreDataClass.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableExternalSites+CoreDataClass.m"; sourceTree = "<group>"; };
+		F73C414E1E82E51F000137C0 /* TableExternalSites+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableExternalSites+CoreDataProperties.h"; sourceTree = "<group>"; };
+		F73C414F1E82E51F000137C0 /* TableExternalSites+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableExternalSites+CoreDataProperties.m"; sourceTree = "<group>"; };
 		F73CC0581E813DFF006E3047 /* BKPasscodeDummyViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKPasscodeDummyViewController.h; sourceTree = "<group>"; };
 		F73CC0591E813DFF006E3047 /* BKPasscodeDummyViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKPasscodeDummyViewController.m; sourceTree = "<group>"; };
 		F73CC05A1E813DFF006E3047 /* BKPasscodeField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKPasscodeField.h; sourceTree = "<group>"; };
@@ -2800,6 +2810,10 @@
 		F77F86401B4ABF6D009F0A10 /* Table */ = {
 			isa = PBXGroup;
 			children = (
+				F73C414C1E82E51F000137C0 /* TableExternalSites+CoreDataClass.h */,
+				F73C414D1E82E51F000137C0 /* TableExternalSites+CoreDataClass.m */,
+				F73C414E1E82E51F000137C0 /* TableExternalSites+CoreDataProperties.h */,
+				F73C414F1E82E51F000137C0 /* TableExternalSites+CoreDataProperties.m */,
 				F7FB5F181E66EB7200389481 /* TableActivity+CoreDataClass.h */,
 				F7FB5F191E66EB7200389481 /* TableActivity+CoreDataClass.m */,
 				F7FB5F1A1E66EB7200389481 /* TableActivity+CoreDataProperties.h */,
@@ -3838,6 +3852,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F73C41541E82E51F000137C0 /* TableExternalSites+CoreDataProperties.m in Sources */,
 				F71459B81D12E3B700CAFEEC /* CCError.m in Sources */,
 				F73CC0701E813DFF006E3047 /* BKPasscodeInputView.m in Sources */,
 				F708CF7A1E56E8CC00271D8B /* TableGPS+CoreDataClass.m in Sources */,
@@ -3847,6 +3862,7 @@
 				F7274FEE1E6EB6F400C241B6 /* Constant.swift in Sources */,
 				F708CF981E56E8CC00271D8B /* TableAccount+CoreDataClass.m in Sources */,
 				F71459BC1D12E3B700CAFEEC /* Reachability.m in Sources */,
+				F73C41511E82E51F000137C0 /* TableExternalSites+CoreDataClass.m in Sources */,
 				F71459BD1D12E3B700CAFEEC /* UIImage+animatedGIF.m in Sources */,
 				F708CF6E1E56E8CC00271D8B /* TableMetadata+CoreDataClass.m in Sources */,
 				F71459BE1D12E3B700CAFEEC /* UIImage+Reflection.m in Sources */,
@@ -3962,6 +3978,8 @@
 				F7274FEF1E6EB6F400C241B6 /* Constant.swift in Sources */,
 				F743448A1E127FF2001CC831 /* CCHud.m in Sources */,
 				F74344861E127F89001CC831 /* RNEncryptor.m in Sources */,
+				F73C41521E82E51F000137C0 /* TableExternalSites+CoreDataClass.m in Sources */,
+				F73C41551E82E51F000137C0 /* TableExternalSites+CoreDataProperties.m in Sources */,
 				F73CC06B1E813DFF006E3047 /* BKPasscodeDummyViewController.m in Sources */,
 				F708CF991E56E8CC00271D8B /* TableAccount+CoreDataClass.m in Sources */,
 				F7FC88FA1E140558006D0506 /* cryptocloud.xcdatamodeld in Sources */,
@@ -4009,6 +4027,7 @@
 				F77B0DFB1D118A16002130FE /* NYXProgressiveImageView.m in Sources */,
 				F708CF701E56E8CC00271D8B /* TableMetadata+CoreDataProperties.m in Sources */,
 				F77B0DFC1D118A16002130FE /* ReaderDocumentOutline.m in Sources */,
+				F73C41531E82E51F000137C0 /* TableExternalSites+CoreDataProperties.m in Sources */,
 				F7F54D0E1E5B14C800E19C62 /* UIImage+MWPhotoBrowser.m in Sources */,
 				F77B0DFE1D118A16002130FE /* REMenuItem.m in Sources */,
 				F7F54D091E5B14C800E19C62 /* MWPhoto.m in Sources */,
@@ -4173,6 +4192,7 @@
 				F7659A661DC0B760004860C4 /* PSTCollectionViewLayout.m in Sources */,
 				F708CF911E56E8CC00271D8B /* TableAutomaticUpload+CoreDataClass.m in Sources */,
 				F75037511DBFA91A008FB480 /* NSLayoutConstraint+PureLayout.m in Sources */,
+				F73C41501E82E51F000137C0 /* TableExternalSites+CoreDataClass.m in Sources */,
 				F73CCE151DC13776007E38D8 /* XLFormRowNavigationAccessoryView.m in Sources */,
 				F73CCDFB1DC13776007E38D8 /* XLFormOptionsViewController.m in Sources */,
 				F77B0E871D118A16002130FE /* NSData+Base64.m in Sources */,
