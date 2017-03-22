@@ -444,8 +444,8 @@
         self.title = NSLocalizedString(@"_home_", nil);
 
         UITabBarItem *item = [self.tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexFile];
-        item.selectedImage = [UIImage imageNamed:image_tabBarFile];
-        item.image = [UIImage imageNamed:image_tabBarFile];
+        item.selectedImage = [UIImage imageNamed:image_tabBarFiles];
+        item.image = [UIImage imageNamed:image_tabBarFiles];
         
         return;
     }

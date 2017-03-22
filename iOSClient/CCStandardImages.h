@@ -35,7 +35,6 @@
 #define image_activeCameraUpload                @"activeCameraUpload"
 #define image_attention                         @"attention"
 #define image_audio                             @"audio"
-#define image_audiocrypto                       @"audiocrypto"
 #define image_avatar                            @"avatar"
 
 #define image_bkfull                            @"bkfull"
@@ -46,10 +45,7 @@
 #define image_decryptedSelectedFiles            @"decryptedSelectedFiles"
 #define image_delete                            @"delete"
 #define image_deleteSelectedFiles               @"deleteSelectedFiles"
-#define image_directory                         @"directory"
-#define image_directorycriptata                 @"directorycriptata"
 #define image_document                          @"document"
-#define image_documentcrypto                    @"documentcrypto"
 #define image_downloadSelectedFiles             @"downloadSelectedFiles"
 #define image_drag                              @"drag"
 
@@ -61,7 +57,6 @@
 #define image_filePreviewDownloadCrypto         @"filePreviewDownloadCrypto"
 #define image_filePreviewError                  @"filePreviewError"
 #define image_filetype_htlm                     @"filetype_html"
-#define image_filetype_htlm_crypto              @"filetype_html_crypto"
 #define image_folderphotocamera                 @"folderphotocamera"
 #define image_folder                            @"folder"
 #define image_foldercrypto                      @"foldercrypto"
@@ -71,7 +66,6 @@
 
 #define image_lock                              @"lock"
 
-#define image_MenuCreateFolder                  @"menuCreateFolder"
 #define image_MenuDirectoryOnTop                @"menuDirectoryOnTop"
 #define image_MenuGroupByAlphabetic             @"MenuGroupByAlphabetic"
 #define image_MenuGroupByDate                   @"MenuGroupByDate"
@@ -84,11 +78,11 @@
 #define image_MenuUploadFile                    @"menuUploadFile"
 #define image_MenuUploadFileCrypto              @"menuUploadFileCrypto"
 #define image_MenuUploadPhoto                   @"menuUploadPhoto"
+#define image_MenuUploadPhotoCrypto             @"menuUploadPhotoCrypto"
 #define image_MenuUploadPlainMode               @"menuUploadPlainMode"
 #define image_moveSelectedFiles                 @"moveSelectedFiles"
 #define image_more                              @"more"
 #define image_movie                             @"movie"
-#define image_moviecrypto                       @"moviecrypto"
 
 #define image_navBarOffline                     @"navBarOffline"
 #define image_navBarLocal                       @"navBarLocal"
@@ -100,9 +94,7 @@
 
 #define image_passcode                          @"passcode"
 #define image_pdf                               @"pdf"
-#define image_pdfcrypto                         @"pdfcrypto"
 #define image_photo                             @"photo"
-#define image_photocrypto                       @"photocrypto"
 #define image_photosDownload                    @"photosDownload"
 #define image_plist                             @"plist"
 
@@ -122,8 +114,6 @@
 #define image_settingsSendActivity              @"settingsSendActivity"
 #define image_settingsClearActivity             @"settingsClearActivity"
 #define image_settingsMail                      @"settingsMail"
-#define image_settingsManagePhotos              @"settingsManagePhotos"
-#define image_settingsManagePhotosChange        @"settingsManagePhotosChange"
 #define image_settings                          @"settings"
 #define image_settingsAccountDelete             @"settingsAccountDelete"
 #define image_settingsAccountModify             @"settingsAccountModify"
@@ -158,7 +148,7 @@
 #define image_stoptask                          @"stoptask"
 #define image_stoptaskcrypto                    @"stoptaskcrypto"
 
-#define image_tabBarFile                        @"tabBarFile"
+#define image_tabBarFiles                       @"tabBarFiles"
 #define image_tabBarActivity                    @"activity"
 #define image_tabBarTransfer                    @"transfer"
 #define image_tabBarFavorite                    @"tabBarFavorite"
@@ -168,7 +158,6 @@
 #define image_tabBarSettings                    @"tabBarSettings"
 #define image_typeFileCompress                  @"typeFileCompress"
 #define image_txt                               @"txt"
-#define image_txtcrypto                         @"txtcrypto"
 #define image_thumbs                            @"thumbs"
 
 #define image_user                              @"loginUser"
@@ -181,4 +170,3 @@
 #define image_WiFiSmall                         @"WiFiSmall"
 
 #define image_xls                               @"xls"
-#define image_xlscrypto                         @"xlscrypto"

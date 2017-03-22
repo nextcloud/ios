@@ -102,8 +102,8 @@
                 cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
                 UIImageView *img = (UIImageView *)[cell viewWithTag:201];
                                 
-                if ([CCUtility isCryptoString:[serverUrlLocal lastPathComponent]]) img.image = [UIImage imageNamed:image_directorycriptata];
-                else img.image = [UIImage imageNamed:image_directory];
+                if ([CCUtility isCryptoString:[serverUrlLocal lastPathComponent]]) img.image = [UIImage imageNamed:image_foldercrypto];
+                else img.image = [UIImage imageNamed:image_folder];
             }
             break;
         case 4:

@@ -2,8 +2,8 @@
   "images" : [
     {
       "idiom" : "universal",
-      "scale" : "1x",
-      "filename" : "pdf.png"
+      "filename" : "pdf.png",
+      "scale" : "1x"
     },
     {
       "idiom" : "universal",
@@ -12,8 +12,8 @@
     },
     {
       "idiom" : "universal",
-      "scale" : "3x",
-      "filename" : "pdf@3x.png"
+      "filename" : "pdf@3x.png",
+      "scale" : "3x"
     }
   ],
   "info" : {

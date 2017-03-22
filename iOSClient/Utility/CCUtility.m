@@ -858,53 +858,44 @@
         // Type image
         else if (UTTypeConformsTo(fileUTI, kUTTypeImage)) {
             metadata.typeFile = k_metadataTypeFile_image;
-            if (metadata.cryptated) metadata.iconName = image_photocrypto;
-            else metadata.iconName = image_photo;
+            metadata.iconName = image_photo;
         }
         // Type Video
         else if (UTTypeConformsTo(fileUTI, kUTTypeMovie)) {
             metadata.typeFile = k_metadataTypeFile_video;
-            if (metadata.cryptated) metadata.iconName = image_moviecrypto;
-            else metadata.iconName = image_movie;
+            metadata.iconName = image_movie;
         }
         // Type Audio
         else if (UTTypeConformsTo(fileUTI, kUTTypeAudio)) {
             metadata.typeFile = k_metadataTypeFile_audio;
-            if (metadata.cryptated) metadata.iconName = image_audiocrypto;
-            else metadata.iconName = image_audio;
+            metadata.iconName = image_audio;
         }
         // Type Document [DOC] [PDF] [XLS] [TXT] (RTF = "public.rtf" - ODT = "org.oasis-open.opendocument.text") [MD]
         else if (UTTypeConformsTo(fileUTI, kUTTypeContent) || [ext isEqualToString:@"MD"]) {
             
             metadata.typeFile = k_metadataTypeFile_document;
-            if (metadata.cryptated) metadata.iconName = image_documentcrypto;
-            else metadata.iconName = image_document;
+            metadata.iconName = image_document;
             
             NSString *typeFile = (__bridge NSString *)fileUTI;
             
             if ([typeFile isEqualToString:@"com.adobe.pdf"]) {
-                if (metadata.cryptated) metadata.iconName = image_pdfcrypto;
-                else metadata.iconName = image_pdf;
+                metadata.iconName = image_pdf;
             }
             
             if ([typeFile isEqualToString:@"org.openxmlformats.spreadsheetml.sheet"]) {
-                if (metadata.cryptated) metadata.iconName = image_xlscrypto;
-                else metadata.iconName = image_xls;
+                metadata.iconName = image_xls;
             }
             
             if ([typeFile isEqualToString:@"com.microsoft.excel.xls"]) {
-                if (metadata.cryptated) metadata.iconName = image_xlscrypto;
-                else metadata.iconName = image_xls;
+                metadata.iconName = image_xls;
             }
             
             if ([typeFile isEqualToString:@"public.plain-text"] || [ext isEqualToString:@"MD"]) {
-                if (metadata.cryptated) metadata.iconName = image_txtcrypto;
-                else metadata.iconName = image_txt;
+                metadata.iconName = image_txt;
             }
             
             if ([typeFile isEqualToString:@"public.html"]) {
-                if (metadata.cryptated) metadata.iconName = image_filetype_htlm_crypto;
-                else metadata.iconName = image_filetype_htlm;
+                metadata.iconName = image_filetype_htlm;
             }
             
         } else {
@@ -915,8 +906,8 @@
             // icon uTorrent
             if ([(__bridge NSString *)fileExtension isEqualToString:@"torrent"]) {
                 
-                if (metadata.cryptated) metadata.iconName = image_utorrentcrypto;
-                else metadata.iconName = image_utorrent;
+                metadata.iconName = image_utorrent;
+                
             } else {
             
                 if (metadata.cryptated) metadata.iconName = image_plist;
