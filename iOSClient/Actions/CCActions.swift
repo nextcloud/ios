@@ -382,9 +382,6 @@ class CCActions: NSObject {
     func downloadThumbnailFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger) {
         
         NSLog("[LOG] Thumbnail Error \(metadataNet.fileName!) \(message) error %\(errorCode))")
-        
-        // Activity
-        CCCoreData.addActivityClient(metadataNet.fileID, fileID: "", action: k_activityDebugActionDownloadThumbnail, selector: metadataNet.selector! , note: "Error: \(message)", type: k_activityTypeFailure, verbose: Int(k_activityVerboseHigh), account: appDelegate.activeAccount)
     }
 
     // --------------------------------------------------------------------------------------------

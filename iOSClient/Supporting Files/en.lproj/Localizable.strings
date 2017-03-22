@@ -383,6 +383,9 @@
 "_directory_on_top_yes_"        = "✓ Folders on top";
 "_directory_on_top_no_"         = "Folders on top";
 "_folder_automatic_upload_"     = "Folder for Automatic upload";
+"_search_no_record_found_"      = "No result";
+"_search_in_progress_"          = "Search in progress...";
+"_search_instruction_"          = "Search a file (minimum 2 characters)";
 
 "audio"                         = "AUDIO";
 "compress"                      = "COMPRESS";

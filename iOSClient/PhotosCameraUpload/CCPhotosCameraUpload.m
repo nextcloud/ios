@@ -84,6 +84,8 @@
     // empty Data Source
     self.collectionView.emptyDataSetDelegate = self;
     self.collectionView.emptyDataSetSource = self;
+    
+    [self reloadDatasource];
 }
 
 // Apparirà
@@ -97,14 +99,14 @@
     
     // Plus Button
     [app plusButtonVisibile:true];
-    
-    [self reloadDatasource];
 }
 
 // E' arrivato
 - (void)viewDidAppear:(BOOL)animated
 {
-    [super viewDidAppear:animated];    
+    [super viewDidAppear:animated];
+    
+    [self reloadDatasource];
 }
 
 - (void)didReceiveMemoryWarning

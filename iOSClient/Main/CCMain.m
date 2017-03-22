@@ -1938,6 +1938,8 @@
             
             [[CCActions sharedInstance] search:_serverUrl fileName:_searchFileName depth:_depth delegate:self];
             
+            [self setTitleBackgroundTableView:NSLocalizedString(@"_search_in_progress_", nil)];
+            
         } else {
             
             NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:_serverUrl activeAccount:app.activeAccount];
@@ -4866,8 +4868,15 @@
         
         [self tableViewReload];
         
-        [self setTitleBackgroundTableView:nil];
+        if ([_sectionDataSource.allRecordsDataSource count] == 0 && [_searchFileName length] >= k_minCharsSearch)
+            [self setTitleBackgroundTableView:NSLocalizedString(@"_search_no_record_found_", nil)];
         
+        if ([_sectionDataSource.allRecordsDataSource count] == 0 && [_searchFileName length] < k_minCharsSearch)
+            [self setTitleBackgroundTableView:NSLocalizedString(@"_search_instruction_", nil)];
+        
+        if ([_sectionDataSource.allRecordsDataSource count] > 0 && [_searchFileName length] >= k_minCharsSearch)
+            [self setTitleBackgroundTableView:nil];
+            
         [app updateApplicationIconBadgeNumber];
         
         return;
