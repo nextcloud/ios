@@ -1,0 +1,30 @@
+"_bad_username_password_"               = "用户名密码错误";
+"_cancelled_by_user"                    = "传送被取消";
+"_error_folder_destiny_is_the_same_"    = "目标目录于源目录相同";
+"_error_not_permission_"                = "没有被授权的操作";
+"_error_path_"                          = "无法打开文件或目录，请确认是否存在";
+"_file_upload_not_exitst_"              = "要上传的文件不存在";
+"_forbidden_characters_from_server_"    = "名称包含一个或多个无效字符";
+"_not_connected_internet_"              = "服务器连接错误";
+"_not_possible_connect_to_server_"      = "此时无法连接到服务器";
+"_not_possible_create_folder_"          = "无法创建文件夹";
+"_server_down_"                         = "找不到服务器";
+"_time_out_"                            = "超时，请重试";
+"_unknow_response_server_"              = "来自服务器的意外响应";
+"_user_autentication_required_"         = "需要用户认证";
+"_file_directory_locked_"               = "文件或目录被锁定";
+"_ssl_certificate_untrusted_"           = "此服务器的证书无效";
+"_internal_server_"                     = "服务器内部错误";
+
+"_file_already_exists_"                 = "无法完成操作，有一个同名文件";
+"_file_folder_not_exists_"              = "文件或目录不存在";
+"_folder_contents_nochanged_"           = "文件夹内容没有更改";
+"_images_invalid_converted_"            = "图像无效，无法转换为缩略图";
+"_method_not_expected_"                 = "预期外的请求方法";
+"_reauthenticate_user_"                 = "访问过期，请重新登录";
+"_server_error_retry_"                  = "服务器错误，重试请求";
+"_too_many_files_"                      = "此操作中涉及的文件太多，无法成功完成";
+"_too_many_request_"                    = "达到速率限制-发送的请求太多";
+"_user_over_quota_"                     = "达到存储配额";
+
+"_ssl_connection_error_"                = "SSL连接错误，请重试";

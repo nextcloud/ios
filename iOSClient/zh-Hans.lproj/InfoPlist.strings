@@ -1,0 +1,3 @@
+/* (No Commment) */
+"NSLocationAlwaysUsageDescription" = "GPS需要在后台持续检测相机内新的照片，会大大减少电池的使用时间。";
+

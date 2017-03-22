@@ -1,0 +1,28 @@
+"%d Failed Passcode Attempts" = "%d 密码尝试失败";
+"%d Failed Password Attempts" = "%d 密码尝试失败";
+"1 Failed Passcode Attempt" = "密码尝试失败1次";
+"1 Failed Password Attempt" = "密码尝试失败1次";
+"Do you want to use Touch ID for authentication?" = "是否要使用指纹进行身份验证?";
+"Done" = "完成";
+"Enable Touch ID" = "使用指纹验证";
+"Enter a different passcode. Cannot re-use the same passcode." = "请输入一个不同的密码";
+"Enter a different password. Cannot re-use the same password." = "请输入一个不同的密码";
+"Enter a passcode" = "请输入密码";
+"Enter a password" = "请输入密码";
+"Enter your new passcode" = "请输入新密码";
+"Enter your new password" = "请输入新密码";
+"Enter your old passcode" = "请输入旧密码";
+"Enter your old password" = "请输入旧密码";
+"Enter your passcode" = "请输入密码";
+"Enter your password" = "请输入密码";
+"Invalid Passcode" = "无效的密码";
+"Invalid Password" = "无效的密码";
+"Passcodes did not match.
+Try again." = "密码无效，请重试";
+"Password did not match.
+Try again." = "密码无效，请重试";
+"Re-enter your passcode" = "请再次输入密码";
+"Re-enter your password" = "请再次输入密码";
+"Try again in %d minutes" = "请%d分钟后再试";
+"Try again in 1 minute" = "请一分钟后再试";
+

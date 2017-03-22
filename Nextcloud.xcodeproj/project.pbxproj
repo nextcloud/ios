@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		EA66D2921E6C610400194CCA /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = EA66D2941E6C610400194CCA /* InfoPlist.strings */; };
+		EA66D2981E6C610500194CCA /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = EA66D29A1E6C610500194CCA /* InfoPlist.strings */; };
+		EA66D29D1E6C610600194CCA /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = EA66D29F1E6C610600194CCA /* InfoPlist.strings */; };
 		F708CF6D1E56E8CC00271D8B /* TableMetadata+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF4E1E56E8CB00271D8B /* TableMetadata+CoreDataClass.m */; };
 		F708CF6E1E56E8CC00271D8B /* TableMetadata+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF4E1E56E8CB00271D8B /* TableMetadata+CoreDataClass.m */; };
 		F708CF6F1E56E8CC00271D8B /* TableMetadata+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF4E1E56E8CB00271D8B /* TableMetadata+CoreDataClass.m */; };
@@ -716,6 +719,22 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		EA5624321E6C3C7700884598 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/Localizable.strings; sourceTree = "<group>"; };
+		EA66D2931E6C610400194CCA /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		EA66D2951E6C610400194CCA /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/MainInterface.strings; sourceTree = "<group>"; };
+		EA66D2991E6C610500194CCA /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		EA66D29E1E6C610600194CCA /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		EA66D2A01E6C632100194CCA /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		EA66D2A11E6C632200194CCA /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/CTAssetsPicker.strings"; sourceTree = "<group>"; };
+		EA66D2A21E6C632200194CCA /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Error.strings"; sourceTree = "<group>"; };
+		EA66D2A31E6C632200194CCA /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/MainInterface.strings"; sourceTree = "<group>"; };
+		EA66D2A41E6C632300194CCA /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		EA66D2A51E6C632300194CCA /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		EA66D2A61E6C632300194CCA /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Intro.strings"; sourceTree = "<group>"; };
+		EA66D2A71E6C632400194CCA /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		EA66D2A81E6C632400194CCA /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		EA66D2A91E6C632400194CCA /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/BKPasscodeView.strings"; sourceTree = "<group>"; };
+		EA66D2AA1E6C634600194CCA /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text; name = "zh-Hans"; path = "zh-Hans.lproj/TTOpenInAppActivityLocalizable.string"; sourceTree = "<group>"; };
 		F70211F41BAC56E9003FC03E /* CCCellMain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCCellMain.h; sourceTree = "<group>"; };
 		F70211F51BAC56E9003FC03E /* CCCellMain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCCellMain.m; sourceTree = "<group>"; };
 		F70211F61BAC56E9003FC03E /* CCCellMain.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CCCellMain.xib; sourceTree = "<group>"; };
@@ -2499,6 +2518,7 @@
 		F7416BAD1E2E2FEF00B261A1 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				EA66D2941E6C610400194CCA /* InfoPlist.strings */,
 				F7DCA1B81D32BD4100E48D39 /* Share Ext Nextcloud.entitlements */,
 				F7416BAB1E2E2FA900B261A1 /* Info.plist */,
 			);
@@ -2519,6 +2539,7 @@
 		F74344141E1264EE001CC831 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				EA66D29A1E6C610500194CCA /* InfoPlist.strings */,
 				F743441B1E1264EE001CC831 /* Info.plist */,
 				F74344151E1264EE001CC831 /* Picker.entitlements */,
 			);
@@ -2538,6 +2559,7 @@
 		F74344221E1264EE001CC831 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				EA66D29F1E6C610600194CCA /* InfoPlist.strings */,
 				F74344261E1264EE001CC831 /* Info.plist */,
 				F74344231E1264EE001CC831 /* PickerFileProvider.entitlements */,
 			);
@@ -3399,7 +3421,6 @@
 						};
 					};
 					F77B0DEB1D118A16002130FE = {
-						DevelopmentTeam = 6JLRKY9ZV7;
 						LastSwiftMigration = 0820;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
@@ -3423,6 +3444,8 @@
 				it,
 				fr,
 				de,
+				Base,
+				"zh-Hans",
 			);
 			mainGroup = F7F67B9F1A24D27800EE80DA;
 			productRefGroup = F7F67B9F1A24D27800EE80DA;
@@ -3534,6 +3557,7 @@
 				F7145A211D12E3B700CAFEEC /* Error.strings in Resources */,
 				F7145A231D12E3B700CAFEEC /* Localizable.strings in Resources */,
 				F7145A241D12E3B700CAFEEC /* CCCellShareExt.xib in Resources */,
+				EA66D2921E6C610400194CCA /* InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3542,6 +3566,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F7D267871E157057005ACB7E /* Nextcloud.xcassets in Resources */,
+				EA66D2981E6C610500194CCA /* InfoPlist.strings in Resources */,
 				F7FC88FD1E141A3F006D0506 /* Error.strings in Resources */,
 				F7FC88FB1E141A34006D0506 /* BKPasscodeView.strings in Resources */,
 				F7FC88FC1E141A39006D0506 /* Localizable.strings in Resources */,
@@ -3555,6 +3580,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EA66D29D1E6C610600194CCA /* InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4197,6 +4223,33 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
+		EA66D2941E6C610400194CCA /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				EA66D2931E6C610400194CCA /* nl */,
+				EA66D2A01E6C632100194CCA /* zh-Hans */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		EA66D29A1E6C610500194CCA /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				EA66D2991E6C610500194CCA /* nl */,
+				EA66D2A51E6C632300194CCA /* zh-Hans */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		EA66D29F1E6C610600194CCA /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				EA66D29E1E6C610600194CCA /* nl */,
+				EA66D2A71E6C632400194CCA /* zh-Hans */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
 		F72B60911A24F00B004EF66F /* BKPasscodeView.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -4205,6 +4258,7 @@
 				F7151A861D477A5400E6AF45 /* it */,
 				F7818A101D99480E00CD5029 /* fr */,
 				F7D96F0B1D99498600A587A5 /* de */,
+				EA66D2A91E6C632400194CCA /* zh-Hans */,
 			);
 			name = BKPasscodeView.strings;
 			sourceTree = "<group>";
@@ -4213,6 +4267,8 @@
 			isa = PBXVariantGroup;
 			children = (
 				F74344191E1264EE001CC831 /* Base */,
+				EA66D2951E6C610400194CCA /* nl */,
+				EA66D2A31E6C632200194CCA /* zh-Hans */,
 			);
 			name = MainInterface.storyboard;
 			sourceTree = "<group>";
@@ -4225,6 +4281,7 @@
 				F7151A891D477A5500E6AF45 /* it */,
 				F7818A131D99480F00CD5029 /* fr */,
 				F7D96F0E1D99498700A587A5 /* de */,
+				EA66D2A61E6C632300194CCA /* zh-Hans */,
 			);
 			name = Intro.strings;
 			sourceTree = "<group>";
@@ -4237,6 +4294,7 @@
 				F7151A8A1D477A5500E6AF45 /* it */,
 				F7818A141D99480F00CD5029 /* fr */,
 				F7D96F0F1D99498700A587A5 /* de */,
+				EA66D2A21E6C632200194CCA /* zh-Hans */,
 			);
 			name = Error.strings;
 			sourceTree = "<group>";
@@ -4249,6 +4307,7 @@
 				F7151A851D477A5400E6AF45 /* it */,
 				F7818A0F1D99480E00CD5029 /* fr */,
 				F7D96F0A1D99498600A587A5 /* de */,
+				EA66D2AA1E6C634600194CCA /* zh-Hans */,
 			);
 			name = TTOpenInAppActivityLocalizable.string;
 			sourceTree = "<group>";
@@ -4261,6 +4320,7 @@
 				F7151A881D477A5400E6AF45 /* it */,
 				F7818A121D99480F00CD5029 /* fr */,
 				F7D96F0D1D99498600A587A5 /* de */,
+				EA66D2A41E6C632300194CCA /* zh-Hans */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -4273,6 +4333,8 @@
 				F7151A871D477A5400E6AF45 /* it */,
 				F7818A111D99480E00CD5029 /* fr */,
 				F7D96F0C1D99498600A587A5 /* de */,
+				EA5624321E6C3C7700884598 /* Base */,
+				EA66D2A81E6C632400194CCA /* zh-Hans */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -4285,6 +4347,7 @@
 				F7F06E7B1DBFACC600099AE9 /* fr */,
 				F7F06E801DBFACC600099AE9 /* it */,
 				F7F06E841DBFACC600099AE9 /* nl */,
+				EA66D2A11E6C632200194CCA /* zh-Hans */,
 			);
 			name = CTAssetsPicker.strings;
 			sourceTree = "<group>";
@@ -4508,7 +4571,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development IOS Push Services: it.twsweb.Nextcloud";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = "";
-				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_BITCODE = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -4551,7 +4614,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = "";
-				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_BITCODE = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
