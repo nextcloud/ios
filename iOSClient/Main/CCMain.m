@@ -1184,6 +1184,14 @@
         });
     }
     
+    if (app.capabilities.isExternalSitesServerEnabled) {
+        
+        CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
+
+        metadataNet.action = actionGetExternalSitesServer;
+        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+    }
+    
     [CCCoreData setServerVersionActiveAccount:app.activeAccount versionMajor:capabilities.versionMajor versionMinor:capabilities.versionMinor versionMicro:capabilities.versionMicro];
     app.serverVersion = capabilities.versionMajor;
 }
@@ -1222,9 +1230,6 @@
     [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
         
     metadataNet.action = actionGetCapabilities;
-    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
-    
-    metadataNet.action = actionGetExternalSitesServer;
     [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
 
     metadataNet.action = actionGetNotificationServer;
@@ -3302,7 +3307,7 @@
     
 #endif
     
-#if defined(MENU_BRAND_ENABLE) && defined(OPTION_MULTIUSER_DISABLE)
+#if defined(MENU_BRAND_ENABLE)
     
     CCMenuItem *item;
     
