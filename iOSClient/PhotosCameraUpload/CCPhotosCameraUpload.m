@@ -667,7 +667,7 @@
     } else {
         
         // Thumbnail not present
-        imageView.image = [UIImage imageNamed:image_photo];
+        imageView.image = [UIImage imageNamed:image_file_photo];
         
         if (metadata.thumbnailExists)
             [[CCActions sharedInstance] downloadTumbnail:metadata delegate:self];

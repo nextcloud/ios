@@ -852,23 +852,22 @@
         // Type compress
         if (UTTypeConformsTo(fileUTI, kUTTypeZipArchive) && [(__bridge NSString *)fileUTI containsString:@"org.openxmlformats"] == NO && [(__bridge NSString *)fileUTI containsString:@"oasis"] == NO) {
             metadata.typeFile = k_metadataTypeFile_compress;
-            if (metadata.cryptated) metadata.iconName = image_typeFileCompress;
-            else metadata.iconName = image_typeFileCompress;
+            metadata.iconName = image_file_compress;
         }
         // Type image
         else if (UTTypeConformsTo(fileUTI, kUTTypeImage)) {
             metadata.typeFile = k_metadataTypeFile_image;
-            metadata.iconName = image_photo;
+            metadata.iconName = image_file_photo;
         }
         // Type Video
         else if (UTTypeConformsTo(fileUTI, kUTTypeMovie)) {
             metadata.typeFile = k_metadataTypeFile_video;
-            metadata.iconName = image_movie;
+            metadata.iconName = image_file_movie;
         }
         // Type Audio
         else if (UTTypeConformsTo(fileUTI, kUTTypeAudio)) {
             metadata.typeFile = k_metadataTypeFile_audio;
-            metadata.iconName = image_audio;
+            metadata.iconName = image_file_audio;
         }
         // Type Document [DOC] [PDF] [XLS] [TXT] (RTF = "public.rtf" - ODT = "org.oasis-open.opendocument.text") [MD]
         else if (UTTypeConformsTo(fileUTI, kUTTypeContent) || [ext isEqualToString:@"MD"]) {
@@ -879,23 +878,23 @@
             NSString *typeFile = (__bridge NSString *)fileUTI;
             
             if ([typeFile isEqualToString:@"com.adobe.pdf"]) {
-                metadata.iconName = image_pdf;
+                metadata.iconName = image_file_pdf;
             }
             
             if ([typeFile isEqualToString:@"org.openxmlformats.spreadsheetml.sheet"]) {
-                metadata.iconName = image_xls;
+                metadata.iconName = image_file_xls;
             }
             
             if ([typeFile isEqualToString:@"com.microsoft.excel.xls"]) {
-                metadata.iconName = image_xls;
+                metadata.iconName = image_file_xls;
             }
             
             if ([typeFile isEqualToString:@"public.plain-text"] || [ext isEqualToString:@"MD"]) {
-                metadata.iconName = image_txt;
+                metadata.iconName = image_file_txt;
             }
             
             if ([typeFile isEqualToString:@"public.html"]) {
-                metadata.iconName = image_filetype_htlm;
+                metadata.iconName = image_file_code;
             }
             
         } else {

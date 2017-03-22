@@ -34,7 +34,6 @@
 #define image_actionSheetRemoveLocal            @"actionSheetRemoveLocal"
 #define image_activeCameraUpload                @"activeCameraUpload"
 #define image_attention                         @"attention"
-#define image_audio                             @"audio"
 #define image_avatar                            @"avatar"
 
 #define image_bkfull                            @"bkfull"
@@ -53,10 +52,16 @@
 
 #define image_favorite                          @"favorite"
 #define image_file                              @"file"
+#define image_file_audio                        @"file_audio"
+#define image_file_compress                     @"file_compress"
+#define image_file_pdf                          @"file_pdf"
+#define image_file_photo                        @"file_photo"
 #define image_filePreviewDownload               @"filePreviewDownload"
 #define image_filePreviewDownloadCrypto         @"filePreviewDownloadCrypto"
 #define image_filePreviewError                  @"filePreviewError"
-#define image_filetype_htlm                     @"filetype_html"
+#define image_file_code                         @"file_code"
+#define image_file_txt                          @"file_txt"
+#define image_file_movie                        @"file_movie"
 #define image_folderphotocamera                 @"folderphotocamera"
 #define image_folder                            @"folder"
 #define image_foldercrypto                      @"foldercrypto"
@@ -82,7 +87,6 @@
 #define image_MenuUploadPlainMode               @"menuUploadPlainMode"
 #define image_moveSelectedFiles                 @"moveSelectedFiles"
 #define image_more                              @"more"
-#define image_movie                             @"movie"
 
 #define image_navBarOffline                     @"navBarOffline"
 #define image_navBarLocal                       @"navBarLocal"
@@ -93,8 +97,6 @@
 #define image_openSelectedFiles                 @"openSelectedFiles"
 
 #define image_passcode                          @"passcode"
-#define image_pdf                               @"pdf"
-#define image_photo                             @"photo"
 #define image_plist                             @"plist"
 
 #define image_quickActionPhotos                 @"quickActionPhotos"
@@ -155,8 +157,6 @@
 #define image_tabBarLocal                       @"tabBarLocal"
 #define image_tabBarPhotos                      @"tabBarPhotos"
 #define image_tabBarSettings                    @"tabBarSettings"
-#define image_typeFileCompress                  @"typeFileCompress"
-#define image_txt                               @"txt"
 #define image_thumbs                            @"thumbs"
 
 #define image_user                              @"loginUser"
@@ -168,4 +168,4 @@
 
 #define image_WiFiSmall                         @"WiFiSmall"
 
-#define image_xls                               @"xls"
+#define image_file_xls                          @"file_xls"
