@@ -185,7 +185,7 @@
 "_help_tutorial_"               = "Tutorial";
 "_help_intro_"                  = "Introduction _brand_";
 "_help_activity_section_"       = "Activity";
-"_help_activity_verbose_"       = "Activity verbose high";
+"_help_activity_verbose_"       = "Detailed Activity feed";
 "_help_activity_mail_"          = "Send activity by mail";
 "_help_activity_clear_"         = "Clear activity";
 

@@ -656,6 +656,14 @@
         [app.listProgressMetadata removeObjectForKey:fileID];
 #endif
     
+    if (!fileID) {
+        
+        if ([self.delegate respondsToSelector:@selector(downloadFileFailure:serverUrl:selector:message:errorCode:)])
+            [self.delegate downloadFileFailure:@"" serverUrl:serverUrl selector:selector message:[CCError manageErrorKCF:errorCode withNumberError:YES] errorCode:errorCode];
+        
+        return;
+    }
+    
     // Progress Task
     NSDictionary* userInfo = @{@"fileID": (fileID), @"serverUrl": (serverUrl), @"cryptated": ([NSNumber numberWithBool:NO]), @"progress": ([NSNumber numberWithFloat:0.0])};
     [[NSNotificationCenter defaultCenter] postNotificationName:@"NotificationProgressTask" object:nil userInfo:userInfo];

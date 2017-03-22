@@ -95,7 +95,6 @@
 #define image_passcode                          @"passcode"
 #define image_pdf                               @"pdf"
 #define image_photo                             @"photo"
-#define image_photosDownload                    @"photosDownload"
 #define image_plist                             @"plist"
 
 #define image_quickActionPhotos                 @"quickActionPhotos"
