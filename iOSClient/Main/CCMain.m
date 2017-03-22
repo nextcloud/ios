@@ -3257,13 +3257,20 @@
         
         for (TableExternalSites *tableExternalSites in externalSites) {
             
-            item = [CCMenuItem new];
-            item.title = tableExternalSites.name;
-            item.image = [UIImage imageNamed:image_MenuExternalSites];
-            item.target = self;
-            item.action = @selector(goToWebVC:);
-            item.argument = tableExternalSites.url;
-            [menuArray addObject:item];
+            NSString *currentLanguageiOS = [[NSLocale preferredLanguages] objectAtIndex:0];
+            
+            // Verify lang
+            if ([tableExternalSites.lang isEqualToString:@""] || [tableExternalSites.lang isEqualToString:currentLanguageiOS]) {
+            
+                item = [CCMenuItem new];
+                
+                item.title = tableExternalSites.name;
+                item.image = [UIImage imageNamed:image_MenuExternalSites];
+                item.target = self;
+                item.action = @selector(goToWebVC:);
+                item.argument = tableExternalSites.url;
+                [menuArray addObject:item];
+            }
         }
         
         if ([menuArray count] > 0) {
