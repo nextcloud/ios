@@ -1043,6 +1043,20 @@
 #pragma mark -
 
 #pragma --------------------------------------------------------------------------------------------
+#pragma mark ==== External Sites ====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)getExternalSitesServerSuccess:(NSArray *)listOfExternalSites
+{
+    
+}
+
+- (void)getExternalSitesServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+{
+    NSLog(@"[LOG] No External Sites found");
+}
+
+#pragma --------------------------------------------------------------------------------------------
 #pragma mark ==== Activity ====
 #pragma --------------------------------------------------------------------------------------------
 
@@ -1058,6 +1072,7 @@
 
 - (void)getActivityServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
+    NSLog(@"[LOG] No Activity found");
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1208,7 +1223,10 @@
         
     metadataNet.action = actionGetCapabilities;
     [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
-        
+    
+    metadataNet.action = actionGetExternalSitesServer;
+    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+
     metadataNet.action = actionGetNotificationServer;
     [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
 
