@@ -17,8 +17,10 @@
 
 @interface CCControlCenterActivity ()
 {
+    BOOL _verbose;
+
     // Datasource
-    NSArray *_sectionDataSource;    
+    NSArray *_sectionDataSource;
 }
 @end
 
@@ -50,6 +52,8 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
+    _verbose = [CCUtility getActivityVerboseHigh];
     
     app.controlCenter.labelMessageNoRecord.hidden = YES;
 }
@@ -154,7 +158,8 @@
     
     // Note
     [label setFont:fontSizeNote];
-    if ([CCUtility getActivityVerboseHigh] && activity.idActivity == 0) label.text = [NSString stringWithFormat:@"%@ Selector: %@", activity.note, activity.selector];
+    
+    if (_verbose && activity.idActivity == 0) label.text = [NSString stringWithFormat:@"%@ Selector: %@", activity.note, activity.selector];
     else label.text = activity.note;
     int heightNote = [self getLabelHeight:label];
 
@@ -165,16 +170,18 @@
 
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
 {
+    UICollectionReusableView *reusableview;
+    
     if (kind == UICollectionElementKindSectionHeader) {
     
-        UICollectionReusableView *headerView = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:@"header" forIndexPath:indexPath];
+        reusableview = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:@"header" forIndexPath:indexPath];
         
         TableActivity *activity = [_sectionDataSource objectAtIndex:indexPath.section];
     
-        UILabel *dateLabel = (UILabel *)[headerView viewWithTag:100];
-        UILabel *actionLabel = (UILabel *)[headerView viewWithTag:101];
-        UILabel *noteLabel = (UILabel *)[headerView viewWithTag:102];
-        UIImageView *typeImage = (UIImageView *) [headerView viewWithTag:103];
+        UILabel *dateLabel = (UILabel *)[reusableview viewWithTag:100];
+        UILabel *actionLabel = (UILabel *)[reusableview viewWithTag:101];
+        UILabel *noteLabel = (UILabel *)[reusableview viewWithTag:102];
+        UIImageView *typeImage = (UIImageView *) [reusableview viewWithTag:103];
     
         [dateLabel setFont:fontSizeData];
         dateLabel.textColor = [UIColor colorWithRed:100.0/255.0 green:100.0/255.0 blue:100.0/255.0 alpha:1.0];
@@ -223,18 +230,14 @@
     
         if ([CCUtility getActivityVerboseHigh] && activity.idActivity == 0) noteLabel.text = [NSString stringWithFormat:@"%@ Selector: %@", activity.note, activity.selector];
         else noteLabel.text = activity.note;
-        
-        return headerView;
     }
     
     if (kind == UICollectionElementKindSectionFooter) {
         
-        UICollectionReusableView *footerView = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:@"footer" forIndexPath:indexPath];
-        
-        return footerView;
+         reusableview = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:@"footer" forIndexPath:indexPath];
     }
     
-    return nil;
+    return reusableview;
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
