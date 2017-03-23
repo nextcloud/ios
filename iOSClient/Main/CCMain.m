@@ -5255,18 +5255,21 @@
     // è una directory
     if (metadata.directory) {
         
+        NSString *directoryServerUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileNameData];
+
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         cell.labelInfoFile.text = [CCUtility dateDiff:metadata.date];
         
         lunghezzaFile = @" ";
         
+#ifndef OPTION_OFFLINE_DISABLE
+
         // ----------------------------------------------------------------------------------------------------------
         // Offline Folder
         // ----------------------------------------------------------------------------------------------------------
         
-        NSString *directoryServerUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileNameData];
         BOOL isOfflineDirectory = [CCCoreData isOfflineDirectoryServerUrl:directoryServerUrl activeAccount:app.activeAccount];
-        
+
         // Verify Offline
         if (_isOfflineServerUrl == YES && isOfflineDirectory == NO) {
             [CCCoreData setOfflineDirectoryServerUrl:directoryServerUrl offline:YES activeAccount:app.activeAccount];
@@ -5277,6 +5280,7 @@
             
             cell.offlineImageView.image = [UIImage imageNamed:image_offline];
         }
+#endif
         
         // ----------------------------------------------------------------------------------------------------------
         // Favorite Folder
