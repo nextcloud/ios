@@ -132,10 +132,15 @@
     UIImage *icon = [UIImage imageNamed:image_seleziona];
     UIBarButtonItem *buttonSelect = [[UIBarButtonItem alloc] initWithImage:icon style:UIBarButtonItemStylePlain target:self action:@selector(collectionSelectYES)];
     
-    if ([_sectionDataSource.allRecordsDataSource count] > 0) buttonSelect.enabled = true;
-    else buttonSelect.enabled = false;
+    if ([_sectionDataSource.allRecordsDataSource count] > 0) {
+        
+        self.navigationItem.rightBarButtonItems = [[NSArray alloc] initWithObjects:buttonSelect, nil];
+        
+    } else {
+        
+        self.navigationItem.rightBarButtonItems = nil;
+    }
     
-    self.navigationItem.rightBarButtonItems = [[NSArray alloc] initWithObjects:buttonSelect, nil];
     self.navigationItem.leftBarButtonItem = nil;
     
     // Title
