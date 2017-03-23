@@ -78,13 +78,11 @@
         return;
     
     if (app.controlCenter.isOpen) {
-        
-         //_sectionDataSource = [CCCoreData getAllTableActivityWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (idActivity != 0)", app.activeAccount]];
-        
+                
         if ([CCUtility getActivityVerboseHigh])
-            _sectionDataSource = [CCCoreData getAllTableActivityWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@)", app.activeAccount]];
+            _sectionDataSource = [CCCoreData getAllTableActivityWithPredicate:[NSPredicate predicateWithFormat:@"((account == %@) || (account == ''))", app.activeAccount]];
         else
-            _sectionDataSource = [CCCoreData getAllTableActivityWithPredicate:[NSPredicate predicateWithFormat:@"((account == %@) || (account == '')) AND (verbose == %lu)", app.activeAccount, k_activityVerboseDefault]];
+            _sectionDataSource = [CCCoreData getAllTableActivityWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (verbose == %lu)", app.activeAccount, k_activityVerboseDefault]];
         
         if ([[app.controlCenter getActivePage] isEqualToString:k_pageControlCenterActivity]) {
             

@@ -74,6 +74,7 @@
 @property (nonatomic, weak) CCDetail *detailViewController;
 @property (nonatomic, strong) UISearchController *searchController;
 
+- (void)closeAllMenu;
 - (void)returnCreate:(NSInteger)type;
 
 - (void)createFolderCameraUpload;

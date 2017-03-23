@@ -275,6 +275,8 @@
 //
 - (void)applicationWillResignActive:(UIApplication *)application
 {
+    [_activeMain closeAllMenu];
+    
     [self updateApplicationIconBadgeNumber];
 }
 

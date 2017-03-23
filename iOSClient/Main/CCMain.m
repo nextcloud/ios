@@ -284,15 +284,7 @@
 {
     [super viewWillDisappear:animated];
     
-    // Close MainMenu & SelectMenu
-    if (app.reMainMenu.isOpen || app.reSelectMenu.isOpen) {
-        
-        [app.reMainMenu close];
-        [app.reSelectMenu close];
-    }
-    
-    // Close Menu Logo
-    [CCMenu dismissMenu];    
+    [self closeAllMenu];
 }
 
 - (void)didReceiveMemoryWarning
@@ -595,10 +587,6 @@
         self.navigationItem.rightBarButtonItems = [[NSArray alloc] initWithObjects:buttonMore, nil];
 
     self.navigationItem.leftBarButtonItem = nil;
-    
-    // close Menu
-    [app.reSelectMenu close];
-    [app.reMainMenu close];
 }
 
 - (void)setUINavigationBarSelected
@@ -616,12 +604,7 @@
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
 {
-    // close the menus
-    if (app.reMainMenu.isOpen)
-        [app.reMainMenu close];
-    
-    if (app.reSelectMenu.isOpen)
-        [app.reSelectMenu close];
+    [self closeAllMenu];
     
     [coordinator animateAlongsideTransition:nil completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
         
@@ -633,6 +616,16 @@
 - (void)cancelSelect
 {
     [self tableViewSelect:NO];
+}
+
+- (void)closeAllMenu
+{
+    // close Menu
+    [app.reSelectMenu close];
+    [app.reMainMenu close];
+    
+    // Close Menu Logo
+    [CCMenu dismissMenu];
 }
 
 #pragma --------------------------------------------------------------------------------------------
