@@ -5421,33 +5421,59 @@
     
         if (isShare) {
        
-            cell.sharedImageView.image = [UIImage imageNamed:image_shareConnect];
+            if (metadata.directory) {
+                
+                cell.fileImageView.image = [UIImage imageNamed:image_folder_shared_with_me];
+                cell.sharedImageView.userInteractionEnabled = NO;
+                
+            } else {
             
-            UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapActionConnectionMounted:)];
-            [tap setNumberOfTapsRequired:1];
-            cell.sharedImageView.userInteractionEnabled = YES;
-            [cell.sharedImageView addGestureRecognizer:tap];
+                cell.sharedImageView.image = [UIImage imageNamed:image_shareUser];
+            
+                UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapActionConnectionMounted:)];
+                [tap setNumberOfTapsRequired:1];
+                cell.sharedImageView.userInteractionEnabled = YES;
+                [cell.sharedImageView addGestureRecognizer:tap];
+            }
         }
         
         if (isMounted) {
             
-            cell.sharedImageView.image = [UIImage imageNamed:image_shareMounted];
-            
-            UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapActionConnectionMounted:)];
-            [tap setNumberOfTapsRequired:1];
-            cell.sharedImageView.userInteractionEnabled = YES;
-            [cell.sharedImageView addGestureRecognizer:tap];
+            if (metadata.directory) {
+                
+                cell.fileImageView.image = [UIImage imageNamed:image_folder_external];
+                cell.sharedImageView.userInteractionEnabled = NO;
+                
+            } else {
+                
+                cell.sharedImageView.image = [UIImage imageNamed:image_shareMounted];
+                
+                UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapActionConnectionMounted:)];
+                [tap setNumberOfTapsRequired:1];
+                cell.sharedImageView.userInteractionEnabled = YES;
+                [cell.sharedImageView addGestureRecognizer:tap];
+            }
         }
         
         if ([shareLink length] > 0 || [shareUserAndGroup length] > 0) {
         
-            if ([shareLink length] > 0) cell.sharedImageView.image = [UIImage imageNamed:image_shareLink];
-            if ([shareUserAndGroup length] > 0) cell.sharedImageView.image = [UIImage imageNamed:image_shareUser];
-        
-            UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapActionShared:)];
-            [tap setNumberOfTapsRequired:1];
-            cell.sharedImageView.userInteractionEnabled = YES;
-            [cell.sharedImageView addGestureRecognizer:tap];
+            if (metadata.directory) {
+                
+                if ([shareLink length] > 0) cell.fileImageView.image = [UIImage imageNamed:image_folder_public];
+                if ([shareUserAndGroup length] > 0) cell.fileImageView.image = [UIImage imageNamed:image_folder_shared_with_me];
+                
+                cell.sharedImageView.userInteractionEnabled = NO;
+                
+            } else {
+                
+                if ([shareLink length] > 0) cell.sharedImageView.image = [UIImage imageNamed:image_shareLink];
+                if ([shareUserAndGroup length] > 0) cell.sharedImageView.image = [UIImage imageNamed:image_shareUser];
+                
+                UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapActionShared:)];
+                [tap setNumberOfTapsRequired:1];
+                cell.sharedImageView.userInteractionEnabled = YES;
+                [cell.sharedImageView addGestureRecognizer:tap];
+            }
         }
         
     } else {

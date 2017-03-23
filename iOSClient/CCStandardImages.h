@@ -65,6 +65,9 @@
 #define image_folderphotocamera                 @"folderphotocamera"
 #define image_folder                            @"folder"
 #define image_foldercrypto                      @"foldercrypto"
+#define image_folder_external                   @"folder_external"
+#define image_folder_public                     @"folder_public"
+#define image_folder_shared_with_me             @"folder_shared_with_me"
 
 #define image_home                              @"home"
 
@@ -135,7 +138,6 @@
 #define image_settingsPasscodeNO                @"settingsPasscodeNO"
 #define image_settingsPasscodeYES               @"settingsPasscodeYES"
 #define image_settingsSync                      @"settingsSync"
-#define image_shareConnect                      @"shareConnect"
 #define image_shareExtEncrypt                   @"shareExtEncrypt"
 #define image_shareLink                         @"shareLink"
 #define image_shareMounted                      @"shareMounted"
