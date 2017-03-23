@@ -51,7 +51,6 @@
 
 @interface CCMain () <CCActionsDeleteDelegate, CCActionsRenameDelegate, CCActionsSearchDelegate, CCActionsDownloadThumbnailDelegate, CCActionsSettingFavoriteDelegate>
 {
-    CCMetadata *_metadataSegue;
     CCMetadata *_metadata;
         
     BOOL _isRoot;
@@ -126,7 +125,6 @@
     
     // init object
     _metadata = [CCMetadata new];
-    _metadataSegue = [CCMetadata new];
     _hud = [[CCHud alloc] initWithView:[[[UIApplication sharedApplication] delegate] window]];
     _hudDeterminate = [[CCHud alloc] initWithView:[[[UIApplication sharedApplication] delegate] window]];
     _selectedMetadatas = [NSMutableArray new];
@@ -1355,10 +1353,9 @@
            
         } else {
             
-            _metadataSegue = metadata;
-            _metadataSegue.sessionSelector = selector;
+            _metadata = metadata;
     
-            if ([self shouldPerformSegue:serverUrl])
+            if ([self shouldPerformSegue])
                 [self performSegueWithIdentifier:@"segueDetail" sender:self];
         }
     }
@@ -5805,7 +5802,7 @@
 #pragma mark ===== Navigation ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (BOOL)shouldPerformSegue:(NSString *)serverUrl
+- (BOOL)shouldPerformSegue
 {
     // if background return
     if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) return NO;
@@ -5826,6 +5823,8 @@
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
     id viewController = segue.destinationViewController;
+    NSMutableArray *allRecordsDataSourceImagesVideos = [NSMutableArray new];
+    CCMetadata *metadata;
     
     if ([viewController isKindOfClass:[UINavigationController class]]) {
         
@@ -5837,19 +5836,28 @@
         _detailViewController = segue.destinationViewController;
     }
     
-    NSMutableArray *allRecordsDataSourceImagesVideos = [[NSMutableArray alloc] init];
-    for (NSString *fileID in _sectionDataSource.allFileID) {
-        CCMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:fileID];
-        if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image] || [metadata.typeFile isEqualToString: k_metadataTypeFile_video])
-            [allRecordsDataSourceImagesVideos addObject:metadata];
+    if ([sender isKindOfClass:[CCMetadata class]]) {
+    
+        metadata = sender;
+        [allRecordsDataSourceImagesVideos addObject:sender];
+        
+    } else {
+        
+        metadata = _metadata;
+        
+        for (NSString *fileID in _sectionDataSource.allFileID) {
+            CCMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:fileID];
+            if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image] || [metadata.typeFile isEqualToString: k_metadataTypeFile_video])
+                [allRecordsDataSourceImagesVideos addObject:metadata];
+        }
     }
-
+    
+    _detailViewController.metadataDetail = metadata;
     _detailViewController.dataSourceImagesVideos = allRecordsDataSourceImagesVideos;
-    _detailViewController.metadataDetail = _metadataSegue;
     _detailViewController.dateFilterQuery = nil;
     _detailViewController.isCameraUpload = NO;
     
-    [_detailViewController setTitle:_metadata.fileNamePrint];
+    [_detailViewController setTitle:metadata.fileNamePrint];
 }
 
 // can i go to next viewcontroller

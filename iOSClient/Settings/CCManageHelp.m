@@ -128,6 +128,9 @@
         } else {
             [CCUtility setActivityVerboseHigh:false];
         }
+        
+        // Clear Date read Activity for force reload datasource
+        app.controlCenterActivity.storeDateFirstActivity = nil;
     }
 }
 

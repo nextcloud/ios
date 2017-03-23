@@ -99,5 +99,7 @@
 
 - (void)cancelSearchBar;
 
+- (BOOL)shouldPerformSegue;
+
 @end
 

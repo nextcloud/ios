@@ -189,6 +189,7 @@
 "_help_activity_mail_"          = "Send activity by mail";
 "_help_activity_clear_"         = "Clear activity";
 
+
 // Manage Optimizations
 
 "_optimized_photos_"            = "Optimized photos resolution";
@@ -492,6 +493,8 @@
 "_no_activity_"                     = "No activity";
 "_transfers_"                       = "Transfers";
 "_activity_"                        = "Activity";
+"_activity_file_not_present_"       = "File no longer present";
+
 
 // Offline
 

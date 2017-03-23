@@ -11,6 +11,8 @@
 @interface CCControlCenterActivity : UICollectionViewController <UICollectionViewDataSource, UICollectionViewDelegate>
 
 @property NSUInteger pageIndex;
+
+@property (nonatomic, strong) NSDate *storeDateFirstActivity;
 @property (nonatomic, strong) NSString *pageType;
 
 - (void)reloadDatasource;

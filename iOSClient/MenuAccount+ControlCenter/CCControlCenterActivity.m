@@ -18,9 +18,7 @@
 @interface CCControlCenterActivity ()
 {
     // Datasource
-    NSArray *_sectionDataSource;
-    
-    NSDate *_storeDateFirstActivity;
+    NSArray *_sectionDataSource;    
 }
 @end
 
@@ -250,6 +248,27 @@
     imageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, activity.fileID]];
     
     return cell;
+}
+
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    TableActivity *activity = [_sectionDataSource objectAtIndex:indexPath.section];
+    
+    CCMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileID == %@)", activity.account, activity.fileID] context:nil];
+    
+    if (metadata) {
+        
+        if (!self.splitViewController.isCollapsed && app.activeMain.detailViewController.isViewLoaded && app.activeMain.detailViewController.view.window)
+            [app.activeMain.navigationController popToRootViewControllerAnimated:NO];
+        
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+            [app.activeMain performSegueWithIdentifier:@"segueDetail" sender:metadata];
+        });
+        
+    } else {
+        
+        [app messageNotification:@"_info_" description:@"_activity_file_not_present_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo];
+    }
 }
 
 #pragma --------------------------------------------------------------------------------------------
