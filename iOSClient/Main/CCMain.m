@@ -3250,10 +3250,10 @@
         
         for (TableExternalSites *tableExternalSites in externalSites) {
             
-            NSString *currentLanguageiOS = [[NSLocale preferredLanguages] objectAtIndex:0];
+            // NSString *currentLanguageiOS = [[NSLocale preferredLanguages] objectAtIndex:0];
             
             // Verify lang
-            if ([tableExternalSites.lang isEqualToString:@""] || [tableExternalSites.lang isEqualToString:currentLanguageiOS]) {
+            //if ([tableExternalSites.lang isEqualToString:@""] || [tableExternalSites.lang isEqualToString:currentLanguageiOS]) {
             
                 item = [CCMenuItem new];
                 
@@ -3263,7 +3263,7 @@
                 item.action = @selector(goToWebVC:);
                 item.argument = tableExternalSites.url;
                 [menuArray addObject:item];
-            }
+            //}
         }
         
         if ([menuArray count] > 0) {
