@@ -15,6 +15,8 @@
 #define fontSizeAction  [UIFont systemFontOfSize:14]
 #define fontSizeNote    [UIFont systemFontOfSize:14]
 
+#define daysOfActivity  7
+
 @interface CCControlCenterActivity ()
 {
     BOOL _verbose;
@@ -85,10 +87,12 @@
         
         NSPredicate *predicate;
         
+        NSDate *sixDaysAgo = [[NSCalendar currentCalendar] dateByAddingUnit:NSCalendarUnitDay value:-daysOfActivity toDate:[NSDate date] options:0];
+        
         if ([CCUtility getActivityVerboseHigh])
-            predicate = [NSPredicate predicateWithFormat:@"((account == %@) || (account == ''))", app.activeAccount];
+            predicate = [NSPredicate predicateWithFormat:@"((account == %@) || (account == '')) AND (date > %@)", app.activeAccount, sixDaysAgo];
         else
-            predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (verbose == %lu)", app.activeAccount, k_activityVerboseDefault];
+            predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (verbose == %lu) AND (date > %@)", app.activeAccount, k_activityVerboseDefault, sixDaysAgo];
 
         _sectionDataSource = [CCCoreData getAllTableActivityWithPredicate: predicate];
 
