@@ -19,6 +19,8 @@
 {
     // Datasource
     NSArray *_sectionDataSource;
+    
+    NSDate *_storeDateFirstActivity;
 }
 @end
 
@@ -87,27 +89,30 @@
             predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (verbose == %lu)", app.activeAccount, k_activityVerboseDefault];
 
         _sectionDataSource = [CCCoreData getAllTableActivityWithPredicate: predicate];
-        
+
         [self reloadCollection];
     }
 }
 
 - (void)reloadCollection
 {
-    if ([[app.controlCenter getActivePage] isEqualToString:k_pageControlCenterActivity]) {
-        
-        if ([_sectionDataSource count] == 0) {
+    NSDate *dateActivity;
+    
+    if ([_sectionDataSource count] == 0) {
             
-            app.controlCenter.labelMessageNoRecord.text = NSLocalizedString(@"_no_activity_",nil);
-            app.controlCenter.labelMessageNoRecord.hidden = NO;
+        app.controlCenter.labelMessageNoRecord.text = NSLocalizedString(@"_no_activity_",nil);
+        app.controlCenter.labelMessageNoRecord.hidden = NO;
             
-        } else {
+    } else {
             
-            app.controlCenter.labelMessageNoRecord.hidden = YES;
-        }
+        app.controlCenter.labelMessageNoRecord.hidden = YES;
+        dateActivity = ((TableActivity *)[_sectionDataSource objectAtIndex:0]).date;
     }
 
-    [self.collectionView reloadData];
+    if ([dateActivity compare:_storeDateFirstActivity] == NSOrderedDescending || _storeDateFirstActivity == nil) {
+        _storeDateFirstActivity = dateActivity;
+        [self.collectionView reloadData];
+    }
 }
     
 #pragma --------------------------------------------------------------------------------------------
