@@ -78,29 +78,38 @@
         return;
     
     if (app.controlCenter.isOpen) {
-                
-        if ([CCUtility getActivityVerboseHigh])
-            _sectionDataSource = [CCCoreData getAllTableActivityWithPredicate:[NSPredicate predicateWithFormat:@"((account == %@) || (account == ''))", app.activeAccount]];
-        else
-            _sectionDataSource = [CCCoreData getAllTableActivityWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (verbose == %lu)", app.activeAccount, k_activityVerboseDefault]];
         
-        if ([[app.controlCenter getActivePage] isEqualToString:k_pageControlCenterActivity]) {
-            
-            if ([_sectionDataSource count] == 0) {
-                
-                app.controlCenter.labelMessageNoRecord.text = NSLocalizedString(@"_no_activity_",nil);
-                app.controlCenter.labelMessageNoRecord.hidden = NO;
-            
-            } else {
-            
-                app.controlCenter.labelMessageNoRecord.hidden = YES;
-            }
-        }
+        NSPredicate *predicate;
+        
+        if ([CCUtility getActivityVerboseHigh])
+            predicate = [NSPredicate predicateWithFormat:@"((account == %@) || (account == ''))", app.activeAccount];
+        else
+            predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (verbose == %lu)", app.activeAccount, k_activityVerboseDefault];
+
+        _sectionDataSource = [CCCoreData getAllTableActivityWithPredicate: predicate];
+        
+        [self reloadCollection];
     }
-    
-    [self.collectionView reloadData];    
 }
 
+- (void)reloadCollection
+{
+    if ([[app.controlCenter getActivePage] isEqualToString:k_pageControlCenterActivity]) {
+        
+        if ([_sectionDataSource count] == 0) {
+            
+            app.controlCenter.labelMessageNoRecord.text = NSLocalizedString(@"_no_activity_",nil);
+            app.controlCenter.labelMessageNoRecord.hidden = NO;
+            
+        } else {
+            
+            app.controlCenter.labelMessageNoRecord.hidden = YES;
+        }
+    }
+
+    [self.collectionView reloadData];
+}
+    
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark - ==== Table ====
 #pragma --------------------------------------------------------------------------------------------
@@ -114,7 +123,7 @@
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
     TableActivity *activity = [_sectionDataSource objectAtIndex:section];
-    
+        
     if ([activity.action isEqual: k_activityDebugActionDownload] || [activity.action isEqual: k_activityDebugActionUpload]) {
         
         if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, activity.fileID]])
