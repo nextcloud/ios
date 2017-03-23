@@ -16,5 +16,6 @@
 @property (nonatomic, strong) NSString *pageType;
 
 - (void)reloadDatasource;
++ (CGFloat)getLabelHeight:(UILabel*)label width:(int)width;
 
 @end

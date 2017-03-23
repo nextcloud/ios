@@ -154,15 +154,18 @@
     // Action
     [label setFont:fontSizeAction];
     label.text = [NSString stringWithFormat:@"%@ %@", activity.action, activity.file];
-    int heightAction = [self getLabelHeight:label];
+    int heightAction = [[self class] getLabelHeight:label width:self.collectionView.frame.size.width];
     
     // Note
     [label setFont:fontSizeNote];
     
-    if (_verbose && activity.idActivity == 0) label.text = [NSString stringWithFormat:@"%@ Selector: %@", activity.note, activity.selector];
-    else label.text = activity.note;
-    int heightNote = [self getLabelHeight:label];
-
+    if (_verbose && activity.idActivity == 0)
+        label.text = [NSString stringWithFormat:@"%@ Selector: %@", activity.note, activity.selector];
+    else
+        label.text = activity.note;
+    
+    int heightNote = [[self class] getLabelHeight:label width:self.collectionView.frame.size.width];
+    
     int heightView = 40 + heightAction + heightNote;
     
     return CGSizeMake(collectionView.frame.size.width, heightView);
@@ -278,15 +281,15 @@
 #pragma mark - ==== Utility ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (CGFloat)getLabelHeight:(UILabel*)label
++ (CGFloat)getLabelHeight:(UILabel*)label width:(int)width
 {
-    CGSize constraint = CGSizeMake(self.collectionView.frame.size.width, CGFLOAT_MAX);
+    CGSize constraint = CGSizeMake(width, CGFLOAT_MAX);
     
-    NSMutableParagraphStyle *paragraph = [[NSMutableParagraphStyle alloc] init];
+    NSMutableParagraphStyle *paragraph = [NSMutableParagraphStyle new];
     paragraph.lineBreakMode = NSLineBreakByWordWrapping;
     NSDictionary *attributes = @{NSFontAttributeName : label.font, NSParagraphStyleAttributeName: paragraph};
     
-    NSStringDrawingContext *context = [[NSStringDrawingContext alloc] init];
+    NSStringDrawingContext *context = [NSStringDrawingContext new];
     CGSize boundingBox = [label.text boundingRectWithSize:constraint options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes context:context].size;
     
     CGSize size = CGSizeMake(ceil(boundingBox.width), ceil(boundingBox.height));
