@@ -467,10 +467,19 @@
     }
     
     rowUserAddress.value = _tableAccount.address;
+    if ([_tableAccount.address isEqualToString:@""]) rowUserAddress.hidden = @YES;
+    
     rowUserPhone.value = _tableAccount.phone;
+    if ([_tableAccount.phone isEqualToString:@""]) rowUserPhone.hidden = @YES;
+    
     rowUserEmail.value = _tableAccount.email;
+    if ([_tableAccount.email isEqualToString:@""]) rowUserEmail.hidden = @YES;
+    
     rowUserWeb.value = _tableAccount.webpage;
+    if ([_tableAccount.webpage isEqualToString:@""]) rowUserWeb.hidden = @YES;
+    
     rowUserTwitter.value = _tableAccount.twitter;
+    if ([_tableAccount.twitter isEqualToString:@""]) rowUserTwitter.hidden = @YES;
     
     // -----------------------------------------------------------------
     
