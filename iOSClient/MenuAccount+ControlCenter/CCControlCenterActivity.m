@@ -272,7 +272,10 @@
             [app.activeMain.navigationController popToRootViewControllerAnimated:NO];
         
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+            
             [app.activeMain performSegueWithIdentifier:@"segueDetail" sender:metadata];
+            
+            [app.controlCenter closeControlCenter];
         });
         
     } else {

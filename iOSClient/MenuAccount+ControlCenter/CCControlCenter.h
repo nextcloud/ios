@@ -32,7 +32,7 @@
 @property (nonatomic) BOOL isPopGesture;
 @property (nonatomic) BOOL isOpen;
 
-
+- (void)closeControlCenter;
 - (void)setControlCenterHidden:(BOOL)hidden;
 - (void)enableSingleFingerTap:(SEL)selector target:(id)target;
 - (void)disableSingleFingerTap;
@@ -43,4 +43,6 @@
 @property (strong, nonatomic) NSMutableArray *controlCenterPagesContent;
 
 - (NSString *)getActivePage;
+
+
 @end
