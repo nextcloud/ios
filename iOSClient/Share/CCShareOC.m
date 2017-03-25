@@ -116,7 +116,7 @@
     [super viewDidLoad];
     
     [self.view setTintColor:COLOR_BRAND];
-    self.view.backgroundColor = COLOR_NAVIGATIONBAR;
+    self.view.backgroundColor = COLOR_NAVIGATIONBAR_SHARE;
     
     [self.endButton setTitle:NSLocalizedString(@"_done_", nil) forState:UIControlStateNormal];
     self.endButton.tintColor = COLOR_NAVIGATIONBAR_TEXT;
