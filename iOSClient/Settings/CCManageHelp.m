@@ -253,10 +253,7 @@
     
     [CCCoreData flushTableActivityAccount:app.activeAccount];
     
-    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
-    
-    metadataNet.action = actionGetActivityServer;
-    [app addNetworkingOperationQueue:app.netQueue delegate:app.activeMain metadataNet:metadataNet];
+    [app.controlCenterActivity reloadDatasource];
 }
 
 @end

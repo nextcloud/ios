@@ -95,7 +95,7 @@
             predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (verbose == %lu) AND (date > %@)", app.activeAccount, k_activityVerboseDefault, sixDaysAgo];
 
         _sectionDataSource = [CCCoreData getAllTableActivityWithPredicate: predicate];
-
+        
         [self reloadCollection];
     }
 }
@@ -115,7 +115,7 @@
         dateActivity = ((TableActivity *)[_sectionDataSource objectAtIndex:0]).date;
     }
 
-    if ([dateActivity compare:_storeDateFirstActivity] == NSOrderedDescending || _storeDateFirstActivity == nil) {
+    if ([dateActivity compare:_storeDateFirstActivity] == NSOrderedDescending || _storeDateFirstActivity == nil || dateActivity == nil) {
         _storeDateFirstActivity = dateActivity;
         [self.collectionView reloadData];
     }
@@ -129,7 +129,6 @@
 {
     return [_sectionDataSource count];
 }
-
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {

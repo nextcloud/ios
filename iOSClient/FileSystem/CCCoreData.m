@@ -2194,7 +2194,7 @@
     
     if (account) {
         
-        [TableActivity MR_deleteAllMatchingPredicate:[NSPredicate predicateWithFormat:@"(account == %@)", account] inContext:context];
+        [TableActivity MR_deleteAllMatchingPredicate:[NSPredicate predicateWithFormat:@"(account == %@) || (account == '')", account] inContext:context];
         
     } else {
         
