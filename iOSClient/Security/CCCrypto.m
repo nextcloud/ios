@@ -56,14 +56,16 @@
     NSString *passcode;
     
     // if return the passcode the UUID it has already entered
-    if ([CCUtility getKeyChainPasscodeForUUID:uuid]) return;
+    if ([[CCUtility getKeyChainPasscodeForUUID:uuid] length] > 0)
+        return;
     
     // verify if the password of the UUID insert is good (OPTIMIZATION)
     passcode = [CCUtility getKeyChainPasscodeForUUID:[CCUtility getUUID]];
     key = [AESCrypt encrypt:uuid password:passcode];
         
     // if the decryption it's ok insert UUID with Passcode in KeyChain
-    if([AESCrypt decrypt:text password:key]) [CCUtility setKeyChainPasscodeForUUID:uuid conPasscode:passcode];
+    if([AESCrypt decrypt:text password:key])
+        [CCUtility setKeyChainPasscodeForUUID:uuid conPasscode:passcode];
 }
 
 - (BOOL)verifyPasscode:(NSString *)passcode uuid:(NSString*)uuid text:(NSString *)text
