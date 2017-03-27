@@ -79,7 +79,7 @@
 
 #define COLOR_NAVIGATIONBAR             [UIColor colorWithRed:0.0/255.0 green:130.0/255.0 blue:201.0/255.0 alpha:1.0]                   // BLU NC : #0082c9
 
-#define COLOR_NAVIGATIONBAR_SHARE       [UIColor colorWithRed:18.0/255.0 green:52.0/255.0 blue:78.0/255.0 alpha:1.0]               ;
+#define COLOR_NAVIGATIONBAR_SHARE       [UIColor colorWithRed:18.0/255.0 green:52.0/255.0 blue:78.0/255.0 alpha:1.0]
 
 #define COLOR_NAVIGATIONBAR_TEXT        [UIColor whiteColor]
 #define COLOR_NAVIGATIONBAR_PROGRESS    [UIColor whiteColor]
