@@ -542,8 +542,19 @@
                 [self reloadForm];
             }]];
             
-            [self presentViewController:alertController animated:YES completion:nil];
-
+            //if iPhone
+            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+                
+                [self presentViewController:alertController animated:YES completion:nil];
+            }
+            //if iPad
+            else {
+                
+                // Change Rect to position Popover
+                UIPopoverController *popup = [[UIPopoverController alloc] initWithContentViewController:alertController];
+                [popup presentPopoverFromRect:[self.tableView rectForRowAtIndexPath:[self.form indexPathOfFormRow:rowDescriptor]] inView:self.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+            }
+            
         } else {
             
             [CCUtility setFavoriteOffline:false];
