@@ -540,7 +540,7 @@ extern NSString * _Nullable OCWebDAVModificationDateKey;
  *
  */
 
-- (void)subscribingNextcloudServerPush:(NSString * _Nonnull)serverPath authorizationToken:(NSString * _Nonnull)authorizationToken pushTokenHash:(NSString * _Nonnull)pushTokenHash devicePublicKey:(NSString * _Nonnull)devicePublicKey onCommunication:(OCCommunication * _Nonnull)sharedOCCommunication success:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull, id _Nonnull))success failure:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull, id  _Nullable responseObject, NSError * _Nonnull))failure;
+- (void)subscribingNextcloudServerPush:(NSString * _Nonnull)serverPath authorizationToken:(NSString * _Nonnull)authorizationToken pushTokenHash:(NSString * _Nonnull)pushTokenHash devicePublicKey:(NSString * _Nonnull)devicePublicKey proxyServerPath:(NSString * _Nonnull)proxyServerPath onCommunication:(OCCommunication * _Nonnull)sharedOCCommunication success:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull, id _Nonnull))success failure:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull, id  _Nullable responseObject, NSError * _Nonnull))failure;
 
 
 - (void)subscribingPushProxy:(NSString * _Nonnull)serverPath authorizationToken:(NSString * _Nonnull)authorizationToken pushToken:(NSString * _Nonnull)pushToken deviceIdentifier:(NSString * _Nonnull)deviceIdentifier deviceIdentifierSignature:(NSString * _Nonnull)deviceIdentifierSignature userPublicKey:(NSString * _Nonnull)userPublicKey onCommunication:(OCCommunication * _Nonnull)sharedOCCommunication success:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull, id _Nonnull))success failure:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull, id  _Nullable responseObject, NSError * _Nonnull))failure;
