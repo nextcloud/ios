@@ -241,6 +241,14 @@
 		F75037511DBFA91A008FB480 /* NSLayoutConstraint+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F75037481DBFA91A008FB480 /* NSLayoutConstraint+PureLayout.m */; };
 		F75797AE1E81356C00187A1B /* CTAssetsPicker.strings in Resources */ = {isa = PBXBuildFile; fileRef = F75797AC1E81356C00187A1B /* CTAssetsPicker.strings */; };
 		F75ADF451DC75FFE008A7347 /* CCLogin.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F75ADF441DC75FFE008A7347 /* CCLogin.storyboard */; };
+		F75EDFAC1E8C106900E6F369 /* FirebaseAnalytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F75EDFA61E8C106900E6F369 /* FirebaseAnalytics.framework */; };
+		F75EDFAD1E8C106900E6F369 /* FirebaseCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F75EDFA71E8C106900E6F369 /* FirebaseCore.framework */; };
+		F75EDFAE1E8C106900E6F369 /* FirebaseInstanceID.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F75EDFA81E8C106900E6F369 /* FirebaseInstanceID.framework */; };
+		F75EDFAF1E8C106900E6F369 /* FirebaseMessaging.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F75EDFA91E8C106900E6F369 /* FirebaseMessaging.framework */; };
+		F75EDFB01E8C106900E6F369 /* GoogleToolboxForMac.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F75EDFAA1E8C106900E6F369 /* GoogleToolboxForMac.framework */; };
+		F75EDFB11E8C106900E6F369 /* Protobuf.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F75EDFAB1E8C106900E6F369 /* Protobuf.framework */; };
+		F75EDFBD1E8C112F00E6F369 /* libsqlite3.0.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = F75EDFBC1E8C112F00E6F369 /* libsqlite3.0.tbd */; };
+		F75EDFBF1E8C116D00E6F369 /* libstdc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = F75EDFBE1E8C116D00E6F369 /* libstdc++.tbd */; };
 		F7659A271DC0B726004860C4 /* EAIntroPage.m in Sources */ = {isa = PBXBuildFile; fileRef = F7659A231DC0B726004860C4 /* EAIntroPage.m */; };
 		F7659A291DC0B726004860C4 /* EAIntroView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7659A251DC0B726004860C4 /* EAIntroView.m */; };
 		F7659A2E1DC0B72F004860C4 /* EARestrictedScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7659A2C1DC0B72F004860C4 /* EARestrictedScrollView.m */; };
@@ -1339,6 +1347,15 @@
 		F75797B71E81364C00187A1B /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-BR"; path = "pt-BR.lproj/CTAssetsPicker.strings"; sourceTree = "<group>"; };
 		F75ADF441DC75FFE008A7347 /* CCLogin.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = CCLogin.storyboard; sourceTree = "<group>"; };
 		F75CDBF51DF063AD00116AD0 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; name = .gitignore; path = ../.gitignore; sourceTree = "<group>"; };
+		F75EDFA51E8C106900E6F369 /* Firebase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Firebase.h; sourceTree = "<group>"; };
+		F75EDFA61E8C106900E6F369 /* FirebaseAnalytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseAnalytics.framework; sourceTree = "<group>"; };
+		F75EDFA71E8C106900E6F369 /* FirebaseCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseCore.framework; sourceTree = "<group>"; };
+		F75EDFA81E8C106900E6F369 /* FirebaseInstanceID.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseInstanceID.framework; sourceTree = "<group>"; };
+		F75EDFA91E8C106900E6F369 /* FirebaseMessaging.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseMessaging.framework; sourceTree = "<group>"; };
+		F75EDFAA1E8C106900E6F369 /* GoogleToolboxForMac.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleToolboxForMac.framework; sourceTree = "<group>"; };
+		F75EDFAB1E8C106900E6F369 /* Protobuf.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Protobuf.framework; sourceTree = "<group>"; };
+		F75EDFBC1E8C112F00E6F369 /* libsqlite3.0.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.0.tbd; path = usr/lib/libsqlite3.0.tbd; sourceTree = SDKROOT; };
+		F75EDFBE1E8C116D00E6F369 /* libstdc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libstdc++.tbd"; path = "usr/lib/libstdc++.tbd"; sourceTree = SDKROOT; };
 		F76344751BF259A800188725 /* synchronized.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = synchronized.gif; sourceTree = "<group>"; };
 		F76344761BF259A800188725 /* synchronizedcrypto.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = synchronizedcrypto.gif; sourceTree = "<group>"; };
 		F7659A221DC0B726004860C4 /* EAIntroPage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAIntroPage.h; sourceTree = "<group>"; };
@@ -1708,11 +1725,19 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F75EDFBF1E8C116D00E6F369 /* libstdc++.tbd in Frameworks */,
+				F75EDFBD1E8C112F00E6F369 /* libsqlite3.0.tbd in Frameworks */,
 				F71E68001DC1F792003BA52B /* libownCloudiOS.a in Frameworks */,
 				F714526D1DC1523B0006A5D4 /* libMagicalRecord.a in Frameworks */,
+				F75EDFAC1E8C106900E6F369 /* FirebaseAnalytics.framework in Frameworks */,
+				F75EDFAE1E8C106900E6F369 /* FirebaseInstanceID.framework in Frameworks */,
+				F75EDFB11E8C106900E6F369 /* Protobuf.framework in Frameworks */,
 				F7FC7D561DC1F93800BB2C6A /* libz.tbd in Frameworks */,
+				F75EDFAD1E8C106900E6F369 /* FirebaseCore.framework in Frameworks */,
+				F75EDFAF1E8C106900E6F369 /* FirebaseMessaging.framework in Frameworks */,
 				F7BB14961D5B62C000ECEE68 /* libcrypto.a in Frameworks */,
 				F7BB14971D5B62C000ECEE68 /* libssl.a in Frameworks */,
+				F75EDFB01E8C106900E6F369 /* GoogleToolboxForMac.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2730,6 +2755,21 @@
 			path = openssl;
 			sourceTree = "<group>";
 		};
+		F75EDFA41E8C106900E6F369 /* Analytics */ = {
+			isa = PBXGroup;
+			children = (
+				F75EDFA51E8C106900E6F369 /* Firebase.h */,
+				F75EDFA61E8C106900E6F369 /* FirebaseAnalytics.framework */,
+				F75EDFA71E8C106900E6F369 /* FirebaseCore.framework */,
+				F75EDFA81E8C106900E6F369 /* FirebaseInstanceID.framework */,
+				F75EDFA91E8C106900E6F369 /* FirebaseMessaging.framework */,
+				F75EDFAA1E8C106900E6F369 /* GoogleToolboxForMac.framework */,
+				F75EDFAB1E8C106900E6F369 /* Protobuf.framework */,
+			);
+			name = Analytics;
+			path = "Libraries external/Analytics";
+			sourceTree = SOURCE_ROOT;
+		};
 		F7659A211DC0B726004860C4 /* EAIntroView */ = {
 			isa = PBXGroup;
 			children = (
@@ -3277,6 +3317,7 @@
 				F7B61E861DC13C20009E938F /* MagicalRecord.xcodeproj */,
 				F71E67F61DC1F76F003BA52B /* ownCloud iOS library.xcodeproj */,
 				F70F02A81C889183008DAB36 /* Libraries external */,
+				F75EDFA41E8C106900E6F369 /* Analytics */,
 				F7A582D71A24DAB500E903D7 /* AppDelegate.h */,
 				F7A582D61A24DAB500E903D7 /* AppDelegate.m */,
 				F7C1CDCE1E6DFAD1005D92BE /* CCStandardImages.h */,
@@ -3343,6 +3384,8 @@
 		F7FC7D541DC1F93700BB2C6A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F75EDFBE1E8C116D00E6F369 /* libstdc++.tbd */,
+				F75EDFBC1E8C112F00E6F369 /* libsqlite3.0.tbd */,
 				08EA97441E6554FC004C83FA /* FirebaseAnalytics.framework */,
 				08EA97451E6554FC004C83FA /* FirebaseCore.framework */,
 				08EA97461E6554FC004C83FA /* FirebaseInstanceID.framework */,
@@ -4692,7 +4735,10 @@
 				CURRENT_PROJECT_VERSION = "";
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
 				ENABLE_BITCODE = YES;
-				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)\"/Libraries external/Analytics\"",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = iOSClient/CryptoCloud.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -4735,7 +4781,10 @@
 				CURRENT_PROJECT_VERSION = "";
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
 				ENABLE_BITCODE = YES;
-				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)\"/Libraries external/Analytics\"",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = iOSClient/CryptoCloud.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (

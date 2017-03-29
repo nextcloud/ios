@@ -56,6 +56,7 @@
  #define OPTION_OFFLINE_DISABLE
  
  #define OPTION_NOTIFICATION_PUSH_ENABLE
+ #define OPTION_FIREBASE_ENABLE
  #define OPTION_AUTOMATIC_UPLOAD_ENABLE
  #define OPTION_DISABLE_INTRO
  
@@ -63,6 +64,7 @@
  */
 
 #define OPTION_OFFLINE_DISABLE
+#define OPTION_FIREBASE_ENABLE
 
 // -----------------------------------------------------------------------------------------------------------
 // COLOR

@@ -35,9 +35,9 @@
 #import "CCSynchronize.h"
 #import "CCMain.h"
 #import "CCDetail.h"
+#import "Firebase.h"
 
 #ifdef CUSTOM_BUILD
-    #import "Firebase.h"
     #import "CustomSwift.h"
 #else
     #import "Nextcloud-Swift.h"
@@ -63,7 +63,7 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    #ifdef CUSTOM_BUILD
+    #ifdef OPTION_FIREBASE_ENABLE
         /*
          In order for this to work, proper GoogleService-Info.plist must be included
          */
@@ -415,8 +415,6 @@
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
-#if defined(OPTION_NOTIFICATION_PUSH_ENABLE)
-    
     // test
     if (self.activeAccount.length == 0)
         return;
@@ -443,9 +441,7 @@
         metadataNet.action = actionSubscribingNextcloudServer;
         metadataNet.options = options;
         [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
-    }
-    
-#endif
+    }    
 }
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
