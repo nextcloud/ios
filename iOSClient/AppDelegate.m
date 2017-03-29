@@ -417,6 +417,10 @@
 {
 #if defined(OPTION_NOTIFICATION_PUSH_ENABLE)
     
+    // test
+    if (self.activeAccount.length == 0)
+        return;
+    
     NSString *pushToken = [[[[deviceToken description] stringByReplacingOccurrencesOfString: @"<" withString: @""] stringByReplacingOccurrencesOfString: @">" withString: @""] stringByReplacingOccurrencesOfString: @" " withString: @""];
     NSString *pushTokenHash = [[CCCrypto sharedManager] createSHA512:pushToken];
     

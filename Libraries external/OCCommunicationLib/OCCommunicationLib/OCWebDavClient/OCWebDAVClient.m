@@ -140,7 +140,6 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
         [UtilsFramework deleteAllCookies];
     }
     
-    
     OCHTTPRequestOperation *operation = (OCHTTPRequestOperation*) [sharedOCCommunication.networkSessionManager dataTaskWithRequest:request completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
          if (!error) {
             success((NSHTTPURLResponse*)response,responseObject);
@@ -772,8 +771,10 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     serverPath = [serverPath stringByAppendingString:deviceIdentifier];
     serverPath = [serverPath stringByAppendingString:deviceIdentifierSignature];
     serverPath = [serverPath stringByAppendingString:userPublicKey];
-
+    
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
+    
+    [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
     
     OCHTTPRequestOperation *operation = [self mr_operationWithRequest:request onCommunication:sharedOCCommunication success:success failure:failure];
     [self setRedirectionBlockOnDatataskWithOCCommunication:sharedOCCommunication andSessionManager:sharedOCCommunication.networkSessionManager];
