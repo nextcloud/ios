@@ -355,11 +355,6 @@
         NSLog(@"[LOG] Initialize Camera Upload");
         [[NSNotificationCenter defaultCenter] postNotificationName:@"initStateCameraUpload" object:nil];
         
-#ifndef OPTION_OFFLINE_DISABLE
-        NSLog(@"[LOG] files Offline");
-        [[CCSynchronize sharedSynchronize] readOffline];
-#endif
-        
         NSLog(@"[LOG] Listning Favorites");
         [[CCSynchronize sharedSynchronize] readListingFavorites];        
     });

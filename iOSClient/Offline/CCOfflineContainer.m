@@ -70,11 +70,7 @@
     
     // Create data model
 
-#ifdef OPTION_OFFLINE_DISABLE
     _pageType = @[k_pageOfflineFavorites, k_pageOfflineLocal];
-#else
-    _pageType = @[k_pageOfflineFavorites, k_pageOfflineOffline, k_pageOfflineLocal];
-#endif
     
     _currentPageType = k_pageOfflineFavorites;
     self.title = NSLocalizedString(@"_favorites_", nil);

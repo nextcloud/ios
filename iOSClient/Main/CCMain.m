@@ -5182,27 +5182,7 @@
         cell.labelInfoFile.text = [CCUtility dateDiff:metadata.date];
         
         lunghezzaFile = @" ";
-        
-#ifndef OPTION_OFFLINE_DISABLE
-
-        // ----------------------------------------------------------------------------------------------------------
-        // Offline Folder
-        // ----------------------------------------------------------------------------------------------------------
-        
-        BOOL isOfflineDirectory = [CCCoreData isOfflineDirectoryServerUrl:directoryServerUrl activeAccount:app.activeAccount];
-
-        // Verify Offline
-        if (_isOfflineServerUrl == YES && isOfflineDirectory == NO) {
-            [CCCoreData setOfflineDirectoryServerUrl:directoryServerUrl offline:YES activeAccount:app.activeAccount];
-            isOfflineDirectory = YES;
-        }
-        
-        if (isOfflineDirectory) {
-            
-            cell.offlineImageView.image = [UIImage imageNamed:image_offline];
-        }
-#endif
-        
+                
         // ----------------------------------------------------------------------------------------------------------
         // Favorite Folder
         // ----------------------------------------------------------------------------------------------------------

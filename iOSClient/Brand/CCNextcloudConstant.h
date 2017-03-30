@@ -54,9 +54,7 @@
 /*
  #define OPTION_MULTIUSER_DISABLE
  #define OPTION_CRYPTO_CLOUD_SYSTEM_DISABLE
- #define OPTION_OFFLINE_DISABLE
  
- #define OPTION_NOTIFICATION_PUSH_ENABLE
  #define OPTION_FIREBASE_ENABLE
  #define OPTION_AUTOMATIC_UPLOAD_ENABLE
  #define OPTION_DISABLE_INTRO
@@ -64,7 +62,6 @@
  #define NO_REQUEST_LOGIN_URL
  */
 
-#define OPTION_OFFLINE_DISABLE
 #define OPTION_FIREBASE_ENABLE
 
 // -----------------------------------------------------------------------------------------------------------
