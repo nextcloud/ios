@@ -90,7 +90,7 @@
 #define image_MenuUploadPhotoCrypto             @"menuUploadPhotoCrypto"
 #define image_MenuUploadPlainMode               @"menuUploadPlainMode"
 #define image_moveSelectedFiles                 @"moveSelectedFiles"
-#define image_more                              @"more"
+#define image_navigationControllerMenu          @"navigationControllerMenu"
 
 #define image_navBarOffline                     @"navBarOffline"
 #define image_navBarLocal                       @"navBarLocal"

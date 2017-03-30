@@ -565,7 +565,7 @@
     UIBarButtonItem *buttonMore, *buttonNotification;
     
     // =
-    buttonMore = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:image_more] style:UIBarButtonItemStylePlain target:self action:@selector(toggleReMainMenu)];
+    buttonMore = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:image_navigationControllerMenu] style:UIBarButtonItemStylePlain target:self action:@selector(toggleReMainMenu)];
     buttonMore.enabled = true;
     
     // <
@@ -591,7 +591,7 @@
 {
     [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:_isFolderEncrypted online:[app.reachability isReachable] hidden:NO];
     
-    UIImage *icon = [UIImage imageNamed:image_more];
+    UIImage *icon = [UIImage imageNamed:image_navigationControllerMenu];
     UIBarButtonItem *buttonMore = [[UIBarButtonItem alloc] initWithImage:icon style:UIBarButtonItemStylePlain target:self action:@selector(toggleReSelectMenu)];
 
     UIBarButtonItem *leftButton = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIBarButtonItemStylePlain target:self action:@selector(cancelSelect)];
