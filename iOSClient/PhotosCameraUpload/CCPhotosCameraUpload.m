@@ -1109,14 +1109,15 @@
     
     // Disable idle timer
     [[UIApplication sharedApplication] setIdleTimerDisabled: YES];
+    
+    if (assetsFull) {
         
-    if (!_hud) _hud = [[CCHud alloc] initWithView:[[[UIApplication sharedApplication] delegate] window]];
-    
-    if (assetsFull)
+        if (!_hud)
+            _hud = [[CCHud alloc] initWithView:[[[UIApplication sharedApplication] delegate] window]];
+        
         [_hud visibleHudTitle:NSLocalizedString(@"_create_full_upload_", nil) mode:MBProgressHUDModeIndeterminate color:nil];
-    else
-        [_hud visibleHudTitle:nil mode:MBProgressHUDModeIndeterminate color:nil];
-    
+    }
+
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.01 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
         
         if (assetsFull)
