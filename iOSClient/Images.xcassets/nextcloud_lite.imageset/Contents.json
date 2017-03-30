@@ -2,7 +2,7 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "nextcloudLogin.png",
+      "filename" : "nextcloud_lite.png",
       "scale" : "1x"
     },
     {
@@ -12,7 +12,7 @@
     },
     {
       "idiom" : "universal",
-      "filename" : "nextcloudLogin@3x.png",
+      "filename" : "nextcloud_lite@3x.png",
       "scale" : "3x"
     }
   ],
