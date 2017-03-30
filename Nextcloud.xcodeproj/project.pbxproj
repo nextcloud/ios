@@ -125,6 +125,7 @@
 		F732B3371E8045A1002B7D75 /* SwiftWebVC.strings in Resources */ = {isa = PBXBuildFile; fileRef = F732B3351E8045A1002B7D75 /* SwiftWebVC.strings */; };
 		F732BA061D76CE1500E9878B /* CCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F732BA041D76CE1500E9878B /* CCNetworking.m */; };
 		F732BA0B1D76DBA500E9878B /* CCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F732BA041D76CE1500E9878B /* CCNetworking.m */; };
+		F73B4F791E8D3BF800A97F07 /* CCMainTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73B4F781E8D3BF800A97F07 /* CCMainTabBarController.swift */; };
 		F73C002F1E55D7DF00EEEFA7 /* CCManageCryptoCloudSecurity.m in Sources */ = {isa = PBXBuildFile; fileRef = F73C002E1E55D7DF00EEEFA7 /* CCManageCryptoCloudSecurity.m */; };
 		F73C41501E82E51F000137C0 /* TableExternalSites+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F73C414D1E82E51F000137C0 /* TableExternalSites+CoreDataClass.m */; };
 		F73C41511E82E51F000137C0 /* TableExternalSites+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F73C414D1E82E51F000137C0 /* TableExternalSites+CoreDataClass.m */; };
@@ -1127,6 +1128,7 @@
 		F73814291E65A52D0011A45E /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		F738142A1E65A52D0011A45E /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Intro.strings; sourceTree = "<group>"; };
 		F738142B1E65A52D0011A45E /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Error.strings; sourceTree = "<group>"; };
+		F73B4F781E8D3BF800A97F07 /* CCMainTabBarController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CCMainTabBarController.swift; sourceTree = "<group>"; };
 		F73C002D1E55D7DF00EEEFA7 /* CCManageCryptoCloudSecurity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCManageCryptoCloudSecurity.h; sourceTree = "<group>"; };
 		F73C002E1E55D7DF00EEEFA7 /* CCManageCryptoCloudSecurity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCManageCryptoCloudSecurity.m; sourceTree = "<group>"; };
 		F73C414C1E82E51F000137C0 /* TableExternalSites+CoreDataClass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableExternalSites+CoreDataClass.h"; sourceTree = "<group>"; };
@@ -1755,6 +1757,7 @@
 				F70211FA1BAC56E9003FC03E /* CCMain.h */,
 				F70211FB1BAC56E9003FC03E /* CCMain.m */,
 				F7D0E65E1BC5042E008D989A /* CCDetail.h */,
+				F73B4F781E8D3BF800A97F07 /* CCMainTabBarController.swift */,
 				F7D0E65F1BC5042E008D989A /* CCDetail.m */,
 				F787E5581BC503ED00AFBFE1 /* Main.storyboard */,
 				F78F6FAE1CC8CCB700F4EA25 /* CCSection.h */,
@@ -4187,6 +4190,7 @@
 				F77B0E4F1D118A16002130FE /* CCManageCameraUpload.m in Sources */,
 				F77B0E511D118A16002130FE /* UIImage+Filtering.m in Sources */,
 				F73CCDEB1DC13776007E38D8 /* XLFormSegmentedCell.m in Sources */,
+				F73B4F791E8D3BF800A97F07 /* CCMainTabBarController.swift in Sources */,
 				F7FCFFE01D707B83000E6E29 /* CCPeekPop.m in Sources */,
 				F7F06E911DBFACC600099AE9 /* NSIndexSet+CTAssetsPickerController.m in Sources */,
 				F77B0E541D118A16002130FE /* CCMove.m in Sources */,
