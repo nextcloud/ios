@@ -1086,7 +1086,6 @@
 		F721372E1BAFF0920012B613 /* CCPatenteGuida.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCPatenteGuida.m; sourceTree = "<group>"; };
 		F721372F1BAFF0920012B613 /* CCTemplates.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCTemplates.h; sourceTree = "<group>"; };
 		F72137301BAFF0920012B613 /* CCTemplates.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCTemplates.m; sourceTree = "<group>"; };
-		F7229B461DF71BA800E8C4E7 /* ChangeLog */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ChangeLog; sourceTree = SOURCE_ROOT; };
 		F7229B491DF71BB300E8C4E7 /* AUTHORS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AUTHORS; sourceTree = SOURCE_ROOT; };
 		F7253FC81E38BAF20084135B /* JSAlertView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSAlertView.h; sourceTree = "<group>"; };
 		F7253FC91E38BAF20084135B /* JSAlertView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSAlertView.m; sourceTree = "<group>"; };
@@ -3358,7 +3357,6 @@
 				F76344751BF259A800188725 /* synchronized.gif */,
 				F7D154271E2392A300202FD9 /* Nextcloud-Bridging-Header.h */,
 				F75CDBF51DF063AD00116AD0 /* .gitignore */,
-				F7229B461DF71BA800E8C4E7 /* ChangeLog */,
 				F7229B491DF71BB300E8C4E7 /* AUTHORS */,
 				F78BFECA1D3111B800E513CF /* LaunchScreenNextcloud.xib */,
 				F77D49A71DC238E500CDC568 /* loading@2x.gif */,

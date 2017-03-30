@@ -625,6 +625,7 @@
     [cell.buttonDown addTarget:self action:@selector(cellButtonDownWasTapped:) forControlEvents:UIControlEventTouchUpInside];
     
     // color and font
+    /*
     if (metadata.cryptated) {
         cell.labelTitle.textColor = COLOR_CRYPTOCLOUD;
         cell.labelInfoFile.textColor = [UIColor blackColor];
@@ -637,6 +638,7 @@
         cell.labelInfoFile.text = [CCUtility dateDiff:metadata.date];
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     }
+    */
     
     // File name
     cell.labelTitle.text = metadata.fileNamePrint;
@@ -658,8 +660,9 @@
     if (metadata.directory) {
         
         cell.labelInfoFile.text = [CCUtility dateDiff:metadata.date];
-        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-        
+        cell.accessoryType = UITableViewCellAccessoryNone;
+        //cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+          
     } else {
         
         NSString *date = [CCUtility dateDiff:metadata.date];
