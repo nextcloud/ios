@@ -56,6 +56,8 @@ typedef enum {
 
 @property (nonatomic, weak) IBOutlet UIImageView *loadingBaseUrl;
 
+@property (nonatomic, weak) IBOutlet UILabel *bottomLabel;
+
 
 @property (nonatomic, weak) IBOutlet UIButton *login;
 @property (nonatomic, weak) IBOutlet UIButton *annulla;

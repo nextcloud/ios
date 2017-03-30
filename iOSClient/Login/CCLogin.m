@@ -42,6 +42,18 @@
     self.imageBrand.image = [UIImage imageNamed:image_brandLogin];
     self.login.backgroundColor = COLOR_BRAND;
     
+    self.bottomLabel.text = NSLocalizedString(@"_login_bottom_label_", nil);
+    if (self.view.frame.size.width == ([[UIScreen mainScreen] bounds].size.width*([[UIScreen mainScreen] bounds].size.width<[[UIScreen mainScreen] bounds].size.height))+([[UIScreen mainScreen] bounds].size.height*([[UIScreen mainScreen] bounds].size.width>[[UIScreen mainScreen] bounds].size.height))) {
+        
+        // Portrait
+        self.bottomLabel.hidden = NO;
+        
+    } else {
+        
+        // Landscape
+        self.bottomLabel.hidden = YES;
+    }
+    
 #ifdef NO_REQUEST_LOGIN_URL
     _baseUrl.text = k_loginBaseUrl;
     _imageBaseUrl.hidden = YES;
@@ -106,6 +118,26 @@
     [textField resignFirstResponder];
     return YES;
 }
+
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
+{
+    [coordinator animateAlongsideTransition:nil completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
+        
+        if (self.view.frame.size.width == ([[UIScreen mainScreen] bounds].size.width*([[UIScreen mainScreen] bounds].size.width<[[UIScreen mainScreen] bounds].size.height))+([[UIScreen mainScreen] bounds].size.height*([[UIScreen mainScreen] bounds].size.width>[[UIScreen mainScreen] bounds].size.height))) {
+            
+            // Portrait
+            self.bottomLabel.hidden = NO;
+            
+        } else {
+            
+            // Landscape
+            self.bottomLabel.hidden = YES;
+        }
+    }];
+    
+    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+}
+
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Intro =====
