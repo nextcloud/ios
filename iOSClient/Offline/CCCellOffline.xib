@@ -46,7 +46,7 @@
                         <nil key="highlightedColor"/>
                     </label>
                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="dhG-hb-z3n" userLabel="Offline Image View">
-                        <rect key="frame" x="4" y="39" width="15" height="15"/>
+                        <rect key="frame" x="4" y="40" width="15" height="15"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="15" id="ZiA-bt-IkC"/>
                             <constraint firstAttribute="height" constant="15" id="aQq-XY-pNM"/>
@@ -63,7 +63,7 @@
                 </subviews>
                 <constraints>
                     <constraint firstItem="p7I-KN-FVZ" firstAttribute="leading" secondItem="DQR-yN-JaH" secondAttribute="trailing" constant="4" id="2xR-G4-B2S"/>
-                    <constraint firstItem="dhG-hb-z3n" firstAttribute="top" secondItem="sQq-jC-UEV" secondAttribute="topMargin" constant="31" id="4Zy-SY-nfT"/>
+                    <constraint firstItem="dhG-hb-z3n" firstAttribute="top" secondItem="sQq-jC-UEV" secondAttribute="topMargin" constant="32" id="4Zy-SY-nfT"/>
                     <constraint firstItem="QNC-8X-DAC" firstAttribute="trailing" secondItem="sQq-jC-UEV" secondAttribute="trailingMargin" constant="-51" id="7zt-c0-CsI"/>
                     <constraint firstItem="6B9-Jc-esJ" firstAttribute="centerY" secondItem="5" secondAttribute="centerY" constant="-1" id="EoB-vw-kgn"/>
                     <constraint firstAttribute="centerY" secondItem="5" secondAttribute="centerY" constant="-1.5" id="FQP-wg-vPF"/>
