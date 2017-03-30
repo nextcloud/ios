@@ -27,6 +27,7 @@
 #define k_textCopyright                 @"Nextcloud %@ © 2017 T.W.S. Inc."
 #define k_loginBaseUrl                  @"https://cloud.twsweb.it"
 #define k_pushNotificationServer        @"https://push-notifications.nextcloud.com"
+#define k_loginButtonLabelLink          @"https://nextcloud.com/providers"
 
 // Capabilities Group & Service Key Share
 #define k_capabilitiesGroups            @"group.it.twsweb.Crypto-Cloud"
