@@ -60,7 +60,7 @@
  #define OPTION_DISABLE_INTRO
  
  #define NO_REQUEST_LOGIN_URL
- */
+*/
 
 #define OPTION_FIREBASE_ENABLE
 
