@@ -121,7 +121,7 @@
     if ([CCUtility getIntro:@"1.0"] == NO) {
         
         _intro = [[CCIntro alloc] initWithDelegate:self delegateView:self.view];
-        [_intro showIntroCryptoCloud:2.0];
+        [_intro showIntroCryptoCloud:0.0];
     }
 }
 
