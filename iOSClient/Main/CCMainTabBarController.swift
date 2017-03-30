@@ -76,7 +76,6 @@ class CCMainTabBarController : UITabBarController, UITabBarControllerDelegate {
             }
             tabBarController.selectedIndex = toIndex!
             self.view.isUserInteractionEnabled = true
-            
         })
         
         return true

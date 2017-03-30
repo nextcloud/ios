@@ -4379,6 +4379,41 @@
                                 handler: nil
         ];
 
+        if (!lockDirectory && !_metadata.cryptated) {
+            
+            [actionSheet addButtonWithTitle:titleFavorite
+                                      image:[UIImage imageNamed:image_actionSheetFavorite]
+                            backgroundColor:[UIColor whiteColor]
+                                     height: 50.0
+                                       type:AHKActionSheetButtonTypeDefault
+                                    handler:^(AHKActionSheet *as) {
+                                        
+                                        // close swipe
+                                        [self setEditing:NO animated:YES];
+                                        
+                                        if (_metadata.favorite)
+                                            [self removeFavorite:_metadata];
+                                        else
+                                            [self addFavorite:_metadata];
+                                    }];
+        }
+
+        if (_metadata.cryptated == NO && app.hasServerShareSupport && !lockDirectory) {
+            
+            [actionSheet addButtonWithTitle:NSLocalizedString(@"_share_", nil)
+                                      image:[UIImage imageNamed:image_actionSheetShare]
+                            backgroundColor:[UIColor whiteColor]
+                                     height: 50.0
+                                       type:AHKActionSheetButtonTypeDefault
+                                    handler:^(AHKActionSheet *as) {
+                                        
+                                        // close swipe
+                                        [self setEditing:NO animated:YES];
+                                        
+                                        [self openWindowShare:_metadata];
+                                    }];
+        }
+
         if (!([_metadata.fileName isEqualToString:cameraUploadFolderName] == YES && [serverUrl isEqualToString:cameraUploadFolderPath] == YES) && !lockDirectory) {
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_rename_", nil)
@@ -4417,54 +4452,6 @@
                                     }];
         }
         
-        if (!([_metadata.fileName isEqualToString:cameraUploadFolderName] == YES && [serverUrl isEqualToString:cameraUploadFolderPath] == YES) && !lockDirectory && app.isCryptoCloudMode) {
-            
-            [actionSheet addButtonWithTitle:titoloCriptaDecripta
-                                      image:[UIImage imageNamed:image_actionSheetCrypto]
-                            backgroundColor:[UIColor whiteColor]
-                                     height: 50.0
-                                       type:AHKActionSheetButtonTypeEncrypted
-                                    handler:^(AHKActionSheet *as) {
-                                        
-                                        // close swipe
-                                        [self setEditing:NO animated:YES];
-                                        
-                                        [self performSelector:@selector(encyptedDecryptedFolder) withObject:nil];
-                                    }];
-        }
-
-        if (!([_metadata.fileName isEqualToString:cameraUploadFolderName] == YES && [serverUrl isEqualToString:cameraUploadFolderPath] == YES)) {
-            
-            [actionSheet addButtonWithTitle:titoloLock
-                                      image:[UIImage imageNamed:image_actionSheetLock]
-                            backgroundColor:[UIColor whiteColor]
-                                     height: 50.0
-                                       type:AHKActionSheetButtonTypeEncrypted
-                                    handler:^(AHKActionSheet *as) {
-                                        
-                                        // close swipe
-                                        [self setEditing:NO animated:YES];
-                                        
-                                        [self performSelector:@selector(comandoLockPassword) withObject:nil];
-                                    }];
-        }
-        
-        if (_metadata.cryptated == NO && app.hasServerShareSupport && !lockDirectory) {
-            
-            [actionSheet addButtonWithTitle:NSLocalizedString(@"_share_", nil)
-                                      image:[UIImage imageNamed:image_actionSheetShare]
-                            backgroundColor:[UIColor whiteColor]
-                                     height: 50.0
-                                       type:AHKActionSheetButtonTypeDefault
-                                    handler:^(AHKActionSheet *as) {
-                                        
-                                        // close swipe
-                                        [self setEditing:NO animated:YES];
-                                        
-                                        [self openWindowShare:_metadata];
-                                    }];
-        }
-        
         if (!([_metadata.fileName isEqualToString:cameraUploadFolderName] == YES && [serverUrl isEqualToString:cameraUploadFolderPath] == YES) && _metadata.cryptated == NO) {
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_folder_automatic_upload_", nil)
@@ -4494,69 +4481,42 @@
                                         NSString *folderCameraUpload = [CCCoreData getCameraUploadFolderNamePathActiveAccount:app.activeAccount activeUrl:app.activeUrl];
                                         if ([folderCameraUpload length] > 0)
                                             [[CCSynchronize sharedSynchronize] readFolderServerUrl:folderCameraUpload directoryID:[CCCoreData getDirectoryIDFromServerUrl:folderCameraUpload activeAccount:app.activeAccount] selector:selectorReadFolder];
+                                        
+                                    }];
+        }
 
-                                    }];
-        }
-        
-#ifndef OPTION_OFFLINE_DISABLE
-        
-        NSString *upDir = [CCUtility deletingLastPathComponentFromServerUrl:dirServerUrl];
-        NSString *homeDir = [CCUtility getHomeServerUrlActiveUrl:app.activeUrl];
-        
-        if (!lockDirectory && ([upDir isEqualToString:homeDir] || ![CCCoreData isOfflineDirectoryServerUrl:upDir activeAccount:app.activeAccount]) && !_metadata.cryptated) {
-        
-            [actionSheet addButtonWithTitle:titleOfflineFolder
-                                      image:[UIImage imageNamed:image_actionSheetOffline]
-                            backgroundColor:[UIColor whiteColor]
-                                     height: 50.0
-                                       type:AHKActionSheetButtonTypeDefault
-                                    handler:^(AHKActionSheet *as) {
-                                        
-                                        // close swipe
-                                        [self setEditing:NO animated:YES];
-                                        
-                                        if (offlineFolder == NO) {
-                                            
-                                            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"",nil) message:NSLocalizedString(@"_offline_folder_confirm_",nil) delegate:self cancelButtonTitle:NSLocalizedString(@"_cancel_",nil) otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
-                                            alertView.tag = alertOfflineFolder;
-                                            [alertView show];
-                                            
-                                        } else {
-                                            
-                                            // remove tag offline for all folder/subfolder/file
-                                            NSArray *directories = [CCCoreData getOfflineDirectoryActiveAccount:app.activeAccount];
-                                            
-                                            for (TableDirectory *directory in directories)
-                                                if ([directory.serverUrl containsString:dirServerUrl]) {
-                                                    [CCCoreData setOfflineDirectoryServerUrl:directory.serverUrl offline:NO activeAccount:app.activeAccount];
-                                                    [CCCoreData removeOfflineAllFileFromServerUrl:directory.serverUrl activeAccount:app.activeAccount];
-                                                }
-                                            
-                                            [self performSelector:@selector(reloadDatasource) withObject:nil];
-                                        }
-                                    }];
-        }
-#endif
-        
-        if (!lockDirectory && !_metadata.cryptated) {
+        if (!([_metadata.fileName isEqualToString:cameraUploadFolderName] == YES && [serverUrl isEqualToString:cameraUploadFolderPath] == YES)) {
             
-            [actionSheet addButtonWithTitle:titleFavorite
-                                      image:[UIImage imageNamed:image_actionSheetFavorite]
+            [actionSheet addButtonWithTitle:titoloLock
+                                      image:[UIImage imageNamed:image_actionSheetLock]
                             backgroundColor:[UIColor whiteColor]
                                      height: 50.0
-                                       type:AHKActionSheetButtonTypeDefault
+                                       type:AHKActionSheetButtonTypeEncrypted
                                     handler:^(AHKActionSheet *as) {
                                         
                                         // close swipe
                                         [self setEditing:NO animated:YES];
                                         
-                                        if (_metadata.favorite)
-                                            [self removeFavorite:_metadata];
-                                        else
-                                            [self addFavorite:_metadata];
+                                        [self performSelector:@selector(comandoLockPassword) withObject:nil];
                                     }];
         }
-        
+
+        if (!([_metadata.fileName isEqualToString:cameraUploadFolderName] == YES && [serverUrl isEqualToString:cameraUploadFolderPath] == YES) && !lockDirectory && app.isCryptoCloudMode) {
+            
+            [actionSheet addButtonWithTitle:titoloCriptaDecripta
+                                      image:[UIImage imageNamed:image_actionSheetCrypto]
+                            backgroundColor:[UIColor whiteColor]
+                                     height: 50.0
+                                       type:AHKActionSheetButtonTypeEncrypted
+                                    handler:^(AHKActionSheet *as) {
+                                        
+                                        // close swipe
+                                        [self setEditing:NO animated:YES];
+                                        
+                                        [self performSelector:@selector(encyptedDecryptedFolder) withObject:nil];
+                                    }];
+        }
+
         [actionSheet show];
     }
     
@@ -4578,6 +4538,54 @@
                                 handler: nil
         ];
         
+        if (!_metadata.cryptated) {
+            
+            [actionSheet addButtonWithTitle:titleFavorite
+                                      image:[UIImage imageNamed:image_actionSheetFavorite]
+                            backgroundColor:[UIColor whiteColor]
+                                     height: 50.0
+                                       type:AHKActionSheetButtonTypeDefault
+                                    handler:^(AHKActionSheet *as) {
+                                        
+                                        // close swipe
+                                        [self setEditing:NO animated:YES];
+                                        
+                                        if (_metadata.favorite)
+                                            [self  removeFavorite:_metadata];
+                                        else
+                                            [self addFavorite:_metadata];
+                                    }];
+        }
+
+        if (_metadata.cryptated == NO && app.hasServerShareSupport) {
+            
+            [actionSheet addButtonWithTitle:NSLocalizedString(@"_share_", nil)
+                                      image:[UIImage imageNamed:image_actionSheetShare]
+                            backgroundColor:[UIColor whiteColor]
+                                     height: 50.0
+                                       type:AHKActionSheetButtonTypeDefault
+                                    handler:^(AHKActionSheet *as) {
+                                        
+                                        // close swipe
+                                        [self setEditing:NO animated:YES];
+                                        
+                                        [self openWindowShare:_metadata];
+                                    }];
+        }
+
+        [actionSheet addButtonWithTitle:NSLocalizedString(@"_open_in_", nil)
+                                  image:[UIImage imageNamed:image_actionSheetOpenIn]
+                        backgroundColor:[UIColor whiteColor]
+                                 height: 50.0
+                                   type:AHKActionSheetButtonTypeDefault
+                                handler:^(AHKActionSheet *as) {
+                                    
+                                    // close swipe
+                                    [self setEditing:NO animated:YES];
+                                    
+                                    [self performSelector:@selector(openIn:) withObject:_metadata];
+                                }];
+
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_rename_", nil)
                                   image:[UIImage imageNamed:image_actionSheetRename]
                         backgroundColor:[UIColor whiteColor]
@@ -4610,51 +4618,6 @@
                                     [self moveOpenWindow:[[NSArray alloc] initWithObjects:indexPath, nil]];
                                 }];
         
-        [actionSheet addButtonWithTitle:NSLocalizedString(@"_open_in_", nil)
-                                  image:[UIImage imageNamed:image_actionSheetOpenIn]
-                        backgroundColor:[UIColor whiteColor]
-                                 height: 50.0
-                                   type:AHKActionSheetButtonTypeDefault
-                                handler:^(AHKActionSheet *as) {
-                                    
-                                    // close swipe
-                                    [self setEditing:NO animated:YES];
-                                    
-                                    [self performSelector:@selector(openIn:) withObject:_metadata];
-                                }];
-
-        if (_metadata.cryptated == NO && app.hasServerShareSupport) {
-            
-            [actionSheet addButtonWithTitle:NSLocalizedString(@"_share_", nil)
-                                      image:[UIImage imageNamed:image_actionSheetShare]
-                            backgroundColor:[UIColor whiteColor]
-                                     height: 50.0
-                                       type:AHKActionSheetButtonTypeDefault
-                                    handler:^(AHKActionSheet *as) {
-                                        
-                                        // close swipe
-                                        [self setEditing:NO animated:YES];
-                                        
-                                        [self openWindowShare:_metadata];
-                                    }];
-        }
-
-        if (app.isCryptoCloudMode) {
-            
-            [actionSheet addButtonWithTitle:titoloCriptaDecripta
-                                      image:[UIImage imageNamed:image_actionSheetCrypto]
-                            backgroundColor:[UIColor whiteColor]
-                                     height: 50.0
-                                       type:AHKActionSheetButtonTypeEncrypted
-                                    handler:^(AHKActionSheet *as) {
-                                    
-                                        // close swipe
-                                        [self setEditing:NO animated:YES];
-                                    
-                                        [self performSelector:@selector(cmdEncryptedDecryptedFile) withObject:nil];
-                                    }];
-        }
-        
         if (recordLocalFile || [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, _metadata.fileID]]) {
         
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_remove_local_file_", nil)
@@ -4671,63 +4634,21 @@
                                     }];
         }
 
-#ifndef OPTION_OFFLINE_DISABLE
-        
-        if (!_metadata.cryptated) {
-        
-            [actionSheet addButtonWithTitle:titoloOffline
-                                      image:[UIImage imageNamed:image_actionSheetOffline]
-                            backgroundColor:[UIColor whiteColor]
-                                     height: 50.0
-                                       type:AHKActionSheetButtonTypeDefault
-                                    handler:^(AHKActionSheet *as) {
-                                    
-                                        // close swipe
-                                        [self setEditing:NO animated:YES];
-                                    
-                                        if ([CCCoreData isOfflineLocalFileID:_metadata.fileID activeAccount:app.activeAccount]) {
-                                        
-                                            [self removeOffline:_metadata];
-                                        
-                                        } else {
-                                        
-                                            [self addOffline:_metadata];
-                                        }
-                                    }];
-        }
-#endif
-        
-        if (!_metadata.cryptated) {
+        if (app.isCryptoCloudMode) {
             
-            [actionSheet addButtonWithTitle:titleFavorite
-                                      image:[UIImage imageNamed:image_actionSheetFavorite]
+            [actionSheet addButtonWithTitle:titoloCriptaDecripta
+                                      image:[UIImage imageNamed:image_actionSheetCrypto]
                             backgroundColor:[UIColor whiteColor]
                                      height: 50.0
-                                       type:AHKActionSheetButtonTypeDefault
+                                       type:AHKActionSheetButtonTypeEncrypted
                                     handler:^(AHKActionSheet *as) {
                                         
                                         // close swipe
                                         [self setEditing:NO animated:YES];
                                         
-                                        if (_metadata.favorite)
-                                            [self  removeFavorite:_metadata];
-                                        else
-                                            [self addFavorite:_metadata];
+                                        [self performSelector:@selector(cmdEncryptedDecryptedFile) withObject:nil];
                                     }];
         }
-        
-        [actionSheet addButtonWithTitle:NSLocalizedString(@"_add_local_", nil)
-                                  image:[UIImage imageNamed:image_actionSheetLocal]
-                        backgroundColor:[UIColor whiteColor]
-                                 height: 50.0
-                                   type:AHKActionSheetButtonTypeDefault
-                                handler:^(AHKActionSheet *as) {
-                                    
-                                    // close swipe
-                                    [self setEditing:NO animated:YES];
-                                    
-                                    [self performSelector:@selector(addLocal:) withObject:_metadata];
-                                }];
         
         [actionSheet show];
     }
