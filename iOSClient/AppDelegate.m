@@ -98,8 +98,6 @@
         #endif
     }
     
-    //[[UIApplication sharedApplication] registerForRemoteNotifications];
-    
 #endif // OPTION_FIREBASE_ENABLE
 
     NSString *dir;
@@ -547,6 +545,7 @@
 }
 
 - (void)connectToFcm {
+    
     // Won't connect since there is no token
     if (![[FIRInstanceID instanceID] token]) {
         return;
