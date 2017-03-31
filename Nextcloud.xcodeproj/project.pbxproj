@@ -237,6 +237,8 @@
 		F744FA7F1E57333C00BFAB34 /* APAvatarImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = F744FA7D1E57333C00BFAB34 /* APAvatarImageView.m */; };
 		F744FA801E57333C00BFAB34 /* APAvatarImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = F744FA7D1E57333C00BFAB34 /* APAvatarImageView.m */; };
 		F749E4E91DC1FB38009BA2FD /* Share.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = F7CE8AFB1DC1F8D8009CAE48 /* Share.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		F74FF2961E8E532300B52D91 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F74FF2951E8E532300B52D91 /* GoogleService-Info.plist */; };
+		F74FF2A21E8E532F00B52D91 /* DevicePushKey-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F74FF2A11E8E532F00B52D91 /* DevicePushKey-Info.plist */; };
 		F750374D1DBFA91A008FB480 /* ALView+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F75037441DBFA91A008FB480 /* ALView+PureLayout.m */; };
 		F750374F1DBFA91A008FB480 /* NSArray+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F75037461DBFA91A008FB480 /* NSArray+PureLayout.m */; };
 		F75037511DBFA91A008FB480 /* NSLayoutConstraint+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F75037481DBFA91A008FB480 /* NSLayoutConstraint+PureLayout.m */; };
@@ -1250,6 +1252,8 @@
 		F744FA7D1E57333C00BFAB34 /* APAvatarImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = APAvatarImageView.m; sourceTree = "<group>"; };
 		F74D3DBD1BAC1941000BAE4B /* OCNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCNetworking.h; sourceTree = "<group>"; };
 		F74D3DBE1BAC1941000BAE4B /* OCNetworking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCNetworking.m; sourceTree = "<group>"; };
+		F74FF2951E8E532300B52D91 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = SOURCE_ROOT; };
+		F74FF2A11E8E532F00B52D91 /* DevicePushKey-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "DevicePushKey-Info.plist"; sourceTree = SOURCE_ROOT; };
 		F75037431DBFA91A008FB480 /* ALView+PureLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ALView+PureLayout.h"; sourceTree = "<group>"; };
 		F75037441DBFA91A008FB480 /* ALView+PureLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "ALView+PureLayout.m"; sourceTree = "<group>"; };
 		F75037451DBFA91A008FB480 /* NSArray+PureLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+PureLayout.h"; sourceTree = "<group>"; };
@@ -3325,6 +3329,8 @@
 				F7C1CDCE1E6DFAD1005D92BE /* CCStandardImages.h */,
 				F7C8C1901B482CEA0048180E /* CCGlobal.h */,
 				F7C8C1911B482CEA0048180E /* CCGlobal.m */,
+				F74FF2A11E8E532F00B52D91 /* DevicePushKey-Info.plist */,
+				F74FF2951E8E532300B52D91 /* GoogleService-Info.plist */,
 				F78088E51DD3A1DB005C5A7C /* cryptocloud.xcdatamodeld */,
 				F7F67BB81A24D27800EE80DA /* Images.xcassets */,
 				F7C1CDD91E6DFC6F005D92BE /* Brand */,
@@ -3786,6 +3792,7 @@
 				F77B0F2E1D118A16002130FE /* ZSScenterjustify.png in Resources */,
 				F77B0F2F1D118A16002130FE /* CCMove.storyboard in Resources */,
 				F7F54D001E5B14C700E19C62 /* UIBarButtonItemGrid.png in Resources */,
+				F74FF2961E8E532300B52D91 /* GoogleService-Info.plist in Resources */,
 				F77B0F311D118A16002130FE /* Reader-Thumbs.png in Resources */,
 				F7F54CFE1E5B14C700E19C62 /* UIBarButtonItemArrowRight@2x.png in Resources */,
 				F7659A371DC0B737004860C4 /* iRate.bundle in Resources */,
@@ -3879,6 +3886,7 @@
 				F77B0F8E1D118A16002130FE /* LMMediaPlayerView.xib in Resources */,
 				F75797AE1E81356C00187A1B /* CTAssetsPicker.strings in Resources */,
 				F77B0F8F1D118A16002130FE /* ZSSunlink@2x.png in Resources */,
+				F74FF2A21E8E532F00B52D91 /* DevicePushKey-Info.plist in Resources */,
 				F77B0F901D118A16002130FE /* ZSSpicker@2x.png in Resources */,
 				F77B0F941D118A16002130FE /* ZSSh6@2x.png in Resources */,
 				F7F54CFD1E5B14C700E19C62 /* UIBarButtonItemArrowRight.png in Resources */,
