@@ -458,6 +458,11 @@
         // FIREBASE
         [[FIRInstanceID instanceID] setAPNSToken:deviceToken type:FIRInstanceIDAPNSTokenTypeSandbox];
         
+        NSString *refreshedToken = [[FIRInstanceID instanceID] token];
+        NSLog(@"InstanceID token: %@", refreshedToken);
+
+        
+        
         CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
     
         NSDictionary *options = [[NSDictionary alloc] initWithObjectsAndKeys:pushToken, @"pushToken", pushTokenHash, @"pushTokenHash", devicePublicKey, @"devicePublicKey", nil];
