@@ -16,6 +16,7 @@ README.md
 Documentation/
 Custom/
 GoogleService-Info.plist
+DevicePushKey-Info.plist
 iOSClient/Brand/Device*
 
 ########### OSX ###########
