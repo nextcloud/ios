@@ -24,6 +24,7 @@
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
 #import <MagicalRecord/MagicalRecord.h>
+#import <UserNotifications/UserNotifications.h>
 
 #import "BKPasscodeLockScreenManager.h"
 #import "REMenu.h"

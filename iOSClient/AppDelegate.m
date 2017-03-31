@@ -43,7 +43,7 @@
     #import "Nextcloud-Swift.h"
 #endif
 
-@interface AppDelegate ()
+@interface AppDelegate () <UNUserNotificationCenterDelegate, FIRMessagingDelegate>
 {
     
 }
@@ -63,16 +63,44 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    #ifdef OPTION_FIREBASE_ENABLE
-        /*
-         In order for this to work, proper GoogleService-Info.plist must be included
-         */
-        @try {
-            [FIRApp configure];
-        } @catch (NSException *exception) {
-            NSLog(@"[LOG] Something went wrong while configuring Firebase");
-        }
-    #endif
+
+#ifdef OPTION_FIREBASE_ENABLE
+    
+    /*
+    In order for this to work, proper GoogleService-Info.plist must be included
+    */
+    
+    @try {
+        [FIRApp configure];
+    } @catch (NSException *exception) {
+        NSLog(@"[LOG] Something went wrong while configuring Firebase");
+    }
+    
+    if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
+        
+        UIUserNotificationType allNotificationTypes =(UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge);
+        UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:allNotificationTypes categories:nil];
+        
+        [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
+        
+    } else {
+        
+        // iOS 10 or later
+        #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
+        // For iOS 10 display notification (sent via APNS)
+        [UNUserNotificationCenter currentNotificationCenter].delegate = self;
+        UNAuthorizationOptions authOptions = UNAuthorizationOptionAlert | UNAuthorizationOptionSound | UNAuthorizationOptionBadge;
+        [[UNUserNotificationCenter currentNotificationCenter] requestAuthorizationWithOptions:authOptions completionHandler:^(BOOL granted, NSError * _Nullable error) {
+        }];
+        
+        // For iOS 10 data message (sent via FCM)
+        [FIRMessaging messaging].remoteMessageDelegate = self;
+        #endif
+    }
+    
+    [[UIApplication sharedApplication] registerForRemoteNotifications];
+    
+#endif // OPTION_FIREBASE_ENABLE
 
     NSString *dir;
     NSURL *dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:k_capabilitiesGroups];
@@ -429,6 +457,9 @@
     
     if ([devicePublicKey length] > 0 && [pushTokenHash length] > 0) {
         
+        // FIREBASE
+        [[FIRInstanceID instanceID] setAPNSToken:deviceToken type:FIRInstanceIDAPNSTokenTypeSandbox];
+        
         CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
     
         NSDictionary *options = [[NSDictionary alloc] initWithObjectsAndKeys:pushToken, @"pushToken", pushTokenHash, @"pushTokenHash", devicePublicKey, @"devicePublicKey", nil];
@@ -456,11 +487,34 @@
         
         NSLog(@"Receive Notification on Active state");
     }
+    
+    
+    // If you are receiving a notification message while your app is in the background,
+    // this callback will not be fired till the user taps on the notification launching the application.
+    // TODO: Handle data of notification
+    
+    // Print message ID.
+    //if (userInfo[kGCMMessageIDKey]) {
+    //    NSLog(@"Message ID: %@", userInfo[kGCMMessageIDKey]);
+    //}
+    
+    // Print full message.
+    NSLog(@"%@", userInfo);
+
 }
 
 - (void) application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
 {
     UIApplicationState state = [application applicationState];
+    
+    // Print message ID.
+    //if (userInfo[kGCMMessageIDKey]) {
+    //    NSLog(@"Message ID: %@", userInfo[kGCMMessageIDKey]);
+    //}
+    
+    // Print full message.
+    NSLog(@"%@", userInfo);
+
     
     if (state == UIApplicationStateBackground || (state == UIApplicationStateInactive)) {
         
@@ -475,6 +529,47 @@
         completionHandler(UIBackgroundFetchResultNoData);
     }
 }
+
+#pragma FIREBASE
+
+- (void)tokenRefreshNotification:(NSNotification *)notification {
+    // Note that this callback will be fired everytime a new token is generated, including the first
+    // time. So if you need to retrieve the token as soon as it is available this is where that
+    // should be done.
+    NSString *refreshedToken = [[FIRInstanceID instanceID] token];
+    NSLog(@"InstanceID token: %@", refreshedToken);
+    
+    // Connect to FCM since connection may have failed when attempted before having a token.
+    [self connectToFcm];
+    
+    // TODO: If necessary send token to application server.
+}
+
+- (void)connectToFcm {
+    // Won't connect since there is no token
+    if (![[FIRInstanceID instanceID] token]) {
+        return;
+    }
+    
+    // Disconnect previous FCM connection if it exists.
+    [[FIRMessaging messaging] disconnect];
+    
+    [[FIRMessaging messaging] connectWithCompletion:^(NSError * _Nullable error) {
+        if (error != nil) {
+            NSLog(@"Unable to connect to FCM. %@", error);
+        } else {
+            NSLog(@"Connected to FCM.");
+        }
+    }];
+}
+
+#if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
+// Receive data message on iOS 10 devices while app is in the foreground.
+- (void)applicationReceivedRemoteMessage:(FIRMessagingRemoteMessage *)remoteMessage {
+    // Print full message
+    NSLog(@"%@", remoteMessage.appData);
+}
+#endif
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Quick Actions - ShotcutItem =====
