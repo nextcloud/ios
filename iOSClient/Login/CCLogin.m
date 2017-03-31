@@ -59,6 +59,10 @@
         self.bottomLabel.hidden = YES;
     }
     
+#ifdef CUSTOM_BUILD
+    self.bottomLabel.hidden = YES;
+#endif
+    
 #ifdef NO_REQUEST_LOGIN_URL
     _baseUrl.text = k_loginBaseUrl;
     _imageBaseUrl.hidden = YES;
