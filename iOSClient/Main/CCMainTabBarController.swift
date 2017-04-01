@@ -39,6 +39,11 @@ class CCMainTabBarController : UITabBarController, UITabBarControllerDelegate {
         let toView = viewController.view
         
         if (fromView == toView) {
+            
+            if let vc = viewController as? UINavigationController {
+                vc.popToRootViewController(animated: true);
+            }
+            
             return false
         }
         
