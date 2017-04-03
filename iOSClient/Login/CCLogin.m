@@ -116,8 +116,6 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    
-    [self showIntro];
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
@@ -143,30 +141,6 @@
     }];
     
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
-}
-
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Intro =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)showIntro
-{
-    
-#ifdef OPTION_DISABLE_INTRO
-    [CCUtility setIntro:@"1.0"];
-#endif
-    
-    if ([CCUtility getIntro:@"1.0"] == NO) {
-        
-        _intro = [[CCIntro alloc] initWithDelegate:self delegateView:self.view];
-        [_intro showIntroCryptoCloud:0.0];
-    }
-}
-
-- (void)introDidFinish:(EAIntroView *)introView wasSkipped:(BOOL)wasSkipped
-{
-    [CCUtility setIntro:@"1.0"];
 }
 
 #pragma --------------------------------------------------------------------------------------------

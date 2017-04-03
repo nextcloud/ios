@@ -25,9 +25,11 @@
 
 #import "CCLogin.h"
 #import "CCDetail.h"
+#import "CCIntro.h"
 
-@interface CCSplit : UISplitViewController <UISplitViewControllerDelegate, CCLoginDelegate>
+@interface CCSplit : UISplitViewController <UISplitViewControllerDelegate, CCLoginDelegate, CCIntroDelegate>
 
 @property (nonatomic, strong) NSString *version;
+@property (nonatomic, strong) CCIntro *intro;
 
 @end

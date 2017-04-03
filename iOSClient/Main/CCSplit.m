@@ -59,14 +59,8 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-}
-
-// E' apparsa
-- (void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];
     
-    [self newAccount];
+    [self showIntro];
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
@@ -100,6 +94,35 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Intro =====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)showIntro
+{
+    
+#ifdef OPTION_DISABLE_INTRO
+    [CCUtility setIntro:@"1.0"];
+    [self newAccount];
+#endif
+    
+    if ([CCUtility getIntro:@"1.0"] == NO) {
+        
+        _intro = [[CCIntro alloc] initWithDelegate:self delegateView:self.view];
+        [_intro showIntroCryptoCloud:0.0];
+        
+    } else {
+        
+        [self newAccount];
+    }
+}
+
+- (void)introWillFinish:(EAIntroView *)introView wasSkipped:(BOOL)wasSkipped
+{
+    [CCUtility setIntro:@"1.0"];
+    [self newAccount];
+}
+
+#pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== newAccount =====
 #pragma --------------------------------------------------------------------------------------------
 
@@ -110,7 +133,6 @@
 
 - (void)newAccount
 {
-    // test
     if (app.activeAccount.length == 0) {
     
         CCLogin *loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];

@@ -41,6 +41,7 @@
 
 @protocol CCIntroDelegate <NSObject>
 
+@optional - (void)introWillFinish:(EAIntroView *)introView wasSkipped:(BOOL)wasSkipped;
 @optional - (void)introDidFinish:(EAIntroView *)introView wasSkipped:(BOOL)wasSkipped;
 
 @end

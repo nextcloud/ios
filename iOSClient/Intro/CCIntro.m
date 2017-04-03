@@ -45,6 +45,12 @@
     return self;
 }
 
+- (void)introWillFinish:(EAIntroView *)introView wasSkipped:(BOOL)wasSkipped
+{
+    if (self.delegate && [self.delegate respondsToSelector:@selector(introWillFinish:wasSkipped:)])
+        [self.delegate introWillFinish:introView wasSkipped:wasSkipped];
+}
+
 - (void)introDidFinish:(EAIntroView *)introView wasSkipped:(BOOL)wasSkipped
 {
     if (self.delegate && [self.delegate respondsToSelector:@selector(introDidFinish:wasSkipped:)])
