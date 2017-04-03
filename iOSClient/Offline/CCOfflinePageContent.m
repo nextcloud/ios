@@ -627,6 +627,8 @@
     // encrypted color
     if (metadata.cryptated) {
         cell.labelTitle.textColor = COLOR_CRYPTOCLOUD;
+    } else {
+        cell.labelTitle.textColor = [UIColor blackColor];
     }
     
     // File name
