@@ -101,9 +101,12 @@
 {
     
 #ifdef OPTION_DISABLE_INTRO
+
     [CCUtility setIntro:@"1.0"];
+    
     [self newAccount];
-#endif
+
+#else
     
     if ([CCUtility getIntro:@"1.0"] == NO) {
         
@@ -114,6 +117,9 @@
         
         [self newAccount];
     }
+    
+#endif
+    
 }
 
 - (void)introWillFinish:(EAIntroView *)introView wasSkipped:(BOOL)wasSkipped
