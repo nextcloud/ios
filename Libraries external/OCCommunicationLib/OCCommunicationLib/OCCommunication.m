@@ -1507,16 +1507,15 @@
     OCWebDAVClient *request = [OCWebDAVClient new];
     request = [self getRequestWithCredentials:request];
     
+    __weak OCWebDAVClient *wrequest = request;
+    
     [request setNotificationServer:serverPath type:type onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
         
-        if (successRequest) {
-            //Return success
-            successRequest(response, request.redirectedServer);
-        }
+        successRequest(response, wrequest.redirectedServer);
         
     } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
         
-        failureRequest(response, error, request.redirectedServer);
+        failureRequest(response, error, wrequest.redirectedServer);
     }];
 }
 
