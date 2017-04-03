@@ -643,10 +643,6 @@
     if (metadata.cryptated && [metadata.type isEqualToString: k_metadataType_template] == NO)
         cell.statusImageView.image = [UIImage imageNamed:image_lock];
     
-    // it's in download mode
-    if ([metadata.session length] > 0 && [metadata.session containsString:@"download"])
-        cell.statusImageView.image = [UIImage imageNamed:image_attention];
-    
     // text and length
     if (metadata.directory) {
         

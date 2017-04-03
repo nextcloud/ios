@@ -502,7 +502,7 @@
         for (CCMetadata *metadata in metadatas) {
         
             NSString *selector, *selectorPost;
-            BOOL downloadData, downloadPlist;
+            BOOL downloadData = NO, downloadPlist = NO;
         
             // it's a offline ?
             BOOL isOffline = [CCCoreData isOfflineLocalFileID:metadata.fileID activeAccount:app.activeAccount];
