@@ -35,10 +35,7 @@ class CCMainTabBarController : UITabBarController, UITabBarControllerDelegate {
     func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
         
         let tabViewControllers = tabBarController.viewControllers!
-        let fromView = tabBarController.selectedViewController!.view
-        let toView = viewController.view
-        
-        if (fromView == toView) {
+        guard let toIndex = tabViewControllers.index(of: viewController) else {
             
             if let vc = viewController as? UINavigationController {
                 vc.popToRootViewController(animated: true);
@@ -47,43 +44,46 @@ class CCMainTabBarController : UITabBarController, UITabBarControllerDelegate {
             return false
         }
         
-        let fromIndex = tabViewControllers.index(of: tabBarController.selectedViewController!)
-        let toIndex = tabViewControllers.index(of: viewController)
-        
-        let offScreenRight = CGAffineTransform(translationX: (toView?.frame.width)!, y: 0)
-        let offScreenLeft = CGAffineTransform(translationX: -(toView?.frame.width)!, y: 0)
-        
-        // start the toView to the right of the screen
-        
-        if (toIndex! < fromIndex!) {
-            toView?.transform = offScreenLeft
-            fromView?.transform = offScreenRight
-        } else {
-            toView?.transform = offScreenRight
-            fromView?.transform = offScreenLeft
-        }
-        
-        fromView?.tag = 124
-        toView?.addSubview(fromView!)
-        
-        self.view.isUserInteractionEnabled = false
-        UIView.animate(withDuration: 0.5, delay: 0.0, usingSpringWithDamping: 1, initialSpringVelocity: 0, options: UIViewAnimationOptions.curveEaseOut, animations: {
-            
-            toView?.transform = CGAffineTransform.identity
-            
-        }, completion: { finished in
-            
-            let subViews = toView?.subviews
-            for subview in subViews!{
-                if (subview.tag == 124) {
-                    subview.removeFromSuperview()
-                }
-            }
-            tabBarController.selectedIndex = toIndex!
-            self.view.isUserInteractionEnabled = true
-        })
+        animateToTab(toIndex: toIndex)
         
         return true
     }
+    
+    func animateToTab(toIndex: Int) {
+        
+        let tabViewControllers = viewControllers!
+        let fromView = selectedViewController!.view!
+        let toView = tabViewControllers[toIndex].view!
+        let fromIndex = tabViewControllers.index(of: selectedViewController!)
+        
+        guard fromIndex != toIndex else {return}
+        
+        // Add the toView to the tab bar view
+        fromView.superview?.addSubview(toView)
+        
+        // Position toView off screen (to the left/right of fromView)
+        let screenWidth = UIScreen.main.bounds.size.width;
+        let scrollRight = toIndex > fromIndex!;
+        let offset = (scrollRight ? screenWidth : -screenWidth)
+        toView.center = CGPoint(x: (fromView.center.x) + offset, y: (toView.center.y))
+        
+        // Disable interaction during animation
+        view.isUserInteractionEnabled = false
+        
+        UIView.animate(withDuration: 0.3, delay: 0.0, usingSpringWithDamping: 1, initialSpringVelocity: 0, options: UIViewAnimationOptions.curveEaseOut, animations: {
+            
+            // Slide the views by -offset
+            fromView.center = CGPoint(x: fromView.center.x - offset, y: fromView.center.y);
+            toView.center   = CGPoint(x: toView.center.x - offset, y: toView.center.y);
+            
+        }, completion: { finished in
+            
+            // Remove the old view from the tabbar view.
+            fromView.removeFromSuperview()
+            self.selectedIndex = toIndex
+            self.view.isUserInteractionEnabled = true
+        })
+    }
+
 }
 
