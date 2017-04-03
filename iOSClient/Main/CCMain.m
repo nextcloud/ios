@@ -5157,13 +5157,9 @@
     cell.reloadTaskButton.hidden = YES;
     cell.stopTaskButton.hidden = YES;
     
-    // colori e font
+    // Encrypted color
     if (metadata.cryptated) {
         cell.labelTitle.textColor = COLOR_CRYPTOCLOUD;
-        cell.labelInfoFile.textColor = [UIColor blackColor];
-    } else {
-        cell.labelTitle.textColor = COLOR_TEXT_ANTHRACITE;
-        cell.labelInfoFile.textColor = [UIColor blackColor];
     }
     
     // ----------------------------------------------------------------------------------------------------------
