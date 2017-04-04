@@ -159,6 +159,7 @@
 #define image_tabBarLocal                       @"tabBarLocal"
 #define image_tabBarPhotos                      @"tabBarPhotos"
 #define image_tabBarSettings                    @"tabBarSettings"
+#define image_tabBarMore                        @"tabBarMore"
 #define image_thumbs                            @"thumbs"
 
 #define image_user                              @"loginUser"
