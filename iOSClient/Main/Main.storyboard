@@ -137,10 +137,13 @@
                             <constraint firstItem="cxb-Vw-8zb" firstAttribute="leading" secondItem="XtC-Je-LUc" secondAttribute="leading" id="qyg-dI-shE"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="tableView" destination="Xym-IM-aqh" id="BM5-cf-ZtQ"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="D6O-WR-IEL" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="9670" y="1218"/>
+            <point key="canvasLocation" x="9874" y="1218"/>
         </scene>
         <!--Offline Container-->
         <scene sceneID="AYB-62-j4s">

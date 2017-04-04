@@ -24,14 +24,54 @@
 
 import UIKit
 
-class CCMore: UIViewController, UITableViewDelegate {
+class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
+    @IBOutlet var tableView: UITableView!
 
+    let section = ["pizza", "deep dish pizza", "calzone"]
+    let items = [["Margarita", "BBQ Chicken", "Pepperoni"], ["sausage", "meat lovers", "veggie lovers"], ["sausage", "chicken pesto", "prawns", "mushrooms"]]
+    
+    override func viewDidLoad() {
+        
+        super.viewDidLoad()
+        
+        // This view controller itself will provide the delegate methods and row data for the table view.
+        tableView.delegate = self
+        tableView.dataSource = self
+    }
+    
+
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return self.section.count
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return self.items[section].count
+    }
+    
+    // create a cell for each table view row
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
+        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! CCCellMore
+        
+        // cell.textLabel?.text = "Section \(indexPath.section) Row \(indexPath.row)"
+        //let fruitName = fruits[indexPath.row]
+        //cell.textLabel?.text = fruitName
+        //cell.detailTextLabel?.text = "Delicious!"
+        //cell.imageView?.image = UIImage(named: fruitName)
+        
+        return cell
+    }
+
+    
+    // method to run when table view cell is tapped
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        print("You tapped cell number \(indexPath.row).")
+    }
 }
 
 class CCCellMore: UITableViewCell {
     
     @IBOutlet weak var labelText: UILabel!
     @IBOutlet weak var imageIcon: UIImageView!
-    
 }
