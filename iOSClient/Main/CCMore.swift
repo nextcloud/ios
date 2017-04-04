@@ -26,10 +26,16 @@ import UIKit
 
 class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
-    @IBOutlet var tableView: UITableView!
+    @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var labelQuota: UILabel!
+    @IBOutlet weak var progressQuota: UIProgressView!
 
-    let section = ["pizza", "deep dish pizza", "calzone"]
-    let items = [["Margarita", "BBQ Chicken", "Pepperoni"], ["sausage", "meat lovers", "veggie lovers"], ["sausage", "chicken pesto", "prawns", "mushrooms"]]
+    let section = ["Main", "Menu", "Settings"]
+    let items = [["A", "B", "C"], ["A", "B", "C"], ["A", "B", "C", "D"]]
+    
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    
+    var externalSite: [TableExternalSites]?
     
     override func viewDidLoad() {
         
@@ -40,7 +46,14 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         tableView.dataSource = self
     }
     
-
+    override func viewDidAppear(_ animated: Bool) {
+        
+        // Get External Site
+        externalSite = CCCoreData.getAllTableExternalSites(with:  NSPredicate(format: "(account == '\(appDelegate.activeAccount!))")) as? [TableExternalSites]
+        
+        tableView.reloadData()
+    }
+    
     func numberOfSections(in tableView: UITableView) -> Int {
         return self.section.count
     }
@@ -63,7 +76,6 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         return cell
     }
 
-    
     // method to run when table view cell is tapped
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         print("You tapped cell number \(indexPath.row).")

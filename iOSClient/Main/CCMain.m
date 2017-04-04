@@ -1056,9 +1056,8 @@
 
 - (void)getActivityServerSuccess:(NSArray *)listOfActivity
 {
-    for (OCActivity *activity in listOfActivity) {
+    for (OCActivity *activity in listOfActivity)
         [CCCoreData addActivityServer:activity account:app.activeAccount];
-    }
     
     // Reload Activity Data Source
     [app.controlCenterActivity reloadDatasource];
