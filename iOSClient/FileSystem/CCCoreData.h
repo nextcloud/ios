@@ -213,7 +213,7 @@
 // ===== Activity =====
 
 + (void)addActivityServer:(OCActivity *)activity account:(NSString *)account;
-+ (void)addActivityClient:(NSString *)file fileID:(NSString *)fileID action:(NSString *)action selector:(NSString *)selector note:(NSString *)note type:(NSString *)type verbose:(NSInteger)verbose account:(NSString *)account;
++ (void)addActivityClient:(NSString *)file fileID:(NSString *)fileID action:(NSString *)action selector:(NSString *)selector note:(NSString *)note type:(NSString *)type verbose:(NSInteger)verbose account:(NSString *)account activeUrl:(NSString *)activeUrl;
 + (NSArray *)getAllTableActivityWithPredicate:(NSPredicate *)predicate;
 
 // ===== External Sites =====
@@ -232,8 +232,6 @@
 
 + (void)insertMetadataInEntity:(CCMetadata *)metadata recordMetadata:(TableMetadata *)recordMetadata activeAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl;
 + (CCMetadata *)insertEntityInMetadata:(TableMetadata *)recordMetadata;
-
-// ===== Routine for migrate =====
 
 // ===== Utility Database =====
 

@@ -1102,7 +1102,7 @@
         return;
     
     // Activity
-    [CCCoreData addActivityClient:@"" fileID:@"" action:k_activityDebugActionAutomaticUpload selector:@"" note:[NSString stringWithFormat:@"Number: %lu", (unsigned long)[newItemsToUpload count]] type:k_activityTypeInfo verbose:k_activityVerboseHigh account:app.activeAccount];
+    [CCCoreData addActivityClient:@"" fileID:@"" action:k_activityDebugActionAutomaticUpload selector:@"" note:[NSString stringWithFormat:@"Number: %lu", (unsigned long)[newItemsToUpload count]] type:k_activityTypeInfo verbose:k_activityVerboseHigh account:app.activeAccount activeUrl:app.activeUrl];
     
     // STOP new request : initStateCameraUpload
     //_AutomaticCameraUploadInProgress = YES;
@@ -1166,7 +1166,7 @@
         //_AutomaticCameraUploadInProgress = NO;
         
         // Activity
-        [CCCoreData addActivityClient:@"" fileID:@"" action:k_activityDebugActionAutomaticUpload selector:@"" note:description type:k_activityTypeFailure verbose:k_activityVerboseDefault account:app.activeAccount];
+        [CCCoreData addActivityClient:@"" fileID:@"" action:k_activityDebugActionAutomaticUpload selector:@"" note:description type:k_activityTypeFailure verbose:k_activityVerboseDefault account:app.activeAccount activeUrl:app.activeUrl];
         
         return;
     }
@@ -1184,7 +1184,7 @@
                     [app messageNotification:@"_error_" description:@"_error_createsubfolders_upload_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo];
                 
                 // Activity
-                [CCCoreData addActivityClient:@"" fileID:@"" action:k_activityDebugActionAutomaticUpload selector:@"" note:NSLocalizedString(@"_error_createsubfolders_upload_",nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault account:app.activeAccount];
+                [CCCoreData addActivityClient:@"" fileID:@"" action:k_activityDebugActionAutomaticUpload selector:@"" note:NSLocalizedString(@"_error_createsubfolders_upload_",nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault account:app.activeAccount activeUrl:app.activeUrl];
                 
                 return;
             }
@@ -1243,7 +1243,7 @@
         NSString *media = @"";
         if (assetMediaType == PHAssetMediaTypeImage) media = @"Image";
         if (assetMediaType == PHAssetMediaTypeVideo) media = @"Video";
-        [CCCoreData addActivityClient:fileName fileID:@"" action:k_activityDebugActionAutomaticUpload selector:@"" note:[NSString stringWithFormat:@"Add TableAutomaticUpload on Session: %@, Set Data asset %@", session, media] type:k_activityTypeInfo verbose:k_activityVerboseHigh account:app.activeAccount];
+        [CCCoreData addActivityClient:fileName fileID:@"" action:k_activityDebugActionAutomaticUpload selector:@"" note:[NSString stringWithFormat:@"Add TableAutomaticUpload on Session: %@, Set Data asset %@", session, media] type:k_activityTypeInfo verbose:k_activityVerboseHigh account:app.activeAccount activeUrl:app.activeUrl];
         
         // Upldate Camera Upload data  
         if ([metadataNet.selector isEqualToString:selectorUploadAutomatic])

@@ -424,12 +424,12 @@
             date = [dateFormatter dateFromString:[fields objectForKey:@"Date"]];
 
             // Activity
-            [CCCoreData addActivityClient:fileName fileID:metadata.fileID action:k_activityDebugActionDownload selector:metadata.sessionSelector note:serverUrl type:k_activityTypeSuccess verbose:k_activityVerboseDefault account:metadata.account];
+            [CCCoreData addActivityClient:fileName fileID:metadata.fileID action:k_activityDebugActionDownload selector:metadata.sessionSelector note:serverUrl type:k_activityTypeSuccess verbose:k_activityVerboseDefault account:metadata.account activeUrl:_activeUrl];
             
         } else {
             
             // Activity
-            [CCCoreData addActivityClient:fileName fileID:metadata.fileID action:k_activityDebugActionDownload selector:metadata.sessionSelector note:[NSString stringWithFormat:@"Server: %@ Error: %@", serverUrl, [CCError manageErrorKCF:errorCode withNumberError:YES]] type:k_activityTypeFailure verbose:k_activityVerboseDefault account:metadata.account];
+            [CCCoreData addActivityClient:fileName fileID:metadata.fileID action:k_activityDebugActionDownload selector:metadata.sessionSelector note:[NSString stringWithFormat:@"Server: %@ Error: %@", serverUrl, [CCError manageErrorKCF:errorCode withNumberError:YES]] type:k_activityTypeFailure verbose:k_activityVerboseDefault account:metadata.account activeUrl:_activeUrl];
         }
         
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -457,12 +457,12 @@
             date = [dateFormatter dateFromString:[fields objectForKey:@"Date"]];
             
             // Activity
-            [CCCoreData addActivityClient:fileName fileID:fileID action:k_activityDebugActionUpload selector:metadata.sessionSelector note:serverUrl type:k_activityTypeSuccess verbose:k_activityVerboseDefault account:metadata.account];
+            [CCCoreData addActivityClient:fileName fileID:fileID action:k_activityDebugActionUpload selector:metadata.sessionSelector note:serverUrl type:k_activityTypeSuccess verbose:k_activityVerboseDefault account:metadata.account activeUrl:_activeUrl];
 
         } else {
             
             // Activity
-            [CCCoreData addActivityClient:fileName fileID:metadata.fileID action:k_activityDebugActionUpload selector:metadata.sessionSelector note:[NSString stringWithFormat:@"Server: %@ Error: %@", serverUrl, [CCError manageErrorKCF:errorCode withNumberError:YES]] type:k_activityTypeFailure verbose:k_activityVerboseDefault account:metadata.account];
+            [CCCoreData addActivityClient:fileName fileID:metadata.fileID action:k_activityDebugActionUpload selector:metadata.sessionSelector note:[NSString stringWithFormat:@"Server: %@ Error: %@", serverUrl, [CCError manageErrorKCF:errorCode withNumberError:YES]] type:k_activityTypeFailure verbose:k_activityVerboseDefault account:metadata.account activeUrl:_activeUrl];
         }
         
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -734,7 +734,7 @@
     
     if (!result.count) {
         
-        [CCCoreData addActivityClient:fileName fileID:localIdentifier action:k_activityDebugActionUpload selector:selector note:@"Internal error image/video not found" type:k_activityVerboseDefault verbose:k_activityVerboseHigh account:_activeAccount];
+        [CCCoreData addActivityClient:fileName fileID:localIdentifier action:k_activityDebugActionUpload selector:selector note:@"Internal error image/video not found" type:k_activityVerboseDefault verbose:k_activityVerboseHigh account:_activeAccount activeUrl:_activeUrl];
 
         if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
             [delegate uploadFileFailure:nil fileID:nil serverUrl:serverUrl selector:selector message:@"Internal error image/video not found" errorCode: k_CCErrorInternalError];
@@ -792,7 +792,7 @@
                     if (error) {
                     
                         // Activity
-                        [CCCoreData addActivityClient:fileName fileID:localIdentifier action:k_activityDebugActionUpload selector:selector note:NSLocalizedString(@"_read_file_error_", nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault account:_activeAccount];
+                        [CCCoreData addActivityClient:fileName fileID:localIdentifier action:k_activityDebugActionUpload selector:selector note:NSLocalizedString(@"_read_file_error_", nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault account:_activeAccount activeUrl:_activeUrl];
                         
                         // Error for uploadFileFailure
                         if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
@@ -826,7 +826,7 @@
                     if (error) {
                     
                         // Activity
-                        [CCCoreData addActivityClient:fileName fileID:localIdentifier action:k_activityDebugActionUpload selector:selector note:NSLocalizedString(@"_read_file_error_", nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault account:_activeAccount];
+                        [CCCoreData addActivityClient:fileName fileID:localIdentifier action:k_activityDebugActionUpload selector:selector note:NSLocalizedString(@"_read_file_error_", nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault account:_activeAccount activeUrl:_activeUrl];
 
                         // Error for uploadFileFailure
                         if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
@@ -991,7 +991,7 @@
                         //    [CCCoreData setCameraUploadDateAssetType:assetMediaType assetDate:assetDate activeAccount:_activeAccount];
                         
                         // Activity
-                        [CCCoreData addActivityClient:fileName fileID:uploadID action:k_activityDebugActionUpload selector:selector note:NSLocalizedString(@"_file_already_exists_", nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault account:_activeAccount];
+                        [CCCoreData addActivityClient:fileName fileID:uploadID action:k_activityDebugActionUpload selector:selector note:NSLocalizedString(@"_file_already_exists_", nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault account:_activeAccount activeUrl:_activeUrl];
                         
                         // Error for uploadFileFailure
                         if ([[self getDelegate:uploadID] respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
@@ -1084,7 +1084,7 @@
                     //    [CCCoreData setCameraUploadDateAssetType:assetMediaType assetDate:assetDate activeAccount:_activeAccount];
                 
                     // Activity
-                    [CCCoreData addActivityClient:fileName fileID:uploadID action:k_activityDebugActionUpload selector:selector note:NSLocalizedString(@"_file_already_exists_", nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault account:_activeAccount];
+                    [CCCoreData addActivityClient:fileName fileID:uploadID action:k_activityDebugActionUpload selector:selector note:NSLocalizedString(@"_file_already_exists_", nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault account:_activeAccount activeUrl:_activeUrl];
                     
                     // Error for uploadFileFailure
                     if ([[self getDelegate:uploadID] respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
@@ -1217,7 +1217,7 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             
             // Activity
-            [CCCoreData addActivityClient:fileName fileID:sessionID action:k_activityDebugActionUpload selector:selector note:NSLocalizedString(@"_file_not_present_", nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault account:_activeAccount];
+            [CCCoreData addActivityClient:fileName fileID:sessionID action:k_activityDebugActionUpload selector:selector note:NSLocalizedString(@"_file_not_present_", nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault account:_activeAccount activeUrl:_activeUrl];
             
             // Error for uploadFileFailure
             if ([[self getDelegate:sessionID] respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
