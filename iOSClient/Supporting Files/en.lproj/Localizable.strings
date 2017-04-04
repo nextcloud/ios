@@ -76,6 +76,10 @@
 "_file_already_exists_"     = "Unable to complete the operation, there is a file with the same name";
 "_read_file_error_"         = "Read file error";
 
+// More
+
+"_more_"                    = "More";
+
 // Settings
 
 "_acknowledgements_"        = "Acknowledgements";
