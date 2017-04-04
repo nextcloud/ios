@@ -113,6 +113,10 @@
                                                 <constraint firstItem="idt-Tt-9A9" firstAttribute="leading" secondItem="Zho-os-HYj" secondAttribute="leadingMargin" constant="48" id="wOF-pM-QzV"/>
                                             </constraints>
                                         </tableViewCellContentView>
+                                        <connections>
+                                            <outlet property="imageIcon" destination="RZt-EQ-32U" id="dZO-MZ-YJp"/>
+                                            <outlet property="labelText" destination="idt-Tt-9A9" id="Xgv-C7-jBr"/>
+                                        </connections>
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>
