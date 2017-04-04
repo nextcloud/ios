@@ -83,6 +83,38 @@
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="Xym-IM-aqh">
                                 <rect key="frame" x="0.0" y="194" width="375" height="453"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <prototypes>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="Cell" rowHeight="50" id="zQQ-52-W9I" customClass="CCCellMore" customModule="Nextcloud" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="28" width="375" height="50"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="zQQ-52-W9I" id="Zho-os-HYj">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="50"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="RZt-EQ-32U">
+                                                    <rect key="frame" x="8" y="4" width="40" height="40"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" constant="40" id="GYs-fR-sFZ"/>
+                                                        <constraint firstAttribute="height" constant="40" id="Wrt-BX-70e"/>
+                                                    </constraints>
+                                                </imageView>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="idt-Tt-9A9">
+                                                    <rect key="frame" x="56" y="15" width="311" height="20"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstAttribute="leadingMargin" secondItem="RZt-EQ-32U" secondAttribute="leading" id="fph-ua-Vg7"/>
+                                                <constraint firstAttribute="trailingMargin" secondItem="idt-Tt-9A9" secondAttribute="trailing" id="iZn-Cp-TaL"/>
+                                                <constraint firstItem="idt-Tt-9A9" firstAttribute="centerY" secondItem="Zho-os-HYj" secondAttribute="centerY" id="sXO-Ap-7WF"/>
+                                                <constraint firstItem="RZt-EQ-32U" firstAttribute="centerY" secondItem="Zho-os-HYj" secondAttribute="centerY" id="vfg-W2-KG4"/>
+                                                <constraint firstItem="idt-Tt-9A9" firstAttribute="leading" secondItem="Zho-os-HYj" secondAttribute="leadingMargin" constant="48" id="wOF-pM-QzV"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </prototypes>
                             </tableView>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="DWx-1W-vs0">
                                 <rect key="frame" x="16" y="73" width="60" height="60"/>
