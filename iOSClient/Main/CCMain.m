@@ -4346,11 +4346,11 @@
     actionSheet.separatorHeight = 5.0f;
     
     actionSheet.automaticallyTintButtonImages = @(NO);
-        
-    actionSheet.encryptedButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:14], NSForegroundColorAttributeName:COLOR_CRYPTOCLOUD };
-    actionSheet.buttonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:14], NSForegroundColorAttributeName:COLOR_TEXT_ANTHRACITE };
+    
+    actionSheet.encryptedButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:COLOR_CRYPTOCLOUD };
+    actionSheet.buttonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:COLOR_TEXT_ANTHRACITE };
     actionSheet.cancelButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:COLOR_BRAND };
-    actionSheet.disableButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:12], NSForegroundColorAttributeName:COLOR_TEXT_ANTHRACITE };
+    actionSheet.disableButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:COLOR_TEXT_ANTHRACITE };
     
     actionSheet.separatorColor = COLOR_SEPARATOR_TABLE;
     actionSheet.cancelButtonTitle = NSLocalizedString(@"_cancel_",nil);

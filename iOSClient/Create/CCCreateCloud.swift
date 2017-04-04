@@ -27,10 +27,10 @@ import Foundation
 
 class CreateMenuAdd: NSObject {
     
-    let fontButton = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 14)!, NSForegroundColorAttributeName: UIColor(colorLiteralRed: 65.0/255.0, green: 64.0/255.0, blue: 66.0/255.0, alpha: 1.0)]
-    let fontEncrypted = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 14)!, NSForegroundColorAttributeName: Constant.GlobalConstants.k_Color_Cryptocloud]
+    let fontButton = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 16)!, NSForegroundColorAttributeName: UIColor(colorLiteralRed: 65.0/255.0, green: 64.0/255.0, blue: 66.0/255.0, alpha: 1.0)]
+    let fontEncrypted = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 16)!, NSForegroundColorAttributeName: Constant.GlobalConstants.k_Color_Cryptocloud]
     let fontCancel = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 16)!, NSForegroundColorAttributeName: Constant.GlobalConstants.k_Color_NavigationBar]
-    let fontDisable = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 12)!, NSForegroundColorAttributeName: UIColor(colorLiteralRed: 65.0/255.0, green: 64.0/255.0, blue: 66.0/255.0, alpha: 1.0)]
+    let fontDisable = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 16)!, NSForegroundColorAttributeName: UIColor(colorLiteralRed: 65.0/255.0, green: 64.0/255.0, blue: 66.0/255.0, alpha: 1.0)]
 
     let colorLightGray = UIColor(colorLiteralRed: 250.0/255.0, green: 250.0/255.0, blue: 250.0/255.0, alpha: 1)
     
