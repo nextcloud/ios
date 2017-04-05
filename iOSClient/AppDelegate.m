@@ -1415,6 +1415,42 @@
     });
 }
 
+- (BOOL)createFolderSubFolderAutomaticUploadWithSubfolder:(BOOL)useSubFolder assets:(NSArray *)assets
+{
+    NSString *folderPhotos = [CCCoreData getCameraUploadFolderNamePathActiveAccount:_activeAccount activeUrl:_activeUrl];
+    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:_activeUser withPassword:_activePassword withUrl:_activeUrl isCryptoCloudMode:NO];
+
+    if(![ocNetworking automaticCreateFolderSync:folderPhotos]) {
+        
+        // Activity & Message
+        NSString *description = NSLocalizedStringFromTable(@"_not_possible_create_folder_", @"Error", nil);
+        [app messageNotification:@"_error_" description:description visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo];
+        [CCCoreData addActivityClient:@"" fileID:@"" action:k_activityDebugActionAutomaticUpload selector:@"" note:description type:k_activityTypeFailure verbose:k_activityVerboseDefault account:_activeAccount activeUrl:_activeUrl];
+        
+        return false;
+    }
+    
+    // Create if request the subfolders
+    if (useSubFolder) {
+        
+        for (NSString *dateSubFolder in [CCUtility createNameSubFolder:assets]) {
+            
+            if(![ocNetworking automaticCreateFolderSync:[NSString stringWithFormat:@"%@/%@", folderPhotos, dateSubFolder]]) {
+                
+                // Activity & Message
+                NSString *description = NSLocalizedString(@"_error_createsubfolders_upload_",nil);
+                [app messageNotification:@"_error_" description:description visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo];
+                [CCCoreData addActivityClient:@"" fileID:@"" action:k_activityDebugActionAutomaticUpload selector:@"" note:description type:k_activityTypeFailure verbose:k_activityVerboseDefault account:_activeAccount activeUrl:_activeUrl];
+                
+                return false;
+            }
+        }
+    }
+
+    
+    return true;
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Open CCUploadFromOtherUpp  =====
 #pragma --------------------------------------------------------------------------------------------
