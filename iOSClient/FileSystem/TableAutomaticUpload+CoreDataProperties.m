@@ -18,6 +18,7 @@
 @dynamic date;
 @dynamic fileName;
 @dynamic identifier;
+@dynamic lock;
 @dynamic priority;
 @dynamic selector;
 @dynamic selectorPost;

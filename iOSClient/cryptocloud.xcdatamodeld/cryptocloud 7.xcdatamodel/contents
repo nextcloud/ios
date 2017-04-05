@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="11759" systemVersion="16D32" minimumToolsVersion="Xcode 7.0" sourceLanguage="Objective-C" userDefinedModelVersionIdentifier="cryptocloud">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="12141" systemVersion="16E195" minimumToolsVersion="Xcode 7.0" sourceLanguage="Objective-C" userDefinedModelVersionIdentifier="cryptocloud">
     <entity name="TableAccount" representedClassName="TableAccount" syncable="YES">
         <attribute name="account" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="active" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="NO" syncable="YES"/>
@@ -56,6 +56,7 @@
         <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="fileName" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="identifier" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="lock" optional="YES" attributeType="Boolean" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="priority" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="selector" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="selectorPost" optional="YES" attributeType="String" syncable="YES"/>
@@ -153,13 +154,13 @@
     <elements>
         <element name="TableAccount" positionX="-6597" positionY="111" width="171" height="585"/>
         <element name="TableActivity" positionX="-6399" positionY="252" width="128" height="210"/>
-        <element name="TableAutomaticUpload" positionX="-6597" positionY="801" width="128" height="180"/>
+        <element name="TableAutomaticUpload" positionX="-6597" positionY="801" width="128" height="195"/>
         <element name="TableCertificates" positionX="-6597" positionY="711" width="128" height="60"/>
         <element name="TableDirectory" positionX="-6372" positionY="111" width="162" height="210"/>
+        <element name="TableExternalSites" positionX="-6399" positionY="252" width="128" height="135"/>
         <element name="TableGPS" positionX="-6597" positionY="990" width="128" height="165"/>
         <element name="TableLocalFile" positionX="-6138" positionY="111" width="162" height="225"/>
         <element name="TableMetadata" positionX="-6138" positionY="402" width="162" height="510"/>
         <element name="TableShare" positionX="-6597" positionY="558" width="128" height="120"/>
-        <element name="TableExternalSites" positionX="-6399" positionY="252" width="128" height="135"/>
     </elements>
 </model>

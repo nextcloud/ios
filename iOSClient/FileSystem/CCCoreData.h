@@ -189,7 +189,7 @@
 
 // ===== Automatic Upload =====
 
-+ (void)addTableAutomaticUpload:(CCMetadataNet *)metadataNet account:(NSString *)account;
++ (BOOL)addTableAutomaticUpload:(CCMetadataNet *)metadataNet account:(NSString *)account;
 + (CCMetadataNet *)getTableAutomaticUploadForAccount:(NSString *)account selector:(NSString *)selector context:(NSManagedObjectContext *)context;
 + (void)deleteTableAutomaticUploadForAccount:(NSString *)account identifier:(NSString *)identifier context:(NSManagedObjectContext *)context;
 + (NSUInteger)countTableAutomaticUploadForAccount:(NSString *)account selector:(NSString *)selector;

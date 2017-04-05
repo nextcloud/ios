@@ -1208,13 +1208,20 @@
         metadataNet.session = session;
         metadataNet.taskStatus = k_taskStatusResume;
         
-        [CCCoreData addTableAutomaticUpload:metadataNet account:app.activeAccount];
+        if (![CCCoreData addTableAutomaticUpload:metadataNet account:app.activeAccount]) {
+            
+            [CCCoreData addActivityClient:fileName fileID:metadataNet.identifier action:k_activityDebugActionAutomaticUpload selector:metadataNet.selector note:@"File already present in Table automatic Upload" type:k_activityTypeInfo verbose:k_activityVerboseHigh account:app.activeAccount activeUrl:app.activeUrl];
+            
+            [self endLoadingAssets];
+
+            return;
+        }
         
         // Activity
         NSString *media = @"";
         if (assetMediaType == PHAssetMediaTypeImage) media = @"Image";
         if (assetMediaType == PHAssetMediaTypeVideo) media = @"Video";
-        [CCCoreData addActivityClient:fileName fileID:@"" action:k_activityDebugActionAutomaticUpload selector:@"" note:[NSString stringWithFormat:@"Add TableAutomaticUpload on Session: %@, Set Data asset %@", session, media] type:k_activityTypeInfo verbose:k_activityVerboseHigh account:app.activeAccount activeUrl:app.activeUrl];
+        [CCCoreData addActivityClient:fileName fileID:metadataNet.identifier action:k_activityDebugActionAutomaticUpload selector:metadataNet.selector note:[NSString stringWithFormat:@"Add TableAutomaticUpload on Session: %@, Set Data asset %@", session, media] type:k_activityTypeInfo verbose:k_activityVerboseHigh account:app.activeAccount activeUrl:app.activeUrl];
         
         // Upldate Camera Upload data  
         if ([metadataNet.selector isEqualToString:selectorUploadAutomatic])

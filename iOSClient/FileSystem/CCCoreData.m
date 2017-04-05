@@ -1501,18 +1501,21 @@
 #pragma mark ===== Automatic Upload =====
 #pragma --------------------------------------------------------------------------------------------
 
-+ (void)addTableAutomaticUpload:(CCMetadataNet *)metadataNet account:(NSString *)account
++ (BOOL)addTableAutomaticUpload:(CCMetadataNet *)metadataNet account:(NSString *)account
 {
     NSManagedObjectContext *context = [NSManagedObjectContext MR_context];
+    TableAutomaticUpload *record = nil;
     
-    // Delete record if exists
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (identifier == %@)", account, metadataNet.identifier];
-    [TableAutomaticUpload MR_deleteAllMatchingPredicate:predicate inContext:context];
+    // Record exists ?
+    record = [TableAutomaticUpload MR_findFirstWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (identifier == %@)", account, metadataNet.identifier] inContext:context];
+    if (record)
+        return NO;
     
-    TableAutomaticUpload *record = [TableAutomaticUpload MR_createEntityInContext:context];
+    record = [TableAutomaticUpload MR_createEntityInContext:context];
         
     record.account = account;
     record.identifier = metadataNet.identifier;
+    record.lock = [NSNumber numberWithBool:NO];
     record.date = [NSDate date];
     record.fileName = metadataNet.fileName;
     record.selector = metadataNet.selector;
@@ -1522,6 +1525,8 @@
     record.priority = [NSNumber numberWithLong:metadataNet.priority];
         
     [context MR_saveToPersistentStoreAndWait];
+    
+    return YES;
 }
 
 + (CCMetadataNet *)getTableAutomaticUploadForAccount:(NSString *)account selector:(NSString *)selector context:(NSManagedObjectContext *)context
@@ -1529,7 +1534,7 @@
     if (context == nil)
         context = [NSManagedObjectContext MR_context];
     
-    TableAutomaticUpload *record = [TableAutomaticUpload MR_findFirstWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (selector == %@)", account, selector] inContext:context];
+    TableAutomaticUpload *record = [TableAutomaticUpload MR_findFirstWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (selector == %@) AND (lock == 0)", account, selector] inContext:context];
     
     if (record) {
     
@@ -1545,6 +1550,10 @@
         metadataNet.session = record.session;
         metadataNet.taskStatus = k_taskStatusResume;                        // Default
         
+        // LOCK
+        record.lock = [NSNumber numberWithBool:YES];
+        [context MR_saveToPersistentStoreAndWait];
+
         return metadataNet;
     }
     
