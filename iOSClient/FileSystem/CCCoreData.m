@@ -1506,7 +1506,7 @@
     NSManagedObjectContext *context = [NSManagedObjectContext MR_context];
     
     // Delete record if exists
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (fileName == %@) AND (serverUrl == %@) AND (selector == %@)", account, metadataNet.fileName, metadataNet.serverUrl, metadataNet.selector];
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (identifier == %@)", account, metadataNet.identifier];
     [TableAutomaticUpload MR_deleteAllMatchingPredicate:predicate inContext:context];
     
     TableAutomaticUpload *record = [TableAutomaticUpload MR_createEntityInContext:context];
