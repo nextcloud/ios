@@ -1102,9 +1102,6 @@
     if ([newItemsToUpload count] == 0)
         return;
     
-    // Activity
-    [CCCoreData addActivityClient:@"" fileID:@"" action:k_activityDebugActionAutomaticUpload selector:@"" note:[NSString stringWithFormat:@"Number: %lu", (unsigned long)[newItemsToUpload count]] type:k_activityTypeInfo verbose:k_activityVerboseHigh account:app.activeAccount activeUrl:app.activeUrl];
-    
     // STOP new request : initStateCameraUpload
     _AutomaticCameraUploadInProgress = YES;
     
@@ -1155,7 +1152,7 @@
         NSLog(@"Convert url %@", url);
     }
     
-    // Create the folder for Photos & if request the subfolders
+    // selectorUploadAutomaticAll : create the folder for Photos & if request the subfolders
     if (assetsFull) {
         
         if(![app createFolderSubFolderAutomaticUploadFolderPhotos:folderPhotos useSubFolder:useSubFolder assets:newItemsPHAssetToUpload selector:selectorUploadAutomaticAll]) {
