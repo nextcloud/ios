@@ -39,7 +39,7 @@
     NSMutableArray *_queueMetadatas;
     NSMutableArray *_selectedMetadatas;
     NSUInteger _numSelectedMetadatas;
-    //BOOL _AutomaticCameraUploadInProgress;      // START/STOP new request : initStateCameraUpload
+    BOOL _AutomaticCameraUploadInProgress;      // START/STOP new request : initStateCameraUpload
     
     CCSectionDataSourceMetadata *_sectionDataSource;
     
@@ -795,9 +795,6 @@
 
 - (void)initStateCameraUpload
 {
-    //if (_AutomaticCameraUploadInProgress)
-    //    return;
-    
     if([CCCoreData getCameraUploadActiveAccount:app.activeAccount]) {
         
         [self setupCameraUpload];
@@ -1084,6 +1081,10 @@
     CCManageAsset *manageAsset = [[CCManageAsset alloc] init];
     NSMutableArray *newItemsToUpload;
     
+    // CHECK : initStateCameraUpload
+    if (_AutomaticCameraUploadInProgress)
+        return;
+    
     // Check Asset : NEW or FULL
     if (assetsFull) {
         
@@ -1105,7 +1106,7 @@
     [CCCoreData addActivityClient:@"" fileID:@"" action:k_activityDebugActionAutomaticUpload selector:@"" note:[NSString stringWithFormat:@"Number: %lu", (unsigned long)[newItemsToUpload count]] type:k_activityTypeInfo verbose:k_activityVerboseHigh account:app.activeAccount activeUrl:app.activeUrl];
     
     // STOP new request : initStateCameraUpload
-    //_AutomaticCameraUploadInProgress = YES;
+    _AutomaticCameraUploadInProgress = YES;
     
     // Disable idle timer
     [[UIApplication sharedApplication] setIdleTimerDisabled: YES];
@@ -1156,7 +1157,7 @@
     }
     
     // verify/create folder Camera Upload, if error exit
-    if(![ocNetworking automaticCreateFolderSync:folderPhotos]) {
+    if(![ocNetworking automaticCreateFolderSync:folderPhotos] && assetsFull) {
         
         NSString *description = NSLocalizedStringFromTable(@"_not_possible_create_folder_", @"Error", nil);
         
@@ -1164,17 +1165,16 @@
         if (assetsFull)
             [app messageNotification:@"_error_" description:description visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo];
         
-        // START new request : initStateCameraUpload
-        //_AutomaticCameraUploadInProgress = NO;
-        
         // Activity
         [CCCoreData addActivityClient:@"" fileID:@"" action:k_activityDebugActionAutomaticUpload selector:@"" note:description type:k_activityTypeFailure verbose:k_activityVerboseDefault account:app.activeAccount activeUrl:app.activeUrl];
+        
+        [self endLoadingAssets];
         
         return;
     }
     
     // Use subfolders verify/create subfolder, if error exit
-    if (createSubfolders) {
+    if (createSubfolders && assetsFull) {
         
         for (NSString *dateSubFolder in [CCUtility createNameSubFolder:newItemsPHAssetToUpload]) {
             
@@ -1187,6 +1187,8 @@
                 
                 // Activity
                 [CCCoreData addActivityClient:@"" fileID:@"" action:k_activityDebugActionAutomaticUpload selector:@"" note:NSLocalizedString(@"_error_createsubfolders_upload_",nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault account:app.activeAccount activeUrl:app.activeUrl];
+                
+                [self endLoadingAssets];
                 
                 return;
             }
@@ -1267,10 +1269,8 @@
 
 -(void)endLoadingAssets
 {
-    [_hud hideHud];
-    
     // START new request : initStateCameraUpload
-    //_AutomaticCameraUploadInProgress = NO;
+    _AutomaticCameraUploadInProgress = NO;
     
     // Enable idle timer
     [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
