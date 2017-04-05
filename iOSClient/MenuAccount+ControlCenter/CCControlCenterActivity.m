@@ -45,6 +45,8 @@
     
     [super viewDidLoad];
     
+    _verbose = [CCUtility getActivityVerboseHigh];
+    
     _sectionDataSource = [NSArray new];
     
     [self reloadDatasource];
@@ -169,7 +171,7 @@
     
     int heightNote = [[self class] getLabelHeight:label width:self.collectionView.frame.size.width];
     
-    int heightView = 40 + heightAction + heightNote;
+    int heightView = 40 + heightAction + heightNote + 17;
     
     return CGSizeMake(collectionView.frame.size.width, heightView);
 }
