@@ -763,7 +763,7 @@
         
         @autoreleasepool {
             
-            PHVideoRequestOptions *options = [[PHVideoRequestOptions alloc] init];
+            PHVideoRequestOptions *options = [PHVideoRequestOptions new];
             options.version = PHVideoRequestOptionsVersionOriginal;
         
             [[PHImageManager defaultManager] requestAVAssetForVideo:asset options:options resultHandler:^(AVAsset *asset, AVAudioMix *audioMix, NSDictionary *info) {
@@ -817,7 +817,10 @@
 
         @autoreleasepool {
             
-            [[PHImageManager defaultManager] requestImageDataForAsset:asset options:nil resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
+            PHImageRequestOptions *options = [PHImageRequestOptions new];
+            options.synchronous = NO;
+            
+            [[PHImageManager defaultManager] requestImageDataForAsset:asset options:options resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
             
                 [imageData writeToFile:fileNamePath options:NSDataWritingAtomic error:&error];
                 
