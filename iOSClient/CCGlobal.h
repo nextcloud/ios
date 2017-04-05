@@ -104,6 +104,27 @@ extern NSString *const urlBaseUploadDB;
 
 #define k_networkingSessionNotification                 @"networkingSessionNotification"
 
+// Session
+#define k_domain_session_queue                          @"it.twsweb.Crypto-Cloud"
+
+#define k_download_session                              @"it.twsweb.Crypto-Cloud.download.session"
+#define k_download_session_foreground                   @"it.twsweb.Crypto-Cloud.download.sessionforeground"
+#define k_download_session_wwan                         @"it.twsweb.Crypto-Cloud.download.sessionwwan"
+#define k_upload_session                                @"it.twsweb.Crypto-Cloud.upload.session"
+#define k_upload_session_foreground                     @"it.twsweb.Crypto-Cloud.upload.sessionforeground"
+#define k_upload_session_wwan                           @"it.twsweb.Crypto-Cloud.upload.sessionwwan"
+
+// OperationQueue
+#define k_queue                                         @"it.twsweb.Crypto-Cloud.queue"
+#define k_download_queue                                @"it.twsweb.Crypto-Cloud.download.queue"
+#define k_download_queuewwan                            @"it.twsweb.Crypto-Cloud.download.queuewwan"
+#define k_upload_queue                                  @"it.twsweb.Crypto-Cloud.upload.queue"
+#define k_upload_queuewwan                              @"it.twsweb.Crypto-Cloud.upload.queuewwan"
+
+// Service Key Share
+#define k_serviceShareKeyChain                          @"Crypto Cloud"
+#define k_metadataKeyedUnarchiver                       @"it.twsweb.Crypto-Cloud.metadata"
+
 // TaskIdentifier
 #define k_taskIdentifierDone                            -1
 #define k_taskIdentifierStop                            -2
