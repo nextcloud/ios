@@ -190,8 +190,9 @@
 // ===== Automatic Upload =====
 
 + (BOOL)addTableAutomaticUpload:(CCMetadataNet *)metadataNet account:(NSString *)account;
-+ (CCMetadataNet *)getTableAutomaticUploadForAccount:(NSString *)account selector:(NSString *)selector context:(NSManagedObjectContext *)context;
-+ (void)deleteTableAutomaticUploadForAccount:(NSString *)account identifier:(NSString *)identifier context:(NSManagedObjectContext *)context;
++ (CCMetadataNet *)getTableAutomaticUploadForAccount:(NSString *)account selector:(NSString *)selector;
++ (void)unlockTableAutomaticUploadForAccount:(NSString *)account identifier:(NSString *)identifier;
++ (void)deleteTableAutomaticUploadForAccount:(NSString *)account identifier:(NSString *)identifier;
 + (NSUInteger)countTableAutomaticUploadForAccount:(NSString *)account selector:(NSString *)selector;
 
 // ===== GPS =====

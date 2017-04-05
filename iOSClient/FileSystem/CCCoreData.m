@@ -1529,10 +1529,9 @@
     return YES;
 }
 
-+ (CCMetadataNet *)getTableAutomaticUploadForAccount:(NSString *)account selector:(NSString *)selector context:(NSManagedObjectContext *)context
++ (CCMetadataNet *)getTableAutomaticUploadForAccount:(NSString *)account selector:(NSString *)selector
 {
-    if (context == nil)
-        context = [NSManagedObjectContext MR_context];
+    NSManagedObjectContext *context = [NSManagedObjectContext MR_context];
     
     TableAutomaticUpload *record = [TableAutomaticUpload MR_findFirstWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (selector == %@) AND (lock == 0)", account, selector] inContext:context];
     
@@ -1560,10 +1559,23 @@
     return nil;
 }
 
-+ (void)deleteTableAutomaticUploadForAccount:(NSString *)account identifier:(NSString *)identifier context:(NSManagedObjectContext *)context
++ (void)unlockTableAutomaticUploadForAccount:(NSString *)account identifier:(NSString *)identifier
 {
-    if (context == nil)
-        context = [NSManagedObjectContext MR_context];
+    NSManagedObjectContext *context = [NSManagedObjectContext MR_context];
+    
+    TableAutomaticUpload *record = [TableAutomaticUpload MR_findFirstWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (identifier == %@)", account, identifier] inContext:context];
+    
+    if (record) {
+        
+        // UN-LOCK
+        record.lock = [NSNumber numberWithBool:NO];
+        [context MR_saveToPersistentStoreAndWait];
+    }
+}
+
++ (void)deleteTableAutomaticUploadForAccount:(NSString *)account identifier:(NSString *)identifier
+{
+    NSManagedObjectContext *context = [NSManagedObjectContext MR_context];
     
     TableAutomaticUpload *record = [TableAutomaticUpload MR_findFirstWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (identifier == %@)", account, identifier] inContext:context];
     

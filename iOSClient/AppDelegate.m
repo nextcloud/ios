@@ -1253,8 +1253,8 @@
         }
     }
     
-    // Add Network queue
-    CCMetadataNet *metadataNet = [CCCoreData getTableAutomaticUploadForAccount:self.activeAccount selector:selector context:nil];
+    // Get Record on Table Automatic Upload
+    CCMetadataNet *metadataNet = [CCCoreData getTableAutomaticUploadForAccount:self.activeAccount selector:selector];
 
     // For UploadAutomatic create the folder for Photos & if request the subfolders
     if ([selector isEqualToString:selectorUploadAutomatic] && metadataNet) {
@@ -1266,11 +1266,14 @@
 
         if (!result.count) {
            [CCCoreData addActivityClient:metadataNet.fileName fileID:metadataNet.identifier action:k_activityDebugActionUpload selector:selector note:@"Internal error image/video not found" type:k_activityVerboseDefault verbose:k_activityVerboseHigh account:_activeAccount activeUrl:_activeUrl];
+            [CCCoreData unlockTableAutomaticUploadForAccount:_activeAccount identifier:metadataNet.identifier];
             return;
         }
         
-        if(![self createFolderSubFolderAutomaticUploadFolderPhotos:folderPhotos useSubFolder:useSubFolder assets:[[NSArray alloc] initWithObjects:result[0], nil] selector:selectorUploadAutomatic])
+        if(![self createFolderSubFolderAutomaticUploadFolderPhotos:folderPhotos useSubFolder:useSubFolder assets:[[NSArray alloc] initWithObjects:result[0], nil] selector:selectorUploadAutomatic]) {
+            [CCCoreData unlockTableAutomaticUploadForAccount:_activeAccount identifier:metadataNet.identifier];
             return;
+        }
     }
     
     if (metadataNet) {
@@ -1284,8 +1287,8 @@
         
         [self addNetworkingOperationQueue:queue delegate:app.activeMain metadataNet:metadataNet];
         
-        // Delete record
-        [CCCoreData deleteTableAutomaticUploadForAccount:self.activeAccount identifier:metadataNet.identifier context:nil];
+        // Delete record on Table Automatic Upload
+        [CCCoreData deleteTableAutomaticUploadForAccount:self.activeAccount identifier:metadataNet.identifier];
     }
 }
 
