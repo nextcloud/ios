@@ -1415,9 +1415,8 @@
     });
 }
 
-- (BOOL)createFolderSubFolderAutomaticUploadWithSubfolder:(BOOL)useSubFolder assets:(NSArray *)assets
+- (BOOL)createFolderSubFolderAutomaticUploadFolderPhotos:(NSString *)folderPhotos useSubFolder:(BOOL)useSubFolder assets:(NSArray *)assets
 {
-    NSString *folderPhotos = [CCCoreData getCameraUploadFolderNamePathActiveAccount:_activeAccount activeUrl:_activeUrl];
     OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:_activeUser withPassword:_activePassword withUrl:_activeUrl isCryptoCloudMode:NO];
 
     if(![ocNetworking automaticCreateFolderSync:folderPhotos]) {
@@ -1446,7 +1445,6 @@
             }
         }
     }
-
     
     return true;
 }
