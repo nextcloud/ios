@@ -51,6 +51,6 @@
 - (void)downloadFileFailure:(NSInteger)errorCode;
 
 - (void)reloadDatasourceForced;
-- (BOOL)automaticCreateFolder:(NSString *)folderPathName;
+//- (BOOL)automaticCreateFolder:(NSString *)folderPathName;
 
 @end

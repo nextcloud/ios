@@ -45,6 +45,7 @@
 
 - (NSError *)readFileSync:(NSString *)filePathName;
 - (NSError *)checkServerSync:(NSString *)serverUrl;
+- (BOOL)automaticCreateFolderSync:(NSString *)folderPathName;
 
 @end
 

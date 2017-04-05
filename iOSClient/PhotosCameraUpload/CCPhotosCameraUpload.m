@@ -1263,6 +1263,7 @@
     [app updateApplicationIconBadgeNumber];
 }
 
+/*
 - (BOOL)automaticCreateFolder:(NSString *)folderPathName
 {
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
@@ -1303,6 +1304,7 @@
     
     return noError;
 }
+*/
 
 -(void)endLoadingAssets
 {
