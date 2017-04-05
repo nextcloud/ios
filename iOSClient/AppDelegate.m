@@ -289,10 +289,10 @@
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5.0 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         
         if ([CCCoreData countTableAutomaticUploadForAccount:self.activeAccount selector:selectorUploadAutomatic] > 0)
-            [app loadTableAutomaticUploadForSelector:selectorUploadAutomatic];
-    
+            [self performSelectorOnMainThread:@selector(loadTableAutomaticUploadForSelector:) withObject:selectorUploadAutomatic waitUntilDone:NO];
+        
         if ([CCCoreData countTableAutomaticUploadForAccount:self.activeAccount selector:selectorUploadAutomaticAll] > 0)
-            [app loadTableAutomaticUploadForSelector:selectorUploadAutomaticAll];
+            [self performSelectorOnMainThread:@selector(loadTableAutomaticUploadForSelector:) withObject:selectorUploadAutomaticAll waitUntilDone:NO];
     });
 }
 
@@ -1255,6 +1255,23 @@
     
     // Add Network queue
     CCMetadataNet *metadataNet = [CCCoreData getTableAutomaticUploadForAccount:self.activeAccount selector:selector context:nil];
+
+    // For UploadAutomatic create the folder for Photos & if request the subfolders
+    if ([selector isEqualToString:selectorUploadAutomatic] && metadataNet) {
+        
+        NSString *folderPhotos = [CCCoreData getCameraUploadFolderNamePathActiveAccount:app.activeAccount activeUrl:app.activeUrl];
+        BOOL useSubFolder = [CCCoreData getCameraUploadCreateSubfolderActiveAccount:app.activeAccount];
+
+        PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[metadataNet.identifier] options:nil];
+
+        if (!result.count) {
+           [CCCoreData addActivityClient:metadataNet.fileName fileID:metadataNet.identifier action:k_activityDebugActionUpload selector:selector note:@"Internal error image/video not found" type:k_activityVerboseDefault verbose:k_activityVerboseHigh account:_activeAccount activeUrl:_activeUrl];
+            return;
+        }
+        
+        if(![self createFolderSubFolderAutomaticUploadFolderPhotos:folderPhotos useSubFolder:useSubFolder assets:[[NSArray alloc] initWithObjects:result[0], nil] selector:selectorUploadAutomatic])
+            return;
+    }
     
     if (metadataNet) {
         
@@ -1266,6 +1283,9 @@
             queue = app.netQueueUpload;
         
         [self addNetworkingOperationQueue:queue delegate:app.activeMain metadataNet:metadataNet];
+        
+        // Delete record
+        [CCCoreData deleteTableAutomaticUploadForAccount:self.activeAccount identifier:metadataNet.identifier context:nil];
     }
 }
 
@@ -1415,16 +1435,14 @@
     });
 }
 
-- (BOOL)createFolderSubFolderAutomaticUploadFolderPhotos:(NSString *)folderPhotos useSubFolder:(BOOL)useSubFolder assets:(NSArray *)assets
+- (BOOL)createFolderSubFolderAutomaticUploadFolderPhotos:(NSString *)folderPhotos useSubFolder:(BOOL)useSubFolder assets:(NSArray *)assets selector:(NSString *)selector
 {
     OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:_activeUser withPassword:_activePassword withUrl:_activeUrl isCryptoCloudMode:NO];
 
     if(![ocNetworking automaticCreateFolderSync:folderPhotos]) {
         
-        // Activity & Message
-        NSString *description = NSLocalizedStringFromTable(@"_not_possible_create_folder_", @"Error", nil);
-        [app messageNotification:@"_error_" description:description visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo];
-        [CCCoreData addActivityClient:@"" fileID:@"" action:k_activityDebugActionAutomaticUpload selector:@"" note:description type:k_activityTypeFailure verbose:k_activityVerboseDefault account:_activeAccount activeUrl:_activeUrl];
+        // Activity
+        [CCCoreData addActivityClient:@"" fileID:@"" action:k_activityDebugActionAutomaticUpload selector:selector note:NSLocalizedStringFromTable(@"_not_possible_create_folder_", @"Error", nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault account:_activeAccount activeUrl:_activeUrl];
         
         return false;
     }
@@ -1436,10 +1454,8 @@
             
             if(![ocNetworking automaticCreateFolderSync:[NSString stringWithFormat:@"%@/%@", folderPhotos, dateSubFolder]]) {
                 
-                // Activity & Message
-                NSString *description = NSLocalizedString(@"_error_createsubfolders_upload_",nil);
-                [app messageNotification:@"_error_" description:description visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo];
-                [CCCoreData addActivityClient:@"" fileID:@"" action:k_activityDebugActionAutomaticUpload selector:@"" note:description type:k_activityTypeFailure verbose:k_activityVerboseDefault account:_activeAccount activeUrl:_activeUrl];
+                // Activity
+                [CCCoreData addActivityClient:@"" fileID:@"" action:k_activityDebugActionAutomaticUpload selector:selector note:NSLocalizedString(@"_error_createsubfolders_upload_",nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault account:_activeAccount activeUrl:_activeUrl];
                 
                 return false;
             }

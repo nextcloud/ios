@@ -1542,8 +1542,8 @@
 {
     // Automatic upload
     if([selector isEqualToString:selectorUploadAutomatic] || [selector isEqualToString:selectorUploadAutomaticAll])
-        [app loadTableAutomaticUploadForSelector:selector];
-
+        [app performSelectorOnMainThread:@selector(loadTableAutomaticUploadForSelector:) withObject:selector waitUntilDone:NO];
+    
     // Read File test do not exists
     if (errorCode == k_CCErrorFileUploadNotFound && fileID) {
        
@@ -1567,7 +1567,7 @@
 {
     // Automatic upload
     if([selector isEqualToString:selectorUploadAutomatic] || [selector isEqualToString:selectorUploadAutomaticAll])
-        [app loadTableAutomaticUploadForSelector:selector];
+        [app performSelectorOnMainThread:@selector(loadTableAutomaticUploadForSelector:) withObject:selector waitUntilDone:NO];
     
     if ([selectorPost isEqualToString:selectorReadFolderForced] ) {
             
@@ -1595,7 +1595,7 @@
     NSString *serverUrl = [arguments objectAtIndex:1];
     BOOL cryptated = [[arguments objectAtIndex:2] boolValue];
     BOOL useSubFolder = [[arguments objectAtIndex:3] boolValue];
-    NSString * session = [arguments objectAtIndex:4];
+    NSString *session = [arguments objectAtIndex:4];
     
     // remove title (graphics)
     [self setTitleBackgroundTableView:nil];
@@ -1603,8 +1603,8 @@
     NSString *folderPhotos = [CCCoreData getCameraUploadFolderNamePathActiveAccount:app.activeAccount activeUrl:app.activeUrl];
     NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:app.activeAccount];
     
-    // Create if request the folder for Photos & if request the subfolders
-    if (![app createFolderSubFolderAutomaticUploadFolderPhotos:folderPhotos useSubFolder:useSubFolder assets:assets])
+    // Create the folder for Photos & if request the subfolders
+    if (![app createFolderSubFolderAutomaticUploadFolderPhotos:folderPhotos useSubFolder:useSubFolder assets:assets selector:selectorUploadFile])
         return;
     
     NSLog(@"[LOG] Asset N. %lu", (unsigned long)[assets count]);

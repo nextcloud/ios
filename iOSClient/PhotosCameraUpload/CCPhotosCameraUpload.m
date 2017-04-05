@@ -1143,9 +1143,7 @@
     NSMutableArray *newItemsPHAssetToUpload = [[NSMutableArray alloc] init];
     
     NSString *folderPhotos = [CCCoreData getCameraUploadFolderNamePathActiveAccount:app.activeAccount activeUrl:app.activeUrl];
-    BOOL createSubfolders = [CCCoreData getCameraUploadCreateSubfolderActiveAccount:app.activeAccount];
-    
-    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:app.activeUser withPassword:app.activePassword withUrl:app.activeUrl isCryptoCloudMode:NO];
+    BOOL useSubFolder = [CCCoreData getCameraUploadCreateSubfolderActiveAccount:app.activeAccount];
     
     // Conversion from ALAsset -to-> PHAsset
     for (ALAsset *asset in newItemsToUpload) {
@@ -1154,44 +1152,16 @@
         PHFetchResult *fetchResult = [PHAsset fetchAssetsWithALAssetURLs:@[url] options:nil];
         PHAsset *asset = [fetchResult firstObject];
         [newItemsPHAssetToUpload addObject:asset];
+        NSLog(@"Convert url %@", url);
     }
     
-    // verify/create folder Camera Upload, if error exit
-    if(![ocNetworking automaticCreateFolderSync:folderPhotos] && assetsFull) {
+    // Create the folder for Photos & if request the subfolders
+    if (assetsFull) {
         
-        NSString *description = NSLocalizedStringFromTable(@"_not_possible_create_folder_", @"Error", nil);
-        
-        // Full Upload ?
-        if (assetsFull)
-            [app messageNotification:@"_error_" description:description visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo];
-        
-        // Activity
-        [CCCoreData addActivityClient:@"" fileID:@"" action:k_activityDebugActionAutomaticUpload selector:@"" note:description type:k_activityTypeFailure verbose:k_activityVerboseDefault account:app.activeAccount activeUrl:app.activeUrl];
-        
-        [self endLoadingAssets];
-        
-        return;
-    }
-    
-    // Use subfolders verify/create subfolder, if error exit
-    if (createSubfolders && assetsFull) {
-        
-        for (NSString *dateSubFolder in [CCUtility createNameSubFolder:newItemsPHAssetToUpload]) {
+        if(![app createFolderSubFolderAutomaticUploadFolderPhotos:folderPhotos useSubFolder:useSubFolder assets:newItemsPHAssetToUpload selector:selectorUploadAutomaticAll]) {
             
-            if (![ocNetworking automaticCreateFolderSync:[NSString stringWithFormat:@"%@/%@", folderPhotos, dateSubFolder]]) {
-                
-                [self endLoadingAssets];
-                
-                if (assetsFull)
-                    [app messageNotification:@"_error_" description:@"_error_createsubfolders_upload_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo];
-                
-                // Activity
-                [CCCoreData addActivityClient:@"" fileID:@"" action:k_activityDebugActionAutomaticUpload selector:@"" note:NSLocalizedString(@"_error_createsubfolders_upload_",nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault account:app.activeAccount activeUrl:app.activeUrl];
-                
-                [self endLoadingAssets];
-                
-                return;
-            }
+            [self endLoadingAssets];
+            return;
         }
     }
     
@@ -1210,7 +1180,7 @@
         if (assetMediaType == PHAssetMediaTypeImage && [CCCoreData getCameraUploadWWanPhotoActiveAccount:app.activeAccount]) session = k_upload_session_wwan;
         if (assetMediaType == PHAssetMediaTypeVideo && [CCCoreData getCameraUploadWWanVideoActiveAccount:app.activeAccount]) session = k_upload_session_wwan;
 
-        NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+        NSDateFormatter *formatter = [NSDateFormatter new];
         
         [formatter setDateFormat:@"yyyy"];
         NSString *yearString = [formatter stringFromDate:assetDate];
@@ -1218,7 +1188,7 @@
         [formatter setDateFormat:@"MM"];
         NSString *monthString = [formatter stringFromDate:assetDate];
 
-        if (createSubfolders)
+        if (useSubFolder)
             serverUrl = [NSString stringWithFormat:@"%@/%@/%@", folderPhotos, yearString, monthString];
         else
             serverUrl = folderPhotos;
@@ -1256,9 +1226,9 @@
     
     // start upload
     if (assetsFull)
-        [app loadTableAutomaticUploadForSelector:selectorUploadAutomaticAll];
+        [app performSelectorOnMainThread:@selector(loadTableAutomaticUploadForSelector:) withObject:selectorUploadAutomaticAll waitUntilDone:NO];
     else
-        [app loadTableAutomaticUploadForSelector:selectorUploadAutomatic];
+        [app performSelectorOnMainThread:@selector(loadTableAutomaticUploadForSelector:) withObject:selectorUploadAutomatic waitUntilDone:NO];
 
     // end loading
     [self endLoadingAssets];
@@ -1269,6 +1239,8 @@
 
 -(void)endLoadingAssets
 {
+    [_hud hideHud];
+    
     // START new request : initStateCameraUpload
     _AutomaticCameraUploadInProgress = NO;
     

@@ -745,7 +745,7 @@
 
 + (NSArray *)createNameSubFolder:(NSArray *)alassets
 {
-    NSMutableOrderedSet *datesSubFolder = [[NSMutableOrderedSet alloc] init];
+    NSMutableOrderedSet *datesSubFolder = [NSMutableOrderedSet new];
     
     for (PHAsset *asset in alassets) {
         

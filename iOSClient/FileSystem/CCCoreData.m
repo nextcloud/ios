@@ -1533,7 +1533,7 @@
     
     if (record) {
     
-        CCMetadataNet *metadataNet = [[CCMetadataNet alloc] init];
+        CCMetadataNet *metadataNet = [CCMetadataNet new];
         
         metadataNet.action = actionUploadAsset;                             // Default
         metadataNet.identifier = record.identifier;
@@ -1545,13 +1545,23 @@
         metadataNet.session = record.session;
         metadataNet.taskStatus = k_taskStatusResume;                        // Default
         
-        [record MR_deleteEntityInContext:context];                          // Remove record
-        [context MR_saveToPersistentStoreAndWait];
-        
         return metadataNet;
     }
     
     return nil;
+}
+
++ (void)deleteTableAutomaticUploadForAccount:(NSString *)account identifier:(NSString *)identifier context:(NSManagedObjectContext *)context
+{
+    if (context == nil)
+        context = [NSManagedObjectContext MR_context];
+    
+    TableAutomaticUpload *record = [TableAutomaticUpload MR_findFirstWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (identifier == %@)", account, identifier] inContext:context];
+    
+    if (record) {
+        [record MR_deleteEntityInContext:context];
+        [context MR_saveToPersistentStoreAndWait];
+    }
 }
 
 + (NSUInteger)countTableAutomaticUploadForAccount:(NSString *)account selector:(NSString *)selector
