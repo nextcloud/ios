@@ -515,8 +515,10 @@
                     // Location ??
                     [self setLocationCaptionPhoto:photo fileID:metadata.fileID];
                     
-                    if (!photo.caption)
-                        photo.caption = metadata.fileNamePrint;
+                    if (!photo.caption) {
+                        // Remove title foto caption
+                        //photo.caption = metadata.fileNamePrint;
+                    }
                     
                     [self.photos replaceObjectAtIndex:index withObject:photo];
                     
