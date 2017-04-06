@@ -1127,7 +1127,6 @@
 		F732B33C1E8045D7002B7D75 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/SwiftWebVC.strings; sourceTree = "<group>"; };
 		F732B33D1E8045D8002B7D75 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/SwiftWebVC.strings; sourceTree = "<group>"; };
 		F732B33E1E8045DA002B7D75 /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/SwiftWebVC.strings; sourceTree = "<group>"; };
-		F732B33F1E8045DC002B7D75 /* is */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = is; path = is.lproj/SwiftWebVC.strings; sourceTree = "<group>"; };
 		F732B3401E8045DF002B7D75 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-BR"; path = "pt-BR.lproj/SwiftWebVC.strings"; sourceTree = "<group>"; };
 		F732BA031D76CE1500E9878B /* CCNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCNetworking.h; sourceTree = "<group>"; };
 		F732BA041D76CE1500E9878B /* CCNetworking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCNetworking.m; sourceTree = "<group>"; };
@@ -1353,7 +1352,6 @@
 		F75797B31E81364100187A1B /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/CTAssetsPicker.strings; sourceTree = "<group>"; };
 		F75797B41E81364400187A1B /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/CTAssetsPicker.strings; sourceTree = "<group>"; };
 		F75797B51E81364700187A1B /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/CTAssetsPicker.strings; sourceTree = "<group>"; };
-		F75797B61E81364A00187A1B /* is */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = is; path = is.lproj/CTAssetsPicker.strings; sourceTree = "<group>"; };
 		F75797B71E81364C00187A1B /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-BR"; path = "pt-BR.lproj/CTAssetsPicker.strings"; sourceTree = "<group>"; };
 		F75ADF441DC75FFE008A7347 /* CCLogin.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = CCLogin.storyboard; sourceTree = "<group>"; };
 		F75CDBF51DF063AD00116AD0 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; name = .gitignore; path = ../.gitignore; sourceTree = "<group>"; };
@@ -1491,11 +1489,6 @@
 		F7B81D801C64E77F006D02DF /* CCCoreData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCCoreData.m; sourceTree = "<group>"; };
 		F7BE6E2B1D2D5C3B00106933 /* CCQuickActions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCQuickActions.h; sourceTree = "<group>"; };
 		F7BE6E2C1D2D5C3B00106933 /* CCQuickActions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCQuickActions.m; sourceTree = "<group>"; };
-		F7BEC53E1E7981720048500A /* is */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = is; path = is.lproj/BKPasscodeView.strings; sourceTree = "<group>"; };
-		F7BEC53F1E7981720048500A /* is */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = is; path = is.lproj/Localizable.strings; sourceTree = "<group>"; };
-		F7BEC5401E7981720048500A /* is */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = is; path = is.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		F7BEC5411E7981720048500A /* is */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = is; path = is.lproj/Intro.strings; sourceTree = "<group>"; };
-		F7BEC5421E7981720048500A /* is */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = is; path = is.lproj/Error.strings; sourceTree = "<group>"; };
 		F7BF1B3F1D51E893000854F6 /* CCLogin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCLogin.h; sourceTree = "<group>"; };
 		F7BF1B401D51E893000854F6 /* CCLogin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCLogin.m; sourceTree = "<group>"; };
 		F7BFA4541E0693EE0010E44C /* cryptocloud 5.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "cryptocloud 5.xcdatamodel"; sourceTree = "<group>"; };
@@ -3598,7 +3591,6 @@
 				ru,
 				pl,
 				es,
-				is,
 				"pt-BR",
 				tr,
 				"zh-Hans",
@@ -4407,7 +4399,6 @@
 				F7202C8E1E68171900C6D9AD /* ru */,
 				F7202C961E6817A400C6D9AD /* pl */,
 				F7202C9C1E6818B700C6D9AD /* es */,
-				F7BEC53E1E7981720048500A /* is */,
 				F732B2D71E802B71002B7D75 /* pt-BR */,
 				F76A75E21E83D42B005AFFF4 /* tr */,
 				F76A75F71E83DA6F005AFFF4 /* zh-Hans */,
@@ -4429,7 +4420,6 @@
 				F732B33C1E8045D7002B7D75 /* fr */,
 				F732B33D1E8045D8002B7D75 /* ru */,
 				F732B33E1E8045DA002B7D75 /* pl */,
-				F732B33F1E8045DC002B7D75 /* is */,
 				F732B3401E8045DF002B7D75 /* pt-BR */,
 				F76A75E11E83D42B005AFFF4 /* tr */,
 				F76A75F61E83DA6F005AFFF4 /* zh-Hans */,
@@ -4451,7 +4441,6 @@
 				F7202C911E68171900C6D9AD /* ru */,
 				F7202C991E6817A500C6D9AD /* pl */,
 				F7202C9F1E6818B700C6D9AD /* es */,
-				F7BEC5411E7981720048500A /* is */,
 				F732B2DA1E802B72002B7D75 /* pt-BR */,
 				F76A75E51E83D42B005AFFF4 /* tr */,
 				F76A75FA1E83DA70005AFFF4 /* zh-Hans */,
@@ -4473,7 +4462,6 @@
 				F75797B31E81364100187A1B /* fr */,
 				F75797B41E81364400187A1B /* ru */,
 				F75797B51E81364700187A1B /* pl */,
-				F75797B61E81364A00187A1B /* is */,
 				F75797B71E81364C00187A1B /* pt-BR */,
 				F76A75E01E83D42B005AFFF4 /* tr */,
 				F76A75F51E83DA6F005AFFF4 /* zh-Hans */,
@@ -4495,7 +4483,6 @@
 				F7202C921E68171A00C6D9AD /* ru */,
 				F7202C9A1E6817A500C6D9AD /* pl */,
 				F7202CA01E6818B700C6D9AD /* es */,
-				F7BEC5421E7981720048500A /* is */,
 				F732B2DB1E802B72002B7D75 /* pt-BR */,
 				F76A75E61E83D42B005AFFF4 /* tr */,
 				F76A75FB1E83DA70005AFFF4 /* zh-Hans */,
@@ -4517,7 +4504,6 @@
 				F7202C901E68171900C6D9AD /* ru */,
 				F7202C981E6817A500C6D9AD /* pl */,
 				F7202C9E1E6818B700C6D9AD /* es */,
-				F7BEC5401E7981720048500A /* is */,
 				F732B2D91E802B72002B7D75 /* pt-BR */,
 				F76A75E41E83D42B005AFFF4 /* tr */,
 				F76A75F91E83DA70005AFFF4 /* zh-Hans */,
@@ -4539,7 +4525,6 @@
 				F7202C8F1E68171900C6D9AD /* ru */,
 				F7202C971E6817A500C6D9AD /* pl */,
 				F7202C9D1E6818B700C6D9AD /* es */,
-				F7BEC53F1E7981720048500A /* is */,
 				F732B2D81E802B71002B7D75 /* pt-BR */,
 				F76A75E31E83D42B005AFFF4 /* tr */,
 				F76A75F81E83DA70005AFFF4 /* zh-Hans */,
