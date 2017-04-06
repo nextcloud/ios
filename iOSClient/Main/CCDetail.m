@@ -478,7 +478,7 @@
         [self performSelector:@selector(downloadPhotoBrowser:) withObject:metadata afterDelay:0.1];
     
     // Title
-    if (metadata)
+    if (metadata && !photoBrowser.isGridController)
         self.title = metadata.fileNamePrint;
 }
 
