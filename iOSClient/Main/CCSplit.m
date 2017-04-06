@@ -104,7 +104,7 @@
 
     [CCUtility setIntro:@"1.0"];
     
-    [self newAccount];
+    [self performSelector:@selector(newAccount) withObject:nil afterDelay:0.1];
 
 #else
     
@@ -115,7 +115,7 @@
         
     } else {
         
-        [self newAccount];
+        [self performSelector:@selector(newAccount) withObject:nil afterDelay:0.1];
     }
     
 #endif
@@ -125,7 +125,7 @@
 - (void)introWillFinish:(EAIntroView *)introView wasSkipped:(BOOL)wasSkipped
 {
     [CCUtility setIntro:@"1.0"];
-    [self newAccount];
+    [self performSelector:@selector(newAccount) withObject:nil afterDelay:0.1];
 }
 
 #pragma --------------------------------------------------------------------------------------------

@@ -29,20 +29,20 @@
 #define k_pushNotificationServer        @"https://push-notifications.nextcloud.com"
 #define k_loginButtonLabelLink          @"https://nextcloud.com/providers"
 
-// Capabilities Group & Service Key Share
+// Capabilities Group
 #define k_capabilitiesGroups            @"group.it.twsweb.Crypto-Cloud"
 
 /* Define option compiler */
 
 /*
- #define OPTION_MULTIUSER_DISABLE
- #define OPTION_CRYPTO_CLOUD_SYSTEM_DISABLE
+ #define OPTION_DISABLE_INTRO
+ #define NO_REQUEST_LOGIN_URL
  
  #define OPTION_FIREBASE_ENABLE
- #define OPTION_AUTOMATIC_UPLOAD_ENABLE
- #define OPTION_DISABLE_INTRO
  
- #define NO_REQUEST_LOGIN_URL
+ #define OPTION_MULTIUSER_DISABLE
+ #define OPTION_CRYPTO_CLOUD_SYSTEM_DISABLE
+ #define OPTION_AUTOMATIC_UPLOAD_ENABLE
 */
 
 #define OPTION_FIREBASE_ENABLE
