@@ -18,10 +18,7 @@ public class CCLoginWeb: UIViewController {
     
     var viewController : UIViewController?
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    
-    public enum enumLoginType : Int {
-        case loginAdd = 0, loginAddForced = 1, loginModifyPasswordUser = 2
-    }
+    var loginType : NSInteger = 0
     
     func presentModalWithDefaultTheme(_ vc: UIViewController) {
         
@@ -62,7 +59,7 @@ extension CCLoginWeb: SwiftModalWebVCDelegate {
                 if (tableAccount.account == account) {
                     
                     appDelegate.settingActiveAccount(account, activeUrl: serverUrl, activeUser: username, activePassword: password)
-                    self.delegate?.loginSuccess(0)
+                    self.delegate?.loginSuccess(loginType)
                 
                     self.viewController?.dismiss(animated: true, completion: nil)
                 }

@@ -166,6 +166,7 @@
     
     _loginWeb = [CCLoginWeb new];
     _loginWeb.delegate = self;
+    _loginWeb.loginType = loginAdd;
     
     [_loginWeb presentModalWithDefaultTheme:self];
     
@@ -185,6 +186,7 @@
     
     _loginWeb = [CCLoginWeb new];
     _loginWeb.delegate = self;
+    _loginWeb.loginType = loginAddForced;
     
     dispatch_async(dispatch_get_main_queue(), ^ {
         [_loginWeb presentModalWithDefaultTheme:self];
@@ -215,6 +217,7 @@
     
     _loginWeb = [CCLoginWeb new];
     _loginWeb.delegate = self;
+    _loginWeb.loginType = loginModifyPasswordUser;
     
     dispatch_async(dispatch_get_main_queue(), ^ {
         [_loginWeb presentModalWithDefaultTheme:self];

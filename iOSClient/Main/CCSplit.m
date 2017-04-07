@@ -153,6 +153,8 @@
         
         _loginWeb = [CCLoginWeb new];
         _loginWeb.delegate = self;
+        _loginWeb.loginType = loginAddForced;
+        
         [_loginWeb presentModalWithDefaultTheme:self];
         
 #else
