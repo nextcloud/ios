@@ -295,6 +295,10 @@ extension SwiftWebVC: WKNavigationDelegate {
         updateToolbarItems()
     }
     
+    public func webView(_ webView: WKWebView, didReceiveServerRedirectForProvisionalNavigation navigation: WKNavigation!) {
+        print(webView.url)
+    }
+    
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         self.delegate?.didFinishLoading(success: true)
         self.delegate?.didFinishLoading(success: true, url: webView.url!)
