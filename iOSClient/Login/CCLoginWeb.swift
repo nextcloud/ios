@@ -19,6 +19,12 @@ class CCLoginWeb: UIViewController {
     
     public weak var delegate: CCLoginDelegate?
     
+    public enum enumLoginType : Int {
+        case loginAdd = 0, loginAddForced = 1, loginModifyPasswordUser = 2
+    }
+    
+    public var loginTypeX : enumLoginType?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
     }
@@ -58,6 +64,7 @@ extension CCLoginWeb: SwiftModalWebVCDelegate {
                 
                 let account : String = "\(username) \(serverUrl)"
                 
+                CCCoreData.deleteAccount(account)
                 CCCoreData.addAccount(account, url: serverUrl, user: username, password: password)
                 appDelegate.settingActiveAccount(account, activeUrl: serverUrl, activeUser: username, activePassword: password)
                 
