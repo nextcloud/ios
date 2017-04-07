@@ -145,10 +145,16 @@ public class SwiftWebVC: UIViewController {
         
         super.viewWillAppear(true)
         
-        if (UIDevice.current.userInterfaceIdiom == UIUserInterfaceIdiom.phone) {
-            self.navigationController?.setToolbarHidden(false, animated: false)
-        }
-        else if (UIDevice.current.userInterfaceIdiom == UIUserInterfaceIdiom.pad) {
+        if (toobar == true) {
+        
+            if (UIDevice.current.userInterfaceIdiom == UIUserInterfaceIdiom.phone) {
+                self.navigationController?.setToolbarHidden(false, animated: false)
+            }
+            else if (UIDevice.current.userInterfaceIdiom == UIUserInterfaceIdiom.pad) {
+                self.navigationController?.setToolbarHidden(true, animated: true)
+            }
+            
+        } else {
             self.navigationController?.setToolbarHidden(true, animated: true)
         }
     }
