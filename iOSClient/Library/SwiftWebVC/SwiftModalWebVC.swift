@@ -69,6 +69,7 @@ public class SwiftModalWebVC: UINavigationController {
         case .loginWeb:
             webViewController.buttonColor = UIColor.white
             UINavigationBar.appearance().barStyle = UIBarStyle.default
+            webViewController.toobar = false
         }
         
         if (theme != .loginWeb) {
