@@ -20,7 +20,7 @@ class CCLoginWeb: UIViewController {
     
     func presentModalWithDefaultTheme(_ vc: UIViewController) {
                 
-        let webVC = SwiftModalWebVC(urlString: k_loginBaseUrl, theme: .customLoginWeb, color: UIColor.red)
+        let webVC = SwiftModalWebVC(urlString: k_loginBaseUrl, theme: .loginWeb)
         webVC.delegateWeb = self
         vc.present(webVC, animated: true, completion: nil)
     }
