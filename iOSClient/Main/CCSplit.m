@@ -142,28 +142,6 @@
 
 - (void)loginSuccess:(NSInteger)loginType
 {
-    // ---------------------------------------
-    //  *** DEFAULT OPTION ***
-    // ---------------------------------------
-    
-#ifdef OPTION_AUTOMATIC_UPLOAD_ENABLE
-    
-    [CCCoreData setCameraUpload:YES activeAccount:app.activeAccount];
-    
-    // Default parameter
-    [CCCoreData setCameraUploadFolderName:nil activeAccount:app.activeAccount];
-    [CCCoreData setCameraUploadFolderPath:nil activeUrl:app.activeUrl activeAccount:app.activeAccount];
-    
-    [CCCoreData setCameraUploadPhoto:YES activeAccount:app.activeAccount];
-    [CCCoreData setCameraUploadDatePhoto:[NSDate date]];
-    
-    [CCCoreData setCameraUploadVideo:YES activeAccount:app.activeAccount];
-    [CCCoreData setCameraUploadWWanVideo:YES activeAccount:app.activeAccount];
-    [CCCoreData setCameraUploadDateVideo:[NSDate date]];
-    
-    [CCCoreData setCameraUploadCreateSubfolderActiveAccount:YES activeAccount:app.activeAccount];
-#endif
-
     [[NSNotificationCenter defaultCenter] postNotificationName:@"initializeMain" object:nil];
 }
 

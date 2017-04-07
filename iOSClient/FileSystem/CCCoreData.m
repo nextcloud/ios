@@ -39,17 +39,29 @@
         
     record.account = account;
     record.active = [NSNumber numberWithBool:NO];
-        
+    
+#ifdef OPTION_AUTOMATIC_UPLOAD_ENABLE
+    record.cameraUpload = [NSNumber numberWithBool:YES];
+    record.cameraUploadPhoto = [NSNumber numberWithBool:YES];
+    record.cameraUploadVideo = [NSNumber numberWithBool:YES];
+    
+    record.cameraUploadDatePhoto = [NSDate date];
+    record.cameraUploadDateVideo = [NSDate date];
+
+    record.cameraUploadWWAnPhoto = [NSNumber numberWithBool:NO];
+    record.cameraUploadWWAnVideo = [NSNumber numberWithBool:YES];
+#else
     record.cameraUpload = [NSNumber numberWithBool:NO];
     record.cameraUploadPhoto = [NSNumber numberWithBool:NO];
     record.cameraUploadVideo = [NSNumber numberWithBool:NO];
-        
-    record.cameraUploadCryptatedPhoto = [NSNumber numberWithBool:NO];
-    record.cameraUploadCryptatedVideo = [NSNumber numberWithBool:NO];
-        
+    
     record.cameraUploadWWAnPhoto = [NSNumber numberWithBool:NO];
     record.cameraUploadWWAnVideo = [NSNumber numberWithBool:NO];
-        
+#endif
+    
+    record.cameraUploadCryptatedPhoto = [NSNumber numberWithBool:NO];
+    record.cameraUploadCryptatedVideo = [NSNumber numberWithBool:NO];
+
     record.optimization = [NSDate date];
     record.password = password;
     record.url = url;
