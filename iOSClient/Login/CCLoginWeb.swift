@@ -8,31 +8,32 @@
 
 import UIKit
 
-/*
- - (void)goToWebVC:(CCMenuItem *)sender
- {
- if (self.splitViewController.isCollapsed) {
- 
- SwiftWebVC *webVC = [[SwiftWebVC alloc] initWithUrlString:sender.argument];
- [self.navigationController pushViewController:webVC animated:YES];
- 
- } else {
- 
- SwiftModalWebVC *webVC = [[SwiftModalWebVC alloc] initWithUrlString:sender.argument];
- [self presentViewController:webVC animated:YES completion:nil];
- }
- }
-*/
-
 class CCLoginWeb: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
     }
     
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+    }
+    
     func presentModalWithDefaultTheme(_ vc: UIViewController) {
-        let webVC = SwiftModalWebVC(urlString: k_loginBaseUrl)
+                
+        let webVC = SwiftModalWebVC(urlString: k_loginBaseUrl, theme: .customLoginWeb, color: UIColor.red)
+        webVC.delegateWeb = self
         vc.present(webVC, animated: true, completion: nil)
+    }
+}
+
+extension CCLoginWeb: SwiftModalWebVCDelegate {
+    
+    func didStartLoading() {
+        print("Started loading.")
+    }
+
+    func didFinishLoading(success: Bool, url: URL) {
+        print("Finished loading. Success: \(success).")
     }
 }
 

@@ -8,10 +8,17 @@
 
 import UIKit
 
+public protocol SwiftModalWebVCDelegate: class {
+    func didStartLoading()
+    func didFinishLoading(success: Bool, url: URL)
+}
+
 public class SwiftModalWebVC: UINavigationController {
     
+    public weak var delegateWeb: SwiftModalWebVCDelegate?
+    
     public enum SwiftModalWebVCTheme {
-        case lightBlue, lightBlack, dark
+        case lightBlue, lightBlack, dark, customLoginWeb
     }
     
     weak var webViewDelegate: UIWebViewDelegate? = nil
@@ -24,6 +31,10 @@ public class SwiftModalWebVC: UINavigationController {
         self.init(pageURL: URL(string: urlString)!, theme: theme)
     }
     
+    public convenience init(urlString: String, theme: SwiftModalWebVCTheme, color : UIColor) {
+        self.init(pageURL: URL(string: urlString)!, theme: theme, color: color)
+    }
+    
     public convenience init(pageURL: URL) {
         self.init(request: URLRequest(url: pageURL))
     }
@@ -31,11 +42,16 @@ public class SwiftModalWebVC: UINavigationController {
     public convenience init(pageURL: URL, theme: SwiftModalWebVCTheme) {
         self.init(request: URLRequest(url: pageURL), theme: theme)
     }
+   
+    public convenience init(pageURL: URL, theme: SwiftModalWebVCTheme, color : UIColor) {
+        self.init(request: URLRequest(url: pageURL), theme: theme, color: color)
+    }
     
-    public init(request: URLRequest, theme: SwiftModalWebVCTheme = .dark) {
+    public init(request: URLRequest, theme: SwiftModalWebVCTheme = .dark, color : UIColor = UIColor.clear) {
+        
         let webViewController = SwiftWebVC(aRequest: request)
         webViewController.storedStatusColor = UINavigationBar.appearance().barStyle
-
+        
         let doneButton = UIBarButtonItem(image: SwiftWebVC.bundledImage(named: "SwiftWebVCDismiss"),
                                          style: UIBarButtonItemStyle.plain,
                                          target: webViewController,
@@ -57,15 +73,23 @@ public class SwiftModalWebVC: UINavigationController {
             webViewController.buttonColor = UIColor.white
             webViewController.titleColor = UIColor.groupTableViewBackground
             UINavigationBar.appearance().barStyle = UIBarStyle.black
+        case .customLoginWeb:
+            webViewController.buttonColor = UIColor.white
+            UINavigationBar.appearance().barStyle = UIBarStyle.default
+            UINavigationBar.appearance().tintColor = color
         }
         
-        if (UIDevice.current.userInterfaceIdiom == UIUserInterfaceIdiom.pad) {
-            webViewController.navigationItem.leftBarButtonItem = doneButton
+        if (theme != .customLoginWeb) {
+            if (UIDevice.current.userInterfaceIdiom == UIUserInterfaceIdiom.pad) {
+                webViewController.navigationItem.leftBarButtonItem = doneButton
+            }
+            else {
+                webViewController.navigationItem.rightBarButtonItem = doneButton
+            }
         }
-        else {
-            webViewController.navigationItem.rightBarButtonItem = doneButton
-        }
+        
         super.init(rootViewController: webViewController)
+        webViewController.delegate = self
     }
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
@@ -78,5 +102,20 @@ public class SwiftModalWebVC: UINavigationController {
     
     override public func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(false)
+    }
+}
+
+extension SwiftModalWebVC: SwiftWebVCDelegate {
+    
+    public func didStartLoading() {
+        self.delegateWeb?.didStartLoading()
+    }
+    
+    public func didFinishLoading(success: Bool) {
+        print("Finished loading. Success: \(success).")
+    }
+    
+    public func didFinishLoading(success: Bool, url: URL) {
+        self.delegateWeb?.didFinishLoading(success: success, url: url)
     }
 }

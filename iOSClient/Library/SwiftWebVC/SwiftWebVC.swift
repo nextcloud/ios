@@ -11,6 +11,7 @@ import WebKit
 public protocol SwiftWebVCDelegate: class {
     func didStartLoading()
     func didFinishLoading(success: Bool)
+    func didFinishLoading(success: Bool, url: URL)
 }
 
 public class SwiftWebVC: UIViewController {
@@ -100,6 +101,12 @@ public class SwiftWebVC: UIViewController {
     }
     
     func loadRequest(_ request: URLRequest) {
+        if #available(iOS 9.0, *) {
+            webView.customUserAgent = "Mozilla/5.0 (iOS) Nextcloud-iOS"
+        } else {
+            // Fallback on earlier versions
+            UserDefaults.standard.register(defaults: ["UserAgent": "Mozilla/5.0 (iOS) Nextcloud-iOS"])
+        }
         webView.load(request)
     }
     
@@ -290,7 +297,9 @@ extension SwiftWebVC: WKNavigationDelegate {
     
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         self.delegate?.didFinishLoading(success: true)
+        self.delegate?.didFinishLoading(success: true, url: webView.url!)
         UIApplication.shared.isNetworkActivityIndicatorVisible = false
+        
         
         webView.evaluateJavaScript("document.title", completionHandler: {(response, error) in
             self.navBarTitle.text = response as! String?
@@ -302,6 +311,7 @@ extension SwiftWebVC: WKNavigationDelegate {
     
     public func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
         self.delegate?.didFinishLoading(success: false)
+        self.delegate?.didFinishLoading(success: false, url: webView.url!)
         UIApplication.shared.isNetworkActivityIndicatorVisible = false
         updateToolbarItems()
     }
