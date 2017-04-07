@@ -32,15 +32,19 @@ public class SwiftModalWebVC: UINavigationController {
         self.init(pageURL: URL(string: urlString)!, theme: theme)
     }
     
+    public convenience init(urlString: String, theme: SwiftModalWebVCTheme, color: UIColor, colorText: UIColor) {
+        self.init(pageURL: URL(string: urlString)!, theme: theme, color: color, colorText: colorText)
+    }
+    
     public convenience init(pageURL: URL) {
         self.init(request: URLRequest(url: pageURL))
     }
     
-    public convenience init(pageURL: URL, theme: SwiftModalWebVCTheme) {
-        self.init(request: URLRequest(url: pageURL), theme: theme)
+    public convenience init(pageURL: URL, theme: SwiftModalWebVCTheme, color : UIColor = UIColor.clear, colorText: UIColor = UIColor.black) {
+        self.init(request: URLRequest(url: pageURL), theme: theme, color: color, colorText: colorText)
     }
    
-    public init(request: URLRequest, theme: SwiftModalWebVCTheme = .dark, color : UIColor = UIColor.clear) {
+    public init(request: URLRequest, theme: SwiftModalWebVCTheme = .dark, color: UIColor = UIColor.clear, colorText: UIColor = UIColor.black) {
         
         let webViewController = SwiftWebVC(aRequest: request)
         webViewController.storedStatusColor = UINavigationBar.appearance().barStyle
