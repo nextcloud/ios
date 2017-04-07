@@ -10,6 +10,7 @@ import WebKit
 
 public protocol SwiftWebVCDelegate: class {
     func didStartLoading()
+    func didReceiveServerRedirectForProvisionalNavigation(url: URL)
     func didFinishLoading(success: Bool)
     func didFinishLoading(success: Bool, url: URL)
 }
@@ -296,7 +297,7 @@ extension SwiftWebVC: WKNavigationDelegate {
     }
     
     public func webView(_ webView: WKWebView, didReceiveServerRedirectForProvisionalNavigation navigation: WKNavigation!) {
-        print(webView.url)
+        self.delegate?.didReceiveServerRedirectForProvisionalNavigation(url: webView.url!)
     }
     
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {

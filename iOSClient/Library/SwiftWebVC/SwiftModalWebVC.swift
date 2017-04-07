@@ -10,6 +10,7 @@ import UIKit
 
 public protocol SwiftModalWebVCDelegate: class {
     func didStartLoading()
+    func didReceiveServerRedirectForProvisionalNavigation(url: URL)
     func didFinishLoading(success: Bool, url: URL)
 }
 
@@ -109,6 +110,10 @@ extension SwiftModalWebVC: SwiftWebVCDelegate {
     
     public func didStartLoading() {
         self.delegateWeb?.didStartLoading()
+    }
+    
+    public func didReceiveServerRedirectForProvisionalNavigation(url: URL) {
+        self.delegateWeb?.didReceiveServerRedirectForProvisionalNavigation(url: url)
     }
     
     public func didFinishLoading(success: Bool) {

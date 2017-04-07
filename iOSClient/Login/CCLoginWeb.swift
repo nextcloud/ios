@@ -31,6 +31,10 @@ extension CCLoginWeb: SwiftModalWebVCDelegate {
     func didStartLoading() {
         print("Started loading.")
     }
+    
+    func didReceiveServerRedirectForProvisionalNavigation(url: URL) {
+        print(url)
+    }
 
     func didFinishLoading(success: Bool, url: URL) {
         print("Finished loading. Success: \(success).")
