@@ -518,6 +518,7 @@
 		F7B1FBC81E72E3D1001781FE /* SwiftWebVCActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B1FBC11E72E3D1001781FE /* SwiftWebVCActivity.swift */; };
 		F7B1FBC91E72E3D1001781FE /* SwiftWebVCActivityChrome.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B1FBC21E72E3D1001781FE /* SwiftWebVCActivityChrome.swift */; };
 		F7B1FBCA1E72E3D1001781FE /* SwiftWebVCActivitySafari.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B1FBC31E72E3D1001781FE /* SwiftWebVCActivitySafari.swift */; };
+		F7B3A4EE1E97818A000DACE8 /* CCLoginWeb.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B3A4ED1E97818A000DACE8 /* CCLoginWeb.swift */; };
 		F7BB14961D5B62C000ECEE68 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63061D5B3467004E2AA5 /* libcrypto.a */; };
 		F7BB14971D5B62C000ECEE68 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63071D5B3467004E2AA5 /* libssl.a */; };
 		F7BE6E2F1D2D5C3B00106933 /* CCQuickActions.m in Sources */ = {isa = PBXBuildFile; fileRef = F7BE6E2C1D2D5C3B00106933 /* CCQuickActions.m */; };
@@ -1484,6 +1485,7 @@
 		F7B1FBC11E72E3D1001781FE /* SwiftWebVCActivity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftWebVCActivity.swift; sourceTree = "<group>"; };
 		F7B1FBC21E72E3D1001781FE /* SwiftWebVCActivityChrome.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftWebVCActivityChrome.swift; sourceTree = "<group>"; };
 		F7B1FBC31E72E3D1001781FE /* SwiftWebVCActivitySafari.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftWebVCActivitySafari.swift; sourceTree = "<group>"; };
+		F7B3A4ED1E97818A000DACE8 /* CCLoginWeb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CCLoginWeb.swift; sourceTree = "<group>"; };
 		F7B61E861DC13C20009E938F /* MagicalRecord.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MagicalRecord.xcodeproj; path = "Libraries external/MagicalRecord/MagicalRecord.xcodeproj"; sourceTree = SOURCE_ROOT; };
 		F7B81D7F1C64E77F006D02DF /* CCCoreData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCCoreData.h; sourceTree = "<group>"; };
 		F7B81D801C64E77F006D02DF /* CCCoreData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCCoreData.m; sourceTree = "<group>"; };
@@ -3017,6 +3019,7 @@
 				F75ADF441DC75FFE008A7347 /* CCLogin.storyboard */,
 				F7BF1B3F1D51E893000854F6 /* CCLogin.h */,
 				F7BF1B401D51E893000854F6 /* CCLogin.m */,
+				F7B3A4ED1E97818A000DACE8 /* CCLoginWeb.swift */,
 			);
 			path = Login;
 			sourceTree = "<group>";
@@ -4224,6 +4227,7 @@
 				F77B0E5F1D118A16002130FE /* CCSettings.m in Sources */,
 				F77B0E601D118A16002130FE /* CGPDFDocument.m in Sources */,
 				F77B0E621D118A16002130FE /* REMenuContainerView.m in Sources */,
+				F7B3A4EE1E97818A000DACE8 /* CCLoginWeb.swift in Sources */,
 				F77B0E631D118A16002130FE /* CCShareOC.m in Sources */,
 				F73CCE261DC13788007E38D8 /* UIScrollView+EmptyDataSet.m in Sources */,
 				F70FD1C71E67552700C0FDA6 /* CCControlCenterTransfer.m in Sources */,

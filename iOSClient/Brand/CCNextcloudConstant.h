@@ -37,6 +37,7 @@
 /*
  #define OPTION_DISABLE_INTRO
  #define NO_REQUEST_LOGIN_URL
+ #define LOGIN_WEB
  
  #define OPTION_FIREBASE_ENABLE
  
@@ -46,6 +47,7 @@
 */
 
 #define OPTION_FIREBASE_ENABLE
+#define LOGIN_WEB
 
 // -----------------------------------------------------------------------------------------------------------
 // COLOR

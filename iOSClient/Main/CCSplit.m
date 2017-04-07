@@ -25,8 +25,16 @@
 #import "AppDelegate.h"
 #import "CCLogin.h"
 
+#ifdef CUSTOM_BUILD
+    #import "CustomSwift.h"
+#else
+    #import "Nextcloud-Swift.h"
+#endif
+
 @interface CCSplit ()
 {
+    CCLoginWeb *_loginWeb;
+    CCLogin *_loginVC;
 }
 @end
 
@@ -141,11 +149,20 @@
 {
     if (app.activeAccount.length == 0) {
     
-        CCLogin *loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
-        loginVC.delegate = self;
-        loginVC.loginType = loginAddForced;
+#ifdef LOGIN_WEB
         
-        [self presentViewController:loginVC animated:YES completion:nil];
+        _loginWeb = [CCLoginWeb new];
+        [_loginWeb presentModalWithDefaultTheme:self];
+        
+#else
+        _loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
+        _loginVC.delegate = self;
+        _loginVC.loginType = loginAddForced;
+        
+        [self presentViewController:_loginVC animated:YES completion:nil];
+
+#endif
+    
     }
 }
 
