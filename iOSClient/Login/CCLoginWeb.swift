@@ -8,29 +8,19 @@
 
 import UIKit
 
-public protocol CCLoginDelegate: class {
-    func loginSuccess(loginType: Int)
+@objc protocol CCLoginWebDelegate: class {
+    func loginSuccess(_: NSInteger)
 }
 
-class CCLoginWeb: UIViewController {
+public class CCLoginWeb: UIViewController {
 
+    weak var delegate: CCLoginWebDelegate?
+    
     var viewController : UIViewController?
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
-    public weak var delegate: CCLoginDelegate?
-    
     public enum enumLoginType : Int {
         case loginAdd = 0, loginAddForced = 1, loginModifyPasswordUser = 2
-    }
-    
-    public var loginTypeX : enumLoginType?
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-    }
-    
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
     }
     
     func presentModalWithDefaultTheme(_ vc: UIViewController) {
@@ -45,12 +35,12 @@ class CCLoginWeb: UIViewController {
 
 extension CCLoginWeb: SwiftModalWebVCDelegate {
     
-    func didStartLoading() {
+    public func didStartLoading() {
         print("Started loading.")
     }
     
-    func didReceiveServerRedirectForProvisionalNavigation(url: URL) {
-        
+    public func didReceiveServerRedirectForProvisionalNavigation(url: URL) {
+                
         let urlString: String = url.absoluteString
         
         if (urlString.contains(k_webLoginAutenticationProtocol) == true) {
@@ -66,16 +56,21 @@ extension CCLoginWeb: SwiftModalWebVCDelegate {
                 
                 CCCoreData.deleteAccount(account)
                 CCCoreData.addAccount(account, url: serverUrl, user: username, password: password)
-                appDelegate.settingActiveAccount(account, activeUrl: serverUrl, activeUser: username, activePassword: password)
                 
-                self.delegate?.loginSuccess(loginType: 0)
+                let tableAccount : TableAccount = CCCoreData.setActiveAccount(account)
                 
-                self.viewController?.dismiss(animated: true, completion: nil)
+                if (tableAccount.account == account) {
+                    
+                    appDelegate.settingActiveAccount(account, activeUrl: serverUrl, activeUser: username, activePassword: password)
+                    self.delegate?.loginSuccess(0)
+                
+                    self.viewController?.dismiss(animated: true, completion: nil)
+                }
             }
         }
     }
 
-    func didFinishLoading(success: Bool, url: URL) {
+    public func didFinishLoading(success: Bool, url: URL) {
         print("Finished loading. Success: \(success).")
     }
 }

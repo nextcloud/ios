@@ -31,7 +31,7 @@
     #import "Nextcloud-Swift.h"
 #endif
 
-@interface CCSplit ()
+@interface CCSplit () <CCLoginWebDelegate>
 {
     CCLoginWeb *_loginWeb;
     CCLogin *_loginVC;
@@ -174,7 +174,7 @@
 #ifdef LOGIN_WEB
         
         _loginWeb = [CCLoginWeb new];
-        _loginVC.delegate = self;
+        _loginWeb.delegate = self;
         [_loginWeb presentModalWithDefaultTheme:self];
         
 #else
