@@ -990,11 +990,14 @@
 
 - (void)changePasswordAccount
 {
+#ifdef LOGIN_WEB
+#else
     CCLogin *loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
     loginVC.delegate = self;
     loginVC.loginType = loginModifyPasswordUser;
     
     [self presentViewController:loginVC animated:YES completion:nil];
+#endif
 }
 
 #pragma mark -

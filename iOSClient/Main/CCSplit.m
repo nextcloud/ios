@@ -31,7 +31,7 @@
     #import "Nextcloud-Swift.h"
 #endif
 
-@interface CCSplit () <CCLoginWebDelegate>
+@interface CCSplit ()
 {
     CCLoginWeb *_loginWeb;
     CCLogin *_loginVC;

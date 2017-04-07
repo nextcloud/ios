@@ -8,13 +8,13 @@
 
 import UIKit
 
-@objc protocol CCLoginWebDelegate: class {
+@objc protocol CCLoginDelegate: class {
     func loginSuccess(_: NSInteger)
 }
 
 public class CCLoginWeb: UIViewController {
 
-    weak var delegate: CCLoginWebDelegate?
+    weak var delegate: CCLoginDelegate?
     
     var viewController : UIViewController?
     let appDelegate = UIApplication.shared.delegate as! AppDelegate

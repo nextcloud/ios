@@ -25,7 +25,21 @@
 #import "AppDelegate.h"
 #import "CCLogin.h"
 
+#ifdef CUSTOM_BUILD
+#import "CustomSwift.h"
+#else
+#import "Nextcloud-Swift.h"
+#endif
+
 #define actionSheetCancellaAccount 1
+
+@interface CCManageAccount ()
+{
+    CCLoginWeb *_loginWeb;
+    CCLogin *_loginVC;
+}
+@end
+
 
 @implementation CCManageAccount
 
@@ -148,22 +162,42 @@
     [app cancelAllOperations];
     [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:k_taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
     
-    CCLogin *loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
-    loginVC.delegate = self;
-    loginVC.loginType = loginAdd;
+#ifdef LOGIN_WEB
     
-    [self presentViewController:loginVC animated:YES completion:nil];
+    _loginWeb = [CCLoginWeb new];
+    _loginWeb.delegate = self;
+    
+    [_loginWeb presentModalWithDefaultTheme:self];
+    
+#else
+    _loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
+    _loginVC.delegate = self;
+    _loginVC.loginType = loginAdd;
+    
+    [self presentViewController:_loginVC animated:YES completion:nil];
+    
+#endif
 }
 
 - (void)addAccountFoced
 {
-    CCLogin *loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
-    loginVC.delegate = self;
-    loginVC.loginType = loginAddForced;
+#ifdef LOGIN_WEB
+    
+    _loginWeb = [CCLoginWeb new];
+    _loginWeb.delegate = self;
     
     dispatch_async(dispatch_get_main_queue(), ^ {
-        [self presentViewController:loginVC animated:YES completion:nil];
+        [_loginWeb presentModalWithDefaultTheme:self];
     });
+#else
+    _loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
+    _loginVC.delegate = self;
+    _loginVC.loginType = loginAddForced;
+    
+    dispatch_async(dispatch_get_main_queue(), ^ {
+        [self presentViewController:_loginVC animated:YES completion:nil];
+    });
+#endif
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -177,11 +211,23 @@
     [app cancelAllOperations];
     [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:k_taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
     
-    CCLogin *loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier: @"CCLoginNextcloud"];
-    loginVC.delegate = self;
-    loginVC.loginType = loginModifyPasswordUser;
-        
-    [self presentViewController:loginVC animated:YES completion:nil];
+#ifdef LOGIN_WEB
+    
+    _loginWeb = [CCLoginWeb new];
+    _loginWeb.delegate = self;
+    
+    dispatch_async(dispatch_get_main_queue(), ^ {
+        [_loginWeb presentModalWithDefaultTheme:self];
+    });
+#else
+    _loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
+    _loginVC.delegate = self;
+    _loginVC.loginType = loginModifyPasswordUser;
+    
+    dispatch_async(dispatch_get_main_queue(), ^ {
+        [self presentViewController:_loginVC animated:YES completion:nil];
+    });
+#endif
     
     [self UpdateForm];
 }
