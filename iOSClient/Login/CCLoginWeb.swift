@@ -24,7 +24,7 @@ public class CCLoginWeb: UIViewController {
         
         self.viewController = vc
         
-        let webVC = SwiftModalWebVC(urlString: k_loginBaseUrl, theme: .loginWeb, color: Constant.GlobalConstants.k_Color_NavigationBar, colorText: Constant.GlobalConstants.k_Color_NavigationBar_Text)
+        let webVC = SwiftModalWebVC(urlString: k_loginBaseUrl, theme: .custom, color: Constant.GlobalConstants.k_Color_NavigationBar, colorText: Constant.GlobalConstants.k_Color_NavigationBar_Text)
         webVC.delegateWeb = self
         vc.present(webVC, animated: false, completion: nil)
     }

@@ -22,7 +22,7 @@ public class SwiftWebVC: UIViewController {
     var buttonColor: UIColor? = nil
     var titleColor: UIColor? = nil
     var closing: Bool! = false
-    var toobar: Bool! = true
+    //var toobar: Bool! = true
     
     lazy var backBarButtonItem: UIBarButtonItem =  {
         var tempBackBarButtonItem = UIBarButtonItem(image: SwiftWebVC.bundledImage(named: "SwiftWebVCBack"),
@@ -103,11 +103,14 @@ public class SwiftWebVC: UIViewController {
     }
     
     func loadRequest(_ request: URLRequest) {
+        
+        let userAgent : String = CCUtility.getUserAgent()
+        
         if #available(iOS 9.0, *) {
-            webView.customUserAgent = "Mozilla/5.0 (iOS) Nextcloud-iOS"
+            webView.customUserAgent = userAgent
         } else {
             // Fallback on earlier versions
-            UserDefaults.standard.register(defaults: ["UserAgent": "Mozilla/5.0 (iOS) Nextcloud-iOS"])
+            UserDefaults.standard.register(defaults: ["UserAgent": userAgent])
         }
         webView.load(request)
     }
@@ -145,18 +148,12 @@ public class SwiftWebVC: UIViewController {
         
         super.viewWillAppear(true)
         
-        if (toobar == true) {
-        
-            if (UIDevice.current.userInterfaceIdiom == UIUserInterfaceIdiom.phone) {
-                self.navigationController?.setToolbarHidden(false, animated: false)
-            }
-            else if (UIDevice.current.userInterfaceIdiom == UIUserInterfaceIdiom.pad) {
-                self.navigationController?.setToolbarHidden(true, animated: true)
-            }
-            
-        } else {
-            self.navigationController?.setToolbarHidden(true, animated: true)
+        if (UIDevice.current.userInterfaceIdiom == UIUserInterfaceIdiom.phone) {
+            self.navigationController?.setToolbarHidden(false, animated: false)
         }
+        else if (UIDevice.current.userInterfaceIdiom == UIUserInterfaceIdiom.pad) {
+            self.navigationController?.setToolbarHidden(true, animated: true)
+        }            
     }
     
     override public func viewWillDisappear(_ animated: Bool) {
@@ -176,10 +173,6 @@ public class SwiftWebVC: UIViewController {
     // Toolbar
     
     func updateToolbarItems() {
-        
-        if (toobar == false) {
-            return
-        }
         
         backBarButtonItem.isEnabled = webView.canGoBack
         forwardBarButtonItem.isEnabled = webView.canGoForward
