@@ -152,7 +152,7 @@ public class SwiftWebVC: UIViewController {
         }
         else if (UIDevice.current.userInterfaceIdiom == UIUserInterfaceIdiom.pad) {
             self.navigationController?.setToolbarHidden(true, animated: true)
-        }            
+        }        
     }
     
     override public func viewWillDisappear(_ animated: Bool) {
