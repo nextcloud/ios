@@ -45,23 +45,31 @@ extension CCLoginWeb: SwiftModalWebVCDelegate {
             let keyValue = url.path.components(separatedBy: "&")
             if (keyValue.count == 3) {
                 
-                let serverUrl : String = String(keyValue[0].replacingOccurrences(of: "/server:", with: "").characters.dropLast())
-                let username : String = keyValue[1].replacingOccurrences(of: "user:", with: "")
-                let password : String = keyValue[2].replacingOccurrences(of: "password:", with: "")
+                if (keyValue[0].contains("server:") && keyValue[1].contains("user:") && keyValue[2].contains("password:")) {
                 
-                let account : String = "\(username) \(serverUrl)"
-                
-                CCCoreData.deleteAccount(account)
-                CCCoreData.addAccount(account, url: serverUrl, user: username, password: password)
-                
-                let tableAccount : TableAccount = CCCoreData.setActiveAccount(account)
-                
-                if (tableAccount.account == account) {
+                    var serverUrl : String = keyValue[0].replacingOccurrences(of: "/server:", with: "")
                     
-                    appDelegate.settingActiveAccount(account, activeUrl: serverUrl, activeUser: username, activePassword: password)
-                    self.delegate?.loginSuccess(loginType)
+                    if (serverUrl.characters.last == "/") {
+                        serverUrl = String(serverUrl.characters.dropLast())
+                    }
                 
-                    self.viewController?.dismiss(animated: true, completion: nil)
+                    let username : String = keyValue[1].replacingOccurrences(of: "user:", with: "")
+                    let password : String = keyValue[2].replacingOccurrences(of: "password:", with: "")
+                
+                    let account : String = "\(username) \(serverUrl)"
+                
+                    CCCoreData.deleteAccount(account)
+                    CCCoreData.addAccount(account, url: serverUrl, user: username, password: password)
+                
+                    let tableAccount : TableAccount = CCCoreData.setActiveAccount(account)
+                
+                    if (tableAccount.account == account) {
+                    
+                        appDelegate.settingActiveAccount(account, activeUrl: serverUrl, activeUser: username, activePassword: password)
+                        self.delegate?.loginSuccess(loginType)
+                
+                        self.viewController?.dismiss(animated: true, completion: nil)
+                    }
                 }
             }
         }
