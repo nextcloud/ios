@@ -140,7 +140,6 @@
 #define image_shareExtEncrypt                   @"shareExtEncrypt"
 #define image_shareLink                         @"shareLink"
 #define image_shareMounted                      @"shareMounted"
-#define image_shareUser                         @"shareUser"
 #define image_statusdownload                    @"statusdownload"
 #define image_statusdownloadcrypto              @"statusdownloadcrypto"
 #define image_statuserror                       @"statuserror"

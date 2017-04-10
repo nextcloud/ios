@@ -188,7 +188,7 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
     }
     
     if (self.displayShareButton) {
-        _shareButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"shareUser"] style:UIBarButtonItemStylePlain target:self action:@selector(shareButtonPressed:)];
+        _shareButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"actionSheetShare"] style:UIBarButtonItemStylePlain target:self action:@selector(shareButtonPressed:)];
     }
     
     // Update

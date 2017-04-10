@@ -5308,7 +5308,7 @@
                 
             } else {
             
-                cell.sharedImageView.image = [UIImage imageNamed:image_shareUser];
+                cell.sharedImageView.image = [UIImage imageNamed:image_actionSheetShare];
             
                 UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapActionConnectionMounted:)];
                 [tap setNumberOfTapsRequired:1];
@@ -5347,7 +5347,7 @@
             } else {
                 
                 if ([shareLink length] > 0) cell.sharedImageView.image = [UIImage imageNamed:image_shareLink];
-                if ([shareUserAndGroup length] > 0) cell.sharedImageView.image = [UIImage imageNamed:image_shareUser];
+                if ([shareUserAndGroup length] > 0) cell.sharedImageView.image = [UIImage imageNamed:image_actionSheetShare];
                 
                 UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapActionShared:)];
                 [tap setNumberOfTapsRequired:1];
