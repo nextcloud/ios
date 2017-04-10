@@ -1571,6 +1571,13 @@
     return nil;
 }
 
++ (NSArray *)getAllLockTableAutomaticUploadForAccount:(NSString *)account
+{
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (lock == 1)", account];
+    
+    return [TableAutomaticUpload MR_findAllWithPredicate:predicate];
+}
+
 + (void)unlockTableAutomaticUploadForAccount:(NSString *)account identifier:(NSString *)identifier
 {
     NSManagedObjectContext *context = [NSManagedObjectContext MR_context];

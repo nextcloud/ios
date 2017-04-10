@@ -311,7 +311,7 @@
 //
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {    
-    // facciamo partire il timer per il controllo delle sessioni
+    // facciamo partire il timer per il controllo delle sessioni e dei Lock
     [self.timerVerifySessionInProgress invalidate];
     self.timerVerifySessionInProgress = [NSTimer scheduledTimerWithTimeInterval:k_timerVerifySession target:self selector:@selector(verifyDownloadUploadInProgress) userInfo:nil repeats:YES];
     
@@ -1244,7 +1244,7 @@
     // Only one
     if ([[self verifyExistsInQueuesUploadSelector:selector] count] > 1)
         return;
-
+    
     // Verify num error if selectorUploadAutomaticAll
     if ([selector isEqualToString:selectorUploadAutomaticAll]) {
     
@@ -1270,13 +1270,17 @@
         PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[metadataNet.identifier] options:nil];
 
         if (!result.count) {
-           [CCCoreData addActivityClient:metadataNet.fileName fileID:metadataNet.identifier action:k_activityDebugActionUpload selector:selector note:@"Internal error image/video not found" type:k_activityVerboseDefault verbose:k_activityVerboseHigh account:_activeAccount activeUrl:_activeUrl];
+            
+            [CCCoreData addActivityClient:metadataNet.fileName fileID:metadataNet.identifier action:k_activityDebugActionUpload selector:selector note:@"Internal error image/video not found" type:k_activityVerboseDefault verbose:k_activityVerboseHigh account:_activeAccount activeUrl:_activeUrl];
             [CCCoreData unlockTableAutomaticUploadForAccount:_activeAccount identifier:metadataNet.identifier];
+            
             return;
         }
         
         if(![self createFolderSubFolderAutomaticUploadFolderPhotos:folderPhotos useSubFolder:useSubFolder assets:[[NSArray alloc] initWithObjects:result[0], nil] selector:selectorUploadAutomatic]) {
+            
             [CCCoreData unlockTableAutomaticUploadForAccount:_activeAccount identifier:metadataNet.identifier];
+            
             return;
         }
     }
@@ -1294,6 +1298,30 @@
         
         // Delete record on Table Automatic Upload
         [CCCoreData deleteTableAutomaticUploadForAccount:self.activeAccount identifier:metadataNet.identifier];
+    }
+}
+
+- (void)verifyLockTableAutomaticUpload
+{
+    NSArray *UploadAutomaticInQueue = [self verifyExistsInQueuesUploadSelector:selectorUploadAutomatic];
+    NSArray *UploadAutomaticAllInQueue = [self verifyExistsInQueuesUploadSelector:selectorUploadAutomaticAll];
+    NSMutableArray *UploadInQueue = [NSMutableArray new];
+    [UploadInQueue addObjectsFromArray:UploadAutomaticInQueue];
+    [UploadInQueue addObjectsFromArray:UploadAutomaticAllInQueue];
+    
+    NSArray *recordAutomaticUploadInLock = [CCCoreData getAllLockTableAutomaticUploadForAccount:_activeAccount];
+    
+    for (TableAutomaticUpload *tableAutomaticUpload in recordAutomaticUploadInLock) {
+        
+        BOOL recordFound = NO;
+        
+        for (CCMetadataNet *metadataNet in UploadInQueue) {
+            if (metadataNet.identifier == tableAutomaticUpload.identifier)
+                recordFound = YES;
+        }
+        
+        if (!recordFound)
+            [CCCoreData unlockTableAutomaticUploadForAccount:_activeAccount identifier:tableAutomaticUpload.identifier];
     }
 }
 
@@ -1324,6 +1352,9 @@
             
             [self.timerVerifySessionInProgress invalidate];
         }
+        
+        // Verify Lock in Table Automatic Upload
+        //[self verifyLockTableAutomaticUpload];
     }
 }
 
