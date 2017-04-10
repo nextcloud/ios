@@ -14,11 +14,17 @@ import UIKit
 
 public class CCLoginWeb: UIViewController {
 
+    enum enumLoginType : NSInteger {
+        case loginAdd = 0
+        case loginAddForced = 1
+        case loginModifyPasswordUser = 2
+    }
+    
     weak var delegate: CCLoginDelegate?
     
     var viewController : UIViewController?
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    var loginType : NSInteger = 0
+    var loginType = loginAdd
     
     func presentModalWithDefaultTheme(_ vc: UIViewController) {
         
@@ -40,7 +46,7 @@ extension CCLoginWeb: SwiftModalWebVCDelegate {
                 
         let urlString: String = url.absoluteString
         
-        if (urlString.contains(k_webLoginAutenticationProtocol) == true && (loginType == 0 || loginType == 1)) {
+        if (urlString.contains(k_webLoginAutenticationProtocol) == true && urlString.contains("login") == true && (loginType == loginAdd || loginType == loginAddForced)) {
             
             let keyValue = url.path.components(separatedBy: "&")
             if (keyValue.count == 3) {
@@ -66,7 +72,7 @@ extension CCLoginWeb: SwiftModalWebVCDelegate {
                     if (tableAccount.account == account) {
                     
                         appDelegate.settingActiveAccount(account, activeUrl: serverUrl, activeUser: username, activePassword: password)
-                        self.delegate?.loginSuccess(loginType)
+                        self.delegate?.loginSuccess(NSInteger(loginType.rawValue))
                 
                         self.viewController?.dismiss(animated: true, completion: nil)
                     }
