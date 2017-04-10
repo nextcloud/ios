@@ -282,8 +282,14 @@
         if (errorCode == 0)
             errorCode = error.code;
         
-        if ([self.delegate respondsToSelector:@selector(downloadThumbnailFailure:message:errorCode:)] && [_metadataNet.action isEqualToString:actionDownloadThumbnail])
-            [self.delegate downloadThumbnailFailure:_metadataNet message:[CCError manageErrorOC:response.statusCode error:error] errorCode:errorCode];
+        // Error
+        if ([self.delegate respondsToSelector:@selector(downloadThumbnailFailure:message:errorCode:)] && [_metadataNet.action isEqualToString:actionDownloadThumbnail]) {
+            
+            if (errorCode == 503)
+                [self.delegate downloadThumbnailFailure:_metadataNet message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
+            else
+                [self.delegate downloadThumbnailFailure:_metadataNet message:[CCError manageErrorOC:response.statusCode error:error] errorCode:errorCode];
+        }
         
         [self complete];
     }];
@@ -394,9 +400,15 @@
         if (errorCode == 0)
             errorCode = error.code;
         
-        if ([self.delegate respondsToSelector:@selector(readFolderFailure:message:errorCode:)])
-            [self.delegate readFolderFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
-    
+        // Error
+        if ([self.delegate respondsToSelector:@selector(readFolderFailure:message:errorCode:)]) {
+            
+            if (errorCode == 503)
+                [self.delegate readFolderFailure:_metadataNet message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
+            else
+                [self.delegate readFolderFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        }
+        
         // Request trusted certificated
         if ([error code] == NSURLErrorServerCertificateUntrusted)
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
@@ -479,8 +491,14 @@
         if (errorCode == 0)
             errorCode = error.code;
 
-        if ([self.delegate respondsToSelector:@selector(searchFailure:message:errorCode:)])
-            [self.delegate searchFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        // Error
+        if ([self.delegate respondsToSelector:@selector(searchFailure:message:errorCode:)]) {
+            
+            if (errorCode == 503)
+                [self.delegate searchFailure:_metadataNet message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
+            else
+                [self.delegate searchFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        }
         
         // Request trusted certificated
         if ([error code] == NSURLErrorServerCertificateUntrusted)
@@ -516,8 +534,14 @@
         if (errorCode == 0)
             errorCode = error.code;
         
-        if ([self.delegate respondsToSelector:@selector(settingFavoriteFailure:message:errorCode:)])
-            [self.delegate settingFavoriteFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        // Error
+        if ([self.delegate respondsToSelector:@selector(settingFavoriteFailure:message:errorCode:)]) {
+            
+            if (errorCode == 503)
+                [self.delegate settingFavoriteFailure:_metadataNet message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
+            else
+                [self.delegate settingFavoriteFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        }
         
         // Request trusted certificated
         if ([error code] == NSURLErrorServerCertificateUntrusted)
@@ -612,8 +636,14 @@
         if (errorCode == 0)
             errorCode = error.code;
         
-        if ([self.delegate respondsToSelector:@selector(listingFavoritesFailure:message:errorCode:)])
-            [self.delegate listingFavoritesFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        // Error
+        if ([self.delegate respondsToSelector:@selector(listingFavoritesFailure:message:errorCode:)]) {
+            
+            if (errorCode == 503)
+                [self.delegate listingFavoritesFailure:_metadataNet message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
+            else
+                [self.delegate listingFavoritesFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        }
         
         // Request trusted certificated
         if ([error code] == NSURLErrorServerCertificateUntrusted)
@@ -679,8 +709,14 @@
                 message = NSLocalizedStringFromTable(@"_unknow_response_server_", @"Error", nil);
         }
         
-        if ([self.delegate respondsToSelector:@selector(createFolderFailure:message:errorCode:)])
-            [self.delegate createFolderFailure:_metadataNet message:message errorCode:error.code];
+        // Error
+        if ([self.delegate respondsToSelector:@selector(createFolderFailure:message:errorCode:)]) {
+            
+            if (error.code == 503)
+                [self.delegate createFolderFailure:_metadataNet message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:error.code];
+            else
+                [self.delegate createFolderFailure:_metadataNet message:message errorCode:error.code];
+        }
         
         [self complete];
     }];
@@ -755,8 +791,14 @@
         if (errorCode == 0)
             errorCode = error.code;
         
-        if ([self.delegate respondsToSelector:@selector(deleteFileOrFolderFailure:message:errorCode:)])
-            [self.delegate deleteFileOrFolderFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        // Error
+        if ([self.delegate respondsToSelector:@selector(deleteFileOrFolderFailure:message:errorCode:)]) {
+            
+            if (errorCode == 503)
+                [self.delegate deleteFileOrFolderFailure:_metadataNet message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
+            else
+                [self.delegate deleteFileOrFolderFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        }
         
         // Request trusted certificated
         if ([error code] == NSURLErrorServerCertificateUntrusted)
@@ -819,9 +861,15 @@
             message = NSLocalizedStringFromTable(@"_unknow_response_server_", @"Error", nil);
         }
         
-        if ([self.delegate respondsToSelector:@selector(renameMoveFileOrFolderFailure:message:errorCode:)])
-            [self.delegate renameMoveFileOrFolderFailure:_metadataNet message:message errorCode:error.code];
-
+        // Error
+        if ([self.delegate respondsToSelector:@selector(renameMoveFileOrFolderFailure:message:errorCode:)]) {
+            
+            if (error.code == 503)
+                [self.delegate renameMoveFileOrFolderFailure:_metadataNet message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:error.code];
+            else
+                [self.delegate renameMoveFileOrFolderFailure:_metadataNet message:message errorCode:error.code];
+        }
+        
         [self complete];
     }];
 }
@@ -886,8 +934,14 @@
         if (errorCode == 0)
             errorCode = error.code;
         
-        if([self.delegate respondsToSelector:@selector(readFileFailure:message:errorCode:)] && [recordAccount.account isEqualToString:_metadataNet.account])
-            [self.delegate readFileFailure:_metadataNet message:[CCError manageErrorOC:response.statusCode error:error] errorCode:errorCode];
+        // Error
+        if ([self.delegate respondsToSelector:@selector(readFileFailure:message:errorCode:)] && [recordAccount.account isEqualToString:_metadataNet.account]) {
+            
+            if (errorCode == 503)
+                [self.delegate readFileFailure:_metadataNet message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
+            else
+                [self.delegate readFileFailure:_metadataNet message:[CCError manageErrorOC:response.statusCode error:error] errorCode:errorCode];
+        }
         
         // Request trusted certificated
         if ([error code] == NSURLErrorServerCertificateUntrusted)
@@ -978,8 +1032,14 @@
         if (errorCode == 0)
             errorCode = error.code;
         
-        if([self.delegate respondsToSelector:@selector(shareFailure:message:errorCode:)])
-            [self.delegate shareFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        // Error
+        if ([self.delegate respondsToSelector:@selector(shareFailure:message:errorCode:)]) {
+            
+            if (errorCode == 503)
+                [self.delegate shareFailure:_metadataNet message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
+            else
+                [self.delegate shareFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        }
         
         // Request trusted certificated
         if ([error code] == NSURLErrorServerCertificateUntrusted)
@@ -1006,8 +1066,14 @@
         if (errorCode == 0)
             errorCode = error.code;
 
-        if([self.delegate respondsToSelector:@selector(shareFailure:message:errorCode:)])
-            [self.delegate shareFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        // Error
+        if ([self.delegate respondsToSelector:@selector(shareFailure:message:errorCode:)]) {
+            
+            if (errorCode == 503)
+                [self.delegate shareFailure:_metadataNet message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
+            else
+                [self.delegate shareFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        }
         
         // Request trusted certificated
         if ([error code] == NSURLErrorServerCertificateUntrusted)
@@ -1036,8 +1102,14 @@
         if (errorCode == 0)
             errorCode = error.code;
 
-        if([self.delegate respondsToSelector:@selector(shareFailure:message:errorCode:)])
-            [self.delegate shareFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        // Error
+        if ([self.delegate respondsToSelector:@selector(shareFailure:message:errorCode:)]) {
+            
+            if (errorCode == 503)
+                [self.delegate shareFailure:_metadataNet message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
+            else
+                [self.delegate shareFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        }
         
         // Request trusted certificated
         if ([error code] == NSURLErrorServerCertificateUntrusted)
@@ -1068,8 +1140,14 @@
         if (errorCode == 0)
             errorCode = error.code;
 
-        if([self.delegate respondsToSelector:@selector(shareFailure:message:errorCode:)])
-            [self.delegate shareFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        // Error
+        if ([self.delegate respondsToSelector:@selector(shareFailure:message:errorCode:)]) {
+            
+            if (errorCode == 503)
+                [self.delegate shareFailure:_metadataNet message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
+            else
+                [self.delegate shareFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        }
         
         // Request trusted certificated
         if ([error code] == NSURLErrorServerCertificateUntrusted)
@@ -1103,8 +1181,14 @@
         if (errorCode == 0)
             errorCode = error.code;
 
-        if([self.delegate respondsToSelector:@selector(shareFailure:message:errorCode:)])
-            [self.delegate shareFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        // Error
+        if ([self.delegate respondsToSelector:@selector(shareFailure:message:errorCode:)]) {
+            
+            if (errorCode == 503)
+                [self.delegate shareFailure:_metadataNet message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
+            else
+                [self.delegate shareFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        }
         
         // Request trusted certificated
         if ([error code] == NSURLErrorServerCertificateUntrusted)
@@ -1134,8 +1218,14 @@
         if (errorCode == 0)
             errorCode = error.code;
 
-        if([self.delegate respondsToSelector:@selector(getUserAndGroupFailure:message:errorCode:)])
-            [self.delegate getUserAndGroupFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        // Error
+        if ([self.delegate respondsToSelector:@selector(getUserAndGroupFailure:message:errorCode:)]) {
+            
+            if (errorCode == 503)
+                [self.delegate getUserAndGroupFailure:_metadataNet message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
+            else
+                [self.delegate getUserAndGroupFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        }
         
         // Request trusted certificated
         if ([error code] == NSURLErrorServerCertificateUntrusted)
@@ -1169,8 +1259,14 @@
         if (errorCode == 0)
             errorCode = error.code;
         
-        if([self.delegate respondsToSelector:@selector(getActivityServerFailure:message:errorCode:)])
-            [self.delegate getActivityServerFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        // Error
+        if ([self.delegate respondsToSelector:@selector(getActivityServerFailure:message:errorCode:)]) {
+            
+            if (errorCode == 503)
+                [self.delegate getActivityServerFailure:_metadataNet message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
+            else
+                [self.delegate getActivityServerFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        }
         
         // Request trusted certificated
         if ([error code] == NSURLErrorServerCertificateUntrusted)
@@ -1204,8 +1300,14 @@
         if (errorCode == 0)
             errorCode = error.code;
         
-        if([self.delegate respondsToSelector:@selector(getExternalSitesServerFailure:message:errorCode:)])
-            [self.delegate getExternalSitesServerFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        // Error
+        if ([self.delegate respondsToSelector:@selector(getExternalSitesServerFailure:message:errorCode:)]) {
+            
+            if (errorCode == 503)
+                [self.delegate getExternalSitesServerFailure:_metadataNet message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
+            else
+                [self.delegate getExternalSitesServerFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        }
         
         // Request trusted certificated
         if ([error code] == NSURLErrorServerCertificateUntrusted)
@@ -1240,8 +1342,14 @@
         if (errorCode == 0)
             errorCode = error.code;
         
-        if([self.delegate respondsToSelector:@selector(getNotificationServerFailure:message:errorCode:)])
-            [self.delegate getNotificationServerFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        // Error
+        if ([self.delegate respondsToSelector:@selector(getNotificationServerFailure:message:errorCode:)]) {
+            
+            if (errorCode == 503)
+                [self.delegate getNotificationServerFailure:_metadataNet message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
+            else
+                [self.delegate getNotificationServerFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        }
         
         // Request trusted certificated
         if ([error code] == NSURLErrorServerCertificateUntrusted)
@@ -1276,8 +1384,14 @@
         if (errorCode == 0)
             errorCode = error.code;
         
-        if([self.delegate respondsToSelector:@selector(setNotificationServerFailure:message:errorCode:)])
-            [self.delegate setNotificationServerFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        // Error
+        if ([self.delegate respondsToSelector:@selector(setNotificationServerFailure:message:errorCode:)]) {
+            
+            if (errorCode == 503)
+                [self.delegate setNotificationServerFailure:_metadataNet message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
+            else
+                [self.delegate setNotificationServerFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        }
         
         // Request trusted certificated
         if ([error code] == NSURLErrorServerCertificateUntrusted)
@@ -1373,8 +1487,14 @@
         if (errorCode == 0)
             errorCode = error.code;
         
-        if([self.delegate respondsToSelector:@selector(getUserProfileFailure:message:errorCode:)])
-            [self.delegate getUserProfileFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        // Error
+        if ([self.delegate respondsToSelector:@selector(getUserProfileFailure:message:errorCode:)]) {
+            
+            if (errorCode == 503)
+                [self.delegate getUserProfileFailure:_metadataNet message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
+            else
+                [self.delegate getUserProfileFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        }
         
         // Request trusted certificated
         if ([error code] == NSURLErrorServerCertificateUntrusted)
@@ -1442,9 +1562,15 @@
         if (errorCode == 0)
             errorCode = error.code;
 
-        if([self.delegate respondsToSelector:@selector(getInfoServerFailure:message:errorCode:)])
-            [self.delegate getInfoServerFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
-
+        // Error
+        if ([self.delegate respondsToSelector:@selector(getInfoServerFailure:message:errorCode:)]) {
+            
+            if (errorCode == 503)
+                [self.delegate getInfoServerFailure:_metadataNet message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
+            else
+                [self.delegate getInfoServerFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        }
+        
         // Request trusted certificated
         if ([error code] == NSURLErrorServerCertificateUntrusted)
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
@@ -1478,9 +1604,15 @@
         if (errorCode == 0)
             errorCode = error.code;
 
-        if([self.delegate respondsToSelector:@selector(getInfoServerFailure:message:errorCode:)])
-            [self.delegate getInfoServerFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        // Error
+        if ([self.delegate respondsToSelector:@selector(getInfoServerFailure:message:errorCode:)]) {
 
+            if (errorCode == 503)
+                [self.delegate getInfoServerFailure:_metadataNet message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
+            else
+                [self.delegate getInfoServerFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        }
+        
         // Request trusted certificated
         if ([error code] == NSURLErrorServerCertificateUntrusted)
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
