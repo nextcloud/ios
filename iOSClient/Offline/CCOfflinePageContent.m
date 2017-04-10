@@ -53,7 +53,7 @@
     // Metadata
     _metadata = [CCMetadata new];
     
-    self.tableView.tableFooterView = [UIView new];
+    self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 1)];
     self.tableView.separatorColor = COLOR_SEPARATOR_TABLE;
     self.tableView.emptyDataSetDelegate = self;
     self.tableView.emptyDataSetSource = self;
@@ -586,6 +586,9 @@
 {
     CCCellOffline *cell = (CCCellOffline *)[tableView dequeueReusableCellWithIdentifier:@"OfflineCell" forIndexPath:indexPath];
     CCMetadata *metadata;
+    
+    // separator
+    cell.separatorInset = UIEdgeInsetsMake(0.f, 60.f, 0.f, 0.f);
     
     // Initialize
     cell.statusImageView.image = nil;
