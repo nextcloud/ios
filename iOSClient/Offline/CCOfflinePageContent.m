@@ -414,16 +414,6 @@
                             handler: nil
     ];
 
-    // NO Directory - NO Template
-    if (metadata.directory == NO && [metadata.type isEqualToString:k_metadataType_template] == NO) {
-        
-        [actionSheet addButtonWithTitle:NSLocalizedString(@"_open_in_", nil) image:[UIImage imageNamed:image_actionSheetOpenIn] backgroundColor:[UIColor whiteColor] height: 50.0 type:AHKActionSheetButtonTypeDefault handler:^(AHKActionSheet *as) {
-                                    
-            [self.tableView setEditing:NO animated:YES];
-            [self openWith:metadata];
-        }];
-    }
-    
     // ONLY Root Favorites : Remove file/folder Favorites
     if (_serverUrl == nil && [_pageType isEqualToString:k_pageOfflineFavorites]) {
         
@@ -460,6 +450,33 @@
             [self.tableView setEditing:NO animated:YES];
                                     
             [self reloadDatasource];
+        }];
+    }
+    
+    // Share
+    if (_metadata.cryptated == NO && app.hasServerShareSupport) {
+        
+        [actionSheet addButtonWithTitle:NSLocalizedString(@"_share_", nil)
+                                  image:[UIImage imageNamed:image_actionSheetShare]
+                        backgroundColor:[UIColor whiteColor]
+                                 height: 50.0
+                                   type:AHKActionSheetButtonTypeDefault
+                                handler:^(AHKActionSheet *as) {
+                                    
+                                    // close swipe
+                                    [self setEditing:NO animated:YES];
+                                    
+                                    [app.activeMain openWindowShare:metadata];
+                                }];
+    }
+
+    // NO Directory - NO Template
+    if (metadata.directory == NO && [metadata.type isEqualToString:k_metadataType_template] == NO) {
+        
+        [actionSheet addButtonWithTitle:NSLocalizedString(@"_open_in_", nil) image:[UIImage imageNamed:image_actionSheetOpenIn] backgroundColor:[UIColor whiteColor] height: 50.0 type:AHKActionSheetButtonTypeDefault handler:^(AHKActionSheet *as) {
+            
+            [self.tableView setEditing:NO animated:YES];
+            [self openWith:metadata];
         }];
     }
     
