@@ -1436,6 +1436,15 @@
             if (errorCode == 0)
                 errorCode = error.code;
             
+            // Error
+            if ([self.delegate respondsToSelector:@selector(subscribingNextcloudServerFailure:message:errorCode:)]) {
+                
+                if (errorCode == 503)
+                    [self.delegate subscribingNextcloudServerFailure:_metadataNet message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
+                else
+                    [self.delegate subscribingNextcloudServerFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+            }
+            
             // Request trusted certificated
             if ([error code] == NSURLErrorServerCertificateUntrusted)
                 [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
@@ -1452,6 +1461,15 @@
         if (errorCode == 0)
             errorCode = error.code;
     
+        // Error
+        if ([self.delegate respondsToSelector:@selector(subscribingNextcloudServerFailure:message:errorCode:)]) {
+            
+            if (errorCode == 503)
+                [self.delegate subscribingNextcloudServerFailure:_metadataNet message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
+            else
+                [self.delegate subscribingNextcloudServerFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        }
+
         // Request trusted certificated
         if ([error code] == NSURLErrorServerCertificateUntrusted)
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];

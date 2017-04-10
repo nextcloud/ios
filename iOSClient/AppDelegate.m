@@ -429,6 +429,11 @@
 #pragma mark ===== Push Notification =====
 #pragma --------------------------------------------------------------------------------------------
 
+- (void)subscribingNextcloudServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+{
+    NSLog(@"[LOG] Error Subscribing Nextcloud Server %@", message);
+}
+
 - (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
 {
     [application registerForRemoteNotifications];
@@ -457,7 +462,7 @@
     
     if ([devicePublicKey length] > 0 && [pushTokenHash length] > 0) {
         
-        NSLog(@"Firebase InstanceID push token: %@", pushToken);
+        NSLog(@"[LOG] Firebase InstanceID push token: %@", pushToken);
         
         CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
     
@@ -471,7 +476,7 @@
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
 {
-    NSLog(@"Error register remote notification %@", error);
+    NSLog(@"[LOG] Error register remote notification %@", error);
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
@@ -480,11 +485,11 @@
     
     if (state == UIApplicationStateInactive || state == UIApplicationStateBackground) {
         
-        NSLog(@"Receive Notification on Inactive or Background state");
+        NSLog(@"[LOG] Receive Notification on Inactive or Background state");
         
     } else {
         
-        NSLog(@"Receive Notification on Active state");
+        NSLog(@"[LOG] Receive Notification on Active state");
     }
     
     // If you are receiving a notification message while your app is in the background,
@@ -497,7 +502,7 @@
     //}
     
     // Print full message.
-    NSLog(@"%@", userInfo);
+    NSLog(@"[LOG] %@", userInfo);
 
 }
 
@@ -511,7 +516,7 @@
     //}
     
     // Print full message.
-    NSLog(@"%@", userInfo);
+    NSLog(@"[LOG] %@", userInfo);
 
     
     if (state == UIApplicationStateBackground || (state == UIApplicationStateInactive)) {
@@ -537,7 +542,7 @@
     // should be done.
     
     NSString *refreshedToken = [[FIRInstanceID instanceID] token];
-    NSLog(@"InstanceID token: %@", refreshedToken);
+    NSLog(@"[LOG] InstanceID token: %@", refreshedToken);
     
     // Connect to FCM since connection may have failed when attempted before having a token.
     [self connectToFcm];
@@ -557,9 +562,9 @@
     
     [[FIRMessaging messaging] connectWithCompletion:^(NSError * _Nullable error) {
         if (error != nil) {
-            NSLog(@"Unable to connect to FCM. %@", error);
+            NSLog(@"[LOG] Unable to connect to FCM. %@", error);
         } else {
-            NSLog(@"Connected to FCM.");
+            NSLog(@"[LOG] Connected to FCM.");
         }
     }];
 }
@@ -568,7 +573,7 @@
 // Receive data message on iOS 10 devices while app is in the foreground.
 - (void)applicationReceivedRemoteMessage:(FIRMessagingRemoteMessage *)remoteMessage {
     // Print full message
-    NSLog(@"%@", remoteMessage.appData);
+    NSLog(@"[LOG] %@", remoteMessage.appData);
 }
 #endif
 
