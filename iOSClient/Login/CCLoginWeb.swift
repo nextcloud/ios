@@ -40,7 +40,7 @@ extension CCLoginWeb: SwiftModalWebVCDelegate {
                 
         let urlString: String = url.absoluteString
         
-        if (urlString.contains(k_webLoginAutenticationProtocol) == true) {
+        if (urlString.contains(k_webLoginAutenticationProtocol) == true && (loginType == 0 || loginType == 1)) {
             
             let keyValue = url.path.components(separatedBy: "&")
             if (keyValue.count == 3) {
