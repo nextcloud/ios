@@ -93,12 +93,10 @@
 - (void)requestSharedByServer;
 - (void)requestServerInformation;
 
+- (void)openWindowShare:(CCMetadata *)metadata;
 - (void)synchronizeFolderGraphicsServerUrl:(NSString *)serverUrl animation:(BOOL)animation;
-
 - (void)clearDateReadDataSource:(NSNotification *)notification;
-
 - (void)cancelSearchBar;
-
 - (BOOL)shouldPerformSegue;
 
 @end

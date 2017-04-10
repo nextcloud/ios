@@ -33,6 +33,7 @@
 - (NSString *)photoBrowser:(MWPhotoBrowser *)photoBrowser titleForPhotoAtIndex:(NSUInteger)index;
 - (void)photoBrowser:(MWPhotoBrowser *)photoBrowser didDisplayPhotoAtIndex:(NSUInteger)index;
 - (void)photoBrowser:(MWPhotoBrowser *)photoBrowser actionButtonPressedForPhotoAtIndex:(NSUInteger)index;
+- (void)photoBrowser:(MWPhotoBrowser *)photoBrowser shareButtonPressedForPhotoAtIndex:(NSUInteger)index;
 - (void)photoBrowser:(MWPhotoBrowser *)photoBrowser deleteButtonPressedForPhotoAtIndex:(NSUInteger)index deleteButton:(UIBarButtonItem *)deleteButton;
 - (BOOL)photoBrowser:(MWPhotoBrowser *)photoBrowser isPhotoSelectedAtIndex:(NSUInteger)index;
 - (void)photoBrowser:(MWPhotoBrowser *)photoBrowser photoAtIndex:(NSUInteger)index selectedChanged:(BOOL)selected;
@@ -50,6 +51,7 @@
 @property (nonatomic) BOOL zoomPhotosToFill;
 @property (nonatomic) BOOL displayNavArrows;
 @property (nonatomic) BOOL displayActionButton;
+@property (nonatomic) BOOL displayShareButton;      //TWS
 @property (nonatomic) BOOL displayDeleteButton;     //TWS
 @property (nonatomic) BOOL displaySelectionButtons;
 @property (nonatomic) BOOL displayPopoverButton;    //TWS
@@ -66,7 +68,7 @@
 @property (nonatomic, strong) NSString *customImageSelectedIconName;
 @property (nonatomic, strong) NSString *customImageSelectedSmallIconName;
 
-@property (nonatomic, strong) UIBarButtonItem *previousButton, *nextButton, *actionButton, *doneButton, *popoverButton, *deleteButton; //TWS
+@property (nonatomic, strong) UIBarButtonItem *previousButton, *nextButton, *actionButton, *doneButton, *popoverButton, *deleteButton, *shareButton; //TWS
 
 //TWS Video
 @property (nonatomic, strong) MPMoviePlayerViewController *currentVideoPlayerViewController;

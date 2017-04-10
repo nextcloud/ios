@@ -66,6 +66,7 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
     _currentPageIndex = 0;
     _previousPageIndex = NSUIntegerMax;
     _displayActionButton = YES;
+    _displayShareButton = YES;
     _displayDeleteButton = YES;
     _displayNavArrows = NO;
     _zoomPhotosToFill = YES;
@@ -186,6 +187,10 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
         _actionButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(actionButtonPressed:)];
     }
     
+    if (self.displayShareButton) {
+        _shareButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"shareUser"] style:UIBarButtonItemStylePlain target:self action:@selector(shareButtonPressed:)];
+    }
+    
     // Update
     [self reloadData];
     
@@ -265,6 +270,11 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
         if (_deleteButton) {
             
             [items addObject:_deleteButton];
+            [items addObject:fixedSpaceMini];
+        }
+        if (_shareButton) {
+            
+            [items addObject:_shareButton];
             [items addObject:fixedSpaceMini];
         }
         [items addObject:_actionButton];
@@ -1591,6 +1601,14 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
     
     if ([self.delegate respondsToSelector:@selector(photoBrowser:deleteButtonPressedForPhotoAtIndex:deleteButton:)])
         [self.delegate photoBrowser:self deleteButtonPressedForPhotoAtIndex:_currentPageIndex deleteButton:self.deleteButton];
+}
+
+#pragma mark - Share
+
+- (void)shareButtonPressed:(id)sender {
+    
+    if ([self.delegate respondsToSelector:@selector(photoBrowser:shareButtonPressedForPhotoAtIndex:)])
+        [self.delegate photoBrowser:self shareButtonPressedForPhotoAtIndex:_currentPageIndex];
 }
 
 #pragma mark - Actions

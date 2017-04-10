@@ -41,6 +41,7 @@
     UIToolbar *_toolbar;
     
     UIBarButtonItem *_buttonAction;
+    UIBarButtonItem *_buttonShare;
     UIBarButtonItem *_buttonDelete;
     
     BOOL _reload;
@@ -180,9 +181,10 @@
     UIBarButtonItem *fixedSpaceMini = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:self action:nil];
     fixedSpaceMini.width = 25;
     _buttonAction = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:image_actionSheetOpenIn] style:UIBarButtonItemStylePlain target:self action:@selector(actionButtonPressed:)];
+    _buttonShare  = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:image_shareUser] style:UIBarButtonItemStylePlain target:self action:@selector(shareButtonPressed:)];
     _buttonDelete = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(deleteButtonPressed:)];
     
-    [_toolbar setItems:[NSArray arrayWithObjects: flexible, _buttonDelete, fixedSpaceMini, _buttonAction,  nil]];
+    [_toolbar setItems:[NSArray arrayWithObjects: flexible, _buttonDelete, fixedSpaceMini, _buttonShare, fixedSpaceMini, _buttonAction,  nil]];
     [_toolbar setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin];
     
     [self.view addSubview:_toolbar];
@@ -687,6 +689,13 @@
     [self.docController presentOptionsMenuFromBarButtonItem:photoBrowser.actionButton animated:YES];
 }
 
+- (void)photoBrowser:(MWPhotoBrowser *)photoBrowser shareButtonPressedForPhotoAtIndex:(NSUInteger)index
+{
+    CCMetadata *metadata = [self.dataSourceImagesVideos objectAtIndex:index];
+    
+    [app.activeMain openWindowShare:metadata];
+}
+
 - (void)photoBrowser:(MWPhotoBrowser *)photoBrowser deleteButtonPressedForPhotoAtIndex:(NSUInteger)index deleteButton:(UIBarButtonItem *)deleteButton
 {
     CCMetadata *metadata = [self.dataSourceImagesVideos objectAtIndex:index];
@@ -1042,6 +1051,11 @@
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) [self.docController presentOptionsMenuFromRect:self.view.frame inView:self.view animated:YES];
     [self.docController presentOptionsMenuFromBarButtonItem:sender animated:YES];
+}
+
+- (void)shareButtonPressed:(UIBarButtonItem *)sender
+{
+    [app.activeMain openWindowShare:self.metadataDetail];
 }
 
 - (void)deleteButtonPressed:(UIBarButtonItem *)sender
