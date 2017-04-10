@@ -365,6 +365,7 @@
     CGPoint touchPoint = [sender convertPoint:CGPointZero toView:self.tableView];
     NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:touchPoint];
     CCMetadata *metadata = [CCMetadata new];
+    UIImage *iconHeader;
     
     if ([_pageType isEqualToString:k_pageOfflineLocal]) {
         
@@ -399,6 +400,20 @@
     actionSheet.separatorColor = COLOR_SEPARATOR_TABLE;
     actionSheet.cancelButtonTitle = NSLocalizedString(@"_cancel_",nil);
     
+    // assegnamo l'immagine anteprima se esiste, altrimenti metti quella standars
+    if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]])
+        iconHeader = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]];
+    else
+        iconHeader = [UIImage imageNamed:metadata.iconName];
+    
+    [actionSheet addButtonWithTitle: metadata.fileNamePrint
+                              image: iconHeader
+                    backgroundColor: COLOR_TABBAR
+                             height: 50.0
+                               type: AHKActionSheetButtonTypeDisabled
+                            handler: nil
+    ];
+
     // NO Directory - NO Template
     if (metadata.directory == NO && [metadata.type isEqualToString:k_metadataType_template] == NO) {
         
