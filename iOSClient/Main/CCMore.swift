@@ -33,8 +33,8 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     @IBOutlet weak var labelQuota: UILabel!
     @IBOutlet weak var progressQuota: UIProgressView!
 
-    let itemsMenuLabelText = [["_transfers_","_activity_"], ["_settings_"]]
-    let itemsMenuImage = [["transfers","activity"], ["settings"]]
+    let itemsMenuLabelText = [["_transfers_","_activity_","_local_storage_"], ["_settings_"]]
+    let itemsMenuImage = [["transfers","activity","localStorage"], ["settings"]]
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     

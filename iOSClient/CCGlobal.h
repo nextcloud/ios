@@ -286,9 +286,6 @@ extern NSString *const urlBaseUploadDB;
 #define k_activityDebugActionFeatures                   @"Features Supported By Server"
 #define k_activityDebugActionCapabilities               @"Capabilities Of Server"
 
-
-
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
