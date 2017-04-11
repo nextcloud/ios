@@ -112,7 +112,13 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! CCCellMore
+
+        // change color selection
+        let selectionColor : UIView = UIView.init()
+        selectionColor.backgroundColor = Constant.GlobalConstants.k_Color_SelectBackgrond
+        cell.selectedBackgroundView = selectionColor
         
+        // data
         cell.imageIcon?.image = UIImage.init(named: self.itemsMenuImage[indexPath.section][indexPath.row])
         cell.labelText?.text = NSLocalizedString(self.itemsMenuLabelText[indexPath.section][indexPath.row], comment: "")
         
