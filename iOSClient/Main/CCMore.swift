@@ -38,27 +38,40 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
     var externalSite: [TableExternalSites]?
+    var tableAccont : TableAccount?
     
     override func viewDidLoad() {
         
         super.viewDidLoad()
         
-        // This view controller itself will provide the delegate methods and row data for the table view.
         self.tableView.delegate = self
         self.tableView.dataSource = self
+        self.tableView.tableFooterView = UIView.init(frame: CGRect(x: 0, y: 0, width: self.tableView.frame.size.width, height: 1))
+        self.tableView.separatorColor = Constant.GlobalConstants.k_Color_Seperator
 
         CCAspect.aspectNavigationControllerBar(self.navigationController?.navigationBar, encrypted: false, online: appDelegate.reachability.isReachable(), hidden: true)
         CCAspect.aspectTabBar(self.tabBarController?.tabBar, hidden: false)
     }
     
-    override func viewDidAppear(_ animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         
-        // Get External Site
-        //externalSite = CCCoreData.getAllTableExternalSites(with:  NSPredicate(format: "(account == '\(appDelegate.activeAccount!))")) as? [TableExternalSites]
+        self.tableAccont = CCCoreData.getActiveAccount()
+        self.externalSite = CCCoreData.getAllTableExternalSites(with:  NSPredicate(format: "(account == '\(appDelegate.activeAccount!)')")) as? [TableExternalSites]
         
+        if (self.tableAccont != nil) {
+        
+            self.progressQuota.progress = Float((self.tableAccont?.quotaRelative)!) / 100
+        
+            let quota : String = CCUtility.transformedSize(Double((self.tableAccont?.quotaTotal)!))
+            let quotaUsed : String = CCUtility.transformedSize(Double((self.tableAccont?.quotaUsed)!))
+        
+            self.labelQuota.text = String.localizedStringWithFormat(NSLocalizedString("_quota_using_", comment: ""), quotaUsed, quota)
+        }
+        
+        // Aspect
         CCAspect.aspectNavigationControllerBar(self.navigationController?.navigationBar, encrypted: false, online: appDelegate.reachability.isReachable(), hidden: true)
         CCAspect.aspectTabBar(self.tabBarController?.tabBar, hidden: false)
-        
+
         tableView.reloadData()
     }
     
