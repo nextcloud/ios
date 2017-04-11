@@ -26,6 +26,8 @@ import UIKit
 
 class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
+    @IBOutlet weak var imageLogo: UIImageView!
+    @IBOutlet weak var imageUser: UIImageView!
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var labelQuota: UILabel!
     @IBOutlet weak var progressQuota: UIProgressView!
@@ -42,14 +44,20 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         super.viewDidLoad()
         
         // This view controller itself will provide the delegate methods and row data for the table view.
-        tableView.delegate = self
-        tableView.dataSource = self
+        self.tableView.delegate = self
+        self.tableView.dataSource = self
+
+        CCAspect.aspectNavigationControllerBar(self.navigationController?.navigationBar, encrypted: false, online: appDelegate.reachability.isReachable(), hidden: true)
+        CCAspect.aspectTabBar(self.tabBarController?.tabBar, hidden: false)
     }
     
     override func viewDidAppear(_ animated: Bool) {
         
         // Get External Site
-        externalSite = CCCoreData.getAllTableExternalSites(with:  NSPredicate(format: "(account == '\(appDelegate.activeAccount!))")) as? [TableExternalSites]
+        //externalSite = CCCoreData.getAllTableExternalSites(with:  NSPredicate(format: "(account == '\(appDelegate.activeAccount!))")) as? [TableExternalSites]
+        
+        CCAspect.aspectNavigationControllerBar(self.navigationController?.navigationBar, encrypted: false, online: appDelegate.reachability.isReachable(), hidden: true)
+        CCAspect.aspectTabBar(self.tabBarController?.tabBar, hidden: false)
         
         tableView.reloadData()
     }
