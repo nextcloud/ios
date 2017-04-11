@@ -76,7 +76,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             
         } else {
             
-            self.imageAvatar.image = UIImage.init(named: "avatar")
+            self.imageAvatar.image = UIImage.init(named: "moreAvatar")
         }
         
         // Aspect
