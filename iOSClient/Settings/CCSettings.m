@@ -318,7 +318,7 @@
     [CCAspect aspectTabBar:self.tabBarController.tabBar hidden:NO];
     
     [self reloadForm];
-    [self recalculateSize];
+    [self recalculateSize];    
 }
 
 // E' apparsa

@@ -141,6 +141,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     // method to run when table view cell is tapped
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         print("You tapped cell number \(indexPath.row).")
+         self.navigationController?.performSegue(withIdentifier: "segueSettings", sender: self)
     }
 }
 
