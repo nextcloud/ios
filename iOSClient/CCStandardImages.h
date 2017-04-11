@@ -70,8 +70,9 @@
 
 #define image_home                              @"home"
 
-
 #define image_lock                              @"lock"
+
+#define image_NextcloudMenuChangeAccount        @"typeCloudNextcloud"
 
 #define image_MenuDirectoryOnTop                @"menuDirectoryOnTop"
 #define image_MenuGroupByAlphabetic             @"MenuGroupByAlphabetic"
@@ -171,6 +172,4 @@
 #define image_WiFiSmall                         @"WiFiSmall"
 
 #define image_file_xls                          @"file_xls"
-
-#define image_NextcloudMenuChangeAccount        @"typeCloudNextcloud"
 
