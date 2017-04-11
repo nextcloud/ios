@@ -127,12 +127,23 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     // method to run when table view cell is tapped
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        if (indexPath.row == 1) {
-            self.navigationController?.performSegue(withIdentifier: "segueSettings", sender: self)
+        // Menu Function
+        if (indexPath.section == 0) {
+            
         }
         
-        print("You tapped cell number \(indexPath.row).")
+        // Menu External Site
+        if (indexPath.section == 1 && self.menuExternalSite != nil) {
+            
+        }
         
+        // Menu Settings
+        if ((indexPath.section == 1 && self.menuExternalSite == nil) || (indexPath.section == 2 && self.menuExternalSite != nil)) {
+            
+            if (indexPath.row == 0) {
+                self.navigationController?.performSegue(withIdentifier: "segueSettings", sender: self)
+            }
+        }
     }
 }
 
