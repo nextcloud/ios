@@ -28,6 +28,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
     @IBOutlet weak var imageLogo: UIImageView!
     @IBOutlet weak var imageAvatar: UIImageView!
+    @IBOutlet weak var labelUsername: UILabel!
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var labelQuota: UILabel!
     @IBOutlet weak var progressQuota: UIProgressView!
@@ -58,6 +59,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         
         if (self.tableAccont != nil) {
         
+            self.labelUsername.text = self.tableAccont?.user
             self.progressQuota.progress = Float((self.tableAccont?.quotaRelative)!) / 100
         
             let quota : String = CCUtility.transformedSize(Double((self.tableAccont?.quotaTotal)!))
@@ -70,30 +72,13 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         let avatar : UIImage? = UIImage.init(contentsOfFile: "\(appDelegate.directoryUser!)/avatar.png")
         
         if (avatar != nil) {
-            
-            //avatar = CCGraphics.scale(avatar, to: CGSize(width: 50, height: 50))
-            //let avatarView : APAvatarImageView = APAvatarImageView.init(image: CCGraphics.scale(avatar, to: CGSize(width: 50, height: 50)), borderColor: UIColor.white, borderWidth: 0.5)
+        
             self.imageAvatar.image = avatar
             
         } else {
             
             self.imageAvatar.image = UIImage.init(named: "avatar")
         }
-        
-        /*
-        if (avatar) {
-            
-            avatar =  [CCGraphics scaleImage:avatar toSize:CGSizeMake(50, 50)];
-            APAvatarImageView *avatarImageView = [[APAvatarImageView alloc] initWithImage:avatar borderColor:[UIColor lightGrayColor] borderWidth:0.5];
-            
-            CGSize imageSize = avatarImageView.bounds.size;
-            UIGraphicsBeginImageContextWithOptions(imageSize, NO, 0);
-            CGContextRef context = UIGraphicsGetCurrentContext();
-            [avatarImageView.layer renderInContext:context];
-            avatar = UIGraphicsGetImageFromCurrentImageContext();
-            UIGraphicsEndImageContext();
-        }
-        */
         
         // Aspect
         CCAspect.aspectNavigationControllerBar(self.navigationController?.navigationBar, encrypted: false, online: appDelegate.reachability.isReachable(), hidden: true)
@@ -125,6 +110,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        
         return self.itemsMenuLabelText[section].count
     }
     
@@ -140,8 +126,13 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
     // method to run when table view cell is tapped
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        if (indexPath.row == 1) {
+            self.navigationController?.performSegue(withIdentifier: "segueSettings", sender: self)
+        }
+        
         print("You tapped cell number \(indexPath.row).")
-         self.navigationController?.performSegue(withIdentifier: "segueSettings", sender: self)
+        
     }
 }
 
