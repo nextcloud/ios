@@ -97,16 +97,12 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        
-        var height : CGFloat
-        
+                
         if (section == 0) {
-            height = 10
+            return 10
         } else {
-            height = 30
+            return 30
         }
-
-        return height
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
