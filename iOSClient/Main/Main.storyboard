@@ -83,26 +83,26 @@
                                     <constraint firstAttribute="height" constant="100" id="mmt-Ka-rkQ"/>
                                 </constraints>
                             </imageView>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="Xym-IM-aqh">
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="none" rowHeight="50" sectionHeaderHeight="1" sectionFooterHeight="1" translatesAutoresizingMaskIntoConstraints="NO" id="Xym-IM-aqh">
                                 <rect key="frame" x="0.0" y="100" width="375" height="476"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="Cell" rowHeight="50" id="zQQ-52-W9I" customClass="CCCellMore" customModule="Nextcloud" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="28" width="375" height="50"/>
+                                        <rect key="frame" x="0.0" y="56" width="375" height="50"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="zQQ-52-W9I" id="Zho-os-HYj">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="50"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="RZt-EQ-32U">
-                                                    <rect key="frame" x="8" y="4" width="40" height="40"/>
+                                                    <rect key="frame" x="8" y="4.5" width="40" height="40"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="40" id="GYs-fR-sFZ"/>
                                                         <constraint firstAttribute="height" constant="40" id="Wrt-BX-70e"/>
                                                     </constraints>
                                                 </imageView>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="idt-Tt-9A9">
-                                                    <rect key="frame" x="56" y="15" width="311" height="20"/>
+                                                    <rect key="frame" x="56" y="14.5" width="311" height="20"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
@@ -141,7 +141,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES"/>
                             </imageView>
                         </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="cxb-Vw-8zb" firstAttribute="top" secondItem="XtC-Je-LUc" secondAttribute="topMargin" id="2z9-1h-2dU"/>
                             <constraint firstItem="WdB-hd-mrv" firstAttribute="leading" secondItem="XtC-Je-LUc" secondAttribute="leadingMargin" id="9ET-QC-35O"/>
@@ -160,8 +160,8 @@
                     </view>
                     <navigationItem key="navigationItem" id="170-MG-QpZ"/>
                     <connections>
+                        <outlet property="imageAvatar" destination="DWx-1W-vs0" id="WMr-Kl-RUr"/>
                         <outlet property="imageLogo" destination="cxb-Vw-8zb" id="U9H-30-zBN"/>
-                        <outlet property="imageUser" destination="DWx-1W-vs0" id="dII-b5-rqX"/>
                         <outlet property="labelQuota" destination="WdB-hd-mrv" id="Ozy-WV-w5O"/>
                         <outlet property="progressQuota" destination="HgC-Ub-Dtb" id="mpA-O3-SpS"/>
                         <outlet property="tableView" destination="Xym-IM-aqh" id="Esm-wN-pr1"/>
