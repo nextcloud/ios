@@ -857,11 +857,11 @@
     item.image = [UIImage imageNamed:image_tabBarPhotos];
     item.selectedImage = [UIImage imageNamed:image_tabBarPhotos];
     
-    // Settings
-    item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexSettings];
-    [item setTitle:NSLocalizedString(@"_settings_", nil)];
-    item.image = [UIImage imageNamed:image_tabBarSettings];
-    item.selectedImage = [UIImage imageNamed:image_tabBarSettings];
+    // More
+    item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexMore];
+    [item setTitle:NSLocalizedString(@"_more_", nil)];
+    item.image = [UIImage imageNamed:image_tabBarMore];
+    item.selectedImage = [UIImage imageNamed:image_tabBarMore];
     
     // Plus Button
     UIImage *buttonImage = [UIImage imageNamed:image_tabBarPlus];    

@@ -249,7 +249,6 @@ extern NSString *const urlBaseUploadDB;
 #define k_tabBarApplicationIndexOffline                 1
 #define k_tabBarApplicationIndexHide                    2
 #define k_tabBarApplicationIndexPhotos                  3
-#define k_tabBarApplicationIndexSettings                4
 #define k_tabBarApplicationIndexMore                    4
 
 #define k_keyFileNameMask                               @"fileNameMask"
