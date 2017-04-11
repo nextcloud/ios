@@ -171,3 +171,6 @@
 #define image_WiFiSmall                         @"WiFiSmall"
 
 #define image_file_xls                          @"file_xls"
+
+#define image_NextcloudMenuChangeAccount        @"typeCloudNextcloud"
+

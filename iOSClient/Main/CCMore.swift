@@ -48,8 +48,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         self.tableView.delegate = self
         self.tableView.dataSource = self
         
-        CCAspect.aspectNavigationControllerBar(self.navigationController?.navigationBar, encrypted: false, online: appDelegate.reachability.isReachable(), hidden: true)
-        CCAspect.aspectTabBar(self.tabBarController?.tabBar, hidden: false)
+        self.imageLogo.image = UIImage.init(named: image_brandLogoMenu)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -97,7 +96,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-                
+        
         if (section == 0) {
             return 10
         } else {

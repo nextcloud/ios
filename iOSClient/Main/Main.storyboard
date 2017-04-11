@@ -72,7 +72,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="nextcloudBackground" translatesAutoresizingMaskIntoConstraints="NO" id="cxb-Vw-8zb">
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="nextcloud_background" translatesAutoresizingMaskIntoConstraints="NO" id="cxb-Vw-8zb">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="100"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="100" id="mmt-Ka-rkQ"/>
@@ -83,7 +83,7 @@
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="Cell" rowHeight="50" id="zQQ-52-W9I" customClass="CCCellMore" customModule="Nextcloud" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="56" width="375" height="50"/>
+                                        <rect key="frame" x="0.0" y="55.5" width="375" height="50"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="zQQ-52-W9I" id="Zho-os-HYj">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="50"/>
@@ -767,12 +767,12 @@
         <image name="avatar" width="25" height="25"/>
         <image name="cryptocloud_sfondo_iPad" width="256" height="187"/>
         <image name="fileNextcloud" width="25" height="25"/>
-        <image name="nextcloudBackground" width="960" height="640"/>
+        <image name="nextcloud_background" width="960" height="640"/>
         <image name="tabBarFavorite" width="25" height="25"/>
         <image name="tabBarMore" width="25" height="25"/>
         <image name="tabBarPhotos" width="25" height="21"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="op6-ow-K8v"/>
+        <segue reference="W5b-lw-8O1"/>
     </inferredMetricsTieBreakers>
 </document>
