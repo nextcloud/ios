@@ -243,6 +243,7 @@
 		F75037511DBFA91A008FB480 /* NSLayoutConstraint+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F75037481DBFA91A008FB480 /* NSLayoutConstraint+PureLayout.m */; };
 		F75797AE1E81356C00187A1B /* CTAssetsPicker.strings in Resources */ = {isa = PBXBuildFile; fileRef = F75797AC1E81356C00187A1B /* CTAssetsPicker.strings */; };
 		F75ADF451DC75FFE008A7347 /* CCLogin.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F75ADF441DC75FFE008A7347 /* CCLogin.storyboard */; };
+		F75AE3C71E9D12900088BB09 /* SwiftyAvatar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75AE3C61E9D12900088BB09 /* SwiftyAvatar.swift */; };
 		F75EDFAC1E8C106900E6F369 /* FirebaseAnalytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F75EDFA61E8C106900E6F369 /* FirebaseAnalytics.framework */; };
 		F75EDFAD1E8C106900E6F369 /* FirebaseCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F75EDFA71E8C106900E6F369 /* FirebaseCore.framework */; };
 		F75EDFAE1E8C106900E6F369 /* FirebaseInstanceID.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F75EDFA81E8C106900E6F369 /* FirebaseInstanceID.framework */; };
@@ -1355,6 +1356,7 @@
 		F75797B51E81364700187A1B /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/CTAssetsPicker.strings; sourceTree = "<group>"; };
 		F75797B71E81364C00187A1B /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-BR"; path = "pt-BR.lproj/CTAssetsPicker.strings"; sourceTree = "<group>"; };
 		F75ADF441DC75FFE008A7347 /* CCLogin.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = CCLogin.storyboard; sourceTree = "<group>"; };
+		F75AE3C61E9D12900088BB09 /* SwiftyAvatar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftyAvatar.swift; sourceTree = "<group>"; };
 		F75CDBF51DF063AD00116AD0 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; name = .gitignore; path = ../.gitignore; sourceTree = "<group>"; };
 		F75EDFA51E8C106900E6F369 /* Firebase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Firebase.h; sourceTree = "<group>"; };
 		F75EDFA61E8C106900E6F369 /* FirebaseAnalytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseAnalytics.framework; sourceTree = "<group>"; };
@@ -1813,6 +1815,7 @@
 				F70F0C4F1C8892C5008DAB36 /* REMenu */,
 				F70F05321C889184008DAB36 /* RNCryptor */,
 				F70F0F921C889487008DAB36 /* SSZipArchive */,
+				F75AE3C51E9D12900088BB09 /* SwiftyAvatar */,
 				F7676A601D5CB1B900DF734C /* TWMessageBarManager */,
 				F73CCE271DC13798007E38D8 /* UICKeyChainStore */,
 				F70F05561C889184008DAB36 /* UIImage+animatedGIF */,
@@ -2767,6 +2770,14 @@
 				F7540F2C1D5B238600C3FFA8 /* x509v3.h */,
 			);
 			path = openssl;
+			sourceTree = "<group>";
+		};
+		F75AE3C51E9D12900088BB09 /* SwiftyAvatar */ = {
+			isa = PBXGroup;
+			children = (
+				F75AE3C61E9D12900088BB09 /* SwiftyAvatar.swift */,
+			);
+			path = SwiftyAvatar;
 			sourceTree = "<group>";
 		};
 		F75EDFA41E8C106900E6F369 /* Analytics */ = {
@@ -4156,6 +4167,7 @@
 				F77B0E231D118A16002130FE /* CCSharePermissionOC.m in Sources */,
 				F77B0E241D118A16002130FE /* HRColorCursor.m in Sources */,
 				F708CF851E56E8CC00271D8B /* TableShare+CoreDataClass.m in Sources */,
+				F75AE3C71E9D12900088BB09 /* SwiftyAvatar.swift in Sources */,
 				F708CF9A1E56E8CC00271D8B /* TableAccount+CoreDataProperties.m in Sources */,
 				F77B0E261D118A16002130FE /* ZSSTextView.m in Sources */,
 				F7253FCA1E38BAF20084135B /* JSAlertView.m in Sources */,
