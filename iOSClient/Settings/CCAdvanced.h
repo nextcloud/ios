@@ -1,8 +1,8 @@
 //
-//  CCSettings.h
+//  CCAdvanced.h
 //  Crypto Cloud Technology Nextcloud
 //
-//  Created by Marino Faggiana on 24/11/14.
+//  Created by Marino Faggiana on 12/04/17.
 //  Copyright (c) 2014 TWS. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
@@ -21,23 +21,13 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#import <UIKit/UIKit.h>
-#import <MessageUI/MessageUI.h>
+#import <MessageUI/MFMailComposeViewController.h>
 #import "XLFormViewController.h"
 #import "XLForm.h"
-#import "BKPasscodeViewController.h"
-#import "CCUtility.h"
 #import "CCHud.h"
-#import "TableAccount+CoreDataClass.h"
 
-@interface CCSettings : XLFormViewController <BKPasscodeViewControllerDelegate, MFMailComposeViewControllerDelegate>
+@interface CCAdvanced : XLFormViewController <MFMailComposeViewControllerDelegate>
 
-@property (strong, nonatomic) TableAccount *tableAccount;
-@property (nonatomic) NSUInteger failedAttempts;
-
-@property (strong, nonatomic) NSDate *lockUntilDate;
-
-
-- (void)reloadForm;
+@property (nonatomic, strong) CCHud *hud;
 
 @end

@@ -519,6 +519,7 @@
 		F7A3217A1E9E3EAF0069AD1B /* CCTransfersCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A321771E9E3EAF0069AD1B /* CCTransfersCell.m */; };
 		F7A3217B1E9E3EAF0069AD1B /* CCTransfersCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7A321781E9E3EAF0069AD1B /* CCTransfersCell.xib */; };
 		F7A3218C1E9E42B30069AD1B /* CCMenuAccount.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A3218B1E9E42B30069AD1B /* CCMenuAccount.m */; };
+		F7A321AD1E9E6AD50069AD1B /* CCAdvanced.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A321AC1E9E6AD50069AD1B /* CCAdvanced.m */; };
 		F7B1FBC41E72E3D1001781FE /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7B1FBB11E72E3D1001781FE /* Media.xcassets */; };
 		F7B1FBC61E72E3D1001781FE /* SwiftModalWebVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B1FBBF1E72E3D1001781FE /* SwiftModalWebVC.swift */; };
 		F7B1FBC71E72E3D1001781FE /* SwiftWebVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B1FBC01E72E3D1001781FE /* SwiftWebVC.swift */; };
@@ -1477,6 +1478,8 @@
 		F7A321781E9E3EAF0069AD1B /* CCTransfersCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CCTransfersCell.xib; sourceTree = "<group>"; };
 		F7A3218A1E9E42B30069AD1B /* CCMenuAccount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCMenuAccount.h; sourceTree = "<group>"; };
 		F7A3218B1E9E42B30069AD1B /* CCMenuAccount.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCMenuAccount.m; sourceTree = "<group>"; };
+		F7A321AB1E9E6AD50069AD1B /* CCAdvanced.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCAdvanced.h; sourceTree = "<group>"; };
+		F7A321AC1E9E6AD50069AD1B /* CCAdvanced.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCAdvanced.m; sourceTree = "<group>"; };
 		F7A54C341C6267B500E2C8BF /* CCExifGeo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCExifGeo.h; sourceTree = "<group>"; };
 		F7A54C351C6267B500E2C8BF /* CCExifGeo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCExifGeo.m; sourceTree = "<group>"; };
 		F7A582D61A24DAB500E903D7 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -3001,6 +3004,8 @@
 				F7FEB6CF1BECADC100E7C415 /* CCManageHelp.m */,
 				F7AB79EF1BB1A3AD00A82F32 /* CCManageOptimizations.h */,
 				F7AB79F01BB1A3AD00A82F32 /* CCManageOptimizations.m */,
+				F7A321AB1E9E6AD50069AD1B /* CCAdvanced.h */,
+				F7A321AC1E9E6AD50069AD1B /* CCAdvanced.m */,
 				F7ACE4301BAC0268006C0017 /* CCSettings.h */,
 				F7ACE4311BAC0268006C0017 /* CCSettings.m */,
 			);
@@ -4196,6 +4201,7 @@
 				F77B0E3A1D118A16002130FE /* RNCryptorEngine.m in Sources */,
 				F77B0E3C1D118A16002130FE /* CCCartaIdentita.m in Sources */,
 				F7659A6C1DC0B760004860C4 /* PSTGridLayoutItem.m in Sources */,
+				F7A321AD1E9E6AD50069AD1B /* CCAdvanced.m in Sources */,
 				F7F06EA31DBFACC600099AE9 /* CTAssetCollectionViewController.m in Sources */,
 				F77B0E411D118A16002130FE /* CCSplit.m in Sources */,
 				F77B0E421D118A16002130FE /* ReaderMainPagebar.m in Sources */,
