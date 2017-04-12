@@ -71,6 +71,8 @@
     _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     _tableView.backgroundColor = [UIColor clearColor];
     
+    self.title = NSLocalizedString(@"_transfers_", nil);
+    
     [self reloadDatasource];
 }
 
