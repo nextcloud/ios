@@ -26,7 +26,7 @@
 #import "AppDelegate.h"
 #import "CCPhotosCameraUpload.h"
 #import "CCSynchronize.h"
-#import "CCControlCenterTransferCell.h"
+#import "CCTransfersCell.h"
 #import <OCCommunicationLib/OCActivity.h>
 #import <OCCommunicationLib/OCNotifications.h>
 #import <OCCommunicationLib/OCNotificationsAction.h>
@@ -619,7 +619,7 @@
     [app.reMainMenu close];
     
     // Close Menu Logo
-    [CCMenu dismissMenu];
+    [CCMenuAccount dismissMenu];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -2626,7 +2626,7 @@
     
     if (indexPath) {
         
-        CCControlCenterTransferCell *cell = (CCControlCenterTransferCell *)[self.tableView cellForRowAtIndexPath:indexPath];
+        CCTransfersCell *cell = (CCTransfersCell *)[self.tableView cellForRowAtIndexPath:indexPath];
         
         if (cryptated) cell.progressView.progressTintColor = COLOR_CRYPTOCLOUD;
         else cell.progressView.progressTintColor = COLOR_TEXT_ANTHRACITE;
@@ -3271,8 +3271,8 @@
             rect.origin.y = rect.origin.y + originY;
             rect.size.height = rect.size.height - originY;
             
-            [CCMenu setTitleFont:[UIFont systemFontOfSize:12.0]];
-            [CCMenu showMenuInView:self.navigationController.view fromRect:rect menuItems:menuArray withOptions:options];
+            [CCMenuAccount setTitleFont:[UIFont systemFontOfSize:12.0]];
+            [CCMenuAccount showMenuInView:self.navigationController.view fromRect:rect menuItems:menuArray withOptions:options];
         }
         
         return;
@@ -3336,8 +3336,8 @@
     rect.origin.y = rect.origin.y + originY;
     rect.size.height = rect.size.height - originY;
     
-    [CCMenu setTitleFont:[UIFont systemFontOfSize:12.0]];
-    [CCMenu showMenuInView:self.navigationController.view fromRect:rect menuItems:menuArray withOptions:options];
+    [CCMenuAccount setTitleFont:[UIFont systemFontOfSize:12.0]];
+    [CCMenuAccount showMenuInView:self.navigationController.view fromRect:rect menuItems:menuArray withOptions:options];
     
 #endif
 }
