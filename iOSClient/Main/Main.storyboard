@@ -48,17 +48,12 @@
                     <navigationItem key="navigationItem" id="1CO-Ie-Aaj"/>
                     <connections>
                         <segue destination="eZl-ut-xpC" kind="presentation" identifier="AcknowledgementsSegue" modalPresentationStyle="formSheet" id="J9C-Ex-Q6i"/>
-                        <segue destination="EIj-cr-7fd" kind="show" identifier="CCManageAccountSegue" id="u0T-X2-SEH"/>
                         <segue destination="DEi-yz-wEj" kind="show" identifier="CCManageCameraUploadSegue" id="Aij-5E-cNN"/>
-                        <segue destination="sOS-YU-Cbr" kind="show" identifier="CCManageOptimizationsSegue" id="JoS-OK-Poe"/>
-                        <segue destination="gTd-HL-PVY" kind="show" identifier="CCManageSynchronizationsSegue" id="MsD-Ag-XH5"/>
-                        <segue destination="HU7-az-TgV" kind="show" identifier="CCManageHelpSegue" id="bfB-KM-85a"/>
-                        <segue destination="Zc0-jh-3hD" kind="show" identifier="CCManageCryptoCloudSegue" id="BZx-hA-Ydj"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="wVn-RD-GD2" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="12524" y="1218"/>
+            <point key="canvasLocation" x="11844" y="1218"/>
         </scene>
         <!--More-->
         <scene sceneID="Mdr-ch-zRI">
@@ -341,7 +336,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="TUv-7S-62D" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="12511" y="3246"/>
+            <point key="canvasLocation" x="13490" y="1218"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="eDq-6m-h8d">
@@ -360,47 +355,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="38M-dR-dlY" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="12511" y="2476"/>
-        </scene>
-        <!--Manage Account-->
-        <scene sceneID="OhO-6f-Vhc">
-            <objects>
-                <viewController id="EIj-cr-7fd" customClass="CCManageAccount" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="uyJ-km-0gk"/>
-                        <viewControllerLayoutGuide type="bottom" id="hEi-St-jlW"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="dTI-9C-Bf2">
-                        <rect key="frame" x="0.0" y="64" width="375" height="554"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                    </view>
-                    <extendedEdge key="edgesForExtendedLayout"/>
-                    <navigationItem key="navigationItem" id="I4M-0q-oPz"/>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="EDa-LU-0rn" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="14583" y="2476"/>
-        </scene>
-        <!--Manage Crypto Cloud-->
-        <scene sceneID="cbW-au-eCe">
-            <objects>
-                <viewController id="Zc0-jh-3hD" customClass="CCManageCryptoCloud" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="Mj6-7r-ybC"/>
-                        <viewControllerLayoutGuide type="bottom" id="qyW-zc-26J"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="y8W-PN-QtS">
-                        <rect key="frame" x="0.0" y="64" width="375" height="554"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                    </view>
-                    <extendedEdge key="edgesForExtendedLayout"/>
-                    <navigationItem key="navigationItem" id="Hhs-Wj-nLB"/>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="ksn-Ew-8Z0" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="13881" y="2472"/>
+            <point key="canvasLocation" x="12676" y="1218"/>
         </scene>
         <!--Manage Camera Upload-->
         <scene sceneID="YAa-hT-VHe">
@@ -420,27 +375,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="g5a-uE-sF6" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="13183" y="2476"/>
-        </scene>
-        <!--Manage Optimizations-->
-        <scene sceneID="dOW-Mw-bEM">
-            <objects>
-                <viewController id="sOS-YU-Cbr" customClass="CCManageOptimizations" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="tze-zu-iin"/>
-                        <viewControllerLayoutGuide type="bottom" id="MYl-TL-mVB"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="DkJ-LZ-yPy">
-                        <rect key="frame" x="0.0" y="64" width="375" height="554"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                    </view>
-                    <extendedEdge key="edgesForExtendedLayout"/>
-                    <navigationItem key="navigationItem" id="f9e-Aq-ViU"/>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="0UA-CF-A4C" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="11145" y="2476"/>
+            <point key="canvasLocation" x="11844" y="2006"/>
         </scene>
         <!--Main Tab Bar Controller-->
         <scene sceneID="gY3-Ur-rTC">
@@ -657,46 +592,6 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="cZf-pk-3Bd" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="8572" y="327"/>
-        </scene>
-        <!--Manage Synchronizations-->
-        <scene sceneID="rlM-Pz-rta">
-            <objects>
-                <viewController id="gTd-HL-PVY" customClass="CCManageSynchronizations" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="9Kq-b8-Bh8"/>
-                        <viewControllerLayoutGuide type="bottom" id="uoD-Vb-rfP"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="cO8-G4-hHt">
-                        <rect key="frame" x="0.0" y="64" width="375" height="554"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                    </view>
-                    <extendedEdge key="edgesForExtendedLayout"/>
-                    <navigationItem key="navigationItem" id="XMM-MK-ZBM"/>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="2YG-G9-yyB" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="11865" y="2476"/>
-        </scene>
-        <!--Manage Help-->
-        <scene sceneID="Kwp-bi-zU9">
-            <objects>
-                <viewController id="HU7-az-TgV" customClass="CCManageHelp" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="q5t-Kt-Dku"/>
-                        <viewControllerLayoutGuide type="bottom" id="wiG-3f-6XF"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="LNE-IV-JjC">
-                        <rect key="frame" x="0.0" y="64" width="375" height="554"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                    </view>
-                    <extendedEdge key="edgesForExtendedLayout"/>
-                    <navigationItem key="navigationItem" id="Zzl-Z4-6Qp"/>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="oeH-9e-IVz" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="10463" y="2472"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="cip-AF-Ks2">

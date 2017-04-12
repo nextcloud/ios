@@ -26,19 +26,7 @@
 
 @implementation CCManageCryptoCloud
 
-- (id)initWithCoder:(NSCoder *)aDecoder
-{
-    self = [super initWithCoder:aDecoder];
-    
-    if (self) {
-        
-        [self initializeForm];
-    }
-    
-    return self;
-}
-
-- (void)initializeForm
+-(id)init
 {
     XLFormDescriptor *form ;
     XLFormSectionDescriptor *section;
@@ -73,16 +61,7 @@
     section = [XLFormSectionDescriptor formSection];
     [form addFormSection:section];
     
-    self.form = form;
-}
-
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-    
-    // Color
-    [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
-    [CCAspect aspectTabBar:self.tabBarController.tabBar hidden:NO];
+    return [super initWithForm:form];
 }
 
 // Apparirà

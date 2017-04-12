@@ -27,6 +27,8 @@
 #import "OCCapabilities.h"
 #import "CCSynchronize.h"
 #import "CCAdvanced.h"
+#import "CCManageCryptoCloud.h"
+#import "CCManageAccount.h"
 
 #define alertViewEsci 1
 #define alertViewAzzeraCache 2
@@ -108,15 +110,7 @@
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"changecredentials" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_change_credentials_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:[UIImage imageNamed:image_settingsCredentials] forKey:@"imageView.image"];
-    row.action.formSegueIdentifier = @"CCManageAccountSegue";
-    [section addFormRow:row];
-    
-    // quota
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"quota" rowType:XLFormRowDescriptorTypeButton title:@""];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:@(NSTextAlignmentCenter) forKey:@"textLabel.textAlignment"];
-    [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
-    row.action.formSelector = @selector(quota:);
+    row.action.viewControllerClass = [CCManageAccount class];
     [section addFormRow:row];
     
     // Section : USER INFORMATION -------------------------------------------
@@ -171,17 +165,6 @@
     row.action.formSegueIdentifier = @"CCManageCameraUploadSegue";
     [section addFormRow:row];
 
-    // Section OPTIMIZATIONS ------------------------------------------------
-    
-    section = [XLFormSectionDescriptor formSection];
-    [form addFormSection:section];
-    
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"optimizations" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_optimizations_", nil)];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIImage imageNamed:image_settingsOptimizations] forKey:@"imageView.image"];
-    row.action.formSegueIdentifier = @"CCManageOptimizationsSegue";
-    [section addFormRow:row];
-
     // Section FOLDERS FAVORITES OFFLINE ------------------------------------
     
     section = [XLFormSectionDescriptor formSection];
@@ -203,7 +186,7 @@
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"cryptocloud" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_crypto_cloud_system_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:[UIImage imageNamed:image_settingsCryptoCloud] forKey:@"imageView.image"];
-    row.action.formSegueIdentifier = @"CCManageCryptoCloudSegue";
+    row.action.viewControllerClass = [CCManageCryptoCloud class];
     [section addFormRow:row];
 #endif
     
@@ -227,13 +210,6 @@
     };
     [section addFormRow:row];
     
-    // Help
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"help" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_help_", nil)];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIImage imageNamed:image_settingsHelp] forKey:@"imageView.image"];
-    row.action.formSegueIdentifier = @"CCManageHelpSegue";
-    [section addFormRow:row];
-
     // Contact us mail
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"sendmail" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_contact_by_email_", nil)];
     [row.cellConfig setObject:COLOR_BRAND forKey:@"textLabel.textColor"];
@@ -288,35 +264,6 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark === TableView ===
-#pragma --------------------------------------------------------------------------------------------
-
--(UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section
-{
-    if (section == 1) {
-        
-        UIView *view = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 0)];
-        view.backgroundColor = [UIColor clearColor];
-        
-        UIProgressView *progressView = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleDefault];
-        progressView.frame = CGRectMake(10, -23, self.tableView.frame.size.width-10-10, 0);
-        progressView.trackTintColor = [UIColor colorWithRed:247.0/255.0 green:247.0/255.0 blue:247.0/255.0 alpha:0.6];
-        progressView.progressTintColor = COLOR_PROGRESS_BAR_QUOTA;
-        progressView.layer.borderWidth = 0.05;
-        progressView.layer.borderColor = [COLOR_BRAND CGColor];
-        CGAffineTransform transform = CGAffineTransformMakeScale(1.0f, 10.0f);
-        progressView.transform = transform;
-        progressView.progress = [_tableAccount.quotaRelative floatValue] / 100;
-        
-        [view addSubview:progressView];
-        
-        return view;
-    }
-    
-    return nil;
-}
-
-#pragma --------------------------------------------------------------------------------------------
 #pragma mark === Chiamate dal Form ===
 #pragma --------------------------------------------------------------------------------------------
 
@@ -334,7 +281,6 @@
     XLFormRowDescriptor *rowVersionServer = [self.form formRowWithTag:@"versionserver"];
     XLFormRowDescriptor *rowUrlCloud = [self.form formRowWithTag:@"urlcloud"];
     XLFormRowDescriptor *rowUserNameCloud = [self.form formRowWithTag:@"usernamecloud"];
-    XLFormRowDescriptor *rowQuota = [self.form formRowWithTag:@"quota"];
 
     XLFormRowDescriptor *rowUserFullName = [self.form formRowWithTag:@"userfullname"];
     XLFormRowDescriptor *rowUserAddress = [self.form formRowWithTag:@"useraddress"];
@@ -365,11 +311,6 @@
     rowVersionServer.value = [NSString stringWithFormat:@"%lu.%lu.%lu",(unsigned long)[_tableAccount.versionMajor integerValue], (unsigned long)[_tableAccount.versionMinor integerValue], (unsigned long)[_tableAccount.versionMicro integerValue]];
     rowUrlCloud.value = app.activeUrl;
     rowUserNameCloud.value = app.activeUser;
-    NSString *quota = [CCUtility transformedSize:[_tableAccount.quotaTotal doubleValue]];
-    //NSString *quotaAvailable = [CCUtility transformedSize:[_tableAccount.quotaFree doubleValue]];
-    NSString *quotaUsed = [CCUtility transformedSize:[_tableAccount.quotaUsed doubleValue]];
-    rowQuota.title = [NSString stringWithFormat:NSLocalizedString(@"_quota_using_", nil), quotaUsed, quota];
-    //rowQuota.title = [NSString stringWithFormat:@"%@ / %@ %@", quota, quotaAvailable, NSLocalizedString(@"_available_", nil)];
     
     rowUserFullName.value = _tableAccount.displayName;
     if ([_tableAccount.displayName isEqualToString:@""]) rowUserFullName.hidden = @YES;
@@ -569,11 +510,6 @@
         [self presentViewController:navigationController animated:YES completion:nil];
     }
     
-}
-
-- (void)quota:(XLFormRowDescriptor *)sender
-{
-    [self deselectFormRow:sender];
 }
 
 - (void)synchronizeFavorites

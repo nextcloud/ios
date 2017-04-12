@@ -358,7 +358,6 @@
 		F77B0E8C1D118A16002130FE /* ReaderConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0EB81C889317008DAB36 /* ReaderConstants.m */; };
 		F77B0E8D1D118A16002130FE /* LMMediaPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0F3E1C889339008DAB36 /* LMMediaPlayer.m */; };
 		F77B0E8F1D118A16002130FE /* CCSection.m in Sources */ = {isa = PBXBuildFile; fileRef = F78F6FAF1CC8CCB700F4EA25 /* CCSection.m */; };
-		F77B0E901D118A16002130FE /* CCManageHelp.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FEB6CF1BECADC100E7C415 /* CCManageHelp.m */; };
 		F77B0E911D118A16002130FE /* CCTemplates.m in Sources */ = {isa = PBXBuildFile; fileRef = F72137301BAFF0920012B613 /* CCTemplates.m */; };
 		F77B0E921D118A16002130FE /* CCCellMainTransfer.m in Sources */ = {isa = PBXBuildFile; fileRef = F70211F81BAC56E9003FC03E /* CCCellMainTransfer.m */; };
 		F77B0E951D118A16002130FE /* CCManageAsset.m in Sources */ = {isa = PBXBuildFile; fileRef = F7BFCCBF1B68C21900548E76 /* CCManageAsset.m */; };
@@ -382,7 +381,6 @@
 		F77B0EB91D118A16002130FE /* HRColorUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0DEC1C889300008DAB36 /* HRColorUtil.m */; };
 		F77B0EBE1D118A16002130FE /* CCNote.m in Sources */ = {isa = PBXBuildFile; fileRef = F721372A1BAFF0920012B613 /* CCNote.m */; };
 		F77B0EBF1D118A16002130FE /* RNEncryptor.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F053B1C889184008DAB36 /* RNEncryptor.m */; };
-		F77B0EC21D118A16002130FE /* CCManageOptimizations.m in Sources */ = {isa = PBXBuildFile; fileRef = F7AB79F01BB1A3AD00A82F32 /* CCManageOptimizations.m */; };
 		F77B0EC31D118A16002130FE /* UIImage+Enhancing.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04C21C889184008DAB36 /* UIImage+Enhancing.m */; };
 		F77B0EC61D118A16002130FE /* CCCellMain.m in Sources */ = {isa = PBXBuildFile; fileRef = F70211F51BAC56E9003FC03E /* CCCellMain.m */; };
 		F77B0EC71D118A16002130FE /* AESCrypt.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02AB1C889183008DAB36 /* AESCrypt.m */; };
@@ -1484,8 +1482,6 @@
 		F7A54C351C6267B500E2C8BF /* CCExifGeo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCExifGeo.m; sourceTree = "<group>"; };
 		F7A582D61A24DAB500E903D7 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = AppDelegate.m; sourceTree = "<group>"; };
 		F7A582D71A24DAB500E903D7 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = AppDelegate.h; sourceTree = "<group>"; };
-		F7AB79EF1BB1A3AD00A82F32 /* CCManageOptimizations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCManageOptimizations.h; sourceTree = "<group>"; };
-		F7AB79F01BB1A3AD00A82F32 /* CCManageOptimizations.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCManageOptimizations.m; sourceTree = "<group>"; };
 		F7ACE4291BAC0268006C0017 /* Acknowledgements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Acknowledgements.h; sourceTree = "<group>"; };
 		F7ACE42A1BAC0268006C0017 /* Acknowledgements.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Acknowledgements.m; sourceTree = "<group>"; };
 		F7ACE42B1BAC0268006C0017 /* Acknowledgements.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; path = Acknowledgements.rtf; sourceTree = "<group>"; };
@@ -1699,8 +1695,6 @@
 		F7FE125D1BAC03FB0041924B /* CCBKPasscode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCBKPasscode.m; sourceTree = "<group>"; };
 		F7FE125E1BAC03FB0041924B /* CCCrypto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCCrypto.h; sourceTree = "<group>"; };
 		F7FE125F1BAC03FB0041924B /* CCCrypto.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCCrypto.m; sourceTree = "<group>"; };
-		F7FEB6CE1BECADC100E7C415 /* CCManageHelp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCManageHelp.h; sourceTree = "<group>"; };
-		F7FEB6CF1BECADC100E7C415 /* CCManageHelp.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCManageHelp.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -3000,10 +2994,6 @@
 				F7F6AC4D1E525AD300E8EB45 /* CCManageCryptoCloud.m */,
 				F73C002D1E55D7DF00EEEFA7 /* CCManageCryptoCloudSecurity.h */,
 				F73C002E1E55D7DF00EEEFA7 /* CCManageCryptoCloudSecurity.m */,
-				F7FEB6CE1BECADC100E7C415 /* CCManageHelp.h */,
-				F7FEB6CF1BECADC100E7C415 /* CCManageHelp.m */,
-				F7AB79EF1BB1A3AD00A82F32 /* CCManageOptimizations.h */,
-				F7AB79F01BB1A3AD00A82F32 /* CCManageOptimizations.m */,
 				F7A321AB1E9E6AD50069AD1B /* CCAdvanced.h */,
 				F7A321AC1E9E6AD50069AD1B /* CCAdvanced.m */,
 				F7ACE4301BAC0268006C0017 /* CCSettings.h */,
@@ -4297,7 +4287,6 @@
 				F77B0E8D1D118A16002130FE /* LMMediaPlayer.m in Sources */,
 				F77B0E8F1D118A16002130FE /* CCSection.m in Sources */,
 				F72AAECB1E5C60C700BB17E1 /* AHKActionSheetViewController.m in Sources */,
-				F77B0E901D118A16002130FE /* CCManageHelp.m in Sources */,
 				F77B0E911D118A16002130FE /* CCTemplates.m in Sources */,
 				F73CCDE11DC13776007E38D8 /* XLFormDatePickerCell.m in Sources */,
 				F72AAECD1E5C60C700BB17E1 /* UIWindow+AHKAdditions.m in Sources */,
@@ -4366,7 +4355,6 @@
 				F7F54D0D1E5B14C800E19C62 /* MWZoomingScrollView.m in Sources */,
 				F7F06EAD1DBFACC600099AE9 /* CTAssetSelectionLabel.m in Sources */,
 				F7659A701DC0B760004860C4 /* PSTGridLayoutSection.m in Sources */,
-				F77B0EC21D118A16002130FE /* CCManageOptimizations.m in Sources */,
 				F77B0EC31D118A16002130FE /* UIImage+Enhancing.m in Sources */,
 				F77B0EC61D118A16002130FE /* CCCellMain.m in Sources */,
 				F77B0EC71D118A16002130FE /* AESCrypt.m in Sources */,

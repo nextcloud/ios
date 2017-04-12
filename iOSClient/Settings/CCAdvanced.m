@@ -67,6 +67,28 @@
     row.action.formSelector = @selector(clearActivity:);
     [section addFormRow:row];
     
+    // Section OTTIMIZATIONS -------------------------------------------------
+    
+    section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_optimized_photos_", nil)];
+    [form addFormSection:section];
+    section.footerTitle = NSLocalizedString(@"_optimized_photos_how_", nil);
+    
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"optimizedphoto" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_optimized_photos_", nil)];
+    if ([CCUtility getOptimizedPhoto]) row.value = @"1";
+    else row.value = @"0";
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [section addFormRow:row];
+    
+    section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_upload_del_photos_", nil)];
+    [form addFormSection:section];
+    section.footerTitle = [CCUtility localizableBrand:@"_upload_del_photos_how_" table:nil];
+    
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"uploadremovephoto" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_upload_del_photos_", nil)];
+    if ([CCUtility getUploadAndRemovePhoto]) row.value = @"1";
+    else row.value = @"0";
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [section addFormRow:row];
+
     // Section CLEAR CACHE -------------------------------------------------
     
     section = [XLFormSectionDescriptor formSection];
@@ -124,6 +146,24 @@
         
         // Clear Date read Activity for force reload datasource
         app.activeActivity.storeDateFirstActivity = nil;
+    }
+    
+    if ([rowDescriptor.tag isEqualToString:@"optimizedphoto"]) {
+        
+        if ([[rowDescriptor.value valueData] boolValue] == YES) {
+            [CCUtility setOptimizedPhoto:YES];
+        } else {
+            [CCUtility setOptimizedPhoto:NO];
+        }
+    }
+    
+    if ([rowDescriptor.tag isEqualToString:@"uploadremovephoto"]) {
+        
+        if ([[rowDescriptor.value valueData] boolValue] == YES) {
+            [CCUtility setUploadAndRemovePhoto:YES];
+        } else {
+            [CCUtility setUploadAndRemovePhoto:NO];
+        }
     }
 }
 

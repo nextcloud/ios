@@ -40,20 +40,9 @@
 }
 @end
 
-
 @implementation CCManageAccount
 
--  (id)initWithCoder:(NSCoder *)aDecoder
-{
-    if (self = [super initWithCoder:aDecoder])  {
-        
-        [self initializeForm];
-    }
-    
-    return self;
-}
-
-- (void)initializeForm
+-(id)init
 {
     XLFormDescriptor *form = [XLFormDescriptor formDescriptorWithTitle:NSLocalizedString(@"_credentials_", nil)];
     XLFormSectionDescriptor *section;
@@ -105,7 +94,7 @@
     if (listAccount.count == 0) row.disabled = @YES;
     [section addFormRow:row];
     
-    self.form = form;
+    return [super initWithForm:form];
 }
 
 // Apparirà
