@@ -1,5 +1,5 @@
 //
-//  CCFavorite.h
+//  CCFavorites.h
 //  Crypto Cloud Technology Nextcloud
 //
 //  Created by Marino Faggiana on 16/01/17.
@@ -27,7 +27,7 @@
 #import "UIScrollView+EmptyDataSet.h"
 #import "TWMessageBarManager.h"
 #import "AHKActionSheet.h"
-#import "CCFavoriteCell.h"
+#import "CCFavoritesCell.h"
 #import "CCUtility.h"
 #import "CCCoreData.h"
 #import "CCMain.h"
@@ -41,7 +41,7 @@
 #import "CCPassaporto.h"
 #import "CCPatenteGuida.h"
 
-@interface CCFavorite : UIViewController <UITableViewDataSource, UITableViewDelegate, UIDocumentInteractionControllerDelegate, UIActionSheetDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, CCAccountWebDelegate, CCBancomatDelegate, CCCartaDiCreditoDelegate, CCCartaIdentitaDelegate, CCContoCorrenteDelegate, CCNoteDelegate, CCPassaportoDelegate, CCPatenteGuidaDelegate>
+@interface CCFavorites : UIViewController <UITableViewDataSource, UITableViewDelegate, UIDocumentInteractionControllerDelegate, UIActionSheetDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, CCAccountWebDelegate, CCBancomatDelegate, CCCartaDiCreditoDelegate, CCCartaIdentitaDelegate, CCContoCorrenteDelegate, CCNoteDelegate, CCPassaportoDelegate, CCPatenteGuidaDelegate>
 
 @property (nonatomic, weak) IBOutlet UITableView *tableView;
 

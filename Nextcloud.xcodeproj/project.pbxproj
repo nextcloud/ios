@@ -280,10 +280,6 @@
 		F769D39A1E9E1506006DBBB4 /* CCLocalStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = F769D3961E9E1506006DBBB4 /* CCLocalStorage.m */; };
 		F769D39B1E9E1506006DBBB4 /* CCLocalStorageCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F769D3981E9E1506006DBBB4 /* CCLocalStorageCell.m */; };
 		F769D39C1E9E1506006DBBB4 /* CCLocalStorageCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F769D3991E9E1506006DBBB4 /* CCLocalStorageCell.xib */; };
-		F769D3BE1E9E2519006DBBB4 /* CCFavorite.m in Sources */ = {isa = PBXBuildFile; fileRef = F769D3B81E9E2519006DBBB4 /* CCFavorite.m */; };
-		F769D3BF1E9E2519006DBBB4 /* CCFavoriteCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F769D3BA1E9E2519006DBBB4 /* CCFavoriteCell.m */; };
-		F769D3C01E9E2519006DBBB4 /* CCFavoriteCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F769D3BB1E9E2519006DBBB4 /* CCFavoriteCell.xib */; };
-		F769D3C11E9E2519006DBBB4 /* CCSynchronize.m in Sources */ = {isa = PBXBuildFile; fileRef = F769D3BD1E9E2519006DBBB4 /* CCSynchronize.m */; };
 		F77B0DF01D118A16002130FE /* UIImage+Resizing.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04CA1C889184008DAB36 /* UIImage+Resizing.m */; };
 		F77B0DF21D118A16002130FE /* CCUploadFromOtherUpp.m in Sources */ = {isa = PBXBuildFile; fileRef = F7956FCA1B4886E60085DEA3 /* CCUploadFromOtherUpp.m */; };
 		F77B0DF41D118A16002130FE /* CCMain.m in Sources */ = {isa = PBXBuildFile; fileRef = F70211FB1BAC56E9003FC03E /* CCMain.m */; };
@@ -520,6 +516,10 @@
 		F78BFEE11D31126B00E513CF /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F78BFEDE1D31126B00E513CF /* MainInterface.storyboard */; };
 		F7A13A031E7F3D5D00016680 /* CCProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A13A001E7F3D5D00016680 /* CCProgressView.m */; };
 		F7A13A041E7F3D5D00016680 /* UINavigationController+CCProgress.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A13A021E7F3D5D00016680 /* UINavigationController+CCProgress.m */; };
+		F7A321551E9E2A070069AD1B /* CCFavorites.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A3214F1E9E2A070069AD1B /* CCFavorites.m */; };
+		F7A321561E9E2A070069AD1B /* CCFavoritesCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A321511E9E2A070069AD1B /* CCFavoritesCell.m */; };
+		F7A321571E9E2A070069AD1B /* CCFavoritesCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7A321521E9E2A070069AD1B /* CCFavoritesCell.xib */; };
+		F7A321581E9E2A070069AD1B /* CCSynchronize.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A321541E9E2A070069AD1B /* CCSynchronize.m */; };
 		F7B1FBC41E72E3D1001781FE /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7B1FBB11E72E3D1001781FE /* Media.xcassets */; };
 		F7B1FBC61E72E3D1001781FE /* SwiftModalWebVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B1FBBF1E72E3D1001781FE /* SwiftModalWebVC.swift */; };
 		F7B1FBC71E72E3D1001781FE /* SwiftWebVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B1FBC01E72E3D1001781FE /* SwiftWebVC.swift */; };
@@ -1425,13 +1425,6 @@
 		F769D3971E9E1506006DBBB4 /* CCLocalStorageCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCLocalStorageCell.h; sourceTree = "<group>"; };
 		F769D3981E9E1506006DBBB4 /* CCLocalStorageCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCLocalStorageCell.m; sourceTree = "<group>"; };
 		F769D3991E9E1506006DBBB4 /* CCLocalStorageCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CCLocalStorageCell.xib; sourceTree = "<group>"; };
-		F769D3B71E9E2519006DBBB4 /* CCFavorite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCFavorite.h; sourceTree = "<group>"; };
-		F769D3B81E9E2519006DBBB4 /* CCFavorite.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCFavorite.m; sourceTree = "<group>"; };
-		F769D3B91E9E2519006DBBB4 /* CCFavoriteCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCFavoriteCell.h; sourceTree = "<group>"; };
-		F769D3BA1E9E2519006DBBB4 /* CCFavoriteCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCFavoriteCell.m; sourceTree = "<group>"; };
-		F769D3BB1E9E2519006DBBB4 /* CCFavoriteCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CCFavoriteCell.xib; sourceTree = "<group>"; };
-		F769D3BC1E9E2519006DBBB4 /* CCSynchronize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCSynchronize.h; sourceTree = "<group>"; };
-		F769D3BD1E9E2519006DBBB4 /* CCSynchronize.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCSynchronize.m; sourceTree = "<group>"; };
 		F76A75E01E83D42B005AFFF4 /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/CTAssetsPicker.strings; sourceTree = "<group>"; };
 		F76A75E11E83D42B005AFFF4 /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/SwiftWebVC.strings; sourceTree = "<group>"; };
 		F76A75E21E83D42B005AFFF4 /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/BKPasscodeView.strings; sourceTree = "<group>"; };
@@ -1480,6 +1473,13 @@
 		F7A13A001E7F3D5D00016680 /* CCProgressView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCProgressView.m; sourceTree = "<group>"; };
 		F7A13A011E7F3D5D00016680 /* UINavigationController+CCProgress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UINavigationController+CCProgress.h"; sourceTree = "<group>"; };
 		F7A13A021E7F3D5D00016680 /* UINavigationController+CCProgress.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UINavigationController+CCProgress.m"; sourceTree = "<group>"; };
+		F7A3214E1E9E2A070069AD1B /* CCFavorites.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCFavorites.h; sourceTree = "<group>"; };
+		F7A3214F1E9E2A070069AD1B /* CCFavorites.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCFavorites.m; sourceTree = "<group>"; };
+		F7A321501E9E2A070069AD1B /* CCFavoritesCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCFavoritesCell.h; sourceTree = "<group>"; };
+		F7A321511E9E2A070069AD1B /* CCFavoritesCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCFavoritesCell.m; sourceTree = "<group>"; };
+		F7A321521E9E2A070069AD1B /* CCFavoritesCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CCFavoritesCell.xib; sourceTree = "<group>"; };
+		F7A321531E9E2A070069AD1B /* CCSynchronize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCSynchronize.h; sourceTree = "<group>"; };
+		F7A321541E9E2A070069AD1B /* CCSynchronize.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCSynchronize.m; sourceTree = "<group>"; };
 		F7A54C341C6267B500E2C8BF /* CCExifGeo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCExifGeo.h; sourceTree = "<group>"; };
 		F7A54C351C6267B500E2C8BF /* CCExifGeo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCExifGeo.m; sourceTree = "<group>"; };
 		F7A582D61A24DAB500E903D7 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -2901,20 +2901,6 @@
 			path = "Local storage";
 			sourceTree = "<group>";
 		};
-		F769D3B61E9E2519006DBBB4 /* Favorite */ = {
-			isa = PBXGroup;
-			children = (
-				F769D3B71E9E2519006DBBB4 /* CCFavorite.h */,
-				F769D3B81E9E2519006DBBB4 /* CCFavorite.m */,
-				F769D3B91E9E2519006DBBB4 /* CCFavoriteCell.h */,
-				F769D3BA1E9E2519006DBBB4 /* CCFavoriteCell.m */,
-				F769D3BB1E9E2519006DBBB4 /* CCFavoriteCell.xib */,
-				F769D3BC1E9E2519006DBBB4 /* CCSynchronize.h */,
-				F769D3BD1E9E2519006DBBB4 /* CCSynchronize.m */,
-			);
-			path = Favorite;
-			sourceTree = "<group>";
-		};
 		F77F86401B4ABF6D009F0A10 /* Table */ = {
 			isa = PBXGroup;
 			children = (
@@ -2971,6 +2957,20 @@
 				F7A13A021E7F3D5D00016680 /* UINavigationController+CCProgress.m */,
 			);
 			path = CCProgress;
+			sourceTree = "<group>";
+		};
+		F7A3214D1E9E2A070069AD1B /* Favorites */ = {
+			isa = PBXGroup;
+			children = (
+				F7A3214E1E9E2A070069AD1B /* CCFavorites.h */,
+				F7A3214F1E9E2A070069AD1B /* CCFavorites.m */,
+				F7A321501E9E2A070069AD1B /* CCFavoritesCell.h */,
+				F7A321511E9E2A070069AD1B /* CCFavoritesCell.m */,
+				F7A321521E9E2A070069AD1B /* CCFavoritesCell.xib */,
+				F7A321531E9E2A070069AD1B /* CCSynchronize.h */,
+				F7A321541E9E2A070069AD1B /* CCSynchronize.m */,
+			);
+			path = Favorites;
 			sourceTree = "<group>";
 		};
 		F7ACE4281BAC0268006C0017 /* Settings */ = {
@@ -3369,7 +3369,7 @@
 				F70211F31BAC56E9003FC03E /* Main */,
 				F720E02A1E48C74C001A4B9E /* Actions */,
 				F7ECBA6B1E239DCD003E6328 /* Create */,
-				F769D3B61E9E2519006DBBB4 /* Favorite */,
+				F7A3214D1E9E2A070069AD1B /* Favorites */,
 				F7E95CEC1AC40BA40060D08E /* FileSystem */,
 				F744BE911BEBB2EE004FFF66 /* Intro */,
 				F7F54CAC1E5B143100E19C62 /* Library */,
@@ -3898,6 +3898,7 @@
 				F7676A811D5CB2A400DF734C /* icon-success.png in Resources */,
 				F77B0F771D118A16002130FE /* ZSSimage@2x.png in Resources */,
 				F7F54CF21E5B14C700E19C62 /* ImageSelectedSmallOn@2x.png in Resources */,
+				F7A321571E9E2A070069AD1B /* CCFavoritesCell.xib in Resources */,
 				F77B0F791D118A16002130FE /* ZSSunlink.png in Resources */,
 				F77B0F7A1D118A16002130FE /* ZSSredo.png in Resources */,
 				F7F54CE51E5B14C700E19C62 /* ImageError.png in Resources */,
@@ -3916,7 +3917,6 @@
 				F77B0F861D118A16002130FE /* LMMediaPlayerView.bundle in Resources */,
 				F77B0F8A1D118A16002130FE /* CCCellMain.xib in Resources */,
 				F77B0F8C1D118A16002130FE /* CCCellMainTransfer.xib in Resources */,
-				F769D3C01E9E2519006DBBB4 /* CCFavoriteCell.xib in Resources */,
 				F77B0F8E1D118A16002130FE /* LMMediaPlayerView.xib in Resources */,
 				F75797AE1E81356C00187A1B /* CTAssetsPicker.strings in Resources */,
 				F77B0F8F1D118A16002130FE /* ZSSunlink@2x.png in Resources */,
@@ -4182,7 +4182,7 @@
 				F77B0E221D118A16002130FE /* CCManageLocation.m in Sources */,
 				F77B0E231D118A16002130FE /* CCSharePermissionOC.m in Sources */,
 				F77B0E241D118A16002130FE /* HRColorCursor.m in Sources */,
-				F769D3C11E9E2519006DBBB4 /* CCSynchronize.m in Sources */,
+				F7A321581E9E2A070069AD1B /* CCSynchronize.m in Sources */,
 				F708CF851E56E8CC00271D8B /* TableShare+CoreDataClass.m in Sources */,
 				F75AE3C71E9D12900088BB09 /* SwiftyAvatar.swift in Sources */,
 				F708CF9A1E56E8CC00271D8B /* TableAccount+CoreDataProperties.m in Sources */,
@@ -4212,7 +4212,6 @@
 				F77B0E411D118A16002130FE /* CCSplit.m in Sources */,
 				F77B0E421D118A16002130FE /* ReaderMainPagebar.m in Sources */,
 				F77B0E431D118A16002130FE /* ReaderThumbsView.m in Sources */,
-				F769D3BE1E9E2519006DBBB4 /* CCFavorite.m in Sources */,
 				F73CCDFD1DC13776007E38D8 /* XLFormViewController.m in Sources */,
 				F73CCDDF1DC13776007E38D8 /* XLFormDateCell.m in Sources */,
 				F73CCE1B1DC13776007E38D8 /* XLFormValidationStatus.m in Sources */,
@@ -4243,6 +4242,7 @@
 				F73CC0691E813DFF006E3047 /* BKPasscodeDummyViewController.m in Sources */,
 				F77B0E5A1D118A16002130FE /* ReaderContentTile.m in Sources */,
 				F77B0E5B1D118A16002130FE /* UIImage+Rotating.m in Sources */,
+				F7A321561E9E2A070069AD1B /* CCFavoritesCell.m in Sources */,
 				F7F06E8D1DBFACC600099AE9 /* NSBundle+CTAssetsPickerController.m in Sources */,
 				F73CCDDD1DC13776007E38D8 /* XLFormCheckCell.m in Sources */,
 				F73CCE0B1DC13776007E38D8 /* NSPredicate+XLFormAdditions.m in Sources */,
@@ -4286,7 +4286,6 @@
 				F7F06EA51DBFACC600099AE9 /* CTAssetItemViewController.m in Sources */,
 				F7659A5A1DC0B760004860C4 /* PSTCollectionView.m in Sources */,
 				F7BF1B431D51E893000854F6 /* CCLogin.m in Sources */,
-				F769D3BF1E9E2519006DBBB4 /* CCFavoriteCell.m in Sources */,
 				F77B0E7D1D118A16002130FE /* CYRTextStorage.m in Sources */,
 				F77B0E7E1D118A16002130FE /* ThumbsViewController.m in Sources */,
 				F77B0E801D118A16002130FE /* ZSSRichTextEditor.m in Sources */,
@@ -4363,6 +4362,7 @@
 				F708CF881E56E8CC00271D8B /* TableShare+CoreDataProperties.m in Sources */,
 				F7F06EA71DBFACC600099AE9 /* CTAssetPlayButton.m in Sources */,
 				F73CCE031DC13776007E38D8 /* XLFormSectionDescriptor.m in Sources */,
+				F7A321551E9E2A070069AD1B /* CCFavorites.m in Sources */,
 				F7676A641D5CB1B900DF734C /* TWMessageBarManager.m in Sources */,
 				F77B0EBE1D118A16002130FE /* CCNote.m in Sources */,
 				F7F54D0B1E5B14C800E19C62 /* MWTapDetectingImageView.m in Sources */,

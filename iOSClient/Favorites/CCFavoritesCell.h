@@ -1,5 +1,5 @@
 //
-//  CCFavoriteCell.h
+//  CCFavoritesCell.h
 //  Crypto Cloud Technology Nextcloud
 //
 //  Created by Marino Faggiana on 05/05/15.
@@ -23,7 +23,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface CCFavoriteCell : UITableViewCell
+@interface CCFavoritesCell : UITableViewCell
 
 @property(nonatomic, weak) IBOutlet UIImageView *fileImageView;
 @property(nonatomic, weak) IBOutlet UIImageView *statusImageView;

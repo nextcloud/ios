@@ -567,11 +567,11 @@
             </objects>
             <point key="canvasLocation" x="5215" y="327"/>
         </scene>
-        <!--Favorite-->
+        <!--Favorites-->
         <scene sceneID="YSr-JF-a0V">
             <objects>
                 <navigationController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="hwM-4d-Afb" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Favorite" image="tabBarFavorite" id="o09-67-hwf"/>
+                    <tabBarItem key="tabBarItem" title="Favorites" image="tabBarFavorite" id="o09-67-hwf"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="MJw-Bn-5le">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
@@ -586,10 +586,10 @@
             </objects>
             <point key="canvasLocation" x="5857" y="327"/>
         </scene>
-        <!--Favorite-->
+        <!--Favorites-->
         <scene sceneID="33n-4d-goO">
             <objects>
-                <viewController storyboardIdentifier="CCFavorite" id="6uw-SF-2Qu" customClass="CCFavorite" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="CCFavorites" id="6uw-SF-2Qu" customClass="CCFavorites" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="kXv-QP-Tlq"/>
                         <viewControllerLayoutGuide type="bottom" id="Y8a-Ua-b9s"/>

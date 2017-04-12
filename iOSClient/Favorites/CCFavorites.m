@@ -1,5 +1,5 @@
 //
-//  CCFavorite.m
+//  CCFavorites.m
 //  Crypto Cloud Technology Nextcloud
 //
 //  Created by Marino Faggiana on 16/01/17.
@@ -21,7 +21,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#import "CCFavorite.h"
+#import "CCFavorites.h"
 
 #import "AppDelegate.h"
 
@@ -31,21 +31,21 @@
     #import "Nextcloud-Swift.h"
 #endif
 
-@interface CCFavorite () <CCActionsDeleteDelegate, CCActionsSettingFavoriteDelegate>
+@interface CCFavorites () <CCActionsDeleteDelegate, CCActionsSettingFavoriteDelegate>
 {
     NSArray *dataSource;
     BOOL _reloadDataSource;
 }
 @end
 
-@implementation CCFavorite
+@implementation CCFavorites
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     
     // Custom Cell
-    [self.tableView registerNib:[UINib nibWithNibName:@"CCFavoriteCell" bundle:nil] forCellReuseIdentifier:@"Cell"];
+    [self.tableView registerNib:[UINib nibWithNibName:@"CCFavoritesCell" bundle:nil] forCellReuseIdentifier:@"Cell"];
 
     // dataSource
     dataSource = [NSMutableArray new];
@@ -60,17 +60,14 @@
     self.tableView.allowsMultipleSelectionDuringEditing = NO;
     
     // calculate _serverUrl
-    if ([self.pageType isEqualToString:k_pageOfflineFavorites] && !_serverUrl)
+    if (!_serverUrl)
         _serverUrl = nil;
-    
-    if ([self.pageType isEqualToString:k_pageOfflineOffline] && !_serverUrl)
-        _serverUrl = nil;
-    
-    if ([self.pageType isEqualToString:k_pageOfflineLocal] && !_serverUrl)
-        _serverUrl = [CCUtility getDirectoryLocal];
-    
-    // Title & color
-    self.title = _titleViewControl;
+  
+    // Title
+    if (_titleViewControl)
+        self.title = _titleViewControl;
+    else
+        self.title = NSLocalizedString(@"_favorites_", nil);
 }
 
 // Apparirà
@@ -108,7 +105,7 @@
 - (BOOL)emptyDataSetShouldDisplay:(UIScrollView *)scrollView
 {
     // only for root
-    if (!_serverUrl || [_serverUrl isEqualToString:[CCUtility getDirectoryLocal]])
+    if (!_serverUrl)
         return YES;
     else
         return NO;
@@ -136,13 +133,7 @@
 
 - (NSAttributedString *)titleForEmptyDataSet:(UIScrollView *)scrollView
 {
-    NSString *text;
-    
-    if ([self.pageType isEqualToString:k_pageOfflineFavorites] || [self.pageType isEqualToString:k_pageOfflineOffline])
-        text = [NSString stringWithFormat:@"%@", @""];
-    
-    if ([self.pageType isEqualToString:k_pageOfflineLocal])
-        text = [NSString stringWithFormat:@"%@", @""];
+    NSString *text = [NSString stringWithFormat:@"%@", @""];
     
     NSDictionary *attributes = @{NSFontAttributeName:[UIFont boldSystemFontOfSize:20.0f], NSForegroundColorAttributeName:COLOR_BRAND};
     
@@ -151,16 +142,7 @@
 
 - (NSAttributedString *)descriptionForEmptyDataSet:(UIScrollView *)scrollView
 {
-    NSString *text;
-    
-    if ([self.pageType isEqualToString:k_pageOfflineFavorites])
-        text = [NSString stringWithFormat:@"\n%@", NSLocalizedString(@"_tutorial_favorite_view_", nil)];
-    
-    if ([self.pageType isEqualToString:k_pageOfflineOffline])
-        text = [NSString stringWithFormat:@"\n%@", NSLocalizedString(@"_tutorial_offline_view_", nil)];
-        
-    if ([self.pageType isEqualToString:k_pageOfflineLocal])
-        text = [NSString stringWithFormat:@"\n%@", NSLocalizedString(@"_tutorial_local_view_", nil)];
+    NSString *text = [NSString stringWithFormat:@"\n%@", NSLocalizedString(@"_tutorial_favorite_view_", nil)];
     
     NSMutableParagraphStyle *paragraph = [NSMutableParagraphStyle new];
     paragraph.lineBreakMode = NSLineBreakByWordWrapping;
@@ -221,9 +203,7 @@
 
 - (void)downloadThumbnailSuccess:(CCMetadataNet *)metadataNet
 {
-    // i am in Favorites
-    if ([_pageType isEqualToString:k_pageOfflineFavorites] || [_pageType isEqualToString:k_pageOfflineOffline])
-        [self reloadDatasource];
+    [self reloadDatasource];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -257,9 +237,6 @@
     UIViewController *viewController;
     BOOL isLocal = NO;
     NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:app.activeAccount];
-    
-    if ([self.pageType isEqualToString:k_pageOfflineLocal])
-        isLocal = YES;
     
     if ([metadata.model isEqualToString:@"cartadicredito"])
         viewController = [[CCCartaDiCredito alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid fileID:metadata.fileID isLocal:isLocal serverUrl:serverUrl];
@@ -302,14 +279,8 @@
 
 - (void)openWith:(CCMetadata *)metadata
 {
-    NSString *fileNamePath;
+    NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID];
     
-    if ([_pageType isEqualToString:k_pageOfflineFavorites] || [_pageType isEqualToString:k_pageOfflineOffline])
-        fileNamePath = [NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID];
-    
-    if ([_pageType isEqualToString:k_pageOfflineLocal])
-        fileNamePath = [NSString stringWithFormat:@"%@/%@", _serverUrl, metadata.fileNameData];
-        
     if ([[NSFileManager defaultManager] fileExistsAtPath:fileNamePath]) {
         
         [[NSFileManager defaultManager] removeItemAtPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileNamePrint] error:nil];
@@ -329,21 +300,8 @@
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
         
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_delete_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
-                                                               
-        if ([_pageType isEqualToString:k_pageOfflineFavorites] || [_pageType isEqualToString:k_pageOfflineOffline]) {
-                                                                   
-            [[CCActions sharedInstance] deleteFileOrFolder:metadata delegate:self];
-        }
-                                                               
-        if ([_pageType isEqualToString:k_pageOfflineLocal]) {
-                                                                   
-            NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", _serverUrl, metadata.fileNameData];
-            NSString *iconPath = [NSString stringWithFormat:@"%@/.%@.ico", _serverUrl, metadata.fileNameData];
-                                                                   
-            [[NSFileManager defaultManager] removeItemAtPath:fileNamePath error:nil];
-            [[NSFileManager defaultManager] removeItemAtPath:iconPath error:nil];
-        }
-                                                               
+        
+        [[CCActions sharedInstance] deleteFileOrFolder:metadata delegate:self];
         [self reloadDatasource];
     }]];
         
@@ -367,17 +325,7 @@
     CCMetadata *metadata = [CCMetadata new];
     UIImage *iconHeader;
     
-    if ([_pageType isEqualToString:k_pageOfflineLocal]) {
-        
-        NSString *cameraFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:app.activeAccount];
-        NSString *cameraFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:app.activeAccount activeUrl:app.activeUrl];
-        
-        metadata = [CCUtility insertFileSystemInMetadata:[dataSource objectAtIndex:indexPath.row] directory:_serverUrl activeAccount:app.activeAccount cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath];
-        
-    } else {
-        
-        metadata = [dataSource objectAtIndex:indexPath.row];
-    }
+    metadata = [dataSource objectAtIndex:indexPath.row];
     
     AHKActionSheet *actionSheet = [[AHKActionSheet alloc] initWithView:self.view title:nil];
     
@@ -415,41 +363,12 @@
     ];
 
     // ONLY Root Favorites : Remove file/folder Favorites
-    if (_serverUrl == nil && [_pageType isEqualToString:k_pageOfflineFavorites]) {
+    if (_serverUrl == nil) {
         
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_remove_favorites_", nil) image:[UIImage imageNamed:image_actionSheetOffline] backgroundColor:[UIColor whiteColor] height: 50.0 type:AHKActionSheetButtonTypeDefault handler:^(AHKActionSheet *as) {
                                     
             [self.tableView setEditing:NO animated:YES];
             [[CCActions sharedInstance] settingFavorite:metadata favorite:NO delegate:self];
-        }];
-    }
-    
-    // ONLY Root Offline : Remove file/folder offline
-    if (_serverUrl == nil && [_pageType isEqualToString:k_pageOfflineOffline]) {
-        
-        [actionSheet addButtonWithTitle:NSLocalizedString(@"_remove_offline_", nil) image:[UIImage imageNamed:image_actionSheetOffline] backgroundColor:[UIColor whiteColor] height: 50.0 type:AHKActionSheetButtonTypeDefault handler:^(AHKActionSheet *as) {
-                                    
-            if (metadata.directory) {
-                                        
-                // remove tag offline for all folder/subfolder/file
-                NSString *relativeRoot = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:app.activeAccount];
-                NSString *dirServerUrl = [CCUtility stringAppendServerUrl:relativeRoot addFileName:metadata.fileNameData];
-                NSArray *directories = [CCCoreData getOfflineDirectoryActiveAccount:app.activeAccount];
-                                        
-                for (TableDirectory *directory in directories)
-                    if ([directory.serverUrl containsString:dirServerUrl]) {
-                        [CCCoreData setOfflineDirectoryServerUrl:directory.serverUrl offline:NO activeAccount:app.activeAccount];
-                        [CCCoreData removeOfflineAllFileFromServerUrl:directory.serverUrl activeAccount:app.activeAccount];
-                    }
-                                        
-            } else {
-                                        
-                [CCCoreData setOfflineLocalFileID:metadata.fileID offline:NO activeAccount:app.activeAccount];
-            }
-                                    
-            [self.tableView setEditing:NO animated:YES];
-                                    
-            [self reloadDatasource];
         }];
     }
     
@@ -497,20 +416,9 @@
 {
     CCMetadata *metadata;
     
-    if ([_pageType isEqualToString:k_pageOfflineFavorites] || [_pageType isEqualToString:k_pageOfflineOffline]) {
-        
-        NSManagedObject *record = [dataSource objectAtIndex:indexPath.row];
-        metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", [record valueForKey:@"fileID"], app.activeAccount] context:nil];
-    }
+    NSManagedObject *record = [dataSource objectAtIndex:indexPath.row];
+    metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", [record valueForKey:@"fileID"], app.activeAccount] context:nil];
 
-    if ([_pageType isEqualToString:k_pageOfflineLocal]) {
-        
-        NSString *cameraFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:app.activeAccount];
-        NSString *cameraFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:app.activeAccount activeUrl:app.activeUrl];
-        
-        metadata = [CCUtility insertFileSystemInMetadata:[dataSource objectAtIndex:indexPath.row] directory:_serverUrl activeAccount:app.activeAccount cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath];
-    }
-    
     return metadata;
 }
 
@@ -521,65 +429,27 @@
 
 - (void)reloadDatasource
 {
-    if ([_pageType isEqualToString:k_pageOfflineFavorites]) {
-        
-        NSMutableArray *metadatas = [NSMutableArray new];
-        NSArray *recordsTableMetadata ;
-        
-        if (!_serverUrl) {
-            
-            recordsTableMetadata = [CCCoreData  getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (favorite == 1)", app.activeAccount] context:nil];
-            
-        } else {
-            
-            NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:_serverUrl activeAccount:app.activeAccount];
-            recordsTableMetadata = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@)", app.activeAccount, directoryID] fieldOrder:[CCUtility getOrderSettings]  ascending:[CCUtility getAscendingSettings]];
-        }
-        
-        CCSectionDataSourceMetadata *sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:nil replaceDateToExifDate:NO activeAccount:app.activeAccount];
-        
-        NSArray *fileIDs = [sectionDataSource.sectionArrayRow objectForKey:@"_none_"];
-        for (NSString *fileID in fileIDs)
-            [metadatas addObject:[sectionDataSource.allRecordsDataSource objectForKey:fileID]];
-        
-        dataSource = [NSArray arrayWithArray:metadatas];
-    }
-
-    if ([_pageType isEqualToString:k_pageOfflineOffline]) {
-        
-        NSMutableArray *metadatas = [NSMutableArray new];
-        NSArray *recordsTableMetadata ;
-        
-        if (!_serverUrl) {
-            
-            recordsTableMetadata = [CCCoreData getHomeOfflineActiveAccount:app.activeAccount directoryUser:app.directoryUser fieldOrder:[CCUtility getOrderSettings] ascending:[CCUtility getAscendingSettings]];
-            
-        } else {
-            
-            NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:_serverUrl activeAccount:app.activeAccount];
-            recordsTableMetadata = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@)", app.activeAccount, directoryID] fieldOrder:[CCUtility getOrderSettings]  ascending:[CCUtility getAscendingSettings]];
-        }
-        
-        CCSectionDataSourceMetadata *sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:nil replaceDateToExifDate:NO activeAccount:app.activeAccount];
-            
-        NSArray *fileIDs = [sectionDataSource.sectionArrayRow objectForKey:@"_none_"];
-        for (NSString *fileID in fileIDs)
-            [metadatas addObject:[sectionDataSource.allRecordsDataSource objectForKey:fileID]];
-            
-        dataSource = [NSArray arrayWithArray:metadatas];
-    }
     
-    if ([_pageType isEqualToString:k_pageOfflineLocal]) {
+    NSMutableArray *metadatas = [NSMutableArray new];
+    NSArray *recordsTableMetadata ;
         
-        NSArray *subpaths = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:_serverUrl error:nil];
-        NSMutableArray *metadatas = [NSMutableArray new];
-        
-        for (NSString *subpath in subpaths)
-            if (![[subpath lastPathComponent] hasPrefix:@"."])
-                [metadatas addObject:subpath];
-        
-        dataSource = [NSArray arrayWithArray:metadatas];
+    if (!_serverUrl) {
+            
+        recordsTableMetadata = [CCCoreData  getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (favorite == 1)", app.activeAccount] context:nil];
+            
+    } else {
+            
+        NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:_serverUrl activeAccount:app.activeAccount];
+        recordsTableMetadata = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@)", app.activeAccount, directoryID] fieldOrder:[CCUtility getOrderSettings]  ascending:[CCUtility getAscendingSettings]];
     }
+        
+    CCSectionDataSourceMetadata *sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:nil replaceDateToExifDate:NO activeAccount:app.activeAccount];
+        
+    NSArray *fileIDs = [sectionDataSource.sectionArrayRow objectForKey:@"_none_"];
+    for (NSString *fileID in fileIDs)
+        [metadatas addObject:[sectionDataSource.allRecordsDataSource objectForKey:fileID]];
+        
+    dataSource = [NSArray arrayWithArray:metadatas];
     
     [self.tableView reloadData];
 }
@@ -601,7 +471,7 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    CCCellOffline *cell = (CCCellOffline *)[tableView dequeueReusableCellWithIdentifier:@"OfflineCell" forIndexPath:indexPath];
+    CCFavoritesCell *cell = (CCFavoritesCell *)[tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
     CCMetadata *metadata;
     
     // separator
@@ -616,45 +486,15 @@
     selectionColor.backgroundColor = COLOR_SELECT_BACKGROUND;
     cell.selectedBackgroundView = selectionColor;
     
-    // i am in Favorites OR i am in Offline
-    if ([_pageType isEqualToString:k_pageOfflineFavorites] || [_pageType isEqualToString:k_pageOfflineOffline]) {
+    metadata = [dataSource objectAtIndex:indexPath.row];
         
-        metadata = [dataSource objectAtIndex:indexPath.row];
+    cell.fileImageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]];
         
-        cell.fileImageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]];
-        
-        if (_serverUrl == nil) {
-            
-            if ([_pageType isEqualToString:k_pageOfflineFavorites])
-                cell.offlineImageView.image = [UIImage imageNamed:image_favorite];
-            if ([_pageType isEqualToString:k_pageOfflineOffline])
-                cell.offlineImageView.image = [UIImage imageNamed:image_offline];
-        }
-        
-        if (cell.fileImageView.image == nil && metadata.thumbnailExists)
-            [[CCActions sharedInstance] downloadTumbnail:metadata delegate:self];
-    }
-
-    // i am in local
-    if ([_pageType isEqualToString:k_pageOfflineLocal]) {
-        
-        NSString *cameraFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:app.activeAccount];
-        NSString *cameraFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:app.activeAccount activeUrl:app.activeUrl];
-        
-        metadata = [CCUtility insertFileSystemInMetadata:[dataSource objectAtIndex:indexPath.row] directory:_serverUrl activeAccount:app.activeAccount cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath];
-        
-        cell.fileImageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/.%@.ico", _serverUrl, metadata.fileNamePrint]];
-        
-        if (!cell.fileImageView.image) {
-            
-            UIImage *icon = [CCGraphics createNewImageFrom:metadata.fileID directoryUser:_serverUrl fileNameTo:metadata.fileID fileNamePrint:metadata.fileNamePrint size:@"m" imageForUpload:NO typeFile:metadata.typeFile writePreview:NO optimizedFileName:[CCUtility getOptimizedPhoto]];
-            
-            if (icon) {
-                [CCGraphics saveIcoWithFileID:metadata.fileNamePrint image:icon writeToFile:[NSString stringWithFormat:@"%@/.%@.ico", _serverUrl, metadata.fileNamePrint] copy:NO move:NO fromPath:nil toPath:nil];
-                cell.fileImageView.image = icon;
-            }
-        }
-    }
+    if (_serverUrl == nil)
+        cell.offlineImageView.image = [UIImage imageNamed:image_favorite];
+    
+    if (cell.fileImageView.image == nil && metadata.thumbnailExists)
+        [[CCActions sharedInstance] downloadTumbnail:metadata delegate:self];
     
     // ButtonDown Tapped
     [cell.buttonDown addTarget:self action:@selector(cellButtonDownWasTapped:) forControlEvents:UIControlEventTouchUpInside];
@@ -695,13 +535,7 @@
         
         if ([metadata.type isEqualToString: k_metadataType_file] || [metadata.type isEqualToString: k_metadataType_local]) {
             
-            BOOL fileExists = NO;
-            
-            if ([_pageType isEqualToString:k_pageOfflineLocal])
-                fileExists = [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", _serverUrl, metadata.fileName]];
-            
-            if ([_pageType isEqualToString:k_pageOfflineFavorites] || [_pageType isEqualToString:k_pageOfflineOffline])
-                fileExists = [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID]];
+            BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID]];
             
             if (fileExists)
                 cell.labelInfoFile.text = [NSString stringWithFormat:@"%@ • %@", date, length];
@@ -730,27 +564,18 @@
     // File
     if (([_metadata.type isEqualToString: k_metadataType_file] || [_metadata.type isEqualToString: k_metadataType_local]) && _metadata.directory == NO) {
         
-        // i am in local
-        if ([_pageType isEqualToString:k_pageOfflineLocal]) {
+        if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, _metadata.fileID]]) {
             
+            // File exists
             if ([self shouldPerformSegue])
                 [self performSegueWithIdentifier:@"segueDetail" sender:self];
 
         } else {
             
-            if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, _metadata.fileID]]) {
-            
-                // File exists
-                if ([self shouldPerformSegue])
-                    [self performSegueWithIdentifier:@"segueDetail" sender:self];
+            // File do not exists
+            NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:_metadata.account];
 
-            } else {
-            
-                // File do not exists
-                NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:_metadata.account];
-
-                [[CCNetworking sharedNetworking] downloadFile:_metadata serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorLoadFileView selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
-            }
+            [[CCNetworking sharedNetworking] downloadFile:_metadata serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorLoadFileView selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
         }
     }
     
@@ -765,21 +590,11 @@
 
 -(void)performSegueDirectoryWithControlPasscode
 {
-    CCFavorite *vc = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"CCFavoriteCCFavorite"];
+    CCFavorites *vc = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"CCFavorites"];
     
-    NSString *serverUrl;
-    
-    if (([_pageType isEqualToString:k_pageOfflineFavorites] || [_pageType isEqualToString:k_pageOfflineOffline]) && !_serverUrl) {
-    
-        serverUrl = [CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:app.activeAccount];
-        
-    } else {
-        
-        serverUrl = _serverUrl;
-    }
+    NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:app.activeAccount];
         
     vc.serverUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:_metadata.fileNameData];
-    vc.pageType = _pageType;
     vc.titleViewControl = _metadata.fileNamePrint;
     
     [self.navigationController pushViewController:vc animated:YES];
@@ -821,36 +636,15 @@
     
     NSMutableArray *allRecordsDataSourceImagesVideos = [NSMutableArray new];
     
-    if ([self.pageType isEqualToString:k_pageOfflineFavorites] || [self.pageType isEqualToString:k_pageOfflineOffline]) {
-        
-        for (CCMetadata *metadata in dataSource) {
-            if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image] || [metadata.typeFile isEqualToString: k_metadataTypeFile_video])
-                [allRecordsDataSourceImagesVideos addObject:metadata];
-        }
-    }
-    
-    if ([self.pageType isEqualToString:k_pageOfflineLocal]) {
-        
-        NSString *cameraFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:app.activeAccount];
-        NSString *cameraFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:app.activeAccount activeUrl:app.activeUrl];
-        
-        for (NSString *fileName in dataSource) {
-            
-            CCMetadata *metadata = [CCMetadata new];
-            metadata = [CCUtility insertFileSystemInMetadata:fileName directory:_serverUrl activeAccount:app.activeAccount cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath];
-            
-            if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image] || [metadata.typeFile isEqualToString: k_metadataTypeFile_video])
-                [allRecordsDataSourceImagesVideos addObject:metadata];
-        }
-        
-        _detailViewController.sourceDirectoryLocal = YES;
+    for (CCMetadata *metadata in dataSource) {
+        if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image] || [metadata.typeFile isEqualToString: k_metadataTypeFile_video])
+            [allRecordsDataSourceImagesVideos addObject:metadata];
     }
     
     _detailViewController.metadataDetail = _metadata;
     _detailViewController.dateFilterQuery = nil;
     _detailViewController.isCameraUpload = NO;
     _detailViewController.dataSourceImagesVideos = allRecordsDataSourceImagesVideos;
-
     
     [_detailViewController setTitle:_metadata.fileNamePrint];
 }
