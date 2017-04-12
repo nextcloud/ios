@@ -33,7 +33,9 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     @IBOutlet weak var labelQuota: UILabel!
     @IBOutlet weak var progressQuota: UIProgressView!
 
-    
+    var normalMenu: [OCExternalSites]!
+    var settingsMenu: [OCExternalSites]!
+    var quotaMenu: [OCExternalSites]!
     
     let itemsMenuLabelText = [["_transfers_","_activity_","_local_storage_"], ["_settings_"]]
     let itemsMenuImage = [["moreTransfers","moreActivity","moreLocalStorage"], ["moreSettings"]]
@@ -55,9 +57,10 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     override func viewWillAppear(_ animated: Bool) {
         
-        self.tableAccont = CCCoreData.getActiveAccount()
         self.menuExternalSite = CCCoreData.getAllTableExternalSites(with:  NSPredicate(format: "(account == '\(appDelegate.activeAccount!)')")) as? [TableExternalSites]
         
+        
+        self.tableAccont = CCCoreData.getActiveAccount()
         if (self.tableAccont != nil) {
         
             self.labelUsername.text = self.tableAccont?.user
