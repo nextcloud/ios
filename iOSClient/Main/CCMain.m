@@ -188,9 +188,6 @@
     
     // Title
     [self setTitle];
-        
-    // List Transfers
-    //app.controlCenter = (CCControlCenter *)self.navigationController;
     
     // Search
     self.definesPresentationContext = YES;

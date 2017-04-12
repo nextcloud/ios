@@ -431,7 +431,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="IJ0-oL-QKv" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="4596" y="3823"/>
+            <point key="canvasLocation" x="5750" y="2407"/>
         </scene>
         <!--Main-->
         <scene sceneID="OEe-6n-ARk">
@@ -481,12 +481,12 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="1l7-Aj-XxZ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="4596" y="3018"/>
+            <point key="canvasLocation" x="4626" y="2407"/>
         </scene>
         <!--File-->
         <scene sceneID="dMv-43-hWy">
             <objects>
-                <navigationController storyboardIdentifier="CCMainNC" extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="bSZ-tE-FEj" customClass="CCControlCenter" sceneMemberID="viewController">
+                <navigationController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="bSZ-tE-FEj" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="File" image="fileNextcloud" id="Zxv-aS-HGF"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="cj6-rT-wnB">
