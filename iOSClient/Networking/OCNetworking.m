@@ -366,7 +366,10 @@
                         
                         fileName = [fileName substringToIndex:[fileName length] - 1];
                         NSString *serverUrl = [CCUtility stringAppendServerUrl:_metadataNet.serverUrl addFileName:fileName];
-                        [CCCoreData addDirectory:serverUrl permissions:nil activeAccount:_metadataNet.account];
+                        
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            [CCCoreData addDirectory:serverUrl permissions:nil activeAccount:_metadataNet.account];
+                        });
                     }
                     
                     if ([CCUtility isFileCryptated:fileName])
