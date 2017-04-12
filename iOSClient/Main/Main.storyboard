@@ -83,7 +83,7 @@
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="Cell" rowHeight="50" id="zQQ-52-W9I" customClass="CCCellMore" customModule="Nextcloud" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="55.5" width="375" height="50"/>
+                                        <rect key="frame" x="0.0" y="56" width="375" height="50"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="zQQ-52-W9I" id="Zho-os-HYj">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="50"/>
@@ -757,11 +757,45 @@
                     <connections>
                         <segue destination="9DM-ts-oJu" kind="relationship" relationship="rootViewController" id="KD8-1A-v76"/>
                         <segue destination="amx-XG-NId" kind="show" identifier="segueSettings" id="iJw-qx-dwJ"/>
+                        <segue destination="o4I-W3-sMH" kind="show" identifier="segueLocalStorage" id="iz8-HB-F2p"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="D7n-Z1-9wU" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="9212" y="326"/>
+        </scene>
+        <!--Local Storage-->
+        <scene sceneID="BhE-A6-AqD">
+            <objects>
+                <viewController storyboardIdentifier="CCLocalStorage" id="o4I-W3-sMH" customClass="CCLocalStorage" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="U4b-Rv-dSO"/>
+                        <viewControllerLayoutGuide type="bottom" id="sYe-gZ-wls"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="IkL-Nw-JTF">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="bkD-NK-bSQ">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <connections>
+                                    <outlet property="dataSource" destination="o4I-W3-sMH" id="L2O-Oa-VKV"/>
+                                    <outlet property="delegate" destination="o4I-W3-sMH" id="eqD-vp-sZY"/>
+                                </connections>
+                            </tableView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <connections>
+                        <outlet property="tableView" destination="bkD-NK-bSQ" id="GQp-y5-f7J"/>
+                        <segue destination="mtc-lf-PRo" kind="showDetail" identifier="segueDetail" id="1IV-5w-SfJ"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="JsH-FD-nZN" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="9849" y="1218"/>
         </scene>
     </scenes>
     <resources>
@@ -775,6 +809,6 @@
         <image name="tabBarPhotos" width="25" height="21"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="W5b-lw-8O1"/>
+        <segue reference="1IV-5w-SfJ"/>
     </inferredMetricsTieBreakers>
 </document>
