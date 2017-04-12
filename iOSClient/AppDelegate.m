@@ -28,7 +28,6 @@
 #import "CCNetworking.h"
 #import "CCCoreData.h"
 #import "CCCrypto.h"
-#import "CCOfflineContainer.h"
 #import "CCManageAsset.h"
 #import "CCGraphics.h"
 #import "CCPhotosCameraUpload.h"

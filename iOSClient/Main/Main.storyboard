@@ -189,33 +189,6 @@
             </objects>
             <point key="canvasLocation" x="9212" y="1217.5412293853074"/>
         </scene>
-        <!--Offline Container-->
-        <scene sceneID="AYB-62-j4s">
-            <objects>
-                <viewController id="rwz-Z7-lr8" customClass="CCOfflineContainer" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="dzn-ww-83z"/>
-                        <viewControllerLayoutGuide type="bottom" id="tXj-pi-tXG"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="HtS-Rb-W2J">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                    </view>
-                    <navigationItem key="navigationItem" id="2FU-76-z2B"/>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="fXh-VU-vqk" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="5857" y="1218"/>
-        </scene>
-        <!--Page View Controller-->
-        <scene sceneID="UZ5-5e-kso">
-            <objects>
-                <pageViewController storyboardIdentifier="OfflinePageViewController" autoresizesArchivedViewToFullSize="NO" transitionStyle="scroll" navigationOrientation="horizontal" spineLocation="none" id="ryN-QC-jWF" sceneMemberID="viewController"/>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="gHN-MZ-CSY" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="6487" y="1218"/>
-        </scene>
         <!--Photos Camera Upload-->
         <scene sceneID="kWr-RF-gdq">
             <objects>
@@ -606,17 +579,17 @@
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
-                        <segue destination="rwz-Z7-lr8" kind="relationship" relationship="rootViewController" id="sp7-ug-USE"/>
+                        <segue destination="6uw-SF-2Qu" kind="relationship" relationship="rootViewController" id="CFg-zI-VEB"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="NME-vT-pfd" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="5857" y="327"/>
         </scene>
-        <!--Offline Page Content-->
+        <!--Favorite-->
         <scene sceneID="33n-4d-goO">
             <objects>
-                <viewController storyboardIdentifier="OfflinePageContent" id="6uw-SF-2Qu" customClass="CCOfflinePageContent" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="CCFavorite" id="6uw-SF-2Qu" customClass="CCFavorite" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="kXv-QP-Tlq"/>
                         <viewControllerLayoutGuide type="bottom" id="Y8a-Ua-b9s"/>
@@ -637,6 +610,7 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
+                    <navigationItem key="navigationItem" id="udr-5M-kHz"/>
                     <connections>
                         <outlet property="tableView" destination="Pes-cJ-S4N" id="Fxj-3r-MCL"/>
                         <segue destination="mtc-lf-PRo" kind="showDetail" identifier="segueDetail" id="45n-bF-9RO"/>
@@ -644,7 +618,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="d5y-uw-vht" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="7125.6000000000004" y="1217.5412293853074"/>
+            <point key="canvasLocation" x="5857" y="1218"/>
         </scene>
         <!--View Controller-->
         <scene sceneID="60G-IQ-Axc">
@@ -809,6 +783,6 @@
         <image name="tabBarPhotos" width="25" height="21"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="1IV-5w-SfJ"/>
+        <segue reference="45n-bF-9RO"/>
     </inferredMetricsTieBreakers>
 </document>

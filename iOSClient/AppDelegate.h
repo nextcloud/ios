@@ -40,8 +40,8 @@
 #import "CCQuickActions.h"
 #import "CCMain.h"
 #import "CCPhotosCameraUpload.h"
-#import "CCOfflineContainer.h"
 #import "CCSettings.h"
+#import "CCFavorite.h"
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate, BKPasscodeLockScreenManagerDelegate, BKPasscodeViewControllerDelegate, LMMediaPlayerViewDelegate, TWMessageBarStyleSheet, CCNetworkingDelegate>
 
@@ -135,7 +135,7 @@
 @property (nonatomic, strong) CCMain *homeMain;
 @property (nonatomic, strong) CCPhotosCameraUpload *activePhotosCameraUpload;
 @property (nonatomic, retain) CCDetail *activeDetail;
-@property (nonatomic, retain) CCOfflineContainer *activeOffline;
+@property (nonatomic, retain) CCFavorite *activeFavorite;
 @property (nonatomic, retain) CCSettings *activeSettings;
 
 @property (nonatomic, strong) NSMutableDictionary *listMainVC;

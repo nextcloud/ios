@@ -280,6 +280,10 @@
 		F769D39A1E9E1506006DBBB4 /* CCLocalStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = F769D3961E9E1506006DBBB4 /* CCLocalStorage.m */; };
 		F769D39B1E9E1506006DBBB4 /* CCLocalStorageCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F769D3981E9E1506006DBBB4 /* CCLocalStorageCell.m */; };
 		F769D39C1E9E1506006DBBB4 /* CCLocalStorageCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F769D3991E9E1506006DBBB4 /* CCLocalStorageCell.xib */; };
+		F769D3BE1E9E2519006DBBB4 /* CCFavorite.m in Sources */ = {isa = PBXBuildFile; fileRef = F769D3B81E9E2519006DBBB4 /* CCFavorite.m */; };
+		F769D3BF1E9E2519006DBBB4 /* CCFavoriteCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F769D3BA1E9E2519006DBBB4 /* CCFavoriteCell.m */; };
+		F769D3C01E9E2519006DBBB4 /* CCFavoriteCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F769D3BB1E9E2519006DBBB4 /* CCFavoriteCell.xib */; };
+		F769D3C11E9E2519006DBBB4 /* CCSynchronize.m in Sources */ = {isa = PBXBuildFile; fileRef = F769D3BD1E9E2519006DBBB4 /* CCSynchronize.m */; };
 		F77B0DF01D118A16002130FE /* UIImage+Resizing.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04CA1C889184008DAB36 /* UIImage+Resizing.m */; };
 		F77B0DF21D118A16002130FE /* CCUploadFromOtherUpp.m in Sources */ = {isa = PBXBuildFile; fileRef = F7956FCA1B4886E60085DEA3 /* CCUploadFromOtherUpp.m */; };
 		F77B0DF41D118A16002130FE /* CCMain.m in Sources */ = {isa = PBXBuildFile; fileRef = F70211FB1BAC56E9003FC03E /* CCMain.m */; };
@@ -527,8 +531,6 @@
 		F7BB14971D5B62C000ECEE68 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63071D5B3467004E2AA5 /* libssl.a */; };
 		F7BE6E2F1D2D5C3B00106933 /* CCQuickActions.m in Sources */ = {isa = PBXBuildFile; fileRef = F7BE6E2C1D2D5C3B00106933 /* CCQuickActions.m */; };
 		F7BF1B431D51E893000854F6 /* CCLogin.m in Sources */ = {isa = PBXBuildFile; fileRef = F7BF1B401D51E893000854F6 /* CCLogin.m */; };
-		F7C00D471E2D0D0F0032160B /* CCCellOffline.m in Sources */ = {isa = PBXBuildFile; fileRef = F7C00D431E2D0D0F0032160B /* CCCellOffline.m */; };
-		F7C00D481E2D0D0F0032160B /* CCCellOffline.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7C00D441E2D0D0F0032160B /* CCCellOffline.xib */; };
 		F7C525A01E3B48B700FFE02C /* CCNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C5259F1E3B48B700FFE02C /* CCNotification.swift */; };
 		F7C525A21E3B6DA800FFE02C /* CCNotification.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7C525A11E3B6DA800FFE02C /* CCNotification.storyboard */; };
 		F7C742D81E7BD5C900D9C973 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7C742D71E7BD5C900D9C973 /* MainInterface.storyboard */; };
@@ -537,8 +539,6 @@
 		F7D6A0931D82DBFA0045AD1A /* CCControlCenterTransferCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D6A08C1D82DBFA0045AD1A /* CCControlCenterTransferCell.m */; };
 		F7D6A0951D82DBFA0045AD1A /* CCControlCenterTransferCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7D6A08D1D82DBFA0045AD1A /* CCControlCenterTransferCell.xib */; };
 		F7D6A0971D82DBFA0045AD1A /* CCMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D6A08F1D82DBFA0045AD1A /* CCMenu.m */; };
-		F7DA62AE1E41E666003E1740 /* CCOfflinePageContent.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DA62AD1E41E666003E1740 /* CCOfflinePageContent.m */; };
-		F7EC147B1E5D9C0B0046F351 /* CCSynchronize.m in Sources */ = {isa = PBXBuildFile; fileRef = F7EC147A1E5D9C0B0046F351 /* CCSynchronize.m */; };
 		F7ECBA6D1E239DCD003E6328 /* CCCreateCloud.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7ECBA6C1E239DCD003E6328 /* CCCreateCloud.swift */; };
 		F7EF0CAF1D9E95F400A9D15E /* CCSharedDBSession.m in Sources */ = {isa = PBXBuildFile; fileRef = F7EF0CAD1D9E95F400A9D15E /* CCSharedDBSession.m */; };
 		F7F06E8D1DBFACC600099AE9 /* NSBundle+CTAssetsPickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F06E2E1DBFACC600099AE9 /* NSBundle+CTAssetsPickerController.m */; };
@@ -620,7 +620,6 @@
 		F7F6AC4E1E525AD300E8EB45 /* CCManageCryptoCloud.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F6AC4D1E525AD300E8EB45 /* CCManageCryptoCloud.m */; };
 		F7F801031D98205A007537BC /* CCCertificate.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F801011D98205A007537BC /* CCCertificate.m */; };
 		F7F801051D98205A007537BC /* CCCertificate.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F801011D98205A007537BC /* CCCertificate.m */; };
-		F7FB5F131E66CDCB00389481 /* CCOfflineContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FB5F121E66CDCB00389481 /* CCOfflineContainer.m */; };
 		F7FB5F1C1E66EB7200389481 /* TableActivity+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FB5F191E66EB7200389481 /* TableActivity+CoreDataClass.m */; };
 		F7FB5F1E1E66EB7200389481 /* TableActivity+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FB5F1B1E66EB7200389481 /* TableActivity+CoreDataProperties.m */; };
 		F7FB5F201E66F0A400389481 /* TableActivity+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FB5F191E66EB7200389481 /* TableActivity+CoreDataClass.m */; };
@@ -1426,6 +1425,13 @@
 		F769D3971E9E1506006DBBB4 /* CCLocalStorageCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCLocalStorageCell.h; sourceTree = "<group>"; };
 		F769D3981E9E1506006DBBB4 /* CCLocalStorageCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCLocalStorageCell.m; sourceTree = "<group>"; };
 		F769D3991E9E1506006DBBB4 /* CCLocalStorageCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CCLocalStorageCell.xib; sourceTree = "<group>"; };
+		F769D3B71E9E2519006DBBB4 /* CCFavorite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCFavorite.h; sourceTree = "<group>"; };
+		F769D3B81E9E2519006DBBB4 /* CCFavorite.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCFavorite.m; sourceTree = "<group>"; };
+		F769D3B91E9E2519006DBBB4 /* CCFavoriteCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCFavoriteCell.h; sourceTree = "<group>"; };
+		F769D3BA1E9E2519006DBBB4 /* CCFavoriteCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCFavoriteCell.m; sourceTree = "<group>"; };
+		F769D3BB1E9E2519006DBBB4 /* CCFavoriteCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CCFavoriteCell.xib; sourceTree = "<group>"; };
+		F769D3BC1E9E2519006DBBB4 /* CCSynchronize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCSynchronize.h; sourceTree = "<group>"; };
+		F769D3BD1E9E2519006DBBB4 /* CCSynchronize.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCSynchronize.m; sourceTree = "<group>"; };
 		F76A75E01E83D42B005AFFF4 /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/CTAssetsPicker.strings; sourceTree = "<group>"; };
 		F76A75E11E83D42B005AFFF4 /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/SwiftWebVC.strings; sourceTree = "<group>"; };
 		F76A75E21E83D42B005AFFF4 /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/BKPasscodeView.strings; sourceTree = "<group>"; };
@@ -1508,9 +1514,6 @@
 		F7BFCCBF1B68C21900548E76 /* CCManageAsset.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCManageAsset.m; sourceTree = "<group>"; };
 		F7BFCCC01B68C21900548E76 /* CCManageLocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCManageLocation.h; sourceTree = "<group>"; };
 		F7BFCCC11B68C21900548E76 /* CCManageLocation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCManageLocation.m; sourceTree = "<group>"; };
-		F7C00D421E2D0D0F0032160B /* CCCellOffline.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCCellOffline.h; sourceTree = "<group>"; };
-		F7C00D431E2D0D0F0032160B /* CCCellOffline.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCCellOffline.m; sourceTree = "<group>"; };
-		F7C00D441E2D0D0F0032160B /* CCCellOffline.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CCCellOffline.xib; sourceTree = "<group>"; };
 		F7C00D4A1E2D10BB0032160B /* cryptocloud 7.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "cryptocloud 7.xcdatamodel"; sourceTree = "<group>"; };
 		F7C0F46E1C8880540059EC54 /* ShareViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = ShareViewController.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		F7C0F46F1C8880540059EC54 /* ShareViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = ShareViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
@@ -1555,11 +1558,7 @@
 		F7D96F0D1D99498600A587A5 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		F7D96F0E1D99498700A587A5 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Intro.strings; sourceTree = "<group>"; };
 		F7D96F0F1D99498700A587A5 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Error.strings; sourceTree = "<group>"; };
-		F7DA62AC1E41E666003E1740 /* CCOfflinePageContent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCOfflinePageContent.h; sourceTree = "<group>"; };
-		F7DA62AD1E41E666003E1740 /* CCOfflinePageContent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCOfflinePageContent.m; sourceTree = "<group>"; };
 		F7E456D41C89D54A00BD63F0 /* Share Ext-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Share Ext-Bridging-Header.h"; sourceTree = "<group>"; };
-		F7EC14791E5D9C0B0046F351 /* CCSynchronize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCSynchronize.h; sourceTree = "<group>"; };
-		F7EC147A1E5D9C0B0046F351 /* CCSynchronize.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCSynchronize.m; sourceTree = "<group>"; };
 		F7ECBA6C1E239DCD003E6328 /* CCCreateCloud.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CCCreateCloud.swift; sourceTree = "<group>"; };
 		F7EF0CAC1D9E95EC00A9D15E /* CCSharedDBSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = CCSharedDBSession.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		F7EF0CAD1D9E95F400A9D15E /* CCSharedDBSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = CCSharedDBSession.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
@@ -1695,8 +1694,6 @@
 		F7F6AC4D1E525AD300E8EB45 /* CCManageCryptoCloud.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCManageCryptoCloud.m; sourceTree = "<group>"; };
 		F7F801001D98205A007537BC /* CCCertificate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCCertificate.h; sourceTree = "<group>"; };
 		F7F801011D98205A007537BC /* CCCertificate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCCertificate.m; sourceTree = "<group>"; };
-		F7FB5F111E66CDCB00389481 /* CCOfflineContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCOfflineContainer.h; sourceTree = "<group>"; };
-		F7FB5F121E66CDCB00389481 /* CCOfflineContainer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCOfflineContainer.m; sourceTree = "<group>"; };
 		F7FB5F181E66EB7200389481 /* TableActivity+CoreDataClass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableActivity+CoreDataClass.h"; sourceTree = "<group>"; };
 		F7FB5F191E66EB7200389481 /* TableActivity+CoreDataClass.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableActivity+CoreDataClass.m"; sourceTree = "<group>"; };
 		F7FB5F1A1E66EB7200389481 /* TableActivity+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableActivity+CoreDataProperties.h"; sourceTree = "<group>"; };
@@ -2904,6 +2901,20 @@
 			path = "Local storage";
 			sourceTree = "<group>";
 		};
+		F769D3B61E9E2519006DBBB4 /* Favorite */ = {
+			isa = PBXGroup;
+			children = (
+				F769D3B71E9E2519006DBBB4 /* CCFavorite.h */,
+				F769D3B81E9E2519006DBBB4 /* CCFavorite.m */,
+				F769D3B91E9E2519006DBBB4 /* CCFavoriteCell.h */,
+				F769D3BA1E9E2519006DBBB4 /* CCFavoriteCell.m */,
+				F769D3BB1E9E2519006DBBB4 /* CCFavoriteCell.xib */,
+				F769D3BC1E9E2519006DBBB4 /* CCSynchronize.h */,
+				F769D3BD1E9E2519006DBBB4 /* CCSynchronize.m */,
+			);
+			path = Favorite;
+			sourceTree = "<group>";
+		};
 		F77F86401B4ABF6D009F0A10 /* Table */ = {
 			isa = PBXGroup;
 			children = (
@@ -3072,23 +3083,6 @@
 				F73049B91CB567F000C7C320 /* NSString+TruncateToWidth.m */,
 			);
 			path = Utility;
-			sourceTree = "<group>";
-		};
-		F7C00D411E2D0D0F0032160B /* Favorite */ = {
-			isa = PBXGroup;
-			children = (
-				F7C00D421E2D0D0F0032160B /* CCCellOffline.h */,
-				F7C00D431E2D0D0F0032160B /* CCCellOffline.m */,
-				F7C00D441E2D0D0F0032160B /* CCCellOffline.xib */,
-				F7FB5F111E66CDCB00389481 /* CCOfflineContainer.h */,
-				F7FB5F121E66CDCB00389481 /* CCOfflineContainer.m */,
-				F7DA62AC1E41E666003E1740 /* CCOfflinePageContent.h */,
-				F7DA62AD1E41E666003E1740 /* CCOfflinePageContent.m */,
-				F7EC14791E5D9C0B0046F351 /* CCSynchronize.h */,
-				F7EC147A1E5D9C0B0046F351 /* CCSynchronize.m */,
-			);
-			name = Favorite;
-			path = Offline;
 			sourceTree = "<group>";
 		};
 		F7C0F46D1C8880540059EC54 /* Share */ = {
@@ -3375,6 +3369,7 @@
 				F70211F31BAC56E9003FC03E /* Main */,
 				F720E02A1E48C74C001A4B9E /* Actions */,
 				F7ECBA6B1E239DCD003E6328 /* Create */,
+				F769D3B61E9E2519006DBBB4 /* Favorite */,
 				F7E95CEC1AC40BA40060D08E /* FileSystem */,
 				F744BE911BEBB2EE004FFF66 /* Intro */,
 				F7F54CAC1E5B143100E19C62 /* Library */,
@@ -3385,7 +3380,6 @@
 				F7F9E3451BC26B19004B9223 /* Move */,
 				F74D3DB81BAC1941000BAE4B /* Networking */,
 				F7C5259A1E3B441D00FFE02C /* Notification */,
-				F7C00D411E2D0D0F0032160B /* Favorite */,
 				F7FCFFD51D70798C000E6E29 /* PeekPop */,
 				F719FDAE1CF06645004895D0 /* PhotosCameraUpload */,
 				F7BE6E2A1D2D5C3B00106933 /* QuickActions */,
@@ -3770,7 +3764,6 @@
 				F75ADF451DC75FFE008A7347 /* CCLogin.storyboard in Resources */,
 				F77B0EEA1D118A16002130FE /* ZSSbold@2x.png in Resources */,
 				F77B0EEB1D118A16002130FE /* ZSSrightjustify@2x.png in Resources */,
-				F7C00D481E2D0D0F0032160B /* CCCellOffline.xib in Resources */,
 				F77B0EEC1D118A16002130FE /* ZSSindent@2x.png in Resources */,
 				F7F54CED1E5B14C700E19C62 /* ImageSelectedOn@3x.png in Resources */,
 				F77B0EED1D118A16002130FE /* Reader-Mark-N@2x.png in Resources */,
@@ -3923,6 +3916,7 @@
 				F77B0F861D118A16002130FE /* LMMediaPlayerView.bundle in Resources */,
 				F77B0F8A1D118A16002130FE /* CCCellMain.xib in Resources */,
 				F77B0F8C1D118A16002130FE /* CCCellMainTransfer.xib in Resources */,
+				F769D3C01E9E2519006DBBB4 /* CCFavoriteCell.xib in Resources */,
 				F77B0F8E1D118A16002130FE /* LMMediaPlayerView.xib in Resources */,
 				F75797AE1E81356C00187A1B /* CTAssetsPicker.strings in Resources */,
 				F77B0F8F1D118A16002130FE /* ZSSunlink@2x.png in Resources */,
@@ -4146,7 +4140,6 @@
 				F7659A581DC0B760004860C4 /* NSIndexPath+PSTCollectionViewAdditions.m in Sources */,
 				F7659A681DC0B760004860C4 /* PSTCollectionViewUpdateItem.m in Sources */,
 				F7F54D061E5B14C800E19C62 /* MWCaptionView.m in Sources */,
-				F7C00D471E2D0D0F0032160B /* CCCellOffline.m in Sources */,
 				F77B0E071D118A16002130FE /* ioapi.c in Sources */,
 				F73CCDF11DC13776007E38D8 /* XLFormStepCounterCell.m in Sources */,
 				F73CCE1F1DC13776007E38D8 /* XLForm.m in Sources */,
@@ -4189,6 +4182,7 @@
 				F77B0E221D118A16002130FE /* CCManageLocation.m in Sources */,
 				F77B0E231D118A16002130FE /* CCSharePermissionOC.m in Sources */,
 				F77B0E241D118A16002130FE /* HRColorCursor.m in Sources */,
+				F769D3C11E9E2519006DBBB4 /* CCSynchronize.m in Sources */,
 				F708CF851E56E8CC00271D8B /* TableShare+CoreDataClass.m in Sources */,
 				F75AE3C71E9D12900088BB09 /* SwiftyAvatar.swift in Sources */,
 				F708CF9A1E56E8CC00271D8B /* TableAccount+CoreDataProperties.m in Sources */,
@@ -4207,8 +4201,6 @@
 				F77B0E321D118A16002130FE /* HRCgUtil.m in Sources */,
 				F7F06EB71DBFACC600099AE9 /* CTAssetsGridViewFooter.m in Sources */,
 				F7F06EB91DBFACC600099AE9 /* CTAssetsGridViewLayout.m in Sources */,
-				F7DA62AE1E41E666003E1740 /* CCOfflinePageContent.m in Sources */,
-				F7FB5F131E66CDCB00389481 /* CCOfflineContainer.m in Sources */,
 				F77B0E351D118A16002130FE /* NYXImagesHelper.m in Sources */,
 				F73CCE171DC13776007E38D8 /* XLFormTextView.m in Sources */,
 				F77B0E361D118A16002130FE /* ZSSBarButtonItem.m in Sources */,
@@ -4220,6 +4212,7 @@
 				F77B0E411D118A16002130FE /* CCSplit.m in Sources */,
 				F77B0E421D118A16002130FE /* ReaderMainPagebar.m in Sources */,
 				F77B0E431D118A16002130FE /* ReaderThumbsView.m in Sources */,
+				F769D3BE1E9E2519006DBBB4 /* CCFavorite.m in Sources */,
 				F73CCDFD1DC13776007E38D8 /* XLFormViewController.m in Sources */,
 				F73CCDDF1DC13776007E38D8 /* XLFormDateCell.m in Sources */,
 				F73CCE1B1DC13776007E38D8 /* XLFormValidationStatus.m in Sources */,
@@ -4293,6 +4286,7 @@
 				F7F06EA51DBFACC600099AE9 /* CTAssetItemViewController.m in Sources */,
 				F7659A5A1DC0B760004860C4 /* PSTCollectionView.m in Sources */,
 				F7BF1B431D51E893000854F6 /* CCLogin.m in Sources */,
+				F769D3BF1E9E2519006DBBB4 /* CCFavoriteCell.m in Sources */,
 				F77B0E7D1D118A16002130FE /* CYRTextStorage.m in Sources */,
 				F77B0E7E1D118A16002130FE /* ThumbsViewController.m in Sources */,
 				F77B0E801D118A16002130FE /* ZSSRichTextEditor.m in Sources */,
@@ -4358,7 +4352,6 @@
 				F73CCDEF1DC13776007E38D8 /* XLFormSliderCell.m in Sources */,
 				F77B0EB51D118A16002130FE /* RECommonFunctions.m in Sources */,
 				F73CCE111DC13776007E38D8 /* XLFormRightDetailCell.m in Sources */,
-				F7EC147B1E5D9C0B0046F351 /* CCSynchronize.m in Sources */,
 				F73CCDE71DC13776007E38D8 /* XLFormLeftRightSelectorCell.m in Sources */,
 				F77B0EB61D118A16002130FE /* MBProgressHUD.m in Sources */,
 				F77B0EB71D118A16002130FE /* ReaderThumbRequest.m in Sources */,
