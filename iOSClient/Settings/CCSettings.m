@@ -123,11 +123,10 @@
     section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_user_information_", nil)];
     [form addFormSection:section];
     
-    // Display Name
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"userdisplayname" rowType:XLFormRowDescriptorTypeInfo];
+    // Full Name
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"userfullname" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_full_name_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
-    row.cellConfig[@"textLabel.numberOfLines"] = @0;
     [section addFormRow:row];
     
     // Address
@@ -400,7 +399,7 @@
     XLFormRowDescriptor *rowUserNameCloud = [self.form formRowWithTag:@"usernamecloud"];
     XLFormRowDescriptor *rowQuota = [self.form formRowWithTag:@"quota"];
 
-    XLFormRowDescriptor *rowUserDisplayName = [self.form formRowWithTag:@"userdisplayname"];
+    XLFormRowDescriptor *rowUserFullName = [self.form formRowWithTag:@"userfullname"];
     XLFormRowDescriptor *rowUserAddress = [self.form formRowWithTag:@"useraddress"];
     XLFormRowDescriptor *rowUserPhone = [self.form formRowWithTag:@"userphone"];
     XLFormRowDescriptor *rowUserEmail = [self.form formRowWithTag:@"useremail"];
@@ -424,21 +423,6 @@
     if ([CCUtility getOnlyLockDir]) [rowOnlyLockDir setValue:@1]; else [rowOnlyLockDir setValue:@0];
     if ([CCUtility getFavoriteOffline]) [rowFavoriteOffline setValue:@1]; else [rowFavoriteOffline setValue:@0];
     
-    // Avatar
-    UIImage *avatar = [[UIImage alloc] initWithContentsOfFile:[NSString stringWithFormat:@"%@/avatar.png", app.directoryUser]];
-    if (avatar) {
-        
-        avatar =  [CCGraphics scaleImage:avatar toSize:CGSizeMake(50, 50)];
-        APAvatarImageView *avatarImageView = [[APAvatarImageView alloc] initWithImage:avatar borderColor:[UIColor lightGrayColor] borderWidth:0.5];
-        
-        CGSize imageSize = avatarImageView.bounds.size;
-        UIGraphicsBeginImageContextWithOptions(imageSize, NO, 0);
-        CGContextRef context = UIGraphicsGetCurrentContext();
-        [avatarImageView.layer renderInContext:context];
-        avatar = UIGraphicsGetImageFromCurrentImageContext();
-        UIGraphicsEndImageContext();
-    }
-    
     _tableAccount = [CCCoreData getActiveAccount];
     
     rowVersionServer.value = [NSString stringWithFormat:@"%lu.%lu.%lu",(unsigned long)[_tableAccount.versionMajor integerValue], (unsigned long)[_tableAccount.versionMinor integerValue], (unsigned long)[_tableAccount.versionMicro integerValue]];
@@ -450,21 +434,8 @@
     rowQuota.title = [NSString stringWithFormat:NSLocalizedString(@"_quota_using_", nil), quotaUsed, quota];
     //rowQuota.title = [NSString stringWithFormat:@"%@ / %@ %@", quota, quotaAvailable, NSLocalizedString(@"_available_", nil)];
     
-    if (avatar || _tableAccount.displayName.length > 0) {
-        
-        rowUserDisplayName.title = _tableAccount.displayName;
-        rowUserDisplayName.disabled = @YES;
-        if (avatar)
-            [rowUserDisplayName.cellConfig setObject:avatar forKey:@"imageView.image"];
-        else
-            [rowUserDisplayName.cellConfig setObject:[UIImage imageNamed:image_avatar] forKey:@"imageView.image"];
-
-    } else {
-        
-        rowUserDisplayName.title = @"";
-        rowUserDisplayName.disabled = @NO;
-        [rowUserDisplayName.cellConfig setObject:[UIImage imageNamed:image_avatar] forKey:@"imageView.image"];
-    }
+    rowUserFullName.value = _tableAccount.displayName;
+    if ([_tableAccount.displayName isEqualToString:@""]) rowUserFullName.hidden = @YES;
     
     rowUserAddress.value = _tableAccount.address;
     if ([_tableAccount.address isEqualToString:@""]) rowUserAddress.hidden = @YES;

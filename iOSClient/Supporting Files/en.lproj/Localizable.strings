@@ -136,6 +136,7 @@
 "_cloud_account_"           = "Cloud Account";
 "_information_"             = "Information";
 "_user_information_"        = "User Information";
+"_user_full_name_"          = "Full name";
 "_user_address_"            = "Address";
 "_user_phone_"              = "Phone number";
 "_user_email_"              = "Email";

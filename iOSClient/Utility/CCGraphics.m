@@ -233,35 +233,4 @@
 #endif
 }
 
-+ (UIView *)navigationBarTitle:(NSString *)title image:(UIImage *)image frame:(CGRect)frame
-{
-    UIView *view = [UIView new];
-    UILabel *label = [UILabel new];
-        
-    title = [@" " stringByAppendingString:title];
-    NSInteger width = floor(frame.size.width/3);
-    if (width < 80)
-        width = 80;
-    label.text =  [title stringByTruncatingToWidth:width withFont:label.font atEnd:YES];
-    label.textColor = COLOR_NAVIGATIONBAR_TEXT;
-    
-    label.textAlignment = NSTextAlignmentCenter;
-    [label sizeToFit];
-    label.center = view.center;
-    
-    image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
-    float imageAspect = imageView.image.size.width / imageView.image.size.height;
-    imageView.frame = CGRectMake(label.frame.origin.x-label.frame.size.height*imageAspect, label.frame.origin.y, label.frame.size.height*imageAspect, label.frame.size.height);
-    imageView.contentMode = UIViewContentModeScaleAspectFit;
-    imageView.tintColor = COLOR_NAVIGATIONBAR_TEXT;
-
-    [view addSubview:label];
-    [view addSubview:imageView];
-    
-    [view sizeToFit];
-    
-    return view;
-}
-
 @end
