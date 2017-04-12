@@ -216,7 +216,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             item = settingsMenu[indexPath.row]
         }
         
-        if (item.url.contains("segue")) {
+        if (item.url.contains("segue") && !item.url.contains("//")) {
             
             self.navigationController?.performSegue(withIdentifier: item.url, sender: self)
         }
@@ -234,7 +234,6 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
                 let webVC = SwiftModalWebVC(urlString: item.url)
                 self.present(webVC, animated: true, completion: nil)
             }
-
         }
     }
 }
