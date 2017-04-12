@@ -57,8 +57,6 @@
 		F708CF9C1E56E8CC00271D8B /* TableAccount+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF6C1E56E8CC00271D8B /* TableAccount+CoreDataProperties.m */; };
 		F70A630B1D5B3467004E2AA5 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63061D5B3467004E2AA5 /* libcrypto.a */; };
 		F70A630F1D5B3467004E2AA5 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63071D5B3467004E2AA5 /* libssl.a */; };
-		F70FD1C71E67552700C0FDA6 /* CCControlCenterTransfer.m in Sources */ = {isa = PBXBuildFile; fileRef = F70FD1C61E67552700C0FDA6 /* CCControlCenterTransfer.m */; };
-		F70FD1CB1E675F1500C0FDA6 /* CCControlCenterActivity.m in Sources */ = {isa = PBXBuildFile; fileRef = F70FD1CA1E675F1500C0FDA6 /* CCControlCenterActivity.m */; };
 		F714526D1DC1523B0006A5D4 /* libMagicalRecord.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F7B61E9B1DC13C20009E938F /* libMagicalRecord.a */; };
 		F71459B81D12E3B700CAFEEC /* CCError.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B881C638A4C00DC4301 /* CCError.m */; };
 		F71459BA1D12E3B700CAFEEC /* NSString+TruncateToWidth.m in Sources */ = {isa = PBXBuildFile; fileRef = F73049B91CB567F000C7C320 /* NSString+TruncateToWidth.m */; };
@@ -120,7 +118,6 @@
 		F72AAECB1E5C60C700BB17E1 /* AHKActionSheetViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F72AAEC51E5C60C700BB17E1 /* AHKActionSheetViewController.m */; };
 		F72AAECC1E5C60C700BB17E1 /* UIImage+AHKAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = F72AAEC71E5C60C700BB17E1 /* UIImage+AHKAdditions.m */; };
 		F72AAECD1E5C60C700BB17E1 /* UIWindow+AHKAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = F72AAEC91E5C60C700BB17E1 /* UIWindow+AHKAdditions.m */; };
-		F72AE40B1E67246200B3E477 /* ControlCenter.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F72AE40A1E67246200B3E477 /* ControlCenter.storyboard */; };
 		F72C63891DC14B0400FA5ED5 /* libMagicalRecord.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F7B61E9B1DC13C20009E938F /* libMagicalRecord.a */; };
 		F732B3371E8045A1002B7D75 /* SwiftWebVC.strings in Resources */ = {isa = PBXBuildFile; fileRef = F732B3351E8045A1002B7D75 /* SwiftWebVC.strings */; };
 		F732BA061D76CE1500E9878B /* CCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F732BA041D76CE1500E9878B /* CCNetworking.m */; };
@@ -521,6 +518,10 @@
 		F7A321571E9E2A070069AD1B /* CCFavoritesCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7A321521E9E2A070069AD1B /* CCFavoritesCell.xib */; };
 		F7A321581E9E2A070069AD1B /* CCSynchronize.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A321541E9E2A070069AD1B /* CCSynchronize.m */; };
 		F7A321651E9E37960069AD1B /* CCActivity.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A321641E9E37960069AD1B /* CCActivity.m */; };
+		F7A321791E9E3EAF0069AD1B /* CCTransfers.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A321751E9E3EAF0069AD1B /* CCTransfers.m */; };
+		F7A3217A1E9E3EAF0069AD1B /* CCTransfersCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A321771E9E3EAF0069AD1B /* CCTransfersCell.m */; };
+		F7A3217B1E9E3EAF0069AD1B /* CCTransfersCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7A321781E9E3EAF0069AD1B /* CCTransfersCell.xib */; };
+		F7A3218C1E9E42B30069AD1B /* CCMenuAccount.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A3218B1E9E42B30069AD1B /* CCMenuAccount.m */; };
 		F7B1FBC41E72E3D1001781FE /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7B1FBB11E72E3D1001781FE /* Media.xcassets */; };
 		F7B1FBC61E72E3D1001781FE /* SwiftModalWebVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B1FBBF1E72E3D1001781FE /* SwiftModalWebVC.swift */; };
 		F7B1FBC71E72E3D1001781FE /* SwiftWebVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B1FBC01E72E3D1001781FE /* SwiftWebVC.swift */; };
@@ -536,10 +537,6 @@
 		F7C525A21E3B6DA800FFE02C /* CCNotification.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7C525A11E3B6DA800FFE02C /* CCNotification.storyboard */; };
 		F7C742D81E7BD5C900D9C973 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7C742D71E7BD5C900D9C973 /* MainInterface.storyboard */; };
 		F7D2677C1E157053005ACB7E /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7F67BB81A24D27800EE80DA /* Images.xcassets */; };
-		F7D6A0911D82DBFA0045AD1A /* CCControlCenter.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D6A08A1D82DBFA0045AD1A /* CCControlCenter.m */; };
-		F7D6A0931D82DBFA0045AD1A /* CCControlCenterTransferCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D6A08C1D82DBFA0045AD1A /* CCControlCenterTransferCell.m */; };
-		F7D6A0951D82DBFA0045AD1A /* CCControlCenterTransferCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7D6A08D1D82DBFA0045AD1A /* CCControlCenterTransferCell.xib */; };
-		F7D6A0971D82DBFA0045AD1A /* CCMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D6A08F1D82DBFA0045AD1A /* CCMenu.m */; };
 		F7ECBA6D1E239DCD003E6328 /* CCCreateCloud.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7ECBA6C1E239DCD003E6328 /* CCCreateCloud.swift */; };
 		F7EF0CAF1D9E95F400A9D15E /* CCSharedDBSession.m in Sources */ = {isa = PBXBuildFile; fileRef = F7EF0CAD1D9E95F400A9D15E /* CCSharedDBSession.m */; };
 		F7F06E8D1DBFACC600099AE9 /* NSBundle+CTAssetsPickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F06E2E1DBFACC600099AE9 /* NSBundle+CTAssetsPickerController.m */; };
@@ -1042,10 +1039,6 @@
 		F70F0F9C1C889487008DAB36 /* zip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zip.h; sourceTree = "<group>"; };
 		F70F0F9D1C889487008DAB36 /* SSZipArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSZipArchive.h; sourceTree = "<group>"; };
 		F70F0F9E1C889487008DAB36 /* SSZipArchive.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSZipArchive.m; sourceTree = "<group>"; };
-		F70FD1C51E67552700C0FDA6 /* CCControlCenterTransfer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCControlCenterTransfer.h; sourceTree = "<group>"; };
-		F70FD1C61E67552700C0FDA6 /* CCControlCenterTransfer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCControlCenterTransfer.m; sourceTree = "<group>"; };
-		F70FD1C91E675F1500C0FDA6 /* CCControlCenterActivity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCControlCenterActivity.h; sourceTree = "<group>"; };
-		F70FD1CA1E675F1500C0FDA6 /* CCControlCenterActivity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCControlCenterActivity.m; sourceTree = "<group>"; };
 		F7151A801D477A4B00E6AF45 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/BKPasscodeView.strings; sourceTree = "<group>"; };
 		F7151A811D477A4B00E6AF45 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F7151A821D477A4B00E6AF45 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -1109,7 +1102,6 @@
 		F72AAEC71E5C60C700BB17E1 /* UIImage+AHKAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+AHKAdditions.m"; sourceTree = "<group>"; };
 		F72AAEC81E5C60C700BB17E1 /* UIWindow+AHKAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIWindow+AHKAdditions.h"; sourceTree = "<group>"; };
 		F72AAEC91E5C60C700BB17E1 /* UIWindow+AHKAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIWindow+AHKAdditions.m"; sourceTree = "<group>"; };
-		F72AE40A1E67246200B3E477 /* ControlCenter.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = ControlCenter.storyboard; sourceTree = "<group>"; };
 		F73049B81CB567F000C7C320 /* NSString+TruncateToWidth.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+TruncateToWidth.h"; sourceTree = "<group>"; };
 		F73049B91CB567F000C7C320 /* NSString+TruncateToWidth.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+TruncateToWidth.m"; sourceTree = "<group>"; };
 		F73200DD1E94E4DF00AB2F01 /* es-MX */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-MX"; path = "es-MX.lproj/CTAssetsPicker.strings"; sourceTree = "<group>"; };
@@ -1483,6 +1475,13 @@
 		F7A321541E9E2A070069AD1B /* CCSynchronize.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCSynchronize.m; sourceTree = "<group>"; };
 		F7A321631E9E37960069AD1B /* CCActivity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCActivity.h; sourceTree = "<group>"; };
 		F7A321641E9E37960069AD1B /* CCActivity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCActivity.m; sourceTree = "<group>"; };
+		F7A321741E9E3EAF0069AD1B /* CCTransfers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCTransfers.h; sourceTree = "<group>"; };
+		F7A321751E9E3EAF0069AD1B /* CCTransfers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCTransfers.m; sourceTree = "<group>"; };
+		F7A321761E9E3EAF0069AD1B /* CCTransfersCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCTransfersCell.h; sourceTree = "<group>"; };
+		F7A321771E9E3EAF0069AD1B /* CCTransfersCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCTransfersCell.m; sourceTree = "<group>"; };
+		F7A321781E9E3EAF0069AD1B /* CCTransfersCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CCTransfersCell.xib; sourceTree = "<group>"; };
+		F7A3218A1E9E42B30069AD1B /* CCMenuAccount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCMenuAccount.h; sourceTree = "<group>"; };
+		F7A3218B1E9E42B30069AD1B /* CCMenuAccount.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCMenuAccount.m; sourceTree = "<group>"; };
 		F7A54C341C6267B500E2C8BF /* CCExifGeo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCExifGeo.h; sourceTree = "<group>"; };
 		F7A54C351C6267B500E2C8BF /* CCExifGeo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCExifGeo.m; sourceTree = "<group>"; };
 		F7A582D61A24DAB500E903D7 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -1549,13 +1548,6 @@
 		F7D0E65E1BC5042E008D989A /* CCDetail.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCDetail.h; sourceTree = "<group>"; };
 		F7D0E65F1BC5042E008D989A /* CCDetail.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCDetail.m; sourceTree = "<group>"; };
 		F7D154271E2392A300202FD9 /* Nextcloud-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Nextcloud-Bridging-Header.h"; sourceTree = "<group>"; };
-		F7D6A0891D82DBFA0045AD1A /* CCControlCenter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCControlCenter.h; sourceTree = "<group>"; };
-		F7D6A08A1D82DBFA0045AD1A /* CCControlCenter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCControlCenter.m; sourceTree = "<group>"; };
-		F7D6A08B1D82DBFA0045AD1A /* CCControlCenterTransferCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCControlCenterTransferCell.h; sourceTree = "<group>"; };
-		F7D6A08C1D82DBFA0045AD1A /* CCControlCenterTransferCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCControlCenterTransferCell.m; sourceTree = "<group>"; };
-		F7D6A08D1D82DBFA0045AD1A /* CCControlCenterTransferCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CCControlCenterTransferCell.xib; sourceTree = "<group>"; };
-		F7D6A08E1D82DBFA0045AD1A /* CCMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCMenu.h; sourceTree = "<group>"; };
-		F7D6A08F1D82DBFA0045AD1A /* CCMenu.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCMenu.m; sourceTree = "<group>"; };
 		F7D96F0B1D99498600A587A5 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/BKPasscodeView.strings; sourceTree = "<group>"; };
 		F7D96F0C1D99498600A587A5 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F7D96F0D1D99498600A587A5 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -2985,6 +2977,27 @@
 			path = Activity;
 			sourceTree = "<group>";
 		};
+		F7A321731E9E3EAF0069AD1B /* Transfers */ = {
+			isa = PBXGroup;
+			children = (
+				F7A321741E9E3EAF0069AD1B /* CCTransfers.h */,
+				F7A321751E9E3EAF0069AD1B /* CCTransfers.m */,
+				F7A321761E9E3EAF0069AD1B /* CCTransfersCell.h */,
+				F7A321771E9E3EAF0069AD1B /* CCTransfersCell.m */,
+				F7A321781E9E3EAF0069AD1B /* CCTransfersCell.xib */,
+			);
+			path = Transfers;
+			sourceTree = "<group>";
+		};
+		F7A321891E9E42B20069AD1B /* MenuAccount */ = {
+			isa = PBXGroup;
+			children = (
+				F7A3218A1E9E42B30069AD1B /* CCMenuAccount.h */,
+				F7A3218B1E9E42B30069AD1B /* CCMenuAccount.m */,
+			);
+			path = MenuAccount;
+			sourceTree = "<group>";
+		};
 		F7ACE4281BAC0268006C0017 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
@@ -3142,26 +3155,6 @@
 				F7C742D41E7BD44400D9C973 /* Picker.entitlements */,
 			);
 			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
-		F7D6A0881D82DBFA0045AD1A /* ControlCenter+MenuAccount */ = {
-			isa = PBXGroup;
-			children = (
-				F72AE40A1E67246200B3E477 /* ControlCenter.storyboard */,
-				F7D6A0891D82DBFA0045AD1A /* CCControlCenter.h */,
-				F7D6A08A1D82DBFA0045AD1A /* CCControlCenter.m */,
-				F7D6A08B1D82DBFA0045AD1A /* CCControlCenterTransferCell.h */,
-				F7D6A08C1D82DBFA0045AD1A /* CCControlCenterTransferCell.m */,
-				F7D6A08D1D82DBFA0045AD1A /* CCControlCenterTransferCell.xib */,
-				F70FD1C51E67552700C0FDA6 /* CCControlCenterTransfer.h */,
-				F70FD1C61E67552700C0FDA6 /* CCControlCenterTransfer.m */,
-				F70FD1C91E675F1500C0FDA6 /* CCControlCenterActivity.h */,
-				F70FD1CA1E675F1500C0FDA6 /* CCControlCenterActivity.m */,
-				F7D6A08E1D82DBFA0045AD1A /* CCMenu.h */,
-				F7D6A08F1D82DBFA0045AD1A /* CCMenu.m */,
-			);
-			name = "ControlCenter+MenuAccount";
-			path = "MenuAccount+ControlCenter";
 			sourceTree = "<group>";
 		};
 		F7E95CEC1AC40BA40060D08E /* FileSystem */ = {
@@ -3389,7 +3382,7 @@
 				F769D3941E9E1506006DBBB4 /* Local storage */,
 				F7BFFA621A24D7300044ED85 /* Login */,
 				F7BFCCBD1B68C21900548E76 /* ManageLocation+ManageAsset */,
-				F7D6A0881D82DBFA0045AD1A /* ControlCenter+MenuAccount */,
+				F7A321891E9E42B20069AD1B /* MenuAccount */,
 				F7F9E3451BC26B19004B9223 /* Move */,
 				F74D3DB81BAC1941000BAE4B /* Networking */,
 				F7C5259A1E3B441D00FFE02C /* Notification */,
@@ -3400,6 +3393,7 @@
 				F7ACE4281BAC0268006C0017 /* Settings */,
 				F728CE741BF6322C00E69702 /* Share */,
 				F721371B1BAFF0920012B613 /* Templates */,
+				F7A321731E9E3EAF0069AD1B /* Transfers */,
 				F70784811A2C8A0D00AC9FFF /* UploadFromOtherUpp */,
 				F7BFFA991A24D7BB0044ED85 /* Utility */,
 			);
@@ -3805,7 +3799,6 @@
 				F77B0F081D118A16002130FE /* ZSSunderline@2x.png in Resources */,
 				F77B0F0A1D118A16002130FE /* Reader-Mark-Y.png in Resources */,
 				F77B0F0C1D118A16002130FE /* Reader-Mark-Y@2x.png in Resources */,
-				F72AE40B1E67246200B3E477 /* ControlCenter.storyboard in Resources */,
 				F77B0F0D1D118A16002130FE /* ZSSundo@2x.png in Resources */,
 				F77B0F0E1D118A16002130FE /* BKPasscodeView.strings in Resources */,
 				F77B0F111D118A16002130FE /* ZSSparagraph.png in Resources */,
@@ -3814,7 +3807,6 @@
 				F77B0F141D118A16002130FE /* ZSSviewsource.png in Resources */,
 				F77B0F151D118A16002130FE /* ZSSforcejustify@2x.png in Resources */,
 				F77B0F171D118A16002130FE /* ZSSh1@2x.png in Resources */,
-				F7D6A0951D82DBFA0045AD1A /* CCControlCenterTransferCell.xib in Resources */,
 				F7F54CF31E5B14C700E19C62 /* ImageSelectedSmallOn@3x.png in Resources */,
 				F77B0F181D118A16002130FE /* Intro.strings in Resources */,
 				F7F54CFA1E5B14C700E19C62 /* UIBarButtonItemArrowLeft.png in Resources */,
@@ -3833,6 +3825,7 @@
 				F77B0F281D118A16002130FE /* Main.storyboard in Resources */,
 				F77B0F291D118A16002130FE /* ZSSleftjustify.png in Resources */,
 				F77B0F2B1D118A16002130FE /* ZSSclearstyle@2x.png in Resources */,
+				F7A3217B1E9E3EAF0069AD1B /* CCTransfersCell.xib in Resources */,
 				F77B0F2C1D118A16002130FE /* ZSSlink.png in Resources */,
 				F77B0F2D1D118A16002130FE /* ZSSsuperscript@2x.png in Resources */,
 				F7B1FBC41E72E3D1001781FE /* Media.xcassets in Resources */,
@@ -4168,7 +4161,6 @@
 				F708CF821E56E8CC00271D8B /* TableDirectory+CoreDataProperties.m in Sources */,
 				F77B0E121D118A16002130FE /* CCPatenteGuida.m in Sources */,
 				F7B1FBC61E72E3D1001781FE /* SwiftModalWebVC.swift in Sources */,
-				F7D6A0971D82DBFA0045AD1A /* CCMenu.m in Sources */,
 				F7A321651E9E37960069AD1B /* CCActivity.m in Sources */,
 				F77B0E131D118A16002130FE /* AppDelegate.m in Sources */,
 				F750374F1DBFA91A008FB480 /* NSArray+PureLayout.m in Sources */,
@@ -4180,7 +4172,6 @@
 				F77B0E161D118A16002130FE /* AFViewShaker.m in Sources */,
 				F77B0E1B1D118A16002130FE /* CCGraphics.m in Sources */,
 				F73CCE071DC13776007E38D8 /* NSExpression+XLFormAdditions.m in Sources */,
-				F70FD1CB1E675F1500C0FDA6 /* CCControlCenterActivity.m in Sources */,
 				F77B0E1D1D118A16002130FE /* ReaderThumbQueue.m in Sources */,
 				F7274FED1E6EB6F400C241B6 /* Constant.swift in Sources */,
 				F7659A6E1DC0B760004860C4 /* PSTGridLayoutRow.m in Sources */,
@@ -4233,11 +4224,11 @@
 				F77B0E451D118A16002130FE /* ReaderThumbRender.m in Sources */,
 				F77B0E481D118A16002130FE /* CCCrypto.m in Sources */,
 				F73CC0781E813DFF006E3047 /* BKShiftingView.m in Sources */,
-				F7D6A0911D82DBFA0045AD1A /* CCControlCenter.m in Sources */,
 				F708CF761E56E8CC00271D8B /* TableLocalFile+CoreDataProperties.m in Sources */,
 				F7659A6A1DC0B760004860C4 /* PSTGridLayoutInfo.m in Sources */,
 				F73CCE1D1DC13776007E38D8 /* XLFormValidator.m in Sources */,
 				F77B0E491D118A16002130FE /* UIImage+Saving.m in Sources */,
+				F7A3218C1E9E42B30069AD1B /* CCMenuAccount.m in Sources */,
 				F73CCE011DC13776007E38D8 /* XLFormRowDescriptor.m in Sources */,
 				F77B0E4C1D118A16002130FE /* CCDetail.m in Sources */,
 				F77B0E4D1D118A16002130FE /* CCCoreData.m in Sources */,
@@ -4272,7 +4263,6 @@
 				F7B3A4EE1E97818A000DACE8 /* CCLoginWeb.swift in Sources */,
 				F77B0E631D118A16002130FE /* CCShareOC.m in Sources */,
 				F73CCE261DC13788007E38D8 /* UIScrollView+EmptyDataSet.m in Sources */,
-				F70FD1C71E67552700C0FDA6 /* CCControlCenterTransfer.m in Sources */,
 				F7F54D071E5B14C800E19C62 /* MWGridCell.m in Sources */,
 				F77B0E651D118A16002130FE /* LMMediaPlayerView.m in Sources */,
 				F708CF731E56E8CC00271D8B /* TableLocalFile+CoreDataClass.m in Sources */,
@@ -4370,6 +4360,7 @@
 				F77B0EB71D118A16002130FE /* ReaderThumbRequest.m in Sources */,
 				F7F06EB31DBFACC600099AE9 /* CTAssetsGridViewCell.m in Sources */,
 				F77B0EB81D118A16002130FE /* CCAccountWeb.m in Sources */,
+				F7A321791E9E3EAF0069AD1B /* CCTransfers.m in Sources */,
 				F708CF7F1E56E8CC00271D8B /* TableDirectory+CoreDataClass.m in Sources */,
 				F77B0EB91D118A16002130FE /* HRColorUtil.m in Sources */,
 				F73CCDD91DC13776007E38D8 /* XLFormBaseCell.m in Sources */,
@@ -4402,7 +4393,7 @@
 				F77B0ECF1D118A16002130FE /* CYRToken.m in Sources */,
 				F72AAECA1E5C60C700BB17E1 /* AHKActionSheet.m in Sources */,
 				F7F06EB11DBFACC600099AE9 /* CTAssetsGridView.m in Sources */,
-				F7D6A0931D82DBFA0045AD1A /* CCControlCenterTransferCell.m in Sources */,
+				F7A3217A1E9E3EAF0069AD1B /* CCTransfersCell.m in Sources */,
 				F77B0ED11D118A16002130FE /* Acknowledgements.m in Sources */,
 				F77B0ED31D118A16002130FE /* PPImageScrollingCellView.m in Sources */,
 				F77B0ED41D118A16002130FE /* LMMediaPlayerHelper.m in Sources */,

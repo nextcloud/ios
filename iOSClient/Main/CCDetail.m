@@ -612,15 +612,6 @@
     photoBrowser.toolbar.hidden = NO;
 }
 
-- (void)setControlsHidden:(BOOL)hidden animated:(BOOL)animated permanent:(BOOL)permanent
-{
-    // Control Center
-    if (self.splitViewController.isCollapsed)
-        [app.controlCenter setControlCenterHidden:hidden];
-    
-    self.navigationController.navigationBar.hidden = hidden;
-}
-
 - (id <MWPhoto>)photoBrowser:(MWPhotoBrowser *)photoBrowser thumbPhotoAtIndex:(NSUInteger)index
 {
     NSString *directory;

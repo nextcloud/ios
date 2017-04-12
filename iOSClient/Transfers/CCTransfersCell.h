@@ -1,8 +1,8 @@
 //
-//  CCControlCenter.h
+//  CCTransfersCell.h
 //  Crypto Cloud Technology Nextcloud
 //
-//  Created by Marino Faggiana on 07/04/16.
+//  Created by Marino Faggiana on 05/05/15.
 //  Copyright (c) 2014 TWS. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
@@ -23,26 +23,23 @@
 
 #import <UIKit/UIKit.h>
 
-#import "CCGlobal.h"
-#import "CCSection.h"
-#import "CCMetadata.h"
+@interface CCTransfersCell : UITableViewCell
 
-@interface CCControlCenter : UINavigationController <UIPageViewControllerDataSource, UIPageViewControllerDelegate>
+@property(nonatomic, weak) IBOutlet UIImageView *fileImageView;
+@property(nonatomic, weak) IBOutlet UIImageView *statusImageView;
 
-@property (nonatomic) BOOL isPopGesture;
-@property (nonatomic) BOOL isOpen;
+@property(nonatomic, weak) IBOutlet UILabel *labelTitle;
+@property(nonatomic, weak) IBOutlet UILabel *labelInfoFile;
 
-- (void)closeControlCenter;
-- (void)setControlCenterHidden:(BOOL)hidden;
-- (void)enableSingleFingerTap:(SEL)selector target:(id)target;
-- (void)disableSingleFingerTap;
+@property(nonatomic, weak) IBOutlet UIProgressView *progressView;
+@property(nonatomic, weak) IBOutlet UIButton *cancelTaskButton;
+@property(nonatomic, weak) IBOutlet UIButton *reloadTaskButton;
+@property(nonatomic, weak) IBOutlet UIButton *stopTaskButton;
 
-@property (strong, nonatomic) UILabel *labelMessageNoRecord;
-@property (strong, nonatomic) UIPageViewController *pageViewController;
-@property (strong, nonatomic) NSArray *pageType;
-@property (strong, nonatomic) NSMutableArray *controlCenterPagesContent;
+//Last position of the scroll of the swipe
+@property (nonatomic, assign) CGFloat lastContentOffset;
 
-- (NSString *)getActivePage;
-
+//Index path of the cell swipe gesture ocured
+@property (nonatomic, strong) NSIndexPath *indexPath;
 
 @end

@@ -1,33 +1,48 @@
 //
-//  CCControlCenterPageContent.m
-//  Nextcloud
+//  CCTransfers.m
+//  Crypto Cloud Technology Nextcloud
 //
-//  Created by Marino Faggiana on 01/03/17.
-//  Copyright © 2017 TWS. All rights reserved.
+//  Created by Marino Faggiana on 12/04/17.
+//  Copyright (c) 2014 TWS. All rights reserved.
+//
+//  Author Marino Faggiana <m.faggiana@twsweb.it>
+//
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#import "CCControlCenterTransfer.h"
+#import "CCTransfers.h"
 
 #import "AppDelegate.h"
 #import "CCMain.h"
 #import "CCDetail.h"
 #import "CCSection.h"
 #import "CCMetadata.h"
-#import "CCControlCenterTransferCell.h"
+#import "CCTransfersCell.h"
 
 #define download 1
 #define downloadwwan 2
 #define upload 3
 #define uploadwwan 4
 
-@interface CCControlCenterTransfer ()
+@interface CCTransfers ()
 {    
     // Datasource
     CCSectionDataSourceMetadata *_sectionDataSource;
 }
 @end
 
-@implementation CCControlCenterTransfer
+@implementation CCTransfers
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Init =====
@@ -39,7 +54,7 @@
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(triggerProgressTask:) name:@"NotificationProgressTask" object:nil];
         
-        app.controlCenterTransfer = self;
+        app.activeTransfers = self;
     }
     return self;
 }
@@ -49,7 +64,7 @@
     [super viewDidLoad];
     
     // Custom Cell
-    [_tableView registerNib:[UINib nibWithNibName:@"CCControlCenterTransferCell" bundle:nil] forCellReuseIdentifier:@"ControlCenterTransferCell"];
+    [_tableView registerNib:[UINib nibWithNibName:@"CCTransfersCell" bundle:nil] forCellReuseIdentifier:@"Cell"];
     
     _tableView.delegate = self;
     _tableView.dataSource = self;
@@ -63,8 +78,10 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    
-    app.controlCenter.labelMessageNoRecord.hidden = YES;
+        
+    // Color
+    [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
+    [CCAspect aspectTabBar:self.tabBarController.tabBar hidden:NO];
 }
 
 // E' arrivato
@@ -104,7 +121,7 @@
     
     if (indexPath && indexPath.row == 0) {
         
-        CCControlCenterTransferCell *cell = (CCControlCenterTransferCell *)[_tableView cellForRowAtIndexPath:indexPath];
+        CCTransfersCell *cell = (CCTransfersCell *)[_tableView cellForRowAtIndexPath:indexPath];
         
         if (cryptated) cell.progressView.progressTintColor = COLOR_CRYPTOCLOUD;
         else cell.progressView.progressTintColor = COLOR_TEXT_ANTHRACITE;
@@ -246,26 +263,10 @@
     if (app.activeAccount.length == 0)
         return;
     
-    if (app.controlCenter.isOpen) {
+    NSArray *recordsTableMetadata = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND ((session CONTAINS 'upload') OR (session CONTAINS 'download' AND (sessionSelector != 'loadPlist')))", app.activeAccount] fieldOrder:@"sessionTaskIdentifier" ascending:YES];
         
-        NSArray *recordsTableMetadata = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND ((session CONTAINS 'upload') OR (session CONTAINS 'download' AND (sessionSelector != 'loadPlist')))", app.activeAccount] fieldOrder:@"sessionTaskIdentifier" ascending:YES];
+    _sectionDataSource  = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:app.listProgressMetadata groupByField:@"session" replaceDateToExifDate:NO activeAccount:app.activeAccount];
         
-        _sectionDataSource  = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:app.listProgressMetadata groupByField:@"session" replaceDateToExifDate:NO activeAccount:app.activeAccount];
-        
-        if ([[app.controlCenter getActivePage] isEqualToString:k_pageControlCenterTransfer]) {
-            
-            if ([_sectionDataSource.allRecordsDataSource count] == 0) {
-                
-                app.controlCenter.labelMessageNoRecord.text = NSLocalizedString(@"_no_transfer_",nil);
-                app.controlCenter.labelMessageNoRecord.hidden = NO;
-            
-            } else {
-            
-                app.controlCenter.labelMessageNoRecord.hidden = YES;
-            }
-        }
-    }
-    
     [_tableView reloadData];
     
     [app updateApplicationIconBadgeNumber];
@@ -476,7 +477,7 @@
     NSString *fileID = [[_sectionDataSource.sectionArrayRow objectForKey:[_sectionDataSource.sections objectAtIndex:indexPath.section]] objectAtIndex:indexPath.row];
     CCMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:fileID];
     
-    CCControlCenterTransferCell *cell = (CCControlCenterTransferCell *)[tableView dequeueReusableCellWithIdentifier:@"ControlCenterTransferCell" forIndexPath:indexPath];
+    CCTransfersCell *cell = (CCTransfersCell *)[tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
     cell.backgroundColor = [UIColor clearColor];
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     

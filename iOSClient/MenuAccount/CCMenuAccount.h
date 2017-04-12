@@ -1,5 +1,5 @@
 //
-//  CCMenu.h
+//  CCMenuAccount.h
 //  Crypto Cloud Technology Nextcloud
 //
 //  Created by Marino Faggiana on 07/04/16.
@@ -67,7 +67,7 @@ typedef struct {
 
 @end
 
-@interface CCMenu : NSObject
+@interface CCMenuAccount : NSObject
 
 + (void)showMenuInView:(UIView *)view fromRect:(CGRect)rect menuItems:(NSArray *)menuItems withOptions:(OptionalConfiguration)options;
 

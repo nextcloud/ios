@@ -33,14 +33,13 @@
 #import "TWMessageBarManager.h"
 #import "CCBKPasscode.h"
 #import "CCUtility.h"
-#import "CCControlCenter.h"
-#import "CCControlCenterTransfer.h"
 #import "CCActivity.h"
 #import "CCDetail.h"
 #import "CCQuickActions.h"
 #import "CCMain.h"
 #import "CCPhotosCameraUpload.h"
 #import "CCSettings.h"
+#import "CCTransfers.h"
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate, BKPasscodeLockScreenManagerDelegate, BKPasscodeViewControllerDelegate, LMMediaPlayerViewDelegate, TWMessageBarStyleSheet, CCNetworkingDelegate>
 
@@ -115,10 +114,6 @@
 @property (nonatomic, strong) REMenuItem *downloadItem;
 @property (nonatomic, strong) REMenuItem *saveItem;
 
-// List Transfert
-@property (nonatomic, retain) CCControlCenter *controlCenter;
-@property (nonatomic, retain) CCControlCenterTransfer *controlCenterTransfer;
-
 // List Change Task
 @property (nonatomic, retain) NSMutableDictionary *listChangeTask;
 
@@ -135,7 +130,7 @@
 @property (nonatomic, retain) CCDetail *activeDetail;
 @property (nonatomic, retain) CCSettings *activeSettings;
 @property (nonatomic, retain) CCActivity *activeActivity;
-
+@property (nonatomic, retain) CCTransfers *activeTransfers;
 
 @property (nonatomic, strong) NSMutableDictionary *listMainVC;
 @property (nonatomic, strong) NSMutableDictionary *listProgressMetadata;

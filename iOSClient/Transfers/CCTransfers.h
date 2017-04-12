@@ -1,8 +1,8 @@
 //
-//  CCControlCenterTransferCell.h
+//  CCTransfers.h
 //  Crypto Cloud Technology Nextcloud
 //
-//  Created by Marino Faggiana on 05/05/15.
+//  Created by Marino Faggiana on 12/04/17.
 //  Copyright (c) 2014 TWS. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
@@ -23,23 +23,10 @@
 
 #import <UIKit/UIKit.h>
 
-@interface CCControlCenterTransferCell : UITableViewCell
+@interface CCTransfers : UIViewController <UITableViewDataSource, UITableViewDelegate>
 
-@property(nonatomic, weak) IBOutlet UIImageView *fileImageView;
-@property(nonatomic, weak) IBOutlet UIImageView *statusImageView;
+@property (nonatomic, weak) IBOutlet UITableView *tableView;
 
-@property(nonatomic, weak) IBOutlet UILabel *labelTitle;
-@property(nonatomic, weak) IBOutlet UILabel *labelInfoFile;
-
-@property(nonatomic, weak) IBOutlet UIProgressView *progressView;
-@property(nonatomic, weak) IBOutlet UIButton *cancelTaskButton;
-@property(nonatomic, weak) IBOutlet UIButton *reloadTaskButton;
-@property(nonatomic, weak) IBOutlet UIButton *stopTaskButton;
-
-//Last position of the scroll of the swipe
-@property (nonatomic, assign) CGFloat lastContentOffset;
-
-//Index path of the cell swipe gesture ocured
-@property (nonatomic, strong) NSIndexPath *indexPath;
+- (void)reloadDatasource;
 
 @end

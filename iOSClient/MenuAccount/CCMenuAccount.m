@@ -1,5 +1,5 @@
 //
-//  CCMenu.h
+//  CCMenuAccount.h
 //  Crypto Cloud Technology Nextcloud
 //
 //  Created by Marino Faggiana on 07/04/16.
@@ -24,7 +24,7 @@
 #import <Foundation/Foundation.h>
 #import <QuartzCore/QuartzCore.h>
 
-#import "CCMenu.h"
+#import "CCMenuAccount.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -283,7 +283,7 @@ typedef enum {
     const CGFloat kMarginX = self.CCMenuViewOptions.marginXSpacing;
     const CGFloat kMarginY = self.CCMenuViewOptions.marginYSpacing;
     
-    UIFont *titleFont = [CCMenu titleFont];
+    UIFont *titleFont = [CCMenuAccount titleFont];
     if (!titleFont) titleFont = [UIFont boldSystemFontOfSize:16];
     
     CGFloat maxImageWidth = 0;
@@ -544,7 +544,7 @@ typedef enum {
     
     CGFloat R1 = R0, G1 = G0, B1 = B0;
     
-    UIColor *tintColor = [CCMenu tintColor];
+    UIColor *tintColor = [CCMenuAccount tintColor];
     if (tintColor) {
         
         CGFloat a;
@@ -677,11 +677,11 @@ typedef enum {
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-static CCMenu *gMenu;
+static CCMenuAccount *gMenu;
 static UIColor *gTintColor;
 static UIFont *gTitleFont;
 
-@implementation CCMenu {
+@implementation CCMenuAccount {
     
     CCMenuView *_menuView;
     BOOL        _observing;
@@ -692,7 +692,7 @@ static UIFont *gTitleFont;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         
-        gMenu = [[CCMenu alloc] init];
+        gMenu = [[CCMenuAccount alloc] init];
     });
     return gMenu;
 }

@@ -475,10 +475,6 @@
 
 - (void)setTitle
 {
-    // PopGesture in progress [swipe gesture to switch between views]
-    if (app.controlCenter.isPopGesture)
-        return;
-
     // Color text self.navigationItem.title
     [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:_isFolderEncrypted online:[app.reachability isReachable] hidden:NO];
 
@@ -3645,7 +3641,6 @@
         
         // Backgroun reMenu (Gesture)
         [_reMenuBackgroundView removeFromSuperview];
-        [app.controlCenter disableSingleFingerTap];
         [_reMenuBackgroundView removeGestureRecognizer:_singleFingerTap];
     }];
 }
@@ -3662,7 +3657,6 @@
         
         // Backgroun reMenu & (Gesture)
         [self createReMenuBackgroundView:app.reMainMenu];
-        [app.controlCenter enableSingleFingerTap:@selector(toggleReMainMenu) target:self];
         _singleFingerTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(toggleReMainMenu)];
         [_reMenuBackgroundView addGestureRecognizer:_singleFingerTap];
     }
@@ -4805,14 +4799,14 @@
     if ([serverUrl isEqualToString:_serverUrl] == NO || _serverUrl == nil) {
         
         if ([selector isEqualToString:selectorDownloadSynchronize]) {
-            [app.controlCenterTransfer reloadDatasource];
+            [app.activeTransfers reloadDatasource];
         } else {
             CCMain *main = [app.listMainVC objectForKey:serverUrl];
             if (main) {
                 [main reloadDatasource];
             } else {
                 [self tableViewReload];
-                [app.controlCenterTransfer reloadDatasource];
+                [app.activeTransfers reloadDatasource];
             }
         }
         
@@ -4822,7 +4816,7 @@
     // Offline folder ?
     _isOfflineServerUrl = [CCCoreData isOfflineDirectoryServerUrl:_serverUrl activeAccount:app.activeAccount];
     
-    [app.controlCenterTransfer reloadDatasource];
+    [app.activeTransfers reloadDatasource];
     
     // Settaggio variabili per le ottimizzazioni
     _directoryGroupBy = [CCUtility getGroupBySettings];
