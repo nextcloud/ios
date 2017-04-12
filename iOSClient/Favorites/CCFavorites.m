@@ -40,6 +40,21 @@
 
 @implementation CCFavorites
 
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Init =====
+#pragma --------------------------------------------------------------------------------------------
+
+- (id)initWithCoder:(NSCoder *)aDecoder
+{
+    if (self = [super initWithCoder:aDecoder])  {
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(triggerProgressTask:) name:@"NotificationProgressTask" object:nil];
+        
+        app.activeFavorites = self;
+    }
+    return self;
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -96,6 +111,17 @@
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
+}
+
+- (void)triggerProgressTask:(NSNotification *)notification
+{
+    NSDictionary *dict = notification.userInfo;
+    float progress = [[dict valueForKey:@"progress"] floatValue];
+    
+    if (progress == 0)
+        [self.navigationController cancelCCProgress];
+    else
+        [self.navigationController setCCProgressPercentage:progress*100 andTintColor:COLOR_NAVIGATIONBAR_PROGRESS];
 }
 
 #pragma --------------------------------------------------------------------------------------------
