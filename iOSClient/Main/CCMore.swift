@@ -177,18 +177,17 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         // Menu External Site
         if (indexPath.section == 1 && self.menuExternalSite != nil) {
             
-            let externalSite : TableExternalSites = self.menuExternalSite![indexPath.row]
-            let url : String = externalSite.url!
+            let url : String? = self.menuExternalSite?[indexPath.row].url
             
             if (self.splitViewController?.isCollapsed)! {
                 
-                let webVC = SwiftWebVC(urlString: url)
+                let webVC = SwiftWebVC(urlString: url!)
                 self.navigationController?.pushViewController(webVC, animated: true)
                 self.navigationController?.navigationBar.isHidden = false
                 
             } else {
                 
-                let webVC = SwiftModalWebVC(urlString: url)
+                let webVC = SwiftModalWebVC(urlString: url!)
                 self.present(webVC, animated: true, completion: nil)
             }
         }
