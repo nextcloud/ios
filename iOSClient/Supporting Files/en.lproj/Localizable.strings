@@ -145,6 +145,7 @@
 "_quota_using_"             = "You are using %@ of %@";
 "_favorite_offline_"        = "Favorites available offline";
 "_favorite_offline_footer_" = "Making all favorites available offline may take a long time with a high memory occupation.";
+"_advanced_"                = "Advanced";
 
 // Manage Camera Upload
 

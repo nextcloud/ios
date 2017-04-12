@@ -1241,8 +1241,12 @@
 - (void)loadTableAutomaticUploadForSelector:(NSString *)selector
 {
     // Only one
-    if ([[self verifyExistsInQueuesUploadSelector:selector] count] > 1)
+    if ([[self verifyExistsInQueuesUploadSelector:selector] count] > 1) {
         return;
+    }
+    
+    // verify Lock pending
+    [self verifyLockTableAutomaticUpload];
     
     // Verify num error if selectorUploadAutomaticAll
     if ([selector isEqualToString:selectorUploadAutomaticAll]) {
@@ -1270,8 +1274,13 @@
 
         if (!result.count) {
             
-            [CCCoreData addActivityClient:metadataNet.fileName fileID:metadataNet.identifier action:k_activityDebugActionUpload selector:selector note:@"Internal error image/video not found" type:k_activityVerboseDefault verbose:k_activityVerboseHigh account:_activeAccount activeUrl:_activeUrl];
-            [CCCoreData unlockTableAutomaticUploadForAccount:_activeAccount identifier:metadataNet.identifier];
+            [CCCoreData addActivityClient:metadataNet.fileName fileID:metadataNet.identifier action:k_activityDebugActionUpload selector:selector note:@"Internal error image/video not found" type:k_activityTypeFailure verbose:k_activityVerboseHigh account:_activeAccount activeUrl:_activeUrl];
+            
+            [CCCoreData deleteTableAutomaticUploadForAccount:_activeAccount identifier:metadataNet.identifier];
+            
+            [self updateApplicationIconBadgeNumber];
+            
+            [self performSelectorOnMainThread:@selector(loadTableAutomaticUploadForSelector:) withObject:selector waitUntilDone:NO];
             
             return;
         }
