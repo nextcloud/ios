@@ -29,6 +29,10 @@ class Constant: NSObject {
         
         // GLOBLE COLOR DEFINE
         
+        static let k_Color_Brand: UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)              // BLU NC : #0082c9
+
+        static let k_Color_Nextcloud: UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)          // BLU NC : #0082c9
+
         static let k_Color_Seperator: UIColor = UIColor(red: 235.0/255.0, green: 235.0/255.0, blue: 235.0/255.0, alpha: 1.0)
         
         static let k_Color_Cryptocloud: UIColor = UIColor(red: 241.0/255.0, green: 90.0/255.0, blue: 34.0/255.0, alpha: 1.0)
@@ -38,7 +42,8 @@ class Constant: NSObject {
         static let k_Color_NavigationBar: UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)      // BLU NC : #0082c9
         
         static let k_Color_NavigationBar_Text: UIColor = UIColor.white
-
+        
+        static let k_Color_GrayMenuMore: UIColor = UIColor(red: 129.0/255.0, green: 129.0/255.0, blue: 129.0/255.0, alpha: 1.0)     // 
         
         // Response searchList
         

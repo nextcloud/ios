@@ -122,6 +122,20 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         cell.imageIcon?.image = UIImage.init(named: self.itemsMenuImage[indexPath.section][indexPath.row])
         cell.labelText?.text = NSLocalizedString(self.itemsMenuLabelText[indexPath.section][indexPath.row], comment: "")
         
+        // Menu Function
+        if (indexPath.section == 0) {
+            cell.labelText.textColor = Constant.GlobalConstants.k_Color_Nextcloud
+        }
+        // Menu External Site
+        if (indexPath.section == 1 && self.menuExternalSite != nil) {
+            
+        }
+        // Menu Settings
+        if ((indexPath.section == 1 && self.menuExternalSite == nil) || (indexPath.section == 2 && self.menuExternalSite != nil)) {
+            cell.labelText.textColor = Constant.GlobalConstants.k_Color_GrayMenuMore
+        }
+        
+        
         return cell
     }
 
