@@ -35,7 +35,7 @@
 #import "CCUtility.h"
 #import "CCControlCenter.h"
 #import "CCControlCenterTransfer.h"
-#import "CCControlCenterActivity.h"
+#import "CCActivity.h"
 #import "CCDetail.h"
 #import "CCQuickActions.h"
 #import "CCMain.h"
@@ -118,7 +118,6 @@
 // List Transfert
 @property (nonatomic, retain) CCControlCenter *controlCenter;
 @property (nonatomic, retain) CCControlCenterTransfer *controlCenterTransfer;
-@property (nonatomic, retain) CCControlCenterActivity *controlCenterActivity;
 
 // List Change Task
 @property (nonatomic, retain) NSMutableDictionary *listChangeTask;
@@ -135,6 +134,8 @@
 @property (nonatomic, strong) CCPhotosCameraUpload *activePhotosCameraUpload;
 @property (nonatomic, retain) CCDetail *activeDetail;
 @property (nonatomic, retain) CCSettings *activeSettings;
+@property (nonatomic, retain) CCActivity *activeActivity;
+
 
 @property (nonatomic, strong) NSMutableDictionary *listMainVC;
 @property (nonatomic, strong) NSMutableDictionary *listProgressMetadata;

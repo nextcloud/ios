@@ -520,6 +520,7 @@
 		F7A321561E9E2A070069AD1B /* CCFavoritesCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A321511E9E2A070069AD1B /* CCFavoritesCell.m */; };
 		F7A321571E9E2A070069AD1B /* CCFavoritesCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7A321521E9E2A070069AD1B /* CCFavoritesCell.xib */; };
 		F7A321581E9E2A070069AD1B /* CCSynchronize.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A321541E9E2A070069AD1B /* CCSynchronize.m */; };
+		F7A321651E9E37960069AD1B /* CCActivity.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A321641E9E37960069AD1B /* CCActivity.m */; };
 		F7B1FBC41E72E3D1001781FE /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7B1FBB11E72E3D1001781FE /* Media.xcassets */; };
 		F7B1FBC61E72E3D1001781FE /* SwiftModalWebVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B1FBBF1E72E3D1001781FE /* SwiftModalWebVC.swift */; };
 		F7B1FBC71E72E3D1001781FE /* SwiftWebVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B1FBC01E72E3D1001781FE /* SwiftWebVC.swift */; };
@@ -1480,6 +1481,8 @@
 		F7A321521E9E2A070069AD1B /* CCFavoritesCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CCFavoritesCell.xib; sourceTree = "<group>"; };
 		F7A321531E9E2A070069AD1B /* CCSynchronize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCSynchronize.h; sourceTree = "<group>"; };
 		F7A321541E9E2A070069AD1B /* CCSynchronize.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCSynchronize.m; sourceTree = "<group>"; };
+		F7A321631E9E37960069AD1B /* CCActivity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCActivity.h; sourceTree = "<group>"; };
+		F7A321641E9E37960069AD1B /* CCActivity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCActivity.m; sourceTree = "<group>"; };
 		F7A54C341C6267B500E2C8BF /* CCExifGeo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCExifGeo.h; sourceTree = "<group>"; };
 		F7A54C351C6267B500E2C8BF /* CCExifGeo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCExifGeo.m; sourceTree = "<group>"; };
 		F7A582D61A24DAB500E903D7 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -2973,6 +2976,15 @@
 			path = Favorites;
 			sourceTree = "<group>";
 		};
+		F7A321621E9E37960069AD1B /* Activity */ = {
+			isa = PBXGroup;
+			children = (
+				F7A321631E9E37960069AD1B /* CCActivity.h */,
+				F7A321641E9E37960069AD1B /* CCActivity.m */,
+			);
+			path = Activity;
+			sourceTree = "<group>";
+		};
 		F7ACE4281BAC0268006C0017 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
@@ -3368,6 +3380,7 @@
 				F7C1CDD91E6DFC6F005D92BE /* Brand */,
 				F70211F31BAC56E9003FC03E /* Main */,
 				F720E02A1E48C74C001A4B9E /* Actions */,
+				F7A321621E9E37960069AD1B /* Activity */,
 				F7ECBA6B1E239DCD003E6328 /* Create */,
 				F7A3214D1E9E2A070069AD1B /* Favorites */,
 				F7E95CEC1AC40BA40060D08E /* FileSystem */,
@@ -4156,6 +4169,7 @@
 				F77B0E121D118A16002130FE /* CCPatenteGuida.m in Sources */,
 				F7B1FBC61E72E3D1001781FE /* SwiftModalWebVC.swift in Sources */,
 				F7D6A0971D82DBFA0045AD1A /* CCMenu.m in Sources */,
+				F7A321651E9E37960069AD1B /* CCActivity.m in Sources */,
 				F77B0E131D118A16002130FE /* AppDelegate.m in Sources */,
 				F750374F1DBFA91A008FB480 /* NSArray+PureLayout.m in Sources */,
 				F7A13A031E7F3D5D00016680 /* CCProgressView.m in Sources */,

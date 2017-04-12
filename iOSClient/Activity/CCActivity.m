@@ -1,12 +1,27 @@
 //
-//  CCControlCenterActivity.m
-//  Nextcloud
+//  CCActivity.m
+//  Crypto Cloud Technology Nextcloud
 //
-//  Created by Marino Faggiana on 01/03/17.
-//  Copyright © 2017 TWS. All rights reserved.
+//  Created by Marino Faggiana on 12/04/17.
+//  Copyright (c) 2014 TWS. All rights reserved.
+//
+//  Author Marino Faggiana <m.faggiana@twsweb.it>
+//
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#import "CCControlCenterActivity.h"
+#import "CCActivity.h"
 
 #import "AppDelegate.h"
 #import "CCSection.h"
@@ -17,7 +32,7 @@
 
 #define daysOfActivity  7
 
-@interface CCControlCenterActivity ()
+@interface CCActivity ()
 {
     BOOL _verbose;
 
@@ -26,7 +41,7 @@
 }
 @end
 
-@implementation CCControlCenterActivity
+@implementation CCActivity
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Init =====
@@ -36,6 +51,7 @@
 {
     if (self = [super initWithCoder:aDecoder])  {
         
+        app.activeActivity = self;
     }
     return self;
 }
@@ -48,6 +64,8 @@
     
     _sectionDataSource = [NSArray new];
     
+    self.title = NSLocalizedString(@"_activity_", nil);
+    
     [self reloadDatasource];
 }
 
@@ -58,7 +76,9 @@
     
     _verbose = [CCUtility getActivityVerboseHigh];
     
-    app.controlCenter.labelMessageNoRecord.hidden = YES;
+    // Color
+    [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
+    [CCAspect aspectTabBar:self.tabBarController.tabBar hidden:NO];
 }
 
 // E' arrivato
@@ -84,21 +104,18 @@
     if (app.activeAccount.length == 0)
         return;
     
-    if (app.controlCenter.isOpen) {
+    NSPredicate *predicate;
         
-        NSPredicate *predicate;
+    NSDate *sixDaysAgo = [[NSCalendar currentCalendar] dateByAddingUnit:NSCalendarUnitDay value:-daysOfActivity toDate:[NSDate date] options:0];
         
-        NSDate *sixDaysAgo = [[NSCalendar currentCalendar] dateByAddingUnit:NSCalendarUnitDay value:-daysOfActivity toDate:[NSDate date] options:0];
-        
-        if (_verbose)
-            predicate = [NSPredicate predicateWithFormat:@"((account == %@) || (account == '')) AND (date > %@)", app.activeAccount, sixDaysAgo];
-        else
-            predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (verbose == %lu) AND (date > %@)", app.activeAccount, k_activityVerboseDefault, sixDaysAgo];
+    if (_verbose)
+        predicate = [NSPredicate predicateWithFormat:@"((account == %@) || (account == '')) AND (date > %@)", app.activeAccount, sixDaysAgo];
+    else
+        predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (verbose == %lu) AND (date > %@)", app.activeAccount, k_activityVerboseDefault, sixDaysAgo];
 
-        _sectionDataSource = [CCCoreData getAllTableActivityWithPredicate: predicate];
+    _sectionDataSource = [CCCoreData getAllTableActivityWithPredicate: predicate];
         
-        [self reloadCollection];
-    }
+    [self reloadCollection];
 }
 
 - (void)reloadCollection
@@ -107,12 +124,10 @@
     
     if ([_sectionDataSource count] == 0) {
             
-        app.controlCenter.labelMessageNoRecord.text = NSLocalizedString(@"_no_activity_",nil);
-        app.controlCenter.labelMessageNoRecord.hidden = NO;
+        
             
     } else {
             
-        app.controlCenter.labelMessageNoRecord.hidden = YES;
         dateActivity = ((TableActivity *)[_sectionDataSource objectAtIndex:0]).date;
     }
 
@@ -252,7 +267,7 @@
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"cell" forIndexPath:indexPath];
-    cell.backgroundColor = [UIColor clearColor];
+    //cell.backgroundColor = [UIColor clearColor];
     UIImageView *imageView = (UIImageView *)[cell viewWithTag:104];
 
     TableActivity *activity = [_sectionDataSource objectAtIndex:indexPath.section];
@@ -275,9 +290,7 @@
         
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
             
-            [app.activeMain performSegueWithIdentifier:@"segueDetail" sender:metadata];
-            
-            [app.controlCenter closeControlCenter];
+            [app.activeMain performSegueWithIdentifier:@"segueDetail" sender:metadata];            
         });
         
     } else {

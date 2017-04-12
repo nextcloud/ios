@@ -58,7 +58,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="wVn-RD-GD2" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="11260" y="1218"/>
+            <point key="canvasLocation" x="12524" y="1218"/>
         </scene>
         <!--More-->
         <scene sceneID="Mdr-ch-zRI">
@@ -341,7 +341,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="TUv-7S-62D" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="11260" y="3024"/>
+            <point key="canvasLocation" x="12511" y="3246"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="eDq-6m-h8d">
@@ -360,7 +360,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="38M-dR-dlY" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="11260" y="2254"/>
+            <point key="canvasLocation" x="12511" y="2476"/>
         </scene>
         <!--Manage Account-->
         <scene sceneID="OhO-6f-Vhc">
@@ -380,7 +380,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="EDa-LU-0rn" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="13332" y="2254"/>
+            <point key="canvasLocation" x="14583" y="2476"/>
         </scene>
         <!--Manage Crypto Cloud-->
         <scene sceneID="cbW-au-eCe">
@@ -400,7 +400,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ksn-Ew-8Z0" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="12631" y="2250"/>
+            <point key="canvasLocation" x="13881" y="2472"/>
         </scene>
         <!--Manage Camera Upload-->
         <scene sceneID="YAa-hT-VHe">
@@ -420,7 +420,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="g5a-uE-sF6" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="11932" y="2254"/>
+            <point key="canvasLocation" x="13183" y="2476"/>
         </scene>
         <!--Manage Optimizations-->
         <scene sceneID="dOW-Mw-bEM">
@@ -440,7 +440,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="0UA-CF-A4C" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="9895" y="2254"/>
+            <point key="canvasLocation" x="11145" y="2476"/>
         </scene>
         <!--Main Tab Bar Controller-->
         <scene sceneID="gY3-Ur-rTC">
@@ -676,7 +676,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="2YG-G9-yyB" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="10615" y="2254"/>
+            <point key="canvasLocation" x="11865" y="2476"/>
         </scene>
         <!--Manage Help-->
         <scene sceneID="Kwp-bi-zU9">
@@ -696,7 +696,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="oeH-9e-IVz" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="9212" y="2251"/>
+            <point key="canvasLocation" x="10463" y="2472"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="cip-AF-Ks2">
@@ -732,6 +732,7 @@
                         <segue destination="9DM-ts-oJu" kind="relationship" relationship="rootViewController" id="KD8-1A-v76"/>
                         <segue destination="amx-XG-NId" kind="show" identifier="segueSettings" id="iJw-qx-dwJ"/>
                         <segue destination="o4I-W3-sMH" kind="show" identifier="segueLocalStorage" id="iz8-HB-F2p"/>
+                        <segue destination="QIL-R2-8iE" kind="show" identifier="segueActivity" id="dwq-EG-6sD"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="D7n-Z1-9wU" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -771,6 +772,103 @@
             </objects>
             <point key="canvasLocation" x="9849" y="1218"/>
         </scene>
+        <!--Activity-->
+        <scene sceneID="Mfj-Rm-dhR">
+            <objects>
+                <collectionViewController storyboardIdentifier="CCActivity" id="QIL-R2-8iE" customClass="CCActivity" sceneMemberID="viewController">
+                    <collectionView key="view" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" dataMode="prototypes" id="KRS-wA-Hbs">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="iB1-bP-HYQ">
+                            <size key="itemSize" width="40" height="40"/>
+                            <size key="headerReferenceSize" width="50" height="92"/>
+                            <size key="footerReferenceSize" width="50" height="5"/>
+                            <inset key="sectionInset" minX="48" minY="5" maxX="0.0" maxY="0.0"/>
+                        </collectionViewFlowLayout>
+                        <cells>
+                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="cell" id="PlB-7F-7NQ">
+                                <rect key="frame" x="48" y="97" width="40" height="40"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                                    <rect key="frame" x="0.0" y="0.0" width="40" height="40"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <imageView opaque="NO" userInteractionEnabled="NO" tag="104" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="xxE-ZN-5bC">
+                                            <rect key="frame" x="0.0" y="0.0" width="40" height="40"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                        </imageView>
+                                    </subviews>
+                                </view>
+                            </collectionViewCell>
+                        </cells>
+                        <collectionReusableView key="sectionHeaderView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="header" id="c6C-th-mGd">
+                            <rect key="frame" x="0.0" y="0.0" width="375" height="92"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <subviews>
+                                <label opaque="NO" userInteractionEnabled="NO" tag="100" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="wordWrap" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zFm-yb-x7l">
+                                    <rect key="frame" x="48" y="8" width="319" height="20"/>
+                                    <constraints>
+                                        <constraint firstAttribute="height" constant="20" id="Qjl-qZ-jEg"/>
+                                    </constraints>
+                                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                    <nil key="textColor"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                                <label opaque="NO" userInteractionEnabled="NO" tag="101" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qcm-XY-Fpz">
+                                    <rect key="frame" x="48" y="33" width="319" height="20"/>
+                                    <constraints>
+                                        <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="20" id="TWj-kc-Si2"/>
+                                    </constraints>
+                                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                    <nil key="textColor"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                                <imageView userInteractionEnabled="NO" tag="103" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="TlA-sj-tgw">
+                                    <rect key="frame" x="8" y="33" width="30" height="30"/>
+                                    <constraints>
+                                        <constraint firstAttribute="height" constant="30" id="Ucg-P7-bvA"/>
+                                        <constraint firstAttribute="width" constant="30" id="vQc-T5-kTd"/>
+                                    </constraints>
+                                </imageView>
+                                <label opaque="NO" userInteractionEnabled="NO" tag="102" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Bo6-HW-PJo">
+                                    <rect key="frame" x="48" y="58" width="319" height="20"/>
+                                    <constraints>
+                                        <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="20" id="UM4-6y-8gx"/>
+                                    </constraints>
+                                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                    <nil key="textColor"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                            </subviews>
+                            <constraints>
+                                <constraint firstItem="zFm-yb-x7l" firstAttribute="trailing" secondItem="c6C-th-mGd" secondAttribute="trailingMargin" id="2Sc-H6-mz5"/>
+                                <constraint firstItem="qcm-XY-Fpz" firstAttribute="leading" secondItem="TlA-sj-tgw" secondAttribute="trailing" constant="10" id="6gb-jH-Jmp"/>
+                                <constraint firstItem="qcm-XY-Fpz" firstAttribute="trailing" secondItem="c6C-th-mGd" secondAttribute="trailingMargin" id="7s9-8J-8R5"/>
+                                <constraint firstItem="Bo6-HW-PJo" firstAttribute="top" secondItem="qcm-XY-Fpz" secondAttribute="bottom" constant="5" id="L4Z-x4-vef"/>
+                                <constraint firstItem="zFm-yb-x7l" firstAttribute="leading" secondItem="c6C-th-mGd" secondAttribute="leadingMargin" constant="40" id="Soc-qb-NoL"/>
+                                <constraint firstItem="Bo6-HW-PJo" firstAttribute="leading" secondItem="TlA-sj-tgw" secondAttribute="trailing" constant="10" id="Va6-nO-ZSm"/>
+                                <constraint firstItem="zFm-yb-x7l" firstAttribute="top" secondItem="c6C-th-mGd" secondAttribute="topMargin" id="YKi-3E-K3q"/>
+                                <constraint firstItem="Bo6-HW-PJo" firstAttribute="trailing" secondItem="c6C-th-mGd" secondAttribute="trailingMargin" id="avJ-9r-HJf"/>
+                                <constraint firstItem="TlA-sj-tgw" firstAttribute="leading" secondItem="c6C-th-mGd" secondAttribute="leadingMargin" id="mE0-4V-fsK"/>
+                                <constraint firstItem="TlA-sj-tgw" firstAttribute="top" secondItem="c6C-th-mGd" secondAttribute="topMargin" constant="25" id="qnN-Bw-afg"/>
+                                <constraint firstItem="qcm-XY-Fpz" firstAttribute="top" secondItem="zFm-yb-x7l" secondAttribute="bottom" constant="5" id="sMO-xL-xdp"/>
+                            </constraints>
+                        </collectionReusableView>
+                        <collectionReusableView key="sectionFooterView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="footer" id="nhY-ro-z91">
+                            <rect key="frame" x="0.0" y="137" width="375" height="5"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        </collectionReusableView>
+                        <connections>
+                            <outlet property="dataSource" destination="QIL-R2-8iE" id="Zgp-JD-dSD"/>
+                            <outlet property="delegate" destination="QIL-R2-8iE" id="27o-gc-9d0"/>
+                        </connections>
+                    </collectionView>
+                </collectionViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="BFK-QR-oce" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="10503" y="1218"/>
+        </scene>
     </scenes>
     <resources>
         <image name="Plus" width="40" height="40"/>
@@ -783,6 +881,6 @@
         <image name="tabBarPhotos" width="25" height="21"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="45n-bF-9RO"/>
+        <segue reference="1IV-5w-SfJ"/>
     </inferredMetricsTieBreakers>
 </document>

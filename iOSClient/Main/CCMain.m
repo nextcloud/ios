@@ -1063,7 +1063,7 @@
         [CCCoreData addActivityServer:activity account:app.activeAccount];
     
     // Reload Activity Data Source
-    [app.controlCenterActivity reloadDatasource];
+    [app.activeActivity reloadDatasource];
 }
 
 - (void)getActivityServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode

@@ -305,7 +305,6 @@
             _isOpen = YES;
 
             [app.controlCenterTransfer reloadDatasource];
-            [app.controlCenterActivity reloadDatasource];
         }
         
     } else {

@@ -130,7 +130,7 @@
         }
         
         // Clear Date read Activity for force reload datasource
-        app.controlCenterActivity.storeDateFirstActivity = nil;
+        app.activeActivity.storeDateFirstActivity = nil;
     }
 }
 
@@ -253,7 +253,7 @@
     
     [CCCoreData flushTableActivityAccount:app.activeAccount];
     
-    [app.controlCenterActivity reloadDatasource];
+    [app.activeActivity reloadDatasource];
 }
 
 @end

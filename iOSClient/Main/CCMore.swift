@@ -131,6 +131,9 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         // Menu Function
         if (indexPath.section == 0) {
             
+            if (indexPath.row == 1) {
+                self.navigationController?.performSegue(withIdentifier: "segueActivity", sender: self)
+            }
             if (indexPath.row == 2) {
                 self.navigationController?.performSegue(withIdentifier: "segueLocalStorage", sender: self)
             }
