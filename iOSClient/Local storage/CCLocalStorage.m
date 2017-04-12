@@ -34,7 +34,6 @@
 @interface CCLocalStorage ()
 {
     NSArray *dataSource;
-    BOOL _reloadDataSource;
 }
 @end
 
@@ -59,7 +58,9 @@
     self.tableView.emptyDataSetSource = self;
     self.tableView.allowsMultipleSelectionDuringEditing = NO;
     
-    _serverUrl = [CCUtility getDirectoryLocal];
+    // ServerUrl
+    if (!_serverUrl)
+        _serverUrl = [CCUtility getDirectoryLocal];
     
     // Title
     if (_titleViewControl)
@@ -384,7 +385,6 @@
     NSString *cameraFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:app.activeAccount activeUrl:app.activeUrl];
         
     return [CCUtility insertFileSystemInMetadata:[dataSource objectAtIndex:indexPath.row] directory:_serverUrl activeAccount:app.activeAccount cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath];
-    
 }
 
 - (void)readFolderWithForced:(BOOL)forced serverUrl:(NSString *)serverUrl
@@ -492,18 +492,10 @@
         if ([metadata.type isEqualToString: k_metadataType_template])
             cell.labelInfoFile.text = [NSString stringWithFormat:@"%@", date];
         
-        if ([metadata.type isEqualToString: k_metadataType_file] || [metadata.type isEqualToString: k_metadataType_local]) {
-            
-            BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", _serverUrl, metadata.fileName]];
-            
-            if (fileExists)
-                cell.labelInfoFile.text = [NSString stringWithFormat:@"%@ • %@", date, length];
-            else
-                cell.labelInfoFile.text = [NSString stringWithFormat:@"%@ ◦ %@", date, length];
-        }
+        if ([metadata.type isEqualToString: k_metadataType_file] || [metadata.type isEqualToString: k_metadataType_local])
+            cell.labelInfoFile.text = [NSString stringWithFormat:@"%@ • %@", date, length];
         
         cell.accessoryType = UITableViewCellAccessoryNone;
-        
     }
     
     return cell;
@@ -601,7 +593,6 @@
     _detailViewController.isCameraUpload = NO;
     _detailViewController.dataSourceImagesVideos = allRecordsDataSourceImagesVideos;
 
-    
     [_detailViewController setTitle:_metadata.fileNamePrint];
 }
 
