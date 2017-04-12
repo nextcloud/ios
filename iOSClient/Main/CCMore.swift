@@ -33,13 +33,10 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     @IBOutlet weak var labelQuota: UILabel!
     @IBOutlet weak var progressQuota: UIProgressView!
 
-    var normalMenu: [OCExternalSites]!
-    var settingsMenu: [OCExternalSites]!
-    var quotaMenu: [OCExternalSites]!
-    
-    let itemsMenuLabelText = [["_transfers_","_activity_","_local_storage_"], ["_settings_"]]
-    let itemsMenuImage = [["moreTransfers","moreActivity","moreLocalStorage"], ["moreSettings"]]
-    
+    var functionMenu = [OCExternalSites]()
+    var settingsMenu = [OCExternalSites]()
+    var quotaMenu = [OCExternalSites]()
+
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
     var menuExternalSite: [TableExternalSites]?
@@ -57,8 +54,57 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     override func viewWillAppear(_ animated: Bool) {
         
+        // Clear Menu
+        functionMenu.removeAll()
+        settingsMenu.removeAll()
+        quotaMenu.removeAll()
+        
+        // Internal
+        var item = OCExternalSites.init()
+        item.name = "_transfers_"
+        item.icon = "moreTransfers"
+        item.url = "segueTransfers"
+        functionMenu.append(item)
+        
+        item = OCExternalSites.init()
+        item.name = "_activity_"
+        item.icon = "moreActivity"
+        item.url = "segueActivity"
+        functionMenu.append(item)
+        
+        item = OCExternalSites.init()
+        item.name = "_local_storage_"
+        item.icon = "moreLocalStorage"
+        item.url = "segueLocalStorage"
+        functionMenu.append(item)
+        
+        item = OCExternalSites.init()
+        item.name = "_settings_"
+        item.icon = "moreSettings"
+        item.url = "segueSettings"
+        settingsMenu.append(item)
+
+        // External 
         self.menuExternalSite = CCCoreData.getAllTableExternalSites(with:  NSPredicate(format: "(account == '\(appDelegate.activeAccount!)')")) as? [TableExternalSites]
         
+        for table in self.menuExternalSite! {
+            
+            item = OCExternalSites.init()
+            
+            item.name = table.name
+            item.url = table.url
+            item.icon = table.icon
+            
+            if (table.type == "link") {
+                functionMenu.append(item)
+            }
+            if (table.type == "settings") {
+                settingsMenu.append(item)
+            }
+            if (table.type == "quota") {
+                quotaMenu.append(item)
+            }
+        }
         
         self.tableAccont = CCCoreData.getActiveAccount()
         if (self.tableAccont != nil) {
@@ -93,11 +139,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     func numberOfSections(in tableView: UITableView) -> Int {
         
-        if (self.menuExternalSite == nil) {
-            return 2
-        } else {
-            return 3
-        }
+        return 2
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
@@ -111,20 +153,18 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-        // Menu Function
+        var cont = 0
+        
+        // Menu Normal
         if (section == 0) {
-            return self.itemsMenuLabelText[0].count
-        }
-        // Menu External Site
-        if (section == 1 && self.menuExternalSite != nil) {
-            return (self.menuExternalSite?.count)!
+            cont = functionMenu.count
         }
         // Menu Settings
-        if ((section == 1 && self.menuExternalSite == nil) || (section == 2 && self.menuExternalSite != nil)) {
-            return self.itemsMenuLabelText[1].count
+        if (section == 1) {
+            cont = settingsMenu.count
         }
         
-        return 0
+        return cont
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -136,26 +176,23 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         selectionColor.backgroundColor = Constant.GlobalConstants.k_Color_SelectBackgrond
         cell.selectedBackgroundView = selectionColor
         
-        // Menu Function
+        // Menu Normal
         if (indexPath.section == 0) {
             
-            cell.imageIcon?.image = UIImage.init(named: self.itemsMenuImage[0][indexPath.row])
-            cell.labelText?.text = NSLocalizedString(self.itemsMenuLabelText[0][indexPath.row], comment: "")
-            cell.labelText.textColor = Constant.GlobalConstants.k_Color_Nextcloud
-        }
-        // Menu External Site
-        if (indexPath.section == 1 && self.menuExternalSite != nil) {
+            let item = functionMenu[indexPath.row]
             
-            cell.imageIcon?.image = UIImage.init(named: "moreExternalSite")
-            let externalSite : TableExternalSites = self.menuExternalSite![indexPath.row]
-            cell.labelText?.text = externalSite.name
-            cell.labelText.textColor = .black
+            cell.imageIcon?.image = UIImage.init(named: item.icon)
+            cell.labelText?.text = NSLocalizedString(item.name, comment: "")
+            cell.labelText.textColor = Constant.GlobalConstants.k_Color_Nextcloud
+
         }
         // Menu Settings
-        if ((indexPath.section == 1 && self.menuExternalSite == nil) || (indexPath.section == 2 && self.menuExternalSite != nil)) {
+        if (indexPath.section == 1) {
             
-            cell.imageIcon?.image = UIImage.init(named: self.itemsMenuImage[1][indexPath.row])
-            cell.labelText?.text = NSLocalizedString(self.itemsMenuLabelText[1][indexPath.row], comment: "")
+            let item = settingsMenu[indexPath.row]
+            
+            cell.imageIcon?.image = UIImage.init(named: item.icon)
+            cell.labelText?.text = NSLocalizedString(item.name, comment: "")
             cell.labelText.textColor = Constant.GlobalConstants.k_Color_GrayMenuMore
         }
         
@@ -165,44 +202,39 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     // method to run when table view cell is tapped
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
+        var item: OCExternalSites = OCExternalSites.init()
+        
         // Menu Function
         if (indexPath.section == 0) {
             
-            if (indexPath.row == 0) {
-                self.navigationController?.performSegue(withIdentifier: "segueTransfers", sender: self)
-            }
-            if (indexPath.row == 1) {
-                self.navigationController?.performSegue(withIdentifier: "segueActivity", sender: self)
-            }
-            if (indexPath.row == 2) {
-                self.navigationController?.performSegue(withIdentifier: "segueLocalStorage", sender: self)
-            }
+            item = functionMenu[indexPath.row]
         }
         
-        // Menu External Site
-        if (indexPath.section == 1 && self.menuExternalSite != nil) {
+        // Menu Settings
+        if (indexPath.section == 1) {
             
-            let url : String? = self.menuExternalSite?[indexPath.row].url
+            item = settingsMenu[indexPath.row]
+        }
+        
+        if (item.url.contains("segue")) {
+            
+            self.navigationController?.performSegue(withIdentifier: item.url, sender: self)
+        }
+        
+        if (item.url.contains("//")) {
             
             if (self.splitViewController?.isCollapsed)! {
                 
-                let webVC = SwiftWebVC(urlString: url!)
+                let webVC = SwiftWebVC(urlString: item.url)
                 self.navigationController?.pushViewController(webVC, animated: true)
                 self.navigationController?.navigationBar.isHidden = false
                 
             } else {
                 
-                let webVC = SwiftModalWebVC(urlString: url!)
+                let webVC = SwiftModalWebVC(urlString: item.url)
                 self.present(webVC, animated: true, completion: nil)
             }
-        }
-        
-        // Menu Settings
-        if ((indexPath.section == 1 && self.menuExternalSite == nil) || (indexPath.section == 2 && self.menuExternalSite != nil)) {
-            
-            if (indexPath.row == 0) {
-                self.navigationController?.performSegue(withIdentifier: "segueSettings", sender: self)
-            }
+
         }
     }
 }
