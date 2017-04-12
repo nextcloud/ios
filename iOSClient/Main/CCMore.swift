@@ -106,7 +106,20 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-        return self.itemsMenuLabelText[section].count
+        // Menu Function
+        if (section == 0) {
+            return self.itemsMenuLabelText[0].count
+        }
+        // Menu External Site
+        if (section == 1 && self.menuExternalSite != nil) {
+            return (self.menuExternalSite?.count)!
+        }
+        // Menu Settings
+        if ((section == 1 && self.menuExternalSite == nil) || (section == 2 && self.menuExternalSite != nil)) {
+            return self.itemsMenuLabelText[1].count
+        }
+        
+        return 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -118,23 +131,28 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         selectionColor.backgroundColor = Constant.GlobalConstants.k_Color_SelectBackgrond
         cell.selectedBackgroundView = selectionColor
         
-        // data
-        cell.imageIcon?.image = UIImage.init(named: self.itemsMenuImage[indexPath.section][indexPath.row])
-        cell.labelText?.text = NSLocalizedString(self.itemsMenuLabelText[indexPath.section][indexPath.row], comment: "")
-        
         // Menu Function
         if (indexPath.section == 0) {
+            
+            cell.imageIcon?.image = UIImage.init(named: self.itemsMenuImage[0][indexPath.row])
+            cell.labelText?.text = NSLocalizedString(self.itemsMenuLabelText[0][indexPath.row], comment: "")
             cell.labelText.textColor = Constant.GlobalConstants.k_Color_Nextcloud
         }
         // Menu External Site
         if (indexPath.section == 1 && self.menuExternalSite != nil) {
             
+            cell.imageIcon?.image = UIImage.init(named: "moreExternalSite")
+            let externalSite : TableExternalSites = self.menuExternalSite![indexPath.row]
+            cell.labelText?.text = externalSite.name
+            cell.labelText.textColor = .black
         }
         // Menu Settings
         if ((indexPath.section == 1 && self.menuExternalSite == nil) || (indexPath.section == 2 && self.menuExternalSite != nil)) {
+            
+            cell.imageIcon?.image = UIImage.init(named: self.itemsMenuImage[1][indexPath.row])
+            cell.labelText?.text = NSLocalizedString(self.itemsMenuLabelText[1][indexPath.row], comment: "")
             cell.labelText.textColor = Constant.GlobalConstants.k_Color_GrayMenuMore
         }
-        
         
         return cell
     }
@@ -159,6 +177,20 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         // Menu External Site
         if (indexPath.section == 1 && self.menuExternalSite != nil) {
             
+            let externalSite : TableExternalSites = self.menuExternalSite![indexPath.row]
+            let url : String = externalSite.url!
+            
+            if (self.splitViewController?.isCollapsed)! {
+                
+                let webVC = SwiftWebVC(urlString: url)
+                self.navigationController?.pushViewController(webVC, animated: true)
+                self.navigationController?.navigationBar.isHidden = false
+                
+            } else {
+                
+                let webVC = SwiftModalWebVC(urlString: url)
+                self.present(webVC, animated: true, completion: nil)
+            }
         }
         
         // Menu Settings

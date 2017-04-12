@@ -3209,72 +3209,6 @@
     if (app.reSelectMenu.isOpen || app.reMainMenu.isOpen)
         return;
     
-    NSMutableArray *menuArray = [NSMutableArray new];
-    
-    NSArray *externalSites = [CCCoreData getAllTableExternalSitesWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@)", app.activeAccount]];
-    
-    // External Sites Present
-    
-    if([externalSites count] > 0) {
-        
-        CCMenuItem *item;
-        
-        for (TableExternalSites *tableExternalSites in externalSites) {
-            
-            // NSString *currentLanguageiOS = [[NSLocale preferredLanguages] objectAtIndex:0];
-            
-            // Verify lang
-            //if ([tableExternalSites.lang isEqualToString:@""] || [tableExternalSites.lang isEqualToString:currentLanguageiOS]) {
-            
-                item = [CCMenuItem new];
-                
-                item.title = tableExternalSites.name;
-                item.image = [UIImage imageNamed:image_MenuExternalSites];
-                item.target = self;
-                item.action = @selector(goToWebVC:);
-                item.argument = tableExternalSites.url;
-                [menuArray addObject:item];
-            //}
-        }
-        
-        if ([menuArray count] > 0) {
-            
-            OptionalConfiguration options;
-            Color textColor, backgroundColor;
-            
-            textColor.R = 0;
-            textColor.G = 0;
-            textColor.B = 0;
-            
-            backgroundColor.R = 1;
-            backgroundColor.G = 1;
-            backgroundColor.B = 1;
-            
-            NSInteger originY = 60;
-            
-            options.arrowSize = 9;
-            options.marginXSpacing = 7;
-            options.marginYSpacing = 10;
-            options.intervalSpacing = 20;
-            options.menuCornerRadius = 6.5;
-            options.maskToBackground = NO;
-            options.shadowOfMenu = YES;
-            options.hasSeperatorLine = YES;
-            options.seperatorLineHasInsets = YES;
-            options.textColor = textColor;
-            options.menuBackgroundColor = backgroundColor;
-            
-            CGRect rect = self.view.frame;
-            rect.origin.y = rect.origin.y + originY;
-            rect.size.height = rect.size.height - originY;
-            
-            [CCMenuAccount setTitleFont:[UIFont systemFontOfSize:12.0]];
-            [CCMenuAccount showMenuInView:self.navigationController.view fromRect:rect menuItems:menuArray withOptions:options];
-        }
-        
-        return;
-    }
-
 #ifndef OPTION_MULTIUSER_DISABLE
     
     if ([app.netQueue operationCount] > 0 || [app.netQueueDownload operationCount] > 0 || [app.netQueueDownloadWWan operationCount] > 0 || [app.netQueueUpload operationCount] > 0 || [app.netQueueUploadWWan operationCount] > 0 || [CCCoreData countTableAutomaticUploadForAccount:app.activeAccount selector:nil] > 0) {
@@ -3284,7 +3218,7 @@
     }
     
     NSArray *listTableAccount = [CCCoreData getAllTableAccount];
-   
+    NSMutableArray *menuArray = [NSMutableArray new];
     
     for (TableAccount *record in listTableAccount) {
      
@@ -3358,20 +3292,6 @@
         
         [_ImageTitleHomeCryptoCloud setUserInteractionEnabled:YES];
     });
-}
-
-- (void)goToWebVC:(CCMenuItem *)sender
-{
-    if (self.splitViewController.isCollapsed) {
-        
-        SwiftWebVC *webVC = [[SwiftWebVC alloc] initWithUrlString:sender.argument];
-        [self.navigationController pushViewController:webVC animated:YES];
-        
-    } else {
-        
-        SwiftModalWebVC *webVC = [[SwiftModalWebVC alloc] initWithUrlString:sender.argument];
-        [self presentViewController:webVC animated:YES completion:nil];
-    }
 }
 
 #pragma --------------------------------------------------------------------------------------------
