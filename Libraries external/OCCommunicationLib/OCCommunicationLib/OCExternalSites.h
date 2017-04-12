@@ -30,5 +30,7 @@
 @property (nonatomic, strong) NSString *url;
 @property (nonatomic, strong) NSString *lang;
 @property (nonatomic, strong) NSString *icon;
+@property (nonatomic, strong) NSString *type;
+
 
 @end

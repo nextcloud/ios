@@ -20,5 +20,6 @@
 @dynamic url;
 @dynamic lang;
 @dynamic icon;
+@dynamic type;
 
 @end

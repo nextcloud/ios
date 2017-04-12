@@ -36,6 +36,7 @@
         self.url = @"";
         self.lang = @"";
         self.icon = @"";
+        self.type = @"";
     }
     
     return self;

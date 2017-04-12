@@ -1680,6 +1680,7 @@
                     if ([data valueForKey:@"lang"] && ![[data valueForKey:@"lang"] isEqual:[NSNull null]]) externalSites.lang = [data valueForKey:@"lang"];
                     if ([data valueForKey:@"name"] && ![[data valueForKey:@"name"] isEqual:[NSNull null]]) externalSites.name = [data valueForKey:@"name"];
                     if ([data valueForKey:@"url"]  && ![[data valueForKey:@"url"]  isEqual:[NSNull null]]) externalSites.url  = [data valueForKey:@"url"];
+                    if ([data valueForKey:@"type"] && ![[data valueForKey:@"type"] isEqual:[NSNull null]]) externalSites.type = [data valueForKey:@"type"];
                     
                     [listOfExternalSites addObject:externalSites];
                 }

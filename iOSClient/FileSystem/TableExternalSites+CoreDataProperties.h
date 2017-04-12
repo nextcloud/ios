@@ -21,6 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nullable, nonatomic, copy) NSString *url;
 @property (nullable, nonatomic, copy) NSString *lang;
 @property (nullable, nonatomic, copy) NSString *icon;
+@property (nullable, nonatomic, copy) NSString *type;
 
 @end
 

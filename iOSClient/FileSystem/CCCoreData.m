@@ -1977,6 +1977,7 @@
         record.lang = externalSites.lang;
         record.name = externalSites.name;
         record.url = externalSites.url;
+        record.type = externalSites.type;
     }];
 }
 

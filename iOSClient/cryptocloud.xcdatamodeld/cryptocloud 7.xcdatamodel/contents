@@ -85,6 +85,7 @@
         <attribute name="idExternalSite" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="lang" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="type" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="url" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
     <entity name="TableGPS" representedClassName="TableGPS" syncable="YES">
@@ -157,7 +158,7 @@
         <element name="TableAutomaticUpload" positionX="-6597" positionY="801" width="128" height="195"/>
         <element name="TableCertificates" positionX="-6597" positionY="711" width="128" height="60"/>
         <element name="TableDirectory" positionX="-6372" positionY="111" width="162" height="210"/>
-        <element name="TableExternalSites" positionX="-6399" positionY="252" width="128" height="135"/>
+        <element name="TableExternalSites" positionX="-6399" positionY="252" width="128" height="150"/>
         <element name="TableGPS" positionX="-6597" positionY="990" width="128" height="165"/>
         <element name="TableLocalFile" positionX="-6138" positionY="111" width="162" height="225"/>
         <element name="TableMetadata" positionX="-6138" positionY="402" width="162" height="510"/>
