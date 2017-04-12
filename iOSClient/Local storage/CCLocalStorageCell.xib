@@ -16,7 +16,7 @@
             <rect key="frame" x="0.0" y="0.0" width="600" height="60"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxY="YES"/>
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="2" id="sQq-jC-UEV">
-                <rect key="frame" x="0.0" y="0.0" width="600" height="60"/>
+                <rect key="frame" x="0.0" y="0.0" width="600" height="59.5"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <label opaque="NO" userInteractionEnabled="NO" tag="101" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QNC-8X-DAC">
@@ -44,7 +44,7 @@
                         <color key="backgroundColor" red="0.66666666669999997" green="0.66666666669999997" blue="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </view>
                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="5">
-                        <rect key="frame" x="8" y="10" width="40" height="40"/>
+                        <rect key="frame" x="10" y="10" width="40" height="40"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="40" id="7r4-ao-ayY"/>
                             <constraint firstAttribute="height" constant="40" id="cGI-9B-eWe"/>
@@ -59,7 +59,7 @@
                     <constraint firstItem="p7I-KN-FVZ" firstAttribute="leading" secondItem="hzp-7C-oyF" secondAttribute="trailing" constant="8" id="Suy-Ng-4df"/>
                     <constraint firstItem="QNC-8X-DAC" firstAttribute="top" secondItem="sQq-jC-UEV" secondAttribute="topMargin" constant="5" id="Wks-nJ-JjF"/>
                     <constraint firstItem="hzp-7C-oyF" firstAttribute="leading" secondItem="sQq-jC-UEV" secondAttribute="leading" id="YSP-Om-gqC"/>
-                    <constraint firstItem="5" firstAttribute="leading" secondItem="sQq-jC-UEV" secondAttribute="leadingMargin" id="asm-5P-8p8"/>
+                    <constraint firstItem="5" firstAttribute="leading" secondItem="sQq-jC-UEV" secondAttribute="leadingMargin" constant="2" id="asm-5P-8p8"/>
                     <constraint firstItem="5" firstAttribute="centerY" secondItem="sQq-jC-UEV" secondAttribute="centerY" id="b3N-Ho-wsM"/>
                     <constraint firstItem="p7I-KN-FVZ" firstAttribute="trailing" secondItem="sQq-jC-UEV" secondAttribute="trailingMargin" constant="-51" id="kaB-WS-bDl"/>
                     <constraint firstItem="hzp-7C-oyF" firstAttribute="top" secondItem="6B9-Jc-esJ" secondAttribute="top" id="lW3-zV-LJT"/>

@@ -452,7 +452,6 @@
 
 - (void)reloadDatasource
 {
-    
     NSMutableArray *metadatas = [NSMutableArray new];
     NSArray *recordsTableMetadata ;
         

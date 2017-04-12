@@ -16,7 +16,7 @@
             <rect key="frame" x="0.0" y="0.0" width="600" height="60"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxY="YES"/>
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="2" id="sQq-jC-UEV">
-                <rect key="frame" x="0.0" y="0.0" width="600" height="59.5"/>
+                <rect key="frame" x="0.0" y="0.0" width="600" height="60"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <view alpha="0.10000000149011612" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="hzp-7C-oyF" userLabel="Gray">
@@ -25,13 +25,13 @@
                         <color key="backgroundColor" red="0.66666666669999997" green="0.66666666669999997" blue="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </view>
                     <label opaque="NO" userInteractionEnabled="NO" tag="101" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QNC-8X-DAC">
-                        <rect key="frame" x="68" y="13" width="473" height="20"/>
+                        <rect key="frame" x="68" y="13" width="465" height="20"/>
                         <fontDescription key="fontDescription" type="system" pointSize="16"/>
                         <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="5">
-                        <rect key="frame" x="8" y="11" width="40" height="40"/>
+                        <rect key="frame" x="10" y="10" width="40" height="40"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="40" id="7r4-ao-ayY"/>
                             <constraint firstAttribute="height" constant="40" id="cGI-9B-eWe"/>
@@ -45,7 +45,7 @@
                         </constraints>
                     </imageView>
                     <label opaque="NO" userInteractionEnabled="NO" tag="102" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="p7I-KN-FVZ">
-                        <rect key="frame" x="68" y="33" width="473" height="15"/>
+                        <rect key="frame" x="68" y="33" width="465" height="15"/>
                         <fontDescription key="fontDescription" type="system" pointSize="12"/>
                         <color key="textColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.59999999999999998" alpha="1" colorSpace="calibratedRGB"/>
                         <nil key="highlightedColor"/>
@@ -58,7 +58,7 @@
                         </constraints>
                     </imageView>
                     <button opaque="NO" alpha="0.40000000000000002" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6B9-Jc-esJ" userLabel="buttonDown">
-                        <rect key="frame" x="541" y="0.0" width="60" height="60"/>
+                        <rect key="frame" x="541" y="-1.5" width="60" height="60.5"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="60" id="PcN-jN-71v"/>
                             <constraint firstAttribute="width" constant="60" id="bAG-EX-HKe"/>
@@ -67,21 +67,20 @@
                     </button>
                 </subviews>
                 <constraints>
+                    <constraint firstItem="DQR-yN-JaH" firstAttribute="top" secondItem="dhG-hb-z3n" secondAttribute="top" id="0XU-Ho-ald"/>
+                    <constraint firstItem="5" firstAttribute="leading" secondItem="sQq-jC-UEV" secondAttribute="leadingMargin" constant="2" id="1yX-Zr-1lx"/>
                     <constraint firstItem="p7I-KN-FVZ" firstAttribute="leading" secondItem="DQR-yN-JaH" secondAttribute="trailing" constant="16" id="2xR-G4-B2S"/>
                     <constraint firstItem="dhG-hb-z3n" firstAttribute="top" secondItem="sQq-jC-UEV" secondAttribute="topMargin" constant="32" id="4Zy-SY-nfT"/>
-                    <constraint firstItem="QNC-8X-DAC" firstAttribute="trailing" secondItem="sQq-jC-UEV" secondAttribute="trailingMargin" constant="-51" id="7zt-c0-CsI"/>
+                    <constraint firstItem="QNC-8X-DAC" firstAttribute="trailing" secondItem="sQq-jC-UEV" secondAttribute="trailingMargin" constant="-59" id="7zt-c0-CsI"/>
                     <constraint firstItem="6B9-Jc-esJ" firstAttribute="centerY" secondItem="5" secondAttribute="centerY" constant="-1" id="EoB-vw-kgn"/>
-                    <constraint firstAttribute="centerY" secondItem="5" secondAttribute="centerY" constant="-1.5" id="FQP-wg-vPF"/>
+                    <constraint firstAttribute="centerY" secondItem="5" secondAttribute="centerY" id="FQP-wg-vPF"/>
                     <constraint firstItem="DQR-yN-JaH" firstAttribute="top" secondItem="p7I-KN-FVZ" secondAttribute="top" constant="6.5" id="K6B-gJ-8Fp"/>
-                    <constraint firstItem="p7I-KN-FVZ" firstAttribute="leading" secondItem="5" secondAttribute="trailing" constant="20" id="K7G-0u-f8E"/>
-                    <constraint firstItem="5" firstAttribute="bottom" secondItem="p7I-KN-FVZ" secondAttribute="bottom" constant="3" id="MuE-C8-4UJ"/>
-                    <constraint firstItem="QNC-8X-DAC" firstAttribute="leading" secondItem="5" secondAttribute="trailing" constant="20" id="UYc-Al-a4h"/>
+                    <constraint firstItem="p7I-KN-FVZ" firstAttribute="leading" secondItem="5" secondAttribute="trailing" constant="18" id="K7G-0u-f8E"/>
+                    <constraint firstItem="QNC-8X-DAC" firstAttribute="leading" secondItem="5" secondAttribute="trailing" constant="18" id="UYc-Al-a4h"/>
+                    <constraint firstItem="p7I-KN-FVZ" firstAttribute="top" secondItem="QNC-8X-DAC" secondAttribute="bottom" id="cJT-LE-kot"/>
                     <constraint firstItem="dhG-hb-z3n" firstAttribute="leading" secondItem="sQq-jC-UEV" secondAttribute="leadingMargin" constant="-4" id="dNM-6x-zkx"/>
-                    <constraint firstItem="5" firstAttribute="leading" secondItem="sQq-jC-UEV" secondAttribute="leadingMargin" id="ha0-VA-fF9"/>
-                    <constraint firstItem="p7I-KN-FVZ" firstAttribute="trailing" secondItem="sQq-jC-UEV" secondAttribute="trailingMargin" constant="-51" id="kaB-WS-bDl"/>
-                    <constraint firstItem="5" firstAttribute="top" secondItem="QNC-8X-DAC" secondAttribute="top" constant="-2" id="lyH-lh-z03"/>
-                    <constraint firstItem="6B9-Jc-esJ" firstAttribute="leading" secondItem="QNC-8X-DAC" secondAttribute="trailing" id="mBS-nt-t6R"/>
-                    <constraint firstItem="5" firstAttribute="top" secondItem="sQq-jC-UEV" secondAttribute="topMargin" constant="3" id="pRH-CQ-O4x"/>
+                    <constraint firstItem="p7I-KN-FVZ" firstAttribute="trailing" secondItem="sQq-jC-UEV" secondAttribute="trailingMargin" constant="-59" id="kaB-WS-bDl"/>
+                    <constraint firstItem="6B9-Jc-esJ" firstAttribute="leading" secondItem="QNC-8X-DAC" secondAttribute="trailing" constant="8" id="mBS-nt-t6R"/>
                 </constraints>
             </tableViewCellContentView>
             <connections>
@@ -93,7 +92,7 @@
                 <outlet property="statusImageView" destination="DQR-yN-JaH" id="UmC-pt-kjV"/>
                 <outletCollection property="constraints" destination="mBS-nt-t6R" id="4sz-P1-CPa"/>
             </connections>
-            <point key="canvasLocation" x="316" y="128"/>
+            <point key="canvasLocation" x="256" y="19"/>
         </tableViewCell>
     </objects>
     <resources>
