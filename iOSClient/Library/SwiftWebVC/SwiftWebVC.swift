@@ -193,12 +193,12 @@ public class SwiftWebVC: UIViewController {
             if !closing {
                 toolbar.items = items as? [UIBarButtonItem]
                 if presentingViewController == nil {
-                    toolbar.barTintColor = navigationController!.navigationBar.barTintColor
+                    toolbar.barTintColor = navigationController?.navigationBar.barTintColor
                 }
                 else {
-                    toolbar.barStyle = navigationController!.navigationBar.barStyle
+                    toolbar.barStyle = (navigationController?.navigationBar.barStyle)!
                 }
-                toolbar.tintColor = navigationController!.navigationBar.tintColor
+                toolbar.tintColor = navigationController?.navigationBar.tintColor
             }
             navigationItem.rightBarButtonItems = items.reverseObjectEnumerator().allObjects as? [UIBarButtonItem]
             
@@ -208,12 +208,12 @@ public class SwiftWebVC: UIViewController {
             
             if !closing {
                 if presentingViewController == nil {
-                    navigationController!.toolbar.barTintColor = navigationController!.navigationBar.barTintColor
+                    navigationController?.toolbar.barTintColor = navigationController?.navigationBar.barTintColor
                 }
                 else {
-                    navigationController!.toolbar.barStyle = navigationController!.navigationBar.barStyle
+                    navigationController?.toolbar.barStyle = (navigationController?.navigationBar.barStyle)!
                 }
-                navigationController!.toolbar.tintColor = navigationController!.navigationBar.tintColor
+                navigationController?.toolbar.tintColor = navigationController?.navigationBar.tintColor
                 toolbarItems = items as? [UIBarButtonItem]
             }
         }
