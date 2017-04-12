@@ -49,9 +49,8 @@
     if (self = [super initWithCoder:aDecoder])  {
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(triggerProgressTask:) name:@"NotificationProgressTask" object:nil];
-        
-        app.activeFavorites = self;
     }
+    
     return self;
 }
 
@@ -448,14 +447,8 @@
     return metadata;
 }
 
-- (void)readFolderWithForced:(BOOL)forced serverUrl:(NSString *)serverUrl
-{
-    [self reloadDatasource];
-}
-
 - (void)reloadDatasource
 {
-    
     NSMutableArray *metadatas = [NSMutableArray new];
     NSArray *recordsTableMetadata ;
         

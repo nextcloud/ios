@@ -52,7 +52,4 @@
 @property (nonatomic, weak) CCDetail *detailViewController;
 @property (nonatomic, strong) UIDocumentInteractionController *docController;
 
-- (void)reloadDatasource;
-- (void)readFolderWithForced:(BOOL)forced serverUrl:(NSString *)serverUrl;
-
 @end
