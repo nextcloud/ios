@@ -414,8 +414,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" preservesSuperviewLayoutMargins="YES" image="cryptocloud_sfondo_iPad" translatesAutoresizingMaskIntoConstraints="NO" id="zlU-MP-ZVs">
-                                <rect key="frame" x="59.5" y="240" width="256" height="187"/>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" preservesSuperviewLayoutMargins="YES" image="nextcloud_lite" translatesAutoresizingMaskIntoConstraints="NO" id="zlU-MP-ZVs">
+                                <rect key="frame" x="76" y="255" width="223" height="157"/>
                             </imageView>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -801,9 +801,9 @@
     <resources>
         <image name="Plus" width="40" height="40"/>
         <image name="avatar" width="25" height="25"/>
-        <image name="cryptocloud_sfondo_iPad" width="256" height="187"/>
         <image name="fileNextcloud" width="25" height="25"/>
         <image name="nextcloud_background" width="960" height="640"/>
+        <image name="nextcloud_lite" width="223" height="157"/>
         <image name="tabBarFavorite" width="25" height="25"/>
         <image name="tabBarMore" width="25" height="25"/>
         <image name="tabBarPhotos" width="25" height="21"/>
