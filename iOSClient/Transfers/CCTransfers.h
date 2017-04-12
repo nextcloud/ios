@@ -22,8 +22,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "UIScrollView+EmptyDataSet.h"
 
-@interface CCTransfers : UIViewController <UITableViewDataSource, UITableViewDelegate>
+@interface CCTransfers : UIViewController <UITableViewDataSource, UITableViewDelegate, DZNEmptyDataSetDelegate , DZNEmptyDataSetSource>
 
 @property (nonatomic, weak) IBOutlet UITableView *tableView;
 

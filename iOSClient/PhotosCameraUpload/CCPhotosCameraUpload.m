@@ -259,21 +259,9 @@
     return YES;
 }
 
-/*
-- (BOOL)emptyDataSetShouldAllowScroll:(UIScrollView *)scrollView
-{    
-    return YES;
-}
-*/
-
 - (CGFloat)spaceHeightForEmptyDataSet:(UIScrollView *)scrollView
 {
     return 0.0f;
-}
-
-- (CGFloat)verticalOffsetForEmptyDataSet:(UIScrollView *)scrollView
-{
-    return - self.navigationController.navigationBar.frame.size.height;
 }
 
 - (UIColor *)backgroundColorForEmptyDataSet:(UIScrollView *)scrollView
