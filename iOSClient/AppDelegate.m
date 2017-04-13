@@ -1246,8 +1246,27 @@
     }
     
     // verify Lock pending
-    [self verifyLockTableAutomaticUpload];
+    NSArray *UploadAutomaticInQueue = [self verifyExistsInQueuesUploadSelector:selectorUploadAutomatic];
+    NSArray *UploadAutomaticAllInQueue = [self verifyExistsInQueuesUploadSelector:selectorUploadAutomaticAll];
+    NSMutableArray *UploadInQueue = [NSMutableArray new];
+    [UploadInQueue addObjectsFromArray:UploadAutomaticInQueue];
+    [UploadInQueue addObjectsFromArray:UploadAutomaticAllInQueue];
+
+    NSArray *recordAutomaticUploadInLock = [CCCoreData getAllLockTableAutomaticUploadForAccount:_activeAccount];
     
+    for (TableAutomaticUpload *tableAutomaticUpload in recordAutomaticUploadInLock) {
+        
+        BOOL recordFound = NO;
+        
+        for (CCMetadataNet *metadataNet in UploadInQueue) {
+            if (metadataNet.identifier == tableAutomaticUpload.identifier)
+                recordFound = YES;
+        }
+        
+        if (!recordFound)
+            [CCCoreData unlockTableAutomaticUploadForAccount:_activeAccount identifier:tableAutomaticUpload.identifier];
+    }
+
     // Verify num error if selectorUploadAutomaticAll
     if ([selector isEqualToString:selectorUploadAutomaticAll]) {
     
@@ -1309,30 +1328,6 @@
     }
 }
 
-- (void)verifyLockTableAutomaticUpload
-{
-    NSArray *UploadAutomaticInQueue = [self verifyExistsInQueuesUploadSelector:selectorUploadAutomatic];
-    NSArray *UploadAutomaticAllInQueue = [self verifyExistsInQueuesUploadSelector:selectorUploadAutomaticAll];
-    NSMutableArray *UploadInQueue = [NSMutableArray new];
-    [UploadInQueue addObjectsFromArray:UploadAutomaticInQueue];
-    [UploadInQueue addObjectsFromArray:UploadAutomaticAllInQueue];
-    
-    NSArray *recordAutomaticUploadInLock = [CCCoreData getAllLockTableAutomaticUploadForAccount:_activeAccount];
-    
-    for (TableAutomaticUpload *tableAutomaticUpload in recordAutomaticUploadInLock) {
-        
-        BOOL recordFound = NO;
-        
-        for (CCMetadataNet *metadataNet in UploadInQueue) {
-            if (metadataNet.identifier == tableAutomaticUpload.identifier)
-                recordFound = YES;
-        }
-        
-        if (!recordFound)
-            [CCCoreData unlockTableAutomaticUploadForAccount:_activeAccount identifier:tableAutomaticUpload.identifier];
-    }
-}
-
 - (void)verifyDownloadUploadInProgress
 {
     BOOL callVerifyDownload = NO;
@@ -1360,9 +1355,6 @@
             
             [self.timerVerifySessionInProgress invalidate];
         }
-        
-        // Verify Lock in Table Automatic Upload
-        //[self verifyLockTableAutomaticUpload];
     }
 }
 
