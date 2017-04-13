@@ -239,6 +239,7 @@
     [super viewDidLoad];
     
     self.title = NSLocalizedString(@"_settings_", nil);
+    self.tableView.backgroundColor = [UIColor whiteColor];
     
     // Color
     [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];

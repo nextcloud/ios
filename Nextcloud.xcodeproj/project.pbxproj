@@ -2986,6 +2986,8 @@
 				F7ACE4291BAC0268006C0017 /* Acknowledgements.h */,
 				F7ACE42A1BAC0268006C0017 /* Acknowledgements.m */,
 				F7ACE42B1BAC0268006C0017 /* Acknowledgements.rtf */,
+				F7A321AB1E9E6AD50069AD1B /* CCAdvanced.h */,
+				F7A321AC1E9E6AD50069AD1B /* CCAdvanced.m */,
 				F7ACE42C1BAC0268006C0017 /* CCManageAccount.h */,
 				F7ACE42D1BAC0268006C0017 /* CCManageAccount.m */,
 				F7ACE42E1BAC0268006C0017 /* CCManageCameraUpload.h */,
@@ -2994,8 +2996,6 @@
 				F7F6AC4D1E525AD300E8EB45 /* CCManageCryptoCloud.m */,
 				F73C002D1E55D7DF00EEEFA7 /* CCManageCryptoCloudSecurity.h */,
 				F73C002E1E55D7DF00EEEFA7 /* CCManageCryptoCloudSecurity.m */,
-				F7A321AB1E9E6AD50069AD1B /* CCAdvanced.h */,
-				F7A321AC1E9E6AD50069AD1B /* CCAdvanced.m */,
 				F7ACE4301BAC0268006C0017 /* CCSettings.h */,
 				F7ACE4311BAC0268006C0017 /* CCSettings.m */,
 			);
