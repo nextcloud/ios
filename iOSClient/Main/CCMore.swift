@@ -50,7 +50,9 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         tableView.delegate = self
         tableView.dataSource = self
         
-        imageLogo.image = UIImage.init(named: image_brandLogoMenu)
+        tableView.separatorColor = Constant.GlobalConstants.k_Color_Seperator
+        
+        imageLogo.image = UIImage.init(named: image_brandMenuMoreBackground)
         
         let tap = UITapGestureRecognizer(target: self, action: #selector(tapLabelQuotaExternalSite))
         labelQuotaExternalSite.isUserInteractionEnabled = true
@@ -188,10 +190,12 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! CCCellMore
 
-        // change color selection
+        // change color selection and disclosure indicator
         let selectionColor : UIView = UIView.init()
         selectionColor.backgroundColor = Constant.GlobalConstants.k_Color_SelectBackgrond
         cell.selectedBackgroundView = selectionColor
+        
+        cell.accessoryType = UITableViewCellAccessoryType.disclosureIndicator
         
         // Menu Normal
         if (indexPath.section == 0) {

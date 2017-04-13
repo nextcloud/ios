@@ -27,4 +27,4 @@
 #define image_brandNavigationController         @"nextcloud_navigationcontroller"
 #define image_brandNavigationControllerOffline  @"nextcloud_navigationcontroller_offline"
 #define image_brandBackgroundLite               @"nextcloud_lite"
-#define image_brandLogoMenu                     @"nextcloud_background"
+#define image_brandMenuMoreBackground           @"MoreBackground"
