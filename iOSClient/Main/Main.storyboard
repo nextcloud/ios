@@ -117,15 +117,6 @@
                                     <outlet property="delegate" destination="9DM-ts-oJu" id="ePC-4O-7ui"/>
                                 </connections>
                             </tableView>
-                            <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" progress="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="HgC-Ub-Dtb">
-                                <rect key="frame" x="16" y="576" width="343" height="2"/>
-                            </progressView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WdB-hd-mrv">
-                                <rect key="frame" x="16" y="586" width="343" height="17"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="avatar" translatesAutoresizingMaskIntoConstraints="NO" id="DWx-1W-vs0" customClass="SwiftyAvatar" customModule="Nextcloud" customModuleProvider="target">
                                 <rect key="frame" x="15" y="25" width="50" height="50"/>
                                 <constraints>
@@ -147,6 +138,21 @@
                                 <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WdB-hd-mrv">
+                                <rect key="frame" x="16" y="562" width="343" height="17"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="C75-NQ-7jy">
+                                <rect key="frame" x="16" y="593" width="343" height="17"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" progress="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="HgC-Ub-Dtb">
+                                <rect key="frame" x="16" y="584" width="343" height="2"/>
+                            </progressView>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         <constraints>
@@ -158,12 +164,15 @@
                             <constraint firstItem="Xym-IM-aqh" firstAttribute="leading" secondItem="cxb-Vw-8zb" secondAttribute="leading" id="DKF-Y7-cmv"/>
                             <constraint firstItem="WdB-hd-mrv" firstAttribute="trailing" secondItem="XtC-Je-LUc" secondAttribute="trailingMargin" id="FPW-TD-fS8"/>
                             <constraint firstAttribute="leadingMargin" secondItem="HgC-Ub-Dtb" secondAttribute="leading" id="HZo-wI-3Vc"/>
-                            <constraint firstItem="WdB-hd-mrv" firstAttribute="top" secondItem="HgC-Ub-Dtb" secondAttribute="bottom" constant="8" id="J6a-bU-rSQ"/>
+                            <constraint firstItem="WdB-hd-mrv" firstAttribute="top" secondItem="HgC-Ub-Dtb" secondAttribute="bottom" constant="-24" id="J6a-bU-rSQ"/>
+                            <constraint firstItem="C75-NQ-7jy" firstAttribute="top" secondItem="HgC-Ub-Dtb" secondAttribute="bottom" constant="7" id="Ppj-zL-e8g"/>
                             <constraint firstItem="Xym-IM-aqh" firstAttribute="trailing" secondItem="cxb-Vw-8zb" secondAttribute="trailing" id="SNN-Jv-Ezx"/>
                             <constraint firstAttribute="trailingMargin" secondItem="HgC-Ub-Dtb" secondAttribute="trailing" id="UCm-fo-XLY"/>
-                            <constraint firstItem="HgC-Ub-Dtb" firstAttribute="top" secondItem="Xym-IM-aqh" secondAttribute="bottom" constant="16" id="bcj-pp-ogX"/>
+                            <constraint firstItem="HgC-Ub-Dtb" firstAttribute="top" secondItem="Xym-IM-aqh" secondAttribute="bottom" constant="24" id="bcj-pp-ogX"/>
                             <constraint firstItem="Xym-IM-aqh" firstAttribute="top" secondItem="cxb-Vw-8zb" secondAttribute="bottom" id="gtG-qs-qFg"/>
                             <constraint firstAttribute="bottom" secondItem="Xym-IM-aqh" secondAttribute="bottom" constant="107" id="iky-9q-uu8"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="C75-NQ-7jy" secondAttribute="trailing" id="jq5-ve-GiZ"/>
+                            <constraint firstAttribute="leadingMargin" secondItem="C75-NQ-7jy" secondAttribute="leading" id="kl7-4f-nKS"/>
                             <constraint firstItem="BiW-NW-hVZ" firstAttribute="trailing" secondItem="HgC-Ub-Dtb" secondAttribute="trailing" id="ptS-mx-Gnc"/>
                             <constraint firstItem="cxb-Vw-8zb" firstAttribute="leading" secondItem="XtC-Je-LUc" secondAttribute="leading" id="qyg-dI-shE"/>
                             <constraint firstItem="BiW-NW-hVZ" firstAttribute="leading" secondItem="DWx-1W-vs0" secondAttribute="trailing" constant="13" id="uDv-hU-dPQ"/>
@@ -175,6 +184,7 @@
                         <outlet property="imageAvatar" destination="DWx-1W-vs0" id="WMr-Kl-RUr"/>
                         <outlet property="imageLogo" destination="cxb-Vw-8zb" id="U9H-30-zBN"/>
                         <outlet property="labelQuota" destination="WdB-hd-mrv" id="Ozy-WV-w5O"/>
+                        <outlet property="labelQuotaExternalSite" destination="C75-NQ-7jy" id="lqR-zC-xRX"/>
                         <outlet property="labelUsername" destination="BiW-NW-hVZ" id="0nF-vI-MBZ"/>
                         <outlet property="progressQuota" destination="HgC-Ub-Dtb" id="mpA-O3-SpS"/>
                         <outlet property="tableView" destination="Xym-IM-aqh" id="Esm-wN-pr1"/>

@@ -31,6 +31,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     @IBOutlet weak var labelUsername: UILabel!
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var labelQuota: UILabel!
+    @IBOutlet weak var labelQuotaExternalSite: UILabel!
     @IBOutlet weak var progressQuota: UIProgressView!
 
     var functionMenu = [OCExternalSites]()
@@ -46,18 +47,23 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         
         super.viewDidLoad()
         
-        self.tableView.delegate = self
-        self.tableView.dataSource = self
+        tableView.delegate = self
+        tableView.dataSource = self
         
-        self.imageLogo.image = UIImage.init(named: image_brandLogoMenu)
+        imageLogo.image = UIImage.init(named: image_brandLogoMenu)
+        
+        let tap = UITapGestureRecognizer(target: self, action: #selector(tapLabelQuotaExternalSite))
+        labelQuotaExternalSite.isUserInteractionEnabled = true
+        labelQuotaExternalSite.addGestureRecognizer(tap)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         
-        // Clear Menu
+        // Clear
         functionMenu.removeAll()
         settingsMenu.removeAll()
         quotaMenu.removeAll()
+        labelQuotaExternalSite.text = ""
         
         // Internal
         var item = OCExternalSites.init()
@@ -85,37 +91,48 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         settingsMenu.append(item)
 
         // External 
-        self.menuExternalSite = CCCoreData.getAllTableExternalSites(with:  NSPredicate(format: "(account == '\(appDelegate.activeAccount!)')")) as? [TableExternalSites]
+        menuExternalSite = CCCoreData.getAllTableExternalSites(with:  NSPredicate(format: "(account == '\(appDelegate.activeAccount!)')")) as? [TableExternalSites]
         
-        for table in self.menuExternalSite! {
+        if (menuExternalSite != nil) {
+            for table in menuExternalSite! {
             
-            item = OCExternalSites.init()
+                item = OCExternalSites.init()
             
-            item.name = table.name
-            item.url = table.url
-            item.icon = table.icon
+                item.name = table.name
+                item.url = table.url
+                item.icon = table.icon
             
-            if (table.type == "link") {
-                functionMenu.append(item)
-            }
-            if (table.type == "settings") {
-                settingsMenu.append(item)
-            }
-            if (table.type == "quota") {
-                quotaMenu.append(item)
+                if (table.type == "link") {
+                    item.icon = "moreExternalSite"
+                    functionMenu.append(item)
+                }
+                if (table.type == "settings") {
+                    item.icon = "moreSettingsExternalSite"
+                    settingsMenu.append(item)
+                }
+                if (table.type == "quota") {
+                    quotaMenu.append(item)
+                }
             }
         }
         
-        self.tableAccont = CCCoreData.getActiveAccount()
-        if (self.tableAccont != nil) {
+        // Quota
+        tableAccont = CCCoreData.getActiveAccount()
+        if (tableAccont != nil) {
         
-            self.labelUsername.text = self.tableAccont?.user
-            self.progressQuota.progress = Float((self.tableAccont?.quotaRelative)!) / 100
+            labelUsername.text = self.tableAccont?.user
+            progressQuota.progress = Float((self.tableAccont?.quotaRelative)!) / 100
         
             let quota : String = CCUtility.transformedSize(Double((self.tableAccont?.quotaTotal)!))
             let quotaUsed : String = CCUtility.transformedSize(Double((self.tableAccont?.quotaUsed)!))
         
-            self.labelQuota.text = String.localizedStringWithFormat(NSLocalizedString("_quota_using_", comment: ""), quotaUsed, quota)
+            labelQuota.text = String.localizedStringWithFormat(NSLocalizedString("_quota_using_", comment: ""), quotaUsed, quota)
+        }
+        
+        if (quotaMenu.count > 0) {
+            
+            let item = quotaMenu[0]
+            labelQuotaExternalSite.text = item.name
         }
         
         // Avatar
@@ -123,11 +140,11 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         
         if (avatar != nil) {
         
-            self.imageAvatar.image = avatar
+            imageAvatar.image = avatar
             
         } else {
             
-            self.imageAvatar.image = UIImage.init(named: "moreAvatar")
+            imageAvatar.image = UIImage.init(named: "moreAvatar")
         }
         
         // Aspect
@@ -223,6 +240,26 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         }
         
         if (item.url.contains("//")) {
+            
+            if (self.splitViewController?.isCollapsed)! {
+                
+                let webVC = SwiftWebVC(urlString: item.url)
+                self.navigationController?.pushViewController(webVC, animated: true)
+                self.navigationController?.navigationBar.isHidden = false
+                
+            } else {
+                
+                let webVC = SwiftModalWebVC(urlString: item.url)
+                self.present(webVC, animated: true, completion: nil)
+            }
+        }
+    }
+    
+    func tapLabelQuotaExternalSite() {
+        
+        if (quotaMenu.count > 0) {
+            
+            let item = quotaMenu[0]
             
             if (self.splitViewController?.isCollapsed)! {
                 
