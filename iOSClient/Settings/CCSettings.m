@@ -67,7 +67,7 @@
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"bloccopasscode" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_lock_not_active_", nil)];
     [row.cellConfig setObject:[UIImage imageNamed:image_settingsPasscodeNO] forKey:@"imageView.image"];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:COLOR_BRAND forKey:@"textLabel.textColor"];
+    [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
     //[row.cellConfig setObject:@(UITableViewCellAccessoryDisclosureIndicator) forKey:@"accessoryType"];
     row.action.formSelector = @selector(bloccoPassword);
@@ -202,7 +202,7 @@
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"buttonLeftAligned" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_acknowledgements_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
-    [row.cellConfig setObject:COLOR_BRAND forKey:@"textLabel.textColor"];
+    [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
     [row.cellConfig setObject:[UIImage imageNamed:image_settingsAcknowledgements] forKey:@"imageView.image"];
     row.action.formBlock = ^(XLFormRowDescriptor * sender){
         [self performSegueWithIdentifier:@"AcknowledgementsSegue" sender:sender];
@@ -212,7 +212,7 @@
     
     // Contact us mail
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"sendmail" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_contact_by_email_", nil)];
-    [row.cellConfig setObject:COLOR_BRAND forKey:@"textLabel.textColor"];
+    [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:[UIImage imageNamed:image_settingsMail] forKey:@"imageView.image"];

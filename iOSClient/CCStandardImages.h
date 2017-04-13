@@ -125,7 +125,6 @@
 #define image_settingsAccountModify             @"settingsAccountModify"
 #define image_settingsAccountNextcloud          @"settingsAccountNextcloud"
 #define image_settingsAcknowledgements          @"settingsAcknowledgements"
-#define image_settingsAdmin                     @"settingsAdmin"
 #define image_settingsCameraUpload              @"settingsCameraUpload"
 #define image_settingsClearCache                @"settingsClearCache"
 #define image_settingsCredentials               @"settingsCredentials"

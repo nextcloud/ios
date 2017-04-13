@@ -2,7 +2,6 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "settingsCryptoCloud.png",
       "scale" : "1x"
     },
     {
@@ -12,7 +11,6 @@
     },
     {
       "idiom" : "universal",
-      "filename" : "settingsCryptoCloud@3x.png",
       "scale" : "3x"
     }
   ],

@@ -68,7 +68,7 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:[UIImage imageNamed:image_settingsAccountModify] forKey:@"imageView.image"];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
-    [row.cellConfig setObject:COLOR_BRAND forKey:@"textLabel.textColor"];
+    [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
     row.action.formSelector = @selector(changePassword:);
     if (listAccount.count == 0) row.disabled = @YES;
     [section addFormRow:row];
@@ -79,7 +79,7 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:[UIImage imageNamed:image_settingsAccountNextcloud] forKey:@"imageView.image"];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
-    [row.cellConfig setObject:COLOR_BRAND forKey:@"textLabel.textColor"];
+    [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
     row.action.formSelector = @selector(addAccount:);
     [section addFormRow:row];
 #endif
