@@ -55,7 +55,7 @@ NSString *const dav = @"/remote.php/dav";
 + (void)aspectTabBar:(UITabBar *)tab hidden:(BOOL)hidden
 {    
     tab.translucent = NO;
-    tab.barTintColor = COLOR_TABBAR;
+    tab.barTintColor = [UIColor whiteColor];// COLOR_TABBAR;
     tab.tintColor = COLOR_TABBAR_TEXT;
     
     tab.hidden = hidden;
