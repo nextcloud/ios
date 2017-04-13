@@ -451,7 +451,7 @@
 {
     CCMetadata *metadata = [self.dataSourceImagesVideos objectAtIndex:index];
     
-    NSString *titleDir = metadata.fileNamePrint; //[NSString stringWithFormat:@"%lu %@ %lu", (unsigned long)index+1, NSLocalizedString(@"of", nil), (unsigned long)self.photos.count];
+    NSString *titleDir = metadata.fileNamePrint;
     self.title = titleDir;
     
     return titleDir;
@@ -521,11 +521,6 @@
                     // Location ??
                     [self setLocationCaptionPhoto:photo fileID:metadata.fileID];
                     
-                    if (!photo.caption) {
-                        // Remove title foto caption
-                        //photo.caption = metadata.fileNamePrint;
-                    }
-                    
                     [self.photos replaceObjectAtIndex:index withObject:photo];
                     
                 } else {
@@ -554,7 +549,6 @@
                     NSURL *url = [NSURL fileURLWithPath:toPath];
                     
                     MWPhoto *video = [MWPhoto photoWithImage:[CCGraphics thumbnailImageForVideo:url atTime:1.0]];
-                    video.caption = metadata.fileNamePrint;
                     video.videoURL = url;
                     
                     [self.photos replaceObjectAtIndex:index withObject:video];
