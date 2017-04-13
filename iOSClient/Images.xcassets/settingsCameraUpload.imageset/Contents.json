@@ -2,6 +2,7 @@
   "images" : [
     {
       "idiom" : "universal",
+      "filename" : "settingsCameraUpload.png",
       "scale" : "1x"
     },
     {
@@ -11,6 +12,7 @@
     },
     {
       "idiom" : "universal",
+      "filename" : "settingsCameraUpload@2x-1.png",
       "scale" : "3x"
     }
   ],
