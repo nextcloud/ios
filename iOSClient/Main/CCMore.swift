@@ -186,6 +186,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             cell.labelText.textColor = Constant.GlobalConstants.k_Color_Nextcloud
 
         }
+        
         // Menu Settings
         if (indexPath.section == 1) {
             
