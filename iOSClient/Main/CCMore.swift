@@ -204,7 +204,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             
             cell.imageIcon?.image = UIImage.init(named: item.icon)
             cell.labelText?.text = NSLocalizedString(item.name, comment: "")
-            cell.labelText.textColor = Constant.GlobalConstants.k_Color_Nextcloud
+            cell.labelText.textColor = .black
 
         }
         
@@ -215,7 +215,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             
             cell.imageIcon?.image = UIImage.init(named: item.icon)
             cell.labelText?.text = NSLocalizedString(item.name, comment: "")
-            cell.labelText.textColor = Constant.GlobalConstants.k_Color_GrayMenuMore
+            cell.labelText.textColor = Constant.GlobalConstants.k_Color_Anthracite
         }
         
         return cell
