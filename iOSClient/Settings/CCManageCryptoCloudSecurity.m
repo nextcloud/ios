@@ -46,8 +46,9 @@
         XLFormSectionDescriptor *section;
         XLFormRowDescriptor *row;
         
+        form = [XLFormDescriptor formDescriptorWithTitle:NSLocalizedString(@"_title_form_security_init_", nil)];
+        
         // form mail
-        form = [XLFormDescriptor formDescriptor];
         section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_security_init_required_mail_", nil)];
         [form addFormSection:section];
         form.assignFirstResponderOnShow = YES;
@@ -93,13 +94,16 @@
     return self;
 }
 
-- (void)viewDidLoad
+// Apparirà
+- (void)viewWillAppear:(BOOL)animated
 {
-    [super viewDidLoad];
+    [super viewWillAppear:animated];
     
-    self.navigationItem.title = NSLocalizedString(@"_title_form_security_init_", nil);
+    self.tableView.backgroundColor = [UIColor whiteColor];
     
+    // Color
     [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
+    [CCAspect aspectTabBar:self.tabBarController.tabBar hidden:NO];
 }
 
 -(void)formRowDescriptorValueHasChanged:(XLFormRowDescriptor *)rowDescriptor oldValue:(id)oldValue newValue:(id)newValue

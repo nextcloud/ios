@@ -234,22 +234,12 @@
     self.form = form;
 }
 
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-    
-    self.title = NSLocalizedString(@"_settings_", nil);
-    self.tableView.backgroundColor = [UIColor whiteColor];
-    
-    // Color
-    [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
-    [CCAspect aspectTabBar:self.tabBarController.tabBar hidden:NO];
-}
-
 // Apparirà
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
+    self.tableView.backgroundColor = [UIColor whiteColor];
     
     // Color
     [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
