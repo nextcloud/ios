@@ -138,6 +138,9 @@
 {
     [super viewWillAppear:animated];
     
+    // BUGFIX 2.17 - Change user Nextcloud App
+    [[CCNetworking sharedNetworking] settingAccount];
+    
     if ([[CCUtility getBlockCode] length] > 0 && [CCUtility getOnlyLockDir] == NO)
         [self openBKPasscode];
 }
