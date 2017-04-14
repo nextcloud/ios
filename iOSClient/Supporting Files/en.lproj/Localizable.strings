@@ -428,7 +428,7 @@
 
 // CoreData
 
-"_required_new_database_"       = "Sorry for the inconvenience, but because of improvements it's required to re-login to get a new version of the database.";
+"_required_new_database_"       = "Upgrade ready: Log in again in order to get a new version of the database.";
 
 // Files Preview
 
