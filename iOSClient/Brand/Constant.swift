@@ -45,6 +45,8 @@ class Constant: NSObject {
         
         static let k_Color_Anthracite: UIColor = UIColor(red: 65.0/255.0, green: 64.0/255.0, blue: 66.0/255.0, alpha: 1.0)
         
+        static let k_Color_Table_Background: UIColor = UIColor.white
+        
         // Response searchList
         
         static let kOrganizationFullName    = "FullName"

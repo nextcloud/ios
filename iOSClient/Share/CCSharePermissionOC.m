@@ -152,6 +152,8 @@
     [self.endButton setTitle:NSLocalizedString(@"_done_", nil) forState:UIControlStateNormal];
     self.endButton.tintColor = COLOR_NAVIGATIONBAR_TEXT;
     
+    self.tableView.backgroundColor = COLOR_TABLE_BACKGROUND;
+    
     shareDto = [app.sharesID objectForKey:self.idRemoteShared];
         
     [self initializeForm];    

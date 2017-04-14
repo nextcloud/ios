@@ -133,6 +133,8 @@
         line.backgroundColor = self.tableView.separatorColor;
         line;
     });
+    
+    self.tableView.backgroundColor = COLOR_TABLE_BACKGROUND;
 }
 
 #pragma --------------------------------------------------------------------------------------------
