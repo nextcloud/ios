@@ -1251,9 +1251,9 @@
     return [emailTest evaluateWithObject:checkString];
 }
 
-+ (UIImage*)drawText:(NSString*)text inImage:(UIImage*)image
++ (UIImage*)drawText:(NSString*)text inImage:(UIImage*)image colorText:(UIColor *)colorText
 {
-    NSDictionary* attributes = @{NSFontAttributeName: [UIFont systemFontOfSize:26], NSForegroundColorAttributeName:[UIColor whiteColor]};
+    NSDictionary* attributes = @{NSFontAttributeName: [UIFont systemFontOfSize:26], NSForegroundColorAttributeName:colorText};
     NSAttributedString* attributedString = [[NSAttributedString alloc] initWithString:text attributes:attributes];
     
     int x = image.size.width/2 - attributedString.size.width/2;

@@ -530,8 +530,7 @@
                         
                     } else {
                         
-                        NSURL *url = [[NSBundle mainBundle] URLForResource:@"loading" withExtension:@"gif"];
-                        [self.photos replaceObjectAtIndex:index withObject:[MWPhoto photoWithImage:[UIImage animatedImageWithAnimatedGIFURL:url]]];
+                        [self.photos replaceObjectAtIndex:index withObject:[MWPhoto photoWithImage:[CCUtility drawText:[NSLocalizedString(@"_loading_", nil) stringByAppendingString:@"..."] inImage:[UIImage imageNamed:image_buttonWhite] colorText:[UIColor lightGrayColor]]]];
                     }
                 }
             }
@@ -560,8 +559,7 @@
                         
                     } else {
                         
-                        NSURL *url = [[NSBundle mainBundle] URLForResource:@"loading" withExtension:@"gif"];
-                        [self.photos replaceObjectAtIndex:index withObject:[MWPhoto photoWithImage:[UIImage animatedImageWithAnimatedGIFURL:url]]];
+                        [self.photos replaceObjectAtIndex:index withObject:[MWPhoto photoWithImage:[CCUtility drawText:[NSLocalizedString(@"_loading_", nil) stringByAppendingString:@"..."] inImage:[UIImage imageNamed:image_buttonWhite] colorText:[UIColor lightGrayColor]]]];
                     }
                 }
             }
@@ -730,7 +728,7 @@
 - (void)downloadPhotoBrowserFailure:(NSInteger)errorCode
 {
     [app messageNotification:@"_download_selected_files_" description:@"_error_download_photobrowser_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
-    
+
     [self.photoBrowser reloadData];
 }
 

@@ -304,10 +304,7 @@
 {
     if ([CCCoreData getCameraUploadActiveAccount:app.activeAccount] == NO) {
     
-        UIImage *imageButton = [UIImage imageNamed:image_activeCameraUpload];
-        UIImage *image = [CCUtility drawText:NSLocalizedString(@"_activate_camera_upload_", nil) inImage:imageButton];
-        
-        return image;
+        return [CCUtility drawText:NSLocalizedString(@"_activate_camera_upload_", nil) inImage:[UIImage imageNamed:image_buttonBlu] colorText:[UIColor whiteColor]];        
         
     } else return nil;
 }

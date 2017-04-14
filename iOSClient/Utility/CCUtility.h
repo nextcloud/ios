@@ -188,7 +188,7 @@
 + (NSDate *)datetimeWithOutTime:(NSDate *)datDate;
 + (NSDate *)datetimeWithOutDate:(NSDate *)datDate;
 + (BOOL)isValidEmail:(NSString *)checkString;
-+ (UIImage*)drawText:(NSString*)text inImage:(UIImage*)image;
++ (UIImage*)drawText:(NSString*)text inImage:(UIImage*)image colorText:(UIColor *)colorText;
 + (NSString *)URLEncodeStringFromString:(NSString *)string;
 
 @end
