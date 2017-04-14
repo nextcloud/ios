@@ -39,7 +39,7 @@
 "_home_"                    = "Files";
 "_file_to_upload_"          = "File to upload";
 "_destination_"             = "Destination";
-"_ok_"                      = "Ok";
+"_ok_"                      = "OK";
 "_beta_version_"            = "Beta version";
 "_function_in_testing_"     = "Function in testing, please send information to any problems or malfunctions.";
 "_done_"                    = "Done";
@@ -267,7 +267,7 @@
 "_add_web_account_"             = "Add web account";
 "_add_notes_"                   = "Add notes";
 "_add_driving_license_"         = "Add driving license template";
-"_add_id_card_"                 = "Add id card template";
+"_add_id_card_"                 = "Add ID card template";
 "_add_passport_"                = "Add passport template";
 "_add_atm_card_"                = "ATM card data";
 "_bank_name:_"                  = "Bank name :";
@@ -428,7 +428,7 @@
 
 // CoreData
 
-"_required_new_database_"       = "Sorry for the inconvenience, but because of improvements it's required to re-login to get a new version of the database.";
+"_required_new_database_"       = "Upgrade ready: Log in again in order to get a new version of the database.";
 
 // Files Preview
 
