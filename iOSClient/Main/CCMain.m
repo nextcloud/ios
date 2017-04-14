@@ -212,7 +212,6 @@
     
     // Hide Search Filed on Load
     [self.tableView setContentOffset:CGPointMake(0, self.searchController.searchBar.frame.size.height - self.tableView.contentOffset.y)];
-    
 }
 
 // Apparirà
@@ -450,6 +449,7 @@
 {
     _refreshControl = [UIRefreshControl new];
     _refreshControl.tintColor = COLOR_REFRESH_CONTROL;
+    _refreshControl.backgroundColor = [UIColor colorWithRed:235.0/255.0 green:235.0/255.0 blue:235.0/255.0 alpha:1.0];
     [_refreshControl addTarget:self action:@selector(refreshControlTarget) forControlEvents:UIControlEventValueChanged];
     [self setRefreshControl:_refreshControl];
 }
