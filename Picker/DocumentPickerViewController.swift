@@ -177,9 +177,12 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         
         super.viewWillAppear(animated)
     
+        // BUGFIX 2.17 - Change user Nextcloud App
+        CCNetworking.shared().settingAccount()
+        
         // (save) mode of presentation -> pass variable for pushViewController
         prepareForPresentation(in: parameterMode!)
-        
+    
         // String is nil or empty
         guard let passcode = CCUtility.getBlockCode(), !passcode.isEmpty else {
             return
