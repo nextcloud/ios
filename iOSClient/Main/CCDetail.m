@@ -355,7 +355,6 @@
             [self.webView  loadHTMLString:[NSString stringWithFormat:@"<div style='font-size:%@;font-family:%@;'><pre>%@",@"20",@"Sans-Serif",dataFile] baseURL:nil];
         }
         
-        
     } else if ([ext isEqualToString:@"TXT"] ) {
         
         NSMutableURLRequest *headRequest = [NSMutableURLRequest requestWithURL:[NSURL fileURLWithPath:fileName]];

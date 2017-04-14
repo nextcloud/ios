@@ -486,13 +486,20 @@
     // File
     if (([_metadata.type isEqualToString: k_metadataType_file] || [_metadata.type isEqualToString: k_metadataType_local]) && _metadata.directory == NO) {
         
-        if ([self shouldPerformSegue])
-            [self performSegueWithIdentifier:@"segueDetail" sender:self];
+        if ([_metadata.typeFile isEqualToString: k_metadataTypeFile_unknown] || [_metadata.typeFile isEqualToString: k_metadataTypeFile_compress]) {
+            
+            [self openWith:_metadata];
+            
+        } else {
+        
+            if ([self shouldPerformSegue])
+                [self performSegueWithIdentifier:@"segueDetail" sender:self];
+        }
     }
     
     // Model
     if ([self.metadata.type isEqualToString: k_metadataType_template])
-        [self openModel:self.metadata];
+        [self openModel:_metadata];
     
     // Directory
     if (_metadata.directory)
@@ -544,7 +551,6 @@
     }
     
     NSMutableArray *allRecordsDataSourceImagesVideos = [NSMutableArray new];
-    
     
     NSString *cameraFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:app.activeAccount];
     NSString *cameraFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:app.activeAccount activeUrl:app.activeUrl];
