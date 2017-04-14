@@ -107,22 +107,8 @@
     page3.titleIconPositionY = titleIconPositionY;
     page3.showTitleView = NO;
 
-    EAIntroPage *page4 = [EAIntroPage page];
-    page4.title = [CCUtility localizableBrand:@"_intro_4_title_" table:@"Intro"];
-    page4.titlePositionY = titlePositionY;
-    page4.titleColor = COLOR_TEXT_ANTHRACITE;
-    page4.titleFont = [UIFont systemFontOfSize:20];
-    page4.desc = [CCUtility localizableBrand:@"_intro_4_text_" table:@"Intro"];
-    page4.descPositionY = descPositionY;
-    page4.descColor = COLOR_TEXT_ANTHRACITE;
-    page4.descFont = [UIFont systemFontOfSize:14];
-    page4.titleIconView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"intro4"]];
-    page4.bgImage = [UIImage imageNamed:@"bgbianco"];
-    page4.titleIconPositionY = titleIconPositionY;
-    page4.showTitleView = NO;
-
     
-    EAIntroView *intro = [[EAIntroView alloc] initWithFrame:self.rootView.bounds andPages:@[page1, page2, page3, page4]];
+    EAIntroView *intro = [[EAIntroView alloc] initWithFrame:self.rootView.bounds andPages:@[page1, page2, page3]];
     //intro.backgroundColor = [UIColor whiteColor];
     intro.tapToNext = YES;
     intro.pageControl.pageIndicatorTintColor = [UIColor lightGrayColor];
