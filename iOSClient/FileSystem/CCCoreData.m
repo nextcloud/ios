@@ -835,7 +835,7 @@
     NSArray *tableDirectoryes = [self getDirectoryIDsFromBeginsWithServerUrl:serverUrl activeAccount:activeAccount];
     
     for (TableDirectory *record in tableDirectoryes) {
-        
+                
         NSArray *records = [TableMetadata MR_findAllWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND ((session == NULL) OR (session == '')) AND (type == 'file') AND ((typeFile == %@) OR (typeFile == %@))", activeAccount, record.directoryID, k_metadataTypeFile_image, k_metadataTypeFile_video] inContext:context];
         
         if ([records count] > 0)
@@ -1049,7 +1049,12 @@
 
 + (NSArray *)getDirectoryIDsFromBeginsWithServerUrl:(NSString *)serverUrl activeAccount:(NSString *)activeAccount
 {
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(serverUrl BEGINSWITH %@) AND (account == %@)", serverUrl, activeAccount];
+    NSString *serverUrlBeginWith = serverUrl;
+    
+    if (![serverUrl hasSuffix:@"/"])
+        serverUrlBeginWith = [serverUrl stringByAppendingString:@"/"];
+        
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"((serverUrl == %@) OR (serverUrl BEGINSWITH %@)) AND (account == %@)", serverUrl, serverUrlBeginWith, activeAccount];
     
     return [TableDirectory MR_findAllWithPredicate:predicate];
 }
