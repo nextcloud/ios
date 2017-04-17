@@ -734,7 +734,7 @@
     
     if (!result.count) {
         
-        [CCCoreData addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:@"Internal error image/video not found" type:k_activityVerboseDefault verbose:k_activityVerboseHigh account:_activeAccount activeUrl:_activeUrl];
+        [CCCoreData addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:@"Internal error image/video not found [1]" type:k_activityVerboseDefault verbose:k_activityVerboseHigh account:_activeAccount activeUrl:_activeUrl];
 
         if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
             [delegate uploadFileFailure:nil fileID:nil serverUrl:serverUrl selector:selector message:@"Internal error image/video not found" errorCode: k_CCErrorInternalError];
