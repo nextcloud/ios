@@ -88,6 +88,7 @@
 
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"sendLinkTo" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_share_link_button_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
     row.action.formSelector = @selector(sendLinkTo:);
     [section addFormRow:row];
 
@@ -101,6 +102,7 @@
         
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"findUser" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_add_sharee_", nil)];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+        [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
         row.action.formSelector = @selector(shareUserButton:);
         [section addFormRow:row];
         
