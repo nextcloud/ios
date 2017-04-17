@@ -25,13 +25,19 @@ public class CCLoginWeb: UIViewController {
     var viewController : UIViewController?
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var loginType = loginAdd
+    var doneButtonVisible: Bool = false
     
     func presentModalWithDefaultTheme(_ vc: UIViewController) {
         
         self.viewController = vc
         
-        let webVC = SwiftModalWebVC(urlString: k_loginBaseUrl, theme: .custom, color: Constant.GlobalConstants.k_Color_NavigationBar, colorText: Constant.GlobalConstants.k_Color_NavigationBar_Text)
+        if (loginType == loginAdd || loginType == loginModifyPasswordUser) {
+            doneButtonVisible = true
+        }
+        
+        let webVC = SwiftModalWebVC(urlString: k_loginBaseUrl, theme: .custom, color: Constant.GlobalConstants.k_Color_NavigationBar, colorText: Constant.GlobalConstants.k_Color_NavigationBar_Text, doneButtonVisible: doneButtonVisible)
         webVC.delegateWeb = self
+
         vc.present(webVC, animated: false, completion: nil)
     }
 }

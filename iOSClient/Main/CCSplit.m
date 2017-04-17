@@ -156,16 +156,13 @@
         _loginWeb.loginType = loginAddForced;
         
         [_loginWeb presentModalWithDefaultTheme:self];
-        
 #else
         _loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
         _loginVC.delegate = self;
         _loginVC.loginType = loginAddForced;
         
         [self presentViewController:_loginVC animated:YES completion:nil];
-
 #endif
-    
     }
 }
 

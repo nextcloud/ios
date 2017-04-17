@@ -90,6 +90,10 @@
     NSString *_searchFileName;
     NSMutableArray *_searchResultMetadatas;
     NSString *_depth;
+    
+    // Login
+    CCLoginWeb *_loginWeb;
+    CCLogin *_loginVC;
 }
 @end
 
@@ -984,12 +988,19 @@
 - (void)changePasswordAccount
 {
 #ifdef LOGIN_WEB
-#else
-    CCLogin *loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
-    loginVC.delegate = self;
-    loginVC.loginType = loginModifyPasswordUser;
+    _loginWeb = [CCLoginWeb new];
+    _loginWeb.delegate = self;
+    _loginWeb.loginType = loginModifyPasswordUser;
     
-    [self presentViewController:loginVC animated:YES completion:nil];
+    dispatch_async(dispatch_get_main_queue(), ^ {
+        [_loginWeb presentModalWithDefaultTheme:self];
+    });
+#else
+    _loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
+    _loginVC.delegate = self;
+    _loginVC.loginType = loginModifyPasswordUser;
+    
+    [self presentViewController:_loginVC animated:YES completion:nil];
 #endif
 }
 
@@ -5066,9 +5077,6 @@
     // è una directory
     if (metadata.directory) {
         
-        NSString *directoryServerUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileNameData];
-
-        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         cell.labelInfoFile.text = [CCUtility dateDiff:metadata.date];
         
         lunghezzaFile = @" ";

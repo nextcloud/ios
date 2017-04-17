@@ -17,7 +17,6 @@ public protocol SwiftModalWebVCDelegate: class {
 public class SwiftModalWebVC: UINavigationController {
     
     public weak var delegateWeb: SwiftModalWebVCDelegate?
-    var doneButtonHide: Bool! = true
     
     public enum SwiftModalWebVCTheme {
         case lightBlue, lightBlack, dark, custom
@@ -33,19 +32,19 @@ public class SwiftModalWebVC: UINavigationController {
         self.init(pageURL: URL(string: urlString)!, theme: theme)
     }
     
-    public convenience init(urlString: String, theme: SwiftModalWebVCTheme, color: UIColor, colorText: UIColor) {
-        self.init(pageURL: URL(string: urlString)!, theme: theme, color: color, colorText: colorText)
+    public convenience init(urlString: String, theme: SwiftModalWebVCTheme, color: UIColor, colorText: UIColor, doneButtonVisible: Bool) {
+        self.init(pageURL: URL(string: urlString)!, theme: theme, color: color, colorText: colorText, doneButtonVisible: doneButtonVisible)
     }
     
     public convenience init(pageURL: URL) {
         self.init(request: URLRequest(url: pageURL))
     }
     
-    public convenience init(pageURL: URL, theme: SwiftModalWebVCTheme, color : UIColor = UIColor.clear, colorText: UIColor = UIColor.black) {
-        self.init(request: URLRequest(url: pageURL), theme: theme, color: color, colorText: colorText)
+    public convenience init(pageURL: URL, theme: SwiftModalWebVCTheme, color : UIColor = UIColor.clear, colorText: UIColor = UIColor.black, doneButtonVisible: Bool = false) {
+        self.init(request: URLRequest(url: pageURL), theme: theme, color: color, colorText: colorText, doneButtonVisible: doneButtonVisible)
     }
    
-    public init(request: URLRequest, theme: SwiftModalWebVCTheme = .dark, color: UIColor = UIColor.clear, colorText: UIColor = UIColor.black) {
+    public init(request: URLRequest, theme: SwiftModalWebVCTheme = .dark, color: UIColor = UIColor.clear, colorText: UIColor = UIColor.black, doneButtonVisible: Bool = false) {
         
         let webViewController = SwiftWebVC(aRequest: request)
         webViewController.storedStatusColor = UINavigationBar.appearance().barStyle
@@ -85,7 +84,7 @@ public class SwiftModalWebVC: UINavigationController {
             self.toolbar.barTintColor = color
         }
         
-        if (doneButtonHide == false) {
+        if (doneButtonVisible == true) {
             if (UIDevice.current.userInterfaceIdiom == UIUserInterfaceIdiom.pad) {
                 webViewController.navigationItem.leftBarButtonItem = doneButton
             }
