@@ -1519,7 +1519,7 @@
     TableAutomaticUpload *record = nil;
     
     // Record exists ?
-    record = [TableAutomaticUpload MR_findFirstWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (identifier == %@)", account, metadataNet.assetLocalIdentifier] inContext:context];
+    record = [TableAutomaticUpload MR_findFirstWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (assetLocalIdentifier == %@)", account, metadataNet.assetLocalIdentifier] inContext:context];
     if (record)
         return NO;
     
