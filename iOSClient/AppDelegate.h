@@ -60,7 +60,7 @@
 @property double currentLatitude;
 @property double currentLongitude;
 
-// ownCloud & Nextcloud
+// Nextcloud
 @property BOOL hasServerForbiddenCharactersSupport;
 @property BOOL hasServerShareSupport;
 @property BOOL hasServerShareeSupport;
@@ -89,6 +89,9 @@
 @property (nonatomic, strong) NSMutableDictionary *sharesID;
 @property (nonatomic, strong) NSMutableDictionary *sharesLink;
 @property (nonatomic, strong) NSMutableDictionary *sharesUserAndGroup;
+
+// Check new Asset Photos/Video in progress 
+@property BOOL automaticCheckAssetInProgress;
 
 // UploadFromOtherUpp
 @property (nonatomic, strong) NSString *fileNameUpload;

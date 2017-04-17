@@ -173,16 +173,19 @@
     _netQueueUploadWWan.name = k_upload_queuewwan;
     _netQueueUploadWWan.maxConcurrentOperationCount = k_maxConcurrentOperationDownloadUpload;
     
+    // Check new Asset Photos/Video in progress  
+    _automaticCheckAssetInProgress = NO;
+    
     // Add notification change session
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(sessionChanged:) name:k_networkingSessionNotification object:nil];
         
     // Initialization Share
-    self.sharesID = [[NSMutableDictionary alloc] init];
-    self.sharesLink = [[NSMutableDictionary alloc] init];
-    self.sharesUserAndGroup = [[NSMutableDictionary alloc] init];
+    self.sharesID = [NSMutableDictionary new];
+    self.sharesLink = [NSMutableDictionary new];
+    self.sharesUserAndGroup = [NSMutableDictionary new];
     
     // Initialization Notification
-    self.listOfNotifications = [[NSMutableArray alloc] init];
+    self.listOfNotifications = [NSMutableArray new];
     
     // Verify Session in progress and Init date task
     self.sessionDateLastDownloadTasks = [NSDate date];
@@ -378,16 +381,16 @@
 
 - (void)process
 {
-// BACKGROND & FOREGROUND
+    // BACKGROND & FOREGROUND
 
-// ONLY BACKGROUND
     
     if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
-    
+
+        // ONLY BACKGROUND
        
     } else {
 
-// ONLY FOREFROUND
+        // ONLY FOREFROUND
         
         [app performSelectorOnMainThread:@selector(loadAutomaticUpload) withObject:nil waitUntilDone:NO];
     
@@ -1210,6 +1213,10 @@
 - (void)loadAutomaticUpload
 {
     CCMetadataNet *metadataNet;
+    
+    // Is loading new Asset ?
+    if (_automaticCheckAssetInProgress)
+        return;
     
     NSArray *uploadInQueue = [CCCoreData getTableMetadataUploadAccount:app.activeAccount];
     NSArray *recordAutomaticUploadInLock = [CCCoreData getAllLockTableAutomaticUploadForAccount:_activeAccount];

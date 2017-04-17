@@ -39,7 +39,6 @@
     NSMutableArray *_queueMetadatas;
     NSMutableArray *_selectedMetadatas;
     NSUInteger _numSelectedMetadatas;
-    BOOL _AutomaticCameraUploadInProgress;      // START/STOP new request : initStateCameraUpload
     
     CCSectionDataSourceMetadata *_sectionDataSource;
     
@@ -1066,8 +1065,8 @@
     CCManageAsset *manageAsset = [[CCManageAsset alloc] init];
     NSMutableArray *newItemsToUpload;
     
-    // CHECK : initStateCameraUpload
-    if (_AutomaticCameraUploadInProgress)
+    // Is loading new Asset ?
+    if (app.automaticCheckAssetInProgress)
         return;
     
     // Check Asset : NEW or FULL
@@ -1087,8 +1086,8 @@
     if ([newItemsToUpload count] == 0)
         return;
     
-    // STOP new request : initStateCameraUpload
-    _AutomaticCameraUploadInProgress = YES;
+    // STOP
+    app.automaticCheckAssetInProgress = YES;
     
     // Disable idle timer
     [[UIApplication sharedApplication] setIdleTimerDisabled: YES];
@@ -1224,8 +1223,8 @@
 {
     [_hud hideHud];
     
-    // START new request : initStateCameraUpload
-    _AutomaticCameraUploadInProgress = NO;
+    // START
+    app.automaticCheckAssetInProgress = NO;
     
     // Enable idle timer
     [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
