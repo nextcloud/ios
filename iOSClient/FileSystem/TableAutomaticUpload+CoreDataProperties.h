@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nullable, nonatomic, copy) NSString *account;
 @property (nullable, nonatomic, copy) NSDate *date;
 @property (nullable, nonatomic, copy) NSString *fileName;
-@property (nullable, nonatomic, copy) NSString *identifier;
+@property (nullable, nonatomic, copy) NSString *assetLocalIdentifier;
 @property (nullable, nonatomic, copy) NSNumber *lock;
 @property (nullable, nonatomic, copy) NSNumber *priority;
 @property (nullable, nonatomic, copy) NSString *selector;

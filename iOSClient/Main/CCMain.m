@@ -1536,10 +1536,6 @@
 
 - (void)uploadFileFailure:(CCMetadataNet *)metadataNet fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    // Automatic upload
-    if([selector isEqualToString:selectorUploadAutomatic] || [selector isEqualToString:selectorUploadAutomaticAll])
-        [app performSelectorOnMainThread:@selector(loadTableAutomaticUploadForSelector:) withObject:selector waitUntilDone:NO];
-    
     // Read File test do not exists
     if (errorCode == k_CCErrorFileUploadNotFound && fileID) {
        
@@ -1561,10 +1557,6 @@
 
 - (void)uploadFileSuccess:(CCMetadataNet *)metadataNet fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost
 {
-    // Automatic upload
-    if([selector isEqualToString:selectorUploadAutomatic] || [selector isEqualToString:selectorUploadAutomaticAll])
-        [app performSelectorOnMainThread:@selector(loadTableAutomaticUploadForSelector:) withObject:selector waitUntilDone:NO];
-    
     if ([selectorPost isEqualToString:selectorReadFolderForced] ) {
             
         [self readFolderWithForced:YES serverUrl:serverUrl];
@@ -1638,7 +1630,7 @@
             CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
             
             metadataNet.action = actionReadFile;
-            metadataNet.identifier = asset.localIdentifier;
+            metadataNet.assetLocalIdentifier = asset.localIdentifier;
             metadataNet.cryptated = cryptated;
             metadataNet.fileName = fileName;
             metadataNet.priority = NSOperationQueuePriorityNormal;

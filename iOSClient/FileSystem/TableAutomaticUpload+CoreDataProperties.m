@@ -17,7 +17,7 @@
 @dynamic account;
 @dynamic date;
 @dynamic fileName;
-@dynamic identifier;
+@dynamic assetLocalIdentifier;
 @dynamic lock;
 @dynamic priority;
 @dynamic selector;

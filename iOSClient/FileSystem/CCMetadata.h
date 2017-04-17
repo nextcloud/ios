@@ -38,7 +38,7 @@
 @property (nonatomic, strong) NSString *fileNameData;
 @property (nonatomic, strong) NSString *fileNamePrint;
 @property (nonatomic, strong) NSString *iconName;
-@property (nonatomic, strong) NSString *localIdentifier;
+@property (nonatomic, strong) NSString *assetLocalIdentifier;
 @property (nonatomic, strong) NSString *model;
 @property (nonatomic ,strong) NSString *nameCurrentDevice;
 @property (nonatomic, strong) NSString *permissions;
@@ -84,7 +84,7 @@
 @property (nonatomic, strong) NSString *fileNameTo;
 @property (nonatomic, strong) NSString *fileNameLocal;
 @property (nonatomic, strong) NSString *fileNamePrint;
-@property (nonatomic, strong) NSString *identifier;
+@property (nonatomic, strong) NSString *assetLocalIdentifier;
 @property (nonatomic, strong) CCMetadata *metadata;
 @property (nonatomic, strong) id options;
 @property (nonatomic, strong) NSString *password;

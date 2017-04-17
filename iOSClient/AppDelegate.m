@@ -280,22 +280,6 @@
 }
 
 //
-// L' applicazione è diventata attiva
-//
-- (void)applicationDidBecomeActive:(UIApplication *)application
-{
-    // After 5 sec. for wait load app.activeMain start if exists in Table Automatic Upload + All
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5.0 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        
-        if ([CCCoreData countTableAutomaticUploadForAccount:self.activeAccount selector:selectorUploadAutomatic] > 0)
-            [self performSelectorOnMainThread:@selector(loadTableAutomaticUploadForSelector:) withObject:selectorUploadAutomatic waitUntilDone:NO];
-        
-        if ([CCCoreData countTableAutomaticUploadForAccount:self.activeAccount selector:selectorUploadAutomaticAll] > 0)
-            [self performSelectorOnMainThread:@selector(loadTableAutomaticUploadForSelector:) withObject:selectorUploadAutomaticAll waitUntilDone:NO];
-    });
-}
-
-//
 // L' applicazione si dimetterà dallo stato di attivo
 //
 - (void)applicationWillResignActive:(UIApplication *)application
@@ -396,6 +380,9 @@
 {
 // BACKGROND & FOREGROUND
     
+        //[app performSelectorOnMainThread:@selector(loadTableAutomaticUploadForSelector:) withObject:selectorUploadAutomaticAll waitUntilDone:NO];
+    [app performSelectorOnMainThread:@selector(loadTableAutomaticUploadForSelector:) withObject:selectorUploadAutomatic waitUntilDone:NO];
+
 
 // ONLY BACKGROUND
     
@@ -1258,12 +1245,12 @@
         BOOL recordFound = NO;
         
         for (CCMetadataNet *metadataNet in UploadInQueue) {
-            if (metadataNet.identifier == tableAutomaticUpload.identifier)
+            if (metadataNet.assetLocalIdentifier == tableAutomaticUpload.assetLocalIdentifier)
                 recordFound = YES;
         }
         
         if (!recordFound)
-            [CCCoreData unlockTableAutomaticUploadForAccount:_activeAccount identifier:tableAutomaticUpload.identifier];
+            [CCCoreData unlockTableAutomaticUploadForAccount:_activeAccount assetLocalIdentifier:tableAutomaticUpload.assetLocalIdentifier];
     }
 
     // Verify num error if selectorUploadAutomaticAll
@@ -1288,24 +1275,24 @@
         NSString *folderPhotos = [CCCoreData getCameraUploadFolderNamePathActiveAccount:app.activeAccount activeUrl:app.activeUrl];
         BOOL useSubFolder = [CCCoreData getCameraUploadCreateSubfolderActiveAccount:app.activeAccount];
 
-        PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[metadataNet.identifier] options:nil];
+        PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[metadataNet.assetLocalIdentifier] options:nil];
 
         if (!result.count) {
             
-            [CCCoreData addActivityClient:metadataNet.fileName fileID:metadataNet.identifier action:k_activityDebugActionUpload selector:selector note:@"Internal error image/video not found" type:k_activityTypeFailure verbose:k_activityVerboseHigh account:_activeAccount activeUrl:_activeUrl];
+            [CCCoreData addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:@"Internal error image/video not found" type:k_activityTypeFailure verbose:k_activityVerboseHigh account:_activeAccount activeUrl:_activeUrl];
             
-            [CCCoreData deleteTableAutomaticUploadForAccount:_activeAccount identifier:metadataNet.identifier];
+            [CCCoreData deleteTableAutomaticUploadForAccount:_activeAccount assetLocalIdentifier:metadataNet.assetLocalIdentifier];
             
             [self updateApplicationIconBadgeNumber];
             
-            [self performSelectorOnMainThread:@selector(loadTableAutomaticUploadForSelector:) withObject:selector waitUntilDone:NO];
+            //[self performSelectorOnMainThread:@selector(loadTableAutomaticUploadForSelector:) withObject:selector waitUntilDone:NO];
             
             return;
         }
         
         if(![self createFolderSubFolderAutomaticUploadFolderPhotos:folderPhotos useSubFolder:useSubFolder assets:[[NSArray alloc] initWithObjects:result[0], nil] selector:selectorUploadAutomatic]) {
             
-            [CCCoreData unlockTableAutomaticUploadForAccount:_activeAccount identifier:metadataNet.identifier];
+            [CCCoreData unlockTableAutomaticUploadForAccount:_activeAccount assetLocalIdentifier:metadataNet.assetLocalIdentifier];
             
             return;
         }
@@ -1313,17 +1300,7 @@
     
     if (metadataNet) {
         
-        NSOperationQueue *queue;
-        
-        if ([metadataNet.session containsString:@"wwan"])
-            queue = app.netQueueUploadWWan;
-        else
-            queue = app.netQueueUpload;
-        
-        [self addNetworkingOperationQueue:queue delegate:app.activeMain metadataNet:metadataNet];
-        
-        // Delete record on Table Automatic Upload
-        [CCCoreData deleteTableAutomaticUploadForAccount:self.activeAccount identifier:metadataNet.identifier];
+        [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet.assetLocalIdentifier fileName:metadataNet.fileName serverUrl:metadataNet.serverUrl cryptated:metadataNet.cryptated session:metadataNet.session taskStatus:metadataNet.taskStatus selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:metadataNet.errorCode delegate:app.activeMain];
     }
 }
 

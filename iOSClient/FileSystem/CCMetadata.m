@@ -53,7 +53,7 @@
     [metadata setFileNameData: self.fileNameData];
     [metadata setFileNamePrint: self.fileNamePrint];
     [metadata setIconName: self.iconName];
-    [metadata setLocalIdentifier: self.localIdentifier];
+    [metadata setAssetLocalIdentifier: self.assetLocalIdentifier];
     [metadata setModel: self.model];
     [metadata setNameCurrentDevice: self.nameCurrentDevice];
     [metadata setPermissions: self.permissions];
@@ -94,7 +94,7 @@
         _fileNameData = [decoder decodeObjectForKey:@"fileNameData"];
         _fileNamePrint = [decoder decodeObjectForKey:@"fileNamePrint"];
         _iconName = [decoder decodeObjectForKey:@"iconName"];
-        _localIdentifier = [decoder decodeObjectForKey:@"localIdentifier"];
+        _assetLocalIdentifier = [decoder decodeObjectForKey:@"assetLocalIdentifier"];
         _model = [decoder decodeObjectForKey:@"model"];
         _nameCurrentDevice = [decoder decodeObjectForKey:@"nameCurrentDevice"];
         _permissions = [decoder decodeObjectForKey:@"permissions"];
@@ -132,7 +132,7 @@
     [encoder encodeObject:_fileNameData forKey:@"fileNameData"];
     [encoder encodeObject:_fileNamePrint forKey:@"fileNamePrint"];
     [encoder encodeObject:_iconName forKey:@"iconName"];
-    [encoder encodeObject:_localIdentifier forKey:@"localIdentifier"];
+    [encoder encodeObject:_assetLocalIdentifier forKey:@"assetLocalIdentifier"];
     [encoder encodeObject:_model forKey:@"model"];
     [encoder encodeObject:_nameCurrentDevice forKey:@"nameCurrentDevice"];
     [encoder encodeObject:_permissions forKey:@"permissions"];
@@ -184,7 +184,7 @@
     
     [metadataNet setAccount: self.account];
     [metadataNet setAction: self.action];
-    [metadataNet setIdentifier: self.identifier];
+    [metadataNet setAssetLocalIdentifier: self.assetLocalIdentifier];
     [metadataNet setCryptated: self.cryptated];
     [metadataNet setDate: self.date];
     [metadataNet setDelegate: self.delegate];

@@ -27,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nullable, nonatomic, copy) NSString *fileNameData;
 @property (nullable, nonatomic, copy) NSString *fileNamePrint;
 @property (nullable, nonatomic, copy) NSString *iconName;
-@property (nullable, nonatomic, copy) NSString *localIdentifier;
+@property (nullable, nonatomic, copy) NSString *assetLocalIdentifier;
 @property (nullable, nonatomic, copy) NSString *model;
 @property (nullable, nonatomic, copy) NSString *nameCurrentDevice;
 @property (nullable, nonatomic, copy) NSString *permissions;

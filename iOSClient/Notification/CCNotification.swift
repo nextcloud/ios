@@ -80,9 +80,9 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
                 let metadataNet = CCMetadataNet.init(account: self.appDelegate.activeAccount)!
                 
                 metadataNet.action = actionSetNotificationServer
-                metadataNet.identifier = "\(notification.idNotification)"
+                metadataNet.assetLocalIdentifier = "\(notification.idNotification)"
                 metadataNet.options = "DELETE"
-                metadataNet.serverUrl = "\(self.appDelegate.activeUrl!)/\(k_url_acces_remote_notification_api)/\(metadataNet.identifier!)"
+                metadataNet.serverUrl = "\(self.appDelegate.activeUrl!)/\(k_url_acces_remote_notification_api)/\(metadataNet.assetLocalIdentifier!)"
 
                 self.appDelegate.addNetworkingOperationQueue(self.appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
             }
@@ -109,7 +109,7 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
                             let metadataNet = CCMetadataNet.init(account: self.appDelegate.activeAccount)!
                             
                             metadataNet.action = actionSetNotificationServer
-                            metadataNet.identifier = "\(notification.idNotification)"
+                            metadataNet.assetLocalIdentifier = "\(notification.idNotification)"
                             metadataNet.serverUrl =  (actionNotification as! OCNotificationsAction).link
                             metadataNet.options = (actionNotification as! OCNotificationsAction).type
                             
@@ -212,7 +212,7 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
         
         let listOfNotifications = appDelegate.listOfNotifications as NSArray as! [OCNotifications]
         
-        if let index = listOfNotifications.index(where: {$0.idNotification == Int(metadataNet.identifier)})  {
+        if let index = listOfNotifications.index(where: {$0.idNotification == Int(metadataNet.assetLocalIdentifier)})  {
             appDelegate.listOfNotifications.removeObject(at: index)
         }
         

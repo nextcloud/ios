@@ -26,7 +26,7 @@
 @dynamic fileNameData;
 @dynamic fileNamePrint;
 @dynamic iconName;
-@dynamic localIdentifier;
+@dynamic assetLocalIdentifier;
 @dynamic model;
 @dynamic nameCurrentDevice;
 @dynamic permissions;
