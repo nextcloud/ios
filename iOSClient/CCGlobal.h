@@ -64,9 +64,6 @@ extern NSString *const urlBaseUploadDB;
 
 #define k_dayForceReadFolder                            3
 
-#define k_MaxGroupBySessionUploadDatasource             50
-#define k_MaxGroupBySessionDownloadDatasource           50
-
 #define k_returnCreateFolderPlain                       0
 #define k_returnCreateFotoVideoPlain                    1
 #define k_returnCreateFilePlain                         2
