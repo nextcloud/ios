@@ -1136,14 +1136,11 @@
         NSLog(@"Convert url %@", url);
     }
     
-    // selectorUploadAutomaticAll : create the folder for Photos & if request the subfolders
-    if (assetsFull) {
-        
-        if(![app createFolderSubFolderAutomaticUploadFolderPhotos:folderPhotos useSubFolder:useSubFolder assets:newItemsPHAssetToUpload selector:selectorUploadAutomaticAll]) {
+    // Create the folder for Photos & if request the subfolders
+    if(![app createFolderSubFolderAutomaticUploadFolderPhotos:folderPhotos useSubFolder:useSubFolder assets:newItemsPHAssetToUpload selector:selectorUploadAutomaticAll]) {
             
-            [self endLoadingAssets];
-            return;
-        }
+        [self endLoadingAssets];
+        return;
     }
     
     for (PHAsset *asset in newItemsPHAssetToUpload) {
