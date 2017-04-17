@@ -468,10 +468,6 @@
         case 0:
             sectionName = [CCUtility localizableBrand:@"_photo_folder_photocamera_" table:nil];
             break;
-        case 2:
-            if ([CCCoreData getCameraUploadActiveAccount:app.activeAccount]) sectionName = [CCUtility localizableBrand:@"_upload_automatic_videos_footer_" table:nil ];
-            else sectionName = @"";
-            break;
         case 3:
             if ([CCCoreData getCameraUploadActiveAccount:app.activeAccount]) sectionName = [CCUtility localizableBrand:@"_photo_folder_background_" table:nil];
             else sectionName = @"";

@@ -157,7 +157,6 @@
 "_upload_automatic_photos_" = "Upload camera photos automatically";
 "_upload_automatic_videos_" = "Upload camera videos automatically";
 "_photo_folder_photocamera_"= "The photos will be uploaded to the folder 'photos' in your Cloud";
-"_upload_automatic_videos_footer_"  = "Due to the use of the CPU, the videos will be sent only when _brand_ is active and in the foreground.";
 "_photo_folder_background_"         = "This option requires the use of GPS to trigger the detection of new photos in the camera roll once the location changes significantly";
 "_cameraupload_background_title_"   = "Limitations";
 "_cameraupload_background_msg_"     = "Due to IOS restrictions, it is not yet possible to perform background processes, unless GPS services are activated. Once the cell in the cellular network is changed, the system wakes up _brand_ for a short time and checks for new photos to upload to the cloud.";

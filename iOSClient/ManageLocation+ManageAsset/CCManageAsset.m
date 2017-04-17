@@ -110,9 +110,9 @@
             [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]];
     }
     
-    // Video - Foreground
+    // Video
     
-    if ([CCCoreData getCameraUploadVideoActiveAccount:app.activeAccount] && !([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground)) {
+    if ([CCCoreData getCameraUploadVideoActiveAccount:app.activeAccount]) {
         
         dispatch_semaphore_t semaphoreAsset = dispatch_semaphore_create(0);
         

@@ -379,8 +379,6 @@
 - (void)verifyProcess
 {
 // BACKGROND & FOREGROUND
-    
-    [app performSelectorOnMainThread:@selector(loadAutomaticUpload) withObject:nil waitUntilDone:NO];
 
 // ONLY BACKGROUND
     
@@ -390,6 +388,8 @@
     } else {
 
 // ONLY FOREFROUND
+        
+        [app performSelectorOnMainThread:@selector(loadAutomaticUpload) withObject:nil waitUntilDone:NO];
     
     }
 }
