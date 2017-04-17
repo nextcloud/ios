@@ -269,7 +269,7 @@
     }
     
     // Start timer Verify Process
-    self.timerVerifyProcess = [NSTimer scheduledTimerWithTimeInterval:5.0 target:self selector:@selector(verifyProcess) userInfo:nil repeats:YES];
+    self.timerProcess = [NSTimer scheduledTimerWithTimeInterval:k_timerProcess target:self selector:@selector(process) userInfo:nil repeats:YES];
     
     // Registration Push Notification
     UIUserNotificationType types = UIUserNotificationTypeSound | UIUserNotificationTypeBadge | UIUserNotificationTypeAlert;
@@ -373,10 +373,10 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Verify Process 5 seconds =====
+#pragma mark ===== Process k_timerProcess seconds =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)verifyProcess
+- (void)process
 {
 // BACKGROND & FOREGROUND
 

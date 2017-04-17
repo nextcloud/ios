@@ -43,8 +43,8 @@
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate, BKPasscodeLockScreenManagerDelegate, BKPasscodeViewControllerDelegate, LMMediaPlayerViewDelegate, TWMessageBarStyleSheet, CCNetworkingDelegate>
 
-// Timer 5 sec.
-@property (nonatomic, strong) NSTimer *timerVerifyProcess;
+// Timer Process
+@property (nonatomic, strong) NSTimer *timerProcess;
 
 // For LMMediaPlayerView
 @property (strong, nonatomic) UIWindow *window;
