@@ -34,14 +34,6 @@
                                     <constraint firstAttribute="height" constant="50" id="fWJ-Sq-Yb3"/>
                                 </constraints>
                             </imageView>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0rc-qU-t2v">
-                                <rect key="frame" x="314" y="20" width="53" height="32"/>
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
-                                <state key="normal" title="Button"/>
-                                <connections>
-                                    <action selector="endButtonAction:" destination="FgK-eH-DI1" eventType="touchDown" id="Ibi-H5-8Lo"/>
-                                </connections>
-                            </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5R0-1B-nUL" userLabel="Label Title">
                                 <rect key="frame" x="74" y="29" width="232" height="50"/>
                                 <constraints>
@@ -51,6 +43,14 @@
                                 <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0rc-qU-t2v">
+                                <rect key="frame" x="314" y="29" width="53" height="32"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
+                                <state key="normal" title="Button"/>
+                                <connections>
+                                    <action selector="endButtonAction:" destination="FgK-eH-DI1" eventType="touchDown" id="Ibi-H5-8Lo"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
@@ -61,7 +61,7 @@
                             <constraint firstAttribute="trailingMargin" secondItem="0rc-qU-t2v" secondAttribute="trailing" constant="-8" id="F2h-Gs-1HX"/>
                             <constraint firstAttribute="trailing" secondItem="ejc-ux-EAE" secondAttribute="trailing" id="Qmg-GS-aNl"/>
                             <constraint firstAttribute="trailingMargin" secondItem="5R0-1B-nUL" secondAttribute="trailing" constant="53" id="Wf2-P9-9R0"/>
-                            <constraint firstItem="0rc-qU-t2v" firstAttribute="top" secondItem="ypH-iM-3do" secondAttribute="bottom" id="ZUu-Ur-vra"/>
+                            <constraint firstItem="0rc-qU-t2v" firstAttribute="top" secondItem="ypH-iM-3do" secondAttribute="bottom" constant="9" id="ZUu-Ur-vra"/>
                             <constraint firstItem="ejc-ux-EAE" firstAttribute="top" secondItem="ypH-iM-3do" secondAttribute="bottom" constant="66" id="e5l-5V-Ic6"/>
                             <constraint firstItem="g3i-ij-OJy" firstAttribute="top" secondItem="ejc-ux-EAE" secondAttribute="bottom" id="g0g-ki-s02"/>
                             <constraint firstAttribute="leadingMargin" secondItem="g7r-0n-C6A" secondAttribute="leading" id="pUq-DL-LqB"/>
