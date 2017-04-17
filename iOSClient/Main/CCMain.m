@@ -1536,6 +1536,10 @@
 
 - (void)uploadFileFailure:(CCMetadataNet *)metadataNet fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode
 {
+    // Automatic upload All
+    if([selector isEqualToString:selectorUploadAutomaticAll])
+        [app performSelectorOnMainThread:@selector(loadAutomaticUpload) withObject:nil waitUntilDone:NO];
+    
     // Read File test do not exists
     if (errorCode == k_CCErrorFileUploadNotFound && fileID) {
        
@@ -1557,6 +1561,10 @@
 
 - (void)uploadFileSuccess:(CCMetadataNet *)metadataNet fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost
 {
+    // Automatic upload All
+    if([selector isEqualToString:selectorUploadAutomaticAll])
+        [app performSelectorOnMainThread:@selector(loadAutomaticUpload) withObject:nil waitUntilDone:NO];
+    
     if ([selectorPost isEqualToString:selectorReadFolderForced] ) {
             
         [self readFolderWithForced:YES serverUrl:serverUrl];

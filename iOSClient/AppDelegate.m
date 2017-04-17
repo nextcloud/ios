@@ -1211,21 +1211,14 @@
 {
     CCMetadataNet *metadataNet;
     
-    // verify Lock pending
-    /*
-    NSArray *UploadAutomaticInQueue = [self verifyExistsInQueuesUploadSelector:selectorUploadAutomatic];
-    NSArray *UploadAutomaticAllInQueue = [self verifyExistsInQueuesUploadSelector:selectorUploadAutomaticAll];
-    NSMutableArray *UploadInQueue = [NSMutableArray new];
-    [UploadInQueue addObjectsFromArray:UploadAutomaticInQueue];
-    [UploadInQueue addObjectsFromArray:UploadAutomaticAllInQueue];
-
+    NSArray *uploadInQueue = [CCCoreData getTableMetadataUploadAccount:app.activeAccount];
     NSArray *recordAutomaticUploadInLock = [CCCoreData getAllLockTableAutomaticUploadForAccount:_activeAccount];
     
     for (TableAutomaticUpload *tableAutomaticUpload in recordAutomaticUploadInLock) {
         
         BOOL recordFound = NO;
         
-        for (CCMetadataNet *metadataNet in UploadInQueue) {
+        for (CCMetadataNet *metadataNet in uploadInQueue) {
             if (metadataNet.assetLocalIdentifier == tableAutomaticUpload.assetLocalIdentifier)
                 recordFound = YES;
         }
@@ -1233,8 +1226,7 @@
         if (!recordFound)
             [CCCoreData unlockTableAutomaticUploadForAccount:_activeAccount assetLocalIdentifier:tableAutomaticUpload.assetLocalIdentifier];
     }
-    */
-    
+
     // ------------------------- <selectorUploadAutomatic> -------------------------
     do {
         metadataNet = [CCCoreData getTableAutomaticUploadForAccount:self.activeAccount selector:selectorUploadAutomatic];
@@ -1246,26 +1238,25 @@
 
             PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[metadataNet.assetLocalIdentifier] options:nil];
 
-            if (!result.count) {
-            
+            if (result.count) {
+                
+                if(![self createFolderSubFolderAutomaticUploadFolderPhotos:folderPhotos useSubFolder:useSubFolder assets:[[NSArray alloc] initWithObjects:result[0], nil] selector:selectorUploadAutomatic]) {
+                    
+                    [CCCoreData unlockTableAutomaticUploadForAccount:_activeAccount assetLocalIdentifier:metadataNet.assetLocalIdentifier];
+                    
+                    break;
+                }
+                
+                [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet.assetLocalIdentifier fileName:metadataNet.fileName serverUrl:metadataNet.serverUrl cryptated:metadataNet.cryptated session:metadataNet.session taskStatus:metadataNet.taskStatus selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:metadataNet.errorCode delegate:app.activeMain];
+                
+            } else {
+                
                 [CCCoreData addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionUpload selector:selectorUploadAutomatic note:@"Internal error image/video not found [0]" type:k_activityTypeFailure verbose:k_activityVerboseHigh account:_activeAccount activeUrl:_activeUrl];
-            
+                
                 [CCCoreData deleteTableAutomaticUploadForAccount:_activeAccount assetLocalIdentifier:metadataNet.assetLocalIdentifier];
-            
+                
                 [self updateApplicationIconBadgeNumber];
-            
-                break;
             }
-        
-            if(![self createFolderSubFolderAutomaticUploadFolderPhotos:folderPhotos useSubFolder:useSubFolder assets:[[NSArray alloc] initWithObjects:result[0], nil] selector:selectorUploadAutomatic]) {
-            
-                [CCCoreData unlockTableAutomaticUploadForAccount:_activeAccount assetLocalIdentifier:metadataNet.assetLocalIdentifier];
-            
-                break;
-            }
-        
-            [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet.assetLocalIdentifier fileName:metadataNet.fileName serverUrl:metadataNet.serverUrl cryptated:metadataNet.cryptated session:metadataNet.session taskStatus:metadataNet.taskStatus selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:metadataNet.errorCode delegate:app.activeMain];
-        
         }
         
     } while (metadataNet);
@@ -1293,18 +1284,18 @@
         
         PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[metadataNet.assetLocalIdentifier] options:nil];
         
-        if (!result.count) {
+        if (result.count) {
+            
+            [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet.assetLocalIdentifier fileName:metadataNet.fileName serverUrl:metadataNet.serverUrl cryptated:metadataNet.cryptated session:metadataNet.session taskStatus:metadataNet.taskStatus selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:metadataNet.errorCode delegate:app.activeMain];
+            
+        } else {
             
             [CCCoreData addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionUpload selector:selectorUploadAutomatic note:@"Internal error image/video not found [0]" type:k_activityTypeFailure verbose:k_activityVerboseHigh account:_activeAccount activeUrl:_activeUrl];
             
             [CCCoreData deleteTableAutomaticUploadForAccount:_activeAccount assetLocalIdentifier:metadataNet.assetLocalIdentifier];
             
             [self updateApplicationIconBadgeNumber];
-            
-            return;
         }
-        
-        [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet.assetLocalIdentifier fileName:metadataNet.fileName serverUrl:metadataNet.serverUrl cryptated:metadataNet.cryptated session:metadataNet.session taskStatus:metadataNet.taskStatus selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:metadataNet.errorCode delegate:app.activeMain];
     }
 }
 
