@@ -160,9 +160,7 @@
 - (void)addNetworkingOperationQueue:(NSOperationQueue *)netQueue delegate:(id)delegate metadataNet:(CCMetadataNet *)metadataNet;
 
 - (NSMutableArray *)verifyExistsInQueuesDownloadSelector:(NSString *)selector;
-- (NSMutableArray *)verifyExistsInQueuesUploadSelector:(NSString *)selector;
 
-- (void)loadAutomaticUploadForSelector:(NSString *)selector;
 - (BOOL)createFolderSubFolderAutomaticUploadFolderPhotos:(NSString *)folderPhotos useSubFolder:(BOOL)useSubFolder assets:(NSArray *)assets selector:(NSString *)selector;
 - (void)dropAutomaticUploadWithSelector:(NSString *)selector;
 

@@ -142,11 +142,17 @@ extern NSString *const urlBaseUploadDB;
 #define k_maxConcurrentOperation                        10
 #define k_maxConcurrentOperationDownloadUpload          10
 
+#define k_maxSelectorUploadAutomatic                    10
+#define k_maxSelectorUploadAutomaticAll                 1
+
 // Error
 #define k_CCErrorTaskNil                                -9999
 #define k_CCErrorTaskDownloadNotFound                   -9998
 #define k_CCErrorFileUploadNotFound                     -9997
 #define k_CCErrorInternalError                          -9996
+
+// Search
+#define k_minCharsSearch                                2
 
 // Metadata ed ID
 #define k_uploadSessionID                               @"ID_UPLOAD_"
@@ -261,9 +267,6 @@ extern NSString *const urlBaseUploadDB;
 
 #define k_pageControlCenterTransfer                     @"Transfer"
 #define k_pageControlCenterActivity                     @"Activity"
-
-// Search
-#define k_minCharsSearch                                2
 
 // Activity
 #define k_activityVerboseDefault                        0
