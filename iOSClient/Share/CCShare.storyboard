@@ -75,7 +75,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Zxn-bc-fzJ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="565.60000000000002" y="935.98200899550227"/>
+            <point key="canvasLocation" x="513" y="614"/>
         </scene>
         <!--ShareUser ownCloud-->
         <scene sceneID="NIA-LD-rfC">
@@ -163,7 +163,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="a31-QY-djo" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1309.5999999999999" y="1305.697151424288"/>
+            <point key="canvasLocation" x="1950" y="614"/>
         </scene>
         <!--CCShareInfoCMOC ownCloud-->
         <scene sceneID="9He-gi-9NT">
@@ -182,7 +182,7 @@
                                 <color key="backgroundColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             </tableView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="z1J-6F-519">
-                                <rect key="frame" x="535" y="20" width="53" height="32"/>
+                                <rect key="frame" x="314" y="20" width="53" height="32"/>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
                                 <state key="normal" title="Button"/>
                                 <connections>
@@ -192,7 +192,7 @@
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstAttribute="trailingMargin" secondItem="z1J-6F-519" secondAttribute="trailing" constant="-229" id="470-o5-hbr"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="z1J-6F-519" secondAttribute="trailing" constant="-8" id="470-o5-hbr"/>
                             <constraint firstItem="z1J-6F-519" firstAttribute="top" secondItem="cJu-FE-egs" secondAttribute="bottom" id="4ax-aH-ys3"/>
                             <constraint firstItem="0Tl-U6-oZH" firstAttribute="top" secondItem="cJu-FE-egs" secondAttribute="bottom" constant="40" id="7hl-hq-nP4"/>
                             <constraint firstItem="0Tl-U6-oZH" firstAttribute="leading" secondItem="ThM-gV-z79" secondAttribute="leading" id="E6g-O0-jvY"/>
@@ -207,7 +207,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="NFe-CI-5yc" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1309.5999999999999" y="1985.7571214392806"/>
+            <point key="canvasLocation" x="2593" y="614"/>
         </scene>
     </scenes>
 </document>
