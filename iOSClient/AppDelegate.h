@@ -162,7 +162,7 @@
 - (NSMutableArray *)verifyExistsInQueuesDownloadSelector:(NSString *)selector;
 - (NSMutableArray *)verifyExistsInQueuesUploadSelector:(NSString *)selector;
 
-- (void)loadTableAutomaticUploadForSelector:(NSString *)selector;
+- (void)loadAutomaticUploadForSelector:(NSString *)selector;
 - (BOOL)createFolderSubFolderAutomaticUploadFolderPhotos:(NSString *)folderPhotos useSubFolder:(BOOL)useSubFolder assets:(NSArray *)assets selector:(NSString *)selector;
 - (void)dropAutomaticUploadWithSelector:(NSString *)selector;
 

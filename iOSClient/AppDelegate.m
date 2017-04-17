@@ -380,8 +380,8 @@
 {
 // BACKGROND & FOREGROUND
     
-        //[app performSelectorOnMainThread:@selector(loadTableAutomaticUploadForSelector:) withObject:selectorUploadAutomaticAll waitUntilDone:NO];
-    [app performSelectorOnMainThread:@selector(loadTableAutomaticUploadForSelector:) withObject:selectorUploadAutomatic waitUntilDone:NO];
+        //[app performSelectorOnMainThread:@selector(loadAutomaticUploadForSelector:) withObject:selectorUploadAutomaticAll waitUntilDone:NO];
+    [app performSelectorOnMainThread:@selector(loadAutomaticUploadForSelector:) withObject:selectorUploadAutomatic waitUntilDone:NO];
 
 
 // ONLY BACKGROUND
@@ -1224,7 +1224,7 @@
     return metadatasNet;
 }
 
-- (void)loadTableAutomaticUploadForSelector:(NSString *)selector
+- (void)loadAutomaticUploadForSelector:(NSString *)selector
 {
     // Only one
     if ([[self verifyExistsInQueuesUploadSelector:selector] count] > 1) {
