@@ -43,8 +43,6 @@
 
 - (void)verifyChangeMedatas:(NSArray *)allRecordMetadatas serverUrl:(NSString *)serverUrl account:(NSString *)account withDownload:(BOOL)withDownload;
 
-- (BOOL)synchronizeFolderAnimationDirectory:(NSArray *)directory setGraphicsFolder:(BOOL)setGraphicsFolder;
-
 - (void)readFolderServerUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID selector:(NSString *)selector;
 
 @end

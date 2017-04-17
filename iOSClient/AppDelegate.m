@@ -396,7 +396,6 @@
 {
 // BACKGROND & FOREGROUND
     
-    [[CCSynchronize sharedSynchronize] synchronizeFolderAnimationDirectory:nil setGraphicsFolder:YES];
 
 // ONLY BACKGROUND
     

@@ -5082,17 +5082,6 @@
             cell.offlineImageView.image = [UIImage imageNamed:image_favorite];
         }
         
-        // Animation synchronized gif
-        if ([[CCSynchronize sharedSynchronize] synchronizeFolderAnimationDirectory:[[NSArray alloc] initWithObjects:directoryServerUrl, nil] setGraphicsFolder:NO]) {
-            
-            NSURL *myURL;
-            
-            if (metadata.cryptated) myURL = [[NSBundle mainBundle] URLForResource: @"synchronizedcrypto" withExtension:@"gif"];
-            else myURL = [[NSBundle mainBundle] URLForResource: @"synchronized" withExtension:@"gif"];
-            
-            //cell.synchronizedImageView.image = [UIImage animatedImageWithAnimatedGIFURL:myURL];
-        }
-
     } else {
     
         // File                

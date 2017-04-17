@@ -543,62 +543,11 @@
 
             [app addNetworkingOperationQueue:app.netQueueDownload delegate:app.activeMain metadataNet:metadataNet];
         }
-    
-        [[CCSynchronize sharedSynchronize] synchronizeFolderAnimationDirectory:[[NSArray alloc] initWithObjects:serverUrl, nil] setGraphicsFolder:YES];
         
         [app.activeMain reloadDatasource:serverUrl fileID:nil selector:nil];
         
         [_hud hideHud];
     });
 }
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Synchronize Folder Animation =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (BOOL)synchronizeFolderAnimationDirectory:(NSArray *)directory setGraphicsFolder:(BOOL)setGraphicsFolder
-{
-    BOOL animation = NO;
-    BOOL isAtLeastOneInAnimation = NO;
-    NSMutableOrderedSet *serversUrlInDownload = [NSMutableOrderedSet new];
-    
-    // test
-    if ([directory count] == 0 && [self.foldersInSynchronized count] == 0)
-        return isAtLeastOneInAnimation;
-    
-    if (directory)
-        [self.foldersInSynchronized addObjectsFromArray:directory];
-    else
-        directory = [[NSArray alloc] initWithArray:self.foldersInSynchronized.array];
-    
-    // Active in download
-    NSMutableArray *metadatasNet = [app verifyExistsInQueuesDownloadSelector:selectorDownloadSynchronize];
-    
-    for (CCMetadataNet *metadataNet in metadatasNet)
-        [serversUrlInDownload addObject:metadataNet.serverUrl];
-    
-    // Animation ON/OFF
-    
-    for (NSString *serverUrl in directory) {
-        
-        animation = [serversUrlInDownload containsObject:serverUrl];
-        
-        if (animation)
-            isAtLeastOneInAnimation = YES;
-        else
-            [self.foldersInSynchronized removeObject:serverUrl];
-        
-        if (setGraphicsFolder) {
-            
-            NSString *serverUrlOffline = [CCUtility deletingLastPathComponentFromServerUrl:serverUrl];
-            CCMain *viewController = [app.listMainVC objectForKey:serverUrlOffline];
-            if (viewController)
-                [viewController synchronizeFolderGraphicsServerUrl:serverUrl animation:animation];
-        }
-    }
-    
-    return isAtLeastOneInAnimation;
-}
-
 
 @end
