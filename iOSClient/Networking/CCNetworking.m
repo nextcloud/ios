@@ -436,11 +436,16 @@
         
             // Notification change session
             if (metadata) {
+                
                 NSArray *object = [[NSArray alloc] initWithObjects:session, metadata, task, nil];
                 [[NSNotificationCenter defaultCenter] postNotificationName:k_networkingSessionNotification object:object];
-            }
-            
-            [self downloadFileSuccessFailure:fileName fileID:metadata.fileID rev:rev date:date serverUrl:serverUrl selector:metadata.sessionSelector selectorPost:metadata.sessionSelectorPost errorCode:errorCode];
+                
+                [self downloadFileSuccessFailure:fileName fileID:metadata.fileID rev:rev date:date serverUrl:serverUrl selector:metadata.sessionSelector selectorPost:metadata.sessionSelectorPost errorCode:errorCode];
+                
+            } else {
+                
+                NSLog(@"[LOG] Serius error internal download : metadata not found");
+            }        
         });
     }
     
@@ -468,12 +473,17 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             
             // Notification change session
-            if (metadata) {
+            if (fileID && metadata ) {
+                
                 NSArray *object = [[NSArray alloc] initWithObjects:session, metadata, task, nil];
                 [[NSNotificationCenter defaultCenter] postNotificationName:k_networkingSessionNotification object:object];
+                
+                [self uploadFileSuccessFailure:metadata fileName:fileName fileID:fileID rev:rev date:date serverUrl:serverUrl errorCode:errorCode];
+                
+            } else {
+                
+                NSLog(@"[LOG] Serius error internal upload : fileID or metadata not found");
             }
-            
-            [self uploadFileSuccessFailure:metadata fileName:fileName fileID:fileID rev:rev date:date serverUrl:serverUrl errorCode:errorCode];
         });
     }
 }
