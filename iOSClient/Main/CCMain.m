@@ -2642,6 +2642,11 @@
         cell.progressView.hidden = NO;
         [cell.progressView setProgress:progress];
     }
+        
+    if (progress == 0)
+        [self.navigationController cancelCCProgress];
+    else
+        [self.navigationController setCCProgressPercentage:progress*100 andTintColor:COLOR_NAVIGATIONBAR_PROGRESS];
 }
 
 - (void)reloadTaskButton:(id)sender withEvent:(UIEvent *)event
@@ -5077,6 +5082,7 @@
     // è una directory
     if (metadata.directory) {
         
+        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         cell.labelInfoFile.text = [CCUtility dateDiff:metadata.date];
         
         lunghezzaFile = @" ";
