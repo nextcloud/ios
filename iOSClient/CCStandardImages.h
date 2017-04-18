@@ -109,6 +109,7 @@
 
 #define image_passcode                          @"passcode"
 #define image_plist                             @"plist"
+#define image_photosNoRecord                    @"photosNoRecord"
 
 #define image_quickActionPhotos                 @"quickActionPhotos"
 #define image_quickActionUpload                 @"quickActionUpload"
