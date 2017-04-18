@@ -75,6 +75,8 @@
 
 #define image_home                              @"home"
 
+#define image_localStorageNoRecord              @"localStorageNoRecord"
+
 #define image_lock                              @"lock"
 
 #define image_NextcloudMenuChangeAccount        @"typeCloudNextcloud"

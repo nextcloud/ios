@@ -220,6 +220,7 @@
 "_favorites_"                   = "Favorites";
 "_offline_"                     = "Offline";
 "_local_storage_"               = "Local storage";
+"_local_storage_no_record_"     = "No files yet";
 "_no_files_uploaded_"           = "No files uploaded";
 "_tutorial_favorite_view_"      = "Here is the list of files that you have selected as favorites.";
 "_tutorial_offline_view_"       = "Copy here the files that should be available offline.\n\nThey will be synchronized with your cloud.";
