@@ -33,7 +33,7 @@
 
 @interface CCFavorites () <CCActionsDeleteDelegate, CCActionsSettingFavoriteDelegate>
 {
-    NSArray *dataSource;
+    NSArray *_dataSource;
     BOOL _reloadDataSource;
 }
 @end
@@ -61,7 +61,7 @@
     [self.tableView registerNib:[UINib nibWithNibName:@"CCFavoritesCell" bundle:nil] forCellReuseIdentifier:@"Cell"];
 
     // dataSource
-    dataSource = [NSMutableArray new];
+    _dataSource = [NSMutableArray new];
     
     // Metadata
     _metadata = [CCMetadata new];
@@ -70,7 +70,7 @@
     self.tableView.separatorColor = COLOR_SEPARATOR_TABLE;
     self.tableView.emptyDataSetDelegate = self;
     self.tableView.emptyDataSetSource = self;
-    self.tableView.allowsMultipleSelectionDuringEditing = NO;
+    self.tableView.delegate = self;
     
     // calculate _serverUrl
     if (!_serverUrl)
@@ -336,14 +336,11 @@
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
--(void)cellButtonDownWasTapped:(id)sender
+- (void)requestMoreMetadata:(CCMetadata *)metadata indexPath:(NSIndexPath *)indexPath
 {
-    CGPoint touchPoint = [sender convertPoint:CGPointZero toView:self.tableView];
-    NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:touchPoint];
-    CCMetadata *metadata = [CCMetadata new];
     UIImage *iconHeader;
     
-    metadata = [dataSource objectAtIndex:indexPath.row];
+    metadata = [_dataSource objectAtIndex:indexPath.row];
     
     AHKActionSheet *actionSheet = [[AHKActionSheet alloc] initWithView:self.view title:nil];
     
@@ -417,13 +414,39 @@
         }];
     }
     
-    [actionSheet addButtonWithTitle:NSLocalizedString(@"_delete_", nil) image:[UIImage imageNamed:image_delete] backgroundColor:[UIColor whiteColor] height: 50.0 type:AHKActionSheetButtonTypeDestructive handler:^(AHKActionSheet *as) {
-        
-        [self requestDeleteMetadata:metadata indexPath:indexPath];
-    }];
-
-    
     [actionSheet show];
+}
+
+#pragma mark -
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Swipe Tablet -> menu =====
+#pragma --------------------------------------------------------------------------------------------
+
+- (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return UITableViewCellEditingStyleDelete;
+}
+
+- (NSString *)tableView:(UITableView *)tableView titleForSwipeAccessoryButtonForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return NSLocalizedString(@"_more_", nil);
+}
+
+- (void)tableView:(UITableView *)tableView swipeAccessoryButtonPushedForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [self requestMoreMetadata:[_dataSource objectAtIndex:indexPath.row] indexPath:indexPath];
+}
+
+- (NSString *)tableView:(UITableView *)tableView titleForDeleteConfirmationButtonForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return NSLocalizedString(@"_delete_", nil);
+}
+
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (editingStyle == UITableViewCellEditingStyleDelete) {
+                
+        [self requestDeleteMetadata:[_dataSource objectAtIndex:indexPath.row] indexPath:indexPath];
+    }
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -434,7 +457,7 @@
 {
     CCMetadata *metadata;
     
-    NSManagedObject *record = [dataSource objectAtIndex:indexPath.row];
+    NSManagedObject *record = [_dataSource objectAtIndex:indexPath.row];
     metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", [record valueForKey:@"fileID"], app.activeAccount] context:nil];
 
     return metadata;
@@ -466,7 +489,7 @@
     for (NSString *fileID in fileIDs)
         [metadatas addObject:[sectionDataSource.allRecordsDataSource objectForKey:fileID]];
         
-    dataSource = [NSArray arrayWithArray:metadatas];
+    _dataSource = [NSArray arrayWithArray:metadatas];
     
     [self.tableView reloadData];
 }
@@ -483,7 +506,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return [dataSource count];
+    return [_dataSource count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -503,7 +526,7 @@
     selectionColor.backgroundColor = COLOR_SELECT_BACKGROUND;
     cell.selectedBackgroundView = selectionColor;
     
-    metadata = [dataSource objectAtIndex:indexPath.row];
+    metadata = [_dataSource objectAtIndex:indexPath.row];
         
     cell.fileImageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]];
         
@@ -512,9 +535,6 @@
     
     if (cell.fileImageView.image == nil && metadata.thumbnailExists)
         [[CCActions sharedInstance] downloadTumbnail:metadata delegate:self];
-    
-    // ButtonDown Tapped
-    [cell.buttonDown addTarget:self action:@selector(cellButtonDownWasTapped:) forControlEvents:UIControlEventTouchUpInside];
     
     // encrypted color
     if (metadata.cryptated) {
@@ -653,7 +673,7 @@
     
     NSMutableArray *allRecordsDataSourceImagesVideos = [NSMutableArray new];
     
-    for (CCMetadata *metadata in dataSource) {
+    for (CCMetadata *metadata in _dataSource) {
         if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image] || [metadata.typeFile isEqualToString: k_metadataTypeFile_video])
             [allRecordsDataSourceImagesVideos addObject:metadata];
     }

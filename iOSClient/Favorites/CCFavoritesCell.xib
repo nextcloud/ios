@@ -16,7 +16,7 @@
             <rect key="frame" x="0.0" y="0.0" width="600" height="60"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxY="YES"/>
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="2" id="sQq-jC-UEV">
-                <rect key="frame" x="0.0" y="0.0" width="600" height="60"/>
+                <rect key="frame" x="0.0" y="0.0" width="600" height="59.5"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <view alpha="0.10000000149011612" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="hzp-7C-oyF" userLabel="Gray">
@@ -57,14 +57,6 @@
                             <constraint firstAttribute="height" constant="15" id="aQq-XY-pNM"/>
                         </constraints>
                     </imageView>
-                    <button opaque="NO" alpha="0.40000000000000002" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6B9-Jc-esJ" userLabel="buttonDown">
-                        <rect key="frame" x="540" y="0.0" width="60" height="60.5"/>
-                        <constraints>
-                            <constraint firstAttribute="height" constant="60" id="PcN-jN-71v"/>
-                            <constraint firstAttribute="width" constant="60" id="bAG-EX-HKe"/>
-                        </constraints>
-                        <state key="normal" image="buttonDown"/>
-                    </button>
                 </subviews>
                 <constraints>
                     <constraint firstItem="DQR-yN-JaH" firstAttribute="top" secondItem="dhG-hb-z3n" secondAttribute="top" id="0XU-Ho-ald"/>
@@ -73,18 +65,15 @@
                     <constraint firstItem="dhG-hb-z3n" firstAttribute="top" secondItem="sQq-jC-UEV" secondAttribute="topMargin" constant="32" id="4Zy-SY-nfT"/>
                     <constraint firstItem="QNC-8X-DAC" firstAttribute="trailing" secondItem="sQq-jC-UEV" secondAttribute="trailingMargin" constant="-59" id="7zt-c0-CsI"/>
                     <constraint firstAttribute="centerY" secondItem="5" secondAttribute="centerY" id="FQP-wg-vPF"/>
-                    <constraint firstAttribute="trailingMargin" secondItem="6B9-Jc-esJ" secondAttribute="trailing" constant="-8" id="Ht3-dh-Pl8"/>
                     <constraint firstItem="DQR-yN-JaH" firstAttribute="top" secondItem="p7I-KN-FVZ" secondAttribute="top" constant="6.5" id="K6B-gJ-8Fp"/>
                     <constraint firstItem="p7I-KN-FVZ" firstAttribute="leading" secondItem="5" secondAttribute="trailing" constant="18" id="K7G-0u-f8E"/>
                     <constraint firstItem="QNC-8X-DAC" firstAttribute="leading" secondItem="5" secondAttribute="trailing" constant="18" id="UYc-Al-a4h"/>
                     <constraint firstItem="p7I-KN-FVZ" firstAttribute="top" secondItem="QNC-8X-DAC" secondAttribute="bottom" id="cJT-LE-kot"/>
                     <constraint firstItem="dhG-hb-z3n" firstAttribute="leading" secondItem="sQq-jC-UEV" secondAttribute="leadingMargin" constant="-4" id="dNM-6x-zkx"/>
                     <constraint firstItem="p7I-KN-FVZ" firstAttribute="trailing" secondItem="sQq-jC-UEV" secondAttribute="trailingMargin" constant="-59" id="kaB-WS-bDl"/>
-                    <constraint firstItem="6B9-Jc-esJ" firstAttribute="centerY" secondItem="sQq-jC-UEV" secondAttribute="centerY" id="quA-ue-XsG"/>
                 </constraints>
             </tableViewCellContentView>
             <connections>
-                <outlet property="buttonDown" destination="6B9-Jc-esJ" id="tb8-y2-OM0"/>
                 <outlet property="fileImageView" destination="5" id="6"/>
                 <outlet property="labelInfoFile" destination="p7I-KN-FVZ" id="5Yb-hH-k73"/>
                 <outlet property="labelTitle" destination="QNC-8X-DAC" id="dFX-Cb-8IE"/>
@@ -94,9 +83,6 @@
             <point key="canvasLocation" x="256" y="19"/>
         </tableViewCell>
     </objects>
-    <resources>
-        <image name="buttonDown" width="25" height="25"/>
-    </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>
         <simulatedOrientationMetrics key="orientation"/>

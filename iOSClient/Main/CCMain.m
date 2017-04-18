@@ -5612,9 +5612,7 @@
         if (cryptated)
             myURL = [[NSBundle mainBundle] URLForResource: @"synchronizedcrypto" withExtension:@"gif"];
         else
-            myURL = [[NSBundle mainBundle] URLForResource: @"synchronized" withExtension:@"gif"];
-        
-        //cell.synchronizedImageView.image = [UIImage animatedImageWithAnimatedGIFURL:myURL];
+            myURL = [[NSBundle mainBundle] URLForResource: @"synchronized" withExtension:@"gif"];        
         
     } else {
         
