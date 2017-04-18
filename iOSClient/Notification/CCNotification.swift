@@ -87,7 +87,7 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
                 self.appDelegate.addNetworkingOperationQueue(self.appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
             }
             
-            remove.backgroundColor = .green
+            remove.backgroundColor = .red
  
             return [remove]
  
