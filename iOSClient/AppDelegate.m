@@ -1262,10 +1262,10 @@
     // Verify Max Upload Automatic All
     NSUInteger count = [TableMetadata MR_countOfEntitiesWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (sessionSelector == %@) AND ((sessionTaskIdentifier > 0) OR (sessionTaskIdentifierPlist > 0))", app.activeAccount, selectorUploadAutomaticAll]];
     
-    if (count > 1)
+    if (count > k_maxConcurrentOperationDownloadUpload)
         return;
     
-    // Verify num error
+    // Verify num error MAX 10 after STOP
     NSUInteger errorCount = [TableMetadata MR_countOfEntitiesWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (sessionSelector == %@) AND ((sessionTaskIdentifier == %i) OR (sessionTaskIdentifierPlist == %i))", app.activeAccount, selectorUploadAutomaticAll,k_taskIdentifierError, k_taskIdentifierError]];
     
     if (errorCount >= 10) {
