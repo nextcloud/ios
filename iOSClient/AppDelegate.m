@@ -175,6 +175,7 @@
     
     // Check new Asset Photos/Video in progress  
     _automaticCheckAssetInProgress = NO;
+    _automaticUploadInProgress = NO;
     
     // Add notification change session
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(sessionChanged:) name:k_networkingSessionNotification object:nil];
@@ -1214,9 +1215,12 @@
 {
     CCMetadataNet *metadataNet;
     
-    // Is loading new Asset ?
-    if (_automaticCheckAssetInProgress)
+    // Is loading new Asset or this  ?
+    if (_automaticCheckAssetInProgress || _automaticUploadInProgress)
         return;
+    
+    // START Automatic Upload in progress
+    _automaticUploadInProgress = YES;
     
     NSArray *uploadInQueue = [CCCoreData getTableMetadataUploadAccount:app.activeAccount];
     NSArray *recordAutomaticUploadInLock = [CCCoreData getAllLockTableAutomaticUploadForAccount:_activeAccount];
@@ -1267,13 +1271,21 @@
         
         [app messageNotification:@"_error_" description:@"_too_errors_automatic_all_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
         
+        // STOP Im progress
+        _automaticUploadInProgress = NO;
+        
         return;
     }
     
     NSUInteger count = [TableMetadata MR_countOfEntitiesWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (sessionSelector == %@) AND ((sessionTaskIdentifier > 0) OR (sessionTaskIdentifierPlist > 0))", app.activeAccount, selectorUploadAutomaticAll]];
     
-    if (count >= k_maxConcurrentOperationDownloadUpload)
+    if (count >= k_maxConcurrentOperationDownloadUpload) {
+        
+        // STOP Im progress
+        _automaticUploadInProgress = NO;
+        
         return;
+    }
     
     metadataNet = [CCCoreData getTableAutomaticUploadForAccount:self.activeAccount selector:selectorUploadAutomaticAll];
     if (metadataNet) {
@@ -1294,6 +1306,8 @@
         }
     }
     
+    // STOP Im progress
+    _automaticUploadInProgress = NO;
 }
 
 - (void)verifyDownloadUploadInProgress
