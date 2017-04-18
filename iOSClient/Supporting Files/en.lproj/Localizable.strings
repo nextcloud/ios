@@ -393,6 +393,7 @@
 "_search_no_record_found_"      = "No result";
 "_search_in_progress_"          = "Search in progress...";
 "_search_instruction_"          = "Search a file (minimum 2 characters)";
+"_files_no_files_"              = "No files in here";
 
 "audio"                         = "AUDIO";
 "compress"                      = "COMPRESS";

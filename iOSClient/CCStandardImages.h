@@ -66,6 +66,7 @@
 #define image_file_code                         @"file_code"
 #define image_file_txt                          @"file_txt"
 #define image_file_movie                        @"file_movie"
+#define image_filesNoFiles                      @"filesNoFiles"
 #define image_folderphotocamera                 @"folderphotocamera"
 #define image_folder                            @"folder"
 #define image_foldercrypto                      @"foldercrypto"
