@@ -32,6 +32,9 @@
 #define image_actionSheetFavorite               @"actionSheetFavorite"
 #define image_actionSheetLocal                  @"localStorage"
 #define image_actionSheetRemoveLocal            @"actionSheetRemoveLocal"
+
+#define image_activityNoRecord                  @"activityNoRecord"
+
 #define image_avatar                            @"avatar"
 
 #define image_bkfull                            @"bkfull"
