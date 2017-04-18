@@ -35,6 +35,8 @@
 {
     NSArray *_dataSource;
     BOOL _reloadDataSource;
+    
+    CCHud *_hudDeterminate;
 }
 @end
 
@@ -240,9 +242,19 @@
 {
     _metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, app.activeAccount] context:nil];
     
-    // File exists
-    if ([self shouldPerformSegue])
-        [self performSegueWithIdentifier:@"segueDetail" sender:self];
+    if ([_metadata.typeFile isEqualToString: k_metadataTypeFile_compress]) {
+        
+        [self performSelector:@selector(unZipFile:) withObject:_metadata.fileID];
+        
+    } else if ([_metadata.typeFile isEqualToString: k_metadataTypeFile_unknown]) {
+        
+        [self openWith:_metadata];
+        
+    } else {
+        
+        if ([self shouldPerformSegue])
+            [self performSegueWithIdentifier:@"segueDetail" sender:self];
+    }
     
     [app updateApplicationIconBadgeNumber];
 }
@@ -334,6 +346,39 @@
         [alertController.view layoutIfNeeded];
         
     [self presentViewController:alertController animated:YES completion:nil];
+}
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== UnZipFile =====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)unZipFile:(NSString *)fileID
+{
+    [_hudDeterminate visibleHudTitle:NSLocalizedString(@"_unzip_in_progress_", nil) mode:MBProgressHUDModeDeterminate color:nil];
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        
+        NSString *fileZip = [NSString stringWithFormat:@"%@/%@", app.directoryUser, fileID];
+        
+        [SSZipArchive unzipFileAtPath:fileZip toDestination:[CCUtility getDirectoryLocal] overwrite:YES password:nil progressHandler:^(NSString *entry, unz_file_info zipInfo, long entryNumber, long total) {
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                float progress = (float) entryNumber / (float)total;
+                [_hudDeterminate progress:progress];
+            });
+            
+        } completionHandler:^(NSString *path, BOOL succeeded, NSError *error) {
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                
+                [_hudDeterminate hideHud];
+                
+                if (succeeded) [app messageNotification:@"_info_" description:@"_file_unpacked_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess];
+                else [app messageNotification:@"_error_" description:[NSString stringWithFormat:@"Error %ld", (long)error.code] visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
+            });
+            
+        }];
+    });
 }
 
 - (void)requestMoreMetadata:(CCMetadata *)metadata indexPath:(NSIndexPath *)indexPath
@@ -599,19 +644,17 @@
         return;
     
     // File
-    if (([_metadata.type isEqualToString: k_metadataType_file] || [_metadata.type isEqualToString: k_metadataType_local]) && _metadata.directory == NO) {
+    if (([_metadata.type isEqualToString: k_metadataType_file]) && _metadata.directory == NO) {
         
+        // File do not exists
+        NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:_metadata.account];
+
         if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, _metadata.fileID]]) {
             
-            // File exists
-            if ([self shouldPerformSegue])
-                [self performSegueWithIdentifier:@"segueDetail" sender:self];
-
+            [self downloadFileSuccess:_metadata.fileID serverUrl:serverUrl selector:selectorLoadFileView selectorPost:nil];
+            
         } else {
             
-            // File do not exists
-            NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:_metadata.account];
-
             [[CCNetworking sharedNetworking] downloadFile:_metadata serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorLoadFileView selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
         }
     }
