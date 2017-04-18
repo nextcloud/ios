@@ -1235,35 +1235,30 @@
     }
 
     // ------------------------- <selectorUploadAutomatic> -------------------------
-    do {
-        metadataNet = [CCCoreData getTableAutomaticUploadForAccount:self.activeAccount selector:selectorUploadAutomatic];
-        if (metadataNet) {
-
-            PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[metadataNet.assetLocalIdentifier] options:nil];
-
-            if (result.count) {
-                
-                [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet.assetLocalIdentifier fileName:metadataNet.fileName serverUrl:metadataNet.serverUrl cryptated:metadataNet.cryptated session:metadataNet.session taskStatus:metadataNet.taskStatus selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:metadataNet.errorCode delegate:app.activeMain];
-                                    
-            } else {
-                
-                [CCCoreData addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionUpload selector:selectorUploadAutomatic note:@"Internal error image/video not found [0]" type:k_activityTypeFailure verbose:k_activityVerboseHigh account:_activeAccount activeUrl:_activeUrl];
-                
-                [CCCoreData deleteTableAutomaticUploadForAccount:_activeAccount assetLocalIdentifier:metadataNet.assetLocalIdentifier];
-                
-                [self updateApplicationIconBadgeNumber];
-            }
-        }
+    
+    metadataNet = [CCCoreData getTableAutomaticUploadForAccount:self.activeAccount selector:selectorUploadAutomatic];
+    
+    while (metadataNet) {
         
-    } while (metadataNet);
+        PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[metadataNet.assetLocalIdentifier] options:nil];
+        
+        if (result.count) {
+            
+            [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet.assetLocalIdentifier fileName:metadataNet.fileName serverUrl:metadataNet.serverUrl cryptated:metadataNet.cryptated session:metadataNet.session taskStatus:metadataNet.taskStatus selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:metadataNet.errorCode delegate:app.activeMain];
+            
+        } else {
+            
+            [CCCoreData addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionUpload selector:selectorUploadAutomatic note:@"Internal error image/video not found [0]" type:k_activityTypeFailure verbose:k_activityVerboseHigh account:_activeAccount activeUrl:_activeUrl];
+            
+            [CCCoreData deleteTableAutomaticUploadForAccount:_activeAccount assetLocalIdentifier:metadataNet.assetLocalIdentifier];
+            
+            [self updateApplicationIconBadgeNumber];
+        }
+
+        metadataNet = [CCCoreData getTableAutomaticUploadForAccount:self.activeAccount selector:selectorUploadAutomatic];
+    }
     
     // ------------------------- <selectorUploadAutomaticAll> -------------------------
-    
-    // Verify Max Upload Automatic All
-    NSUInteger count = [TableMetadata MR_countOfEntitiesWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (sessionSelector == %@) AND ((sessionTaskIdentifier > 0) OR (sessionTaskIdentifierPlist > 0))", app.activeAccount, selectorUploadAutomaticAll]];
-    
-    if (count > k_maxConcurrentOperationDownloadUpload)
-        return;
     
     // Verify num error MAX 10 after STOP
     NSUInteger errorCount = [TableMetadata MR_countOfEntitiesWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (sessionSelector == %@) AND ((sessionTaskIdentifier == %i) OR (sessionTaskIdentifierPlist == %i))", app.activeAccount, selectorUploadAutomaticAll,k_taskIdentifierError, k_taskIdentifierError]];
@@ -1274,6 +1269,11 @@
         
         return;
     }
+    
+    NSUInteger count = [TableMetadata MR_countOfEntitiesWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (sessionSelector == %@) AND ((sessionTaskIdentifier > 0) OR (sessionTaskIdentifierPlist > 0))", app.activeAccount, selectorUploadAutomaticAll]];
+    
+    if (count >= k_maxConcurrentOperationDownloadUpload)
+        return;
     
     metadataNet = [CCCoreData getTableAutomaticUploadForAccount:self.activeAccount selector:selectorUploadAutomaticAll];
     if (metadataNet) {
@@ -1293,6 +1293,7 @@
             [self updateApplicationIconBadgeNumber];
         }
     }
+    
 }
 
 - (void)verifyDownloadUploadInProgress
