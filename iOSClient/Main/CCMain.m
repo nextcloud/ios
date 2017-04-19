@@ -90,15 +90,12 @@
     NSString *_searchFileName;
     NSMutableArray *_searchResultMetadatas;
     NSString *_depth;
+    NSString *_noFilesSearchTitle;
+    NSString *_noFilesSearchDescription;
     
     // Login
     CCLoginWeb *_loginWeb;
     CCLogin *_loginVC;
-    
-    // NO Files
-    NSString *_noFilesTitle;
-    NSString *_noFilesDescription;
-
 }
 @end
 
@@ -144,13 +141,15 @@
     _searchResultMetadatas = [NSMutableArray new];
     _searchFileName = @"";
     _depth = @"0";
+    _noFilesSearchTitle = @"";
+    _noFilesSearchDescription = @"";
     
     // delegate
     self.tableView.delegate = self;
     self.tableView.tableFooterView = [UIView new];
     self.tableView.separatorColor = COLOR_SEPARATOR_TABLE;
-    //self.tableView.emptyDataSetDelegate = self;
-    //self.tableView.emptyDataSetSource = self;
+    self.tableView.emptyDataSetDelegate = self;
+    self.tableView.emptyDataSetSource = self;
     self.searchController.delegate = self;
     self.searchController.searchBar.delegate = self;
     
@@ -396,12 +395,19 @@
 #pragma mark ==== DZNEmptyDataSetSource ====
 #pragma --------------------------------------------------------------------------------------------
 
+/*
 - (BOOL)emptyDataSetShouldDisplay:(UIScrollView *)scrollView
 {
     if(_isSearchMode)
         return NO;
     else
         return YES;
+}
+*/
+
+- (BOOL)emptyDataSetShouldAllowScroll:(UIScrollView *)scrollView
+{
+    return YES;
 }
 
 - (UIColor *)backgroundColorForEmptyDataSet:(UIScrollView *)scrollView
@@ -411,12 +417,21 @@
 
 - (UIImage *)imageForEmptyDataSet:(UIScrollView *)scrollView
 {
-    return [UIImage imageNamed:image_filesNoFiles];
+    if (_isSearchMode)
+        return [UIImage imageNamed:image_searchBig];
+    else
+        return [UIImage imageNamed:image_filesNoFiles];
+
 }
 
 - (NSAttributedString *)titleForEmptyDataSet:(UIScrollView *)scrollView
 {
-    NSString *text = [NSString stringWithFormat:@"%@", NSLocalizedString(@"_files_no_files_", nil)];
+    NSString *text;
+    
+    if (_isSearchMode)
+        text = _noFilesSearchTitle;
+    else
+        text = [NSString stringWithFormat:@"%@", NSLocalizedString(@"_files_no_files_", nil)];
     
     NSDictionary *attributes = @{NSFontAttributeName:[UIFont boldSystemFontOfSize:20.0f], NSForegroundColorAttributeName:[UIColor lightGrayColor]};
     
@@ -425,7 +440,12 @@
 
 - (NSAttributedString *)descriptionForEmptyDataSet:(UIScrollView *)scrollView
 {
-    NSString *text = [NSString stringWithFormat:@"\n%@", NSLocalizedString(@"_no_file_pull_down_", nil)];
+    NSString *text;
+    
+    if (_isSearchMode)
+        text = _noFilesSearchDescription;
+    else
+        text = [NSString stringWithFormat:@"\n%@", NSLocalizedString(@"_no_file_pull_down_", nil)];
     
     NSMutableParagraphStyle *paragraph = [NSMutableParagraphStyle new];
     paragraph.lineBreakMode = NSLineBreakByWordWrapping;
@@ -559,50 +579,6 @@
         
             self.navigationItem.title = _titleMain;
         }
-    }
-}
-
-- (void)setTitleBackgroundTableView
-{
-    if ([_sectionDataSource.allRecordsDataSource count] == 0) {
-        
-        [self setTitleBackgroundTableView:NSLocalizedString(@"_no_file_pull_down_", nil)];
-        
-    } else {
-        
-        [self setTitleBackgroundTableView:nil];
-    }
-}
-
-- (void)setTitleBackgroundTableView:(NSString *)title
-{
-    if (title) {
-        
-        // message if table is empty
-        UILabel *messageLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height)];
-        
-        if ([app.reachability isReachable] == NO) {
-            messageLabel.text = NSLocalizedString(@"_comm_erro_pull_down_", nil);
-            messageLabel.textColor = COLOR_TEXT_NO_CONNECTION;
-            messageLabel.font = [UIFont systemFontOfSize:14];
-        } else {
-            messageLabel.text = NSLocalizedString(title ,nil);
-            messageLabel.textColor = COLOR_TEXT_NO_CONNECTION;
-            messageLabel.font = [UIFont systemFontOfSize:14];
-        }
-        
-        messageLabel.numberOfLines = 0;
-        messageLabel.textAlignment = NSTextAlignmentCenter;
-        [messageLabel sizeToFit];
-        
-        [self.tableView reloadData];
-        self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-        self.tableView.backgroundView = messageLabel;
-        
-    } else {
-        
-        [self.tableView setBackgroundView:nil];
-        self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
     }
 }
 
@@ -1655,9 +1631,6 @@
     BOOL useSubFolder = [[arguments objectAtIndex:3] boolValue];
     NSString *session = [arguments objectAtIndex:4];
     
-    // remove title (graphics)
-    [self setTitleBackgroundTableView:nil];
-
     NSString *folderPhotos = [CCCoreData getCameraUploadFolderNamePathActiveAccount:app.activeAccount activeUrl:app.activeUrl];
     NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:app.activeAccount];
     
@@ -1924,8 +1897,6 @@
 
 - (void)readFolderWithForced:(BOOL)forced serverUrl:(NSString *)serverUrl
 {
-    [self setTitleBackgroundTableView:nil];
- 
     // init control
     if (!serverUrl || !app.activeAccount)
         return;
@@ -1963,10 +1934,6 @@
 
         [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
         
-    } else {
-        
-        if ([_sectionDataSource.allRecordsDataSource count] == 0) [self setTitleBackgroundTableView:NSLocalizedString(@"_no_file_pull_down_",nil)];
-        else [self setTitleBackgroundTableView:nil];
     }
 }
 
@@ -1990,8 +1957,11 @@
             
             [[CCActions sharedInstance] search:_serverUrl fileName:_searchFileName depth:_depth delegate:self];
             
-            [self setTitleBackgroundTableView:NSLocalizedString(@"_search_in_progress_", nil)];
-            
+            _noFilesSearchTitle = @"";
+            _noFilesSearchDescription = NSLocalizedString(@"_search_in_progress_", nil);
+        
+            [self.tableView reloadEmptyDataSet];
+
         } else {
             
             NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:_serverUrl activeAccount:app.activeAccount];
@@ -4765,15 +4735,20 @@
         
         [self tableViewReload];
         
-        if ([_sectionDataSource.allRecordsDataSource count] == 0 && [_searchFileName length] >= k_minCharsSearch)
-            [self setTitleBackgroundTableView:NSLocalizedString(@"_search_no_record_found_", nil)];
-        
-        if ([_sectionDataSource.allRecordsDataSource count] == 0 && [_searchFileName length] < k_minCharsSearch)
-            [self setTitleBackgroundTableView:NSLocalizedString(@"_search_instruction_", nil)];
-        
-        if ([_sectionDataSource.allRecordsDataSource count] > 0 && [_searchFileName length] >= k_minCharsSearch)
-            [self setTitleBackgroundTableView:nil];
+        if ([_sectionDataSource.allRecordsDataSource count] == 0 && [_searchFileName length] >= k_minCharsSearch) {
             
+            _noFilesSearchTitle = NSLocalizedString(@"_search_no_record_found_", nil);
+            _noFilesSearchDescription = @"";
+        }
+        
+        if ([_sectionDataSource.allRecordsDataSource count] == 0 && [_searchFileName length] < k_minCharsSearch) {
+            
+            _noFilesSearchTitle = @"";
+            _noFilesSearchDescription = NSLocalizedString(@"_search_instruction_", nil);
+        }
+    
+        [self.tableView reloadEmptyDataSet];
+        
         [app updateApplicationIconBadgeNumber];
         
         return;
@@ -4827,8 +4802,6 @@
     }
     
     [self tableViewReload];
-    
-    [self setTitleBackgroundTableView];
     
     [app updateApplicationIconBadgeNumber];
 }

@@ -358,7 +358,7 @@
 "_downloading_progress_"        = "Initiating download of files ...";
 "_encrypted_progress_"          = "Encrypted ...";
 "_decrypted_progress_"          = "Decrypted ...";
-"_no_file_pull_down_"           = "No files found. Upload a file or pull down to refresh";
+"_no_file_pull_down_"           = "Upload a file or pull down to refresh";
 "_browse_images_"               = "Browse images";
 "_synchronized_folder_"         = "Keep the folder synchronized";
 "_remove_synchronized_folder_"  = "Remove the synchronization";
