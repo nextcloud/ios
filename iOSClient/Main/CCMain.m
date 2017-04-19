@@ -149,8 +149,8 @@
     self.tableView.delegate = self;
     self.tableView.tableFooterView = [UIView new];
     self.tableView.separatorColor = COLOR_SEPARATOR_TABLE;
-    self.tableView.emptyDataSetDelegate = self;
-    self.tableView.emptyDataSetSource = self;
+    //self.tableView.emptyDataSetDelegate = self;
+    //self.tableView.emptyDataSetSource = self;
     self.searchController.delegate = self;
     self.searchController.searchBar.delegate = self;
     
