@@ -168,7 +168,6 @@
 - (void)loadAutomaticUpload;
 
 - (BOOL)createFolderSubFolderAutomaticUploadFolderPhotos:(NSString *)folderPhotos useSubFolder:(BOOL)useSubFolder assets:(NSArray *)assets selector:(NSString *)selector;
-- (void)dropAutomaticUploadWithSelector:(NSString *)selector;
 
 @end
 

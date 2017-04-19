@@ -1446,16 +1446,6 @@
     }
 }
 
-- (void)dropAutomaticUploadWithSelector:(NSString *)selector
-{
-    [CCCoreData flushTableAutomaticUploadAccount:self.activeAccount selector:selector];
-    
-    // Update icon badge number
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1.0 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        [self updateApplicationIconBadgeNumber];
-    });
-}
-
 - (BOOL)createFolderSubFolderAutomaticUploadFolderPhotos:(NSString *)folderPhotos useSubFolder:(BOOL)useSubFolder assets:(NSArray *)assets selector:(NSString *)selector
 {
     OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:_activeUser withPassword:_activePassword withUrl:_activeUrl isCryptoCloudMode:NO];
