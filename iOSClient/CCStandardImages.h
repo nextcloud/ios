@@ -122,6 +122,7 @@
 #define image_removetaskcrypto                  @"removetaskcrypto"
 
 #define image_seleziona                         @"seleziona"
+#define image_searchBig                         @"searchBig"
 #define image_saveSelectedFiles                 @"saveSelectedFiles"
 #define image_settingsActivityHigh              @"settingsActivityHigh"
 #define image_settingsAdvanced                  @"settingsAdvanced"

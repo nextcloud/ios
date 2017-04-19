@@ -94,6 +94,11 @@
     // Login
     CCLoginWeb *_loginWeb;
     CCLogin *_loginVC;
+    
+    // NO Files
+    NSString *_noFilesTitle;
+    NSString *_noFilesDescription;
+
 }
 @end
 
@@ -144,6 +149,8 @@
     self.tableView.delegate = self;
     self.tableView.tableFooterView = [UIView new];
     self.tableView.separatorColor = COLOR_SEPARATOR_TABLE;
+    self.tableView.emptyDataSetDelegate = self;
+    self.tableView.emptyDataSetSource = self;
     self.searchController.delegate = self;
     self.searchController.searchBar.delegate = self;
     
@@ -383,6 +390,50 @@
         // reload datasource
         [self reloadDatasource:_serverUrl fileID:nil selector:nil];
     }
+}
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ==== DZNEmptyDataSetSource ====
+#pragma --------------------------------------------------------------------------------------------
+
+- (BOOL)emptyDataSetShouldDisplay:(UIScrollView *)scrollView
+{
+    if(_isSearchMode)
+        return NO;
+    else
+        return YES;
+}
+
+- (UIColor *)backgroundColorForEmptyDataSet:(UIScrollView *)scrollView
+{
+    return [UIColor whiteColor];
+}
+
+- (UIImage *)imageForEmptyDataSet:(UIScrollView *)scrollView
+{
+    return [UIImage imageNamed:image_filesNoFiles];
+}
+
+- (NSAttributedString *)titleForEmptyDataSet:(UIScrollView *)scrollView
+{
+    NSString *text = [NSString stringWithFormat:@"%@", NSLocalizedString(@"_files_no_files_", nil)];
+    
+    NSDictionary *attributes = @{NSFontAttributeName:[UIFont boldSystemFontOfSize:20.0f], NSForegroundColorAttributeName:[UIColor lightGrayColor]};
+    
+    return [[NSAttributedString alloc] initWithString:text attributes:attributes];
+}
+
+- (NSAttributedString *)descriptionForEmptyDataSet:(UIScrollView *)scrollView
+{
+    NSString *text = [NSString stringWithFormat:@"\n%@", NSLocalizedString(@"_no_file_pull_down_", nil)];
+    
+    NSMutableParagraphStyle *paragraph = [NSMutableParagraphStyle new];
+    paragraph.lineBreakMode = NSLineBreakByWordWrapping;
+    paragraph.alignment = NSTextAlignmentCenter;
+    
+    NSDictionary *attributes = @{NSFontAttributeName: [UIFont systemFontOfSize:14.0], NSForegroundColorAttributeName: [UIColor lightGrayColor], NSParagraphStyleAttributeName: paragraph};
+    
+    return [[NSAttributedString alloc] initWithString:text attributes:attributes];
 }
 
 #pragma --------------------------------------------------------------------------------------------
