@@ -124,7 +124,7 @@
 "_synchronizations_"        = "Synchronized folders";
 "_version_server_"          = "Server version";
 "_check_key_aes_256_"       = "Control encryption key passcode";
-"_encryptpass_by_email_"    = "Send encryption key passcode by mail";
+"_encryptpass_by_email_"    = "Send by email";
 "_title_mail_encryptpass_"  = "Encryption Key Passcode _brand_";
 "_text1_mail_encryptpass_"  = "Your encryption key passcode is";
 "_text2_mail_encryptpass_"  = "store it securely and away from prying eyes.";
@@ -210,7 +210,7 @@
 
 "_security_init_required_hint_" = "Hint for encryption key passcode (Recommended)";
 "_hint_"                        = "Hint";
-"_security_init_required_mail_" = "Enter your email address that the encryption key passcode is send to(recommended).";
+"_security_init_required_mail_" = "Enter your email address to receive the encryption key passcode (recommended).";
 "_email_"                       = "Email";
 "_title_form_security_init_"    = "Security options";
 "_login_bottom_label_"          = "Don't have a server yet?\nChoose one of the providers.";
