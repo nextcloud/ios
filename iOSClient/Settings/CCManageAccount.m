@@ -52,6 +52,18 @@
     
     NSArray *listAccount = [CCCoreData getAllAccount];
 
+    // Section : PICKER ACCOUNT -------------------------------------------
+    
+    section = [XLFormSectionDescriptor formSectionWithTitle:@"cloud account"];
+    [form addFormSection:section];
+    form.rowNavigationOptions = XLFormRowNavigationOptionNone;
+    
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"pickerAccount" rowType:XLFormRowDescriptorTypePicker];
+    row.height = 90;
+    row.selectorOptions = listAccount;
+    row.value = app.activeAccount;
+    [section addFormRow:row];
+
     // Section : USER INFORMATION -------------------------------------------
     
     section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_user_information_", nil)];
@@ -93,17 +105,6 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
     [section addFormRow:row];
 
-    // Section : PICKER ACCOUNT -------------------------------------------
-    
-    section = [XLFormSectionDescriptor formSectionWithTitle:@"cloud account"];
-    [form addFormSection:section];
-    form.rowNavigationOptions = XLFormRowNavigationOptionNone;
-    
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"pickerAccount" rowType:XLFormRowDescriptorTypePicker];
-    row.height = 90;
-    row.selectorOptions = listAccount;
-    row.value = app.activeAccount;
-    [section addFormRow:row];
     
     // Section : MANAGE ACCOUNT -------------------------------------------
     
@@ -140,6 +141,7 @@
     row.action.formSelector = @selector(answerDelAccount:);
     if (listAccount.count == 0) row.disabled = @YES;
     [section addFormRow:row];
+    
     
     return [super initWithForm:form];
 }
@@ -375,7 +377,7 @@
     
     UIImage *avatar = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/avatar.png", app.directoryUser]];
     if (!avatar)
-        avatar = [UIImage imageNamed:@"avatar"];
+        avatar = [UIImage imageNamed:@"avatarBN"];
     
     avatar = [self imageWithImage:avatar scaledToSize:CGSizeMake(40, 40) isAspectRation:YES];
     
