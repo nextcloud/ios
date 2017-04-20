@@ -124,7 +124,18 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         tableAccont = CCCoreData.getActiveAccount()
         if (tableAccont != nil) {
         
-            labelUsername.text = self.tableAccont?.user
+            if let displayName = self.tableAccont!.displayName {
+                if displayName.isEmpty {
+                    labelUsername.text = self.tableAccont!.user
+                }
+                else{
+                    labelUsername.text = self.tableAccont!.displayName
+                }
+            }
+            else{
+                labelUsername.text = self.tableAccont!.user
+            }
+            
             progressQuota.progress = Float((self.tableAccont?.quotaRelative)!) / 100
         
             let quota : String = CCUtility.transformedSize(Double((self.tableAccont?.quotaTotal)!))
