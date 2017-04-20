@@ -25,6 +25,7 @@
 #import "XLForm.h"
 #import "CCLogin.h"
 #import "CCCoreData.h"
+#import "APAvatarImageView.h"
 
 @interface CCManageAccount : XLFormViewController <CCLoginDelegate>
 
