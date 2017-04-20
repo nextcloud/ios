@@ -61,6 +61,8 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     override func viewWillAppear(_ animated: Bool) {
         
+        super.viewWillAppear(animated)
+        
         // Clear
         functionMenu.removeAll()
         settingsMenu.removeAll()
@@ -149,11 +151,30 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             imageAvatar.image = UIImage.init(named: "moreAvatar")
         }
         
+        // Title
+        self.navigationItem.title = NSLocalizedString("_more_", comment: "")
+        
         // Aspect
-        CCAspect.aspectNavigationControllerBar(self.navigationController?.navigationBar, encrypted: false, online: appDelegate.reachability.isReachable(), hidden: true)
+        CCAspect.aspectNavigationControllerBar(self.navigationController?.navigationBar, encrypted: false, online: appDelegate.reachability.isReachable(), hidden: false)
         CCAspect.aspectTabBar(self.tabBarController?.tabBar, hidden: false)
 
+        // +
+        appDelegate.plusButtonVisibile(true)
+        
+        self.navigationController?.setNavigationBarHidden(true, animated: animated)
+        
         tableView.reloadData()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        self.navigationController?.setNavigationBarHidden(false, animated: animated)
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
