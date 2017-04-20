@@ -120,7 +120,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             }
         }
         
-        // Quota
+        // Display Name user & Quota
         tableAccont = CCCoreData.getActiveAccount()
         if (tableAccont != nil) {
         
