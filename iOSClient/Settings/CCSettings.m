@@ -113,47 +113,6 @@
     row.action.viewControllerClass = [CCManageAccount class];
     [section addFormRow:row];
     
-    // Section : USER INFORMATION -------------------------------------------
-    
-    section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_user_information_", nil)];
-    [form addFormSection:section];
-    
-    // Full Name
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"userfullname" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_full_name_", nil)];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
-    [section addFormRow:row];
-    
-    // Address
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"useraddress" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_address_", nil)];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
-    [section addFormRow:row];
-
-    // Phone
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"userphone" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_phone_", nil)];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
-    [section addFormRow:row];
-
-    // Email
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"useremail" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_email_", nil)];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
-    [section addFormRow:row];
-
-    // Web
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"userweb" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_web_", nil)];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
-    [section addFormRow:row];
-    
-    // Twitter
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"usertwitter" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_twitter_", nil)];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
-    [section addFormRow:row];
-
     // Section AUTOMATIC UPLOAD OF CAMERA IMAGES ----------------------------
     
     section = [XLFormSectionDescriptor formSection];
@@ -273,13 +232,6 @@
     XLFormRowDescriptor *rowUrlCloud = [self.form formRowWithTag:@"urlcloud"];
     XLFormRowDescriptor *rowUserNameCloud = [self.form formRowWithTag:@"usernamecloud"];
 
-    XLFormRowDescriptor *rowUserFullName = [self.form formRowWithTag:@"userfullname"];
-    XLFormRowDescriptor *rowUserAddress = [self.form formRowWithTag:@"useraddress"];
-    XLFormRowDescriptor *rowUserPhone = [self.form formRowWithTag:@"userphone"];
-    XLFormRowDescriptor *rowUserEmail = [self.form formRowWithTag:@"useremail"];
-    XLFormRowDescriptor *rowUserWeb = [self.form formRowWithTag:@"userweb"];
-    XLFormRowDescriptor *rowUserTwitter = [self.form formRowWithTag:@"usertwitter"];
-
     
     //XLFormRowDescriptor *rowChangeCredentials = [self.form formRowWithTag:@"changecredentials"];
 
@@ -303,23 +255,6 @@
     rowUrlCloud.value = app.activeUrl;
     rowUserNameCloud.value = app.activeUser;
     
-    rowUserFullName.value = _tableAccount.displayName;
-    if ([_tableAccount.displayName isEqualToString:@""]) rowUserFullName.hidden = @YES;
-    
-    rowUserAddress.value = _tableAccount.address;
-    if ([_tableAccount.address isEqualToString:@""]) rowUserAddress.hidden = @YES;
-    
-    rowUserPhone.value = _tableAccount.phone;
-    if ([_tableAccount.phone isEqualToString:@""]) rowUserPhone.hidden = @YES;
-    
-    rowUserEmail.value = _tableAccount.email;
-    if ([_tableAccount.email isEqualToString:@""]) rowUserEmail.hidden = @YES;
-    
-    rowUserWeb.value = _tableAccount.webpage;
-    if ([_tableAccount.webpage isEqualToString:@""]) rowUserWeb.hidden = @YES;
-    
-    rowUserTwitter.value = _tableAccount.twitter;
-    if ([_tableAccount.twitter isEqualToString:@""]) rowUserTwitter.hidden = @YES;
     
     // -----------------------------------------------------------------
     

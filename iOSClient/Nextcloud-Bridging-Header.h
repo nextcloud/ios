@@ -6,6 +6,7 @@
 #import "AppDelegate.h"
 #import "OCNetworking.h"
 #import "TWMessageBarManager.h"
+#import "CCManageAccount.h"
 
 #import <OCCommunicationLib/OCNotifications.h>
 #import <OCCommunicationLib/OCNotificationsAction.h>

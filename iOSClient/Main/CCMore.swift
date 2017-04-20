@@ -54,9 +54,15 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         
         imageLogo.image = UIImage.init(named: image_brandMenuMoreBackground)
         
-        let tap = UITapGestureRecognizer(target: self, action: #selector(tapLabelQuotaExternalSite))
+        // create tap gesture recognizer
+
+        let tapQuota = UITapGestureRecognizer(target: self, action: #selector(tapLabelQuotaExternalSite))
         labelQuotaExternalSite.isUserInteractionEnabled = true
-        labelQuotaExternalSite.addGestureRecognizer(tap)
+        labelQuotaExternalSite.addGestureRecognizer(tapQuota)
+        
+        let tapImageLogo = UITapGestureRecognizer(target: self, action: #selector(tapImageLogoManageAccount))
+        imageLogo.isUserInteractionEnabled = true
+        imageLogo.addGestureRecognizer(tapImageLogo)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -310,6 +316,14 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             }
         }
     }
+    
+    func tapImageLogoManageAccount() {
+        
+        let controller = CCManageAccount.init()
+        
+        self.navigationController?.pushViewController(controller, animated: true)
+    }
+
 }
 
 class CCCellMore: UITableViewCell {
