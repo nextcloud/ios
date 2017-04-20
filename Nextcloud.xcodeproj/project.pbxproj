@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		F705723E1EA8DC4E00268E43 /* APAvatarImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = F705723D1EA8DC4E00268E43 /* APAvatarImageView.m */; };
 		F708CF6D1E56E8CC00271D8B /* TableMetadata+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF4E1E56E8CB00271D8B /* TableMetadata+CoreDataClass.m */; };
 		F708CF6E1E56E8CC00271D8B /* TableMetadata+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF4E1E56E8CB00271D8B /* TableMetadata+CoreDataClass.m */; };
 		F708CF6F1E56E8CC00271D8B /* TableMetadata+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF4E1E56E8CB00271D8B /* TableMetadata+CoreDataClass.m */; };
@@ -756,8 +755,6 @@
 		F70211FB1BAC56E9003FC03E /* CCMain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCMain.m; sourceTree = "<group>"; };
 		F7053E3C1C639DF500741EA5 /* CCUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCUtility.h; sourceTree = "<group>"; };
 		F7053E3D1C639DF500741EA5 /* CCUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCUtility.m; sourceTree = "<group>"; };
-		F705723C1EA8DC4E00268E43 /* APAvatarImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = APAvatarImageView.h; sourceTree = "<group>"; };
-		F705723D1EA8DC4E00268E43 /* APAvatarImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = APAvatarImageView.m; sourceTree = "<group>"; };
 		F706C5031EA61F54003A48A3 /* es-MX */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-MX"; path = "es-MX.lproj/CTAssetsPicker.strings"; sourceTree = "<group>"; };
 		F706C5041EA61F54003A48A3 /* es-MX */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-MX"; path = "es-MX.lproj/SwiftWebVC.strings"; sourceTree = "<group>"; };
 		F706C5051EA61F54003A48A3 /* es-MX */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-MX"; path = "es-MX.lproj/BKPasscodeView.strings"; sourceTree = "<group>"; };
@@ -1756,15 +1753,6 @@
 			path = Main;
 			sourceTree = "<group>";
 		};
-		F705723B1EA8DC4E00268E43 /* APAvatarImageView */ = {
-			isa = PBXGroup;
-			children = (
-				F705723C1EA8DC4E00268E43 /* APAvatarImageView.h */,
-				F705723D1EA8DC4E00268E43 /* APAvatarImageView.m */,
-			);
-			path = APAvatarImageView;
-			sourceTree = "<group>";
-		};
 		F70784811A2C8A0D00AC9FFF /* UploadFromOtherUpp */ = {
 			isa = PBXGroup;
 			children = (
@@ -1780,7 +1768,6 @@
 			children = (
 				F70F02A91C889183008DAB36 /* AESCrypt-ObjC */,
 				F70F02B21C889183008DAB36 /* AFViewShaker */,
-				F705723B1EA8DC4E00268E43 /* APAvatarImageView */,
 				F7F06E291DBFACC600099AE9 /* CTAssetsPickerController */,
 				F73CCE221DC13788007E38D8 /* DZNEmptyDataSet */,
 				F7659A211DC0B726004860C4 /* EAIntroView */,
@@ -4188,7 +4175,6 @@
 				F73CCDFD1DC13776007E38D8 /* XLFormViewController.m in Sources */,
 				F73CCDDF1DC13776007E38D8 /* XLFormDateCell.m in Sources */,
 				F73CCE1B1DC13776007E38D8 /* XLFormValidationStatus.m in Sources */,
-				F705723E1EA8DC4E00268E43 /* APAvatarImageView.m in Sources */,
 				F77B0E441D118A16002130FE /* CCIntro.m in Sources */,
 				F77B0E451D118A16002130FE /* ReaderThumbRender.m in Sources */,
 				F77B0E481D118A16002130FE /* CCCrypto.m in Sources */,

@@ -41,3 +41,9 @@
 + (UIImage *)scaleImage:(UIImage *)image toSize:(CGSize)targetSize isAspectRation:(BOOL)aspect;
 
 @end
+
+@interface CCAvatar : UIImageView
+
+- (id)initWithImage:(UIImage *)image borderColor:(UIColor*)borderColor borderWidth:(float)borderWidth;
+
+@end

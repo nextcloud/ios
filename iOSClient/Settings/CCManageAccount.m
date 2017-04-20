@@ -381,7 +381,7 @@
     
     avatar = [CCGraphics scaleImage:avatar toSize:CGSizeMake(40, 40) isAspectRation:YES];
     
-    APAvatarImageView *avatarImageView = [[APAvatarImageView alloc] initWithImage:avatar borderColor:[UIColor lightGrayColor] borderWidth:0.5];
+    CCAvatar *avatarImageView = [[CCAvatar alloc] initWithImage:avatar borderColor:[UIColor lightGrayColor] borderWidth:0.5];
         
     CGSize imageSize = avatarImageView.bounds.size;
     UIGraphicsBeginImageContextWithOptions(imageSize, NO, 0);
