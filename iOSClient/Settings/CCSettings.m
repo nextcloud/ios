@@ -107,11 +107,13 @@
     [section addFormRow:row];
     
     // Change Account
+    /*
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"changecredentials" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_change_credentials_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:[UIImage imageNamed:image_settingsCredentials] forKey:@"imageView.image"];
     row.action.viewControllerClass = [CCManageAccount class];
     [section addFormRow:row];
+    */
     
     // Section AUTOMATIC UPLOAD OF CAMERA IMAGES ----------------------------
     
@@ -231,9 +233,6 @@
     XLFormRowDescriptor *rowVersionServer = [self.form formRowWithTag:@"versionserver"];
     XLFormRowDescriptor *rowUrlCloud = [self.form formRowWithTag:@"urlcloud"];
     XLFormRowDescriptor *rowUserNameCloud = [self.form formRowWithTag:@"usernamecloud"];
-
-    
-    //XLFormRowDescriptor *rowChangeCredentials = [self.form formRowWithTag:@"changecredentials"];
 
     // ------------------------------------------------------------------
     
