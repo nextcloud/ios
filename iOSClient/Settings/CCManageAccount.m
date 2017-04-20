@@ -373,6 +373,16 @@
     pickerAccount.rowDescriptor.selectorOptions = listAccount;
     pickerAccount.rowDescriptor.value = app.activeAccount;
     
+    UIImage *avatar = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/avatar.png", app.directoryUser]];
+    
+    if (avatar)
+        [pickerAccount.rowDescriptor.cellConfig setObject:avatar forKey:@"imageView.image"];
+    else
+        [pickerAccount.rowDescriptor.cellConfig setObject:nil forKey:@"imageView.image"];
+
+    
+    // --
+    
      _tableAccount = [CCCoreData getActiveAccount];
     
     XLFormRowDescriptor *rowUserFullName = [self.form formRowWithTag:@"userfullname"];
@@ -405,9 +415,7 @@
     rowUserTwitter.value = _tableAccount.twitter;
     if ([_tableAccount.twitter isEqualToString:@""]) rowUserTwitter.hidden = @YES;
     else rowUserTwitter.hidden = @NO;
-    
-    // -----------------------------------------------------------------
-    
+
     [self.tableView reloadData];
     
     [self performSelector:@selector(reloadData) withObject:nil afterDelay:1];
