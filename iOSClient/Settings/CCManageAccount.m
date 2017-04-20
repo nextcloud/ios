@@ -379,7 +379,7 @@
     if (!avatar)
         avatar = [UIImage imageNamed:@"avatarBN"];
     
-    avatar = [self imageWithImage:avatar scaledToSize:CGSizeMake(40, 40) isAspectRation:YES];
+    avatar = [CCGraphics scaleImage:avatar toSize:CGSizeMake(40, 40) isAspectRation:YES];
     
     APAvatarImageView *avatarImageView = [[APAvatarImageView alloc] initWithImage:avatar borderColor:[UIColor lightGrayColor] borderWidth:0.5];
         
@@ -437,42 +437,16 @@
     [self.tableView reloadData];
 }
 
-- (UIImage *)imageWithImage:(UIImage *)image scaledToSize:(CGSize)newSize isAspectRation:(BOOL)aspect {
-    if (!image) {
-        return nil;
-    }
-    //UIGraphicsBeginImageContext(newSize);
-    // In next line, pass 0.0 to use the current device's pixel scaling factor (and thus account for Retina resolution).
-    // Pass 1.0 to force exact pixel size.
-    CGFloat originRatio = image.size.width / image.size.height;
-    CGFloat newRatio = newSize.width / newSize.height;
+/*
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    XLFormRowDescriptor *row = [self.form formRowAtIndex:indexPath];
     
-    CGSize sz;
-    
-    if (!aspect) {
-        sz = newSize;
-    }else {
-        if (originRatio < newRatio) {
-            sz.height = newSize.height;
-            sz.width = newSize.height * originRatio;
-        }else {
-            sz.width = newSize.width;
-            sz.height = newSize.width / originRatio;
-        }
+    if ([row.tag isEqualToString:@"pickerAccount"]) {
+        // set background color in here
+        
     }
-    CGFloat scale = 1.0;
-    //    if([[UIScreen mainScreen]respondsToSelector:@selector(scale)]) {
-    //        CGFloat tmp = [[UIScreen mainScreen]scale];
-    //        if (tmp > 1.5) {
-    //            scale = 2.0;
-    //        }
-    //    }
-    sz.width /= scale;
-    sz.height /= scale;
-    UIGraphicsBeginImageContextWithOptions(sz, NO, scale);
-    [image drawInRect:CGRectMake(0, 0, sz.width, sz.height)];
-    UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    return newImage;
 }
+*/
+
 @end
