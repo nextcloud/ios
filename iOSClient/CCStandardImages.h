@@ -55,6 +55,8 @@
 #define image_encryptedSelectedFiles            @"encryptedSelectedFiles"
 
 #define image_favorite                          @"favorite"
+#define image_favoriteNoFiles                   @"favoriteNoFiles"
+
 #define image_file                              @"file"
 #define image_file_audio                        @"file_audio"
 #define image_file_compress                     @"file_compress"
