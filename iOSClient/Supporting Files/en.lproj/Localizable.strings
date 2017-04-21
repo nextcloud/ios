@@ -215,7 +215,7 @@
 "_title_form_security_init_"    = "Security options";
 "_login_bottom_label_"          = "Don't have a server yet?\nChoose one of the providers.";
 
-// offline
+// Favorite
 
 "_favorites_"                   = "Favorites";
 "_offline_"                     = "Offline";
@@ -226,6 +226,8 @@
 "_tutorial_offline_view_"       = "Copy here the files that should be available offline.\n\nThey will be synchronized with your cloud.";
 "_tutorial_local_view_"         = "You'll find the unpacked files from your cloud.\n\nConnect to iTunes to share these files.";
 "_more_"                        = "More";
+"_favorite_no_files_"           = "No favorites yet";
+
 
 // Camera Upload
 
@@ -393,7 +395,7 @@
 "_search_no_record_found_"      = "No result";
 "_search_in_progress_"          = "Search in progress...";
 "_search_instruction_"          = "Search a file (minimum 2 characters)";
-"_files_no_files_"              = "No favorites yet";
+"_files_no_files_"              = "No files in here";
 
 "audio"                         = "AUDIO";
 "compress"                      = "COMPRESS";
