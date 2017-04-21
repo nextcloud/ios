@@ -498,7 +498,7 @@
 
 
 "_no_transfer_"                     = "No transfers yet";
-"_no_transfer_sub_"                 = "Transfers will be listed here";
+"_no_transfer_sub_"                 = "Uploads and downloads from this device will show up here";
 "_no_activity_"                     = "No activity yet";
 "_transfers_"                       = "Transfers";
 "_activity_"                        = "Activity";
