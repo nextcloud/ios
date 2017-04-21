@@ -33,8 +33,7 @@
 // Capabilities Group
 #define k_capabilitiesGroups                    @"group.it.twsweb.Crypto-Cloud"
 
-/* Define option Brand */
-
+// Define option Brand
 #define k_option_use_login_web                  NO
 #define k_option_use_firebase                   NO
 #define k_option_use_default_automatic_upload   NO
@@ -44,46 +43,28 @@
 #define k_option_disable_multiaccount           NO
 #define k_option_disable_cryptocloudsystem      NO
 
-// -----------------------------------------------------------------------------------------------------------
-// COLOR
-// -----------------------------------------------------------------------------------------------------------
-
-#define COLOR_BRAND                     [UIColor colorWithRed:0.0/255.0 green:130.0/255.0 blue:201.0/255.0 alpha:1.0]                   // BLU NC : #0082c9
-
-#define COLOR_SELECT_BACKGROUND         [UIColor colorWithRed:0.0/255.0 green:130.0/255.0 blue:201.0/255.0 alpha:0.1]                   // BLU NC : #0082c9
-
-#define COLOR_TRANSFER_BACKGROUND       [UIColor colorWithRed:178.0/255.0 green:244.0/255.0 blue:258.0/255.0 alpha:0.1]
-
-#define COLOR_GROUPBY_BAR               [UIColor colorWithRed:0.0/255.0 green:130.0/255.0 blue:201.0/255.0 alpha:0.2]                   // BLU NC : #0082c9
-#define COLOR_GROUPBY_BAR_NO_BLUR       [UIColor colorWithRed:0.0/255.0 green:130.0/255.0 blue:201.0/255.0 alpha:0.3]                   // BLU NC : #0082c9
-
-#define COLOR_NAVIGATIONBAR             [UIColor colorWithRed:0.0/255.0 green:130.0/255.0 blue:201.0/255.0 alpha:1.0]                   // BLU NC : #0082c9
-
-#define COLOR_NAVIGATIONBAR_SHARE       [UIColor colorWithRed:0.0/255.0 green:130.0/255.0 blue:201.0/255.0 alpha:1.0]
-
-#define COLOR_NAVIGATIONBAR_TEXT        [UIColor whiteColor]
-#define COLOR_NAVIGATIONBAR_PROGRESS    [UIColor whiteColor]
-
-#define COLOR_TABBAR                    [UIColor whiteColor]
-#define COLOR_TABBAR_TEXT               [UIColor colorWithRed:0.0/255.0 green:130.0/255.0 blue:201.0/255.0 alpha:1.0]                   // BLU NC : #0082c9
-
-#define COLOR_BACKGROUND_MENU           [UIColor whiteColor]
-
-#define COLOR_BACKGROUND_PAGECONTROL    [UIColor colorWithRed:247.0/255.0 green:247.0/255.0 blue:247.0/255.0 alpha:1.0]
-#define COLOR_PAGECONTROL_INDICATOR     [UIColor colorWithRed:0.0/255.0 green:130.0/255.0 blue:201.0/255.0 alpha:1.0]                   // BLU NC : #0082c9
-
-#define COLOR_CRYPTOCLOUD               [UIColor colorWithRed:241.0/255.0 green:90.0/255.0 blue:34.0/255.0 alpha:1.0]
-
-#define COLOR_TEXT_ANTHRACITE           [UIColor colorWithRed:65.0/255.0 green:64.0/255.0 blue:66.0/255.0 alpha:1.0]                    // #414042
-
-#define COLOR_TEXT_NO_CONNECTION        [UIColor colorWithRed:204.0/255.0 green:204.0/255.0 blue:204.0/255.0 alpha:1.0]
-
-#define COLOR_SEPARATOR_TABLE           [UIColor colorWithRed:235.0/255.0 green:235.0/255.0 blue:235.0/255.0 alpha:1.0]                 // iOS 7
-
-#define COLOR_BACKGROUND_MESSAGE_INFO   [UIColor colorWithRed:0.0/255.0 green:130.0/255.0 blue:201.0/255.0 alpha:1.0]                   // BLU NC : #0082c9
-#define COLOR_CONTROL_CENTER            [UIColor colorWithRed:0.0/255.0 green:130.0/255.0 blue:201.0/255.0 alpha:1.0]                   // BLU NC : #0082c9
-#define COLOR_REFRESH_CONTROL           [UIColor colorWithRed:0.0/255.0 green:130.0/255.0 blue:201.0/255.0 alpha:1.0]                   // BLU NC : #0082c9
-#define COLOR_WINDOW_TINTCOLOR          [UIColor colorWithRed:0.0/255.0 green:130.0/255.0 blue:201.0/255.0 alpha:1.0]                   // BLU NC : #0082c9
-
-#define COLOR_TABLE_BACKGROUND          [UIColor whiteColor]
+//Color
+#define COLOR_BRAND                             [UIColor colorWithRed:0.0/255.0 green:130.0/255.0 blue:201.0/255.0 alpha:1.0]       // BLU NC : #0082c9
+#define COLOR_SELECT_BACKGROUND                 [UIColor colorWithRed:0.0/255.0 green:130.0/255.0 blue:201.0/255.0 alpha:0.1]       // BLU NC : #0082c9
+#define COLOR_TRANSFER_BACKGROUND               [UIColor colorWithRed:178.0/255.0 green:244.0/255.0 blue:258.0/255.0 alpha:0.1]
+#define COLOR_GROUPBY_BAR                       [UIColor colorWithRed:0.0/255.0 green:130.0/255.0 blue:201.0/255.0 alpha:0.2]       // BLU NC : #0082c9
+#define COLOR_GROUPBY_BAR_NO_BLUR               [UIColor colorWithRed:0.0/255.0 green:130.0/255.0 blue:201.0/255.0 alpha:0.3]       // BLU NC : #0082c9
+#define COLOR_NAVIGATIONBAR                     [UIColor colorWithRed:0.0/255.0 green:130.0/255.0 blue:201.0/255.0 alpha:1.0]       // BLU NC : #0082c9
+#define COLOR_NAVIGATIONBAR_SHARE               [UIColor colorWithRed:0.0/255.0 green:130.0/255.0 blue:201.0/255.0 alpha:1.0]
+#define COLOR_NAVIGATIONBAR_TEXT                [UIColor whiteColor]
+#define COLOR_NAVIGATIONBAR_PROGRESS            [UIColor whiteColor]
+#define COLOR_TABBAR                            [UIColor whiteColor]
+#define COLOR_TABBAR_TEXT                       [UIColor colorWithRed:0.0/255.0 green:130.0/255.0 blue:201.0/255.0 alpha:1.0]       // BLU NC : #0082c9
+#define COLOR_BACKGROUND_MENU                   [UIColor whiteColor]
+#define COLOR_BACKGROUND_PAGECONTROL            [UIColor colorWithRed:247.0/255.0 green:247.0/255.0 blue:247.0/255.0 alpha:1.0]
+#define COLOR_PAGECONTROL_INDICATOR             [UIColor colorWithRed:0.0/255.0 green:130.0/255.0 blue:201.0/255.0 alpha:1.0]       // BLU NC : #0082c9
+#define COLOR_CRYPTOCLOUD                       [UIColor colorWithRed:241.0/255.0 green:90.0/255.0 blue:34.0/255.0 alpha:1.0]
+#define COLOR_TEXT_ANTHRACITE                   [UIColor colorWithRed:65.0/255.0 green:64.0/255.0 blue:66.0/255.0 alpha:1.0]        // #414042
+#define COLOR_TEXT_NO_CONNECTION                [UIColor colorWithRed:204.0/255.0 green:204.0/255.0 blue:204.0/255.0 alpha:1.0]
+#define COLOR_SEPARATOR_TABLE                   [UIColor colorWithRed:235.0/255.0 green:235.0/255.0 blue:235.0/255.0 alpha:1.0]     // iOS 7
+#define COLOR_BACKGROUND_MESSAGE_INFO           [UIColor colorWithRed:0.0/255.0 green:130.0/255.0 blue:201.0/255.0 alpha:1.0]       // BLU NC : #0082c9
+#define COLOR_CONTROL_CENTER                    [UIColor colorWithRed:0.0/255.0 green:130.0/255.0 blue:201.0/255.0 alpha:1.0]       // BLU NC : #0082c9
+#define COLOR_REFRESH_CONTROL                   [UIColor colorWithRed:0.0/255.0 green:130.0/255.0 blue:201.0/255.0 alpha:1.0]       // BLU NC : #0082c9
+#define COLOR_WINDOW_TINTCOLOR                  [UIColor colorWithRed:0.0/255.0 green:130.0/255.0 blue:201.0/255.0 alpha:1.0]       // BLU NC : #0082c9
+#define COLOR_TABLE_BACKGROUND                  [UIColor whiteColor]
 
