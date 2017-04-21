@@ -222,7 +222,7 @@
 "_local_storage_"               = "Local storage";
 "_local_storage_no_record_"     = "No files yet";
 "_no_files_uploaded_"           = "No files uploaded";
-"_tutorial_favorite_view_"      = "Here is the list of files that you have selected as favorites.";
+"_tutorial_favorite_view_"      = "Files and folders you mark as favorite will show up here";
 "_tutorial_offline_view_"       = "Copy here the files that should be available offline.\n\nThey will be synchronized with your cloud.";
 "_tutorial_local_view_"         = "You'll find the unpacked files from your cloud.\n\nConnect to iTunes to share these files.";
 "_more_"                        = "More";
@@ -231,7 +231,7 @@
 
 "_pull_down_"                               = "Pull down to refresh";
 "_no_photo_load_"                           = "No Photo or Video";
-"_tutorial_camera_upload_view_"             = "No photos or videos loaded, to enable the automatic upload of photos and videos from the camera go to the settings and activate the service 'Automatic upload of camera photos'";
+"_tutorial_camera_upload_view_"             = "You can enable camera upload from the settings";
 "_no_date_"                                 = "No date";
 "_today_"                                   = "Today";
 "_time_"                                    = "Time : %@\n\n%@";
@@ -242,10 +242,10 @@
 "_access_photo_location_not_enabled_"       = "Access to Photos and Location not enabled";
 "_access_photo_location_not_enabled_msg_"   = "Please go to Setting and turn on Photo Access and Location Services to allow automatic camera photo/video uploads.";
 "_processing_send_camera_upload_"           = "Uploading camera photo ...";
-"_tutorial_photo_view_"                     = "No photos or videos loaded";
+"_tutorial_photo_view_"                     = "No photos or videos uploaded yet";
 "_create_full_upload_"                      = "Creating archive .. may take a long time, please wait";
 "_error_createsubfolders_upload_"           = "Error creating subfolders";
-"_activate_camera_upload_"                  = "Activate camera upload";
+"_activate_camera_upload_"                  = "Enable camera upload";
 
 // Template
 
@@ -393,7 +393,7 @@
 "_search_no_record_found_"      = "No result";
 "_search_in_progress_"          = "Search in progress...";
 "_search_instruction_"          = "Search a file (minimum 2 characters)";
-"_files_no_files_"              = "No files in here";
+"_files_no_files_"              = "No favorites yet";
 
 "audio"                         = "AUDIO";
 "compress"                      = "COMPRESS";
