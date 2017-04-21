@@ -136,20 +136,22 @@
     [row.cellConfig setObject:[UIImage imageNamed:image_settingsFavoriteOffline] forKey:@"imageView.image"];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
-
-#ifndef OPTION_CRYPTO_CLOUD_SYSTEM_DISABLE
+    
     // Section CRYPTO CLOUD SYSTEM ------------------------------------------
     
-    section = [XLFormSectionDescriptor formSection];
-    [form addFormSection:section];
+    // Brand
+    if (k_option_disable_cryptocloudsystem == NO) {
     
-    // Crypto Cloud
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"cryptocloud" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_crypto_cloud_system_", nil)];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIImage imageNamed:image_settingsCryptoCloud] forKey:@"imageView.image"];
-    row.action.viewControllerClass = [CCManageCryptoCloud class];
-    [section addFormRow:row];
-#endif
+        section = [XLFormSectionDescriptor formSection];
+        [form addFormSection:section];
+    
+        // Crypto Cloud
+        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"cryptocloud" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_crypto_cloud_system_", nil)];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+        [row.cellConfig setObject:[UIImage imageNamed:image_settingsCryptoCloud] forKey:@"imageView.image"];
+        row.action.viewControllerClass = [CCManageCryptoCloud class];
+        [section addFormRow:row];
+    }
     
     // Section : INFORMATION ------------------------------------------------
 

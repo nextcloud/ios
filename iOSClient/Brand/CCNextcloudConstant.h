@@ -22,30 +22,27 @@
 //
 
 // Brand
-#define k_brand                         @"Nextcloud"
-#define k_mailMe                        @"ios@nextcloud.com"
-#define k_textCopyright                 @"Nextcloud %@ © 2017 T.W.S. Inc."
-#define k_loginBaseUrl                  @"https://cloud.twsweb.it"
-#define k_pushNotificationServer        @"https://push-notifications.nextcloud.com"
-#define k_loginButtonLabelLink          @"https://nextcloud.com/providers"
-#define k_webLoginAutenticationProtocol @""
+#define k_brand                                 @"Nextcloud"
+#define k_mailMe                                @"ios@nextcloud.com"
+#define k_textCopyright                         @"Nextcloud %@ © 2017 T.W.S. Inc."
+#define k_loginBaseUrl                          @"https://cloud.twsweb.it"
+#define k_pushNotificationServer                @"https://push-notifications.nextcloud.com"
+#define k_loginButtonLabelLink                  @"https://nextcloud.com/providers"
+#define k_webLoginAutenticationProtocol         @""
 
 // Capabilities Group
-#define k_capabilitiesGroups            @"group.it.twsweb.Crypto-Cloud"
+#define k_capabilitiesGroups                    @"group.it.twsweb.Crypto-Cloud"
 
-/* Define option compiler */
+/* Define option Brand */
 
-/*
- #define OPTION_DISABLE_INTRO
- #define NO_REQUEST_LOGIN_URL
- #define LOGIN_WEB
- 
- #define OPTION_FIREBASE_ENABLE
- 
- #define OPTION_MULTIUSER_DISABLE
- #define OPTION_CRYPTO_CLOUD_SYSTEM_DISABLE
- #define OPTION_AUTOMATIC_UPLOAD_ENABLE
-*/
+#define k_option_use_login_web                  NO
+#define k_option_use_firebase                   NO
+#define k_option_use_default_automatic_upload   NO
+
+#define k_option_disable_intro                  NO
+#define k_option_disable_request_login_url      NO
+#define k_option_disable_multiaccount           NO
+#define k_option_disable_cryptocloudsystem      NO
 
 // -----------------------------------------------------------------------------------------------------------
 // COLOR

@@ -1014,21 +1014,25 @@
 
 - (void)changePasswordAccount
 {
-#ifdef LOGIN_WEB
-    _loginWeb = [CCLoginWeb new];
-    _loginWeb.delegate = self;
-    _loginWeb.loginType = loginModifyPasswordUser;
+    // Brand
+    if (k_option_use_login_web) {
     
-    dispatch_async(dispatch_get_main_queue(), ^ {
-        [_loginWeb presentModalWithDefaultTheme:self];
-    });
-#else
-    _loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
-    _loginVC.delegate = self;
-    _loginVC.loginType = loginModifyPasswordUser;
+        _loginWeb = [CCLoginWeb new];
+        _loginWeb.delegate = self;
+        _loginWeb.loginType = loginModifyPasswordUser;
     
-    [self presentViewController:_loginVC animated:YES completion:nil];
-#endif
+        dispatch_async(dispatch_get_main_queue(), ^ {
+            [_loginWeb presentModalWithDefaultTheme:self];
+        });
+        
+    } else {
+        
+        _loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
+        _loginVC.delegate = self;
+        _loginVC.loginType = loginModifyPasswordUser;
+    
+        [self presentViewController:_loginVC animated:YES completion:nil];
+    }
 }
 
 #pragma mark -
@@ -3246,7 +3250,9 @@
     if (app.reSelectMenu.isOpen || app.reMainMenu.isOpen)
         return;
     
-#ifndef OPTION_MULTIUSER_DISABLE
+    // Brand
+    if (k_option_disable_multiaccount)
+        return;
     
     if ([app.netQueue operationCount] > 0 || [app.netQueueDownload operationCount] > 0 || [app.netQueueDownloadWWan operationCount] > 0 || [app.netQueueUpload operationCount] > 0 || [app.netQueueUploadWWan operationCount] > 0 || [CCCoreData countTableAutomaticUploadForAccount:app.activeAccount selector:nil] > 0) {
         
@@ -3305,9 +3311,7 @@
     rect.size.height = rect.size.height - originY;
     
     [CCMenuAccount setTitleFont:[UIFont systemFontOfSize:12.0]];
-    [CCMenuAccount showMenuInView:self.navigationController.view fromRect:rect menuItems:menuArray withOptions:options];
-    
-#endif
+    [CCMenuAccount showMenuInView:self.navigationController.view fromRect:rect menuItems:menuArray withOptions:options];    
 }
 
 - (void)changeDefaultAccount:(CCMenuItem *)sender

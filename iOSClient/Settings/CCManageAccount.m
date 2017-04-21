@@ -121,16 +121,18 @@
     if (listAccount.count == 0) row.disabled = @YES;
     [section addFormRow:row];
 
-#ifndef OPTION_MULTIUSER_DISABLE
-    // New Account nextcloud
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"addAccountNextcloud" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_add_nextcloud_", nil)];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIImage imageNamed:image_settingsAccountNextcloud] forKey:@"imageView.image"];
-    [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
-    [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
-    row.action.formSelector = @selector(addAccount:);
-    [section addFormRow:row];
-#endif
+    // Brand
+    if (k_option_disable_multiaccount == NO) {
+    
+        // New Account nextcloud
+        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"addAccountNextcloud" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_add_nextcloud_", nil)];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+        [row.cellConfig setObject:[UIImage imageNamed:image_settingsAccountNextcloud] forKey:@"imageView.image"];
+        [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
+        [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
+        row.action.formSelector = @selector(addAccount:);
+        [section addFormRow:row];
+    }
     
     // delete Account
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"delAccount" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_delete_account_", nil)];
@@ -196,44 +198,48 @@
     [app cancelAllOperations];
     [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:k_taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
     
-#ifdef LOGIN_WEB
+    // Brand
+    if (k_option_use_login_web) {
     
-    _loginWeb = [CCLoginWeb new];
-    _loginWeb.delegate = self;
-    _loginWeb.loginType = loginAdd;
+        _loginWeb = [CCLoginWeb new];
+        _loginWeb.delegate = self;
+        _loginWeb.loginType = loginAdd;
     
-    [_loginWeb presentModalWithDefaultTheme:self];
+        [_loginWeb presentModalWithDefaultTheme:self];
+        
+    } else {
+  
+        _loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
+        _loginVC.delegate = self;
+        _loginVC.loginType = loginAdd;
     
-#else
-    _loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
-    _loginVC.delegate = self;
-    _loginVC.loginType = loginAdd;
-    
-    [self presentViewController:_loginVC animated:YES completion:nil];
-    
-#endif
+        [self presentViewController:_loginVC animated:YES completion:nil];
+    }
 }
 
 - (void)addAccountFoced
 {
-#ifdef LOGIN_WEB
+    // Brand
+    if (k_option_use_login_web) {
     
-    _loginWeb = [CCLoginWeb new];
-    _loginWeb.delegate = self;
-    _loginWeb.loginType = loginAddForced;
+        _loginWeb = [CCLoginWeb new];
+        _loginWeb.delegate = self;
+        _loginWeb.loginType = loginAddForced;
     
-    dispatch_async(dispatch_get_main_queue(), ^ {
-        [_loginWeb presentModalWithDefaultTheme:self];
-    });
-#else
-    _loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
-    _loginVC.delegate = self;
-    _loginVC.loginType = loginAddForced;
-    
-    dispatch_async(dispatch_get_main_queue(), ^ {
-        [self presentViewController:_loginVC animated:YES completion:nil];
-    });
-#endif
+        dispatch_async(dispatch_get_main_queue(), ^ {
+            [_loginWeb presentModalWithDefaultTheme:self];
+        });
+        
+    } else {
+        
+        _loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
+        _loginVC.delegate = self;
+        _loginVC.loginType = loginAddForced;
+        
+        dispatch_async(dispatch_get_main_queue(), ^ {
+            [self presentViewController:_loginVC animated:YES completion:nil];
+        });
+    }
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -247,24 +253,27 @@
     [app cancelAllOperations];
     [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:k_taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
     
-#ifdef LOGIN_WEB
+    // Brand
+    if (k_option_use_login_web) {
     
-    _loginWeb = [CCLoginWeb new];
-    _loginWeb.delegate = self;
-    _loginWeb.loginType = loginModifyPasswordUser;
+        _loginWeb = [CCLoginWeb new];
+        _loginWeb.delegate = self;
+        _loginWeb.loginType = loginModifyPasswordUser;
     
-    dispatch_async(dispatch_get_main_queue(), ^ {
-        [_loginWeb presentModalWithDefaultTheme:self];
-    });
-#else
-    _loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
-    _loginVC.delegate = self;
-    _loginVC.loginType = loginModifyPasswordUser;
+        dispatch_async(dispatch_get_main_queue(), ^ {
+            [_loginWeb presentModalWithDefaultTheme:self];
+        });
+
+    } else {
+        
+        _loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
+        _loginVC.delegate = self;
+        _loginVC.loginType = loginModifyPasswordUser;
     
-    dispatch_async(dispatch_get_main_queue(), ^ {
-        [self presentViewController:_loginVC animated:YES completion:nil];
-    });
-#endif
+        dispatch_async(dispatch_get_main_queue(), ^ {
+            [self presentViewController:_loginVC animated:YES completion:nil];
+        });
+    }
     
     [self UpdateForm];
 }
@@ -404,27 +413,27 @@
     XLFormRowDescriptor *rowUserTwitter = [self.form formRowWithTag:@"usertwitter"];
 
     rowUserFullName.value = _tableAccount.displayName;
-    if ([_tableAccount.displayName isEqualToString:@""]) rowUserFullName.hidden = @YES;
+    if ([_tableAccount.displayName isEqualToString:@""] || _tableAccount.displayName == nil) rowUserFullName.hidden = @YES;
     else rowUserFullName.hidden = @NO;
     
     rowUserAddress.value = _tableAccount.address;
-    if ([_tableAccount.address isEqualToString:@""]) rowUserAddress.hidden = @YES;
+    if ([_tableAccount.address isEqualToString:@""] || _tableAccount.address == nil) rowUserAddress.hidden = @YES;
     else rowUserAddress.hidden = @NO;
     
     rowUserPhone.value = _tableAccount.phone;
-    if ([_tableAccount.phone isEqualToString:@""]) rowUserPhone.hidden = @YES;
+    if ([_tableAccount.phone isEqualToString:@""] || _tableAccount.phone == nil) rowUserPhone.hidden = @YES;
     else rowUserPhone.hidden = @NO;
     
     rowUserEmail.value = _tableAccount.email;
-    if ([_tableAccount.email isEqualToString:@""]) rowUserEmail.hidden = @YES;
+    if ([_tableAccount.email isEqualToString:@""] || _tableAccount.email == nil) rowUserEmail.hidden = @YES;
     else rowUserEmail.hidden = @NO;
     
     rowUserWeb.value = _tableAccount.webpage;
-    if ([_tableAccount.webpage isEqualToString:@""]) rowUserWeb.hidden = @YES;
+    if ([_tableAccount.webpage isEqualToString:@""] || _tableAccount.webpage == nil) rowUserWeb.hidden = @YES;
     else rowUserWeb.hidden = @NO;
     
     rowUserTwitter.value = _tableAccount.twitter;
-    if ([_tableAccount.twitter isEqualToString:@""]) rowUserTwitter.hidden = @YES;
+    if ([_tableAccount.twitter isEqualToString:@""] || _tableAccount.twitter == nil) rowUserTwitter.hidden = @YES;
     else rowUserTwitter.hidden = @NO;
 
     [self.tableView reloadData];

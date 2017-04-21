@@ -63,11 +63,13 @@
     self.bottomLabel.hidden = YES;
 #endif
     
-#ifdef NO_REQUEST_LOGIN_URL
-    _baseUrl.text = k_loginBaseUrl;
-    _imageBaseUrl.hidden = YES;
-    _baseUrl.hidden = YES;
-#endif
+    // Brand
+    if (k_option_disable_request_login_url) {
+        
+        _baseUrl.text = k_loginBaseUrl;
+        _imageBaseUrl.hidden = YES;
+        _baseUrl.hidden = YES;
+    }
     
     [self.baseUrl setDelegate:self];
     [self.password setDelegate:self];

@@ -107,27 +107,25 @@
 
 - (void)showIntro
 {
-    
-#ifdef OPTION_DISABLE_INTRO
+    // Brand
+    if (k_option_disable_intro) {
 
-    [CCUtility setIntro:@"1.0"];
+        [CCUtility setIntro:@"1.0"];
     
-    [self performSelector:@selector(newAccount) withObject:nil afterDelay:0.1];
-
-#else
-    
-    if ([CCUtility getIntro:@"1.0"] == NO) {
-        
-        _intro = [[CCIntro alloc] initWithDelegate:self delegateView:self.view];
-        [_intro showIntroCryptoCloud:0.0];
-        
-    } else {
-        
         [self performSelector:@selector(newAccount) withObject:nil afterDelay:0.1];
+
+    } else {
+    
+        if ([CCUtility getIntro:@"1.0"] == NO) {
+        
+            _intro = [[CCIntro alloc] initWithDelegate:self delegateView:self.view];
+            [_intro showIntroCryptoCloud:0.0];
+        
+        } else {
+        
+            [self performSelector:@selector(newAccount) withObject:nil afterDelay:0.1];
+        }
     }
-    
-#endif
-    
 }
 
 - (void)introWillFinish:(EAIntroView *)introView wasSkipped:(BOOL)wasSkipped
@@ -149,20 +147,23 @@
 {
     if (app.activeAccount.length == 0) {
     
-#ifdef LOGIN_WEB
+        // Brand
+        if (k_option_use_login_web) {
         
-        _loginWeb = [CCLoginWeb new];
-        _loginWeb.delegate = self;
-        _loginWeb.loginType = loginAddForced;
+            _loginWeb = [CCLoginWeb new];
+            _loginWeb.delegate = self;
+            _loginWeb.loginType = loginAddForced;
         
-        [_loginWeb presentModalWithDefaultTheme:self];
-#else
-        _loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
-        _loginVC.delegate = self;
-        _loginVC.loginType = loginAddForced;
+            [_loginWeb presentModalWithDefaultTheme:self];
+            
+        } else {
+            
+            _loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
+            _loginVC.delegate = self;
+            _loginVC.loginType = loginAddForced;
         
-        [self presentViewController:_loginVC animated:YES completion:nil];
-#endif
+            [self presentViewController:_loginVC animated:YES completion:nil];
+        }
     }
 }
 

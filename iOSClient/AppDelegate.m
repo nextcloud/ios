@@ -62,42 +62,41 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-
-#ifdef OPTION_FIREBASE_ENABLE
+    // Brand
+    if (k_option_use_firebase) {
     
-    /*
-    In order for this to work, proper GoogleService-Info.plist must be included
-    */
+        /*
+         In order for this to work, proper GoogleService-Info.plist must be included
+         */
     
-    @try {
-        [FIRApp configure];
-    } @catch (NSException *exception) {
-        NSLog(@"[LOG] Something went wrong while configuring Firebase");
+        @try {
+            [FIRApp configure];
+        } @catch (NSException *exception) {
+            NSLog(@"[LOG] Something went wrong while configuring Firebase");
+        }
+    
+        if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
+        
+            UIUserNotificationType allNotificationTypes =(UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge);
+            UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:allNotificationTypes categories:nil];
+        
+            [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
+        
+        } else {
+        
+            // iOS 10 or later
+            #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
+            // For iOS 10 display notification (sent via APNS)
+            [UNUserNotificationCenter currentNotificationCenter].delegate = self;
+            UNAuthorizationOptions authOptions = UNAuthorizationOptionAlert | UNAuthorizationOptionSound | UNAuthorizationOptionBadge;
+            [[UNUserNotificationCenter currentNotificationCenter] requestAuthorizationWithOptions:authOptions completionHandler:^(BOOL granted, NSError * _Nullable error) {
+            }];
+        
+            // For iOS 10 data message (sent via FCM)
+            [FIRMessaging messaging].remoteMessageDelegate = self;
+            #endif
+        }
     }
-    
-    if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
-        
-        UIUserNotificationType allNotificationTypes =(UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge);
-        UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:allNotificationTypes categories:nil];
-        
-        [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
-        
-    } else {
-        
-        // iOS 10 or later
-        #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
-        // For iOS 10 display notification (sent via APNS)
-        [UNUserNotificationCenter currentNotificationCenter].delegate = self;
-        UNAuthorizationOptions authOptions = UNAuthorizationOptionAlert | UNAuthorizationOptionSound | UNAuthorizationOptionBadge;
-        [[UNUserNotificationCenter currentNotificationCenter] requestAuthorizationWithOptions:authOptions completionHandler:^(BOOL granted, NSError * _Nullable error) {
-        }];
-        
-        // For iOS 10 data message (sent via FCM)
-        [FIRMessaging messaging].remoteMessageDelegate = self;
-        #endif
-    }
-    
-#endif // OPTION_FIREBASE_ENABLE
 
     NSString *dir;
     NSURL *dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:k_capabilitiesGroups];
