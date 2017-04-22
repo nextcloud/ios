@@ -1756,11 +1756,13 @@
                     
                 NSDictionary *quotaDic = [datas valueForKey:@"quota"];
                 
-                userProfile.quotaFree = [[quotaDic valueForKey:@"free"] doubleValue];
-                userProfile.quota = [[quotaDic valueForKey:@"quota"] doubleValue];
-                userProfile.quotaRelative = [[quotaDic valueForKey:@"relative"] doubleValue];
-                userProfile.quotaTotal = [[quotaDic valueForKey:@"total"] doubleValue];
-                userProfile.quotaUsed = [[quotaDic valueForKey:@"used"] doubleValue];
+                if ([quotaDic count]> 0) {
+                    userProfile.quotaFree = [[quotaDic valueForKey:@"free"] doubleValue];
+                    userProfile.quota = [[quotaDic valueForKey:@"quota"] doubleValue];
+                    userProfile.quotaRelative = [[quotaDic valueForKey:@"relative"] doubleValue];
+                    userProfile.quotaTotal = [[quotaDic valueForKey:@"total"] doubleValue];
+                    userProfile.quotaUsed = [[quotaDic valueForKey:@"used"] doubleValue];
+                }
                 
             } else {
                 
