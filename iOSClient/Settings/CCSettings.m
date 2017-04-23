@@ -58,6 +58,27 @@
     form = [XLFormDescriptor formDescriptorWithTitle:NSLocalizedString(@"_settings_", nil)];
     form.rowNavigationOptions = XLFormRowNavigationOptionNone;
     
+    // Section AUTOMATIC UPLOAD OF CAMERA IMAGES ----------------------------
+    
+    section = [XLFormSectionDescriptor formSection];
+    [form addFormSection:section];
+    
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"cameraupload" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_uploading_from_camera_", nil)];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[UIImage imageNamed:image_settingsCameraUpload] forKey:@"imageView.image"];
+    row.action.formSegueIdentifier = @"CCManageCameraUploadSegue";
+    [section addFormRow:row];
+
+    // Section FOLDERS FAVORITES OFFLINE ------------------------------------
+    
+    section = [XLFormSectionDescriptor formSection];
+    [form addFormSection:section];
+    
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"favoriteoffline" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_favorite_offline_", nil)];
+    [row.cellConfig setObject:[UIImage imageNamed:image_settingsFavoriteOffline] forKey:@"imageView.image"];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [section addFormRow:row];
+    
     // Section : PASSWORD --------------------------------------------------------------
     
     section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_passcode_", nil)];
@@ -82,60 +103,6 @@
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"onlylockdir" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_lock_protection_folder_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
-
-    // Section : CLOUD ACCOUNT --------------------------------------------------------------
-    
-    section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_cloud_account_", nil)];
-    [form addFormSection:section];
-    
-    // version
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"versionserver" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_version_server_", nil)];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
-    [section addFormRow:row];
-    
-    // Url
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"urlcloud" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_url_", nil)];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
-    [section addFormRow:row];
-    
-    // username
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"usernamecloud" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_username_", nil)];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
-    [section addFormRow:row];
-    
-    // Change Account
-    /*
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"changecredentials" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_change_credentials_", nil)];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIImage imageNamed:image_settingsCredentials] forKey:@"imageView.image"];
-    row.action.viewControllerClass = [CCManageAccount class];
-    [section addFormRow:row];
-    */
-    
-    // Section AUTOMATIC UPLOAD OF CAMERA IMAGES ----------------------------
-    
-    section = [XLFormSectionDescriptor formSection];
-    [form addFormSection:section];
-    
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"cameraupload" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_uploading_from_camera_", nil)];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIImage imageNamed:image_settingsCameraUpload] forKey:@"imageView.image"];
-    row.action.formSegueIdentifier = @"CCManageCameraUploadSegue";
-    [section addFormRow:row];
-
-    // Section FOLDERS FAVORITES OFFLINE ------------------------------------
-    
-    section = [XLFormSectionDescriptor formSection];
-    [form addFormSection:section];
-    section.footerTitle = NSLocalizedString(@"_favorite_offline_footer_", nil);
-    
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"favoriteoffline" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_favorite_offline_", nil)];
-    [row.cellConfig setObject:[UIImage imageNamed:image_settingsFavoriteOffline] forKey:@"imageView.image"];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [section addFormRow:row];
     
     // Section CRYPTO CLOUD SYSTEM ------------------------------------------
     
@@ -153,13 +120,22 @@
         [section addFormRow:row];
     }
     
+    // Section Advanced -------------------------------------------------
+    
+    section = [XLFormSectionDescriptor formSection];
+    [form addFormSection:section];
+    
+    // Advanced
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"advanced" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_advanced_", nil)];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[UIImage imageNamed:image_settingsAdvanced] forKey:@"imageView.image"];
+    row.action.viewControllerClass = [CCAdvanced class];
+    [section addFormRow:row];
+
     // Section : INFORMATION ------------------------------------------------
 
     section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_information_", nil)];
     [form addFormSection:section];
-    
-    NSString *versionApp = [NSString stringWithFormat:@"%@.%@", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"], [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
-    section.footerTitle = [NSString stringWithFormat:k_textCopyright, versionApp];
     
     // Acknowledgements
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"buttonLeftAligned" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_acknowledgements_", nil)];
@@ -182,18 +158,6 @@
     row.action.formSelector = @selector(sendMail:);
     [section addFormRow:row];
    
-    // Section Advanced -------------------------------------------------
-    
-    section = [XLFormSectionDescriptor formSection];
-    [form addFormSection:section];
-    
-    // Advanced
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"advanced" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_advanced_", nil)];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIImage imageNamed:image_settingsAdvanced] forKey:@"imageView.image"];
-    row.action.viewControllerClass = [CCAdvanced class];
-    [section addFormRow:row];
-    
     self.form = form;
 }
 
@@ -211,12 +175,6 @@
     [self reloadForm];
 }
 
-// E' apparsa
-- (void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];
-}
-
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark === Chiamate dal Form ===
 #pragma --------------------------------------------------------------------------------------------
@@ -232,10 +190,6 @@
     XLFormRowDescriptor *rowOnlyLockDir = [self.form formRowWithTag:@"onlylockdir"];
     XLFormRowDescriptor *rowFavoriteOffline = [self.form formRowWithTag:@"favoriteoffline"];
 
-    XLFormRowDescriptor *rowVersionServer = [self.form formRowWithTag:@"versionserver"];
-    XLFormRowDescriptor *rowUrlCloud = [self.form formRowWithTag:@"urlcloud"];
-    XLFormRowDescriptor *rowUserNameCloud = [self.form formRowWithTag:@"usernamecloud"];
-
     // ------------------------------------------------------------------
     
     if ([[CCUtility getBlockCode] length]) {
@@ -249,13 +203,6 @@
     if ([CCUtility getSimplyBlockCode]) [rowSimplyPasscode setValue:@1]; else [rowSimplyPasscode setValue:@0];
     if ([CCUtility getOnlyLockDir]) [rowOnlyLockDir setValue:@1]; else [rowOnlyLockDir setValue:@0];
     if ([CCUtility getFavoriteOffline]) [rowFavoriteOffline setValue:@1]; else [rowFavoriteOffline setValue:@0];
-    
-    _tableAccount = [CCCoreData getActiveAccount];
-    
-    rowVersionServer.value = [NSString stringWithFormat:@"%lu.%lu.%lu",(unsigned long)[_tableAccount.versionMajor integerValue], (unsigned long)[_tableAccount.versionMinor integerValue], (unsigned long)[_tableAccount.versionMicro integerValue]];
-    rowUrlCloud.value = app.activeUrl;
-    rowUserNameCloud.value = app.activeUser;
-    
     
     // -----------------------------------------------------------------
     
@@ -459,6 +406,38 @@
     }
     
     [[CCSynchronize sharedSynchronize] readListingFavorites];
+}
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark === Table View ===
+#pragma --------------------------------------------------------------------------------------------
+
+- (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section
+{
+    NSString *sectionName;
+    
+    switch (section)
+    {
+        case 1: {
+            sectionName = NSLocalizedString(@"_favorite_offline_footer_", nil);
+        }
+        break;
+        case 5: {
+            
+            TableAccount *tableAccount = [CCCoreData getActiveAccount];
+            
+            NSString *versionServer = [NSString stringWithFormat:@"%lu.%lu.%lu",(unsigned long)[tableAccount.versionMajor integerValue], (unsigned long)[tableAccount.versionMinor integerValue], (unsigned long)[tableAccount.versionMicro integerValue]];
+            
+            NSString *versionApp = [NSString stringWithFormat:@"%@.%@", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"], [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
+            
+            NSString *versionNextcloud = [NSString stringWithFormat:k_textCopyrightNextcloudServer, versionServer];
+            NSString *versionNextcloudiOS = [NSString stringWithFormat:k_textCopyrightNextcloudiOS, versionApp];
+            
+            sectionName = [NSString stringWithFormat:@"%@\n%@", versionNextcloudiOS, versionNextcloud];
+        }
+        break;
+    }
+    return sectionName;
 }
 
 #pragma --------------------------------------------------------------------------------------------

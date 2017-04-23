@@ -66,7 +66,7 @@
 
     // Section : USER INFORMATION -------------------------------------------
     
-    section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_user_information_", nil)];
+    section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_personal_information_", nil)];
     [form addFormSection:section];
     
     // Full Name

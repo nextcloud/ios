@@ -24,7 +24,8 @@
 // Brand
 #define k_brand                                 @"Nextcloud"
 #define k_mailMe                                @"ios@nextcloud.com"
-#define k_textCopyright                         @"Nextcloud %@ © 2017 T.W.S. Inc."
+#define k_textCopyrightNextcloudiOS             @"Nextcloud for iOS %@ © 2017 T.W.S. Inc."
+#define k_textCopyrightNextcloudServer          @"Nextcloud Server %@"
 #define k_loginBaseUrl                          @"https://cloud.twsweb.it"
 #define k_pushNotificationServer                @"https://push-notifications.nextcloud.com"
 #define k_loginButtonLabelLink                  @"https://nextcloud.com/providers"
