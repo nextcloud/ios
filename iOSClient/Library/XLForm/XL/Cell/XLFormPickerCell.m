@@ -104,7 +104,7 @@
     UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, pickerView.frame.size.width, 50)];
     label.backgroundColor = [UIColor clearColor];
     label.textColor = [UIColor blackColor];
-    label.font = [UIFont fontWithName:@"Helvetica" size:15.0];
+    label.font = [UIFont systemFontOfSize:13];
     label.textAlignment = NSTextAlignmentCenter;
     [label setText:[self.rowDescriptor.selectorOptions objectAtIndex:row]];
     
