@@ -164,7 +164,7 @@
     cell.isSelected = [_browser photoIsSelectedAtIndex:indexPath.row];
     cell.index = indexPath.row;
     
-    // TWS
+    //TWS
     [photo performLoadUnderlyingImageAndNotify];
     
     UIImage *img = [_browser imageForPhoto:photo];

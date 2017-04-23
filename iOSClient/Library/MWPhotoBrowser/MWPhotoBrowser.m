@@ -178,7 +178,7 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
         _nextButton = [[UIBarButtonItem alloc] initWithImage:nextButtonImage style:UIBarButtonItemStylePlain target:self action:@selector(gotoNextPage)];
     }
     
-    // TWS
+    //TWS
     if (self.displayDeleteButton) {
         _deleteButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(deleteButtonPressed:)];
     }
@@ -612,7 +612,7 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
     [_gridController.collectionView reloadItemsAtIndexPaths:indexPaths];
 }
 
-// TWS
+//TWS
 - (BOOL)isGridReload:(NSUInteger)index
 {
     if (_gridController) {
@@ -1447,7 +1447,7 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
                 
                 MWCaptionView *v = page.captionView;
                 
-                // TWS
+                //TWS
                 id <MWPhoto> photo = [self photoAtIndex:self.currentIndex];
                 if (photo.caption) {
                  
