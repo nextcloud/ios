@@ -1546,6 +1546,10 @@
         [CCCoreData clearAllDateReadDirectory];
         [CCCoreData flushTableMetadataAccount:nil];
     }
+    
+    if (([actualVersion compare:@"2.17.1" options:NSNumericSearch] == NSOrderedAscending)) {
+        
+    }
 }
 
 @end
