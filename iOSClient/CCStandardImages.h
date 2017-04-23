@@ -82,8 +82,7 @@
 
 #define image_lock                              @"lock"
 
-#define image_NextcloudMenuChangeAccount        @"typeCloudNextcloud"
-
+#define image_MenuLogoUser                      @"menuLogoUser"
 #define image_MenuDirectoryOnTop                @"menuDirectoryOnTop"
 #define image_MenuGroupByAlphabetic             @"MenuGroupByAlphabetic"
 #define image_MenuGroupByDate                   @"MenuGroupByDate"
