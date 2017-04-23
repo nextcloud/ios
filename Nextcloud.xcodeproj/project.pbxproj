@@ -108,7 +108,6 @@
 		F71E68001DC1F792003BA52B /* libownCloudiOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F71E67FC1DC1F76F003BA52B /* libownCloudiOS.a */; };
 		F71E68021DC1F79D003BA52B /* libownCloudiOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F71E67FC1DC1F76F003BA52B /* libownCloudiOS.a */; };
 		F720E01F1E48C73E001A4B9E /* CCActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F720E01E1E48C73E001A4B9E /* CCActions.swift */; };
-		F7253FCA1E38BAF20084135B /* JSAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7253FC91E38BAF20084135B /* JSAlertView.m */; };
 		F725437C1E12A44A009BF4C2 /* CCSection.m in Sources */ = {isa = PBXBuildFile; fileRef = F78F6FAF1CC8CCB700F4EA25 /* CCSection.m */; };
 		F7274FED1E6EB6F400C241B6 /* Constant.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7274FEC1E6EB6F400C241B6 /* Constant.swift */; };
 		F7274FEE1E6EB6F400C241B6 /* Constant.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7274FEC1E6EB6F400C241B6 /* Constant.swift */; };
@@ -1011,8 +1010,6 @@
 		F721372F1BAFF0920012B613 /* CCTemplates.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCTemplates.h; sourceTree = "<group>"; };
 		F72137301BAFF0920012B613 /* CCTemplates.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCTemplates.m; sourceTree = "<group>"; };
 		F7229B491DF71BB300E8C4E7 /* AUTHORS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AUTHORS; sourceTree = SOURCE_ROOT; };
-		F7253FC81E38BAF20084135B /* JSAlertView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSAlertView.h; sourceTree = "<group>"; };
-		F7253FC91E38BAF20084135B /* JSAlertView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSAlertView.m; sourceTree = "<group>"; };
 		F7274FEC1E6EB6F400C241B6 /* Constant.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constant.swift; sourceTree = "<group>"; };
 		F7296A601C8880C9001A7809 /* CCCellShareExt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCCellShareExt.h; sourceTree = "<group>"; };
 		F7296A611C8880C9001A7809 /* CCCellShareExt.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCCellShareExt.m; sourceTree = "<group>"; };
@@ -1773,7 +1770,6 @@
 				F73CCE221DC13788007E38D8 /* DZNEmptyDataSet */,
 				F7659A211DC0B726004860C4 /* EAIntroView */,
 				F7659A2A1DC0B72F004860C4 /* EARestrictedScrollView */,
-				F7253FC71E38BAF20084135B /* JSAlertView */,
 				F7659A2F1DC0B737004860C4 /* iRate */,
 				F70F04821C889183008DAB36 /* MBProgressHUD */,
 				F70F04BD1C889184008DAB36 /* NYXImagesKit */,
@@ -2123,15 +2119,6 @@
 				F72137301BAFF0920012B613 /* CCTemplates.m */,
 			);
 			path = Templates;
-			sourceTree = "<group>";
-		};
-		F7253FC71E38BAF20084135B /* JSAlertView */ = {
-			isa = PBXGroup;
-			children = (
-				F7253FC81E38BAF20084135B /* JSAlertView.h */,
-				F7253FC91E38BAF20084135B /* JSAlertView.m */,
-			);
-			path = JSAlertView;
 			sourceTree = "<group>";
 		};
 		F728CE741BF6322C00E69702 /* Share */ = {
@@ -4157,7 +4144,6 @@
 				F708CF9A1E56E8CC00271D8B /* TableAccount+CoreDataProperties.m in Sources */,
 				F77B0E261D118A16002130FE /* ZSSTextView.m in Sources */,
 				F762CAFC1EACB66200B38484 /* XLFormImageCell.m in Sources */,
-				F7253FCA1E38BAF20084135B /* JSAlertView.m in Sources */,
 				F77B0E271D118A16002130FE /* CYRLayoutManager.m in Sources */,
 				F762CB681EACB7D400B38484 /* ReaderConstants.m in Sources */,
 				F7F06E9B1DBFACC600099AE9 /* UICollectionView+CTAssetsPickerController.m in Sources */,

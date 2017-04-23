@@ -60,7 +60,7 @@
 #import "CCNote.h"
 #import "CCPassaporto.h"
 #import "CCPatenteGuida.h"
-#import "JSAlertView.h"
+//#import "JSAlertView.h"
 
 @interface CCMain : UITableViewController <UITableViewDataSource, UITableViewDelegate, UIActionSheetDelegate, UIGestureRecognizerDelegate, UIDocumentInteractionControllerDelegate, UIViewControllerPreviewingDelegate, CCMoveDelegate, CTAssetsPickerControllerDelegate, BKPasscodeViewControllerDelegate, UISplitViewControllerDelegate, UIPopoverControllerDelegate, CCNetworkingDelegate, CCShareOCDelegate, CCAccountWebDelegate, CCBancomatDelegate, CCCartaDiCreditoDelegate, CCCartaIdentitaDelegate, CCContoCorrenteDelegate, CCNoteDelegate, CCPassaportoDelegate, CCPatenteGuidaDelegate, CCPeekPopDelegate, UIDocumentMenuDelegate, UIDocumentPickerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, UIScrollViewDelegate, CCLoginDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate>
 
