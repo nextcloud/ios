@@ -1439,38 +1439,71 @@
                 
                     OCNotifications *notification = [OCNotifications new];
                     
-                    notification.idNotification = [[data valueForKey:@"notification_id"] integerValue];
-                    notification.application = [data valueForKey:@"app"];
-                    notification.user = [data valueForKey:@"user"];
+                    if ([data valueForKey:@"notification_id"] && ![[data valueForKey:@"notification_id"] isEqual:[NSNull null]])
+                        notification.idNotification = [[data valueForKey:@"notification_id"] integerValue];
                     
-                    NSString *dateString = [data valueForKey:@"datetime"];
-                    NSISO8601DateFormatter *formatter = [[NSISO8601DateFormatter alloc] init];
-                    notification.date = [formatter dateFromString:dateString];
+                    if ([data valueForKey:@"app"] && ![[data valueForKey:@"app"] isEqual:[NSNull null]])
+                        notification.application = [data valueForKey:@"app"];
                     
-                    notification.typeObject = [data valueForKey:@"object_type"];
-                    notification.idObject = [data valueForKey:@"object_id"];
-                    notification.subject = [data valueForKey:@"subject"];
-                    notification.subjectRich = [data valueForKey:@"subjectRich"];
-                    notification.subjectRichParameters = [data valueForKey:@"subjectRichParameters"];
-                    notification.message = [data valueForKey:@"message"];
-                    notification.messageRich = [data valueForKey:@"messageRich"];
-                    notification.messageRichParameters = [data valueForKey:@"messageRichParameters"];
-                    notification.link = [data valueForKey:@"link"];
-                    notification.icon = [data valueForKey:@"icon"];
+                    if ([data valueForKey:@"user"] && ![[data valueForKey:@"user"] isEqual:[NSNull null]])
+                        notification.user = [data valueForKey:@"user"];
+                    
+                    if ([data valueForKey:@"datetime"] && ![[data valueForKey:@"datetime"] isEqual:[NSNull null]]) {
+                        NSString *dateString = [data valueForKey:@"datetime"];
+                        NSISO8601DateFormatter *formatter = [[NSISO8601DateFormatter alloc] init];
+                        notification.date = [formatter dateFromString:dateString];
+                    }
+                    
+                    if ([data valueForKey:@"object_type"] && ![[data valueForKey:@"object_type"] isEqual:[NSNull null]])
+                        notification.typeObject = [data valueForKey:@"object_type"];
+                    
+                    if ([data valueForKey:@"object_id"] && ![[data valueForKey:@"object_id"] isEqual:[NSNull null]])
+                        notification.idObject = [data valueForKey:@"object_id"];
+                    
+                    if ([data valueForKey:@"subject"] && ![[data valueForKey:@"subject"] isEqual:[NSNull null]])
+                        notification.subject = [data valueForKey:@"subject"];
+                    
+                    if ([data valueForKey:@"subjectRich"] && ![[data valueForKey:@"subjectRich"] isEqual:[NSNull null]])
+                        notification.subjectRich = [data valueForKey:@"subjectRich"];
+                    
+                    if ([data valueForKey:@"subjectRichParameters"] && ![[data valueForKey:@"subjectRichParameters"] isEqual:[NSNull null]])
+                        notification.subjectRichParameters = [data valueForKey:@"subjectRichParameters"];
+                    
+                    if ([data valueForKey:@"message"] && ![[data valueForKey:@"message"] isEqual:[NSNull null]])
+                        notification.message = [data valueForKey:@"message"];
+                    
+                    if ([data valueForKey:@"messageRich"] && ![[data valueForKey:@"messageRich"] isEqual:[NSNull null]])
+                        notification.messageRich = [data valueForKey:@"messageRich"];
+                    
+                    if ([data valueForKey:@"messageRichParameters"] && ![[data valueForKey:@"messageRichParameters"] isEqual:[NSNull null]])
+                        notification.messageRichParameters = [data valueForKey:@"messageRichParameters"];
+                    
+                    if ([data valueForKey:@"link"] && ![[data valueForKey:@"link"] isEqual:[NSNull null]])
+                        notification.link = [data valueForKey:@"link"];
+                    
+                    if ([data valueForKey:@"icon"] && ![[data valueForKey:@"icon"] isEqual:[NSNull null]])
+                        notification.icon = [data valueForKey:@"icon"];
                     
                     /* ACTION */
                     
                     NSMutableArray *actionsArr = [NSMutableArray new];
-                    NSDictionary *actionsDic = [data valueForKey:@"actions"];
+                    NSDictionary *actions = [data valueForKey:@"actions"];
                     
-                    for (NSDictionary *actionDic in actionsDic) {
+                    for (NSDictionary *action in actions) {
                         
                         OCNotificationsAction *notificationAction = [OCNotificationsAction new];
                         
-                        notificationAction.label = [actionDic valueForKey:@"label"];
-                        notificationAction.link = [actionDic valueForKey:@"link"];
-                        notificationAction.primary = [[actionDic valueForKey:@"primary"] boolValue];
-                        notificationAction.type = [actionDic valueForKey:@"type"];
+                        if ([action valueForKey:@"label"] && ![[action valueForKey:@"label"] isEqual:[NSNull null]])
+                            notificationAction.label = [action valueForKey:@"label"];
+                        
+                        if ([action valueForKey:@"link"] && ![[action valueForKey:@"link"] isEqual:[NSNull null]])
+                            notificationAction.link = [action valueForKey:@"link"];
+                        
+                        if ([action valueForKey:@"primary"] && ![[action valueForKey:@"primary"] isEqual:[NSNull null]])
+                            notificationAction.primary = [[action valueForKey:@"primary"] boolValue];
+                        
+                        if ([action valueForKey:@"type"] && ![[action valueForKey:@"type"] isEqual:[NSNull null]])
+                            notificationAction.type = [action valueForKey:@"type"];
 
                         [actionsArr addObject:notificationAction];
                     }
@@ -1604,16 +1637,26 @@
                     
                     OCActivity *activity = [OCActivity new];
                     
-                    activity.idActivity = [[data valueForKey:@"id"] integerValue];
+                    if ([data valueForKey:@"id"] && ![[data valueForKey:@"id"] isEqual:[NSNull null]])
+                        activity.idActivity = [[data valueForKey:@"id"] integerValue];
                     
-                    NSString *dateString = [data valueForKey:@"date"];
-                    NSISO8601DateFormatter *formatter = [[NSISO8601DateFormatter alloc] init];
-                    activity.date = [formatter dateFromString:dateString];
-
-                    if ([data valueForKey:@"file"]    && ![[data valueForKey:@"file"]    isEqual:[NSNull null]]) activity.file    = [data valueForKey:@"file"];
-                    if ([data valueForKey:@"link"]    && ![[data valueForKey:@"link"]    isEqual:[NSNull null]]) activity.link    = [data valueForKey:@"link"];
-                    if ([data valueForKey:@"message"] && ![[data valueForKey:@"message"] isEqual:[NSNull null]]) activity.message = [data valueForKey:@"message"];
-                    if ([data valueForKey:@"subject"] && ![[data valueForKey:@"subject"] isEqual:[NSNull null]]) activity.subject = [data valueForKey:@"subject"];
+                    if ([data valueForKey:@"date"] && ![[data valueForKey:@"date"] isEqual:[NSNull null]]) {
+                        NSString *dateString = [data valueForKey:@"date"];
+                        NSISO8601DateFormatter *formatter = [[NSISO8601DateFormatter alloc] init];
+                        activity.date = [formatter dateFromString:dateString];
+                    }
+                    
+                    if ([data valueForKey:@"file"] && ![[data valueForKey:@"file"] isEqual:[NSNull null]])
+                        activity.file = [data valueForKey:@"file"];
+                    
+                    if ([data valueForKey:@"link"] && ![[data valueForKey:@"link"] isEqual:[NSNull null]])
+                        activity.link = [data valueForKey:@"link"];
+                    
+                    if ([data valueForKey:@"message"] && ![[data valueForKey:@"message"] isEqual:[NSNull null]])
+                        activity.message = [data valueForKey:@"message"];
+                    
+                    if ([data valueForKey:@"subject"] && ![[data valueForKey:@"subject"] isEqual:[NSNull null]])
+                        activity.subject = [data valueForKey:@"subject"];
                     
                     [listOfActivity addObject:activity];
                 }
@@ -1676,11 +1719,20 @@
                     
                     externalSites.idExternalSite = [[data valueForKey:@"id"] integerValue];
     
-                    if ([data valueForKey:@"icon"] && ![[data valueForKey:@"icon"] isEqual:[NSNull null]]) externalSites.icon = [data valueForKey:@"icon"];
-                    if ([data valueForKey:@"lang"] && ![[data valueForKey:@"lang"] isEqual:[NSNull null]]) externalSites.lang = [data valueForKey:@"lang"];
-                    if ([data valueForKey:@"name"] && ![[data valueForKey:@"name"] isEqual:[NSNull null]]) externalSites.name = [data valueForKey:@"name"];
-                    if ([data valueForKey:@"url"]  && ![[data valueForKey:@"url"]  isEqual:[NSNull null]]) externalSites.url  = [data valueForKey:@"url"];
-                    if ([data valueForKey:@"type"] && ![[data valueForKey:@"type"] isEqual:[NSNull null]]) externalSites.type = [data valueForKey:@"type"];
+                    if ([data valueForKey:@"icon"] && ![[data valueForKey:@"icon"] isEqual:[NSNull null]])
+                        externalSites.icon = [data valueForKey:@"icon"];
+                    
+                    if ([data valueForKey:@"lang"] && ![[data valueForKey:@"lang"] isEqual:[NSNull null]])
+                        externalSites.lang = [data valueForKey:@"lang"];
+                    
+                    if ([data valueForKey:@"name"] && ![[data valueForKey:@"name"] isEqual:[NSNull null]])
+                        externalSites.name = [data valueForKey:@"name"];
+                    
+                    if ([data valueForKey:@"url"]  && ![[data valueForKey:@"url"]  isEqual:[NSNull null]])
+                        externalSites.url  = [data valueForKey:@"url"];
+                    
+                    if ([data valueForKey:@"type"] && ![[data valueForKey:@"type"] isEqual:[NSNull null]])
+                        externalSites.type = [data valueForKey:@"type"];
                     
                     [listOfExternalSites addObject:externalSites];
                 }
@@ -1734,34 +1786,56 @@
 
             NSDictionary *ocs = [jsongParsed valueForKey:@"ocs"];
             NSDictionary *meta = [ocs valueForKey:@"meta"];
-            NSDictionary *datas = [ocs valueForKey:@"data"];
+            NSDictionary *data = [ocs valueForKey:@"data"];
             
             NSInteger statusCode = [[meta valueForKey:@"statuscode"] integerValue];
             
             if (statusCode == kOCUserProfileAPISuccessful) {
                 
-                if ([datas valueForKey:@"address"]) userProfile.address = [datas valueForKey:@"address"];
-                if ([datas valueForKey:@"displayname"]) userProfile.displayName = [datas valueForKey:@"displayname"];
+                if ([data valueForKey:@"address"] && ![[data valueForKey:@"address"] isKindOfClass:[NSNull class]])
+                    userProfile.address = [data valueForKey:@"address"];
                 
-                userProfile.email = [datas valueForKey:@"email"];
-                if ([userProfile.email isKindOfClass:[NSNull class]]) userProfile.email = @"";
+                if ([data valueForKey:@"displayname"] && ![[data valueForKey:@"displayname"] isKindOfClass:[NSNull class]])
+                    userProfile.displayName = [data valueForKey:@"displayname"];
+              
+                if ([data valueForKey:@"email"] && ![[data valueForKey:@"email"] isKindOfClass:[NSNull class]])
+                    userProfile.email = [data valueForKey:@"email"];
                 
-                userProfile.enabled = [[datas valueForKey:@"enabled"] boolValue];
-                if ([datas valueForKey:@"id"])  userProfile.id = [datas valueForKey:@"id"];
-                if ([datas valueForKey:@"phone"]) userProfile.phone = [datas valueForKey:@"phone"];
-                if ([datas valueForKey:@"twitter"]) userProfile.twitter = [datas valueForKey:@"twitter"];
-                if ([datas valueForKey:@"webpage"]) userProfile.webpage = [datas valueForKey:@"webpage"];
+                if ([data valueForKey:@"enabled"] && ![[data valueForKey:@"enabled"] isKindOfClass:[NSNull class]])
+                    userProfile.enabled = [[data valueForKey:@"enabled"] boolValue];
+                
+                if ([data valueForKey:@"id"] && ![[data valueForKey:@"id"] isKindOfClass:[NSNull class]])
+                    userProfile.id = [data valueForKey:@"id"];
+                
+                if ([data valueForKey:@"phone"] && ![[data valueForKey:@"phone"] isKindOfClass:[NSNull class]])
+                    userProfile.phone = [data valueForKey:@"phone"];
+                
+                if ([data valueForKey:@"twitter"] && ![[data valueForKey:@"twitter"] isKindOfClass:[NSNull class]])
+                    userProfile.twitter = [data valueForKey:@"twitter"];
+                
+                if ([data valueForKey:@"webpage"] && ![[data valueForKey:@"webpage"] isKindOfClass:[NSNull class]])
+                    userProfile.webpage = [data valueForKey:@"webpage"];
 
                 /* QUOTA */
                     
-                NSDictionary *quotaDic = [datas valueForKey:@"quota"];
+                NSDictionary *quota = [data valueForKey:@"quota"];
                 
-                if ([quotaDic count]> 0) {
-                    userProfile.quotaFree = [[quotaDic valueForKey:@"free"] doubleValue];
-                    userProfile.quota = [[quotaDic valueForKey:@"quota"] doubleValue];
-                    userProfile.quotaRelative = [[quotaDic valueForKey:@"relative"] doubleValue];
-                    userProfile.quotaTotal = [[quotaDic valueForKey:@"total"] doubleValue];
-                    userProfile.quotaUsed = [[quotaDic valueForKey:@"used"] doubleValue];
+                if ([quota count] > 0) {
+                    
+                    if ([quota valueForKey:@"free"] && ![[quota valueForKey:@"free"] isKindOfClass:[NSNull class]])
+                        userProfile.quotaFree = [[quota valueForKey:@"free"] doubleValue];
+                    
+                    if ([quota valueForKey:@"quota"] && ![[quota valueForKey:@"quota"] isKindOfClass:[NSNull class]])
+                        userProfile.quota = [[quota valueForKey:@"quota"] doubleValue];
+
+                    if ([quota valueForKey:@"relative"] && ![[quota valueForKey:@"relative"] isKindOfClass:[NSNull class]])
+                        userProfile.quotaRelative = [[quota valueForKey:@"relative"] doubleValue];
+                        
+                    if ([quota valueForKey:@"total"] && ![[quota valueForKey:@"total"] isKindOfClass:[NSNull class]])
+                        userProfile.quotaTotal = [[quota valueForKey:@"total"] doubleValue];
+                        
+                    if ([quota valueForKey:@"used"] && ![[quota valueForKey:@"used"] isKindOfClass:[NSNull class]])
+                        userProfile.quotaUsed = [[quota valueForKey:@"used"] doubleValue];
                 }
                 
             } else {
