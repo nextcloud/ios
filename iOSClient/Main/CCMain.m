@@ -4753,8 +4753,6 @@
     
         [self.tableView reloadEmptyDataSet];
         
-        [app updateApplicationIconBadgeNumber];
-        
         return;
     }
     
@@ -4805,9 +4803,7 @@
          NSLog(@"[LOG] [OPTIMIZATION] Rebuild Data Source File : %@ - %@", _serverUrl, _dateReadDataSource);
     }
     
-    [self tableViewReload];
-    
-    [app updateApplicationIconBadgeNumber];
+    [self tableViewReload];    
 }
 
 - (NSArray *)getMetadatasFromSelectedRows:(NSArray *)selectedRows

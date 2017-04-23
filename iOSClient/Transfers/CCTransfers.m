@@ -95,9 +95,6 @@
     [super viewDidAppear:animated];
     
     [self reloadDatasource];
-    
-    // update Badge
-    [app updateApplicationIconBadgeNumber];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -313,9 +310,7 @@
         
     _sectionDataSource  = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:app.listProgressMetadata groupByField:@"session" replaceDateToExifDate:NO activeAccount:app.activeAccount];
         
-    [_tableView reloadData];
-    
-    [app updateApplicationIconBadgeNumber];
+    [_tableView reloadData];    
 }
 
 #pragma --------------------------------------------------------------------------------------------

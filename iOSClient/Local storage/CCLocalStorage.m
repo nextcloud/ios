@@ -80,10 +80,7 @@
 // E' arrivato
 - (void)viewDidAppear:(BOOL)animated
 {
-    [super viewDidAppear:animated];
-        
-    // update Badge
-    [app updateApplicationIconBadgeNumber];
+    [super viewDidAppear:animated];        
 }
 
 - (void)didReceiveMemoryWarning {

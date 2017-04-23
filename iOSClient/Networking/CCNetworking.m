@@ -329,12 +329,6 @@
             [CCUtility removeAllFileID_UPLOAD_ActiveUser:activeUser activeUrl:activeUrl];
         });
     }
-
-#ifndef EXTENSION
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-        [app updateApplicationIconBadgeNumber];
-    });
-#endif
 }
 
 - (void)settingSession:(NSString *)sessionDescription sessionTaskIdentifier:(NSUInteger)sessionTaskIdentifier taskStatus:(NSInteger)taskStatus
@@ -600,6 +594,10 @@
         // Refresh datasource if is not a Plist
         if ([_delegate respondsToSelector:@selector(reloadDatasource:fileID:selector:)] && [CCUtility isCryptoPlistString:fileName] == NO)
             [_delegate reloadDatasource:serverUrl fileID:fileID selector:selector];
+        
+#ifndef EXTENSION
+        [app updateApplicationIconBadgeNumber];
+#endif
     });
 }
 
@@ -1283,6 +1281,10 @@
         // refresh main
         if ([self.delegate respondsToSelector:@selector(reloadDatasource:fileID:selector:)])
             [self.delegate reloadDatasource:serverUrl fileID:nil selector:selector];
+        
+#ifndef EXTENSION
+        [app updateApplicationIconBadgeNumber];
+#endif
     });
 }
 

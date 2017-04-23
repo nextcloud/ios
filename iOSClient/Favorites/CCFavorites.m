@@ -104,9 +104,6 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-        
-    // update Badge
-    [app updateApplicationIconBadgeNumber];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -220,8 +217,6 @@
 - (void)downloadFileFailure:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode
 {    
     [app messageNotification:@"_download_file_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
-    
-    [app updateApplicationIconBadgeNumber];
 }
 
 - (void)downloadFileSuccess:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost
@@ -240,9 +235,7 @@
         
         if ([self shouldPerformSegue])
             [self performSegueWithIdentifier:@"segueDetail" sender:self];
-    }
-    
-    [app updateApplicationIconBadgeNumber];
+    }    
 }
 
 #pragma --------------------------------------------------------------------------------------------

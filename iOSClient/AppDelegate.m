@@ -190,7 +190,6 @@
     // Verify Session in progress and Init date task
     self.sessionDateLastDownloadTasks = [NSDate date];
     self.sessionDateLastUploadTasks = [NSDate date];
-    self.timerVerifySessionInProgress = [NSTimer scheduledTimerWithTimeInterval:k_timerVerifySession target:self selector:@selector(verifyDownloadUploadInProgress) userInfo:nil repeats:YES];
     
     // Background Fetch
     [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
@@ -271,9 +270,11 @@
             [self handleShortCutItem:shortcutItem];
     }
     
-    // Start timer Verify Process
+    // Start Timer
     self.timerProcess = [NSTimer scheduledTimerWithTimeInterval:k_timerProcess target:self selector:@selector(process) userInfo:nil repeats:YES];
-    
+    self.timerVerifySessionInProgress = [NSTimer scheduledTimerWithTimeInterval:k_timerVerifySession target:self selector:@selector(verifyDownloadUploadInProgress) userInfo:nil repeats:YES];
+    self.timerUpdateApplicationIconBadgeNumber = [NSTimer scheduledTimerWithTimeInterval:k_timerUpdateApplicationIconBadgeNumber target:self selector:@selector(updateApplicationIconBadgeNumber) userInfo:nil repeats:YES];
+
     // Registration Push Notification
     UIUserNotificationType types = UIUserNotificationTypeSound | UIUserNotificationTypeBadge | UIUserNotificationTypeAlert;
     UIUserNotificationSettings *notificationSettings = [UIUserNotificationSettings settingsForTypes:types categories:nil];
@@ -909,29 +910,21 @@
     _queueNumUploadWWan = [[CCCoreData getTableMetadataUploadWWanAccount:self.activeAccount] count];
     
     // netQueueDownload
-    for (NSOperation *operation in [app.netQueueDownload operations]) {
-        
+    for (NSOperation *operation in [app.netQueueDownload operations])
         if (((OCnetworking *)operation).isExecuting == NO) _queueNunDownload++;
-    }
     
     // netQueueDownloadWWan
-    for (NSOperation *operation in [app.netQueueDownloadWWan operations]) {
-        
+    for (NSOperation *operation in [app.netQueueDownloadWWan operations])
         if (((OCnetworking *)operation).isExecuting == NO) _queueNumDownloadWWan++;
-    }
     
     // netQueueUpload
-    for (NSOperation *operation in [app.netQueueUpload operations]) {
-        
+    for (NSOperation *operation in [app.netQueueUpload operations])
         if (((OCnetworking *)operation).isExecuting == NO) _queueNumUpload++;
-    }
-    
+
     // netQueueUploadWWan
-    for (NSOperation *operation in [app.netQueueUploadWWan operations]) {
-        
+    for (NSOperation *operation in [app.netQueueUploadWWan operations])
         if (((OCnetworking *)operation).isExecuting == NO) _queueNumUploadWWan++;
-    }
-    
+
     // Total
     NSUInteger total = _queueNunDownload + _queueNumDownloadWWan + _queueNumUpload + _queueNumUploadWWan + [CCCoreData countTableAutomaticUploadForAccount:self.activeAccount selector:nil];
     
@@ -1180,8 +1173,6 @@
     [_netQueueDownloadWWan cancelAllOperations];
     [_netQueueUpload cancelAllOperations];
     [_netQueueUploadWWan cancelAllOperations];
-    
-    [self performSelector:@selector(updateApplicationIconBadgeNumber) withObject:nil afterDelay:0.5];
 }
 
 - (void)addNetworkingOperationQueue:(NSOperationQueue *)netQueue delegate:(id)delegate metadataNet:(CCMetadataNet *)metadataNet
@@ -1254,8 +1245,6 @@
             [CCCoreData addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionUpload selector:selectorUploadAutomatic note:@"Internal error image/video not found [0]" type:k_activityTypeFailure verbose:k_activityVerboseHigh account:_activeAccount activeUrl:_activeUrl];
             
             [CCCoreData deleteTableAutomaticUploadForAccount:_activeAccount assetLocalIdentifier:metadataNet.assetLocalIdentifier];
-            
-            [self updateApplicationIconBadgeNumber];
         }
 
         metadataNet = [CCCoreData getTableAutomaticUploadForAccount:self.activeAccount selector:selectorUploadAutomatic];
@@ -1299,9 +1288,7 @@
             
             [CCCoreData addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionUpload selector:selectorUploadAutomatic note:@"Internal error image/video not found [0]" type:k_activityTypeFailure verbose:k_activityVerboseHigh account:_activeAccount activeUrl:_activeUrl];
             
-            [CCCoreData deleteTableAutomaticUploadForAccount:_activeAccount assetLocalIdentifier:metadataNet.assetLocalIdentifier];
-            
-            [self updateApplicationIconBadgeNumber];
+            [CCCoreData deleteTableAutomaticUploadForAccount:_activeAccount assetLocalIdentifier:metadataNet.assetLocalIdentifier];            
         }
     }
     
