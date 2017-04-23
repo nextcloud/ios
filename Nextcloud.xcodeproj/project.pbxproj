@@ -1362,6 +1362,27 @@
 		F762CBB51EACB89C00B38484 /* LMMediaPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LMMediaPlayer.m; sourceTree = "<group>"; };
 		F762CBB71EACB89C00B38484 /* LMMediaPlayerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LMMediaPlayerView.h; sourceTree = "<group>"; };
 		F762CBB81EACB89C00B38484 /* LMMediaPlayerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LMMediaPlayerView.m; sourceTree = "<group>"; };
+		F762CBCF1EACC66600B38484 /* el */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el; path = el.lproj/CTAssetsPicker.strings; sourceTree = "<group>"; };
+		F762CBD01EACC66600B38484 /* el */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el; path = el.lproj/SwiftWebVC.strings; sourceTree = "<group>"; };
+		F762CBD11EACC66600B38484 /* el */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el; path = el.lproj/BKPasscodeView.strings; sourceTree = "<group>"; };
+		F762CBD21EACC66600B38484 /* el */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el; path = el.lproj/Localizable.strings; sourceTree = "<group>"; };
+		F762CBD31EACC66600B38484 /* el */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el; path = el.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		F762CBD41EACC66600B38484 /* el */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el; path = el.lproj/Intro.strings; sourceTree = "<group>"; };
+		F762CBD51EACC66600B38484 /* el */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el; path = el.lproj/Error.strings; sourceTree = "<group>"; };
+		F762CBD61EACC6A500B38484 /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/CTAssetsPicker.strings; sourceTree = "<group>"; };
+		F762CBD71EACC6A500B38484 /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/SwiftWebVC.strings; sourceTree = "<group>"; };
+		F762CBD81EACC6A500B38484 /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/BKPasscodeView.strings; sourceTree = "<group>"; };
+		F762CBD91EACC6A500B38484 /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/Localizable.strings; sourceTree = "<group>"; };
+		F762CBDA1EACC6A500B38484 /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		F762CBDB1EACC6A500B38484 /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/Intro.strings; sourceTree = "<group>"; };
+		F762CBDC1EACC6A500B38484 /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/Error.strings; sourceTree = "<group>"; };
+		F762CBDD1EACC70400B38484 /* nb-NO */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "nb-NO"; path = "nb-NO.lproj/CTAssetsPicker.strings"; sourceTree = "<group>"; };
+		F762CBDE1EACC70400B38484 /* nb-NO */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "nb-NO"; path = "nb-NO.lproj/SwiftWebVC.strings"; sourceTree = "<group>"; };
+		F762CBDF1EACC70500B38484 /* nb-NO */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "nb-NO"; path = "nb-NO.lproj/BKPasscodeView.strings"; sourceTree = "<group>"; };
+		F762CBE01EACC70500B38484 /* nb-NO */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "nb-NO"; path = "nb-NO.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		F762CBE11EACC70500B38484 /* nb-NO */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "nb-NO"; path = "nb-NO.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		F762CBE21EACC70500B38484 /* nb-NO */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "nb-NO"; path = "nb-NO.lproj/Intro.strings"; sourceTree = "<group>"; };
+		F762CBE31EACC70500B38484 /* nb-NO */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "nb-NO"; path = "nb-NO.lproj/Error.strings"; sourceTree = "<group>"; };
 		F76344751BF259A800188725 /* synchronized.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = synchronized.gif; sourceTree = "<group>"; };
 		F76344761BF259A800188725 /* synchronizedcrypto.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = synchronizedcrypto.gif; sourceTree = "<group>"; };
 		F7659A221DC0B726004860C4 /* EAIntroPage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAIntroPage.h; sourceTree = "<group>"; };
@@ -3576,6 +3597,9 @@
 				"pt-BR",
 				"es-MX",
 				tr,
+				el,
+				pl,
+				"nb-NO",
 			);
 			mainGroup = F7F67B9F1A24D27800EE80DA;
 			productRefGroup = F7F67B9F1A24D27800EE80DA;
@@ -4379,6 +4403,9 @@
 				F732B2D71E802B71002B7D75 /* pt-BR */,
 				F706C5051EA61F54003A48A3 /* es-MX */,
 				F706C50C1EA620E8003A48A3 /* tr */,
+				F762CBD11EACC66600B38484 /* el */,
+				F762CBD81EACC6A500B38484 /* pl */,
+				F762CBDF1EACC70500B38484 /* nb-NO */,
 			);
 			name = BKPasscodeView.strings;
 			path = "Supporting Files";
@@ -4397,6 +4424,9 @@
 				F732B3401E8045DF002B7D75 /* pt-BR */,
 				F706C5041EA61F54003A48A3 /* es-MX */,
 				F706C50B1EA620E8003A48A3 /* tr */,
+				F762CBD01EACC66600B38484 /* el */,
+				F762CBD71EACC6A500B38484 /* pl */,
+				F762CBDE1EACC70400B38484 /* nb-NO */,
 			);
 			name = SwiftWebVC.strings;
 			path = "Supporting Files";
@@ -4415,6 +4445,9 @@
 				F732B2DA1E802B72002B7D75 /* pt-BR */,
 				F706C5081EA61F55003A48A3 /* es-MX */,
 				F706C50F1EA620E9003A48A3 /* tr */,
+				F762CBD41EACC66600B38484 /* el */,
+				F762CBDB1EACC6A500B38484 /* pl */,
+				F762CBE21EACC70500B38484 /* nb-NO */,
 			);
 			name = Intro.strings;
 			path = "Supporting Files";
@@ -4433,6 +4466,9 @@
 				F75797B71E81364C00187A1B /* pt-BR */,
 				F706C5031EA61F54003A48A3 /* es-MX */,
 				F706C50A1EA620E8003A48A3 /* tr */,
+				F762CBCF1EACC66600B38484 /* el */,
+				F762CBD61EACC6A500B38484 /* pl */,
+				F762CBDD1EACC70400B38484 /* nb-NO */,
 			);
 			name = CTAssetsPicker.strings;
 			path = "Supporting Files";
@@ -4451,6 +4487,9 @@
 				F732B2DB1E802B72002B7D75 /* pt-BR */,
 				F706C5091EA61F55003A48A3 /* es-MX */,
 				F706C5101EA620E9003A48A3 /* tr */,
+				F762CBD51EACC66600B38484 /* el */,
+				F762CBDC1EACC6A500B38484 /* pl */,
+				F762CBE31EACC70500B38484 /* nb-NO */,
 			);
 			name = Error.strings;
 			path = "Supporting Files";
@@ -4469,6 +4508,9 @@
 				F732B2D91E802B72002B7D75 /* pt-BR */,
 				F706C5071EA61F55003A48A3 /* es-MX */,
 				F706C50E1EA620E9003A48A3 /* tr */,
+				F762CBD31EACC66600B38484 /* el */,
+				F762CBDA1EACC6A500B38484 /* pl */,
+				F762CBE11EACC70500B38484 /* nb-NO */,
 			);
 			name = InfoPlist.strings;
 			path = "Supporting Files";
@@ -4487,6 +4529,9 @@
 				F732B2D81E802B71002B7D75 /* pt-BR */,
 				F706C5061EA61F54003A48A3 /* es-MX */,
 				F706C50D1EA620E8003A48A3 /* tr */,
+				F762CBD21EACC66600B38484 /* el */,
+				F762CBD91EACC6A500B38484 /* pl */,
+				F762CBE01EACC70500B38484 /* nb-NO */,
 			);
 			name = Localizable.strings;
 			path = "Supporting Files";
