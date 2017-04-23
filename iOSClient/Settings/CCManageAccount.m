@@ -385,20 +385,25 @@
     pickerAccount.rowDescriptor.value = app.activeAccount;
     
     UIImage *avatar = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/avatar.png", app.directoryUser]];
-    if (!avatar)
+    if (avatar) {
+    
+        avatar = [CCGraphics scaleImage:avatar toSize:CGSizeMake(40, 40) isAspectRation:YES];
+    
+        CCAvatar *avatarImageView = [[CCAvatar alloc] initWithImage:avatar borderColor:[UIColor lightGrayColor] borderWidth:0.5];
+        
+        CGSize imageSize = avatarImageView.bounds.size;
+        UIGraphicsBeginImageContextWithOptions(imageSize, NO, 0);
+        CGContextRef context = UIGraphicsGetCurrentContext();
+        [avatarImageView.layer renderInContext:context];
+        avatar = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext();
+        
+    } else {
+        
         avatar = [UIImage imageNamed:@"avatarBN"];
+    }
     
-    avatar = [CCGraphics scaleImage:avatar toSize:CGSizeMake(40, 40) isAspectRation:YES];
     
-    CCAvatar *avatarImageView = [[CCAvatar alloc] initWithImage:avatar borderColor:[UIColor lightGrayColor] borderWidth:0.5];
-        
-    CGSize imageSize = avatarImageView.bounds.size;
-    UIGraphicsBeginImageContextWithOptions(imageSize, NO, 0);
-    CGContextRef context = UIGraphicsGetCurrentContext();
-    [avatarImageView.layer renderInContext:context];
-    avatar = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-        
     [pickerAccount.rowDescriptor.cellConfig setObject:avatar forKey:@"imageView.image"];
 
     // --
