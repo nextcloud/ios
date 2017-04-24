@@ -46,7 +46,7 @@
 {
     self = [super init];
     
-    if (self){
+    if (self) {
         
         self.delegate = delegate;
         self.fileName = fileName;
@@ -54,6 +54,8 @@
         self.fileID = fileID;
         self.uuid = uuid;
         self.serverUrl = serverUrl;
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
         
         // if fileName read Crypto File
         if (fileName)
@@ -96,6 +98,11 @@
     [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
     
     self.view.backgroundColor = [UIColor whiteColor];
+}
+
+- (void)changeTheming
+{
+    [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
 }
 
 - (void)viewDidAppear:(BOOL)animated

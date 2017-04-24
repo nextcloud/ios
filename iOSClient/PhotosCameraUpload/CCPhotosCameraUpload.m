@@ -57,10 +57,9 @@
     if (self = [super initWithCoder:aDecoder])  {
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initStateCameraUpload:) name:@"initStateCameraUpload" object:nil];
-        
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setupCameraUploadFull) name:@"setupCameraUploadFull" object:nil];
-        
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(triggerProgressTask:) name:@"NotificationProgressTask" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
         
         app.activePhotosCameraUpload = self;
     }
@@ -108,11 +107,9 @@
     [self reloadDatasource];
 }
 
-- (void)didReceiveMemoryWarning
+- (void)changeTheming
 {
-    [super didReceiveMemoryWarning];
-    
-    // Dispose of any resources that can be recreated.
+    [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
 }
 
 #pragma --------------------------------------------------------------------------------------------

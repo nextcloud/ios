@@ -57,6 +57,8 @@
     if (self = [super initWithCoder:aDecoder])  {
         
         app.activeActivity = self;
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
     }
     return self;
 }
@@ -99,6 +101,11 @@
     [super viewDidAppear:animated];
     
     [self reloadDatasource];
+}
+
+- (void)changeTheming
+{
+    [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
 }
 
 - (void)didReceiveMemoryWarning {

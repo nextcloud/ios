@@ -1189,13 +1189,16 @@
 }
 
 - (void)getCapabilitiesOfServerSuccess:(OCCapabilities *)capabilities
-{    
+{
+    TableCapabilities *oldCapabilities = [CCCoreData getCapabilitesForAccount:app.activeAccount];
     [CCCoreData addCapabilities:capabilities account:app.activeAccount];
     
-    // Change Theming
-    if (k_option_use_themingColor == YES) {
+    // Change Theming color
+    if (k_option_use_themingColor == YES && ![oldCapabilities.themingColor isEqualToString:capabilities.themingColor]) {
         
         [[NSNotificationCenter defaultCenter] postNotificationName:@"changeTheming" object:nil];
+        
+        self.navigationController.navigationBar.barTintColor = [NCBrandColor sharedInstance].navigationBar;
     }
     
     // Search bar if change version

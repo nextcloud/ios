@@ -65,6 +65,8 @@
     XLFormSectionDescriptor *section;
     XLFormRowDescriptor *row;
 
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
+    
     form = [XLFormDescriptor formDescriptorWithTitle:NSLocalizedString(@"_uploading_from_camera_", nil)];
     
     // Camera Upload
@@ -207,6 +209,11 @@
     }];
 
     [self reloadForm];
+}
+
+- (void)changeTheming
+{
+    [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
 }
 
 -(void)formRowDescriptorValueHasChanged:(XLFormRowDescriptor *)rowDescriptor oldValue:(id)oldValue newValue:(id)newValue

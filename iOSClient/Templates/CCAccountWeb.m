@@ -46,7 +46,9 @@
 {
     self = [super init];
     
-    if (self){
+    if (self) {
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
         
         self.delegate = delegate;
         self.fileName = fileName;
@@ -140,6 +142,11 @@
     [super viewDidAppear:animated];
     
     if (self.fileName && !field) [self performSelector:@selector(cancelPressed:) withObject:nil afterDelay:0.5];
+}
+
+- (void)changeTheming
+{
+    [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
 }
 
 - (void)didSelectFormRow:(XLFormRowDescriptor *)formRow

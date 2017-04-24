@@ -50,6 +50,8 @@
     XLFormSectionDescriptor *section;
     XLFormRowDescriptor *row;
     
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
+    
     NSArray *listAccount = [CCCoreData getAllAccount];
 
     // Section : PICKER ACCOUNT -------------------------------------------
@@ -160,6 +162,11 @@
     [app aspectTabBar:self.tabBarController.tabBar hidden:NO];
     
     [self UpdateForm];
+}
+
+- (void)changeTheming
+{
+    [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
 }
 
 #pragma --------------------------------------------------------------------------------------------

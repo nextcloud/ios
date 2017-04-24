@@ -38,6 +38,8 @@
     XLFormSectionDescriptor *section;
     XLFormRowDescriptor *row;
     
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
+    
     form = [XLFormDescriptor formDescriptorWithTitle:NSLocalizedString(@"_crypto_cloud_system_", nil)];
     
     section = [XLFormSectionDescriptor formSection];
@@ -82,6 +84,11 @@
     [app aspectTabBar:self.tabBarController.tabBar hidden:NO];
     
     [self reloadForm];
+}
+
+- (void)changeTheming
+{
+    [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
 }
 
 - (void)activateCryptoCloud:(XLFormRowDescriptor *)sender

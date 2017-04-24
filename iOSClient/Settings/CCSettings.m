@@ -49,6 +49,8 @@
         
         [self initializeForm];
         
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
+        
         app.activeSettings = self;
     }
     
@@ -179,6 +181,11 @@
     [app aspectTabBar:self.tabBarController.tabBar hidden:NO];
     
     [self reloadForm];
+}
+
+- (void)changeTheming
+{
+    [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
 }
 
 #pragma --------------------------------------------------------------------------------------------

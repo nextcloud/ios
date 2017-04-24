@@ -63,6 +63,9 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         let tapImageLogo = UITapGestureRecognizer(target: self, action: #selector(tapImageLogoManageAccount))
         imageLogo.isUserInteractionEnabled = true
         imageLogo.addGestureRecognizer(tapImageLogo)
+        
+        // Notification theming
+        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -192,6 +195,11 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         super.viewWillDisappear(animated)
         
         self.navigationController?.setNavigationBarHidden(false, animated: animated)
+    }
+    
+    func changeTheming() {
+        
+        appDelegate.aspectNavigationControllerBar(self.navigationController?.navigationBar, encrypted: false, online: appDelegate.reachability.isReachable(), hidden: false)
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {

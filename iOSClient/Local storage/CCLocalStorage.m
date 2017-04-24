@@ -38,6 +38,16 @@
 
 @implementation CCLocalStorage
 
+-  (id)initWithCoder:(NSCoder *)aDecoder
+{
+    if (self = [super initWithCoder:aDecoder])  {
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
+    }
+    
+    return self;
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -83,14 +93,9 @@
     [self reloadDatasource];
 }
 
-// E' arrivato
-- (void)viewDidAppear:(BOOL)animated
+- (void)changeTheming
 {
-    [super viewDidAppear:animated];        
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
+    [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
 }
 
 #pragma --------------------------------------------------------------------------------------------

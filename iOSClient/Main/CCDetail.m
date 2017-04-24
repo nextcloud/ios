@@ -60,8 +60,8 @@
     if (self = [super initWithCoder:aDecoder])  {
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(insertGeocoderLocation:) name:@"insertGeocoderLocation" object:nil];
-        
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(triggerProgressTask:) name:@"NotificationProgressTask" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
 
         self.metadataDetail = [[CCMetadata alloc] init];
         self.photos = [[NSMutableArray alloc] init];
@@ -191,6 +191,22 @@
     _toolbar.barTintColor = [NCBrandColor sharedInstance].tabBar;
 
     [self.view addSubview:_toolbar];
+}
+
+- (void)changeTheming
+{
+    if (app.activeAccount.length > 0 && k_option_use_themingColor == YES) {
+        
+        TableCapabilities *capabilities = [CCCoreData getCapabilitesForAccount:app.activeAccount];
+        if (capabilities.themingColor.length > 0) {
+            
+            UIColor *themingColor = [CCGraphics colorFromHexString:capabilities.themingColor];
+            NCBrandColor.sharedInstance.navigationBar = themingColor;
+            NCBrandColor.sharedInstance.navigationBarShare = themingColor;
+        }
+    }
+    
+    self.navigationController.navigationBar.barTintColor = [NCBrandColor sharedInstance].navigationBar;
 }
 
 #pragma --------------------------------------------------------------------------------------------

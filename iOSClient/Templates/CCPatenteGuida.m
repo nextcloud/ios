@@ -57,6 +57,8 @@
         self.uuid = uuid;
         self.serverUrl = serverUrl;
         
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
+        
         // if fileName read Crypto File
         if (fileName)
             field = [[CCCrypto sharedManager] getDictionaryEncrypted:fileName uuid:uuid isLocal:isLocal directoryUser:app.directoryUser];
@@ -157,6 +159,11 @@
     [super viewDidAppear:animated];
     
     if (self.fileName && !field) [self performSelector:@selector(cancelPressed:) withObject:nil afterDelay:0.5];
+}
+
+- (void)changeTheming
+{
+    [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
 }
 
 - (void)didSelectFormRow:(XLFormRowDescriptor *)formRow
