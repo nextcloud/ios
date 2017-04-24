@@ -935,6 +935,7 @@
     if (documentPDF != nil) {
         
         self.readerPDFViewController = [[ReaderViewController alloc] initWithReaderDocument:documentPDF];
+        self.readerPDFViewController.delegate = self;
         self.readerPDFViewController.view.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height - TOOLBAR_HEIGHT);
         [self.readerPDFViewController updateContentViews];
 
@@ -948,6 +949,19 @@
         [alertView show];
         
     }
+}
+
+- (void)handleSingleTapReader
+{
+    self.navigationController.navigationBarHidden = !self.navigationController.navigationBarHidden;
+    _toolbar.hidden = !_toolbar.isHidden;
+    
+    if (_toolbar.isHidden) {
+        self.readerPDFViewController.view.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height);
+    } else {
+        self.readerPDFViewController.view.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height - TOOLBAR_HEIGHT);
+    }
+    [self.readerPDFViewController updateContentViews];
 }
 
 #pragma --------------------------------------------------------------------------------------------

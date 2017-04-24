@@ -399,9 +399,6 @@
 
 		lastAppearSize = CGSizeZero; // Reset view size tracking
 	}
-    
-    //TWS (IOS7)
-    self.tabBarController.tabBar.hidden = YES;
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -562,6 +559,10 @@
 {
 	if (recognizer.state == UIGestureRecognizerStateRecognized)
 	{
+        //TWS
+        if ([self.delegate respondsToSelector:@selector(handleSingleTapReader)])
+            [self.delegate handleSingleTapReader];
+        
 		CGRect viewRect = recognizer.view.bounds; // View bounds
 
 		CGPoint point = [recognizer locationInView:recognizer.view]; // Point

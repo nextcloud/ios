@@ -35,6 +35,9 @@
 
 - (void)dismissReaderViewController:(ReaderViewController *)viewController;
 
+//TWS
+- (void)handleSingleTapReader;
+
 @end
 
 @interface ReaderViewController : UIViewController
