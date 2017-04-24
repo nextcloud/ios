@@ -132,7 +132,7 @@
     [super viewWillAppear:animated];
     
     self.title = NSLocalizedString(@"_settings_", nil);
-    self.tableView.backgroundColor = [NCColorBrand sharedInstance].tableBackground;
+    self.tableView.backgroundColor = [NCBrandColor sharedInstance].tableBackground;
 
     // Color
     [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];

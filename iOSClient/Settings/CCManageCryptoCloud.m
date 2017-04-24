@@ -49,7 +49,7 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:[UIImage imageNamed:image_settingsCryptoCloud] forKey:@"imageView.image"];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
-    [row.cellConfig setObject:[NCColorBrand sharedInstance].brand forKey:@"textLabel.textColor"];
+    [row.cellConfig setObject:[NCBrandColor sharedInstance].brand forKey:@"textLabel.textColor"];
     row.action.formSelector = @selector(activateCryptoCloud:);
     row.hidden = @(YES);
     [section addFormRow:row];
@@ -59,7 +59,7 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:[UIImage imageNamed:image_settingsRemoveCryptoCloud] forKey:@"imageView.image"];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
-    [row.cellConfig setObject:[NCColorBrand sharedInstance].brand forKey:@"textLabel.textColor"];
+    [row.cellConfig setObject:[NCBrandColor sharedInstance].brand forKey:@"textLabel.textColor"];
     row.action.formSelector = @selector(disactivateCryptoCloud:);
     row.hidden = @(YES);
     [section addFormRow:row];
@@ -75,7 +75,7 @@
 {
     [super viewWillAppear:animated];
     
-    self.tableView.backgroundColor = [NCColorBrand sharedInstance].tableBackground;
+    self.tableView.backgroundColor = [NCBrandColor sharedInstance].tableBackground;
     
     // Color
     [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
@@ -99,7 +99,7 @@
     viewController.title = NSLocalizedString(@"_key_aes_256_", nil);
     
     viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
-    viewController.navigationItem.leftBarButtonItem.tintColor = [NCColorBrand sharedInstance].cryptocloud;
+    viewController.navigationItem.leftBarButtonItem.tintColor = [NCBrandColor sharedInstance].cryptocloud;
     
     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
     [self presentViewController:navigationController animated:YES completion:nil];
@@ -118,7 +118,7 @@
     viewController.title = NSLocalizedString(@"_check_key_aes_256_", nil);
     
     viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
-    viewController.navigationItem.leftBarButtonItem.tintColor = [NCColorBrand sharedInstance].cryptocloud;
+    viewController.navigationItem.leftBarButtonItem.tintColor = [NCBrandColor sharedInstance].cryptocloud;
     
     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
     [self presentViewController:navigationController animated:YES completion:nil];

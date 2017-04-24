@@ -77,7 +77,7 @@
     _tableView.emptyDataSetSource = self;
     
     _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    _tableView.backgroundColor = [NCColorBrand sharedInstance].tableBackground;
+    _tableView.backgroundColor = [NCBrandColor sharedInstance].tableBackground;
     
     self.title = NSLocalizedString(@"_transfers_", nil);
     
@@ -171,7 +171,7 @@
         
         CCTransfersCell *cell = (CCTransfersCell *)[_tableView cellForRowAtIndexPath:indexPath];
         
-        if (cryptated) cell.progressView.progressTintColor = [NCColorBrand sharedInstance].cryptocloud;
+        if (cryptated) cell.progressView.progressTintColor = [NCBrandColor sharedInstance].cryptocloud;
         else cell.progressView.progressTintColor = [UIColor blackColor];
         
         cell.progressView.hidden = NO;
@@ -548,7 +548,7 @@
     
     // colori e font
     if (metadata.cryptated) {
-        cell.labelTitle.textColor = [NCColorBrand sharedInstance].cryptocloud;
+        cell.labelTitle.textColor = [NCBrandColor sharedInstance].cryptocloud;
         cell.labelInfoFile.textColor = [UIColor blackColor];
     } else {
         cell.labelTitle.textColor = [UIColor blackColor];
@@ -643,7 +643,7 @@
         float progress = [[app.listProgressMetadata objectForKey:metadata.fileID] floatValue];
         if (progress > 0) {
             
-            if (metadata.cryptated) cell.progressView.progressTintColor = [NCColorBrand sharedInstance].cryptocloud;
+            if (metadata.cryptated) cell.progressView.progressTintColor = [NCBrandColor sharedInstance].cryptocloud;
             else cell.progressView.progressTintColor = [UIColor blackColor];
             
             cell.progressView.progress = progress;
@@ -708,7 +708,7 @@
         float progress = [[app.listProgressMetadata objectForKey:metadata.fileID] floatValue];
         if (progress > 0) {
             
-            if (metadata.cryptated) cell.progressView.progressTintColor = [NCColorBrand sharedInstance].cryptocloud;
+            if (metadata.cryptated) cell.progressView.progressTintColor = [NCBrandColor sharedInstance].cryptocloud;
             else cell.progressView.progressTintColor = [UIColor blackColor];
             
             cell.progressView.progress = progress;

@@ -87,7 +87,7 @@
     [self setHTML:[field objectForKey:@"note"]];
     
     //
-    self.toolbarItemTintColor = [NCColorBrand sharedInstance].brand;
+    self.toolbarItemTintColor = [NCBrandColor sharedInstance].brand;
     
     templates = [[CCTemplates alloc] init];
     [templates setImageTitle:self.titolo conNavigationItem:self.navigationItem reachability:[app.reachability isReachable]];

@@ -507,7 +507,7 @@
     if (progress == 0)
         [self.navigationController cancelCCProgress];
     else
-        [self.navigationController setCCProgressPercentage:progress*100 andTintColor:[NCColorBrand sharedInstance].navigationBarProgress];
+        [self.navigationController setCCProgressPercentage:progress*100 andTintColor:[NCBrandColor sharedInstance].navigationBarProgress];
 }
 
 #pragma --------------------------------------------------------------------------------------------

@@ -102,7 +102,7 @@
 - (void)openAssetsPickerController
 {
     CTAssetCheckmark *checkmark = [CTAssetCheckmark appearance];
-    checkmark.tintColor = [NCColorBrand sharedInstance].brand;
+    checkmark.tintColor = [NCBrandColor sharedInstance].brand;
     [checkmark setMargin:0.0 forVerticalEdge:NSLayoutAttributeRight horizontalEdge:NSLayoutAttributeTop];
     
     UINavigationBar *navBar = [UINavigationBar appearanceWhenContainedIn:[CTAssetsPickerController class], nil];
@@ -194,9 +194,9 @@
 
     _move.delegate = self;
     _move.selectedMetadatas = nil;
-    _move.tintColor = [NCColorBrand sharedInstance].navigationBarText;
-    _move.barTintColor = [NCColorBrand sharedInstance].navigationBar;
-    _move.tintColorTitle = [NCColorBrand sharedInstance].navigationBarText;
+    _move.tintColor = [NCBrandColor sharedInstance].navigationBarText;
+    _move.barTintColor = [NCBrandColor sharedInstance].navigationBar;
+    _move.tintColorTitle = [NCBrandColor sharedInstance].navigationBarText;
     _move.networkingOperationQueue = app.netQueue;
     
     [navigationController setModalPresentationStyle:UIModalPresentationFormSheet];

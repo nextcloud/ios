@@ -33,13 +33,13 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
         super.viewDidLoad()
         
         self.navigationController?.navigationBar.topItem?.title = NSLocalizedString("_notification_", comment: "")
-        self.navigationController?.navigationBar.barTintColor = NCColorBrand.sharedInstance.navigationBar
-        self.navigationController?.navigationBar.tintColor = NCColorBrand.sharedInstance.navigationBarText
-        self.navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: NCColorBrand.sharedInstance.navigationBarText]
+        self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.navigationBar
+        self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.navigationBarText
+        self.navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: NCBrandColor.sharedInstance.navigationBarText]
 
         self.navigationItem.setRightBarButton(UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(viewClose)), animated: true)
         
-        self.tableView.separatorColor = NCColorBrand.sharedInstance.seperator
+        self.tableView.separatorColor = NCBrandColor.sharedInstance.seperator
         self.tableView.tableFooterView = UIView()
 
         // Register to receive notification reload data
@@ -159,7 +159,7 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! CCNotificationCell
         
         let selectionColor : UIView = UIView.init()
-        selectionColor.backgroundColor = NCColorBrand.sharedInstance.selectBackgrond
+        selectionColor.backgroundColor = NCBrandColor.sharedInstance.selectBackgrond
         cell.selectedBackgroundView = selectionColor
         
         if self.resultSearchController.isActive {

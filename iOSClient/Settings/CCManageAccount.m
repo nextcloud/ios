@@ -153,7 +153,7 @@
 {
     [super viewWillAppear:animated];
  
-    self.tableView.backgroundColor = [NCColorBrand sharedInstance].tableBackground;
+    self.tableView.backgroundColor = [NCBrandColor sharedInstance].tableBackground;
 
     // Color
     [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];

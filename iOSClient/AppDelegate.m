@@ -233,7 +233,7 @@
     [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
     
     // Tint Color GLOBAL WINDOW
-    [self.window setTintColor:[NCColorBrand sharedInstance].windowTintcolor];
+    [self.window setTintColor:[NCBrandColor sharedInstance].windowTintcolor];
     
     UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
     //UITabBarController *tabBarController = [splitViewController.viewControllers firstObject];
@@ -752,7 +752,7 @@
             backgroundColor = [UIColor colorWithRed:0.588 green:0.797 blue:0.000 alpha:0.90];
             break;
         case TWMessageBarMessageTypeInfo:
-            backgroundColor = [NCColorBrand sharedInstance].messageInfoBackground;
+            backgroundColor = [NCBrandColor sharedInstance].messageInfoBackground;
             break;
         default:
             break;
@@ -868,15 +868,15 @@
 - (void)aspectNavigationControllerBar:(UINavigationBar *)nav encrypted:(BOOL)encrypted online:(BOOL)online hidden:(BOOL)hidden
 {
     nav.translucent = NO;
-    nav.barTintColor = [NCColorBrand sharedInstance].navigationBar;
-    nav.tintColor = [NCColorBrand sharedInstance].navigationBarText;
-    [nav setTitleTextAttributes:@{NSForegroundColorAttributeName : [NCColorBrand sharedInstance].navigationBarText}];
+    nav.barTintColor = [NCBrandColor sharedInstance].navigationBar;
+    nav.tintColor = [NCBrandColor sharedInstance].navigationBarText;
+    [nav setTitleTextAttributes:@{NSForegroundColorAttributeName : [NCBrandColor sharedInstance].navigationBarText}];
     
     if (encrypted)
-        [nav setTitleTextAttributes:@{NSForegroundColorAttributeName : [NCColorBrand sharedInstance].cryptocloud}];
+        [nav setTitleTextAttributes:@{NSForegroundColorAttributeName : [NCBrandColor sharedInstance].cryptocloud}];
     
     if (!online)
-        [nav setTitleTextAttributes:@{NSForegroundColorAttributeName : [NCColorBrand sharedInstance].connectionNo}];
+        [nav setTitleTextAttributes:@{NSForegroundColorAttributeName : [NCBrandColor sharedInstance].connectionNo}];
     
     nav.hidden = hidden;
     
@@ -886,8 +886,8 @@
 - (void)aspectTabBar:(UITabBar *)tab hidden:(BOOL)hidden
 {
     tab.translucent = NO;
-    tab.barTintColor = [NCColorBrand sharedInstance].tabBar;
-    tab.tintColor = [NCColorBrand sharedInstance].tabBarText;
+    tab.barTintColor = [NCBrandColor sharedInstance].tabBar;
+    tab.tintColor = [NCBrandColor sharedInstance].tabBarText;
     
     tab.hidden = hidden;
     

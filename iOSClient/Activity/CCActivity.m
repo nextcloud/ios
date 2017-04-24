@@ -261,7 +261,7 @@
 
         if ([activity.type isEqualToString:k_activityTypeInfo]) {
         
-            actionLabel.textColor = [NCColorBrand sharedInstance].brand;
+            actionLabel.textColor = [NCBrandColor sharedInstance].brand;
         
             if (activity.idActivity == 0)
                 typeImage.image = [UIImage imageNamed:@"activityTypeInfo"];

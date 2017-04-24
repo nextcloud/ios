@@ -147,7 +147,7 @@
     // delegate
     self.tableView.delegate = self;
     self.tableView.tableFooterView = [UIView new];
-    self.tableView.separatorColor = [NCColorBrand sharedInstance].seperator;
+    self.tableView.separatorColor = [NCBrandColor sharedInstance].seperator;
     self.tableView.emptyDataSetDelegate = self;
     self.tableView.emptyDataSetSource = self;
     self.searchController.delegate = self;
@@ -204,7 +204,7 @@
     self.searchController.searchResultsUpdater = self;
     self.searchController.dimsBackgroundDuringPresentation = NO;
     self.tableView.tableHeaderView = self.searchController.searchBar;
-    self.searchController.searchBar.barTintColor = [NCColorBrand sharedInstance].seperator;
+    self.searchController.searchBar.barTintColor = [NCBrandColor sharedInstance].seperator;
     [self.searchController.searchBar sizeToFit];
     self.searchController.searchBar.delegate = self;
     self.searchController.searchBar.placeholder = NSLocalizedString(@"_search_this_folder_",nil);
@@ -523,7 +523,7 @@
 - (void)createRefreshControl
 {
     _refreshControl = [UIRefreshControl new];
-    _refreshControl.tintColor = [NCColorBrand sharedInstance].refreshControl;
+    _refreshControl.tintColor = [NCBrandColor sharedInstance].refreshControl;
     _refreshControl.backgroundColor = [UIColor colorWithRed:235.0/255.0 green:235.0/255.0 blue:235.0/255.0 alpha:1.0];
     [_refreshControl addTarget:self action:@selector(refreshControlTarget) forControlEvents:UIControlEventValueChanged];
     [self setRefreshControl:_refreshControl];
@@ -599,7 +599,7 @@
     if ([app.listOfNotifications count] > 0) {
         
         buttonNotification = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:image_notification] style:UIBarButtonItemStylePlain target:self action:@selector(viewNotification)];
-        buttonNotification.tintColor = [NCColorBrand sharedInstance].navigationBarText;
+        buttonNotification.tintColor = [NCBrandColor sharedInstance].navigationBarText;
         buttonNotification.enabled = true;
     }
     
@@ -722,7 +722,7 @@
 - (void)openAssetsPickerController
 {
     CTAssetCheckmark *checkmark = [CTAssetCheckmark appearance];
-    checkmark.tintColor = [NCColorBrand sharedInstance].brand;
+    checkmark.tintColor = [NCBrandColor sharedInstance].brand;
     [checkmark setMargin:0.0 forVerticalEdge:NSLayoutAttributeRight horizontalEdge:NSLayoutAttributeTop];
     
     UINavigationBar *navBar = [UINavigationBar appearanceWhenContainedIn:[CTAssetsPickerController class], nil];
@@ -2347,9 +2347,9 @@
     viewController.delegate = self;
     viewController.move.title = NSLocalizedString(@"_move_", nil);
     viewController.selectedMetadatas = [self getMetadatasFromSelectedRows:indexPaths];
-    viewController.tintColor = [NCColorBrand sharedInstance].navigationBarText;
-    viewController.barTintColor = [NCColorBrand sharedInstance].navigationBar;
-    viewController.tintColorTitle = [NCColorBrand sharedInstance].navigationBarText;
+    viewController.tintColor = [NCBrandColor sharedInstance].navigationBarText;
+    viewController.barTintColor = [NCBrandColor sharedInstance].navigationBar;
+    viewController.tintColorTitle = [NCBrandColor sharedInstance].navigationBarText;
     viewController.networkingOperationQueue = app.netQueue;
     
     [navigationController setModalPresentationStyle:UIModalPresentationFormSheet];
@@ -2668,7 +2668,7 @@
         
         CCTransfersCell *cell = (CCTransfersCell *)[self.tableView cellForRowAtIndexPath:indexPath];
         
-        if (cryptated) cell.progressView.progressTintColor = [NCColorBrand sharedInstance].cryptocloud;
+        if (cryptated) cell.progressView.progressTintColor = [NCBrandColor sharedInstance].cryptocloud;
         else cell.progressView.progressTintColor = [UIColor blackColor];
         
         cell.progressView.hidden = NO;
@@ -2678,7 +2678,7 @@
     if (progress == 0)
         [self.navigationController cancelCCProgress];
     else
-        [self.navigationController setCCProgressPercentage:progress*100 andTintColor: [NCColorBrand sharedInstance].navigationBarProgress];
+        [self.navigationController setCCProgressPercentage:progress*100 andTintColor: [NCBrandColor sharedInstance].navigationBarProgress];
 }
 
 - (void)reloadTaskButton:(id)sender withEvent:(UIEvent *)event
@@ -3568,16 +3568,16 @@
     app.reMainMenu.waitUntilAnimationIsComplete = NO;
     
     app.reMainMenu.separatorHeight = 0.5;
-    app.reMainMenu.separatorColor = [NCColorBrand sharedInstance].seperator;
+    app.reMainMenu.separatorColor = [NCBrandColor sharedInstance].seperator;
     
-    app.reMainMenu.backgroundColor = [NCColorBrand sharedInstance].menuBackground;
+    app.reMainMenu.backgroundColor = [NCBrandColor sharedInstance].menuBackground;
     app.reMainMenu.textColor = [UIColor blackColor];
     app.reMainMenu.textAlignment = NSTextAlignmentLeft;
     app.reMainMenu.textShadowColor = nil;
     app.reMainMenu.textOffset = CGSizeMake(50, 0.0);
     app.reMainMenu.font = [UIFont systemFontOfSize:14.0];
     
-    app.reMainMenu.highlightedBackgroundColor = [NCColorBrand sharedInstance].selectBackgrond;
+    app.reMainMenu.highlightedBackgroundColor = [NCBrandColor sharedInstance].selectBackgrond;
     app.reMainMenu.highlightedSeparatorColor = nil;
     app.reMainMenu.highlightedTextColor = [UIColor blackColor];
     app.reMainMenu.highlightedTextShadowColor = nil;
@@ -3757,16 +3757,16 @@
     app.reSelectMenu.waitUntilAnimationIsComplete = NO;
     
     app.reSelectMenu.separatorHeight = 0.5;
-    app.reSelectMenu.separatorColor = [NCColorBrand sharedInstance].seperator;
+    app.reSelectMenu.separatorColor = [NCBrandColor sharedInstance].seperator;
     
-    app.reSelectMenu.backgroundColor = [NCColorBrand sharedInstance].menuBackground;
+    app.reSelectMenu.backgroundColor = [NCBrandColor sharedInstance].menuBackground;
     app.reSelectMenu.textColor = [UIColor blackColor];
     app.reSelectMenu.textAlignment = NSTextAlignmentLeft;
     app.reSelectMenu.textShadowColor = nil;
     app.reSelectMenu.textOffset = CGSizeMake(50, 0.0);
     app.reSelectMenu.font = [UIFont systemFontOfSize:14.0];
     
-    app.reSelectMenu.highlightedBackgroundColor = [NCColorBrand sharedInstance].selectBackgrond;
+    app.reSelectMenu.highlightedBackgroundColor = [NCBrandColor sharedInstance].selectBackgrond;
     app.reSelectMenu.highlightedSeparatorColor = nil;
     app.reSelectMenu.highlightedTextColor = [UIColor blackColor];
     app.reSelectMenu.highlightedTextShadowColor = nil;
@@ -4197,7 +4197,7 @@
 
         viewController.title = NSLocalizedString(@"_passcode_protection_", nil);
         viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
-        viewController.navigationItem.leftBarButtonItem.tintColor = [NCColorBrand sharedInstance].cryptocloud;
+        viewController.navigationItem.leftBarButtonItem.tintColor = [NCBrandColor sharedInstance].cryptocloud;
         
         UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
         [self presentViewController:navigationController animated:YES completion:nil];
@@ -4287,12 +4287,12 @@
     
     actionSheet.automaticallyTintButtonImages = @(NO);
     
-    actionSheet.encryptedButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:[NCColorBrand sharedInstance].cryptocloud };
+    actionSheet.encryptedButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:[NCBrandColor sharedInstance].cryptocloud };
     actionSheet.buttonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:[UIColor blackColor] };
-    actionSheet.cancelButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:[NCColorBrand sharedInstance].brand };
-    actionSheet.disableButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:[NCColorBrand sharedInstance].cryptocloud };
+    actionSheet.cancelButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:[NCBrandColor sharedInstance].brand };
+    actionSheet.disableButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:[NCBrandColor sharedInstance].cryptocloud };
     
-    actionSheet.separatorColor =  [NCColorBrand sharedInstance].seperator;
+    actionSheet.separatorColor =  [NCBrandColor sharedInstance].seperator;
     actionSheet.cancelButtonTitle = NSLocalizedString(@"_cancel_",nil);
     
     /******************************************* DIRECTORY *******************************************/
@@ -4313,7 +4313,7 @@
         
         [actionSheet addButtonWithTitle: _metadata.fileNamePrint
                                   image: iconHeader
-                        backgroundColor: [NCColorBrand sharedInstance].tabBar
+                        backgroundColor: [NCBrandColor sharedInstance].tabBar
                                  height: 50.0
                                    type: AHKActionSheetButtonTypeDisabled
                                 handler: nil
@@ -4472,7 +4472,7 @@
         
         [actionSheet addButtonWithTitle: _metadata.fileNamePrint
                                   image: iconHeader
-                        backgroundColor: [NCColorBrand sharedInstance].tabBar
+                        backgroundColor: [NCBrandColor sharedInstance].tabBar
                                  height: 50.0
                                    type: AHKActionSheetButtonTypeDisabled
                                 handler: nil
@@ -4601,7 +4601,7 @@
      
         [actionSheet addButtonWithTitle: _metadata.fileNamePrint
                                   image: iconHeader
-                        backgroundColor: [NCColorBrand sharedInstance].tabBar
+                        backgroundColor: [NCBrandColor sharedInstance].tabBar
                                  height: 50.0
                                    type: AHKActionSheetButtonTypeDisabled
                                 handler: nil
@@ -4975,14 +4975,14 @@
     if ([currentDevice rangeOfString:@"iPad3"].location != NSNotFound) {
         
         visualEffectView = [[UIVisualEffectView alloc] init];
-        visualEffectView.backgroundColor = [NCColorBrand sharedInstance].groupByBarNoBlur;
+        visualEffectView.backgroundColor = [NCBrandColor sharedInstance].groupByBarNoBlur;
         
     } else {
         
         UIVisualEffect *blurEffect;
         blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
         visualEffectView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
-        visualEffectView.backgroundColor = [NCColorBrand sharedInstance].groupByBar;
+        visualEffectView.backgroundColor = [NCBrandColor sharedInstance].groupByBar;
     }
     
     if ([_directoryGroupBy isEqualToString:@"alphabetic"]) {
@@ -5068,11 +5068,11 @@
     
     // change color selection
     UIView *selectionColor = [[UIView alloc] init];
-    selectionColor.backgroundColor = [NCColorBrand sharedInstance].selectBackgrond;
+    selectionColor.backgroundColor = [NCBrandColor sharedInstance].selectBackgrond;
     cell.selectedBackgroundView = selectionColor;
     
     if ([typeCell isEqualToString:@"CellMain"]) cell.backgroundColor = [UIColor whiteColor];
-    if ([typeCell isEqualToString:@"CellMainTransfer"]) cell.backgroundColor = [NCColorBrand sharedInstance].transferBackground;
+    if ([typeCell isEqualToString:@"CellMainTransfer"]) cell.backgroundColor = [NCBrandColor sharedInstance].transferBackground;
     
     // ----------------------------------------------------------------------------------------------------------
     // DEFAULT
@@ -5098,7 +5098,7 @@
     
     // Encrypted color
     if (metadata.cryptated) {
-        cell.labelTitle.textColor = [NCColorBrand sharedInstance].cryptocloud;
+        cell.labelTitle.textColor = [NCBrandColor sharedInstance].cryptocloud;
     } else {
         cell.labelTitle.textColor = [UIColor blackColor];
     }
@@ -5344,7 +5344,7 @@
         float progress = [[app.listProgressMetadata objectForKey:metadata.fileID] floatValue];
         if (progress > 0) {
             
-            if (metadata.cryptated) cell.progressView.progressTintColor = [NCColorBrand sharedInstance].cryptocloud;
+            if (metadata.cryptated) cell.progressView.progressTintColor = [NCBrandColor sharedInstance].cryptocloud;
             else cell.progressView.progressTintColor = [UIColor blackColor];
             
             cell.progressView.progress = progress;
@@ -5409,7 +5409,7 @@
         float progress = [[app.listProgressMetadata objectForKey:metadata.fileID] floatValue];
         if (progress > 0) {
             
-            if (metadata.cryptated) cell.progressView.progressTintColor = [NCColorBrand sharedInstance].cryptocloud;
+            if (metadata.cryptated) cell.progressView.progressTintColor = [NCBrandColor sharedInstance].cryptocloud;
             else cell.progressView.progressTintColor = [UIColor blackColor];
             
             cell.progressView.progress = progress;
@@ -5559,7 +5559,7 @@
         
         viewController.title = k_brand;
         viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
-        viewController.navigationItem.leftBarButtonItem.tintColor = [NCColorBrand sharedInstance].cryptocloud;
+        viewController.navigationItem.leftBarButtonItem.tintColor = [NCBrandColor sharedInstance].cryptocloud;
 
         UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
             
@@ -5749,7 +5749,7 @@
             
             viewController.title = NSLocalizedString(@"_folder_blocked_", nil); 
             viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
-            viewController.navigationItem.leftBarButtonItem.tintColor = [NCColorBrand sharedInstance].cryptocloud;
+            viewController.navigationItem.leftBarButtonItem.tintColor = [NCBrandColor sharedInstance].cryptocloud;
             
             UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:viewController];
             [self presentViewController:navController animated:YES completion:nil];

@@ -1,5 +1,5 @@
 //
-//  NCColor.swift
+//  NCBrandColor.swift
 //  Crypto Cloud Technology Nextcloud
 //
 //  Created by Marino Faggiana on 24/04/17.
@@ -23,10 +23,10 @@
 
 import UIKit
 
-class NCColorBrand: NSObject {
+class NCBrandColor: NSObject {
 
-    static let sharedInstance: NCColorBrand = {
-        let instance = NCColorBrand()
+    static let sharedInstance: NCBrandColor = {
+        let instance = NCBrandColor()
         return instance
     }()
 

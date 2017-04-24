@@ -188,7 +188,7 @@
     [_toolbar setItems:[NSArray arrayWithObjects: flexible, _buttonDelete, fixedSpaceMini, _buttonShare, fixedSpaceMini, _buttonAction,  nil]];
     [_toolbar setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin];
     
-    _toolbar.barTintColor = [NCColorBrand sharedInstance].tabBar;
+    _toolbar.barTintColor = [NCBrandColor sharedInstance].tabBar;
 
     [self.view addSubview:_toolbar];
 }
@@ -721,7 +721,7 @@
     if (progress == 0)
         [self.navigationController cancelCCProgress];
     else
-        [self.navigationController setCCProgressPercentage:progress*100 andTintColor:[NCColorBrand sharedInstance].navigationBarProgress];
+        [self.navigationController setCCProgressPercentage:progress*100 andTintColor:[NCBrandColor sharedInstance].navigationBarProgress];
 }
 
 - (void)downloadPhotoBrowserFailure:(NSInteger)errorCode

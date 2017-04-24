@@ -172,7 +172,7 @@
 {
     [super viewWillAppear:animated];
     
-    self.tableView.backgroundColor = [NCColorBrand sharedInstance].tableBackground;
+    self.tableView.backgroundColor = [NCBrandColor sharedInstance].tableBackground;
     
     // Color
     [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
@@ -286,7 +286,7 @@
     viewController.title = NSLocalizedString(@"_check_key_aes_256_", nil);
     
     viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
-    viewController.navigationItem.leftBarButtonItem.tintColor = [NCColorBrand sharedInstance].cryptocloud;
+    viewController.navigationItem.leftBarButtonItem.tintColor = [NCBrandColor sharedInstance].cryptocloud;
     
     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
     [self presentViewController:navigationController animated:YES completion:nil];
@@ -317,7 +317,7 @@
     viewController.touchIDManager = touchIDManager;
     
     viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
-    viewController.navigationItem.leftBarButtonItem.tintColor = [NCColorBrand sharedInstance].cryptocloud;
+    viewController.navigationItem.leftBarButtonItem.tintColor = [NCBrandColor sharedInstance].cryptocloud;
     
     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
     [self presentViewController:navigationController animated:YES completion:nil];
@@ -352,7 +352,7 @@
         viewController.title = NSLocalizedString(@"_passcode_activate_", nil);
         
         viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
-        viewController.navigationItem.leftBarButtonItem.tintColor = [NCColorBrand sharedInstance].cryptocloud;
+        viewController.navigationItem.leftBarButtonItem.tintColor = [NCBrandColor sharedInstance].cryptocloud;
                
         UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
         [self presentViewController:navigationController animated:YES completion:nil];
@@ -384,7 +384,7 @@
         viewController.title = NSLocalizedString(@"_disabling_passcode_", nil);
             
         viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
-        viewController.navigationItem.leftBarButtonItem.tintColor = [NCColorBrand sharedInstance].cryptocloud;
+        viewController.navigationItem.leftBarButtonItem.tintColor = [NCBrandColor sharedInstance].cryptocloud;
         
         UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
         [self presentViewController:navigationController animated:YES completion:nil];

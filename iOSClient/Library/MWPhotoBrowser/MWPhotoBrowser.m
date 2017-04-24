@@ -168,8 +168,8 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
 	
     // Toolbar
     _toolbar = [[UIToolbar alloc] initWithFrame:[self frameForToolbarAtOrientation:[[UIApplication sharedApplication] statusBarOrientation]]];
-    _toolbar.tintColor = [NCColorBrand sharedInstance].tabBarText; //TWS
-    _toolbar.barTintColor = [NCColorBrand sharedInstance].tabBar;
+    _toolbar.tintColor = [NCBrandColor sharedInstance].tabBarText; //TWS
+    _toolbar.barTintColor = [NCBrandColor sharedInstance].tabBar;
     [_toolbar setBackgroundImage:nil forToolbarPosition:UIToolbarPositionAny barMetrics:UIBarMetricsDefault];
     [_toolbar setBackgroundImage:nil forToolbarPosition:UIToolbarPositionAny barMetrics:UIBarMetricsCompact];
     _toolbar.barStyle = UIBarStyleDefault; //TWS
@@ -237,9 +237,9 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
     }
     
     // color
-    self.navigationController.navigationBar.barTintColor = [NCColorBrand sharedInstance].navigationBar;
-    self.navigationController.navigationBar.tintColor = [NCColorBrand sharedInstance].navigationBarText;
-    [self.navigationController.navigationBar setTitleTextAttributes:@{NSForegroundColorAttributeName : [NCColorBrand sharedInstance].navigationBarText}];
+    self.navigationController.navigationBar.barTintColor = [NCBrandColor sharedInstance].navigationBar;
+    self.navigationController.navigationBar.tintColor = [NCBrandColor sharedInstance].navigationBarText;
+    [self.navigationController.navigationBar setTitleTextAttributes:@{NSForegroundColorAttributeName : [NCBrandColor sharedInstance].navigationBarText}];
     
     // Toolbar items
     BOOL hasItems = NO;

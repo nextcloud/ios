@@ -101,13 +101,13 @@
     
     self.selectedItems = [[NSMutableArray alloc] init];
     
-    [self.view setTintColor:[NCColorBrand sharedInstance].brand];
-    self.view.backgroundColor = [NCColorBrand sharedInstance].navigationBarShare;
+    [self.view setTintColor:[NCBrandColor sharedInstance].brand];
+    self.view.backgroundColor = [NCBrandColor sharedInstance].navigationBarShare;
     
     [self.endButton setTitle:NSLocalizedString(@"_done_", nil) forState:UIControlStateNormal];
-    self.endButton.tintColor = [NCColorBrand sharedInstance].navigationBarText;
+    self.endButton.tintColor = [NCBrandColor sharedInstance].navigationBarText;
     
-    self.tableView.backgroundColor = [NCColorBrand sharedInstance].tableBackground;
+    self.tableView.backgroundColor = [NCBrandColor sharedInstance].tableBackground;
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -222,7 +222,7 @@
         
         XLFormRowDescriptor *row = [XLFormRowDescriptor formRowDescriptorWithTag:[@(num) stringValue] rowType:XLFormRowDescriptorTypeBooleanCheck title:title];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-        [row.cellConfig setObject:[NCColorBrand sharedInstance].brand forKey:@"self.tintColor"];
+        [row.cellConfig setObject:[NCBrandColor sharedInstance].brand forKey:@"self.tintColor"];
         
         [section addFormRow:row];
     }

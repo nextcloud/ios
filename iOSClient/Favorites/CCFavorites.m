@@ -68,7 +68,7 @@
     _metadata = [CCMetadata new];
     
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 1)];
-    self.tableView.separatorColor = [NCColorBrand sharedInstance].seperator;
+    self.tableView.separatorColor = [NCBrandColor sharedInstance].seperator;
     self.tableView.emptyDataSetDelegate = self;
     self.tableView.emptyDataSetSource = self;
     self.tableView.delegate = self;
@@ -117,7 +117,7 @@
     if (progress == 0)
         [self.navigationController cancelCCProgress];
     else
-        [self.navigationController setCCProgressPercentage:progress*100 andTintColor:[NCColorBrand sharedInstance].navigationBarProgress];
+        [self.navigationController setCCProgressPercentage:progress*100 andTintColor:[NCBrandColor sharedInstance].navigationBarProgress];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -378,12 +378,12 @@
     
     actionSheet.automaticallyTintButtonImages = @(NO);
     
-    actionSheet.encryptedButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:[NCColorBrand sharedInstance].cryptocloud };
+    actionSheet.encryptedButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:[NCBrandColor sharedInstance].cryptocloud };
     actionSheet.buttonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:[UIColor blackColor] };
-    actionSheet.cancelButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:[NCColorBrand sharedInstance].brand };
+    actionSheet.cancelButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:[NCBrandColor sharedInstance].brand };
     actionSheet.disableButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:[UIColor blackColor] };
     
-    actionSheet.separatorColor = [NCColorBrand sharedInstance].seperator;
+    actionSheet.separatorColor = [NCBrandColor sharedInstance].seperator;
     actionSheet.cancelButtonTitle = NSLocalizedString(@"_cancel_",nil);
     
     // assegnamo l'immagine anteprima se esiste, altrimenti metti quella standars
@@ -394,7 +394,7 @@
     
     [actionSheet addButtonWithTitle: metadata.fileNamePrint
                               image: iconHeader
-                    backgroundColor: [NCColorBrand sharedInstance].tabBar
+                    backgroundColor: [NCBrandColor sharedInstance].tabBar
                              height: 50.0
                                type: AHKActionSheetButtonTypeDisabled
                             handler: nil
@@ -546,7 +546,7 @@
     
     // change color selection
     UIView *selectionColor = [[UIView alloc] init];
-    selectionColor.backgroundColor = [NCColorBrand sharedInstance].selectBackgrond;
+    selectionColor.backgroundColor = [NCBrandColor sharedInstance].selectBackgrond;
     cell.selectedBackgroundView = selectionColor;
     
     metadata = [_dataSource objectAtIndex:indexPath.row];
@@ -561,7 +561,7 @@
     
     // encrypted color
     if (metadata.cryptated) {
-        cell.labelTitle.textColor = [NCColorBrand sharedInstance].cryptocloud;
+        cell.labelTitle.textColor = [NCBrandColor sharedInstance].cryptocloud;
     } else {
         cell.labelTitle.textColor = [UIColor blackColor];
     }

@@ -73,7 +73,7 @@
         
         // Titolo
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"titolo" rowType:XLFormRowDescriptorTypeText];
-        [row.cellConfig setObject:[NCColorBrand sharedInstance].cryptocloud forKey:@"textField.textColor"];
+        [row.cellConfig setObject:[NCBrandColor sharedInstance].cryptocloud forKey:@"textField.textColor"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textField.font"];
         row.value = [field objectForKey:@"titolo"];

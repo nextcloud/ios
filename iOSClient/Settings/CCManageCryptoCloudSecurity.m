@@ -72,7 +72,7 @@
         // Send aes-256 password via mail
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"sendmailencryptpass" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_encryptpass_by_email_", nil)];
         [row.cellConfig setObject:@(NSTextAlignmentCenter) forKey:@"textLabel.textAlignment"];
-        [row.cellConfig setObject:[NCColorBrand sharedInstance].cryptocloud forKey:@"textLabel.textColor"];
+        [row.cellConfig setObject:[NCBrandColor sharedInstance].cryptocloud forKey:@"textLabel.textColor"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
         [row.cellConfig setObject:[UIImage imageNamed:image_settingsKeyMail] forKey:@"imageView.image"];
         row.action.formSelector = @selector(sendMailEncryptPass:);
@@ -104,7 +104,7 @@
 {
     [super viewWillAppear:animated];
     
-    self.tableView.backgroundColor = [NCColorBrand sharedInstance].tableBackground;
+    self.tableView.backgroundColor = [NCBrandColor sharedInstance].tableBackground;
     
     // Color
     [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];

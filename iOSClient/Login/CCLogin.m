@@ -46,7 +46,7 @@
     [super viewDidLoad];
     
     self.imageBrand.image = [UIImage imageNamed:image_brandLogin];
-    self.login.backgroundColor = [NCColorBrand sharedInstance].brand;
+    self.login.backgroundColor = [NCBrandColor sharedInstance].brand;
     
     // Bottom label
     self.bottomLabel.text = NSLocalizedString(@"_login_bottom_label_", nil);
