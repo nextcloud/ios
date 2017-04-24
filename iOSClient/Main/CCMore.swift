@@ -52,7 +52,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         
         tableView.separatorColor = NCBrandColor.sharedInstance.seperator
         
-        imageLogo.image = UIImage.init(named: image_brandMenuMoreBackground)
+        imageLogo.image = UIImage.init(named: NCBrandImages.sharedInstance.menuMoreImage)
         
         // create tap gesture recognizer
 

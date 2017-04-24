@@ -28,7 +28,6 @@
     #import "CustomImages.h"
     #import "CustomConstant.h"
 #else
-    #import "NCBrandImages.h"
     #import "NCBrandConstant.h"
 #endif
 

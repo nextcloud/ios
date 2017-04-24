@@ -84,7 +84,7 @@
 {
     [super viewDidLoad];
     
-    self.imageBackground.image = [UIImage imageNamed:image_brandBackgroundLite];
+    self.imageBackground.image = [UIImage imageNamed:[NCBrandImages sharedInstance].BackgroundDetail];
     
     if ([self.metadataDetail.fileName length] > 0 || [self.metadataDetail.directoryID length] > 0 || [self.metadataDetail.fileID length] > 0) {
     

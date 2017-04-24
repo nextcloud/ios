@@ -179,7 +179,7 @@
     
     XLFormRowDescriptor *row = [self.form formRowWithTag:@"mail"];
     
-    [CCUtility sendMailEncryptPass:row.value validateEmail:YES form:self];
+    [CCUtility sendMailEncryptPass:row.value validateEmail:YES form:self nameImage:[NCBrandImages sharedInstance].BackgroundDetail];
 }
 
 @end

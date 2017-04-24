@@ -114,10 +114,11 @@
 
     if (![_serverUrl length]) {
         
-        _serverUrl = [CCUtility getHomeServerUrlActiveUrl:activeUrl];
+        /*_serverUrl = [CCUtility getHomeServerUrlActiveUrl:activeUrl];
         UIImageView *image = [[UIImageView alloc] initWithImage:[UIImage imageNamed:image_brandNavigationController]];
         [self.navigationController.navigationBar.topItem setTitleView:image];
         self.title = @"Home";
+        */
         
     } else {
         

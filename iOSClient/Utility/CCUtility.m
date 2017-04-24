@@ -685,7 +685,7 @@
     return fileName;
 }
 
-+ (void)sendMailEncryptPass:(NSString *)recipient validateEmail:(BOOL)validateEmail form:(id)form
++ (void)sendMailEncryptPass:(NSString *)recipient validateEmail:(BOOL)validateEmail form:(id)form nameImage:(NSString *)nameImage
 {
     BOOL error = NO;
     
@@ -706,7 +706,7 @@
         
         NSString *htmlMsg =[NSString stringWithFormat:@"<html><body><p>%@ : %@ , %@</p></body></html>", NSLocalizedString(@"_text1_mail_encryptpass_", nil), key, NSLocalizedString(@"_text2_mail_encryptpass_", nil)];
         
-        NSData *jpegData = UIImageJPEGRepresentation([UIImage imageNamed:image_brandBackgroundLite], 1.0);
+        NSData *jpegData = UIImageJPEGRepresentation([UIImage imageNamed:nameImage], 1.0);
         [mc addAttachmentData:jpegData mimeType:@"image/jpeg" fileName:@"cryptocloud.png"];
         [mc setMessageBody:htmlMsg isHTML:YES];
         

@@ -53,3 +53,19 @@ class NCBrandColor: NSObject {
     public var transferBackground:      UIColor = UIColor(red: 178.0/255.0, green: 244.0/255.0, blue: 258.0/255.0, alpha: 0.1)
     public var windowTintcolor:         UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)    // BLU NC : #0082c9
 }
+
+class NCBrandImages: NSObject {
+
+    static let sharedInstance: NCBrandImages = {
+        let instance = NCBrandImages()
+        return instance
+    }()
+    
+    public var login:                   String = "loginLogo"
+    public var navigationLogo:          String = "navigationLogo"
+    public var navigationLogoOffline:   String = "navigationLogoOffline"
+    public var BackgroundDetail:        String = "backgroundDetail"
+    public var menuMoreImage:           String = "menuMoreImage"
+}
+
+
