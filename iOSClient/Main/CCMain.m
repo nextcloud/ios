@@ -3577,110 +3577,61 @@
 {
     // ITEM DELETE ------------------------------------------------------------------------------------------------------
     
-    if (app.deleteItem == nil) app.deleteItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_delete_selected_files_", nil)
-                                                                                         subtitle:@""
-                                                                                            image:[UIImage imageNamed:image_deleteSelectedFiles]
-                                                                                 highlightedImage:nil
-                                                                                           action:^(REMenuItem *item) {
-                                                                                               [self deleteSelectionFile];
-                                                                                           }];
-    else app.deleteItem = [app.deleteItem initWithTitle:NSLocalizedString(@"_delete_selected_files_", nil)
-                                                               subtitle:@""
-                                                                  image:[UIImage imageNamed:image_deleteSelectedFiles]
-                                                       highlightedImage:nil
-                                                                 action:^(REMenuItem *item) {
-                                                                     [self deleteSelectionFile];
-                                                                 }];
+    if (app.deleteItem == nil) app.deleteItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_delete_selected_files_", nil) subtitle:@"" image:[UIImage imageNamed:image_deleteSelectedFiles] highlightedImage:nil action:^(REMenuItem *item) {
+            [self deleteSelectionFile];
+        }];
+    else app.deleteItem = [app.deleteItem initWithTitle:NSLocalizedString(@"_delete_selected_files_", nil) subtitle:@"" image:[UIImage imageNamed:image_deleteSelectedFiles] highlightedImage:nil action:^(REMenuItem *item) {
+            [self deleteSelectionFile];
+        }];
     
     
     // ITEM MOVE ------------------------------------------------------------------------------------------------------
     
-    if (app.moveItem == nil) app.moveItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_move_selected_files_", nil)
-                                                                                               subtitle:@""
-                                                                                                  image:[UIImage imageNamed:image_moveSelectedFiles]
-                                                                                       highlightedImage:nil
-                                                                                                 action:^(REMenuItem *item) {
-                                                                                                     [self moveOpenWindow:[self.tableView indexPathsForSelectedRows]];
-                                                                                                 }];
-    else app.moveItem = [app.moveItem initWithTitle:NSLocalizedString(@"_move_selected_files_", nil)
-                                                                     subtitle:@""
-                                                                        image:[UIImage imageNamed:image_moveSelectedFiles]
-                                                             highlightedImage:nil
-                                                                       action:^(REMenuItem *item) {
-                                                                           [self moveOpenWindow:[self.tableView indexPathsForSelectedRows]];
-                                                                       }];
+    if (app.moveItem == nil) app.moveItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_move_selected_files_", nil) subtitle:@"" image:[UIImage imageNamed:image_moveSelectedFiles] highlightedImage:nil action:^(REMenuItem *item) {
+            [self moveOpenWindow:[self.tableView indexPathsForSelectedRows]];
+        }];
+    else app.moveItem = [app.moveItem initWithTitle:NSLocalizedString(@"_move_selected_files_", nil) subtitle:@"" image:[UIImage imageNamed:image_moveSelectedFiles] highlightedImage:nil action:^(REMenuItem *item) {
+            [self moveOpenWindow:[self.tableView indexPathsForSelectedRows]];
+        }];
     
     if (app.isCryptoCloudMode) {
     
         // ITEM ENCRYPTED ------------------------------------------------------------------------------------------------------
     
-        if (app.encryptItem == nil) app.encryptItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_encrypted_selected_files_", nil)
-                                                                               subtitle:@""
-                                                                                  image:[UIImage imageNamed:image_encryptedSelectedFiles]
-                                                                       highlightedImage:nil
-                                                                                 action:^(REMenuItem *item) {
-                                                                                     [self performSelector:@selector(encryptedSelectedFiles) withObject:nil];
-                                                                                 }];
-        else app.encryptItem = [app.encryptItem initWithTitle:NSLocalizedString(@"_encrypted_selected_files_", nil)
-                                                     subtitle:@""
-                                                        image:[UIImage imageNamed:image_encryptedSelectedFiles]
-                                             highlightedImage:nil
-                                                       action:^(REMenuItem *item) {
-                                                           [self performSelector:@selector(encryptedSelectedFiles) withObject:nil];
-                                                       }];
+        if (app.encryptItem == nil) app.encryptItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_encrypted_selected_files_", nil) subtitle:@"" image:[UIImage imageNamed:image_encryptedSelectedFiles] highlightedImage:nil action:^(REMenuItem *item) {
+                [self performSelector:@selector(encryptedSelectedFiles) withObject:nil];
+            }];
+        else app.encryptItem = [app.encryptItem initWithTitle:NSLocalizedString(@"_encrypted_selected_files_", nil) subtitle:@"" image:[UIImage imageNamed:image_encryptedSelectedFiles] highlightedImage:nil action:^(REMenuItem *item) {
+                [self performSelector:@selector(encryptedSelectedFiles) withObject:nil];
+            }];
     
         // ITEM DECRYPTED ----------------------------------------------------------------------------------------------------
     
-        if (app.decryptItem == nil) app.decryptItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_decrypted_selected_files_", nil)
-                                                                               subtitle:@""
-                                                                                  image:[UIImage imageNamed:image_decryptedSelectedFiles]
-                                                                       highlightedImage:nil
-                                                                                 action:^(REMenuItem *item) {
-                                                                                     [self performSelector:@selector(decryptedSelectedFiles) withObject:nil];
-                                                                                 }];
-        else app.decryptItem = [app.decryptItem initWithTitle:NSLocalizedString(@"_decrypted_selected_files_", nil)
-                                                     subtitle:@""
-                                                        image:[UIImage imageNamed:image_decryptedSelectedFiles]
-                                             highlightedImage:nil
-                                                       action:^(REMenuItem *item) {
-                                                           [self performSelector:@selector(decryptedSelectedFiles) withObject:nil];
-                                                       }];
+        if (app.decryptItem == nil) app.decryptItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_decrypted_selected_files_", nil) subtitle:@"" image:[UIImage imageNamed:image_decryptedSelectedFiles] highlightedImage:nil action:^(REMenuItem *item) {
+                [self performSelector:@selector(decryptedSelectedFiles) withObject:nil];
+            }];
+        else app.decryptItem = [app.decryptItem initWithTitle:NSLocalizedString(@"_decrypted_selected_files_", nil) subtitle:@"" image:[UIImage imageNamed:image_decryptedSelectedFiles] highlightedImage:nil action:^(REMenuItem *item) {
+                [self performSelector:@selector(decryptedSelectedFiles) withObject:nil];
+            }];
     }
     
     // ITEM DOWNLOAD ----------------------------------------------------------------------------------------------------
     
-    if (app.downloadItem == nil) app.downloadItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_download_selected_files_", nil)
-                                                                                           subtitle:@""
-                                                                                              image:[UIImage imageNamed:image_downloadSelectedFiles]
-                                                                                   highlightedImage:nil
-                                                                                             action:^(REMenuItem *item) {
-                                                                                                 [self downloadSelectedFiles];
-                                                                                             }];
-    else app.downloadItem = [app.downloadItem initWithTitle:NSLocalizedString(@"_download_selected_files_", nil)
-                                                                 subtitle:@""
-                                                                    image:[UIImage imageNamed:image_downloadSelectedFiles]
-                                                         highlightedImage:nil
-                                                                   action:^(REMenuItem *item) {
-                                                                       [self downloadSelectedFiles];
-                                                                   }];
+    if (app.downloadItem == nil) app.downloadItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_download_selected_files_", nil) subtitle:@"" image:[UIImage imageNamed:image_downloadSelectedFiles] highlightedImage:nil action:^(REMenuItem *item) {
+            [self downloadSelectedFiles];
+        }];
+    else app.downloadItem = [app.downloadItem initWithTitle:NSLocalizedString(@"_download_selected_files_", nil) subtitle:@"" image:[UIImage imageNamed:image_downloadSelectedFiles] highlightedImage:nil action:^(REMenuItem *item) {
+            [self downloadSelectedFiles];
+        }];
     
     // ITEM SAVE IMAGE & VIDEO -------------------------------------------------------------------------------------------
     
-    if (app.saveItem == nil) app.saveItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_save_selected_files_", nil)
-                                                                                             subtitle:@""
-                                                                                                image:[UIImage imageNamed:image_saveSelectedFiles]
-                                                                                     highlightedImage:nil
-                                                                                               action:^(REMenuItem *item) {
-                                                                                                   [self saveSelectedFiles];
-                                                                                               }];
-    else app.saveItem = [app.saveItem initWithTitle:NSLocalizedString(@"_save_selected_files_", nil)
-                                                                   subtitle:@""
-                                                                      image:[UIImage imageNamed:image_saveSelectedFiles]
-                                                           highlightedImage:nil
-                                                                     action:^(REMenuItem *item) {
-                                                                         [self saveSelectedFiles];
-                                                                     }];
-
+    if (app.saveItem == nil) app.saveItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_save_selected_files_", nil) subtitle:@"" image:[UIImage imageNamed:image_saveSelectedFiles] highlightedImage:nil action:^(REMenuItem *item) {
+            [self saveSelectedFiles];
+        }];
+    else app.saveItem = [app.saveItem initWithTitle:NSLocalizedString(@"_save_selected_files_", nil) subtitle:@"" image:[UIImage imageNamed:image_saveSelectedFiles] highlightedImage:nil action:^(REMenuItem *item) {
+            [self saveSelectedFiles];
+        }];
 
     // REMENU --------------------------------------------------------------------------------------------------------------
     
