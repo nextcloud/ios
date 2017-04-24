@@ -38,6 +38,7 @@
 #define k_option_use_login_web                  NO
 #define k_option_use_firebase                   NO
 #define k_option_use_default_automatic_upload   NO
+#define k_option_use_themingColor               YES
 
 #define k_option_disable_intro                  NO
 #define k_option_disable_request_login_url      NO

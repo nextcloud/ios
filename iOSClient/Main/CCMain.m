@@ -1192,12 +1192,13 @@
 {
     app.capabilities = capabilities;
     
-    /*
-    UIColor *x =  [CCGraphics colorFromHexString:capabilities.themingColor];
-    UIColor *Y = [NCColor sharedInstance].colorBrand;
-    [NCColor sharedInstance].colorBrand = x;
-    Y = [NCColor sharedInstance].colorBrand;
-    */
+    if (k_option_use_themingColor == YES) {
+        
+        UIColor *themingColor =  [CCGraphics colorFromHexString:capabilities.themingColor];
+        NCBrandColor.sharedInstance.navigationBar = themingColor;
+        NCBrandColor.sharedInstance.navigationBarShare = themingColor;
+        self.navigationController.navigationBar.barTintColor = [NCBrandColor sharedInstance].navigationBar;
+    }
     
     // Search bar if change version
     if (app.serverVersion != capabilities.versionMajor) {
