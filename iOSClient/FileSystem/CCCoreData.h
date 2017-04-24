@@ -35,7 +35,7 @@
 #import "OCUserProfile.h"
 #import "OCActivity.h"
 #import "OCExternalSites.h"
-
+#import "OCCapabilities.h"
 #import "TableAccount+CoreDataClass.h"
 #import "TableActivity+CoreDataClass.h"
 #import "TableCertificates+CoreDataClass.h"
@@ -46,6 +46,7 @@
 #import "TableShare+CoreDataClass.h"
 #import "TableAutomaticUpload+CoreDataClass.h"
 #import "TableExternalSites+CoreDataClass.h"
+#import "TableCapabilities+CoreDataClass.h"
 
 @interface CCCoreData : NSObject
 
@@ -224,6 +225,9 @@
 + (void)addExternalSites:(OCExternalSites *)externalSites account:(NSString *)account;
 + (void)deleteAllExternalSitesForAccount:(NSString *)account;
 + (NSArray *)getAllTableExternalSitesWithPredicate:(NSPredicate *)predicate;
+
+// ===== Capabilities =====
++ (void)addCapabilities:(OCCapabilities *)capabilities account:(NSString *)account;
 
 // ===== File System =====
 

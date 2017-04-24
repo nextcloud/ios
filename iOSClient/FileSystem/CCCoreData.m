@@ -2013,6 +2013,28 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Capabilities =====
+#pragma --------------------------------------------------------------------------------------------
+
++ (void)addCapabilities:(OCCapabilities *)capabilities account:(NSString *)account
+{
+    [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
+        
+        [TableCapabilities MR_deleteAllMatchingPredicate:[NSPredicate predicateWithFormat:@"(account == %@)", account] inContext:localContext];
+        
+        TableCapabilities *record = [TableCapabilities MR_createEntityInContext:localContext];
+        
+        record.account = account;
+        record.themingBackground = capabilities.themingBackground;
+        record.themingColor = capabilities.themingColor;
+        record.themingLogo = capabilities.themingLogo;
+        record.themingName = capabilities.themingName;
+        record.themingSlogan = capabilities.themingSlogan;
+        record.themingUrl = capabilities.themingUrl;
+    }];
+}
+
+#pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== File System =====
 #pragma --------------------------------------------------------------------------------------------
 
