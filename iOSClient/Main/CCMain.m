@@ -1189,21 +1189,9 @@
 
 - (void)getCapabilitiesOfServerSuccess:(OCCapabilities *)capabilities
 {
-    TableCapabilities *oldCapabilities = [CCCoreData getCapabilitesForAccount:app.activeAccount];
-    [CCCoreData addCapabilities:capabilities account:app.activeAccount];
-    
     // Change Theming color
-    if (k_option_use_themingColor) {
-        
-        app.themingColor = [CCGraphics colorFromHexString:capabilities.themingColor];
-        
-        if (![oldCapabilities.themingColor isEqualToString:capabilities.themingColor]) {
-         
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"changeTheming" object:nil];
-
-            self.navigationController.navigationBar.barTintColor = app.themingColor;
-        }
-    }
+    [app settingThemingColor:capabilities.themingColor];
+    [CCCoreData addCapabilities:capabilities account:app.activeAccount];
     
     // Search bar if change version
     if (app.serverVersion != capabilities.versionMajor) {
