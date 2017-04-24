@@ -1000,14 +1000,10 @@
     
         if (k_option_use_themingColor && tableCapabilities.themingColor.length > 0) {
         
-            self.themingColor = [CCGraphics colorFromHexString:tableCapabilities.themingColor];
+            [NCBrandColor sharedInstance].brand = [CCGraphics colorFromHexString:tableCapabilities.themingColor];
             
             if (![capabilitiesColor isEqualToString:tableCapabilities.themingColor])
                 [[NSNotificationCenter defaultCenter] postNotificationName:@"changeTheming" object:nil];
-        
-        } else {
-        
-            self.themingColor = [NCBrandColor sharedInstance].brand;
         }
     }
 }

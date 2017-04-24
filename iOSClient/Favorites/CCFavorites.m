@@ -390,7 +390,7 @@
     } else {
         
         if (metadata.directory)
-            iconHeader = [CCGraphics changeThemingColorImage:[UIImage imageNamed:metadata.iconName] color:app.themingColor];
+            iconHeader = [CCGraphics changeThemingColorImage:[UIImage imageNamed:metadata.iconName] color:[NCBrandColor sharedInstance].brand];
         else
             iconHeader = [UIImage imageNamed:metadata.iconName];
     }
@@ -401,7 +401,7 @@
     // ONLY Root Favorites : Remove file/folder Favorites
     if (_serverUrl == nil) {
         
-        [actionSheet addButtonWithTitle:NSLocalizedString(@"_remove_favorites_", nil) image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_actionSheetOffline] color:app.themingColor] backgroundColor:[UIColor whiteColor] height: 50.0 type:AHKActionSheetButtonTypeDefault handler:^(AHKActionSheet *as) {
+        [actionSheet addButtonWithTitle:NSLocalizedString(@"_remove_favorites_", nil) image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_actionSheetOffline] color:[NCBrandColor sharedInstance].brand] backgroundColor:[UIColor whiteColor] height: 50.0 type:AHKActionSheetButtonTypeDefault handler:^(AHKActionSheet *as) {
                                     
             [self.tableView setEditing:NO animated:YES];
             [[CCActions sharedInstance] settingFavorite:metadata favorite:NO delegate:self];
@@ -411,7 +411,7 @@
     // Share
     if (_metadata.cryptated == NO && app.hasServerShareSupport) {
         
-        [actionSheet addButtonWithTitle:NSLocalizedString(@"_share_", nil) image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_actionSheetShare] color:app.themingColor] backgroundColor:[UIColor whiteColor] height: 50.0 type:AHKActionSheetButtonTypeDefault handler:^(AHKActionSheet *as) {
+        [actionSheet addButtonWithTitle:NSLocalizedString(@"_share_", nil) image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_actionSheetShare] color:[NCBrandColor sharedInstance].brand] backgroundColor:[UIColor whiteColor] height: 50.0 type:AHKActionSheetButtonTypeDefault handler:^(AHKActionSheet *as) {
                 // close swipe
                 [self setEditing:NO animated:YES];
                                     
@@ -422,7 +422,7 @@
     // NO Directory - NO Template
     if (metadata.directory == NO && [metadata.type isEqualToString:k_metadataType_template] == NO) {
         
-        [actionSheet addButtonWithTitle:NSLocalizedString(@"_open_in_", nil) image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_actionSheetOpenIn] color:app.themingColor] backgroundColor:[UIColor whiteColor] height: 50.0 type:AHKActionSheetButtonTypeDefault handler:^(AHKActionSheet *as) {
+        [actionSheet addButtonWithTitle:NSLocalizedString(@"_open_in_", nil) image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_actionSheetOpenIn] color:[NCBrandColor sharedInstance].brand] backgroundColor:[UIColor whiteColor] height: 50.0 type:AHKActionSheetButtonTypeDefault handler:^(AHKActionSheet *as) {
                 [self.tableView setEditing:NO animated:YES];
                 [self openWith:metadata];
             }];
@@ -566,7 +566,7 @@
         
         if (metadata.directory) {
             
-            cell.fileImageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:metadata.iconName] color:app.themingColor];
+            cell.fileImageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:metadata.iconName] color:[NCBrandColor sharedInstance].brand];
             
         } else {
             
