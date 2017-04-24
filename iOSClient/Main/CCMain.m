@@ -3383,25 +3383,15 @@
     
     // ITEM SELECT ----------------------------------------------------------------------------------------------------
     
-    if (app.selezionaItem == nil) app.selezionaItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_select_", nil)
-                                                                                               subtitle:@""
-                                                                                                  image:[UIImage imageNamed:image_seleziona]
-                                                                                       highlightedImage:nil
-                                                                                                 action:^(REMenuItem *item) {
-                                                                                                     
-                                                                                                     if ([_sectionDataSource.allRecordsDataSource count] > 0) {
-                                                                                                         [self tableViewSelect:YES];
-                                                                                                     }
-                                                                                                 }];
-    else app.selezionaItem = [app.selezionaItem initWithTitle:NSLocalizedString(@"_select_", nil)
-                                                                     subtitle:@""
-                                                                        image:[UIImage imageNamed:image_seleziona]
-                                                             highlightedImage:nil
-                                                                       action:^(REMenuItem *item) {
-                                                                           
-                                                                           if ([_sectionDataSource.allRecordsDataSource count] > 0)
-                                                                               [self tableViewSelect:YES];
-                                                                       }];
+    if (app.selezionaItem == nil) app.selezionaItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_select_", nil)subtitle:@"" image:[UIImage imageNamed:image_seleziona] highlightedImage:nil action:^(REMenuItem *item) {
+            if ([_sectionDataSource.allRecordsDataSource count] > 0) {
+                [self tableViewSelect:YES];
+            }
+        }];
+    else app.selezionaItem = [app.selezionaItem initWithTitle:NSLocalizedString(@"_select_", nil) subtitle:@"" image:[UIImage imageNamed:image_seleziona] highlightedImage:nil action:^(REMenuItem *item) {
+            if ([_sectionDataSource.allRecordsDataSource count] > 0)
+                [self tableViewSelect:YES];
+        }];
     
     // ITEM ORDER ----------------------------------------------------------------------------------------------------
     
@@ -3422,20 +3412,12 @@
         nuovoOrdinamento = @"fileName";
     }
     
-    if (app.ordinaItem == nil) app.ordinaItem = [[REMenuItem alloc] initWithTitle:titoloNuovo
-                                                                                         subtitle:titoloAttuale
-                                                                                            image:image
-                                                                                 highlightedImage:nil
-                                                                                           action:^(REMenuItem *item) {
-                                                                                               [self orderTable:nuovoOrdinamento];
-                                                                                           }];
-    else app.ordinaItem = [app.ordinaItem initWithTitle:titoloNuovo
-                                                               subtitle:titoloAttuale
-                                                                  image:image
-                                                       highlightedImage:nil
-                                                                 action:^(REMenuItem *item) {
-                                                                     [self orderTable:nuovoOrdinamento];
-                                                                 }];
+    if (app.ordinaItem == nil) app.ordinaItem = [[REMenuItem alloc] initWithTitle:titoloNuovo subtitle:titoloAttuale image:image highlightedImage:nil action:^(REMenuItem *item) {
+            [self orderTable:nuovoOrdinamento];
+        }];
+    else app.ordinaItem = [app.ordinaItem initWithTitle:titoloNuovo subtitle:titoloAttuale image:image highlightedImage:nil action:^(REMenuItem *item) {
+            [self orderTable:nuovoOrdinamento];
+        }];
     
     // ITEM ASCENDING -----------------------------------------------------------------------------------------------------
     
@@ -3457,110 +3439,68 @@
         nuovoAscendente = true;
     }
     
-    if (app.ascendenteItem == nil) app.ascendenteItem = [[REMenuItem alloc] initWithTitle:titoloNuovo
-                                                                                                 subtitle:titoloAttuale
-                                                                                                    image:image
-                                                                                         highlightedImage:nil
-                                                                                                   action:^(REMenuItem *item) {
-                                                                                                       [self ascendingTable:nuovoAscendente];
-                                                                                                   }];
-    else app.ascendenteItem = [app.ascendenteItem initWithTitle:titoloNuovo
-                                                                       subtitle:titoloAttuale
-                                                                          image:image
-                                                               highlightedImage:nil
-                                                                         action:^(REMenuItem *item) {
-                                                                             [self ascendingTable:nuovoAscendente];
-                                                                         }];
+    if (app.ascendenteItem == nil) app.ascendenteItem = [[REMenuItem alloc] initWithTitle:titoloNuovo subtitle:titoloAttuale image:image highlightedImage:nil action:^(REMenuItem *item) {
+            [self ascendingTable:nuovoAscendente];
+        }];
+    else app.ascendenteItem = [app.ascendenteItem initWithTitle:titoloNuovo subtitle:titoloAttuale image:image highlightedImage:nil action:^(REMenuItem *item) {
+            [self ascendingTable:nuovoAscendente];
+        }];
     
     // ITEM ALPHABETIC -----------------------------------------------------------------------------------------------------
     
     if ([groupBy isEqualToString:@"alphabetic"])  { titoloNuovo = NSLocalizedString(@"_group_alphabetic_yes_", nil); }
     else { titoloNuovo = NSLocalizedString(@"_group_alphabetic_no_", nil); }
     
-    if (app.alphabeticItem == nil) app.alphabeticItem = [[REMenuItem alloc] initWithTitle:titoloNuovo
-                                                                                                 subtitle:@""
-                                                                                                    image:[UIImage imageNamed:image_MenuGroupByAlphabetic]
-                                                                                         highlightedImage:nil
-                                                                                                   action:^(REMenuItem *item) {
-                                                                                                       if ([groupBy isEqualToString:@"alphabetic"]) [self tableGroupBy:@"none"];
-                                                                                                       else [self tableGroupBy:@"alphabetic"];
-                                                                                                   }];
-    else app.alphabeticItem = [app.alphabeticItem initWithTitle:titoloNuovo
-                                                                       subtitle:@""
-                                                                          image:[UIImage imageNamed:image_MenuGroupByAlphabetic]
-                                                               highlightedImage:nil
-                                                                         action:^(REMenuItem *item) {
-                                                                             if ([groupBy isEqualToString:@"alphabetic"]) [self tableGroupBy:@"none"];
-                                                                             else [self tableGroupBy:@"alphabetic"];
-                                                                         }];
+    if (app.alphabeticItem == nil) app.alphabeticItem = [[REMenuItem alloc] initWithTitle:titoloNuovo subtitle:@"" image:[UIImage imageNamed:image_MenuGroupByAlphabetic] highlightedImage:nil action:^(REMenuItem *item) {
+            if ([groupBy isEqualToString:@"alphabetic"]) [self tableGroupBy:@"none"];
+            else [self tableGroupBy:@"alphabetic"];
+        }];
+    else app.alphabeticItem = [app.alphabeticItem initWithTitle:titoloNuovo subtitle:@"" image:[UIImage imageNamed:image_MenuGroupByAlphabetic] highlightedImage:nil action:^(REMenuItem *item) {
+            if ([groupBy isEqualToString:@"alphabetic"]) [self tableGroupBy:@"none"];
+            else [self tableGroupBy:@"alphabetic"];
+        }];
     
     // ITEM TYPEFILE -------------------------------------------------------------------------------------------------------
     
     if ([groupBy isEqualToString:@"typefile"])  { titoloNuovo = NSLocalizedString(@"_group_typefile_yes_", nil); }
     else { titoloNuovo = NSLocalizedString(@"_group_typefile_no_", nil); }
     
-    if (app.typefileItem == nil) app.typefileItem = [[REMenuItem alloc] initWithTitle:titoloNuovo
-                                                                                                 subtitle:@""
-                                                                                                    image:[UIImage imageNamed:image_MenuGroupByTypeFile]
-                                                                                         highlightedImage:nil
-                                                                                                   action:^(REMenuItem *item) {
-                                                                                                       if ([groupBy isEqualToString:@"typefile"]) [self tableGroupBy:@"none"];
-                                                                                                       else [self tableGroupBy:@"typefile"];
-                                                                                                   }];
-    else app.typefileItem = [app.typefileItem initWithTitle:titoloNuovo
-                                                                       subtitle:@""
-                                                                          image:[UIImage imageNamed:image_MenuGroupByTypeFile]
-                                                               highlightedImage:nil
-                                                                         action:^(REMenuItem *item) {
-                                                                             if ([groupBy isEqualToString:@"typefile"]) [self tableGroupBy:@"none"];
-                                                                             else [self tableGroupBy:@"typefile"];
-                                                                         }];
+    if (app.typefileItem == nil) app.typefileItem = [[REMenuItem alloc] initWithTitle:titoloNuovo subtitle:@"" image:[UIImage imageNamed:image_MenuGroupByTypeFile] highlightedImage:nil action:^(REMenuItem *item) {
+            if ([groupBy isEqualToString:@"typefile"]) [self tableGroupBy:@"none"];
+            else [self tableGroupBy:@"typefile"];
+        }];
+    else app.typefileItem = [app.typefileItem initWithTitle:titoloNuovo subtitle:@"" image:[UIImage imageNamed:image_MenuGroupByTypeFile] highlightedImage:nil action:^(REMenuItem *item) {
+            if ([groupBy isEqualToString:@"typefile"]) [self tableGroupBy:@"none"];
+            else [self tableGroupBy:@"typefile"];
+        }];
 
     // ITEM DATE -------------------------------------------------------------------------------------------------------
     
     if ([groupBy isEqualToString:@"date"])  { titoloNuovo = NSLocalizedString(@"_group_date_yes_", nil); }
     else { titoloNuovo = NSLocalizedString(@"_group_date_no_", nil); }
     
-    if (app.dateItem == nil) app.dateItem = [[REMenuItem alloc] initWithTitle:titoloNuovo
-                                                                                     subtitle:@""
-                                                                                        image:[UIImage imageNamed:image_MenuGroupByDate]
-                                                                             highlightedImage:nil
-                                                                                       action:^(REMenuItem *item) {
-                                                                                           if ([groupBy isEqualToString:@"date"]) [self tableGroupBy:@"none"];
-                                                                                                   else [self tableGroupBy:@"date"];
-                                                                                            }];
-    else app.dateItem = [app.dateItem initWithTitle:titoloNuovo
-                                                           subtitle:@""
-                                                              image:[UIImage imageNamed:image_MenuGroupByDate]
-                                                   highlightedImage:nil
-                                                             action:^(REMenuItem *item) {
-                                                                if ([groupBy isEqualToString:@"date"]) [self tableGroupBy:@"none"];
-                                                                    else [self tableGroupBy:@"date"];
-                                                                }];
+    if (app.dateItem == nil) app.dateItem = [[REMenuItem alloc] initWithTitle:titoloNuovo   subtitle:@"" image:[UIImage imageNamed:image_MenuGroupByDate] highlightedImage:nil action:^(REMenuItem *item) {
+            if ([groupBy isEqualToString:@"date"]) [self tableGroupBy:@"none"];
+            else [self tableGroupBy:@"date"];
+        }];
+    else app.dateItem = [app.dateItem initWithTitle:titoloNuovo subtitle:@"" image:[UIImage imageNamed:image_MenuGroupByDate] highlightedImage:nil action:^(REMenuItem *item) {
+            if ([groupBy isEqualToString:@"date"]) [self tableGroupBy:@"none"];
+            else [self tableGroupBy:@"date"];
+        }];
 
     // ITEM DIRECTORY ON TOP ------------------------------------------------------------------------------------------------
     
     if ([CCUtility getDirectoryOnTop])  { titoloNuovo = NSLocalizedString(@"_directory_on_top_yes_", nil); }
     else { titoloNuovo = NSLocalizedString(@"_directory_on_top_no_", nil); }
     
-    if (app.directoryOnTopItem == nil) app.directoryOnTopItem = [[REMenuItem alloc] initWithTitle:titoloNuovo
-                                                                                         subtitle:@""
-                                                                                            image:[UIImage imageNamed:image_MenuDirectoryOnTop]
-                                                                                 highlightedImage:nil
-                                                                                           action:^(REMenuItem *item) {
-                                                                                               
-                                                                                               if ([CCUtility getDirectoryOnTop]) [self directoryOnTop:NO];
-                                                                                               else [self directoryOnTop:YES];
-                                                                                           }];
-    else app.directoryOnTopItem = [app.directoryOnTopItem initWithTitle:titoloNuovo
-                                                               subtitle:@""
-                                                                  image:[UIImage imageNamed:image_MenuDirectoryOnTop]
-                                                       highlightedImage:nil
-                                                                 action:^(REMenuItem *item) {
-                                                                     
-                                                                     if ([CCUtility getDirectoryOnTop]) [self directoryOnTop:NO];
-                                                                     else [self directoryOnTop:YES];
-                                                                 }];
+    if (app.directoryOnTopItem == nil) app.directoryOnTopItem = [[REMenuItem alloc] initWithTitle:titoloNuovo subtitle:@"" image:[UIImage imageNamed:image_MenuDirectoryOnTop] highlightedImage:nil action:^(REMenuItem *item) {
+            if ([CCUtility getDirectoryOnTop]) [self directoryOnTop:NO];
+            else [self directoryOnTop:YES];
+        }];
+    else app.directoryOnTopItem = [app.directoryOnTopItem initWithTitle:titoloNuovo subtitle:@"" image:[UIImage imageNamed:image_MenuDirectoryOnTop] highlightedImage:nil action:^(REMenuItem *item) {
+            if ([CCUtility getDirectoryOnTop]) [self directoryOnTop:NO];
+            else [self directoryOnTop:YES];
+        }];
 
     // REMENU --------------------------------------------------------------------------------------------------------------
 
@@ -4324,7 +4264,7 @@
         if (!lockDirectory && !_metadata.cryptated) {
             
             [actionSheet addButtonWithTitle:titleFavorite
-                                      image:[UIImage imageNamed:image_actionSheetFavorite]
+                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_actionSheetFavorite] color:self.navigationController.navigationBar.barTintColor]
                             backgroundColor:[UIColor whiteColor]
                                      height: 50.0
                                        type:AHKActionSheetButtonTypeDefault
@@ -4343,7 +4283,7 @@
         if (_metadata.cryptated == NO && app.hasServerShareSupport && !lockDirectory) {
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_share_", nil)
-                                      image:[UIImage imageNamed:image_actionSheetShare]
+                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_actionSheetShare] color:self.navigationController.navigationBar.barTintColor]
                             backgroundColor:[UIColor whiteColor]
                                      height: 50.0
                                        type:AHKActionSheetButtonTypeDefault
@@ -4359,7 +4299,7 @@
         if (!([_metadata.fileName isEqualToString:cameraUploadFolderName] == YES && [serverUrl isEqualToString:cameraUploadFolderPath] == YES) && !lockDirectory) {
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_rename_", nil)
-                                      image:[UIImage imageNamed:image_actionSheetRename]
+                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_actionSheetRename] color:self.navigationController.navigationBar.barTintColor]
                             backgroundColor:[UIColor whiteColor]
                                      height: 50.0
                                        type:AHKActionSheetButtonTypeDefault
@@ -4381,7 +4321,7 @@
         if (!([_metadata.fileName isEqualToString:cameraUploadFolderName] == YES && [serverUrl isEqualToString:cameraUploadFolderPath] == YES) && !lockDirectory) {
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_move_", nil)
-                                      image:[UIImage imageNamed:image_actionSheetMove]
+                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_actionSheetMove] color:self.navigationController.navigationBar.barTintColor]
                             backgroundColor:[UIColor whiteColor]
                                      height: 50.0
                                        type:AHKActionSheetButtonTypeDefault
@@ -4485,7 +4425,7 @@
         if (!_metadata.cryptated) {
             
             [actionSheet addButtonWithTitle:titleFavorite
-                                      image:[UIImage imageNamed:image_actionSheetFavorite]
+                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_actionSheetFavorite] color:self.navigationController.navigationBar.barTintColor]
                             backgroundColor:[UIColor whiteColor]
                                      height: 50.0
                                        type:AHKActionSheetButtonTypeDefault
@@ -4504,7 +4444,7 @@
         if (_metadata.cryptated == NO && app.hasServerShareSupport) {
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_share_", nil)
-                                      image:[UIImage imageNamed:image_actionSheetShare]
+                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_actionSheetShare] color:self.navigationController.navigationBar.barTintColor]
                             backgroundColor:[UIColor whiteColor]
                                      height: 50.0
                                        type:AHKActionSheetButtonTypeDefault
@@ -4518,7 +4458,7 @@
         }
 
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_open_in_", nil)
-                                  image:[UIImage imageNamed:image_actionSheetOpenIn]
+                                  image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_actionSheetOpenIn] color:self.navigationController.navigationBar.barTintColor]
                         backgroundColor:[UIColor whiteColor]
                                  height: 50.0
                                    type:AHKActionSheetButtonTypeDefault
@@ -4531,7 +4471,7 @@
                                 }];
 
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_rename_", nil)
-                                  image:[UIImage imageNamed:image_actionSheetRename]
+                                  image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_actionSheetRename] color:self.navigationController.navigationBar.barTintColor]
                         backgroundColor:[UIColor whiteColor]
                                  height: 50.0
                                    type:AHKActionSheetButtonTypeDefault
@@ -4550,7 +4490,7 @@
                                 }];
         
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_move_", nil)
-                                  image:[UIImage imageNamed:image_actionSheetMove]
+                                  image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_actionSheetMove] color:self.navigationController.navigationBar.barTintColor]
                         backgroundColor:[UIColor whiteColor]
                                  height: 50.0
                                    type:AHKActionSheetButtonTypeDefault
@@ -4565,7 +4505,7 @@
         if (recordLocalFile || [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, _metadata.fileID]]) {
         
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_remove_local_file_", nil)
-                                      image:[UIImage imageNamed:image_actionSheetRemoveLocal]
+                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_actionSheetRemoveLocal] color:self.navigationController.navigationBar.barTintColor]
                             backgroundColor:[UIColor whiteColor]
                                      height: 50.0
                                        type:AHKActionSheetButtonTypeDefault
