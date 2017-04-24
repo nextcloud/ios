@@ -1192,6 +1192,11 @@
 {
     app.capabilities = capabilities;
     
+    UIColor *x =  [CCGraphics colorFromHexString:capabilities.themingColor];
+    UIColor *Y = [NCColor sharedInstance].colorBrand;
+    [NCColor sharedInstance].colorBrand = x;
+    Y = [NCColor sharedInstance].colorBrand;
+    
     // Search bar if change version
     if (app.serverVersion != capabilities.versionMajor) {
     

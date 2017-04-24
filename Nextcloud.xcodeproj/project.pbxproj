@@ -324,6 +324,10 @@
 		F769D39A1E9E1506006DBBB4 /* CCLocalStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = F769D3961E9E1506006DBBB4 /* CCLocalStorage.m */; };
 		F769D39B1E9E1506006DBBB4 /* CCLocalStorageCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F769D3981E9E1506006DBBB4 /* CCLocalStorageCell.m */; };
 		F769D39C1E9E1506006DBBB4 /* CCLocalStorageCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F769D3991E9E1506006DBBB4 /* CCLocalStorageCell.xib */; };
+		F76B3CCE1EAE01BD00921AC9 /* NCColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCColor.swift */; };
+		F76B3CCF1EAE01BD00921AC9 /* NCColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCColor.swift */; };
+		F76B3CD01EAE01BD00921AC9 /* NCColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCColor.swift */; };
+		F76B3CD11EAE01BD00921AC9 /* NCColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCColor.swift */; };
 		F77B0DF01D118A16002130FE /* UIImage+Resizing.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04CA1C889184008DAB36 /* UIImage+Resizing.m */; };
 		F77B0DF21D118A16002130FE /* CCUploadFromOtherUpp.m in Sources */ = {isa = PBXBuildFile; fileRef = F7956FCA1B4886E60085DEA3 /* CCUploadFromOtherUpp.m */; };
 		F77B0DF41D118A16002130FE /* CCMain.m in Sources */ = {isa = PBXBuildFile; fileRef = F70211FB1BAC56E9003FC03E /* CCMain.m */; };
@@ -1431,6 +1435,7 @@
 		F769D3971E9E1506006DBBB4 /* CCLocalStorageCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCLocalStorageCell.h; sourceTree = "<group>"; };
 		F769D3981E9E1506006DBBB4 /* CCLocalStorageCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCLocalStorageCell.m; sourceTree = "<group>"; };
 		F769D3991E9E1506006DBBB4 /* CCLocalStorageCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CCLocalStorageCell.xib; sourceTree = "<group>"; };
+		F76B3CCD1EAE01BD00921AC9 /* NCColor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCColor.swift; sourceTree = "<group>"; };
 		F76C3B831C6388BC00DC4301 /* CCGraphics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCGraphics.h; sourceTree = "<group>"; };
 		F76C3B841C6388BC00DC4301 /* CCGraphics.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCGraphics.m; sourceTree = "<group>"; };
 		F76C3B871C638A4C00DC4301 /* CCError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCError.h; sourceTree = "<group>"; };
@@ -3096,6 +3101,7 @@
 				F7274FEC1E6EB6F400C241B6 /* Constant.swift */,
 				F7C1CDDA1E6DFC6F005D92BE /* CCNextcloudConstant.h */,
 				F7C1CDDB1E6DFC6F005D92BE /* CCNextcloudImages.h */,
+				F76B3CCD1EAE01BD00921AC9 /* NCColor.swift */,
 			);
 			path = Brand;
 			sourceTree = "<group>";
@@ -3992,6 +3998,7 @@
 				F7145A041D12E3B700CAFEEC /* CCloadItemData.swift in Sources */,
 				F708CF951E56E8CC00271D8B /* TableAutomaticUpload+CoreDataProperties.m in Sources */,
 				F73CC07F1E813DFF006E3047 /* BKTouchIDSwitchView.m in Sources */,
+				F76B3CCF1EAE01BD00921AC9 /* NCColor.swift in Sources */,
 				F73CC0761E813DFF006E3047 /* BKPasscodeViewController.m in Sources */,
 				F7145A081D12E3B700CAFEEC /* PPCollectionViewCell.m in Sources */,
 				F7145A0D1D12E3B700CAFEEC /* NSData+Base64.m in Sources */,
@@ -4058,6 +4065,7 @@
 				F74344631E127D79001CC831 /* CCBKPasscode.m in Sources */,
 				F708CF8A1E56E8CC00271D8B /* TableShare+CoreDataProperties.m in Sources */,
 				F74344661E127E35001CC831 /* CCCoreData.m in Sources */,
+				F76B3CD01EAE01BD00921AC9 /* NCColor.swift in Sources */,
 				F73CC0801E813DFF006E3047 /* BKTouchIDSwitchView.m in Sources */,
 				F743447C1E127EB2001CC831 /* NSString+TruncateToWidth.m in Sources */,
 				F708CF751E56E8CC00271D8B /* TableLocalFile+CoreDataClass.m in Sources */,
@@ -4073,6 +4081,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F74344251E1264EE001CC831 /* FileProvider.swift in Sources */,
+				F76B3CD11EAE01BD00921AC9 /* NCColor.swift in Sources */,
 				F7274FF01E6EB6F400C241B6 /* Constant.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4251,6 +4260,7 @@
 				F7659A2E1DC0B72F004860C4 /* EARestrictedScrollView.m in Sources */,
 				F77B0E741D118A16002130FE /* CCBancomat.m in Sources */,
 				F77B0E7B1D118A16002130FE /* CCPassaporto.m in Sources */,
+				F76B3CCE1EAE01BD00921AC9 /* NCColor.swift in Sources */,
 				F7B1FBC91E72E3D1001781FE /* SwiftWebVCActivityChrome.swift in Sources */,
 				F7F06EA51DBFACC600099AE9 /* CTAssetItemViewController.m in Sources */,
 				F762CB8A1EACB81000B38484 /* REMenuItemView.m in Sources */,

@@ -1365,6 +1365,30 @@
             capabilities.isFileUndeleteEnabled = fileUndeleteEnabledNumber.boolValue;
             capabilities.isFileVersioningEnabled = fileVersioningEnabledNumber.boolValue;
             
+            //THEMING
+            
+            NSDictionary *theming = [capabilitiesDict valueForKey:@"theming"];
+            
+            if ([theming count] > 0) {
+                
+                if ([theming valueForKey:@"background"] && ![[theming valueForKey:@"background"] isEqual:[NSNull null]])
+                    capabilities.themingBackground = [theming valueForKey:@"background"];
+                
+                if ([theming valueForKey:@"color"] && ![[theming valueForKey:@"color"] isEqual:[NSNull null]])
+                    capabilities.themingColor = [theming valueForKey:@"color"];
+                
+                if ([theming valueForKey:@"logo"] && ![[theming valueForKey:@"logo"] isEqual:[NSNull null]])
+                    capabilities.themingLogo = [theming valueForKey:@"logo"];
+                
+                if ([theming valueForKey:@"name"] && ![[theming valueForKey:@"name"] isEqual:[NSNull null]])
+                    capabilities.themingName = [theming valueForKey:@"name"];
+                
+                if ([theming valueForKey:@"slogan"] && ![[theming valueForKey:@"slogan"] isEqual:[NSNull null]])
+                    capabilities.themingSlogan = [theming valueForKey:@"slogan"];
+                
+                if ([theming valueForKey:@"url"] && ![[theming valueForKey:@"url"] isEqual:[NSNull null]])
+                    capabilities.themingUrl = [theming valueForKey:@"url"];
+            }
         }
         
         successRequest(response, capabilities, request.redirectedServer);
