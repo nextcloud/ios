@@ -203,6 +203,9 @@
     self.player = [LMMediaPlayerView sharedPlayerView];
     self.player.delegate = self;
     
+    // Theming Color
+    self.themingColor = [NCBrandColor sharedInstance].brand;
+    
     // ico Image Cache
     self.icoImagesCache = [[NSMutableDictionary alloc] init];
     

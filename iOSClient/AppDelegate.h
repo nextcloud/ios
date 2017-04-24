@@ -145,6 +145,9 @@
 // Is in Crypto Mode
 @property BOOL isCryptoCloudMode;
 
+// Theming Color
+@property (nonatomic, strong) UIColor *themingColor;
+
 // Setting Active Account
 - (void)settingActiveAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl activeUser:(NSString *)activeUser activePassword:(NSString *)activePassword;
 

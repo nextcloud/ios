@@ -1198,11 +1198,16 @@
     [CCCoreData addCapabilities:capabilities account:app.activeAccount];
     
     // Change Theming color
-    if (k_option_use_themingColor == YES && ![oldCapabilities.themingColor isEqualToString:capabilities.themingColor]) {
+    if (k_option_use_themingColor) {
         
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"changeTheming" object:nil];
+        app.themingColor = [CCGraphics colorFromHexString:capabilities.themingColor];
         
-        self.navigationController.navigationBar.barTintColor = [NCBrandColor sharedInstance].navigationBar;
+        if (![oldCapabilities.themingColor isEqualToString:capabilities.themingColor]) {
+         
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"changeTheming" object:nil];
+
+            self.navigationController.navigationBar.barTintColor = app.themingColor;
+        }
     }
     
     // Search bar if change version
