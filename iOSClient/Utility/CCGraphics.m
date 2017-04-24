@@ -273,8 +273,11 @@
     return [UIColor colorWithRed:((rgbValue & 0xFF0000) >> 16)/255.0 green:((rgbValue & 0xFF00) >> 8)/255.0 blue:(rgbValue & 0xFF)/255.0 alpha:1.0];
 }
 
-+ (UIImage *)changeColorImage:(UIImage *)image color:(UIColor *)color
++ (UIImage *)changeThemingColorImage:(UIImage *)image color:(UIColor *)color
 {
+    if (k_option_use_themingColor == NO)
+        return image;
+    
     CGRect rect = CGRectMake(0, 0, image.size.width, image.size.height);
     UIGraphicsBeginImageContext(rect.size);
     CGContextRef context = UIGraphicsGetCurrentContext();

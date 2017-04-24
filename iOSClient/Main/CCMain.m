@@ -5076,6 +5076,9 @@
     if ([typeCell isEqualToString:@"CellMain"]) cell.backgroundColor = [UIColor whiteColor];
     if ([typeCell isEqualToString:@"CellMainTransfer"]) cell.backgroundColor = [NCBrandColor sharedInstance].transferBackground;
     
+    // theming color
+    UIColor *ThemingColor = self.navigationController.navigationBar.barTintColor;
+    
     // ----------------------------------------------------------------------------------------------------------
     // DEFAULT
     // ----------------------------------------------------------------------------------------------------------
@@ -5194,7 +5197,14 @@
 
     } else {
         
-        cell.fileImageView.image = [UIImage imageNamed:metadata.iconName];
+        if (metadata.directory) {
+            
+            cell.fileImageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:metadata.iconName] color:ThemingColor];
+            
+        } else {
+            
+            cell.fileImageView.image = [UIImage imageNamed:metadata.iconName];
+        }
         
         if (metadata.thumbnailExists)
             [[CCActions sharedInstance] downloadTumbnail:metadata delegate:self];
@@ -5212,7 +5222,8 @@
     
     // Directory con passcode lock attivato
     NSString *lockServerUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileNameData];
-    if (metadata.directory && ([CCCoreData isDirectoryLock:lockServerUrl activeAccount:app.activeAccount] && [[CCUtility getBlockCode] length])) cell.statusImageView.image = [UIImage imageNamed:image_passcode];
+    if (metadata.directory && ([CCCoreData isDirectoryLock:lockServerUrl activeAccount:app.activeAccount] && [[CCUtility getBlockCode] length]))
+        cell.statusImageView.image = [UIImage imageNamed:image_passcode];
     
     // ----------------------------------------------------------------------------------------------------------
     // Offline
@@ -5250,12 +5261,12 @@
        
             if (metadata.directory) {
                 
-                cell.fileImageView.image = [UIImage imageNamed:image_folder_shared_with_me];
+                cell.fileImageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:image_folder_shared_with_me] color:ThemingColor];
                 cell.sharedImageView.userInteractionEnabled = NO;
                 
             } else {
             
-                cell.sharedImageView.image = [UIImage imageNamed:image_actionSheetShare];
+                cell.sharedImageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:image_actionSheetShare] color:ThemingColor];
             
                 UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapActionConnectionMounted:)];
                 [tap setNumberOfTapsRequired:1];
@@ -5268,12 +5279,12 @@
             
             if (metadata.directory) {
                 
-                cell.fileImageView.image = [UIImage imageNamed:image_folder_external];
+                cell.fileImageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:image_folder_external] color:ThemingColor];
                 cell.sharedImageView.userInteractionEnabled = NO;
                 
             } else {
                 
-                cell.sharedImageView.image = [UIImage imageNamed:image_shareMounted];
+                cell.sharedImageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:image_shareMounted] color:ThemingColor];
                 
                 UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapActionConnectionMounted:)];
                 [tap setNumberOfTapsRequired:1];
@@ -5286,15 +5297,19 @@
         
             if (metadata.directory) {
                 
-                if ([shareLink length] > 0) cell.fileImageView.image = [UIImage imageNamed:image_folder_public];
-                if ([shareUserAndGroup length] > 0) cell.fileImageView.image = [UIImage imageNamed:image_folder_shared_with_me];
+                if ([shareLink length] > 0)
+                    cell.fileImageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:image_folder_public] color:ThemingColor];
+                if ([shareUserAndGroup length] > 0)
+                    cell.fileImageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:image_folder_shared_with_me] color:ThemingColor];
                 
                 cell.sharedImageView.userInteractionEnabled = NO;
                 
             } else {
                 
-                if ([shareLink length] > 0) cell.sharedImageView.image = [UIImage imageNamed:image_shareLink];
-                if ([shareUserAndGroup length] > 0) cell.sharedImageView.image = [UIImage imageNamed:image_actionSheetShare];
+                if ([shareLink length] > 0)
+                    cell.sharedImageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:image_shareLink] color:ThemingColor];
+                if ([shareUserAndGroup length] > 0)
+                    cell.sharedImageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:image_actionSheetShare] color:ThemingColor];
                 
                 UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapActionShared:)];
                 [tap setNumberOfTapsRequired:1];
@@ -5403,7 +5418,7 @@
         
         // se non c'è una preview in bianconero metti l'immagine di default
         if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]] == NO)
-            cell.fileImageView.image = [UIImage imageNamed:image_uploaddisable];
+            cell.fileImageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:image_uploaddisable] color:ThemingColor];
         
         cell.labelTitle.enabled = NO;
         cell.labelInfoFile.text = [NSString stringWithFormat:@"%@", lunghezzaFile];
