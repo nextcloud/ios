@@ -21,7 +21,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-// Brand
+// Brand Text
 #define k_brand                                 @"Nextcloud"
 #define k_mailMe                                @"ios@nextcloud.com"
 #define k_textCopyrightNextcloudiOS             @"Nextcloud for iOS %@ © 2017 T.W.S. Inc."
@@ -34,7 +34,7 @@
 // Capabilities Group
 #define k_capabilitiesGroups                    @"group.it.twsweb.Crypto-Cloud"
 
-// Define option Brand
+// Option 
 #define k_option_use_login_web                  NO
 #define k_option_use_firebase                   NO
 #define k_option_use_default_automatic_upload   NO
