@@ -1512,8 +1512,8 @@
 		F7C0F46E1C8880540059EC54 /* ShareViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = ShareViewController.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		F7C0F46F1C8880540059EC54 /* ShareViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = ShareViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		F7C1CDCE1E6DFAD1005D92BE /* CCStandardImages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCStandardImages.h; sourceTree = "<group>"; };
-		F7C1CDDA1E6DFC6F005D92BE /* CCNextcloudConstant.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCNextcloudConstant.h; sourceTree = "<group>"; };
-		F7C1CDDB1E6DFC6F005D92BE /* CCNextcloudImages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCNextcloudImages.h; sourceTree = "<group>"; };
+		F7C1CDDA1E6DFC6F005D92BE /* NCBrandConstant.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCBrandConstant.h; sourceTree = "<group>"; };
+		F7C1CDDB1E6DFC6F005D92BE /* NCBrandImages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCBrandImages.h; sourceTree = "<group>"; };
 		F7C1D8BB1D47781C00B89DEA /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/BKPasscodeView.strings; sourceTree = "<group>"; };
 		F7C1D8BC1D47781C00B89DEA /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F7C1D8BD1D47781C00B89DEA /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -3093,8 +3093,8 @@
 			isa = PBXGroup;
 			children = (
 				F7C742D31E7BD36600D9C973 /* Supporting Files */,
-				F7C1CDDA1E6DFC6F005D92BE /* CCNextcloudConstant.h */,
-				F7C1CDDB1E6DFC6F005D92BE /* CCNextcloudImages.h */,
+				F7C1CDDA1E6DFC6F005D92BE /* NCBrandConstant.h */,
+				F7C1CDDB1E6DFC6F005D92BE /* NCBrandImages.h */,
 				F76B3CCD1EAE01BD00921AC9 /* NCColorBrand.swift */,
 			);
 			path = Brand;

@@ -1,5 +1,5 @@
 //
-//  CCConstant.h
+//  NCBrandConstant.h
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 06/03/17.

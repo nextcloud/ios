@@ -1,5 +1,5 @@
 //
-//  CCImages.h
+//  NCBrandImages.h
 //  Crypto Cloud Technology Nextcloud
 //
 //  Created by Marino Faggiana on 15/06/16.

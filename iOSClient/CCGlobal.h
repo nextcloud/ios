@@ -28,8 +28,8 @@
     #import "CustomImages.h"
     #import "CustomConstant.h"
 #else
-    #import "CCNextcloudImages.h"
-    #import "CCNextcloudConstant.h"
+    #import "NCBrandImages.h"
+    #import "NCBrandConstant.h"
 #endif
 
 extern NSString *const appApplicationSupport;
