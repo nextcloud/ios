@@ -30,19 +30,27 @@ class NCColor: NSObject {
         return instance
     }()
 
-    public var colorBrand:              UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)    // BLU NC : #0082c9
-    public var colorCryptocloud:        UIColor = UIColor(red: 241.0/255.0, green: 90.0/255.0, blue: 34.0/255.0, alpha: 1.0)
-    public var colorGroupByBar:         UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 0.2)
-    public var colorGroupByBarNoBlur:   UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 0.3)
-    public var colorNavigationBar:      UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)
-    public var colorNavigationBarText:  UIColor = UIColor.white
-    public var colorNextcloud:          UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)
-    public var colorMoreNormal:         UIColor = .black
-    public var colorMoreSettings:       UIColor = .black
-    public var colorSelectBackgrond:    UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 0.1)
-    public var colorSeperator:          UIColor = UIColor(red: 235.0/255.0, green: 235.0/255.0, blue: 235.0/255.0, alpha: 1.0)
-    public var colorTableBackground:    UIColor = UIColor.white
-    public var colorTransferBackground: UIColor = UIColor(red: 178.0/255.0, green: 244.0/255.0, blue: 258.0/255.0, alpha: 0.1)
-    
-    
+    public var colorAnthracite:             UIColor = UIColor(red: 65.0/255.0, green: 64.0/255.0, blue: 66.0/255.0, alpha: 1.0)
+    public var colorBrand:                  UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)    // BLU NC : #0082c9
+    public var colorConnectionNo:           UIColor = UIColor(red: 204.0/255.0, green: 204.0/255.0, blue: 204.0/255.0, alpha: 1.0)
+    public var colorCryptocloud:            UIColor = UIColor(red: 241.0/255.0, green: 90.0/255.0, blue: 34.0/255.0, alpha: 1.0)
+    public var colorGroupByBar:             UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 0.2)
+    public var colorGroupByBarNoBlur:       UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 0.3)
+    public var colorNavigationBar:          UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)    // BLU NC : #0082c9
+    public var colorNavigationBarProgress:  UIColor = .white
+    public var colorNavigationBarShare:     UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)    // BLU NC : #0082c9
+    public var colorNavigationBarText:      UIColor = .white
+    public var colorNextcloud:              UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)    // BLU NC : #0082c9
+    public var colorMenuBackground:         UIColor = .white
+    public var colorMessageInfoBackground:  UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)    // BLU NC : #0082c9
+    public var colorMoreNormal:             UIColor = .black
+    public var colorMoreSettings:           UIColor = .black
+    public var colorRefreshControl:         UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)    // BLU NC : #0082c9
+    public var colorSelectBackgrond:        UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 0.1)
+    public var colorSeperator:              UIColor = UIColor(red: 235.0/255.0, green: 235.0/255.0, blue: 235.0/255.0, alpha: 1.0)
+    public var colorTabBar:                 UIColor = .white
+    public var colorTabBarText:             UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)    // BLU NC : #0082c9
+    public var colorTableBackground:        UIColor = .white
+    public var colorTransferBackground:     UIColor = UIColor(red: 178.0/255.0, green: 244.0/255.0, blue: 258.0/255.0, alpha: 0.1)
+    public var colorWindowTintcolor:        UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)    // BLU NC : #0082c9
 }

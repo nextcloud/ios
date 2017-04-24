@@ -206,12 +206,6 @@
     // ico Image Cache
     self.icoImagesCache = [[NSMutableDictionary alloc] init];
     
-    // Page Control
-    UIPageControl *pageControl = [UIPageControl appearance];
-    pageControl.pageIndicatorTintColor = [UIColor whiteColor];
-    pageControl.currentPageIndicatorTintColor = COLOR_PAGECONTROL_INDICATOR;
-    pageControl.backgroundColor = COLOR_BACKGROUND_PAGECONTROL;
-    
     // remove tmp & cache
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
     
