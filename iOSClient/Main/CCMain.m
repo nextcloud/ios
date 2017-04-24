@@ -1216,6 +1216,7 @@
         });
     }
     
+    // External Sites
     if (capabilities.isExternalSitesServerEnabled) {
         
         CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
