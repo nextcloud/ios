@@ -24,7 +24,6 @@
 #import <UIKit/UIKit.h>
 
 #import "XLFormViewController.h"
-#import "XLForm.h"
 #import "OCShareUser.h"
 #import "OCConstants.h"
 #import "CCMetadata.h"

@@ -38,8 +38,8 @@
 #import "CCQuickActions.h"
 #import "CCMain.h"
 #import "CCPhotosCameraUpload.h"
-#import "CCSettings.h"
 #import "CCTransfers.h"
+#import "CCSettings.h"
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate, BKPasscodeLockScreenManagerDelegate, BKPasscodeViewControllerDelegate, LMMediaPlayerViewDelegate, TWMessageBarStyleSheet, CCNetworkingDelegate>
 
