@@ -417,11 +417,15 @@
 
 - (UIImage *)imageForEmptyDataSet:(UIScrollView *)scrollView
 {
-    if (_isSearchMode)
+    if (_isSearchMode) {
+        
         return [UIImage imageNamed:image_searchBig];
-    else
-        return [UIImage imageNamed:image_filesNoFiles];
-
+        
+    } else {
+        
+        UIColor *ThemingColor = self.navigationController.navigationBar.barTintColor;
+        return [CCGraphics changeThemingColorImage:[UIImage imageNamed:image_filesNoFiles] color:ThemingColor];
+    }
 }
 
 - (NSAttributedString *)titleForEmptyDataSet:(UIScrollView *)scrollView
@@ -4274,8 +4278,6 @@
 
     /******************************************* AHKActionSheet *******************************************/
     
-    UIImage *iconHeader;
-    
     AHKActionSheet *actionSheet = [[AHKActionSheet alloc] initWithView:self.view title:nil];
     
     actionSheet.animationDuration = 0.2;
@@ -4301,20 +4303,18 @@
     
     if (_metadata.directory) {
         
-        UIImage *iconHeader;
+        
         BOOL lockDirectory = NO;
         NSString *dirServerUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:_metadata.fileNameData];
 
         // Directory bloccata ?
         if ([CCCoreData isDirectoryLock:dirServerUrl activeAccount:app.activeAccount] && [[CCUtility getBlockCode] length] && app.sessionePasscodeLock == nil) lockDirectory = YES;
         
-        iconHeader = [UIImage imageNamed:_metadata.iconName];
-
         NSString *cameraUploadFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:app.activeAccount];
         NSString *cameraUploadFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:app.activeAccount activeUrl:app.activeUrl];
         
         [actionSheet addButtonWithTitle: _metadata.fileNamePrint
-                                  image: iconHeader
+                                  image: [CCGraphics changeThemingColorImage:[UIImage imageNamed:_metadata.iconName] color:self.navigationController.navigationBar.barTintColor]
                         backgroundColor: [NCBrandColor sharedInstance].tabBar
                                  height: 50.0
                                    type: AHKActionSheetButtonTypeDisabled
@@ -4397,7 +4397,7 @@
         if (!([_metadata.fileName isEqualToString:cameraUploadFolderName] == YES && [serverUrl isEqualToString:cameraUploadFolderPath] == YES) && _metadata.cryptated == NO) {
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_folder_automatic_upload_", nil)
-                                      image:[UIImage imageNamed:image_folderphotocamera]
+                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_folderphotocamera] color:self.navigationController.navigationBar.barTintColor]
                             backgroundColor:[UIColor whiteColor]
                                      height: 50.0
                                        type:AHKActionSheetButtonTypeDefault
@@ -4465,6 +4465,8 @@
     /******************************************* FILE *******************************************/
     
     if ([_metadata.type isEqualToString: k_metadataType_file] && !_metadata.directory) {
+        
+        UIImage *iconHeader;
         
         // assegnamo l'immagine anteprima se esiste, altrimenti metti quella standars
         if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, _metadata.fileID]])
@@ -4599,10 +4601,8 @@
     
     if ([_metadata.type isEqualToString: k_metadataType_template]) {
         
-        iconHeader = [UIImage imageNamed:_metadata.iconName];
-     
         [actionSheet addButtonWithTitle: _metadata.fileNamePrint
-                                  image: iconHeader
+                                  image: [UIImage imageNamed:_metadata.iconName]
                         backgroundColor: [NCBrandColor sharedInstance].tabBar
                                  height: 50.0
                                    type: AHKActionSheetButtonTypeDisabled
@@ -5197,14 +5197,10 @@
 
     } else {
         
-        if (metadata.directory) {
-            
+        if (metadata.directory)
             cell.fileImageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:metadata.iconName] color:ThemingColor];
-            
-        } else {
-            
+        else
             cell.fileImageView.image = [UIImage imageNamed:metadata.iconName];
-        }
         
         if (metadata.thumbnailExists)
             [[CCActions sharedInstance] downloadTumbnail:metadata delegate:self];

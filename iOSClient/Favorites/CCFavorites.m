@@ -383,10 +383,17 @@
     actionSheet.cancelButtonTitle = NSLocalizedString(@"_cancel_",nil);
     
     // assegnamo l'immagine anteprima se esiste, altrimenti metti quella standars
-    if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]])
+    if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]]) {
+        
         iconHeader = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]];
-    else
-        iconHeader = [UIImage imageNamed:metadata.iconName];
+        
+    } else {
+        
+        if (metadata.directory)
+            iconHeader = [CCGraphics changeThemingColorImage:[UIImage imageNamed:metadata.iconName] color:self.navigationController.navigationBar.barTintColor];
+        else
+            iconHeader = [UIImage imageNamed:metadata.iconName];
+    }
     
     [actionSheet addButtonWithTitle: metadata.fileNamePrint
                               image: iconHeader
@@ -540,6 +547,9 @@
     cell.statusImageView.image = nil;
     cell.offlineImageView.image = nil;
     
+    // theming color
+    UIColor *ThemingColor = self.navigationController.navigationBar.barTintColor;
+    
     // change color selection
     UIView *selectionColor = [[UIView alloc] init];
     selectionColor.backgroundColor = [NCBrandColor sharedInstance].selectBackgrond;
@@ -567,8 +577,17 @@
     cell.labelInfoFile.text = @"";
     
     // Immagine del file, se non c'è l'anteprima mettiamo quella standard
-    if (cell.fileImageView.image == nil)
-        cell.fileImageView.image = [UIImage imageNamed:metadata.iconName];
+    if (cell.fileImageView.image == nil) {
+        
+        if (metadata.directory) {
+            
+            cell.fileImageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:metadata.iconName] color:ThemingColor];
+            
+        } else {
+            
+            cell.fileImageView.image = [UIImage imageNamed:metadata.iconName];
+        }
+    }
     
     // it's encrypted ???
     if (metadata.cryptated && [metadata.type isEqualToString: k_metadataType_template] == NO)
