@@ -68,4 +68,22 @@ class NCBrandImages: NSObject {
     public var menuMoreImage:           String = "menuMoreImage"
 }
 
+/*
+class NCBrandText: NSObject {
+    
+    static let sharedInstance: NCBrandText = {
+        let instance = NCBrandText()
+        return instance
+    }()
+    
+    public var brand:                           String = "Nextcloud"
+    public var mailBrand:                       String = "ios@nextcloud.com"
+    public var copyrightNextcloudiOS :          String = "Nextcloud for iOS %@ © 2017 T.W.S. Inc."
+    public var copyrightNextcloudServer:        String = "Nextcloud Server %@"
+    public var loginBaseUrl:                    String = "https://cloud.twsweb.it"
+    public var pushNotificationServer:          String = "https://push-notifications.nextcloud.com"
+    public var loginButtonLabelLink:            String = "https://nextcloud.com/providers"
+    public var webLoginAutenticationProtocol:   String = ""
+}
+*/
 

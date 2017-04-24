@@ -24,33 +24,24 @@
 #import "CCMove.h"
 
 #ifndef EXTENSION
-#import "AppDelegate.h"
-#endif
 
-//Color
-#define COLOR_BRAND                             [UIColor colorWithRed:0.0/255.0 green:130.0/255.0 blue:201.0/255.0 alpha:1.0]       // BLU NC : #0082c9
-#define COLOR_SELECT_BACKGROUND                 [UIColor colorWithRed:0.0/255.0 green:130.0/255.0 blue:201.0/255.0 alpha:0.1]       // BLU NC : #0082c9
-#define COLOR_TRANSFER_BACKGROUND               [UIColor colorWithRed:178.0/255.0 green:244.0/255.0 blue:258.0/255.0 alpha:0.1]
-#define COLOR_GROUPBY_BAR                       [UIColor colorWithRed:0.0/255.0 green:130.0/255.0 blue:201.0/255.0 alpha:0.2]       // BLU NC : #0082c9
-#define COLOR_GROUPBY_BAR_NO_BLUR               [UIColor colorWithRed:0.0/255.0 green:130.0/255.0 blue:201.0/255.0 alpha:0.3]       // BLU NC : #0082c9
-#define COLOR_NAVIGATIONBAR                     [UIColor colorWithRed:0.0/255.0 green:130.0/255.0 blue:201.0/255.0 alpha:1.0]       // BLU NC : #0082c9
-#define COLOR_NAVIGATIONBAR_SHARE               [UIColor colorWithRed:0.0/255.0 green:130.0/255.0 blue:201.0/255.0 alpha:1.0]
-#define COLOR_NAVIGATIONBAR_TEXT                [UIColor whiteColor]
-#define COLOR_NAVIGATIONBAR_PROGRESS            [UIColor whiteColor]
-#define COLOR_TABBAR                            [UIColor whiteColor]
-#define COLOR_TABBAR_TEXT                       [UIColor colorWithRed:0.0/255.0 green:130.0/255.0 blue:201.0/255.0 alpha:1.0]       // BLU NC : #0082c9
-#define COLOR_BACKGROUND_MENU                   [UIColor whiteColor]
-#define COLOR_BACKGROUND_PAGECONTROL            [UIColor colorWithRed:247.0/255.0 green:247.0/255.0 blue:247.0/255.0 alpha:1.0]
-#define COLOR_PAGECONTROL_INDICATOR             [UIColor colorWithRed:0.0/255.0 green:130.0/255.0 blue:201.0/255.0 alpha:1.0]       // BLU NC : #0082c9
-#define COLOR_CRYPTOCLOUD                       [UIColor colorWithRed:241.0/255.0 green:90.0/255.0 blue:34.0/255.0 alpha:1.0]
-#define COLOR_TEXT_ANTHRACITE                   [UIColor colorWithRed:65.0/255.0 green:64.0/255.0 blue:66.0/255.0 alpha:1.0]        // #414042
-#define COLOR_TEXT_NO_CONNECTION                [UIColor colorWithRed:204.0/255.0 green:204.0/255.0 blue:204.0/255.0 alpha:1.0]
-#define COLOR_SEPARATOR_TABLE                   [UIColor colorWithRed:235.0/255.0 green:235.0/255.0 blue:235.0/255.0 alpha:1.0]     // iOS 7
-#define COLOR_BACKGROUND_MESSAGE_INFO           [UIColor colorWithRed:0.0/255.0 green:130.0/255.0 blue:201.0/255.0 alpha:1.0]       // BLU NC : #0082c9
-#define COLOR_CONTROL_CENTER                    [UIColor colorWithRed:0.0/255.0 green:130.0/255.0 blue:201.0/255.0 alpha:1.0]       // BLU NC : #0082c9
-#define COLOR_REFRESH_CONTROL                   [UIColor colorWithRed:0.0/255.0 green:130.0/255.0 blue:201.0/255.0 alpha:1.0]       // BLU NC : #0082c9
-#define COLOR_WINDOW_TINTCOLOR                  [UIColor colorWithRed:0.0/255.0 green:130.0/255.0 blue:201.0/255.0 alpha:1.0]       // BLU NC : #0082c9
-#define COLOR_TABLE_BACKGROUND                  [UIColor whiteColor]
+    #import "AppDelegate.h"
+
+    #ifdef CUSTOM_BUILD
+    #import "CustomSwift.h"
+    #else
+    #import "Nextcloud-Swift.h"
+    #endif
+
+#else
+
+    #ifdef CUSTOM_BUILD
+    #import "CustomSwiftShare.h"
+    #else
+    #import "Share-Swift.h"
+    #endif
+
+#endif
 
 @interface CCMove ()
 {    
@@ -107,25 +98,25 @@
 
     // TableView : at the end of rows nothing
     self.tableView.tableFooterView = [UIView new];
-    self.tableView.separatorColor = COLOR_SEPARATOR_TABLE;
+    
+    self.tableView.separatorColor =  NCBrandColor.sharedInstance.seperator;
 
     [self.cancel setTitle:NSLocalizedString(@"_cancel_", nil)];
     [self.create setTitle:NSLocalizedString(@"_create_folder_", nil)];
 
     if (![_serverUrl length]) {
         
-        /*_serverUrl = [CCUtility getHomeServerUrlActiveUrl:activeUrl];
-        UIImageView *image = [[UIImageView alloc] initWithImage:[UIImage imageNamed:image_brandNavigationController]];
+        _serverUrl = [CCUtility getHomeServerUrlActiveUrl:activeUrl];
+        UIImageView *image = [[UIImageView alloc] initWithImage:[UIImage imageNamed: NCBrandImages.sharedInstance.navigationLogo]];
         [self.navigationController.navigationBar.topItem setTitleView:image];
         self.title = @"Home";
-        */
         
     } else {
         
         UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(0,0, self.navigationItem.titleView.frame.size.width, 40)];
         label.text = self.passMetadata.fileNamePrint;
         
-        if (self.passMetadata.cryptated) label.textColor = COLOR_CRYPTOCLOUD;
+        if (self.passMetadata.cryptated) label.textColor = NCBrandColor.sharedInstance.cryptocloud;
         else label.textColor = self.tintColorTitle;
         
         label.backgroundColor =[UIColor clearColor];
@@ -134,11 +125,11 @@
     }
     
     // Toolbar Color
-    self.navigationController.navigationBar.barTintColor = COLOR_NAVIGATIONBAR;
-    self.navigationController.navigationBar.tintColor = COLOR_NAVIGATIONBAR_TEXT;
+    self.navigationController.navigationBar.barTintColor = NCBrandColor.sharedInstance.navigationBar;
+    self.navigationController.navigationBar.tintColor = NCBrandColor.sharedInstance.navigationBarText;
     
-    self.navigationController.toolbar.barTintColor = COLOR_TABBAR;
-    self.navigationController.toolbar.tintColor = COLOR_TABBAR_TEXT;
+    self.navigationController.toolbar.barTintColor = NCBrandColor.sharedInstance.tabBar;
+    self.navigationController.toolbar.tintColor = NCBrandColor.sharedInstance.tabBarText;
     
     // read folder
     [self readFolder];
@@ -449,9 +440,9 @@
     
     // colors
     if (metadata.cryptated) {
-        cell.textLabel.textColor = COLOR_CRYPTOCLOUD;
+        cell.textLabel.textColor = NCBrandColor.sharedInstance.cryptocloud;
     } else {
-        cell.textLabel.textColor = COLOR_TEXT_ANTHRACITE;
+        cell.textLabel.textColor = [UIColor blackColor];
     }
     
     cell.detailTextLabel.text = @"";
@@ -512,7 +503,7 @@
             
             viewController.title = NSLocalizedString(@"_folder_blocked_", nil);
             viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
-            viewController.navigationItem.leftBarButtonItem.tintColor = COLOR_CRYPTOCLOUD;
+            viewController.navigationItem.leftBarButtonItem.tintColor = NCBrandColor.sharedInstance.cryptocloud;
             
             UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:viewController];
             [self presentViewController:navController animated:YES completion:nil];
