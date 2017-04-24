@@ -232,7 +232,7 @@
         self.edgesForExtendedLayout = UIRectEdgeBottom;
         [self viewAudio];
         [self createToolbar];
-        [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
+        [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
 
     }
     
@@ -245,14 +245,14 @@
             self.edgesForExtendedLayout = UIRectEdgeBottom;
             [self viewPDF:@""];
             [self createToolbar];
-            [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
+            [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
 
         } else {
 
             self.edgesForExtendedLayout = UIRectEdgeBottom;
             [self viewDocument];
             [self createToolbar];
-            [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
+            [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
         }
     }
 }

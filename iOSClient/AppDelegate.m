@@ -241,7 +241,7 @@
 
     navigationController.topViewController.navigationItem.leftBarButtonItem = splitViewController.displayModeButtonItem;
     splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeAllVisible;
-    [CCAspect aspectNavigationControllerBar:navigationController.navigationBar encrypted:NO online:YES hidden:NO];
+    [app aspectNavigationControllerBar:navigationController.navigationBar encrypted:NO online:YES hidden:NO];
     
     // Settings TabBar
     [self createTabBarController];
@@ -812,7 +812,7 @@
     UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
     UITabBarController *tabBarController = [splitViewController.viewControllers firstObject];
     
-    [CCAspect aspectTabBar:tabBarController.tabBar hidden:NO];
+    [app aspectTabBar:tabBarController.tabBar hidden:NO];
     
     // File
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexFile];
@@ -863,6 +863,35 @@
     constraint =[NSLayoutConstraint constraintWithItem:button attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:tabBarController.view attribute:NSLayoutAttributeBottom multiplier:1.0 constant:-5];
     
     [tabBarController.view addConstraint:constraint];
+}
+
+- (void)aspectNavigationControllerBar:(UINavigationBar *)nav encrypted:(BOOL)encrypted online:(BOOL)online hidden:(BOOL)hidden
+{
+    nav.translucent = NO;
+    nav.barTintColor = [NCColorBrand sharedInstance].navigationBar;
+    nav.tintColor = [NCColorBrand sharedInstance].navigationBarText;
+    [nav setTitleTextAttributes:@{NSForegroundColorAttributeName : [NCColorBrand sharedInstance].navigationBarText}];
+    
+    if (encrypted)
+        [nav setTitleTextAttributes:@{NSForegroundColorAttributeName : [NCColorBrand sharedInstance].cryptocloud}];
+    
+    if (!online)
+        [nav setTitleTextAttributes:@{NSForegroundColorAttributeName : [NCColorBrand sharedInstance].connectionNo}];
+    
+    nav.hidden = hidden;
+    
+    [nav setAlpha:1];
+}
+
+- (void)aspectTabBar:(UITabBar *)tab hidden:(BOOL)hidden
+{
+    tab.translucent = NO;
+    tab.barTintColor = [NCColorBrand sharedInstance].tabBar;
+    tab.tintColor = [NCColorBrand sharedInstance].tabBarText;
+    
+    tab.hidden = hidden;
+    
+    [tab setAlpha:1];
 }
 
 - (void)plusButtonVisibile:(BOOL)visible

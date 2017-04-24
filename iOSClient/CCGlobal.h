@@ -288,9 +288,3 @@ extern NSString *const urlBaseUploadDB;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-@interface CCAspect : NSObject
-
-+ (void)aspectNavigationControllerBar:(UINavigationBar *)nav encrypted:(BOOL)encrypted online:(BOOL)online hidden:(BOOL)hidden;
-+ (void)aspectTabBar:(UITabBar *)tab hidden:(BOOL)hidden;
-
-@end

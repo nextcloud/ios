@@ -106,7 +106,7 @@
     [checkmark setMargin:0.0 forVerticalEdge:NSLayoutAttributeRight horizontalEdge:NSLayoutAttributeTop];
     
     UINavigationBar *navBar = [UINavigationBar appearanceWhenContainedIn:[CTAssetsPickerController class], nil];
-    [CCAspect aspectNavigationControllerBar:navBar encrypted:NO online:YES hidden:NO];
+    [app aspectNavigationControllerBar:navBar encrypted:NO online:YES hidden:NO];
     
     [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
         dispatch_async(dispatch_get_main_queue(), ^{

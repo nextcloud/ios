@@ -10,8 +10,6 @@
 #import "MWCaptionView.h"
 #import "MWPhoto.h"
 
-#define COLOR_TEXT_ANTHRACITE                   [UIColor colorWithRed:65.0/255.0 green:64.0/255.0 blue:66.0/255.0 alpha:1.0]        // #414042
-
 static const CGFloat labelPadding = 10;
 
 //TWS Private
@@ -67,7 +65,7 @@ static const CGFloat labelPadding = 10;
     _label.lineBreakMode = NSLineBreakByWordWrapping;
 
     _label.numberOfLines = 0;
-    _label.textColor = COLOR_TEXT_ANTHRACITE;
+    _label.textColor = [UIColor blackColor];
     _label.font = [UIFont systemFontOfSize:12];
     if ([_photo respondsToSelector:@selector(caption)]) {
         _label.text = [_photo caption] ? [_photo caption] : @" ";
