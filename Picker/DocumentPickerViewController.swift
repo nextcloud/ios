@@ -129,11 +129,11 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         hud = CCHud.init(view: self.navigationController?.view)
         
         // COLOR
-        self.navigationController?.navigationBar.barTintColor = NCColor.sharedInstance.colorNavigationBar
-        self.navigationController?.navigationBar.tintColor = NCColor.sharedInstance.colorNavigationBarText
-        self.navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: NCColor.sharedInstance.colorNavigationBarText]
+        self.navigationController?.navigationBar.barTintColor = NCColorBrand.sharedInstance.navigationBar
+        self.navigationController?.navigationBar.tintColor = NCColorBrand.sharedInstance.navigationBarText
+        self.navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: NCColorBrand.sharedInstance.navigationBarText]
         
-        self.tableView.separatorColor = NCColor.sharedInstance.colorSeperator
+        self.tableView.separatorColor = NCColorBrand.sharedInstance.seperator
         self.tableView.tableFooterView = UIView()
         
         // Get Crypto Cloud Mode
@@ -156,7 +156,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
             
             // Color Button
             if parameterEncrypted == true {
-                encryptedButton.tintColor = NCColor.sharedInstance.colorCryptocloud
+                encryptedButton.tintColor = NCColorBrand.sharedInstance.cryptocloud
             } else {
                 encryptedButton.tintColor = self.view.tintColor
                 
@@ -494,7 +494,7 @@ extension DocumentPickerViewController {
         parameterEncrypted = !parameterEncrypted!
         
         if parameterEncrypted == true {
-            encryptedButton.tintColor = NCColor.sharedInstance.colorCryptocloud
+            encryptedButton.tintColor = NCColorBrand.sharedInstance.cryptocloud
         } else {
             encryptedButton.tintColor = self.view.tintColor
         }
@@ -621,7 +621,7 @@ extension DocumentPickerViewController {
         viewController.touchIDManager = touchIDManager
         viewController.title = title
         viewController.navigationItem.leftBarButtonItem = UIBarButtonItem.init(barButtonSystemItem: UIBarButtonSystemItem.cancel, target: self, action: #selector(passcodeViewCloseButtonPressed(sender:)))
-        viewController.navigationItem.leftBarButtonItem?.tintColor = NCColor.sharedInstance.colorCryptocloud
+        viewController.navigationItem.leftBarButtonItem?.tintColor = NCColorBrand.sharedInstance.cryptocloud
         
         let navController = UINavigationController.init(rootViewController: viewController)
         self.present(navController, animated: true, completion: nil)

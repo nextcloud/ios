@@ -22,8 +22,13 @@
 //
 
 #import "CCUploadFromOtherUpp.h"
-
 #import "AppDelegate.h"
+
+#ifdef CUSTOM_BUILD
+#import "CustomSwift.h"
+#else
+#import "Nextcloud-Swift.h"
+#endif
 
 @interface CCUploadFromOtherUpp()
 {
@@ -167,9 +172,9 @@
     CCMove *viewController = (CCMove *)navigationController.topViewController;
     viewController.delegate = self;
     viewController.move.title = NSLocalizedString(@"_select_", nil);
-    viewController.tintColor = COLOR_NAVIGATIONBAR_TEXT;
-    viewController.barTintColor = COLOR_NAVIGATIONBAR;
-    viewController.tintColorTitle = COLOR_NAVIGATIONBAR_TEXT;
+    viewController.tintColor = [NCColorBrand sharedInstance].navigationBarText;
+    viewController.barTintColor = [NCColorBrand sharedInstance].navigationBar;
+    viewController.tintColorTitle = [NCColorBrand sharedInstance].navigationBarText;
     viewController.networkingOperationQueue = app.netQueue;
 
     [self presentViewController:navigationController animated:YES completion:nil];

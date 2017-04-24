@@ -22,8 +22,13 @@
 //
 
 #import "CCShareOC.h"
-
 #import "AppDelegate.h"
+
+#ifdef CUSTOM_BUILD
+#import "CustomSwift.h"
+#else
+#import "Nextcloud-Swift.h"
+#endif
 
 @interface CCShareOC ()
 
@@ -117,11 +122,11 @@
 {
     [super viewDidLoad];
     
-    [self.view setTintColor:COLOR_BRAND];
-    self.view.backgroundColor = COLOR_NAVIGATIONBAR_SHARE;
+    [self.view setTintColor:[NCColorBrand sharedInstance].brand];
+    self.view.backgroundColor = [NCColorBrand sharedInstance].navigationBarShare;
     
     [self.endButton setTitle:NSLocalizedString(@"_done_", nil) forState:UIControlStateNormal];
-    self.endButton.tintColor = COLOR_NAVIGATIONBAR_TEXT;
+    self.endButton.tintColor = [NCColorBrand sharedInstance].navigationBarText;
     
     [self reloadData];
     
@@ -129,14 +134,14 @@
     else self.fileImageView.image = [UIImage imageNamed:self.metadata.iconName];
     
     self.labelTitle.text = self.metadata.fileNamePrint;
-    self.labelTitle.textColor = COLOR_NAVIGATIONBAR_TEXT;
+    self.labelTitle.textColor = [NCColorBrand sharedInstance].navigationBarText;
     
     self.tableView.tableHeaderView = ({UIView *line = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 0.1 / UIScreen.mainScreen.scale)];
         line.backgroundColor = self.tableView.separatorColor;
         line;
     });
     
-    self.tableView.backgroundColor = COLOR_TABLE_BACKGROUND;
+    self.tableView.backgroundColor = [NCColorBrand sharedInstance].tableBackground;
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -222,7 +227,7 @@
 
                 [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
                 //[row.cellConfig setObject:@(UITableViewCellAccessoryDisclosureIndicator) forKey:@"accessoryType"];
-                [row.cellConfig setObject:COLOR_BRAND forKey:@"textLabel.textColor"];
+                [row.cellConfig setObject:[NCColorBrand sharedInstance].brand forKey:@"textLabel.textColor"];
                 row.action.formSelector = @selector(sharePermissionButton:);
                 
                 if (item.shareType == shareTypeGroup) row.title = [item.shareWithDisplayName stringByAppendingString:NSLocalizedString(@"_user_is_group_", nil)];

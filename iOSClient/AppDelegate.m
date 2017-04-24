@@ -233,7 +233,7 @@
     [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
     
     // Tint Color GLOBAL WINDOW
-    [self.window setTintColor:COLOR_WINDOW_TINTCOLOR];
+    [self.window setTintColor:[NCColorBrand sharedInstance].windowTintcolor];
     
     UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
     //UITabBarController *tabBarController = [splitViewController.viewControllers firstObject];
@@ -752,7 +752,7 @@
             backgroundColor = [UIColor colorWithRed:0.588 green:0.797 blue:0.000 alpha:0.90];
             break;
         case TWMessageBarMessageTypeInfo:
-            backgroundColor = COLOR_BACKGROUND_MESSAGE_INFO;
+            backgroundColor = [NCColorBrand sharedInstance].messageInfoBackground;
             break;
         default:
             break;

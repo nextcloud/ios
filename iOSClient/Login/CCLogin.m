@@ -26,6 +26,12 @@
 #import "CCUtility.h"
 #import "CCCoreData.h"
 
+#ifdef CUSTOM_BUILD
+#import "CustomSwift.h"
+#else
+#import "Nextcloud-Swift.h"
+#endif
+
 @interface CCLogin ()
 {
     UIAlertView *alertView;
@@ -40,7 +46,7 @@
     [super viewDidLoad];
     
     self.imageBrand.image = [UIImage imageNamed:image_brandLogin];
-    self.login.backgroundColor = COLOR_BRAND;
+    self.login.backgroundColor = [NCColorBrand sharedInstance].brand;
     
     // Bottom label
     self.bottomLabel.text = NSLocalizedString(@"_login_bottom_label_", nil);

@@ -22,9 +22,14 @@
 //
 
 #import "CCActivity.h"
-
 #import "AppDelegate.h"
 #import "CCSection.h"
+
+#ifdef CUSTOM_BUILD
+#import "CustomSwift.h"
+#else
+#import "Nextcloud-Swift.h"
+#endif
 
 #define fontSizeData    [UIFont boldSystemFontOfSize:15]
 #define fontSizeAction  [UIFont systemFontOfSize:14]
@@ -256,7 +261,7 @@
 
         if ([activity.type isEqualToString:k_activityTypeInfo]) {
         
-            actionLabel.textColor = COLOR_BRAND;
+            actionLabel.textColor = [NCColorBrand sharedInstance].brand;
         
             if (activity.idActivity == 0)
                 typeImage.image = [UIImage imageNamed:@"activityTypeInfo"];
@@ -278,7 +283,7 @@
     
         [noteLabel setFont:fontSizeNote];
         [noteLabel sizeToFit];
-        noteLabel.textColor = COLOR_TEXT_ANTHRACITE;
+        noteLabel.textColor = [UIColor blackColor];
         noteLabel.numberOfLines = 0;
         noteLabel.lineBreakMode = NSLineBreakByWordWrapping;
     

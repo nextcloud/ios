@@ -22,10 +22,15 @@
 //
 
 #import "CCShareInfoCMOC.h"
-
 #import "XLFormViewController.h"
 #import "XLForm.h"
 #import "AppDelegate.h"
+
+#ifdef CUSTOM_BUILD
+#import "CustomSwift.h"
+#else
+#import "Nextcloud-Swift.h"
+#endif
 
 @interface CCShareInfoCMOC ()
 
@@ -73,7 +78,7 @@
         if ([self.metadata.permissions rangeOfString:k_permission_file_can_write].location != NSNotFound) row.value = @1;
         else row.value = @0;
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-        [row.cellConfig setObject:COLOR_BRAND forKey:@"tintColor"];
+        [row.cellConfig setObject:[NCColorBrand sharedInstance].brand forKey:@"tintColor"];
         [section addFormRow:row];
     }
     
@@ -83,14 +88,14 @@
         if ([self.metadata.permissions rangeOfString:k_permission_can_create_file].location != NSNotFound) row.value = @1;
         else row.value = @0;
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-        [row.cellConfig setObject:COLOR_BRAND forKey:@"tintColor"];
+        [row.cellConfig setObject:[NCColorBrand sharedInstance].brand forKey:@"tintColor"];
         [section addFormRow:row];
     
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"createfolder" rowType:XLFormRowDescriptorTypeBooleanCheck title:NSLocalizedString(@"_share_permission_create_folder_", nil)];
         if ([self.metadata.permissions rangeOfString:k_permission_can_create_folder].location != NSNotFound) row.value = @1;
         else row.value = @0;
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-        [row.cellConfig setObject:COLOR_BRAND forKey:@"tintColor"];
+        [row.cellConfig setObject:[NCColorBrand sharedInstance].brand forKey:@"tintColor"];
         [section addFormRow:row];
     }
     
@@ -98,28 +103,28 @@
     if ([self.metadata.permissions rangeOfString:k_permission_can_delete].location != NSNotFound) row.value = @1;
     else row.value = @0;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:COLOR_BRAND forKey:@"tintColor"];
+    [row.cellConfig setObject:[NCColorBrand sharedInstance].brand forKey:@"tintColor"];
     [section addFormRow:row];
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"rename" rowType:XLFormRowDescriptorTypeBooleanCheck title:NSLocalizedString(@"_share_permission_rename_", nil)];
     if ([self.metadata.permissions rangeOfString:k_permission_can_rename].location != NSNotFound) row.value = @1;
     else row.value = @0;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:COLOR_BRAND forKey:@"tintColor"];
+    [row.cellConfig setObject:[NCColorBrand sharedInstance].brand forKey:@"tintColor"];
     [section addFormRow:row];
 
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"move" rowType:XLFormRowDescriptorTypeBooleanCheck title:NSLocalizedString(@"_share_permission_move_", nil)];
     if ([self.metadata.permissions rangeOfString:k_permission_can_move].location != NSNotFound) row.value = @1;
     else row.value = @0;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:COLOR_BRAND forKey:@"tintColor"];
+    [row.cellConfig setObject:[NCColorBrand sharedInstance].brand forKey:@"tintColor"];
     [section addFormRow:row];
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"share" rowType:XLFormRowDescriptorTypeBooleanCheck title:NSLocalizedString(@"_share_permission_share_", nil)];
     if ([self.metadata.permissions rangeOfString:k_permission_can_share].location != NSNotFound) row.value = @1;
     else row.value = @0;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:COLOR_BRAND forKey:@"tintColor"];
+    [row.cellConfig setObject:[NCColorBrand sharedInstance].brand forKey:@"tintColor"];
     [section addFormRow:row];
     
     section = [XLFormSectionDescriptor formSection];
@@ -146,13 +151,13 @@
 {
     [super viewDidLoad];
     
-    [self.view setTintColor:COLOR_BRAND];
-    self.view.backgroundColor = COLOR_NAVIGATIONBAR_SHARE;
+    [self.view setTintColor:[NCColorBrand sharedInstance].brand];
+    self.view.backgroundColor = [NCColorBrand sharedInstance].navigationBarShare;
     
     [self.endButton setTitle:NSLocalizedString(@"_done_", nil) forState:UIControlStateNormal];
-    self.endButton.tintColor = COLOR_NAVIGATIONBAR_TEXT;
+    self.endButton.tintColor = [NCColorBrand sharedInstance].navigationBarText;
     
-    self.tableView.backgroundColor = COLOR_TABLE_BACKGROUND;
+    self.tableView.backgroundColor = [NCColorBrand sharedInstance].tableBackground;
 }
 
 #pragma --------------------------------------------------------------------------------------------

@@ -32,6 +32,13 @@ NSString *const appCertificates = @"Library/Application Support/Certificates";
 NSString *const webDAV = @"/remote.php/webdav";
 NSString *const dav = @"/remote.php/dav";
 
+#define COLOR_NAVIGATIONBAR                     [UIColor colorWithRed:0.0/255.0 green:130.0/255.0 blue:201.0/255.0 alpha:1.0] 
+#define COLOR_NAVIGATIONBAR_TEXT                [UIColor whiteColor]
+#define COLOR_CRYPTOCLOUD                       [UIColor colorWithRed:241.0/255.0 green:90.0/255.0 blue:34.0/255.0 alpha:1.0]
+#define COLOR_TEXT_NO_CONNECTION                [UIColor colorWithRed:204.0/255.0 green:204.0/255.0 blue:204.0/255.0 alpha:1.0]
+#define COLOR_TABBAR                            [UIColor whiteColor]
+#define COLOR_TABBAR_TEXT                       [UIColor colorWithRed:0.0/255.0 green:130.0/255.0 blue:201.0/255.0 alpha:1.0]
+
 @implementation CCAspect
 
 + (void)aspectNavigationControllerBar:(UINavigationBar *)nav encrypted:(BOOL)encrypted online:(BOOL)online hidden:(BOOL)hidden

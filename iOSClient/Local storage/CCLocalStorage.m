@@ -24,6 +24,12 @@
 #import "CCLocalStorage.h"
 #import "AppDelegate.h"
 
+#ifdef CUSTOM_BUILD
+#import "CustomSwift.h"
+#else
+#import "Nextcloud-Swift.h"
+#endif
+
 @interface CCLocalStorage ()
 {
     NSArray *dataSource;
@@ -46,7 +52,7 @@
     _metadata = [CCMetadata new];
     
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 1)];
-    self.tableView.separatorColor = COLOR_SEPARATOR_TABLE;
+    self.tableView.separatorColor = [NCColorBrand sharedInstance].seperator;
     self.tableView.emptyDataSetDelegate = self;
     self.tableView.emptyDataSetSource = self;
     self.tableView.allowsMultipleSelectionDuringEditing = NO;
@@ -273,12 +279,12 @@
     
     actionSheet.automaticallyTintButtonImages = @(NO);
     
-    actionSheet.encryptedButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:COLOR_CRYPTOCLOUD };
-    actionSheet.buttonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:COLOR_TEXT_ANTHRACITE };
-    actionSheet.cancelButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:COLOR_BRAND };
-    actionSheet.disableButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:COLOR_TEXT_ANTHRACITE };
+    actionSheet.encryptedButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:[NCColorBrand sharedInstance].cryptocloud };
+    actionSheet.buttonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:[UIColor blackColor] };
+    actionSheet.cancelButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:[NCColorBrand sharedInstance].brand };
+    actionSheet.disableButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:[UIColor blackColor] };
     
-    actionSheet.separatorColor = COLOR_SEPARATOR_TABLE;
+    actionSheet.separatorColor = [NCColorBrand sharedInstance].seperator;
     actionSheet.cancelButtonTitle = NSLocalizedString(@"_cancel_",nil);
     
     // assegnamo l'immagine anteprima se esiste, altrimenti metti quella standars
@@ -289,7 +295,7 @@
     
     [actionSheet addButtonWithTitle: metadata.fileNamePrint
                               image: iconHeader
-                    backgroundColor: COLOR_TABBAR
+                    backgroundColor: [NCColorBrand sharedInstance].tabBar
                              height: 50.0
                                type: AHKActionSheetButtonTypeDisabled
                             handler: nil
@@ -403,7 +409,7 @@
     
     // change color selection
     UIView *selectionColor = [[UIView alloc] init];
-    selectionColor.backgroundColor = COLOR_SELECT_BACKGROUND;
+    selectionColor.backgroundColor = [NCColorBrand sharedInstance].selectBackgrond;
     cell.selectedBackgroundView = selectionColor;
 
     NSString *cameraFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:app.activeAccount];
@@ -428,7 +434,7 @@
     
     // encrypted color
     if (metadata.cryptated) {
-        cell.labelTitle.textColor = COLOR_CRYPTOCLOUD;
+        cell.labelTitle.textColor = [NCColorBrand sharedInstance].cryptocloud;
     } else {
         cell.labelTitle.textColor = [UIColor blackColor];
     }

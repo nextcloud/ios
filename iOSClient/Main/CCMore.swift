@@ -50,7 +50,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         tableView.delegate = self
         tableView.dataSource = self
         
-        tableView.separatorColor = NCColor.sharedInstance.colorSeperator
+        tableView.separatorColor = NCColorBrand.sharedInstance.seperator
         
         imageLogo.image = UIImage.init(named: image_brandMenuMoreBackground)
         
@@ -230,7 +230,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
         // change color selection and disclosure indicator
         let selectionColor : UIView = UIView.init()
-        selectionColor.backgroundColor = NCColor.sharedInstance.colorSelectBackgrond
+        selectionColor.backgroundColor = NCColorBrand.sharedInstance.selectBackgrond
         cell.selectedBackgroundView = selectionColor
         
         cell.accessoryType = UITableViewCellAccessoryType.disclosureIndicator
@@ -242,7 +242,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             
             cell.imageIcon?.image = UIImage.init(named: item.icon)
             cell.labelText?.text = NSLocalizedString(item.name, comment: "")
-            cell.labelText.textColor = NCColor.sharedInstance.colorMoreNormal
+            cell.labelText.textColor = NCColorBrand.sharedInstance.moreNormal
 
         }
         
@@ -253,7 +253,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             
             cell.imageIcon?.image = UIImage.init(named: item.icon)
             cell.labelText?.text = NSLocalizedString(item.name, comment: "")
-            cell.labelText.textColor = NCColor.sharedInstance.colorMoreSettings
+            cell.labelText.textColor = NCColorBrand.sharedInstance.moreSettings
         }
         
         return cell

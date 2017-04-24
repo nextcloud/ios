@@ -22,8 +22,13 @@
 //
 
 #import "CCPassaporto.h"
-
 #import "AppDelegate.h"
+
+#ifdef CUSTOM_BUILD
+#import "CustomSwift.h"
+#else
+#import "Nextcloud-Swift.h"
+#endif
 
 @interface CCPassaporto()
 {
@@ -66,7 +71,7 @@
         
         // Title
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"titolo" rowType:XLFormRowDescriptorTypeText];
-        [row.cellConfig setObject:COLOR_CRYPTOCLOUD forKey:@"textField.textColor"];
+        [row.cellConfig setObject:[NCColorBrand sharedInstance].cryptocloud forKey:@"textField.textColor"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textField.font"];
         row.value = [field objectForKey:@"titolo"];
@@ -78,7 +83,7 @@
         
         // Nome Cognome
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"comecognome" rowType:XLFormRowDescriptorTypeText title:NSLocalizedString(@"_name_surname:_", nil)];
-        [row.cellConfig setObject:COLOR_TEXT_ANTHRACITE forKey:@"textField.textColor"];
+        [row.cellConfig setObject:[UIColor blackColor] forKey:@"textField.textColor"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textField.font"];
         row.value = [field objectForKey:@"comecognome"];
@@ -86,7 +91,7 @@
         
         // Numero
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"numero" rowType:XLFormRowDescriptorTypeText title:NSLocalizedString(@"_number:_", nil)];
-        [row.cellConfig setObject:COLOR_TEXT_ANTHRACITE forKey:@"textField.textColor"];
+        [row.cellConfig setObject:[UIColor blackColor] forKey:@"textField.textColor"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textField.font"];
         row.value = [field objectForKey:@"numero"];
@@ -94,7 +99,7 @@
 
         // Luogo di nascita
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"luogonascita" rowType:XLFormRowDescriptorTypeText title:NSLocalizedString(@"_place_of_birth:_", nil)];
-        [row.cellConfig setObject:COLOR_TEXT_ANTHRACITE forKey:@"textField.textColor"];
+        [row.cellConfig setObject:[UIColor blackColor] forKey:@"textField.textColor"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textField.font"];
         row.value = [field objectForKey:@"luogonascita"];
@@ -102,7 +107,7 @@
 
         // Data di nascita
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"datanascita" rowType:XLFormRowDescriptorTypeText title:NSLocalizedString(@"_date_of_birth:_", nil)];
-        [row.cellConfig setObject:COLOR_TEXT_ANTHRACITE forKey:@"textField.textColor"];
+        [row.cellConfig setObject:[UIColor blackColor] forKey:@"textField.textColor"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textField.font"];
         row.value = [field objectForKey:@"datanascita"];
@@ -110,7 +115,7 @@
         
         // Data di rilascio
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"datarilascio" rowType:XLFormRowDescriptorTypeText title:NSLocalizedString(@"_date_of_issue:_", nil)];
-        [row.cellConfig setObject:COLOR_TEXT_ANTHRACITE forKey:@"textField.textColor"];
+        [row.cellConfig setObject:[UIColor blackColor] forKey:@"textField.textColor"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textField.font"];
         row.value = [field objectForKey:@"datarilascio"];
@@ -118,7 +123,7 @@
         
         // Data di scadenza
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"datascadenza" rowType:XLFormRowDescriptorTypeText title:NSLocalizedString(@"_date_of_expiry:_", nil)];
-        [row.cellConfig setObject:COLOR_TEXT_ANTHRACITE forKey:@"textField.textColor"];
+        [row.cellConfig setObject:[UIColor blackColor] forKey:@"textField.textColor"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textField.font"];
         row.value = [field objectForKey:@"datascadenza"];
@@ -130,7 +135,7 @@
         // Note
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"note" rowType:XLFormRowDescriptorTypeTextView];
         row.value = [field objectForKey:@"note"];
-        [row.cellConfig setObject:COLOR_TEXT_ANTHRACITE forKey:@"textView.textColor"];
+        [row.cellConfig setObject:[UIColor blackColor] forKey:@"textView.textColor"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textView.font"];
         [section addFormRow:row];
     

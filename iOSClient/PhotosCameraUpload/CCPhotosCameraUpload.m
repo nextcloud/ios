@@ -26,9 +26,9 @@
 #import "AppDelegate.h"
 
 #ifdef CUSTOM_BUILD
-    #import "CustomSwift.h"
+#import "CustomSwift.h"
 #else
-    #import "Nextcloud-Swift.h"
+#import "Nextcloud-Swift.h"
 #endif
 
 @interface CCPhotosCameraUpload () <CCActionsDeleteDelegate, CCActionsDownloadThumbnailDelegate>
@@ -507,7 +507,7 @@
     if (progress == 0)
         [self.navigationController cancelCCProgress];
     else
-        [self.navigationController setCCProgressPercentage:progress*100 andTintColor:COLOR_NAVIGATIONBAR_PROGRESS];
+        [self.navigationController setCCProgressPercentage:progress*100 andTintColor:[NCColorBrand sharedInstance].navigationBarProgress];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -593,7 +593,7 @@
         [self getGeoLocationForSection:indexPath.section];
         
         UILabel *titleLabel = (UILabel *)[headerView viewWithTag:100];
-        titleLabel.textColor = COLOR_TEXT_ANTHRACITE;
+        titleLabel.textColor = [UIColor blackColor];
         titleLabel.text = [CCUtility getTitleSectionDate:[_sectionDataSource.sections objectAtIndex:indexPath.section]];
 
         return headerView;

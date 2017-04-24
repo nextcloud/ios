@@ -22,8 +22,13 @@
 //
 
 #import "CCNote.h"
-
 #import "AppDelegate.h"
+
+#ifdef CUSTOM_BUILD
+#import "CustomSwift.h"
+#else
+#import "Nextcloud-Swift.h"
+#endif
 
 @interface CCNote()
 {
@@ -82,7 +87,7 @@
     [self setHTML:[field objectForKey:@"note"]];
     
     //
-    self.toolbarItemTintColor = COLOR_BRAND;
+    self.toolbarItemTintColor = [NCColorBrand sharedInstance].brand;
     
     templates = [[CCTemplates alloc] init];
     [templates setImageTitle:self.titolo conNavigationItem:self.navigationItem reachability:[app.reachability isReachable]];

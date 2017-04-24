@@ -10,6 +10,8 @@
 #import "MWCaptionView.h"
 #import "MWPhoto.h"
 
+#define COLOR_TEXT_ANTHRACITE                   [UIColor colorWithRed:65.0/255.0 green:64.0/255.0 blue:66.0/255.0 alpha:1.0]        // #414042
+
 static const CGFloat labelPadding = 10;
 
 //TWS Private

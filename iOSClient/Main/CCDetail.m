@@ -22,14 +22,13 @@
 //
 
 #import "CCDetail.h"
-
 #import "AppDelegate.h"
 #import "CCMain.h"
 
 #ifdef CUSTOM_BUILD
-    #import "CustomSwift.h"
+#import "CustomSwift.h"
 #else
-    #import "Nextcloud-Swift.h"
+#import "Nextcloud-Swift.h"
 #endif
 
 #define TOOLBAR_HEIGHT 49.0f
@@ -189,7 +188,7 @@
     [_toolbar setItems:[NSArray arrayWithObjects: flexible, _buttonDelete, fixedSpaceMini, _buttonShare, fixedSpaceMini, _buttonAction,  nil]];
     [_toolbar setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin];
     
-    _toolbar.barTintColor = COLOR_TABBAR;
+    _toolbar.barTintColor = [NCColorBrand sharedInstance].tabBar;
 
     [self.view addSubview:_toolbar];
 }
@@ -722,7 +721,7 @@
     if (progress == 0)
         [self.navigationController cancelCCProgress];
     else
-        [self.navigationController setCCProgressPercentage:progress*100 andTintColor:COLOR_NAVIGATIONBAR_PROGRESS];
+        [self.navigationController setCCProgressPercentage:progress*100 andTintColor:[NCColorBrand sharedInstance].navigationBarProgress];
 }
 
 - (void)downloadPhotoBrowserFailure:(NSInteger)errorCode
