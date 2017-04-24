@@ -3383,12 +3383,12 @@
     
     // ITEM SELECT ----------------------------------------------------------------------------------------------------
     
-    if (app.selezionaItem == nil) app.selezionaItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_select_", nil)subtitle:@"" image:[UIImage imageNamed:image_seleziona] highlightedImage:nil action:^(REMenuItem *item) {
+    if (app.selezionaItem == nil) app.selezionaItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_select_", nil)subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_seleziona] color:self.navigationController.navigationBar.barTintColor] highlightedImage:nil action:^(REMenuItem *item) {
             if ([_sectionDataSource.allRecordsDataSource count] > 0) {
                 [self tableViewSelect:YES];
             }
         }];
-    else app.selezionaItem = [app.selezionaItem initWithTitle:NSLocalizedString(@"_select_", nil) subtitle:@"" image:[UIImage imageNamed:image_seleziona] highlightedImage:nil action:^(REMenuItem *item) {
+    else app.selezionaItem = [app.selezionaItem initWithTitle:NSLocalizedString(@"_select_", nil) subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_seleziona] color:self.navigationController.navigationBar.barTintColor] highlightedImage:nil action:^(REMenuItem *item) {
             if ([_sectionDataSource.allRecordsDataSource count] > 0)
                 [self tableViewSelect:YES];
         }];
@@ -3398,7 +3398,7 @@
     ordinamento = _directoryOrder;
     if ([ordinamento isEqualToString:@"fileName"]) {
         
-        image = [UIImage imageNamed:image_MenuOrdeyByDate];
+        image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:image_MenuOrdeyByDate] color:self.navigationController.navigationBar.barTintColor];
         titoloNuovo = NSLocalizedString(@"_order_by_date_", nil);
         titoloAttuale = NSLocalizedString(@"_current_order_name_", nil);
         nuovoOrdinamento = @"fileDate";
@@ -3406,7 +3406,7 @@
     
     if ([ordinamento isEqualToString:@"fileDate"]) {
         
-        image = [UIImage imageNamed:image_MenuOrderByFileName];
+        image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:image_MenuOrderByFileName] color:self.navigationController.navigationBar.barTintColor];
         titoloNuovo = NSLocalizedString(@"_order_by_name_", nil);
         titoloAttuale = NSLocalizedString(@"_current_order_date_", nil);
         nuovoOrdinamento = @"fileName";
@@ -3425,7 +3425,7 @@
     
     if (ascendente)  {
         
-        image = [UIImage imageNamed:image_MenuOrdinamentoDiscendente];
+        image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:image_MenuOrdinamentoDiscendente] color:self.navigationController.navigationBar.barTintColor];
         titoloNuovo = NSLocalizedString(@"_sort_descending_", nil);
         titoloAttuale = NSLocalizedString(@"_current_sort_ascending_", nil);
         nuovoAscendente = false;
@@ -3433,7 +3433,7 @@
     
     if (!ascendente) {
         
-        image = [UIImage imageNamed:image_MenuOrdinamentoAscendente];
+        image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:image_MenuOrdinamentoAscendente] color:self.navigationController.navigationBar.barTintColor];
         titoloNuovo = NSLocalizedString(@"_sort_ascending_", nil);
         titoloAttuale = NSLocalizedString(@"_current_sort_descending_", nil);
         nuovoAscendente = true;
@@ -3451,11 +3451,11 @@
     if ([groupBy isEqualToString:@"alphabetic"])  { titoloNuovo = NSLocalizedString(@"_group_alphabetic_yes_", nil); }
     else { titoloNuovo = NSLocalizedString(@"_group_alphabetic_no_", nil); }
     
-    if (app.alphabeticItem == nil) app.alphabeticItem = [[REMenuItem alloc] initWithTitle:titoloNuovo subtitle:@"" image:[UIImage imageNamed:image_MenuGroupByAlphabetic] highlightedImage:nil action:^(REMenuItem *item) {
+    if (app.alphabeticItem == nil) app.alphabeticItem = [[REMenuItem alloc] initWithTitle:titoloNuovo subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_MenuGroupByAlphabetic] color:self.navigationController.navigationBar.barTintColor] highlightedImage:nil action:^(REMenuItem *item) {
             if ([groupBy isEqualToString:@"alphabetic"]) [self tableGroupBy:@"none"];
             else [self tableGroupBy:@"alphabetic"];
         }];
-    else app.alphabeticItem = [app.alphabeticItem initWithTitle:titoloNuovo subtitle:@"" image:[UIImage imageNamed:image_MenuGroupByAlphabetic] highlightedImage:nil action:^(REMenuItem *item) {
+    else app.alphabeticItem = [app.alphabeticItem initWithTitle:titoloNuovo subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_MenuGroupByAlphabetic] color:self.navigationController.navigationBar.barTintColor] highlightedImage:nil action:^(REMenuItem *item) {
             if ([groupBy isEqualToString:@"alphabetic"]) [self tableGroupBy:@"none"];
             else [self tableGroupBy:@"alphabetic"];
         }];
@@ -3465,11 +3465,11 @@
     if ([groupBy isEqualToString:@"typefile"])  { titoloNuovo = NSLocalizedString(@"_group_typefile_yes_", nil); }
     else { titoloNuovo = NSLocalizedString(@"_group_typefile_no_", nil); }
     
-    if (app.typefileItem == nil) app.typefileItem = [[REMenuItem alloc] initWithTitle:titoloNuovo subtitle:@"" image:[UIImage imageNamed:image_MenuGroupByTypeFile] highlightedImage:nil action:^(REMenuItem *item) {
+    if (app.typefileItem == nil) app.typefileItem = [[REMenuItem alloc] initWithTitle:titoloNuovo subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_MenuGroupByTypeFile] color:self.navigationController.navigationBar.barTintColor] highlightedImage:nil action:^(REMenuItem *item) {
             if ([groupBy isEqualToString:@"typefile"]) [self tableGroupBy:@"none"];
             else [self tableGroupBy:@"typefile"];
         }];
-    else app.typefileItem = [app.typefileItem initWithTitle:titoloNuovo subtitle:@"" image:[UIImage imageNamed:image_MenuGroupByTypeFile] highlightedImage:nil action:^(REMenuItem *item) {
+    else app.typefileItem = [app.typefileItem initWithTitle:titoloNuovo subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_MenuGroupByTypeFile] color:self.navigationController.navigationBar.barTintColor] highlightedImage:nil action:^(REMenuItem *item) {
             if ([groupBy isEqualToString:@"typefile"]) [self tableGroupBy:@"none"];
             else [self tableGroupBy:@"typefile"];
         }];
@@ -3479,11 +3479,11 @@
     if ([groupBy isEqualToString:@"date"])  { titoloNuovo = NSLocalizedString(@"_group_date_yes_", nil); }
     else { titoloNuovo = NSLocalizedString(@"_group_date_no_", nil); }
     
-    if (app.dateItem == nil) app.dateItem = [[REMenuItem alloc] initWithTitle:titoloNuovo   subtitle:@"" image:[UIImage imageNamed:image_MenuGroupByDate] highlightedImage:nil action:^(REMenuItem *item) {
+    if (app.dateItem == nil) app.dateItem = [[REMenuItem alloc] initWithTitle:titoloNuovo   subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_MenuGroupByDate] color:self.navigationController.navigationBar.barTintColor] highlightedImage:nil action:^(REMenuItem *item) {
             if ([groupBy isEqualToString:@"date"]) [self tableGroupBy:@"none"];
             else [self tableGroupBy:@"date"];
         }];
-    else app.dateItem = [app.dateItem initWithTitle:titoloNuovo subtitle:@"" image:[UIImage imageNamed:image_MenuGroupByDate] highlightedImage:nil action:^(REMenuItem *item) {
+    else app.dateItem = [app.dateItem initWithTitle:titoloNuovo subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_MenuGroupByDate] color:self.navigationController.navigationBar.barTintColor] highlightedImage:nil action:^(REMenuItem *item) {
             if ([groupBy isEqualToString:@"date"]) [self tableGroupBy:@"none"];
             else [self tableGroupBy:@"date"];
         }];
@@ -3493,11 +3493,11 @@
     if ([CCUtility getDirectoryOnTop])  { titoloNuovo = NSLocalizedString(@"_directory_on_top_yes_", nil); }
     else { titoloNuovo = NSLocalizedString(@"_directory_on_top_no_", nil); }
     
-    if (app.directoryOnTopItem == nil) app.directoryOnTopItem = [[REMenuItem alloc] initWithTitle:titoloNuovo subtitle:@"" image:[UIImage imageNamed:image_MenuDirectoryOnTop] highlightedImage:nil action:^(REMenuItem *item) {
+    if (app.directoryOnTopItem == nil) app.directoryOnTopItem = [[REMenuItem alloc] initWithTitle:titoloNuovo subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_MenuDirectoryOnTop] color:self.navigationController.navigationBar.barTintColor] highlightedImage:nil action:^(REMenuItem *item) {
             if ([CCUtility getDirectoryOnTop]) [self directoryOnTop:NO];
             else [self directoryOnTop:YES];
         }];
-    else app.directoryOnTopItem = [app.directoryOnTopItem initWithTitle:titoloNuovo subtitle:@"" image:[UIImage imageNamed:image_MenuDirectoryOnTop] highlightedImage:nil action:^(REMenuItem *item) {
+    else app.directoryOnTopItem = [app.directoryOnTopItem initWithTitle:titoloNuovo subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_MenuDirectoryOnTop] color:self.navigationController.navigationBar.barTintColor] highlightedImage:nil action:^(REMenuItem *item) {
             if ([CCUtility getDirectoryOnTop]) [self directoryOnTop:NO];
             else [self directoryOnTop:YES];
         }];
@@ -3577,20 +3577,20 @@
 {
     // ITEM DELETE ------------------------------------------------------------------------------------------------------
     
-    if (app.deleteItem == nil) app.deleteItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_delete_selected_files_", nil) subtitle:@"" image:[UIImage imageNamed:image_deleteSelectedFiles] highlightedImage:nil action:^(REMenuItem *item) {
+    if (app.deleteItem == nil) app.deleteItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_delete_selected_files_", nil) subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_deleteSelectedFiles] color:self.navigationController.navigationBar.barTintColor] highlightedImage:nil action:^(REMenuItem *item) {
             [self deleteSelectionFile];
         }];
-    else app.deleteItem = [app.deleteItem initWithTitle:NSLocalizedString(@"_delete_selected_files_", nil) subtitle:@"" image:[UIImage imageNamed:image_deleteSelectedFiles] highlightedImage:nil action:^(REMenuItem *item) {
+    else app.deleteItem = [app.deleteItem initWithTitle:NSLocalizedString(@"_delete_selected_files_", nil) subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_deleteSelectedFiles] color:self.navigationController.navigationBar.barTintColor] highlightedImage:nil action:^(REMenuItem *item) {
             [self deleteSelectionFile];
         }];
     
     
     // ITEM MOVE ------------------------------------------------------------------------------------------------------
     
-    if (app.moveItem == nil) app.moveItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_move_selected_files_", nil) subtitle:@"" image:[UIImage imageNamed:image_moveSelectedFiles] highlightedImage:nil action:^(REMenuItem *item) {
+    if (app.moveItem == nil) app.moveItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_move_selected_files_", nil) subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_moveSelectedFiles] color:self.navigationController.navigationBar.barTintColor] highlightedImage:nil action:^(REMenuItem *item) {
             [self moveOpenWindow:[self.tableView indexPathsForSelectedRows]];
         }];
-    else app.moveItem = [app.moveItem initWithTitle:NSLocalizedString(@"_move_selected_files_", nil) subtitle:@"" image:[UIImage imageNamed:image_moveSelectedFiles] highlightedImage:nil action:^(REMenuItem *item) {
+    else app.moveItem = [app.moveItem initWithTitle:NSLocalizedString(@"_move_selected_files_", nil) subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_moveSelectedFiles] color:self.navigationController.navigationBar.barTintColor] highlightedImage:nil action:^(REMenuItem *item) {
             [self moveOpenWindow:[self.tableView indexPathsForSelectedRows]];
         }];
     
@@ -3598,38 +3598,38 @@
     
         // ITEM ENCRYPTED ------------------------------------------------------------------------------------------------------
     
-        if (app.encryptItem == nil) app.encryptItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_encrypted_selected_files_", nil) subtitle:@"" image:[UIImage imageNamed:image_encryptedSelectedFiles] highlightedImage:nil action:^(REMenuItem *item) {
+        if (app.encryptItem == nil) app.encryptItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_encrypted_selected_files_", nil) subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_encryptedSelectedFiles] color:self.navigationController.navigationBar.barTintColor] highlightedImage:nil action:^(REMenuItem *item) {
                 [self performSelector:@selector(encryptedSelectedFiles) withObject:nil];
             }];
-        else app.encryptItem = [app.encryptItem initWithTitle:NSLocalizedString(@"_encrypted_selected_files_", nil) subtitle:@"" image:[UIImage imageNamed:image_encryptedSelectedFiles] highlightedImage:nil action:^(REMenuItem *item) {
+        else app.encryptItem = [app.encryptItem initWithTitle:NSLocalizedString(@"_encrypted_selected_files_", nil) subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_encryptedSelectedFiles] color:self.navigationController.navigationBar.barTintColor] highlightedImage:nil action:^(REMenuItem *item) {
                 [self performSelector:@selector(encryptedSelectedFiles) withObject:nil];
             }];
     
         // ITEM DECRYPTED ----------------------------------------------------------------------------------------------------
     
-        if (app.decryptItem == nil) app.decryptItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_decrypted_selected_files_", nil) subtitle:@"" image:[UIImage imageNamed:image_decryptedSelectedFiles] highlightedImage:nil action:^(REMenuItem *item) {
+        if (app.decryptItem == nil) app.decryptItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_decrypted_selected_files_", nil) subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_decryptedSelectedFiles] color:self.navigationController.navigationBar.barTintColor] highlightedImage:nil action:^(REMenuItem *item) {
                 [self performSelector:@selector(decryptedSelectedFiles) withObject:nil];
             }];
-        else app.decryptItem = [app.decryptItem initWithTitle:NSLocalizedString(@"_decrypted_selected_files_", nil) subtitle:@"" image:[UIImage imageNamed:image_decryptedSelectedFiles] highlightedImage:nil action:^(REMenuItem *item) {
+        else app.decryptItem = [app.decryptItem initWithTitle:NSLocalizedString(@"_decrypted_selected_files_", nil) subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_decryptedSelectedFiles] color:self.navigationController.navigationBar.barTintColor] highlightedImage:nil action:^(REMenuItem *item) {
                 [self performSelector:@selector(decryptedSelectedFiles) withObject:nil];
             }];
     }
     
     // ITEM DOWNLOAD ----------------------------------------------------------------------------------------------------
     
-    if (app.downloadItem == nil) app.downloadItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_download_selected_files_", nil) subtitle:@"" image:[UIImage imageNamed:image_downloadSelectedFiles] highlightedImage:nil action:^(REMenuItem *item) {
+    if (app.downloadItem == nil) app.downloadItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_download_selected_files_", nil) subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_downloadSelectedFiles] color:self.navigationController.navigationBar.barTintColor] highlightedImage:nil action:^(REMenuItem *item) {
             [self downloadSelectedFiles];
         }];
-    else app.downloadItem = [app.downloadItem initWithTitle:NSLocalizedString(@"_download_selected_files_", nil) subtitle:@"" image:[UIImage imageNamed:image_downloadSelectedFiles] highlightedImage:nil action:^(REMenuItem *item) {
+    else app.downloadItem = [app.downloadItem initWithTitle:NSLocalizedString(@"_download_selected_files_", nil) subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_downloadSelectedFiles] color:self.navigationController.navigationBar.barTintColor] highlightedImage:nil action:^(REMenuItem *item) {
             [self downloadSelectedFiles];
         }];
     
     // ITEM SAVE IMAGE & VIDEO -------------------------------------------------------------------------------------------
     
-    if (app.saveItem == nil) app.saveItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_save_selected_files_", nil) subtitle:@"" image:[UIImage imageNamed:image_saveSelectedFiles] highlightedImage:nil action:^(REMenuItem *item) {
+    if (app.saveItem == nil) app.saveItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_save_selected_files_", nil) subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_saveSelectedFiles] color:self.navigationController.navigationBar.barTintColor] highlightedImage:nil action:^(REMenuItem *item) {
             [self saveSelectedFiles];
         }];
-    else app.saveItem = [app.saveItem initWithTitle:NSLocalizedString(@"_save_selected_files_", nil) subtitle:@"" image:[UIImage imageNamed:image_saveSelectedFiles] highlightedImage:nil action:^(REMenuItem *item) {
+    else app.saveItem = [app.saveItem initWithTitle:NSLocalizedString(@"_save_selected_files_", nil) subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_saveSelectedFiles] color:self.navigationController.navigationBar.barTintColor] highlightedImage:nil action:^(REMenuItem *item) {
             [self saveSelectedFiles];
         }];
 
