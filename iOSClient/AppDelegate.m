@@ -876,13 +876,12 @@
         if (capabilities.themingColor.length > 0) {
             
             UIColor *themingColor = [CCGraphics colorFromHexString:capabilities.themingColor];
-            NCBrandColor.sharedInstance.navigationBar = themingColor;
-            NCBrandColor.sharedInstance.navigationBarShare = themingColor;
+            NCBrandColor.sharedInstance.brand = themingColor;
         }
     }
     
     nav.translucent = NO;
-    nav.barTintColor = [NCBrandColor sharedInstance].navigationBar;
+    nav.barTintColor = [NCBrandColor sharedInstance].brand;
     nav.tintColor = [NCBrandColor sharedInstance].navigationBarText;
     [nav setTitleTextAttributes:@{NSForegroundColorAttributeName : [NCBrandColor sharedInstance].navigationBarText}];
     
@@ -929,13 +928,7 @@
 
 - (void)handleTouchTabbarCenter:(id)sender
 {
-    UIColor *ThemingColor = [NCBrandColor sharedInstance].navigationBar;
-    
-    TableCapabilities *capabilities = [CCCoreData getCapabilitesForAccount:self.activeAccount];
-    if (k_option_use_themingColor == YES && capabilities.themingColor.length > 0)
-        ThemingColor = [CCGraphics colorFromHexString:capabilities.themingColor];
-    
-    CreateMenuAdd *menuAdd = [[CreateMenuAdd alloc] initWithThemingColor:ThemingColor];
+    CreateMenuAdd *menuAdd = [[CreateMenuAdd alloc] initWithThemingColor:[NCBrandColor sharedInstance].brand];
     
     if ([CCUtility getCreateMenuEncrypted])
         [menuAdd createMenuEncryptedWithView:self.window.rootViewController.view];

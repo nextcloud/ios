@@ -33,7 +33,7 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
         super.viewDidLoad()
         
         self.navigationController?.navigationBar.topItem?.title = NSLocalizedString("_notification_", comment: "")
-        self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.navigationBar
+        self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand
         self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.navigationBarText
         self.navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: NCBrandColor.sharedInstance.navigationBarText]
 

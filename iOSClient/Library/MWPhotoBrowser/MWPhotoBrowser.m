@@ -237,7 +237,7 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
     }
     
     // color
-    self.navigationController.navigationBar.barTintColor = [NCBrandColor sharedInstance].navigationBar;
+    self.navigationController.navigationBar.barTintColor = [NCBrandColor sharedInstance].brand;
     self.navigationController.navigationBar.tintColor = [NCBrandColor sharedInstance].navigationBarText;
     [self.navigationController.navigationBar setTitleTextAttributes:@{NSForegroundColorAttributeName : [NCBrandColor sharedInstance].navigationBarText}];
     

@@ -31,7 +31,7 @@ class CreateMenuAdd: NSObject {
 
     let fontButton = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 16)!, NSForegroundColorAttributeName: UIColor(colorLiteralRed: 65.0/255.0, green: 64.0/255.0, blue: 66.0/255.0, alpha: 1.0)]
     let fontEncrypted = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 16)!, NSForegroundColorAttributeName: NCBrandColor.sharedInstance.cryptocloud] as [String : Any]
-    let fontCancel = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 16)!, NSForegroundColorAttributeName: NCBrandColor.sharedInstance.navigationBar] as [String : Any]
+    let fontCancel = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 16)!, NSForegroundColorAttributeName: NCBrandColor.sharedInstance.brand] as [String : Any]
     let fontDisable = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 16)!, NSForegroundColorAttributeName: UIColor(colorLiteralRed: 65.0/255.0, green: 64.0/255.0, blue: 66.0/255.0, alpha: 1.0)]
 
     let colorLightGray = UIColor(colorLiteralRed: 250.0/255.0, green: 250.0/255.0, blue: 250.0/255.0, alpha: 1)
@@ -374,7 +374,7 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         self.navigationItem.leftBarButtonItem = cancelButton
         self.navigationItem.rightBarButtonItem = saveButton
         
-        self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.navigationBar
+        self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand
         self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.navigationBarText
         self.navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: NCBrandColor.sharedInstance.navigationBarText]
         
@@ -522,7 +522,7 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         
         viewController.delegate = self;
         viewController.tintColor = NCBrandColor.sharedInstance.navigationBarText
-        viewController.barTintColor = NCBrandColor.sharedInstance.navigationBar
+        viewController.barTintColor = NCBrandColor.sharedInstance.brand
         viewController.tintColorTitle = NCBrandColor.sharedInstance.navigationBarText
         viewController.move.title = NSLocalizedString("_select_", comment: "");
         viewController.networkingOperationQueue =  appDelegate.netQueue

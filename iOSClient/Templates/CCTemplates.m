@@ -41,7 +41,7 @@
     label.text=titolo;
     if (!reachability) label.textColor = [NCBrandColor sharedInstance].connectionNo;
     else label.textColor = [NCBrandColor sharedInstance].navigationBarText;
-    label.backgroundColor = [NCBrandColor sharedInstance].navigationBar;
+    label.backgroundColor = [NCBrandColor sharedInstance].brand;
     label.textAlignment = NSTextAlignmentCenter;
     navItem.titleView=label;
 }

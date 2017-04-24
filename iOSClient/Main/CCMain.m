@@ -2343,7 +2343,7 @@
     viewController.move.title = NSLocalizedString(@"_move_", nil);
     viewController.selectedMetadatas = [self getMetadatasFromSelectedRows:indexPaths];
     viewController.tintColor = [NCBrandColor sharedInstance].navigationBarText;
-    viewController.barTintColor = [NCBrandColor sharedInstance].navigationBar;
+    viewController.barTintColor = [NCBrandColor sharedInstance].brand;
     viewController.tintColorTitle = [NCBrandColor sharedInstance].navigationBarText;
     viewController.networkingOperationQueue = app.netQueue;
     

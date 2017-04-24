@@ -125,7 +125,7 @@
     }
     
     // Toolbar Color
-    self.navigationController.navigationBar.barTintColor = NCBrandColor.sharedInstance.navigationBar;
+    self.navigationController.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand;
     self.navigationController.navigationBar.tintColor = NCBrandColor.sharedInstance.navigationBarText;
     
     self.navigationController.toolbar.barTintColor = NCBrandColor.sharedInstance.tabBar;

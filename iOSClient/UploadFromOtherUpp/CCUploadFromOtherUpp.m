@@ -173,7 +173,7 @@
     viewController.delegate = self;
     viewController.move.title = NSLocalizedString(@"_select_", nil);
     viewController.tintColor = [NCBrandColor sharedInstance].navigationBarText;
-    viewController.barTintColor = [NCBrandColor sharedInstance].navigationBar;
+    viewController.barTintColor = [NCBrandColor sharedInstance].brand;
     viewController.tintColorTitle = [NCBrandColor sharedInstance].navigationBarText;
     viewController.networkingOperationQueue = app.netQueue;
 

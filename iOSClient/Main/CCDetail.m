@@ -195,18 +195,7 @@
 
 - (void)changeTheming
 {
-    if (app.activeAccount.length > 0 && k_option_use_themingColor == YES) {
-        
-        TableCapabilities *capabilities = [CCCoreData getCapabilitesForAccount:app.activeAccount];
-        if (capabilities.themingColor.length > 0) {
-            
-            UIColor *themingColor = [CCGraphics colorFromHexString:capabilities.themingColor];
-            NCBrandColor.sharedInstance.navigationBar = themingColor;
-            NCBrandColor.sharedInstance.navigationBarShare = themingColor;
-        }
-    }
-    
-    self.navigationController.navigationBar.barTintColor = [NCBrandColor sharedInstance].navigationBar;
+    self.navigationController.navigationBar.barTintColor = [NCBrandColor sharedInstance].brand;
 }
 
 #pragma --------------------------------------------------------------------------------------------

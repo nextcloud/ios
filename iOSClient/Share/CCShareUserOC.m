@@ -102,7 +102,7 @@
     self.selectedItems = [[NSMutableArray alloc] init];
     
     [self.view setTintColor:[NCBrandColor sharedInstance].brand];
-    self.view.backgroundColor = [NCBrandColor sharedInstance].navigationBarShare;
+    self.view.backgroundColor = [NCBrandColor sharedInstance].brand;
     
     [self.endButton setTitle:NSLocalizedString(@"_done_", nil) forState:UIControlStateNormal];
     self.endButton.tintColor = [NCBrandColor sharedInstance].navigationBarText;

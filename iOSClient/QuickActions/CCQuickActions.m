@@ -195,7 +195,7 @@
     _move.delegate = self;
     _move.selectedMetadatas = nil;
     _move.tintColor = [NCBrandColor sharedInstance].navigationBarText;
-    _move.barTintColor = [NCBrandColor sharedInstance].navigationBar;
+    _move.barTintColor = [NCBrandColor sharedInstance].brand;
     _move.tintColorTitle = [NCBrandColor sharedInstance].navigationBarText;
     _move.networkingOperationQueue = app.netQueue;
     
