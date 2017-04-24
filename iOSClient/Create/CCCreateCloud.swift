@@ -28,8 +28,8 @@ import Foundation
 class CreateMenuAdd: NSObject {
     
     let fontButton = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 16)!, NSForegroundColorAttributeName: UIColor(colorLiteralRed: 65.0/255.0, green: 64.0/255.0, blue: 66.0/255.0, alpha: 1.0)]
-    let fontEncrypted = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 16)!, NSForegroundColorAttributeName: Constant.GlobalConstants.k_Color_Cryptocloud]
-    let fontCancel = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 16)!, NSForegroundColorAttributeName: Constant.GlobalConstants.k_Color_NavigationBar]
+    let fontEncrypted = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 16)!, NSForegroundColorAttributeName: NCColor.sharedInstance.colorCryptocloud] as [String : Any]
+    let fontCancel = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 16)!, NSForegroundColorAttributeName: NCColor.sharedInstance.colorNavigationBar] as [String : Any]
     let fontDisable = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 16)!, NSForegroundColorAttributeName: UIColor(colorLiteralRed: 65.0/255.0, green: 64.0/255.0, blue: 66.0/255.0, alpha: 1.0)]
 
     let colorLightGray = UIColor(colorLiteralRed: 250.0/255.0, green: 250.0/255.0, blue: 250.0/255.0, alpha: 1)
@@ -49,7 +49,7 @@ class CreateMenuAdd: NSObject {
         actionSheet.cancelButtonHeight = 50.0
         actionSheet.separatorHeight = 5.0
         
-        actionSheet.separatorColor = Constant.GlobalConstants.k_Color_Seperator
+        actionSheet.separatorColor = NCColor.sharedInstance.colorSeperator
         
         actionSheet.buttonTextAttributes = fontButton
         actionSheet.encryptedButtonTextAttributes = fontEncrypted
@@ -95,7 +95,7 @@ class CreateMenuAdd: NSObject {
         actionSheet.cancelButtonHeight = 50.0
         actionSheet.separatorHeight = 5.0
         
-        actionSheet.separatorColor = Constant.GlobalConstants.k_Color_Seperator
+        actionSheet.separatorColor = NCColor.sharedInstance.colorSeperator
 
         actionSheet.buttonTextAttributes = fontButton
         actionSheet.encryptedButtonTextAttributes = fontEncrypted
@@ -143,7 +143,7 @@ class CreateMenuAdd: NSObject {
         actionSheet.cancelButtonHeight = 50.0
         actionSheet.separatorHeight = 5.0
         
-        actionSheet.separatorColor = Constant.GlobalConstants.k_Color_Seperator
+        actionSheet.separatorColor = NCColor.sharedInstance.colorSeperator
 
         actionSheet.buttonTextAttributes = fontButton
         actionSheet.encryptedButtonTextAttributes = fontEncrypted
@@ -365,9 +365,9 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         self.navigationItem.leftBarButtonItem = cancelButton
         self.navigationItem.rightBarButtonItem = saveButton
         
-        self.navigationController?.navigationBar.barTintColor = Constant.GlobalConstants.k_Color_NavigationBar
-        self.navigationController?.navigationBar.tintColor = Constant.GlobalConstants.k_Color_NavigationBar_Text
-        self.navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: Constant.GlobalConstants.k_Color_NavigationBar_Text]
+        self.navigationController?.navigationBar.barTintColor = NCColor.sharedInstance.colorNavigationBar
+        self.navigationController?.navigationBar.tintColor = NCColor.sharedInstance.colorNavigationBarText
+        self.navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: NCColor.sharedInstance.colorNavigationBarText]
         
         self.tableView.separatorStyle = UITableViewCellSeparatorStyle.none
         
@@ -512,9 +512,9 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         let viewController : CCMove = navigationController.topViewController as! CCMove
         
         viewController.delegate = self;
-        viewController.tintColor = Constant.GlobalConstants.k_Color_NavigationBar_Text
-        viewController.barTintColor = Constant.GlobalConstants.k_Color_NavigationBar
-        viewController.tintColorTitle = Constant.GlobalConstants.k_Color_NavigationBar_Text
+        viewController.tintColor = NCColor.sharedInstance.colorNavigationBarText
+        viewController.barTintColor = NCColor.sharedInstance.colorNavigationBar
+        viewController.tintColorTitle = NCColor.sharedInstance.colorNavigationBarText
         viewController.move.title = NSLocalizedString("_select_", comment: "");
         viewController.networkingOperationQueue =  appDelegate.netQueue
         

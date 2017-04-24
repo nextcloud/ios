@@ -109,10 +109,6 @@
 		F71E68021DC1F79D003BA52B /* libownCloudiOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F71E67FC1DC1F76F003BA52B /* libownCloudiOS.a */; };
 		F720E01F1E48C73E001A4B9E /* CCActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F720E01E1E48C73E001A4B9E /* CCActions.swift */; };
 		F725437C1E12A44A009BF4C2 /* CCSection.m in Sources */ = {isa = PBXBuildFile; fileRef = F78F6FAF1CC8CCB700F4EA25 /* CCSection.m */; };
-		F7274FED1E6EB6F400C241B6 /* Constant.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7274FEC1E6EB6F400C241B6 /* Constant.swift */; };
-		F7274FEE1E6EB6F400C241B6 /* Constant.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7274FEC1E6EB6F400C241B6 /* Constant.swift */; };
-		F7274FEF1E6EB6F400C241B6 /* Constant.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7274FEC1E6EB6F400C241B6 /* Constant.swift */; };
-		F7274FF01E6EB6F400C241B6 /* Constant.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7274FEC1E6EB6F400C241B6 /* Constant.swift */; };
 		F72AAECA1E5C60C700BB17E1 /* AHKActionSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = F72AAEC31E5C60C700BB17E1 /* AHKActionSheet.m */; };
 		F72AAECB1E5C60C700BB17E1 /* AHKActionSheetViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F72AAEC51E5C60C700BB17E1 /* AHKActionSheetViewController.m */; };
 		F72AAECC1E5C60C700BB17E1 /* UIImage+AHKAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = F72AAEC71E5C60C700BB17E1 /* UIImage+AHKAdditions.m */; };
@@ -1014,7 +1010,6 @@
 		F721372F1BAFF0920012B613 /* CCTemplates.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCTemplates.h; sourceTree = "<group>"; };
 		F72137301BAFF0920012B613 /* CCTemplates.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCTemplates.m; sourceTree = "<group>"; };
 		F7229B491DF71BB300E8C4E7 /* AUTHORS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AUTHORS; sourceTree = SOURCE_ROOT; };
-		F7274FEC1E6EB6F400C241B6 /* Constant.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constant.swift; sourceTree = "<group>"; };
 		F7296A601C8880C9001A7809 /* CCCellShareExt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCCellShareExt.h; sourceTree = "<group>"; };
 		F7296A611C8880C9001A7809 /* CCCellShareExt.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCCellShareExt.m; sourceTree = "<group>"; };
 		F7296A621C8880C9001A7809 /* CCCellShareExt.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CCCellShareExt.xib; sourceTree = "<group>"; };
@@ -3098,7 +3093,6 @@
 			isa = PBXGroup;
 			children = (
 				F7C742D31E7BD36600D9C973 /* Supporting Files */,
-				F7274FEC1E6EB6F400C241B6 /* Constant.swift */,
 				F7C1CDDA1E6DFC6F005D92BE /* CCNextcloudConstant.h */,
 				F7C1CDDB1E6DFC6F005D92BE /* CCNextcloudImages.h */,
 				F76B3CCD1EAE01BD00921AC9 /* NCColor.swift */,
@@ -3937,7 +3931,6 @@
 				F71459BA1D12E3B700CAFEEC /* NSString+TruncateToWidth.m in Sources */,
 				F708CF9B1E56E8CC00271D8B /* TableAccount+CoreDataProperties.m in Sources */,
 				F71459BB1D12E3B700CAFEEC /* NYXProgressiveImageView.m in Sources */,
-				F7274FEE1E6EB6F400C241B6 /* Constant.swift in Sources */,
 				F708CF981E56E8CC00271D8B /* TableAccount+CoreDataClass.m in Sources */,
 				F71459BC1D12E3B700CAFEEC /* Reachability.m in Sources */,
 				F73C41511E82E51F000137C0 /* TableExternalSites+CoreDataClass.m in Sources */,
@@ -4053,7 +4046,6 @@
 				F74344881E127F9C001CC831 /* UIImage+animatedGIF.m in Sources */,
 				F708CF7E1E56E8CC00271D8B /* TableGPS+CoreDataProperties.m in Sources */,
 				F73CC0771E813DFF006E3047 /* BKPasscodeViewController.m in Sources */,
-				F7274FEF1E6EB6F400C241B6 /* Constant.swift in Sources */,
 				F743448A1E127FF2001CC831 /* CCHud.m in Sources */,
 				F74344861E127F89001CC831 /* RNEncryptor.m in Sources */,
 				F73C41521E82E51F000137C0 /* TableExternalSites+CoreDataClass.m in Sources */,
@@ -4082,7 +4074,6 @@
 			files = (
 				F74344251E1264EE001CC831 /* FileProvider.swift in Sources */,
 				F76B3CD11EAE01BD00921AC9 /* NCColor.swift in Sources */,
-				F7274FF01E6EB6F400C241B6 /* Constant.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4152,7 +4143,6 @@
 				F77B0E161D118A16002130FE /* AFViewShaker.m in Sources */,
 				F762CB021EACB66200B38484 /* XLFormSliderCell.m in Sources */,
 				F77B0E1B1D118A16002130FE /* CCGraphics.m in Sources */,
-				F7274FED1E6EB6F400C241B6 /* Constant.swift in Sources */,
 				F7659A6E1DC0B760004860C4 /* PSTGridLayoutRow.m in Sources */,
 				F769D39B1E9E1506006DBBB4 /* CCLocalStorageCell.m in Sources */,
 				F762CB701EACB7D400B38484 /* ReaderThumbCache.m in Sources */,
