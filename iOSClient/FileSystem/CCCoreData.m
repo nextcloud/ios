@@ -2034,6 +2034,13 @@
     }];
 }
 
++ (TableCapabilities *)getCapabilitesForAccount:(NSString *)account
+{
+    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
+    
+    return [TableCapabilities MR_findFirstWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@)", account] inContext:context];
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== File System =====
 #pragma --------------------------------------------------------------------------------------------

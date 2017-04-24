@@ -1189,15 +1189,13 @@
 }
 
 - (void)getCapabilitiesOfServerSuccess:(OCCapabilities *)capabilities
-{
-    app.capabilities = capabilities;
+{    
+    [CCCoreData addCapabilities:capabilities account:app.activeAccount];
     
+    // Change Theming
     if (k_option_use_themingColor == YES) {
         
-        UIColor *themingColor = [CCGraphics colorFromHexString:capabilities.themingColor];
-        NCBrandColor.sharedInstance.navigationBar = themingColor;
-        NCBrandColor.sharedInstance.navigationBarShare = themingColor;
-        self.navigationController.navigationBar.barTintColor = [NCBrandColor sharedInstance].navigationBar;
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"changeTheming" object:nil];
     }
     
     // Search bar if change version
@@ -1223,7 +1221,7 @@
         });
     }
     
-    if (app.capabilities.isExternalSitesServerEnabled) {
+    if (capabilities.isExternalSitesServerEnabled) {
         
         CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
 

@@ -227,7 +227,9 @@
 + (NSArray *)getAllTableExternalSitesWithPredicate:(NSPredicate *)predicate;
 
 // ===== Capabilities =====
+
 + (void)addCapabilities:(OCCapabilities *)capabilities account:(NSString *)account;
++ (TableCapabilities *)getCapabilitesForAccount:(NSString *)account;
 
 // ===== File System =====
 

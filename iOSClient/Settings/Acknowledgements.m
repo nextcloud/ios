@@ -26,6 +26,16 @@
 
 @implementation Acknowledgements
 
+-  (id)initWithCoder:(NSCoder *)aDecoder
+{
+    if (self = [super initWithCoder:aDecoder])  {
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
+    }
+    
+    return self;
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -59,6 +69,11 @@
     
     [self.txtTermini setContentOffset:CGPointZero animated:NO];
     self.txtTermini.hidden = false;
+}
+
+- (void)changeTheming
+{
+    [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
 }
 
 - (void)cancelPressed

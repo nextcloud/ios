@@ -67,7 +67,6 @@
 @property BOOL hasServerShareSupport;
 @property BOOL hasServerShareeSupport;
 @property BOOL hasServerCapabilitiesSupport;
-@property OCCapabilities *capabilities;
 @property (nonatomic, strong) NSMutableArray<OCCommunication *> *listOfNotifications;
 @property NSInteger serverVersion;
 

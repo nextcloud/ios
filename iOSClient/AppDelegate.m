@@ -867,6 +867,17 @@
 
 - (void)aspectNavigationControllerBar:(UINavigationBar *)nav encrypted:(BOOL)encrypted online:(BOOL)online hidden:(BOOL)hidden
 {
+    if (app.activeAccount.length > 0 && k_option_use_themingColor == YES) {
+        
+        TableCapabilities *capabilities = [CCCoreData getCapabilitesForAccount:app.activeAccount];
+        if (capabilities.themingColor.length > 0) {
+            
+            UIColor *themingColor = [CCGraphics colorFromHexString:capabilities.themingColor];
+            NCBrandColor.sharedInstance.navigationBar = themingColor;
+            NCBrandColor.sharedInstance.navigationBarShare = themingColor;
+        }
+    }
+    
     nav.translucent = NO;
     nav.barTintColor = [NCBrandColor sharedInstance].navigationBar;
     nav.tintColor = [NCBrandColor sharedInstance].navigationBarText;
