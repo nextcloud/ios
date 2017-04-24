@@ -322,6 +322,14 @@
 		F76B3CCF1EAE01BD00921AC9 /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
 		F76B3CD01EAE01BD00921AC9 /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
 		F76B3CD11EAE01BD00921AC9 /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
+		F76B3CE11EAE4E5100921AC9 /* TableCapabilities+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CDE1EAE4E5100921AC9 /* TableCapabilities+CoreDataClass.m */; };
+		F76B3CE21EAE4E5100921AC9 /* TableCapabilities+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CDE1EAE4E5100921AC9 /* TableCapabilities+CoreDataClass.m */; };
+		F76B3CE31EAE4E5100921AC9 /* TableCapabilities+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CDE1EAE4E5100921AC9 /* TableCapabilities+CoreDataClass.m */; };
+		F76B3CE41EAE4E5100921AC9 /* TableCapabilities+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CDE1EAE4E5100921AC9 /* TableCapabilities+CoreDataClass.m */; };
+		F76B3CE51EAE4E5100921AC9 /* TableCapabilities+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CE01EAE4E5100921AC9 /* TableCapabilities+CoreDataProperties.m */; };
+		F76B3CE61EAE4E5100921AC9 /* TableCapabilities+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CE01EAE4E5100921AC9 /* TableCapabilities+CoreDataProperties.m */; };
+		F76B3CE71EAE4E5100921AC9 /* TableCapabilities+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CE01EAE4E5100921AC9 /* TableCapabilities+CoreDataProperties.m */; };
+		F76B3CE81EAE4E5100921AC9 /* TableCapabilities+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CE01EAE4E5100921AC9 /* TableCapabilities+CoreDataProperties.m */; };
 		F77B0DF01D118A16002130FE /* UIImage+Resizing.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04CA1C889184008DAB36 /* UIImage+Resizing.m */; };
 		F77B0DF21D118A16002130FE /* CCUploadFromOtherUpp.m in Sources */ = {isa = PBXBuildFile; fileRef = F7956FCA1B4886E60085DEA3 /* CCUploadFromOtherUpp.m */; };
 		F77B0DF41D118A16002130FE /* CCMain.m in Sources */ = {isa = PBXBuildFile; fileRef = F70211FB1BAC56E9003FC03E /* CCMain.m */; };
@@ -1429,6 +1437,11 @@
 		F769D3981E9E1506006DBBB4 /* CCLocalStorageCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCLocalStorageCell.m; sourceTree = "<group>"; };
 		F769D3991E9E1506006DBBB4 /* CCLocalStorageCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CCLocalStorageCell.xib; sourceTree = "<group>"; };
 		F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCBrand.swift; sourceTree = "<group>"; };
+		F76B3CDC1EAE4D9100921AC9 /* cryptocloud 8.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "cryptocloud 8.xcdatamodel"; sourceTree = "<group>"; };
+		F76B3CDD1EAE4E5100921AC9 /* TableCapabilities+CoreDataClass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableCapabilities+CoreDataClass.h"; sourceTree = "<group>"; };
+		F76B3CDE1EAE4E5100921AC9 /* TableCapabilities+CoreDataClass.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableCapabilities+CoreDataClass.m"; sourceTree = "<group>"; };
+		F76B3CDF1EAE4E5100921AC9 /* TableCapabilities+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableCapabilities+CoreDataProperties.h"; sourceTree = "<group>"; };
+		F76B3CE01EAE4E5100921AC9 /* TableCapabilities+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableCapabilities+CoreDataProperties.m"; sourceTree = "<group>"; };
 		F76C3B831C6388BC00DC4301 /* CCGraphics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCGraphics.h; sourceTree = "<group>"; };
 		F76C3B841C6388BC00DC4301 /* CCGraphics.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCGraphics.m; sourceTree = "<group>"; };
 		F76C3B871C638A4C00DC4301 /* CCError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCError.h; sourceTree = "<group>"; };
@@ -2861,6 +2874,10 @@
 		F77F86401B4ABF6D009F0A10 /* Table */ = {
 			isa = PBXGroup;
 			children = (
+				F76B3CDD1EAE4E5100921AC9 /* TableCapabilities+CoreDataClass.h */,
+				F76B3CDE1EAE4E5100921AC9 /* TableCapabilities+CoreDataClass.m */,
+				F76B3CDF1EAE4E5100921AC9 /* TableCapabilities+CoreDataProperties.h */,
+				F76B3CE01EAE4E5100921AC9 /* TableCapabilities+CoreDataProperties.m */,
 				F73C414C1E82E51F000137C0 /* TableExternalSites+CoreDataClass.h */,
 				F73C414D1E82E51F000137C0 /* TableExternalSites+CoreDataClass.m */,
 				F73C414E1E82E51F000137C0 /* TableExternalSites+CoreDataProperties.h */,
@@ -3932,6 +3949,7 @@
 				F71459BD1D12E3B700CAFEEC /* UIImage+animatedGIF.m in Sources */,
 				F708CF6E1E56E8CC00271D8B /* TableMetadata+CoreDataClass.m in Sources */,
 				F71459BE1D12E3B700CAFEEC /* UIImage+Reflection.m in Sources */,
+				F76B3CE61EAE4E5100921AC9 /* TableCapabilities+CoreDataProperties.m in Sources */,
 				F73CC06D1E813DFF006E3047 /* BKPasscodeField.m in Sources */,
 				F71459BF1D12E3B700CAFEEC /* RNEncryptor.m in Sources */,
 				F708CF891E56E8CC00271D8B /* TableShare+CoreDataProperties.m in Sources */,
@@ -3945,6 +3963,7 @@
 				F7FB5F201E66F0A400389481 /* TableActivity+CoreDataClass.m in Sources */,
 				F71459C61D12E3B700CAFEEC /* CCMetadata.m in Sources */,
 				F708CF771E56E8CC00271D8B /* TableLocalFile+CoreDataProperties.m in Sources */,
+				F76B3CE21EAE4E5100921AC9 /* TableCapabilities+CoreDataClass.m in Sources */,
 				F71459C91D12E3B700CAFEEC /* OCNetworking.m in Sources */,
 				F71459CC1D12E3B700CAFEEC /* RNCryptorEngine.m in Sources */,
 				F71459CD1D12E3B700CAFEEC /* AFViewShaker.m in Sources */,
@@ -4007,6 +4026,7 @@
 				F708CF871E56E8CC00271D8B /* TableShare+CoreDataClass.m in Sources */,
 				F743447A1E127EA6001CC831 /* CCGraphics.m in Sources */,
 				F708CF9C1E56E8CC00271D8B /* TableAccount+CoreDataProperties.m in Sources */,
+				F76B3CE71EAE4E5100921AC9 /* TableCapabilities+CoreDataProperties.m in Sources */,
 				F708CF811E56E8CC00271D8B /* TableDirectory+CoreDataClass.m in Sources */,
 				F708CF901E56E8CC00271D8B /* TableCertificates+CoreDataProperties.m in Sources */,
 				F743448C1E128010001CC831 /* CCCrypto.m in Sources */,
@@ -4052,6 +4072,7 @@
 				F708CF8A1E56E8CC00271D8B /* TableShare+CoreDataProperties.m in Sources */,
 				F74344661E127E35001CC831 /* CCCoreData.m in Sources */,
 				F76B3CD01EAE01BD00921AC9 /* NCBrand.swift in Sources */,
+				F76B3CE31EAE4E5100921AC9 /* TableCapabilities+CoreDataClass.m in Sources */,
 				F73CC0801E813DFF006E3047 /* BKTouchIDSwitchView.m in Sources */,
 				F743447C1E127EB2001CC831 /* NSString+TruncateToWidth.m in Sources */,
 				F708CF751E56E8CC00271D8B /* TableLocalFile+CoreDataClass.m in Sources */,
@@ -4067,6 +4088,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				F74344251E1264EE001CC831 /* FileProvider.swift in Sources */,
+				F76B3CE41EAE4E5100921AC9 /* TableCapabilities+CoreDataClass.m in Sources */,
+				F76B3CE81EAE4E5100921AC9 /* TableCapabilities+CoreDataProperties.m in Sources */,
 				F76B3CD11EAE01BD00921AC9 /* NCBrand.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4179,6 +4202,7 @@
 				F77B0E391D118A16002130FE /* CCContoCorrente.m in Sources */,
 				F77B0E3A1D118A16002130FE /* RNCryptorEngine.m in Sources */,
 				F77B0E3C1D118A16002130FE /* CCCartaIdentita.m in Sources */,
+				F76B3CE51EAE4E5100921AC9 /* TableCapabilities+CoreDataProperties.m in Sources */,
 				F762CB761EACB7D400B38484 /* ReaderThumbView.m in Sources */,
 				F7659A6C1DC0B760004860C4 /* PSTGridLayoutItem.m in Sources */,
 				F762CAFF1EACB66200B38484 /* XLFormPickerCell.m in Sources */,
@@ -4247,6 +4271,7 @@
 				F76B3CCE1EAE01BD00921AC9 /* NCBrand.swift in Sources */,
 				F7B1FBC91E72E3D1001781FE /* SwiftWebVCActivityChrome.swift in Sources */,
 				F7F06EA51DBFACC600099AE9 /* CTAssetItemViewController.m in Sources */,
+				F76B3CE11EAE4E5100921AC9 /* TableCapabilities+CoreDataClass.m in Sources */,
 				F762CB8A1EACB81000B38484 /* REMenuItemView.m in Sources */,
 				F7659A5A1DC0B760004860C4 /* PSTCollectionView.m in Sources */,
 				F7BF1B431D51E893000854F6 /* CCLogin.m in Sources */,
@@ -4981,6 +5006,7 @@
 		F78088E51DD3A1DB005C5A7C /* cryptocloud.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				F76B3CDC1EAE4D9100921AC9 /* cryptocloud 8.xcdatamodel */,
 				F7C00D4A1E2D10BB0032160B /* cryptocloud 7.xcdatamodel */,
 				F7BFA4541E0693EE0010E44C /* cryptocloud 5.xcdatamodel */,
 				F78088E61DD3A1DB005C5A7C /* cryptocloud 2.xcdatamodel */,
@@ -4988,7 +5014,7 @@
 				F78088E81DD3A1DB005C5A7C /* cryptocloud 4.xcdatamodel */,
 				F78088E91DD3A1DB005C5A7C /* cryptocloud.xcdatamodel */,
 			);
-			currentVersion = F7C00D4A1E2D10BB0032160B /* cryptocloud 7.xcdatamodel */;
+			currentVersion = F76B3CDC1EAE4D9100921AC9 /* cryptocloud 8.xcdatamodel */;
 			path = cryptocloud.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

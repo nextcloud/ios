@@ -1194,7 +1194,7 @@
     
     if (k_option_use_themingColor == YES) {
         
-        UIColor *themingColor =  [CCGraphics colorFromHexString:capabilities.themingColor];
+        UIColor *themingColor = [CCGraphics colorFromHexString:capabilities.themingColor];
         NCBrandColor.sharedInstance.navigationBar = themingColor;
         NCBrandColor.sharedInstance.navigationBarShare = themingColor;
         self.navigationController.navigationBar.barTintColor = [NCBrandColor sharedInstance].navigationBar;

@@ -41,6 +41,7 @@
 + (UIImage *)scaleImage:(UIImage *)image toSize:(CGSize)targetSize isAspectRation:(BOOL)aspect;
 
 + (UIColor *)colorFromHexString:(NSString *)hexString;
++ (UIImage *)changeColorImage:(UIImage *)image color:(UIColor *)color;
 
 @end
 
