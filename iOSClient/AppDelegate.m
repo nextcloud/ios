@@ -926,7 +926,13 @@
 
 - (void)handleTouchTabbarCenter:(id)sender
 {
-    CreateMenuAdd *menuAdd = [[CreateMenuAdd alloc] init];
+    UIColor *ThemingColor = [NCBrandColor sharedInstance].navigationBar;
+    
+    TableCapabilities *capabilities = [CCCoreData getCapabilitesForAccount:self.activeAccount];
+    if (k_option_use_themingColor == YES && capabilities.themingColor.length > 0)
+        ThemingColor = [CCGraphics colorFromHexString:capabilities.themingColor];
+    
+    CreateMenuAdd *menuAdd = [[CreateMenuAdd alloc] initWithThemingColor:ThemingColor];
     
     if ([CCUtility getCreateMenuEncrypted])
         [menuAdd createMenuEncryptedWithView:self.window.rootViewController.view];
