@@ -275,7 +275,7 @@
 
 + (UIImage *)changeThemingColorImage:(UIImage *)image color:(UIColor *)color
 {
-    if (k_option_use_themingColor == NO)
+    if (k_option_use_themingColor == NO || [color isEqual:k_color_brand_standard])
         return image;
     
     CGRect rect = CGRectMake(0, 0, image.size.width, image.size.height);
