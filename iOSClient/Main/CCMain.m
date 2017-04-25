@@ -1188,7 +1188,7 @@
 - (void)getCapabilitiesOfServerSuccess:(OCCapabilities *)capabilities
 {
     // Change Theming color
-    [app settingThemingColor:capabilities.themingColor];
+    [app settingThemingColor];
     [CCCoreData addCapabilities:capabilities account:app.activeAccount];
     
     // Download Theming Background

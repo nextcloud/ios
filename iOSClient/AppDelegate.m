@@ -204,7 +204,7 @@
     self.player.delegate = self;
     
     // Theming Color
-    [self settingThemingColor:nil];
+    [self settingThemingColor];
     
     // ico Image Cache
     self.icoImagesCache = [[NSMutableDictionary alloc] init];
@@ -982,7 +982,7 @@
 #pragma mark ===== Theming Color =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)settingThemingColor:(NSString *)capabilitiesColor
+- (void)settingThemingColor
 {
     if (self.activeAccount.length > 0) {
     
@@ -991,9 +991,7 @@
         if (k_option_use_themingColor && tableCapabilities.themingColor.length > 0) {
         
             [NCBrandColor sharedInstance].brand = [CCGraphics colorFromHexString:tableCapabilities.themingColor];
-            
-            if (![capabilitiesColor isEqualToString:tableCapabilities.themingColor])
-                [[NSNotificationCenter defaultCenter] postNotificationName:@"changeTheming" object:nil];
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"changeTheming" object:nil];
         }
     }
     
