@@ -162,7 +162,6 @@
 #define image_stoptask                          @"stoptask"
 #define image_stoptaskcrypto                    @"stoptaskcrypto"
 
-#define image_tabBarPlus                        @"PlusClear" //"tabBarPlusNextcloud"
 #define image_tabBarFiles                       @"tabBarFiles"
 #define image_tabBarActivity                    @"activity"
 #define image_tabBarTransfer                    @"transfer"
