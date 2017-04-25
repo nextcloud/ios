@@ -323,6 +323,7 @@
             [CCCoreData flushTableLocalFileAccount:app.activeAccount];
             [CCCoreData flushTableMetadataAccount:app.activeAccount];
             [CCCoreData flushTableActivityAccount:app.activeAccount];
+            [CCCoreData flushTableCapabilitiesAccount:app.activeAccount];
             
             [self emptyUserDirectoryUser:app.activeUser url:app.activeUrl];
             
@@ -380,7 +381,6 @@
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark == Exit Nextcloud ==
 #pragma --------------------------------------------------------------------------------------------
-
 
 - (void)exitNextcloud:(XLFormRowDescriptor *)sender
 {

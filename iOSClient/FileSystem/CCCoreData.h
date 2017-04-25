@@ -251,6 +251,7 @@
 
 + (void)flushTableActivityAccount:(NSString *)account;
 + (void)flushTableAutomaticUploadAccount:(NSString *)account selector:(NSString *)selector;
++ (void)flushTableCapabilitiesAccount:(NSString *)account;
 + (void)flushTableDirectoryAccount:(NSString *)account;
 + (void)flushTableLocalFileAccount:(NSString *)account;
 + (void)flushTableMetadataAccount:(NSString *)account;

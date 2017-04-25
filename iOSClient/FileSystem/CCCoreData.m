@@ -2353,6 +2353,22 @@
     [context MR_saveToPersistentStoreAndWait];
 }
 
++ (void)flushTableCapabilitiesAccount:(NSString *)account
+{
+    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
+    
+    if (account) {
+        
+        [TableCapabilities MR_deleteAllMatchingPredicate:[NSPredicate predicateWithFormat:@"(account == %@)", account] inContext:context];
+        
+    } else {
+        
+        [TableCapabilities MR_truncateAllInContext:context];
+    }
+    
+    [context MR_saveToPersistentStoreAndWait];
+}
+
 + (void)flushTableGPS
 {
     NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
@@ -2369,6 +2385,7 @@
     [TableAccount MR_truncateAllInContext:context];
     [TableActivity MR_truncateAllInContext:context];
     [TableAutomaticUpload MR_truncateAllInContext:context];
+    [TableCapabilities MR_truncateAllInContext:context];
     [TableCertificates MR_truncateAllInContext:context];
     [TableDirectory MR_truncateAllInContext:context];
     [TableGPS MR_truncateAllInContext:context];
