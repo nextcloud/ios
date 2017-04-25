@@ -202,10 +202,7 @@
     // Player audio
     self.player = [LMMediaPlayerView sharedPlayerView];
     self.player.delegate = self;
-    
-    // Theming Color
-    //[self settingThemingColor];
-    
+        
     // ico Image Cache
     self.icoImagesCache = [[NSMutableDictionary alloc] init];
     
@@ -982,7 +979,7 @@
 #pragma mark ===== Theming Color =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)settingThemingColor
+- (void)settingThemingColorBrand
 {
     if (self.activeAccount.length > 0) {
     
@@ -994,9 +991,6 @@
             [[NSNotificationCenter defaultCenter] postNotificationName:@"changeTheming" object:nil];
         }
     }
-    
-    // Tint Color GLOBAL WINDOW
-    [self.window setTintColor:[NCBrandColor sharedInstance].brand];
 }
 
 - (void)changeTheming:(UIViewController *)vc
@@ -1015,6 +1009,9 @@
     
     [button setBackgroundImage:buttonImage forState:UIControlStateNormal];
     [button setBackgroundImage:buttonImage forState:UIControlStateHighlighted];
+    
+    // Tint Color GLOBAL WINDOW
+    [self.window setTintColor:[NCBrandColor sharedInstance].brand];
 }
 
 #pragma --------------------------------------------------------------------------------------------

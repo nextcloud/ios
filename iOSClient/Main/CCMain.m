@@ -370,7 +370,7 @@
         [CCCoreData populateSharesVariableFromDBActiveAccount:app.activeAccount sharesLink:app.sharesLink sharesUserAndGroup:app.sharesUserAndGroup];
 
         // Setting Theming
-        [app settingThemingColor];
+        [app settingThemingColorBrand];
         
         // Load Datasource
         [self reloadDatasource:_serverUrl fileID:nil selector:nil];
@@ -1201,7 +1201,7 @@
 - (void)getCapabilitiesOfServerSuccess:(OCCapabilities *)capabilities
 {
     // Change Theming color
-    [app settingThemingColor];
+    [app settingThemingColorBrand];
     [CCCoreData addCapabilities:capabilities account:app.activeAccount];
     
     // Download Theming Background
