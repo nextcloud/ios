@@ -160,7 +160,7 @@
 - (void)aspectTabBar:(UITabBar *)tab hidden:(BOOL)hidden;
 - (void)plusButtonVisibile:(BOOL)visible;
 
-- (void)settingThemingColor;
+- (void)settingThemingColorBrand;
 - (void)changeTheming:(UIViewController *)vc;
 
 // Operation Networking
