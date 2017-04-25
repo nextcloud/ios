@@ -52,10 +52,9 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         
         tableView.separatorColor = NCBrandColor.sharedInstance.seperator
         
-        imageLogo.image = UIImage.init(named: NCBrandImages.sharedInstance.menuMoreImage)
+        imageLogo.image = UIImage.init(named: NCBrandImages.sharedInstance.themingBackground)
         
         // create tap gesture recognizer
-
         let tapQuota = UITapGestureRecognizer(target: self, action: #selector(tapLabelQuotaExternalSite))
         labelQuotaExternalSite.isUserInteractionEnabled = true
         labelQuotaExternalSite.addGestureRecognizer(tapQuota)

@@ -57,6 +57,6 @@ class NCBrandImages: NSObject {
     public var navigationLogo:          String = "navigationLogo"
     public var navigationLogoOffline:   String = "navigationLogoOffline"
     public var BackgroundDetail:        String = "backgroundDetail"
-    public var menuMoreImage:           String = "menuMoreImage"
+    public var themingBackground:       String = "themingBackground"
 }
 
