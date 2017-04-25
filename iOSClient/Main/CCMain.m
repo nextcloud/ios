@@ -522,7 +522,7 @@
 - (void)createRefreshControl
 {
     _refreshControl = [UIRefreshControl new];
-    _refreshControl.tintColor = [NCBrandColor sharedInstance].refreshControl;
+    _refreshControl.tintColor = [NCBrandColor sharedInstance].brand;
     _refreshControl.backgroundColor = [UIColor colorWithRed:235.0/255.0 green:235.0/255.0 blue:235.0/255.0 alpha:1.0];
     [_refreshControl addTarget:self action:@selector(refreshControlTarget) forControlEvents:UIControlEventValueChanged];
     [self setRefreshControl:_refreshControl];
@@ -4857,14 +4857,14 @@
     if ([currentDevice rangeOfString:@"iPad3"].location != NSNotFound) {
         
         visualEffectView = [[UIVisualEffectView alloc] init];
-        visualEffectView.backgroundColor = [NCBrandColor sharedInstance].groupByBarNoBlur;
+        visualEffectView.backgroundColor = [[NCBrandColor sharedInstance].brand colorWithAlphaComponent:0.3];
         
     } else {
         
         UIVisualEffect *blurEffect;
         blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
         visualEffectView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
-        visualEffectView.backgroundColor = [NCBrandColor sharedInstance].groupByBar;
+        visualEffectView.backgroundColor = [[NCBrandColor sharedInstance].brand colorWithAlphaComponent:0.2];
     }
     
     if ([_directoryGroupBy isEqualToString:@"alphabetic"]) {

@@ -129,7 +129,7 @@
     self.navigationController.navigationBar.tintColor = NCBrandColor.sharedInstance.navigationBarText;
     
     self.navigationController.toolbar.barTintColor = NCBrandColor.sharedInstance.tabBar;
-    self.navigationController.toolbar.tintColor = NCBrandColor.sharedInstance.tabBarText;
+    self.navigationController.toolbar.tintColor = NCBrandColor.sharedInstance.brand;
     
     // read folder
     [self readFolder];

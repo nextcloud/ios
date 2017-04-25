@@ -176,7 +176,7 @@
     self.navigationController.navigationBar.tintColor = [NCBrandColor sharedInstance].navigationBarText;
     
     self.toolBar.barTintColor = [NCBrandColor sharedInstance].tabBar;
-    self.toolBar.tintColor = [NCBrandColor sharedInstance].tabBarText;
+    self.toolBar.tintColor = [NCBrandColor sharedInstance].brand;
     
     // Upload
     if (self.localCryptated && _isCryptoCloudMode) {

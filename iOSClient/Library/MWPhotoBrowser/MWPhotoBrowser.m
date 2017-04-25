@@ -168,7 +168,7 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
 	
     // Toolbar
     _toolbar = [[UIToolbar alloc] initWithFrame:[self frameForToolbarAtOrientation:[[UIApplication sharedApplication] statusBarOrientation]]];
-    _toolbar.tintColor = [NCBrandColor sharedInstance].tabBarText; //TWS
+    _toolbar.tintColor = [NCBrandColor sharedInstance].brand; //TWS
     _toolbar.barTintColor = [NCBrandColor sharedInstance].tabBar;
     [_toolbar setBackgroundImage:nil forToolbarPosition:UIToolbarPositionAny barMetrics:UIBarMetricsDefault];
     [_toolbar setBackgroundImage:nil forToolbarPosition:UIToolbarPositionAny barMetrics:UIBarMetricsCompact];

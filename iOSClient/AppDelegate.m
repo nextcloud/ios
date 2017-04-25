@@ -235,9 +235,6 @@
     //[[AVAudioSession sharedInstance] setActive:YES error:nil];
     [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
     
-    // Tint Color GLOBAL WINDOW
-    [self.window setTintColor:[NCBrandColor sharedInstance].windowTintcolor];
-    
     UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
     //UITabBarController *tabBarController = [splitViewController.viewControllers firstObject];
     UINavigationController *navigationController = [splitViewController.viewControllers lastObject];
@@ -755,7 +752,7 @@
             backgroundColor = [UIColor colorWithRed:0.588 green:0.797 blue:0.000 alpha:0.90];
             break;
         case TWMessageBarMessageTypeInfo:
-            backgroundColor = [NCBrandColor sharedInstance].messageInfoBackground;
+            backgroundColor = [NCBrandColor sharedInstance].nextcloud;
             break;
         default:
             break;
@@ -900,7 +897,7 @@
 {
     tab.translucent = NO;
     tab.barTintColor = [NCBrandColor sharedInstance].tabBar;
-    tab.tintColor = [NCBrandColor sharedInstance].tabBarText;
+    tab.tintColor = [NCBrandColor sharedInstance].brand;
     
     tab.hidden = hidden;
     
@@ -999,6 +996,9 @@
                 [[NSNotificationCenter defaultCenter] postNotificationName:@"changeTheming" object:nil];
         }
     }
+    
+    // Tint Color GLOBAL WINDOW
+    [self.window setTintColor:[NCBrandColor sharedInstance].brand];
 }
 
 #pragma --------------------------------------------------------------------------------------------
