@@ -845,7 +845,8 @@
     item.selectedImage = [UIImage imageNamed:image_tabBarMore];
     
     // Plus Button
-    UIImage *buttonImage = [UIImage imageNamed:image_tabBarPlus];    
+    //UIImage *buttonImage = [UIImage imageNamed:image_tabBarPlus];
+    UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:image_tabBarPlus] color:[NCBrandColor sharedInstance].brand];
     UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
     button.tag = 99;
     button.frame = CGRectMake(0.0, 0.0, buttonImage.size.width, buttonImage.size.height);
