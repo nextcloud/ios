@@ -150,6 +150,14 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             let quotaUsed : String = CCUtility.transformedSize(Double((self.tableAccont?.quotaUsed)!))
         
             labelQuota.text = String.localizedStringWithFormat(NSLocalizedString("_quota_using_", comment: ""), quotaUsed, quota)
+            
+            // imageLogo
+            let theminBackground = UIImage.init(contentsOfFile: "\(appDelegate.directoryUser!)/themingBackground.png")
+            if (theminBackground != nil) {
+                imageLogo.image = theminBackground
+            } else {
+                imageLogo.image = UIImage.init(named: NCBrandImages.sharedInstance.themingBackground)
+            }
         }
         
         if (quotaMenu.count > 0) {

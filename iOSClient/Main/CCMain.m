@@ -1196,14 +1196,16 @@
     // Download Theming Background
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
         
-        UIImage *themingBackground = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:[capabilities.themingBackground stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]]];
-        if (themingBackground)
-            [UIImagePNGRepresentation(themingBackground) writeToFile:[NSString stringWithFormat:@"%@/themingBackground.png", app.directoryUser] atomically:YES];
-        else
-            [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/themingBackground.png", app.directoryUser] error:nil];
+        if (k_option_use_themingBackground == YES) {
+        
+            UIImage *themingBackground = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:[capabilities.themingBackground stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]]];
+            if (themingBackground)
+                [UIImagePNGRepresentation(themingBackground) writeToFile:[NSString stringWithFormat:@"%@/themingBackground.png", app.directoryUser] atomically:YES];
+            else
+                [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/themingBackground.png", app.directoryUser] error:nil];
+        }
     });
 
-    
     // Search bar if change version
     if (app.serverVersion != capabilities.versionMajor) {
     
