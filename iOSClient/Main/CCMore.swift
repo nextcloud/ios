@@ -145,7 +145,8 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             }
             
             progressQuota.progress = Float((self.tableAccont?.quotaRelative)!) / 100
-        
+            progressQuota.progressTintColor = NCBrandColor.sharedInstance.brand
+
             let quota : String = CCUtility.transformedSize(Double((self.tableAccont?.quotaTotal)!))
             let quotaUsed : String = CCUtility.transformedSize(Double((self.tableAccont?.quotaUsed)!))
         

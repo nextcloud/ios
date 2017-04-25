@@ -22,7 +22,6 @@
 //
 
 #import "CCMain.h"
-
 #import "AppDelegate.h"
 #import "CCPhotosCameraUpload.h"
 #import "CCSynchronize.h"
@@ -32,13 +31,12 @@
 #import <OCCommunicationLib/OCNotificationsAction.h>
 #import <OCCommunicationLib/OCFrameworkConstants.h>
 #import <OCCommunicationLib/OCCapabilities.h>
-
 #import "CTAssetCheckmark.h"
 
 #ifdef CUSTOM_BUILD
-    #import "CustomSwift.h"
+#import "CustomSwift.h"
 #else
-    #import "Nextcloud-Swift.h"
+#import "Nextcloud-Swift.h"
 #endif
 
 #pragma GCC diagnostic ignored "-Wundeclared-selector"
