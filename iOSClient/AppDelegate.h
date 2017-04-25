@@ -159,7 +159,9 @@
 - (void)aspectNavigationControllerBar:(UINavigationBar *)nav encrypted:(BOOL)encrypted online:(BOOL)online hidden:(BOOL)hidden;
 - (void)aspectTabBar:(UITabBar *)tab hidden:(BOOL)hidden;
 - (void)plusButtonVisibile:(BOOL)visible;
+
 - (void)settingThemingColor;
+- (void)changeTheming:(UIViewController *)vc;
 
 // Operation Networking
 - (void)cancelAllOperations;

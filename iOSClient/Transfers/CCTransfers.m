@@ -105,9 +105,7 @@
 
 - (void)changeTheming
 {
-    // Navigation & TabBar color
-    [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
-    [app aspectTabBar:self.tabBarController.tabBar hidden:NO];
+    [app changeTheming:self];
 }
 
 #pragma --------------------------------------------------------------------------------------------

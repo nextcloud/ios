@@ -207,9 +207,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     func changeTheming() {
         
-        // Navigation & TabBar color
-        appDelegate.aspectNavigationControllerBar(self.navigationController?.navigationBar, encrypted: false, online: appDelegate.reachability.isReachable(), hidden: false)
-        appDelegate.aspectTabBar(self.tabBarController?.tabBar, hidden: false)
+        appDelegate.changeTheming(self)
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {

@@ -312,9 +312,7 @@
 
 - (void)changeTheming
 {
-    // Navigation & TabBar color
-    [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:_isFolderEncrypted online:[app.reachability isReachable] hidden:NO];
-    [app aspectTabBar:self.tabBarController.tabBar hidden:NO];
+    [app changeTheming:self];
     
     // Menu e Bar
     [self createReMainMenu];

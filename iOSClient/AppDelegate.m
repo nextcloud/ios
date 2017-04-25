@@ -845,9 +845,7 @@
     item.selectedImage = [UIImage imageNamed:image_tabBarMore];
     
     // Plus Button
-    // "PlusClear" "tabBarPlusNextcloud"
-    UIImage *buttonImage = [UIImage imageNamed:@"tabBarPlusNextcloud"];
-    //UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:image_tabBarPlus] color:[NCBrandColor sharedInstance].brand];
+    UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] color:[NCBrandColor sharedInstance].brand];
     UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
     button.tag = 99;
     button.frame = CGRectMake(0.0, 0.0, buttonImage.size.width, buttonImage.size.height);
@@ -999,6 +997,24 @@
     
     // Tint Color GLOBAL WINDOW
     [self.window setTintColor:[NCBrandColor sharedInstance].brand];
+}
+
+- (void)changeTheming:(UIViewController *)vc
+{
+    // Change Navigation & TabBar color
+    vc.navigationController.navigationBar.barTintColor = [NCBrandColor sharedInstance].brand;
+    vc.tabBarController.tabBar.barTintColor = [NCBrandColor sharedInstance].tabBar;
+    vc.tabBarController.tabBar.tintColor = [NCBrandColor sharedInstance].brand;
+    
+    // Change button Plus
+    UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
+    UITabBarController *tabBarController = [splitViewController.viewControllers firstObject];
+    
+    UIButton *button = [tabBarController.view viewWithTag:99];
+    UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] color:[NCBrandColor sharedInstance].brand];
+    
+    [button setBackgroundImage:buttonImage forState:UIControlStateNormal];
+    [button setBackgroundImage:buttonImage forState:UIControlStateHighlighted];
 }
 
 #pragma --------------------------------------------------------------------------------------------
