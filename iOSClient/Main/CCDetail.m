@@ -195,7 +195,10 @@
 
 - (void)changeTheming
 {
+    // Navigation & TabBar color
     self.navigationController.navigationBar.barTintColor = [NCBrandColor sharedInstance].brand;
+    self.tabBarController.tabBar.barTintColor = [NCBrandColor sharedInstance].tabBar;
+    self.tabBarController.tabBar.tintColor = [NCBrandColor sharedInstance].brand;
 }
 
 #pragma --------------------------------------------------------------------------------------------

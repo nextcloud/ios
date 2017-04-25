@@ -204,7 +204,7 @@
     self.player.delegate = self;
     
     // Theming Color
-    [self settingThemingColor];
+    //[self settingThemingColor];
     
     // ico Image Cache
     self.icoImagesCache = [[NSMutableDictionary alloc] init];

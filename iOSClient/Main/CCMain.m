@@ -114,6 +114,7 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(clearDateReadDataSource:) name:@"clearDateReadDataSource" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setTitle) name:@"setTitleMain" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(triggerProgressTask:) name:@"NotificationProgressTask" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
     }
     
     return self;
@@ -309,6 +310,17 @@
     }
 }
 
+- (void)changeTheming
+{
+    // Navigation & TabBar color
+    [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:_isFolderEncrypted online:[app.reachability isReachable] hidden:NO];
+    [app aspectTabBar:self.tabBarController.tabBar hidden:NO];
+    
+    // Menu e Bar
+    [self createReMainMenu];
+    [self createReSelectMenu];
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Initizlize Mail =====
 #pragma --------------------------------------------------------------------------------------------
@@ -359,6 +371,9 @@
         // populate shared Link & User variable
         [CCCoreData populateSharesVariableFromDBActiveAccount:app.activeAccount sharesLink:app.sharesLink sharesUserAndGroup:app.sharesUserAndGroup];
 
+        // Setting Theming
+        [app settingThemingColor];
+        
         // Load Datasource
         [self reloadDatasource:_serverUrl fileID:nil selector:nil];
 

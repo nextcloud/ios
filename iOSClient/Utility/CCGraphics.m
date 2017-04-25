@@ -278,7 +278,7 @@
     if (k_option_use_themingColor == NO || [color isEqual:k_color_brand_standard])
         return image;
     
-    CGRect rect = CGRectMake(0, 0, image.size.width, image.size.height);
+    CGRect rect = CGRectMake(0, 0, image.size.width*2, image.size.height*2);
     UIGraphicsBeginImageContext(rect.size);
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGContextClipToMask(context, rect, image.CGImage);
@@ -287,7 +287,7 @@
     UIImage *img = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     
-    return [UIImage imageWithCGImage:img.CGImage scale:1.0 orientation: UIImageOrientationDownMirrored];
+    return [UIImage imageWithCGImage:img.CGImage scale:2.0 orientation: UIImageOrientationDownMirrored];
 }
 
 @end
