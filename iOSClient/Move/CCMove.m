@@ -446,7 +446,7 @@
     }
     
     cell.detailTextLabel.text = @"";
-    cell.imageView.image = [UIImage imageNamed:metadata.iconName];
+    cell.imageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:metadata.iconName] color:[NCBrandColor sharedInstance].brand];
     cell.textLabel.text = metadata.fileNamePrint;
     
     return cell;
