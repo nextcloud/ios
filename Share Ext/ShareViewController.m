@@ -171,7 +171,12 @@
 - (void)navigationBarToolBar
 {    
     UIBarButtonItem *rightButtonUpload, *rightButtonEncrypt, *leftButtonCancel;
-    
+
+    // Theming
+    TableCapabilities *tableCapabilities = [CCCoreData getCapabilitesForAccount:self.activeAccount];
+    if (k_option_use_themingColor && tableCapabilities.themingColor.length > 0)
+        [NCBrandColor sharedInstance].brand = [CCGraphics colorFromHexString:tableCapabilities.themingColor];
+
     self.navigationController.navigationBar.barTintColor = [NCBrandColor sharedInstance].brand;
     self.navigationController.navigationBar.tintColor = [NCBrandColor sharedInstance].navigationBarText;
     
