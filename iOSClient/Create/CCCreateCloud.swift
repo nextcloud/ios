@@ -217,7 +217,7 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
     var session : String = ""
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    let sectionColor: UIColor = UIColor(colorLiteralRed: 239.0/255.0, green: 239.0/255.0, blue: 244.0/255.0, alpha: 1)
+    //let sectionColor: //UIColor = UIColor(colorLiteralRed: 239.0/255.0, green: 239.0/255.0, blue: 244.0/255.0, alpha: 1)
     
     convenience init(_ titleServerUrl : String?, serverUrl : String, assets : NSMutableArray, cryptated : Bool, session : String) {
         
@@ -251,9 +251,10 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         
         section = XLFormSectionDescriptor.formSection()
         form.addFormSection(section)
-        
         row = XLFormRowDescriptor(tag: "ButtonDestinationFolder", rowType: XLFormRowDescriptorTypeButton, title: self.titleServerUrl)
-        row.cellConfig.setObject(UIImage(named: image_folderphotocamera)!, forKey: "imageView.image" as NSCopying)
+        let imageFolder = CCGraphics.changeThemingColorImage(UIImage(named: image_folder)!, color: NCBrandColor.sharedInstance.brand) as UIImage
+        row.cellConfig.setObject(imageFolder, forKey: "imageView.image" as NSCopying)
+        row.cellConfig.setObject(UIColor.black, forKey: "textLabel.textColor" as NSCopying)
         row.action.formSelector = #selector(changeDestinationFolder(_:))
         section.addFormRow(row)
         
@@ -296,8 +297,8 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         
         row = XLFormRowDescriptor(tag: "previewFileName", rowType: XLFormRowDescriptorTypeTextView, title: "")
         row.height = 180
-        row.cellConfig.setObject(sectionColor, forKey: "backgroundColor" as NSCopying)
-        row.cellConfig.setObject(sectionColor, forKey: "textView.backgroundColor" as NSCopying)
+        row.cellConfig.setObject(NCBrandColor.sharedInstance.tableBackground, forKey: "backgroundColor" as NSCopying)
+        row.cellConfig.setObject(NCBrandColor.sharedInstance.tableBackground, forKey: "textView.backgroundColor" as NSCopying)
         //row.cellConfig.setObject(10, forKey: "textView.layer.borderWidth" as NSCopying)
 
         row.disabled = true
@@ -379,6 +380,8 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         self.navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: NCBrandColor.sharedInstance.navigationBarText]
         
         self.tableView.separatorStyle = UITableViewCellSeparatorStyle.none
+        
+        self.tableView.backgroundColor = NCBrandColor.sharedInstance.tableBackground
         
         self.reloadForm()
     }
