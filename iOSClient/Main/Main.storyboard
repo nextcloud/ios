@@ -74,7 +74,7 @@
                                 </constraints>
                             </imageView>
                             <imageView userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="disclosureIndicator" translatesAutoresizingMaskIntoConstraints="NO" id="Hxn-XA-fmj">
-                                <rect key="frame" x="346" y="96" width="24" height="26"/>
+                                <rect key="frame" x="346" y="91" width="24" height="26"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="24" id="t8K-rR-nO7"/>
                                     <constraint firstAttribute="height" constant="26" id="wKO-XG-ygn"/>
@@ -125,7 +125,7 @@
                                 </connections>
                             </tableView>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="avatar" translatesAutoresizingMaskIntoConstraints="NO" id="DWx-1W-vs0" customClass="SwiftyAvatar" customModule="Nextcloud" customModuleProvider="target">
-                                <rect key="frame" x="15" y="84" width="50" height="50"/>
+                                <rect key="frame" x="15" y="79" width="50" height="50"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="50" id="QAM-AU-L76"/>
                                     <constraint firstAttribute="height" constant="50" id="Quc-kC-yu5"/>
@@ -140,7 +140,7 @@
                                 </userDefinedRuntimeAttributes>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="username" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BiW-NW-hVZ">
-                                <rect key="frame" x="78" y="99" width="72" height="20"/>
+                                <rect key="frame" x="78" y="94" width="72" height="20"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <nil key="highlightedColor"/>
@@ -191,7 +191,7 @@
                             <constraint firstItem="BiW-NW-hVZ" firstAttribute="centerY" secondItem="DWx-1W-vs0" secondAttribute="centerY" id="NA6-sD-Ouq"/>
                             <constraint firstAttribute="trailingMargin" secondItem="Hxn-XA-fmj" secondAttribute="trailing" constant="-11" id="NwY-of-hgF"/>
                             <constraint firstItem="Xym-IM-aqh" firstAttribute="trailing" secondItem="cxb-Vw-8zb" secondAttribute="trailing" id="SNN-Jv-Ezx"/>
-                            <constraint firstItem="Xym-IM-aqh" firstAttribute="top" secondItem="DWx-1W-vs0" secondAttribute="bottom" constant="30" id="Wus-Hr-tKk"/>
+                            <constraint firstItem="Xym-IM-aqh" firstAttribute="top" secondItem="DWx-1W-vs0" secondAttribute="bottom" constant="35" id="Wus-Hr-tKk"/>
                             <constraint firstItem="NxR-5x-edP" firstAttribute="leading" secondItem="XtC-Je-LUc" secondAttribute="leading" id="Xjg-WL-zva"/>
                             <constraint firstItem="Hxn-XA-fmj" firstAttribute="centerY" secondItem="DWx-1W-vs0" secondAttribute="centerY" id="m1i-IF-Acx"/>
                             <constraint firstItem="cxb-Vw-8zb" firstAttribute="leading" secondItem="XtC-Je-LUc" secondAttribute="leading" id="qyg-dI-shE"/>
