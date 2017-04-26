@@ -88,7 +88,8 @@
 
 - (void)changeTheming
 {
-    [app changeTheming:self];
+    if (self.isViewLoaded && self.view.window)
+        [app changeTheming:self];
 }
 
 - (void)activateCryptoCloud:(XLFormRowDescriptor *)sender

@@ -213,7 +213,8 @@
 
 - (void)changeTheming
 {
-    [app changeTheming:self];
+    if (self.isViewLoaded && self.view.window)
+        [app changeTheming:self];
 }
 
 -(void)formRowDescriptorValueHasChanged:(XLFormRowDescriptor *)rowDescriptor oldValue:(id)oldValue newValue:(id)newValue
