@@ -90,6 +90,8 @@
     NSString *_searchFileName;
     NSMutableArray *_searchResultMetadatas;
     NSString *_depth;
+    NSString *_noFilesSearchTitle;
+    NSString *_noFilesSearchDescription;
     
     // Login
     CCLoginWeb *_loginWeb;
@@ -139,11 +141,15 @@
     _searchResultMetadatas = [NSMutableArray new];
     _searchFileName = @"";
     _depth = @"0";
+    _noFilesSearchTitle = @"";
+    _noFilesSearchDescription = @"";
     
     // delegate
     self.tableView.delegate = self;
     self.tableView.tableFooterView = [UIView new];
     self.tableView.separatorColor = COLOR_SEPARATOR_TABLE;
+    self.tableView.emptyDataSetDelegate = self;
+    self.tableView.emptyDataSetSource = self;
     self.searchController.delegate = self;
     self.searchController.searchBar.delegate = self;
     
@@ -386,6 +392,71 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
+#pragma mark ==== DZNEmptyDataSetSource ====
+#pragma --------------------------------------------------------------------------------------------
+
+/*
+- (BOOL)emptyDataSetShouldDisplay:(UIScrollView *)scrollView
+{
+    if(_isSearchMode)
+        return NO;
+    else
+        return YES;
+}
+*/
+
+- (BOOL)emptyDataSetShouldAllowScroll:(UIScrollView *)scrollView
+{
+    return YES;
+}
+
+- (UIColor *)backgroundColorForEmptyDataSet:(UIScrollView *)scrollView
+{
+    return [UIColor whiteColor];
+}
+
+- (UIImage *)imageForEmptyDataSet:(UIScrollView *)scrollView
+{
+    if (_isSearchMode)
+        return [UIImage imageNamed:image_searchBig];
+    else
+        return [UIImage imageNamed:image_filesNoFiles];
+
+}
+
+- (NSAttributedString *)titleForEmptyDataSet:(UIScrollView *)scrollView
+{
+    NSString *text;
+    
+    if (_isSearchMode)
+        text = _noFilesSearchTitle;
+    else
+        text = [NSString stringWithFormat:@"%@", NSLocalizedString(@"_files_no_files_", nil)];
+    
+    NSDictionary *attributes = @{NSFontAttributeName:[UIFont boldSystemFontOfSize:20.0f], NSForegroundColorAttributeName:[UIColor lightGrayColor]};
+    
+    return [[NSAttributedString alloc] initWithString:text attributes:attributes];
+}
+
+- (NSAttributedString *)descriptionForEmptyDataSet:(UIScrollView *)scrollView
+{
+    NSString *text;
+    
+    if (_isSearchMode)
+        text = _noFilesSearchDescription;
+    else
+        text = [NSString stringWithFormat:@"\n%@", NSLocalizedString(@"_no_file_pull_down_", nil)];
+    
+    NSMutableParagraphStyle *paragraph = [NSMutableParagraphStyle new];
+    paragraph.lineBreakMode = NSLineBreakByWordWrapping;
+    paragraph.alignment = NSTextAlignmentCenter;
+    
+    NSDictionary *attributes = @{NSFontAttributeName: [UIFont systemFontOfSize:14.0], NSForegroundColorAttributeName: [UIColor lightGrayColor], NSParagraphStyleAttributeName: paragraph};
+    
+    return [[NSAttributedString alloc] initWithString:text attributes:attributes];
+}
+
+#pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== AlertView =====
 #pragma --------------------------------------------------------------------------------------------
 
@@ -508,50 +579,6 @@
         
             self.navigationItem.title = _titleMain;
         }
-    }
-}
-
-- (void)setTitleBackgroundTableView
-{
-    if ([_sectionDataSource.allRecordsDataSource count] == 0) {
-        
-        [self setTitleBackgroundTableView:NSLocalizedString(@"_no_file_pull_down_", nil)];
-        
-    } else {
-        
-        [self setTitleBackgroundTableView:nil];
-    }
-}
-
-- (void)setTitleBackgroundTableView:(NSString *)title
-{
-    if (title) {
-        
-        // message if table is empty
-        UILabel *messageLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height)];
-        
-        if ([app.reachability isReachable] == NO) {
-            messageLabel.text = NSLocalizedString(@"_comm_erro_pull_down_", nil);
-            messageLabel.textColor = COLOR_TEXT_NO_CONNECTION;
-            messageLabel.font = [UIFont systemFontOfSize:14];
-        } else {
-            messageLabel.text = NSLocalizedString(title ,nil);
-            messageLabel.textColor = COLOR_TEXT_NO_CONNECTION;
-            messageLabel.font = [UIFont systemFontOfSize:14];
-        }
-        
-        messageLabel.numberOfLines = 0;
-        messageLabel.textAlignment = NSTextAlignmentCenter;
-        [messageLabel sizeToFit];
-        
-        [self.tableView reloadData];
-        self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-        self.tableView.backgroundView = messageLabel;
-        
-    } else {
-        
-        [self.tableView setBackgroundView:nil];
-        self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
     }
 }
 
@@ -987,21 +1014,25 @@
 
 - (void)changePasswordAccount
 {
-#ifdef LOGIN_WEB
-    _loginWeb = [CCLoginWeb new];
-    _loginWeb.delegate = self;
-    _loginWeb.loginType = loginModifyPasswordUser;
+    // Brand
+    if (k_option_use_login_web) {
     
-    dispatch_async(dispatch_get_main_queue(), ^ {
-        [_loginWeb presentModalWithDefaultTheme:self];
-    });
-#else
-    _loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
-    _loginVC.delegate = self;
-    _loginVC.loginType = loginModifyPasswordUser;
+        _loginWeb = [CCLoginWeb new];
+        _loginWeb.delegate = self;
+        _loginWeb.loginType = loginModifyPasswordUser;
     
-    [self presentViewController:_loginVC animated:YES completion:nil];
-#endif
+        dispatch_async(dispatch_get_main_queue(), ^ {
+            [_loginWeb presentModalWithDefaultTheme:self];
+        });
+        
+    } else {
+        
+        _loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
+        _loginVC.delegate = self;
+        _loginVC.loginType = loginModifyPasswordUser;
+    
+        [self presentViewController:_loginVC animated:YES completion:nil];
+    }
 }
 
 #pragma mark -
@@ -1604,9 +1635,6 @@
     BOOL useSubFolder = [[arguments objectAtIndex:3] boolValue];
     NSString *session = [arguments objectAtIndex:4];
     
-    // remove title (graphics)
-    [self setTitleBackgroundTableView:nil];
-
     NSString *folderPhotos = [CCCoreData getCameraUploadFolderNamePathActiveAccount:app.activeAccount activeUrl:app.activeUrl];
     NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:app.activeAccount];
     
@@ -1873,8 +1901,6 @@
 
 - (void)readFolderWithForced:(BOOL)forced serverUrl:(NSString *)serverUrl
 {
-    [self setTitleBackgroundTableView:nil];
- 
     // init control
     if (!serverUrl || !app.activeAccount)
         return;
@@ -1912,10 +1938,6 @@
 
         [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
         
-    } else {
-        
-        if ([_sectionDataSource.allRecordsDataSource count] == 0) [self setTitleBackgroundTableView:NSLocalizedString(@"_no_file_pull_down_",nil)];
-        else [self setTitleBackgroundTableView:nil];
     }
 }
 
@@ -1939,8 +1961,11 @@
             
             [[CCActions sharedInstance] search:_serverUrl fileName:_searchFileName depth:_depth delegate:self];
             
-            [self setTitleBackgroundTableView:NSLocalizedString(@"_search_in_progress_", nil)];
-            
+            _noFilesSearchTitle = @"";
+            _noFilesSearchDescription = NSLocalizedString(@"_search_in_progress_", nil);
+        
+            [self.tableView reloadEmptyDataSet];
+
         } else {
             
             NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:_serverUrl activeAccount:app.activeAccount];
@@ -3225,7 +3250,9 @@
     if (app.reSelectMenu.isOpen || app.reMainMenu.isOpen)
         return;
     
-#ifndef OPTION_MULTIUSER_DISABLE
+    // Brand
+    if (k_option_disable_multiaccount)
+        return;
     
     if ([app.netQueue operationCount] > 0 || [app.netQueueDownload operationCount] > 0 || [app.netQueueDownloadWWan operationCount] > 0 || [app.netQueueUpload operationCount] > 0 || [app.netQueueUploadWWan operationCount] > 0 || [CCCoreData countTableAutomaticUploadForAccount:app.activeAccount selector:nil] > 0) {
         
@@ -3244,7 +3271,7 @@
         
         item.title = [record.account stringByTruncatingToWidth:self.view.bounds.size.width - 100 withFont:[UIFont systemFontOfSize:12.0] atEnd:YES];
         item.argument = record.account;
-        item.image = [UIImage imageNamed:image_NextcloudMenuChangeAccount];
+        item.image = [UIImage imageNamed:image_MenuLogoUser];
         item.target = self;
         item.action = @selector(changeDefaultAccount:);
         
@@ -3284,9 +3311,7 @@
     rect.size.height = rect.size.height - originY;
     
     [CCMenuAccount setTitleFont:[UIFont systemFontOfSize:12.0]];
-    [CCMenuAccount showMenuInView:self.navigationController.view fromRect:rect menuItems:menuArray withOptions:options];
-    
-#endif
+    [CCMenuAccount showMenuInView:self.navigationController.view fromRect:rect menuItems:menuArray withOptions:options];    
 }
 
 - (void)changeDefaultAccount:(CCMenuItem *)sender
@@ -4714,16 +4739,19 @@
         
         [self tableViewReload];
         
-        if ([_sectionDataSource.allRecordsDataSource count] == 0 && [_searchFileName length] >= k_minCharsSearch)
-            [self setTitleBackgroundTableView:NSLocalizedString(@"_search_no_record_found_", nil)];
-        
-        if ([_sectionDataSource.allRecordsDataSource count] == 0 && [_searchFileName length] < k_minCharsSearch)
-            [self setTitleBackgroundTableView:NSLocalizedString(@"_search_instruction_", nil)];
-        
-        if ([_sectionDataSource.allRecordsDataSource count] > 0 && [_searchFileName length] >= k_minCharsSearch)
-            [self setTitleBackgroundTableView:nil];
+        if ([_sectionDataSource.allRecordsDataSource count] == 0 && [_searchFileName length] >= k_minCharsSearch) {
             
-        [app updateApplicationIconBadgeNumber];
+            _noFilesSearchTitle = NSLocalizedString(@"_search_no_record_found_", nil);
+            _noFilesSearchDescription = @"";
+        }
+        
+        if ([_sectionDataSource.allRecordsDataSource count] == 0 && [_searchFileName length] < k_minCharsSearch) {
+            
+            _noFilesSearchTitle = @"";
+            _noFilesSearchDescription = NSLocalizedString(@"_search_instruction_", nil);
+        }
+    
+        [self.tableView reloadEmptyDataSet];
         
         return;
     }
@@ -4775,11 +4803,7 @@
          NSLog(@"[LOG] [OPTIMIZATION] Rebuild Data Source File : %@ - %@", _serverUrl, _dateReadDataSource);
     }
     
-    [self tableViewReload];
-    
-    [self setTitleBackgroundTableView];
-    
-    [app updateApplicationIconBadgeNumber];
+    [self tableViewReload];    
 }
 
 - (NSArray *)getMetadatasFromSelectedRows:(NSArray *)selectedRows

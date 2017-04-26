@@ -20,19 +20,14 @@
                 <rect key="frame" x="0.0" y="0.0" width="600" height="59.5"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <view alpha="0.10000000149011612" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Wae-Rk-kda" userLabel="Gray">
-                        <rect key="frame" x="0.0" y="0.0" width="60" height="60"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <color key="backgroundColor" red="0.66666666669999997" green="0.66666666669999997" blue="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                    </view>
                     <label opaque="NO" userInteractionEnabled="NO" tag="101" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QNC-8X-DAC">
-                        <rect key="frame" x="68" y="13" width="430" height="20"/>
+                        <rect key="frame" x="60" y="13" width="436" height="20"/>
                         <fontDescription key="fontDescription" type="system" pointSize="16"/>
                         <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" tag="102" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="p7I-KN-FVZ">
-                        <rect key="frame" x="68" y="33" width="430" height="15"/>
+                        <rect key="frame" x="60" y="33" width="436" height="15"/>
                         <fontDescription key="fontDescription" type="system" pointSize="12"/>
                         <color key="textColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.63921568627450975" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <nil key="highlightedColor"/>
@@ -95,10 +90,10 @@
                     <constraint firstItem="5" firstAttribute="bottom" secondItem="p7I-KN-FVZ" secondAttribute="bottom" constant="2" id="N38-yB-Rf0"/>
                     <constraint firstItem="5" firstAttribute="bottom" secondItem="sQq-jC-UEV" secondAttribute="bottomMargin" constant="-1" id="Qp5-KA-Mwc"/>
                     <constraint firstItem="Kaz-0H-BSt" firstAttribute="baseline" secondItem="Dge-D1-XMk" secondAttribute="baseline" constant="1" id="R1y-g5-Bri"/>
-                    <constraint firstItem="Dge-D1-XMk" firstAttribute="leading" secondItem="QNC-8X-DAC" secondAttribute="trailing" constant="53" id="Tad-UN-Ttn"/>
+                    <constraint firstItem="Dge-D1-XMk" firstAttribute="leading" secondItem="QNC-8X-DAC" secondAttribute="trailing" constant="55" id="Tad-UN-Ttn"/>
                     <constraint firstItem="Dge-D1-XMk" firstAttribute="leading" secondItem="Kaz-0H-BSt" secondAttribute="leading" id="Vc0-qc-qvs"/>
                     <constraint firstItem="QNC-8X-DAC" firstAttribute="leading" secondItem="p7I-KN-FVZ" secondAttribute="leading" id="Vdn-9J-xdb"/>
-                    <constraint firstItem="p7I-KN-FVZ" firstAttribute="leading" secondItem="5" secondAttribute="trailing" constant="18" id="Xur-Fo-IO7"/>
+                    <constraint firstItem="p7I-KN-FVZ" firstAttribute="leading" secondItem="5" secondAttribute="trailing" constant="10" id="Xur-Fo-IO7"/>
                     <constraint firstItem="Dge-D1-XMk" firstAttribute="baseline" secondItem="eGg-ei-EiX" secondAttribute="baseline" id="YY9-7o-8ag"/>
                     <constraint firstItem="Dge-D1-XMk" firstAttribute="firstBaseline" secondItem="eGg-ei-EiX" secondAttribute="firstBaseline" id="b1Y-qH-GES"/>
                     <constraint firstItem="Dge-D1-XMk" firstAttribute="firstBaseline" secondItem="Kaz-0H-BSt" secondAttribute="firstBaseline" constant="-1" id="eFj-cr-a0P"/>
@@ -106,7 +101,7 @@
                     <constraint firstItem="DQR-yN-JaH" firstAttribute="top" secondItem="sQq-jC-UEV" secondAttribute="topMargin" constant="32" id="iWl-MU-FCz"/>
                     <constraint firstItem="eGg-ei-EiX" firstAttribute="leading" secondItem="Kaz-0H-BSt" secondAttribute="trailing" constant="-103" id="iuz-Vg-6UE"/>
                     <constraint firstItem="5" firstAttribute="leading" secondItem="sQq-jC-UEV" secondAttribute="leadingMargin" constant="2" id="jRD-Qd-3a9"/>
-                    <constraint firstItem="p7I-KN-FVZ" firstAttribute="leading" secondItem="DQR-yN-JaH" secondAttribute="trailing" constant="14" id="mRY-av-dw7"/>
+                    <constraint firstItem="p7I-KN-FVZ" firstAttribute="leading" secondItem="DQR-yN-JaH" secondAttribute="trailing" constant="6" id="mRY-av-dw7"/>
                     <constraint firstItem="Q4M-4B-abs" firstAttribute="trailing" secondItem="sQq-jC-UEV" secondAttribute="trailingMargin" constant="-94" id="nQL-7B-qXT"/>
                     <constraint firstItem="Q4M-4B-abs" firstAttribute="leading" secondItem="sQq-jC-UEV" secondAttribute="leadingMargin" constant="60" id="o1f-09-ZgZ"/>
                     <constraint firstItem="QNC-8X-DAC" firstAttribute="trailing" secondItem="p7I-KN-FVZ" secondAttribute="trailing" id="oZv-Y4-1iW"/>

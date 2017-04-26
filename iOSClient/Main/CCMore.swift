@@ -54,12 +54,20 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         
         imageLogo.image = UIImage.init(named: image_brandMenuMoreBackground)
         
-        let tap = UITapGestureRecognizer(target: self, action: #selector(tapLabelQuotaExternalSite))
+        // create tap gesture recognizer
+
+        let tapQuota = UITapGestureRecognizer(target: self, action: #selector(tapLabelQuotaExternalSite))
         labelQuotaExternalSite.isUserInteractionEnabled = true
-        labelQuotaExternalSite.addGestureRecognizer(tap)
+        labelQuotaExternalSite.addGestureRecognizer(tapQuota)
+        
+        let tapImageLogo = UITapGestureRecognizer(target: self, action: #selector(tapImageLogoManageAccount))
+        imageLogo.isUserInteractionEnabled = true
+        imageLogo.addGestureRecognizer(tapImageLogo)
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        
+        super.viewWillAppear(animated)
         
         // Clear
         functionMenu.removeAll()
@@ -118,11 +126,22 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             }
         }
         
-        // Quota
+        // Display Name user & Quota
         tableAccont = CCCoreData.getActiveAccount()
         if (tableAccont != nil) {
         
-            labelUsername.text = self.tableAccont?.user
+            if let displayName = self.tableAccont!.displayName {
+                if displayName.isEmpty {
+                    labelUsername.text = self.tableAccont!.user
+                }
+                else{
+                    labelUsername.text = self.tableAccont!.displayName
+                }
+            }
+            else{
+                labelUsername.text = self.tableAccont!.user
+            }
+            
             progressQuota.progress = Float((self.tableAccont?.quotaRelative)!) / 100
         
             let quota : String = CCUtility.transformedSize(Double((self.tableAccont?.quotaTotal)!))
@@ -149,11 +168,30 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             imageAvatar.image = UIImage.init(named: "moreAvatar")
         }
         
+        // Title
+        self.navigationItem.title = NSLocalizedString("_more_", comment: "")
+        
         // Aspect
-        CCAspect.aspectNavigationControllerBar(self.navigationController?.navigationBar, encrypted: false, online: appDelegate.reachability.isReachable(), hidden: true)
+        CCAspect.aspectNavigationControllerBar(self.navigationController?.navigationBar, encrypted: false, online: appDelegate.reachability.isReachable(), hidden: false)
         CCAspect.aspectTabBar(self.tabBarController?.tabBar, hidden: false)
 
+        // +
+        appDelegate.plusButtonVisibile(true)
+        
+        self.navigationController?.setNavigationBarHidden(true, animated: animated)
+        
         tableView.reloadData()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        self.navigationController?.setNavigationBarHidden(false, animated: animated)
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -278,6 +316,14 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             }
         }
     }
+    
+    func tapImageLogoManageAccount() {
+        
+        let controller = CCManageAccount.init()
+        
+        self.navigationController?.pushViewController(controller, animated: true)
+    }
+
 }
 
 class CCCellMore: UITableViewCell {

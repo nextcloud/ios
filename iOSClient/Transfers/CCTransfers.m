@@ -95,9 +95,6 @@
     [super viewDidAppear:animated];
     
     [self reloadDatasource];
-    
-    // update Badge
-    [app updateApplicationIconBadgeNumber];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -119,18 +116,23 @@
     return [UIColor whiteColor];
 }
 
+- (UIImage *)imageForEmptyDataSet:(UIScrollView *)scrollView
+{
+    return [UIImage imageNamed:image_transfersNoRecord];
+}
+
 - (NSAttributedString *)titleForEmptyDataSet:(UIScrollView *)scrollView
 {
-    NSString *text = [NSString stringWithFormat:@"%@", @""];
+    NSString *text = [NSString stringWithFormat:@"%@", NSLocalizedString(@"_no_transfer_", nil)];
     
-    NSDictionary *attributes = @{NSFontAttributeName:[UIFont boldSystemFontOfSize:20.0f], NSForegroundColorAttributeName:COLOR_BRAND};
+    NSDictionary *attributes = @{NSFontAttributeName:[UIFont boldSystemFontOfSize:20.0f], NSForegroundColorAttributeName:[UIColor lightGrayColor]};
     
     return [[NSAttributedString alloc] initWithString:text attributes:attributes];
 }
 
 - (NSAttributedString *)descriptionForEmptyDataSet:(UIScrollView *)scrollView
 {
-    NSString *text = [NSString stringWithFormat:@"\n%@", NSLocalizedString(@"_no_transfer_", nil)];
+    NSString *text = [NSString stringWithFormat:@"%@", NSLocalizedString(@"_no_transfer_sub_", nil)];
     
     NSMutableParagraphStyle *paragraph = [NSMutableParagraphStyle new];
     paragraph.lineBreakMode = NSLineBreakByWordWrapping;
@@ -308,9 +310,7 @@
         
     _sectionDataSource  = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:app.listProgressMetadata groupByField:@"session" replaceDateToExifDate:NO activeAccount:app.activeAccount];
         
-    [_tableView reloadData];
-    
-    [app updateApplicationIconBadgeNumber];
+    [_tableView reloadData];    
 }
 
 #pragma --------------------------------------------------------------------------------------------

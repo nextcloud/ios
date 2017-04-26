@@ -62,42 +62,41 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-
-#ifdef OPTION_FIREBASE_ENABLE
+    // Brand
+    if (k_option_use_firebase) {
     
-    /*
-    In order for this to work, proper GoogleService-Info.plist must be included
-    */
+        /*
+         In order for this to work, proper GoogleService-Info.plist must be included
+         */
     
-    @try {
-        [FIRApp configure];
-    } @catch (NSException *exception) {
-        NSLog(@"[LOG] Something went wrong while configuring Firebase");
+        @try {
+            [FIRApp configure];
+        } @catch (NSException *exception) {
+            NSLog(@"[LOG] Something went wrong while configuring Firebase");
+        }
+    
+        if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
+        
+            UIUserNotificationType allNotificationTypes =(UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge);
+            UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:allNotificationTypes categories:nil];
+        
+            [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
+        
+        } else {
+        
+            // iOS 10 or later
+            #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
+            // For iOS 10 display notification (sent via APNS)
+            [UNUserNotificationCenter currentNotificationCenter].delegate = self;
+            UNAuthorizationOptions authOptions = UNAuthorizationOptionAlert | UNAuthorizationOptionSound | UNAuthorizationOptionBadge;
+            [[UNUserNotificationCenter currentNotificationCenter] requestAuthorizationWithOptions:authOptions completionHandler:^(BOOL granted, NSError * _Nullable error) {
+            }];
+        
+            // For iOS 10 data message (sent via FCM)
+            [FIRMessaging messaging].remoteMessageDelegate = self;
+            #endif
+        }
     }
-    
-    if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
-        
-        UIUserNotificationType allNotificationTypes =(UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge);
-        UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:allNotificationTypes categories:nil];
-        
-        [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
-        
-    } else {
-        
-        // iOS 10 or later
-        #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
-        // For iOS 10 display notification (sent via APNS)
-        [UNUserNotificationCenter currentNotificationCenter].delegate = self;
-        UNAuthorizationOptions authOptions = UNAuthorizationOptionAlert | UNAuthorizationOptionSound | UNAuthorizationOptionBadge;
-        [[UNUserNotificationCenter currentNotificationCenter] requestAuthorizationWithOptions:authOptions completionHandler:^(BOOL granted, NSError * _Nullable error) {
-        }];
-        
-        // For iOS 10 data message (sent via FCM)
-        [FIRMessaging messaging].remoteMessageDelegate = self;
-        #endif
-    }
-    
-#endif // OPTION_FIREBASE_ENABLE
 
     NSString *dir;
     NSURL *dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:k_capabilitiesGroups];
@@ -191,7 +190,6 @@
     // Verify Session in progress and Init date task
     self.sessionDateLastDownloadTasks = [NSDate date];
     self.sessionDateLastUploadTasks = [NSDate date];
-    self.timerVerifySessionInProgress = [NSTimer scheduledTimerWithTimeInterval:k_timerVerifySession target:self selector:@selector(verifyDownloadUploadInProgress) userInfo:nil repeats:YES];
     
     // Background Fetch
     [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
@@ -272,9 +270,11 @@
             [self handleShortCutItem:shortcutItem];
     }
     
-    // Start timer Verify Process
+    // Start Timer
     self.timerProcess = [NSTimer scheduledTimerWithTimeInterval:k_timerProcess target:self selector:@selector(process) userInfo:nil repeats:YES];
-    
+    self.timerVerifySessionInProgress = [NSTimer scheduledTimerWithTimeInterval:k_timerVerifySession target:self selector:@selector(verifyDownloadUploadInProgress) userInfo:nil repeats:YES];
+    self.timerUpdateApplicationIconBadgeNumber = [NSTimer scheduledTimerWithTimeInterval:k_timerUpdateApplicationIconBadgeNumber target:self selector:@selector(updateApplicationIconBadgeNumber) userInfo:nil repeats:YES];
+
     // Registration Push Notification
     UIUserNotificationType types = UIUserNotificationTypeSound | UIUserNotificationTypeBadge | UIUserNotificationTypeAlert;
     UIUserNotificationSettings *notificationSettings = [UIUserNotificationSettings settingsForTypes:types categories:nil];
@@ -910,29 +910,21 @@
     _queueNumUploadWWan = [[CCCoreData getTableMetadataUploadWWanAccount:self.activeAccount] count];
     
     // netQueueDownload
-    for (NSOperation *operation in [app.netQueueDownload operations]) {
-        
+    for (NSOperation *operation in [app.netQueueDownload operations])
         if (((OCnetworking *)operation).isExecuting == NO) _queueNunDownload++;
-    }
     
     // netQueueDownloadWWan
-    for (NSOperation *operation in [app.netQueueDownloadWWan operations]) {
-        
+    for (NSOperation *operation in [app.netQueueDownloadWWan operations])
         if (((OCnetworking *)operation).isExecuting == NO) _queueNumDownloadWWan++;
-    }
     
     // netQueueUpload
-    for (NSOperation *operation in [app.netQueueUpload operations]) {
-        
+    for (NSOperation *operation in [app.netQueueUpload operations])
         if (((OCnetworking *)operation).isExecuting == NO) _queueNumUpload++;
-    }
-    
+
     // netQueueUploadWWan
-    for (NSOperation *operation in [app.netQueueUploadWWan operations]) {
-        
+    for (NSOperation *operation in [app.netQueueUploadWWan operations])
         if (((OCnetworking *)operation).isExecuting == NO) _queueNumUploadWWan++;
-    }
-    
+
     // Total
     NSUInteger total = _queueNunDownload + _queueNumDownloadWWan + _queueNumUpload + _queueNumUploadWWan + [CCCoreData countTableAutomaticUploadForAccount:self.activeAccount selector:nil];
     
@@ -1181,8 +1173,6 @@
     [_netQueueDownloadWWan cancelAllOperations];
     [_netQueueUpload cancelAllOperations];
     [_netQueueUploadWWan cancelAllOperations];
-    
-    [self performSelector:@selector(updateApplicationIconBadgeNumber) withObject:nil afterDelay:0.5];
 }
 
 - (void)addNetworkingOperationQueue:(NSOperationQueue *)netQueue delegate:(id)delegate metadataNet:(CCMetadataNet *)metadataNet
@@ -1255,8 +1245,6 @@
             [CCCoreData addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionUpload selector:selectorUploadAutomatic note:@"Internal error image/video not found [0]" type:k_activityTypeFailure verbose:k_activityVerboseHigh account:_activeAccount activeUrl:_activeUrl];
             
             [CCCoreData deleteTableAutomaticUploadForAccount:_activeAccount assetLocalIdentifier:metadataNet.assetLocalIdentifier];
-            
-            [self updateApplicationIconBadgeNumber];
         }
 
         metadataNet = [CCCoreData getTableAutomaticUploadForAccount:self.activeAccount selector:selectorUploadAutomatic];
@@ -1300,9 +1288,7 @@
             
             [CCCoreData addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionUpload selector:selectorUploadAutomatic note:@"Internal error image/video not found [0]" type:k_activityTypeFailure verbose:k_activityVerboseHigh account:_activeAccount activeUrl:_activeUrl];
             
-            [CCCoreData deleteTableAutomaticUploadForAccount:_activeAccount assetLocalIdentifier:metadataNet.assetLocalIdentifier];
-            
-            [self updateApplicationIconBadgeNumber];
+            [CCCoreData deleteTableAutomaticUploadForAccount:_activeAccount assetLocalIdentifier:metadataNet.assetLocalIdentifier];            
         }
     }
     
@@ -1446,16 +1432,6 @@
     }
 }
 
-- (void)dropAutomaticUploadWithSelector:(NSString *)selector
-{
-    [CCCoreData flushTableAutomaticUploadAccount:self.activeAccount selector:selector];
-    
-    // Update icon badge number
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1.0 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        [self updateApplicationIconBadgeNumber];
-    });
-}
-
 - (BOOL)createFolderSubFolderAutomaticUploadFolderPhotos:(NSString *)folderPhotos useSubFolder:(BOOL)useSubFolder assets:(NSArray *)assets selector:(NSString *)selector
 {
     OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:_activeUser withPassword:_activePassword withUrl:_activeUrl isCryptoCloudMode:NO];
@@ -1556,6 +1532,10 @@
         
         [CCCoreData clearAllDateReadDirectory];
         [CCCoreData flushTableMetadataAccount:nil];
+    }
+    
+    if (([actualVersion compare:@"2.17.1" options:NSNumericSearch] == NSOrderedAscending)) {
+        
     }
 }
 

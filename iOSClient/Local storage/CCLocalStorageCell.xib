@@ -20,13 +20,13 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <label opaque="NO" userInteractionEnabled="NO" tag="101" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QNC-8X-DAC">
-                        <rect key="frame" x="68" y="13" width="473" height="20"/>
+                        <rect key="frame" x="60" y="13" width="481" height="20"/>
                         <fontDescription key="fontDescription" type="system" pointSize="16"/>
                         <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" tag="102" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="p7I-KN-FVZ">
-                        <rect key="frame" x="68" y="33" width="473" height="15"/>
+                        <rect key="frame" x="60" y="33" width="481" height="15"/>
                         <fontDescription key="fontDescription" type="system" pointSize="12"/>
                         <color key="textColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.59999999999999998" alpha="1" colorSpace="calibratedRGB"/>
                         <nil key="highlightedColor"/>
@@ -39,10 +39,6 @@
                         </constraints>
                         <state key="normal" image="buttonDown"/>
                     </button>
-                    <view alpha="0.10000000149011612" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hzp-7C-oyF" userLabel="Gray">
-                        <rect key="frame" x="0.0" y="0.0" width="60" height="60"/>
-                        <color key="backgroundColor" red="0.66666666669999997" green="0.66666666669999997" blue="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                    </view>
                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="5">
                         <rect key="frame" x="10" y="10" width="40" height="40"/>
                         <constraints>
@@ -53,18 +49,14 @@
                 </subviews>
                 <constraints>
                     <constraint firstItem="QNC-8X-DAC" firstAttribute="trailing" secondItem="sQq-jC-UEV" secondAttribute="trailingMargin" constant="-51" id="7zt-c0-CsI"/>
-                    <constraint firstItem="hzp-7C-oyF" firstAttribute="bottom" secondItem="6B9-Jc-esJ" secondAttribute="bottom" id="Don-Q5-q73"/>
-                    <constraint firstItem="p7I-KN-FVZ" firstAttribute="leading" secondItem="sQq-jC-UEV" secondAttribute="leadingMargin" constant="60" id="Lgb-6q-pd1"/>
+                    <constraint firstItem="p7I-KN-FVZ" firstAttribute="leading" secondItem="sQq-jC-UEV" secondAttribute="leadingMargin" constant="52" id="Lgb-6q-pd1"/>
                     <constraint firstItem="p7I-KN-FVZ" firstAttribute="top" secondItem="sQq-jC-UEV" secondAttribute="topMargin" constant="25" id="Ofy-42-gUb"/>
-                    <constraint firstItem="p7I-KN-FVZ" firstAttribute="leading" secondItem="hzp-7C-oyF" secondAttribute="trailing" constant="8" id="Suy-Ng-4df"/>
                     <constraint firstItem="QNC-8X-DAC" firstAttribute="top" secondItem="sQq-jC-UEV" secondAttribute="topMargin" constant="5" id="Wks-nJ-JjF"/>
-                    <constraint firstItem="hzp-7C-oyF" firstAttribute="leading" secondItem="sQq-jC-UEV" secondAttribute="leading" id="YSP-Om-gqC"/>
                     <constraint firstItem="5" firstAttribute="leading" secondItem="sQq-jC-UEV" secondAttribute="leadingMargin" constant="2" id="asm-5P-8p8"/>
                     <constraint firstItem="5" firstAttribute="centerY" secondItem="sQq-jC-UEV" secondAttribute="centerY" id="b3N-Ho-wsM"/>
                     <constraint firstItem="p7I-KN-FVZ" firstAttribute="trailing" secondItem="sQq-jC-UEV" secondAttribute="trailingMargin" constant="-51" id="kaB-WS-bDl"/>
-                    <constraint firstItem="hzp-7C-oyF" firstAttribute="top" secondItem="6B9-Jc-esJ" secondAttribute="top" id="lW3-zV-LJT"/>
                     <constraint firstItem="6B9-Jc-esJ" firstAttribute="leading" secondItem="QNC-8X-DAC" secondAttribute="trailing" id="mBS-nt-t6R"/>
-                    <constraint firstItem="QNC-8X-DAC" firstAttribute="leading" secondItem="sQq-jC-UEV" secondAttribute="leadingMargin" constant="60" id="prQ-27-bk0"/>
+                    <constraint firstItem="QNC-8X-DAC" firstAttribute="leading" secondItem="sQq-jC-UEV" secondAttribute="leadingMargin" constant="52" id="prQ-27-bk0"/>
                     <constraint firstItem="6B9-Jc-esJ" firstAttribute="centerY" secondItem="sQq-jC-UEV" secondAttribute="centerY" id="xuI-qH-BjK"/>
                 </constraints>
             </tableViewCellContentView>

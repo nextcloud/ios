@@ -104,9 +104,6 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-        
-    // update Badge
-    [app updateApplicationIconBadgeNumber];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -128,20 +125,6 @@
 #pragma mark ==== DZNEmptyDataSetSource ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (BOOL)emptyDataSetShouldDisplay:(UIScrollView *)scrollView
-{
-    // only for root
-    if (!_serverUrl)
-        return YES;
-    else
-        return NO;
-}
-
-- (CGFloat)spaceHeightForEmptyDataSet:(UIScrollView *)scrollView
-{
-    return 0.0f;
-}
-
 - (UIColor *)backgroundColorForEmptyDataSet:(UIScrollView *)scrollView
 {
     return [UIColor whiteColor];
@@ -149,14 +132,14 @@
 
 - (UIImage *)imageForEmptyDataSet:(UIScrollView *)scrollView
 {
-    return [UIImage imageNamed:image_brandBackgroundLite];
+    return [UIImage imageNamed:image_favoriteNoFiles];
 }
 
 - (NSAttributedString *)titleForEmptyDataSet:(UIScrollView *)scrollView
 {
-    NSString *text = [NSString stringWithFormat:@"%@", @""];
+    NSString *text = [NSString stringWithFormat:@"%@", NSLocalizedString(@"_favorite_no_files_", nil)];
     
-    NSDictionary *attributes = @{NSFontAttributeName:[UIFont boldSystemFontOfSize:20.0f], NSForegroundColorAttributeName:COLOR_BRAND};
+    NSDictionary *attributes = @{NSFontAttributeName:[UIFont boldSystemFontOfSize:20.0f], NSForegroundColorAttributeName:[UIColor lightGrayColor]};
     
     return [[NSAttributedString alloc] initWithString:text attributes:attributes];
 }
@@ -234,8 +217,6 @@
 - (void)downloadFileFailure:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode
 {    
     [app messageNotification:@"_download_file_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
-    
-    [app updateApplicationIconBadgeNumber];
 }
 
 - (void)downloadFileSuccess:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost
@@ -254,9 +235,7 @@
         
         if ([self shouldPerformSegue])
             [self performSegueWithIdentifier:@"segueDetail" sender:self];
-    }
-    
-    [app updateApplicationIconBadgeNumber];
+    }    
 }
 
 #pragma --------------------------------------------------------------------------------------------

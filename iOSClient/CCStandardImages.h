@@ -32,6 +32,9 @@
 #define image_actionSheetFavorite               @"actionSheetFavorite"
 #define image_actionSheetLocal                  @"localStorage"
 #define image_actionSheetRemoveLocal            @"actionSheetRemoveLocal"
+
+#define image_activityNoRecord                  @"activityNoRecord"
+
 #define image_avatar                            @"avatar"
 
 #define image_bkfull                            @"bkfull"
@@ -52,6 +55,8 @@
 #define image_encryptedSelectedFiles            @"encryptedSelectedFiles"
 
 #define image_favorite                          @"favorite"
+#define image_favoriteNoFiles                   @"favoriteNoFiles"
+
 #define image_file                              @"file"
 #define image_file_audio                        @"file_audio"
 #define image_file_compress                     @"file_compress"
@@ -63,6 +68,7 @@
 #define image_file_code                         @"file_code"
 #define image_file_txt                          @"file_txt"
 #define image_file_movie                        @"file_movie"
+#define image_filesNoFiles                      @"filesNoFiles"
 #define image_folderphotocamera                 @"folderphotocamera"
 #define image_folder                            @"folder"
 #define image_foldercrypto                      @"foldercrypto"
@@ -72,10 +78,11 @@
 
 #define image_home                              @"home"
 
+#define image_localStorageNoRecord              @"localStorageNoRecord"
+
 #define image_lock                              @"lock"
 
-#define image_NextcloudMenuChangeAccount        @"typeCloudNextcloud"
-
+#define image_MenuLogoUser                      @"menuLogoUser"
 #define image_MenuDirectoryOnTop                @"menuDirectoryOnTop"
 #define image_MenuGroupByAlphabetic             @"MenuGroupByAlphabetic"
 #define image_MenuGroupByDate                   @"MenuGroupByDate"
@@ -104,6 +111,7 @@
 
 #define image_passcode                          @"passcode"
 #define image_plist                             @"plist"
+#define image_photosNoRecord                    @"photosNoRecord"
 
 #define image_quickActionPhotos                 @"quickActionPhotos"
 #define image_quickActionUpload                 @"quickActionUpload"
@@ -115,6 +123,7 @@
 #define image_removetaskcrypto                  @"removetaskcrypto"
 
 #define image_seleziona                         @"seleziona"
+#define image_searchBig                         @"searchBig"
 #define image_saveSelectedFiles                 @"saveSelectedFiles"
 #define image_settingsActivityHigh              @"settingsActivityHigh"
 #define image_settingsAdvanced                  @"settingsAdvanced"
@@ -162,7 +171,10 @@
 #define image_tabBarPhotos                      @"tabBarPhotos"
 #define image_tabBarSettings                    @"tabBarSettings"
 #define image_tabBarMore                        @"tabBarMore"
+
 #define image_thumbs                            @"thumbs"
+
+#define image_transfersNoRecord                 @"transfersNoRecord"
 
 #define image_user                              @"loginUser"
 #define image_uploadchiaro                      @"uploadchiaro"

@@ -645,7 +645,7 @@ static LMMediaPlayerView *sharedPlayerView;
 		[_fullscreenButton_ setImage:buttonImages_[LMMediaPlayerViewFullscreenButtonSelectedImageKey] forState:UIControlStateSelected];
 
 		newRect = superView_.bounds;
-        newRect.size.height = newRect.size.height - 20; // TWS
+        newRect.size.height = newRect.size.height - 20; //TWS
         
         self.frame = newRect;
 		[superView_ addSubview:self];

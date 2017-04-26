@@ -45,6 +45,8 @@
 
 // Timer Process
 @property (nonatomic, strong) NSTimer *timerProcess;
+@property (nonatomic, strong) NSTimer *timerUpdateApplicationIconBadgeNumber;
+@property (nonatomic, strong) NSTimer *timerVerifySessionInProgress;
 
 // For LMMediaPlayerView
 @property (strong, nonatomic) UIWindow *window;
@@ -83,7 +85,6 @@
 @property (nonatomic, copy) void (^backgroundSessionCompletionHandler)(void);
 @property (nonatomic, strong) NSDate *sessionDateLastUploadTasks;
 @property (nonatomic, strong) NSDate *sessionDateLastDownloadTasks;
-@property (nonatomic, strong) NSTimer *timerVerifySessionInProgress;
 
 // Network Share
 @property (nonatomic, strong) NSMutableDictionary *sharesID;
@@ -168,7 +169,6 @@
 - (void)loadAutomaticUpload;
 
 - (BOOL)createFolderSubFolderAutomaticUploadFolderPhotos:(NSString *)folderPhotos useSubFolder:(BOOL)useSubFolder assets:(NSArray *)assets selector:(NSString *)selector;
-- (void)dropAutomaticUploadWithSelector:(NSString *)selector;
 
 @end
 

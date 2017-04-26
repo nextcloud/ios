@@ -114,6 +114,37 @@
     return scaledImage;
 }
 
++ (UIImage *)scaleImage:(UIImage *)image toSize:(CGSize)targetSize isAspectRation:(BOOL)aspect
+{
+    CGFloat originRatio = image.size.width / image.size.height;
+    CGFloat newRatio = targetSize.width / targetSize.height;
+    CGSize sz;
+    CGFloat scale = 1.0;
+    
+    if (!aspect) {
+        sz = targetSize;
+    }else {
+        if (originRatio < newRatio) {
+            sz.height = targetSize.height;
+            sz.width = targetSize.height * originRatio;
+        }else {
+            sz.width = targetSize.width;
+            sz.height = targetSize.width / originRatio;
+        }
+    }
+    
+    sz.width /= scale;
+    sz.height /= scale;
+    
+    UIGraphicsBeginImageContextWithOptions(sz, NO, scale);
+    [image drawInRect:CGRectMake(0, 0, sz.width, sz.height)];
+    UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    return newImage;
+}
+
+
 + (UIImage *)createNewImageFrom:(NSString *)fileName directoryUser:(NSString *)directoryUser fileNameTo:(NSString *)fileNameTo fileNamePrint:(NSString *)fileNamePrint size:(NSString *)size imageForUpload:(BOOL)imageForUpload typeFile:(NSString *)typeFile writePreview:(BOOL)writePreview optimizedFileName:(BOOL)optimizedFileName
 {
     UIImage *originalImage;
@@ -234,3 +265,28 @@
 }
 
 @end
+
+
+// ------------------------------------------------------------------------------------------------------
+// MARK: Avatar
+// ------------------------------------------------------------------------------------------------------
+
+@implementation CCAvatar
+
+- (id)initWithImage:(UIImage *)image borderColor:(UIColor*)borderColor borderWidth:(float)borderWidth
+{
+    self = [super initWithImage:image];
+    
+    float cornerRadius = self.frame.size.height/2.0f;
+    CALayer *layer = [self layer];
+        
+    [layer setMasksToBounds:YES];
+    [layer setCornerRadius: cornerRadius];
+    [layer setBorderWidth: borderWidth];
+    [layer setBorderColor:[borderColor CGColor]];
+    
+    return self;
+}
+
+@end
+

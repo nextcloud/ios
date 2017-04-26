@@ -240,8 +240,8 @@
             [CCCoreData setCameraUploadDateVideo:NULL];
 
             // remove
-            [app dropAutomaticUploadWithSelector:selectorUploadAutomatic];
-            [app dropAutomaticUploadWithSelector:selectorUploadAutomaticAll];
+            [self dropAutomaticUploadWithSelector:selectorUploadAutomatic];
+            [self dropAutomaticUploadWithSelector:selectorUploadAutomaticAll];
         }
         
         // Initialize Camera Upload
@@ -288,7 +288,7 @@
             
         } else {
             
-            [app dropAutomaticUploadWithSelector:selectorUploadAutomaticAll];
+            [self dropAutomaticUploadWithSelector:selectorUploadAutomaticAll];
             [CCCoreData setCameraUploadFullPhotosActiveAccount:NO activeAccount:app.activeAccount];
         }
     }
@@ -482,6 +482,11 @@
             break;
     }
     return sectionName;
+}
+
+- (void)dropAutomaticUploadWithSelector:(NSString *)selector
+{
+    [CCCoreData flushTableAutomaticUploadAccount:app.activeAccount selector:selector];
 }
 
 @end

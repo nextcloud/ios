@@ -35,6 +35,8 @@
 
 @interface CCManageAccount ()
 {
+    TableAccount *_tableAccount;
+
     CCLoginWeb *_loginWeb;
     CCLogin *_loginVC;
 }
@@ -49,16 +51,62 @@
     XLFormRowDescriptor *row;
     
     NSArray *listAccount = [CCCoreData getAllAccount];
+
+    // Section : PICKER ACCOUNT -------------------------------------------
     
     section = [XLFormSectionDescriptor formSectionWithTitle:@"cloud account"];
     [form addFormSection:section];
     form.rowNavigationOptions = XLFormRowNavigationOptionNone;
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"pickerAccount" rowType:XLFormRowDescriptorTypePicker];
-        
+    row.height = 90;
     row.selectorOptions = listAccount;
     row.value = app.activeAccount;
     [section addFormRow:row];
+
+    // Section : USER INFORMATION -------------------------------------------
+    
+    section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_personal_information_", nil)];
+    [form addFormSection:section];
+    
+    // Full Name
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"userfullname" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_full_name_", nil)];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
+    [section addFormRow:row];
+    
+    // Address
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"useraddress" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_address_", nil)];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
+    [section addFormRow:row];
+    
+    // Phone
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"userphone" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_phone_", nil)];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
+    [section addFormRow:row];
+    
+    // Email
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"useremail" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_email_", nil)];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
+    [section addFormRow:row];
+    
+    // Web
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"userweb" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_web_", nil)];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
+    [section addFormRow:row];
+    
+    // Twitter
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"usertwitter" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_twitter_", nil)];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
+    [section addFormRow:row];
+
+    
+    // Section : MANAGE ACCOUNT -------------------------------------------
     
     section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_manage_account_", nil)];
     [form addFormSection:section];
@@ -73,16 +121,18 @@
     if (listAccount.count == 0) row.disabled = @YES;
     [section addFormRow:row];
 
-#ifndef OPTION_MULTIUSER_DISABLE
-    // New Account nextcloud
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"addAccountNextcloud" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_add_nextcloud_", nil)];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIImage imageNamed:image_settingsAccountNextcloud] forKey:@"imageView.image"];
-    [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
-    [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
-    row.action.formSelector = @selector(addAccount:);
-    [section addFormRow:row];
-#endif
+    // Brand
+    if (k_option_disable_multiaccount == NO) {
+    
+        // New Account nextcloud
+        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"addAccountNextcloud" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_add_nextcloud_", nil)];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+        [row.cellConfig setObject:[UIImage imageNamed:image_settingsAccountNextcloud] forKey:@"imageView.image"];
+        [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
+        [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
+        row.action.formSelector = @selector(addAccount:);
+        [section addFormRow:row];
+    }
     
     // delete Account
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"delAccount" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_delete_account_", nil)];
@@ -93,6 +143,7 @@
     row.action.formSelector = @selector(answerDelAccount:);
     if (listAccount.count == 0) row.disabled = @YES;
     [section addFormRow:row];
+    
     
     return [super initWithForm:form];
 }
@@ -147,44 +198,48 @@
     [app cancelAllOperations];
     [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:k_taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
     
-#ifdef LOGIN_WEB
+    // Brand
+    if (k_option_use_login_web) {
     
-    _loginWeb = [CCLoginWeb new];
-    _loginWeb.delegate = self;
-    _loginWeb.loginType = loginAdd;
+        _loginWeb = [CCLoginWeb new];
+        _loginWeb.delegate = self;
+        _loginWeb.loginType = loginAdd;
     
-    [_loginWeb presentModalWithDefaultTheme:self];
+        [_loginWeb presentModalWithDefaultTheme:self];
+        
+    } else {
+  
+        _loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
+        _loginVC.delegate = self;
+        _loginVC.loginType = loginAdd;
     
-#else
-    _loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
-    _loginVC.delegate = self;
-    _loginVC.loginType = loginAdd;
-    
-    [self presentViewController:_loginVC animated:YES completion:nil];
-    
-#endif
+        [self presentViewController:_loginVC animated:YES completion:nil];
+    }
 }
 
 - (void)addAccountFoced
 {
-#ifdef LOGIN_WEB
+    // Brand
+    if (k_option_use_login_web) {
     
-    _loginWeb = [CCLoginWeb new];
-    _loginWeb.delegate = self;
-    _loginWeb.loginType = loginAddForced;
+        _loginWeb = [CCLoginWeb new];
+        _loginWeb.delegate = self;
+        _loginWeb.loginType = loginAddForced;
     
-    dispatch_async(dispatch_get_main_queue(), ^ {
-        [_loginWeb presentModalWithDefaultTheme:self];
-    });
-#else
-    _loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
-    _loginVC.delegate = self;
-    _loginVC.loginType = loginAddForced;
-    
-    dispatch_async(dispatch_get_main_queue(), ^ {
-        [self presentViewController:_loginVC animated:YES completion:nil];
-    });
-#endif
+        dispatch_async(dispatch_get_main_queue(), ^ {
+            [_loginWeb presentModalWithDefaultTheme:self];
+        });
+        
+    } else {
+        
+        _loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
+        _loginVC.delegate = self;
+        _loginVC.loginType = loginAddForced;
+        
+        dispatch_async(dispatch_get_main_queue(), ^ {
+            [self presentViewController:_loginVC animated:YES completion:nil];
+        });
+    }
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -198,24 +253,27 @@
     [app cancelAllOperations];
     [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:k_taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
     
-#ifdef LOGIN_WEB
+    // Brand
+    if (k_option_use_login_web) {
     
-    _loginWeb = [CCLoginWeb new];
-    _loginWeb.delegate = self;
-    _loginWeb.loginType = loginModifyPasswordUser;
+        _loginWeb = [CCLoginWeb new];
+        _loginWeb.delegate = self;
+        _loginWeb.loginType = loginModifyPasswordUser;
     
-    dispatch_async(dispatch_get_main_queue(), ^ {
-        [_loginWeb presentModalWithDefaultTheme:self];
-    });
-#else
-    _loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
-    _loginVC.delegate = self;
-    _loginVC.loginType = loginModifyPasswordUser;
+        dispatch_async(dispatch_get_main_queue(), ^ {
+            [_loginWeb presentModalWithDefaultTheme:self];
+        });
+
+    } else {
+        
+        _loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
+        _loginVC.delegate = self;
+        _loginVC.loginType = loginModifyPasswordUser;
     
-    dispatch_async(dispatch_get_main_queue(), ^ {
-        [self presentViewController:_loginVC animated:YES completion:nil];
-    });
-#endif
+        dispatch_async(dispatch_get_main_queue(), ^ {
+            [self presentViewController:_loginVC animated:YES completion:nil];
+        });
+    }
     
     [self UpdateForm];
 }
@@ -326,6 +384,63 @@
     pickerAccount.rowDescriptor.selectorOptions = listAccount;
     pickerAccount.rowDescriptor.value = app.activeAccount;
     
+    UIImage *avatar = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/avatar.png", app.directoryUser]];
+    if (avatar) {
+    
+        avatar = [CCGraphics scaleImage:avatar toSize:CGSizeMake(40, 40) isAspectRation:YES];
+    
+        CCAvatar *avatarImageView = [[CCAvatar alloc] initWithImage:avatar borderColor:[UIColor lightGrayColor] borderWidth:0.5];
+        
+        CGSize imageSize = avatarImageView.bounds.size;
+        UIGraphicsBeginImageContextWithOptions(imageSize, NO, 0);
+        CGContextRef context = UIGraphicsGetCurrentContext();
+        [avatarImageView.layer renderInContext:context];
+        avatar = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext();
+        
+    } else {
+        
+        avatar = [UIImage imageNamed:@"avatarBN"];
+    }
+    
+    
+    [pickerAccount.rowDescriptor.cellConfig setObject:avatar forKey:@"imageView.image"];
+
+    // --
+    
+     _tableAccount = [CCCoreData getActiveAccount];
+    
+    XLFormRowDescriptor *rowUserFullName = [self.form formRowWithTag:@"userfullname"];
+    XLFormRowDescriptor *rowUserAddress = [self.form formRowWithTag:@"useraddress"];
+    XLFormRowDescriptor *rowUserPhone = [self.form formRowWithTag:@"userphone"];
+    XLFormRowDescriptor *rowUserEmail = [self.form formRowWithTag:@"useremail"];
+    XLFormRowDescriptor *rowUserWeb = [self.form formRowWithTag:@"userweb"];
+    XLFormRowDescriptor *rowUserTwitter = [self.form formRowWithTag:@"usertwitter"];
+
+    rowUserFullName.value = _tableAccount.displayName;
+    if ([_tableAccount.displayName isEqualToString:@""] || _tableAccount.displayName == nil) rowUserFullName.hidden = @YES;
+    else rowUserFullName.hidden = @NO;
+    
+    rowUserAddress.value = _tableAccount.address;
+    if ([_tableAccount.address isEqualToString:@""] || _tableAccount.address == nil) rowUserAddress.hidden = @YES;
+    else rowUserAddress.hidden = @NO;
+    
+    rowUserPhone.value = _tableAccount.phone;
+    if ([_tableAccount.phone isEqualToString:@""] || _tableAccount.phone == nil) rowUserPhone.hidden = @YES;
+    else rowUserPhone.hidden = @NO;
+    
+    rowUserEmail.value = _tableAccount.email;
+    if ([_tableAccount.email isEqualToString:@""] || _tableAccount.email == nil) rowUserEmail.hidden = @YES;
+    else rowUserEmail.hidden = @NO;
+    
+    rowUserWeb.value = _tableAccount.webpage;
+    if ([_tableAccount.webpage isEqualToString:@""] || _tableAccount.webpage == nil) rowUserWeb.hidden = @YES;
+    else rowUserWeb.hidden = @NO;
+    
+    rowUserTwitter.value = _tableAccount.twitter;
+    if ([_tableAccount.twitter isEqualToString:@""] || _tableAccount.twitter == nil) rowUserTwitter.hidden = @YES;
+    else rowUserTwitter.hidden = @NO;
+
     [self.tableView reloadData];
     
     [self performSelector:@selector(reloadData) withObject:nil afterDelay:1];
@@ -335,5 +450,17 @@
 {
     [self.tableView reloadData];
 }
+
+/*
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    XLFormRowDescriptor *row = [self.form formRowAtIndex:indexPath];
+    
+    if ([row.tag isEqualToString:@"pickerAccount"]) {
+        // set background color in here
+        
+    }
+}
+*/
 
 @end

@@ -22,8 +22,9 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "UIScrollView+EmptyDataSet.h"
 
-@interface CCActivity : UICollectionViewController <UICollectionViewDataSource, UICollectionViewDelegate>
+@interface CCActivity : UICollectionViewController <UICollectionViewDataSource, UICollectionViewDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate>
 
 @property NSUInteger pageIndex;
 

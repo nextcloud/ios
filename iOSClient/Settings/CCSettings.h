@@ -32,11 +32,8 @@
 
 @interface CCSettings : XLFormViewController <BKPasscodeViewControllerDelegate, MFMailComposeViewControllerDelegate>
 
-@property (strong, nonatomic) TableAccount *tableAccount;
 @property (nonatomic) NSUInteger failedAttempts;
-
 @property (strong, nonatomic) NSDate *lockUntilDate;
-
 
 - (void)reloadForm;
 

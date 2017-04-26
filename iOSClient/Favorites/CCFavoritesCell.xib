@@ -19,13 +19,8 @@
                 <rect key="frame" x="0.0" y="0.0" width="600" height="59.5"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <view alpha="0.10000000149011612" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="hzp-7C-oyF" userLabel="Gray">
-                        <rect key="frame" x="0.0" y="0.0" width="60" height="60"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <color key="backgroundColor" red="0.66666666669999997" green="0.66666666669999997" blue="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                    </view>
                     <label opaque="NO" userInteractionEnabled="NO" tag="101" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QNC-8X-DAC">
-                        <rect key="frame" x="68" y="13" width="465" height="20"/>
+                        <rect key="frame" x="60" y="13" width="473" height="20"/>
                         <fontDescription key="fontDescription" type="system" pointSize="16"/>
                         <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <nil key="highlightedColor"/>
@@ -45,7 +40,7 @@
                         </constraints>
                     </imageView>
                     <label opaque="NO" userInteractionEnabled="NO" tag="102" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="p7I-KN-FVZ">
-                        <rect key="frame" x="68" y="33" width="465" height="15"/>
+                        <rect key="frame" x="60" y="33" width="473" height="15"/>
                         <fontDescription key="fontDescription" type="system" pointSize="12"/>
                         <color key="textColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.59999999999999998" alpha="1" colorSpace="calibratedRGB"/>
                         <nil key="highlightedColor"/>
@@ -61,13 +56,13 @@
                 <constraints>
                     <constraint firstItem="DQR-yN-JaH" firstAttribute="top" secondItem="dhG-hb-z3n" secondAttribute="top" id="0XU-Ho-ald"/>
                     <constraint firstItem="5" firstAttribute="leading" secondItem="sQq-jC-UEV" secondAttribute="leadingMargin" constant="2" id="1yX-Zr-1lx"/>
-                    <constraint firstItem="p7I-KN-FVZ" firstAttribute="leading" secondItem="DQR-yN-JaH" secondAttribute="trailing" constant="16" id="2xR-G4-B2S"/>
+                    <constraint firstItem="p7I-KN-FVZ" firstAttribute="leading" secondItem="DQR-yN-JaH" secondAttribute="trailing" constant="8" id="2xR-G4-B2S"/>
                     <constraint firstItem="dhG-hb-z3n" firstAttribute="top" secondItem="sQq-jC-UEV" secondAttribute="topMargin" constant="32" id="4Zy-SY-nfT"/>
                     <constraint firstItem="QNC-8X-DAC" firstAttribute="trailing" secondItem="sQq-jC-UEV" secondAttribute="trailingMargin" constant="-59" id="7zt-c0-CsI"/>
                     <constraint firstAttribute="centerY" secondItem="5" secondAttribute="centerY" id="FQP-wg-vPF"/>
                     <constraint firstItem="DQR-yN-JaH" firstAttribute="top" secondItem="p7I-KN-FVZ" secondAttribute="top" constant="6.5" id="K6B-gJ-8Fp"/>
-                    <constraint firstItem="p7I-KN-FVZ" firstAttribute="leading" secondItem="5" secondAttribute="trailing" constant="18" id="K7G-0u-f8E"/>
-                    <constraint firstItem="QNC-8X-DAC" firstAttribute="leading" secondItem="5" secondAttribute="trailing" constant="18" id="UYc-Al-a4h"/>
+                    <constraint firstItem="p7I-KN-FVZ" firstAttribute="leading" secondItem="5" secondAttribute="trailing" constant="10" id="K7G-0u-f8E"/>
+                    <constraint firstItem="QNC-8X-DAC" firstAttribute="leading" secondItem="5" secondAttribute="trailing" constant="10" id="UYc-Al-a4h"/>
                     <constraint firstItem="p7I-KN-FVZ" firstAttribute="top" secondItem="QNC-8X-DAC" secondAttribute="bottom" id="cJT-LE-kot"/>
                     <constraint firstItem="dhG-hb-z3n" firstAttribute="leading" secondItem="sQq-jC-UEV" secondAttribute="leadingMargin" constant="-4" id="dNM-6x-zkx"/>
                     <constraint firstItem="p7I-KN-FVZ" firstAttribute="trailing" secondItem="sQq-jC-UEV" secondAttribute="trailingMargin" constant="-59" id="kaB-WS-bDl"/>

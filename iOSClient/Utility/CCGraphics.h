@@ -38,5 +38,12 @@
 + (void)saveIcoWithFileID:(NSString *)fileID image:(UIImage *)image writeToFile:(NSString *)writeToFile copy:(BOOL)copy move:(BOOL)move fromPath:(NSString *)fromPath toPath:(NSString *)toPath;
 
 + (UIImage *)scaleImage:(UIImage *)image toSize:(CGSize)targetSize;
++ (UIImage *)scaleImage:(UIImage *)image toSize:(CGSize)targetSize isAspectRation:(BOOL)aspect;
+
+@end
+
+@interface CCAvatar : UIImageView
+
+- (id)initWithImage:(UIImage *)image borderColor:(UIColor*)borderColor borderWidth:(float)borderWidth;
 
 @end

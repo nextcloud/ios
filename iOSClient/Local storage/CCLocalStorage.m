@@ -80,10 +80,7 @@
 // E' arrivato
 - (void)viewDidAppear:(BOOL)animated
 {
-    [super viewDidAppear:animated];
-        
-    // update Badge
-    [app updateApplicationIconBadgeNumber];
+    [super viewDidAppear:animated];        
 }
 
 - (void)didReceiveMemoryWarning {
@@ -115,14 +112,14 @@
 
 - (UIImage *)imageForEmptyDataSet:(UIScrollView *)scrollView
 {
-    return [UIImage imageNamed:image_brandBackgroundLite];
+    return [UIImage imageNamed:image_localStorageNoRecord];
 }
 
 - (NSAttributedString *)titleForEmptyDataSet:(UIScrollView *)scrollView
 {
-    NSString *text = [NSString stringWithFormat:@"%@", @""];
+    NSString *text = [NSString stringWithFormat:@"%@", NSLocalizedString(@"_local_storage_no_record_", nil)];
     
-    NSDictionary *attributes = @{NSFontAttributeName:[UIFont boldSystemFontOfSize:20.0f], NSForegroundColorAttributeName:COLOR_BRAND};
+    NSDictionary *attributes = @{NSFontAttributeName:[UIFont boldSystemFontOfSize:20.0f], NSForegroundColorAttributeName:[UIColor lightGrayColor]};
     
     return [[NSAttributedString alloc] initWithString:text attributes:attributes];
 }

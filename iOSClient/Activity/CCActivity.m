@@ -60,6 +60,10 @@
     
     [super viewDidLoad];
     
+    self.collectionView.emptyDataSetSource = self;
+    self.collectionView.emptyDataSetDelegate = self;
+    self.collectionView.delegate = self;
+    
     _verbose = [CCUtility getActivityVerboseHigh];
     
     _sectionDataSource = [NSArray new];
@@ -79,6 +83,9 @@
     // Color
     [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
     [CCAspect aspectTabBar:self.tabBarController.tabBar hidden:NO];
+    
+    // Plus Button
+    [app plusButtonVisibile:true];
 }
 
 // E' arrivato
@@ -92,6 +99,37 @@
 - (void)didReceiveMemoryWarning {
     
     [super didReceiveMemoryWarning];
+}
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ==== DZNEmptyDataSetSource ====
+#pragma --------------------------------------------------------------------------------------------
+
+- (BOOL)emptyDataSetShouldDisplay:(UIScrollView *)scrollView
+{
+    if([_sectionDataSource count] > 0)
+        return NO;
+    else
+        return YES;
+}
+
+- (UIColor *)backgroundColorForEmptyDataSet:(UIScrollView *)scrollView
+{
+    return [UIColor whiteColor];
+}
+
+- (UIImage *)imageForEmptyDataSet:(UIScrollView *)scrollView
+{
+    return [UIImage imageNamed:image_activityNoRecord];
+}
+
+- (NSAttributedString *)titleForEmptyDataSet:(UIScrollView *)scrollView
+{
+    NSString *text = [NSString stringWithFormat:@"%@", NSLocalizedString(@"_no_activity_", nil)];
+
+    NSDictionary *attributes = @{NSFontAttributeName:[UIFont boldSystemFontOfSize:20.0f], NSForegroundColorAttributeName:[UIColor lightGrayColor]};
+    
+    return [[NSAttributedString alloc] initWithString:text attributes:attributes];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -122,21 +160,15 @@
 {
     NSDate *dateActivity;
     
-    if ([_sectionDataSource count] == 0) {
-            
-        
-            
-    } else {
-            
+    if ([_sectionDataSource count] > 0)
         dateActivity = ((TableActivity *)[_sectionDataSource objectAtIndex:0]).date;
-    }
 
     if ([dateActivity compare:_storeDateFirstActivity] == NSOrderedDescending || _storeDateFirstActivity == nil || dateActivity == nil) {
         _storeDateFirstActivity = dateActivity;
         [self.collectionView reloadData];
-    }
+    }    
 }
-    
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark - ==== Table ====
 #pragma --------------------------------------------------------------------------------------------
