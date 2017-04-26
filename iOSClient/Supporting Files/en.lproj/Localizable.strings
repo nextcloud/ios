@@ -124,7 +124,7 @@
 "_synchronizations_"        = "Synchronized folders";
 "_version_server_"          = "Server version";
 "_check_key_aes_256_"       = "Control encryption key passcode";
-"_encryptpass_by_email_"    = "Send encryption key passcode by mail";
+"_encryptpass_by_email_"    = "Send by email";
 "_title_mail_encryptpass_"  = "Encryption Key Passcode _brand_";
 "_text1_mail_encryptpass_"  = "Your encryption key passcode is";
 "_text2_mail_encryptpass_"  = "store it securely and away from prying eyes.";
@@ -135,7 +135,7 @@
 "_available_"               = "available";
 "_cloud_account_"           = "Cloud Account";
 "_information_"             = "Information";
-"_user_information_"        = "User Information";
+"_personal_information_"    = "Personal info";
 "_user_full_name_"          = "Full name";
 "_user_address_"            = "Address";
 "_user_phone_"              = "Phone number";
@@ -210,27 +210,30 @@
 
 "_security_init_required_hint_" = "Hint for encryption key passcode (Recommended)";
 "_hint_"                        = "Hint";
-"_security_init_required_mail_" = "Enter your email address that the encryption key passcode is send to(recommended).";
+"_security_init_required_mail_" = "Enter your email address to receive the encryption key passcode (recommended).";
 "_email_"                       = "Email";
 "_title_form_security_init_"    = "Security options";
 "_login_bottom_label_"          = "Don't have a server yet?\nChoose one of the providers.";
 
-// offline
+// Favorite
 
 "_favorites_"                   = "Favorites";
 "_offline_"                     = "Offline";
 "_local_storage_"               = "Local storage";
+"_local_storage_no_record_"     = "No files yet";
 "_no_files_uploaded_"           = "No files uploaded";
-"_tutorial_favorite_view_"      = "Here is the list of files that you have selected as favorites.";
+"_tutorial_favorite_view_"      = "Files and folders you mark as favorite will show up here";
 "_tutorial_offline_view_"       = "Copy here the files that should be available offline.\n\nThey will be synchronized with your cloud.";
 "_tutorial_local_view_"         = "You'll find the unpacked files from your cloud.\n\nConnect to iTunes to share these files.";
 "_more_"                        = "More";
+"_favorite_no_files_"           = "No favorites yet";
+
 
 // Camera Upload
 
 "_pull_down_"                               = "Pull down to refresh";
 "_no_photo_load_"                           = "No Photo or Video";
-"_tutorial_camera_upload_view_"             = "No photos or videos loaded, to enable the automatic upload of photos and videos from the camera go to the settings and activate the service 'Automatic upload of camera photos'";
+"_tutorial_camera_upload_view_"             = "You can enable camera upload from the settings";
 "_no_date_"                                 = "No date";
 "_today_"                                   = "Today";
 "_time_"                                    = "Time : %@\n\n%@";
@@ -241,10 +244,10 @@
 "_access_photo_location_not_enabled_"       = "Access to Photos and Location not enabled";
 "_access_photo_location_not_enabled_msg_"   = "Please go to Setting and turn on Photo Access and Location Services to allow automatic camera photo/video uploads.";
 "_processing_send_camera_upload_"           = "Uploading camera photo ...";
-"_tutorial_photo_view_"                     = "No photos or videos loaded";
+"_tutorial_photo_view_"                     = "No photos or videos uploaded yet";
 "_create_full_upload_"                      = "Creating archive .. may take a long time, please wait";
 "_error_createsubfolders_upload_"           = "Error creating subfolders";
-"_activate_camera_upload_"                  = "Activate camera upload";
+"_activate_camera_upload_"                  = "Enable camera upload";
 
 // Template
 
@@ -357,7 +360,7 @@
 "_downloading_progress_"        = "Initiating download of files ...";
 "_encrypted_progress_"          = "Encrypted ...";
 "_decrypted_progress_"          = "Decrypted ...";
-"_no_file_pull_down_"           = "No files found. Upload a file or pull down to refresh";
+"_no_file_pull_down_"           = "Upload a file or pull down to refresh";
 "_browse_images_"               = "Browse images";
 "_synchronized_folder_"         = "Keep the folder synchronized";
 "_remove_synchronized_folder_"  = "Remove the synchronization";
@@ -392,6 +395,7 @@
 "_search_no_record_found_"      = "No result";
 "_search_in_progress_"          = "Search in progress...";
 "_search_instruction_"          = "Search a file (minimum 2 characters)";
+"_files_no_files_"              = "No files in here";
 
 "audio"                         = "AUDIO";
 "compress"                      = "COMPRESS";
@@ -492,10 +496,10 @@
 
 "_destiny_folder_"                  = "Folder : %@";
 
-// Control Center
 
-"_no_transfer_"                     = "No transfer";
-"_no_activity_"                     = "No activity";
+"_no_transfer_"                     = "No transfers yet";
+"_no_transfer_sub_"                 = "Uploads and downloads from this device will show up here";
+"_no_activity_"                     = "No activity yet";
 "_transfers_"                       = "Transfers";
 "_activity_"                        = "Activity";
 "_activity_file_not_present_"       = "File no longer present";
