@@ -128,6 +128,14 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         CCNetworking.shared().settingDelegate(self)
         hud = CCHud.init(view: self.navigationController?.view)
         
+        // Theming
+        let tableCapabilities = CCCoreData.getCapabilitesForAccount(activeAccount)
+        if (tableCapabilities != nil && CCGraphics.isOptionUseThemingColor() == true) {
+            if ((tableCapabilities?.themingColor?.characters.count)! > 0) {
+                NCBrandColor.sharedInstance.brand = CCGraphics.color(fromHexString: tableCapabilities?.themingColor)
+            }
+        }
+        
         // COLOR
         self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand
         self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.navigationBarText
@@ -728,12 +736,18 @@ extension DocumentPickerViewController: UITableViewDataSource {
             
         } else {
             
-            cell.fileImageView.image = UIImage(named: metadata.iconName!)
-            
-            if metadata.thumbnailExists && metadata.directory == false {
+            if metadata.directory {
                 
-                downloadThumbnail(metadata)
-                thumbnailInLoading[metadata.fileID] = indexPath
+                cell.fileImageView.image = CCGraphics.changeThemingColorImage(UIImage(named: metadata.iconName!), color: NCBrandColor.sharedInstance.brand)
+                
+            } else {
+                
+                cell.fileImageView.image = UIImage(named: metadata.iconName!)
+                if metadata.thumbnailExists {
+                    
+                    downloadThumbnail(metadata)
+                    thumbnailInLoading[metadata.fileID] = indexPath
+                }
             }
         }
         

@@ -290,6 +290,11 @@
     return [UIImage imageWithCGImage:img.CGImage scale:2.0 orientation: UIImageOrientationDownMirrored];
 }
 
++ (BOOL)isOptionUseThemingColor
+{
+    return k_option_use_themingColor;
+}
+
 @end
 
 // ------------------------------------------------------------------------------------------------------

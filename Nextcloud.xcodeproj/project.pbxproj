@@ -166,7 +166,6 @@
 		F74344671E127E38001CC831 /* CCMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = F7C8C1731B482A920048180E /* CCMetadata.m */; };
 		F74344781E127E9E001CC831 /* CCExifGeo.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A54C351C6267B500E2C8BF /* CCExifGeo.m */; };
 		F74344791E127EA1001CC831 /* CCError.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B881C638A4C00DC4301 /* CCError.m */; };
-		F743447A1E127EA6001CC831 /* CCGraphics.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B841C6388BC00DC4301 /* CCGraphics.m */; };
 		F743447B1E127EAC001CC831 /* CCUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = F7053E3D1C639DF500741EA5 /* CCUtility.m */; };
 		F743447C1E127EB2001CC831 /* NSString+TruncateToWidth.m in Sources */ = {isa = PBXBuildFile; fileRef = F73049B91CB567F000C7C320 /* NSString+TruncateToWidth.m */; };
 		F743447D1E127ECB001CC831 /* AESCrypt.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02AB1C889183008DAB36 /* AESCrypt.m */; };
@@ -539,6 +538,7 @@
 		F7C525A21E3B6DA800FFE02C /* CCNotification.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7C525A11E3B6DA800FFE02C /* CCNotification.storyboard */; };
 		F7C742D81E7BD5C900D9C973 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7C742D71E7BD5C900D9C973 /* MainInterface.storyboard */; };
 		F7D2677C1E157053005ACB7E /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7F67BB81A24D27800EE80DA /* Images.xcassets */; };
+		F7E718B01EB0FBE700FA58C9 /* CCGraphics.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B841C6388BC00DC4301 /* CCGraphics.m */; };
 		F7ECBA6D1E239DCD003E6328 /* CCCreateCloud.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7ECBA6C1E239DCD003E6328 /* CCCreateCloud.swift */; };
 		F7EF0CAF1D9E95F400A9D15E /* CCSharedDBSession.m in Sources */ = {isa = PBXBuildFile; fileRef = F7EF0CAD1D9E95F400A9D15E /* CCSharedDBSession.m */; };
 		F7F06E8D1DBFACC600099AE9 /* NSBundle+CTAssetsPickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F06E2E1DBFACC600099AE9 /* NSBundle+CTAssetsPickerController.m */; };
@@ -4024,7 +4024,6 @@
 				F708CF931E56E8CC00271D8B /* TableAutomaticUpload+CoreDataClass.m in Sources */,
 				F74344801E127ED3001CC831 /* NSString+Base64.m in Sources */,
 				F708CF871E56E8CC00271D8B /* TableShare+CoreDataClass.m in Sources */,
-				F743447A1E127EA6001CC831 /* CCGraphics.m in Sources */,
 				F708CF9C1E56E8CC00271D8B /* TableAccount+CoreDataProperties.m in Sources */,
 				F76B3CE71EAE4E5100921AC9 /* TableCapabilities+CoreDataProperties.m in Sources */,
 				F708CF811E56E8CC00271D8B /* TableDirectory+CoreDataClass.m in Sources */,
@@ -4043,6 +4042,7 @@
 				F74344671E127E38001CC831 /* CCMetadata.m in Sources */,
 				F73CC0741E813DFF006E3047 /* BKPasscodeLockScreenManager.m in Sources */,
 				F74344781E127E9E001CC831 /* CCExifGeo.m in Sources */,
+				F7E718B01EB0FBE700FA58C9 /* CCGraphics.m in Sources */,
 				F74344171E1264EE001CC831 /* DocumentPickerViewController.swift in Sources */,
 				F74344811E127F49001CC831 /* AFViewShaker.m in Sources */,
 				F74344791E127EA1001CC831 /* CCError.m in Sources */,

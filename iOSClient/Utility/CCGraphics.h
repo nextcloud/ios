@@ -43,6 +43,8 @@
 + (UIColor *)colorFromHexString:(NSString *)hexString;
 + (UIImage *)changeThemingColorImage:(UIImage *)image color:(UIColor *)color;
 
++ (BOOL)isOptionUseThemingColor;
+
 @end
 
 @interface CCAvatar : UIImageView
