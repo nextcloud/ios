@@ -61,7 +61,7 @@
     form.rowNavigationOptions = XLFormRowNavigationOptionNone;
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"pickerAccount" rowType:XLFormRowDescriptorTypePicker];
-    row.height = 90;
+    row.height = 100;
     row.selectorOptions = listAccount;
     row.value = app.activeAccount;
     [section addFormRow:row];

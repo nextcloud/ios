@@ -42,6 +42,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     var menuExternalSite: [TableExternalSites]?
     var tableAccont : TableAccount?
+    var refreshControl: UIRefreshControl!
     
     override func viewDidLoad() {
         
@@ -53,6 +54,14 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         tableView.separatorColor = NCBrandColor.sharedInstance.seperator
         
         imageLogo.image = UIImage.init(named: NCBrandImages.sharedInstance.themingBackground)
+        
+        // Refresh COntroller
+        /*
+        refreshControl = UIRefreshControl()
+        refreshControl.addTarget(self, action: #selector(self.refresh), for: UIControlEvents.valueChanged)
+        //refreshControl.tintColor = UIColor.clear
+        tableView.addSubview(refreshControl)
+        */
         
         // create tap gesture recognizer
         let tapQuota = UITapGestureRecognizer(target: self, action: #selector(tapLabelQuotaExternalSite))
@@ -313,6 +322,28 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
                 self.present(webVC, animated: true, completion: nil)
             }
         }
+    }
+    
+    func refresh(sender:AnyObject) {
+        // Code to refresh table view
+        refreshControl.endRefreshing()
+    }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let offsetY = tableView.contentOffset.y
+        print(" Y : \(offsetY)")
+
+        /*
+        let imageLogoH = self.imageLogo.frame.size.height
+        
+        //if (imageLogoH > self.imageLogo.frame.size.height-offsetY) {
+            self.imageLogo.frame = CGRect(x: self.imageLogo.frame.origin.x, y: self.imageLogo.frame.origin.y, width: self.imageLogo.frame.size.width, height: self.imageLogo.frame.size.height-offsetY)
+        } else {
+            self.imageLogo.frame = CGRect(x: self.imageLogo.frame.origin.x, y: self.imageLogo.frame.origin.y, width: self.imageLogo.frame.size.width, height: self.imageLogo.frame.size.height+offsetY)
+
+        }
+    */
+        //self.imageLogo.frame = CGRect(x: self.imageLogo.frame.origin.x, y: self.imageLogo.frame.origin.y, width: self.imageLogo.frame.size.width-y, height: self.imageLogo.frame.size.height-y)
     }
     
     func tapLabelQuotaExternalSite() {
