@@ -26,8 +26,8 @@ import UIKit
 
 class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
-    @IBOutlet weak var imageLogo: UIImageView!
-    @IBOutlet weak var imageAvatar: UIImageView!
+    @IBOutlet weak var themingBackground: UIImageView!
+    @IBOutlet weak var themingAvatar: UIImageView!
     @IBOutlet weak var labelUsername: UILabel!
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var labelQuota: UILabel!
@@ -42,7 +42,6 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     var menuExternalSite: [TableExternalSites]?
     var tableAccont : TableAccount?
-    var refreshControl: UIRefreshControl!
     
     override func viewDidLoad() {
         
@@ -53,15 +52,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         
         tableView.separatorColor = NCBrandColor.sharedInstance.seperator
         
-        imageLogo.image = UIImage.init(named: NCBrandImages.sharedInstance.themingBackground)
-        
-        // Refresh COntroller
-        /*
-        refreshControl = UIRefreshControl()
-        refreshControl.addTarget(self, action: #selector(self.refresh), for: UIControlEvents.valueChanged)
-        //refreshControl.tintColor = UIColor.clear
-        tableView.addSubview(refreshControl)
-        */
+        themingBackground.image = UIImage.init(named: NCBrandImages.sharedInstance.themingBackground)
         
         // create tap gesture recognizer
         let tapQuota = UITapGestureRecognizer(target: self, action: #selector(tapLabelQuotaExternalSite))
@@ -69,8 +60,8 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         labelQuotaExternalSite.addGestureRecognizer(tapQuota)
         
         let tapImageLogo = UITapGestureRecognizer(target: self, action: #selector(tapImageLogoManageAccount))
-        imageLogo.isUserInteractionEnabled = true
-        imageLogo.addGestureRecognizer(tapImageLogo)
+        themingBackground.isUserInteractionEnabled = true
+        themingBackground.addGestureRecognizer(tapImageLogo)
         
         // Notification theming
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
@@ -162,11 +153,11 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             labelQuota.text = String.localizedStringWithFormat(NSLocalizedString("_quota_using_", comment: ""), quotaUsed, quota)
             
             // imageLogo
-            let theminBackground = UIImage.init(contentsOfFile: "\(appDelegate.directoryUser!)/themingBackground.png")
-            if (theminBackground != nil) {
-                imageLogo.image = theminBackground
+            let theminBackgroundFile = UIImage.init(contentsOfFile: "\(appDelegate.directoryUser!)/themingBackground.png")
+            if (theminBackgroundFile != nil) {
+                themingBackground.image = theminBackgroundFile
             } else {
-                imageLogo.image = UIImage.init(named: NCBrandImages.sharedInstance.themingBackground)
+                themingBackground.image = UIImage.init(named: NCBrandImages.sharedInstance.themingBackground)
             }
         }
         
@@ -177,15 +168,15 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         }
         
         // Avatar
-        let avatar : UIImage? = UIImage.init(contentsOfFile: "\(appDelegate.directoryUser!)/avatar.png")
+        let themingAvatarFile : UIImage? = UIImage.init(contentsOfFile: "\(appDelegate.directoryUser!)/avatar.png")
         
-        if (avatar != nil) {
+        if (themingAvatarFile != nil) {
         
-            imageAvatar.image = avatar
+            themingAvatar.image = themingAvatarFile
             
         } else {
             
-            imageAvatar.image = UIImage.init(named: "moreAvatar")
+            themingAvatar.image = UIImage.init(named: "moreAvatar")
         }
         
         // Title
@@ -322,28 +313,6 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
                 self.present(webVC, animated: true, completion: nil)
             }
         }
-    }
-    
-    func refresh(sender:AnyObject) {
-        // Code to refresh table view
-        refreshControl.endRefreshing()
-    }
-    
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        let offsetY = tableView.contentOffset.y
-        print(" Y : \(offsetY)")
-
-        /*
-        let imageLogoH = self.imageLogo.frame.size.height
-        
-        //if (imageLogoH > self.imageLogo.frame.size.height-offsetY) {
-            self.imageLogo.frame = CGRect(x: self.imageLogo.frame.origin.x, y: self.imageLogo.frame.origin.y, width: self.imageLogo.frame.size.width, height: self.imageLogo.frame.size.height-offsetY)
-        } else {
-            self.imageLogo.frame = CGRect(x: self.imageLogo.frame.origin.x, y: self.imageLogo.frame.origin.y, width: self.imageLogo.frame.size.width, height: self.imageLogo.frame.size.height+offsetY)
-
-        }
-    */
-        //self.imageLogo.frame = CGRect(x: self.imageLogo.frame.origin.x, y: self.imageLogo.frame.origin.y, width: self.imageLogo.frame.size.width-y, height: self.imageLogo.frame.size.height-y)
     }
     
     func tapLabelQuotaExternalSite() {
