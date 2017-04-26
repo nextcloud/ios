@@ -538,7 +538,7 @@
         
     // change color selection
     UIView *selectionColor = [[UIView alloc] init];
-    selectionColor.backgroundColor = [NCBrandColor sharedInstance].selectBackgrond;
+    selectionColor.backgroundColor = [[NCBrandColor sharedInstance] getColorSelectBackgrond];
     cell.selectedBackgroundView = selectionColor;
     
     metadata = [_dataSource objectAtIndex:indexPath.row];

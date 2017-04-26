@@ -3539,7 +3539,7 @@
     app.reMainMenu.textOffset = CGSizeMake(50, 0.0);
     app.reMainMenu.font = [UIFont systemFontOfSize:14.0];
     
-    app.reMainMenu.highlightedBackgroundColor = [NCBrandColor sharedInstance].selectBackgrond;
+    app.reMainMenu.highlightedBackgroundColor = [[NCBrandColor sharedInstance] getColorSelectBackgrond];
     app.reMainMenu.highlightedSeparatorColor = nil;
     app.reMainMenu.highlightedTextColor = [UIColor blackColor];
     app.reMainMenu.highlightedTextShadowColor = nil;
@@ -3679,7 +3679,7 @@
     app.reSelectMenu.textOffset = CGSizeMake(50, 0.0);
     app.reSelectMenu.font = [UIFont systemFontOfSize:14.0];
     
-    app.reSelectMenu.highlightedBackgroundColor = [NCBrandColor sharedInstance].selectBackgrond;
+    app.reSelectMenu.highlightedBackgroundColor = [[NCBrandColor sharedInstance] getColorSelectBackgrond];
     app.reSelectMenu.highlightedSeparatorColor = nil;
     app.reSelectMenu.highlightedTextColor = [UIColor blackColor];
     app.reSelectMenu.highlightedTextShadowColor = nil;
@@ -4976,7 +4976,7 @@
     
     // change color selection
     UIView *selectionColor = [[UIView alloc] init];
-    selectionColor.backgroundColor = [NCBrandColor sharedInstance].selectBackgrond;
+    selectionColor.backgroundColor = [[NCBrandColor sharedInstance] getColorSelectBackgrond];
     cell.selectedBackgroundView = selectionColor;
     
     if ([typeCell isEqualToString:@"CellMain"]) cell.backgroundColor = [UIColor whiteColor];

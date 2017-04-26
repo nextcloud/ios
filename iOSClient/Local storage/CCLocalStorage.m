@@ -415,7 +415,7 @@
     
     // change color selection
     UIView *selectionColor = [[UIView alloc] init];
-    selectionColor.backgroundColor = [NCBrandColor sharedInstance].selectBackgrond;
+    selectionColor.backgroundColor = [[NCBrandColor sharedInstance] getColorSelectBackgrond];
     cell.selectedBackgroundView = selectionColor;
 
     NSString *cameraFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:app.activeAccount];
