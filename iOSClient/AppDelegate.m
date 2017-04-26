@@ -995,17 +995,18 @@
 
 - (void)changeTheming:(UIViewController *)vc
 {
+    UIColor *color = [NCBrandColor sharedInstance].brand;
+    
     // Change Navigation & TabBar color
-    vc.navigationController.navigationBar.barTintColor = [NCBrandColor sharedInstance].brand;
-    vc.tabBarController.tabBar.barTintColor = [NCBrandColor sharedInstance].tabBar;
-    vc.tabBarController.tabBar.tintColor = [NCBrandColor sharedInstance].brand;
+    vc.navigationController.navigationBar.barTintColor = color;
+    vc.tabBarController.tabBar.tintColor = color;
     
     // Change button Plus
     UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
     UITabBarController *tabBarController = [splitViewController.viewControllers firstObject];
     
     UIButton *button = [tabBarController.view viewWithTag:99];
-    UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] color:[NCBrandColor sharedInstance].brand];
+    UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] color:color];
     
     [button setBackgroundImage:buttonImage forState:UIControlStateNormal];
     [button setBackgroundImage:buttonImage forState:UIControlStateHighlighted];

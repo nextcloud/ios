@@ -207,7 +207,9 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     func changeTheming() {
         
-        appDelegate.changeTheming(self)
+        if (self.isViewLoaded && (self.view.window != nil)) {
+            appDelegate.changeTheming(self)
+        }
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {

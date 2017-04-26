@@ -1201,9 +1201,11 @@
 
 - (void)getCapabilitiesOfServerSuccess:(OCCapabilities *)capabilities
 {
+    // Update capabilities db
+    [CCCoreData addCapabilities:capabilities account:app.activeAccount];
+    
     // Change Theming color
     [app settingThemingColorBrand];
-    [CCCoreData addCapabilities:capabilities account:app.activeAccount];
     
     // Download Theming Background
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
