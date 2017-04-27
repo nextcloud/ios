@@ -62,11 +62,7 @@
 @property double currentLatitude;
 @property double currentLongitude;
 
-// Nextcloud
-@property BOOL hasServerForbiddenCharactersSupport;
-@property BOOL hasServerShareSupport;
-@property BOOL hasServerShareeSupport;
-@property BOOL hasServerCapabilitiesSupport;
+// Notification
 @property (nonatomic, strong) NSMutableArray<OCCommunication *> *listOfNotifications;
 @property NSInteger serverVersion;
 

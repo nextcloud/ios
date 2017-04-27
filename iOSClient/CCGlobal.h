@@ -203,7 +203,6 @@ extern NSString *const urlBaseUploadDB;
 #define actionDownloadThumbnail                         @"downloadThumbnail"
 #define actionGetActivityServer                         @"getActivityServer"
 #define actionGetCapabilities                           @"getCapabilitiesOfServer"
-#define actionGetFeaturesSuppServer                     @"getFeaturesSupportedByServer"
 #define actionGetUserAndGroup                           @"getUserAndGroup"
 #define actionGetUserProfile                            @"getUserProfile"
 #define actionGetNotificationServer                     @"getNotificationServer"

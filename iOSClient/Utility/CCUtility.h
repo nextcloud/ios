@@ -134,7 +134,9 @@
 + (NSString *)dateDiff:(NSDate *) convertedDate;
 + (NSString *)transformedSize:(double)value;
 
-+ (NSString *)removeForbiddenCharacters:(NSString *)fileName hasServerForbiddenCharactersSupport:(BOOL)hasServerForbiddenCharactersSupport;
++ (NSString *)removeForbiddenCharactersServer:(NSString *)fileName;
++ (NSString *)removeForbiddenCharactersFileSystem:(NSString *)fileName;
+
 + (NSString *)stringAppendServerUrl:(NSString *)serverUrl addFileName:(NSString *)addFileName;
 
 + (NSString *)createRandomString:(int)numChars;

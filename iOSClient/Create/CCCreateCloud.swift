@@ -339,7 +339,7 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
             self.form.delegate = nil
             
             if fileName != nil {
-                formRow.value = CCUtility.removeForbiddenCharacters(fileName, hasServerForbiddenCharactersSupport: appDelegate.hasServerForbiddenCharactersSupport)
+                formRow.value = CCUtility.removeForbiddenCharactersServer(fileName)
             }
             
             self.form.delegate = self

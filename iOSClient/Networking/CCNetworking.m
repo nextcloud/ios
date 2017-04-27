@@ -414,7 +414,7 @@
             
         if (errorCode == 0) {
             
-            rev = [CCUtility removeForbiddenCharacters:[fields objectForKey:@"OC-ETag"] hasServerForbiddenCharactersSupport:NO];
+            rev = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-ETag"]];
             date = [dateFormatter dateFromString:[fields objectForKey:@"Date"]];
 
             // Activity
@@ -451,8 +451,8 @@
             
         if (errorCode == 0) {
             
-            fileID = [CCUtility removeForbiddenCharacters:[fields objectForKey:@"OC-FileId"] hasServerForbiddenCharactersSupport:NO];
-            rev = [CCUtility removeForbiddenCharacters:[fields objectForKey:@"OC-ETag"] hasServerForbiddenCharactersSupport:NO];
+            fileID = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-FileId"]];
+            rev = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-ETag"]];
             date = [dateFormatter dateFromString:[fields objectForKey:@"Date"]];
             
             // Activity

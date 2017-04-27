@@ -99,21 +99,18 @@
 
     // Sharee
     
-    if (app.hasServerShareeSupport) {
+    section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_share_title_", nil)];
+    [form addFormSection:section];
+    section.footerTitle = NSLocalizedString(@"_add_sharee_footer_", nil);
         
-        section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_share_title_", nil)];
-        [form addFormSection:section];
-        section.footerTitle = NSLocalizedString(@"_add_sharee_footer_", nil);
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"findUser" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_add_sharee_", nil)];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
+    row.action.formSelector = @selector(shareUserButton:);
+    [section addFormRow:row];
         
-        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"findUser" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_add_sharee_", nil)];
-        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-        [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
-        row.action.formSelector = @selector(shareUserButton:);
-        [section addFormRow:row];
-        
-        section = [XLFormSectionDescriptor formSectionWithTitle:@"" sectionOptions:XLFormSectionOptionCanDelete];
-        [form addFormSection:section];
-    }
+    section = [XLFormSectionDescriptor formSectionWithTitle:@"" sectionOptions:XLFormSectionOptionCanDelete];
+    [form addFormSection:section];
     
     self.form = form;
 }
@@ -211,41 +208,38 @@
     }
     
     // User & Group
-    if (app.hasServerShareeSupport) {
-    
-        XLFormSectionDescriptor *section = [self.form formSectionAtIndex:4];
-        [section.formRows removeAllObjects];
-        [self.itemsShareWith removeAllObjects];
+    XLFormSectionDescriptor *section = [self.form formSectionAtIndex:4];
+    [section.formRows removeAllObjects];
+    [self.itemsShareWith removeAllObjects];
         
-        if ([self.itemsUserAndGroupLink count] > 0) {
+    if ([self.itemsUserAndGroupLink count] > 0) {
     
-            for (NSString *idRemoteShared in self.itemsUserAndGroupLink) {
+        for (NSString *idRemoteShared in self.itemsUserAndGroupLink) {
             
-                OCSharedDto *item = [app.sharesID objectForKey:idRemoteShared];
+            OCSharedDto *item = [app.sharesID objectForKey:idRemoteShared];
             
-                XLFormRowDescriptor *row = [XLFormRowDescriptor formRowDescriptorWithTag:idRemoteShared rowType:XLFormRowDescriptorTypeButton];
+            XLFormRowDescriptor *row = [XLFormRowDescriptor formRowDescriptorWithTag:idRemoteShared rowType:XLFormRowDescriptorTypeButton];
 
-                [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-                //[row.cellConfig setObject:@(UITableViewCellAccessoryDisclosureIndicator) forKey:@"accessoryType"];
-                [row.cellConfig setObject:[NCBrandColor sharedInstance].brand forKey:@"textLabel.textColor"];
-                row.action.formSelector = @selector(sharePermissionButton:);
+            [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+            //[row.cellConfig setObject:@(UITableViewCellAccessoryDisclosureIndicator) forKey:@"accessoryType"];
+            [row.cellConfig setObject:[NCBrandColor sharedInstance].brand forKey:@"textLabel.textColor"];
+            row.action.formSelector = @selector(sharePermissionButton:);
                 
-                if (item.shareType == shareTypeGroup) row.title = [item.shareWithDisplayName stringByAppendingString:NSLocalizedString(@"_user_is_group_", nil)];
-                else row.title = item.shareWithDisplayName;
+            if (item.shareType == shareTypeGroup) row.title = [item.shareWithDisplayName stringByAppendingString:NSLocalizedString(@"_user_is_group_", nil)];
+            else row.title = item.shareWithDisplayName;
                 
-                [section addFormRow:row];
+            [section addFormRow:row];
                 
-                // add users
-                [self.itemsShareWith addObject:item];
-            }
-            
-            section.footerTitle = NSLocalizedString(@"_user_sharee_footer_", nil);
-
-        } else {
-            
-            section.footerTitle = @"";
-
+            // add users
+            [self.itemsShareWith addObject:item];
         }
+            
+        section.footerTitle = NSLocalizedString(@"_user_sharee_footer_", nil);
+
+    } else {
+            
+        section.footerTitle = @"";
+
     }
     
     self.form.disabled = NO;

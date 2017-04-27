@@ -1181,8 +1181,14 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ==== Request Server  ====
+#pragma mark ==== User Profile  ====
 #pragma --------------------------------------------------------------------------------------------
+
+- (void)getUserProfileFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+{
+    if (errorCode == 401)
+        [self changePasswordAccount];
+}
 
 - (void)getUserProfileSuccess:(CCMetadataNet *)metadataNet userProfile:(OCUserProfile *)userProfile
 {
@@ -1197,6 +1203,16 @@
         else
             [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/avatar.png", app.directoryUser] error:nil];
     });
+}
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ==== Capabilities  ====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)getCapabilitiesOfServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+{
+    if (errorCode == 401)
+        [self changePasswordAccount];
 }
 
 - (void)getCapabilitiesOfServerSuccess:(OCCapabilities *)capabilities
@@ -1256,22 +1272,10 @@
     app.serverVersion = capabilities.versionMajor;
 }
 
-- (void)getFeaturesSupportedByServerSuccess:(BOOL)hasCapabilitiesSupport hasForbiddenCharactersSupport:(BOOL)hasForbiddenCharactersSupport hasShareSupport:(BOOL)hasShareSupport hasShareeSupport:(BOOL)hasShareeSupport
-{
-    app.hasServerCapabilitiesSupport = hasCapabilitiesSupport;
-    app.hasServerForbiddenCharactersSupport = hasForbiddenCharactersSupport;
-    app.hasServerShareSupport = hasShareSupport;
-    app.hasServerShareeSupport = hasShareeSupport;
-    
-    if (hasShareSupport || hasShareeSupport)
-        [self requestSharedByServer];
-}
-
-- (void)getInfoServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
-{
-    if (errorCode == 401)
-        [self changePasswordAccount];
-}
+#pragma mark -
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ==== Request Server Information  ====
+#pragma --------------------------------------------------------------------------------------------
 
 - (void)requestServerInformation
 {
@@ -1283,15 +1287,12 @@
    
     [app.sharesID removeAllObjects];
     
-    app.hasServerForbiddenCharactersSupport = YES;
-    app.hasServerShareSupport = YES;
-    
-    metadataNet.action = actionGetFeaturesSuppServer;
-    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
-        
     metadataNet.action = actionGetCapabilities;
     [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
 
+    metadataNet.action = actionReadShareServer;
+    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+    
     metadataNet.action = actionGetNotificationServer;
     [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
 
@@ -1302,6 +1303,7 @@
     [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
 }
 
+#pragma mark -
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ==== Download Thumbnail Delegate ====
 #pragma --------------------------------------------------------------------------------------------
@@ -1980,7 +1982,7 @@
     _isSearchMode = YES;
     [self deleteRefreshControl];
     
-    NSString *fileName = [CCUtility removeForbiddenCharacters:searchController.searchBar.text hasServerForbiddenCharactersSupport:app.hasServerForbiddenCharactersSupport];
+    NSString *fileName = [CCUtility removeForbiddenCharactersServer:searchController.searchBar.text];
     
     if (fileName.length >= k_minCharsSearch && [fileName isEqualToString:_searchFileName] == NO) {
         
@@ -2414,7 +2416,7 @@
 {
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
     
-    fileNameFolder = [CCUtility removeForbiddenCharacters:fileNameFolder hasServerForbiddenCharactersSupport:app.hasServerForbiddenCharactersSupport];
+    fileNameFolder = [CCUtility removeForbiddenCharactersServer:fileNameFolder];
     if (![fileNameFolder length]) return;
     
     if (folderCameraUpload) metadataNet.serverUrl = [CCCoreData getCameraUploadFolderPathActiveAccount:app.activeAccount activeUrl:app.activeUrl];
@@ -2438,7 +2440,7 @@
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
     NSString *fileNamePlist;
     
-    fileNameFolder = [CCUtility removeForbiddenCharacters:fileNameFolder hasServerForbiddenCharactersSupport:app.hasServerForbiddenCharactersSupport];
+    fileNameFolder = [CCUtility removeForbiddenCharactersServer:fileNameFolder];
     if (![fileNameFolder length]) return;
     
     NSString *title = [AESCrypt encrypt:fileNameFolder password:[[CCCrypto sharedManager] getKeyPasscode:[CCUtility getUUID]]];
@@ -2915,15 +2917,6 @@
     }
 
     [self tableViewReload];
-}
-
-- (void)requestSharedByServer
-{
-    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
-    
-    metadataNet.action = actionReadShareServer;
-
-    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
 }
 
 - (void)shareFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
@@ -4246,7 +4239,7 @@
                                     }];
         }
 
-        if (_metadata.cryptated == NO && app.hasServerShareSupport && !lockDirectory) {
+        if (_metadata.cryptated == NO && !lockDirectory) {
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_share_", nil)
                                       image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_actionSheetShare] color:[NCBrandColor sharedInstance].brand]
@@ -4407,7 +4400,7 @@
                                     }];
         }
 
-        if (_metadata.cryptated == NO && app.hasServerShareSupport) {
+        if (_metadata.cryptated == NO) {
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_share_", nil)
                                       image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_actionSheetShare] color:[NCBrandColor sharedInstance].brand]

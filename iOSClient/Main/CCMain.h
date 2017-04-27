@@ -89,7 +89,6 @@
 - (void)reloadDatasource;
 - (void)reloadDatasource:(NSString *)serverUrl fileID:(NSString *)fileID selector:(NSString *)selector;
 
-- (void)requestSharedByServer;
 - (void)requestServerInformation;
 
 - (void)openWindowShare:(CCMetadata *)metadata;

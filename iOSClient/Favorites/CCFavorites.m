@@ -410,7 +410,7 @@
     }
     
     // Share
-    if (_metadata.cryptated == NO && app.hasServerShareSupport) {
+    if (_metadata.cryptated == NO) {
         
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_share_", nil) image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_actionSheetShare] color:[NCBrandColor sharedInstance].brand] backgroundColor:[UIColor whiteColor] height: 50.0 type:AHKActionSheetButtonTypeDefault handler:^(AHKActionSheet *as) {
                 // close swipe
