@@ -317,13 +317,15 @@
             [[NSURLCache sharedURLCache] setMemoryCapacity:0];
             [[NSURLCache sharedURLCache] setDiskCapacity:0];
             
+            [CCCoreData flushTableActivityAccount:app.activeAccount];
             [CCCoreData flushTableAutomaticUploadAccount:app.activeAccount selector:nil];
+            [CCCoreData flushTableCapabilitiesAccount:app.activeAccount];
             [CCCoreData flushTableDirectoryAccount:app.activeAccount];
+            [CCCoreData flushTableExternalSitesAccount:app.activeAccount];
             [CCCoreData flushTableLocalFileAccount:app.activeAccount];
             [CCCoreData flushTableMetadataAccount:app.activeAccount];
-            [CCCoreData flushTableActivityAccount:app.activeAccount];
-            [CCCoreData flushTableCapabilitiesAccount:app.activeAccount];
-            
+            [CCCoreData flushTableShareAccount:app.activeAccount];
+
             [self emptyUserDirectoryUser:app.activeUser url:app.activeUrl];
             
             [self emptyLocalDirectory];

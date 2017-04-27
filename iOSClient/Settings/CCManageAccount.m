@@ -322,13 +322,15 @@
 
 - (void)deleteAccount:(NSString *)account
 {
-    [CCCoreData deleteAccount:account];
-        
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@)", account];
-    
-    [CCCoreData deleteMetadataWithPredicate:predicate];
-    [CCCoreData deleteLocalFileWithPredicate:predicate];
-    [CCCoreData deleteDirectoryFromPredicate:predicate];
+    [CCCoreData flushTableAccount:account];
+    [CCCoreData flushTableActivityAccount:account];
+    [CCCoreData flushTableAutomaticUploadAccount:account selector:nil];
+    [CCCoreData flushTableCapabilitiesAccount:account];
+    [CCCoreData flushTableDirectoryAccount:account];
+    [CCCoreData flushTableExternalSitesAccount:account];
+    [CCCoreData flushTableLocalFileAccount:account];
+    [CCCoreData flushTableMetadataAccount:account];
+    [CCCoreData flushTableShareAccount:account];
 }
 
 - (void)answerDelAccount:(XLFormRowDescriptor *)sender

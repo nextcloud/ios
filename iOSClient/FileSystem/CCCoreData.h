@@ -249,13 +249,17 @@
 
 //+ (void)verifyVersionCoreData;
 
++ (void)flushTableAccount:(NSString *)account;
 + (void)flushTableActivityAccount:(NSString *)account;
 + (void)flushTableAutomaticUploadAccount:(NSString *)account selector:(NSString *)selector;
 + (void)flushTableCapabilitiesAccount:(NSString *)account;
++ (void)flushTableCertificates;
 + (void)flushTableDirectoryAccount:(NSString *)account;
++ (void)flushTableExternalSitesAccount:(NSString *)account;
++ (void)flushTableGPS;
 + (void)flushTableLocalFileAccount:(NSString *)account;
 + (void)flushTableMetadataAccount:(NSString *)account;
-+ (void)flushTableGPS;
++ (void)flushTableShareAccount:(NSString *)account;
 
 + (void)flushAllDatabase;
 @end

@@ -1211,6 +1211,9 @@
 
 - (void)getCapabilitiesOfServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
+    // Change Theming color
+    [app settingThemingColorBrand];
+    
     if (errorCode == 401)
         [self changePasswordAccount];
 }

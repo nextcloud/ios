@@ -749,7 +749,7 @@
             backgroundColor = [UIColor colorWithRed:0.588 green:0.797 blue:0.000 alpha:0.90];
             break;
         case TWMessageBarMessageTypeInfo:
-            backgroundColor = [NCBrandColor sharedInstance].nextcloud;
+            backgroundColor = [NCBrandColor sharedInstance].brand;
             break;
         default:
             break;
@@ -989,7 +989,15 @@
         
             [NCBrandColor sharedInstance].brand = [CCGraphics colorFromHexString:tableCapabilities.themingColor];
             [[NSNotificationCenter defaultCenter] postNotificationName:@"changeTheming" object:nil];
+            
+        } else {
+            
+            [NCBrandColor sharedInstance].brand = [NCBrandColor sharedInstance].customer;
         }
+        
+    } else {
+        
+        [NCBrandColor sharedInstance].brand = [NCBrandColor sharedInstance].customer;
     }
 }
 

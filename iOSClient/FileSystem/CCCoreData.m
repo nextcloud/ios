@@ -2275,6 +2275,26 @@
     }
 }
 
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Flush Database =====
+#pragma --------------------------------------------------------------------------------------------
+
++ (void)flushTableAccount:(NSString *)account
+{
+    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
+    
+    if (account) {
+        
+        [TableAccount MR_deleteAllMatchingPredicate:[NSPredicate predicateWithFormat:@"(account == %@)", account] inContext:context];
+        
+    } else {
+        
+        [TableAccount MR_truncateAllInContext:context];
+    }
+    
+    [context MR_saveToPersistentStoreAndWait];
+}
+
 + (void)flushTableActivityAccount:(NSString *)account
 {
     NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
@@ -2305,6 +2325,31 @@
     [context MR_saveToPersistentStoreAndWait];
 }
 
++ (void)flushTableCapabilitiesAccount:(NSString *)account
+{
+    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
+    
+    if (account) {
+        
+        [TableCapabilities MR_deleteAllMatchingPredicate:[NSPredicate predicateWithFormat:@"(account == %@)", account] inContext:context];
+        
+    } else {
+        
+        [TableCapabilities MR_truncateAllInContext:context];
+    }
+    
+    [context MR_saveToPersistentStoreAndWait];
+}
+
++ (void)flushTableCertificates
+{
+    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
+    
+    [TableCertificates MR_truncateAllInContext:context];
+    
+    [context MR_saveToPersistentStoreAndWait];
+}
+
 + (void)flushTableDirectoryAccount:(NSString *)account
 {
     NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
@@ -2317,6 +2362,31 @@
         
         [TableDirectory MR_truncateAllInContext:context];
     }
+    
+    [context MR_saveToPersistentStoreAndWait];
+}
+
++ (void)flushTableExternalSitesAccount:(NSString *)account
+{
+    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
+    
+    if (account) {
+        
+        [TableExternalSites MR_deleteAllMatchingPredicate:[NSPredicate predicateWithFormat:@"(account == %@)", account] inContext:context];
+        
+    } else {
+        
+        [TableExternalSites MR_truncateAllInContext:context];
+    }
+    
+    [context MR_saveToPersistentStoreAndWait];
+}
+
++ (void)flushTableGPS
+{
+    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
+    
+    [TableGPS MR_truncateAllInContext:context];
     
     [context MR_saveToPersistentStoreAndWait];
 }
@@ -2353,30 +2423,22 @@
     [context MR_saveToPersistentStoreAndWait];
 }
 
-+ (void)flushTableCapabilitiesAccount:(NSString *)account
++ (void)flushTableShareAccount:(NSString *)account
 {
     NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
     
     if (account) {
         
-        [TableCapabilities MR_deleteAllMatchingPredicate:[NSPredicate predicateWithFormat:@"(account == %@)", account] inContext:context];
+        [TableShare MR_deleteAllMatchingPredicate:[NSPredicate predicateWithFormat:@"(account == %@)", account] inContext:context];
         
     } else {
         
-        [TableCapabilities MR_truncateAllInContext:context];
+        [TableShare MR_truncateAllInContext:context];
     }
     
     [context MR_saveToPersistentStoreAndWait];
 }
 
-+ (void)flushTableGPS
-{
-    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
-
-    [TableGPS MR_truncateAllInContext:context];
-    
-    [context MR_saveToPersistentStoreAndWait];
-}
 
 + (void)flushAllDatabase
 {
