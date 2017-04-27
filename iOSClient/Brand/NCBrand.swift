@@ -38,7 +38,6 @@ class NCBrandColor: NSObject {
     public var cryptocloud:             UIColor = UIColor(red: 241.0/255.0, green: 90.0/255.0, blue: 34.0/255.0, alpha: 1.0)
     public var navigationBarProgress:   UIColor = .white
     public var navigationBarText:       UIColor = .white
-    public let nextcloudText:           String  = "#0082c9"
     public var menuBackground:          UIColor = .white
     public var moreNormal:              UIColor = .black
     public var moreSettings:            UIColor = .black
