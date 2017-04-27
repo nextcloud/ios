@@ -31,9 +31,6 @@
 #define k_loginButtonLabelLink                  @"https://nextcloud.com/providers"
 #define k_webLoginAutenticationProtocol         @""
 
-// Color Brand Standard : Nextcloud #0082c9
-#define k_color_brand_standard                  [UIColor colorWithRed:0.0/255.0 green:130.0/255.0 blue:201.0/255.0 alpha:1.0]
-
 // Capabilities Group
 #define k_capabilitiesGroups                    @"group.it.twsweb.Crypto-Cloud"
 
