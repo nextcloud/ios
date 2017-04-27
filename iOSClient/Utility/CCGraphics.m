@@ -275,9 +275,6 @@
 
 + (UIImage *)changeThemingColorImage:(UIImage *)image color:(UIColor *)color
 {
-    if (k_option_use_themingColor == NO)
-        return image;
-    
     CGRect rect = CGRectMake(0, 0, image.size.width*2, image.size.height*2);
     UIGraphicsBeginImageContext(rect.size);
     CGContextRef context = UIGraphicsGetCurrentContext();

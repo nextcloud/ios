@@ -864,16 +864,6 @@
 
 - (void)aspectNavigationControllerBar:(UINavigationBar *)nav encrypted:(BOOL)encrypted online:(BOOL)online hidden:(BOOL)hidden
 {
-    if (app.activeAccount.length > 0 && k_option_use_themingColor == YES) {
-        
-        TableCapabilities *capabilities = [CCCoreData getCapabilitesForAccount:app.activeAccount];
-        if (capabilities.themingColor.length > 0) {
-            
-            UIColor *themingColor = [CCGraphics colorFromHexString:capabilities.themingColor];
-            NCBrandColor.sharedInstance.brand = themingColor;
-        }
-    }
-    
     nav.translucent = NO;
     nav.barTintColor = [NCBrandColor sharedInstance].brand;
     nav.tintColor = [NCBrandColor sharedInstance].navigationBarText;
@@ -1614,6 +1604,10 @@
     }
     
     if (([actualVersion compare:@"2.17.1" options:NSNumericSearch] == NSOrderedAscending)) {
+        
+    }
+    
+    if (([actualVersion compare:@"2.17.2" options:NSNumericSearch] == NSOrderedAscending)) {
         
     }
 }
