@@ -191,9 +191,6 @@
         // Read Folder
         [self readFolderWithForced:NO serverUrl:_serverUrl];
     }
-
-    // Version Server
-    app.serverVersion = [CCCoreData getServerVersionMajorActiveAccount:app.activeAccount];
     
     // Title
     [self setTitle];
@@ -208,7 +205,7 @@
     self.searchController.searchBar.delegate = self;
     self.searchController.searchBar.placeholder = NSLocalizedString(@"_search_this_folder_",nil);
 
-    if (app.serverVersion >= 12) {
+    if ([CCCoreData getServerVersionAccount:app.activeAccount] >= 12) {
         
         if (_isRoot)
             self.searchController.searchBar.scopeButtonTitles = [NSArray arrayWithObjects:NSLocalizedString(@"_search_this_folder_",nil),NSLocalizedString(@"_search_all_folders_",nil), nil];
@@ -1221,7 +1218,7 @@
 - (void)getCapabilitiesOfServerSuccess:(OCCapabilities *)capabilities
 {
     // Update capabilities db
-    [CCCoreData addCapabilities:capabilities account:app.activeAccount];
+    [CCCoreData setCapabilities:capabilities account:app.activeAccount];
     
     // Change Theming color
     [app settingThemingColorBrand];
@@ -1240,7 +1237,7 @@
     });
 
     // Search bar if change version
-    if (app.serverVersion != capabilities.versionMajor) {
+    if ([CCCoreData getServerVersionAccount:app.activeAccount] != capabilities.versionMajor) {
     
         [self cancelSearchBar];
         
@@ -1270,9 +1267,6 @@
         metadataNet.action = actionGetExternalSitesServer;
         [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
     }
-    
-    [CCCoreData setServerVersionActiveAccount:app.activeAccount versionMajor:capabilities.versionMajor versionMinor:capabilities.versionMinor versionMicro:capabilities.versionMicro];
-    app.serverVersion = capabilities.versionMajor;
 }
 
 #pragma mark -
@@ -1991,7 +1985,7 @@
         
         _searchFileName = fileName;
         
-        if (app.serverVersion >= 12 && ![_depth isEqualToString:@"0"]) {
+        if ([CCCoreData getServerVersionAccount:app.activeAccount] >= 12 && ![_depth isEqualToString:@"0"]) {
             
             [[CCActions sharedInstance] search:_serverUrl fileName:_searchFileName depth:_depth delegate:self];
             

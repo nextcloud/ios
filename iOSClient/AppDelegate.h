@@ -64,7 +64,6 @@
 
 // Notification
 @property (nonatomic, strong) NSMutableArray<OCCommunication *> *listOfNotifications;
-@property NSInteger serverVersion;
 
 // Network Operation
 @property (nonatomic, strong) NSOperationQueue *netQueue;

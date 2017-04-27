@@ -22,6 +22,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nullable, nonatomic, copy) NSString *themingName;
 @property (nullable, nonatomic, copy) NSString *themingSlogan;
 @property (nullable, nonatomic, copy) NSString *themingUrl;
+@property (nullable, nonatomic, copy) NSNumber *versionMajor;
+@property (nullable, nonatomic, copy) NSNumber *versionMicro;
+@property (nullable, nonatomic, copy) NSNumber *versionMinor;
+@property (nullable, nonatomic, copy) NSString *versionString;
 
 @end
 

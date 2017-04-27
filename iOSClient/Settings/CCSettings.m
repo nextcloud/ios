@@ -438,9 +438,9 @@
         break;
         case 5: {
             
-            TableAccount *tableAccount = [CCCoreData getActiveAccount];
+            TableCapabilities *record = [CCCoreData getCapabilitesForAccount:app.activeAccount];
             
-            NSString *versionServer = [NSString stringWithFormat:@"%lu.%lu.%lu",(unsigned long)[tableAccount.versionMajor integerValue], (unsigned long)[tableAccount.versionMinor integerValue], (unsigned long)[tableAccount.versionMicro integerValue]];
+            NSString *versionServer = record.versionString;
             
             NSString *versionApp = [NSString stringWithFormat:@"%@.%@", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"], [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
             

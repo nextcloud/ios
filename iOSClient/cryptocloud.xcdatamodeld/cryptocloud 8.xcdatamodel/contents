@@ -33,9 +33,6 @@
         <attribute name="twitter" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="url" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="user" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="versionMajor" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
-        <attribute name="versionMicro" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
-        <attribute name="versionMinor" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="webpage" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
     <entity name="TableActivity" representedClassName="TableActivity" syncable="YES">
@@ -71,6 +68,10 @@
         <attribute name="themingName" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="themingSlogan" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="themingUrl" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="versionMajor" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="versionMicro" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="versionMinor" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="versionString" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
     <entity name="TableCertificates" representedClassName="TableCertificates" syncable="YES">
         <attribute name="certificateLocation" optional="YES" attributeType="String" syncable="YES"/>
@@ -162,9 +163,10 @@
         <attribute name="shareUserAndGroup" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
     <elements>
-        <element name="TableAccount" positionX="-6597" positionY="111" width="171" height="585"/>
+        <element name="TableAccount" positionX="-6597" positionY="111" width="171" height="540"/>
         <element name="TableActivity" positionX="-6399" positionY="252" width="128" height="210"/>
         <element name="TableAutomaticUpload" positionX="-6597" positionY="801" width="128" height="195"/>
+        <element name="TableCapabilities" positionX="-6390" positionY="261" width="128" height="210"/>
         <element name="TableCertificates" positionX="-6597" positionY="711" width="128" height="60"/>
         <element name="TableDirectory" positionX="-6372" positionY="111" width="162" height="210"/>
         <element name="TableExternalSites" positionX="-6399" positionY="252" width="128" height="150"/>
@@ -172,6 +174,5 @@
         <element name="TableLocalFile" positionX="-6138" positionY="111" width="162" height="225"/>
         <element name="TableMetadata" positionX="-6138" positionY="402" width="162" height="510"/>
         <element name="TableShare" positionX="-6597" positionY="558" width="128" height="120"/>
-        <element name="TableCapabilities" positionX="-6390" positionY="261" width="128" height="150"/>
     </elements>
 </model>

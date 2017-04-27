@@ -21,5 +21,9 @@
 @dynamic themingName;
 @dynamic themingSlogan;
 @dynamic themingUrl;
+@dynamic versionMajor;
+@dynamic versionMinor;
+@dynamic versionMicro;
+@dynamic versionString;
 
 @end

@@ -310,20 +310,6 @@
     else return NO;
 }
 
-+ (NSInteger)getServerVersionMajorActiveAccount:(NSString *)activeAccount
-{
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@)", activeAccount];
-    TableAccount *record = [TableAccount MR_findFirstWithPredicate:predicate];
-
-    if (record) {
-        
-        NSInteger versionMajor = [record.versionMajor integerValue];
-        return versionMajor;
-
-    } else
-        return 0;
-}
-
 + (void)setCameraUpload:(BOOL)state activeAccount:(NSString *)activeAccount
 {
     [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
@@ -543,22 +529,6 @@
             record.quotaRelative = [NSNumber numberWithDouble:userProfile.quotaRelative];
             record.quotaTotal = [NSNumber numberWithDouble:userProfile.quotaTotal];
             record.quotaUsed = [NSNumber numberWithDouble:userProfile.quotaUsed];
-        }
-    }];
-}
-
-+ (void)setServerVersionActiveAccount:(NSString *)activeAccount versionMajor:(NSInteger)versionMajor versionMinor:(NSInteger)versionMinor versionMicro:(NSInteger)versionMicro
-{
-    [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
-        
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@)", activeAccount];
-        TableAccount *record = [TableAccount MR_findFirstWithPredicate:predicate inContext:localContext];
-
-        if (record) {
-            
-            record.versionMajor = [NSNumber numberWithInteger:versionMajor];
-            record.versionMinor = [NSNumber numberWithInteger:versionMinor];
-            record.versionMicro = [NSNumber numberWithInteger:versionMicro];
         }
     }];
 }
@@ -2016,7 +1986,7 @@
 #pragma mark ===== Capabilities =====
 #pragma --------------------------------------------------------------------------------------------
 
-+ (void)addCapabilities:(OCCapabilities *)capabilities account:(NSString *)account
++ (void)setCapabilities:(OCCapabilities *)capabilities account:(NSString *)account
 {
     [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
         
@@ -2025,12 +1995,18 @@
         TableCapabilities *record = [TableCapabilities MR_createEntityInContext:localContext];
         
         record.account = account;
+        
         record.themingBackground = capabilities.themingBackground;
         record.themingColor = capabilities.themingColor;
         record.themingLogo = capabilities.themingLogo;
         record.themingName = capabilities.themingName;
         record.themingSlogan = capabilities.themingSlogan;
         record.themingUrl = capabilities.themingUrl;
+        
+        record.versionMajor = [NSNumber numberWithInteger:capabilities.versionMajor];
+        record.versionMinor = [NSNumber numberWithInteger:capabilities.versionMinor];
+        record.versionMicro = [NSNumber numberWithInteger:capabilities.versionMicro];
+        record.versionString = capabilities.versionString;
     }];
 }
 
@@ -2039,6 +2015,20 @@
     NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
     
     return [TableCapabilities MR_findFirstWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@)", account] inContext:context];
+}
+
++ (NSInteger)getServerVersionAccount:(NSString *)activeAccount
+{
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@)", activeAccount];
+    TableCapabilities *record = [TableCapabilities MR_findFirstWithPredicate:predicate];
+    
+    if (record) {
+        
+        NSInteger versionMajor = [record.versionMajor integerValue];
+        return versionMajor;
+        
+    } else
+        return 0;
 }
 
 #pragma --------------------------------------------------------------------------------------------

@@ -78,7 +78,6 @@
 + (BOOL)getCameraUploadCryptatedVideoActiveAccount:(NSString *)activeAccount;
 + (BOOL)getCameraUploadWWanPhotoActiveAccount:(NSString *)activeAccount;
 + (BOOL)getCameraUploadWWanVideoActiveAccount:(NSString *)activeAccount;
-+ (NSInteger)getServerVersionMajorActiveAccount:(NSString *)activeAccount;
 
 + (void)setCameraUpload:(BOOL)state activeAccount:(NSString *)activeAccount;
 + (void)setCameraUploadBackground:(BOOL)state activeAccount:(NSString *)activeAccount;
@@ -98,7 +97,6 @@
 + (void)setCameraUploadSaveAlbum:(BOOL)saveAlbum activeAccount:(NSString *)activeAccount;
 
 + (void)setUserProfileActiveAccount:(NSString *)activeAccount userProfile:(OCUserProfile *)userProfile;
-+ (void)setServerVersionActiveAccount:(NSString *)activeAccount versionMajor:(NSInteger)versionMajor versionMinor:(NSInteger)versionMinor versionMicro:(NSInteger)versionMicro;
 
 // ===== Certificates =====
 
@@ -228,8 +226,9 @@
 
 // ===== Capabilities =====
 
-+ (void)addCapabilities:(OCCapabilities *)capabilities account:(NSString *)account;
++ (void)setCapabilities:(OCCapabilities *)capabilities account:(NSString *)account;
 + (TableCapabilities *)getCapabilitesForAccount:(NSString *)account;
++ (NSInteger)getServerVersionAccount:(NSString *)activeAccount;
 
 // ===== File System =====
 
