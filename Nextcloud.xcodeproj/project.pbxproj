@@ -4576,8 +4576,9 @@
 				GCC_PREFIX_HEADER = iOSClient/CryptoCloud.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
-					"EXTENSION=1",
-					"NC=1",
+					EXTENSION,
+					EXTENSION_SHARE,
+					NC,
 				);
 				HEADER_SEARCH_PATHS = "\"Libraries external\"/**";
 				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/Share.plist";
@@ -4616,8 +4617,9 @@
 				GCC_PREFIX_HEADER = iOSClient/CryptoCloud.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
-					"EXTENSION=1",
-					"NC=1",
+					EXTENSION,
+					EXTENSION_SHARE,
+					NC,
 				);
 				HEADER_SEARCH_PATHS = "\"Libraries external\"/**";
 				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/Share.plist";
@@ -4651,9 +4653,10 @@
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
 				GCC_PREFIX_HEADER = iOSClient/CryptoCloud.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					"EXTENSION=1",
-					"DEBUG=1",
-					"NC=1",
+					DEBUG,
+					EXTENSION,
+					EXTENSION_PICKER,
+					NC,
 				);
 				HEADER_SEARCH_PATHS = "\"Libraries external\"/**";
 				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/Picker.plist";
@@ -4684,8 +4687,9 @@
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
 				GCC_PREFIX_HEADER = iOSClient/CryptoCloud.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					"EXTENSION=1",
-					"NC=1",
+					EXTENSION,
+					EXTENSION_PICKER,
+					NC,
 				);
 				HEADER_SEARCH_PATHS = "\"Libraries external\"/**";
 				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/Picker.plist";
@@ -4715,9 +4719,9 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"EXTENSION=1",
-					"NC=1",
+					DEBUG,
+					EXTENSION,
+					NC,
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/PickerFileProvider.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
@@ -4747,8 +4751,8 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					"NC=1",
-					"EXTENSION=1",
+					EXTENSION,
+					NC,
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/PickerFileProvider.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
