@@ -2019,6 +2019,9 @@
 
 + (NSInteger)getServerVersionAccount:(NSString *)activeAccount
 {
+    if (!activeAccount)
+        return 0;
+    
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@)", activeAccount];
     TableCapabilities *record = [TableCapabilities MR_findFirstWithPredicate:predicate];
     
