@@ -100,9 +100,6 @@
             #endif
         }
     }
-    
-    // Fabric
-    //[Fabric with:@[[Crashlytics class]]];
 
     NSString *dir;
     NSURL *dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:k_capabilitiesGroups];
@@ -276,6 +273,9 @@
     UIUserNotificationType types = UIUserNotificationTypeSound | UIUserNotificationTypeBadge | UIUserNotificationTypeAlert;
     UIUserNotificationSettings *notificationSettings = [UIUserNotificationSettings settingsForTypes:types categories:nil];
     [application registerUserNotificationSettings:notificationSettings];
+    
+    // Fabric
+    [Fabric with:@[[Crashlytics class]]];
     
     return YES;
 }

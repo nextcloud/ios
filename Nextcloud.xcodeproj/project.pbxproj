@@ -3538,6 +3538,7 @@
 				F77B0EE91D118A16002130FE /* Resources */,
 				F77B0F981D118A16002130FE /* Embed App Extensions */,
 				F73B02C01DC0F1C900EC2C33 /* ShellScript */,
+				F7A377371EB24469002856D3 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -3945,6 +3946,19 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "#!/bin/bash\n# buildNumber=$(/usr/libexec/PlistBuddy -c \"Print CFBundleVersion\" \"$INFOPLIST_FILE\")\n# buildNumber=$(echo $buildNumber | sed 's/0*//')\n# buildNumber=$(($buildNumber + 1))\n# buildNumber=$(printf \"%04d\" $buildNumber)\n# /usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $buildNumber\" \"$INFOPLIST_FILE\"";
+		};
+		F7A377371EB24469002856D3 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PROJECT_DIR}/Libraries external/Fabric/Fabric.framework/run\" 52fe877f4a4ff58868da789df0b0eb915fd94ae1 3d6e5abfdc40776a4a8468ddf5910958596ccbccc341e19f7aaf0fbeb4ff6cf5\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 

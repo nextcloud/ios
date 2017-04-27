@@ -39,9 +39,6 @@
 #import "Nextcloud-Swift.h"
 #endif
 
-#pragma GCC diagnostic ignored "-Wundeclared-selector"
-#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-
 #define alertCreateFolder 1
 #define alertCreateFolderCrypto 2
 #define alertRename 3
