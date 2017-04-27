@@ -38,7 +38,6 @@
 #import <Fabric/Fabric.h>
 #import <Crashlytics/Crashlytics.h>
 
-
 #ifdef CUSTOM_BUILD
     #import "CustomSwift.h"
 #else
