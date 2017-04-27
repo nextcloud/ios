@@ -23,13 +23,7 @@
 
 #import <UIKit/UIKit.h>
 #import "CCStandardImages.h"
-
-#ifdef CUSTOM_BUILD
-    #import "CustomImages.h"
-    #import "CustomConstant.h"
-#else
-    #import "NCBrandConstant.h"
-#endif
+#import "NCBrandConstant.h"
 
 extern NSString *const appApplicationSupport;
 extern NSString *const appDatabase;
