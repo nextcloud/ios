@@ -523,6 +523,8 @@
 		F7A3217B1E9E3EAF0069AD1B /* CCTransfersCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7A321781E9E3EAF0069AD1B /* CCTransfersCell.xib */; };
 		F7A3218C1E9E42B30069AD1B /* CCMenuAccount.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A3218B1E9E42B30069AD1B /* CCMenuAccount.m */; };
 		F7A321AD1E9E6AD50069AD1B /* CCAdvanced.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A321AC1E9E6AD50069AD1B /* CCAdvanced.m */; };
+		F7A377161EB2364A002856D3 /* Crashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7A377141EB2364A002856D3 /* Crashlytics.framework */; };
+		F7A3771A1EB2364A002856D3 /* Fabric.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7A377151EB2364A002856D3 /* Fabric.framework */; };
 		F7B1FBC41E72E3D1001781FE /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7B1FBB11E72E3D1001781FE /* Media.xcassets */; };
 		F7B1FBC61E72E3D1001781FE /* SwiftModalWebVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B1FBBF1E72E3D1001781FE /* SwiftModalWebVC.swift */; };
 		F7B1FBC71E72E3D1001781FE /* SwiftWebVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B1FBC01E72E3D1001781FE /* SwiftWebVC.swift */; };
@@ -1487,6 +1489,8 @@
 		F7A3218B1E9E42B30069AD1B /* CCMenuAccount.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCMenuAccount.m; sourceTree = "<group>"; };
 		F7A321AB1E9E6AD50069AD1B /* CCAdvanced.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCAdvanced.h; sourceTree = "<group>"; };
 		F7A321AC1E9E6AD50069AD1B /* CCAdvanced.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCAdvanced.m; sourceTree = "<group>"; };
+		F7A377141EB2364A002856D3 /* Crashlytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Crashlytics.framework; sourceTree = "<group>"; };
+		F7A377151EB2364A002856D3 /* Fabric.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Fabric.framework; sourceTree = "<group>"; };
 		F7A54C341C6267B500E2C8BF /* CCExifGeo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCExifGeo.h; sourceTree = "<group>"; };
 		F7A54C351C6267B500E2C8BF /* CCExifGeo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCExifGeo.m; sourceTree = "<group>"; };
 		F7A582D61A24DAB500E903D7 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -1745,10 +1749,12 @@
 				F714526D1DC1523B0006A5D4 /* libMagicalRecord.a in Frameworks */,
 				F75EDFAC1E8C106900E6F369 /* FirebaseAnalytics.framework in Frameworks */,
 				F75EDFAE1E8C106900E6F369 /* FirebaseInstanceID.framework in Frameworks */,
+				F7A377161EB2364A002856D3 /* Crashlytics.framework in Frameworks */,
 				F75EDFB11E8C106900E6F369 /* Protobuf.framework in Frameworks */,
 				F7FC7D561DC1F93800BB2C6A /* libz.tbd in Frameworks */,
 				F75EDFAD1E8C106900E6F369 /* FirebaseCore.framework in Frameworks */,
 				F75EDFAF1E8C106900E6F369 /* FirebaseMessaging.framework in Frameworks */,
+				F7A3771A1EB2364A002856D3 /* Fabric.framework in Frameworks */,
 				F7BB14961D5B62C000ECEE68 /* libcrypto.a in Frameworks */,
 				F7BB14971D5B62C000ECEE68 /* libssl.a in Frameworks */,
 				F75EDFB01E8C106900E6F369 /* GoogleToolboxForMac.framework in Frameworks */,
@@ -2977,6 +2983,16 @@
 			path = MenuAccount;
 			sourceTree = "<group>";
 		};
+		F7A377131EB2364A002856D3 /* Fabric */ = {
+			isa = PBXGroup;
+			children = (
+				F7A377141EB2364A002856D3 /* Crashlytics.framework */,
+				F7A377151EB2364A002856D3 /* Fabric.framework */,
+			);
+			name = Fabric;
+			path = "Libraries external/Fabric";
+			sourceTree = SOURCE_ROOT;
+		};
 		F7ACE4281BAC0268006C0017 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
@@ -3344,6 +3360,7 @@
 				F71E67F61DC1F76F003BA52B /* ownCloud iOS library.xcodeproj */,
 				F70F02A81C889183008DAB36 /* Libraries external */,
 				F75EDFA41E8C106900E6F369 /* Analytics */,
+				F7A377131EB2364A002856D3 /* Fabric */,
 				F7A582D71A24DAB500E903D7 /* AppDelegate.h */,
 				F7A582D61A24DAB500E903D7 /* AppDelegate.m */,
 				F7C8C1901B482CEA0048180E /* CCGlobal.h */,
@@ -4651,6 +4668,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_PREFIX_HEADER = iOSClient/CryptoCloud.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					DEBUG,
@@ -4685,6 +4703,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_PREFIX_HEADER = iOSClient/CryptoCloud.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					EXTENSION,
@@ -4718,6 +4737,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					DEBUG,
 					EXTENSION,
@@ -4750,6 +4770,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					EXTENSION,
 					NC,
@@ -4784,6 +4805,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)\"/Libraries external/Analytics\"",
+					"$(PROJECT_DIR)\"/Libraries external/Fabric\"",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = iOSClient/CryptoCloud.pch;
@@ -4830,6 +4852,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)\"/Libraries external/Analytics\"",
+					"$(PROJECT_DIR)\"/Libraries external/Fabric\"",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = iOSClient/CryptoCloud.pch;

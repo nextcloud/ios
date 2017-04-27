@@ -35,6 +35,9 @@
 #import "CCMain.h"
 #import "CCDetail.h"
 #import "Firebase.h"
+#import <Fabric/Fabric.h>
+#import <Crashlytics/Crashlytics.h>
+
 
 #ifdef CUSTOM_BUILD
     #import "CustomSwift.h"
@@ -97,6 +100,9 @@
             #endif
         }
     }
+    
+    // Fabric
+    //[Fabric with:@[[Crashlytics class]]];
 
     NSString *dir;
     NSURL *dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:k_capabilitiesGroups];
