@@ -988,7 +988,6 @@
         if (k_option_use_themingColor && tableCapabilities.themingColor.length > 0) {
         
             [NCBrandColor sharedInstance].brand = [CCGraphics colorFromHexString:tableCapabilities.themingColor];
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"changeTheming" object:nil];
             
         } else {
             
@@ -999,6 +998,8 @@
         
         [NCBrandColor sharedInstance].brand = [NCBrandColor sharedInstance].customer;
     }
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"changeTheming" object:nil];
 }
 
 - (void)changeTheming:(UIViewController *)vc
