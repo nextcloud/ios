@@ -1092,6 +1092,20 @@
 		F744BE921BEBB2EE004FFF66 /* CCIntro.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCIntro.h; sourceTree = "<group>"; };
 		F744BE931BEBB2EE004FFF66 /* CCIntro.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCIntro.m; sourceTree = "<group>"; };
 		F744BE961BEBB31E004FFF66 /* ImagesIntro.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = ImagesIntro.xcassets; sourceTree = "<group>"; };
+		F74639DA1EB35BC700862322 /* fi-FI */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "fi-FI"; path = "fi-FI.lproj/CTAssetsPicker.strings"; sourceTree = "<group>"; };
+		F74639DB1EB35BC700862322 /* fi-FI */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "fi-FI"; path = "fi-FI.lproj/SwiftWebVC.strings"; sourceTree = "<group>"; };
+		F74639DC1EB35BC800862322 /* fi-FI */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "fi-FI"; path = "fi-FI.lproj/BKPasscodeView.strings"; sourceTree = "<group>"; };
+		F74639DD1EB35BC800862322 /* fi-FI */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "fi-FI"; path = "fi-FI.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		F74639DE1EB35BC800862322 /* fi-FI */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "fi-FI"; path = "fi-FI.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		F74639DF1EB35BC800862322 /* fi-FI */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "fi-FI"; path = "fi-FI.lproj/Intro.strings"; sourceTree = "<group>"; };
+		F74639E01EB35BC800862322 /* fi-FI */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "fi-FI"; path = "fi-FI.lproj/Error.strings"; sourceTree = "<group>"; };
+		F74639E11EB35C1300862322 /* is */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = is; path = is.lproj/CTAssetsPicker.strings; sourceTree = "<group>"; };
+		F74639E21EB35C1300862322 /* is */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = is; path = is.lproj/SwiftWebVC.strings; sourceTree = "<group>"; };
+		F74639E31EB35C1300862322 /* is */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = is; path = is.lproj/BKPasscodeView.strings; sourceTree = "<group>"; };
+		F74639E41EB35C1300862322 /* is */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = is; path = is.lproj/Localizable.strings; sourceTree = "<group>"; };
+		F74639E51EB35C1300862322 /* is */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = is; path = is.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		F74639E61EB35C1300862322 /* is */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = is; path = is.lproj/Intro.strings; sourceTree = "<group>"; };
+		F74639E71EB35C1300862322 /* is */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = is; path = is.lproj/Error.strings; sourceTree = "<group>"; };
 		F74D3DBD1BAC1941000BAE4B /* OCNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCNetworking.h; sourceTree = "<group>"; };
 		F74D3DBE1BAC1941000BAE4B /* OCNetworking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCNetworking.m; sourceTree = "<group>"; };
 		F75037431DBFA91A008FB480 /* ALView+PureLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ALView+PureLayout.h"; sourceTree = "<group>"; };
@@ -3631,6 +3645,8 @@
 				el,
 				pl,
 				"nb-NO",
+				"fi-FI",
+				is,
 			);
 			mainGroup = F7F67B9F1A24D27800EE80DA;
 			productRefGroup = F7F67B9F1A24D27800EE80DA;
@@ -4456,6 +4472,8 @@
 				F762CBD11EACC66600B38484 /* el */,
 				F762CBD81EACC6A500B38484 /* pl */,
 				F762CBDF1EACC70500B38484 /* nb-NO */,
+				F74639DC1EB35BC800862322 /* fi-FI */,
+				F74639E31EB35C1300862322 /* is */,
 			);
 			name = BKPasscodeView.strings;
 			path = "Supporting Files";
@@ -4477,6 +4495,8 @@
 				F762CBD01EACC66600B38484 /* el */,
 				F762CBD71EACC6A500B38484 /* pl */,
 				F762CBDE1EACC70400B38484 /* nb-NO */,
+				F74639DB1EB35BC700862322 /* fi-FI */,
+				F74639E21EB35C1300862322 /* is */,
 			);
 			name = SwiftWebVC.strings;
 			path = "Supporting Files";
@@ -4498,6 +4518,8 @@
 				F762CBD41EACC66600B38484 /* el */,
 				F762CBDB1EACC6A500B38484 /* pl */,
 				F762CBE21EACC70500B38484 /* nb-NO */,
+				F74639DF1EB35BC800862322 /* fi-FI */,
+				F74639E61EB35C1300862322 /* is */,
 			);
 			name = Intro.strings;
 			path = "Supporting Files";
@@ -4519,6 +4541,8 @@
 				F762CBCF1EACC66600B38484 /* el */,
 				F762CBD61EACC6A500B38484 /* pl */,
 				F762CBDD1EACC70400B38484 /* nb-NO */,
+				F74639DA1EB35BC700862322 /* fi-FI */,
+				F74639E11EB35C1300862322 /* is */,
 			);
 			name = CTAssetsPicker.strings;
 			path = "Supporting Files";
@@ -4540,6 +4564,8 @@
 				F762CBD51EACC66600B38484 /* el */,
 				F762CBDC1EACC6A500B38484 /* pl */,
 				F762CBE31EACC70500B38484 /* nb-NO */,
+				F74639E01EB35BC800862322 /* fi-FI */,
+				F74639E71EB35C1300862322 /* is */,
 			);
 			name = Error.strings;
 			path = "Supporting Files";
@@ -4561,6 +4587,8 @@
 				F762CBD31EACC66600B38484 /* el */,
 				F762CBDA1EACC6A500B38484 /* pl */,
 				F762CBE11EACC70500B38484 /* nb-NO */,
+				F74639DE1EB35BC800862322 /* fi-FI */,
+				F74639E51EB35C1300862322 /* is */,
 			);
 			name = InfoPlist.strings;
 			path = "Supporting Files";
@@ -4582,6 +4610,8 @@
 				F762CBD21EACC66600B38484 /* el */,
 				F762CBD91EACC6A500B38484 /* pl */,
 				F762CBE01EACC70500B38484 /* nb-NO */,
+				F74639DD1EB35BC800862322 /* fi-FI */,
+				F74639E41EB35C1300862322 /* is */,
 			);
 			name = Localizable.strings;
 			path = "Supporting Files";
