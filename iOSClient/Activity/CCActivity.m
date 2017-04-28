@@ -35,8 +35,6 @@
 #define fontSizeAction  [UIFont systemFontOfSize:14]
 #define fontSizeNote    [UIFont systemFontOfSize:14]
 
-#define daysOfActivity  7
-
 @interface CCActivity ()
 {
     BOOL _verbose;
@@ -157,7 +155,7 @@
     
     NSPredicate *predicate;
         
-    NSDate *sixDaysAgo = [[NSCalendar currentCalendar] dateByAddingUnit:NSCalendarUnitDay value:-daysOfActivity toDate:[NSDate date] options:0];
+    NSDate *sixDaysAgo = [[NSCalendar currentCalendar] dateByAddingUnit:NSCalendarUnitDay value:-k_daysOfActivity toDate:[NSDate date] options:0];
         
     if (_verbose)
         predicate = [NSPredicate predicateWithFormat:@"((account == %@) || (account == '')) AND (date > %@)", app.activeAccount, sixDaysAgo];
