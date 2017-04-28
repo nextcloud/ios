@@ -151,11 +151,10 @@
 {
     [super viewDidLoad];
     
-    [self.view setTintColor:[NCBrandColor sharedInstance].brand];
-    self.view.backgroundColor = [NCBrandColor sharedInstance].brand;
+    self.view.backgroundColor = [NCBrandColor sharedInstance].tableBackground;
     
     [self.endButton setTitle:NSLocalizedString(@"_done_", nil) forState:UIControlStateNormal];
-    self.endButton.tintColor = [NCBrandColor sharedInstance].navigationBarText;
+    self.endButton.tintColor = [NCBrandColor sharedInstance].brand;
     
     self.tableView.backgroundColor = [NCBrandColor sharedInstance].tableBackground;
     

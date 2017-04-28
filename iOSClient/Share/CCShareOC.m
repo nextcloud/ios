@@ -57,7 +57,6 @@
     form = [XLFormDescriptor formDescriptor];
     form.rowNavigationOptions = XLFormRowNavigationOptionNone;
     
-    
     // Share Link
     
     section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_share_link_", nil)];
@@ -119,19 +118,28 @@
 {
     [super viewDidLoad];
     
-    [self.view setTintColor:[NCBrandColor sharedInstance].brand];
-    self.view.backgroundColor = [NCBrandColor sharedInstance].brand;
+    self.view.backgroundColor = [NCBrandColor sharedInstance].tableBackground;
     
     [self.endButton setTitle:NSLocalizedString(@"_done_", nil) forState:UIControlStateNormal];
-    self.endButton.tintColor = [NCBrandColor sharedInstance].navigationBarText;
+    self.endButton.tintColor = [NCBrandColor sharedInstance].brand;
     
     [self reloadData];
     
-    if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, self.metadata.fileID]]) self.fileImageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, self.metadata.fileID]];
-    else self.fileImageView.image = [UIImage imageNamed:self.metadata.iconName];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, self.metadata.fileID]]) {
+        
+        self.fileImageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, self.metadata.fileID]];
+        
+    } else {
+        
+        if (self.metadata.directory)
+            self.fileImageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:self.metadata.iconName] color:[NCBrandColor sharedInstance].brand];
+        else
+            self.fileImageView.image = [UIImage imageNamed:self.metadata.iconName];
+
+    }
     
     self.labelTitle.text = self.metadata.fileNamePrint;
-    self.labelTitle.textColor = [NCBrandColor sharedInstance].navigationBarText;
+    self.labelTitle.textColor = [UIColor blackColor];
     
     self.tableView.tableHeaderView = ({UIView *line = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 0.1 / UIScreen.mainScreen.scale)];
         line.backgroundColor = self.tableView.separatorColor;
