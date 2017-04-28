@@ -980,6 +980,13 @@
 
 - (void)deleteFileOrFolderSuccess:(CCMetadataNet *)metadataNet
 {
+    // reload Main
+    [app.activeMain reloadDatasource];
+    
+    // If removed document (web) or PDF close
+    if (_webView || _readerPDFViewController)
+        [self removeAllView];
+    
     // if a message for a directory of these
     if (![_dataSourceDirectoryID containsObject:metadataNet.metadata.directoryID])
         return;

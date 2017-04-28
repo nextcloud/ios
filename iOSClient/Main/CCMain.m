@@ -315,6 +315,9 @@
 
     // Refresh control
     _refreshControl.tintColor = [NCBrandColor sharedInstance].brand;
+    
+    // Reload Table View
+    [self.tableView reloadData];
 }
 
 #pragma --------------------------------------------------------------------------------------------

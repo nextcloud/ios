@@ -104,6 +104,9 @@
 {
     if (self.isViewLoaded && self.view.window)
         [app changeTheming:self];
+    
+    // Reload Table View
+    [self.tableView reloadData];
 }
 
 - (void)triggerProgressTask:(NSNotification *)notification
