@@ -1199,6 +1199,10 @@
             [UIImagePNGRepresentation(avatar) writeToFile:[NSString stringWithFormat:@"%@/avatar.png", app.directoryUser] atomically:YES];
         else
             [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/avatar.png", app.directoryUser] error:nil];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"changeUserProfile" object:nil];
+        });
     });
 }
 
@@ -1220,10 +1224,7 @@
     // Update capabilities db
     [CCCoreData setCapabilities:capabilities account:app.activeAccount];
     
-    // Change Theming color
-    [app settingThemingColorBrand];
-    
-    // Download Theming Background
+    // Download Theming Background & Change Theming color
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
         
         if (k_option_use_themingBackground == YES) {
@@ -1234,6 +1235,10 @@
             else
                 [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/themingBackground.png", app.directoryUser] error:nil];
         }
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [app settingThemingColorBrand];
+        });
     });
 
     // Search bar if change version

@@ -902,6 +902,11 @@
     UITabBarController *tabBarController = [splitViewController.viewControllers firstObject];
     
     UIButton *buttonPlus = [tabBarController.view viewWithTag:99];
+    
+    UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] color:[NCBrandColor sharedInstance].brand];
+    [buttonPlus setBackgroundImage:buttonImage forState:UIControlStateNormal];
+    [buttonPlus setBackgroundImage:buttonImage forState:UIControlStateHighlighted];
+    
     if (buttonPlus) {
 
         if (visible) {

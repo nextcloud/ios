@@ -63,10 +63,12 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         themingBackground.isUserInteractionEnabled = true
         themingBackground.addGestureRecognizer(tapImageLogo)
         
-        // Notification theming
+        // Notification
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.changeUserProfile), name: NSNotification.Name(rawValue: "changeUserProfile"), object: nil)
     }
     
+    // Apparirà
     override func viewWillAppear(_ animated: Bool) {
         
         super.viewWillAppear(animated)
@@ -128,56 +130,14 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             }
         }
         
-        // Display Name user & Quota
-        tableAccont = CCCoreData.getActiveAccount()
-        if (tableAccont != nil) {
-        
-            if let displayName = self.tableAccont!.displayName {
-                if displayName.isEmpty {
-                    labelUsername.text = self.tableAccont!.user
-                }
-                else{
-                    labelUsername.text = self.tableAccont!.displayName
-                }
-            }
-            else{
-                labelUsername.text = self.tableAccont!.user
-            }
-            
-            progressQuota.progress = Float((self.tableAccont?.quotaRelative)!) / 100
-            progressQuota.progressTintColor = NCBrandColor.sharedInstance.brand
-
-            let quota : String = CCUtility.transformedSize(Double((self.tableAccont?.quotaTotal)!))
-            let quotaUsed : String = CCUtility.transformedSize(Double((self.tableAccont?.quotaUsed)!))
-        
-            labelQuota.text = String.localizedStringWithFormat(NSLocalizedString("_quota_using_", comment: ""), quotaUsed, quota)
-            
-            // imageLogo
-            let theminBackgroundFile = UIImage.init(contentsOfFile: "\(appDelegate.directoryUser!)/themingBackground.png")
-            if (theminBackgroundFile != nil) {
-                themingBackground.image = theminBackgroundFile
-            } else {
-                themingBackground.image = UIImage.init(named: NCBrandImages.sharedInstance.themingBackground)
-            }
-        }
-        
         if (quotaMenu.count > 0) {
             
             let item = quotaMenu[0]
             labelQuotaExternalSite.text = item.name
         }
         
-        // Avatar
-        let themingAvatarFile : UIImage? = UIImage.init(contentsOfFile: "\(appDelegate.directoryUser!)/avatar.png")
-        
-        if (themingAvatarFile != nil) {
-        
-            themingAvatar.image = themingAvatarFile
-            
-        } else {
-            
-            themingAvatar.image = UIImage.init(named: "moreAvatar")
-        }
+        // User data
+        changeUserProfile()
         
         // Title
         self.navigationItem.title = NSLocalizedString("_more_", comment: "")
@@ -194,11 +154,6 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         tableView.reloadData()
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-
-    }
-    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
@@ -207,8 +162,55 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     func changeTheming() {
         
+        // Theming Background
+        let theminBackgroundFile = UIImage.init(contentsOfFile: "\(appDelegate.directoryUser!)/themingBackground.png")
+        if (theminBackgroundFile != nil) {
+            themingBackground.image = theminBackgroundFile
+        } else {
+            themingBackground.image = UIImage.init(named: NCBrandImages.sharedInstance.themingBackground)
+        }
+
         if (self.isViewLoaded && (self.view.window != nil)) {
             appDelegate.changeTheming(self)
+        }
+    }
+    
+    func changeUserProfile() {
+     
+        let themingAvatarFile : UIImage? = UIImage.init(contentsOfFile: "\(appDelegate.directoryUser!)/avatar.png")
+        
+        if (themingAvatarFile != nil) {
+            
+            themingAvatar.image = themingAvatarFile
+            
+        } else {
+            
+            themingAvatar.image = UIImage.init(named: "moreAvatar")
+        }
+        
+        // Display Name user & Quota
+        tableAccont = CCCoreData.getActiveAccount()
+        if (tableAccont != nil) {
+            
+            if let displayName = self.tableAccont!.displayName {
+                if displayName.isEmpty {
+                    labelUsername.text = self.tableAccont!.user
+                }
+                else{
+                    labelUsername.text = self.tableAccont!.displayName
+                }
+            }
+            else{
+                labelUsername.text = self.tableAccont!.user
+            }
+            
+            progressQuota.progress = Float((self.tableAccont?.quotaRelative)!) / 100
+            progressQuota.progressTintColor = NCBrandColor.sharedInstance.brand
+            
+            let quota : String = CCUtility.transformedSize(Double((self.tableAccont?.quotaTotal)!))
+            let quotaUsed : String = CCUtility.transformedSize(Double((self.tableAccont?.quotaUsed)!))
+            
+            labelQuota.text = String.localizedStringWithFormat(NSLocalizedString("_quota_using_", comment: ""), quotaUsed, quota)
         }
     }
     
