@@ -312,6 +312,9 @@
     // Menu e Bar
     [self createReMainMenu];
     [self createReSelectMenu];
+
+    // Refresh control
+    _refreshControl.tintColor = [NCBrandColor sharedInstance].brand;
 }
 
 #pragma --------------------------------------------------------------------------------------------
