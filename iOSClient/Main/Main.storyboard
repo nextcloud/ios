@@ -443,7 +443,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" preservesSuperviewLayoutMargins="YES" image="nextcloud_lite" translatesAutoresizingMaskIntoConstraints="NO" id="zlU-MP-ZVs">
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" preservesSuperviewLayoutMargins="YES" image="backgroundDetail" translatesAutoresizingMaskIntoConstraints="NO" id="zlU-MP-ZVs">
                                 <rect key="frame" x="76" y="255" width="223" height="157"/>
                             </imageView>
                         </subviews>
@@ -831,9 +831,9 @@
         <image name="MoreBackground" width="225" height="150"/>
         <image name="Plus" width="40" height="40"/>
         <image name="avatar" width="25" height="25"/>
+        <image name="backgroundDetail" width="223" height="157"/>
         <image name="disclosureIndicator" width="13" height="14"/>
         <image name="fileNextcloud" width="25" height="25"/>
-        <image name="nextcloud_lite" width="223" height="157"/>
         <image name="tabBarFavorite" width="25" height="25"/>
         <image name="tabBarMore" width="25" height="25"/>
         <image name="tabBarPhotos" width="25" height="21"/>
