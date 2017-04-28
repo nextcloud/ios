@@ -93,14 +93,9 @@
     // Color
     [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
     [app aspectTabBar:self.tabBarController.tabBar hidden:NO];
-}
-
-// E' arrivato
-- (void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];
     
     [self reloadDatasource];
+
 }
 
 - (void)changeTheming
