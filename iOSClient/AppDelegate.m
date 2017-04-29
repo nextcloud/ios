@@ -1569,6 +1569,24 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Crashlytics =====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)logUserCrashlytics
+{
+    TableAccount *tableAccount = [CCCoreData getActiveAccount];
+    
+    if (tableAccount) {
+        
+        if (tableAccount.account && tableAccount.account.length > 0)
+            [CrashlyticsKit setUserName:tableAccount.account];
+        
+        if (tableAccount.email && tableAccount.email.length > 0)
+            [CrashlyticsKit setUserEmail:tableAccount.email];
+    }
+}
+
+#pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== UPGRADE =====
 #pragma --------------------------------------------------------------------------------------------
 

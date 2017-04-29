@@ -40,8 +40,7 @@
 #define image_bkfull                            @"bkfull"
 #define image_bkempty                           @"bkempty"
 
-#define image_buttonBlu                         @"buttonBlu"
-#define image_buttonWhite                       @"buttonWhite"
+#define image_button                            @"button"
 
 #define image_checked                           @"checked"
 

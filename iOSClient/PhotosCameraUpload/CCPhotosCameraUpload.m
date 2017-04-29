@@ -254,7 +254,7 @@
 
 - (UIImage *)imageForEmptyDataSet:(UIScrollView *)scrollView
 {
-    return [UIImage imageNamed:image_photosNoRecord];
+    return [CCGraphics changeThemingColorImage:[UIImage imageNamed:image_photosNoRecord] color:[NCBrandColor sharedInstance].brand];
 }
 
 - (NSAttributedString *)titleForEmptyDataSet:(UIScrollView *)scrollView
@@ -287,7 +287,9 @@
 {
     if ([CCCoreData getCameraUploadActiveAccount:app.activeAccount] == NO) {
     
-        return [CCUtility drawText:NSLocalizedString(@"_activate_camera_upload_", nil) inImage:[UIImage imageNamed:image_buttonBlu] colorText:[UIColor whiteColor]];        
+        UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:image_button] color:[NCBrandColor sharedInstance].brand];
+        
+        return [CCUtility drawText:NSLocalizedString(@"_activate_camera_upload_", nil) inImage:buttonImage colorText:[UIColor whiteColor]];
         
     } else return nil;
 }

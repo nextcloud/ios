@@ -57,6 +57,7 @@
 @property (nonatomic, strong) NSString *activeUser;
 @property (nonatomic, strong) NSString *activePassword;
 @property (nonatomic, strong) NSString *directoryUser;
+@property (nonatomic, strong) NSString *activeEmail;
 
 // next version ... ? ...
 @property double currentLatitude;
@@ -167,6 +168,8 @@
 - (void)loadAutomaticUpload;
 
 - (BOOL)createFolderSubFolderAutomaticUploadFolderPhotos:(NSString *)folderPhotos useSubFolder:(BOOL)useSubFolder assets:(NSArray *)assets selector:(NSString *)selector;
+
+- (void)logUserCrashlytics;
 
 @end
 
