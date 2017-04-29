@@ -111,6 +111,8 @@
 {
     if (self.isViewLoaded && self.view.window)
         [app changeTheming:self];
+    
+    [self.collectionView reloadData];
 }
 
 #pragma --------------------------------------------------------------------------------------------
