@@ -32,6 +32,7 @@
 #import <OCCommunicationLib/OCFrameworkConstants.h>
 #import <OCCommunicationLib/OCCapabilities.h>
 #import "CTAssetCheckmark.h"
+//#import <Crashlytics/Crashlytics.h>
 
 #ifdef CUSTOM_BUILD
 #import "CustomSwift.h"
@@ -3274,6 +3275,9 @@
 
 - (void)menuLogo
 {
+    // Test crash
+    //[[Crashlytics sharedInstance] crash];
+    
     if (app.reSelectMenu.isOpen || app.reMainMenu.isOpen)
         return;
     
