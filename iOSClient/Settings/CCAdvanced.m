@@ -125,7 +125,7 @@
 {
     [super viewWillAppear:animated];
     
-    self.title = NSLocalizedString(@"_settings_", nil);
+    self.title = NSLocalizedString(@"_advanced_", nil);
     self.tableView.backgroundColor = COLOR_TABLE_BACKGROUND;
 
     // Color
