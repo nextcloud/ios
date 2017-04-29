@@ -136,8 +136,9 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             labelQuotaExternalSite.text = item.name
         }
         
-        // User data
+        // User data & Theming
         changeUserProfile()
+        changeTheming()
         
         // Title
         self.navigationItem.title = NSLocalizedString("_more_", comment: "")
