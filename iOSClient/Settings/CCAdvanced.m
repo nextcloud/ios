@@ -133,7 +133,6 @@
 {
     [super viewWillAppear:animated];
     
-    self.title = NSLocalizedString(@"_settings_", nil);
     self.tableView.backgroundColor = [NCBrandColor sharedInstance].tableBackground;
 
     // Color

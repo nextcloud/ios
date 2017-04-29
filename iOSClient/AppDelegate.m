@@ -208,17 +208,6 @@
     // ico Image Cache
     self.icoImagesCache = [[NSMutableDictionary alloc] init];
     
-    // remove tmp & cache
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-    
-        NSArray* tmpDirectory = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:NSTemporaryDirectory() error:NULL];
-        for (NSString *file in tmpDirectory) {
-            [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@%@", NSTemporaryDirectory(), file] error:NULL];
-        }
-        
-        [[NSURLCache sharedURLCache] removeAllCachedResponses];
-    });
-    
     // setting Reachable in back
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 
