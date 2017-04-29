@@ -378,10 +378,10 @@
     CCMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(session = %@) AND ((sessionTaskIdentifier == %i) OR (sessionTaskIdentifierPlist == %i))",session.sessionDescription, task.taskIdentifier, task.taskIdentifier] context:_context];
     
     NSInteger errorCode;
-    NSString *fileID = metadata.fileID;
-    NSString *rev = metadata.rev;
+    __block NSString *fileID = metadata.fileID;
+    __block NSString *rev = metadata.rev;
     
-    NSDate *date = [NSDate date];
+    __block NSDate *date = [NSDate date];
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"EEE, dd MMM y HH:mm:ss zzz"];
 
@@ -410,23 +410,23 @@
     
     if ([task isKindOfClass:[NSURLSessionDownloadTask class]]) {
         
-        NSDictionary *fields = [httpResponse allHeaderFields];
-            
-        if (errorCode == 0) {
-            
-            rev = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-ETag"]];
-            date = [dateFormatter dateFromString:[fields objectForKey:@"Date"]];
-
-            // Activity
-            [CCCoreData addActivityClient:fileName fileID:metadata.fileID action:k_activityDebugActionDownload selector:metadata.sessionSelector note:serverUrl type:k_activityTypeSuccess verbose:k_activityVerboseDefault account:metadata.account activeUrl:_activeUrl];
-            
-        } else {
-            
-            // Activity
-            [CCCoreData addActivityClient:fileName fileID:metadata.fileID action:k_activityDebugActionDownload selector:metadata.sessionSelector note:[NSString stringWithFormat:@"Server: %@ Error: %@", serverUrl, [CCError manageErrorKCF:errorCode withNumberError:YES]] type:k_activityTypeFailure verbose:k_activityVerboseDefault account:metadata.account activeUrl:_activeUrl];
-        }
-        
         dispatch_async(dispatch_get_main_queue(), ^{
+
+            NSDictionary *fields = [httpResponse allHeaderFields];
+            
+            if (errorCode == 0) {
+            
+                rev = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-ETag"]];
+                date = [dateFormatter dateFromString:[fields objectForKey:@"Date"]];
+
+                // Activity
+                [CCCoreData addActivityClient:fileName fileID:metadata.fileID action:k_activityDebugActionDownload selector:metadata.sessionSelector note:serverUrl type:k_activityTypeSuccess verbose:k_activityVerboseDefault account:metadata.account activeUrl:_activeUrl];
+            
+            } else {
+            
+                // Activity
+                [CCCoreData addActivityClient:fileName fileID:metadata.fileID action:k_activityDebugActionDownload selector:metadata.sessionSelector note:[NSString stringWithFormat:@"Server: %@ Error: %@", serverUrl, [CCError manageErrorKCF:errorCode withNumberError:YES]] type:k_activityTypeFailure verbose:k_activityVerboseDefault account:metadata.account activeUrl:_activeUrl];
+            }
         
             // Notification change session
             if (metadata) {
@@ -447,25 +447,25 @@
     
     if ([task isKindOfClass:[NSURLSessionUploadTask class]]) {
         
-        NSDictionary *fields = [httpResponse allHeaderFields];
-            
-        if (errorCode == 0) {
-            
-            fileID = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-FileId"]];
-            rev = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-ETag"]];
-            date = [dateFormatter dateFromString:[fields objectForKey:@"Date"]];
-            
-            // Activity
-            [CCCoreData addActivityClient:fileName fileID:fileID action:k_activityDebugActionUpload selector:metadata.sessionSelector note:serverUrl type:k_activityTypeSuccess verbose:k_activityVerboseDefault account:metadata.account activeUrl:_activeUrl];
-
-        } else {
-            
-            // Activity
-            [CCCoreData addActivityClient:fileName fileID:metadata.fileID action:k_activityDebugActionUpload selector:metadata.sessionSelector note:[NSString stringWithFormat:@"Server: %@ Error: %@", serverUrl, [CCError manageErrorKCF:errorCode withNumberError:YES]] type:k_activityTypeFailure verbose:k_activityVerboseDefault account:metadata.account activeUrl:_activeUrl];
-        }
-        
         dispatch_async(dispatch_get_main_queue(), ^{
+
+            NSDictionary *fields = [httpResponse allHeaderFields];
             
+            if (errorCode == 0) {
+            
+                fileID = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-FileId"]];
+                rev = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-ETag"]];
+                date = [dateFormatter dateFromString:[fields objectForKey:@"Date"]];
+            
+                // Activity
+                [CCCoreData addActivityClient:fileName fileID:fileID action:k_activityDebugActionUpload selector:metadata.sessionSelector note:serverUrl type:k_activityTypeSuccess verbose:k_activityVerboseDefault account:metadata.account activeUrl:_activeUrl];
+
+            } else {
+            
+                // Activity
+                [CCCoreData addActivityClient:fileName fileID:metadata.fileID action:k_activityDebugActionUpload selector:metadata.sessionSelector note:[NSString stringWithFormat:@"Server: %@ Error: %@", serverUrl, [CCError manageErrorKCF:errorCode withNumberError:YES]] type:k_activityTypeFailure verbose:k_activityVerboseDefault account:metadata.account activeUrl:_activeUrl];
+            }
+        
             // Notification change session
             if (fileID && metadata ) {
                 
