@@ -1231,6 +1231,8 @@
     // Update capabilities db
     [CCCoreData setCapabilities:capabilities account:app.activeAccount];
     
+    // ------ THEMING -----------------------------------------------------------------------
+    
     // Download Theming Background & Change Theming color
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
         
@@ -1248,6 +1250,8 @@
         });
     });
 
+    // ------ SEARCH  ------------------------------------------------------------------------
+    
     // Search bar if change version
     if ([CCCoreData getServerVersionAccount:app.activeAccount] != capabilities.versionMajor) {
     
@@ -1271,14 +1275,36 @@
         });
     }
     
-    // External Sites
+    // ------ GET SERVICE SERVER ------------------------------------------------------------
+    
+    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
+
+    // Read External Sites
     if (capabilities.isExternalSitesServerEnabled) {
         
-        CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
-
         metadataNet.action = actionGetExternalSitesServer;
         [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
     }
+    
+    // Read Share
+    if (capabilities.isFilesSharingAPIEnabled) {
+        
+        [app.sharesID removeAllObjects];
+        metadataNet.action = actionReadShareServer;
+        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+    }
+    
+    // Read Notification
+    metadataNet.action = actionGetNotificationServer;
+    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+    
+    // Read User Profile
+    metadataNet.action = actionGetUserProfile;
+    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+    
+    // Read Activity
+    metadataNet.action = actionGetActivityServer;
+    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
 }
 
 #pragma mark -
@@ -1293,22 +1319,8 @@
         return;
     
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
-   
-    [app.sharesID removeAllObjects];
     
     metadataNet.action = actionGetCapabilities;
-    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
-
-    metadataNet.action = actionReadShareServer;
-    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
-    
-    metadataNet.action = actionGetNotificationServer;
-    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
-
-    metadataNet.action = actionGetUserProfile;
-    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
-        
-    metadataNet.action = actionGetActivityServer;
     [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
 }
 
