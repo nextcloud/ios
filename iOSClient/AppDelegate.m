@@ -263,10 +263,8 @@
     [application registerUserNotificationSettings:notificationSettings];
     
     // Fabric
-#ifndef DEBUG
     [Fabric with:@[[Crashlytics class]]];
     [self logUserCrashlytics];
-#endif
     
     return YES;
 }
@@ -1577,14 +1575,12 @@
 
 - (void)logUserCrashlytics
 {
-#ifndef DEBUG
     TableAccount *tableAccount = [CCCoreData getActiveAccount];
     
     if (tableAccount) {
         if (tableAccount.email && tableAccount.email.length > 0)
             [CrashlyticsKit setUserEmail:tableAccount.email];
     }
-#endif
 }
 
 #pragma --------------------------------------------------------------------------------------------
