@@ -346,10 +346,10 @@
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         
-        NSLog(@"[LOG] Request Server Information");
+        NSLog(@"[LOG] Request Server Capabilities");
     
         if (_activeMain)
-            [_activeMain requestServerInformation];
+            [_activeMain requestServerCapabilities];
     
         NSLog(@"[LOG] Initialize Camera Upload");
         [[NSNotificationCenter defaultCenter] postNotificationName:@"initStateCameraUpload" object:nil];
@@ -1150,7 +1150,7 @@
             [self messageNotification:@"_network_available_" description:nil visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo];
             
             if (_activeMain)
-                [_activeMain performSelector:@selector(requestServerInformation) withObject:nil afterDelay:3];
+                [_activeMain performSelector:@selector(requestServerCapabilities) withObject:nil afterDelay:3];
         }
         
         NSLog(@"[LOG] Reachability Changed: Reachable");

@@ -1286,7 +1286,7 @@
 #pragma mark ==== Request Server Information  ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)requestServerInformation
+- (void)requestServerCapabilities
 {
     // test
     if (app.activeAccount.length == 0)
