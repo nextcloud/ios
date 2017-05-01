@@ -558,8 +558,10 @@
     
     for (TableCertificates *record in records) {
         
-        NSString *certificatePath = [NSString stringWithFormat:@"%@%@", localCertificatesFolder, record.certificateLocation];
-        [output addObject:certificatePath];
+        if (record.certificateLocation && record.certificateLocation.length > 0) {
+            NSString *certificatePath = [NSString stringWithFormat:@"%@%@", localCertificatesFolder, record.certificateLocation];
+            [output addObject:certificatePath];
+        }
     }
     
     return output;
