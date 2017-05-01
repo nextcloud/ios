@@ -311,8 +311,11 @@
         [app changeTheming:self];
     
     // Menu e Bar
-    [self createReMainMenu];
-    [self createReSelectMenu];
+    if (app.reMainMenu.isOpen == NO)
+        [self createReMainMenu];
+    
+    if (app.reSelectMenu.isOpen == NO)
+        [self createReSelectMenu];
 
     // Refresh control
     _refreshControl.tintColor = [NCBrandColor sharedInstance].brand;

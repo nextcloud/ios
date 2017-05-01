@@ -59,7 +59,6 @@
 {
     if (self = [super initWithCoder:aDecoder])  {
         
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(insertGeocoderLocation:) name:@"insertGeocoderLocation" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(triggerProgressTask:) name:@"NotificationProgressTask" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
 
@@ -84,6 +83,8 @@
 {
     [super viewDidLoad];
     
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(insertGeocoderLocation:) name:@"insertGeocoderLocation" object:nil];
+
     self.imageBackground.image = [UIImage imageNamed:[NCBrandImages sharedInstance].BackgroundDetail];
     
     if ([self.metadataDetail.fileName length] > 0 || [self.metadataDetail.directoryID length] > 0 || [self.metadataDetail.fileID length] > 0) {
@@ -802,7 +803,7 @@
         if (![self.photoBrowser isGridController]) {
             
             //[self.photoBrowser hideControls];
-            [self.photoBrowser showControls];
+            //[self.photoBrowser showControls];
         }
     }
 }
