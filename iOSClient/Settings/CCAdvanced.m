@@ -321,6 +321,7 @@
             [CCCoreData flushTableCapabilitiesAccount:app.activeAccount];
             [CCCoreData flushTableDirectoryAccount:app.activeAccount];
             [CCCoreData flushTableExternalSitesAccount:app.activeAccount];
+            [CCCoreData flushTableGPS];
             [CCCoreData flushTableLocalFileAccount:app.activeAccount];
             [CCCoreData flushTableMetadataAccount:app.activeAccount];
             [CCCoreData flushTableShareAccount:app.activeAccount];
