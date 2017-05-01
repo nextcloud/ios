@@ -1880,25 +1880,26 @@
 
 + (void)addActivityServer:(OCActivity *)activity account:(NSString *)account
 {
-    [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
+    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
+    
+    if (activity.idActivity != 0)
+        [TableActivity MR_deleteAllMatchingPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (idActivity == %d)", account, activity.idActivity] inContext:context];
         
-        if (activity.idActivity != 0)
-            [TableActivity MR_deleteAllMatchingPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (idActivity == %d)", account, activity.idActivity] inContext:localContext];
-        
-        TableActivity *record = [TableActivity MR_createEntityInContext:localContext];
+    TableActivity *record = [TableActivity MR_createEntityInContext:context];
 
-        record.account = account;
-        record.action = @"Activity";
-        record.date = activity.date;
-        record.file = activity.file;
-        record.fileID = @"";
-        record.idActivity = [NSNumber numberWithInteger:activity.idActivity];
-        record.link = activity.link;
-        record.note = activity.subject;
-        record.selector = @"";
-        record.type = k_activityTypeInfo;
-        record.verbose = [NSNumber numberWithInteger:k_activityVerboseDefault];
-    }];
+    record.account = account;
+    record.action = @"Activity";
+    record.date = activity.date;
+    record.file = activity.file;
+    record.fileID = @"";
+    record.idActivity = [NSNumber numberWithInteger:activity.idActivity];
+    record.link = activity.link;
+    record.note = activity.subject;
+    record.selector = @"";
+    record.type = k_activityTypeInfo;
+    record.verbose = [NSNumber numberWithInteger:k_activityVerboseDefault];
+    
+    [context MR_saveToPersistentStoreAndWait];
 }
 
 + (void)addActivityClient:(NSString *)file fileID:(NSString *)fileID action:(NSString *)action selector:(NSString *)selector note:(NSString *)note type:(NSString *)type verbose:(NSInteger)verbose account:(NSString *)account activeUrl:(NSString *)activeUrl
@@ -1906,24 +1907,25 @@
     note = [note stringByReplacingOccurrencesOfString:[activeUrl stringByAppendingString:webDAV] withString:@""];
     note = [note stringByReplacingOccurrencesOfString:[k_domain_session_queue stringByAppendingString:@"."] withString:@""];
 
-    [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
+    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
+    
+    TableActivity *record = [TableActivity MR_createEntityInContext:context];
         
-        TableActivity *record = [TableActivity MR_createEntityInContext:localContext];
+    if (!account) record.account = @"";
+    else record.account = account;
         
-        if (!account) record.account = @"";
-        else record.account = account;
-        
-        record.action = action;
-        record.date = [NSDate date];
-        record.file = file;
-        record.fileID = fileID;
-        record.idActivity = 0;
-        record.link = @"";
-        record.note = note;
-        record.selector = selector;
-        record.type = type;
-        record.verbose = [NSNumber numberWithInteger:verbose];
-   }];
+    record.action = action;
+    record.date = [NSDate date];
+    record.file = file;
+    record.fileID = fileID;
+    record.idActivity = 0;
+    record.link = @"";
+    record.note = note;
+    record.selector = selector;
+    record.type = type;
+    record.verbose = [NSNumber numberWithInteger:verbose];
+   
+    [context MR_saveToPersistentStoreAndWait];
 }
 
 + (NSArray *)getAllTableActivityWithPredicate:(NSPredicate *)predicate

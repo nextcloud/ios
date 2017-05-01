@@ -783,6 +783,9 @@
 
 - (void)insertGeocoderLocation:(NSNotification *)notification
 {
+    if (notification.userInfo.count == 0)
+        return;
+    
     NSString *fileID = [[notification.userInfo allKeys] objectAtIndex:0];
     //NSDate *date = [[notification.userInfo allValues] objectAtIndex:0];
  
@@ -790,21 +793,18 @@
     if (self.indexNowVisible >= [self.photos count])
         return;
     
-    dispatch_async(dispatch_get_main_queue(), ^{
-        
-        if ([fileID isEqualToString:self.fileIDNowVisible]) {
+    if ([fileID isEqualToString:self.fileIDNowVisible]) {
             
-            MWPhoto *photo = [self.photos objectAtIndex:self.indexNowVisible];
+        MWPhoto *photo = [self.photos objectAtIndex:self.indexNowVisible];
             
-            [self setLocationCaptionPhoto:photo fileID:fileID];
+        [self setLocationCaptionPhoto:photo fileID:fileID];
             
-            if (![self.photoBrowser isGridController]) {
+        if (![self.photoBrowser isGridController]) {
             
-                [self.photoBrowser hideControls];
-                [self.photoBrowser showControls];
-            }
+            //[self.photoBrowser hideControls];
+            [self.photoBrowser showControls];
         }
-    });
+    }
 }
 
 - (void)setLocationCaptionPhoto:(MWPhoto *)photo fileID:(NSString *)fileID
