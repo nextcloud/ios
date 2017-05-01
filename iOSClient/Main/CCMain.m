@@ -310,11 +310,12 @@
     if (self.isViewLoaded && self.view.window)
         [app changeTheming:self];
     
-    // Menu e Bar
+    // Menu Main
     if (app.reMainMenu.isOpen)
         [app.reMainMenu close];
     [self createReMainMenu];
     
+    // Menu Select
     if (app.reSelectMenu.isOpen)
         [app.reSelectMenu close];
     [self createReSelectMenu];
