@@ -1396,6 +1396,13 @@
 		F7875D381EB9EB5C001EE12D /* is */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = is; path = is.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F7875D391EB9EB5C001EE12D /* is */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = is; path = is.lproj/SwiftWebVC.strings; sourceTree = "<group>"; };
 		F7875D3A1EB9EB5C001EE12D /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/Localizable.strings; sourceTree = "<group>"; };
+		F7875D5A1EB9EC39001EE12D /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/BKPasscodeView.strings; sourceTree = "<group>"; };
+		F7875D5B1EB9EC39001EE12D /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/CTAssetsPicker.strings; sourceTree = "<group>"; };
+		F7875D5C1EB9EC39001EE12D /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Error.strings; sourceTree = "<group>"; };
+		F7875D5D1EB9EC39001EE12D /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		F7875D5E1EB9EC39001EE12D /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Intro.strings; sourceTree = "<group>"; };
+		F7875D5F1EB9EC39001EE12D /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
+		F7875D601EB9EC3A001EE12D /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/SwiftWebVC.strings; sourceTree = "<group>"; };
 		F787E5581BC503ED00AFBFE1 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		F78BFEDE1D31126B00E513CF /* MainInterface.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = MainInterface.storyboard; sourceTree = "<group>"; };
 		F78F6FAE1CC8CCB700F4EA25 /* CCSection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCSection.h; sourceTree = "<group>"; };
@@ -3509,7 +3516,6 @@
 				nl,
 				en,
 				it,
-				de,
 				fr,
 				Base,
 				ru,
@@ -3523,6 +3529,7 @@
 				cs_CZ,
 				"fi-FI",
 				is,
+				de,
 			);
 			mainGroup = F7F67B9F1A24D27800EE80DA;
 			productRefGroup = F7F67B9F1A24D27800EE80DA;
@@ -4324,6 +4331,7 @@
 				F7875D251EB9EB5C001EE12D /* es-MX */,
 				F7875D2C1EB9EB5C001EE12D /* fi-FI */,
 				F7875D331EB9EB5C001EE12D /* is */,
+				F7875D5A1EB9EC39001EE12D /* de */,
 			);
 			name = BKPasscodeView.strings;
 			sourceTree = "<group>";
@@ -4336,6 +4344,7 @@
 				F7875D261EB9EB5C001EE12D /* es-MX */,
 				F7875D2D1EB9EB5C001EE12D /* fi-FI */,
 				F7875D341EB9EB5C001EE12D /* is */,
+				F7875D5B1EB9EC39001EE12D /* de */,
 			);
 			name = CTAssetsPicker.strings;
 			sourceTree = "<group>";
@@ -4348,6 +4357,7 @@
 				F7875D271EB9EB5C001EE12D /* es-MX */,
 				F7875D2E1EB9EB5C001EE12D /* fi-FI */,
 				F7875D351EB9EB5C001EE12D /* is */,
+				F7875D5C1EB9EC39001EE12D /* de */,
 			);
 			name = Error.strings;
 			sourceTree = "<group>";
@@ -4360,6 +4370,7 @@
 				F7875D281EB9EB5C001EE12D /* es-MX */,
 				F7875D2F1EB9EB5C001EE12D /* fi-FI */,
 				F7875D361EB9EB5C001EE12D /* is */,
+				F7875D5D1EB9EC39001EE12D /* de */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -4372,6 +4383,7 @@
 				F7875D291EB9EB5C001EE12D /* es-MX */,
 				F7875D301EB9EB5C001EE12D /* fi-FI */,
 				F7875D371EB9EB5C001EE12D /* is */,
+				F7875D5E1EB9EC39001EE12D /* de */,
 			);
 			name = Intro.strings;
 			sourceTree = "<group>";
@@ -4385,6 +4397,7 @@
 				F7875D311EB9EB5C001EE12D /* fi-FI */,
 				F7875D381EB9EB5C001EE12D /* is */,
 				F7875D3A1EB9EB5C001EE12D /* pl */,
+				F7875D5F1EB9EC39001EE12D /* de */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -4396,6 +4409,7 @@
 				F7875D2B1EB9EB5C001EE12D /* es-MX */,
 				F7875D321EB9EB5C001EE12D /* fi-FI */,
 				F7875D391EB9EB5C001EE12D /* is */,
+				F7875D601EB9EC3A001EE12D /* de */,
 			);
 			name = SwiftWebVC.strings;
 			sourceTree = "<group>";
