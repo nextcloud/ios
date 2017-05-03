@@ -38,8 +38,8 @@
 #import "CCQuickActions.h"
 #import "CCMain.h"
 #import "CCPhotosCameraUpload.h"
-#import "CCSettings.h"
 #import "CCTransfers.h"
+#import "CCSettings.h"
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate, BKPasscodeLockScreenManagerDelegate, BKPasscodeViewControllerDelegate, LMMediaPlayerViewDelegate, TWMessageBarStyleSheet, CCNetworkingDelegate>
 
@@ -57,19 +57,14 @@
 @property (nonatomic, strong) NSString *activeUser;
 @property (nonatomic, strong) NSString *activePassword;
 @property (nonatomic, strong) NSString *directoryUser;
+@property (nonatomic, strong) NSString *activeEmail;
 
 // next version ... ? ...
 @property double currentLatitude;
 @property double currentLongitude;
 
-// Nextcloud
-@property BOOL hasServerForbiddenCharactersSupport;
-@property BOOL hasServerShareSupport;
-@property BOOL hasServerShareeSupport;
-@property BOOL hasServerCapabilitiesSupport;
-@property OCCapabilities *capabilities;
+// Notification
 @property (nonatomic, strong) NSMutableArray<OCCommunication *> *listOfNotifications;
-@property NSInteger serverVersion;
 
 // Network Operation
 @property (nonatomic, strong) NSOperationQueue *netQueue;
@@ -157,8 +152,12 @@
 - (void)messageNotification:(NSString *)title description:(NSString *)description visible:(BOOL)visible delay:(NSTimeInterval)delay type:(TWMessageBarMessageType)type;
 - (void)updateApplicationIconBadgeNumber;
 - (BOOL)handleShortCutItem:(UIApplicationShortcutItem *)shortcutItem;
-
+- (void)aspectNavigationControllerBar:(UINavigationBar *)nav encrypted:(BOOL)encrypted online:(BOOL)online hidden:(BOOL)hidden;
+- (void)aspectTabBar:(UITabBar *)tab hidden:(BOOL)hidden;
 - (void)plusButtonVisibile:(BOOL)visible;
+
+- (void)settingThemingColorBrand;
+- (void)changeTheming:(UIViewController *)vc;
 
 // Operation Networking
 - (void)cancelAllOperations;
@@ -169,6 +168,8 @@
 - (void)loadAutomaticUpload;
 
 - (BOOL)createFolderSubFolderAutomaticUploadFolderPhotos:(NSString *)folderPhotos useSubFolder:(BOOL)useSubFolder assets:(NSArray *)assets selector:(NSString *)selector;
+
+- (void)logUserCrashlytics;
 
 @end
 

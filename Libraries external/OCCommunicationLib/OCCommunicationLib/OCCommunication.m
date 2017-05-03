@@ -1269,105 +1269,136 @@
             NSDictionary *data = [ocs valueForKey:@"data"];
             NSDictionary *version = [data valueForKey:@"version"];
             
-            //VERSION
+            if (ocs.count > 0 && data.count > 0 && version.count > 0) {
             
-            NSNumber *versionMajorNumber = (NSNumber*) [version valueForKey:@"major"];
-            NSNumber *versionMinorNumber = (NSNumber*) [version valueForKey:@"minor"];
-            NSNumber *versionMicroNumber = (NSNumber*) [version valueForKey:@"micro"];
+                //VERSION
             
-            capabilities.versionMajor = versionMajorNumber.integerValue;
-            capabilities.versionMinor = versionMinorNumber.integerValue;
-            capabilities.versionMicro = versionMicroNumber.integerValue;
+                NSNumber *versionMajorNumber = (NSNumber*) [version valueForKey:@"major"];
+                NSNumber *versionMinorNumber = (NSNumber*) [version valueForKey:@"minor"];
+                NSNumber *versionMicroNumber = (NSNumber*) [version valueForKey:@"micro"];
             
-            capabilities.versionString = (NSString*)[version valueForKey:@"string"];
-            capabilities.versionEdition = (NSString*)[version valueForKey:@"edition"];
+                capabilities.versionMajor = versionMajorNumber.integerValue;
+                capabilities.versionMinor = versionMinorNumber.integerValue;
+                capabilities.versionMicro = versionMicroNumber.integerValue;
             
-            NSDictionary *capabilitiesDict = [data valueForKey:@"capabilities"];
-            NSDictionary *core = [capabilitiesDict valueForKey:@"core"];
+                capabilities.versionString = (NSString*)[version valueForKey:@"string"];
+                capabilities.versionEdition = (NSString*)[version valueForKey:@"edition"];
             
-            //CORE
+                NSDictionary *capabilitiesDict = [data valueForKey:@"capabilities"];
+                NSDictionary *core = [capabilitiesDict valueForKey:@"core"];
             
-            NSNumber *corePollIntervalNumber = (NSNumber*)[core valueForKey:@"pollinterval"];
-            capabilities.corePollInterval = corePollIntervalNumber.integerValue;
+                //CORE
             
-            NSDictionary *fileSharing = [capabilitiesDict valueForKey:@"files_sharing"];
+                NSNumber *corePollIntervalNumber = (NSNumber*)[core valueForKey:@"pollinterval"];
+                capabilities.corePollInterval = corePollIntervalNumber.integerValue;
             
-            //FILE SHARING
+                NSDictionary *fileSharing = [capabilitiesDict valueForKey:@"files_sharing"];
             
-            NSNumber *fileSharingAPIEnabledNumber = (NSNumber*)[fileSharing valueForKey:@"api_enabled"];
-            NSNumber *filesSharingReSharingEnabledNumber = (NSNumber*)[fileSharing valueForKey:@"resharing"];
-      
+                //FILE SHARING
             
-            capabilities.isFilesSharingAPIEnabled = fileSharingAPIEnabledNumber.boolValue;
-            capabilities.isFilesSharingReSharingEnabled = filesSharingReSharingEnabledNumber.boolValue;
+                NSNumber *fileSharingAPIEnabledNumber = (NSNumber*)[fileSharing valueForKey:@"api_enabled"];
+                NSNumber *filesSharingReSharingEnabledNumber = (NSNumber*)[fileSharing valueForKey:@"resharing"];
             
-            NSDictionary *fileSharingPublic = [fileSharing valueForKey:@"public"];
+                capabilities.isFilesSharingAPIEnabled = fileSharingAPIEnabledNumber.boolValue;
+                capabilities.isFilesSharingReSharingEnabled = filesSharingReSharingEnabledNumber.boolValue;
             
-            NSNumber *filesSharingShareLinkEnabledNumber = (NSNumber*)[fileSharingPublic valueForKey:@"enabled"];
-            NSNumber *filesSharingAllowPublicUploadsEnabledNumber = (NSNumber*)[fileSharingPublic valueForKey:@"upload"];
-            NSNumber *filesSharingAllowUserSendMailNotificationAboutShareLinkEnabledNumber = (NSNumber*)[fileSharingPublic valueForKey:@"send_mail"];
+                NSDictionary *fileSharingPublic = [fileSharing valueForKey:@"public"];
             
-            capabilities.isFilesSharingShareLinkEnabled = filesSharingShareLinkEnabledNumber.boolValue;
-            capabilities.isFilesSharingAllowPublicUploadsEnabled = filesSharingAllowPublicUploadsEnabledNumber.boolValue;
-            capabilities.isFilesSharingAllowUserSendMailNotificationAboutShareLinkEnabled = filesSharingAllowUserSendMailNotificationAboutShareLinkEnabledNumber.boolValue;
+                NSNumber *filesSharingShareLinkEnabledNumber = (NSNumber*)[fileSharingPublic valueForKey:@"enabled"];
+                NSNumber *filesSharingAllowPublicUploadsEnabledNumber = (NSNumber*)[fileSharingPublic valueForKey:@"upload"];
+                NSNumber *filesSharingAllowUserSendMailNotificationAboutShareLinkEnabledNumber = (NSNumber*)[fileSharingPublic valueForKey:@"send_mail"];
             
-            NSDictionary *fileSharingPublicExpireDate = [fileSharingPublic valueForKey:@"expire_date"];
+                capabilities.isFilesSharingShareLinkEnabled = filesSharingShareLinkEnabledNumber.boolValue;
+                capabilities.isFilesSharingAllowPublicUploadsEnabled = filesSharingAllowPublicUploadsEnabledNumber.boolValue;
+                capabilities.isFilesSharingAllowUserSendMailNotificationAboutShareLinkEnabled = filesSharingAllowUserSendMailNotificationAboutShareLinkEnabledNumber.boolValue;
             
-            NSNumber *filesSharingExpireDateByDefaultEnabledNumber = (NSNumber*)[fileSharingPublicExpireDate valueForKey:@"enabled"];
-            NSNumber *filesSharingExpireDateEnforceEnabledNumber = (NSNumber*)[fileSharingPublicExpireDate valueForKey:@"enforced"];
-            NSNumber *filesSharingExpireDateDaysNumber = (NSNumber*)[fileSharingPublicExpireDate valueForKey:@"days"];
+                NSDictionary *fileSharingPublicExpireDate = [fileSharingPublic valueForKey:@"expire_date"];
+            
+                NSNumber *filesSharingExpireDateByDefaultEnabledNumber = (NSNumber*)[fileSharingPublicExpireDate valueForKey:@"enabled"];
+                NSNumber *filesSharingExpireDateEnforceEnabledNumber = (NSNumber*)[fileSharingPublicExpireDate valueForKey:@"enforced"];
+                NSNumber *filesSharingExpireDateDaysNumber = (NSNumber*)[fileSharingPublicExpireDate valueForKey:@"days"];
             
     
-            capabilities.isFilesSharingExpireDateByDefaultEnabled = filesSharingExpireDateByDefaultEnabledNumber.boolValue;
-            capabilities.isFilesSharingExpireDateEnforceEnabled = filesSharingExpireDateEnforceEnabledNumber.boolValue;
-            capabilities.filesSharingExpireDateDaysNumber = filesSharingExpireDateDaysNumber.integerValue;
+                capabilities.isFilesSharingExpireDateByDefaultEnabled = filesSharingExpireDateByDefaultEnabledNumber.boolValue;
+                capabilities.isFilesSharingExpireDateEnforceEnabled = filesSharingExpireDateEnforceEnabledNumber.boolValue;
+                capabilities.filesSharingExpireDateDaysNumber = filesSharingExpireDateDaysNumber.integerValue;
             
-            NSDictionary *fileSharingPublicPassword = [fileSharingPublic valueForKey:@"password"];
+                NSDictionary *fileSharingPublicPassword = [fileSharingPublic valueForKey:@"password"];
             
-            NSNumber *filesSharingPasswordEnforcedEnabledNumber = (NSNumber*)[fileSharingPublicPassword valueForKey:@"enforced"];
+                NSNumber *filesSharingPasswordEnforcedEnabledNumber = (NSNumber*)[fileSharingPublicPassword valueForKey:@"enforced"];
             
-            capabilities.isFilesSharingPasswordEnforcedEnabled = filesSharingPasswordEnforcedEnabledNumber.boolValue;;
+                capabilities.isFilesSharingPasswordEnforcedEnabled = filesSharingPasswordEnforcedEnabledNumber.boolValue;;
             
-            NSDictionary *fileSharingUser = [fileSharing valueForKey:@"user"];
+                NSDictionary *fileSharingUser = [fileSharing valueForKey:@"user"];
             
-            NSNumber *filesSharingAllowUserSendMailNotificationAboutOtherUsersEnabledNumber = (NSNumber*)[fileSharingUser valueForKey:@"send_mail"];
+                NSNumber *filesSharingAllowUserSendMailNotificationAboutOtherUsersEnabledNumber = (NSNumber*)[fileSharingUser valueForKey:@"send_mail"];
             
-            capabilities.isFilesSharingAllowUserSendMailNotificationAboutOtherUsersEnabled = filesSharingAllowUserSendMailNotificationAboutOtherUsersEnabledNumber.boolValue;
+                capabilities.isFilesSharingAllowUserSendMailNotificationAboutOtherUsersEnabled = filesSharingAllowUserSendMailNotificationAboutOtherUsersEnabledNumber.boolValue;
             
-            //FEDERATION
+                //FEDERATION
             
-            NSDictionary *fileSharingFederation = [fileSharing valueForKey:@"federation"];
+                NSDictionary *fileSharingFederation = [fileSharing valueForKey:@"federation"];
             
-            NSNumber *filesSharingAllowUserSendSharesToOtherServersEnabledNumber = (NSNumber*)[fileSharingFederation valueForKey:@"outgoing"];
-            NSNumber *filesSharingAllowUserReceiveSharesToOtherServersEnabledNumber = (NSNumber*)[fileSharingFederation valueForKey:@"incoming"];
+                NSNumber *filesSharingAllowUserSendSharesToOtherServersEnabledNumber = (NSNumber*)[fileSharingFederation valueForKey:@"outgoing"];
+                NSNumber *filesSharingAllowUserReceiveSharesToOtherServersEnabledNumber = (NSNumber*)[fileSharingFederation valueForKey:@"incoming"];
             
-            capabilities.isFilesSharingAllowUserSendSharesToOtherServersEnabled = filesSharingAllowUserSendSharesToOtherServersEnabledNumber.boolValue;
-            capabilities.isFilesSharingAllowUserReceiveSharesToOtherServersEnabled = filesSharingAllowUserReceiveSharesToOtherServersEnabledNumber.boolValue;
+                capabilities.isFilesSharingAllowUserSendSharesToOtherServersEnabled = filesSharingAllowUserSendSharesToOtherServersEnabledNumber.boolValue;
+                capabilities.isFilesSharingAllowUserReceiveSharesToOtherServersEnabled = filesSharingAllowUserReceiveSharesToOtherServersEnabledNumber.boolValue;
             
-            // EXTERNAL SITES
+                // EXTERNAL SITES
             
-            NSDictionary *externalSitesDic = [capabilitiesDict valueForKey:@"external"];
-            if (externalSitesDic) {
-                NSArray *externalSitesArray = [externalSitesDic valueForKey:@"v1"];
-                if (externalSitesArray)
-                    if ([[externalSitesArray objectAtIndex:0] isEqualToString:@"sites"])
-                        capabilities.isExternalSitesServerEnabled = YES;
+                NSDictionary *externalSitesDic = [capabilitiesDict valueForKey:@"external"];
+                if (externalSitesDic) {
+                    NSArray *externalSitesArray = [externalSitesDic valueForKey:@"v1"];
+                    if (externalSitesArray)
+                        if ([[externalSitesArray objectAtIndex:0] isEqualToString:@"sites"])
+                            capabilities.isExternalSitesServerEnabled = YES;
+                }
+                
+                //FILES
+            
+                NSDictionary *files = [capabilitiesDict valueForKey:@"files"];
+            
+                NSNumber *fileBigFileChunkingEnabledNumber = (NSNumber*)[files valueForKey:@"bigfilechunking"];
+                NSNumber *fileUndeleteEnabledNumber = (NSNumber*)[files valueForKey:@"undelete"];
+                NSNumber *fileVersioningEnabledNumber = (NSNumber*)[files valueForKey:@"versioning"];
+            
+                capabilities.isFileBigFileChunkingEnabled = fileBigFileChunkingEnabledNumber.boolValue;
+                capabilities.isFileUndeleteEnabled = fileUndeleteEnabledNumber.boolValue;
+                capabilities.isFileVersioningEnabled = fileVersioningEnabledNumber.boolValue;
+            
+                //THEMING
+            
+                NSDictionary *theming = [capabilitiesDict valueForKey:@"theming"];
+            
+                if ([theming count] > 0) {
+                
+                    if ([theming valueForKey:@"background"] && ![[theming valueForKey:@"background"] isEqual:[NSNull null]])
+                        capabilities.themingBackground = [theming valueForKey:@"background"];
+                
+                    if ([theming valueForKey:@"color"] && ![[theming valueForKey:@"color"] isEqual:[NSNull null]])
+                        capabilities.themingColor = [theming valueForKey:@"color"];
+                
+                    if ([theming valueForKey:@"logo"] && ![[theming valueForKey:@"logo"] isEqual:[NSNull null]])
+                        capabilities.themingLogo = [theming valueForKey:@"logo"];
+                
+                    if ([theming valueForKey:@"name"] && ![[theming valueForKey:@"name"] isEqual:[NSNull null]])
+                        capabilities.themingName = [theming valueForKey:@"name"];
+                
+                    if ([theming valueForKey:@"slogan"] && ![[theming valueForKey:@"slogan"] isEqual:[NSNull null]])
+                        capabilities.themingSlogan = [theming valueForKey:@"slogan"];
+                
+                    if ([theming valueForKey:@"url"] && ![[theming valueForKey:@"url"] isEqual:[NSNull null]])
+                        capabilities.themingUrl = [theming valueForKey:@"url"];
+                }
             }
-            //FILES
-            
-            NSDictionary *files = [capabilitiesDict valueForKey:@"files"];
-            
-            NSNumber *fileBigFileChunkingEnabledNumber = (NSNumber*)[files valueForKey:@"bigfilechunking"];
-            NSNumber *fileUndeleteEnabledNumber = (NSNumber*)[files valueForKey:@"undelete"];
-            NSNumber *fileVersioningEnabledNumber = (NSNumber*)[files valueForKey:@"versioning"];
-            
-            capabilities.isFileBigFileChunkingEnabled = fileBigFileChunkingEnabledNumber.boolValue;
-            capabilities.isFileUndeleteEnabled = fileUndeleteEnabledNumber.boolValue;
-            capabilities.isFileVersioningEnabled = fileVersioningEnabledNumber.boolValue;
-            
-        }
         
-        successRequest(response, capabilities, request.redirectedServer);
+            successRequest(response, capabilities, request.redirectedServer);
+            
+        } else {
+            
+            failureRequest(response, error, request.redirectedServer);
+        }
         
     } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
         failureRequest(response, error, request.redirectedServer);

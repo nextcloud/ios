@@ -22,15 +22,18 @@
 //
 
 #import "CCActivity.h"
-
 #import "AppDelegate.h"
 #import "CCSection.h"
+
+#ifdef CUSTOM_BUILD
+#import "CustomSwift.h"
+#else
+#import "Nextcloud-Swift.h"
+#endif
 
 #define fontSizeData    [UIFont boldSystemFontOfSize:15]
 #define fontSizeAction  [UIFont systemFontOfSize:14]
 #define fontSizeNote    [UIFont systemFontOfSize:14]
-
-#define daysOfActivity  7
 
 @interface CCActivity ()
 {
@@ -52,6 +55,8 @@
     if (self = [super initWithCoder:aDecoder])  {
         
         app.activeActivity = self;
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
     }
     return self;
 }
@@ -81,8 +86,8 @@
     _verbose = [CCUtility getActivityVerboseHigh];
     
     // Color
-    [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
-    [CCAspect aspectTabBar:self.tabBarController.tabBar hidden:NO];
+    [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
+    [app aspectTabBar:self.tabBarController.tabBar hidden:NO];
     
     // Plus Button
     [app plusButtonVisibile:true];
@@ -94,6 +99,12 @@
     [super viewDidAppear:animated];
     
     [self reloadDatasource];
+}
+
+- (void)changeTheming
+{
+    if (self.isViewLoaded && self.view.window)
+        [app changeTheming:self];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -144,7 +155,7 @@
     
     NSPredicate *predicate;
         
-    NSDate *sixDaysAgo = [[NSCalendar currentCalendar] dateByAddingUnit:NSCalendarUnitDay value:-daysOfActivity toDate:[NSDate date] options:0];
+    NSDate *sixDaysAgo = [[NSCalendar currentCalendar] dateByAddingUnit:NSCalendarUnitDay value:-k_daysOfActivity toDate:[NSDate date] options:0];
         
     if (_verbose)
         predicate = [NSPredicate predicateWithFormat:@"((account == %@) || (account == '')) AND (date > %@)", app.activeAccount, sixDaysAgo];
@@ -256,7 +267,7 @@
 
         if ([activity.type isEqualToString:k_activityTypeInfo]) {
         
-            actionLabel.textColor = COLOR_BRAND;
+            actionLabel.textColor = [NCBrandColor sharedInstance].brand;
         
             if (activity.idActivity == 0)
                 typeImage.image = [UIImage imageNamed:@"activityTypeInfo"];
@@ -278,7 +289,7 @@
     
         [noteLabel setFont:fontSizeNote];
         [noteLabel sizeToFit];
-        noteLabel.textColor = COLOR_TEXT_ANTHRACITE;
+        noteLabel.textColor = [UIColor blackColor];
         noteLabel.numberOfLines = 0;
         noteLabel.lineBreakMode = NSLineBreakByWordWrapping;
     

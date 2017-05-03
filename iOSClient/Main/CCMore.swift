@@ -26,8 +26,8 @@ import UIKit
 
 class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
-    @IBOutlet weak var imageLogo: UIImageView!
-    @IBOutlet weak var imageAvatar: UIImageView!
+    @IBOutlet weak var themingBackground: UIImageView!
+    @IBOutlet weak var themingAvatar: UIImageView!
     @IBOutlet weak var labelUsername: UILabel!
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var labelQuota: UILabel!
@@ -50,21 +50,25 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         tableView.delegate = self
         tableView.dataSource = self
         
-        tableView.separatorColor = Constant.GlobalConstants.k_Color_Seperator
+        tableView.separatorColor = NCBrandColor.sharedInstance.seperator
         
-        imageLogo.image = UIImage.init(named: image_brandMenuMoreBackground)
+        themingBackground.image = UIImage.init(named: NCBrandImages.sharedInstance.themingBackground)
         
         // create tap gesture recognizer
-
         let tapQuota = UITapGestureRecognizer(target: self, action: #selector(tapLabelQuotaExternalSite))
         labelQuotaExternalSite.isUserInteractionEnabled = true
         labelQuotaExternalSite.addGestureRecognizer(tapQuota)
         
         let tapImageLogo = UITapGestureRecognizer(target: self, action: #selector(tapImageLogoManageAccount))
-        imageLogo.isUserInteractionEnabled = true
-        imageLogo.addGestureRecognizer(tapImageLogo)
+        themingBackground.isUserInteractionEnabled = true
+        themingBackground.addGestureRecognizer(tapImageLogo)
+        
+        // Notification
+        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.changeUserProfile), name: NSNotification.Name(rawValue: "changeUserProfile"), object: nil)
     }
     
+    // Apparirà
     override func viewWillAppear(_ animated: Bool) {
         
         super.viewWillAppear(animated)
@@ -126,10 +130,69 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             }
         }
         
+        if (quotaMenu.count > 0) {
+            
+            let item = quotaMenu[0]
+            labelQuotaExternalSite.text = item.name
+        }
+        
+        // User data & Theming
+        changeUserProfile()
+        changeTheming()
+        
+        // Title
+        self.navigationItem.title = NSLocalizedString("_more_", comment: "")
+        
+        // Aspect
+        appDelegate.aspectNavigationControllerBar(self.navigationController?.navigationBar, encrypted: false, online: appDelegate.reachability.isReachable(), hidden: false)
+        appDelegate.aspectTabBar(self.tabBarController?.tabBar, hidden: false)
+
+        // +
+        appDelegate.plusButtonVisibile(true)
+        
+        self.navigationController?.setNavigationBarHidden(true, animated: animated)
+        
+        tableView.reloadData()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        self.navigationController?.setNavigationBarHidden(false, animated: animated)
+    }
+    
+    func changeTheming() {
+        
+        // Theming Background
+        let theminBackgroundFile = UIImage.init(contentsOfFile: "\(appDelegate.directoryUser!)/themingBackground.png")
+        if (theminBackgroundFile != nil) {
+            themingBackground.image = theminBackgroundFile
+        } else {
+            themingBackground.image = UIImage.init(named: NCBrandImages.sharedInstance.themingBackground)
+        }
+
+        if (self.isViewLoaded && (self.view.window != nil)) {
+            appDelegate.changeTheming(self)
+        }
+    }
+    
+    func changeUserProfile() {
+     
+        let themingAvatarFile : UIImage? = UIImage.init(contentsOfFile: "\(appDelegate.directoryUser!)/avatar.png")
+        
+        if (themingAvatarFile != nil) {
+            
+            themingAvatar.image = themingAvatarFile
+            
+        } else {
+            
+            themingAvatar.image = UIImage.init(named: "moreAvatar")
+        }
+        
         // Display Name user & Quota
         tableAccont = CCCoreData.getActiveAccount()
         if (tableAccont != nil) {
-        
+            
             if let displayName = self.tableAccont!.displayName {
                 if displayName.isEmpty {
                     labelUsername.text = self.tableAccont!.user
@@ -143,55 +206,13 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             }
             
             progressQuota.progress = Float((self.tableAccont?.quotaRelative)!) / 100
-        
+            progressQuota.progressTintColor = NCBrandColor.sharedInstance.brand
+            
             let quota : String = CCUtility.transformedSize(Double((self.tableAccont?.quotaTotal)!))
             let quotaUsed : String = CCUtility.transformedSize(Double((self.tableAccont?.quotaUsed)!))
-        
+            
             labelQuota.text = String.localizedStringWithFormat(NSLocalizedString("_quota_using_", comment: ""), quotaUsed, quota)
         }
-        
-        if (quotaMenu.count > 0) {
-            
-            let item = quotaMenu[0]
-            labelQuotaExternalSite.text = item.name
-        }
-        
-        // Avatar
-        let avatar : UIImage? = UIImage.init(contentsOfFile: "\(appDelegate.directoryUser!)/avatar.png")
-        
-        if (avatar != nil) {
-        
-            imageAvatar.image = avatar
-            
-        } else {
-            
-            imageAvatar.image = UIImage.init(named: "moreAvatar")
-        }
-        
-        // Title
-        self.navigationItem.title = NSLocalizedString("_more_", comment: "")
-        
-        // Aspect
-        CCAspect.aspectNavigationControllerBar(self.navigationController?.navigationBar, encrypted: false, online: appDelegate.reachability.isReachable(), hidden: false)
-        CCAspect.aspectTabBar(self.tabBarController?.tabBar, hidden: false)
-
-        // +
-        appDelegate.plusButtonVisibile(true)
-        
-        self.navigationController?.setNavigationBarHidden(true, animated: animated)
-        
-        tableView.reloadData()
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        
-        self.navigationController?.setNavigationBarHidden(false, animated: animated)
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -230,7 +251,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
         // change color selection and disclosure indicator
         let selectionColor : UIView = UIView.init()
-        selectionColor.backgroundColor = Constant.GlobalConstants.k_Color_SelectBackgrond
+        selectionColor.backgroundColor = NCBrandColor.sharedInstance.getColorSelectBackgrond()
         cell.selectedBackgroundView = selectionColor
         
         cell.accessoryType = UITableViewCellAccessoryType.disclosureIndicator
@@ -242,7 +263,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             
             cell.imageIcon?.image = UIImage.init(named: item.icon)
             cell.labelText?.text = NSLocalizedString(item.name, comment: "")
-            cell.labelText.textColor = Constant.GlobalConstants.k_Color_MoreNormal
+            cell.labelText.textColor = NCBrandColor.sharedInstance.moreNormal
 
         }
         
@@ -253,7 +274,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             
             cell.imageIcon?.image = UIImage.init(named: item.icon)
             cell.labelText?.text = NSLocalizedString(item.name, comment: "")
-            cell.labelText.textColor = Constant.GlobalConstants.k_Color_MoreSettings
+            cell.labelText.textColor = NCBrandColor.sharedInstance.moreSettings
         }
         
         return cell

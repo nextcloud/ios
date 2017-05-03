@@ -31,36 +31,3 @@ NSString *const appCertificates = @"Library/Application Support/Certificates";
 // webDAV & DAV
 NSString *const webDAV = @"/remote.php/webdav";
 NSString *const dav = @"/remote.php/dav";
-
-@implementation CCAspect
-
-+ (void)aspectNavigationControllerBar:(UINavigationBar *)nav encrypted:(BOOL)encrypted online:(BOOL)online hidden:(BOOL)hidden
-{
-    nav.translucent = NO;
-    nav.barTintColor = COLOR_NAVIGATIONBAR;
-    nav.tintColor = COLOR_NAVIGATIONBAR_TEXT;
-    [nav setTitleTextAttributes:@{NSForegroundColorAttributeName : COLOR_NAVIGATIONBAR_TEXT}];
-
-    if (encrypted)
-        [nav setTitleTextAttributes:@{NSForegroundColorAttributeName : COLOR_CRYPTOCLOUD}];
-    
-    if (!online)
-        [nav setTitleTextAttributes:@{NSForegroundColorAttributeName : COLOR_TEXT_NO_CONNECTION}];
-
-    nav.hidden = hidden;
-    
-    [nav setAlpha:1];
-}
-
-+ (void)aspectTabBar:(UITabBar *)tab hidden:(BOOL)hidden
-{    
-    tab.translucent = NO;
-    tab.barTintColor = COLOR_TABBAR;
-    tab.tintColor = COLOR_TABBAR_TEXT;
-    
-    tab.hidden = hidden;
-    
-    [tab setAlpha:1];
-}
-
-@end

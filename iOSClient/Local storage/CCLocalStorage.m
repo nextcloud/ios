@@ -24,6 +24,12 @@
 #import "CCLocalStorage.h"
 #import "AppDelegate.h"
 
+#ifdef CUSTOM_BUILD
+#import "CustomSwift.h"
+#else
+#import "Nextcloud-Swift.h"
+#endif
+
 @interface CCLocalStorage ()
 {
     NSArray *dataSource;
@@ -31,6 +37,16 @@
 @end
 
 @implementation CCLocalStorage
+
+-  (id)initWithCoder:(NSCoder *)aDecoder
+{
+    if (self = [super initWithCoder:aDecoder])  {
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
+    }
+    
+    return self;
+}
 
 - (void)viewDidLoad
 {
@@ -46,7 +62,7 @@
     _metadata = [CCMetadata new];
     
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 1)];
-    self.tableView.separatorColor = COLOR_SEPARATOR_TABLE;
+    self.tableView.separatorColor = [NCBrandColor sharedInstance].seperator;
     self.tableView.emptyDataSetDelegate = self;
     self.tableView.emptyDataSetSource = self;
     self.tableView.allowsMultipleSelectionDuringEditing = NO;
@@ -68,8 +84,8 @@
     [super viewWillAppear:animated];
     
     // Color
-    [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
-    [CCAspect aspectTabBar:self.tabBarController.tabBar hidden:NO];
+    [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
+    [app aspectTabBar:self.tabBarController.tabBar hidden:NO];
     
     // Plus Button
     [app plusButtonVisibile:true];
@@ -77,14 +93,10 @@
     [self reloadDatasource];
 }
 
-// E' arrivato
-- (void)viewDidAppear:(BOOL)animated
+- (void)changeTheming
 {
-    [super viewDidAppear:animated];        
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
+    if (self.isViewLoaded && self.view.window)
+        [app changeTheming:self];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -273,12 +285,12 @@
     
     actionSheet.automaticallyTintButtonImages = @(NO);
     
-    actionSheet.encryptedButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:COLOR_CRYPTOCLOUD };
-    actionSheet.buttonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:COLOR_TEXT_ANTHRACITE };
-    actionSheet.cancelButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:COLOR_BRAND };
-    actionSheet.disableButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:COLOR_TEXT_ANTHRACITE };
+    actionSheet.encryptedButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:[NCBrandColor sharedInstance].cryptocloud };
+    actionSheet.buttonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:[UIColor blackColor] };
+    actionSheet.cancelButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:[NCBrandColor sharedInstance].brand };
+    actionSheet.disableButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:[UIColor blackColor] };
     
-    actionSheet.separatorColor = COLOR_SEPARATOR_TABLE;
+    actionSheet.separatorColor = [NCBrandColor sharedInstance].seperator;
     actionSheet.cancelButtonTitle = NSLocalizedString(@"_cancel_",nil);
     
     // assegnamo l'immagine anteprima se esiste, altrimenti metti quella standars
@@ -289,7 +301,7 @@
     
     [actionSheet addButtonWithTitle: metadata.fileNamePrint
                               image: iconHeader
-                    backgroundColor: COLOR_TABBAR
+                    backgroundColor: [NCBrandColor sharedInstance].tabBar
                              height: 50.0
                                type: AHKActionSheetButtonTypeDisabled
                             handler: nil
@@ -403,7 +415,7 @@
     
     // change color selection
     UIView *selectionColor = [[UIView alloc] init];
-    selectionColor.backgroundColor = COLOR_SELECT_BACKGROUND;
+    selectionColor.backgroundColor = [[NCBrandColor sharedInstance] getColorSelectBackgrond];
     cell.selectedBackgroundView = selectionColor;
 
     NSString *cameraFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:app.activeAccount];
@@ -428,7 +440,7 @@
     
     // encrypted color
     if (metadata.cryptated) {
-        cell.labelTitle.textColor = COLOR_CRYPTOCLOUD;
+        cell.labelTitle.textColor = [NCBrandColor sharedInstance].cryptocloud;
     } else {
         cell.labelTitle.textColor = [UIColor blackColor];
     }

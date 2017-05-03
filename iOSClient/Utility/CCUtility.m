@@ -436,15 +436,22 @@
     return [NSString stringWithFormat:@"%4.2f %@",value, [tokens objectAtIndex:multiplyFactor]];
 }
 
-// Remove do not forbidden characters
-+ (NSString *)removeForbiddenCharacters:(NSString *)fileName hasServerForbiddenCharactersSupport:(BOOL)hasServerForbiddenCharactersSupport
+// Remove do not forbidden characters for Nextcloud Server
++ (NSString *)removeForbiddenCharactersServer:(NSString *)fileName
 {
-    NSArray *arrayForbiddenCharacters;
+    NSArray *arrayForbiddenCharacters = [NSArray arrayWithObjects:@"/", nil];
     
-    if (hasServerForbiddenCharactersSupport)
-        arrayForbiddenCharacters = [NSArray arrayWithObjects:@"/", nil];
-    else
-        arrayForbiddenCharacters = [NSArray arrayWithObjects:@"\\",@"<",@">",@":",@"\"",@"|",@"?",@"*",@"/", nil];
+    for (NSString *currentCharacter in arrayForbiddenCharacters) {
+        fileName = [fileName stringByReplacingOccurrencesOfString:currentCharacter withString:@""];
+    }
+    
+    return fileName;
+}
+
+// Remove do not forbidden characters for File System Server
++ (NSString *)removeForbiddenCharactersFileSystem:(NSString *)fileName
+{
+    NSArray *arrayForbiddenCharacters = [NSArray arrayWithObjects:@"\\",@"<",@">",@":",@"\"",@"|",@"?",@"*",@"/", nil];
     
     for (NSString *currentCharacter in arrayForbiddenCharacters) {
         fileName = [fileName stringByReplacingOccurrencesOfString:currentCharacter withString:@""];
@@ -551,7 +558,7 @@
         if ([baseUrl hasPrefix:@"http://"]) baseUrl = [baseUrl substringFromIndex:7];
         
         dirUserBaseUrl = [NSString stringWithFormat:@"%@-%@", user, baseUrl];
-        dirUserBaseUrl = [[self removeForbiddenCharacters:dirUserBaseUrl hasServerForbiddenCharactersSupport:NO] lowercaseString];
+        dirUserBaseUrl = [[self removeForbiddenCharactersFileSystem:dirUserBaseUrl] lowercaseString];
     } else return @"";
     
     dirApplicationUserGroup = [[dirGroup URLByAppendingPathComponent:appApplicationSupport] path];
@@ -576,7 +583,7 @@
         if ([baseUrl hasPrefix:@"http://"]) baseUrl = [baseUrl substringFromIndex:7];
         
         dirUserBaseUrl = [NSString stringWithFormat:@"%@-%@", user, baseUrl];
-        dirUserBaseUrl = [[self removeForbiddenCharacters:dirUserBaseUrl hasServerForbiddenCharactersSupport:NO] lowercaseString];
+        dirUserBaseUrl = [[self removeForbiddenCharactersFileSystem:dirUserBaseUrl] lowercaseString];
     } else return @"";
     
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES);
@@ -685,7 +692,7 @@
     return fileName;
 }
 
-+ (void)sendMailEncryptPass:(NSString *)recipient validateEmail:(BOOL)validateEmail form:(id)form
++ (void)sendMailEncryptPass:(NSString *)recipient validateEmail:(BOOL)validateEmail form:(id)form nameImage:(NSString *)nameImage
 {
     BOOL error = NO;
     
@@ -706,7 +713,7 @@
         
         NSString *htmlMsg =[NSString stringWithFormat:@"<html><body><p>%@ : %@ , %@</p></body></html>", NSLocalizedString(@"_text1_mail_encryptpass_", nil), key, NSLocalizedString(@"_text2_mail_encryptpass_", nil)];
         
-        NSData *jpegData = UIImageJPEGRepresentation([UIImage imageNamed:image_brandBackgroundLite], 1.0);
+        NSData *jpegData = UIImageJPEGRepresentation([UIImage imageNamed:nameImage], 1.0);
         [mc addAttachmentData:jpegData mimeType:@"image/jpeg" fileName:@"cryptocloud.png"];
         [mc setMessageBody:htmlMsg isHTML:YES];
         
@@ -781,9 +788,9 @@
     metadata.favorite = itemDto.isFavorite;
     metadata.fileID = itemDto.ocId;
     metadata.directoryID = directoryID;
-    metadata.fileName = [CCUtility removeForbiddenCharacters:itemDto.fileName hasServerForbiddenCharactersSupport:YES];
+    metadata.fileName = [CCUtility removeForbiddenCharactersServer:itemDto.fileName];
     metadata.fileNameData = [CCUtility trasformedFileNamePlistInCrypto:metadata.fileName];
-    metadata.fileNamePrint = [CCUtility removeForbiddenCharacters:fileNamePrint hasServerForbiddenCharactersSupport:YES];
+    metadata.fileNamePrint = [CCUtility removeForbiddenCharactersServer:fileNamePrint];
     metadata.iconName = @"";
     metadata.model = @"";
     metadata.nameCurrentDevice = [CCUtility getNameCurrentDevice];

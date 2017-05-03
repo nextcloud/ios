@@ -50,6 +50,8 @@
     XLFormSectionDescriptor *section;
     XLFormRowDescriptor *row;
     
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
+    
     NSArray *listAccount = [CCCoreData getAllAccount];
 
     // Section : PICKER ACCOUNT -------------------------------------------
@@ -59,7 +61,7 @@
     form.rowNavigationOptions = XLFormRowNavigationOptionNone;
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"pickerAccount" rowType:XLFormRowDescriptorTypePicker];
-    row.height = 90;
+    row.height = 100;
     row.selectorOptions = listAccount;
     row.value = app.activeAccount;
     [section addFormRow:row];
@@ -153,13 +155,19 @@
 {
     [super viewWillAppear:animated];
  
-    self.tableView.backgroundColor = COLOR_TABLE_BACKGROUND;
+    self.tableView.backgroundColor = [NCBrandColor sharedInstance].tableBackground;
 
     // Color
-    [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
-    [CCAspect aspectTabBar:self.tabBarController.tabBar hidden:NO];
+    [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
+    [app aspectTabBar:self.tabBarController.tabBar hidden:NO];
     
     [self UpdateForm];
+}
+
+- (void)changeTheming
+{
+    if (self.isViewLoaded && self.view.window)
+        [app changeTheming:self];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -314,13 +322,15 @@
 
 - (void)deleteAccount:(NSString *)account
 {
-    [CCCoreData deleteAccount:account];
-        
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@)", account];
-    
-    [CCCoreData deleteMetadataWithPredicate:predicate];
-    [CCCoreData deleteLocalFileWithPredicate:predicate];
-    [CCCoreData deleteDirectoryFromPredicate:predicate];
+    [CCCoreData flushTableAccount:account];
+    [CCCoreData flushTableActivityAccount:account];
+    [CCCoreData flushTableAutomaticUploadAccount:account selector:nil];
+    [CCCoreData flushTableCapabilitiesAccount:account];
+    [CCCoreData flushTableDirectoryAccount:account];
+    [CCCoreData flushTableExternalSitesAccount:account];
+    [CCCoreData flushTableLocalFileAccount:account];
+    [CCCoreData flushTableMetadataAccount:account];
+    [CCCoreData flushTableShareAccount:account];
 }
 
 - (void)answerDelAccount:(XLFormRowDescriptor *)sender

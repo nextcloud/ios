@@ -26,9 +26,9 @@
 #import "AppDelegate.h"
 
 #ifdef CUSTOM_BUILD
-    #import "CustomSwift.h"
+#import "CustomSwift.h"
 #else
-    #import "Nextcloud-Swift.h"
+#import "Nextcloud-Swift.h"
 #endif
 
 @interface CCPhotosCameraUpload () <CCActionsDeleteDelegate, CCActionsDownloadThumbnailDelegate>
@@ -57,10 +57,9 @@
     if (self = [super initWithCoder:aDecoder])  {
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initStateCameraUpload:) name:@"initStateCameraUpload" object:nil];
-        
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setupCameraUploadFull) name:@"setupCameraUploadFull" object:nil];
-        
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(triggerProgressTask:) name:@"NotificationProgressTask" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
         
         app.activePhotosCameraUpload = self;
     }
@@ -93,8 +92,8 @@
     [super viewWillAppear:animated];
     
     // Color
-    [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
-    [CCAspect aspectTabBar:self.tabBarController.tabBar hidden:NO];
+    [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
+    [app aspectTabBar:self.tabBarController.tabBar hidden:NO];
     
     // Plus Button
     [app plusButtonVisibile:true];
@@ -108,11 +107,12 @@
     [self reloadDatasource];
 }
 
-- (void)didReceiveMemoryWarning
+- (void)changeTheming
 {
-    [super didReceiveMemoryWarning];
+    if (self.isViewLoaded && self.view.window)
+        [app changeTheming:self];
     
-    // Dispose of any resources that can be recreated.
+    [self.collectionView reloadData];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -121,7 +121,7 @@
 
 - (void)setUINavigationBarDefault
 {
-    [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
+    [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
     
     // select
     UIImage *icon = [UIImage imageNamed:image_seleziona];
@@ -256,7 +256,7 @@
 
 - (UIImage *)imageForEmptyDataSet:(UIScrollView *)scrollView
 {
-    return [UIImage imageNamed:image_photosNoRecord];
+    return [CCGraphics changeThemingColorImage:[UIImage imageNamed:image_photosNoRecord] color:[NCBrandColor sharedInstance].brand];
 }
 
 - (NSAttributedString *)titleForEmptyDataSet:(UIScrollView *)scrollView
@@ -289,7 +289,9 @@
 {
     if ([CCCoreData getCameraUploadActiveAccount:app.activeAccount] == NO) {
     
-        return [CCUtility drawText:NSLocalizedString(@"_activate_camera_upload_", nil) inImage:[UIImage imageNamed:image_buttonBlu] colorText:[UIColor whiteColor]];        
+        UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:image_button] color:[NCBrandColor sharedInstance].brand];
+        
+        return [CCUtility drawText:NSLocalizedString(@"_activate_camera_upload_", nil) inImage:buttonImage colorText:[UIColor whiteColor]];
         
     } else return nil;
 }
@@ -507,7 +509,7 @@
     if (progress == 0)
         [self.navigationController cancelCCProgress];
     else
-        [self.navigationController setCCProgressPercentage:progress*100 andTintColor:COLOR_NAVIGATIONBAR_PROGRESS];
+        [self.navigationController setCCProgressPercentage:progress*100 andTintColor:[NCBrandColor sharedInstance].navigationBarProgress];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -593,7 +595,7 @@
         [self getGeoLocationForSection:indexPath.section];
         
         UILabel *titleLabel = (UILabel *)[headerView viewWithTag:100];
-        titleLabel.textColor = COLOR_TEXT_ANTHRACITE;
+        titleLabel.textColor = [UIColor blackColor];
         titleLabel.text = [CCUtility getTitleSectionDate:[_sectionDataSource.sections objectAtIndex:indexPath.section]];
 
         return headerView;

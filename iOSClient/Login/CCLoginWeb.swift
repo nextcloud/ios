@@ -35,7 +35,7 @@ public class CCLoginWeb: UIViewController {
             doneButtonVisible = true
         }
         
-        let webVC = SwiftModalWebVC(urlString: k_loginBaseUrl, theme: .custom, color: Constant.GlobalConstants.k_Color_NavigationBar, colorText: Constant.GlobalConstants.k_Color_NavigationBar_Text, doneButtonVisible: doneButtonVisible)
+        let webVC = SwiftModalWebVC(urlString: k_loginBaseUrl, theme: .custom, color: NCBrandColor.sharedInstance.brand, colorText: NCBrandColor.sharedInstance.navigationBarText, doneButtonVisible: doneButtonVisible)
         webVC.delegateWeb = self
 
         vc.present(webVC, animated: false, completion: nil)

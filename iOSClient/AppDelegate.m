@@ -35,6 +35,8 @@
 #import "CCMain.h"
 #import "CCDetail.h"
 #import "Firebase.h"
+#import <Fabric/Fabric.h>
+#import <Crashlytics/Crashlytics.h>
 
 #ifdef CUSTOM_BUILD
     #import "CustomSwift.h"
@@ -202,26 +204,9 @@
     // Player audio
     self.player = [LMMediaPlayerView sharedPlayerView];
     self.player.delegate = self;
-    
+        
     // ico Image Cache
     self.icoImagesCache = [[NSMutableDictionary alloc] init];
-    
-    // Page Control
-    UIPageControl *pageControl = [UIPageControl appearance];
-    pageControl.pageIndicatorTintColor = [UIColor whiteColor];
-    pageControl.currentPageIndicatorTintColor = COLOR_PAGECONTROL_INDICATOR;
-    pageControl.backgroundColor = COLOR_BACKGROUND_PAGECONTROL;
-    
-    // remove tmp & cache
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-    
-        NSArray* tmpDirectory = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:NSTemporaryDirectory() error:NULL];
-        for (NSString *file in tmpDirectory) {
-            [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@%@", NSTemporaryDirectory(), file] error:NULL];
-        }
-        
-        [[NSURLCache sharedURLCache] removeAllCachedResponses];
-    });
     
     // setting Reachable in back
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -238,16 +223,13 @@
     //[[AVAudioSession sharedInstance] setActive:YES error:nil];
     [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
     
-    // Tint Color GLOBAL WINDOW
-    [self.window setTintColor:COLOR_WINDOW_TINTCOLOR];
-    
     UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
     //UITabBarController *tabBarController = [splitViewController.viewControllers firstObject];
     UINavigationController *navigationController = [splitViewController.viewControllers lastObject];
 
     navigationController.topViewController.navigationItem.leftBarButtonItem = splitViewController.displayModeButtonItem;
     splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeAllVisible;
-    [CCAspect aspectNavigationControllerBar:navigationController.navigationBar encrypted:NO online:YES hidden:NO];
+    [app aspectNavigationControllerBar:navigationController.navigationBar encrypted:NO online:YES hidden:NO];
     
     // Settings TabBar
     [self createTabBarController];
@@ -279,6 +261,10 @@
     UIUserNotificationType types = UIUserNotificationTypeSound | UIUserNotificationTypeBadge | UIUserNotificationTypeAlert;
     UIUserNotificationSettings *notificationSettings = [UIUserNotificationSettings settingsForTypes:types categories:nil];
     [application registerUserNotificationSettings:notificationSettings];
+    
+    // Fabric
+    [Fabric with:@[[Crashlytics class]]];
+    [self logUserCrashlytics];
     
     return YES;
 }
@@ -360,10 +346,10 @@
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         
-        NSLog(@"[LOG] Request Server Information");
+        NSLog(@"[LOG] Request Server Capabilities");
     
         if (_activeMain)
-            [_activeMain requestServerInformation];
+            [_activeMain requestServerCapabilities];
     
         NSLog(@"[LOG] Initialize Camera Upload");
         [[NSNotificationCenter defaultCenter] postNotificationName:@"initStateCameraUpload" object:nil];
@@ -758,7 +744,7 @@
             backgroundColor = [UIColor colorWithRed:0.588 green:0.797 blue:0.000 alpha:0.90];
             break;
         case TWMessageBarMessageTypeInfo:
-            backgroundColor = COLOR_BACKGROUND_MESSAGE_INFO;
+            backgroundColor = [NCBrandColor sharedInstance].brand;
             break;
         default:
             break;
@@ -818,7 +804,7 @@
     UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
     UITabBarController *tabBarController = [splitViewController.viewControllers firstObject];
     
-    [CCAspect aspectTabBar:tabBarController.tabBar hidden:NO];
+    [app aspectTabBar:tabBarController.tabBar hidden:NO];
     
     // File
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexFile];
@@ -851,7 +837,7 @@
     item.selectedImage = [UIImage imageNamed:image_tabBarMore];
     
     // Plus Button
-    UIImage *buttonImage = [UIImage imageNamed:image_tabBarPlus];    
+    UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] color:[NCBrandColor sharedInstance].brand];
     UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
     button.tag = 99;
     button.frame = CGRectMake(0.0, 0.0, buttonImage.size.width, buttonImage.size.height);
@@ -871,12 +857,46 @@
     [tabBarController.view addConstraint:constraint];
 }
 
+- (void)aspectNavigationControllerBar:(UINavigationBar *)nav encrypted:(BOOL)encrypted online:(BOOL)online hidden:(BOOL)hidden
+{
+    nav.translucent = NO;
+    nav.barTintColor = [NCBrandColor sharedInstance].brand;
+    nav.tintColor = [NCBrandColor sharedInstance].navigationBarText;
+    [nav setTitleTextAttributes:@{NSForegroundColorAttributeName : [NCBrandColor sharedInstance].navigationBarText}];
+    
+    if (encrypted)
+        [nav setTitleTextAttributes:@{NSForegroundColorAttributeName : [NCBrandColor sharedInstance].cryptocloud}];
+    
+    if (!online)
+        [nav setTitleTextAttributes:@{NSForegroundColorAttributeName : [NCBrandColor sharedInstance].connectionNo}];
+    
+    nav.hidden = hidden;
+    
+    [nav setAlpha:1];
+}
+
+- (void)aspectTabBar:(UITabBar *)tab hidden:(BOOL)hidden
+{
+    tab.translucent = NO;
+    tab.barTintColor = [NCBrandColor sharedInstance].tabBar;
+    tab.tintColor = [NCBrandColor sharedInstance].brand;
+    
+    tab.hidden = hidden;
+    
+    [tab setAlpha:1];
+}
+
 - (void)plusButtonVisibile:(BOOL)visible
 {
     UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
     UITabBarController *tabBarController = [splitViewController.viewControllers firstObject];
     
     UIButton *buttonPlus = [tabBarController.view viewWithTag:99];
+    
+    UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] color:[NCBrandColor sharedInstance].brand];
+    [buttonPlus setBackgroundImage:buttonImage forState:UIControlStateNormal];
+    [buttonPlus setBackgroundImage:buttonImage forState:UIControlStateHighlighted];
+    
     if (buttonPlus) {
 
         if (visible) {
@@ -892,7 +912,7 @@
 
 - (void)handleTouchTabbarCenter:(id)sender
 {
-    CreateMenuAdd *menuAdd = [[CreateMenuAdd alloc] init];
+    CreateMenuAdd *menuAdd = [[CreateMenuAdd alloc] initWithThemingColor:[NCBrandColor sharedInstance].brand];
     
     if ([CCUtility getCreateMenuEncrypted])
         [menuAdd createMenuEncryptedWithView:self.window.rootViewController.view];
@@ -943,6 +963,55 @@
         else
             [tbItem setBadgeValue:nil];
     }
+}
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Theming Color =====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)settingThemingColorBrand
+{
+    if (self.activeAccount.length > 0) {
+    
+        TableCapabilities *tableCapabilities = [CCCoreData getCapabilitesForAccount:self.activeAccount];
+    
+        if (k_option_use_themingColor && tableCapabilities.themingColor.length > 0) {
+        
+            [NCBrandColor sharedInstance].brand = [CCGraphics colorFromHexString:tableCapabilities.themingColor];
+            
+        } else {
+            
+            [NCBrandColor sharedInstance].brand = [NCBrandColor sharedInstance].customer;
+        }
+        
+    } else {
+        
+        [NCBrandColor sharedInstance].brand = [NCBrandColor sharedInstance].customer;
+    }
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"changeTheming" object:nil];
+}
+
+- (void)changeTheming:(UIViewController *)vc
+{
+    UIColor *color = [NCBrandColor sharedInstance].brand;
+    
+    // Change Navigation & TabBar color
+    vc.navigationController.navigationBar.barTintColor = color;
+    vc.tabBarController.tabBar.tintColor = color;
+    
+    // Change button Plus
+    UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
+    UITabBarController *tabBarController = [splitViewController.viewControllers firstObject];
+    
+    UIButton *button = [tabBarController.view viewWithTag:99];
+    UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] color:color];
+    
+    [button setBackgroundImage:buttonImage forState:UIControlStateNormal];
+    [button setBackgroundImage:buttonImage forState:UIControlStateHighlighted];
+    
+    // Tint Color GLOBAL WINDOW
+    [self.window setTintColor:[NCBrandColor sharedInstance].brand];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1081,7 +1150,7 @@
             [self messageNotification:@"_network_available_" description:nil visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo];
             
             if (_activeMain)
-                [_activeMain performSelector:@selector(requestServerInformation) withObject:nil afterDelay:3];
+                [_activeMain performSelector:@selector(requestServerCapabilities) withObject:nil afterDelay:3];
         }
         
         NSLog(@"[LOG] Reachability Changed: Reachable");
@@ -1501,6 +1570,20 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Crashlytics =====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)logUserCrashlytics
+{
+    TableAccount *tableAccount = [CCCoreData getActiveAccount];
+    
+    if (tableAccount) {
+        if (tableAccount.email && tableAccount.email.length > 0)
+            [CrashlyticsKit setUserEmail:tableAccount.email];
+    }
+}
+
+#pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== UPGRADE =====
 #pragma --------------------------------------------------------------------------------------------
 
@@ -1535,6 +1618,10 @@
     }
     
     if (([actualVersion compare:@"2.17.1" options:NSNumericSearch] == NSOrderedAscending)) {
+        
+    }
+    
+    if (([actualVersion compare:@"2.17.2" options:NSNumericSearch] == NSOrderedAscending)) {
         
     }
 }

@@ -22,13 +22,18 @@
 //
 
 #import "CCTransfers.h"
-
 #import "AppDelegate.h"
 #import "CCMain.h"
 #import "CCDetail.h"
 #import "CCSection.h"
 #import "CCMetadata.h"
 #import "CCTransfersCell.h"
+
+#ifdef CUSTOM_BUILD
+#import "CustomSwift.h"
+#else
+#import "Nextcloud-Swift.h"
+#endif
 
 #define download 1
 #define downloadwwan 2
@@ -53,6 +58,7 @@
     if (self = [super initWithCoder:aDecoder])  {
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(triggerProgressTask:) name:@"NotificationProgressTask" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
         
         app.activeTransfers = self;
     }
@@ -72,7 +78,7 @@
     _tableView.emptyDataSetSource = self;
     
     _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    _tableView.backgroundColor = COLOR_TABLE_BACKGROUND;
+    _tableView.backgroundColor = [NCBrandColor sharedInstance].tableBackground;
     
     self.title = NSLocalizedString(@"_transfers_", nil);
     
@@ -85,21 +91,17 @@
     [super viewWillAppear:animated];
         
     // Color
-    [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
-    [CCAspect aspectTabBar:self.tabBarController.tabBar hidden:NO];
-}
-
-// E' arrivato
-- (void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];
+    [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
+    [app aspectTabBar:self.tabBarController.tabBar hidden:NO];
     
     [self reloadDatasource];
+
 }
 
-- (void)didReceiveMemoryWarning {
-    
-    [super didReceiveMemoryWarning];
+- (void)changeTheming
+{
+    if (self.isViewLoaded && self.view.window)
+        [app changeTheming:self];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -166,8 +168,8 @@
         
         CCTransfersCell *cell = (CCTransfersCell *)[_tableView cellForRowAtIndexPath:indexPath];
         
-        if (cryptated) cell.progressView.progressTintColor = COLOR_CRYPTOCLOUD;
-        else cell.progressView.progressTintColor = COLOR_TEXT_ANTHRACITE;
+        if (cryptated) cell.progressView.progressTintColor = [NCBrandColor sharedInstance].cryptocloud;
+        else cell.progressView.progressTintColor = [UIColor blackColor];
         
         cell.progressView.hidden = NO;
         [cell.progressView setProgress:progress];
@@ -374,7 +376,7 @@
     
     // title label on left
     UILabel *titleLabel=[[UILabel alloc]initWithFrame:CGRectMake(8, 3, 0, 13)];
-    titleLabel.textColor = COLOR_TEXT_ANTHRACITE;
+    titleLabel.textColor = [UIColor blackColor];
     titleLabel.font = [UIFont systemFontOfSize:9];
     titleLabel.textAlignment = NSTextAlignmentLeft;
     titleLabel.text = titleSection;
@@ -383,7 +385,7 @@
     
     // element (s) on right
     UILabel *elementLabel=[[UILabel alloc]initWithFrame:CGRectMake(-8, 3, 0, 13)];
-    elementLabel.textColor = COLOR_TEXT_ANTHRACITE;
+    elementLabel.textColor = [UIColor blackColor];
     elementLabel.font = [UIFont systemFontOfSize:9];
     elementLabel.textAlignment = NSTextAlignmentRight;
     elementLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth;
@@ -417,7 +419,7 @@
     UIView *view = [[UIView alloc] initWithFrame:CGRectZero];
     
     UILabel *titleFooterLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width, 18)];
-    titleFooterLabel.textColor = COLOR_TEXT_ANTHRACITE;
+    titleFooterLabel.textColor = [UIColor blackColor];
     titleFooterLabel.font = [UIFont systemFontOfSize:12];
     titleFooterLabel.textAlignment = NSTextAlignmentCenter;
     
@@ -543,10 +545,10 @@
     
     // colori e font
     if (metadata.cryptated) {
-        cell.labelTitle.textColor = COLOR_CRYPTOCLOUD;
+        cell.labelTitle.textColor = [NCBrandColor sharedInstance].cryptocloud;
         cell.labelInfoFile.textColor = [UIColor blackColor];
     } else {
-        cell.labelTitle.textColor = COLOR_TEXT_ANTHRACITE;
+        cell.labelTitle.textColor = [UIColor blackColor];
         cell.labelInfoFile.textColor = [UIColor blackColor];
     }
     
@@ -638,8 +640,8 @@
         float progress = [[app.listProgressMetadata objectForKey:metadata.fileID] floatValue];
         if (progress > 0) {
             
-            if (metadata.cryptated) cell.progressView.progressTintColor = COLOR_CRYPTOCLOUD;
-            else cell.progressView.progressTintColor = COLOR_TEXT_ANTHRACITE;
+            if (metadata.cryptated) cell.progressView.progressTintColor = [NCBrandColor sharedInstance].cryptocloud;
+            else cell.progressView.progressTintColor = [UIColor blackColor];
             
             cell.progressView.progress = progress;
             cell.progressView.hidden = NO;
@@ -703,8 +705,8 @@
         float progress = [[app.listProgressMetadata objectForKey:metadata.fileID] floatValue];
         if (progress > 0) {
             
-            if (metadata.cryptated) cell.progressView.progressTintColor = COLOR_CRYPTOCLOUD;
-            else cell.progressView.progressTintColor = COLOR_TEXT_ANTHRACITE;
+            if (metadata.cryptated) cell.progressView.progressTintColor = [NCBrandColor sharedInstance].cryptocloud;
+            else cell.progressView.progressTintColor = [UIColor blackColor];
             
             cell.progressView.progress = progress;
             cell.progressView.hidden = NO;

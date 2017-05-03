@@ -57,6 +57,12 @@
 @property (nonatomic) BOOL isFileUndeleteEnabled;
 @property (nonatomic) BOOL isFileVersioningEnabled;
 
-
+// Theming
+@property (nonatomic, strong) NSString *themingBackground;
+@property (nonatomic, strong) NSString *themingColor;
+@property (nonatomic, strong) NSString *themingLogo;
+@property (nonatomic, strong) NSString *themingName;
+@property (nonatomic, strong) NSString *themingSlogan;
+@property (nonatomic, strong) NSString *themingUrl;
 
 @end

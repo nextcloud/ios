@@ -22,14 +22,13 @@
 //
 
 #import "CCDetail.h"
-
 #import "AppDelegate.h"
 #import "CCMain.h"
 
 #ifdef CUSTOM_BUILD
-    #import "CustomSwift.h"
+#import "CustomSwift.h"
 #else
-    #import "Nextcloud-Swift.h"
+#import "Nextcloud-Swift.h"
 #endif
 
 #define TOOLBAR_HEIGHT 49.0f
@@ -60,9 +59,8 @@
 {
     if (self = [super initWithCoder:aDecoder])  {
         
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(insertGeocoderLocation:) name:@"insertGeocoderLocation" object:nil];
-        
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(triggerProgressTask:) name:@"NotificationProgressTask" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
 
         self.metadataDetail = [[CCMetadata alloc] init];
         self.photos = [[NSMutableArray alloc] init];
@@ -85,7 +83,9 @@
 {
     [super viewDidLoad];
     
-    self.imageBackground.image = [UIImage imageNamed:image_brandBackgroundLite];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(insertGeocoderLocation:) name:@"insertGeocoderLocation" object:nil];
+
+    self.imageBackground.image = [UIImage imageNamed:[NCBrandImages sharedInstance].BackgroundDetail];
     
     if ([self.metadataDetail.fileName length] > 0 || [self.metadataDetail.directoryID length] > 0 || [self.metadataDetail.fileID length] > 0) {
     
@@ -189,9 +189,15 @@
     [_toolbar setItems:[NSArray arrayWithObjects: flexible, _buttonDelete, fixedSpaceMini, _buttonShare, fixedSpaceMini, _buttonAction,  nil]];
     [_toolbar setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin];
     
-    _toolbar.barTintColor = COLOR_TABBAR;
+    _toolbar.barTintColor = [NCBrandColor sharedInstance].tabBar;
 
     [self.view addSubview:_toolbar];
+}
+
+- (void)changeTheming
+{
+    if (self.isViewLoaded && self.view.window)
+        [app changeTheming:self];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -233,7 +239,7 @@
         self.edgesForExtendedLayout = UIRectEdgeBottom;
         [self viewAudio];
         [self createToolbar];
-        [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
+        [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
 
     }
     
@@ -246,14 +252,14 @@
             self.edgesForExtendedLayout = UIRectEdgeBottom;
             [self viewPDF:@""];
             [self createToolbar];
-            [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
+            [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
 
         } else {
 
             self.edgesForExtendedLayout = UIRectEdgeBottom;
             [self viewDocument];
             [self createToolbar];
-            [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
+            [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
         }
     }
 }
@@ -530,7 +536,7 @@
                         
                     } else {
                         
-                        [self.photos replaceObjectAtIndex:index withObject:[MWPhoto photoWithImage:[CCUtility drawText:[NSLocalizedString(@"_loading_", nil) stringByAppendingString:@"..."] inImage:[UIImage imageNamed:image_buttonWhite] colorText:[UIColor lightGrayColor]]]];
+                        [self.photos replaceObjectAtIndex:index withObject:[MWPhoto photoWithImage:[CCUtility drawText:[NSLocalizedString(@"_loading_", nil) stringByAppendingString:@"..."] inImage:[UIImage imageNamed:image_button] colorText:[UIColor lightGrayColor]]]];
                     }
                 }
             }
@@ -559,7 +565,7 @@
                         
                     } else {
                         
-                        [self.photos replaceObjectAtIndex:index withObject:[MWPhoto photoWithImage:[CCUtility drawText:[NSLocalizedString(@"_loading_", nil) stringByAppendingString:@"..."] inImage:[UIImage imageNamed:image_buttonWhite] colorText:[UIColor lightGrayColor]]]];
+                        [self.photos replaceObjectAtIndex:index withObject:[MWPhoto photoWithImage:[CCUtility drawText:[NSLocalizedString(@"_loading_", nil) stringByAppendingString:@"..."] inImage:[UIImage imageNamed:image_button] colorText:[UIColor lightGrayColor]]]];
                     }
                 }
             }
@@ -722,7 +728,7 @@
     if (progress == 0)
         [self.navigationController cancelCCProgress];
     else
-        [self.navigationController setCCProgressPercentage:progress*100 andTintColor:COLOR_NAVIGATIONBAR_PROGRESS];
+        [self.navigationController setCCProgressPercentage:progress*100 andTintColor:[NCBrandColor sharedInstance].navigationBarProgress];
 }
 
 - (void)downloadPhotoBrowserFailure:(NSInteger)errorCode
@@ -778,6 +784,9 @@
 
 - (void)insertGeocoderLocation:(NSNotification *)notification
 {
+    if (notification.userInfo.count == 0)
+        return;
+    
     NSString *fileID = [[notification.userInfo allKeys] objectAtIndex:0];
     //NSDate *date = [[notification.userInfo allValues] objectAtIndex:0];
  
@@ -785,21 +794,18 @@
     if (self.indexNowVisible >= [self.photos count])
         return;
     
-    dispatch_async(dispatch_get_main_queue(), ^{
-        
-        if ([fileID isEqualToString:self.fileIDNowVisible]) {
+    if ([fileID isEqualToString:self.fileIDNowVisible]) {
             
-            MWPhoto *photo = [self.photos objectAtIndex:self.indexNowVisible];
+        MWPhoto *photo = [self.photos objectAtIndex:self.indexNowVisible];
             
-            [self setLocationCaptionPhoto:photo fileID:fileID];
+        [self setLocationCaptionPhoto:photo fileID:fileID];
             
-            if (![self.photoBrowser isGridController]) {
+        if (![self.photoBrowser isGridController]) {
             
-                [self.photoBrowser hideControls];
-                [self.photoBrowser showControls];
-            }
+            //[self.photoBrowser hideControls];
+            //[self.photoBrowser showControls];
         }
-    });
+    }
 }
 
 - (void)setLocationCaptionPhoto:(MWPhoto *)photo fileID:(NSString *)fileID
@@ -935,6 +941,7 @@
     if (documentPDF != nil) {
         
         self.readerPDFViewController = [[ReaderViewController alloc] initWithReaderDocument:documentPDF];
+        self.readerPDFViewController.delegate = self;
         self.readerPDFViewController.view.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height - TOOLBAR_HEIGHT);
         [self.readerPDFViewController updateContentViews];
 
@@ -950,6 +957,19 @@
     }
 }
 
+- (void)handleSingleTapReader
+{
+    self.navigationController.navigationBarHidden = !self.navigationController.navigationBarHidden;
+    _toolbar.hidden = !_toolbar.isHidden;
+    
+    if (_toolbar.isHidden) {
+        self.readerPDFViewController.view.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height);
+    } else {
+        self.readerPDFViewController.view.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height - TOOLBAR_HEIGHT);
+    }
+    [self.readerPDFViewController updateContentViews];
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Delete =====
 #pragma --------------------------------------------------------------------------------------------
@@ -961,6 +981,13 @@
 
 - (void)deleteFileOrFolderSuccess:(CCMetadataNet *)metadataNet
 {
+    // reload Main
+    [app.activeMain reloadDatasource];
+    
+    // If removed document (web) or PDF close
+    if (_webView || _readerPDFViewController)
+        [self removeAllView];
+    
     // if a message for a directory of these
     if (![_dataSourceDirectoryID containsObject:metadataNet.metadata.directoryID])
         return;

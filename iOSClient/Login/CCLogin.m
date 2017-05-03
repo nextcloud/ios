@@ -26,6 +26,12 @@
 #import "CCUtility.h"
 #import "CCCoreData.h"
 
+#ifdef CUSTOM_BUILD
+#import "CustomSwift.h"
+#else
+#import "Nextcloud-Swift.h"
+#endif
+
 @interface CCLogin ()
 {
     UIAlertView *alertView;
@@ -39,8 +45,8 @@
 {
     [super viewDidLoad];
     
-    self.imageBrand.image = [UIImage imageNamed:image_brandLogin];
-    self.login.backgroundColor = COLOR_BRAND;
+    self.imageBrand.image = [UIImage imageNamed:[NCBrandImages sharedInstance].login];
+    self.login.backgroundColor = [NCBrandColor sharedInstance].customer;
     
     // Bottom label
     self.bottomLabel.text = NSLocalizedString(@"_login_bottom_label_", nil);
@@ -63,13 +69,7 @@
     self.bottomLabel.hidden = YES;
 #endif
     
-    // Brand
-    if (k_option_disable_request_login_url) {
-        
-        _baseUrl.text = k_loginBaseUrl;
-        _imageBaseUrl.hidden = YES;
-        _baseUrl.hidden = YES;
-    }
+    self.annulla.tintColor = [NCBrandColor sharedInstance].customer;
     
     [self.baseUrl setDelegate:self];
     [self.password setDelegate:self];
@@ -79,9 +79,21 @@
     [self.user setFont:[UIFont systemFontOfSize:13]];
     [self.password setFont:[UIFont systemFontOfSize:13]];
     
+    self.imageBaseUrl.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"loginURL"] color:[NCBrandColor sharedInstance].customer];
+    self.imageUser.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"loginUser"] color:[NCBrandColor sharedInstance].customer];
+    self.imagePassword.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"loginPassword"] color:[NCBrandColor sharedInstance].customer];
+
     self.loadingBaseUrl.image = [UIImage animatedImageWithAnimatedGIFURL:[[NSBundle mainBundle] URLForResource: @"loading" withExtension:@"gif"]];
     self.loadingBaseUrl.hidden = YES;
     
+    // Brand
+    if (k_option_disable_request_login_url) {
+        
+        _baseUrl.text = k_loginBaseUrl;
+        _imageBaseUrl.hidden = YES;
+        _baseUrl.hidden = YES;
+    }
+
     if (_loginType == loginAdd) {
         
     }

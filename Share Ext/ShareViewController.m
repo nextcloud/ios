@@ -171,18 +171,23 @@
 - (void)navigationBarToolBar
 {    
     UIBarButtonItem *rightButtonUpload, *rightButtonEncrypt, *leftButtonCancel;
+
+    // Theming
+    TableCapabilities *tableCapabilities = [CCCoreData getCapabilitesForAccount:self.activeAccount];
+    if (k_option_use_themingColor && tableCapabilities.themingColor.length > 0)
+        [NCBrandColor sharedInstance].brand = [CCGraphics colorFromHexString:tableCapabilities.themingColor];
+
+    self.navigationController.navigationBar.barTintColor = [NCBrandColor sharedInstance].brand;
+    self.navigationController.navigationBar.tintColor = [NCBrandColor sharedInstance].navigationBarText;
     
-    self.navigationController.navigationBar.barTintColor = COLOR_NAVIGATIONBAR;
-    self.navigationController.navigationBar.tintColor = COLOR_NAVIGATIONBAR_TEXT;
-    
-    self.toolBar.barTintColor = COLOR_TABBAR;
-    self.toolBar.tintColor = COLOR_TABBAR_TEXT;
+    self.toolBar.barTintColor = [NCBrandColor sharedInstance].tabBar;
+    self.toolBar.tintColor = [NCBrandColor sharedInstance].brand;
     
     // Upload
     if (self.localCryptated && _isCryptoCloudMode) {
         
         rightButtonUpload = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"_save_encrypted_", nil) style:UIBarButtonItemStylePlain target:self action:@selector(selectPost)];
-        [rightButtonUpload setTintColor:COLOR_CRYPTOCLOUD];
+        [rightButtonUpload setTintColor:[NCBrandColor sharedInstance].cryptocloud];
         
     } else {
         
@@ -193,7 +198,7 @@
     if (_isCryptoCloudMode) {
         UIImage *icon = [[UIImage imageNamed:image_shareExtEncrypt] imageWithRenderingMode:UIImageRenderingModeAutomatic];
         rightButtonEncrypt = [[UIBarButtonItem alloc] initWithImage:icon style:UIBarButtonItemStylePlain target:self action:@selector(changeEncrypt)];
-        if (self.localCryptated) [rightButtonEncrypt setTintColor:COLOR_CRYPTOCLOUD];
+        if (self.localCryptated) [rightButtonEncrypt setTintColor:[NCBrandColor sharedInstance].cryptocloud];
     }
     
     // Cancel
@@ -383,7 +388,7 @@
     viewController.touchIDManager = touchIDManager;
     viewController.title = k_brand;
     viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
-    viewController.navigationItem.leftBarButtonItem.tintColor = COLOR_CRYPTOCLOUD;
+    viewController.navigationItem.leftBarButtonItem.tintColor = [NCBrandColor sharedInstance].cryptocloud;
     
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:viewController];
     [self presentViewController:navController animated:YES completion:nil];

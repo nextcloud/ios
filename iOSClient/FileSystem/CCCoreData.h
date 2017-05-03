@@ -35,7 +35,7 @@
 #import "OCUserProfile.h"
 #import "OCActivity.h"
 #import "OCExternalSites.h"
-
+#import "OCCapabilities.h"
 #import "TableAccount+CoreDataClass.h"
 #import "TableActivity+CoreDataClass.h"
 #import "TableCertificates+CoreDataClass.h"
@@ -46,6 +46,7 @@
 #import "TableShare+CoreDataClass.h"
 #import "TableAutomaticUpload+CoreDataClass.h"
 #import "TableExternalSites+CoreDataClass.h"
+#import "TableCapabilities+CoreDataClass.h"
 
 @interface CCCoreData : NSObject
 
@@ -77,7 +78,6 @@
 + (BOOL)getCameraUploadCryptatedVideoActiveAccount:(NSString *)activeAccount;
 + (BOOL)getCameraUploadWWanPhotoActiveAccount:(NSString *)activeAccount;
 + (BOOL)getCameraUploadWWanVideoActiveAccount:(NSString *)activeAccount;
-+ (NSInteger)getServerVersionMajorActiveAccount:(NSString *)activeAccount;
 
 + (void)setCameraUpload:(BOOL)state activeAccount:(NSString *)activeAccount;
 + (void)setCameraUploadBackground:(BOOL)state activeAccount:(NSString *)activeAccount;
@@ -97,7 +97,6 @@
 + (void)setCameraUploadSaveAlbum:(BOOL)saveAlbum activeAccount:(NSString *)activeAccount;
 
 + (void)setUserProfileActiveAccount:(NSString *)activeAccount userProfile:(OCUserProfile *)userProfile;
-+ (void)setServerVersionActiveAccount:(NSString *)activeAccount versionMajor:(NSInteger)versionMajor versionMinor:(NSInteger)versionMinor versionMicro:(NSInteger)versionMicro;
 
 // ===== Certificates =====
 
@@ -225,6 +224,12 @@
 + (void)deleteAllExternalSitesForAccount:(NSString *)account;
 + (NSArray *)getAllTableExternalSitesWithPredicate:(NSPredicate *)predicate;
 
+// ===== Capabilities =====
+
++ (void)setCapabilities:(OCCapabilities *)capabilities account:(NSString *)account;
++ (TableCapabilities *)getCapabilitesForAccount:(NSString *)account;
++ (NSInteger)getServerVersionAccount:(NSString *)activeAccount;
+
 // ===== File System =====
 
 + (BOOL)downloadFile:(CCMetadata *)metadata directoryUser:(NSString *)directoryUser activeAccount:(NSString *)activeAccount;
@@ -243,12 +248,17 @@
 
 //+ (void)verifyVersionCoreData;
 
++ (void)flushTableAccount:(NSString *)account;
 + (void)flushTableActivityAccount:(NSString *)account;
 + (void)flushTableAutomaticUploadAccount:(NSString *)account selector:(NSString *)selector;
++ (void)flushTableCapabilitiesAccount:(NSString *)account;
++ (void)flushTableCertificates;
 + (void)flushTableDirectoryAccount:(NSString *)account;
++ (void)flushTableExternalSitesAccount:(NSString *)account;
++ (void)flushTableGPS;
 + (void)flushTableLocalFileAccount:(NSString *)account;
 + (void)flushTableMetadataAccount:(NSString *)account;
-+ (void)flushTableGPS;
++ (void)flushTableShareAccount:(NSString *)account;
 
 + (void)flushAllDatabase;
 @end

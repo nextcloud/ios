@@ -27,6 +27,12 @@
 #import "AppDelegate.h"
 #import "CCMain.h"
 
+#ifdef CUSTOM_BUILD
+#import "CustomSwift.h"
+#else
+#import "Nextcloud-Swift.h"
+#endif
+
 @interface CCQuickActions ()
 {
     BOOL _cryptated;
@@ -96,11 +102,11 @@
 - (void)openAssetsPickerController
 {
     CTAssetCheckmark *checkmark = [CTAssetCheckmark appearance];
-    checkmark.tintColor = COLOR_BRAND;
+    checkmark.tintColor = [NCBrandColor sharedInstance].brand;
     [checkmark setMargin:0.0 forVerticalEdge:NSLayoutAttributeRight horizontalEdge:NSLayoutAttributeTop];
     
     UINavigationBar *navBar = [UINavigationBar appearanceWhenContainedIn:[CTAssetsPickerController class], nil];
-    [CCAspect aspectNavigationControllerBar:navBar encrypted:NO online:YES hidden:NO];
+    [app aspectNavigationControllerBar:navBar encrypted:NO online:YES hidden:NO];
     
     [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -188,9 +194,9 @@
 
     _move.delegate = self;
     _move.selectedMetadatas = nil;
-    _move.tintColor = COLOR_NAVIGATIONBAR_TEXT;
-    _move.barTintColor = COLOR_NAVIGATIONBAR;
-    _move.tintColorTitle = COLOR_NAVIGATIONBAR_TEXT;
+    _move.tintColor = [NCBrandColor sharedInstance].navigationBarText;
+    _move.barTintColor = [NCBrandColor sharedInstance].brand;
+    _move.tintColorTitle = [NCBrandColor sharedInstance].navigationBarText;
     _move.networkingOperationQueue = app.netQueue;
     
     [navigationController setModalPresentationStyle:UIModalPresentationFormSheet];

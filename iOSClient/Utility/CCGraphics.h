@@ -40,6 +40,11 @@
 + (UIImage *)scaleImage:(UIImage *)image toSize:(CGSize)targetSize;
 + (UIImage *)scaleImage:(UIImage *)image toSize:(CGSize)targetSize isAspectRation:(BOOL)aspect;
 
++ (UIColor *)colorFromHexString:(NSString *)hexString;
++ (UIImage *)changeThemingColorImage:(UIImage *)image color:(UIColor *)color;
+
++ (BOOL)isOptionUseThemingColor;
+
 @end
 
 @interface CCAvatar : UIImageView

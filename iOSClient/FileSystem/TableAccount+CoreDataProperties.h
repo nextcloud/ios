@@ -42,9 +42,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nullable, nonatomic, copy) NSString *email;
 @property (nullable, nonatomic, copy) NSString *phone;
 @property (nullable, nonatomic, copy) NSString *twitter;
-@property (nullable, nonatomic, copy) NSNumber *versionMajor;
-@property (nullable, nonatomic, copy) NSNumber *versionMicro;
-@property (nullable, nonatomic, copy) NSNumber *versionMinor;
 @property (nullable, nonatomic, copy) NSString *webpage;
 @property (nullable, nonatomic, copy) NSNumber *quota;
 @property (nullable, nonatomic, copy) NSNumber *quotaFree;

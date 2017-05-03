@@ -27,12 +27,21 @@ import Foundation
 
 class CreateMenuAdd: NSObject {
     
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+
     let fontButton = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 16)!, NSForegroundColorAttributeName: UIColor(colorLiteralRed: 65.0/255.0, green: 64.0/255.0, blue: 66.0/255.0, alpha: 1.0)]
-    let fontEncrypted = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 16)!, NSForegroundColorAttributeName: Constant.GlobalConstants.k_Color_Cryptocloud]
-    let fontCancel = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 16)!, NSForegroundColorAttributeName: Constant.GlobalConstants.k_Color_NavigationBar]
+    let fontEncrypted = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 16)!, NSForegroundColorAttributeName: NCBrandColor.sharedInstance.cryptocloud] as [String : Any]
+    let fontCancel = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 16)!, NSForegroundColorAttributeName: NCBrandColor.sharedInstance.brand] as [String : Any]
     let fontDisable = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 16)!, NSForegroundColorAttributeName: UIColor(colorLiteralRed: 65.0/255.0, green: 64.0/255.0, blue: 66.0/255.0, alpha: 1.0)]
 
     let colorLightGray = UIColor(colorLiteralRed: 250.0/255.0, green: 250.0/255.0, blue: 250.0/255.0, alpha: 1)
+    var colorIcon = NCBrandColor.sharedInstance.brand
+    
+    init (themingColor : UIColor) {
+        super.init()
+        
+        colorIcon = themingColor
+    }
     
     func createMenuPlain(view : UIView) {
         
@@ -49,7 +58,7 @@ class CreateMenuAdd: NSObject {
         actionSheet.cancelButtonHeight = 50.0
         actionSheet.separatorHeight = 5.0
         
-        actionSheet.separatorColor = Constant.GlobalConstants.k_Color_Seperator
+        actionSheet.separatorColor = NCBrandColor.sharedInstance.seperator
         
         actionSheet.buttonTextAttributes = fontButton
         actionSheet.encryptedButtonTextAttributes = fontEncrypted
@@ -57,16 +66,16 @@ class CreateMenuAdd: NSObject {
         actionSheet.disableButtonTextAttributes = fontDisable
         
         actionSheet.cancelButtonTitle = NSLocalizedString("_cancel_", comment: "")
-
-        actionSheet.addButton(withTitle: NSLocalizedString("_create_folder_", comment: ""), image: UIImage(named: image_folder), backgroundColor: UIColor.white, height: 50.0 ,type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
+        
+        actionSheet.addButton(withTitle: NSLocalizedString("_create_folder_", comment: ""), image: CCGraphics.changeThemingColorImage(UIImage(named: image_folder), color: colorIcon), backgroundColor: UIColor.white, height: 50.0 ,type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
             appDelegate.activeMain.returnCreate(Int(k_returnCreateFolderPlain))
         })
         
-        actionSheet.addButton(withTitle: NSLocalizedString("_upload_photos_videos_", comment: ""), image: UIImage(named: image_MenuUploadPhoto), backgroundColor: UIColor.white, height: 50.0, type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
+        actionSheet.addButton(withTitle: NSLocalizedString("_upload_photos_videos_", comment: ""), image: CCGraphics.changeThemingColorImage(UIImage(named: image_MenuUploadPhoto), color: colorIcon), backgroundColor: UIColor.white, height: 50.0, type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
             appDelegate.activeMain.returnCreate(Int(k_returnCreateFotoVideoPlain))
         })
         
-        actionSheet.addButton(withTitle: NSLocalizedString("_upload_file_", comment: ""), image: UIImage(named: image_MenuUploadFile), backgroundColor: UIColor.white, height: 50.0, type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
+        actionSheet.addButton(withTitle: NSLocalizedString("_upload_file_", comment: ""), image: CCGraphics.changeThemingColorImage(UIImage(named: image_MenuUploadFile), color: colorIcon), backgroundColor: UIColor.white, height: 50.0, type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
             appDelegate.activeMain.returnCreate(Int(k_returnCreateFilePlain))
         })
         
@@ -95,7 +104,7 @@ class CreateMenuAdd: NSObject {
         actionSheet.cancelButtonHeight = 50.0
         actionSheet.separatorHeight = 5.0
         
-        actionSheet.separatorColor = Constant.GlobalConstants.k_Color_Seperator
+        actionSheet.separatorColor = NCBrandColor.sharedInstance.seperator
 
         actionSheet.buttonTextAttributes = fontButton
         actionSheet.encryptedButtonTextAttributes = fontEncrypted
@@ -143,7 +152,7 @@ class CreateMenuAdd: NSObject {
         actionSheet.cancelButtonHeight = 50.0
         actionSheet.separatorHeight = 5.0
         
-        actionSheet.separatorColor = Constant.GlobalConstants.k_Color_Seperator
+        actionSheet.separatorColor = NCBrandColor.sharedInstance.seperator
 
         actionSheet.buttonTextAttributes = fontButton
         actionSheet.encryptedButtonTextAttributes = fontEncrypted
@@ -208,7 +217,7 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
     var session : String = ""
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    let sectionColor: UIColor = UIColor(colorLiteralRed: 239.0/255.0, green: 239.0/255.0, blue: 244.0/255.0, alpha: 1)
+    //let sectionColor: //UIColor = UIColor(colorLiteralRed: 239.0/255.0, green: 239.0/255.0, blue: 244.0/255.0, alpha: 1)
     
     convenience init(_ titleServerUrl : String?, serverUrl : String, assets : NSMutableArray, cryptated : Bool, session : String) {
         
@@ -242,9 +251,10 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         
         section = XLFormSectionDescriptor.formSection()
         form.addFormSection(section)
-        
         row = XLFormRowDescriptor(tag: "ButtonDestinationFolder", rowType: XLFormRowDescriptorTypeButton, title: self.titleServerUrl)
-        row.cellConfig.setObject(UIImage(named: image_folderphotocamera)!, forKey: "imageView.image" as NSCopying)
+        let imageFolder = CCGraphics.changeThemingColorImage(UIImage(named: image_folder)!, color: NCBrandColor.sharedInstance.brand) as UIImage
+        row.cellConfig.setObject(imageFolder, forKey: "imageView.image" as NSCopying)
+        row.cellConfig.setObject(UIColor.black, forKey: "textLabel.textColor" as NSCopying)
         row.action.formSelector = #selector(changeDestinationFolder(_:))
         section.addFormRow(row)
         
@@ -287,8 +297,8 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         
         row = XLFormRowDescriptor(tag: "previewFileName", rowType: XLFormRowDescriptorTypeTextView, title: "")
         row.height = 180
-        row.cellConfig.setObject(sectionColor, forKey: "backgroundColor" as NSCopying)
-        row.cellConfig.setObject(sectionColor, forKey: "textView.backgroundColor" as NSCopying)
+        row.cellConfig.setObject(NCBrandColor.sharedInstance.tableBackground, forKey: "backgroundColor" as NSCopying)
+        row.cellConfig.setObject(NCBrandColor.sharedInstance.tableBackground, forKey: "textView.backgroundColor" as NSCopying)
         //row.cellConfig.setObject(10, forKey: "textView.layer.borderWidth" as NSCopying)
 
         row.disabled = true
@@ -329,7 +339,7 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
             self.form.delegate = nil
             
             if fileName != nil {
-                formRow.value = CCUtility.removeForbiddenCharacters(fileName, hasServerForbiddenCharactersSupport: appDelegate.hasServerForbiddenCharactersSupport)
+                formRow.value = CCUtility.removeForbiddenCharactersServer(fileName)
             }
             
             self.form.delegate = self
@@ -365,11 +375,13 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         self.navigationItem.leftBarButtonItem = cancelButton
         self.navigationItem.rightBarButtonItem = saveButton
         
-        self.navigationController?.navigationBar.barTintColor = Constant.GlobalConstants.k_Color_NavigationBar
-        self.navigationController?.navigationBar.tintColor = Constant.GlobalConstants.k_Color_NavigationBar_Text
-        self.navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: Constant.GlobalConstants.k_Color_NavigationBar_Text]
+        self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand
+        self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.navigationBarText
+        self.navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: NCBrandColor.sharedInstance.navigationBarText]
         
         self.tableView.separatorStyle = UITableViewCellSeparatorStyle.none
+        
+        self.tableView.backgroundColor = NCBrandColor.sharedInstance.tableBackground
         
         self.reloadForm()
     }
@@ -512,9 +524,9 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         let viewController : CCMove = navigationController.topViewController as! CCMove
         
         viewController.delegate = self;
-        viewController.tintColor = Constant.GlobalConstants.k_Color_NavigationBar_Text
-        viewController.barTintColor = Constant.GlobalConstants.k_Color_NavigationBar
-        viewController.tintColorTitle = Constant.GlobalConstants.k_Color_NavigationBar_Text
+        viewController.tintColor = NCBrandColor.sharedInstance.navigationBarText
+        viewController.barTintColor = NCBrandColor.sharedInstance.brand
+        viewController.tintColorTitle = NCBrandColor.sharedInstance.navigationBarText
         viewController.move.title = NSLocalizedString("_select_", comment: "");
         viewController.networkingOperationQueue =  appDelegate.netQueue
         

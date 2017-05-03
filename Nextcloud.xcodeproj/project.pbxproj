@@ -109,10 +109,6 @@
 		F71E68021DC1F79D003BA52B /* libownCloudiOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F71E67FC1DC1F76F003BA52B /* libownCloudiOS.a */; };
 		F720E01F1E48C73E001A4B9E /* CCActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F720E01E1E48C73E001A4B9E /* CCActions.swift */; };
 		F725437C1E12A44A009BF4C2 /* CCSection.m in Sources */ = {isa = PBXBuildFile; fileRef = F78F6FAF1CC8CCB700F4EA25 /* CCSection.m */; };
-		F7274FED1E6EB6F400C241B6 /* Constant.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7274FEC1E6EB6F400C241B6 /* Constant.swift */; };
-		F7274FEE1E6EB6F400C241B6 /* Constant.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7274FEC1E6EB6F400C241B6 /* Constant.swift */; };
-		F7274FEF1E6EB6F400C241B6 /* Constant.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7274FEC1E6EB6F400C241B6 /* Constant.swift */; };
-		F7274FF01E6EB6F400C241B6 /* Constant.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7274FEC1E6EB6F400C241B6 /* Constant.swift */; };
 		F72AAECA1E5C60C700BB17E1 /* AHKActionSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = F72AAEC31E5C60C700BB17E1 /* AHKActionSheet.m */; };
 		F72AAECB1E5C60C700BB17E1 /* AHKActionSheetViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F72AAEC51E5C60C700BB17E1 /* AHKActionSheetViewController.m */; };
 		F72AAECC1E5C60C700BB17E1 /* UIImage+AHKAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = F72AAEC71E5C60C700BB17E1 /* UIImage+AHKAdditions.m */; };
@@ -159,8 +155,6 @@
 		F73F537F1E929C8500F8678D /* CCMore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73F537E1E929C8500F8678D /* CCMore.swift */; };
 		F74344171E1264EE001CC831 /* DocumentPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74344161E1264EE001CC831 /* DocumentPickerViewController.swift */; };
 		F74344251E1264EE001CC831 /* FileProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74344241E1264EE001CC831 /* FileProvider.swift */; };
-		F743444A1E126B4D001CC831 /* CCMove.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D02A471C5F9E4400D6F972 /* CCMove.m */; };
-		F743444B1E126B69001CC831 /* CCMove.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7D02A481C5F9E4400D6F972 /* CCMove.storyboard */; };
 		F74344541E1277D8001CC831 /* libownCloudiOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F71E67FC1DC1F76F003BA52B /* libownCloudiOS.a */; };
 		F74344551E1277E2001CC831 /* libMagicalRecord.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F7B61E9B1DC13C20009E938F /* libMagicalRecord.a */; };
 		F74344561E12784A001CC831 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63061D5B3467004E2AA5 /* libcrypto.a */; };
@@ -172,7 +166,6 @@
 		F74344671E127E38001CC831 /* CCMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = F7C8C1731B482A920048180E /* CCMetadata.m */; };
 		F74344781E127E9E001CC831 /* CCExifGeo.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A54C351C6267B500E2C8BF /* CCExifGeo.m */; };
 		F74344791E127EA1001CC831 /* CCError.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B881C638A4C00DC4301 /* CCError.m */; };
-		F743447A1E127EA6001CC831 /* CCGraphics.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B841C6388BC00DC4301 /* CCGraphics.m */; };
 		F743447B1E127EAC001CC831 /* CCUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = F7053E3D1C639DF500741EA5 /* CCUtility.m */; };
 		F743447C1E127EB2001CC831 /* NSString+TruncateToWidth.m in Sources */ = {isa = PBXBuildFile; fileRef = F73049B91CB567F000C7C320 /* NSString+TruncateToWidth.m */; };
 		F743447D1E127ECB001CC831 /* AESCrypt.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02AB1C889183008DAB36 /* AESCrypt.m */; };
@@ -324,6 +317,18 @@
 		F769D39A1E9E1506006DBBB4 /* CCLocalStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = F769D3961E9E1506006DBBB4 /* CCLocalStorage.m */; };
 		F769D39B1E9E1506006DBBB4 /* CCLocalStorageCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F769D3981E9E1506006DBBB4 /* CCLocalStorageCell.m */; };
 		F769D39C1E9E1506006DBBB4 /* CCLocalStorageCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F769D3991E9E1506006DBBB4 /* CCLocalStorageCell.xib */; };
+		F76B3CCE1EAE01BD00921AC9 /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
+		F76B3CCF1EAE01BD00921AC9 /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
+		F76B3CD01EAE01BD00921AC9 /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
+		F76B3CD11EAE01BD00921AC9 /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
+		F76B3CE11EAE4E5100921AC9 /* TableCapabilities+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CDE1EAE4E5100921AC9 /* TableCapabilities+CoreDataClass.m */; };
+		F76B3CE21EAE4E5100921AC9 /* TableCapabilities+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CDE1EAE4E5100921AC9 /* TableCapabilities+CoreDataClass.m */; };
+		F76B3CE31EAE4E5100921AC9 /* TableCapabilities+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CDE1EAE4E5100921AC9 /* TableCapabilities+CoreDataClass.m */; };
+		F76B3CE41EAE4E5100921AC9 /* TableCapabilities+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CDE1EAE4E5100921AC9 /* TableCapabilities+CoreDataClass.m */; };
+		F76B3CE51EAE4E5100921AC9 /* TableCapabilities+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CE01EAE4E5100921AC9 /* TableCapabilities+CoreDataProperties.m */; };
+		F76B3CE61EAE4E5100921AC9 /* TableCapabilities+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CE01EAE4E5100921AC9 /* TableCapabilities+CoreDataProperties.m */; };
+		F76B3CE71EAE4E5100921AC9 /* TableCapabilities+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CE01EAE4E5100921AC9 /* TableCapabilities+CoreDataProperties.m */; };
+		F76B3CE81EAE4E5100921AC9 /* TableCapabilities+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CE01EAE4E5100921AC9 /* TableCapabilities+CoreDataProperties.m */; };
 		F77B0DF01D118A16002130FE /* UIImage+Resizing.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04CA1C889184008DAB36 /* UIImage+Resizing.m */; };
 		F77B0DF21D118A16002130FE /* CCUploadFromOtherUpp.m in Sources */ = {isa = PBXBuildFile; fileRef = F7956FCA1B4886E60085DEA3 /* CCUploadFromOtherUpp.m */; };
 		F77B0DF41D118A16002130FE /* CCMain.m in Sources */ = {isa = PBXBuildFile; fileRef = F70211FB1BAC56E9003FC03E /* CCMain.m */; };
@@ -518,6 +523,8 @@
 		F7A3217B1E9E3EAF0069AD1B /* CCTransfersCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7A321781E9E3EAF0069AD1B /* CCTransfersCell.xib */; };
 		F7A3218C1E9E42B30069AD1B /* CCMenuAccount.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A3218B1E9E42B30069AD1B /* CCMenuAccount.m */; };
 		F7A321AD1E9E6AD50069AD1B /* CCAdvanced.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A321AC1E9E6AD50069AD1B /* CCAdvanced.m */; };
+		F7A377161EB2364A002856D3 /* Crashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7A377141EB2364A002856D3 /* Crashlytics.framework */; };
+		F7A3771A1EB2364A002856D3 /* Fabric.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7A377151EB2364A002856D3 /* Fabric.framework */; };
 		F7B1FBC41E72E3D1001781FE /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7B1FBB11E72E3D1001781FE /* Media.xcassets */; };
 		F7B1FBC61E72E3D1001781FE /* SwiftModalWebVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B1FBBF1E72E3D1001781FE /* SwiftModalWebVC.swift */; };
 		F7B1FBC71E72E3D1001781FE /* SwiftWebVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B1FBC01E72E3D1001781FE /* SwiftWebVC.swift */; };
@@ -533,6 +540,7 @@
 		F7C525A21E3B6DA800FFE02C /* CCNotification.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7C525A11E3B6DA800FFE02C /* CCNotification.storyboard */; };
 		F7C742D81E7BD5C900D9C973 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7C742D71E7BD5C900D9C973 /* MainInterface.storyboard */; };
 		F7D2677C1E157053005ACB7E /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7F67BB81A24D27800EE80DA /* Images.xcassets */; };
+		F7E718B01EB0FBE700FA58C9 /* CCGraphics.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B841C6388BC00DC4301 /* CCGraphics.m */; };
 		F7ECBA6D1E239DCD003E6328 /* CCCreateCloud.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7ECBA6C1E239DCD003E6328 /* CCCreateCloud.swift */; };
 		F7EF0CAF1D9E95F400A9D15E /* CCSharedDBSession.m in Sources */ = {isa = PBXBuildFile; fileRef = F7EF0CAD1D9E95F400A9D15E /* CCSharedDBSession.m */; };
 		F7F06E8D1DBFACC600099AE9 /* NSBundle+CTAssetsPickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F06E2E1DBFACC600099AE9 /* NSBundle+CTAssetsPickerController.m */; };
@@ -1010,7 +1018,6 @@
 		F721372F1BAFF0920012B613 /* CCTemplates.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCTemplates.h; sourceTree = "<group>"; };
 		F72137301BAFF0920012B613 /* CCTemplates.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCTemplates.m; sourceTree = "<group>"; };
 		F7229B491DF71BB300E8C4E7 /* AUTHORS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AUTHORS; sourceTree = SOURCE_ROOT; };
-		F7274FEC1E6EB6F400C241B6 /* Constant.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constant.swift; sourceTree = "<group>"; };
 		F7296A601C8880C9001A7809 /* CCCellShareExt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCCellShareExt.h; sourceTree = "<group>"; };
 		F7296A611C8880C9001A7809 /* CCCellShareExt.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCCellShareExt.m; sourceTree = "<group>"; };
 		F7296A621C8880C9001A7809 /* CCCellShareExt.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CCCellShareExt.xib; sourceTree = "<group>"; };
@@ -1085,6 +1092,20 @@
 		F744BE921BEBB2EE004FFF66 /* CCIntro.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCIntro.h; sourceTree = "<group>"; };
 		F744BE931BEBB2EE004FFF66 /* CCIntro.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCIntro.m; sourceTree = "<group>"; };
 		F744BE961BEBB31E004FFF66 /* ImagesIntro.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = ImagesIntro.xcassets; sourceTree = "<group>"; };
+		F74639DA1EB35BC700862322 /* fi-FI */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "fi-FI"; path = "fi-FI.lproj/CTAssetsPicker.strings"; sourceTree = "<group>"; };
+		F74639DB1EB35BC700862322 /* fi-FI */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "fi-FI"; path = "fi-FI.lproj/SwiftWebVC.strings"; sourceTree = "<group>"; };
+		F74639DC1EB35BC800862322 /* fi-FI */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "fi-FI"; path = "fi-FI.lproj/BKPasscodeView.strings"; sourceTree = "<group>"; };
+		F74639DD1EB35BC800862322 /* fi-FI */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "fi-FI"; path = "fi-FI.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		F74639DE1EB35BC800862322 /* fi-FI */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "fi-FI"; path = "fi-FI.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		F74639DF1EB35BC800862322 /* fi-FI */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "fi-FI"; path = "fi-FI.lproj/Intro.strings"; sourceTree = "<group>"; };
+		F74639E01EB35BC800862322 /* fi-FI */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "fi-FI"; path = "fi-FI.lproj/Error.strings"; sourceTree = "<group>"; };
+		F74639E11EB35C1300862322 /* is */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = is; path = is.lproj/CTAssetsPicker.strings; sourceTree = "<group>"; };
+		F74639E21EB35C1300862322 /* is */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = is; path = is.lproj/SwiftWebVC.strings; sourceTree = "<group>"; };
+		F74639E31EB35C1300862322 /* is */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = is; path = is.lproj/BKPasscodeView.strings; sourceTree = "<group>"; };
+		F74639E41EB35C1300862322 /* is */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = is; path = is.lproj/Localizable.strings; sourceTree = "<group>"; };
+		F74639E51EB35C1300862322 /* is */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = is; path = is.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		F74639E61EB35C1300862322 /* is */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = is; path = is.lproj/Intro.strings; sourceTree = "<group>"; };
+		F74639E71EB35C1300862322 /* is */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = is; path = is.lproj/Error.strings; sourceTree = "<group>"; };
 		F74D3DBD1BAC1941000BAE4B /* OCNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCNetworking.h; sourceTree = "<group>"; };
 		F74D3DBE1BAC1941000BAE4B /* OCNetworking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCNetworking.m; sourceTree = "<group>"; };
 		F75037431DBFA91A008FB480 /* ALView+PureLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ALView+PureLayout.h"; sourceTree = "<group>"; };
@@ -1431,6 +1452,12 @@
 		F769D3971E9E1506006DBBB4 /* CCLocalStorageCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCLocalStorageCell.h; sourceTree = "<group>"; };
 		F769D3981E9E1506006DBBB4 /* CCLocalStorageCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCLocalStorageCell.m; sourceTree = "<group>"; };
 		F769D3991E9E1506006DBBB4 /* CCLocalStorageCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CCLocalStorageCell.xib; sourceTree = "<group>"; };
+		F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCBrand.swift; sourceTree = "<group>"; };
+		F76B3CDC1EAE4D9100921AC9 /* cryptocloud 8.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "cryptocloud 8.xcdatamodel"; sourceTree = "<group>"; };
+		F76B3CDD1EAE4E5100921AC9 /* TableCapabilities+CoreDataClass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableCapabilities+CoreDataClass.h"; sourceTree = "<group>"; };
+		F76B3CDE1EAE4E5100921AC9 /* TableCapabilities+CoreDataClass.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableCapabilities+CoreDataClass.m"; sourceTree = "<group>"; };
+		F76B3CDF1EAE4E5100921AC9 /* TableCapabilities+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableCapabilities+CoreDataProperties.h"; sourceTree = "<group>"; };
+		F76B3CE01EAE4E5100921AC9 /* TableCapabilities+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableCapabilities+CoreDataProperties.m"; sourceTree = "<group>"; };
 		F76C3B831C6388BC00DC4301 /* CCGraphics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCGraphics.h; sourceTree = "<group>"; };
 		F76C3B841C6388BC00DC4301 /* CCGraphics.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCGraphics.m; sourceTree = "<group>"; };
 		F76C3B871C638A4C00DC4301 /* CCError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCError.h; sourceTree = "<group>"; };
@@ -1476,6 +1503,8 @@
 		F7A3218B1E9E42B30069AD1B /* CCMenuAccount.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCMenuAccount.m; sourceTree = "<group>"; };
 		F7A321AB1E9E6AD50069AD1B /* CCAdvanced.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCAdvanced.h; sourceTree = "<group>"; };
 		F7A321AC1E9E6AD50069AD1B /* CCAdvanced.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCAdvanced.m; sourceTree = "<group>"; };
+		F7A377141EB2364A002856D3 /* Crashlytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Crashlytics.framework; sourceTree = "<group>"; };
+		F7A377151EB2364A002856D3 /* Fabric.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Fabric.framework; sourceTree = "<group>"; };
 		F7A54C341C6267B500E2C8BF /* CCExifGeo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCExifGeo.h; sourceTree = "<group>"; };
 		F7A54C351C6267B500E2C8BF /* CCExifGeo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCExifGeo.m; sourceTree = "<group>"; };
 		F7A582D61A24DAB500E903D7 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -1512,8 +1541,7 @@
 		F7C0F46E1C8880540059EC54 /* ShareViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = ShareViewController.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		F7C0F46F1C8880540059EC54 /* ShareViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = ShareViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		F7C1CDCE1E6DFAD1005D92BE /* CCStandardImages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCStandardImages.h; sourceTree = "<group>"; };
-		F7C1CDDA1E6DFC6F005D92BE /* CCNextcloudConstant.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCNextcloudConstant.h; sourceTree = "<group>"; };
-		F7C1CDDB1E6DFC6F005D92BE /* CCNextcloudImages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCNextcloudImages.h; sourceTree = "<group>"; };
+		F7C1CDDA1E6DFC6F005D92BE /* NCBrandConstant.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCBrandConstant.h; sourceTree = "<group>"; };
 		F7C1D8BB1D47781C00B89DEA /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/BKPasscodeView.strings; sourceTree = "<group>"; };
 		F7C1D8BC1D47781C00B89DEA /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F7C1D8BD1D47781C00B89DEA /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -1735,10 +1763,12 @@
 				F714526D1DC1523B0006A5D4 /* libMagicalRecord.a in Frameworks */,
 				F75EDFAC1E8C106900E6F369 /* FirebaseAnalytics.framework in Frameworks */,
 				F75EDFAE1E8C106900E6F369 /* FirebaseInstanceID.framework in Frameworks */,
+				F7A377161EB2364A002856D3 /* Crashlytics.framework in Frameworks */,
 				F75EDFB11E8C106900E6F369 /* Protobuf.framework in Frameworks */,
 				F7FC7D561DC1F93800BB2C6A /* libz.tbd in Frameworks */,
 				F75EDFAD1E8C106900E6F369 /* FirebaseCore.framework in Frameworks */,
 				F75EDFAF1E8C106900E6F369 /* FirebaseMessaging.framework in Frameworks */,
+				F7A3771A1EB2364A002856D3 /* Fabric.framework in Frameworks */,
 				F7BB14961D5B62C000ECEE68 /* libcrypto.a in Frameworks */,
 				F7BB14971D5B62C000ECEE68 /* libssl.a in Frameworks */,
 				F75EDFB01E8C106900E6F369 /* GoogleToolboxForMac.framework in Frameworks */,
@@ -2864,6 +2894,10 @@
 		F77F86401B4ABF6D009F0A10 /* Table */ = {
 			isa = PBXGroup;
 			children = (
+				F76B3CDD1EAE4E5100921AC9 /* TableCapabilities+CoreDataClass.h */,
+				F76B3CDE1EAE4E5100921AC9 /* TableCapabilities+CoreDataClass.m */,
+				F76B3CDF1EAE4E5100921AC9 /* TableCapabilities+CoreDataProperties.h */,
+				F76B3CE01EAE4E5100921AC9 /* TableCapabilities+CoreDataProperties.m */,
 				F73C414C1E82E51F000137C0 /* TableExternalSites+CoreDataClass.h */,
 				F73C414D1E82E51F000137C0 /* TableExternalSites+CoreDataClass.m */,
 				F73C414E1E82E51F000137C0 /* TableExternalSites+CoreDataProperties.h */,
@@ -2962,6 +2996,16 @@
 			);
 			path = MenuAccount;
 			sourceTree = "<group>";
+		};
+		F7A377131EB2364A002856D3 /* Fabric */ = {
+			isa = PBXGroup;
+			children = (
+				F7A377141EB2364A002856D3 /* Crashlytics.framework */,
+				F7A377151EB2364A002856D3 /* Fabric.framework */,
+			);
+			name = Fabric;
+			path = "Libraries external/Fabric";
+			sourceTree = SOURCE_ROOT;
 		};
 		F7ACE4281BAC0268006C0017 /* Settings */ = {
 			isa = PBXGroup;
@@ -3093,9 +3137,8 @@
 			isa = PBXGroup;
 			children = (
 				F7C742D31E7BD36600D9C973 /* Supporting Files */,
-				F7274FEC1E6EB6F400C241B6 /* Constant.swift */,
-				F7C1CDDA1E6DFC6F005D92BE /* CCNextcloudConstant.h */,
-				F7C1CDDB1E6DFC6F005D92BE /* CCNextcloudImages.h */,
+				F7C1CDDA1E6DFC6F005D92BE /* NCBrandConstant.h */,
+				F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */,
 			);
 			path = Brand;
 			sourceTree = "<group>";
@@ -3331,6 +3374,7 @@
 				F71E67F61DC1F76F003BA52B /* ownCloud iOS library.xcodeproj */,
 				F70F02A81C889183008DAB36 /* Libraries external */,
 				F75EDFA41E8C106900E6F369 /* Analytics */,
+				F7A377131EB2364A002856D3 /* Fabric */,
 				F7A582D71A24DAB500E903D7 /* AppDelegate.h */,
 				F7A582D61A24DAB500E903D7 /* AppDelegate.m */,
 				F7C8C1901B482CEA0048180E /* CCGlobal.h */,
@@ -3508,6 +3552,7 @@
 				F77B0EE91D118A16002130FE /* Resources */,
 				F77B0F981D118A16002130FE /* Embed App Extensions */,
 				F73B02C01DC0F1C900EC2C33 /* ShellScript */,
+				F7A377371EB24469002856D3 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -3600,6 +3645,8 @@
 				el,
 				pl,
 				"nb-NO",
+				"fi-FI",
+				is,
 			);
 			mainGroup = F7F67B9F1A24D27800EE80DA;
 			productRefGroup = F7F67B9F1A24D27800EE80DA;
@@ -3721,7 +3768,6 @@
 				F7FC88FB1E141A34006D0506 /* BKPasscodeView.strings in Resources */,
 				F7FC88FC1E141A39006D0506 /* Localizable.strings in Resources */,
 				F7D2677C1E157053005ACB7E /* Images.xcassets in Resources */,
-				F743444B1E126B69001CC831 /* CCMove.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3917,6 +3963,19 @@
 			shellPath = /bin/sh;
 			shellScript = "#!/bin/bash\n# buildNumber=$(/usr/libexec/PlistBuddy -c \"Print CFBundleVersion\" \"$INFOPLIST_FILE\")\n# buildNumber=$(echo $buildNumber | sed 's/0*//')\n# buildNumber=$(($buildNumber + 1))\n# buildNumber=$(printf \"%04d\" $buildNumber)\n# /usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $buildNumber\" \"$INFOPLIST_FILE\"";
 		};
+		F7A377371EB24469002856D3 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PROJECT_DIR}/Libraries external/Fabric/Fabric.framework/run\" 52fe877f4a4ff58868da789df0b0eb915fd94ae1 3d6e5abfdc40776a4a8468ddf5910958596ccbccc341e19f7aaf0fbeb4ff6cf5\n";
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -3931,13 +3990,13 @@
 				F71459BA1D12E3B700CAFEEC /* NSString+TruncateToWidth.m in Sources */,
 				F708CF9B1E56E8CC00271D8B /* TableAccount+CoreDataProperties.m in Sources */,
 				F71459BB1D12E3B700CAFEEC /* NYXProgressiveImageView.m in Sources */,
-				F7274FEE1E6EB6F400C241B6 /* Constant.swift in Sources */,
 				F708CF981E56E8CC00271D8B /* TableAccount+CoreDataClass.m in Sources */,
 				F71459BC1D12E3B700CAFEEC /* Reachability.m in Sources */,
 				F73C41511E82E51F000137C0 /* TableExternalSites+CoreDataClass.m in Sources */,
 				F71459BD1D12E3B700CAFEEC /* UIImage+animatedGIF.m in Sources */,
 				F708CF6E1E56E8CC00271D8B /* TableMetadata+CoreDataClass.m in Sources */,
 				F71459BE1D12E3B700CAFEEC /* UIImage+Reflection.m in Sources */,
+				F76B3CE61EAE4E5100921AC9 /* TableCapabilities+CoreDataProperties.m in Sources */,
 				F73CC06D1E813DFF006E3047 /* BKPasscodeField.m in Sources */,
 				F71459BF1D12E3B700CAFEEC /* RNEncryptor.m in Sources */,
 				F708CF891E56E8CC00271D8B /* TableShare+CoreDataProperties.m in Sources */,
@@ -3951,6 +4010,7 @@
 				F7FB5F201E66F0A400389481 /* TableActivity+CoreDataClass.m in Sources */,
 				F71459C61D12E3B700CAFEEC /* CCMetadata.m in Sources */,
 				F708CF771E56E8CC00271D8B /* TableLocalFile+CoreDataProperties.m in Sources */,
+				F76B3CE21EAE4E5100921AC9 /* TableCapabilities+CoreDataClass.m in Sources */,
 				F71459C91D12E3B700CAFEEC /* OCNetworking.m in Sources */,
 				F71459CC1D12E3B700CAFEEC /* RNCryptorEngine.m in Sources */,
 				F71459CD1D12E3B700CAFEEC /* AFViewShaker.m in Sources */,
@@ -3992,6 +4052,7 @@
 				F7145A041D12E3B700CAFEEC /* CCloadItemData.swift in Sources */,
 				F708CF951E56E8CC00271D8B /* TableAutomaticUpload+CoreDataProperties.m in Sources */,
 				F73CC07F1E813DFF006E3047 /* BKTouchIDSwitchView.m in Sources */,
+				F76B3CCF1EAE01BD00921AC9 /* NCBrand.swift in Sources */,
 				F73CC0761E813DFF006E3047 /* BKPasscodeViewController.m in Sources */,
 				F7145A081D12E3B700CAFEEC /* PPCollectionViewCell.m in Sources */,
 				F7145A0D1D12E3B700CAFEEC /* NSData+Base64.m in Sources */,
@@ -4010,8 +4071,8 @@
 				F708CF931E56E8CC00271D8B /* TableAutomaticUpload+CoreDataClass.m in Sources */,
 				F74344801E127ED3001CC831 /* NSString+Base64.m in Sources */,
 				F708CF871E56E8CC00271D8B /* TableShare+CoreDataClass.m in Sources */,
-				F743447A1E127EA6001CC831 /* CCGraphics.m in Sources */,
 				F708CF9C1E56E8CC00271D8B /* TableAccount+CoreDataProperties.m in Sources */,
+				F76B3CE71EAE4E5100921AC9 /* TableCapabilities+CoreDataProperties.m in Sources */,
 				F708CF811E56E8CC00271D8B /* TableDirectory+CoreDataClass.m in Sources */,
 				F708CF901E56E8CC00271D8B /* TableCertificates+CoreDataProperties.m in Sources */,
 				F743448C1E128010001CC831 /* CCCrypto.m in Sources */,
@@ -4022,13 +4083,13 @@
 				F708CF841E56E8CC00271D8B /* TableDirectory+CoreDataProperties.m in Sources */,
 				F74344821E127F68001CC831 /* MBProgressHUD.m in Sources */,
 				F708CF7B1E56E8CC00271D8B /* TableGPS+CoreDataClass.m in Sources */,
-				F743444A1E126B4D001CC831 /* CCMove.m in Sources */,
 				F743448B1E12800D001CC831 /* CCCertificate.m in Sources */,
 				F743447D1E127ECB001CC831 /* AESCrypt.m in Sources */,
 				F743447E1E127ECE001CC831 /* NSData+Base64.m in Sources */,
 				F74344671E127E38001CC831 /* CCMetadata.m in Sources */,
 				F73CC0741E813DFF006E3047 /* BKPasscodeLockScreenManager.m in Sources */,
 				F74344781E127E9E001CC831 /* CCExifGeo.m in Sources */,
+				F7E718B01EB0FBE700FA58C9 /* CCGraphics.m in Sources */,
 				F74344171E1264EE001CC831 /* DocumentPickerViewController.swift in Sources */,
 				F74344811E127F49001CC831 /* AFViewShaker.m in Sources */,
 				F74344791E127EA1001CC831 /* CCError.m in Sources */,
@@ -4046,7 +4107,6 @@
 				F74344881E127F9C001CC831 /* UIImage+animatedGIF.m in Sources */,
 				F708CF7E1E56E8CC00271D8B /* TableGPS+CoreDataProperties.m in Sources */,
 				F73CC0771E813DFF006E3047 /* BKPasscodeViewController.m in Sources */,
-				F7274FEF1E6EB6F400C241B6 /* Constant.swift in Sources */,
 				F743448A1E127FF2001CC831 /* CCHud.m in Sources */,
 				F74344861E127F89001CC831 /* RNEncryptor.m in Sources */,
 				F73C41521E82E51F000137C0 /* TableExternalSites+CoreDataClass.m in Sources */,
@@ -4058,6 +4118,8 @@
 				F74344631E127D79001CC831 /* CCBKPasscode.m in Sources */,
 				F708CF8A1E56E8CC00271D8B /* TableShare+CoreDataProperties.m in Sources */,
 				F74344661E127E35001CC831 /* CCCoreData.m in Sources */,
+				F76B3CD01EAE01BD00921AC9 /* NCBrand.swift in Sources */,
+				F76B3CE31EAE4E5100921AC9 /* TableCapabilities+CoreDataClass.m in Sources */,
 				F73CC0801E813DFF006E3047 /* BKTouchIDSwitchView.m in Sources */,
 				F743447C1E127EB2001CC831 /* NSString+TruncateToWidth.m in Sources */,
 				F708CF751E56E8CC00271D8B /* TableLocalFile+CoreDataClass.m in Sources */,
@@ -4073,7 +4135,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				F74344251E1264EE001CC831 /* FileProvider.swift in Sources */,
-				F7274FF01E6EB6F400C241B6 /* Constant.swift in Sources */,
+				F76B3CE41EAE4E5100921AC9 /* TableCapabilities+CoreDataClass.m in Sources */,
+				F76B3CE81EAE4E5100921AC9 /* TableCapabilities+CoreDataProperties.m in Sources */,
+				F76B3CD11EAE01BD00921AC9 /* NCBrand.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4143,7 +4207,6 @@
 				F77B0E161D118A16002130FE /* AFViewShaker.m in Sources */,
 				F762CB021EACB66200B38484 /* XLFormSliderCell.m in Sources */,
 				F77B0E1B1D118A16002130FE /* CCGraphics.m in Sources */,
-				F7274FED1E6EB6F400C241B6 /* Constant.swift in Sources */,
 				F7659A6E1DC0B760004860C4 /* PSTGridLayoutRow.m in Sources */,
 				F769D39B1E9E1506006DBBB4 /* CCLocalStorageCell.m in Sources */,
 				F762CB701EACB7D400B38484 /* ReaderThumbCache.m in Sources */,
@@ -4186,6 +4249,7 @@
 				F77B0E391D118A16002130FE /* CCContoCorrente.m in Sources */,
 				F77B0E3A1D118A16002130FE /* RNCryptorEngine.m in Sources */,
 				F77B0E3C1D118A16002130FE /* CCCartaIdentita.m in Sources */,
+				F76B3CE51EAE4E5100921AC9 /* TableCapabilities+CoreDataProperties.m in Sources */,
 				F762CB761EACB7D400B38484 /* ReaderThumbView.m in Sources */,
 				F7659A6C1DC0B760004860C4 /* PSTGridLayoutItem.m in Sources */,
 				F762CAFF1EACB66200B38484 /* XLFormPickerCell.m in Sources */,
@@ -4251,8 +4315,10 @@
 				F7659A2E1DC0B72F004860C4 /* EARestrictedScrollView.m in Sources */,
 				F77B0E741D118A16002130FE /* CCBancomat.m in Sources */,
 				F77B0E7B1D118A16002130FE /* CCPassaporto.m in Sources */,
+				F76B3CCE1EAE01BD00921AC9 /* NCBrand.swift in Sources */,
 				F7B1FBC91E72E3D1001781FE /* SwiftWebVCActivityChrome.swift in Sources */,
 				F7F06EA51DBFACC600099AE9 /* CTAssetItemViewController.m in Sources */,
+				F76B3CE11EAE4E5100921AC9 /* TableCapabilities+CoreDataClass.m in Sources */,
 				F762CB8A1EACB81000B38484 /* REMenuItemView.m in Sources */,
 				F7659A5A1DC0B760004860C4 /* PSTCollectionView.m in Sources */,
 				F7BF1B431D51E893000854F6 /* CCLogin.m in Sources */,
@@ -4406,6 +4472,8 @@
 				F762CBD11EACC66600B38484 /* el */,
 				F762CBD81EACC6A500B38484 /* pl */,
 				F762CBDF1EACC70500B38484 /* nb-NO */,
+				F74639DC1EB35BC800862322 /* fi-FI */,
+				F74639E31EB35C1300862322 /* is */,
 			);
 			name = BKPasscodeView.strings;
 			path = "Supporting Files";
@@ -4427,6 +4495,8 @@
 				F762CBD01EACC66600B38484 /* el */,
 				F762CBD71EACC6A500B38484 /* pl */,
 				F762CBDE1EACC70400B38484 /* nb-NO */,
+				F74639DB1EB35BC700862322 /* fi-FI */,
+				F74639E21EB35C1300862322 /* is */,
 			);
 			name = SwiftWebVC.strings;
 			path = "Supporting Files";
@@ -4448,6 +4518,8 @@
 				F762CBD41EACC66600B38484 /* el */,
 				F762CBDB1EACC6A500B38484 /* pl */,
 				F762CBE21EACC70500B38484 /* nb-NO */,
+				F74639DF1EB35BC800862322 /* fi-FI */,
+				F74639E61EB35C1300862322 /* is */,
 			);
 			name = Intro.strings;
 			path = "Supporting Files";
@@ -4469,6 +4541,8 @@
 				F762CBCF1EACC66600B38484 /* el */,
 				F762CBD61EACC6A500B38484 /* pl */,
 				F762CBDD1EACC70400B38484 /* nb-NO */,
+				F74639DA1EB35BC700862322 /* fi-FI */,
+				F74639E11EB35C1300862322 /* is */,
 			);
 			name = CTAssetsPicker.strings;
 			path = "Supporting Files";
@@ -4490,6 +4564,8 @@
 				F762CBD51EACC66600B38484 /* el */,
 				F762CBDC1EACC6A500B38484 /* pl */,
 				F762CBE31EACC70500B38484 /* nb-NO */,
+				F74639E01EB35BC800862322 /* fi-FI */,
+				F74639E71EB35C1300862322 /* is */,
 			);
 			name = Error.strings;
 			path = "Supporting Files";
@@ -4511,6 +4587,8 @@
 				F762CBD31EACC66600B38484 /* el */,
 				F762CBDA1EACC6A500B38484 /* pl */,
 				F762CBE11EACC70500B38484 /* nb-NO */,
+				F74639DE1EB35BC800862322 /* fi-FI */,
+				F74639E51EB35C1300862322 /* is */,
 			);
 			name = InfoPlist.strings;
 			path = "Supporting Files";
@@ -4532,6 +4610,8 @@
 				F762CBD21EACC66600B38484 /* el */,
 				F762CBD91EACC6A500B38484 /* pl */,
 				F762CBE01EACC70500B38484 /* nb-NO */,
+				F74639DD1EB35BC800862322 /* fi-FI */,
+				F74639E41EB35C1300862322 /* is */,
 			);
 			name = Localizable.strings;
 			path = "Supporting Files";
@@ -4557,8 +4637,9 @@
 				GCC_PREFIX_HEADER = iOSClient/CryptoCloud.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
-					"EXTENSION=1",
-					"NC=1",
+					EXTENSION,
+					EXTENSION_SHARE,
+					NC,
 				);
 				HEADER_SEARCH_PATHS = "\"Libraries external\"/**";
 				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/Share.plist";
@@ -4597,8 +4678,9 @@
 				GCC_PREFIX_HEADER = iOSClient/CryptoCloud.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
-					"EXTENSION=1",
-					"NC=1",
+					EXTENSION,
+					EXTENSION_SHARE,
+					NC,
 				);
 				HEADER_SEARCH_PATHS = "\"Libraries external\"/**";
 				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/Share.plist";
@@ -4630,11 +4712,13 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_PREFIX_HEADER = iOSClient/CryptoCloud.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					"EXTENSION=1",
-					"DEBUG=1",
-					"NC=1",
+					DEBUG,
+					EXTENSION,
+					EXTENSION_PICKER,
+					NC,
 				);
 				HEADER_SEARCH_PATHS = "\"Libraries external\"/**";
 				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/Picker.plist";
@@ -4663,10 +4747,12 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_PREFIX_HEADER = iOSClient/CryptoCloud.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					"EXTENSION=1",
-					"NC=1",
+					EXTENSION,
+					EXTENSION_PICKER,
+					NC,
 				);
 				HEADER_SEARCH_PATHS = "\"Libraries external\"/**";
 				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/Picker.plist";
@@ -4695,10 +4781,11 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"EXTENSION=1",
-					"NC=1",
+					DEBUG,
+					EXTENSION,
+					NC,
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/PickerFileProvider.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
@@ -4727,9 +4814,10 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					"NC=1",
-					"EXTENSION=1",
+					EXTENSION,
+					NC,
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/PickerFileProvider.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
@@ -4761,6 +4849,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)\"/Libraries external/Analytics\"",
+					"$(PROJECT_DIR)\"/Libraries external/Fabric\"",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = iOSClient/CryptoCloud.pch;
@@ -4807,6 +4896,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)\"/Libraries external/Analytics\"",
+					"$(PROJECT_DIR)\"/Libraries external/Fabric\"",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = iOSClient/CryptoCloud.pch;
@@ -4987,6 +5077,7 @@
 		F78088E51DD3A1DB005C5A7C /* cryptocloud.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				F76B3CDC1EAE4D9100921AC9 /* cryptocloud 8.xcdatamodel */,
 				F7C00D4A1E2D10BB0032160B /* cryptocloud 7.xcdatamodel */,
 				F7BFA4541E0693EE0010E44C /* cryptocloud 5.xcdatamodel */,
 				F78088E61DD3A1DB005C5A7C /* cryptocloud 2.xcdatamodel */,
@@ -4994,7 +5085,7 @@
 				F78088E81DD3A1DB005C5A7C /* cryptocloud 4.xcdatamodel */,
 				F78088E91DD3A1DB005C5A7C /* cryptocloud.xcdatamodel */,
 			);
-			currentVersion = F7C00D4A1E2D10BB0032160B /* cryptocloud 7.xcdatamodel */;
+			currentVersion = F76B3CDC1EAE4D9100921AC9 /* cryptocloud 8.xcdatamodel */;
 			path = cryptocloud.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

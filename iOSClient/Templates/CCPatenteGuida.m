@@ -22,10 +22,15 @@
 //
 
 #import "CCPatenteGuida.h"
-
 #import "XLFormViewController.h"
 #import "XLForm.h"
 #import "AppDelegate.h"
+
+#ifdef CUSTOM_BUILD
+#import "CustomSwift.h"
+#else
+#import "Nextcloud-Swift.h"
+#endif
 
 @interface CCPatenteGuida()
 {
@@ -68,7 +73,7 @@
         
         // Titolo
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"titolo" rowType:XLFormRowDescriptorTypeText];
-        [row.cellConfig setObject:COLOR_CRYPTOCLOUD forKey:@"textField.textColor"];
+        [row.cellConfig setObject:[NCBrandColor sharedInstance].cryptocloud forKey:@"textField.textColor"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textField.font"];
         row.value = [field objectForKey:@"titolo"];
@@ -80,7 +85,7 @@
         
         // Nome Cognome
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"comecognome" rowType:XLFormRowDescriptorTypeText title:NSLocalizedString(@"_name_surname:_", nil)];
-        [row.cellConfig setObject:COLOR_TEXT_ANTHRACITE forKey:@"textField.textColor"];
+        [row.cellConfig setObject:[UIColor blackColor] forKey:@"textField.textColor"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textField.font"];
         row.value = [field objectForKey:@"comecognome"];
@@ -88,7 +93,7 @@
         
         // Numero
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"numero" rowType:XLFormRowDescriptorTypeText title:NSLocalizedString(@"_license_number:_", nil)];
-        [row.cellConfig setObject:COLOR_TEXT_ANTHRACITE forKey:@"textField.textColor"];
+        [row.cellConfig setObject:[UIColor blackColor] forKey:@"textField.textColor"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textField.font"];
         row.value = [field objectForKey:@"numero"];
@@ -96,7 +101,7 @@
 
         // Data di rilascio
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"datarilascio" rowType:XLFormRowDescriptorTypeText title:NSLocalizedString(@"_date_of_issue:_", nil)];
-        [row.cellConfig setObject:COLOR_TEXT_ANTHRACITE forKey:@"textField.textColor"];
+        [row.cellConfig setObject:[UIColor blackColor] forKey:@"textField.textColor"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textField.font"];
         row.value = [field objectForKey:@"datarilascio"];
@@ -104,7 +109,7 @@
         
         // Data di scadenza
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"datascadenza" rowType:XLFormRowDescriptorTypeText title:NSLocalizedString(@"_date_of_expiry:_", nil)];
-        [row.cellConfig setObject:COLOR_TEXT_ANTHRACITE forKey:@"textField.textColor"];
+        [row.cellConfig setObject:[UIColor blackColor] forKey:@"textField.textColor"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textField.font"];
         row.value = [field objectForKey:@"datascadenza"];
@@ -112,7 +117,7 @@
         
         // Tipi di veicolo
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"tipiveicolo" rowType:XLFormRowDescriptorTypeText title:NSLocalizedString(@"_vehicle_types:_", nil)];
-        [row.cellConfig setObject:COLOR_TEXT_ANTHRACITE forKey:@"textField.textColor"];
+        [row.cellConfig setObject:[UIColor blackColor] forKey:@"textField.textColor"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textField.font"];
         row.value = [field objectForKey:@"tipiveicolo"];
@@ -124,7 +129,7 @@
         // Note
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"note" rowType:XLFormRowDescriptorTypeTextView];
         row.value = [field objectForKey:@"note"];
-        [row.cellConfig setObject:COLOR_TEXT_ANTHRACITE forKey:@"textView.textColor"];
+        [row.cellConfig setObject:[UIColor blackColor] forKey:@"textView.textColor"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textView.font"];
         [section addFormRow:row];
     
@@ -144,7 +149,7 @@
     [templates setImageTitle:NSLocalizedString(@"_driving_license_", nil) conNavigationItem:self.navigationItem reachability:[app.reachability isReachable]];
         
     // Color
-    [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
+    [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
 }
 
 - (void)viewDidAppear:(BOOL)animated

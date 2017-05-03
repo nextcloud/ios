@@ -22,8 +22,13 @@
 //
 
 #import "CCShareOC.h"
-
 #import "AppDelegate.h"
+
+#ifdef CUSTOM_BUILD
+#import "CustomSwift.h"
+#else
+#import "Nextcloud-Swift.h"
+#endif
 
 @interface CCShareOC ()
 
@@ -51,7 +56,6 @@
     
     form = [XLFormDescriptor formDescriptor];
     form.rowNavigationOptions = XLFormRowNavigationOptionNone;
-    
     
     // Share Link
     
@@ -94,21 +98,18 @@
 
     // Sharee
     
-    if (app.hasServerShareeSupport) {
+    section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_share_title_", nil)];
+    [form addFormSection:section];
+    section.footerTitle = NSLocalizedString(@"_add_sharee_footer_", nil);
         
-        section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_share_title_", nil)];
-        [form addFormSection:section];
-        section.footerTitle = NSLocalizedString(@"_add_sharee_footer_", nil);
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"findUser" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_add_sharee_", nil)];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
+    row.action.formSelector = @selector(shareUserButton:);
+    [section addFormRow:row];
         
-        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"findUser" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_add_sharee_", nil)];
-        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-        [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
-        row.action.formSelector = @selector(shareUserButton:);
-        [section addFormRow:row];
-        
-        section = [XLFormSectionDescriptor formSectionWithTitle:@"" sectionOptions:XLFormSectionOptionCanDelete];
-        [form addFormSection:section];
-    }
+    section = [XLFormSectionDescriptor formSectionWithTitle:@"" sectionOptions:XLFormSectionOptionCanDelete];
+    [form addFormSection:section];
     
     self.form = form;
 }
@@ -117,26 +118,35 @@
 {
     [super viewDidLoad];
     
-    [self.view setTintColor:COLOR_BRAND];
-    self.view.backgroundColor = COLOR_NAVIGATIONBAR_SHARE;
+    self.view.backgroundColor = [NCBrandColor sharedInstance].tableBackground;
     
     [self.endButton setTitle:NSLocalizedString(@"_done_", nil) forState:UIControlStateNormal];
-    self.endButton.tintColor = COLOR_NAVIGATIONBAR_TEXT;
+    self.endButton.tintColor = [NCBrandColor sharedInstance].brand;
     
     [self reloadData];
     
-    if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, self.metadata.fileID]]) self.fileImageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, self.metadata.fileID]];
-    else self.fileImageView.image = [UIImage imageNamed:self.metadata.iconName];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, self.metadata.fileID]]) {
+        
+        self.fileImageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, self.metadata.fileID]];
+        
+    } else {
+        
+        if (self.metadata.directory)
+            self.fileImageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:self.metadata.iconName] color:[NCBrandColor sharedInstance].brand];
+        else
+            self.fileImageView.image = [UIImage imageNamed:self.metadata.iconName];
+
+    }
     
     self.labelTitle.text = self.metadata.fileNamePrint;
-    self.labelTitle.textColor = COLOR_NAVIGATIONBAR_TEXT;
+    self.labelTitle.textColor = [UIColor blackColor];
     
     self.tableView.tableHeaderView = ({UIView *line = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 0.1 / UIScreen.mainScreen.scale)];
         line.backgroundColor = self.tableView.separatorColor;
         line;
     });
     
-    self.tableView.backgroundColor = COLOR_TABLE_BACKGROUND;
+    self.tableView.backgroundColor = [NCBrandColor sharedInstance].tableBackground;
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -206,41 +216,38 @@
     }
     
     // User & Group
-    if (app.hasServerShareeSupport) {
-    
-        XLFormSectionDescriptor *section = [self.form formSectionAtIndex:4];
-        [section.formRows removeAllObjects];
-        [self.itemsShareWith removeAllObjects];
+    XLFormSectionDescriptor *section = [self.form formSectionAtIndex:4];
+    [section.formRows removeAllObjects];
+    [self.itemsShareWith removeAllObjects];
         
-        if ([self.itemsUserAndGroupLink count] > 0) {
+    if ([self.itemsUserAndGroupLink count] > 0) {
     
-            for (NSString *idRemoteShared in self.itemsUserAndGroupLink) {
+        for (NSString *idRemoteShared in self.itemsUserAndGroupLink) {
             
-                OCSharedDto *item = [app.sharesID objectForKey:idRemoteShared];
+            OCSharedDto *item = [app.sharesID objectForKey:idRemoteShared];
             
-                XLFormRowDescriptor *row = [XLFormRowDescriptor formRowDescriptorWithTag:idRemoteShared rowType:XLFormRowDescriptorTypeButton];
+            XLFormRowDescriptor *row = [XLFormRowDescriptor formRowDescriptorWithTag:idRemoteShared rowType:XLFormRowDescriptorTypeButton];
 
-                [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-                //[row.cellConfig setObject:@(UITableViewCellAccessoryDisclosureIndicator) forKey:@"accessoryType"];
-                [row.cellConfig setObject:COLOR_BRAND forKey:@"textLabel.textColor"];
-                row.action.formSelector = @selector(sharePermissionButton:);
+            [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+            //[row.cellConfig setObject:@(UITableViewCellAccessoryDisclosureIndicator) forKey:@"accessoryType"];
+            [row.cellConfig setObject:[NCBrandColor sharedInstance].brand forKey:@"textLabel.textColor"];
+            row.action.formSelector = @selector(sharePermissionButton:);
                 
-                if (item.shareType == shareTypeGroup) row.title = [item.shareWithDisplayName stringByAppendingString:NSLocalizedString(@"_user_is_group_", nil)];
-                else row.title = item.shareWithDisplayName;
+            if (item.shareType == shareTypeGroup) row.title = [item.shareWithDisplayName stringByAppendingString:NSLocalizedString(@"_user_is_group_", nil)];
+            else row.title = item.shareWithDisplayName;
                 
-                [section addFormRow:row];
+            [section addFormRow:row];
                 
-                // add users
-                [self.itemsShareWith addObject:item];
-            }
-            
-            section.footerTitle = NSLocalizedString(@"_user_sharee_footer_", nil);
-
-        } else {
-            
-            section.footerTitle = @"";
-
+            // add users
+            [self.itemsShareWith addObject:item];
         }
+            
+        section.footerTitle = NSLocalizedString(@"_user_sharee_footer_", nil);
+
+    } else {
+            
+        section.footerTitle = @"";
+
     }
     
     self.form.disabled = NO;

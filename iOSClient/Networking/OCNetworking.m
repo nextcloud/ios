@@ -40,7 +40,6 @@
     NSURLSessionUploadTask *_uploadTask;
     
     BOOL _isCryptoCloudMode;
-    BOOL _hasServerForbiddenCharactersSupport;
 }
 @end
 
@@ -119,11 +118,7 @@
 - (void)poolNetworking
 {
 #ifndef EXTENSION
-    _hasServerForbiddenCharactersSupport = app.hasServerForbiddenCharactersSupport;
-    
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
-#else
-    _hasServerForbiddenCharactersSupport = YES;
 #endif
         
     if([self respondsToSelector:NSSelectorFromString(_metadataNet.action)])
@@ -669,7 +664,7 @@
     [communication setCredentialsWithUser:_activeUser andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
-    [communication createFolder:nameFolderURL onCommunication:communication withForbiddenCharactersSupported:_hasServerForbiddenCharactersSupport successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+    [communication createFolder:nameFolderURL onCommunication:communication withForbiddenCharactersSupported:YES successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
         if ([self.delegate respondsToSelector:@selector(createFolderSuccess:)])
             [self.delegate createFolderSuccess:_metadataNet];
@@ -825,7 +820,7 @@
     [communication setCredentialsWithUser:_activeUser andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
-    [communication moveFileOrFolder:origineURL toDestiny:destinazioneURL onCommunication:communication withForbiddenCharactersSupported:_hasServerForbiddenCharactersSupport successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+    [communication moveFileOrFolder:origineURL toDestiny:destinazioneURL onCommunication:communication withForbiddenCharactersSupported:YES successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
         if ([_metadataNet.selector isEqualToString:selectorRename] && [self.delegate respondsToSelector:@selector(renameSuccess:)])
             [self.delegate renameSuccess:_metadataNet];
@@ -1527,7 +1522,7 @@
 
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark =====  Server =====
+#pragma mark ===== Server =====
 #pragma --------------------------------------------------------------------------------------------
 
 - (NSError *)checkServerSync:(NSString *)serverUrl
@@ -1561,47 +1556,9 @@
     return returnError;
 }
 
-- (void)getFeaturesSupportedByServer
-{
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    
-    [communication setCredentialsWithUser:_activeUser andPassword:_activePassword];
-    [communication setUserAgent:[CCUtility getUserAgent]];
-    
-    [communication getFeaturesSupportedByServer:[_activeUrl stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, BOOL hasShareSupport, BOOL hasShareeSupport, BOOL hasCookiesSupport, BOOL hasForbiddenCharactersSupport, BOOL hasCapabilitiesSupport, BOOL hasFedSharesOptionShareSupport, NSString *redirectedServer) {
-        
-        TableAccount *recordAccount = [CCCoreData getActiveAccount];
-        
-        if ([self.delegate respondsToSelector:@selector(getFeaturesSupportedByServerSuccess:hasForbiddenCharactersSupport:hasShareSupport:hasShareeSupport:)] && [recordAccount.account isEqualToString:_metadataNet.account])
-            [self.delegate getFeaturesSupportedByServerSuccess:hasCapabilitiesSupport hasForbiddenCharactersSupport:hasForbiddenCharactersSupport hasShareSupport:hasShareSupport hasShareeSupport:hasShareeSupport];
-
-        [self complete];
-        
-    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
-        
-        NSInteger errorCode = response.statusCode;
-        if (errorCode == 0)
-            errorCode = error.code;
-
-        // Error
-        if ([self.delegate respondsToSelector:@selector(getInfoServerFailure:message:errorCode:)]) {
-            
-            if (errorCode == 503)
-                [self.delegate getInfoServerFailure:_metadataNet message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
-            else
-                [self.delegate getInfoServerFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
-        }
-        
-        // Request trusted certificated
-        if ([error code] == NSURLErrorServerCertificateUntrusted)
-            [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
-        
-        // Activity
-        [CCCoreData addActivityClient:_activeUrl fileID:@"" action:k_activityDebugActionFeatures selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh account:_metadataNet.account activeUrl:_activeUrl];
-
-        [self complete];
-    }];
-}
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Capabilities =====
+#pragma --------------------------------------------------------------------------------------------
 
 - (void)getCapabilitiesOfServer
 {
@@ -1626,12 +1583,12 @@
             errorCode = error.code;
 
         // Error
-        if ([self.delegate respondsToSelector:@selector(getInfoServerFailure:message:errorCode:)]) {
+        if ([self.delegate respondsToSelector:@selector(getCapabilitiesOfServerFailure:message:errorCode:)]) {
 
             if (errorCode == 503)
-                [self.delegate getInfoServerFailure:_metadataNet message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
+                [self.delegate getCapabilitiesOfServerFailure:_metadataNet message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
             else
-                [self.delegate getInfoServerFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+                [self.delegate getCapabilitiesOfServerFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
         }
         
         // Request trusted certificated
@@ -1656,12 +1613,13 @@
 - (void)URLSession:(NSURLSession *)session didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential *credential))completionHandler
 {
     // The pinnning check
-    
-    if ([[CCCertificate sharedManager] checkTrustedChallenge:challenge]) {
-        completionHandler(NSURLSessionAuthChallengeUseCredential, [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust]);
-    } else {
-        completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, nil);
-    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if ([[CCCertificate sharedManager] checkTrustedChallenge:challenge]) {
+            completionHandler(NSURLSessionAuthChallengeUseCredential, [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust]);
+        } else {
+            completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, nil);
+        }
+    });
 }
 
 @end

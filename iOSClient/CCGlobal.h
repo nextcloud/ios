@@ -23,14 +23,7 @@
 
 #import <UIKit/UIKit.h>
 #import "CCStandardImages.h"
-
-#ifdef CUSTOM_BUILD
-    #import "CustomImages.h"
-    #import "CustomConstant.h"
-#else
-    #import "CCNextcloudImages.h"
-    #import "CCNextcloudConstant.h"
-#endif
+#import "NCBrandConstant.h"
 
 extern NSString *const appApplicationSupport;
 extern NSString *const appDatabase;
@@ -63,6 +56,8 @@ extern NSString *const urlBaseUploadDB;
 #define k_MaxDimensionUpload                            524288000       // 500 MB
 
 #define k_dayForceReadFolder                            3
+
+#define k_daysOfActivity                                7
 
 #define k_returnCreateFolderPlain                       0
 #define k_returnCreateFotoVideoPlain                    1
@@ -204,7 +199,6 @@ extern NSString *const urlBaseUploadDB;
 #define actionDownloadThumbnail                         @"downloadThumbnail"
 #define actionGetActivityServer                         @"getActivityServer"
 #define actionGetCapabilities                           @"getCapabilitiesOfServer"
-#define actionGetFeaturesSuppServer                     @"getFeaturesSupportedByServer"
 #define actionGetUserAndGroup                           @"getUserAndGroup"
 #define actionGetUserProfile                            @"getUserProfile"
 #define actionGetNotificationServer                     @"getNotificationServer"
@@ -288,9 +282,3 @@ extern NSString *const urlBaseUploadDB;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-@interface CCAspect : NSObject
-
-+ (void)aspectNavigationControllerBar:(UINavigationBar *)nav encrypted:(BOOL)encrypted online:(BOOL)online hidden:(BOOL)hidden;
-+ (void)aspectTabBar:(UITabBar *)tab hidden:(BOOL)hidden;
-
-@end

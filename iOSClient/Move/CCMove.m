@@ -24,7 +24,23 @@
 #import "CCMove.h"
 
 #ifndef EXTENSION
-#import "AppDelegate.h"
+
+    #import "AppDelegate.h"
+
+    #ifdef CUSTOM_BUILD
+    #import "CustomSwift.h"
+    #else
+    #import "Nextcloud-Swift.h"
+    #endif
+
+#else
+
+    #ifdef CUSTOM_BUILD
+    #import "CustomSwiftShare.h"
+    #else
+    #import "Share-Swift.h"
+    #endif
+
 #endif
 
 @interface CCMove ()
@@ -82,7 +98,8 @@
 
     // TableView : at the end of rows nothing
     self.tableView.tableFooterView = [UIView new];
-    self.tableView.separatorColor = COLOR_SEPARATOR_TABLE;
+    
+    self.tableView.separatorColor =  NCBrandColor.sharedInstance.seperator;
 
     [self.cancel setTitle:NSLocalizedString(@"_cancel_", nil)];
     [self.create setTitle:NSLocalizedString(@"_create_folder_", nil)];
@@ -90,7 +107,7 @@
     if (![_serverUrl length]) {
         
         _serverUrl = [CCUtility getHomeServerUrlActiveUrl:activeUrl];
-        UIImageView *image = [[UIImageView alloc] initWithImage:[UIImage imageNamed:image_brandNavigationController]];
+        UIImageView *image = [[UIImageView alloc] initWithImage:[UIImage imageNamed: NCBrandImages.sharedInstance.navigationLogo]];
         [self.navigationController.navigationBar.topItem setTitleView:image];
         self.title = @"Home";
         
@@ -99,7 +116,7 @@
         UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(0,0, self.navigationItem.titleView.frame.size.width, 40)];
         label.text = self.passMetadata.fileNamePrint;
         
-        if (self.passMetadata.cryptated) label.textColor = COLOR_CRYPTOCLOUD;
+        if (self.passMetadata.cryptated) label.textColor = NCBrandColor.sharedInstance.cryptocloud;
         else label.textColor = self.tintColorTitle;
         
         label.backgroundColor =[UIColor clearColor];
@@ -108,11 +125,11 @@
     }
     
     // Toolbar Color
-    self.navigationController.navigationBar.barTintColor = COLOR_NAVIGATIONBAR;
-    self.navigationController.navigationBar.tintColor = COLOR_NAVIGATIONBAR_TEXT;
+    self.navigationController.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand;
+    self.navigationController.navigationBar.tintColor = NCBrandColor.sharedInstance.navigationBarText;
     
-    self.navigationController.toolbar.barTintColor = COLOR_TABBAR;
-    self.navigationController.toolbar.tintColor = COLOR_TABBAR_TEXT;
+    self.navigationController.toolbar.barTintColor = NCBrandColor.sharedInstance.tabBar;
+    self.navigationController.toolbar.tintColor = NCBrandColor.sharedInstance.brand;
     
     // read folder
     [self readFolder];
@@ -125,7 +142,7 @@
     if (buttonIndex == 1) {
         NSString *nome = [alertView textFieldAtIndex:0].text;
         if ([nome length]) {
-            nome = [NSString stringWithFormat:@"%@/%@", _serverUrl, [CCUtility removeForbiddenCharacters:nome hasServerForbiddenCharactersSupport:YES]];
+            nome = [NSString stringWithFormat:@"%@/%@", _serverUrl, [CCUtility removeForbiddenCharactersServer:nome]];
         }
     }
 }
@@ -366,7 +383,7 @@
 {
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:activeAccount];
     
-    fileNameFolder = [CCUtility removeForbiddenCharacters:fileNameFolder hasServerForbiddenCharactersSupport:YES];
+    fileNameFolder = [CCUtility removeForbiddenCharactersServer:fileNameFolder];
     if (![fileNameFolder length]) return;
     
     metadataNet.action = actionCreateFolder;
@@ -423,13 +440,13 @@
     
     // colors
     if (metadata.cryptated) {
-        cell.textLabel.textColor = COLOR_CRYPTOCLOUD;
+        cell.textLabel.textColor = NCBrandColor.sharedInstance.cryptocloud;
     } else {
-        cell.textLabel.textColor = COLOR_TEXT_ANTHRACITE;
+        cell.textLabel.textColor = [UIColor blackColor];
     }
     
     cell.detailTextLabel.text = @"";
-    cell.imageView.image = [UIImage imageNamed:metadata.iconName];
+    cell.imageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:metadata.iconName] color:[NCBrandColor sharedInstance].brand];
     cell.textLabel.text = metadata.fileNamePrint;
     
     return cell;
@@ -486,7 +503,7 @@
             
             viewController.title = NSLocalizedString(@"_folder_blocked_", nil);
             viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
-            viewController.navigationItem.leftBarButtonItem.tintColor = COLOR_CRYPTOCLOUD;
+            viewController.navigationItem.leftBarButtonItem.tintColor = NCBrandColor.sharedInstance.cryptocloud;
             
             UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:viewController];
             [self presentViewController:navController animated:YES completion:nil];

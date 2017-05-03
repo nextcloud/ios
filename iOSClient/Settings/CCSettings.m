@@ -30,6 +30,12 @@
 #import "CCManageCryptoCloud.h"
 #import "CCManageAccount.h"
 
+#ifdef CUSTOM_BUILD
+#import "CustomSwift.h"
+#else
+#import "Nextcloud-Swift.h"
+#endif
+
 #define alertViewEsci 1
 #define alertViewAzzeraCache 2
 
@@ -42,6 +48,8 @@
     if (self) {
         
         [self initializeForm];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
         
         app.activeSettings = self;
     }
@@ -166,13 +174,19 @@
 {
     [super viewWillAppear:animated];
     
-    self.tableView.backgroundColor = COLOR_TABLE_BACKGROUND;
+    self.tableView.backgroundColor = [NCBrandColor sharedInstance].tableBackground;
     
     // Color
-    [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
-    [CCAspect aspectTabBar:self.tabBarController.tabBar hidden:NO];
+    [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
+    [app aspectTabBar:self.tabBarController.tabBar hidden:NO];
     
     [self reloadForm];
+}
+
+- (void)changeTheming
+{
+    if (self.isViewLoaded && self.view.window)
+        [app changeTheming:self];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -280,7 +294,7 @@
     viewController.title = NSLocalizedString(@"_check_key_aes_256_", nil);
     
     viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
-    viewController.navigationItem.leftBarButtonItem.tintColor = COLOR_CRYPTOCLOUD;
+    viewController.navigationItem.leftBarButtonItem.tintColor = [NCBrandColor sharedInstance].cryptocloud;
     
     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
     [self presentViewController:navigationController animated:YES completion:nil];
@@ -311,7 +325,7 @@
     viewController.touchIDManager = touchIDManager;
     
     viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
-    viewController.navigationItem.leftBarButtonItem.tintColor = COLOR_CRYPTOCLOUD;
+    viewController.navigationItem.leftBarButtonItem.tintColor = [NCBrandColor sharedInstance].cryptocloud;
     
     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
     [self presentViewController:navigationController animated:YES completion:nil];
@@ -346,7 +360,7 @@
         viewController.title = NSLocalizedString(@"_passcode_activate_", nil);
         
         viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
-        viewController.navigationItem.leftBarButtonItem.tintColor = COLOR_CRYPTOCLOUD;
+        viewController.navigationItem.leftBarButtonItem.tintColor = [NCBrandColor sharedInstance].cryptocloud;
                
         UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
         [self presentViewController:navigationController animated:YES completion:nil];
@@ -378,7 +392,7 @@
         viewController.title = NSLocalizedString(@"_disabling_passcode_", nil);
             
         viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
-        viewController.navigationItem.leftBarButtonItem.tintColor = COLOR_CRYPTOCLOUD;
+        viewController.navigationItem.leftBarButtonItem.tintColor = [NCBrandColor sharedInstance].cryptocloud;
         
         UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
         [self presentViewController:navigationController animated:YES completion:nil];
@@ -424,9 +438,9 @@
         break;
         case 5: {
             
-            TableAccount *tableAccount = [CCCoreData getActiveAccount];
+            TableCapabilities *record = [CCCoreData getCapabilitesForAccount:app.activeAccount];
             
-            NSString *versionServer = [NSString stringWithFormat:@"%lu.%lu.%lu",(unsigned long)[tableAccount.versionMajor integerValue], (unsigned long)[tableAccount.versionMinor integerValue], (unsigned long)[tableAccount.versionMicro integerValue]];
+            NSString *versionServer = record.versionString;
             
             NSString *versionApp = [NSString stringWithFormat:@"%@.%@", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"], [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
             
@@ -494,7 +508,7 @@
 
 - (void)sendMailEncryptPass
 {
-    [CCUtility sendMailEncryptPass:[CCUtility getEmail] validateEmail:NO form:self];
+    [CCUtility sendMailEncryptPass:[CCUtility getEmail] validateEmail:NO form:self nameImage:[NCBrandImages sharedInstance].BackgroundDetail];
 }
 
 #pragma --------------------------------------------------------------------------------------------

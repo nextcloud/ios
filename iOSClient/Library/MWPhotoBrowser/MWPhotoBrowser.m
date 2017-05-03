@@ -12,6 +12,12 @@
 #import "MWPhotoBrowserPrivate.h"
 #import "UIImage+MWPhotoBrowser.h"
 
+#ifdef CUSTOM_BUILD
+#import "CustomSwift.h"
+#else
+#import "Nextcloud-Swift.h"
+#endif
+
 #define PADDING                  10
 
 #pragma clang diagnostic ignored "-Wundeclared-selector"
@@ -162,8 +168,8 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
 	
     // Toolbar
     _toolbar = [[UIToolbar alloc] initWithFrame:[self frameForToolbarAtOrientation:[[UIApplication sharedApplication] statusBarOrientation]]];
-    _toolbar.tintColor = COLOR_TABBAR_TEXT; //TWS
-    _toolbar.barTintColor = COLOR_TABBAR;
+    _toolbar.tintColor = [NCBrandColor sharedInstance].brand; //TWS
+    _toolbar.barTintColor = [NCBrandColor sharedInstance].tabBar;
     [_toolbar setBackgroundImage:nil forToolbarPosition:UIToolbarPositionAny barMetrics:UIBarMetricsDefault];
     [_toolbar setBackgroundImage:nil forToolbarPosition:UIToolbarPositionAny barMetrics:UIBarMetricsCompact];
     _toolbar.barStyle = UIBarStyleDefault; //TWS
@@ -231,9 +237,9 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
     }
     
     // color
-    self.navigationController.navigationBar.barTintColor = COLOR_NAVIGATIONBAR;
-    self.navigationController.navigationBar.tintColor = COLOR_NAVIGATIONBAR_TEXT;
-    [self.navigationController.navigationBar setTitleTextAttributes:@{NSForegroundColorAttributeName : COLOR_NAVIGATIONBAR_TEXT}];
+    self.navigationController.navigationBar.barTintColor = [NCBrandColor sharedInstance].brand;
+    self.navigationController.navigationBar.tintColor = [NCBrandColor sharedInstance].navigationBarText;
+    [self.navigationController.navigationBar setTitleTextAttributes:@{NSForegroundColorAttributeName : [NCBrandColor sharedInstance].navigationBarText}];
     
     // Toolbar items
     BOOL hasItems = NO;

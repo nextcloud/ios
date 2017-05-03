@@ -128,12 +128,20 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         CCNetworking.shared().settingDelegate(self)
         hud = CCHud.init(view: self.navigationController?.view)
         
-        // COLOR
-        self.navigationController?.navigationBar.barTintColor = Constant.GlobalConstants.k_Color_NavigationBar
-        self.navigationController?.navigationBar.tintColor = Constant.GlobalConstants.k_Color_NavigationBar_Text
-        self.navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: Constant.GlobalConstants.k_Color_NavigationBar_Text]
+        // Theming
+        let tableCapabilities = CCCoreData.getCapabilitesForAccount(activeAccount)
+        if (tableCapabilities != nil && CCGraphics.isOptionUseThemingColor() == true) {
+            if ((tableCapabilities?.themingColor?.characters.count)! > 0) {
+                NCBrandColor.sharedInstance.brand = CCGraphics.color(fromHexString: tableCapabilities?.themingColor)
+            }
+        }
         
-        self.tableView.separatorColor = Constant.GlobalConstants.k_Color_Seperator
+        // COLOR
+        self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand
+        self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.navigationBarText
+        self.navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: NCBrandColor.sharedInstance.navigationBarText]
+        
+        self.tableView.separatorColor = NCBrandColor.sharedInstance.seperator
         self.tableView.tableFooterView = UIView()
         
         // Get Crypto Cloud Mode
@@ -156,7 +164,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
             
             // Color Button
             if parameterEncrypted == true {
-                encryptedButton.tintColor = Constant.GlobalConstants.k_Color_Cryptocloud
+                encryptedButton.tintColor = NCBrandColor.sharedInstance.cryptocloud
             } else {
                 encryptedButton.tintColor = self.view.tintColor
                 
@@ -494,7 +502,7 @@ extension DocumentPickerViewController {
         parameterEncrypted = !parameterEncrypted!
         
         if parameterEncrypted == true {
-            encryptedButton.tintColor = Constant.GlobalConstants.k_Color_Cryptocloud
+            encryptedButton.tintColor = NCBrandColor.sharedInstance.cryptocloud
         } else {
             encryptedButton.tintColor = self.view.tintColor
         }
@@ -621,7 +629,7 @@ extension DocumentPickerViewController {
         viewController.touchIDManager = touchIDManager
         viewController.title = title
         viewController.navigationItem.leftBarButtonItem = UIBarButtonItem.init(barButtonSystemItem: UIBarButtonSystemItem.cancel, target: self, action: #selector(passcodeViewCloseButtonPressed(sender:)))
-        viewController.navigationItem.leftBarButtonItem?.tintColor = Constant.GlobalConstants.k_Color_Cryptocloud
+        viewController.navigationItem.leftBarButtonItem?.tintColor = NCBrandColor.sharedInstance.cryptocloud
         
         let navController = UINavigationController.init(rootViewController: viewController)
         self.present(navController, animated: true, completion: nil)
@@ -728,12 +736,18 @@ extension DocumentPickerViewController: UITableViewDataSource {
             
         } else {
             
-            cell.fileImageView.image = UIImage(named: metadata.iconName!)
-            
-            if metadata.thumbnailExists && metadata.directory == false {
+            if metadata.directory {
                 
-                downloadThumbnail(metadata)
-                thumbnailInLoading[metadata.fileID] = indexPath
+                cell.fileImageView.image = CCGraphics.changeThemingColorImage(UIImage(named: metadata.iconName!), color: NCBrandColor.sharedInstance.brand)
+                
+            } else {
+                
+                cell.fileImageView.image = UIImage(named: metadata.iconName!)
+                if metadata.thumbnailExists {
+                    
+                    downloadThumbnail(metadata)
+                    thumbnailInLoading[metadata.fileID] = indexPath
+                }
             }
         }
         

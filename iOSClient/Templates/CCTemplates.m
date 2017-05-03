@@ -23,6 +23,12 @@
 
 #import "CCTemplates.h"
 
+#ifdef CUSTOM_BUILD
+#import "CustomSwift.h"
+#else
+#import "Nextcloud-Swift.h"
+#endif
+
 @implementation CCTemplates
 
 #pragma --------------------------------------------------------------------------------------------
@@ -33,9 +39,9 @@
 {
     UILabel* label=[[UILabel alloc] initWithFrame:CGRectMake(0,0, navItem.titleView.frame.size.width, 40)];
     label.text=titolo;
-    if (!reachability) label.textColor = COLOR_TEXT_NO_CONNECTION;
-    else label.textColor = COLOR_NAVIGATIONBAR_TEXT;
-    label.backgroundColor = COLOR_NAVIGATIONBAR;
+    if (!reachability) label.textColor = [NCBrandColor sharedInstance].connectionNo;
+    else label.textColor = [NCBrandColor sharedInstance].navigationBarText;
+    label.backgroundColor = [NCBrandColor sharedInstance].brand;
     label.textAlignment = NSTextAlignmentCenter;
     navItem.titleView=label;
 }

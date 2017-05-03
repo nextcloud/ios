@@ -21,6 +21,12 @@
         self.corePollInterval = 0;
         self.filesSharingExpireDateDaysNumber = 0;
         
+        self.themingBackground = @"";
+        self.themingColor = @"";
+        self.themingLogo = @"";
+        self.themingName = @"";
+        self.themingSlogan = @"";
+        self.themingUrl = @"";
     }
     return self;
 }

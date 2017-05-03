@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12118" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="4IE-mo-rkp">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12120" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="4IE-mo-rkp">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12086"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12088"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -74,21 +74,21 @@
                                 </constraints>
                             </imageView>
                             <imageView userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="disclosureIndicator" translatesAutoresizingMaskIntoConstraints="NO" id="Hxn-XA-fmj">
-                                <rect key="frame" x="346" y="37" width="24" height="26"/>
+                                <rect key="frame" x="346" y="91" width="24" height="26"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="24" id="t8K-rR-nO7"/>
                                     <constraint firstAttribute="height" constant="26" id="wKO-XG-ygn"/>
                                 </constraints>
                             </imageView>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" rowHeight="50" sectionHeaderHeight="1" sectionFooterHeight="1" translatesAutoresizingMaskIntoConstraints="NO" id="Xym-IM-aqh">
-                                <rect key="frame" x="0.0" y="100" width="375" height="567"/>
+                                <rect key="frame" x="0.0" y="164" width="375" height="503"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="Cell" rowHeight="50" id="zQQ-52-W9I" customClass="CCCellMore" customModule="Nextcloud" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="55.5" width="375" height="50"/>
+                                        <rect key="frame" x="0.0" y="56" width="375" height="50"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="zQQ-52-W9I" id="Zho-os-HYj">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="49.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="49"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="RZt-EQ-32U">
@@ -125,7 +125,7 @@
                                 </connections>
                             </tableView>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="avatar" translatesAutoresizingMaskIntoConstraints="NO" id="DWx-1W-vs0" customClass="SwiftyAvatar" customModule="Nextcloud" customModuleProvider="target">
-                                <rect key="frame" x="15" y="25" width="50" height="50"/>
+                                <rect key="frame" x="15" y="79" width="50" height="50"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="50" id="QAM-AU-L76"/>
                                     <constraint firstAttribute="height" constant="50" id="Quc-kC-yu5"/>
@@ -140,8 +140,8 @@
                                 </userDefinedRuntimeAttributes>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="username" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BiW-NW-hVZ">
-                                <rect key="frame" x="78" y="40" width="72" height="20"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                <rect key="frame" x="78" y="94" width="77.5" height="20"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <nil key="highlightedColor"/>
                             </label>
@@ -182,31 +182,31 @@
                         <constraints>
                             <constraint firstAttribute="bottom" secondItem="Xym-IM-aqh" secondAttribute="bottom" id="0E5-2f-72F"/>
                             <constraint firstItem="cxb-Vw-8zb" firstAttribute="top" secondItem="XtC-Je-LUc" secondAttribute="topMargin" id="2z9-1h-2dU"/>
-                            <constraint firstItem="DWx-1W-vs0" firstAttribute="centerY" secondItem="cxb-Vw-8zb" secondAttribute="centerY" id="9Ti-IK-MeQ"/>
+                            <constraint firstItem="Xym-IM-aqh" firstAttribute="top" secondItem="myb-PI-7vm" secondAttribute="bottom" constant="100" id="3Bb-ws-1xn"/>
                             <constraint firstAttribute="bottom" secondItem="NxR-5x-edP" secondAttribute="bottom" id="9bH-mG-bse"/>
                             <constraint firstAttribute="trailing" secondItem="cxb-Vw-8zb" secondAttribute="trailing" id="AjJ-cB-0xu"/>
                             <constraint firstItem="cxb-Vw-8zb" firstAttribute="left" secondItem="DWx-1W-vs0" secondAttribute="left" constant="-15" id="CzV-Na-OWE"/>
                             <constraint firstItem="Xym-IM-aqh" firstAttribute="leading" secondItem="cxb-Vw-8zb" secondAttribute="leading" id="DKF-Y7-cmv"/>
                             <constraint firstAttribute="trailing" secondItem="NxR-5x-edP" secondAttribute="trailing" id="LJB-St-B4Y"/>
+                            <constraint firstItem="BiW-NW-hVZ" firstAttribute="centerY" secondItem="DWx-1W-vs0" secondAttribute="centerY" id="NA6-sD-Ouq"/>
                             <constraint firstAttribute="trailingMargin" secondItem="Hxn-XA-fmj" secondAttribute="trailing" constant="-11" id="NwY-of-hgF"/>
                             <constraint firstItem="Xym-IM-aqh" firstAttribute="trailing" secondItem="cxb-Vw-8zb" secondAttribute="trailing" id="SNN-Jv-Ezx"/>
+                            <constraint firstItem="Xym-IM-aqh" firstAttribute="top" secondItem="DWx-1W-vs0" secondAttribute="bottom" constant="35" id="Wus-Hr-tKk"/>
                             <constraint firstItem="NxR-5x-edP" firstAttribute="leading" secondItem="XtC-Je-LUc" secondAttribute="leading" id="Xjg-WL-zva"/>
-                            <constraint firstItem="Xym-IM-aqh" firstAttribute="top" secondItem="cxb-Vw-8zb" secondAttribute="bottom" id="gtG-qs-qFg"/>
+                            <constraint firstItem="Hxn-XA-fmj" firstAttribute="centerY" secondItem="DWx-1W-vs0" secondAttribute="centerY" id="m1i-IF-Acx"/>
                             <constraint firstItem="cxb-Vw-8zb" firstAttribute="leading" secondItem="XtC-Je-LUc" secondAttribute="leading" id="qyg-dI-shE"/>
                             <constraint firstItem="BiW-NW-hVZ" firstAttribute="leading" secondItem="DWx-1W-vs0" secondAttribute="trailing" constant="13" id="uDv-hU-dPQ"/>
-                            <constraint firstItem="Hxn-XA-fmj" firstAttribute="top" secondItem="cxb-Vw-8zb" secondAttribute="bottom" constant="-63" id="uma-04-4i6"/>
-                            <constraint firstItem="BiW-NW-hVZ" firstAttribute="centerY" secondItem="cxb-Vw-8zb" secondAttribute="centerY" id="xgp-S6-l5Z"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="170-MG-QpZ"/>
                     <connections>
-                        <outlet property="imageAvatar" destination="DWx-1W-vs0" id="WMr-Kl-RUr"/>
-                        <outlet property="imageLogo" destination="cxb-Vw-8zb" id="U9H-30-zBN"/>
                         <outlet property="labelQuota" destination="WdB-hd-mrv" id="Ozy-WV-w5O"/>
                         <outlet property="labelQuotaExternalSite" destination="C75-NQ-7jy" id="lqR-zC-xRX"/>
                         <outlet property="labelUsername" destination="BiW-NW-hVZ" id="0nF-vI-MBZ"/>
                         <outlet property="progressQuota" destination="HgC-Ub-Dtb" id="mpA-O3-SpS"/>
                         <outlet property="tableView" destination="Xym-IM-aqh" id="Esm-wN-pr1"/>
+                        <outlet property="themingAvatar" destination="DWx-1W-vs0" id="Krr-7g-A4s"/>
+                        <outlet property="themingBackground" destination="cxb-Vw-8zb" id="mRn-Rs-tfr"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="D6O-WR-IEL" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -443,7 +443,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" preservesSuperviewLayoutMargins="YES" image="nextcloud_lite" translatesAutoresizingMaskIntoConstraints="NO" id="zlU-MP-ZVs">
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" preservesSuperviewLayoutMargins="YES" image="backgroundDetail" translatesAutoresizingMaskIntoConstraints="NO" id="zlU-MP-ZVs">
                                 <rect key="frame" x="76" y="255" width="223" height="157"/>
                             </imageView>
                         </subviews>
@@ -831,9 +831,9 @@
         <image name="MoreBackground" width="225" height="150"/>
         <image name="Plus" width="40" height="40"/>
         <image name="avatar" width="25" height="25"/>
+        <image name="backgroundDetail" width="223" height="157"/>
         <image name="disclosureIndicator" width="13" height="14"/>
         <image name="fileNextcloud" width="25" height="25"/>
-        <image name="nextcloud_lite" width="223" height="157"/>
         <image name="tabBarFavorite" width="25" height="25"/>
         <image name="tabBarMore" width="25" height="25"/>
         <image name="tabBarPhotos" width="25" height="21"/>

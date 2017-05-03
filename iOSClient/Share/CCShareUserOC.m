@@ -22,8 +22,13 @@
 //
 
 #import "CCShareUserOC.h"
-
 #import "AppDelegate.h"
+
+#ifdef CUSTOM_BUILD
+#import "CustomSwift.h"
+#else
+#import "Nextcloud-Swift.h"
+#endif
 
 @interface CCShareUserOC ()
 
@@ -96,13 +101,12 @@
     
     self.selectedItems = [[NSMutableArray alloc] init];
     
-    [self.view setTintColor:COLOR_BRAND];
-    self.view.backgroundColor = COLOR_NAVIGATIONBAR_SHARE;
+    self.view.backgroundColor = [NCBrandColor sharedInstance].tableBackground;
     
     [self.endButton setTitle:NSLocalizedString(@"_done_", nil) forState:UIControlStateNormal];
-    self.endButton.tintColor = COLOR_NAVIGATIONBAR_TEXT;
+    self.endButton.tintColor = [NCBrandColor sharedInstance].brand;
     
-    self.tableView.backgroundColor = COLOR_TABLE_BACKGROUND;
+    self.tableView.backgroundColor = [NCBrandColor sharedInstance].tableBackground;
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -217,7 +221,7 @@
         
         XLFormRowDescriptor *row = [XLFormRowDescriptor formRowDescriptorWithTag:[@(num) stringValue] rowType:XLFormRowDescriptorTypeBooleanCheck title:title];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-        [row.cellConfig setObject:COLOR_BRAND forKey:@"self.tintColor"];
+        [row.cellConfig setObject:[NCBrandColor sharedInstance].brand forKey:@"self.tintColor"];
         
         [section addFormRow:row];
     }

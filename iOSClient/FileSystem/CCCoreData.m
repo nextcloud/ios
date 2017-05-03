@@ -310,20 +310,6 @@
     else return NO;
 }
 
-+ (NSInteger)getServerVersionMajorActiveAccount:(NSString *)activeAccount
-{
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@)", activeAccount];
-    TableAccount *record = [TableAccount MR_findFirstWithPredicate:predicate];
-
-    if (record) {
-        
-        NSInteger versionMajor = [record.versionMajor integerValue];
-        return versionMajor;
-
-    } else
-        return 0;
-}
-
 + (void)setCameraUpload:(BOOL)state activeAccount:(NSString *)activeAccount
 {
     [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
@@ -547,22 +533,6 @@
     }];
 }
 
-+ (void)setServerVersionActiveAccount:(NSString *)activeAccount versionMajor:(NSInteger)versionMajor versionMinor:(NSInteger)versionMinor versionMicro:(NSInteger)versionMicro
-{
-    [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
-        
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@)", activeAccount];
-        TableAccount *record = [TableAccount MR_findFirstWithPredicate:predicate inContext:localContext];
-
-        if (record) {
-            
-            record.versionMajor = [NSNumber numberWithInteger:versionMajor];
-            record.versionMinor = [NSNumber numberWithInteger:versionMinor];
-            record.versionMicro = [NSNumber numberWithInteger:versionMicro];
-        }
-    }];
-}
-
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Certificates =====
 #pragma --------------------------------------------------------------------------------------------
@@ -588,8 +558,10 @@
     
     for (TableCertificates *record in records) {
         
-        NSString *certificatePath = [NSString stringWithFormat:@"%@%@", localCertificatesFolder, record.certificateLocation];
-        [output addObject:certificatePath];
+        if (record.certificateLocation && record.certificateLocation.length > 0) {
+            NSString *certificatePath = [NSString stringWithFormat:@"%@%@", localCertificatesFolder, record.certificateLocation];
+            [output addObject:certificatePath];
+        }
     }
     
     return output;
@@ -1910,25 +1882,26 @@
 
 + (void)addActivityServer:(OCActivity *)activity account:(NSString *)account
 {
-    [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
+    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
+    
+    if (activity.idActivity != 0)
+        [TableActivity MR_deleteAllMatchingPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (idActivity == %d)", account, activity.idActivity] inContext:context];
         
-        if (activity.idActivity != 0)
-            [TableActivity MR_deleteAllMatchingPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (idActivity == %d)", account, activity.idActivity] inContext:localContext];
-        
-        TableActivity *record = [TableActivity MR_createEntityInContext:localContext];
+    TableActivity *record = [TableActivity MR_createEntityInContext:context];
 
-        record.account = account;
-        record.action = @"Activity";
-        record.date = activity.date;
-        record.file = activity.file;
-        record.fileID = @"";
-        record.idActivity = [NSNumber numberWithInteger:activity.idActivity];
-        record.link = activity.link;
-        record.note = activity.subject;
-        record.selector = @"";
-        record.type = k_activityTypeInfo;
-        record.verbose = [NSNumber numberWithInteger:k_activityVerboseDefault];
-    }];
+    record.account = account;
+    record.action = @"Activity";
+    record.date = activity.date;
+    record.file = activity.file;
+    record.fileID = @"";
+    record.idActivity = [NSNumber numberWithInteger:activity.idActivity];
+    record.link = activity.link;
+    record.note = activity.subject;
+    record.selector = @"";
+    record.type = k_activityTypeInfo;
+    record.verbose = [NSNumber numberWithInteger:k_activityVerboseDefault];
+    
+    [context MR_saveToPersistentStoreAndWait];
 }
 
 + (void)addActivityClient:(NSString *)file fileID:(NSString *)fileID action:(NSString *)action selector:(NSString *)selector note:(NSString *)note type:(NSString *)type verbose:(NSInteger)verbose account:(NSString *)account activeUrl:(NSString *)activeUrl
@@ -1936,24 +1909,25 @@
     note = [note stringByReplacingOccurrencesOfString:[activeUrl stringByAppendingString:webDAV] withString:@""];
     note = [note stringByReplacingOccurrencesOfString:[k_domain_session_queue stringByAppendingString:@"."] withString:@""];
 
-    [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
+    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
+    
+    TableActivity *record = [TableActivity MR_createEntityInContext:context];
         
-        TableActivity *record = [TableActivity MR_createEntityInContext:localContext];
+    if (!account) record.account = @"";
+    else record.account = account;
         
-        if (!account) record.account = @"";
-        else record.account = account;
-        
-        record.action = action;
-        record.date = [NSDate date];
-        record.file = file;
-        record.fileID = fileID;
-        record.idActivity = 0;
-        record.link = @"";
-        record.note = note;
-        record.selector = selector;
-        record.type = type;
-        record.verbose = [NSNumber numberWithInteger:verbose];
-   }];
+    record.action = action;
+    record.date = [NSDate date];
+    record.file = file;
+    record.fileID = fileID;
+    record.idActivity = 0;
+    record.link = @"";
+    record.note = note;
+    record.selector = selector;
+    record.type = type;
+    record.verbose = [NSNumber numberWithInteger:verbose];
+   
+    [context MR_saveToPersistentStoreAndWait];
 }
 
 + (NSArray *)getAllTableActivityWithPredicate:(NSPredicate *)predicate
@@ -2010,6 +1984,58 @@
     NSSortDescriptor *descriptor = [[NSSortDescriptor alloc] initWithKey:@"idExternalSite" ascending:YES selector:nil];
     
     return [records sortedArrayUsingDescriptors:[NSArray arrayWithObjects:descriptor, nil]];
+}
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Capabilities =====
+#pragma --------------------------------------------------------------------------------------------
+
++ (void)setCapabilities:(OCCapabilities *)capabilities account:(NSString *)account
+{
+    [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
+        
+        [TableCapabilities MR_deleteAllMatchingPredicate:[NSPredicate predicateWithFormat:@"(account == %@)", account] inContext:localContext];
+        
+        TableCapabilities *record = [TableCapabilities MR_createEntityInContext:localContext];
+        
+        record.account = account;
+        
+        record.themingBackground = capabilities.themingBackground;
+        record.themingColor = capabilities.themingColor;
+        record.themingLogo = capabilities.themingLogo;
+        record.themingName = capabilities.themingName;
+        record.themingSlogan = capabilities.themingSlogan;
+        record.themingUrl = capabilities.themingUrl;
+        
+        record.versionMajor = [NSNumber numberWithInteger:capabilities.versionMajor];
+        record.versionMinor = [NSNumber numberWithInteger:capabilities.versionMinor];
+        record.versionMicro = [NSNumber numberWithInteger:capabilities.versionMicro];
+        record.versionString = capabilities.versionString;
+    }];
+}
+
++ (TableCapabilities *)getCapabilitesForAccount:(NSString *)account
+{
+    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
+    
+    return [TableCapabilities MR_findFirstWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@)", account] inContext:context];
+}
+
++ (NSInteger)getServerVersionAccount:(NSString *)activeAccount
+{
+    if (!activeAccount)
+        return 0;
+    
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@)", activeAccount];
+    TableCapabilities *record = [TableCapabilities MR_findFirstWithPredicate:predicate];
+    
+    if (record) {
+        
+        NSInteger versionMajor = [record.versionMajor integerValue];
+        return versionMajor;
+        
+    } else
+        return 0;
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -2246,6 +2272,26 @@
     }
 }
 
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Flush Database =====
+#pragma --------------------------------------------------------------------------------------------
+
++ (void)flushTableAccount:(NSString *)account
+{
+    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
+    
+    if (account) {
+        
+        [TableAccount MR_deleteAllMatchingPredicate:[NSPredicate predicateWithFormat:@"(account == %@)", account] inContext:context];
+        
+    } else {
+        
+        [TableAccount MR_truncateAllInContext:context];
+    }
+    
+    [context MR_saveToPersistentStoreAndWait];
+}
+
 + (void)flushTableActivityAccount:(NSString *)account
 {
     NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
@@ -2276,6 +2322,31 @@
     [context MR_saveToPersistentStoreAndWait];
 }
 
++ (void)flushTableCapabilitiesAccount:(NSString *)account
+{
+    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
+    
+    if (account) {
+        
+        [TableCapabilities MR_deleteAllMatchingPredicate:[NSPredicate predicateWithFormat:@"(account == %@)", account] inContext:context];
+        
+    } else {
+        
+        [TableCapabilities MR_truncateAllInContext:context];
+    }
+    
+    [context MR_saveToPersistentStoreAndWait];
+}
+
++ (void)flushTableCertificates
+{
+    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
+    
+    [TableCertificates MR_truncateAllInContext:context];
+    
+    [context MR_saveToPersistentStoreAndWait];
+}
+
 + (void)flushTableDirectoryAccount:(NSString *)account
 {
     NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
@@ -2288,6 +2359,31 @@
         
         [TableDirectory MR_truncateAllInContext:context];
     }
+    
+    [context MR_saveToPersistentStoreAndWait];
+}
+
++ (void)flushTableExternalSitesAccount:(NSString *)account
+{
+    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
+    
+    if (account) {
+        
+        [TableExternalSites MR_deleteAllMatchingPredicate:[NSPredicate predicateWithFormat:@"(account == %@)", account] inContext:context];
+        
+    } else {
+        
+        [TableExternalSites MR_truncateAllInContext:context];
+    }
+    
+    [context MR_saveToPersistentStoreAndWait];
+}
+
++ (void)flushTableGPS
+{
+    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
+    
+    [TableGPS MR_truncateAllInContext:context];
     
     [context MR_saveToPersistentStoreAndWait];
 }
@@ -2324,14 +2420,22 @@
     [context MR_saveToPersistentStoreAndWait];
 }
 
-+ (void)flushTableGPS
++ (void)flushTableShareAccount:(NSString *)account
 {
     NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
-
-    [TableGPS MR_truncateAllInContext:context];
+    
+    if (account) {
+        
+        [TableShare MR_deleteAllMatchingPredicate:[NSPredicate predicateWithFormat:@"(account == %@)", account] inContext:context];
+        
+    } else {
+        
+        [TableShare MR_truncateAllInContext:context];
+    }
     
     [context MR_saveToPersistentStoreAndWait];
 }
+
 
 + (void)flushAllDatabase
 {
@@ -2340,6 +2444,7 @@
     [TableAccount MR_truncateAllInContext:context];
     [TableActivity MR_truncateAllInContext:context];
     [TableAutomaticUpload MR_truncateAllInContext:context];
+    [TableCapabilities MR_truncateAllInContext:context];
     [TableCertificates MR_truncateAllInContext:context];
     [TableDirectory MR_truncateAllInContext:context];
     [TableGPS MR_truncateAllInContext:context];

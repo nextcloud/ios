@@ -22,8 +22,13 @@
 //
 
 #import "CCUploadFromOtherUpp.h"
-
 #import "AppDelegate.h"
+
+#ifdef CUSTOM_BUILD
+#import "CustomSwift.h"
+#else
+#import "Nextcloud-Swift.h"
+#endif
 
 @interface CCUploadFromOtherUpp()
 {
@@ -45,8 +50,8 @@
     destinationTitle = NSLocalizedString(@"_home_", nil);
     
     // Color
-    [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
-    [CCAspect aspectTabBar:self.tabBarController.tabBar hidden:NO];
+    [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
+    [app aspectTabBar:self.tabBarController.tabBar hidden:NO];
 }
 
 - (void)didReceiveMemoryWarning
@@ -167,9 +172,9 @@
     CCMove *viewController = (CCMove *)navigationController.topViewController;
     viewController.delegate = self;
     viewController.move.title = NSLocalizedString(@"_select_", nil);
-    viewController.tintColor = COLOR_NAVIGATIONBAR_TEXT;
-    viewController.barTintColor = COLOR_NAVIGATIONBAR;
-    viewController.tintColorTitle = COLOR_NAVIGATIONBAR_TEXT;
+    viewController.tintColor = [NCBrandColor sharedInstance].navigationBarText;
+    viewController.barTintColor = [NCBrandColor sharedInstance].brand;
+    viewController.tintColorTitle = [NCBrandColor sharedInstance].navigationBarText;
     viewController.networkingOperationQueue = app.netQueue;
 
     [self presentViewController:navigationController animated:YES completion:nil];

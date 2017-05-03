@@ -22,8 +22,13 @@
 //
 
 #import "CCNote.h"
-
 #import "AppDelegate.h"
+
+#ifdef CUSTOM_BUILD
+#import "CustomSwift.h"
+#else
+#import "Nextcloud-Swift.h"
+#endif
 
 @interface CCNote()
 {
@@ -41,7 +46,7 @@
 {
     self = [super init];
     
-    if (self){
+    if (self) {
         
         self.delegate = delegate;
         self.fileName = fileName;
@@ -82,13 +87,13 @@
     [self setHTML:[field objectForKey:@"note"]];
     
     //
-    self.toolbarItemTintColor = COLOR_BRAND;
+    self.toolbarItemTintColor = [NCBrandColor sharedInstance].brand;
     
     templates = [[CCTemplates alloc] init];
     [templates setImageTitle:self.titolo conNavigationItem:self.navigationItem reachability:[app.reachability isReachable]];
         
     // Color
-    [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
+    [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
     
     self.view.backgroundColor = [UIColor whiteColor];
 }

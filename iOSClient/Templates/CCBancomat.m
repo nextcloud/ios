@@ -24,6 +24,12 @@
 #import "CCBancomat.h"
 #import "AppDelegate.h"
 
+#ifdef CUSTOM_BUILD
+#import "CustomSwift.h"
+#else
+#import "Nextcloud-Swift.h"
+#endif
+
 @interface CCBancomat()
 {
     XLFormDescriptor *form ;
@@ -41,7 +47,7 @@
 {
     self = [super init];
     
-    if (self){
+    if (self) {
         
         self.delegate = delegate;
         self.fileName = fileName;
@@ -65,7 +71,7 @@
         
         // Title
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"titolo" rowType:XLFormRowDescriptorTypeText];
-        [row.cellConfig setObject:COLOR_CRYPTOCLOUD forKey:@"textField.textColor"];
+        [row.cellConfig setObject:[NCBrandColor sharedInstance].cryptocloud forKey:@"textField.textColor"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textField.font"];
         row.value = [field objectForKey:@"titolo"];
@@ -77,7 +83,7 @@
         
         // Nome Banca
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"nomebanca" rowType:XLFormRowDescriptorTypeText title:NSLocalizedString(@"_bank_name:_", nil)];
-        [row.cellConfig setObject:COLOR_TEXT_ANTHRACITE forKey:@"textField.textColor"];
+        [row.cellConfig setObject:[UIColor blackColor] forKey:@"textField.textColor"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textField.font"];
         row.value = [field objectForKey:@"nomebanca"];
@@ -85,7 +91,7 @@
 
         // CODE
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"code" rowType:XLFormRowDescriptorTypeText title:NSLocalizedString(@"_code:_", nil)];
-        [row.cellConfig setObject:COLOR_TEXT_ANTHRACITE forKey:@"textField.textColor"];
+        [row.cellConfig setObject:[UIColor blackColor] forKey:@"textField.textColor"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textField.font"];
         row.value = [field objectForKey:@"code"];
@@ -93,7 +99,7 @@
         
         // Secur Code
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"securcode" rowType:XLFormRowDescriptorTypeText title:NSLocalizedString(@"_security_code:_", nil)];
-        [row.cellConfig setObject:COLOR_TEXT_ANTHRACITE forKey:@"textField.textColor"];
+        [row.cellConfig setObject:[UIColor blackColor] forKey:@"textField.textColor"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textField.font"];
         row.value = [field objectForKey:@"securcode"];
@@ -101,7 +107,7 @@
 
         // PIN
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"pin" rowType:XLFormRowDescriptorTypeText title:NSLocalizedString(@"_pin:_", nil)];
-        [row.cellConfig setObject:COLOR_TEXT_ANTHRACITE forKey:@"textField.textColor"];
+        [row.cellConfig setObject:[UIColor blackColor] forKey:@"textField.textColor"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textField.font"];
         row.value = [field objectForKey:@"pin"];
@@ -113,7 +119,7 @@
         // Note
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"note" rowType:XLFormRowDescriptorTypeTextView];
         row.value = [field objectForKey:@"note"];
-        [row.cellConfig setObject:COLOR_TEXT_ANTHRACITE forKey:@"textView.textColor"];
+        [row.cellConfig setObject:[UIColor blackColor] forKey:@"textView.textColor"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textView.font"];
         [section addFormRow:row];
 
@@ -133,7 +139,7 @@
     [templates setImageTitle:NSLocalizedString(@"_atm_card_", nil) conNavigationItem:self.navigationItem reachability:[app.reachability isReachable]];
         
     // Color
-    [CCAspect aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
+    [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
 }
 
 - (void)viewDidAppear:(BOOL)animated

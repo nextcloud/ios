@@ -41,9 +41,6 @@
 @dynamic email;
 @dynamic phone;
 @dynamic twitter;
-@dynamic versionMajor;
-@dynamic versionMinor;
-@dynamic versionMicro;
 @dynamic webpage;
 @dynamic quota;
 @dynamic quotaFree;

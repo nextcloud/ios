@@ -65,7 +65,7 @@ static const CGFloat labelPadding = 10;
     _label.lineBreakMode = NSLineBreakByWordWrapping;
 
     _label.numberOfLines = 0;
-    _label.textColor = COLOR_TEXT_ANTHRACITE;
+    _label.textColor = [UIColor blackColor];
     _label.font = [UIFont systemFontOfSize:12];
     if ([_photo respondsToSelector:@selector(caption)]) {
         _label.text = [_photo caption] ? [_photo caption] : @" ";
