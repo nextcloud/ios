@@ -3481,7 +3481,6 @@
 				Base,
 				cs_CZ,
 				en,
-				fr,
 			);
 			mainGroup = F7F67B9F1A24D27800EE80DA;
 			productRefGroup = F7F67B9F1A24D27800EE80DA;
