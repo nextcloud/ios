@@ -490,6 +490,27 @@
 		F77B0F941D118A16002130FE /* ZSSh6@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DA41C889300008DAB36 /* ZSSh6@2x.png */; };
 		F78088EA1DD3A1DB005C5A7C /* cryptocloud.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = F78088E51DD3A1DB005C5A7C /* cryptocloud.xcdatamodeld */; };
 		F78088EB1DD3A1DB005C5A7C /* cryptocloud.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = F78088E51DD3A1DB005C5A7C /* cryptocloud.xcdatamodeld */; };
+		F7875D3B1EB9EB5C001EE12D /* BKPasscodeView.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7875D111EB9EB5C001EE12D /* BKPasscodeView.strings */; };
+		F7875D3C1EB9EB5C001EE12D /* BKPasscodeView.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7875D111EB9EB5C001EE12D /* BKPasscodeView.strings */; };
+		F7875D3D1EB9EB5C001EE12D /* BKPasscodeView.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7875D111EB9EB5C001EE12D /* BKPasscodeView.strings */; };
+		F7875D3E1EB9EB5C001EE12D /* CTAssetsPicker.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7875D131EB9EB5C001EE12D /* CTAssetsPicker.strings */; };
+		F7875D3F1EB9EB5C001EE12D /* CTAssetsPicker.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7875D131EB9EB5C001EE12D /* CTAssetsPicker.strings */; };
+		F7875D401EB9EB5C001EE12D /* CTAssetsPicker.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7875D131EB9EB5C001EE12D /* CTAssetsPicker.strings */; };
+		F7875D411EB9EB5C001EE12D /* Error.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7875D151EB9EB5C001EE12D /* Error.strings */; };
+		F7875D421EB9EB5C001EE12D /* Error.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7875D151EB9EB5C001EE12D /* Error.strings */; };
+		F7875D431EB9EB5C001EE12D /* Error.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7875D151EB9EB5C001EE12D /* Error.strings */; };
+		F7875D441EB9EB5C001EE12D /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7875D171EB9EB5C001EE12D /* InfoPlist.strings */; };
+		F7875D451EB9EB5C001EE12D /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7875D171EB9EB5C001EE12D /* InfoPlist.strings */; };
+		F7875D461EB9EB5C001EE12D /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7875D171EB9EB5C001EE12D /* InfoPlist.strings */; };
+		F7875D471EB9EB5C001EE12D /* Intro.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7875D191EB9EB5C001EE12D /* Intro.strings */; };
+		F7875D481EB9EB5C001EE12D /* Intro.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7875D191EB9EB5C001EE12D /* Intro.strings */; };
+		F7875D491EB9EB5C001EE12D /* Intro.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7875D191EB9EB5C001EE12D /* Intro.strings */; };
+		F7875D4A1EB9EB5C001EE12D /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7875D1B1EB9EB5C001EE12D /* Localizable.strings */; };
+		F7875D4B1EB9EB5C001EE12D /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7875D1B1EB9EB5C001EE12D /* Localizable.strings */; };
+		F7875D4C1EB9EB5C001EE12D /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7875D1B1EB9EB5C001EE12D /* Localizable.strings */; };
+		F7875D4D1EB9EB5C001EE12D /* SwiftWebVC.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7875D1D1EB9EB5C001EE12D /* SwiftWebVC.strings */; };
+		F7875D4E1EB9EB5C001EE12D /* SwiftWebVC.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7875D1D1EB9EB5C001EE12D /* SwiftWebVC.strings */; };
+		F7875D4F1EB9EB5C001EE12D /* SwiftWebVC.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7875D1D1EB9EB5C001EE12D /* SwiftWebVC.strings */; };
 		F78BFEE11D31126B00E513CF /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F78BFEDE1D31126B00E513CF /* MainInterface.storyboard */; };
 		F7A13A031E7F3D5D00016680 /* CCProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A13A001E7F3D5D00016680 /* CCProgressView.m */; };
 		F7A13A041E7F3D5D00016680 /* UINavigationController+CCProgress.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A13A021E7F3D5D00016680 /* UINavigationController+CCProgress.m */; };
@@ -1340,6 +1361,41 @@
 		F78088E91DD3A1DB005C5A7C /* cryptocloud.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = cryptocloud.xcdatamodel; sourceTree = "<group>"; };
 		F78316861C0CB3CA00C43975 /* CCShareUserOC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCShareUserOC.h; sourceTree = "<group>"; };
 		F78316871C0CB3CA00C43975 /* CCShareUserOC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCShareUserOC.m; sourceTree = "<group>"; };
+		F7875D121EB9EB5C001EE12D /* cs_CZ */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs_CZ; path = cs_CZ.lproj/BKPasscodeView.strings; sourceTree = "<group>"; };
+		F7875D141EB9EB5C001EE12D /* cs_CZ */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs_CZ; path = cs_CZ.lproj/CTAssetsPicker.strings; sourceTree = "<group>"; };
+		F7875D161EB9EB5C001EE12D /* cs_CZ */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs_CZ; path = cs_CZ.lproj/Error.strings; sourceTree = "<group>"; };
+		F7875D181EB9EB5C001EE12D /* cs_CZ */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs_CZ; path = cs_CZ.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		F7875D1A1EB9EB5C001EE12D /* cs_CZ */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs_CZ; path = cs_CZ.lproj/Intro.strings; sourceTree = "<group>"; };
+		F7875D1C1EB9EB5C001EE12D /* cs_CZ */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs_CZ; path = cs_CZ.lproj/Localizable.strings; sourceTree = "<group>"; };
+		F7875D1E1EB9EB5C001EE12D /* cs_CZ */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs_CZ; path = cs_CZ.lproj/SwiftWebVC.strings; sourceTree = "<group>"; };
+		F7875D1F1EB9EB5C001EE12D /* el */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el; path = el.lproj/BKPasscodeView.strings; sourceTree = "<group>"; };
+		F7875D201EB9EB5C001EE12D /* el */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el; path = el.lproj/CTAssetsPicker.strings; sourceTree = "<group>"; };
+		F7875D211EB9EB5C001EE12D /* el */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el; path = el.lproj/Error.strings; sourceTree = "<group>"; };
+		F7875D221EB9EB5C001EE12D /* el */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el; path = el.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		F7875D231EB9EB5C001EE12D /* el */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el; path = el.lproj/Intro.strings; sourceTree = "<group>"; };
+		F7875D241EB9EB5C001EE12D /* el */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el; path = el.lproj/Localizable.strings; sourceTree = "<group>"; };
+		F7875D251EB9EB5C001EE12D /* es-MX */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-MX"; path = "es-MX.lproj/BKPasscodeView.strings"; sourceTree = "<group>"; };
+		F7875D261EB9EB5C001EE12D /* es-MX */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-MX"; path = "es-MX.lproj/CTAssetsPicker.strings"; sourceTree = "<group>"; };
+		F7875D271EB9EB5C001EE12D /* es-MX */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-MX"; path = "es-MX.lproj/Error.strings"; sourceTree = "<group>"; };
+		F7875D281EB9EB5C001EE12D /* es-MX */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-MX"; path = "es-MX.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		F7875D291EB9EB5C001EE12D /* es-MX */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-MX"; path = "es-MX.lproj/Intro.strings"; sourceTree = "<group>"; };
+		F7875D2A1EB9EB5C001EE12D /* es-MX */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-MX"; path = "es-MX.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		F7875D2B1EB9EB5C001EE12D /* es-MX */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-MX"; path = "es-MX.lproj/SwiftWebVC.strings"; sourceTree = "<group>"; };
+		F7875D2C1EB9EB5C001EE12D /* fi-FI */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "fi-FI"; path = "fi-FI.lproj/BKPasscodeView.strings"; sourceTree = "<group>"; };
+		F7875D2D1EB9EB5C001EE12D /* fi-FI */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "fi-FI"; path = "fi-FI.lproj/CTAssetsPicker.strings"; sourceTree = "<group>"; };
+		F7875D2E1EB9EB5C001EE12D /* fi-FI */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "fi-FI"; path = "fi-FI.lproj/Error.strings"; sourceTree = "<group>"; };
+		F7875D2F1EB9EB5C001EE12D /* fi-FI */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "fi-FI"; path = "fi-FI.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		F7875D301EB9EB5C001EE12D /* fi-FI */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "fi-FI"; path = "fi-FI.lproj/Intro.strings"; sourceTree = "<group>"; };
+		F7875D311EB9EB5C001EE12D /* fi-FI */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "fi-FI"; path = "fi-FI.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		F7875D321EB9EB5C001EE12D /* fi-FI */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "fi-FI"; path = "fi-FI.lproj/SwiftWebVC.strings"; sourceTree = "<group>"; };
+		F7875D331EB9EB5C001EE12D /* is */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = is; path = is.lproj/BKPasscodeView.strings; sourceTree = "<group>"; };
+		F7875D341EB9EB5C001EE12D /* is */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = is; path = is.lproj/CTAssetsPicker.strings; sourceTree = "<group>"; };
+		F7875D351EB9EB5C001EE12D /* is */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = is; path = is.lproj/Error.strings; sourceTree = "<group>"; };
+		F7875D361EB9EB5C001EE12D /* is */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = is; path = is.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		F7875D371EB9EB5C001EE12D /* is */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = is; path = is.lproj/Intro.strings; sourceTree = "<group>"; };
+		F7875D381EB9EB5C001EE12D /* is */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = is; path = is.lproj/Localizable.strings; sourceTree = "<group>"; };
+		F7875D391EB9EB5C001EE12D /* is */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = is; path = is.lproj/SwiftWebVC.strings; sourceTree = "<group>"; };
+		F7875D3A1EB9EB5C001EE12D /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F787E5581BC503ED00AFBFE1 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		F78BFEDE1D31126B00E513CF /* MainInterface.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = MainInterface.storyboard; sourceTree = "<group>"; };
 		F78F6FAE1CC8CCB700F4EA25 /* CCSection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCSection.h; sourceTree = "<group>"; };
@@ -2776,6 +2832,20 @@
 			name = Table;
 			sourceTree = "<group>";
 		};
+		F7875D101EB9EB5C001EE12D /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				F7875D111EB9EB5C001EE12D /* BKPasscodeView.strings */,
+				F7875D131EB9EB5C001EE12D /* CTAssetsPicker.strings */,
+				F7875D151EB9EB5C001EE12D /* Error.strings */,
+				F7875D171EB9EB5C001EE12D /* InfoPlist.strings */,
+				F7875D191EB9EB5C001EE12D /* Intro.strings */,
+				F7875D1B1EB9EB5C001EE12D /* Localizable.strings */,
+				F7875D1D1EB9EB5C001EE12D /* SwiftWebVC.strings */,
+			);
+			path = "Supporting Files";
+			sourceTree = "<group>";
+		};
 		F7A139FE1E7F3D5D00016680 /* CCProgress */ = {
 			isa = PBXGroup;
 			children = (
@@ -3230,6 +3300,7 @@
 				F721371B1BAFF0920012B613 /* Templates */,
 				F7A321731E9E3EAF0069AD1B /* Transfers */,
 				F70784811A2C8A0D00AC9FFF /* UploadFromOtherUpp */,
+				F7875D101EB9EB5C001EE12D /* Supporting Files */,
 				F7BFFA991A24D7BB0044ED85 /* Utility */,
 			);
 			path = iOSClient;
@@ -3449,6 +3520,9 @@
 				el,
 				pl,
 				"nb-NO",
+				cs_CZ,
+				"fi-FI",
+				is,
 			);
 			mainGroup = F7F67B9F1A24D27800EE80DA;
 			productRefGroup = F7F67B9F1A24D27800EE80DA;
@@ -3551,7 +3625,14 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F7875D421EB9EB5C001EE12D /* Error.strings in Resources */,
+				F7875D4E1EB9EB5C001EE12D /* SwiftWebVC.strings in Resources */,
+				F7875D451EB9EB5C001EE12D /* InfoPlist.strings in Resources */,
+				F7875D3F1EB9EB5C001EE12D /* CTAssetsPicker.strings in Resources */,
 				F78BFEE11D31126B00E513CF /* MainInterface.storyboard in Resources */,
+				F7875D3C1EB9EB5C001EE12D /* BKPasscodeView.strings in Resources */,
+				F7875D4B1EB9EB5C001EE12D /* Localizable.strings in Resources */,
+				F7875D481EB9EB5C001EE12D /* Intro.strings in Resources */,
 				F7145A1A1D12E3B700CAFEEC /* Images.xcassets in Resources */,
 				F7145A1C1D12E3B700CAFEEC /* CCMove.storyboard in Resources */,
 				F7145A241D12E3B700CAFEEC /* CCCellShareExt.xib in Resources */,
@@ -3562,8 +3643,15 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F7875D4F1EB9EB5C001EE12D /* SwiftWebVC.strings in Resources */,
+				F7875D3D1EB9EB5C001EE12D /* BKPasscodeView.strings in Resources */,
+				F7875D491EB9EB5C001EE12D /* Intro.strings in Resources */,
+				F7875D461EB9EB5C001EE12D /* InfoPlist.strings in Resources */,
 				F7C742D81E7BD5C900D9C973 /* MainInterface.storyboard in Resources */,
+				F7875D4C1EB9EB5C001EE12D /* Localizable.strings in Resources */,
 				F7D2677C1E157053005ACB7E /* Images.xcassets in Resources */,
+				F7875D431EB9EB5C001EE12D /* Error.strings in Resources */,
+				F7875D401EB9EB5C001EE12D /* CTAssetsPicker.strings in Resources */,
 				F743444B1E126B69001CC831 /* CCMove.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3587,6 +3675,7 @@
 				F7F54CF41E5B14C700E19C62 /* PlayButtonOverlayLarge.png in Resources */,
 				F7F54D041E5B14C800E19C62 /* VideoOverlay@2x.png in Resources */,
 				F77B0EF01D118A16002130FE /* ZSSh4@2x.png in Resources */,
+				F7875D3B1EB9EB5C001EE12D /* BKPasscodeView.strings in Resources */,
 				F7F54CF51E5B14C700E19C62 /* PlayButtonOverlayLarge@2x.png in Resources */,
 				F77B0EF21D118A16002130FE /* ZSSunderline.png in Resources */,
 				F7F54CF91E5B14C700E19C62 /* PlayButtonOverlayLargeTap@3x.png in Resources */,
@@ -3626,6 +3715,7 @@
 				F77B0F231D118A16002130FE /* ZSSh3.png in Resources */,
 				F769D39C1E9E1506006DBBB4 /* CCLocalStorageCell.xib in Resources */,
 				F77B0F251D118A16002130FE /* ZSSh1.png in Resources */,
+				F7875D4D1EB9EB5C001EE12D /* SwiftWebVC.strings in Resources */,
 				F77B0F281D118A16002130FE /* Main.storyboard in Resources */,
 				F762CB621EACB7D400B38484 /* Reader-Mark-Y@2x.png in Resources */,
 				F762CB571EACB7D400B38484 /* Reader-Button-H.png in Resources */,
@@ -3672,6 +3762,7 @@
 				F762CB9A1EACB84400B38484 /* icon-success@2x.png in Resources */,
 				F77B0F561D118A16002130FE /* ZSStable.png in Resources */,
 				F762CB591EACB7D400B38484 /* Reader-Button-N.png in Resources */,
+				F7875D441EB9EB5C001EE12D /* InfoPlist.strings in Resources */,
 				F7F54CEE1E5B14C700E19C62 /* ImageSelectedSmallOff.png in Resources */,
 				F77B0F591D118A16002130FE /* ZSSRichTextEditor.js in Resources */,
 				F7F54D051E5B14C800E19C62 /* VideoOverlay@3x.png in Resources */,
@@ -3680,7 +3771,9 @@
 				F77B0F5B1D118A16002130FE /* ZSSclearstyle.png in Resources */,
 				F77B0F5C1D118A16002130FE /* ImagesIntro.xcassets in Resources */,
 				F762CB631EACB7D400B38484 /* Reader-Print.png in Resources */,
+				F7875D3E1EB9EB5C001EE12D /* CTAssetsPicker.strings in Resources */,
 				F7F54CE61E5B14C700E19C62 /* ImageError@2x.png in Resources */,
+				F7875D4A1EB9EB5C001EE12D /* Localizable.strings in Resources */,
 				F7F54CEF1E5B14C700E19C62 /* ImageSelectedSmallOff@2x.png in Resources */,
 				F77B0F5E1D118A16002130FE /* ZSSlink@2x.png in Resources */,
 				F7F54CFF1E5B14C700E19C62 /* UIBarButtonItemArrowRight@3x.png in Resources */,
@@ -3696,6 +3789,7 @@
 				F762CAF61EACB66200B38484 /* Info.plist in Resources */,
 				F762CB951EACB84400B38484 /* icon-error.png in Resources */,
 				F7F06EC31DBFACC600099AE9 /* CTAssetsPickerController.bundle in Resources */,
+				F7875D411EB9EB5C001EE12D /* Error.strings in Resources */,
 				F77B0F6E1D118A16002130FE /* ZSShorizontalrule@2x.png in Resources */,
 				F762CB641EACB7D400B38484 /* Reader-Print@2x.png in Resources */,
 				F77B0F6F1D118A16002130FE /* ZSSforcejustify.png in Resources */,
@@ -3712,6 +3806,7 @@
 				F7F54CE51E5B14C700E19C62 /* ImageError.png in Resources */,
 				F77B0F7B1D118A16002130FE /* ZSSrightjustify.png in Resources */,
 				F7F54CFC1E5B14C700E19C62 /* UIBarButtonItemArrowLeft@3x.png in Resources */,
+				F7875D471EB9EB5C001EE12D /* Intro.strings in Resources */,
 				F77B0F7C1D118A16002130FE /* ZSSviewsource@2x.png in Resources */,
 				F77B0F7D1D118A16002130FE /* Images.xcassets in Resources */,
 				F762CB5B1EACB7D400B38484 /* Reader-Email.png in Resources */,
@@ -4219,6 +4314,93 @@
 			targetProxy = F743442A1E1264EE001CC831 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		F7875D111EB9EB5C001EE12D /* BKPasscodeView.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F7875D121EB9EB5C001EE12D /* cs_CZ */,
+				F7875D1F1EB9EB5C001EE12D /* el */,
+				F7875D251EB9EB5C001EE12D /* es-MX */,
+				F7875D2C1EB9EB5C001EE12D /* fi-FI */,
+				F7875D331EB9EB5C001EE12D /* is */,
+			);
+			name = BKPasscodeView.strings;
+			sourceTree = "<group>";
+		};
+		F7875D131EB9EB5C001EE12D /* CTAssetsPicker.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F7875D141EB9EB5C001EE12D /* cs_CZ */,
+				F7875D201EB9EB5C001EE12D /* el */,
+				F7875D261EB9EB5C001EE12D /* es-MX */,
+				F7875D2D1EB9EB5C001EE12D /* fi-FI */,
+				F7875D341EB9EB5C001EE12D /* is */,
+			);
+			name = CTAssetsPicker.strings;
+			sourceTree = "<group>";
+		};
+		F7875D151EB9EB5C001EE12D /* Error.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F7875D161EB9EB5C001EE12D /* cs_CZ */,
+				F7875D211EB9EB5C001EE12D /* el */,
+				F7875D271EB9EB5C001EE12D /* es-MX */,
+				F7875D2E1EB9EB5C001EE12D /* fi-FI */,
+				F7875D351EB9EB5C001EE12D /* is */,
+			);
+			name = Error.strings;
+			sourceTree = "<group>";
+		};
+		F7875D171EB9EB5C001EE12D /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F7875D181EB9EB5C001EE12D /* cs_CZ */,
+				F7875D221EB9EB5C001EE12D /* el */,
+				F7875D281EB9EB5C001EE12D /* es-MX */,
+				F7875D2F1EB9EB5C001EE12D /* fi-FI */,
+				F7875D361EB9EB5C001EE12D /* is */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		F7875D191EB9EB5C001EE12D /* Intro.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F7875D1A1EB9EB5C001EE12D /* cs_CZ */,
+				F7875D231EB9EB5C001EE12D /* el */,
+				F7875D291EB9EB5C001EE12D /* es-MX */,
+				F7875D301EB9EB5C001EE12D /* fi-FI */,
+				F7875D371EB9EB5C001EE12D /* is */,
+			);
+			name = Intro.strings;
+			sourceTree = "<group>";
+		};
+		F7875D1B1EB9EB5C001EE12D /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F7875D1C1EB9EB5C001EE12D /* cs_CZ */,
+				F7875D241EB9EB5C001EE12D /* el */,
+				F7875D2A1EB9EB5C001EE12D /* es-MX */,
+				F7875D311EB9EB5C001EE12D /* fi-FI */,
+				F7875D381EB9EB5C001EE12D /* is */,
+				F7875D3A1EB9EB5C001EE12D /* pl */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+		F7875D1D1EB9EB5C001EE12D /* SwiftWebVC.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F7875D1E1EB9EB5C001EE12D /* cs_CZ */,
+				F7875D2B1EB9EB5C001EE12D /* es-MX */,
+				F7875D321EB9EB5C001EE12D /* fi-FI */,
+				F7875D391EB9EB5C001EE12D /* is */,
+			);
+			name = SwiftWebVC.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		F7145A261D12E3B700CAFEEC /* Debug */ = {
