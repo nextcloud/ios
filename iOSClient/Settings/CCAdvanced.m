@@ -259,7 +259,8 @@
     NSString *documentsDirectory = [paths objectAtIndex:0];
     NSError *error;
     
-    if ([fileAttachment writeToFile:[documentsDirectory stringByAppendingPathComponent:@"activity.txt"] atomically:YES encoding:NSUTF8StringEncoding error:&error]) {
+    // fix CCAdvanced.m line 276 2.17.2 (00005)
+    if ([fileAttachment writeToFile:[documentsDirectory stringByAppendingPathComponent:@"activity.txt"] atomically:YES encoding:NSUTF8StringEncoding error:&error] && [MFMailComposeViewController canSendMail]) {
         
         toRecipents = [NSArray arrayWithObject:k_mailMe];
         
