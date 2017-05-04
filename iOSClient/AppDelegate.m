@@ -722,8 +722,15 @@
         
         if (visible) {
             
-            [TWMessageBarManager sharedInstance].styleSheet = self;
-            [[TWMessageBarManager sharedInstance] showMessageWithTitle:title description:[CCUtility localizableBrand:description table:nil] type:type duration:delay];
+            if (errorcode == kCFURLErrorNotConnectedToInternet) {
+                
+                NSLog(@"[LOG] No internet connection");
+                
+            } else {
+            
+                [TWMessageBarManager sharedInstance].styleSheet = self;
+                [[TWMessageBarManager sharedInstance] showMessageWithTitle:title description:[CCUtility localizableBrand:description table:nil] type:type duration:delay];
+            }
             
         } else {
             
