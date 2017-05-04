@@ -205,13 +205,17 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
                 labelUsername.text = self.tableAccont!.user
             }
             
-            progressQuota.progress = Float((self.tableAccont?.quotaRelative)!) / 100
-            progressQuota.progressTintColor = NCBrandColor.sharedInstance.brand
-            
-            let quota : String = CCUtility.transformedSize(Double((self.tableAccont?.quotaTotal)!))
-            let quotaUsed : String = CCUtility.transformedSize(Double((self.tableAccont?.quotaUsed)!))
-            
-            labelQuota.text = String.localizedStringWithFormat(NSLocalizedString("_quota_using_", comment: ""), quotaUsed, quota)
+            // fix CCMore.swift line 208 Version 2.17.2 (00005)
+            if (self.tableAccont?.quotaRelative != nil && self.tableAccont?.quotaTotal != nil && self.tableAccont?.quotaUsed != nil) {
+                
+                progressQuota.progress = Float((self.tableAccont?.quotaRelative)!) / 100
+                progressQuota.progressTintColor = NCBrandColor.sharedInstance.brand
+                
+                let quota : String = CCUtility.transformedSize(Double((self.tableAccont?.quotaTotal)!))
+                let quotaUsed : String = CCUtility.transformedSize(Double((self.tableAccont?.quotaUsed)!))
+                
+                labelQuota.text = String.localizedStringWithFormat(NSLocalizedString("_quota_using_", comment: ""), quotaUsed, quota)
+            }
         }
     }
     
