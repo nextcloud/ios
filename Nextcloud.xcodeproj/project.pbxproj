@@ -512,7 +512,6 @@
 		F78964AD1EBB576C00403E13 /* JDStatusBarNotification.m in Sources */ = {isa = PBXBuildFile; fileRef = F78964A81EBB576C00403E13 /* JDStatusBarNotification.m */; };
 		F78964AE1EBB576C00403E13 /* JDStatusBarStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = F78964AA1EBB576C00403E13 /* JDStatusBarStyle.m */; };
 		F78964AF1EBB576C00403E13 /* JDStatusBarView.m in Sources */ = {isa = PBXBuildFile; fileRef = F78964AC1EBB576C00403E13 /* JDStatusBarView.m */; };
-		F78964BB1EBB621200403E13 /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = F78964BA1EBB621200403E13 /* README.md */; };
 		F78BFED41D3111B800E513CF /* LaunchScreenNextcloud.xib in Resources */ = {isa = PBXBuildFile; fileRef = F78BFECA1D3111B800E513CF /* LaunchScreenNextcloud.xib */; };
 		F78BFEE11D31126B00E513CF /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F78BFEDE1D31126B00E513CF /* MainInterface.storyboard */; };
 		F7A13A031E7F3D5D00016680 /* CCProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A13A001E7F3D5D00016680 /* CCProgressView.m */; };
@@ -1394,7 +1393,6 @@
 		F78964AA1EBB576C00403E13 /* JDStatusBarStyle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JDStatusBarStyle.m; sourceTree = "<group>"; };
 		F78964AB1EBB576C00403E13 /* JDStatusBarView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JDStatusBarView.h; sourceTree = "<group>"; };
 		F78964AC1EBB576C00403E13 /* JDStatusBarView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JDStatusBarView.m; sourceTree = "<group>"; };
-		F78964BA1EBB621200403E13 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = SOURCE_ROOT; };
 		F78BFECA1D3111B800E513CF /* LaunchScreenNextcloud.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LaunchScreenNextcloud.xib; sourceTree = "<group>"; };
 		F78BFEDE1D31126B00E513CF /* MainInterface.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = MainInterface.storyboard; sourceTree = "<group>"; };
 		F78F6FAE1CC8CCB700F4EA25 /* CCSection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCSection.h; sourceTree = "<group>"; };
@@ -3364,7 +3362,6 @@
 				F72B60941A24F04E004EF66F /* Localizations */,
 				F7F67BAD1A24D27800EE80DA /* main.m */,
 				F7D154271E2392A300202FD9 /* Nextcloud-Bridging-Header.h */,
-				F78964BA1EBB621200403E13 /* README.md */,
 				F76344751BF259A800188725 /* synchronized.gif */,
 				F76344761BF259A800188725 /* synchronizedcrypto.gif */,
 			);
@@ -4087,7 +4084,6 @@
 				F7F06EA91DBFACC600099AE9 /* CTAssetScrollView.m in Sources */,
 				F762CB771EACB7D400B38484 /* ReaderViewController.m in Sources */,
 				F7F06E931DBFACC600099AE9 /* NSNumberFormatter+CTAssetsPickerController.m in Sources */,
-				F78964BB1EBB621200403E13 /* README.md in Sources */,
 				F72AAECC1E5C60C700BB17E1 /* UIImage+AHKAdditions.m in Sources */,
 				F762CB071EACB66200B38484 /* XLFormOptionsObject.m in Sources */,
 				F7C525A01E3B48B700FFE02C /* CCNotification.swift in Sources */,
