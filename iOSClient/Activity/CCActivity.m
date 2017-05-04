@@ -338,7 +338,7 @@
         
     } else {
         
-        [app messageNotification:@"_info_" description:@"_activity_file_not_present_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo];
+        [app messageNotification:@"_info_" description:@"_activity_file_not_present_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
     }
 }
 

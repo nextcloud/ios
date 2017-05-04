@@ -148,7 +148,7 @@
     
     if (imageSize > k_MaxDimensionUpload || (picker.selectedAssets.count >= (k_pickerControllerMax - _numTaskUploadInProgress))) {
         
-        [app messageNotification:@"_info_" description:@"_limited_dimension_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo];
+        [app messageNotification:@"_info_" description:@"_limited_dimension_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
         
         return NO;
     }

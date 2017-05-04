@@ -354,7 +354,7 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
                     
                     self.reloadFormRow(formRow)
                     
-                    appDelegate.messageNotification("_info_", description: "_forbidden_characters_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info)
+                    appDelegate.messageNotification("_info_", description: "_forbidden_characters_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: 0)
                 }
             }
             

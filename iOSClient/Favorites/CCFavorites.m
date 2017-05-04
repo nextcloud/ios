@@ -215,7 +215,7 @@
 
 - (void)downloadFileFailure:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode
 {    
-    [app messageNotification:@"_download_file_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
+    [app messageNotification:@"_download_file_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
 }
 
 - (void)downloadFileSuccess:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost
@@ -351,8 +351,8 @@
                 
                 [_hudDeterminate hideHud];
                 
-                if (succeeded) [app messageNotification:@"_info_" description:@"_file_unpacked_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess];
-                else [app messageNotification:@"_error_" description:[NSString stringWithFormat:@"Error %ld", (long)error.code] visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
+                if (succeeded) [app messageNotification:@"_info_" description:@"_file_unpacked_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess errorCode:0];
+                else [app messageNotification:@"_error_" description:[NSString stringWithFormat:@"Error %ld", (long)error.code] visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
             });
             
         }];

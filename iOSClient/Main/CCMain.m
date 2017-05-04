@@ -700,12 +700,12 @@
                     
                 } else {
                     
-                    [app messageNotification:@"_error_" description:error.description visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
+                    [app messageNotification:@"_error_" description:error.description visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
                 }
                 
             } else {
                 
-                [app messageNotification:@"_error_" description:@"_read_file_error_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
+                [app messageNotification:@"_error_" description:@"_read_file_error_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
             }
         }];
     }
@@ -814,8 +814,8 @@
                 
                 [_hudDeterminate hideHud];
                 
-                if (succeeded) [app messageNotification:@"_info_" description:@"_file_unpacked_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess];
-                else [app messageNotification:@"_error_" description:[NSString stringWithFormat:@"Error %ld", (long)error.code] visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
+                if (succeeded) [app messageNotification:@"_info_" description:@"_file_unpacked_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess  errorCode:0];
+                else [app messageNotification:@"_error_" description:[NSString stringWithFormat:@"Error %ld", (long)error.code] visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
             });
                         
         }];
@@ -980,9 +980,9 @@
 -(void)saveSelectedFilesSelector:(NSString *)path didFinishSavingWithError:(NSError *)error contextInfo:(void *)contextInfo
 {
     if (error)
-        [app messageNotification:@"_save_selected_files_" description:@"_file_not_saved_cameraroll_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
+        [app messageNotification:@"_save_selected_files_" description:@"_file_not_saved_cameraroll_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
     else
-        [app messageNotification:@"_save_selected_files_" description:@"_file_saved_cameraroll_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess];
+        [app messageNotification:@"_save_selected_files_" description:@"_file_saved_cameraroll_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess errorCode:error.code];
 }
 
 - (void)saveSelectedFiles
@@ -1375,7 +1375,7 @@
     } else {
         
         if (errorCode != kCFURLErrorCancelled)
-            [app messageNotification:@"_download_file_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
+            [app messageNotification:@"_download_file_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
     }
 
     [self reloadDatasource:serverUrl fileID:metadata.fileID selector:selector];
@@ -1450,7 +1450,7 @@
         UIImage *image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]];
         [CCGraphics saveIcoWithFileID:metadata.fileNamePrint image:image writeToFile:nil copy:YES move:NO fromPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID] toPath:[NSString stringWithFormat:@"%@/.%@.ico", [CCUtility getDirectoryLocal], metadata.fileNamePrint]];
         
-        [app messageNotification:@"_add_local_" description:@"_file_saved_local_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess];
+        [app messageNotification:@"_add_local_" description:@"_file_saved_local_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess errorCode:0];
         
         [self reloadDatasource:serverUrl fileID:metadata.fileID selector:selector];
     }
@@ -1485,7 +1485,7 @@
             if (image)
                 UIImageWriteToSavedPhotosAlbum(image, self, @selector(saveSelectedFilesSelector: didFinishSavingWithError: contextInfo:), nil);
             else
-                [app messageNotification:@"_save_selected_files_" description:@"_file_not_saved_cameraroll_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
+                [app messageNotification:@"_save_selected_files_" description:@"_file_not_saved_cameraroll_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
         }
         
         if ([metadata.typeFile isEqualToString: k_metadataTypeFile_video]) {
@@ -1499,7 +1499,7 @@
                 
                 UISaveVideoAtPathToSavedPhotosAlbum([NSTemporaryDirectory() stringByAppendingString:metadata.fileNamePrint], self, @selector(saveSelectedFilesSelector: didFinishSavingWithError: contextInfo:), nil);
             } else {
-                [app messageNotification:@"_save_selected_files_" description:@"_file_not_saved_cameraroll_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
+                [app messageNotification:@"_save_selected_files_" description:@"_file_not_saved_cameraroll_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
             }
         }
         
@@ -1640,7 +1640,7 @@
     // Print error
     else if (errorCode != kCFURLErrorCancelled && errorCode != 403) {
         
-        [app messageNotification:@"_upload_file_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
+        [app messageNotification:@"_upload_file_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
     }
     
     [self reloadDatasource:serverUrl fileID:nil selector:selector];
@@ -1769,7 +1769,7 @@
             } else {
                 
                 // STOP check file, view message error
-                [app messageNotification:@"_upload_file_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
+                [app messageNotification:@"_upload_file_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
             }
         }
     }
@@ -1809,7 +1809,7 @@
     [_ImageTitleHomeCryptoCloud setUserInteractionEnabled:YES];
     
     if (message && [record.account isEqualToString:metadataNet.account])
-        [app messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
+        [app messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
     
     [self reloadDatasource:metadataNet.serverUrl fileID:nil selector:metadataNet.selector];
     
@@ -2051,7 +2051,7 @@
     _searchFileName = @"";
 
     if (message)
-        [app messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
+        [app messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
 }
 
 - (void)searchSuccess:(CCMetadataNet *)metadataNet metadatas:(NSArray *)metadatas
@@ -2219,7 +2219,7 @@
         [_hud hideHud];
     
         if (message)
-            [app messageNotification:@"_move_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
+            [app messageNotification:@"_move_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
         
         [_selectedMetadatas removeAllObjects];
         [_queueSelector removeAllObjects];
@@ -2403,7 +2403,7 @@
     [_hud hideHud];
     
     if (message)
-        [app messageNotification:@"_create_folder_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
+        [app messageNotification:@"_create_folder_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
 }
 
 - (void)createFolderSuccess:(CCMetadataNet *)metadataNet
@@ -2653,7 +2653,7 @@
         
     } else {
             
-        [app messageNotification:@"_encrypted_selected_files_" description:@"_file_not_present_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
+        [app messageNotification:@"_encrypted_selected_files_" description:@"_file_not_present_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
     }
 }
 
@@ -2675,7 +2675,7 @@
         
     } else {
             
-        [app messageNotification:@"_decrypted_selected_files_" description:@"_file_not_present_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
+        [app messageNotification:@"_decrypted_selected_files_" description:@"_file_not_present_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
     }
 }
 
@@ -2937,7 +2937,7 @@
 {
     [_hud hideHud];
     
-    [app messageNotification:@"_share_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
+    [app messageNotification:@"_share_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
 
     if (_shareOC)
         [_shareOC reloadData];
@@ -3025,7 +3025,7 @@
 {
     [_hud hideHud];
     
-    [app messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
+    [app messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
 }
 
 - (void)getUserAndGroup:(NSString *)find
@@ -3193,7 +3193,7 @@
         
         [CCUtility copyFileAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileName] toPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryLocal], metadata.fileName]];
         
-        [app messageNotification:@"_add_local_" description:@"_file_saved_local_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess];
+        [app messageNotification:@"_add_local_" description:@"_file_saved_local_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess errorCode:0];
     }
     
     NSIndexPath *indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:metadata.fileID];
@@ -3283,7 +3283,7 @@
     
     if ([app.netQueue operationCount] > 0 || [app.netQueueDownload operationCount] > 0 || [app.netQueueDownloadWWan operationCount] > 0 || [app.netQueueUpload operationCount] > 0 || [app.netQueueUploadWWan operationCount] > 0 || [CCCoreData countTableAutomaticUploadForAccount:app.activeAccount selector:nil] > 0) {
         
-        [app messageNotification:@"_transfers_in_queue_" description:nil visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo];
+        [app messageNotification:@"_transfers_in_queue_" description:nil visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
         return;
     }
     
@@ -4011,7 +4011,7 @@
                 
                 if ([CCCoreData setDirectoryUnLock:lockServerUrl activeAccount:app.activeAccount] == NO) {
                     
-                    [app messageNotification:@"_error_" description:@"_error_operation_canc_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
+                    [app messageNotification:@"_error_" description:@"_error_operation_canc_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
                 }
                 
                 [self.tableView reloadData];
@@ -4079,7 +4079,7 @@
         
     } else {
         
-        [app messageNotification:@"_error_" description:@"_error_operation_canc_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
+        [app messageNotification:@"_error_" description:@"_error_operation_canc_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
     }
 }
 
@@ -4537,7 +4537,7 @@
     
     if (lockDirectory && editingStyle == UITableViewCellEditingStyleDelete) {
         
-        [app messageNotification:@"_error_" description:@"_folder_blocked_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
+        [app messageNotification:@"_error_" description:@"_folder_blocked_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
         
         return;
     }

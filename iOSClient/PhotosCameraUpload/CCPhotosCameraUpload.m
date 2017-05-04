@@ -375,7 +375,7 @@
 
 - (void)downloadFileFailure:(NSInteger)errorCode
 {
-    [app messageNotification:@"_download_selected_files_" description:@"_error_download_photobrowser_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
+    [app messageNotification:@"_download_selected_files_" description:@"_error_download_photobrowser_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
 }
 
 - (void)downloadFileSuccess:(CCMetadata *)metadata

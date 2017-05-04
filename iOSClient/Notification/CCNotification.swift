@@ -205,7 +205,7 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
 
     func setNotificationServerFailure(_ metadataNet: CCMetadataNet!, message: String!, errorCode: Int) {
         
-        appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error)
+        appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
     }
     
     func setNotificationServerSuccess(_ metadataNet: CCMetadataNet!) {

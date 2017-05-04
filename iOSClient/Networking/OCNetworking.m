@@ -309,7 +309,7 @@
         if ([items count] == 0) {
             
 #ifndef EXTENSION
-            [app messageNotification:@"Server error" description:@"Read Folder WebDAV : [items NULL] please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
+            [app messageNotification:@"Server error" description:@"Read Folder WebDAV : [items NULL] please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError  errorCode:0];
 #endif
 
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -374,7 +374,7 @@
                 // ----- BUG #942 ---------
                 if ([itemDto.etag length] == 0) {
 #ifndef EXTENSION
-                    [app messageNotification:@"Server error" description:@"Metadata etag absent, record excluded, please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
+                    [app messageNotification:@"Server error" description:@"Metadata etag absent, record excluded, please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
 #endif
                     continue;
                 }
@@ -455,7 +455,7 @@
             // ----- BUG #942 ---------
             if ([itemDto.etag length] == 0) {
 #ifndef EXTENSION
-                [app messageNotification:@"Server error" description:@"Metadata etag absent, record excluded, please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
+                [app messageNotification:@"Server error" description:@"Metadata etag absent, record excluded, please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
 #endif
                 continue;
             }
@@ -600,7 +600,7 @@
             // ----- BUG #942 ---------
             if ([itemDto.etag length] == 0) {
 #ifndef EXTENSION
-                [app messageNotification:@"Server error" description:@"Metadata etag absent, record excluded, please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
+                [app messageNotification:@"Server error" description:@"Metadata etag absent, record excluded, please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
 #endif
                 continue;
             }
@@ -916,7 +916,7 @@
         if ([items count] == 0) {
        
 #ifndef EXTENSION
-            [app messageNotification:@"Server error" description:@"Read File WebDAV : [items NULL] please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
+            [app messageNotification:@"Server error" description:@"Read File WebDAV : [items NULL] please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
 #endif
         }
         
@@ -1131,7 +1131,7 @@
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
 #ifndef EXTENSION
-        [app messageNotification:@"_error_" description:[CCError manageErrorOC:response.statusCode error:error] visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
+        [app messageNotification:@"_error_" description:[CCError manageErrorOC:response.statusCode error:error] visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
 #endif
         
         NSInteger errorCode = response.statusCode;
@@ -1172,7 +1172,7 @@
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
 #ifndef EXTENSION
-        [app messageNotification:@"_error_" description:[CCError manageErrorOC:response.statusCode error:error] visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
+        [app messageNotification:@"_error_" description:[CCError manageErrorOC:response.statusCode error:error] visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
 #endif
         
         NSInteger errorCode = response.statusCode;

@@ -149,7 +149,7 @@
 
 - (void)configDynamicShortcutItems;
 
-- (void)messageNotification:(NSString *)title description:(NSString *)description visible:(BOOL)visible delay:(NSTimeInterval)delay type:(TWMessageBarMessageType)type;
+- (void)messageNotification:(NSString *)title description:(NSString *)description visible:(BOOL)visible delay:(NSTimeInterval)delay type:(TWMessageBarMessageType)type errorCode:(NSInteger)errorcode;
 - (void)updateApplicationIconBadgeNumber;
 - (BOOL)handleShortCutItem:(UIApplicationShortcutItem *)shortcutItem;
 - (void)aspectNavigationControllerBar:(UINavigationBar *)nav encrypted:(BOOL)encrypted online:(BOOL)online hidden:(BOOL)hidden;

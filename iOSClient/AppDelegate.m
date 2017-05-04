@@ -714,7 +714,7 @@
 #pragma mark ===== StatusBar & ApplicationIconBadgeNumber =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)messageNotification:(NSString *)title description:(NSString *)description visible:(BOOL)visible delay:(NSTimeInterval)delay type:(TWMessageBarMessageType)type
+- (void)messageNotification:(NSString *)title description:(NSString *)description visible:(BOOL)visible delay:(NSTimeInterval)delay type:(TWMessageBarMessageType)type errorCode:(NSInteger)errorcode
 {
     title = [NSString stringWithFormat:@"%@\n",[CCUtility localizableBrand:title table:nil]];
         
@@ -1147,7 +1147,7 @@
         
         if (self.lastReachability == NO) {
             
-            [self messageNotification:@"_network_available_" description:nil visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo];
+            [self messageNotification:@"_network_available_" description:nil visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
             
             if (_activeMain)
                 [_activeMain performSelector:@selector(requestServerCapabilities) withObject:nil afterDelay:3];
@@ -1160,7 +1160,7 @@
     } else {
         
         if (self.lastReachability == YES) {
-            [self messageNotification:@"_network_not_available_" description:nil visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo];
+            [self messageNotification:@"_network_not_available_" description:nil visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:kCFURLErrorNotConnectedToInternet];
         }
         
         NSLog(@"[LOG] Reachability Changed: NOT Reachable");
@@ -1326,7 +1326,7 @@
     
     if (errorCount >= 10) {
         
-        [app messageNotification:@"_error_" description:@"_too_errors_automatic_all_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
+        [app messageNotification:@"_error_" description:@"_too_errors_automatic_all_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
         
         // STOP Im progress
         _automaticUploadInProgress = NO;
