@@ -171,9 +171,9 @@
         
         for (NSString *domain in k_loginBaseUrlMultiDomains) {
             
-            message = [NSString stringWithFormat:@"%@ %@", message, domain];
+            message = [NSString stringWithFormat:@"%@ %@", message, domain.lowercaseString];
             
-            if ([self.baseUrl.text containsString:domain])
+            if ([self.baseUrl.text.lowercaseString containsString:domain.lowercaseString])
                 foundDomain = YES;
         }
         
