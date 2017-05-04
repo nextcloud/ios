@@ -32,7 +32,6 @@
 #define k_loginButtonLabelLink                  @"https://nextcloud.com/providers"
 #define k_webLoginAutenticationProtocol         @""
 
-
 // Capabilities Group
 #define k_capabilitiesGroups                    @"group.it.twsweb.Crypto-Cloud"
 

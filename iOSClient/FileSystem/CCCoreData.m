@@ -1906,7 +1906,10 @@
 
 + (void)addActivityClient:(NSString *)file fileID:(NSString *)fileID action:(NSString *)action selector:(NSString *)selector note:(NSString *)note type:(NSString *)type verbose:(NSInteger)verbose account:(NSString *)account activeUrl:(NSString *)activeUrl
 {
-    note = [note stringByReplacingOccurrencesOfString:[activeUrl stringByAppendingString:webDAV] withString:@""];
+    // fix #9 CCCoreData.m line 1909 Version 2.17.2 (00005)
+    if (activeUrl)
+        note = [note stringByReplacingOccurrencesOfString:[activeUrl stringByAppendingString:webDAV] withString:@""];
+    
     note = [note stringByReplacingOccurrencesOfString:[k_domain_session_queue stringByAppendingString:@"."] withString:@""];
 
     NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
