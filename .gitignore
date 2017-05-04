@@ -31,4 +31,5 @@ Pods/
 xcuserdata/
 project.xcworkspace/
 DerivedData/
-
+xcshareddata/
+xcuserdata
