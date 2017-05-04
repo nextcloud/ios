@@ -37,6 +37,7 @@
 #import "Firebase.h"
 #import <Fabric/Fabric.h>
 #import <Crashlytics/Crashlytics.h>
+#import "JDStatusBarNotification.h"
 
 #ifdef CUSTOM_BUILD
     #import "CustomSwift.h"
@@ -716,20 +717,23 @@
 
 - (void)messageNotification:(NSString *)title description:(NSString *)description visible:(BOOL)visible delay:(NSTimeInterval)delay type:(TWMessageBarMessageType)type errorCode:(NSInteger)errorcode
 {
-    title = [NSString stringWithFormat:@"%@\n",[CCUtility localizableBrand:title table:nil]];
-        
+    static NSInteger errorCodePrev = 0;
+    
     dispatch_async(dispatch_get_main_queue(), ^{
         
         if (visible) {
             
-            if (errorcode == kCFURLErrorNotConnectedToInternet) {
+            if (errorcode == kCFURLErrorNotConnectedToInternet || errorcode == k_CCErrorNetworkNowAvailable) {
                 
-                NSLog(@"[LOG] No internet connection");
+                if (errorCodePrev != errorcode)
+                    [JDStatusBarNotification showWithStatus:NSLocalizedString(title, nil) dismissAfter:delay styleName:JDStatusBarStyleDefault];
+                
+                errorCodePrev = errorcode;
                 
             } else {
-            
+                
                 [TWMessageBarManager sharedInstance].styleSheet = self;
-                [[TWMessageBarManager sharedInstance] showMessageWithTitle:title description:[CCUtility localizableBrand:description table:nil] type:type duration:delay];
+                [[TWMessageBarManager sharedInstance] showMessageWithTitle:[NSString stringWithFormat:@"%@\n",[CCUtility localizableBrand:title table:nil]] description:[CCUtility localizableBrand:description table:nil] type:type duration:delay];
             }
             
         } else {
@@ -1154,7 +1158,7 @@
         
         if (self.lastReachability == NO) {
             
-            [self messageNotification:@"_network_available_" description:nil visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
+            [self messageNotification:@"_network_available_" description:nil visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:k_CCErrorNetworkNowAvailable];
             
             if (_activeMain)
                 [_activeMain performSelector:@selector(requestServerCapabilities) withObject:nil afterDelay:3];
