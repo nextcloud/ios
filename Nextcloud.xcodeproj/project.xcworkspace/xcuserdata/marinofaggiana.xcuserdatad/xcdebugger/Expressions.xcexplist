@@ -11,6 +11,17 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
+         contextName = "-[CCLogin testUrl]:CCLogin.m">
+         <PersistentStrings>
+            <PersistentString
+               value = "k_option_use_multiDomains">
+            </PersistentString>
+            <PersistentString
+               value = "k_loginBaseUrlMultiDomains">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
          contextName = "-[CCManageAccount UpdateForm]:CCManageAccount.m">
          <PersistentStrings>
             <PersistentString

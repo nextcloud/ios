@@ -163,9 +163,37 @@
 
 - (void)testUrl
 {
+    // Use MultiDomain check if this is correct
+    if (k_option_use_multiDomains == YES) {
+        
+        BOOL foundDomain = NO;
+        NSString *message = @"";
+        
+        for (NSString *domain in k_loginBaseUrlMultiDomains) {
+            
+            message = [NSString stringWithFormat:@"%@ %@", message, domain];
+            
+            if ([self.baseUrl.text containsString:domain])
+                foundDomain = YES;
+        }
+        
+        if (!foundDomain) {
+            
+            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:[NSString stringWithFormat:@"%@ %@", NSLocalizedString(@"_error_multidomain_", nil), message]  preferredStyle:UIAlertControllerStyleAlert];
+            
+            [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+                self.baseUrl.text = @"";
+            }]];
+            
+            [self presentViewController:alertController animated:YES completion:nil];
+
+            return;
+        }
+    }
+    
     self.login.enabled = NO;
     self.loadingBaseUrl.hidden = NO;
-  
+    
     // Check whether baseUrl contain protocol. If not add https:// by default.
     if(![self.baseUrl.text hasPrefix:@"https"] && ![self.baseUrl.text hasPrefix:@"http"]) {
       self.baseUrl.text = [NSString stringWithFormat:@"https://%@",self.baseUrl.text];

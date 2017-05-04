@@ -3354,12 +3354,12 @@
 		F7F67BAB1A24D27800EE80DA /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				F72B60941A24F04E004EF66F /* Localizations */,
 				F75CDBF51DF063AD00116AD0 /* .gitignore */,
 				F7229B491DF71BB300E8C4E7 /* AUTHORS */,
 				F7F0617A1BAACDD300846525 /* CryptoCloud.pch */,
 				F78BFECA1D3111B800E513CF /* LaunchScreenNextcloud.xib */,
 				F77D49A71DC238E500CDC568 /* loading@2x.gif */,
-				F72B60941A24F04E004EF66F /* Localizations */,
 				F7F67BAD1A24D27800EE80DA /* main.m */,
 				F7D154271E2392A300202FD9 /* Nextcloud-Bridging-Header.h */,
 				F76344751BF259A800188725 /* synchronized.gif */,

@@ -27,7 +27,7 @@
 #define k_textCopyrightNextcloudiOS             @"Nextcloud for iOS %@ © 2017 T.W.S. Inc."
 #define k_textCopyrightNextcloudServer          @"Nextcloud Server %@"
 #define k_loginBaseUrl                          @"https://cloud.twsweb.it"
-#define k_loginBaseUrlMultiDomains              {@"domain.com", "domain.it"}
+#define k_loginBaseUrlMultiDomains              @[@"domain.com", @"domain.it"]
 #define k_pushNotificationServer                @"https://push-notifications.nextcloud.com"
 #define k_loginButtonLabelLink                  @"https://nextcloud.com/providers"
 #define k_webLoginAutenticationProtocol         @""
