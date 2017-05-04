@@ -85,9 +85,19 @@ class CCActions: NSObject {
 
     func deleteFileOrFolder(_ metadata: CCMetadata, delegate: AnyObject) {
         
-        let serverUrl = CCCoreData.getServerUrl(fromDirectoryID: metadata.directoryID, activeAccount: appDelegate.activeAccount)!
+        let serverUrl = CCCoreData.getServerUrl(fromDirectoryID: metadata.directoryID, activeAccount: appDelegate.activeAccount)
         let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
 
+        // fix CCActions.swift line 88 2.17.2 (00005)
+        if (serverUrl == nil) {
+            
+            print("[LOG] Server URL not found \(metadata.directoryID)")
+            
+            appDelegate.messageNotification("_delete_", description: "_file_not_found_reload_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error)
+            
+            return
+        }
+        
         if metadata.cryptated == true {
             
             metadataNet.action = actionDeleteFileDirectory

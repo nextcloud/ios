@@ -6,16 +6,16 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "No"
+            shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "iOSClient/Networking/CCNetworking.m"
-            timestampString = "515582995.152017"
+            filePath = "iOSClient/Main/CCDetail.m"
+            timestampString = "515584360.274905"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1340"
-            endingLineNumber = "1340"
-            landmarkName = "-uploadFileSuccessFailure:fileName:fileID:rev:date:serverUrl:errorCode:"
+            startingLineNumber = "1083"
+            endingLineNumber = "1083"
+            landmarkName = "-deleteButtonPressed:"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
