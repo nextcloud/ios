@@ -195,6 +195,12 @@
 		F75A3FFE1EBCB55A00B213E8 /* Realm.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F75A3FF11EBCB4AA00B213E8 /* Realm.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F75A40011EBCB92300B213E8 /* Realm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F75A3FF11EBCB4AA00B213E8 /* Realm.framework */; };
 		F75A40021EBCB95C00B213E8 /* Realm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F75A3FF11EBCB4AA00B213E8 /* Realm.framework */; };
+		F75A40081EBCBB5E00B213E8 /* NCDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = F75A40071EBCBB5E00B213E8 /* NCDatabase.m */; };
+		F75A40091EBCBB5E00B213E8 /* NCDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = F75A40071EBCBB5E00B213E8 /* NCDatabase.m */; };
+		F75A400A1EBCBB5E00B213E8 /* NCDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = F75A40071EBCBB5E00B213E8 /* NCDatabase.m */; };
+		F75A40171EBCC6C600B213E8 /* NCManageDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = F75A40161EBCC6C600B213E8 /* NCManageDatabase.m */; };
+		F75A40181EBCC6C600B213E8 /* NCManageDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = F75A40161EBCC6C600B213E8 /* NCManageDatabase.m */; };
+		F75A40191EBCC6C600B213E8 /* NCManageDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = F75A40161EBCC6C600B213E8 /* NCManageDatabase.m */; };
 		F75ADF451DC75FFE008A7347 /* CCLogin.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F75ADF441DC75FFE008A7347 /* CCLogin.storyboard */; };
 		F75AE3C71E9D12900088BB09 /* SwiftyAvatar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75AE3C61E9D12900088BB09 /* SwiftyAvatar.swift */; };
 		F75EDFAC1E8C106900E6F369 /* FirebaseAnalytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F75EDFA61E8C106900E6F369 /* FirebaseAnalytics.framework */; };
@@ -1154,6 +1160,10 @@
 		F7540F2C1D5B238600C3FFA8 /* x509v3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = x509v3.h; sourceTree = "<group>"; };
 		F75797AD1E81356C00187A1B /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/CTAssetsPicker.strings; sourceTree = "<group>"; };
 		F75A3FF11EBCB4AA00B213E8 /* Realm.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Realm.framework; sourceTree = "<group>"; };
+		F75A40061EBCBB5E00B213E8 /* NCDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCDatabase.h; sourceTree = "<group>"; };
+		F75A40071EBCBB5E00B213E8 /* NCDatabase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCDatabase.m; sourceTree = "<group>"; };
+		F75A40151EBCC6C600B213E8 /* NCManageDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCManageDatabase.h; sourceTree = "<group>"; };
+		F75A40161EBCC6C600B213E8 /* NCManageDatabase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCManageDatabase.m; sourceTree = "<group>"; };
 		F75ADF441DC75FFE008A7347 /* CCLogin.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = CCLogin.storyboard; sourceTree = "<group>"; };
 		F75AE3C61E9D12900088BB09 /* SwiftyAvatar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftyAvatar.swift; sourceTree = "<group>"; };
 		F75CDBF51DF063AD00116AD0 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; name = .gitignore; path = ../.gitignore; sourceTree = "<group>"; };
@@ -3138,6 +3148,10 @@
 				F7B81D801C64E77F006D02DF /* CCCoreData.m */,
 				F7C8C1721B482A920048180E /* CCMetadata.h */,
 				F7C8C1731B482A920048180E /* CCMetadata.m */,
+				F75A40061EBCBB5E00B213E8 /* NCDatabase.h */,
+				F75A40071EBCBB5E00B213E8 /* NCDatabase.m */,
+				F75A40151EBCC6C600B213E8 /* NCManageDatabase.h */,
+				F75A40161EBCC6C600B213E8 /* NCManageDatabase.m */,
 			);
 			path = FileSystem;
 			sourceTree = "<group>";
@@ -4008,6 +4022,7 @@
 				F71459ED1D12E3B700CAFEEC /* UIImage+Masking.m in Sources */,
 				F71459F01D12E3B700CAFEEC /* NSString+Base64.m in Sources */,
 				F7EF0CAF1D9E95F400A9D15E /* CCSharedDBSession.m in Sources */,
+				F75A40181EBCC6C600B213E8 /* NCManageDatabase.m in Sources */,
 				F71459F11D12E3B700CAFEEC /* CCMove.m in Sources */,
 				F71459F31D12E3B700CAFEEC /* UIImage+Resizing.m in Sources */,
 				F71459F71D12E3B700CAFEEC /* CCGraphics.m in Sources */,
@@ -4020,6 +4035,7 @@
 				F7145A001D12E3B700CAFEEC /* CCGlobal.m in Sources */,
 				F7145A011D12E3B700CAFEEC /* UIImage+Blurring.m in Sources */,
 				F7145A041D12E3B700CAFEEC /* CCloadItemData.swift in Sources */,
+				F75A40091EBCBB5E00B213E8 /* NCDatabase.m in Sources */,
 				F708CF951E56E8CC00271D8B /* TableAutomaticUpload+CoreDataProperties.m in Sources */,
 				F73CC07F1E813DFF006E3047 /* BKTouchIDSwitchView.m in Sources */,
 				F76B3CCF1EAE01BD00921AC9 /* NCBrand.swift in Sources */,
@@ -4081,11 +4097,13 @@
 				F74344861E127F89001CC831 /* RNEncryptor.m in Sources */,
 				F73C41521E82E51F000137C0 /* TableExternalSites+CoreDataClass.m in Sources */,
 				F73C41551E82E51F000137C0 /* TableExternalSites+CoreDataProperties.m in Sources */,
+				F75A400A1EBCBB5E00B213E8 /* NCDatabase.m in Sources */,
 				F73CC06B1E813DFF006E3047 /* BKPasscodeDummyViewController.m in Sources */,
 				F708CF991E56E8CC00271D8B /* TableAccount+CoreDataClass.m in Sources */,
 				F7FC88FA1E140558006D0506 /* cryptocloud.xcdatamodeld in Sources */,
 				F708CF721E56E8CC00271D8B /* TableMetadata+CoreDataProperties.m in Sources */,
 				F74344631E127D79001CC831 /* CCBKPasscode.m in Sources */,
+				F75A40191EBCC6C600B213E8 /* NCManageDatabase.m in Sources */,
 				F708CF8A1E56E8CC00271D8B /* TableShare+CoreDataProperties.m in Sources */,
 				F74344661E127E35001CC831 /* CCCoreData.m in Sources */,
 				F76B3CD01EAE01BD00921AC9 /* NCBrand.swift in Sources */,
@@ -4187,6 +4205,7 @@
 				F708CF791E56E8CC00271D8B /* TableGPS+CoreDataClass.m in Sources */,
 				F7B1FBCA1E72E3D1001781FE /* SwiftWebVCActivitySafari.swift in Sources */,
 				F7F54D0A1E5B14C800E19C62 /* MWPhotoBrowser.m in Sources */,
+				F75A40171EBCC6C600B213E8 /* NCManageDatabase.m in Sources */,
 				F720E01F1E48C73E001A4B9E /* CCActions.swift in Sources */,
 				F762CB081EACB66200B38484 /* XLFormOptionsViewController.m in Sources */,
 				F73CC0721E813DFF006E3047 /* BKPasscodeLockScreenManager.m in Sources */,
@@ -4320,6 +4339,7 @@
 				F7F06EC11DBFACC600099AE9 /* CTAssetsPickerAccessDeniedView.m in Sources */,
 				F7F06ECB1DBFACC600099AE9 /* CTAssetThumbnailOverlay.m in Sources */,
 				F762CB011EACB66200B38484 /* XLFormSelectorCell.m in Sources */,
+				F75A40081EBCBB5E00B213E8 /* NCDatabase.m in Sources */,
 				F77B0E9B1D118A16002130FE /* CCBKPasscode.m in Sources */,
 				F77B0E9D1D118A16002130FE /* HRColorPickerView.m in Sources */,
 				F77B0E9F1D118A16002130FE /* mztools.c in Sources */,

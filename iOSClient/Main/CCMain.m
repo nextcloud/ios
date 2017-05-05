@@ -32,7 +32,7 @@
 #import <OCCommunicationLib/OCFrameworkConstants.h>
 #import <OCCommunicationLib/OCCapabilities.h>
 #import "CTAssetCheckmark.h"
-//#import <Crashlytics/Crashlytics.h>
+#import "NCManageDatabase.h"
 
 #ifdef CUSTOM_BUILD
 #import "CustomSwift.h"
@@ -1102,8 +1102,14 @@
 
 - (void)getActivityServerSuccess:(NSArray *)listOfActivity
 {
-    for (OCActivity *activity in listOfActivity)
+    for (OCActivity *activity in listOfActivity) {
         [CCCoreData addActivityServer:activity account:app.activeAccount];
+        
+        // New Realm DB Test
+        [[NCManageDatabase sharedManageDatabase] addActivityServer:activity account:app.activeAccount];
+    }
+    
+    
     
     // Reload Activity Data Source
     [app.activeActivity reloadDatasource];

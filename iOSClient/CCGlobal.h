@@ -27,6 +27,7 @@
 
 extern NSString *const appApplicationSupport;
 extern NSString *const appDatabase;
+extern NSString *const appDatabaseNextcloud;
 extern NSString *const appCertificates;
 
 extern NSString *const webDAV;
@@ -73,6 +74,9 @@ extern NSString *const urlBaseUploadDB;
 #define k_returnPatenteGuida                            11
 #define k_returnCartaIdentita                           12
 #define k_returnPassaporto                              13
+
+// Name Default DB
+#define k_databaseDefault                               @"nextcloud"
 
 // File Name Const
 #define k_folderDefaultCameraUpload                     @"Photos"

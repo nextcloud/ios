@@ -38,6 +38,7 @@
 #import <Fabric/Fabric.h>
 #import <Crashlytics/Crashlytics.h>
 #import "JDStatusBarNotification.h"
+#import "NCManageDatabase.h"
 
 #ifdef CUSTOM_BUILD
     #import "CustomSwift.h"
@@ -125,6 +126,11 @@
     if (![[NSFileManager defaultManager] fileExistsAtPath:dir])
         [[NSFileManager defaultManager] createDirectoryAtPath:dir withIntermediateDirectories:YES attributes:nil error:nil];
     
+    // create dir Database Nextcloud
+    dir = [[dirGroup URLByAppendingPathComponent:appDatabaseNextcloud] path];
+    if (![[NSFileManager defaultManager] fileExistsAtPath:dir])
+    [[NSFileManager defaultManager] createDirectoryAtPath:dir withIntermediateDirectories:YES attributes:nil error:nil];
+
     //[CCCoreData verifyVersionCoreData];
     
     [MagicalRecord setupCoreDataStackWithAutoMigratingSqliteStoreNamed:(id)[dirGroup URLByAppendingPathComponent:[appDatabase stringByAppendingPathComponent:@"cryptocloud"]]];
