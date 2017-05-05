@@ -9,13 +9,13 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "iOSClient/Transfers/CCTransfers.m"
-            timestampString = "515604604.858531"
+            filePath = "iOSClient/Main/CCMain.m"
+            timestampString = "515610859.479767"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "598"
-            endingLineNumber = "598"
-            landmarkName = "-tableView:cellForRowAtIndexPath:"
+            startingLineNumber = "5650"
+            endingLineNumber = "5650"
+            landmarkName = "-performSegueDirectoryWithControlPasscode:"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -26,11 +26,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "iOSClient/Main/CCMain.m"
-            timestampString = "515610859.479767"
+            timestampString = "515668987.635039"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "5650"
-            endingLineNumber = "5650"
+            startingLineNumber = "5586"
+            endingLineNumber = "5586"
             landmarkName = "-performSegueDirectoryWithControlPasscode:"
             landmarkType = "7">
          </BreakpointContent>

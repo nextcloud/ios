@@ -33,3 +33,6 @@ project.xcworkspace/
 DerivedData/
 xcshareddata/
 xcuserdata
+
+*.xcuserstate
+*.xcbkptlist
