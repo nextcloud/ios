@@ -38,24 +38,29 @@
     return self;
 }
 
-- (void)addActivityServer:(OCActivity *)activity account:(NSString *)account
+- (void)addActivityServer:(NSArray *)listOfActivity account:(NSString *)account
 {
-    DBActivity *dbActivity = [DBActivity new];
-    
-    dbActivity.account = account;
-    dbActivity.action = @"Activity";
-    dbActivity.date = activity.date;
-    dbActivity.file = activity.file;
-    dbActivity.idActivity = activity.idActivity;
-    dbActivity.link = activity.link;
-    dbActivity.note = activity.subject;
-    dbActivity.type = k_activityTypeInfo;
-    dbActivity.verbose = k_activityVerboseDefault;
-
     RLMRealm *realm = [RLMRealm defaultRealm];
     
     [realm beginWriteTransaction];
-    [realm addObject:dbActivity];
+    
+    for (OCActivity *activity in listOfActivity) {
+        
+        DBActivity *dbActivity = [DBActivity new];
+        
+        dbActivity.account = account;
+        dbActivity.action = @"Activity";
+        dbActivity.date = activity.date;
+        dbActivity.file = activity.file;
+        dbActivity.idActivity = activity.idActivity;
+        dbActivity.link = activity.link;
+        dbActivity.note = activity.subject;
+        dbActivity.type = k_activityTypeInfo;
+        dbActivity.verbose = k_activityVerboseDefault;
+        
+        [realm addObject:dbActivity];
+    }
+    
     [realm commitWriteTransaction];
 }
 

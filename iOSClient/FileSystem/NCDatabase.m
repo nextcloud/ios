@@ -33,7 +33,7 @@
 }
 
 + (NSDictionary *)defaultPropertyValues {
-    return @{@"action" : @"", @"date" : [NSDate date], @"file" : @"", @"fileID" : @"", @"idActivity" : @0, @"link" : @"", @"note" : @"", @"selector" : @"", @"type" : @"", @"verbose" : @NO};
+    return @{@"date" : [NSDate date], @"idActivity" : @0, @"verbose" : @NO};
 }
 
 @end

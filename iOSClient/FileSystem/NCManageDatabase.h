@@ -15,6 +15,6 @@
 + (NCManageDatabase *)sharedManageDatabase;
 
 //
-- (void)addActivityServer:(OCActivity *)activity account:(NSString *)account;
+- (void)addActivityServer:(NSArray *)listOfActivity account:(NSString *)account;
 
 @end
