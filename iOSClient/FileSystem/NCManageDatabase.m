@@ -46,11 +46,9 @@
     dbActivity.action = @"Activity";
     dbActivity.date = activity.date;
     dbActivity.file = activity.file;
-    dbActivity.fileID = @"";
     dbActivity.idActivity = activity.idActivity;
     dbActivity.link = activity.link;
     dbActivity.note = activity.subject;
-    dbActivity.selector = @"";
     dbActivity.type = k_activityTypeInfo;
     dbActivity.verbose = k_activityVerboseDefault;
 

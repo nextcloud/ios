@@ -12,9 +12,9 @@
 
 @interface NCManageDatabase : NSObject
 
-    + (NCManageDatabase *)sharedManageDatabase;
++ (NCManageDatabase *)sharedManageDatabase;
 
-    //
-    - (void)addActivityServer:(OCActivity *)activity account:(NSString *)account;
+//
+- (void)addActivityServer:(OCActivity *)activity account:(NSString *)account;
 
 @end
