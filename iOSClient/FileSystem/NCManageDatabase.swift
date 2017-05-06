@@ -40,6 +40,7 @@ class NCManageDatabase: NSObject {
                     continue
                 }
                 
+                // Add new Activity
                 let dbActivity = DBActivity()
                 
                 dbActivity.account = account

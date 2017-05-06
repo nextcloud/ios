@@ -8,7 +8,6 @@
 
 import RealmSwift
 
-// Dog model
 class DBActivity: Object {
     
     dynamic var account = ""
