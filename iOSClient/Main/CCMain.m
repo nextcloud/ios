@@ -1105,8 +1105,7 @@
         [CCCoreData addActivityServer:activity account:app.activeAccount];
     }
     
-    // New Realm DB Test
-    //[[NCManageDatabase sharedManageDatabase] addActivityServer:listOfActivity account:app.activeAccount];
+    [[NCManageDatabase sharedInstance] addActivityServer:listOfActivity account:app.activeAccount];
     
     // Reload Activity Data Source
     [app.activeActivity reloadDatasource];
