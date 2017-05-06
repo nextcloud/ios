@@ -32,7 +32,6 @@
 #import <OCCommunicationLib/OCFrameworkConstants.h>
 #import <OCCommunicationLib/OCCapabilities.h>
 #import "CTAssetCheckmark.h"
-#import "NCManageDatabase.h"
 
 #ifdef CUSTOM_BUILD
 #import "CustomSwift.h"
@@ -1107,7 +1106,7 @@
     }
     
     // New Realm DB Test
-    [[NCManageDatabase sharedManageDatabase] addActivityServer:listOfActivity account:app.activeAccount];
+    //[[NCManageDatabase sharedManageDatabase] addActivityServer:listOfActivity account:app.activeAccount];
     
     // Reload Activity Data Source
     [app.activeActivity reloadDatasource];

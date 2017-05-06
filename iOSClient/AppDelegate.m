@@ -38,7 +38,6 @@
 #import <Fabric/Fabric.h>
 #import <Crashlytics/Crashlytics.h>
 #import "JDStatusBarNotification.h"
-#import "NCManageDatabase.h"
 
 #ifdef CUSTOM_BUILD
     #import "CustomSwift.h"

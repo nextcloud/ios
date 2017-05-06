@@ -191,16 +191,6 @@
 		F750374F1DBFA91A008FB480 /* NSArray+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F75037461DBFA91A008FB480 /* NSArray+PureLayout.m */; };
 		F75037511DBFA91A008FB480 /* NSLayoutConstraint+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F75037481DBFA91A008FB480 /* NSLayoutConstraint+PureLayout.m */; };
 		F75797AE1E81356C00187A1B /* CTAssetsPicker.strings in Resources */ = {isa = PBXBuildFile; fileRef = F75797AC1E81356C00187A1B /* CTAssetsPicker.strings */; };
-		F75A3FF21EBCB4AA00B213E8 /* Realm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F75A3FF11EBCB4AA00B213E8 /* Realm.framework */; };
-		F75A3FFE1EBCB55A00B213E8 /* Realm.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F75A3FF11EBCB4AA00B213E8 /* Realm.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		F75A40011EBCB92300B213E8 /* Realm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F75A3FF11EBCB4AA00B213E8 /* Realm.framework */; };
-		F75A40021EBCB95C00B213E8 /* Realm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F75A3FF11EBCB4AA00B213E8 /* Realm.framework */; };
-		F75A40081EBCBB5E00B213E8 /* NCDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = F75A40071EBCBB5E00B213E8 /* NCDatabase.m */; };
-		F75A40091EBCBB5E00B213E8 /* NCDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = F75A40071EBCBB5E00B213E8 /* NCDatabase.m */; };
-		F75A400A1EBCBB5E00B213E8 /* NCDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = F75A40071EBCBB5E00B213E8 /* NCDatabase.m */; };
-		F75A40171EBCC6C600B213E8 /* NCManageDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = F75A40161EBCC6C600B213E8 /* NCManageDatabase.m */; };
-		F75A40181EBCC6C600B213E8 /* NCManageDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = F75A40161EBCC6C600B213E8 /* NCManageDatabase.m */; };
-		F75A40191EBCC6C600B213E8 /* NCManageDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = F75A40161EBCC6C600B213E8 /* NCManageDatabase.m */; };
 		F75ADF451DC75FFE008A7347 /* CCLogin.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F75ADF441DC75FFE008A7347 /* CCLogin.storyboard */; };
 		F75AE3C71E9D12900088BB09 /* SwiftyAvatar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75AE3C61E9D12900088BB09 /* SwiftyAvatar.swift */; };
 		F75EDFAC1E8C106900E6F369 /* FirebaseAnalytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F75EDFA61E8C106900E6F369 /* FirebaseAnalytics.framework */; };
@@ -553,6 +543,16 @@
 		F7C525A21E3B6DA800FFE02C /* CCNotification.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7C525A11E3B6DA800FFE02C /* CCNotification.storyboard */; };
 		F7C742D81E7BD5C900D9C973 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7C742D71E7BD5C900D9C973 /* MainInterface.storyboard */; };
 		F7D2677C1E157053005ACB7E /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7F67BB81A24D27800EE80DA /* Images.xcassets */; };
+		F7DFE2511EBDC3A400CF5202 /* Realm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7DFE24F1EBDC3A400CF5202 /* Realm.framework */; };
+		F7DFE2521EBDC3A400CF5202 /* Realm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7DFE24F1EBDC3A400CF5202 /* Realm.framework */; };
+		F7DFE2531EBDC3A400CF5202 /* Realm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7DFE24F1EBDC3A400CF5202 /* Realm.framework */; };
+		F7DFE2541EBDC3A400CF5202 /* RealmSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7DFE2501EBDC3A400CF5202 /* RealmSwift.framework */; };
+		F7DFE2551EBDC3A400CF5202 /* RealmSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7DFE2501EBDC3A400CF5202 /* RealmSwift.framework */; };
+		F7DFE2561EBDC3A400CF5202 /* RealmSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7DFE2501EBDC3A400CF5202 /* RealmSwift.framework */; };
+		F7DFE2571EBDC52E00CF5202 /* Realm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7DFE24F1EBDC3A400CF5202 /* Realm.framework */; };
+		F7DFE2581EBDC52E00CF5202 /* Realm.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F7DFE24F1EBDC3A400CF5202 /* Realm.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F7DFE2591EBDC53200CF5202 /* RealmSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7DFE2501EBDC3A400CF5202 /* RealmSwift.framework */; };
+		F7DFE25A1EBDC53200CF5202 /* RealmSwift.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F7DFE2501EBDC3A400CF5202 /* RealmSwift.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F7E718B01EB0FBE700FA58C9 /* CCGraphics.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B841C6388BC00DC4301 /* CCGraphics.m */; };
 		F7ECBA6D1E239DCD003E6328 /* CCCreateCloud.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7ECBA6C1E239DCD003E6328 /* CCCreateCloud.swift */; };
 		F7EF0CAF1D9E95F400A9D15E /* CCSharedDBSession.m in Sources */ = {isa = PBXBuildFile; fileRef = F7EF0CAD1D9E95F400A9D15E /* CCSharedDBSession.m */; };
@@ -751,7 +751,8 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				F75A3FFE1EBCB55A00B213E8 /* Realm.framework in Embed Frameworks */,
+				F7DFE25A1EBDC53200CF5202 /* RealmSwift.framework in Embed Frameworks */,
+				F7DFE2581EBDC52E00CF5202 /* Realm.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1159,11 +1160,6 @@
 		F7540F2B1D5B238600C3FFA8 /* x509_vfy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = x509_vfy.h; sourceTree = "<group>"; };
 		F7540F2C1D5B238600C3FFA8 /* x509v3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = x509v3.h; sourceTree = "<group>"; };
 		F75797AD1E81356C00187A1B /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/CTAssetsPicker.strings; sourceTree = "<group>"; };
-		F75A3FF11EBCB4AA00B213E8 /* Realm.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Realm.framework; sourceTree = "<group>"; };
-		F75A40061EBCBB5E00B213E8 /* NCDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCDatabase.h; sourceTree = "<group>"; };
-		F75A40071EBCBB5E00B213E8 /* NCDatabase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCDatabase.m; sourceTree = "<group>"; };
-		F75A40151EBCC6C600B213E8 /* NCManageDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCManageDatabase.h; sourceTree = "<group>"; };
-		F75A40161EBCC6C600B213E8 /* NCManageDatabase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCManageDatabase.m; sourceTree = "<group>"; };
 		F75ADF441DC75FFE008A7347 /* CCLogin.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = CCLogin.storyboard; sourceTree = "<group>"; };
 		F75AE3C61E9D12900088BB09 /* SwiftyAvatar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftyAvatar.swift; sourceTree = "<group>"; };
 		F75CDBF51DF063AD00116AD0 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; name = .gitignore; path = ../.gitignore; sourceTree = "<group>"; };
@@ -1524,6 +1520,8 @@
 		F7D0E65E1BC5042E008D989A /* CCDetail.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCDetail.h; sourceTree = "<group>"; };
 		F7D0E65F1BC5042E008D989A /* CCDetail.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCDetail.m; sourceTree = "<group>"; };
 		F7D154271E2392A300202FD9 /* Nextcloud-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Nextcloud-Bridging-Header.h"; sourceTree = "<group>"; };
+		F7DFE24F1EBDC3A400CF5202 /* Realm.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Realm.framework; sourceTree = "<group>"; };
+		F7DFE2501EBDC3A400CF5202 /* RealmSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = RealmSwift.framework; sourceTree = "<group>"; };
 		F7E456D41C89D54A00BD63F0 /* Share Ext-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Share Ext-Bridging-Header.h"; sourceTree = "<group>"; };
 		F7ECBA6C1E239DCD003E6328 /* CCCreateCloud.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CCCreateCloud.swift; sourceTree = "<group>"; };
 		F7EF0CAC1D9E95EC00A9D15E /* CCSharedDBSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = CCSharedDBSession.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -1681,9 +1679,10 @@
 			files = (
 				F71E68021DC1F79D003BA52B /* libownCloudiOS.a in Frameworks */,
 				F72C63891DC14B0400FA5ED5 /* libMagicalRecord.a in Frameworks */,
+				F7DFE2551EBDC3A400CF5202 /* RealmSwift.framework in Frameworks */,
 				F70A630F1D5B3467004E2AA5 /* libssl.a in Frameworks */,
 				F70A630B1D5B3467004E2AA5 /* libcrypto.a in Frameworks */,
-				F75A40011EBCB92300B213E8 /* Realm.framework in Frameworks */,
+				F7DFE2521EBDC3A400CF5202 /* Realm.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1693,9 +1692,10 @@
 			files = (
 				F74344541E1277D8001CC831 /* libownCloudiOS.a in Frameworks */,
 				F74344551E1277E2001CC831 /* libMagicalRecord.a in Frameworks */,
+				F7DFE2561EBDC3A400CF5202 /* RealmSwift.framework in Frameworks */,
 				F74344591E12786C001CC831 /* libssl.a in Frameworks */,
 				F74344561E12784A001CC831 /* libcrypto.a in Frameworks */,
-				F75A40021EBCB95C00B213E8 /* Realm.framework in Frameworks */,
+				F7DFE2531EBDC3A400CF5202 /* Realm.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1710,9 +1710,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F7DFE2571EBDC52E00CF5202 /* Realm.framework in Frameworks */,
 				F75EDFBF1E8C116D00E6F369 /* libstdc++.tbd in Frameworks */,
 				F75EDFBD1E8C112F00E6F369 /* libsqlite3.0.tbd in Frameworks */,
+				F7DFE2541EBDC3A400CF5202 /* RealmSwift.framework in Frameworks */,
 				F71E68001DC1F792003BA52B /* libownCloudiOS.a in Frameworks */,
+				F7DFE2591EBDC53200CF5202 /* RealmSwift.framework in Frameworks */,
 				F714526D1DC1523B0006A5D4 /* libMagicalRecord.a in Frameworks */,
 				F75EDFAC1E8C106900E6F369 /* FirebaseAnalytics.framework in Frameworks */,
 				F75EDFAE1E8C106900E6F369 /* FirebaseInstanceID.framework in Frameworks */,
@@ -1722,7 +1725,7 @@
 				F75EDFAD1E8C106900E6F369 /* FirebaseCore.framework in Frameworks */,
 				F75EDFAF1E8C106900E6F369 /* FirebaseMessaging.framework in Frameworks */,
 				F7A3771A1EB2364A002856D3 /* Fabric.framework in Frameworks */,
-				F75A3FF21EBCB4AA00B213E8 /* Realm.framework in Frameworks */,
+				F7DFE2511EBDC3A400CF5202 /* Realm.framework in Frameworks */,
 				F7BB14961D5B62C000ECEE68 /* libcrypto.a in Frameworks */,
 				F7BB14971D5B62C000ECEE68 /* libssl.a in Frameworks */,
 				F75EDFB01E8C106900E6F369 /* GoogleToolboxForMac.framework in Frameworks */,
@@ -1783,8 +1786,8 @@
 				F70F051D1C889184008DAB36 /* PPImageScrollingTableViewCell */,
 				F75037421DBFA91A008FB480 /* PureLayout */,
 				F70F05241C889184008DAB36 /* Reachability */,
+				F7DFE24E1EBDC3A400CF5202 /* Realm */,
 				F7659A3A1DC0B760004860C4 /* PSTCollectionView */,
-				F75A3FF01EBCB4AA00B213E8 /* Realm */,
 				F70F05321C889184008DAB36 /* RNCryptor */,
 				F70F0F921C889487008DAB36 /* SSZipArchive */,
 				F75AE3C51E9D12900088BB09 /* SwiftyAvatar */,
@@ -2364,14 +2367,6 @@
 				F7540F2C1D5B238600C3FFA8 /* x509v3.h */,
 			);
 			path = openssl;
-			sourceTree = "<group>";
-		};
-		F75A3FF01EBCB4AA00B213E8 /* Realm */ = {
-			isa = PBXGroup;
-			children = (
-				F75A3FF11EBCB4AA00B213E8 /* Realm.framework */,
-			);
-			path = Realm;
 			sourceTree = "<group>";
 		};
 		F75AE3C51E9D12900088BB09 /* SwiftyAvatar */ = {
@@ -3140,6 +3135,15 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		F7DFE24E1EBDC3A400CF5202 /* Realm */ = {
+			isa = PBXGroup;
+			children = (
+				F7DFE24F1EBDC3A400CF5202 /* Realm.framework */,
+				F7DFE2501EBDC3A400CF5202 /* RealmSwift.framework */,
+			);
+			path = Realm;
+			sourceTree = "<group>";
+		};
 		F7E95CEC1AC40BA40060D08E /* FileSystem */ = {
 			isa = PBXGroup;
 			children = (
@@ -3148,10 +3152,6 @@
 				F7B81D801C64E77F006D02DF /* CCCoreData.m */,
 				F7C8C1721B482A920048180E /* CCMetadata.h */,
 				F7C8C1731B482A920048180E /* CCMetadata.m */,
-				F75A40061EBCBB5E00B213E8 /* NCDatabase.h */,
-				F75A40071EBCBB5E00B213E8 /* NCDatabase.m */,
-				F75A40151EBCC6C600B213E8 /* NCManageDatabase.h */,
-				F75A40161EBCC6C600B213E8 /* NCManageDatabase.m */,
 			);
 			path = FileSystem;
 			sourceTree = "<group>";
@@ -4022,7 +4022,6 @@
 				F71459ED1D12E3B700CAFEEC /* UIImage+Masking.m in Sources */,
 				F71459F01D12E3B700CAFEEC /* NSString+Base64.m in Sources */,
 				F7EF0CAF1D9E95F400A9D15E /* CCSharedDBSession.m in Sources */,
-				F75A40181EBCC6C600B213E8 /* NCManageDatabase.m in Sources */,
 				F71459F11D12E3B700CAFEEC /* CCMove.m in Sources */,
 				F71459F31D12E3B700CAFEEC /* UIImage+Resizing.m in Sources */,
 				F71459F71D12E3B700CAFEEC /* CCGraphics.m in Sources */,
@@ -4035,7 +4034,6 @@
 				F7145A001D12E3B700CAFEEC /* CCGlobal.m in Sources */,
 				F7145A011D12E3B700CAFEEC /* UIImage+Blurring.m in Sources */,
 				F7145A041D12E3B700CAFEEC /* CCloadItemData.swift in Sources */,
-				F75A40091EBCBB5E00B213E8 /* NCDatabase.m in Sources */,
 				F708CF951E56E8CC00271D8B /* TableAutomaticUpload+CoreDataProperties.m in Sources */,
 				F73CC07F1E813DFF006E3047 /* BKTouchIDSwitchView.m in Sources */,
 				F76B3CCF1EAE01BD00921AC9 /* NCBrand.swift in Sources */,
@@ -4097,13 +4095,11 @@
 				F74344861E127F89001CC831 /* RNEncryptor.m in Sources */,
 				F73C41521E82E51F000137C0 /* TableExternalSites+CoreDataClass.m in Sources */,
 				F73C41551E82E51F000137C0 /* TableExternalSites+CoreDataProperties.m in Sources */,
-				F75A400A1EBCBB5E00B213E8 /* NCDatabase.m in Sources */,
 				F73CC06B1E813DFF006E3047 /* BKPasscodeDummyViewController.m in Sources */,
 				F708CF991E56E8CC00271D8B /* TableAccount+CoreDataClass.m in Sources */,
 				F7FC88FA1E140558006D0506 /* cryptocloud.xcdatamodeld in Sources */,
 				F708CF721E56E8CC00271D8B /* TableMetadata+CoreDataProperties.m in Sources */,
 				F74344631E127D79001CC831 /* CCBKPasscode.m in Sources */,
-				F75A40191EBCC6C600B213E8 /* NCManageDatabase.m in Sources */,
 				F708CF8A1E56E8CC00271D8B /* TableShare+CoreDataProperties.m in Sources */,
 				F74344661E127E35001CC831 /* CCCoreData.m in Sources */,
 				F76B3CD01EAE01BD00921AC9 /* NCBrand.swift in Sources */,
@@ -4205,7 +4201,6 @@
 				F708CF791E56E8CC00271D8B /* TableGPS+CoreDataClass.m in Sources */,
 				F7B1FBCA1E72E3D1001781FE /* SwiftWebVCActivitySafari.swift in Sources */,
 				F7F54D0A1E5B14C800E19C62 /* MWPhotoBrowser.m in Sources */,
-				F75A40171EBCC6C600B213E8 /* NCManageDatabase.m in Sources */,
 				F720E01F1E48C73E001A4B9E /* CCActions.swift in Sources */,
 				F762CB081EACB66200B38484 /* XLFormOptionsViewController.m in Sources */,
 				F73CC0721E813DFF006E3047 /* BKPasscodeLockScreenManager.m in Sources */,
@@ -4339,7 +4334,6 @@
 				F7F06EC11DBFACC600099AE9 /* CTAssetsPickerAccessDeniedView.m in Sources */,
 				F7F06ECB1DBFACC600099AE9 /* CTAssetThumbnailOverlay.m in Sources */,
 				F762CB011EACB66200B38484 /* XLFormSelectorCell.m in Sources */,
-				F75A40081EBCBB5E00B213E8 /* NCDatabase.m in Sources */,
 				F77B0E9B1D118A16002130FE /* CCBKPasscode.m in Sources */,
 				F77B0E9D1D118A16002130FE /* HRColorPickerView.m in Sources */,
 				F77B0E9F1D118A16002130FE /* mztools.c in Sources */,
