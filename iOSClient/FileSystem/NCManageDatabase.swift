@@ -41,7 +41,7 @@ class NCManageDatabase: NSObject {
                 }
                 
                 let dbActivity = DBActivity()
-                
+                                
                 dbActivity.account = account
                 dbActivity.action = "Activity"
                 dbActivity.date = activity.date
@@ -49,11 +49,8 @@ class NCManageDatabase: NSObject {
                 dbActivity.link = activity.link
                 dbActivity.note = activity.subject
                 dbActivity.type = k_activityTypeInfo
-                
-                if (k_activityVerboseDefault == 1) {
-                    dbActivity.verbose = true
-                }
-                
+                dbActivity.verbose = false
+
                 realm.add(dbActivity)
             }
         }

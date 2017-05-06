@@ -20,5 +20,5 @@ class DBActivity: Object {
     dynamic var note = ""
     dynamic var selector = ""
     dynamic var type = ""
-    dynamic var verbose = false
+    dynamic var verbose : Bool = false
 }
