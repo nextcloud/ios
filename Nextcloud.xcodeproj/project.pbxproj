@@ -509,6 +509,12 @@
 		F77D49A91DC238E500CDC568 /* loading@2x.gif in Resources */ = {isa = PBXBuildFile; fileRef = F77D49A71DC238E500CDC568 /* loading@2x.gif */; };
 		F78088EA1DD3A1DB005C5A7C /* cryptocloud.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = F78088E51DD3A1DB005C5A7C /* cryptocloud.xcdatamodeld */; };
 		F78088EB1DD3A1DB005C5A7C /* cryptocloud.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = F78088E51DD3A1DB005C5A7C /* cryptocloud.xcdatamodeld */; };
+		F786AC9C1EBDC88B0055AE9D /* NCDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F786AC9B1EBDC88B0055AE9D /* NCDatabase.swift */; };
+		F786AC9D1EBDC88B0055AE9D /* NCDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F786AC9B1EBDC88B0055AE9D /* NCDatabase.swift */; };
+		F786AC9E1EBDC88B0055AE9D /* NCDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F786AC9B1EBDC88B0055AE9D /* NCDatabase.swift */; };
+		F786ACAA1EBDCCE60055AE9D /* NCManageDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F786ACA91EBDCCE60055AE9D /* NCManageDatabase.swift */; };
+		F786ACAB1EBDCCE60055AE9D /* NCManageDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F786ACA91EBDCCE60055AE9D /* NCManageDatabase.swift */; };
+		F786ACAC1EBDCCE60055AE9D /* NCManageDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F786ACA91EBDCCE60055AE9D /* NCManageDatabase.swift */; };
 		F78964AD1EBB576C00403E13 /* JDStatusBarNotification.m in Sources */ = {isa = PBXBuildFile; fileRef = F78964A81EBB576C00403E13 /* JDStatusBarNotification.m */; };
 		F78964AE1EBB576C00403E13 /* JDStatusBarStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = F78964AA1EBB576C00403E13 /* JDStatusBarStyle.m */; };
 		F78964AF1EBB576C00403E13 /* JDStatusBarView.m in Sources */ = {isa = PBXBuildFile; fileRef = F78964AC1EBB576C00403E13 /* JDStatusBarView.m */; };
@@ -543,7 +549,6 @@
 		F7C525A21E3B6DA800FFE02C /* CCNotification.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7C525A11E3B6DA800FFE02C /* CCNotification.storyboard */; };
 		F7C742D81E7BD5C900D9C973 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7C742D71E7BD5C900D9C973 /* MainInterface.storyboard */; };
 		F7D2677C1E157053005ACB7E /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7F67BB81A24D27800EE80DA /* Images.xcassets */; };
-		F7DFE2511EBDC3A400CF5202 /* Realm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7DFE24F1EBDC3A400CF5202 /* Realm.framework */; };
 		F7DFE2521EBDC3A400CF5202 /* Realm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7DFE24F1EBDC3A400CF5202 /* Realm.framework */; };
 		F7DFE2531EBDC3A400CF5202 /* Realm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7DFE24F1EBDC3A400CF5202 /* Realm.framework */; };
 		F7DFE2541EBDC3A400CF5202 /* RealmSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7DFE2501EBDC3A400CF5202 /* RealmSwift.framework */; };
@@ -551,7 +556,6 @@
 		F7DFE2561EBDC3A400CF5202 /* RealmSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7DFE2501EBDC3A400CF5202 /* RealmSwift.framework */; };
 		F7DFE2571EBDC52E00CF5202 /* Realm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7DFE24F1EBDC3A400CF5202 /* Realm.framework */; };
 		F7DFE2581EBDC52E00CF5202 /* Realm.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F7DFE24F1EBDC3A400CF5202 /* Realm.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		F7DFE2591EBDC53200CF5202 /* RealmSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7DFE2501EBDC3A400CF5202 /* RealmSwift.framework */; };
 		F7DFE25A1EBDC53200CF5202 /* RealmSwift.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F7DFE2501EBDC3A400CF5202 /* RealmSwift.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F7E718B01EB0FBE700FA58C9 /* CCGraphics.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B841C6388BC00DC4301 /* CCGraphics.m */; };
 		F7ECBA6D1E239DCD003E6328 /* CCCreateCloud.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7ECBA6C1E239DCD003E6328 /* CCCreateCloud.swift */; };
@@ -1408,6 +1412,8 @@
 		F78088E91DD3A1DB005C5A7C /* cryptocloud.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = cryptocloud.xcdatamodel; sourceTree = "<group>"; };
 		F78316861C0CB3CA00C43975 /* CCShareUserOC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCShareUserOC.h; sourceTree = "<group>"; };
 		F78316871C0CB3CA00C43975 /* CCShareUserOC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCShareUserOC.m; sourceTree = "<group>"; };
+		F786AC9B1EBDC88B0055AE9D /* NCDatabase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCDatabase.swift; sourceTree = "<group>"; };
+		F786ACA91EBDCCE60055AE9D /* NCManageDatabase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCManageDatabase.swift; sourceTree = "<group>"; };
 		F787E5581BC503ED00AFBFE1 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		F78964A71EBB576C00403E13 /* JDStatusBarNotification.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JDStatusBarNotification.h; sourceTree = "<group>"; };
 		F78964A81EBB576C00403E13 /* JDStatusBarNotification.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JDStatusBarNotification.m; sourceTree = "<group>"; };
@@ -1715,7 +1721,6 @@
 				F75EDFBD1E8C112F00E6F369 /* libsqlite3.0.tbd in Frameworks */,
 				F7DFE2541EBDC3A400CF5202 /* RealmSwift.framework in Frameworks */,
 				F71E68001DC1F792003BA52B /* libownCloudiOS.a in Frameworks */,
-				F7DFE2591EBDC53200CF5202 /* RealmSwift.framework in Frameworks */,
 				F714526D1DC1523B0006A5D4 /* libMagicalRecord.a in Frameworks */,
 				F75EDFAC1E8C106900E6F369 /* FirebaseAnalytics.framework in Frameworks */,
 				F75EDFAE1E8C106900E6F369 /* FirebaseInstanceID.framework in Frameworks */,
@@ -1725,7 +1730,6 @@
 				F75EDFAD1E8C106900E6F369 /* FirebaseCore.framework in Frameworks */,
 				F75EDFAF1E8C106900E6F369 /* FirebaseMessaging.framework in Frameworks */,
 				F7A3771A1EB2364A002856D3 /* Fabric.framework in Frameworks */,
-				F7DFE2511EBDC3A400CF5202 /* Realm.framework in Frameworks */,
 				F7BB14961D5B62C000ECEE68 /* libcrypto.a in Frameworks */,
 				F7BB14971D5B62C000ECEE68 /* libssl.a in Frameworks */,
 				F75EDFB01E8C106900E6F369 /* GoogleToolboxForMac.framework in Frameworks */,
@@ -3152,6 +3156,8 @@
 				F7B81D801C64E77F006D02DF /* CCCoreData.m */,
 				F7C8C1721B482A920048180E /* CCMetadata.h */,
 				F7C8C1731B482A920048180E /* CCMetadata.m */,
+				F786AC9B1EBDC88B0055AE9D /* NCDatabase.swift */,
+				F786ACA91EBDCCE60055AE9D /* NCManageDatabase.swift */,
 			);
 			path = FileSystem;
 			sourceTree = "<group>";
@@ -3556,7 +3562,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0820;
-				LastUpgradeCheck = 0820;
+				LastUpgradeCheck = 0830;
 				ORGANIZATIONNAME = TWS;
 				TargetAttributes = {
 					F71459B41D12E3B700CAFEEC = {
@@ -3990,6 +3996,7 @@
 				F73CC06A1E813DFF006E3047 /* BKPasscodeDummyViewController.m in Sources */,
 				F73CC07C1E813DFF006E3047 /* BKTouchIDManager.m in Sources */,
 				F71459C41D12E3B700CAFEEC /* UIImage+Saving.m in Sources */,
+				F786AC9D1EBDC88B0055AE9D /* NCDatabase.swift in Sources */,
 				F71459C51D12E3B700CAFEEC /* UIImage+Rotating.m in Sources */,
 				F7FB5F201E66F0A400389481 /* TableActivity+CoreDataClass.m in Sources */,
 				F71459C61D12E3B700CAFEEC /* CCMetadata.m in Sources */,
@@ -4026,6 +4033,7 @@
 				F71459F31D12E3B700CAFEEC /* UIImage+Resizing.m in Sources */,
 				F71459F71D12E3B700CAFEEC /* CCGraphics.m in Sources */,
 				F7F801051D98205A007537BC /* CCCertificate.m in Sources */,
+				F786ACAB1EBDCCE60055AE9D /* NCManageDatabase.swift in Sources */,
 				F71459FB1D12E3B700CAFEEC /* PPImageScrollingCellView.m in Sources */,
 				F708CF7D1E56E8CC00271D8B /* TableGPS+CoreDataProperties.m in Sources */,
 				F71459FE1D12E3B700CAFEEC /* CCExifGeo.m in Sources */,
@@ -4063,6 +4071,7 @@
 				F725437C1E12A44A009BF4C2 /* CCSection.m in Sources */,
 				F74344651E127DE9001CC831 /* CCNetworking.m in Sources */,
 				F74344641E127DE6001CC831 /* OCNetworking.m in Sources */,
+				F786ACAC1EBDCCE60055AE9D /* NCManageDatabase.swift in Sources */,
 				F73CC07A1E813DFF006E3047 /* BKShiftingView.m in Sources */,
 				F708CF841E56E8CC00271D8B /* TableDirectory+CoreDataProperties.m in Sources */,
 				F74344821E127F68001CC831 /* MBProgressHUD.m in Sources */,
@@ -4100,6 +4109,7 @@
 				F7FC88FA1E140558006D0506 /* cryptocloud.xcdatamodeld in Sources */,
 				F708CF721E56E8CC00271D8B /* TableMetadata+CoreDataProperties.m in Sources */,
 				F74344631E127D79001CC831 /* CCBKPasscode.m in Sources */,
+				F786AC9E1EBDC88B0055AE9D /* NCDatabase.swift in Sources */,
 				F708CF8A1E56E8CC00271D8B /* TableShare+CoreDataProperties.m in Sources */,
 				F74344661E127E35001CC831 /* CCCoreData.m in Sources */,
 				F76B3CD01EAE01BD00921AC9 /* NCBrand.swift in Sources */,
@@ -4206,6 +4216,7 @@
 				F73CC0721E813DFF006E3047 /* BKPasscodeLockScreenManager.m in Sources */,
 				F762CB0E1EACB66200B38484 /* NSExpression+XLFormAdditions.m in Sources */,
 				F77B0E221D118A16002130FE /* CCManageLocation.m in Sources */,
+				F786AC9C1EBDC88B0055AE9D /* NCDatabase.swift in Sources */,
 				F77B0E231D118A16002130FE /* CCSharePermissionOC.m in Sources */,
 				F77B0E241D118A16002130FE /* HRColorCursor.m in Sources */,
 				F762CAF81EACB66200B38484 /* XLFormButtonCell.m in Sources */,
@@ -4248,6 +4259,7 @@
 				F7659A6A1DC0B760004860C4 /* PSTGridLayoutInfo.m in Sources */,
 				F77B0E491D118A16002130FE /* UIImage+Saving.m in Sources */,
 				F7A3218C1E9E42B30069AD1B /* CCMenuAccount.m in Sources */,
+				F786ACAA1EBDCCE60055AE9D /* NCManageDatabase.swift in Sources */,
 				F77B0E4C1D118A16002130FE /* CCDetail.m in Sources */,
 				F762CB191EACB66200B38484 /* XLFormValidator.m in Sources */,
 				F77B0E4D1D118A16002130FE /* CCCoreData.m in Sources */,
