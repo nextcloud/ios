@@ -34,6 +34,12 @@ class NCManageDatabase: NSObject {
             
             for activity in listOfActivity {
                 
+                // Verify
+                let records = realm.objects(DBActivity.self).filter("idActivity = \(activity.idActivity)")
+                if (records.count > 0) {
+                    continue
+                }
+                
                 let dbActivity = DBActivity()
                 
                 dbActivity.account = account
@@ -52,32 +58,5 @@ class NCManageDatabase: NSObject {
             }
         }
     }
-    /*
-    - (void)addActivityServer:(NSArray *)listOfActivity account:(NSString *)account
-    {
-    RLMRealm *realm = [RLMRealm defaultRealm];
     
-    [realm beginWriteTransaction];
-    
-    for (OCActivity *activity in listOfActivity) {
-    
-    DBActivity *dbActivity = [DBActivity new];
-    
-    dbActivity.account = account;
-    dbActivity.action = @"Activity";
-    dbActivity.date = activity.date;
-    dbActivity.file = activity.file;
-    dbActivity.idActivity = activity.idActivity;
-    dbActivity.link = activity.link;
-    dbActivity.note = activity.subject;
-    dbActivity.type = k_activityTypeInfo;
-    dbActivity.verbose = k_activityVerboseDefault;
-    
-    [realm addObject:dbActivity];
-    }
-    
-    [realm commitWriteTransaction];
-    }
-    */
-
 }
