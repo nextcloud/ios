@@ -55,4 +55,44 @@ class NCManageDatabase: NSObject {
         }
     }
     
+    func addActivityClient(_ file: String, fileID: String, action: String, selector: String, note: String, type: String, verbose: Bool, account: String?, activeUrl: String?) {
+
+        var noteReplacing : String = ""
+        
+        if (activeUrl != nil) {
+            noteReplacing = note.replacingOccurrences(of: "\(activeUrl!)\(webDAV)", with: "")
+        }
+        noteReplacing = note.replacingOccurrences(of: "\(k_domain_session_queue).", with: "")
+
+        let realm = try! Realm()
+        
+        try! realm.write {
+
+            // Add new Activity
+            let dbActivity = DBActivity()
+
+            if (account != nil) {
+                dbActivity.account = account!
+            }
+            
+            dbActivity.action = action
+            dbActivity.file = file
+            dbActivity.fileID = fileID
+            dbActivity.note = noteReplacing
+            dbActivity.selector = selector
+            dbActivity.type = type
+            dbActivity.verbose = verbose
+
+            realm.add(dbActivity)
+        }
+    }
+    
+    func getAllTableActivityWithPredicate(_ predicate : NSPredicate) -> Results<DBActivity> {
+        
+        let realm = try! Realm()
+
+        let records = realm.objects(DBActivity.self).filter(predicate).sorted(byKeyPath: "date")
+        
+        return records;
+    }
 }
