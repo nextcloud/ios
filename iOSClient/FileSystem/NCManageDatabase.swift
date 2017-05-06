@@ -43,7 +43,6 @@ class NCManageDatabase: NSObject {
                 let dbActivity = DBActivity()
                 
                 dbActivity.account = account
-                dbActivity.action = "Activity"
                 dbActivity.date = activity.date
                 dbActivity.idActivity = Double(activity.idActivity)
                 dbActivity.link = activity.link

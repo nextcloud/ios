@@ -12,7 +12,7 @@ import RealmSwift
 class DBActivity: Object {
     
     dynamic var account = ""
-    dynamic var action = ""
+    dynamic var action = "Activity"
     dynamic var date = Date()
     dynamic var file = ""
     dynamic var fileID = ""
