@@ -10,8 +10,9 @@ import RealmSwift
 
 // Dog model
 class DBActivity: Object {
+    
     dynamic var account = ""
-    dynamic var action = "" //: Person? // Properties can be optional
+    dynamic var action = ""
     dynamic var date = Date()
     dynamic var file = ""
     dynamic var fileID = ""
