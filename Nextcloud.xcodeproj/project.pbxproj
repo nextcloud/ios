@@ -4763,7 +4763,7 @@
 				GCC_PREFIX_HEADER = iOSClient/CryptoCloud.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
-					"NC=1",
+					NC,
 				);
 				HEADER_SEARCH_PATHS = "\"Libraries external\"/**";
 				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/iOSClient.plist";
@@ -4811,7 +4811,7 @@
 				GCC_PREFIX_HEADER = iOSClient/CryptoCloud.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
-					"NC=1",
+					NC,
 				);
 				HEADER_SEARCH_PATHS = "\"Libraries external\"/**";
 				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/iOSClient.plist";
