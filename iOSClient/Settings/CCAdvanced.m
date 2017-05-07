@@ -26,9 +26,9 @@
 #import "AppDelegate.h"
 
 #ifdef CUSTOM_BUILD
-#import "CustomSwift.h"
+    #import "CustomSwift.h"
 #else
-#import "Nextcloud-Swift.h"
+    #import "Nextcloud-Swift.h"
 #endif
 
 @interface CCAdvanced ()
@@ -226,7 +226,7 @@
     // Email Recipents
     NSArray *toRecipents;
     
-    NSArray *activities = [CCCoreData getAllTableActivityWithPredicate:[NSPredicate predicateWithFormat:@"((account == %@) || (account == ''))", app.activeAccount]];
+    NSArray *activities = [[NCManageDatabase sharedInstance] getAllTableActivityWithPredicate:[NSPredicate predicateWithFormat:@"((account == %@) || (account == ''))", app.activeAccount]];
     
     if ([activities count] == 0) {
         
@@ -234,7 +234,7 @@
         return;
     }
     
-    for (TableActivity *activity in activities) {
+    for (DBActivity *activity in activities) {
         
         NSString *date, *type, *actionFile, *note;
         

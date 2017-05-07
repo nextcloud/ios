@@ -1877,76 +1877,6 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Activity =====
-#pragma --------------------------------------------------------------------------------------------
-
-+ (void)addActivityServer:(OCActivity *)activity account:(NSString *)account
-{
-    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
-    
-    if (activity.idActivity != 0)
-        [TableActivity MR_deleteAllMatchingPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (idActivity == %d)", account, activity.idActivity] inContext:context];
-        
-    TableActivity *record = [TableActivity MR_createEntityInContext:context];
-
-    record.account = account;
-    record.action = @"Activity";
-    record.date = activity.date;
-    record.file = activity.file;
-    record.fileID = @"";
-    record.idActivity = [NSNumber numberWithInteger:activity.idActivity];
-    record.link = activity.link;
-    record.note = activity.subject;
-    record.selector = @"";
-    record.type = k_activityTypeInfo;
-    record.verbose = [NSNumber numberWithInteger:k_activityVerboseDefault];
-    
-    [context MR_saveToPersistentStoreAndWait];
-}
-
-+ (void)addActivityClient:(NSString *)file fileID:(NSString *)fileID action:(NSString *)action selector:(NSString *)selector note:(NSString *)note type:(NSString *)type verbose:(NSInteger)verbose account:(NSString *)account activeUrl:(NSString *)activeUrl
-{
-    // fix #9 CCCoreData.m line 1909 Version 2.17.2 (00005)
-    if (activeUrl)
-        note = [note stringByReplacingOccurrencesOfString:[activeUrl stringByAppendingString:webDAV] withString:@""];
-    
-    note = [note stringByReplacingOccurrencesOfString:[k_domain_session_queue stringByAppendingString:@"."] withString:@""];
-
-    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
-    
-    TableActivity *record = [TableActivity MR_createEntityInContext:context];
-        
-    if (!account) record.account = @"";
-    else record.account = account;
-        
-    record.action = action;
-    record.date = [NSDate date];
-    record.file = file;
-    record.fileID = fileID;
-    record.idActivity = 0;
-    record.link = @"";
-    record.note = note;
-    record.selector = selector;
-    record.type = type;
-    record.verbose = [NSNumber numberWithInteger:verbose];
-   
-    [context MR_saveToPersistentStoreAndWait];
-}
-
-+ (NSArray *)getAllTableActivityWithPredicate:(NSPredicate *)predicate
-{
-    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
-    
-    NSArray *records = [TableActivity MR_findAllWithPredicate:predicate inContext:context];
-    
-    if ([records count] == 0) return nil;
-    
-    NSSortDescriptor *descriptor = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:NO selector:nil];
-
-    return [records sortedArrayUsingDescriptors:[NSArray arrayWithObjects:descriptor, nil]];
-}
-
-#pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== External Sites =====
 #pragma --------------------------------------------------------------------------------------------
 
@@ -2295,6 +2225,7 @@
     [context MR_saveToPersistentStoreAndWait];
 }
 
+/*
 + (void)flushTableActivityAccount:(NSString *)account
 {
     NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
@@ -2310,6 +2241,7 @@
     
     [context MR_saveToPersistentStoreAndWait];
 }
+*/
 
 + (void)flushTableAutomaticUploadAccount:(NSString *)account selector:(NSString *)selector
 {
@@ -2445,7 +2377,7 @@
     NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
     
     [TableAccount MR_truncateAllInContext:context];
-    [TableActivity MR_truncateAllInContext:context];
+    //[TableActivity MR_truncateAllInContext:context];
     [TableAutomaticUpload MR_truncateAllInContext:context];
     [TableCapabilities MR_truncateAllInContext:context];
     [TableCertificates MR_truncateAllInContext:context];

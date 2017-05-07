@@ -639,12 +639,6 @@
 		F7F6AC4E1E525AD300E8EB45 /* CCManageCryptoCloud.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F6AC4D1E525AD300E8EB45 /* CCManageCryptoCloud.m */; };
 		F7F801031D98205A007537BC /* CCCertificate.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F801011D98205A007537BC /* CCCertificate.m */; };
 		F7F801051D98205A007537BC /* CCCertificate.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F801011D98205A007537BC /* CCCertificate.m */; };
-		F7FB5F1C1E66EB7200389481 /* TableActivity+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FB5F191E66EB7200389481 /* TableActivity+CoreDataClass.m */; };
-		F7FB5F1E1E66EB7200389481 /* TableActivity+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FB5F1B1E66EB7200389481 /* TableActivity+CoreDataProperties.m */; };
-		F7FB5F201E66F0A400389481 /* TableActivity+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FB5F191E66EB7200389481 /* TableActivity+CoreDataClass.m */; };
-		F7FB5F211E66F0A400389481 /* TableActivity+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FB5F191E66EB7200389481 /* TableActivity+CoreDataClass.m */; };
-		F7FB5F241E66F0AA00389481 /* TableActivity+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FB5F1B1E66EB7200389481 /* TableActivity+CoreDataProperties.m */; };
-		F7FB5F251E66F0AA00389481 /* TableActivity+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FB5F1B1E66EB7200389481 /* TableActivity+CoreDataProperties.m */; };
 		F7FC7D561DC1F93800BB2C6A /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = F7FC7D551DC1F93800BB2C6A /* libz.tbd */; };
 		F7FC88FA1E140558006D0506 /* cryptocloud.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = F78088E51DD3A1DB005C5A7C /* cryptocloud.xcdatamodeld */; };
 		F7FC88FB1E141A34006D0506 /* BKPasscodeView.strings in Resources */ = {isa = PBXBuildFile; fileRef = F72B60911A24F00B004EF66F /* BKPasscodeView.strings */; };
@@ -1664,10 +1658,6 @@
 		F7F6AC4D1E525AD300E8EB45 /* CCManageCryptoCloud.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCManageCryptoCloud.m; sourceTree = "<group>"; };
 		F7F801001D98205A007537BC /* CCCertificate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCCertificate.h; sourceTree = "<group>"; };
 		F7F801011D98205A007537BC /* CCCertificate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCCertificate.m; sourceTree = "<group>"; };
-		F7FB5F181E66EB7200389481 /* TableActivity+CoreDataClass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableActivity+CoreDataClass.h"; sourceTree = "<group>"; };
-		F7FB5F191E66EB7200389481 /* TableActivity+CoreDataClass.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableActivity+CoreDataClass.m"; sourceTree = "<group>"; };
-		F7FB5F1A1E66EB7200389481 /* TableActivity+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableActivity+CoreDataProperties.h"; sourceTree = "<group>"; };
-		F7FB5F1B1E66EB7200389481 /* TableActivity+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableActivity+CoreDataProperties.m"; sourceTree = "<group>"; };
 		F7FC7D551DC1F93800BB2C6A /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		F7FCFFD61D70798C000E6E29 /* CCPeekPop.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = CCPeekPop.storyboard; sourceTree = "<group>"; };
 		F7FCFFDD1D707B83000E6E29 /* CCPeekPop.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCPeekPop.h; sourceTree = "<group>"; };
@@ -2865,10 +2855,6 @@
 				F73C414D1E82E51F000137C0 /* TableExternalSites+CoreDataClass.m */,
 				F73C414E1E82E51F000137C0 /* TableExternalSites+CoreDataProperties.h */,
 				F73C414F1E82E51F000137C0 /* TableExternalSites+CoreDataProperties.m */,
-				F7FB5F181E66EB7200389481 /* TableActivity+CoreDataClass.h */,
-				F7FB5F191E66EB7200389481 /* TableActivity+CoreDataClass.m */,
-				F7FB5F1A1E66EB7200389481 /* TableActivity+CoreDataProperties.h */,
-				F7FB5F1B1E66EB7200389481 /* TableActivity+CoreDataProperties.m */,
 				F708CF4D1E56E8CB00271D8B /* TableMetadata+CoreDataClass.h */,
 				F708CF4E1E56E8CB00271D8B /* TableMetadata+CoreDataClass.m */,
 				F708CF4F1E56E8CB00271D8B /* TableMetadata+CoreDataProperties.h */,
@@ -3998,7 +3984,6 @@
 				F71459C41D12E3B700CAFEEC /* UIImage+Saving.m in Sources */,
 				F786AC9D1EBDC88B0055AE9D /* NCDatabase.swift in Sources */,
 				F71459C51D12E3B700CAFEEC /* UIImage+Rotating.m in Sources */,
-				F7FB5F201E66F0A400389481 /* TableActivity+CoreDataClass.m in Sources */,
 				F71459C61D12E3B700CAFEEC /* CCMetadata.m in Sources */,
 				F708CF771E56E8CC00271D8B /* TableLocalFile+CoreDataProperties.m in Sources */,
 				F76B3CE21EAE4E5100921AC9 /* TableCapabilities+CoreDataClass.m in Sources */,
@@ -4023,7 +4008,6 @@
 				F71459E61D12E3B700CAFEEC /* NYXImagesHelper.m in Sources */,
 				F71459E91D12E3B700CAFEEC /* UIImage+Enhancing.m in Sources */,
 				F71459EA1D12E3B700CAFEEC /* CCCellShareExt.m in Sources */,
-				F7FB5F241E66F0AA00389481 /* TableActivity+CoreDataProperties.m in Sources */,
 				F73CCE321DC13798007E38D8 /* UICKeyChainStore.m in Sources */,
 				F708CF831E56E8CC00271D8B /* TableDirectory+CoreDataProperties.m in Sources */,
 				F71459ED1D12E3B700CAFEEC /* UIImage+Masking.m in Sources */,
@@ -4117,10 +4101,8 @@
 				F73CC0801E813DFF006E3047 /* BKTouchIDSwitchView.m in Sources */,
 				F743447C1E127EB2001CC831 /* NSString+TruncateToWidth.m in Sources */,
 				F708CF751E56E8CC00271D8B /* TableLocalFile+CoreDataClass.m in Sources */,
-				F7FB5F211E66F0A400389481 /* TableActivity+CoreDataClass.m in Sources */,
 				F74344831E127F80001CC831 /* RNCryptor.m in Sources */,
 				F708CF961E56E8CC00271D8B /* TableAutomaticUpload+CoreDataProperties.m in Sources */,
-				F7FB5F251E66F0AA00389481 /* TableActivity+CoreDataProperties.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4330,8 +4312,6 @@
 				F77B0E871D118A16002130FE /* NSData+Base64.m in Sources */,
 				F77B0E8A1D118A16002130FE /* CCCartaDiCredito.m in Sources */,
 				F762CB181EACB66200B38484 /* XLFormValidationStatus.m in Sources */,
-				F7FB5F1C1E66EB7200389481 /* TableActivity+CoreDataClass.m in Sources */,
-				F7FB5F1E1E66EB7200389481 /* TableActivity+CoreDataProperties.m in Sources */,
 				F77B0E8F1D118A16002130FE /* CCSection.m in Sources */,
 				F72AAECB1E5C60C700BB17E1 /* AHKActionSheetViewController.m in Sources */,
 				F77B0E911D118A16002130FE /* CCTemplates.m in Sources */,

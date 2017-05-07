@@ -28,19 +28,16 @@
     #import "AppDelegate.h"
 
     #ifdef CUSTOM_BUILD
-    #import "CustomSwift.h"
+        #import "CustomSwift.h"
     #else
-    #import "Nextcloud-Swift.h"
+        #import "Nextcloud-Swift.h"
     #endif
-
 #else
-
     #ifdef CUSTOM_BUILD
-    #import "CustomSwiftShare.h"
+        #import "CustomSwiftShare.h"
     #else
-    #import "Share-Swift.h"
+        #import "Share-Swift.h"
     #endif
-
 #endif
 
 @interface CCMove ()

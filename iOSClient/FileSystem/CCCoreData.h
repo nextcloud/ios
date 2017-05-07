@@ -37,7 +37,6 @@
 #import "OCExternalSites.h"
 #import "OCCapabilities.h"
 #import "TableAccount+CoreDataClass.h"
-#import "TableActivity+CoreDataClass.h"
 #import "TableCertificates+CoreDataClass.h"
 #import "TableMetadata+CoreDataClass.h"
 #import "TableDirectory+CoreDataClass.h"
@@ -211,12 +210,6 @@
 // ===== Offline =====
 
 + (NSArray *)getHomeOfflineActiveAccount:(NSString *)activeAccount directoryUser:(NSString *)directoryUser fieldOrder:(NSString *)fieldOrder ascending:(BOOL)ascending;
-
-// ===== Activity =====
-
-+ (void)addActivityServer:(OCActivity *)activity account:(NSString *)account;
-+ (void)addActivityClient:(NSString *)file fileID:(NSString *)fileID action:(NSString *)action selector:(NSString *)selector note:(NSString *)note type:(NSString *)type verbose:(NSInteger)verbose account:(NSString *)account activeUrl:(NSString *)activeUrl;
-+ (NSArray *)getAllTableActivityWithPredicate:(NSPredicate *)predicate;
 
 // ===== External Sites =====
 

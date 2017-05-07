@@ -34,9 +34,9 @@
 #import "CTAssetCheckmark.h"
 
 #ifdef CUSTOM_BUILD
-#import "CustomSwift.h"
+    #import "CustomSwift.h"
 #else
-#import "Nextcloud-Swift.h"
+    #import "Nextcloud-Swift.h"
 #endif
 
 #define alertCreateFolder 1
@@ -1101,10 +1101,6 @@
 
 - (void)getActivityServerSuccess:(NSArray *)listOfActivity
 {
-    for (OCActivity *activity in listOfActivity) {
-        [CCCoreData addActivityServer:activity account:app.activeAccount];
-    }
-    
     [[NCManageDatabase sharedInstance] addActivityServer:listOfActivity account:app.activeAccount];
     
     // Reload Activity Data Source

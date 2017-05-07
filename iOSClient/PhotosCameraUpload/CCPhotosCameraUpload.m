@@ -22,13 +22,12 @@
 //
 
 #import "CCPhotosCameraUpload.h"
-
 #import "AppDelegate.h"
 
 #ifdef CUSTOM_BUILD
-#import "CustomSwift.h"
+    #import "CustomSwift.h"
 #else
-#import "Nextcloud-Swift.h"
+    #import "Nextcloud-Swift.h"
 #endif
 
 @interface CCPhotosCameraUpload () <CCActionsDeleteDelegate, CCActionsDownloadThumbnailDelegate>
@@ -1179,7 +1178,7 @@
         
         if (![CCCoreData addTableAutomaticUpload:metadataNet account:app.activeAccount]) {
             
-            [CCCoreData addActivityClient:fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionAutomaticUpload selector:metadataNet.selector note:@"File already present in Table automatic Upload" type:k_activityTypeInfo verbose:k_activityVerboseHigh account:app.activeAccount activeUrl:app.activeUrl];
+            [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionAutomaticUpload selector:metadataNet.selector note:@"File already present in Table automatic Upload" type:k_activityTypeInfo verbose:k_activityVerboseHigh account:app.activeAccount activeUrl:app.activeUrl];
             
             [self endLoadingAssets];
 
@@ -1190,7 +1189,8 @@
         NSString *media = @"";
         if (assetMediaType == PHAssetMediaTypeImage) media = @"Image";
         if (assetMediaType == PHAssetMediaTypeVideo) media = @"Video";
-        [CCCoreData addActivityClient:fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionAutomaticUpload selector:metadataNet.selector note:[NSString stringWithFormat:@"Add Automatic Upload on Session: %@, Media Type: %@, Asset Data: %@", session, media, [NSDateFormatter localizedStringFromDate:assetDate dateStyle:NSDateFormatterMediumStyle timeStyle:NSDateFormatterMediumStyle]] type:k_activityTypeInfo verbose:k_activityVerboseHigh account:app.activeAccount activeUrl:app.activeUrl];
+        
+        [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionAutomaticUpload selector:metadataNet.selector note:[NSString stringWithFormat:@"Add Automatic Upload on Session: %@, Media Type: %@, Asset Data: %@", session, media, [NSDateFormatter localizedStringFromDate:assetDate dateStyle:NSDateFormatterMediumStyle timeStyle:NSDateFormatterMediumStyle]] type:k_activityTypeInfo verbose:k_activityVerboseHigh account:app.activeAccount activeUrl:app.activeUrl];
         
         // Upldate Camera Upload data  
         if ([metadataNet.selector isEqualToString:selectorUploadAutomatic])

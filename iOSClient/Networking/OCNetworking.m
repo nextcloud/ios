@@ -30,6 +30,30 @@
 
 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
 
+#ifndef EXTENSION
+    #ifdef CUSTOM_BUILD
+        #import "CustomSwift.h"
+    #else
+        #import "Nextcloud-Swift.h"
+    #endif
+#else
+    #ifdef EXTENSION_SHARE
+        #ifdef CUSTOM_BUILD
+            #import "CustomSwiftShare.h"
+        #else
+            #import "Share-Swift.h"
+        #endif
+    #endif
+
+    #ifdef EXTENSION_PICKER
+        #ifdef CUSTOM_BUILD
+            #import "CustomSwiftPick.h"
+        #else
+            #import "Picker-Swift.h"
+        #endif
+    #endif
+#endif
+
 @interface OCnetworking ()
 {
     NSString *_activeUser;
@@ -412,7 +436,7 @@
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
         
         // Activity
-        [CCCoreData addActivityClient:_metadataNet.serverUrl fileID:@"" action:k_activityDebugActionReadFolder selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh account:_metadataNet.account activeUrl:_activeUrl];
+        [[NCManageDatabase sharedInstance] addActivityClient:_metadataNet.serverUrl fileID:@"" action:k_activityDebugActionReadFolder selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh account:_metadataNet.account activeUrl:_activeUrl];
         
         [self complete];
     }];
@@ -1354,7 +1378,7 @@
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
         
         // Activity
-        [CCCoreData addActivityClient:_activeUrl fileID:@"" action:k_activityDebugActionGetNotification selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh account:_metadataNet.account activeUrl:_activeUrl];
+        [[NCManageDatabase sharedInstance] addActivityClient:_activeUrl fileID:@"" action:k_activityDebugActionGetNotification selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh account:_metadataNet.account activeUrl:_activeUrl];
         
         [self complete];
     }];
@@ -1424,7 +1448,7 @@
         [communication subscribingPushProxy:k_pushNotificationServer pushToken:pushToken deviceIdentifier:deviceIdentifier deviceIdentifierSignature:signature userPublicKey:[CCUtility URLEncodeStringFromString:publicKey] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
             
             // Activity
-            [CCCoreData addActivityClient:k_pushNotificationServer fileID:@"" action:k_activityDebugActionPushProxy selector:@"" note:@"Service registered." type:k_activityTypeSuccess verbose:k_activityVerboseHigh account:_metadataNet.account activeUrl:_activeUrl];
+            [[NCManageDatabase sharedInstance] addActivityClient:k_pushNotificationServer fileID:@"" action:k_activityDebugActionPushProxy selector:@"" note:@"Service registered." type:k_activityTypeSuccess verbose:k_activityVerboseHigh account:_metadataNet.account activeUrl:_activeUrl];
             
             [self complete];
             
@@ -1448,8 +1472,8 @@
                 [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
 
             // Activity
-            [CCCoreData addActivityClient:k_pushNotificationServer fileID:@"" action:k_activityDebugActionPushProxy selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh account:_metadataNet.account activeUrl:_activeUrl];
-
+            [[NCManageDatabase sharedInstance] addActivityClient:k_pushNotificationServer fileID:@"" action:k_activityDebugActionPushProxy selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh account:_metadataNet.account activeUrl:_activeUrl];
+            
             [self complete];
         }];
         
@@ -1473,8 +1497,8 @@
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
         
         // Activity
-        [CCCoreData addActivityClient:_activeUrl fileID:@"" action:k_activityDebugActionServerPush selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh account:_metadataNet.account activeUrl:_activeUrl];
-
+        [[NCManageDatabase sharedInstance] addActivityClient:_activeUrl fileID:@"" action:k_activityDebugActionServerPush selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh account:_metadataNet.account activeUrl:_activeUrl];
+        
         [self complete];
     }];
 }
@@ -1596,7 +1620,7 @@
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
 
         // Activity
-        [CCCoreData addActivityClient:_activeUrl fileID:@"" action:k_activityDebugActionCapabilities selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh account:_metadataNet.account activeUrl:_activeUrl];
+        [[NCManageDatabase sharedInstance] addActivityClient:_activeUrl fileID:@"" action:k_activityDebugActionCapabilities selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh account:_metadataNet.account activeUrl:_activeUrl];
         
         [self complete];
     }];

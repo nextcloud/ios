@@ -87,12 +87,12 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func getAllTableActivityWithPredicate(_ predicate : NSPredicate) -> Results<DBActivity> {
+    func getAllTableActivityWithPredicate(_ predicate : NSPredicate) -> [DBActivity] {
         
         let realm = try! Realm()
 
-        let records = realm.objects(DBActivity.self).filter(predicate).sorted(byKeyPath: "date")
+        let results = realm.objects(DBActivity.self).filter(predicate).sorted(byKeyPath: "date")
         
-        return records;
+        return Array(results)
     }
 }
