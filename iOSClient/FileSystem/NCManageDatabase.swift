@@ -32,7 +32,7 @@ class NCManageDatabase: NSObject {
         
         if (account != nil) {
             
-            results = realm.objects(table).filter("account = \(account!)")
+            results = realm.objects(table).filter("account = '\(account!)'")
 
         } else {
          
