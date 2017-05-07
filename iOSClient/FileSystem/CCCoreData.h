@@ -239,8 +239,6 @@
 + (void)moveCoreDataToGroup;
 + (void)moveAllUserToGroup;
 
-//+ (void)verifyVersionCoreData;
-
 + (void)flushTableAccount:(NSString *)account;
 + (void)flushTableActivityAccount:(NSString *)account;
 + (void)flushTableAutomaticUploadAccount:(NSString *)account selector:(NSString *)selector;
