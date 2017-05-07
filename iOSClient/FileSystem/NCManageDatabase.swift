@@ -25,6 +25,9 @@ class NCManageDatabase: NSObject {
         Realm.Configuration.defaultConfiguration = config
     }
     
+    //MARK: -
+    //MARK: Utility Database
+
     func clearDB(_ table : Object.Type, account: String?) {
         
         let results : Results<Object>
@@ -44,6 +47,9 @@ class NCManageDatabase: NSObject {
         }
     }
     
+    //MARK: -
+    //MARK: Table Activity
+
     func addActivityServer(_ listOfActivity: [OCActivity], account: String) {
     
         let realm = try! Realm()
@@ -113,4 +119,6 @@ class NCManageDatabase: NSObject {
         
         return Array(results)
     }
+    
+    //MARK: -
 }
