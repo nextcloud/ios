@@ -25,6 +25,24 @@ class NCManageDatabase: NSObject {
         Realm.Configuration.defaultConfiguration = config
     }
     
+    func clearDB(_ table : Object.Type, account: String?) {
+        
+        let results : Results<Object>
+        let realm = try! Realm()
+        
+        if (account != nil) {
+            
+            results = realm.objects(table).filter("account = \(account!)")
+
+        } else {
+         
+            results = realm.objects(table)
+        }
+    
+        try! realm.write {
+            realm.delete(results)
+        }
+    }
     
     func addActivityServer(_ listOfActivity: [OCActivity], account: String) {
     

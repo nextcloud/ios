@@ -323,7 +323,9 @@
 - (void)deleteAccount:(NSString *)account
 {
     [CCCoreData flushTableAccount:account];
-    [CCCoreData flushTableActivityAccount:account];
+    
+    [[NCManageDatabase sharedInstance] clearDB:[DBActivity class] account:account];
+    
     [CCCoreData flushTableAutomaticUploadAccount:account selector:nil];
     [CCCoreData flushTableCapabilitiesAccount:account];
     [CCCoreData flushTableDirectoryAccount:account];

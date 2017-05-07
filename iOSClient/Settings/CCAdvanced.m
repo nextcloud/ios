@@ -290,8 +290,8 @@
 {
     [self deselectFormRow:sender];
     
-    [CCCoreData flushTableActivityAccount:app.activeAccount];
-    
+    [[NCManageDatabase sharedInstance] clearDB:[DBActivity class] account:app.activeAccount];
+        
     [app.activeActivity reloadDatasource];
 }
 
@@ -317,7 +317,8 @@
             [[NSURLCache sharedURLCache] setMemoryCapacity:0];
             [[NSURLCache sharedURLCache] setDiskCapacity:0];
             
-            [CCCoreData flushTableActivityAccount:app.activeAccount];
+            [[NCManageDatabase sharedInstance] clearDB:[DBActivity class] account:app.activeAccount];
+
             [CCCoreData flushTableAutomaticUploadAccount:app.activeAccount selector:nil];
             [CCCoreData flushTableCapabilitiesAccount:app.activeAccount];
             [CCCoreData flushTableDirectoryAccount:app.activeAccount];

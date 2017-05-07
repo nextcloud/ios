@@ -240,7 +240,6 @@
 + (void)moveAllUserToGroup;
 
 + (void)flushTableAccount:(NSString *)account;
-+ (void)flushTableActivityAccount:(NSString *)account;
 + (void)flushTableAutomaticUploadAccount:(NSString *)account selector:(NSString *)selector;
 + (void)flushTableCapabilitiesAccount:(NSString *)account;
 + (void)flushTableCertificates;
