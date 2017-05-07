@@ -109,7 +109,7 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
 
-        let results = realm.objects(DBActivity.self).filter(predicate).sorted(byKeyPath: "date")
+        let results = realm.objects(DBActivity.self).filter(predicate).sorted(byKeyPath: "date", ascending: false)
         
         return Array(results)
     }
