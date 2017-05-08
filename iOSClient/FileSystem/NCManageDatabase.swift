@@ -216,7 +216,6 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    
     func getAllCertificatesLocation(_ localCertificatesFolder: String) -> [String] {
         
         let realm = try! Realm()
