@@ -290,7 +290,7 @@
 {
     [self deselectFormRow:sender];
     
-    [[NCManageDatabase sharedInstance] clearDB:[tableActivity class] account:app.activeAccount];
+    [[NCManageDatabase sharedInstance] clearTable:[tableActivity class] account:app.activeAccount];
         
     [app.activeActivity reloadDatasource];
 }
@@ -317,14 +317,14 @@
             [[NSURLCache sharedURLCache] setMemoryCapacity:0];
             [[NSURLCache sharedURLCache] setDiskCapacity:0];
             
-            [[NCManageDatabase sharedInstance] clearDB:[tableActivity class] account:app.activeAccount];
+            [[NCManageDatabase sharedInstance] clearTable:[tableActivity class] account:app.activeAccount];
 
             [CCCoreData flushTableAutomaticUploadAccount:app.activeAccount selector:nil];
             [CCCoreData flushTableCapabilitiesAccount:app.activeAccount];
             [CCCoreData flushTableDirectoryAccount:app.activeAccount];
             [CCCoreData flushTableExternalSitesAccount:app.activeAccount];
                         
-            [[NCManageDatabase sharedInstance] clearDB:[tableGPS class] account:app.activeAccount];
+            [[NCManageDatabase sharedInstance] clearTable:[tableGPS class] account:app.activeAccount];
             
             [CCCoreData flushTableLocalFileAccount:app.activeAccount];
             [CCCoreData flushTableMetadataAccount:app.activeAccount];
@@ -408,6 +408,8 @@
             [[CCNetworking sharedNetworking] invalidateAndCancelAllSession];
             
             [CCCoreData flushAllDatabase];
+            
+            [[NCManageDatabase sharedInstance] removeDB];
             
             [CCUtility deleteAllChainStore];
             

@@ -28,7 +28,7 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Utility Database
 
-    func clearDB(_ table : Object.Type, account: String?) {
+    func clearTable(_ table : Object.Type, account: String?) {
         
         let results : Results<Object>
         let realm = try! Realm()
@@ -44,6 +44,24 @@ class NCManageDatabase: NSObject {
     
         try! realm.write {
             realm.delete(results)
+        }
+    }
+    
+    func removeDB() {
+        
+        let realmURL = Realm.Configuration.defaultConfiguration.fileURL!
+        let realmURLs = [
+            realmURL,
+            realmURL.appendingPathExtension("lock"),
+            realmURL.appendingPathExtension("note"),
+            realmURL.appendingPathExtension("management")
+        ]
+        for URL in realmURLs {
+            do {
+                try FileManager.default.removeItem(at: URL)
+            } catch {
+                // handle error
+            }
         }
     }
     
