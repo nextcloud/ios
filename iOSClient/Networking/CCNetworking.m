@@ -434,75 +434,76 @@
     
     if ([task isKindOfClass:[NSURLSessionDownloadTask class]]) {
         
-        dispatch_async(dispatch_get_main_queue(), ^{
-
-            NSDictionary *fields = [httpResponse allHeaderFields];
+        NSDictionary *fields = [httpResponse allHeaderFields];
             
-            if (errorCode == 0) {
+        if (errorCode == 0) {
             
-                rev = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-ETag"]];
-                date = [dateFormatter dateFromString:[fields objectForKey:@"Date"]];
+            rev = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-ETag"]];
+            date = [dateFormatter dateFromString:[fields objectForKey:@"Date"]];
 
-                // Activity
-                [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:metadata.fileID action:k_activityDebugActionDownload selector:metadata.sessionSelector note:serverUrl type:k_activityTypeSuccess verbose:k_activityVerboseDefault account:metadata.account activeUrl:_activeUrl];
+            // Activity
+            [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:metadata.fileID action:k_activityDebugActionDownload selector:metadata.sessionSelector note:serverUrl type:k_activityTypeSuccess verbose:k_activityVerboseDefault account:metadata.account activeUrl:_activeUrl];
                 
-            } else {
+        } else {
             
-                // Activity
-                [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:metadata.fileID action:k_activityDebugActionDownload selector:metadata.sessionSelector note:[NSString stringWithFormat:@"Server: %@ Error: %@", serverUrl, [CCError manageErrorKCF:errorCode withNumberError:YES]] type:k_activityTypeFailure verbose:k_activityVerboseDefault account:metadata.account activeUrl:_activeUrl];
-            }
+            // Activity
+            [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:metadata.fileID action:k_activityDebugActionDownload selector:metadata.sessionSelector note:[NSString stringWithFormat:@"Server: %@ Error: %@", serverUrl, [CCError manageErrorKCF:errorCode withNumberError:YES]] type:k_activityTypeFailure verbose:k_activityVerboseDefault account:metadata.account activeUrl:_activeUrl];
+        }
         
-            // Notification change session
-            if (metadata) {
+        // Notification change session
+        if (metadata) {
+                
+            dispatch_async(dispatch_get_main_queue(), ^{
                 
                 NSArray *object = [[NSArray alloc] initWithObjects:session, metadata, task, nil];
                 [[NSNotificationCenter defaultCenter] postNotificationName:k_networkingSessionNotification object:object];
                 
                 [self downloadFileSuccessFailure:fileName fileID:metadata.fileID rev:rev date:date serverUrl:serverUrl selector:metadata.sessionSelector selectorPost:metadata.sessionSelectorPost errorCode:errorCode];
+            });
+            
+        } else {
                 
-            } else {
-                
-                NSLog(@"[LOG] Serius error internal download : metadata not found");
-            }        
-        });
+            NSLog(@"[LOG] Serius error internal download : metadata not found");
+        }
     }
     
     // ------------------------ UPLOAD -----------------------
     
     if ([task isKindOfClass:[NSURLSessionUploadTask class]]) {
         
-        dispatch_async(dispatch_get_main_queue(), ^{
+        NSDictionary *fields = [httpResponse allHeaderFields];
+            
+        if (errorCode == 0) {
+            
+            fileID = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-FileId"]];
+            rev = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-ETag"]];
+            date = [dateFormatter dateFromString:[fields objectForKey:@"Date"]];
+            
+            // Activity
+            [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:fileID action:k_activityDebugActionUpload selector:metadata.sessionSelector note:serverUrl type:k_activityTypeSuccess verbose:k_activityVerboseDefault account:metadata.account activeUrl:_activeUrl];
 
-            NSDictionary *fields = [httpResponse allHeaderFields];
+        } else {
             
-            if (errorCode == 0) {
-            
-                fileID = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-FileId"]];
-                rev = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-ETag"]];
-                date = [dateFormatter dateFromString:[fields objectForKey:@"Date"]];
-            
-                // Activity
-                [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:fileID action:k_activityDebugActionUpload selector:metadata.sessionSelector note:serverUrl type:k_activityTypeSuccess verbose:k_activityVerboseDefault account:metadata.account activeUrl:_activeUrl];
-
-            } else {
-            
-                // Activity
-                [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:metadata.fileID action:k_activityDebugActionUpload selector:metadata.sessionSelector note:[NSString stringWithFormat:@"Server: %@ Error: %@", serverUrl, [CCError manageErrorKCF:errorCode withNumberError:YES]] type:k_activityTypeFailure verbose:k_activityVerboseDefault account:metadata.account  activeUrl:_activeUrl];
-            }
+            // Activity
+            [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:metadata.fileID action:k_activityDebugActionUpload selector:metadata.sessionSelector note:[NSString stringWithFormat:@"Server: %@ Error: %@", serverUrl, [CCError manageErrorKCF:errorCode withNumberError:YES]] type:k_activityTypeFailure verbose:k_activityVerboseDefault account:metadata.account  activeUrl:_activeUrl];
+        }
         
-            // Notification change session
-            if (fileID && metadata ) {
+        // Notification change session
+        if (fileID && metadata ) {
                 
+            dispatch_async(dispatch_get_main_queue(), ^{
+                    
                 NSArray *object = [[NSArray alloc] initWithObjects:session, metadata, task, nil];
                 [[NSNotificationCenter defaultCenter] postNotificationName:k_networkingSessionNotification object:object];
                 
                 [self uploadFileSuccessFailure:metadata fileName:fileName fileID:fileID rev:rev date:date serverUrl:serverUrl errorCode:errorCode];
+            });
                 
-            } else {
+        } else {
                 
-                NSLog(@"[LOG] Serius error internal upload : fileID or metadata not found");
-            }
-        });
+            NSLog(@"[LOG] Serius error internal upload : fileID or metadata not found");
+        }
+        
     }
 }
 
@@ -819,23 +820,25 @@
                     error = [NSError errorWithDomain:@"it.twsweb.cryptocloud" code:kCFURLErrorFileDoesNotExist userInfo:nil];
                 }
                 
-                dispatch_async(dispatch_get_main_queue(), ^{
+                if (error) {
                     
-                    if (error) {
-                    
-                        // Activity
-                        [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:NSLocalizedString(@"_read_file_error_", nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault account:_activeAccount  activeUrl:_activeUrl];
+                    // Activity
+                    [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:NSLocalizedString(@"_read_file_error_", nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault account:_activeAccount  activeUrl:_activeUrl];
+                        
+                    dispatch_async(dispatch_get_main_queue(), ^{
                         
                         // Error for uploadFileFailure
                         if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
                             [delegate uploadFileFailure:nil fileID:nil serverUrl:serverUrl selector:selector message:@"_read_file_error_" errorCode:error.code];
+                    });
                     
-                    } else {
+                } else {
                     
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        
                         [self upload:fileName serverUrl:serverUrl cryptated:cryptated template:NO onlyPlist:NO assetFileName:assetFileName assetDate:assetDate assetMediaType:assetMediaType assetLocalIdentifier:assetLocalIdentifier session:session taskStatus:taskStatus selector:selector selectorPost:selectorPost errorCode:errorCode delegate:delegate];
-                    }
-                });
-                
+                    });
+                }
             }];
         }
     }
@@ -856,22 +859,25 @@
             
                 [imageData writeToFile:fileNamePath options:NSDataWritingAtomic error:&error];
                 
-                dispatch_async(dispatch_get_main_queue(), ^{
+                if (error) {
                     
-                    if (error) {
-                    
-                        // Activity
-                        [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:NSLocalizedString(@"_read_file_error_", nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault account:_activeAccount  activeUrl:_activeUrl];
+                    // Activity
+                    [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:NSLocalizedString(@"_read_file_error_", nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault account:_activeAccount  activeUrl:_activeUrl];
 
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        
                         // Error for uploadFileFailure
                         if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
                             [delegate uploadFileFailure:nil fileID:nil serverUrl:serverUrl selector:selector message:@"_read_file_error_" errorCode:error.code];
+                    });
                     
-                    } else {
+                } else {
+                    
+                    dispatch_async(dispatch_get_main_queue(), ^{
                     
                         [self upload:fileName serverUrl:serverUrl cryptated:cryptated template:NO onlyPlist:NO assetFileName:assetFileName assetDate:assetDate assetMediaType:assetMediaType assetLocalIdentifier:assetLocalIdentifier session:session taskStatus:taskStatus selector:selector selectorPost:selectorPost errorCode:errorCode delegate:delegate];
-                    }
-                });
+                    });
+                }
             }];
         }
     }
@@ -1019,10 +1025,10 @@
                 
                 UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
                     
+                    // Activity
+                    [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:uploadID action:k_activityDebugActionUpload selector:selector note:NSLocalizedString(@"_file_already_exists_", nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault account:_activeAccount  activeUrl:_activeUrl];
+                    
                     dispatch_async(dispatch_get_main_queue(), ^{
-                        
-                        // Activity
-                        [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:uploadID action:k_activityDebugActionUpload selector:selector note:NSLocalizedString(@"_file_already_exists_", nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault account:_activeAccount  activeUrl:_activeUrl];
                         
                         // Error for uploadFileFailure
                         if ([[self getDelegate:uploadID] respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
@@ -1108,10 +1114,10 @@
             
             UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
                 
+                // Activity
+                [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:uploadID action:k_activityDebugActionUpload selector:selector note:NSLocalizedString(@"_file_already_exists_", nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault account:_activeAccount  activeUrl:_activeUrl];
+                
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    
-                    // Activity
-                    [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:uploadID action:k_activityDebugActionUpload selector:selector note:NSLocalizedString(@"_file_already_exists_", nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault account:_activeAccount  activeUrl:_activeUrl];
                     
                     // Error for uploadFileFailure
                     if ([[self getDelegate:uploadID] respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
