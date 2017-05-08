@@ -270,7 +270,6 @@
     
     // Fabric
     [Fabric with:@[[Crashlytics class]]];
-    [self logUserCrashlytics];
     
     return YES;
 }
@@ -1583,20 +1582,6 @@
     [[NSFileManager defaultManager] removeItemAtPath:[NSHomeDirectory() stringByAppendingPathComponent:@"Documents/Inbox"] error:nil];
     
     return YES;
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Crashlytics =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)logUserCrashlytics
-{
-    TableAccount *tableAccount = [CCCoreData getActiveAccount];
-    
-    if (tableAccount) {
-        if (tableAccount.email && tableAccount.email.length > 0)
-            [CrashlyticsKit setUserEmail:tableAccount.email];
-    }
 }
 
 #pragma --------------------------------------------------------------------------------------------

@@ -387,10 +387,7 @@
         
         // Initializations
         [app applicationInitialized];
-        
-        // User Crashlytics
-        [app logUserCrashlytics];
-        
+                
     } else {
         
         // reload datasource
