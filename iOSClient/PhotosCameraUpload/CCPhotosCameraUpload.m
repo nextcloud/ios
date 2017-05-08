@@ -1176,7 +1176,7 @@
         metadataNet.session = session;
         metadataNet.taskStatus = k_taskStatusResume;
         
-        if (![CCCoreData addTableAutomaticUpload:metadataNet account:app.activeAccount]) {
+        if (![[NCManageDatabase sharedInstance] addAutomaticUpload:metadataNet account:app.activeAccount]) {
             
             [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionAutomaticUpload selector:metadataNet.selector note:@"File already present in Table automatic Upload" type:k_activityTypeInfo verbose:k_activityVerboseHigh account:app.activeAccount activeUrl:app.activeUrl];
             

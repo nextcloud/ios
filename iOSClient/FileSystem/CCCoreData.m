@@ -1457,109 +1457,6 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Automatic Upload =====
-#pragma --------------------------------------------------------------------------------------------
-
-+ (BOOL)addTableAutomaticUpload:(CCMetadataNet *)metadataNet account:(NSString *)account
-{
-    NSManagedObjectContext *context = [NSManagedObjectContext MR_context];
-    TableAutomaticUpload *record = nil;
-    
-    // Record exists ?
-    record = [TableAutomaticUpload MR_findFirstWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (assetLocalIdentifier == %@)", account, metadataNet.assetLocalIdentifier] inContext:context];
-    if (record)
-        return NO;
-    
-    record = [TableAutomaticUpload MR_createEntityInContext:context];
-        
-    record.account = account;
-    record.assetLocalIdentifier = metadataNet.assetLocalIdentifier;
-    record.lock = [NSNumber numberWithBool:NO];
-    record.date = [NSDate date];
-    record.fileName = metadataNet.fileName;
-    record.selector = metadataNet.selector;
-    record.selectorPost = metadataNet.selectorPost;
-    record.serverUrl = metadataNet.serverUrl;
-    record.session = metadataNet.session;
-    record.priority = [NSNumber numberWithLong:metadataNet.priority];
-        
-    [context MR_saveToPersistentStoreAndWait];
-    
-    return YES;
-}
-
-+ (CCMetadataNet *)getTableAutomaticUploadForAccount:(NSString *)account selector:(NSString *)selector
-{
-    NSManagedObjectContext *context = [NSManagedObjectContext MR_context];
-    
-    TableAutomaticUpload *record = [TableAutomaticUpload MR_findFirstWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (selector == %@) AND (lock == 0)", account, selector] inContext:context];
-    
-    if (record) {
-    
-        CCMetadataNet *metadataNet = [CCMetadataNet new];
-        
-        metadataNet.action = actionUploadAsset;                             // Default
-        metadataNet.assetLocalIdentifier = record.assetLocalIdentifier;
-        metadataNet.fileName = record.fileName;
-        metadataNet.priority = [record.priority longValue];
-        metadataNet.selector = record.selector;
-        metadataNet.selectorPost = record.selectorPost;
-        metadataNet.serverUrl = record.serverUrl;
-        metadataNet.session = record.session;
-        metadataNet.taskStatus = k_taskStatusResume;                        // Default
-        
-        // LOCK
-        record.lock = [NSNumber numberWithBool:YES];
-        [context MR_saveToPersistentStoreAndWait];
-
-        return metadataNet;
-    }
-    
-    return nil;
-}
-
-+ (NSArray *)getAllLockTableAutomaticUploadForAccount:(NSString *)account
-{
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (lock == 1)", account];
-    
-    return [TableAutomaticUpload MR_findAllWithPredicate:predicate];
-}
-
-+ (void)unlockTableAutomaticUploadForAccount:(NSString *)account assetLocalIdentifier:(NSString *)assetLocalIdentifier
-{
-    NSManagedObjectContext *context = [NSManagedObjectContext MR_context];
-    
-    TableAutomaticUpload *record = [TableAutomaticUpload MR_findFirstWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (assetLocalIdentifier == %@)", account, assetLocalIdentifier] inContext:context];
-    
-    if (record) {
-        
-        // UN-LOCK
-        record.lock = [NSNumber numberWithBool:NO];
-        [context MR_saveToPersistentStoreAndWait];
-    }
-}
-
-+ (void)deleteTableAutomaticUploadForAccount:(NSString *)account assetLocalIdentifier:(NSString *)assetLocalIdentifier
-{
-    NSManagedObjectContext *context = [NSManagedObjectContext MR_context];
-    
-    TableAutomaticUpload *record = [TableAutomaticUpload MR_findFirstWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (assetLocalIdentifier == %@)", account, assetLocalIdentifier] inContext:context];
-    
-    if (record) {
-        [record MR_deleteEntityInContext:context];
-        [context MR_saveToPersistentStoreAndWait];
-    }
-}
-
-+ (NSUInteger)countTableAutomaticUploadForAccount:(NSString *)account selector:(NSString *)selector
-{
-    if (selector)
-        return [TableAutomaticUpload MR_countOfEntitiesWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (selector == %@)", account, selector]];
-    else
-        return [TableAutomaticUpload MR_countOfEntitiesWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@)", account]];
-}
-
-#pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Share =====
 #pragma --------------------------------------------------------------------------------------------
 
@@ -2103,38 +2000,6 @@
     [context MR_saveToPersistentStoreAndWait];
 }
 
-/*
-+ (void)flushTableActivityAccount:(NSString *)account
-{
-    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
-    
-    if (account) {
-        
-        [TableActivity MR_deleteAllMatchingPredicate:[NSPredicate predicateWithFormat:@"(account == %@) || (account == '')", account] inContext:context];
-        
-    } else {
-        
-        [TableActivity MR_truncateAllInContext:context];
-    }
-    
-    [context MR_saveToPersistentStoreAndWait];
-}
-*/
-
-+ (void)flushTableAutomaticUploadAccount:(NSString *)account selector:(NSString *)selector
-{
-    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
-    
-    if (account && selector)
-        [TableAutomaticUpload MR_deleteAllMatchingPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (selector == %@)", account, selector] inContext:context];
-    else if (account && !selector )
-        [TableAutomaticUpload MR_deleteAllMatchingPredicate:[NSPredicate predicateWithFormat:@"(account == %@)", account] inContext:context];
-    else
-        [TableAutomaticUpload MR_truncateAllInContext:context];
-    
-    [context MR_saveToPersistentStoreAndWait];
-}
-
 + (void)flushTableDirectoryAccount:(NSString *)account
 {
     NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
@@ -2221,7 +2086,6 @@
     NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
     
     [TableAccount MR_truncateAllInContext:context];
-    [TableAutomaticUpload MR_truncateAllInContext:context];
     [TableDirectory MR_truncateAllInContext:context];
     [TableLocalFile MR_truncateAllInContext:context];
     [TableMetadata MR_truncateAllInContext:context];

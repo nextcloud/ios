@@ -325,9 +325,9 @@
     [CCCoreData flushTableAccount:account];
     
     [[NCManageDatabase sharedInstance] clearTable:[tableActivity class] account:account];
-    
-    [CCCoreData flushTableAutomaticUploadAccount:account selector:nil];
+    [[NCManageDatabase sharedInstance] clearTable:[tableAutomaticUpload class] account:app.activeAccount];
     [[NCManageDatabase sharedInstance] clearTable:[tableCapabilities class] account:app.activeAccount];
+    
     [CCCoreData flushTableDirectoryAccount:account];
     [CCCoreData flushTableExternalSitesAccount:account];
     [CCCoreData flushTableLocalFileAccount:account];
@@ -355,7 +355,7 @@
 
 - (void)ChangeDefaultAccount:(NSString *)account
 {
-    if ([app.netQueue operationCount] > 0 || [app.netQueueDownload operationCount] > 0 || [app.netQueueDownloadWWan operationCount] > 0 || [app.netQueueUpload operationCount] > 0 || [app.netQueueUploadWWan operationCount] > 0 || [CCCoreData countTableAutomaticUploadForAccount:app.activeAccount selector:nil] > 0) {
+    if ([app.netQueue operationCount] > 0 || [app.netQueueDownload operationCount] > 0 || [app.netQueueDownloadWWan operationCount] > 0 || [app.netQueueUpload operationCount] > 0 || [app.netQueueUploadWWan operationCount] > 0 || [[NCManageDatabase sharedInstance] countAutomaticUploadForAccount:app.activeAccount selector:nil] > 0) {
         
         [app messageNotification:@"_transfers_in_queue_" description:nil visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
         [self UpdateForm];

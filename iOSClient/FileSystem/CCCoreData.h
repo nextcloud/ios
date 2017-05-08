@@ -40,7 +40,6 @@
 #import "TableDirectory+CoreDataClass.h"
 #import "TableLocalFile+CoreDataClass.h"
 #import "TableShare+CoreDataClass.h"
-#import "TableAutomaticUpload+CoreDataClass.h"
 #import "TableExternalSites+CoreDataClass.h"
 
 @interface CCCoreData : NSObject
@@ -176,15 +175,6 @@
 + (void)setGeoInformationLocalFromFileID:(NSString *)fileID exifDate:(NSDate *)exifDate exifLatitude:(NSString *)exifLatitude exifLongitude:(NSString *)exifLongitude activeAccount:(NSString *)activeAccount;
 + (void)setGeoInformationLocalNull;
 
-// ===== Automatic Upload =====
-
-+ (BOOL)addTableAutomaticUpload:(CCMetadataNet *)metadataNet account:(NSString *)account;
-+ (CCMetadataNet *)getTableAutomaticUploadForAccount:(NSString *)account selector:(NSString *)selector;
-+ (NSArray *)getAllLockTableAutomaticUploadForAccount:(NSString *)account;
-+ (void)unlockTableAutomaticUploadForAccount:(NSString *)account assetLocalIdentifier:(NSString *)assetLocalIdentifier;
-+ (void)deleteTableAutomaticUploadForAccount:(NSString *)account assetLocalIdentifier:(NSString *)assetLocalIdentifier;
-+ (NSUInteger)countTableAutomaticUploadForAccount:(NSString *)account selector:(NSString *)selector;
-
 // ===== Share =====
 
 + (void)setShareLink:(NSString *)share fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl sharesLink:(NSMutableDictionary *)sharesLink activeAccount:(NSString *)activeAccount;
@@ -220,7 +210,6 @@
 + (void)moveAllUserToGroup;
 
 + (void)flushTableAccount:(NSString *)account;
-+ (void)flushTableAutomaticUploadAccount:(NSString *)account selector:(NSString *)selector;
 + (void)flushTableDirectoryAccount:(NSString *)account;
 + (void)flushTableExternalSitesAccount:(NSString *)account;
 + (void)flushTableLocalFileAccount:(NSString *)account;

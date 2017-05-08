@@ -31,12 +31,6 @@
 		F708CF881E56E8CC00271D8B /* TableShare+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF601E56E8CC00271D8B /* TableShare+CoreDataProperties.m */; };
 		F708CF891E56E8CC00271D8B /* TableShare+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF601E56E8CC00271D8B /* TableShare+CoreDataProperties.m */; };
 		F708CF8A1E56E8CC00271D8B /* TableShare+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF601E56E8CC00271D8B /* TableShare+CoreDataProperties.m */; };
-		F708CF911E56E8CC00271D8B /* TableAutomaticUpload+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF661E56E8CC00271D8B /* TableAutomaticUpload+CoreDataClass.m */; };
-		F708CF921E56E8CC00271D8B /* TableAutomaticUpload+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF661E56E8CC00271D8B /* TableAutomaticUpload+CoreDataClass.m */; };
-		F708CF931E56E8CC00271D8B /* TableAutomaticUpload+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF661E56E8CC00271D8B /* TableAutomaticUpload+CoreDataClass.m */; };
-		F708CF941E56E8CC00271D8B /* TableAutomaticUpload+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF681E56E8CC00271D8B /* TableAutomaticUpload+CoreDataProperties.m */; };
-		F708CF951E56E8CC00271D8B /* TableAutomaticUpload+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF681E56E8CC00271D8B /* TableAutomaticUpload+CoreDataProperties.m */; };
-		F708CF961E56E8CC00271D8B /* TableAutomaticUpload+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF681E56E8CC00271D8B /* TableAutomaticUpload+CoreDataProperties.m */; };
 		F708CF971E56E8CC00271D8B /* TableAccount+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF6A1E56E8CC00271D8B /* TableAccount+CoreDataClass.m */; };
 		F708CF981E56E8CC00271D8B /* TableAccount+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF6A1E56E8CC00271D8B /* TableAccount+CoreDataClass.m */; };
 		F708CF991E56E8CC00271D8B /* TableAccount+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF6A1E56E8CC00271D8B /* TableAccount+CoreDataClass.m */; };
@@ -782,10 +776,6 @@
 		F708CF5E1E56E8CC00271D8B /* TableShare+CoreDataClass.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableShare+CoreDataClass.m"; sourceTree = "<group>"; };
 		F708CF5F1E56E8CC00271D8B /* TableShare+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableShare+CoreDataProperties.h"; sourceTree = "<group>"; };
 		F708CF601E56E8CC00271D8B /* TableShare+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableShare+CoreDataProperties.m"; sourceTree = "<group>"; };
-		F708CF651E56E8CC00271D8B /* TableAutomaticUpload+CoreDataClass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableAutomaticUpload+CoreDataClass.h"; sourceTree = "<group>"; };
-		F708CF661E56E8CC00271D8B /* TableAutomaticUpload+CoreDataClass.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableAutomaticUpload+CoreDataClass.m"; sourceTree = "<group>"; };
-		F708CF671E56E8CC00271D8B /* TableAutomaticUpload+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableAutomaticUpload+CoreDataProperties.h"; sourceTree = "<group>"; };
-		F708CF681E56E8CC00271D8B /* TableAutomaticUpload+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableAutomaticUpload+CoreDataProperties.m"; sourceTree = "<group>"; };
 		F708CF691E56E8CC00271D8B /* TableAccount+CoreDataClass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableAccount+CoreDataClass.h"; sourceTree = "<group>"; };
 		F708CF6A1E56E8CC00271D8B /* TableAccount+CoreDataClass.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableAccount+CoreDataClass.m"; sourceTree = "<group>"; };
 		F708CF6B1E56E8CC00271D8B /* TableAccount+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableAccount+CoreDataProperties.h"; sourceTree = "<group>"; };
@@ -2836,10 +2826,6 @@
 				F708CF5E1E56E8CC00271D8B /* TableShare+CoreDataClass.m */,
 				F708CF5F1E56E8CC00271D8B /* TableShare+CoreDataProperties.h */,
 				F708CF601E56E8CC00271D8B /* TableShare+CoreDataProperties.m */,
-				F708CF651E56E8CC00271D8B /* TableAutomaticUpload+CoreDataClass.h */,
-				F708CF661E56E8CC00271D8B /* TableAutomaticUpload+CoreDataClass.m */,
-				F708CF671E56E8CC00271D8B /* TableAutomaticUpload+CoreDataProperties.h */,
-				F708CF681E56E8CC00271D8B /* TableAutomaticUpload+CoreDataProperties.m */,
 				F708CF691E56E8CC00271D8B /* TableAccount+CoreDataClass.h */,
 				F708CF6A1E56E8CC00271D8B /* TableAccount+CoreDataClass.m */,
 				F708CF6B1E56E8CC00271D8B /* TableAccount+CoreDataProperties.h */,
@@ -3956,7 +3942,6 @@
 				F732BA0B1D76DBA500E9878B /* CCNetworking.m in Sources */,
 				F71459DD1D12E3B700CAFEEC /* CCCoreData.m in Sources */,
 				F71459E11D12E3B700CAFEEC /* CCHud.m in Sources */,
-				F708CF921E56E8CC00271D8B /* TableAutomaticUpload+CoreDataClass.m in Sources */,
 				F71459E41D12E3B700CAFEEC /* RNDecryptor.m in Sources */,
 				F71459E61D12E3B700CAFEEC /* NYXImagesHelper.m in Sources */,
 				F71459E91D12E3B700CAFEEC /* UIImage+Enhancing.m in Sources */,
@@ -3977,7 +3962,6 @@
 				F7145A001D12E3B700CAFEEC /* CCGlobal.m in Sources */,
 				F7145A011D12E3B700CAFEEC /* UIImage+Blurring.m in Sources */,
 				F7145A041D12E3B700CAFEEC /* CCloadItemData.swift in Sources */,
-				F708CF951E56E8CC00271D8B /* TableAutomaticUpload+CoreDataProperties.m in Sources */,
 				F73CC07F1E813DFF006E3047 /* BKTouchIDSwitchView.m in Sources */,
 				F76B3CCF1EAE01BD00921AC9 /* NCBrand.swift in Sources */,
 				F73CC0761E813DFF006E3047 /* BKPasscodeViewController.m in Sources */,
@@ -3995,7 +3979,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				F708CF781E56E8CC00271D8B /* TableLocalFile+CoreDataProperties.m in Sources */,
-				F708CF931E56E8CC00271D8B /* TableAutomaticUpload+CoreDataClass.m in Sources */,
 				F74344801E127ED3001CC831 /* NSString+Base64.m in Sources */,
 				F708CF871E56E8CC00271D8B /* TableShare+CoreDataClass.m in Sources */,
 				F708CF9C1E56E8CC00271D8B /* TableAccount+CoreDataProperties.m in Sources */,
@@ -4047,7 +4030,6 @@
 				F743447C1E127EB2001CC831 /* NSString+TruncateToWidth.m in Sources */,
 				F708CF751E56E8CC00271D8B /* TableLocalFile+CoreDataClass.m in Sources */,
 				F74344831E127F80001CC831 /* RNCryptor.m in Sources */,
-				F708CF961E56E8CC00271D8B /* TableAutomaticUpload+CoreDataProperties.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4224,7 +4206,6 @@
 				F73CC06F1E813DFF006E3047 /* BKPasscodeInputView.m in Sources */,
 				F77B0E6A1D118A16002130FE /* RNDecryptor.m in Sources */,
 				F73CC0751E813DFF006E3047 /* BKPasscodeViewController.m in Sources */,
-				F708CF941E56E8CC00271D8B /* TableAutomaticUpload+CoreDataProperties.m in Sources */,
 				F750374D1DBFA91A008FB480 /* ALView+PureLayout.m in Sources */,
 				F7F06E8F1DBFACC600099AE9 /* NSDateFormatter+CTAssetsPickerController.m in Sources */,
 				F7F6AC4E1E525AD300E8EB45 /* CCManageCryptoCloud.m in Sources */,
@@ -4243,7 +4224,6 @@
 				F77B0E801D118A16002130FE /* ZSSRichTextEditor.m in Sources */,
 				F7F06EC91DBFACC600099AE9 /* CTAssetsViewControllerTransition.m in Sources */,
 				F7659A661DC0B760004860C4 /* PSTCollectionViewLayout.m in Sources */,
-				F708CF911E56E8CC00271D8B /* TableAutomaticUpload+CoreDataClass.m in Sources */,
 				F75037511DBFA91A008FB480 /* NSLayoutConstraint+PureLayout.m in Sources */,
 				F762CAFA1EACB66200B38484 /* XLFormDateCell.m in Sources */,
 				F73C41501E82E51F000137C0 /* TableExternalSites+CoreDataClass.m in Sources */,

@@ -254,8 +254,7 @@
             [CCCoreData setCameraUploadDateVideo:NULL];
 
             // remove
-            [self dropAutomaticUploadWithSelector:selectorUploadAutomatic];
-            [self dropAutomaticUploadWithSelector:selectorUploadAutomaticAll];
+            [[NCManageDatabase sharedInstance] clearTable:[tableAutomaticUpload class] account:app.activeAccount];
         }
         
         // Initialize Camera Upload
@@ -302,7 +301,7 @@
             
         } else {
             
-            [self dropAutomaticUploadWithSelector:selectorUploadAutomaticAll];
+            [[NCManageDatabase sharedInstance] clearTable:[tableAutomaticUpload class] account:app.activeAccount];
             [CCCoreData setCameraUploadFullPhotosActiveAccount:NO activeAccount:app.activeAccount];
         }
     }
@@ -496,11 +495,6 @@
             break;
     }
     return sectionName;
-}
-
-- (void)dropAutomaticUploadWithSelector:(NSString *)selector
-{
-    [CCCoreData flushTableAutomaticUploadAccount:app.activeAccount selector:selector];
 }
 
 @end

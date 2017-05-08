@@ -961,7 +961,7 @@
         if (((OCnetworking *)operation).isExecuting == NO) _queueNumUploadWWan++;
 
     // Total
-    NSUInteger total = _queueNunDownload + _queueNumDownloadWWan + _queueNumUpload + _queueNumUploadWWan + [CCCoreData countTableAutomaticUploadForAccount:self.activeAccount selector:nil];
+    NSUInteger total = _queueNunDownload + _queueNumDownloadWWan + _queueNumUpload + _queueNumUploadWWan + [[NCManageDatabase sharedInstance] countAutomaticUploadForAccount:app.activeAccount selector:nil];
     
     [UIApplication sharedApplication].applicationIconBadgeNumber = total;
     
@@ -1297,9 +1297,9 @@
     _automaticUploadInProgress = YES;
     
     NSArray *uploadInQueue = [CCCoreData getTableMetadataUploadAccount:app.activeAccount];
-    NSArray *recordAutomaticUploadInLock = [CCCoreData getAllLockTableAutomaticUploadForAccount:_activeAccount];
+    NSArray *recordAutomaticUploadInLock =  [[NCManageDatabase sharedInstance] getAllLockAutomaticUploadForAccount:_activeAccount];
     
-    for (TableAutomaticUpload *tableAutomaticUpload in recordAutomaticUploadInLock) {
+    for (tableAutomaticUpload *tableAutomaticUpload in recordAutomaticUploadInLock) {
         
         BOOL recordFound = NO;
         
@@ -1309,12 +1309,12 @@
         }
         
         if (!recordFound)
-            [CCCoreData unlockTableAutomaticUploadForAccount:_activeAccount assetLocalIdentifier:tableAutomaticUpload.assetLocalIdentifier];
+            [[NCManageDatabase sharedInstance] unlockAutomaticUploadForAccount:_activeAccount assetLocalIdentifier:tableAutomaticUpload.assetLocalIdentifier];
     }
 
     // ------------------------- <selectorUploadAutomatic> -------------------------
     
-    metadataNet = [CCCoreData getTableAutomaticUploadForAccount:self.activeAccount selector:selectorUploadAutomatic];
+    metadataNet = [[NCManageDatabase sharedInstance] getAutomaticUploadForAccount:self.activeAccount selector:selectorUploadAutomatic];
     
     while (metadataNet) {
         
@@ -1328,10 +1328,10 @@
             
             [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionUpload selector:selectorUploadAutomatic note:@"Internal error image/video not found [0]" type:k_activityTypeFailure verbose:k_activityVerboseHigh account:_activeAccount activeUrl:_activeUrl];
             
-            [CCCoreData deleteTableAutomaticUploadForAccount:_activeAccount assetLocalIdentifier:metadataNet.assetLocalIdentifier];
+            [[NCManageDatabase sharedInstance] deleteAutomaticUploadForAccount:_activeAccount assetLocalIdentifier:metadataNet.assetLocalIdentifier];
         }
 
-        metadataNet = [CCCoreData getTableAutomaticUploadForAccount:self.activeAccount selector:selectorUploadAutomatic];
+        metadataNet =  [[NCManageDatabase sharedInstance] getAutomaticUploadForAccount:self.activeAccount selector:selectorUploadAutomatic];
     }
     
     // ------------------------- <selectorUploadAutomaticAll> -------------------------
@@ -1359,7 +1359,7 @@
         return;
     }
     
-    metadataNet = [CCCoreData getTableAutomaticUploadForAccount:self.activeAccount selector:selectorUploadAutomaticAll];
+    metadataNet =  [[NCManageDatabase sharedInstance] getAutomaticUploadForAccount:self.activeAccount selector:selectorUploadAutomaticAll];
     if (metadataNet) {
         
         PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[metadataNet.assetLocalIdentifier] options:nil];
@@ -1372,7 +1372,7 @@
             
             [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionUpload selector:selectorUploadAutomatic note:@"Internal error image/video not found [0]" type:k_activityTypeFailure verbose:k_activityVerboseHigh account:_activeAccount activeUrl:_activeUrl];
             
-            [CCCoreData deleteTableAutomaticUploadForAccount:_activeAccount assetLocalIdentifier:metadataNet.assetLocalIdentifier];            
+            [[NCManageDatabase sharedInstance] deleteAutomaticUploadForAccount:_activeAccount assetLocalIdentifier:metadataNet.assetLocalIdentifier];            
         }
     }
     
