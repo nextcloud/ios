@@ -226,7 +226,7 @@
     // Email Recipents
     NSArray *toRecipents;
     
-    NSArray *activities = [[NCManageDatabase sharedInstance] getAllTableActivityWithPredicate:[NSPredicate predicateWithFormat:@"((account == %@) || (account == ''))", app.activeAccount]];
+    NSArray *activities = [[NCManageDatabase sharedInstance] getAllActivityWithPredicate:[NSPredicate predicateWithFormat:@"((account == %@) || (account == ''))", app.activeAccount]];
     
     if ([activities count] == 0) {
         

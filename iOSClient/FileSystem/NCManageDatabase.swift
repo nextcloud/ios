@@ -129,13 +129,129 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func getAllTableActivityWithPredicate(_ predicate: NSPredicate) -> [tableActivity] {
+    func getAllActivityWithPredicate(_ predicate: NSPredicate) -> [tableActivity] {
         
         let realm = try! Realm()
 
         let results = realm.objects(tableActivity.self).filter(predicate).sorted(byKeyPath: "date", ascending: false)
         
         return Array(results)
+    }
+    
+    //MARK: -
+    //MARK: Table Automatic Upload
+    
+    func addAutomaticUpload(_ metadataNet: CCMetadataNet, account: String) -> Bool {
+        
+        let realm = try! Realm()
+        
+        // Verify if exists
+        let results = realm.objects(tableAutomaticUpload.self).filter("account = '\(account)' AND assetLocalIdentifier = '\(metadataNet.assetLocalIdentifier)'")
+        if (results.count > 0) {
+            return false
+        }
+        
+        try! realm.write {
+            
+            // Add new AutomaticUpload
+            let addAutomaticUpload = tableAutomaticUpload()
+            
+            addAutomaticUpload.account = account
+            addAutomaticUpload.assetLocalIdentifier = metadataNet.assetLocalIdentifier
+            addAutomaticUpload.fileName = metadataNet.fileName;
+            addAutomaticUpload.selector = metadataNet.selector;
+            addAutomaticUpload.selectorPost = metadataNet.selectorPost
+            addAutomaticUpload.serverUrl = metadataNet.serverUrl
+            addAutomaticUpload.session = metadataNet.session
+            addAutomaticUpload.priority = metadataNet.priority
+            
+            realm.add(addAutomaticUpload)
+        }
+
+        return true
+    }
+    
+    func getAutomaticUploadForAccount(_ account: String, selector: String) -> CCMetadataNet? {
+        
+        let realm = try! Realm()
+        
+        // Verify if exists
+        let results = realm.objects(tableAutomaticUpload.self).filter("account = '\(account)' AND selector = '\(selector)' AND (lock == false)")
+        if (results.count == 0) {
+            return nil
+        }
+
+        let metadataNet = CCMetadataNet()
+        
+        metadataNet.action = actionUploadAsset
+        metadataNet.assetLocalIdentifier = results[0].assetLocalIdentifier
+        metadataNet.fileName = results[0].fileName
+        metadataNet.priority = results[0].priority
+        metadataNet.selector = results[0].selector
+        metadataNet.selectorPost = results[0].selectorPost
+        metadataNet.serverUrl = results[0].serverUrl
+        metadataNet.session = results[0].session
+        metadataNet.taskStatus = Int(k_taskStatusResume)
+        
+        // Lock True
+        try! realm.write {
+            results[0].lock = true
+        }
+        
+        return metadataNet
+    }
+    
+    func getAllLockAutomaticUploadForAccount(_ account: String) -> [tableAutomaticUpload] {
+        
+        let realm = try! Realm()
+        
+        let results = realm.objects(tableAutomaticUpload.self).filter("account = '\(account)' AND (lock = true)")
+        
+        return Array(results)
+    }
+
+    func unlockAutomaticUploadForAccount(_ account: String, assetLocalIdentifier: String) {
+        
+        let realm = try! Realm()
+        
+        let results = realm.objects(tableAutomaticUpload.self).filter("account = '\(account)' AND (assetLocalIdentifier = '\(assetLocalIdentifier)')")
+        if (results.count > 0) {
+            
+            // Lock False
+            try! realm.write {
+                results[0].lock = false
+            }
+        }
+    }
+    
+    func deleteAutomaticUploadForAccount(_ account: String, assetLocalIdentifier: String) {
+        
+        let realm = try! Realm()
+        
+        let results = realm.objects(tableAutomaticUpload.self).filter("account = '\(account)' AND (assetLocalIdentifier = '\(assetLocalIdentifier)')")
+        if (results.count > 0) {
+            
+            try! realm.write {
+                realm.delete(results)
+            }
+        }
+    }
+    
+    func countAutomaticUploadForAccount(_ account: String, selector: String?) -> Int {
+        
+        let realm = try! Realm()
+        let results : Results<tableAutomaticUpload>
+        
+        if (selector == nil) {
+            
+            results = realm.objects(tableAutomaticUpload.self).filter("account = '\(account)'")
+            
+        } else {
+            
+            results = realm.objects(tableAutomaticUpload.self).filter("account = '\(account)' AND (selector = '\(selector!)')")
+        }
+        
+        return results.count
     }
     
     //MARK: -

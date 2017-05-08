@@ -23,6 +23,20 @@ class tableActivity: Object {
     dynamic var verbose : Bool = false
 }
 
+class tableAutomaticUpload: Object {
+    
+    dynamic var account = ""
+    dynamic var assetLocalIdentifier = ""
+    dynamic var date = Date()
+    dynamic var fileName = ""
+    dynamic var lock : Bool = false
+    dynamic var priority : Int = 0
+    dynamic var selector = ""
+    dynamic var selectorPost = ""
+    dynamic var serverUrl = ""
+    dynamic var session = ""
+}
+
 class tableCapabilities: Object {
     
     dynamic var account = ""
