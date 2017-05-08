@@ -1594,42 +1594,6 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== GPS =====
-#pragma --------------------------------------------------------------------------------------------
-
-+ (void)setGeocoderLocation:(NSString *)location placemarkAdministrativeArea:(NSString *)placemarkAdministrativeArea placemarkCountry:(NSString *)placemarkCountry placemarkLocality:(NSString *)placemarkLocality placemarkPostalCode:(NSString *)placemarkPostalCode placemarkThoroughfare:(NSString *)placemarkThoroughfare latitude:(NSString *)latitude longitude:(NSString *)longitude
-{
-    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
-        
-    TableGPS *record = [TableGPS MR_findFirstWithPredicate:[NSPredicate predicateWithFormat:@"(latitude == %@) AND (longitude == %@)", latitude, longitude] inContext:context];
-        
-    if (!record) {
-        record = [TableGPS MR_createEntityInContext:context];
-    }
-        
-    record.latitude = latitude;
-    record.longitude = longitude;
-    if (location) record.location = location;
-    if (placemarkAdministrativeArea) record.placemarkAdministrativeArea = placemarkAdministrativeArea;
-    if (placemarkCountry) record.placemarkCountry = placemarkCountry;
-    if (placemarkLocality) record.placemarkLocality = placemarkLocality;
-    if (placemarkPostalCode) record.placemarkPostalCode = placemarkPostalCode;
-    if (placemarkThoroughfare) record.placemarkThoroughfare = placemarkThoroughfare;
-    
-    [context MR_saveToPersistentStoreAndWait];
-}
-
-+ (NSString *)getLocationFromGeoLatitude:(NSString *)latitude longitude:(NSString *)longitude
-{
-    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
-
-    TableGPS *record = [TableGPS MR_findFirstWithPredicate:[NSPredicate predicateWithFormat:@"(latitude == %@) AND (longitude == %@)", latitude, longitude] inContext:context];
-    
-    if (record) return record.location;
-    else return nil;
-}
-
-#pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Share =====
 #pragma --------------------------------------------------------------------------------------------
 
@@ -2314,15 +2278,6 @@
     [context MR_saveToPersistentStoreAndWait];
 }
 
-+ (void)flushTableGPS
-{
-    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
-    
-    [TableGPS MR_truncateAllInContext:context];
-    
-    [context MR_saveToPersistentStoreAndWait];
-}
-
 + (void)flushTableLocalFileAccount:(NSString *)account
 {
     NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
@@ -2382,7 +2337,7 @@
     [TableCapabilities MR_truncateAllInContext:context];
     [TableCertificates MR_truncateAllInContext:context];
     [TableDirectory MR_truncateAllInContext:context];
-    [TableGPS MR_truncateAllInContext:context];
+    //[TableGPS MR_truncateAllInContext:context];
     [TableLocalFile MR_truncateAllInContext:context];
     [TableMetadata MR_truncateAllInContext:context];
     [TableShare MR_truncateAllInContext:context];

@@ -216,7 +216,7 @@
     
         if ([localFile.exifLatitude floatValue] > 0 || [localFile.exifLongitude floatValue] > 0) {
         
-            NSString *location = [CCCoreData getLocationFromGeoLatitude:localFile.exifLatitude longitude:localFile.exifLongitude];
+            NSString *location = [[NCManageDatabase sharedInstance] getLocationFromGeoLatitude:localFile.exifLatitude longitude:localFile.exifLongitude];
             
             addLocation = [NSString stringWithFormat:@"%@, %@", addLocation, location];
         

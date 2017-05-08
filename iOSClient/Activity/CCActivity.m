@@ -173,7 +173,7 @@
     NSDate *dateActivity;
     
     if ([_sectionDataSource count] > 0)
-        dateActivity = ((DBActivity *)[_sectionDataSource objectAtIndex:0]).date;
+        dateActivity = ((tableActivity *)[_sectionDataSource objectAtIndex:0]).date;
 
     if ([dateActivity compare:_storeDateFirstActivity] == NSOrderedDescending || _storeDateFirstActivity == nil || dateActivity == nil) {
         _storeDateFirstActivity = dateActivity;
@@ -192,7 +192,7 @@
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    DBActivity *activity = [_sectionDataSource objectAtIndex:section];
+    tableActivity *activity = [_sectionDataSource objectAtIndex:section];
         
     if ([activity.action isEqual: k_activityDebugActionDownload] || [activity.action isEqual: k_activityDebugActionUpload]) {
         
@@ -207,7 +207,7 @@
 
 -(CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section
 {
-    DBActivity *activity = [_sectionDataSource objectAtIndex:section];
+    tableActivity *activity = [_sectionDataSource objectAtIndex:section];
     
     UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, collectionView.frame.size.width - 40, CGFLOAT_MAX)];
     label.numberOfLines = 0;
@@ -242,7 +242,7 @@
     
         reusableview = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:@"header" forIndexPath:indexPath];
         
-        DBActivity *activity = [_sectionDataSource objectAtIndex:indexPath.section];
+        tableActivity *activity = [_sectionDataSource objectAtIndex:indexPath.section];
     
         UILabel *dateLabel = (UILabel *)[reusableview viewWithTag:100];
         UILabel *actionLabel = (UILabel *)[reusableview viewWithTag:101];
@@ -314,7 +314,7 @@
     //cell.backgroundColor = [UIColor clearColor];
     UIImageView *imageView = (UIImageView *)[cell viewWithTag:104];
 
-    DBActivity *activity = [_sectionDataSource objectAtIndex:indexPath.section];
+    tableActivity *activity = [_sectionDataSource objectAtIndex:indexPath.section];
     
     imageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, activity.fileID]];
     
@@ -323,7 +323,7 @@
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    DBActivity *activity = [_sectionDataSource objectAtIndex:indexPath.section];
+    tableActivity *activity = [_sectionDataSource objectAtIndex:indexPath.section];
     
     CCMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileID == %@)", activity.account, activity.fileID] context:nil];
     

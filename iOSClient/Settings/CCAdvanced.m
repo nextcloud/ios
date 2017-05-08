@@ -234,7 +234,7 @@
         return;
     }
     
-    for (DBActivity *activity in activities) {
+    for (tableActivity *activity in activities) {
         
         NSString *date, *type, *actionFile, *note;
         
@@ -290,7 +290,7 @@
 {
     [self deselectFormRow:sender];
     
-    [[NCManageDatabase sharedInstance] clearDB:[DBActivity class] account:app.activeAccount];
+    [[NCManageDatabase sharedInstance] clearDB:[tableActivity class] account:app.activeAccount];
         
     [app.activeActivity reloadDatasource];
 }
@@ -317,13 +317,15 @@
             [[NSURLCache sharedURLCache] setMemoryCapacity:0];
             [[NSURLCache sharedURLCache] setDiskCapacity:0];
             
-            [[NCManageDatabase sharedInstance] clearDB:[DBActivity class] account:app.activeAccount];
+            [[NCManageDatabase sharedInstance] clearDB:[tableActivity class] account:app.activeAccount];
 
             [CCCoreData flushTableAutomaticUploadAccount:app.activeAccount selector:nil];
             [CCCoreData flushTableCapabilitiesAccount:app.activeAccount];
             [CCCoreData flushTableDirectoryAccount:app.activeAccount];
             [CCCoreData flushTableExternalSitesAccount:app.activeAccount];
-            [CCCoreData flushTableGPS];
+                        
+            [[NCManageDatabase sharedInstance] clearDB:[tableGPS class] account:app.activeAccount];
+            
             [CCCoreData flushTableLocalFileAccount:app.activeAccount];
             [CCCoreData flushTableMetadataAccount:app.activeAccount];
             [CCCoreData flushTableShareAccount:app.activeAccount];

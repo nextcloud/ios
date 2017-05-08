@@ -324,7 +324,7 @@
 {
     [CCCoreData flushTableAccount:account];
     
-    [[NCManageDatabase sharedInstance] clearDB:[DBActivity class] account:account];
+    [[NCManageDatabase sharedInstance] clearDB:[tableActivity class] account:account];
     
     [CCCoreData flushTableAutomaticUploadAccount:account selector:nil];
     [CCCoreData flushTableCapabilitiesAccount:account];

@@ -8,7 +8,7 @@
 
 import RealmSwift
 
-class DBActivity: Object {
+class tableActivity: Object {
     
     dynamic var account = ""
     dynamic var action = "Activity"
@@ -21,4 +21,16 @@ class DBActivity: Object {
     dynamic var selector = ""
     dynamic var type = ""
     dynamic var verbose : Bool = false
+}
+
+class tableGPS: Object {
+    
+    dynamic var latitude = ""
+    dynamic var location = ""
+    dynamic var longitude = ""
+    dynamic var placemarkAdministrativeArea = ""
+    dynamic var placemarkCountry = ""
+    dynamic var placemarkLocality = ""
+    dynamic var placemarkPostalCode = ""
+    dynamic var placemarkThoroughfare = ""
 }

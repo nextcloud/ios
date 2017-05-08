@@ -23,6 +23,30 @@
 
 #import "CCExifGeo.h"
 
+#ifndef EXTENSION
+    #ifdef CUSTOM_BUILD
+        #import "CustomSwift.h"
+    #else
+        #import "Nextcloud-Swift.h"
+    #endif
+#else
+    #ifdef EXTENSION_SHARE
+        #ifdef CUSTOM_BUILD
+            #import "CustomSwiftShare.h"
+        #else
+            #import "Share-Swift.h"
+        #endif
+    #endif
+
+    #ifdef EXTENSION_PICKER
+        #ifdef CUSTOM_BUILD
+            #import "CustomSwiftPick.h"
+        #else
+            #import "Picker-Swift.h"
+        #endif
+    #endif
+#endif
+
 @implementation CCExifGeo
 
 + (void)setExifLocalTableFileID:(CCMetadata *)metadata directoryUser:(NSString *)directoryUser activeAccount:(NSString *)activeAccount
@@ -82,7 +106,8 @@
 + (void)setGeocoderFileID:(NSString *)fileID exifDate:(NSDate *)exifDate latitude:(NSString*)latitude longitude:(NSString*)longitude
 {
     // If exists already geocoder data in TableGPS exit
-    if ([CCCoreData getLocationFromGeoLatitude:latitude longitude:longitude]) return;
+    if ([[NCManageDatabase sharedInstance] getLocationFromGeoLatitude:latitude longitude:longitude])
+        return;
     
     CLGeocoder *geocoder = [[CLGeocoder alloc] init];
     CLLocation *location = [[CLLocation alloc] initWithLatitude:[latitude doubleValue] longitude:[longitude doubleValue]];
@@ -113,7 +138,7 @@
             // GPS
             if ([location length] > 0) {
                 
-                [CCCoreData setGeocoderLocation:location placemarkAdministrativeArea:placemark.administrativeArea placemarkCountry:placemark.country placemarkLocality:placemark.locality placemarkPostalCode:placemark.postalCode placemarkThoroughfare:placemark.thoroughfare latitude:latitude longitude:longitude];
+                [[NCManageDatabase sharedInstance] addGeocoderLocation:location placemarkAdministrativeArea:placemark.administrativeArea placemarkCountry:placemark.country placemarkLocality:placemark.locality placemarkPostalCode:placemark.postalCode placemarkThoroughfare:placemark.thoroughfare latitude:latitude longitude:longitude];
                 
                 NSDictionary *dictionary = [[NSDictionary alloc] initWithObjectsAndKeys:exifDate, fileID, nil];
                 

@@ -830,8 +830,8 @@
         localFile = [CCCoreData getLocalFileWithFileID:fileID activeAccount:app.activeAccount];
         
         if ([localFile.exifLatitude floatValue] != 0 || [localFile.exifLongitude floatValue] != 0) {
-            
-            NSString *location = [CCCoreData getLocationFromGeoLatitude:localFile.exifLatitude longitude:localFile.exifLongitude];
+                        
+            NSString *location = [[NCManageDatabase sharedInstance] getLocationFromGeoLatitude:localFile.exifLatitude longitude:localFile.exifLongitude];
             
             if ([localFile.exifDate isEqualToDate:[NSDate distantPast]] == NO && location) {
                 

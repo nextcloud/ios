@@ -1591,8 +1591,7 @@
 - (void)upgrade
 {
 #ifdef DEBUG
-   // [CCCoreData flushTableGPS];
-   // [CCCoreData setGeoInformationLocalNull];
+   
 #endif
     
     NSString *actualVersion = [CCUtility getVersionCryptoCloud];
@@ -1608,7 +1607,6 @@
     
     if (([actualVersion compare:@"2.15" options:NSNumericSearch] == NSOrderedAscending)) {
         
-        [CCCoreData flushTableGPS];
         [CCCoreData setGeoInformationLocalNull];
     }
     

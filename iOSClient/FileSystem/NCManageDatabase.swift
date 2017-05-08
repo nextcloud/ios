@@ -59,22 +59,22 @@ class NCManageDatabase: NSObject {
             for activity in listOfActivity {
                 
                 // Verify
-                let records = realm.objects(DBActivity.self).filter("idActivity = \(activity.idActivity)")
-                if (records.count > 0) {
+                let results = realm.objects(tableActivity.self).filter("idActivity = \(activity.idActivity)")
+                if (results.count > 0) {
                     continue
                 }
                 
                 // Add new Activity
-                let dbActivity = DBActivity()
+                let addActivity = tableActivity()
                 
-                dbActivity.account = account
-                dbActivity.date = activity.date
-                dbActivity.idActivity = Double(activity.idActivity)
-                dbActivity.link = activity.link
-                dbActivity.note = activity.subject
-                dbActivity.type = k_activityTypeInfo
+                addActivity.account = account
+                addActivity.date = activity.date
+                addActivity.idActivity = Double(activity.idActivity)
+                addActivity.link = activity.link
+                addActivity.note = activity.subject
+                addActivity.type = k_activityTypeInfo
 
-                realm.add(dbActivity)
+                realm.add(addActivity)
             }
         }
     }
@@ -93,32 +93,77 @@ class NCManageDatabase: NSObject {
         try! realm.write {
 
             // Add new Activity
-            let dbActivity = DBActivity()
+            let addActivity = tableActivity()
 
             if (account != nil) {
-                dbActivity.account = account!
+                addActivity.account = account!
             }
             
-            dbActivity.action = action
-            dbActivity.file = file
-            dbActivity.fileID = fileID
-            dbActivity.note = noteReplacing
-            dbActivity.selector = selector
-            dbActivity.type = type
-            dbActivity.verbose = verbose
+            addActivity.action = action
+            addActivity.file = file
+            addActivity.fileID = fileID
+            addActivity.note = noteReplacing
+            addActivity.selector = selector
+            addActivity.type = type
+            addActivity.verbose = verbose
 
-            realm.add(dbActivity)
+            realm.add(addActivity)
         }
     }
     
-    func getAllTableActivityWithPredicate(_ predicate : NSPredicate) -> [DBActivity] {
+    func getAllTableActivityWithPredicate(_ predicate: NSPredicate) -> [tableActivity] {
         
         let realm = try! Realm()
 
-        let results = realm.objects(DBActivity.self).filter(predicate).sorted(byKeyPath: "date", ascending: false)
+        let results = realm.objects(tableActivity.self).filter(predicate).sorted(byKeyPath: "date", ascending: false)
         
         return Array(results)
     }
+    
+    //MARK: -
+    //MARK: Table GPS
+    
+    func addGeocoderLocation(_ location: String, placemarkAdministrativeArea: String, placemarkCountry: String, placemarkLocality: String, placemarkPostalCode: String, placemarkThoroughfare: String, latitude: String, longitude: String) {
+
+        let realm = try! Realm()
+
+        // Verify if exists
+        let results = realm.objects(tableGPS.self).filter("latitude = '\(latitude)' AND longitude = '\(longitude)'")
+        if (results.count > 0) {
+            return
+        }
+                
+        try! realm.write {
+            
+            // Add new GPS
+            let addGPS = tableGPS()
+                
+            addGPS.location = location
+            addGPS.placemarkAdministrativeArea = placemarkAdministrativeArea
+            addGPS.placemarkCountry = placemarkCountry
+            addGPS.placemarkLocality = placemarkLocality
+            addGPS.placemarkPostalCode = placemarkPostalCode
+            addGPS.placemarkThoroughfare = placemarkThoroughfare
+            addGPS.latitude = latitude
+            addGPS.longitude = longitude
+                
+            realm.add(addGPS)
+        }
+    }
+    
+    func getLocationFromGeoLatitude(_ latitude: String, longitude: String) -> String? {
+        
+        let realm = try! Realm()
+        
+        let results = realm.objects(tableGPS.self).filter("latitude = '\(latitude)' AND longitude = '\(longitude)'")
+        
+        if (results.count == 0) {
+            return nil
+        } else {
+            return results[0].location
+        }
+    }
+
     
     //MARK: -
 }

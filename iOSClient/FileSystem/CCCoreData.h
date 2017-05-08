@@ -30,7 +30,6 @@
 #import "OCSharedDto.h"
 #import "CCMetadata.h"
 #import "CCUtility.h"
-#import "CCExifGeo.h"
 #import "CCGraphics.h"
 #import "OCUserProfile.h"
 #import "OCActivity.h"
@@ -41,7 +40,6 @@
 #import "TableMetadata+CoreDataClass.h"
 #import "TableDirectory+CoreDataClass.h"
 #import "TableLocalFile+CoreDataClass.h"
-#import "TableGPS+CoreDataClass.h"
 #import "TableShare+CoreDataClass.h"
 #import "TableAutomaticUpload+CoreDataClass.h"
 #import "TableExternalSites+CoreDataClass.h"
@@ -194,11 +192,6 @@
 + (void)deleteTableAutomaticUploadForAccount:(NSString *)account assetLocalIdentifier:(NSString *)assetLocalIdentifier;
 + (NSUInteger)countTableAutomaticUploadForAccount:(NSString *)account selector:(NSString *)selector;
 
-// ===== GPS =====
-
-+ (void)setGeocoderLocation:(NSString *)location placemarkAdministrativeArea:(NSString *)placemarkAdministrativeArea placemarkCountry:(NSString *)placemarkCountry placemarkLocality:(NSString *)placemarkLocality placemarkPostalCode:(NSString *)placemarkPostalCode placemarkThoroughfare:(NSString *)placemarkThoroughfare latitude:(NSString *)latitude longitude:(NSString *)longitude;
-+ (NSString *)getLocationFromGeoLatitude:(NSString *)latitude longitude:(NSString *)longitude;
-
 // ===== Share =====
 
 + (void)setShareLink:(NSString *)share fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl sharesLink:(NSMutableDictionary *)sharesLink activeAccount:(NSString *)activeAccount;
@@ -245,7 +238,6 @@
 + (void)flushTableCertificates;
 + (void)flushTableDirectoryAccount:(NSString *)account;
 + (void)flushTableExternalSitesAccount:(NSString *)account;
-+ (void)flushTableGPS;
 + (void)flushTableLocalFileAccount:(NSString *)account;
 + (void)flushTableMetadataAccount:(NSString *)account;
 + (void)flushTableShareAccount:(NSString *)account;
