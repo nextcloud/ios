@@ -85,16 +85,6 @@
         <attribute name="type" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="url" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
-    <entity name="TableGPS" representedClassName="TableGPS" syncable="YES">
-        <attribute name="latitude" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="location" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="longitude" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="placemarkAdministrativeArea" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="placemarkCountry" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="placemarkLocality" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="placemarkPostalCode" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="placemarkThoroughfare" optional="YES" attributeType="String" syncable="YES"/>
-    </entity>
     <entity name="TableLocalFile" representedClassName="TableLocalFile" syncable="YES">
         <attribute name="account" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
@@ -156,7 +146,6 @@
         <element name="TableCertificates" positionX="-6597" positionY="711" width="128" height="60"/>
         <element name="TableDirectory" positionX="-6372" positionY="111" width="162" height="210"/>
         <element name="TableExternalSites" positionX="-6399" positionY="252" width="128" height="150"/>
-        <element name="TableGPS" positionX="-6597" positionY="990" width="128" height="165"/>
         <element name="TableLocalFile" positionX="-6138" positionY="111" width="162" height="225"/>
         <element name="TableMetadata" positionX="-6138" positionY="402" width="162" height="510"/>
         <element name="TableShare" positionX="-6597" positionY="558" width="128" height="120"/>
