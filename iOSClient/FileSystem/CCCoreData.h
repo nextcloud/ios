@@ -43,7 +43,6 @@
 #import "TableShare+CoreDataClass.h"
 #import "TableAutomaticUpload+CoreDataClass.h"
 #import "TableExternalSites+CoreDataClass.h"
-#import "TableCapabilities+CoreDataClass.h"
 
 @interface CCCoreData : NSObject
 
@@ -210,12 +209,6 @@
 + (void)deleteAllExternalSitesForAccount:(NSString *)account;
 + (NSArray *)getAllTableExternalSitesWithPredicate:(NSPredicate *)predicate;
 
-// ===== Capabilities =====
-
-+ (void)setCapabilities:(OCCapabilities *)capabilities account:(NSString *)account;
-+ (TableCapabilities *)getCapabilitesForAccount:(NSString *)account;
-+ (NSInteger)getServerVersionAccount:(NSString *)activeAccount;
-
 // ===== File System =====
 
 + (BOOL)downloadFile:(CCMetadata *)metadata directoryUser:(NSString *)directoryUser activeAccount:(NSString *)activeAccount;
@@ -234,7 +227,6 @@
 
 + (void)flushTableAccount:(NSString *)account;
 + (void)flushTableAutomaticUploadAccount:(NSString *)account selector:(NSString *)selector;
-+ (void)flushTableCapabilitiesAccount:(NSString *)account;
 + (void)flushTableCertificates;
 + (void)flushTableDirectoryAccount:(NSString *)account;
 + (void)flushTableExternalSitesAccount:(NSString *)account;

@@ -139,6 +139,67 @@ class NCManageDatabase: NSObject {
     }
     
     //MARK: -
+    //MARK: Table Capabilities
+    
+    func addCapabilities(_ capabilities: OCCapabilities, account: String) {
+        
+        let realm = try! Realm()
+        
+        let results = realm.objects(tableCapabilities.self).filter("account = '\(account)'")
+        
+        try! realm.write {
+            
+            var resultCapabilities = tableCapabilities()
+            
+            if (results.count > 0) {
+                resultCapabilities = results[0]
+            }
+            
+            resultCapabilities.account = account
+            resultCapabilities.themingBackground = capabilities.themingBackground
+            resultCapabilities.themingColor = capabilities.themingColor
+            resultCapabilities.themingLogo = capabilities.themingLogo
+            resultCapabilities.themingName = capabilities.themingName
+            resultCapabilities.themingSlogan = capabilities.themingSlogan
+            resultCapabilities.themingUrl = capabilities.themingUrl
+            resultCapabilities.versionMajor = capabilities.versionMajor
+            resultCapabilities.versionMinor = capabilities.versionMinor
+            resultCapabilities.versionMicro = capabilities.versionMicro
+            resultCapabilities.versionString = capabilities.versionString
+            
+            if (results.count == 0) {
+                realm.add(resultCapabilities)
+            }
+        }
+    }
+    
+    func getCapabilitesForAccount(_ account: String) -> tableCapabilities? {
+        
+        let realm = try! Realm()
+        
+        let results = realm.objects(tableCapabilities.self).filter("account = '\(account)'")
+        
+        if (results.count > 0) {
+            return results[0]
+        } else {
+            return nil
+        }
+    }
+    
+    func getServerVersionAccount(_ account: String) -> Int {
+
+        let realm = try! Realm()
+
+        let results = realm.objects(tableCapabilities.self).filter("account = '\(account)'")
+
+        if (results.count > 0) {
+            return results[0].versionMajor
+        } else {
+            return 0
+        }
+    }
+
+    //MARK: -
     //MARK: Table GPS
     
     func addGeocoderLocation(_ location: String, placemarkAdministrativeArea: String, placemarkCountry: String, placemarkLocality: String, placemarkPostalCode: String, placemarkThoroughfare: String, latitude: String, longitude: String) {

@@ -438,9 +438,9 @@
         break;
         case 5: {
             
-            TableCapabilities *record = [CCCoreData getCapabilitesForAccount:app.activeAccount];
+            tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesForAccount:app.activeAccount];
             
-            NSString *versionServer = record.versionString;
+            NSString *versionServer = capabilities.versionString;
             
             NSString *versionApp = [NSString stringWithFormat:@"%@.%@", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"], [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
             

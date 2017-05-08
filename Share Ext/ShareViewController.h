@@ -38,7 +38,6 @@
 #import "CCHud.h"
 
 #import "TableAccount+CoreDataClass.h"
-#import "TableCapabilities+CoreDataClass.h"
 
 @interface ShareViewController : UIViewController <UITableViewDelegate, OCNetworkingDelegate, MBProgressHUDDelegate, BKPasscodeViewControllerDelegate, CCNetworkingDelegate, CCMoveDelegate>
 

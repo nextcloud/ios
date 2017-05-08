@@ -988,11 +988,11 @@
 {
     if (self.activeAccount.length > 0) {
     
-        TableCapabilities *tableCapabilities = [CCCoreData getCapabilitesForAccount:self.activeAccount];
+        tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesForAccount:self.activeAccount];
     
-        if (k_option_use_themingColor && tableCapabilities.themingColor.length > 0) {
+        if (k_option_use_themingColor && capabilities.themingColor.length > 0) {
         
-            [NCBrandColor sharedInstance].brand = [CCGraphics colorFromHexString:tableCapabilities.themingColor];
+            [NCBrandColor sharedInstance].brand = [CCGraphics colorFromHexString:capabilities.themingColor];
             
         } else {
             

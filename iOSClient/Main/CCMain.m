@@ -201,8 +201,8 @@
     [self.searchController.searchBar sizeToFit];
     self.searchController.searchBar.delegate = self;
     self.searchController.searchBar.placeholder = NSLocalizedString(@"_search_this_folder_",nil);
-
-    if ([CCCoreData getServerVersionAccount:app.activeAccount] >= 12) {
+    
+    if ([[NCManageDatabase sharedInstance] getServerVersionAccount:app.activeAccount] >= 12) {
         
         if (_isRoot)
             self.searchController.searchBar.scopeButtonTitles = [NSArray arrayWithObjects:NSLocalizedString(@"_search_this_folder_",nil),NSLocalizedString(@"_search_all_folders_",nil), nil];
@@ -1217,7 +1217,7 @@
 - (void)getCapabilitiesOfServerSuccess:(OCCapabilities *)capabilities
 {
     // Update capabilities db
-    [CCCoreData setCapabilities:capabilities account:app.activeAccount];
+    [[NCManageDatabase sharedInstance] addCapabilities:capabilities account:app.activeAccount];
     
     // ------ THEMING -----------------------------------------------------------------------
     
@@ -1241,7 +1241,7 @@
     // ------ SEARCH  ------------------------------------------------------------------------
     
     // Search bar if change version
-    if ([CCCoreData getServerVersionAccount:app.activeAccount] != capabilities.versionMajor) {
+    if ([[NCManageDatabase sharedInstance] getServerVersionAccount:app.activeAccount] != capabilities.versionMajor) {
     
         [self cancelSearchBar];
         
@@ -1997,7 +1997,7 @@
         
         _searchFileName = fileName;
         
-        if ([CCCoreData getServerVersionAccount:app.activeAccount] >= 12 && ![_depth isEqualToString:@"0"]) {
+        if ([[NCManageDatabase sharedInstance] getServerVersionAccount:app.activeAccount] >= 12 && ![_depth isEqualToString:@"0"]) {
             
             [[CCActions sharedInstance] search:_serverUrl fileName:_searchFileName depth:_depth delegate:self];
             

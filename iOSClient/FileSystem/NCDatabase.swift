@@ -23,6 +23,22 @@ class tableActivity: Object {
     dynamic var verbose : Bool = false
 }
 
+class tableCapabilities: Object {
+    
+    dynamic var account = ""
+    dynamic var themingBackground = ""
+    dynamic var themingColor = ""
+    dynamic var themingLogo = ""
+    dynamic var themingName = ""
+    dynamic var themingSlogan = ""
+    dynamic var themingUrl = ""
+    dynamic var versionMajor : Int = 0
+    dynamic var versionMicro : Int = 0
+    dynamic var versionMinor : Int = 0
+    dynamic var versionString = ""
+
+}
+
 class tableGPS: Object {
     
     dynamic var latitude = ""

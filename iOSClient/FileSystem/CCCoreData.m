@@ -1884,58 +1884,6 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Capabilities =====
-#pragma --------------------------------------------------------------------------------------------
-
-+ (void)setCapabilities:(OCCapabilities *)capabilities account:(NSString *)account
-{
-    [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
-        
-        [TableCapabilities MR_deleteAllMatchingPredicate:[NSPredicate predicateWithFormat:@"(account == %@)", account] inContext:localContext];
-        
-        TableCapabilities *record = [TableCapabilities MR_createEntityInContext:localContext];
-        
-        record.account = account;
-        
-        record.themingBackground = capabilities.themingBackground;
-        record.themingColor = capabilities.themingColor;
-        record.themingLogo = capabilities.themingLogo;
-        record.themingName = capabilities.themingName;
-        record.themingSlogan = capabilities.themingSlogan;
-        record.themingUrl = capabilities.themingUrl;
-        
-        record.versionMajor = [NSNumber numberWithInteger:capabilities.versionMajor];
-        record.versionMinor = [NSNumber numberWithInteger:capabilities.versionMinor];
-        record.versionMicro = [NSNumber numberWithInteger:capabilities.versionMicro];
-        record.versionString = capabilities.versionString;
-    }];
-}
-
-+ (TableCapabilities *)getCapabilitesForAccount:(NSString *)account
-{
-    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
-    
-    return [TableCapabilities MR_findFirstWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@)", account] inContext:context];
-}
-
-+ (NSInteger)getServerVersionAccount:(NSString *)activeAccount
-{
-    if (!activeAccount)
-        return 0;
-    
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@)", activeAccount];
-    TableCapabilities *record = [TableCapabilities MR_findFirstWithPredicate:predicate];
-    
-    if (record) {
-        
-        NSInteger versionMajor = [record.versionMajor integerValue];
-        return versionMajor;
-        
-    } else
-        return 0;
-}
-
-#pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== File System =====
 #pragma --------------------------------------------------------------------------------------------
 
@@ -2221,22 +2169,6 @@
     [context MR_saveToPersistentStoreAndWait];
 }
 
-+ (void)flushTableCapabilitiesAccount:(NSString *)account
-{
-    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
-    
-    if (account) {
-        
-        [TableCapabilities MR_deleteAllMatchingPredicate:[NSPredicate predicateWithFormat:@"(account == %@)", account] inContext:context];
-        
-    } else {
-        
-        [TableCapabilities MR_truncateAllInContext:context];
-    }
-    
-    [context MR_saveToPersistentStoreAndWait];
-}
-
 + (void)flushTableCertificates
 {
     NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
@@ -2332,12 +2264,9 @@
     NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
     
     [TableAccount MR_truncateAllInContext:context];
-    //[TableActivity MR_truncateAllInContext:context];
     [TableAutomaticUpload MR_truncateAllInContext:context];
-    [TableCapabilities MR_truncateAllInContext:context];
     [TableCertificates MR_truncateAllInContext:context];
     [TableDirectory MR_truncateAllInContext:context];
-    //[TableGPS MR_truncateAllInContext:context];
     [TableLocalFile MR_truncateAllInContext:context];
     [TableMetadata MR_truncateAllInContext:context];
     [TableShare MR_truncateAllInContext:context];
