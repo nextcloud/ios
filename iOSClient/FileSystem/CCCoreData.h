@@ -36,7 +36,6 @@
 #import "OCExternalSites.h"
 #import "OCCapabilities.h"
 #import "TableAccount+CoreDataClass.h"
-#import "TableCertificates+CoreDataClass.h"
 #import "TableMetadata+CoreDataClass.h"
 #import "TableDirectory+CoreDataClass.h"
 #import "TableLocalFile+CoreDataClass.h"
@@ -93,11 +92,6 @@
 + (void)setCameraUploadSaveAlbum:(BOOL)saveAlbum activeAccount:(NSString *)activeAccount;
 
 + (void)setUserProfileActiveAccount:(NSString *)activeAccount userProfile:(OCUserProfile *)userProfile;
-
-// ===== Certificates =====
-
-+ (void)addCertificate:(NSString *)certificateLocation;
-+ (NSMutableArray *)getAllCertificatesLocation;
 
 // ===== Metadata =====
 
@@ -227,7 +221,6 @@
 
 + (void)flushTableAccount:(NSString *)account;
 + (void)flushTableAutomaticUploadAccount:(NSString *)account selector:(NSString *)selector;
-+ (void)flushTableCertificates;
 + (void)flushTableDirectoryAccount:(NSString *)account;
 + (void)flushTableExternalSitesAccount:(NSString *)account;
 + (void)flushTableLocalFileAccount:(NSString *)account;

@@ -22,13 +22,36 @@
 //
 
 #import "CCUtility.h"
-#import "CCCoreData.h"
 #import "CCCertificate.h"
 
 #import <openssl/x509.h>
 #import <openssl/bio.h>
 #import <openssl/err.h>
 #import <openssl/pem.h>
+
+#ifndef EXTENSION
+    #ifdef CUSTOM_BUILD
+        #import "CustomSwift.h"
+    #else
+        #import "Nextcloud-Swift.h"
+    #endif
+#else
+    #ifdef EXTENSION_SHARE
+        #ifdef CUSTOM_BUILD
+            #import "CustomSwiftShare.h"
+        #else
+            #import "Share-Swift.h"
+        #endif
+    #endif
+
+    #ifdef EXTENSION_PICKER
+        #ifdef CUSTOM_BUILD
+            #import "CustomSwiftPick.h"
+        #else
+            #import "Picker-Swift.h"
+        #endif
+    #endif
+#endif
 
 @implementation CCCertificate
 
@@ -76,7 +99,7 @@ static SecCertificateRef SecTrustGetLeafCertificate(SecTrustRef trust)
         
         NSString *localCertificatesFolder = [CCUtility getDirectoryCerificates];
         
-        NSMutableArray *listCertificateLocation = [CCCoreData getAllCertificatesLocation];
+        NSArray *listCertificateLocation = [[NCManageDatabase sharedInstance] getAllCertificatesLocation:[CCUtility getDirectoryCerificates]];
         
         for (int i = 0 ; i < [listCertificateLocation count] ; i++) {
          
@@ -221,7 +244,7 @@ static SecCertificateRef SecTrustGetLeafCertificate(SecTrustRef trust)
         
     } else {
         
-        [CCCoreData addCertificate:[NSString stringWithFormat:@"%f.der", dateCertificate]];
+        [[NCManageDatabase sharedInstance] addCertificates:[NSString stringWithFormat:@"%f.der", dateCertificate]];
     }
     
     return YES;

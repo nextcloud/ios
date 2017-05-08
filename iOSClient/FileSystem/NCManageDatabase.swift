@@ -200,6 +200,39 @@ class NCManageDatabase: NSObject {
     }
 
     //MARK: -
+    //MARK: Table Certificates
+    
+    func addCertificates(_ certificateLocation: String) {
+    
+        let realm = try! Realm()
+        
+        try! realm.write {
+            
+            let addCertificates = tableCertificates()
+            
+            addCertificates.certificateLocation = certificateLocation
+            
+            realm.add(addCertificates)
+        }
+    }
+    
+    
+    func getAllCertificatesLocation(_ localCertificatesFolder: String) -> [String] {
+        
+        let realm = try! Realm()
+        
+        let results = realm.objects(tableCertificates.self)
+    
+        var arraycertificatePath = [String]()
+    
+        for result in results {
+            arraycertificatePath.append("\(localCertificatesFolder)\(result.certificateLocation)")
+        }
+        
+        return arraycertificatePath
+    }
+
+    //MARK: -
     //MARK: Table GPS
     
     func addGeocoderLocation(_ location: String, placemarkAdministrativeArea: String, placemarkCountry: String, placemarkLocality: String, placemarkPostalCode: String, placemarkThoroughfare: String, latitude: String, longitude: String) {
@@ -243,6 +276,5 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    
     //MARK: -
 }

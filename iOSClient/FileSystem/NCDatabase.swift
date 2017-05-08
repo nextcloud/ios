@@ -39,6 +39,11 @@ class tableCapabilities: Object {
 
 }
 
+class tableCertificates: Object {
+    
+    dynamic var certificateLocation = ""
+}
+
 class tableGPS: Object {
     
     dynamic var latitude = ""

@@ -534,40 +534,6 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Certificates =====
-#pragma --------------------------------------------------------------------------------------------
-
-+ (void)addCertificate:(NSString *)certificateLocation
-{
-    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
-    
-    TableCertificates *record = [TableCertificates MR_createEntityInContext:context];
-    
-    record.certificateLocation = certificateLocation;
-    
-    [context MR_saveToPersistentStoreAndWait];
-}
-
-+ (NSMutableArray *)getAllCertificatesLocation
-{
-    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
-    NSString *localCertificatesFolder = [CCUtility getDirectoryCerificates];
-    NSMutableArray *output = [NSMutableArray new];
-    
-    NSArray *records = [TableCertificates MR_findAllInContext:context];
-    
-    for (TableCertificates *record in records) {
-        
-        if (record.certificateLocation && record.certificateLocation.length > 0) {
-            NSString *certificatePath = [NSString stringWithFormat:@"%@%@", localCertificatesFolder, record.certificateLocation];
-            [output addObject:certificatePath];
-        }
-    }
-    
-    return output;
-}
-
-#pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Metadata =====
 #pragma --------------------------------------------------------------------------------------------
 
@@ -2169,15 +2135,6 @@
     [context MR_saveToPersistentStoreAndWait];
 }
 
-+ (void)flushTableCertificates
-{
-    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
-    
-    [TableCertificates MR_truncateAllInContext:context];
-    
-    [context MR_saveToPersistentStoreAndWait];
-}
-
 + (void)flushTableDirectoryAccount:(NSString *)account
 {
     NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
@@ -2265,7 +2222,6 @@
     
     [TableAccount MR_truncateAllInContext:context];
     [TableAutomaticUpload MR_truncateAllInContext:context];
-    [TableCertificates MR_truncateAllInContext:context];
     [TableDirectory MR_truncateAllInContext:context];
     [TableLocalFile MR_truncateAllInContext:context];
     [TableMetadata MR_truncateAllInContext:context];

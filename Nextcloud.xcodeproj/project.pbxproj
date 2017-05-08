@@ -31,12 +31,6 @@
 		F708CF881E56E8CC00271D8B /* TableShare+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF601E56E8CC00271D8B /* TableShare+CoreDataProperties.m */; };
 		F708CF891E56E8CC00271D8B /* TableShare+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF601E56E8CC00271D8B /* TableShare+CoreDataProperties.m */; };
 		F708CF8A1E56E8CC00271D8B /* TableShare+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF601E56E8CC00271D8B /* TableShare+CoreDataProperties.m */; };
-		F708CF8B1E56E8CC00271D8B /* TableCertificates+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF621E56E8CC00271D8B /* TableCertificates+CoreDataClass.m */; };
-		F708CF8C1E56E8CC00271D8B /* TableCertificates+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF621E56E8CC00271D8B /* TableCertificates+CoreDataClass.m */; };
-		F708CF8D1E56E8CC00271D8B /* TableCertificates+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF621E56E8CC00271D8B /* TableCertificates+CoreDataClass.m */; };
-		F708CF8E1E56E8CC00271D8B /* TableCertificates+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF641E56E8CC00271D8B /* TableCertificates+CoreDataProperties.m */; };
-		F708CF8F1E56E8CC00271D8B /* TableCertificates+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF641E56E8CC00271D8B /* TableCertificates+CoreDataProperties.m */; };
-		F708CF901E56E8CC00271D8B /* TableCertificates+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF641E56E8CC00271D8B /* TableCertificates+CoreDataProperties.m */; };
 		F708CF911E56E8CC00271D8B /* TableAutomaticUpload+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF661E56E8CC00271D8B /* TableAutomaticUpload+CoreDataClass.m */; };
 		F708CF921E56E8CC00271D8B /* TableAutomaticUpload+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF661E56E8CC00271D8B /* TableAutomaticUpload+CoreDataClass.m */; };
 		F708CF931E56E8CC00271D8B /* TableAutomaticUpload+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF661E56E8CC00271D8B /* TableAutomaticUpload+CoreDataClass.m */; };
@@ -174,7 +168,6 @@
 		F74344881E127F9C001CC831 /* UIImage+animatedGIF.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F05581C889184008DAB36 /* UIImage+animatedGIF.m */; };
 		F74344891E127FC3001CC831 /* CCGlobal.m in Sources */ = {isa = PBXBuildFile; fileRef = F7C8C1911B482CEA0048180E /* CCGlobal.m */; };
 		F743448A1E127FF2001CC831 /* CCHud.m in Sources */ = {isa = PBXBuildFile; fileRef = F7514EDB1C7B1336008F3338 /* CCHud.m */; };
-		F743448B1E12800D001CC831 /* CCCertificate.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F801011D98205A007537BC /* CCCertificate.m */; };
 		F743448C1E128010001CC831 /* CCCrypto.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FE125F1BAC03FB0041924B /* CCCrypto.m */; };
 		F74344921E128EB0001CC831 /* Picker.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = F74344901E128E8F001CC831 /* Picker.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		F74344931E128EB4001CC831 /* PickerFileProvider.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = F74344911E128E96001CC831 /* PickerFileProvider.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -493,6 +486,8 @@
 		F77D49A91DC238E500CDC568 /* loading@2x.gif in Resources */ = {isa = PBXBuildFile; fileRef = F77D49A71DC238E500CDC568 /* loading@2x.gif */; };
 		F77EB6281EC08036003F814F /* CCExifGeo.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A54C351C6267B500E2C8BF /* CCExifGeo.m */; };
 		F77EB6291EC08037003F814F /* CCExifGeo.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A54C351C6267B500E2C8BF /* CCExifGeo.m */; };
+		F77EB62A1EC0B50A003F814F /* CCCertificate.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F801011D98205A007537BC /* CCCertificate.m */; };
+		F77EB62B1EC0B50B003F814F /* CCCertificate.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F801011D98205A007537BC /* CCCertificate.m */; };
 		F78088EA1DD3A1DB005C5A7C /* cryptocloud.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = F78088E51DD3A1DB005C5A7C /* cryptocloud.xcdatamodeld */; };
 		F78088EB1DD3A1DB005C5A7C /* cryptocloud.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = F78088E51DD3A1DB005C5A7C /* cryptocloud.xcdatamodeld */; };
 		F786AC9C1EBDC88B0055AE9D /* NCDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F786AC9B1EBDC88B0055AE9D /* NCDatabase.swift */; };
@@ -624,7 +619,6 @@
 		F7F54D0E1E5B14C800E19C62 /* UIImage+MWPhotoBrowser.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F54CE41E5B14C700E19C62 /* UIImage+MWPhotoBrowser.m */; };
 		F7F6AC4E1E525AD300E8EB45 /* CCManageCryptoCloud.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F6AC4D1E525AD300E8EB45 /* CCManageCryptoCloud.m */; };
 		F7F801031D98205A007537BC /* CCCertificate.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F801011D98205A007537BC /* CCCertificate.m */; };
-		F7F801051D98205A007537BC /* CCCertificate.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F801011D98205A007537BC /* CCCertificate.m */; };
 		F7FC7D561DC1F93800BB2C6A /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = F7FC7D551DC1F93800BB2C6A /* libz.tbd */; };
 		F7FC88FA1E140558006D0506 /* cryptocloud.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = F78088E51DD3A1DB005C5A7C /* cryptocloud.xcdatamodeld */; };
 		F7FC88FB1E141A34006D0506 /* BKPasscodeView.strings in Resources */ = {isa = PBXBuildFile; fileRef = F72B60911A24F00B004EF66F /* BKPasscodeView.strings */; };
@@ -788,10 +782,6 @@
 		F708CF5E1E56E8CC00271D8B /* TableShare+CoreDataClass.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableShare+CoreDataClass.m"; sourceTree = "<group>"; };
 		F708CF5F1E56E8CC00271D8B /* TableShare+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableShare+CoreDataProperties.h"; sourceTree = "<group>"; };
 		F708CF601E56E8CC00271D8B /* TableShare+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableShare+CoreDataProperties.m"; sourceTree = "<group>"; };
-		F708CF611E56E8CC00271D8B /* TableCertificates+CoreDataClass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableCertificates+CoreDataClass.h"; sourceTree = "<group>"; };
-		F708CF621E56E8CC00271D8B /* TableCertificates+CoreDataClass.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableCertificates+CoreDataClass.m"; sourceTree = "<group>"; };
-		F708CF631E56E8CC00271D8B /* TableCertificates+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableCertificates+CoreDataProperties.h"; sourceTree = "<group>"; };
-		F708CF641E56E8CC00271D8B /* TableCertificates+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableCertificates+CoreDataProperties.m"; sourceTree = "<group>"; };
 		F708CF651E56E8CC00271D8B /* TableAutomaticUpload+CoreDataClass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableAutomaticUpload+CoreDataClass.h"; sourceTree = "<group>"; };
 		F708CF661E56E8CC00271D8B /* TableAutomaticUpload+CoreDataClass.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableAutomaticUpload+CoreDataClass.m"; sourceTree = "<group>"; };
 		F708CF671E56E8CC00271D8B /* TableAutomaticUpload+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableAutomaticUpload+CoreDataProperties.h"; sourceTree = "<group>"; };
@@ -2846,10 +2836,6 @@
 				F708CF5E1E56E8CC00271D8B /* TableShare+CoreDataClass.m */,
 				F708CF5F1E56E8CC00271D8B /* TableShare+CoreDataProperties.h */,
 				F708CF601E56E8CC00271D8B /* TableShare+CoreDataProperties.m */,
-				F708CF611E56E8CC00271D8B /* TableCertificates+CoreDataClass.h */,
-				F708CF621E56E8CC00271D8B /* TableCertificates+CoreDataClass.m */,
-				F708CF631E56E8CC00271D8B /* TableCertificates+CoreDataProperties.h */,
-				F708CF641E56E8CC00271D8B /* TableCertificates+CoreDataProperties.m */,
 				F708CF651E56E8CC00271D8B /* TableAutomaticUpload+CoreDataClass.h */,
 				F708CF661E56E8CC00271D8B /* TableAutomaticUpload+CoreDataClass.m */,
 				F708CF671E56E8CC00271D8B /* TableAutomaticUpload+CoreDataProperties.h */,
@@ -3968,9 +3954,7 @@
 				F708CF801E56E8CC00271D8B /* TableDirectory+CoreDataClass.m in Sources */,
 				F71459D91D12E3B700CAFEEC /* CCCrypto.m in Sources */,
 				F732BA0B1D76DBA500E9878B /* CCNetworking.m in Sources */,
-				F708CF8C1E56E8CC00271D8B /* TableCertificates+CoreDataClass.m in Sources */,
 				F71459DD1D12E3B700CAFEEC /* CCCoreData.m in Sources */,
-				F708CF8F1E56E8CC00271D8B /* TableCertificates+CoreDataProperties.m in Sources */,
 				F71459E11D12E3B700CAFEEC /* CCHud.m in Sources */,
 				F708CF921E56E8CC00271D8B /* TableAutomaticUpload+CoreDataClass.m in Sources */,
 				F71459E41D12E3B700CAFEEC /* RNDecryptor.m in Sources */,
@@ -3981,11 +3965,11 @@
 				F708CF831E56E8CC00271D8B /* TableDirectory+CoreDataProperties.m in Sources */,
 				F71459ED1D12E3B700CAFEEC /* UIImage+Masking.m in Sources */,
 				F71459F01D12E3B700CAFEEC /* NSString+Base64.m in Sources */,
+				F77EB62A1EC0B50A003F814F /* CCCertificate.m in Sources */,
 				F7EF0CAF1D9E95F400A9D15E /* CCSharedDBSession.m in Sources */,
 				F71459F11D12E3B700CAFEEC /* CCMove.m in Sources */,
 				F71459F31D12E3B700CAFEEC /* UIImage+Resizing.m in Sources */,
 				F71459F71D12E3B700CAFEEC /* CCGraphics.m in Sources */,
-				F7F801051D98205A007537BC /* CCCertificate.m in Sources */,
 				F786ACAB1EBDCCE60055AE9D /* NCManageDatabase.swift in Sources */,
 				F71459FB1D12E3B700CAFEEC /* PPImageScrollingCellView.m in Sources */,
 				F708CF861E56E8CC00271D8B /* TableShare+CoreDataClass.m in Sources */,
@@ -4016,7 +4000,6 @@
 				F708CF871E56E8CC00271D8B /* TableShare+CoreDataClass.m in Sources */,
 				F708CF9C1E56E8CC00271D8B /* TableAccount+CoreDataProperties.m in Sources */,
 				F708CF811E56E8CC00271D8B /* TableDirectory+CoreDataClass.m in Sources */,
-				F708CF901E56E8CC00271D8B /* TableCertificates+CoreDataProperties.m in Sources */,
 				F743448C1E128010001CC831 /* CCCrypto.m in Sources */,
 				F725437C1E12A44A009BF4C2 /* CCSection.m in Sources */,
 				F74344651E127DE9001CC831 /* CCNetworking.m in Sources */,
@@ -4025,11 +4008,11 @@
 				F73CC07A1E813DFF006E3047 /* BKShiftingView.m in Sources */,
 				F708CF841E56E8CC00271D8B /* TableDirectory+CoreDataProperties.m in Sources */,
 				F74344821E127F68001CC831 /* MBProgressHUD.m in Sources */,
-				F743448B1E12800D001CC831 /* CCCertificate.m in Sources */,
 				F743447D1E127ECB001CC831 /* AESCrypt.m in Sources */,
 				F743447E1E127ECE001CC831 /* NSData+Base64.m in Sources */,
 				F74344671E127E38001CC831 /* CCMetadata.m in Sources */,
 				F73CC0741E813DFF006E3047 /* BKPasscodeLockScreenManager.m in Sources */,
+				F77EB62B1EC0B50B003F814F /* CCCertificate.m in Sources */,
 				F7E718B01EB0FBE700FA58C9 /* CCGraphics.m in Sources */,
 				F74344171E1264EE001CC831 /* DocumentPickerViewController.swift in Sources */,
 				F74344811E127F49001CC831 /* AFViewShaker.m in Sources */,
@@ -4041,7 +4024,6 @@
 				F73CC0711E813DFF006E3047 /* BKPasscodeInputView.m in Sources */,
 				F73CC07D1E813DFF006E3047 /* BKTouchIDManager.m in Sources */,
 				F743447F1E127ED1001CC831 /* NSData+CommonCrypto.m in Sources */,
-				F708CF8D1E56E8CC00271D8B /* TableCertificates+CoreDataClass.m in Sources */,
 				F74344891E127FC3001CC831 /* CCGlobal.m in Sources */,
 				F73CC06E1E813DFF006E3047 /* BKPasscodeField.m in Sources */,
 				F74344841E127F84001CC831 /* RNCryptorEngine.m in Sources */,
@@ -4120,7 +4102,6 @@
 				F732BA061D76CE1500E9878B /* CCNetworking.m in Sources */,
 				F7B1FBC71E72E3D1001781FE /* SwiftWebVC.swift in Sources */,
 				F77B0E111D118A16002130FE /* UIImage+Reflection.m in Sources */,
-				F708CF8B1E56E8CC00271D8B /* TableCertificates+CoreDataClass.m in Sources */,
 				F762CB061EACB66200B38484 /* XLFormTextViewCell.m in Sources */,
 				F762CB881EACB81000B38484 /* REMenuContainerView.m in Sources */,
 				F73F537F1E929C8500F8678D /* CCMore.swift in Sources */,
@@ -4349,7 +4330,6 @@
 				F762CB871EACB81000B38484 /* REMenu.m in Sources */,
 				F708CF971E56E8CC00271D8B /* TableAccount+CoreDataClass.m in Sources */,
 				F762CB091EACB66200B38484 /* XLFormViewController.m in Sources */,
-				F708CF8E1E56E8CC00271D8B /* TableCertificates+CoreDataProperties.m in Sources */,
 				F762CB161EACB66200B38484 /* XLFormTextView.m in Sources */,
 				F7ECBA6D1E239DCD003E6328 /* CCCreateCloud.swift in Sources */,
 				F77B0ECB1D118A16002130FE /* HRBrightnessCursor.m in Sources */,
