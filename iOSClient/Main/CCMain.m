@@ -2971,11 +2971,13 @@
 {
     [_hud hideHud];
     
+    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+
     // rimuoviamo la condivisione da db
-    NSArray *result = [[NCManageDatabase sharedInstance] unShare:metadataNet.share fileName:metadataNet.fileName serverUrl:metadataNet.serverUrl sharesLinkObj:app.sharesLink sharesUserAndGroupObj:app.sharesUserAndGroup account:app.activeAccount];
+    NSArray *result = [[NCManageDatabase sharedInstance] unShare:metadataNet.share fileName:metadataNet.fileName serverUrl:metadataNet.serverUrl sharesLinkObj:appDelegate.sharesLink sharesUserAndGroupObj:appDelegate.sharesUserAndGroup account:appDelegate.activeAccount];
     
-    app.sharesLink = result[0];
-    app.sharesUserAndGroup = result[1];
+    appDelegate.sharesLink = result[0];
+    appDelegate.sharesUserAndGroup = result[1];
     
     if (_shareOC)
         [_shareOC reloadData];

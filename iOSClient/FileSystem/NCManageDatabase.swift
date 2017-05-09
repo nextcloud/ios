@@ -505,37 +505,40 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
         
-        let results = realm.objects(tableShare.self).filter("account = '\(account)' AND (shareLink CONTAINS '\(share)' OR shareUserAndGroup CONTAINS '\(share))'")
+        let results = realm.objects(tableShare.self).filter("account = '\(account)' AND (shareLink CONTAINS '\(share)' OR shareUserAndGroup CONTAINS '\(share)')")
         if (results.count > 0) {
             
-            try! realm.write {
+            let result = results[0]
+            
+            realm.beginWrite()
                 
-                if (results[0].shareLink.contains(share)) {
-                    results[0].shareLink = ""
-                }
+            if (result.shareLink.contains(share)) {
+                result.shareLink = ""
+            }
                 
-                if (results[0].shareUserAndGroup.contains(share)) {
+            if (result.shareUserAndGroup.contains(share)) {
                     
-                    var shares : [String] = results[0].shareUserAndGroup.components(separatedBy: ",")
-                    if let index = shares.index(of:share) {
-                        shares.remove(at: index)
-                    }
-                    results[0].shareUserAndGroup = shares.joined(separator: ",")
+                var shares : [String] = result.shareUserAndGroup.components(separatedBy: ",")
+                if let index = shares.index(of:share) {
+                    shares.remove(at: index)
                 }
+                result.shareUserAndGroup = shares.joined(separator: ",")
+            }
                 
-                if (results[0].shareLink.characters.count == 0 && results[0].shareUserAndGroup.characters.count == 0) {
-                    realm.delete(results[0])
-                }
+            if (result.shareLink.characters.count == 0 && result.shareUserAndGroup.characters.count == 0) {
+                realm.delete(result)
             }
             
-            if (results[0].shareLink.characters.count > 0) {
-                sharesLink = [results[0].shareLink: "\(serverUrl)\(fileName)"]
+            try! realm.commitWrite()
+            
+            if (result.shareLink.characters.count > 0) {
+                sharesLink.updateValue(result.shareLink, forKey:"\(serverUrl)\(fileName)")
             } else {
                 sharesLink.removeValue(forKey: "\(serverUrl)\(fileName)")
             }
             
-            if (results[0].shareUserAndGroup.characters.count > 0) {
-                sharesUserAndGroup = [results[0].shareUserAndGroup: "\(serverUrl)\(fileName)"]
+            if (result.shareUserAndGroup.characters.count > 0) {
+                sharesUserAndGroup.updateValue(result.shareUserAndGroup, forKey:"\(serverUrl)\(fileName)")
             } else {
                 sharesUserAndGroup.removeValue(forKey: "\(serverUrl)\(fileName)")
             }
@@ -564,24 +567,22 @@ class NCManageDatabase: NSObject {
         var itemsLink = [OCSharedDto]()
         var itemsUsersAndGroups = [OCSharedDto]()
         
-        // Manage sharesLink
-        
-        for (idRemoteShared,_) in items {
+        for (_, itemOCSharedDto) in items {
             
-            let item = items[idRemoteShared]!
-            
-            if (item.shareType == Int(shareTypeLink.rawValue)) {
-                itemsLink.append(item)
+            if (itemOCSharedDto.shareType == Int(shareTypeLink.rawValue)) {
+                itemsLink.append(itemOCSharedDto)
             }
             
-            if (item.shareWith.characters.count > 0 && (item.shareType == Int(shareTypeUser.rawValue) || item.shareType == Int(shareTypeGroup.rawValue) || item.shareType == Int(shareTypeRemote.rawValue)  )) {
-                itemsUsersAndGroups.append(item)
+            if (itemOCSharedDto.shareWith.characters.count > 0 && (itemOCSharedDto.shareType == Int(shareTypeUser.rawValue) || itemOCSharedDto.shareType == Int(shareTypeGroup.rawValue) || itemOCSharedDto.shareType == Int(shareTypeRemote.rawValue)  )) {
+                itemsUsersAndGroups.append(itemOCSharedDto)
             }
         }
         
-        for item in itemsLink {
+        // Manage sharesLink
+
+        for itemOCSharedDto in itemsLink {
             
-            let fullPath = CCUtility.getHomeServerUrlActiveUrl(activeUrl) + "\(item.path!)"
+            let fullPath = CCUtility.getHomeServerUrlActiveUrl(activeUrl) + "\(itemOCSharedDto.path!)"
             let fileName = NSString(string: fullPath).lastPathComponent
             var serverUrl = NSString(string: fullPath).substring(to: (fullPath.characters.count - fileName.characters.count - 1))
             
@@ -589,8 +590,8 @@ class NCManageDatabase: NSObject {
                 serverUrl = NSString(string: serverUrl).substring(to: (serverUrl.characters.count - 1))
             }
             
-            if item.idRemoteShared > 0 {
-                let sharesLinkReturn = self.addShareLink("\(item.idRemoteShared)", fileName: fileName, serverUrl: serverUrl, account: account)
+            if itemOCSharedDto.idRemoteShared > 0 {
+                let sharesLinkReturn = self.addShareLink("\(itemOCSharedDto.idRemoteShared)", fileName: fileName, serverUrl: serverUrl, account: account)
                 for (key,value) in sharesLinkReturn {
                     sharesLink.updateValue(value, forKey:key)
                 }
@@ -601,26 +602,25 @@ class NCManageDatabase: NSObject {
         
         var paths = [String:[String]]()
         
-        for item in itemsUsersAndGroups {
+        for itemOCSharedDto in itemsUsersAndGroups {
             
-            if paths[item.path] != nil {
+            if paths[itemOCSharedDto.path] != nil {
                 
-                var share : [String] = paths[item.path]!
-                share.append("\(item.idRemoteShared)")
-                paths[item.path] = share
+                var share : [String] = paths[itemOCSharedDto.path]!
+                share.append("\(itemOCSharedDto.idRemoteShared)")
+                paths[itemOCSharedDto.path] = share
                 
             } else {
                 
-                paths[item.path] = ["\(item.idRemoteShared)"]
+                paths[itemOCSharedDto.path] = ["\(itemOCSharedDto.idRemoteShared)"]
             }
         }
         
-        for (path, _) in paths {
+        for (path, idsRemoteSharedArray) in paths {
             
-            let items = paths[path]
-            let share = items?.joined(separator: ",")
+            let idsRemoteShared = idsRemoteSharedArray.joined(separator: ",")
             
-            print("[LOG] share \(String(describing: share))")
+            print("[LOG] share \(String(describing: idsRemoteShared))")
             
             let fullPath = CCUtility.getHomeServerUrlActiveUrl(activeUrl) + "\(path)"
             let fileName = NSString(string: fullPath).lastPathComponent
@@ -630,7 +630,7 @@ class NCManageDatabase: NSObject {
                 serverUrl = NSString(string: serverUrl).substring(to: (serverUrl.characters.count - 1))
             }
             
-            let sharesUserAndGroupReturn = self.addShareUserAndGroup(share!, fileName: fileName, serverUrl: serverUrl, account: account)
+            let sharesUserAndGroupReturn = self.addShareUserAndGroup(idsRemoteShared, fileName: fileName, serverUrl: serverUrl, account: account)
             for (key,value) in sharesUserAndGroupReturn {
                 sharesUserAndGroup.updateValue(value, forKey:key)
             }
