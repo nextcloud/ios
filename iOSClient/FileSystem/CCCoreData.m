@@ -1569,6 +1569,7 @@
         OCSharedDto *item = [items objectForKey:idRemoteShared];
             
         if (item.shareType == shareTypeLink) [itemsLink addObject:item];
+        
         if ([[item shareWith] length] > 0 && (item.shareType == shareTypeUser || item.shareType == shareTypeGroup || item.shareType == shareTypeRemote)) [itemsUsersAndGroups addObject:item];
     }
         

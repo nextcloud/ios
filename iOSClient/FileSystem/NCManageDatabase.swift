@@ -552,10 +552,60 @@ class NCManageDatabase: NSObject {
         sharesUserAndGroup.removeAll()
     }
     
-    func updateShare(_ items: inout [String:String], sharesLink: inout [String:String], sharesUserAndGroup: inout [String:String] , account: String, activeUrl: String) {
+    func updateShare(_ items: inout [String:OCSharedDto], sharesLink: inout [String:String], sharesUserAndGroup: inout [String:String] , account: String, activeUrl: String) {
         
         self.removeAllShareActiveAccount(account, sharesLink: &sharesLink, sharesUserAndGroup: &sharesUserAndGroup)
+     
+        var itemsLink = [OCSharedDto]()
+        var itemsUsersAndGroups = [OCSharedDto]()
         
+        for (idRemoteShared,_) in items {
+            
+            let item = items[idRemoteShared]!
+            
+            if (item.shareType == Int(shareTypeLink.rawValue)) {
+                itemsLink.append(item)
+            }
+            
+            if (item.shareWith.characters.count > 0 && (item.shareType == Int(shareTypeUser.rawValue) || item.shareType == Int(shareTypeGroup.rawValue) || item.shareType == Int(shareTypeRemote.rawValue)  )) {
+                itemsUsersAndGroups.append(item)
+            }
+        }
+        
+        // Link
+        for item in itemsLink {
+            
+            let fullPath = CCUtility.getHomeServerUrlActiveUrl(activeUrl) + "\(item.path)"
+            let fileName = NSString(string: fullPath).lastPathComponent
+            var serverUrl = NSString(string: fullPath).substring(to: (fullPath.characters.count - (fullPath.characters.count-1)))
+            
+            if serverUrl.hasSuffix("/") {
+                serverUrl = NSString(string: fullPath).substring(to: (fullPath.characters.count-1))
+            }
+            
+            if item.idRemoteShared > 0 {
+                self.addShareLink("\(item.idRemoteShared)", fileName: fileName, serverUrl: serverUrl, sharesLink: &sharesLink, account: account)
+            }
+        }
+        
+        // Create dictionary
+        var paths = [String:[String]]() //Key, value
+        
+        for item in itemsUsersAndGroups {
+            
+            if paths[item.path] != nil {
+                
+                var share : [String] = paths[item.path]!
+                share.append("\(item.idRemoteShared)")
+                paths[item.path] = share
+                
+            } else {
+                
+                paths[item.path] = ["\(item.idRemoteShared)"]
+            }
+        }
+        
+        // Write on DB
     }
     
     func populateSharesVariable(_ account: String, sharesLink: inout [String:String], sharesUserAndGroup: inout [String:String]) {
