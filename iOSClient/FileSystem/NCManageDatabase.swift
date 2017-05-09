@@ -489,7 +489,7 @@ class NCManageDatabase: NSObject {
                 addShare.account = account
                 addShare.fileName = fileName
                 addShare.serverUrl = serverUrl
-                addShare.shareLink = share
+                addShare.shareUserAndGroup = share
                 
                 realm.add(addShare)
             }
@@ -580,16 +580,19 @@ class NCManageDatabase: NSObject {
         // Link
         for item in itemsLink {
             
-            let fullPath = CCUtility.getHomeServerUrlActiveUrl(activeUrl) + "\(item.path)"
+            let fullPath = CCUtility.getHomeServerUrlActiveUrl(activeUrl) + "\(item.path!)"
             let fileName = NSString(string: fullPath).lastPathComponent
-            var serverUrl = NSString(string: fullPath).substring(to: (fullPath.characters.count - (fullPath.characters.count-1)))
+            var serverUrl = NSString(string: fullPath).substring(to: (fullPath.characters.count - fileName.characters.count - 1))
             
             if serverUrl.hasSuffix("/") {
-                serverUrl = NSString(string: fullPath).substring(to: (fullPath.characters.count-1))
+                serverUrl = NSString(string: serverUrl).substring(to: (serverUrl.characters.count - 1))
             }
             
             if item.idRemoteShared > 0 {
-                sharesLink = self.addShareLink("\(item.idRemoteShared)", fileName: fileName, serverUrl: serverUrl, account: account)
+                let sharesLinkReturn = self.addShareLink("\(item.idRemoteShared)", fileName: fileName, serverUrl: serverUrl, account: account)
+                for (key,value) in sharesLinkReturn {
+                    sharesLink.updateValue(value, forKey:key)
+                }
             }
         }
         
@@ -620,9 +623,16 @@ class NCManageDatabase: NSObject {
             
             let fullPath = CCUtility.getHomeServerUrlActiveUrl(activeUrl) + "\(key)"
             let fileName = NSString(string: fullPath).lastPathComponent
-            let serverUrl = NSString(string: fullPath).substring(to: (fullPath.characters.count - (fullPath.characters.count-1)))
+            var serverUrl = NSString(string: fullPath).substring(to: (fullPath.characters.count - fileName.characters.count - 1))
             
-            sharesUserAndGroup = self.addShareUserAndGroup(share!, fileName: fileName, serverUrl: serverUrl, account: account)
+            if serverUrl.hasSuffix("/") {
+                serverUrl = NSString(string: serverUrl).substring(to: (serverUrl.characters.count - 1))
+            }
+            
+            let sharesUserAndGroupReturn = self.addShareUserAndGroup(share!, fileName: fileName, serverUrl: serverUrl, account: account)
+            for (key,value) in sharesUserAndGroupReturn {
+                sharesUserAndGroup.updateValue(value, forKey:key)
+            }
         }
         
         return [sharesLink, sharesUserAndGroup]

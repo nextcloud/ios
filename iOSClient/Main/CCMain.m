@@ -361,9 +361,9 @@
         
         // populate shared Link & User variable
         
-        NSArray *share = [[NCManageDatabase sharedInstance] getSharesAccount:app.activeAccount];
-        app.sharesLink = share[0];
-        app.sharesUserAndGroup = share[1];
+        NSArray *results = [[NCManageDatabase sharedInstance] getSharesAccount:app.activeAccount];
+        app.sharesLink = results[0];
+        app.sharesUserAndGroup = results[1];
         
         // Setting Theming
         [app settingThemingColorBrand];
@@ -2896,14 +2896,16 @@
 {
     [_hud hideHud];
     
+    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    
     // change account ?
     TableAccount *record = [CCCoreData getActiveAccount];
     if([record.account isEqualToString:metadataNet.account] == NO)
         return;
     
-    NSArray *result = [[NCManageDatabase sharedInstance] updateShare:items account:app.activeAccount activeUrl:app.activeUrl];
-    app.sharesLink = result[0];
-    app.sharesUserAndGroup = result[1];
+    NSArray *result = [[NCManageDatabase sharedInstance] updateShare:items account:appDelegate.activeAccount activeUrl:appDelegate.activeUrl];
+    appDelegate.sharesLink = result[0];
+    appDelegate.sharesUserAndGroup = result[1];
     
     if (openWindow) {
             
