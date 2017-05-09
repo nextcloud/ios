@@ -1459,7 +1459,7 @@
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Share =====
 #pragma --------------------------------------------------------------------------------------------
-
+/*
 + (void)setShareLink:(NSString *)share fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl sharesLink:(NSMutableDictionary *)sharesLink activeAccount:(NSString *)activeAccount
 {    
     NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
@@ -1642,7 +1642,7 @@
     
     return;
 }
-
+*/
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Offline =====
 #pragma --------------------------------------------------------------------------------------------
@@ -2006,22 +2006,6 @@
     [context MR_saveToPersistentStoreAndWait];
 }
 
-+ (void)flushTableShareAccount:(NSString *)account
-{
-    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
-    
-    if (account) {
-        
-        [TableShare MR_deleteAllMatchingPredicate:[NSPredicate predicateWithFormat:@"(account == %@)", account] inContext:context];
-        
-    } else {
-        
-        [TableShare MR_truncateAllInContext:context];
-    }
-    
-    [context MR_saveToPersistentStoreAndWait];
-}
-
 
 + (void)flushAllDatabase
 {
@@ -2031,7 +2015,6 @@
     [TableDirectory MR_truncateAllInContext:context];
     [TableLocalFile MR_truncateAllInContext:context];
     [TableMetadata MR_truncateAllInContext:context];
-    [TableShare MR_truncateAllInContext:context];
     
     [context MR_saveToPersistentStoreAndWait];
 }

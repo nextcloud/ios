@@ -360,8 +360,11 @@
         [[CCNetworking sharedNetworking] settingAccount];
         
         // populate shared Link & User variable
-        [CCCoreData populateSharesVariableFromDBActiveAccount:app.activeAccount sharesLink:app.sharesLink sharesUserAndGroup:app.sharesUserAndGroup];
-
+        
+        NSArray *share = [[NCManageDatabase sharedInstance] getSharesAccount:app.activeAccount];
+        app.sharesLink = share[0];
+        app.sharesUserAndGroup = share[1];
+        
         // Setting Theming
         [app settingThemingColorBrand];
         
@@ -2898,7 +2901,9 @@
     if([record.account isEqualToString:metadataNet.account] == NO)
         return;
     
-    [CCCoreData updateShare:items sharesLink:app.sharesLink sharesUserAndGroup:app.sharesUserAndGroup activeAccount:app.activeAccount activeUrl:app.activeUrl];
+    NSArray *result = [[NCManageDatabase sharedInstance] updateShare:items account:app.activeAccount activeUrl:app.activeUrl];
+    app.sharesLink = result[0];
+    app.sharesUserAndGroup = result[1];
     
     if (openWindow) {
             
@@ -2965,7 +2970,10 @@
     [_hud hideHud];
     
     // rimuoviamo la condivisione da db
-    [CCCoreData unShare:metadataNet.share fileName:metadataNet.fileName serverUrl:metadataNet.serverUrl sharesLink:app.sharesLink sharesUserAndGroup:app.sharesUserAndGroup activeAccount:app.activeAccount];
+    NSArray *result = [[NCManageDatabase sharedInstance] unShare:metadataNet.share fileName:metadataNet.fileName serverUrl:metadataNet.serverUrl sharesLinkObj:app.sharesLink sharesUserAndGroupObj:app.sharesUserAndGroup account:app.activeAccount];
+    
+    app.sharesLink = result[0];
+    app.sharesUserAndGroup = result[1];
     
     if (_shareOC)
         [_shareOC reloadData];

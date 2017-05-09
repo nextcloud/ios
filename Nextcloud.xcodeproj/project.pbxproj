@@ -25,12 +25,6 @@
 		F708CF821E56E8CC00271D8B /* TableDirectory+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF5C1E56E8CC00271D8B /* TableDirectory+CoreDataProperties.m */; };
 		F708CF831E56E8CC00271D8B /* TableDirectory+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF5C1E56E8CC00271D8B /* TableDirectory+CoreDataProperties.m */; };
 		F708CF841E56E8CC00271D8B /* TableDirectory+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF5C1E56E8CC00271D8B /* TableDirectory+CoreDataProperties.m */; };
-		F708CF851E56E8CC00271D8B /* TableShare+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF5E1E56E8CC00271D8B /* TableShare+CoreDataClass.m */; };
-		F708CF861E56E8CC00271D8B /* TableShare+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF5E1E56E8CC00271D8B /* TableShare+CoreDataClass.m */; };
-		F708CF871E56E8CC00271D8B /* TableShare+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF5E1E56E8CC00271D8B /* TableShare+CoreDataClass.m */; };
-		F708CF881E56E8CC00271D8B /* TableShare+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF601E56E8CC00271D8B /* TableShare+CoreDataProperties.m */; };
-		F708CF891E56E8CC00271D8B /* TableShare+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF601E56E8CC00271D8B /* TableShare+CoreDataProperties.m */; };
-		F708CF8A1E56E8CC00271D8B /* TableShare+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF601E56E8CC00271D8B /* TableShare+CoreDataProperties.m */; };
 		F708CF971E56E8CC00271D8B /* TableAccount+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF6A1E56E8CC00271D8B /* TableAccount+CoreDataClass.m */; };
 		F708CF981E56E8CC00271D8B /* TableAccount+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF6A1E56E8CC00271D8B /* TableAccount+CoreDataClass.m */; };
 		F708CF991E56E8CC00271D8B /* TableAccount+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF6A1E56E8CC00271D8B /* TableAccount+CoreDataClass.m */; };
@@ -766,10 +760,6 @@
 		F708CF5A1E56E8CC00271D8B /* TableDirectory+CoreDataClass.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableDirectory+CoreDataClass.m"; sourceTree = "<group>"; };
 		F708CF5B1E56E8CC00271D8B /* TableDirectory+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableDirectory+CoreDataProperties.h"; sourceTree = "<group>"; };
 		F708CF5C1E56E8CC00271D8B /* TableDirectory+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableDirectory+CoreDataProperties.m"; sourceTree = "<group>"; };
-		F708CF5D1E56E8CC00271D8B /* TableShare+CoreDataClass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableShare+CoreDataClass.h"; sourceTree = "<group>"; };
-		F708CF5E1E56E8CC00271D8B /* TableShare+CoreDataClass.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableShare+CoreDataClass.m"; sourceTree = "<group>"; };
-		F708CF5F1E56E8CC00271D8B /* TableShare+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableShare+CoreDataProperties.h"; sourceTree = "<group>"; };
-		F708CF601E56E8CC00271D8B /* TableShare+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableShare+CoreDataProperties.m"; sourceTree = "<group>"; };
 		F708CF691E56E8CC00271D8B /* TableAccount+CoreDataClass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableAccount+CoreDataClass.h"; sourceTree = "<group>"; };
 		F708CF6A1E56E8CC00271D8B /* TableAccount+CoreDataClass.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableAccount+CoreDataClass.m"; sourceTree = "<group>"; };
 		F708CF6B1E56E8CC00271D8B /* TableAccount+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableAccount+CoreDataProperties.h"; sourceTree = "<group>"; };
@@ -2808,10 +2798,6 @@
 				F708CF5A1E56E8CC00271D8B /* TableDirectory+CoreDataClass.m */,
 				F708CF5B1E56E8CC00271D8B /* TableDirectory+CoreDataProperties.h */,
 				F708CF5C1E56E8CC00271D8B /* TableDirectory+CoreDataProperties.m */,
-				F708CF5D1E56E8CC00271D8B /* TableShare+CoreDataClass.h */,
-				F708CF5E1E56E8CC00271D8B /* TableShare+CoreDataClass.m */,
-				F708CF5F1E56E8CC00271D8B /* TableShare+CoreDataProperties.h */,
-				F708CF601E56E8CC00271D8B /* TableShare+CoreDataProperties.m */,
 				F708CF691E56E8CC00271D8B /* TableAccount+CoreDataClass.h */,
 				F708CF6A1E56E8CC00271D8B /* TableAccount+CoreDataClass.m */,
 				F708CF6B1E56E8CC00271D8B /* TableAccount+CoreDataProperties.h */,
@@ -3900,7 +3886,6 @@
 				F71459BE1D12E3B700CAFEEC /* UIImage+Reflection.m in Sources */,
 				F73CC06D1E813DFF006E3047 /* BKPasscodeField.m in Sources */,
 				F71459BF1D12E3B700CAFEEC /* RNEncryptor.m in Sources */,
-				F708CF891E56E8CC00271D8B /* TableShare+CoreDataProperties.m in Sources */,
 				F71459C21D12E3B700CAFEEC /* ShareViewController.m in Sources */,
 				F71459C31D12E3B700CAFEEC /* UIImage+Filtering.m in Sources */,
 				F77EB6281EC08036003F814F /* CCExifGeo.m in Sources */,
@@ -3941,7 +3926,6 @@
 				F71459F71D12E3B700CAFEEC /* CCGraphics.m in Sources */,
 				F786ACAB1EBDCCE60055AE9D /* NCManageDatabase.swift in Sources */,
 				F71459FB1D12E3B700CAFEEC /* PPImageScrollingCellView.m in Sources */,
-				F708CF861E56E8CC00271D8B /* TableShare+CoreDataClass.m in Sources */,
 				F71459FF1D12E3B700CAFEEC /* RNCryptor.m in Sources */,
 				F7145A001D12E3B700CAFEEC /* CCGlobal.m in Sources */,
 				F7145A011D12E3B700CAFEEC /* UIImage+Blurring.m in Sources */,
@@ -3964,7 +3948,6 @@
 			files = (
 				F708CF781E56E8CC00271D8B /* TableLocalFile+CoreDataProperties.m in Sources */,
 				F74344801E127ED3001CC831 /* NSString+Base64.m in Sources */,
-				F708CF871E56E8CC00271D8B /* TableShare+CoreDataClass.m in Sources */,
 				F708CF9C1E56E8CC00271D8B /* TableAccount+CoreDataProperties.m in Sources */,
 				F708CF811E56E8CC00271D8B /* TableDirectory+CoreDataClass.m in Sources */,
 				F743448C1E128010001CC831 /* CCCrypto.m in Sources */,
@@ -4005,7 +3988,6 @@
 				F708CF721E56E8CC00271D8B /* TableMetadata+CoreDataProperties.m in Sources */,
 				F74344631E127D79001CC831 /* CCBKPasscode.m in Sources */,
 				F786AC9E1EBDC88B0055AE9D /* NCDatabase.swift in Sources */,
-				F708CF8A1E56E8CC00271D8B /* TableShare+CoreDataProperties.m in Sources */,
 				F74344661E127E35001CC831 /* CCCoreData.m in Sources */,
 				F76B3CD01EAE01BD00921AC9 /* NCBrand.swift in Sources */,
 				F73CC0801E813DFF006E3047 /* BKTouchIDSwitchView.m in Sources */,
@@ -4106,7 +4088,6 @@
 				F77B0E241D118A16002130FE /* HRColorCursor.m in Sources */,
 				F762CAF81EACB66200B38484 /* XLFormButtonCell.m in Sources */,
 				F7A321581E9E2A070069AD1B /* CCSynchronize.m in Sources */,
-				F708CF851E56E8CC00271D8B /* TableShare+CoreDataClass.m in Sources */,
 				F75AE3C71E9D12900088BB09 /* SwiftyAvatar.swift in Sources */,
 				F708CF9A1E56E8CC00271D8B /* TableAccount+CoreDataProperties.m in Sources */,
 				F77B0E261D118A16002130FE /* ZSSTextView.m in Sources */,
@@ -4265,7 +4246,6 @@
 				F708CF7F1E56E8CC00271D8B /* TableDirectory+CoreDataClass.m in Sources */,
 				F77B0EB91D118A16002130FE /* HRColorUtil.m in Sources */,
 				F762CB0F1EACB66200B38484 /* NSObject+XLFormAdditions.m in Sources */,
-				F708CF881E56E8CC00271D8B /* TableShare+CoreDataProperties.m in Sources */,
 				F762CB891EACB81000B38484 /* REMenuItem.m in Sources */,
 				F762CBBB1EACB89C00B38484 /* NSArray+LMMediaPlayerShuffle.m in Sources */,
 				F7F06EA71DBFACC600099AE9 /* CTAssetPlayButton.m in Sources */,

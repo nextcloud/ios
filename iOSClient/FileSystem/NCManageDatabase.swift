@@ -438,7 +438,7 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Share
     
-    func addShareLink(_ share: String, fileName: String, serverUrl: String, sharesLink: inout [String:String], account: String) {
+    func addShareLink(_ share: String, fileName: String, serverUrl: String, account: String) -> [String:String] {
         
         let realm = try! Realm()
         
@@ -465,10 +465,10 @@ class NCManageDatabase: NSObject {
             }
         }
         
-        sharesLink = [share: "\(serverUrl)\(fileName)"]
+        return [share: "\(serverUrl)\(fileName)"]
     }
 
-    func addShareUserAndGroup(_ share: String, fileName: String, serverUrl: String, sharesUserAndGroup: inout [String:String], account: String) {
+    func addShareUserAndGroup(_ share: String, fileName: String, serverUrl: String, account: String) -> [String:String] {
         
         let realm = try! Realm()
         
@@ -495,10 +495,13 @@ class NCManageDatabase: NSObject {
             }
         }
         
-        sharesUserAndGroup = [share: "\(serverUrl)\(fileName)"]
+        return [share: "\(serverUrl)\(fileName)"]
     }
     
-    func unShare(_ share: String, fileName: String, serverUrl: String, sharesLink: inout [String:String], sharesUserAndGroup: inout [String:String], account: String) {
+    func unShare(_ share: String, fileName: String, serverUrl: String, sharesLinkObj: [String:String], sharesUserAndGroupObj: [String:String], account: String) -> [Any] {
+        
+        var sharesLink = sharesLinkObj
+        var sharesUserAndGroup = sharesUserAndGroupObj
         
         let realm = try! Realm()
         
@@ -537,9 +540,11 @@ class NCManageDatabase: NSObject {
                 sharesUserAndGroup.removeValue(forKey: "\(serverUrl)\(fileName)")
             }
         }
+        
+        return [sharesLink, sharesUserAndGroup]
     }
     
-    func removeAllShareActiveAccount(_ account: String, sharesLink: inout [String:String], sharesUserAndGroup: inout [String:String]) {
+    func removeAllShareActiveAccount(_ account: String) {
         
         let realm = try! Realm()
         
@@ -547,14 +552,14 @@ class NCManageDatabase: NSObject {
         try! realm.write {
             realm.delete(results)
         }
-
-        sharesLink.removeAll()
-        sharesUserAndGroup.removeAll()
     }
     
-    func updateShare(_ items: inout [String:OCSharedDto], sharesLink: inout [String:String], sharesUserAndGroup: inout [String:String] , account: String, activeUrl: String) {
+    func updateShare(_ items: [String:OCSharedDto], account: String, activeUrl: String) -> [Any] {
         
-        self.removeAllShareActiveAccount(account, sharesLink: &sharesLink, sharesUserAndGroup: &sharesUserAndGroup)
+        var sharesLink = [String:String]()
+        var sharesUserAndGroup = [String:String]()
+
+        self.removeAllShareActiveAccount(account)
      
         var itemsLink = [OCSharedDto]()
         var itemsUsersAndGroups = [OCSharedDto]()
@@ -584,7 +589,7 @@ class NCManageDatabase: NSObject {
             }
             
             if item.idRemoteShared > 0 {
-                self.addShareLink("\(item.idRemoteShared)", fileName: fileName, serverUrl: serverUrl, sharesLink: &sharesLink, account: account)
+                sharesLink = self.addShareLink("\(item.idRemoteShared)", fileName: fileName, serverUrl: serverUrl, account: account)
             }
         }
         
@@ -606,12 +611,27 @@ class NCManageDatabase: NSObject {
         }
         
         // Write on DB
+        for (key, _) in paths {
+            
+            let items = paths[key]
+            let share = items?.joined(separator: ",")
+            
+            print("[LOG] share \(String(describing: share))")
+            
+            let fullPath = CCUtility.getHomeServerUrlActiveUrl(activeUrl) + "\(key)"
+            let fileName = NSString(string: fullPath).lastPathComponent
+            let serverUrl = NSString(string: fullPath).substring(to: (fullPath.characters.count - (fullPath.characters.count-1)))
+            
+            sharesUserAndGroup = self.addShareUserAndGroup(share!, fileName: fileName, serverUrl: serverUrl, account: account)
+        }
+        
+        return [sharesLink, sharesUserAndGroup]
     }
     
-    func populateSharesVariable(_ account: String, sharesLink: inout [String:String], sharesUserAndGroup: inout [String:String]) {
+    func getSharesAccount(_ account: String) -> [Any] {
 
-        sharesLink.removeAll()
-        sharesUserAndGroup.removeAll()
+        var sharesLink = [String:String]()
+        var sharesUserAndGroup = [String:String]()
         
         let realm = try! Realm()
 
@@ -624,9 +644,11 @@ class NCManageDatabase: NSObject {
             }
             
             if (resultShare.shareUserAndGroup.characters.count > 0) {
-                sharesLink = [resultShare.shareUserAndGroup: "\(resultShare.serverUrl)\(resultShare.fileName)"]
+                sharesUserAndGroup = [resultShare.shareUserAndGroup: "\(resultShare.serverUrl)\(resultShare.fileName)"]
             }
         }
+        
+        return [sharesLink, sharesUserAndGroup]
     }
     
     //MARK: -

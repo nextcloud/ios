@@ -39,7 +39,6 @@
 #import "TableMetadata+CoreDataClass.h"
 #import "TableDirectory+CoreDataClass.h"
 #import "TableLocalFile+CoreDataClass.h"
-#import "TableShare+CoreDataClass.h"
 
 @interface CCCoreData : NSObject
 
@@ -174,14 +173,6 @@
 + (void)setGeoInformationLocalFromFileID:(NSString *)fileID exifDate:(NSDate *)exifDate exifLatitude:(NSString *)exifLatitude exifLongitude:(NSString *)exifLongitude activeAccount:(NSString *)activeAccount;
 + (void)setGeoInformationLocalNull;
 
-// ===== Share =====
-
-+ (void)setShareLink:(NSString *)share fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl sharesLink:(NSMutableDictionary *)sharesLink activeAccount:(NSString *)activeAccount;
-+ (void)setShareUserAndGroup:(NSString *)share fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl sharesUserAndGroup:(NSMutableDictionary *)sharesUserAndGroup activeAccount:(NSString *)activeAccount;
-+ (void)unShare:(NSString *)share fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl sharesLink:(NSMutableDictionary *)sharesLink sharesUserAndGroup:(NSMutableDictionary *)sharesUserAndGroup activeAccount:(NSString *)activeAccount;
-+ (void)updateShare:(NSDictionary *)items sharesLink:(NSMutableDictionary *)sharesLink sharesUserAndGroup:(NSMutableDictionary *)sharesUserAndGroup activeAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl;
-+ (void)populateSharesVariableFromDBActiveAccount:(NSString *)activeAccount sharesLink:(NSMutableDictionary *)sharesLink sharesUserAndGroup:(NSMutableDictionary *)sharesUserAndGroup;
-
 // ===== Offline =====
 
 + (NSArray *)getHomeOfflineActiveAccount:(NSString *)activeAccount directoryUser:(NSString *)directoryUser fieldOrder:(NSString *)fieldOrder ascending:(BOOL)ascending;
@@ -206,7 +197,6 @@
 + (void)flushTableDirectoryAccount:(NSString *)account;
 + (void)flushTableLocalFileAccount:(NSString *)account;
 + (void)flushTableMetadataAccount:(NSString *)account;
-+ (void)flushTableShareAccount:(NSString *)account;
 
 + (void)flushAllDatabase;
 @end

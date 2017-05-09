@@ -332,7 +332,8 @@
     [CCCoreData flushTableDirectoryAccount:account];
     [CCCoreData flushTableLocalFileAccount:account];
     [CCCoreData flushTableMetadataAccount:account];
-    [CCCoreData flushTableShareAccount:account];
+    
+    [[NCManageDatabase sharedInstance] clearTable:[tableShare class] account:app.activeAccount];
 }
 
 - (void)answerDelAccount:(XLFormRowDescriptor *)sender

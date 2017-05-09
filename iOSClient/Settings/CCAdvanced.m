@@ -330,7 +330,8 @@
             
             [CCCoreData flushTableLocalFileAccount:app.activeAccount];
             [CCCoreData flushTableMetadataAccount:app.activeAccount];
-            [CCCoreData flushTableShareAccount:app.activeAccount];
+            
+            [[NCManageDatabase sharedInstance] clearTable:[tableShare class] account:app.activeAccount];
 
             [self emptyUserDirectoryUser:app.activeUser url:app.activeUrl];
             
