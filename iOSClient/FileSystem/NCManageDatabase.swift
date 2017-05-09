@@ -436,4 +436,148 @@ class NCManageDatabase: NSObject {
     }
 
     //MARK: -
+    //MARK: Table Share
+    
+    func addShareLink(_ share: String, fileName: String, serverUrl: String, sharesLink: inout [String:String], account: String) {
+        
+        let realm = try! Realm()
+        
+        // Verify if exists
+        let results = realm.objects(tableShare.self).filter("account = '\(account)' AND fileName = '\(fileName)' AND serverUrl = '\(serverUrl)'")
+        if (results.count > 0) {
+            try! realm.write {
+                results[0].shareLink = share;
+            }
+            
+        } else {
+        
+            // Add new record
+            try! realm.write {
+            
+            let addShare = tableShare()
+            
+                addShare.account = account
+                addShare.fileName = fileName
+                addShare.serverUrl = serverUrl
+                addShare.shareLink = share
+            
+                realm.add(addShare)
+            }
+        }
+        
+        sharesLink = [share: "\(serverUrl)\(fileName)"]
+    }
+
+    func addShareUserAndGroup(_ share: String, fileName: String, serverUrl: String, sharesUserAndGroup: inout [String:String], account: String) {
+        
+        let realm = try! Realm()
+        
+        // Verify if exists
+        let results = realm.objects(tableShare.self).filter("account = '\(account)' AND fileName = '\(fileName)' AND serverUrl = '\(serverUrl)'")
+        if (results.count > 0) {
+            try! realm.write {
+                results[0].shareUserAndGroup = share;
+            }
+            
+        } else {
+            
+            // Add new record
+            try! realm.write {
+                
+                let addShare = tableShare()
+                
+                addShare.account = account
+                addShare.fileName = fileName
+                addShare.serverUrl = serverUrl
+                addShare.shareLink = share
+                
+                realm.add(addShare)
+            }
+        }
+        
+        sharesUserAndGroup = [share: "\(serverUrl)\(fileName)"]
+    }
+    
+    func unShare(_ share: String, fileName: String, serverUrl: String, sharesLink: inout [String:String], sharesUserAndGroup: inout [String:String], account: String) {
+        
+        let realm = try! Realm()
+        
+        let results = realm.objects(tableShare.self).filter("account = '\(account)' AND (shareLink CONTAINS '\(share)' OR shareUserAndGroup CONTAINS '\(share))'")
+        if (results.count > 0) {
+            
+            try! realm.write {
+                
+                if (results[0].shareLink.contains(share)) {
+                    results[0].shareLink = ""
+                }
+                
+                if (results[0].shareUserAndGroup.contains(share)) {
+                    
+                    var shares : [String] = results[0].shareUserAndGroup.components(separatedBy: ",")
+                    if let index = shares.index(of:share) {
+                        shares.remove(at: index)
+                    }
+                    results[0].shareUserAndGroup = shares.joined(separator: ",")
+                }
+                
+                if (results[0].shareLink.characters.count == 0 && results[0].shareUserAndGroup.characters.count == 0) {
+                    realm.delete(results[0])
+                }
+            }
+            
+            if (results[0].shareLink.characters.count > 0) {
+                sharesLink = [results[0].shareLink: "\(serverUrl)\(fileName)"]
+            } else {
+                sharesLink.removeValue(forKey: "\(serverUrl)\(fileName)")
+            }
+            
+            if (results[0].shareUserAndGroup.characters.count > 0) {
+                sharesUserAndGroup = [results[0].shareUserAndGroup: "\(serverUrl)\(fileName)"]
+            } else {
+                sharesUserAndGroup.removeValue(forKey: "\(serverUrl)\(fileName)")
+            }
+        }
+    }
+    
+    func removeAllShareActiveAccount(_ account: String, sharesLink: inout [String:String], sharesUserAndGroup: inout [String:String]) {
+        
+        let realm = try! Realm()
+        
+        let results = realm.objects(tableShare.self).filter("account = '\(account)'")
+        try! realm.write {
+            realm.delete(results)
+        }
+
+        sharesLink.removeAll()
+        sharesUserAndGroup.removeAll()
+    }
+    
+    func updateShare(_ items: inout [String:String], sharesLink: inout [String:String], sharesUserAndGroup: inout [String:String] , account: String, activeUrl: String) {
+        
+        self.removeAllShareActiveAccount(account, sharesLink: &sharesLink, sharesUserAndGroup: &sharesUserAndGroup)
+        
+    }
+    
+    func populateSharesVariable(_ account: String, sharesLink: inout [String:String], sharesUserAndGroup: inout [String:String]) {
+
+        sharesLink.removeAll()
+        sharesUserAndGroup.removeAll()
+        
+        let realm = try! Realm()
+
+        let results = realm.objects(tableShare.self).filter("account = '\(account)'")
+        
+        for resultShare in results {
+            
+            if (resultShare.shareLink.characters.count > 0) {
+                sharesLink = [resultShare.shareLink: "\(resultShare.serverUrl)\(resultShare.fileName)"]
+            }
+            
+            if (resultShare.shareUserAndGroup.characters.count > 0) {
+                sharesLink = [resultShare.shareUserAndGroup: "\(resultShare.serverUrl)\(resultShare.fileName)"]
+            }
+        }
+    }
+    
+    //MARK: -
 }

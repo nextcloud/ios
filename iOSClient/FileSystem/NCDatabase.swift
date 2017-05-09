@@ -80,3 +80,12 @@ class tableGPS: Object {
     dynamic var placemarkPostalCode = ""
     dynamic var placemarkThoroughfare = ""
 }
+
+class tableShare: Object {
+    
+    dynamic var account = ""
+    dynamic var fileName = ""
+    dynamic var serverUrl = ""
+    dynamic var shareLink = ""
+    dynamic var shareUserAndGroup = ""
+}
