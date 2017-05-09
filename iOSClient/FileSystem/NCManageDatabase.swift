@@ -465,7 +465,7 @@ class NCManageDatabase: NSObject {
             }
         }
         
-        return [share: "\(serverUrl)\(fileName)"]
+        return ["\(serverUrl)\(fileName)" : share]
     }
 
     func addShareUserAndGroup(_ share: String, fileName: String, serverUrl: String, account: String) -> [String:String] {
@@ -495,7 +495,7 @@ class NCManageDatabase: NSObject {
             }
         }
         
-        return [share: "\(serverUrl)\(fileName)"]
+        return ["\(serverUrl)\(fileName)" : share]
     }
     
     func unShare(_ share: String, fileName: String, serverUrl: String, sharesLinkObj: [String:String], sharesUserAndGroupObj: [String:String], account: String) -> [Any] {
