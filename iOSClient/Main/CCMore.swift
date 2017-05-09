@@ -107,26 +107,24 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         // External 
         menuExternalSite = NCManageDatabase.sharedInstance.getAllExternalSitesWithPredicate(NSPredicate(format: "(account == '\(appDelegate.activeAccount!)')"))
         
-        if (menuExternalSite != nil) {
-            for table in menuExternalSite! {
+        for table in menuExternalSite! {
             
-                item = OCExternalSites.init()
+            item = OCExternalSites.init()
             
-                item.name = table.name
-                item.url = table.url
-                item.icon = table.icon
+            item.name = table.name
+            item.url = table.url
+            item.icon = table.icon
             
-                if (table.type == "link") {
-                    item.icon = "moreExternalSite"
-                    functionMenu.append(item)
-                }
-                if (table.type == "settings") {
-                    item.icon = "moreSettingsExternalSite"
-                    settingsMenu.append(item)
-                }
-                if (table.type == "quota") {
-                    quotaMenu.append(item)
-                }
+            if (table.type == "link") {
+                item.icon = "moreExternalSite"
+                functionMenu.append(item)
+            }
+            if (table.type == "settings") {
+                item.icon = "moreSettingsExternalSite"
+                settingsMenu.append(item)
+            }
+            if (table.type == "quota") {
+                quotaMenu.append(item)
             }
         }
         

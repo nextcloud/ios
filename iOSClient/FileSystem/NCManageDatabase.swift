@@ -376,7 +376,7 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
         
-        let results = realm.objects(tableExternalSites.self).filter("account = '\(account)')")
+        let results = realm.objects(tableExternalSites.self).filter("account = '\(account)'")
         try! realm.write {
             realm.delete(results)
         }
