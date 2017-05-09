@@ -158,9 +158,11 @@ class NCManageDatabase: NSObject {
             
             addAutomaticUpload.account = account
             addAutomaticUpload.assetLocalIdentifier = metadataNet.assetLocalIdentifier
-            addAutomaticUpload.fileName = metadataNet.fileName;
-            addAutomaticUpload.selector = metadataNet.selector;
-            addAutomaticUpload.selectorPost = metadataNet.selectorPost
+            addAutomaticUpload.fileName = metadataNet.fileName
+            addAutomaticUpload.selector = metadataNet.selector
+            if (metadataNet.selectorPost != nil) {
+                addAutomaticUpload.selectorPost = metadataNet.selectorPost
+            }
             addAutomaticUpload.serverUrl = metadataNet.serverUrl
             addAutomaticUpload.session = metadataNet.session
             addAutomaticUpload.priority = metadataNet.priority
