@@ -564,6 +564,8 @@ class NCManageDatabase: NSObject {
         var itemsLink = [OCSharedDto]()
         var itemsUsersAndGroups = [OCSharedDto]()
         
+        // Manage sharesLink
+        
         for (idRemoteShared,_) in items {
             
             let item = items[idRemoteShared]!
@@ -577,7 +579,6 @@ class NCManageDatabase: NSObject {
             }
         }
         
-        // Link
         for item in itemsLink {
             
             let fullPath = CCUtility.getHomeServerUrlActiveUrl(activeUrl) + "\(item.path!)"
@@ -596,8 +597,9 @@ class NCManageDatabase: NSObject {
             }
         }
         
-        // Create dictionary
-        var paths = [String:[String]]() //Key, value
+        // Manage sharesUserAndGroup
+        
+        var paths = [String:[String]]()
         
         for item in itemsUsersAndGroups {
             
@@ -613,15 +615,14 @@ class NCManageDatabase: NSObject {
             }
         }
         
-        // Write on DB
-        for (key, _) in paths {
+        for (path, _) in paths {
             
-            let items = paths[key]
+            let items = paths[path]
             let share = items?.joined(separator: ",")
             
             print("[LOG] share \(String(describing: share))")
             
-            let fullPath = CCUtility.getHomeServerUrlActiveUrl(activeUrl) + "\(key)"
+            let fullPath = CCUtility.getHomeServerUrlActiveUrl(activeUrl) + "\(path)"
             let fileName = NSString(string: fullPath).lastPathComponent
             var serverUrl = NSString(string: fullPath).substring(to: (fullPath.characters.count - fileName.characters.count - 1))
             
