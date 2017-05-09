@@ -524,12 +524,6 @@ class NCManageDatabase: NSObject {
                 }
                 result.shareUserAndGroup = shares.joined(separator: ",")
             }
-                
-            if (result.shareLink.characters.count == 0 && result.shareUserAndGroup.characters.count == 0) {
-                realm.delete(result)
-            }
-            
-            try! realm.commitWrite()
             
             if (result.shareLink.characters.count > 0) {
                 sharesLink.updateValue(result.shareLink, forKey:"\(serverUrl)\(fileName)")
@@ -542,6 +536,11 @@ class NCManageDatabase: NSObject {
             } else {
                 sharesUserAndGroup.removeValue(forKey: "\(serverUrl)\(fileName)")
             }
+            
+            if (result.shareLink.characters.count == 0 && result.shareUserAndGroup.characters.count == 0) {
+                realm.delete(result)
+            }
+            try! realm.commitWrite()
         }
         
         return [sharesLink, sharesUserAndGroup]
