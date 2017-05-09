@@ -40,7 +40,6 @@
 #import "TableDirectory+CoreDataClass.h"
 #import "TableLocalFile+CoreDataClass.h"
 #import "TableShare+CoreDataClass.h"
-#import "TableExternalSites+CoreDataClass.h"
 
 @interface CCCoreData : NSObject
 
@@ -187,12 +186,6 @@
 
 + (NSArray *)getHomeOfflineActiveAccount:(NSString *)activeAccount directoryUser:(NSString *)directoryUser fieldOrder:(NSString *)fieldOrder ascending:(BOOL)ascending;
 
-// ===== External Sites =====
-
-+ (void)addExternalSites:(OCExternalSites *)externalSites account:(NSString *)account;
-+ (void)deleteAllExternalSitesForAccount:(NSString *)account;
-+ (NSArray *)getAllTableExternalSitesWithPredicate:(NSPredicate *)predicate;
-
 // ===== File System =====
 
 + (BOOL)downloadFile:(CCMetadata *)metadata directoryUser:(NSString *)directoryUser activeAccount:(NSString *)activeAccount;
@@ -211,7 +204,6 @@
 
 + (void)flushTableAccount:(NSString *)account;
 + (void)flushTableDirectoryAccount:(NSString *)account;
-+ (void)flushTableExternalSitesAccount:(NSString *)account;
 + (void)flushTableLocalFileAccount:(NSString *)account;
 + (void)flushTableMetadataAccount:(NSString *)account;
 + (void)flushTableShareAccount:(NSString *)account;

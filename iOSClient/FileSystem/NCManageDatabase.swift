@@ -350,6 +350,48 @@ class NCManageDatabase: NSObject {
     }
 
     //MARK: -
+    //MARK: Table External Sites
+    
+    func addExternalSites(_ externalSites: OCExternalSites, account: String) {
+        
+        let realm = try! Realm()
+        
+        try! realm.write {
+            
+            let addExternalSite = tableExternalSites()
+            
+            addExternalSite.account = account
+            addExternalSite.idExternalSite = externalSites.idExternalSite
+            addExternalSite.icon = externalSites.icon
+            addExternalSite.lang = externalSites.lang
+            addExternalSite.name = externalSites.name
+            addExternalSite.url = externalSites.url
+            addExternalSite.type = externalSites.type
+           
+            realm.add(addExternalSite)
+        }
+    }
+
+    func deleteAllExternalSitesForAccount(_ account: String) {
+        
+        let realm = try! Realm()
+        
+        let results = realm.objects(tableExternalSites.self).filter("account = '\(account)')")
+        try! realm.write {
+            realm.delete(results)
+        }
+    }
+    
+    func getAllExternalSitesWithPredicate(_ predicate: NSPredicate) -> [tableExternalSites] {
+        
+        let realm = try! Realm()
+        
+        let results = realm.objects(tableExternalSites.self).filter(predicate).sorted(byKeyPath: "idExternalSite", ascending: true)
+        
+        return Array(results)
+    }
+
+    //MARK: -
     //MARK: Table GPS
     
     func addGeocoderLocation(_ location: String, placemarkAdministrativeArea: String, placemarkCountry: String, placemarkLocality: String, placemarkPostalCode: String, placemarkThoroughfare: String, latitude: String, longitude: String) {

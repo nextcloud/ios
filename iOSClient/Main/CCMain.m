@@ -1081,10 +1081,10 @@
 
 - (void)getExternalSitesServerSuccess:(NSArray *)listOfExternalSites
 {
-    [CCCoreData deleteAllExternalSitesForAccount:app.activeAccount];
+    [[NCManageDatabase sharedInstance] deleteAllExternalSitesForAccount:app.activeAccount];
     
     for (OCExternalSites *tableExternalSites in listOfExternalSites)
-        [CCCoreData addExternalSites:tableExternalSites account:app.activeAccount];
+        [[NCManageDatabase sharedInstance] addExternalSites:tableExternalSites account:app.activeAccount];
 }
 
 - (void)getExternalSitesServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode

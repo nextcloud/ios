@@ -58,6 +58,17 @@ class tableCertificates: Object {
     dynamic var certificateLocation = ""
 }
 
+class tableExternalSites: Object {
+    
+    dynamic var account = ""
+    dynamic var icon = ""
+    dynamic var idExternalSite : Int = 0
+    dynamic var lang = ""
+    dynamic var name = ""
+    dynamic var type = ""
+    dynamic var url = ""
+}
+
 class tableGPS: Object {
     
     dynamic var latitude = ""

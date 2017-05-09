@@ -40,7 +40,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
-    var menuExternalSite: [TableExternalSites]?
+    var menuExternalSite: [tableExternalSites]?
     var tableAccont : TableAccount?
     
     override func viewDidLoad() {
@@ -105,7 +105,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         settingsMenu.append(item)
 
         // External 
-        menuExternalSite = CCCoreData.getAllTableExternalSites(with:  NSPredicate(format: "(account == '\(appDelegate.activeAccount!)')")) as? [TableExternalSites]
+        menuExternalSite = NCManageDatabase.sharedInstance.getAllExternalSitesWithPredicate(NSPredicate(format: "(account == '\(appDelegate.activeAccount!)')"))
         
         if (menuExternalSite != nil) {
             for table in menuExternalSite! {
