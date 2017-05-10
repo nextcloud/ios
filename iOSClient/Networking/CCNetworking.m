@@ -763,137 +763,134 @@
 
 - (void)uploadFileFromAssetLocalIdentifier:(NSString *)assetLocalIdentifier fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl cryptated:(BOOL)cryptated session:(NSString *)session taskStatus:(NSInteger)taskStatus selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorCode:(NSInteger)errorCode delegate:(id)delegate
 {
-    PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[assetLocalIdentifier] options:nil];
-    
-    if (!result.count) {
-        
-        [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:@"Internal error image/video not found [1]" type:k_activityTypeFailure verbose:k_activityVerboseHigh account:_activeAccount  activeUrl:_activeUrl];
-
-        if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
-            [delegate uploadFileFailure:nil fileID:nil serverUrl:serverUrl selector:selector message:@"Internal error image/video not found" errorCode: k_CCErrorInternalError];
-        return;
-    }
-    
-    PHAsset *asset = result[0];
-    PHAssetMediaType assetMediaType = asset.mediaType;
-    NSDate *assetDate = asset.creationDate;
-    __block NSError *error = nil;
-    
-    // create fileName
-    NSString *assetFileName = [asset valueForKey:@"filename"];
-    NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", _directoryUser, fileName];
-    
     //delegate
     if (delegate == nil)
         delegate = self.delegate;
     
-    // VIDEO
-    if (assetMediaType == PHAssetMediaTypeVideo) {
+    // Upload Automatic (All)
+    
+    if ([selector isEqualToString:selectorUploadAutomatic] || [selector isEqualToString:selectorUploadAutomaticAll]) {
         
-        // Automatic Upload video encrypted ?
-        if ([selector isEqualToString:selectorUploadAutomatic] || [selector isEqualToString:selectorUploadAutomaticAll])
-            cryptated = [CCCoreData getCameraUploadCryptatedVideoActiveAccount:_activeAccount];
+        [self upload:fileName serverUrl:serverUrl cryptated:NO template:NO onlyPlist:NO fileNameTemplate:nil assetLocalIdentifier:assetLocalIdentifier session:session taskStatus:taskStatus selector:selector selectorPost:selectorPost errorCode:errorCode delegate:delegate];
+    } else {
+    
+    // Manual Upload
         
-        @autoreleasepool {
+        PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[assetLocalIdentifier] options:nil];
+        
+        if (!result.count) {
             
-            PHVideoRequestOptions *options = [PHVideoRequestOptions new];
-            options.version = PHVideoRequestOptionsVersionOriginal;
-        
-            [[PHImageManager defaultManager] requestAVAssetForVideo:asset options:options resultHandler:^(AVAsset *asset, AVAudioMix *audioMix, NSDictionary *info) {
+            [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:@"Internal error image/video not found" type:k_activityTypeFailure verbose:k_activityVerboseHigh account:_activeAccount  activeUrl:_activeUrl];
             
-                if ([asset isKindOfClass:[AVURLAsset class]]) {
-
-                    NSData *data = [[NSData alloc] initWithContentsOfURL:[(AVURLAsset *)asset URL] options:0 error:&error];
-                
-                    if (!error || [data length] > 0) {
-                        
-                        [data writeToFile:fileNamePath options:NSDataWritingAtomic error:&error];
-                        
-                    } else {
-                        
-                        if (!error)
-                            error = [NSError errorWithDomain:@"it.twsweb.cryptocloud" code:kCFURLErrorFileDoesNotExist userInfo:nil];
-                    }
-                    
-                } else {
-                    
-                    error = [NSError errorWithDomain:@"it.twsweb.cryptocloud" code:kCFURLErrorFileDoesNotExist userInfo:nil];
-                }
-                
-                if (error) {
-                    
-                    // Activity
-                    [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:NSLocalizedString(@"_read_file_error_", nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault account:_activeAccount  activeUrl:_activeUrl];
-                        
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        
-                        // Error for uploadFileFailure
-                        if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
-                            [delegate uploadFileFailure:nil fileID:nil serverUrl:serverUrl selector:selector message:@"_read_file_error_" errorCode:error.code];
-                    });
-                    
-                } else {
-                    
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        
-                        [self upload:fileName serverUrl:serverUrl cryptated:cryptated template:NO onlyPlist:NO assetFileName:assetFileName assetDate:assetDate assetMediaType:assetMediaType assetLocalIdentifier:assetLocalIdentifier session:session taskStatus:taskStatus selector:selector selectorPost:selectorPost errorCode:errorCode delegate:delegate];
-                    });
-                }
-            }];
+            if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
+                [delegate uploadFileFailure:nil fileID:nil serverUrl:serverUrl selector:selector message:@"Internal error image/video not found" errorCode: k_CCErrorInternalError];
+            return;
         }
-    }
-    
-    // IMAGE
-    if (assetMediaType == PHAssetMediaTypeImage) {
-    
-        // Automatic Upload photo encrypted ?
-        if ([selector isEqualToString:selectorUploadAutomatic] || [selector isEqualToString:selectorUploadAutomaticAll])
-            cryptated = [CCCoreData getCameraUploadCryptatedPhotoActiveAccount:_activeAccount];
+        
+        PHAsset *asset = result[0];
+        PHAssetMediaType assetMediaType = asset.mediaType;
+        __block NSError *error = nil;
 
-        @autoreleasepool {
+        // VIDEO
+        if (assetMediaType == PHAssetMediaTypeVideo) {
+        
+            @autoreleasepool {
             
-            PHImageRequestOptions *options = [PHImageRequestOptions new];
-            options.synchronous = NO;
+                PHVideoRequestOptions *options = [PHVideoRequestOptions new];
+                options.version = PHVideoRequestOptionsVersionOriginal;
+        
+                [[PHImageManager defaultManager] requestAVAssetForVideo:asset options:options resultHandler:^(AVAsset *asset, AVAudioMix *audioMix, NSDictionary *info) {
             
-            [[PHImageManager defaultManager] requestImageDataForAsset:asset options:options resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
-            
-                [imageData writeToFile:fileNamePath options:NSDataWritingAtomic error:&error];
+                    if ([asset isKindOfClass:[AVURLAsset class]]) {
+
+                        NSData *data = [[NSData alloc] initWithContentsOfURL:[(AVURLAsset *)asset URL] options:0 error:&error];
                 
-                if (error) {
-                    
-                    // Activity
-                    [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:NSLocalizedString(@"_read_file_error_", nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault account:_activeAccount  activeUrl:_activeUrl];
-
-                    dispatch_async(dispatch_get_main_queue(), ^{
+                        if (!error || [data length] > 0) {
                         
-                        // Error for uploadFileFailure
-                        if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
-                            [delegate uploadFileFailure:nil fileID:nil serverUrl:serverUrl selector:selector message:@"_read_file_error_" errorCode:error.code];
-                    });
+                            [data writeToFile:[NSString stringWithFormat:@"%@/%@", _directoryUser, fileName] options:NSDataWritingAtomic error:&error];
+                        
+                        } else {
+                        
+                            if (!error)
+                                error = [NSError errorWithDomain:@"it.twsweb.cryptocloud" code:kCFURLErrorFileDoesNotExist userInfo:nil];
+                        }
                     
-                } else {
+                    } else {
                     
-                    dispatch_async(dispatch_get_main_queue(), ^{
+                        error = [NSError errorWithDomain:@"it.twsweb.cryptocloud" code:kCFURLErrorFileDoesNotExist userInfo:nil];
+                    }
+                
+                    if (error) {
                     
-                        [self upload:fileName serverUrl:serverUrl cryptated:cryptated template:NO onlyPlist:NO assetFileName:assetFileName assetDate:assetDate assetMediaType:assetMediaType assetLocalIdentifier:assetLocalIdentifier session:session taskStatus:taskStatus selector:selector selectorPost:selectorPost errorCode:errorCode delegate:delegate];
-                    });
-                }
-            }];
+                        // Activity
+                        [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:NSLocalizedString(@"_read_file_error_", nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault account:_activeAccount  activeUrl:_activeUrl];
+                        
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                        
+                            // Error for uploadFileFailure
+                            if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
+                                [delegate uploadFileFailure:nil fileID:nil serverUrl:serverUrl selector:selector message:@"_read_file_error_" errorCode:error.code];
+                        });
+                    
+                    } else {
+                    
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                        
+                            [self upload:fileName serverUrl:serverUrl cryptated:cryptated template:NO onlyPlist:NO fileNameTemplate:nil assetLocalIdentifier:assetLocalIdentifier session:session taskStatus:taskStatus selector:selector selectorPost:selectorPost errorCode:errorCode delegate:delegate];
+                        });
+                    }
+                }];
+            }
+        }
+    
+        // IMAGE
+        if (assetMediaType == PHAssetMediaTypeImage) {
+    
+            @autoreleasepool {
+            
+                PHImageRequestOptions *options = [PHImageRequestOptions new];
+                options.synchronous = NO;
+            
+                [[PHImageManager defaultManager] requestImageDataForAsset:asset options:options resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
+            
+                    [imageData writeToFile:[NSString stringWithFormat:@"%@/%@", _directoryUser, fileName] options:NSDataWritingAtomic error:&error];
+                
+                    if (error) {
+                    
+                        // Activity
+                        [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:NSLocalizedString(@"_read_file_error_", nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault account:_activeAccount  activeUrl:_activeUrl];
+
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                        
+                            // Error for uploadFileFailure
+                            if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
+                                [delegate uploadFileFailure:nil fileID:nil serverUrl:serverUrl selector:selector message:@"_read_file_error_" errorCode:error.code];
+                        });
+                    
+                    } else {
+                    
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                    
+                            [self upload:fileName serverUrl:serverUrl cryptated:cryptated template:NO onlyPlist:NO fileNameTemplate:nil assetLocalIdentifier:assetLocalIdentifier session:session taskStatus:taskStatus selector:selector selectorPost:selectorPost errorCode:errorCode delegate:delegate];
+                        });
+                    }
+                }];
+            }
         }
     }
 }
 
 - (void)uploadFile:(NSString *)fileName serverUrl:(NSString *)serverUrl cryptated:(BOOL)cryptated onlyPlist:(BOOL)onlyPlist session:(NSString *)session taskStatus:(NSInteger)taskStatus selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorCode:(NSInteger)errorCode delegate:(id)delegate
 {
-    [self upload:fileName serverUrl:serverUrl cryptated:cryptated template:NO onlyPlist:onlyPlist assetFileName:nil assetDate:nil assetMediaType:PHAssetMediaTypeUnknown assetLocalIdentifier:nil session:session taskStatus:taskStatus selector:selector selectorPost:selectorPost  errorCode:errorCode delegate:delegate];
+    [self upload:fileName serverUrl:serverUrl cryptated:cryptated template:NO onlyPlist:onlyPlist fileNameTemplate:nil assetLocalIdentifier:nil session:session taskStatus:taskStatus selector:selector selectorPost:selectorPost  errorCode:errorCode delegate:delegate];
 }
 
 - (void)uploadTemplate:(NSString *)fileNamePrint fileNameCrypto:(NSString *)fileNameCrypto serverUrl:(NSString *)serverUrl session:(NSString *)session taskStatus:(NSInteger)taskStatus selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorCode:(NSInteger)errorCode delegate:(id)delegate
 {
-    [self upload:fileNameCrypto serverUrl:serverUrl cryptated:YES template:YES onlyPlist:NO assetFileName:fileNamePrint assetDate:nil assetMediaType:PHAssetMediaTypeUnknown assetLocalIdentifier:nil session:session taskStatus:taskStatus selector:selector selectorPost:selectorPost errorCode:errorCode delegate:delegate];
+    [self upload:fileNameCrypto serverUrl:serverUrl cryptated:YES template:YES onlyPlist:NO fileNameTemplate:fileNamePrint assetLocalIdentifier:nil session:session taskStatus:taskStatus selector:selector selectorPost:selectorPost errorCode:errorCode delegate:delegate];
 }
 
-- (void)upload:(NSString *)fileName serverUrl:(NSString *)serverUrl cryptated:(BOOL)cryptated template:(BOOL)template onlyPlist:(BOOL)onlyPlist assetFileName:(NSString *)assetFileName assetDate:(NSDate *)assetDate assetMediaType:(PHAssetMediaType)assetMediaType assetLocalIdentifier:(NSString *)assetLocalIdentifier session:(NSString *)session taskStatus:(NSInteger)taskStatus selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorCode:(NSInteger)errorCode delegate:(id)delegate
+- (void)upload:(NSString *)fileName serverUrl:(NSString *)serverUrl cryptated:(BOOL)cryptated template:(BOOL)template onlyPlist:(BOOL)onlyPlist fileNameTemplate:(NSString *)fileNameTemplate assetLocalIdentifier:(NSString *)assetLocalIdentifier session:(NSString *)session taskStatus:(NSInteger)taskStatus selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorCode:(NSInteger)errorCode delegate:(id)delegate
 {
     NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:_activeAccount];
     NSString *fileNameCrypto;
@@ -930,7 +927,7 @@
         
         [CCCoreData addMetadata:metadata activeAccount:_activeAccount activeUrl:_activeUrl context:_context];
         
-        [self uploadURLSession:fileName fileNamePrint:metadata.fileNamePrint serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType assetLocalIdentifier:assetLocalIdentifier cryptated:cryptated onlyPlist:onlyPlist selector:selector];
+        [self uploadURLSession:fileName fileNamePrint:metadata.fileNamePrint serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetLocalIdentifier:assetLocalIdentifier cryptated:cryptated onlyPlist:onlyPlist selector:selector];
     }
     
     else if (cryptated == YES) {
@@ -941,8 +938,8 @@
             [CCUtility moveFileAtPath:[NSTemporaryDirectory() stringByAppendingString:fileName] toPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, fileName]];
             [CCUtility moveFileAtPath:[NSTemporaryDirectory() stringByAppendingString:[fileName stringByAppendingString:@".plist"]] toPath:[NSString stringWithFormat:@"%@/%@.plist", _directoryUser, fileName]];
             
-            fileNameCrypto = fileName;  // file Name Crypto
-            fileName = assetFileName;   // file Name Print
+            fileNameCrypto = fileName;      // file Name Crypto
+            fileName = fileNameTemplate;    // file Name Print
             
             [CCUtility insertInformationPlist:metadata directoryUser:_directoryUser];
             
@@ -961,10 +958,10 @@
             [CCCoreData addMetadata:metadata activeAccount:_activeAccount activeUrl:_activeUrl context:_context];
             
             // DATA
-            [self uploadURLSession:fileNameCrypto fileNamePrint:fileName serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType assetLocalIdentifier:assetLocalIdentifier cryptated:cryptated onlyPlist:onlyPlist selector:selector];
+            [self uploadURLSession:fileNameCrypto fileNamePrint:fileName serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetLocalIdentifier:assetLocalIdentifier cryptated:cryptated onlyPlist:onlyPlist selector:selector];
             
             // PLIST
-            [self uploadURLSession:[fileNameCrypto stringByAppendingString:@".plist"] fileNamePrint:fileName serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType assetLocalIdentifier:assetLocalIdentifier cryptated:cryptated onlyPlist:onlyPlist selector:selector];
+            [self uploadURLSession:[fileNameCrypto stringByAppendingString:@".plist"] fileNamePrint:fileName serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetLocalIdentifier:assetLocalIdentifier cryptated:cryptated onlyPlist:onlyPlist selector:selector];
         }
         
         if (template == NO) {
@@ -1054,10 +1051,10 @@
                     [CCCoreData addMetadata:metadata activeAccount:_activeAccount activeUrl:_activeUrl context:_context];
                     
                     // DATA
-                    [self uploadURLSession:fileNameCrypto fileNamePrint:fileName serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType assetLocalIdentifier:assetLocalIdentifier cryptated:cryptated onlyPlist:onlyPlist selector:selector];
+                    [self uploadURLSession:fileNameCrypto fileNamePrint:fileName serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetLocalIdentifier:assetLocalIdentifier cryptated:cryptated onlyPlist:onlyPlist selector:selector];
                     
                     // PLIST
-                    [self uploadURLSession:[fileNameCrypto stringByAppendingString:@".plist"] fileNamePrint:fileName serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType assetLocalIdentifier:assetLocalIdentifier cryptated:cryptated onlyPlist:onlyPlist selector:selector];
+                    [self uploadURLSession:[fileNameCrypto stringByAppendingString:@".plist"] fileNamePrint:fileName serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetLocalIdentifier:assetLocalIdentifier cryptated:cryptated onlyPlist:onlyPlist selector:selector];
                 }];
 
                 [alertController addAction:cancelAction];
@@ -1083,10 +1080,10 @@
                 [CCCoreData addMetadata:metadata activeAccount:_activeAccount activeUrl:_activeUrl context:_context];
                 
                 // DATA
-                [self uploadURLSession:fileNameCrypto fileNamePrint:fileName serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType assetLocalIdentifier:assetLocalIdentifier cryptated:cryptated onlyPlist:onlyPlist selector:selector];
+                [self uploadURLSession:fileNameCrypto fileNamePrint:fileName serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetLocalIdentifier:assetLocalIdentifier cryptated:cryptated onlyPlist:onlyPlist selector:selector];
                 
                 // PLIST
-                [self uploadURLSession:[fileNameCrypto stringByAppendingString:@".plist"] fileNamePrint:fileName serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType assetLocalIdentifier:assetLocalIdentifier cryptated:cryptated onlyPlist:onlyPlist selector:selector];
+                [self uploadURLSession:[fileNameCrypto stringByAppendingString:@".plist"] fileNamePrint:fileName serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetLocalIdentifier:assetLocalIdentifier cryptated:cryptated onlyPlist:onlyPlist selector:selector];
             }
         }
     }
@@ -1138,7 +1135,7 @@
                 
                 [CCCoreData addMetadata:metadata activeAccount:_activeAccount activeUrl:_activeUrl context:_context];
                 
-                [self uploadURLSession:fileName fileNamePrint:fileName serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType assetLocalIdentifier:assetLocalIdentifier cryptated:cryptated onlyPlist:onlyPlist selector:selector];
+                [self uploadURLSession:fileName fileNamePrint:fileName serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetLocalIdentifier:assetLocalIdentifier cryptated:cryptated onlyPlist:onlyPlist selector:selector];
             }];
             
             [alertController addAction:cancelAction];
@@ -1161,7 +1158,7 @@
 #endif
             [CCCoreData addMetadata:metadata activeAccount:_activeAccount activeUrl:_activeUrl context:_context];
             
-            [self uploadURLSession:fileName fileNamePrint:fileName serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetDate:assetDate assetMediaType:assetMediaType assetLocalIdentifier:assetLocalIdentifier cryptated:cryptated onlyPlist:onlyPlist selector:selector];
+            [self uploadURLSession:fileName fileNamePrint:fileName serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetLocalIdentifier:assetLocalIdentifier cryptated:cryptated onlyPlist:onlyPlist selector:selector];
         }
     }
 }
@@ -1179,9 +1176,9 @@
         
             send = YES;
             
-            [self uploadURLSession:metadata.fileNameData fileNamePrint:metadata.fileNamePrint serverUrl:serverUrl sessionID:metadata.sessionID session:metadata.session taskStatus:taskStatus assetDate:nil assetMediaType:PHAssetMediaTypeUnknown assetLocalIdentifier:nil cryptated:YES onlyPlist:NO selector:metadata.sessionSelector];
+            [self uploadURLSession:metadata.fileNameData fileNamePrint:metadata.fileNamePrint serverUrl:serverUrl sessionID:metadata.sessionID session:metadata.session taskStatus:taskStatus assetLocalIdentifier:nil cryptated:YES onlyPlist:NO selector:metadata.sessionSelector];
             
-            [self uploadURLSession:metadata.fileName fileNamePrint:metadata.fileNamePrint serverUrl:serverUrl sessionID:metadata.sessionID session:metadata.session taskStatus:taskStatus assetDate:nil assetMediaType:PHAssetMediaTypeUnknown assetLocalIdentifier:nil cryptated:YES onlyPlist:NO selector:metadata.sessionSelector];
+            [self uploadURLSession:metadata.fileName fileNamePrint:metadata.fileNamePrint serverUrl:serverUrl sessionID:metadata.sessionID session:metadata.session taskStatus:taskStatus assetLocalIdentifier:nil cryptated:YES onlyPlist:NO selector:metadata.sessionSelector];
         }
         
     } else {
@@ -1191,7 +1188,7 @@
             
             send = YES;
             
-            [self uploadURLSession:metadata.fileName fileNamePrint:metadata.fileNamePrint serverUrl:serverUrl sessionID:metadata.sessionID session:metadata.session taskStatus:taskStatus assetDate:nil assetMediaType:PHAssetMediaTypeUnknown assetLocalIdentifier:nil cryptated:NO onlyPlist:NO selector:metadata.sessionSelector];
+            [self uploadURLSession:metadata.fileName fileNamePrint:metadata.fileNamePrint serverUrl:serverUrl sessionID:metadata.sessionID session:metadata.session taskStatus:taskStatus assetLocalIdentifier:nil cryptated:NO onlyPlist:NO selector:metadata.sessionSelector];
         }
     }
     
@@ -1213,7 +1210,7 @@
     }
 }
 
-- (void)uploadURLSession:(NSString *)fileName fileNamePrint:(NSString *)fileNamePrint serverUrl:(NSString *)serverUrl sessionID:(NSString*)sessionID session:(NSString *)session taskStatus:(NSInteger)taskStatus assetDate:(NSDate *)assetDate assetMediaType:(PHAssetMediaType)assetMediaType assetLocalIdentifier:(NSString *)assetLocalIdentifier cryptated:(BOOL)cryptated onlyPlist:(BOOL)onlyPlist selector:(NSString *)selector
+- (void)uploadURLSession:(NSString *)fileName fileNamePrint:(NSString *)fileNamePrint serverUrl:(NSString *)serverUrl sessionID:(NSString*)sessionID session:(NSString *)session taskStatus:(NSInteger)taskStatus assetLocalIdentifier:(NSString *)assetLocalIdentifier cryptated:(BOOL)cryptated onlyPlist:(BOOL)onlyPlist selector:(NSString *)selector
 {
     NSURLSession *sessionUpload;
     NSURL *url;

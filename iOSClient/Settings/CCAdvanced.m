@@ -326,7 +326,7 @@
             [CCCoreData flushTableDirectoryAccount:app.activeAccount];
 
             [[NCManageDatabase sharedInstance] clearTable:[tableExternalSites class] account:app.activeAccount];
-            [[NCManageDatabase sharedInstance] clearTable:[tableGPS class] account:app.activeAccount];
+            [[NCManageDatabase sharedInstance] clearTable:[tableGPS class] account:nil];
             
             [CCCoreData flushTableLocalFileAccount:app.activeAccount];
             [CCCoreData flushTableMetadataAccount:app.activeAccount];

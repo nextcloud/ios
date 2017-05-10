@@ -1176,21 +1176,7 @@
         metadataNet.session = session;
         metadataNet.taskStatus = k_taskStatusResume;
         
-        if (![[NCManageDatabase sharedInstance] addAutomaticUpload:metadataNet account:app.activeAccount]) {
-            
-            [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionAutomaticUpload selector:metadataNet.selector note:@"File already present in Table automatic Upload" type:k_activityTypeInfo verbose:k_activityVerboseHigh account:app.activeAccount activeUrl:app.activeUrl];
-            
-            [self endLoadingAssets];
-
-            return;
-        }
-        
-        // Activity
-        NSString *media = @"";
-        if (assetMediaType == PHAssetMediaTypeImage) media = @"Image";
-        if (assetMediaType == PHAssetMediaTypeVideo) media = @"Video";
-        
-        [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionAutomaticUpload selector:metadataNet.selector note:[NSString stringWithFormat:@"Add Automatic Upload on Session: %@, Media Type: %@, Asset Data: %@", session, media, [NSDateFormatter localizedStringFromDate:assetDate dateStyle:NSDateFormatterMediumStyle timeStyle:NSDateFormatterMediumStyle]] type:k_activityTypeInfo verbose:k_activityVerboseHigh account:app.activeAccount activeUrl:app.activeUrl];
+        [self writeAssetToSandbox:metadataNet];
     }
     
     // end loading
@@ -1211,15 +1197,14 @@
     [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
 }
 
-- (void)saveFileName:(NSString *)fileName assetLocalIdentifier:(NSString *)assetLocalIdentifier selector:(NSString *)selector
+- (void)writeAssetToSandbox:(CCMetadataNet *)metadataNet
 {
-    PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[assetLocalIdentifier] options:nil];
+    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[metadataNet.assetLocalIdentifier] options:nil];
     
     if (!result.count) {
         
-        [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:NSLocalizedString(@"_read_file_error_", nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault account:app.activeAccount activeUrl:app.activeUrl];
-        
-        [[NCManageDatabase sharedInstance] deleteAutomaticUploadForAccount:app.activeAccount assetLocalIdentifier:assetLocalIdentifier];
+        [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionUpload selector:metadataNet.selector note:NSLocalizedString(@"_read_file_error_", nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault account:appDelegate.activeAccount activeUrl:appDelegate.activeUrl];
         
         return;
     }
@@ -1245,7 +1230,7 @@
                     
                     if (!error || [data length] > 0) {
                         
-                        [data writeToFile:[NSString stringWithFormat:@"%@/%@", app.directoryUser, fileName] options:NSDataWritingAtomic error:&error];
+                        [data writeToFile:[NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, metadataNet.fileName] options:NSDataWritingAtomic error:&error];
                         
                     } else {
                         
@@ -1260,14 +1245,11 @@
                 
                 if (error) {
                     
-                    [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:NSLocalizedString(@"_read_file_error_", nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault account:app.activeAccount activeUrl:app.activeUrl];
+                    [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionUpload selector:metadataNet.selector note:NSLocalizedString(@"_read_file_error_", nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault account:appDelegate.activeAccount activeUrl:appDelegate.activeUrl];
                     
-                    [[NCManageDatabase sharedInstance] deleteAutomaticUploadForAccount:app.activeAccount assetLocalIdentifier:assetLocalIdentifier];
                 } else {
                     
-                    // Update Camera Upload data
-                    if ([selector isEqualToString:selectorUploadAutomatic])
-                        [CCCoreData setCameraUploadDateAssetType:assetMediaType assetDate:assetDate activeAccount:app.activeAccount];
+                    [self addDatabaseAutomaticUpload:metadataNet assetDate:assetDate assetMediaType:assetMediaType];
                 }
             }];
         }
@@ -1283,22 +1265,45 @@
             
             [[PHImageManager defaultManager] requestImageDataForAsset:asset options:options resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
                 
-                [imageData writeToFile:[NSString stringWithFormat:@"%@/%@", app.directoryUser, fileName] options:NSDataWritingAtomic error:&error];
+                [imageData writeToFile:[NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, metadataNet.fileName] options:NSDataWritingAtomic error:&error];
                 
                 if (error) {
                     
-                    [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:NSLocalizedString(@"_read_file_error_", nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault account:app.activeAccount activeUrl:app.activeUrl];
+                    [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionUpload selector:metadataNet.selector note:NSLocalizedString(@"_read_file_error_", nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault account:app.activeAccount activeUrl:app.activeUrl];
                     
-                    [[NCManageDatabase sharedInstance] deleteAutomaticUploadForAccount:app.activeAccount assetLocalIdentifier:assetLocalIdentifier];
+                    [[NCManageDatabase sharedInstance] deleteAutomaticUploadForAccount:appDelegate.activeAccount assetLocalIdentifier:metadataNet.assetLocalIdentifier];
                 } else {
                     
-                    // Update Camera Upload data
-                    if ([selector isEqualToString:selectorUploadAutomatic])
-                        [CCCoreData setCameraUploadDateAssetType:assetMediaType assetDate:assetDate activeAccount:app.activeAccount];
+                    [self addDatabaseAutomaticUpload:metadataNet assetDate:assetDate assetMediaType:assetMediaType];
                 }
             }];
         }
     }
+}
+
+- (void)addDatabaseAutomaticUpload:(CCMetadataNet *)metadataNet assetDate:(NSDate *)assetDate assetMediaType:(PHAssetMediaType)assetMediaType
+{
+    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    NSString *note;
+    
+    if ([[NCManageDatabase sharedInstance] addAutomaticUpload:metadataNet account:appDelegate.activeAccount]) {
+        
+        note = [NSString stringWithFormat:@"Add Automatic Upload, Asset Data: %@", [NSDateFormatter localizedStringFromDate:assetDate dateStyle:NSDateFormatterMediumStyle timeStyle:NSDateFormatterMediumStyle]];
+        
+    } else {
+        
+        note = [NSString stringWithFormat:@"Add Automatic Upload [File already present in Table automatic Upload], Asset Data: %@", [NSDateFormatter localizedStringFromDate:assetDate dateStyle:NSDateFormatterMediumStyle timeStyle:NSDateFormatterMediumStyle]];
+    }
+    
+    [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionAutomaticUpload selector:metadataNet.selector note:note type:k_activityTypeInfo verbose:k_activityVerboseHigh account:app.activeAccount activeUrl:app.activeUrl];
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        
+        // Update Camera Upload data
+        if ([metadataNet.selector isEqualToString:selectorUploadAutomatic])
+            [CCCoreData setCameraUploadDateAssetType:assetMediaType assetDate:assetDate activeAccount:appDelegate.activeAccount];
+    });
+
 }
 
 @end
