@@ -498,10 +498,10 @@ class NCManageDatabase: NSObject {
         return ["\(serverUrl)\(fileName)" : share]
     }
     
-    func unShare(_ share: String, fileName: String, serverUrl: String, sharesLinkObj: [String:String], sharesUserAndGroupObj: [String:String], account: String) -> [Any] {
+    func unShare(_ share: String, fileName: String, serverUrl: String, sharesLink: [String:String], sharesUserAndGroup: [String:String], account: String) -> [Any] {
         
-        var sharesLink = sharesLinkObj
-        var sharesUserAndGroup = sharesUserAndGroupObj
+        var sharesLink = sharesLink
+        var sharesUserAndGroup = sharesUserAndGroup
         
         let realm = try! Realm()
         
