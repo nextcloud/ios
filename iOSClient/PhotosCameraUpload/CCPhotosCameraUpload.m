@@ -1126,7 +1126,15 @@
     // Create the folder for Photos & if request the subfolders
     if(![app createFolderSubFolderAutomaticUploadFolderPhotos:folderPhotos useSubFolder:useSubFolder assets:newItemsPHAssetToUpload selector:selectorUploadAutomaticAll]) {
             
-        [self endLoadingAssets];
+        // end loading
+        [_hud hideHud];
+        
+        // START
+        app.automaticCheckAssetInProgress = NO;
+        
+        // Enable idle timer
+        [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
+        
         return;
     }
     
@@ -1180,14 +1188,6 @@
     }
     
     // end loading
-    [self endLoadingAssets];
-    
-    // Update icon badge number
-    [app updateApplicationIconBadgeNumber];
-}
-
--(void)endLoadingAssets
-{
     [_hud hideHud];
     
     // START
@@ -1296,8 +1296,10 @@
         // Update Camera Upload data
         if ([metadataNet.selector isEqualToString:selectorUploadAutomatic])
             [CCCoreData setCameraUploadDateAssetType:assetMediaType assetDate:assetDate activeAccount:appDelegate.activeAccount];
+        
+        // Update icon badge number
+        [app updateApplicationIconBadgeNumber];
     });
-
 }
 
 @end
