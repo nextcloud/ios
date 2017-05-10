@@ -7,8 +7,6 @@
         <attribute name="cameraUpload" optional="YES" attributeType="Boolean" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="cameraUploadBackground" optional="YES" attributeType="Boolean" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="cameraUploadCreateSubfolder" optional="YES" attributeType="Boolean" usesScalarValueType="NO" syncable="YES"/>
-        <attribute name="cameraUploadCryptatedPhoto" optional="YES" attributeType="Boolean" usesScalarValueType="NO" syncable="YES"/>
-        <attribute name="cameraUploadCryptatedVideo" optional="YES" attributeType="Boolean" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="cameraUploadDatePhoto" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="cameraUploadDateVideo" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="cameraUploadFolderName" optional="YES" attributeType="String" syncable="YES"/>
@@ -96,7 +94,7 @@
         <attribute name="uuid" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
     <elements>
-        <element name="TableAccount" positionX="-6597" positionY="111" width="171" height="540"/>
+        <element name="TableAccount" positionX="-6597" positionY="111" width="171" height="510"/>
         <element name="TableDirectory" positionX="-6372" positionY="111" width="162" height="210"/>
         <element name="TableLocalFile" positionX="-6138" positionY="111" width="162" height="225"/>
         <element name="TableMetadata" positionX="-6138" positionY="402" width="162" height="510"/>

@@ -63,9 +63,6 @@
         record.cameraUploadWWAnVideo = [NSNumber numberWithBool:NO];
     }
     
-    record.cameraUploadCryptatedPhoto = [NSNumber numberWithBool:NO];
-    record.cameraUploadCryptatedVideo = [NSNumber numberWithBool:NO];
-
     record.optimization = [NSDate date];
     record.password = password;
     record.url = url;
@@ -274,24 +271,6 @@
     else return nil;
 }
 
-+ (BOOL)getCameraUploadCryptatedPhotoActiveAccount:(NSString *)activeAccount
-{
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@)", activeAccount];
-    TableAccount *record = [TableAccount MR_findFirstWithPredicate:predicate];
-    
-    if (record) return [record.cameraUploadCryptatedPhoto boolValue];
-    else return NO;
-}
-
-+ (BOOL)getCameraUploadCryptatedVideoActiveAccount:(NSString *)activeAccount
-{
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@)", activeAccount];
-    TableAccount *record = [TableAccount MR_findFirstWithPredicate:predicate];
-    
-    if (record) return [record.cameraUploadCryptatedVideo boolValue];
-    else return NO;
-}
-
 + (BOOL)getCameraUploadWWanPhotoActiveAccount:(NSString *)activeAccount
 {
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@)", activeAccount];
@@ -415,30 +394,6 @@
     if (assetMediaType == PHAssetMediaTypeVideo && [assetDate compare:[self getCameraUploadDateVideoActiveAccount:activeAccount]] ==  NSOrderedDescending && assetDate) {
         [self setCameraUploadDateVideo:assetDate];
     }
-}
-
-+ (void)setCameraUploadCryptatedPhoto:(BOOL)cryptated activeAccount:(NSString *)activeAccount
-{
-    [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
-
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@)", activeAccount];
-        TableAccount *record = [TableAccount MR_findFirstWithPredicate:predicate inContext:localContext];
-    
-        if (record)
-            record.cameraUploadCryptatedPhoto = [NSNumber numberWithBool:cryptated];
-    }];
-}
-
-+ (void)setCameraUploadCryptatedVideo:(BOOL)cryptated activeAccount:(NSString *)activeAccount
-{
-    [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
-        
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@)", activeAccount];
-        TableAccount *record = [TableAccount MR_findFirstWithPredicate:predicate inContext:localContext];
-    
-        if (record)
-            record.cameraUploadCryptatedVideo = [NSNumber numberWithBool:cryptated];
-    }];
 }
 
 + (void)setCameraUploadWWanPhoto:(BOOL)wWan activeAccount:(NSString *)activeAccount

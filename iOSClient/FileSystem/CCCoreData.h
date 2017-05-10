@@ -66,8 +66,6 @@
 + (BOOL)getCameraUploadVideoActiveAccount:(NSString *)activeAccount;
 + (NSDate *)getCameraUploadDatePhotoActiveAccount:(NSString *)activeAccount;
 + (NSDate *)getCameraUploadDateVideoActiveAccount:(NSString *)activeAccount;
-+ (BOOL)getCameraUploadCryptatedPhotoActiveAccount:(NSString *)activeAccount;
-+ (BOOL)getCameraUploadCryptatedVideoActiveAccount:(NSString *)activeAccount;
 + (BOOL)getCameraUploadWWanPhotoActiveAccount:(NSString *)activeAccount;
 + (BOOL)getCameraUploadWWanVideoActiveAccount:(NSString *)activeAccount;
 
@@ -80,8 +78,6 @@
 + (void)setCameraUploadDatePhoto:(NSDate *)date;
 + (void)setCameraUploadDateVideo:(NSDate *)date;
 + (void)setCameraUploadDateAssetType:(PHAssetMediaType)assetMediaType assetDate:(NSDate *)assetDate activeAccount:(NSString *)activeAccount;
-+ (void)setCameraUploadCryptatedPhoto:(BOOL)cryptated activeAccount:(NSString *)activeAccount;
-+ (void)setCameraUploadCryptatedVideo:(BOOL)cryptated activeAccount:(NSString *)activeAccount;
 + (void)setCameraUploadWWanPhoto:(BOOL)wWan activeAccount:(NSString *)activeAccount;
 + (void)setCameraUploadWWanVideo:(BOOL)wWan activeAccount:(NSString *)activeAccount;
 + (void)setCameraUploadFolderName:(NSString *)fileName activeAccount:(NSString *)activeAccount;
