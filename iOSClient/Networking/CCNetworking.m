@@ -767,14 +767,14 @@
     if (delegate == nil)
         delegate = self.delegate;
     
-    // Upload Automatic (All)
+    // *** Upload Automatic (All) ***
     
     if ([selector isEqualToString:selectorUploadAutomatic] || [selector isEqualToString:selectorUploadAutomaticAll]) {
         
         [self upload:fileName serverUrl:serverUrl cryptated:NO template:NO onlyPlist:NO fileNameTemplate:nil assetLocalIdentifier:assetLocalIdentifier session:session taskStatus:taskStatus selector:selector selectorPost:selectorPost errorCode:errorCode delegate:delegate];
     } else {
     
-    // Manual Upload
+    // *** Manual Upload ***
         
         PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[assetLocalIdentifier] options:nil];
         
