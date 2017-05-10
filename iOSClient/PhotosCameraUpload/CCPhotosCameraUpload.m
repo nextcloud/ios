@@ -1191,10 +1191,6 @@
         if (assetMediaType == PHAssetMediaTypeVideo) media = @"Video";
         
         [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionAutomaticUpload selector:metadataNet.selector note:[NSString stringWithFormat:@"Add Automatic Upload on Session: %@, Media Type: %@, Asset Data: %@", session, media, [NSDateFormatter localizedStringFromDate:assetDate dateStyle:NSDateFormatterMediumStyle timeStyle:NSDateFormatterMediumStyle]] type:k_activityTypeInfo verbose:k_activityVerboseHigh account:app.activeAccount activeUrl:app.activeUrl];
-        
-        // Upldate Camera Upload data  
-        if ([metadataNet.selector isEqualToString:selectorUploadAutomatic])
-            [CCCoreData setCameraUploadDateAssetType:assetMediaType assetDate:assetDate activeAccount:app.activeAccount];
     }
     
     // end loading
@@ -1213,6 +1209,96 @@
     
     // Enable idle timer
     [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
+}
+
+- (void)saveFileName:(NSString *)fileName assetLocalIdentifier:(NSString *)assetLocalIdentifier selector:(NSString *)selector
+{
+    PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[assetLocalIdentifier] options:nil];
+    
+    if (!result.count) {
+        
+        [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:NSLocalizedString(@"_read_file_error_", nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault account:app.activeAccount activeUrl:app.activeUrl];
+        
+        [[NCManageDatabase sharedInstance] deleteAutomaticUploadForAccount:app.activeAccount assetLocalIdentifier:assetLocalIdentifier];
+        
+        return;
+    }
+    
+    PHAsset *asset = result[0];
+    PHAssetMediaType assetMediaType = asset.mediaType;
+    NSDate *assetDate = asset.creationDate;
+    __block NSError *error = nil;
+    
+    // VIDEO
+    if (assetMediaType == PHAssetMediaTypeVideo) {
+        
+        @autoreleasepool {
+            
+            PHVideoRequestOptions *options = [PHVideoRequestOptions new];
+            options.version = PHVideoRequestOptionsVersionOriginal;
+            
+            [[PHImageManager defaultManager] requestAVAssetForVideo:asset options:options resultHandler:^(AVAsset *asset, AVAudioMix *audioMix, NSDictionary *info) {
+                
+                if ([asset isKindOfClass:[AVURLAsset class]]) {
+                    
+                    NSData *data = [[NSData alloc] initWithContentsOfURL:[(AVURLAsset *)asset URL] options:0 error:&error];
+                    
+                    if (!error || [data length] > 0) {
+                        
+                        [data writeToFile:[NSString stringWithFormat:@"%@/%@", app.directoryUser, fileName] options:NSDataWritingAtomic error:&error];
+                        
+                    } else {
+                        
+                        if (!error)
+                            error = [NSError errorWithDomain:@"it.twsweb.cryptocloud" code:kCFURLErrorFileDoesNotExist userInfo:nil];
+                    }
+                    
+                } else {
+                    
+                    error = [NSError errorWithDomain:@"it.twsweb.cryptocloud" code:kCFURLErrorFileDoesNotExist userInfo:nil];
+                }
+                
+                if (error) {
+                    
+                    [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:NSLocalizedString(@"_read_file_error_", nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault account:app.activeAccount activeUrl:app.activeUrl];
+                    
+                    [[NCManageDatabase sharedInstance] deleteAutomaticUploadForAccount:app.activeAccount assetLocalIdentifier:assetLocalIdentifier];
+                } else {
+                    
+                    // Update Camera Upload data
+                    if ([selector isEqualToString:selectorUploadAutomatic])
+                        [CCCoreData setCameraUploadDateAssetType:assetMediaType assetDate:assetDate activeAccount:app.activeAccount];
+                }
+            }];
+        }
+    }
+    
+    // IMAGE
+    if (assetMediaType == PHAssetMediaTypeImage) {
+        
+        @autoreleasepool {
+            
+            PHImageRequestOptions *options = [PHImageRequestOptions new];
+            options.synchronous = NO;
+            
+            [[PHImageManager defaultManager] requestImageDataForAsset:asset options:options resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
+                
+                [imageData writeToFile:[NSString stringWithFormat:@"%@/%@", app.directoryUser, fileName] options:NSDataWritingAtomic error:&error];
+                
+                if (error) {
+                    
+                    [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:NSLocalizedString(@"_read_file_error_", nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault account:app.activeAccount activeUrl:app.activeUrl];
+                    
+                    [[NCManageDatabase sharedInstance] deleteAutomaticUploadForAccount:app.activeAccount assetLocalIdentifier:assetLocalIdentifier];
+                } else {
+                    
+                    // Update Camera Upload data
+                    if ([selector isEqualToString:selectorUploadAutomatic])
+                        [CCCoreData setCameraUploadDateAssetType:assetMediaType assetDate:assetDate activeAccount:app.activeAccount];
+                }
+            }];
+        }
+    }
 }
 
 @end
