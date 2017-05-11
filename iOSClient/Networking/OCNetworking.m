@@ -27,32 +27,9 @@
 #import "CCGraphics.h"
 #import "CCCertificate.h"
 #import "NSString+Encode.h"
+#import "NCBridgeSwift.h"
 
 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-
-#ifndef EXTENSION
-    #ifdef CUSTOM_BUILD
-        #import "CustomSwift.h"
-    #else
-        #import "Nextcloud-Swift.h"
-    #endif
-#else
-    #ifdef EXTENSION_SHARE
-        #ifdef CUSTOM_BUILD
-            #import "CustomSwiftShare.h"
-        #else
-            #import "Share-Swift.h"
-        #endif
-    #endif
-
-    #ifdef EXTENSION_PICKER
-        #ifdef CUSTOM_BUILD
-            #import "CustomSwiftPick.h"
-        #else
-            #import "Picker-Swift.h"
-        #endif
-    #endif
-#endif
 
 @interface OCnetworking ()
 {
@@ -1439,16 +1416,16 @@
     // encode URL
     devicePublicKey = [CCUtility URLEncodeStringFromString:devicePublicKey];
     
-    [communication subscribingNextcloudServerPush:_activeUrl pushTokenHash:pushTokenHash devicePublicKey:devicePublicKey proxyServerPath:k_pushNotificationServer onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *publicKey, NSString *deviceIdentifier, NSString *signature, NSString *redirectedServer) {
+    [communication subscribingNextcloudServerPush:_activeUrl pushTokenHash:pushTokenHash devicePublicKey:devicePublicKey proxyServerPath: [NCBrandOptions sharedInstance].pushNotificationServer onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *publicKey, NSString *deviceIdentifier, NSString *signature, NSString *redirectedServer) {
         
         // encode URL
         deviceIdentifier = [CCUtility URLEncodeStringFromString:deviceIdentifier];
         signature = [CCUtility URLEncodeStringFromString:signature];
     
-        [communication subscribingPushProxy:k_pushNotificationServer pushToken:pushToken deviceIdentifier:deviceIdentifier deviceIdentifierSignature:signature userPublicKey:[CCUtility URLEncodeStringFromString:publicKey] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+        [communication subscribingPushProxy:[NCBrandOptions sharedInstance].pushNotificationServer pushToken:pushToken deviceIdentifier:deviceIdentifier deviceIdentifierSignature:signature userPublicKey:[CCUtility URLEncodeStringFromString:publicKey] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
             
             // Activity
-            [[NCManageDatabase sharedInstance] addActivityClient:k_pushNotificationServer fileID:@"" action:k_activityDebugActionPushProxy selector:@"" note:@"Service registered." type:k_activityTypeSuccess verbose:k_activityVerboseHigh account:_metadataNet.account activeUrl:_activeUrl];
+            [[NCManageDatabase sharedInstance] addActivityClient:[NCBrandOptions sharedInstance].pushNotificationServer fileID:@"" action:k_activityDebugActionPushProxy selector:@"" note:@"Service registered." type:k_activityTypeSuccess verbose:k_activityVerboseHigh account:_metadataNet.account activeUrl:_activeUrl];
             
             [self complete];
             
@@ -1472,7 +1449,7 @@
                 [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
 
             // Activity
-            [[NCManageDatabase sharedInstance] addActivityClient:k_pushNotificationServer fileID:@"" action:k_activityDebugActionPushProxy selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh account:_metadataNet.account activeUrl:_activeUrl];
+            [[NCManageDatabase sharedInstance] addActivityClient:[NCBrandOptions sharedInstance].pushNotificationServer fileID:@"" action:k_activityDebugActionPushProxy selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh account:_metadataNet.account activeUrl:_activeUrl];
             
             [self complete];
         }];

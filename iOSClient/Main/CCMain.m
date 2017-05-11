@@ -32,12 +32,7 @@
 #import <OCCommunicationLib/OCFrameworkConstants.h>
 #import <OCCommunicationLib/OCCapabilities.h>
 #import "CTAssetCheckmark.h"
-
-#ifdef CUSTOM_BUILD
-    #import "CustomSwift.h"
-#else
-    #import "Nextcloud-Swift.h"
-#endif
+#import "NCBridgeSwift.h"
 
 #define alertCreateFolder 1
 #define alertCreateFolderCrypto 2
@@ -1022,7 +1017,7 @@
 - (void)changePasswordAccount
 {
     // Brand
-    if (k_option_use_login_web) {
+    if ([NCBrandOptions sharedInstance].use_login_web) {
     
         _loginWeb = [CCLoginWeb new];
         _loginWeb.delegate = self;
@@ -1227,7 +1222,7 @@
     // Download Theming Background & Change Theming color
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
         
-        if (k_option_use_themingBackground == YES) {
+        if ([NCBrandOptions sharedInstance].use_themingBackground == YES) {
         
             UIImage *themingBackground = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:[capabilities.themingBackground stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]]];
             if (themingBackground)
@@ -3285,7 +3280,7 @@
         return;
     
     // Brand
-    if (k_option_disable_multiaccount)
+    if ([NCBrandOptions sharedInstance].disable_multiaccount)
         return;
     
     if ([app.netQueue operationCount] > 0 || [app.netQueueDownload operationCount] > 0 || [app.netQueueDownloadWWan operationCount] > 0 || [app.netQueueUpload operationCount] > 0 || [app.netQueueUploadWWan operationCount] > 0 || [[NCManageDatabase sharedInstance] countAutomaticUploadForAccount:app.activeAccount selector:nil] > 0) {
@@ -5431,7 +5426,7 @@
         viewController.type = BKPasscodeViewControllerCheckPasscodeType;
         viewController.inputViewTitlePassword = NO;
         
-        viewController.title = k_brand;
+        viewController.title = [NCBrandOptions sharedInstance].brand;
         viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
         viewController.navigationItem.leftBarButtonItem.tintColor = [NCBrandColor sharedInstance].cryptocloud;
 

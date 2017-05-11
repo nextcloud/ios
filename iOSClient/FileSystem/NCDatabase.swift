@@ -8,6 +8,41 @@
 
 import RealmSwift
 
+class tableAccount: Object {
+
+    dynamic var account = ""
+    dynamic var active : Bool = false
+    dynamic var address = ""
+    dynamic var cameraUpload : Bool = false
+    dynamic var cameraUploadBackground : Bool = false
+    dynamic var cameraUploadCreateSubfolder : Bool = false
+    dynamic var cameraUploadDatePhoto = Date()
+    dynamic var cameraUploadDateVideo = Date()
+    dynamic var cameraUploadFolderName = ""
+    dynamic var cameraUploadFolderPath = ""
+    dynamic var cameraUploadFull : Bool = false
+    dynamic var cameraUploadPhoto : Bool = false
+    dynamic var cameraUploadSaveAlbum : Bool = false
+    dynamic var cameraUploadVideo : Bool = false
+    dynamic var cameraUploadWWAnPhoto : Bool = false
+    dynamic var cameraUploadWWAnVideo : Bool = false
+    dynamic var displayName = ""
+    dynamic var email = ""
+    dynamic var enabled : Bool = false
+    dynamic var optimization = Date()
+    dynamic var password = ""
+    dynamic var phone = ""
+    dynamic var quota : Double = 0
+    dynamic var quotaFree : Double = 0
+    dynamic var quotaRelative : Double = 0
+    dynamic var quotaTotal : Double = 0
+    dynamic var quotaUsed : Double = 0
+    dynamic var twitter = ""
+    dynamic var url = ""
+    dynamic var user = ""
+    dynamic var webpage = ""
+}
+
 class tableActivity: Object {
     
     dynamic var account = ""

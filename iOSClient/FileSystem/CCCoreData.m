@@ -22,8 +22,8 @@
 //
 
 #import "CCCoreData.h"
-
 #import "CCNetworking.h"
+#import "NCBridgeSwift.h"
 
 @implementation CCCoreData
 
@@ -41,7 +41,7 @@
     record.active = [NSNumber numberWithBool:NO];
         
     // Brand
-    if (k_option_use_default_automatic_upload) {
+    if ([NCBrandOptions sharedInstance].use_default_automatic_upload) {
         
         record.cameraUpload = [NSNumber numberWithBool:YES];
         record.cameraUploadPhoto = [NSNumber numberWithBool:YES];
@@ -1818,7 +1818,7 @@
 + (void)moveCoreDataToGroup
 {
     NSString *applicationName = [[[NSBundle mainBundle] infoDictionary] valueForKey:(NSString *)kCFBundleNameKey];
-    NSURL *dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:k_capabilitiesGroups];
+    NSURL *dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:[NCBrandOptions sharedInstance].capabilitiesGroups];
     NSString *dirToPath = [[dirGroup URLByAppendingPathComponent:appDatabase] path];
 
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES);

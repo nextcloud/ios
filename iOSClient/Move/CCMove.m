@@ -22,23 +22,7 @@
 //
 
 #import "CCMove.h"
-
-#ifndef EXTENSION
-
-    #import "AppDelegate.h"
-
-    #ifdef CUSTOM_BUILD
-        #import "CustomSwift.h"
-    #else
-        #import "Nextcloud-Swift.h"
-    #endif
-#else
-    #ifdef CUSTOM_BUILD
-        #import "CustomSwiftShare.h"
-    #else
-        #import "Share-Swift.h"
-    #endif
-#endif
+#import "NCBridgeSwift.h"
 
 @interface CCMove ()
 {    

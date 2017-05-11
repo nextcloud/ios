@@ -66,3 +66,37 @@ class NCBrandImages: NSObject {
     public var themingBackground:       String = "themingBackground"
 }
 
+class NCBrandOptions: NSObject {
+    
+    static let sharedInstance: NCBrandOptions = {
+        let instance = NCBrandOptions()
+        return instance
+    }()
+    
+    public let brand:                           String = "Nextcloud"
+    public let mailMe:                          String = "ios@nextcloud.com"
+    public let textCopyrightNextcloudiOS:       String = "Nextcloud for iOS %@ © 2017 T.W.S. Inc."
+    public let textCopyrightNextcloudServer:    String = "Nextcloud Server %@"
+    public let loginBaseUrl:                    String = "https://cloud.twsweb.it"
+    public let loginBaseUrlMultiDomains:        [String] = ["domain.com", "domain.it"]
+    public let pushNotificationServer:          String = "https://push-notifications.nextcloud.com"
+    public let loginButtonLabelLink:            String = "https://nextcloud.com/providers"
+    public let webLoginAutenticationProtocol:   String = ""
+    
+    // Capabilities Group
+    public let capabilitiesGroups:              String = "group.it.twsweb.Crypto-Cloud"
+    
+    // Options
+    public let use_login_web:                   Bool = false
+    public let use_firebase:                    Bool = false
+    public let use_default_automatic_upload:    Bool = false
+    public let use_themingColor:                Bool = true
+    public let use_themingBackground:           Bool = true
+    public let use_multiDomains:                Bool = false
+    
+    public let disable_intro:                   Bool = false
+    public let disable_request_login_url:       Bool = false
+    public let disable_multiaccount:            Bool = false
+    public let disable_cryptocloudsystem:       Bool = false
+}
+

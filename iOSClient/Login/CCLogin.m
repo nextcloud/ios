@@ -25,12 +25,7 @@
 #import "AppDelegate.h"
 #import "CCUtility.h"
 #import "CCCoreData.h"
-
-#ifdef CUSTOM_BUILD
-#import "CustomSwift.h"
-#else
-#import "Nextcloud-Swift.h"
-#endif
+#import "NCBridgeSwift.h"
 
 @interface CCLogin ()
 {
@@ -87,9 +82,9 @@
     self.loadingBaseUrl.hidden = YES;
     
     // Brand
-    if (k_option_disable_request_login_url) {
+    if ([NCBrandOptions sharedInstance].disable_request_login_url) {
         
-        _baseUrl.text = k_loginBaseUrl;
+        _baseUrl.text = [NCBrandOptions sharedInstance].loginBaseUrl;
         _imageBaseUrl.hidden = YES;
         _baseUrl.hidden = YES;
     }
@@ -164,12 +159,12 @@
 - (void)testUrl
 {
     // Use MultiDomain check if this is correct
-    if (k_option_use_multiDomains == YES) {
+    if ([NCBrandOptions sharedInstance].use_multiDomains == YES) {
         
         BOOL foundDomain = NO;
         NSString *message = @"";
         
-        for (NSString *domain in k_loginBaseUrlMultiDomains) {
+        for (NSString *domain in [NCBrandOptions sharedInstance].loginBaseUrlMultiDomains) {
             
             message = [NSString stringWithFormat:@"%@ %@", message, domain.lowercaseString];
             
@@ -359,7 +354,7 @@
 
 - (void)tabBottomLabel
 {
-    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:k_loginButtonLabelLink]];
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NCBrandOptions sharedInstance].loginButtonLabelLink]];
 }
 
 - (IBAction)handlebaseUrlchange:(id)sender

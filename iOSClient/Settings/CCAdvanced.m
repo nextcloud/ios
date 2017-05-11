@@ -24,12 +24,7 @@
 #import "CCAdvanced.h"
 #import "CCUtility.h"
 #import "AppDelegate.h"
-
-#ifdef CUSTOM_BUILD
-    #import "CustomSwift.h"
-#else
-    #import "Nextcloud-Swift.h"
-#endif
+#import "NCBridgeSwift.h"
 
 @interface CCAdvanced ()
 
@@ -253,7 +248,7 @@
         fileAttachment = [fileAttachment stringByAppendingString:[NSString stringWithFormat:@"| %@ | %@ | %@ | %@ |\n", date, type, actionFile, note]];
     }
     
-    messageBody = [NSString stringWithFormat:@"\n\n\n%@ Version %@ (%@)", k_brand,[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"], [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
+    messageBody = [NSString stringWithFormat:@"\n\n\n%@ Version %@ (%@)", [NCBrandOptions sharedInstance].brand, [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"], [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
     
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentsDirectory = [paths objectAtIndex:0];
@@ -262,7 +257,7 @@
     // fix CCAdvanced.m line 276 2.17.2 (00005)
     if ([fileAttachment writeToFile:[documentsDirectory stringByAppendingPathComponent:@"activity.txt"] atomically:YES encoding:NSUTF8StringEncoding error:&error] && [MFMailComposeViewController canSendMail]) {
         
-        toRecipents = [NSArray arrayWithObject:k_mailMe];
+        toRecipents = [NSArray arrayWithObject:[NCBrandOptions sharedInstance].mailMe];
         
         MFMailComposeViewController *mc = [[MFMailComposeViewController alloc] init];
         mc.mailComposeDelegate = self;
@@ -456,7 +451,7 @@
 - (void)emptyGroupApplicationSupport
 {
     NSString *file;
-    NSURL *dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:k_capabilitiesGroups];
+    NSURL *dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:[NCBrandOptions sharedInstance].capabilitiesGroups];
     NSString *dirIniziale = [[dirGroup URLByAppendingPathComponent:appApplicationSupport] path];
     
     NSDirectoryEnumerator *enumerator = [[NSFileManager defaultManager] enumeratorAtPath:dirIniziale];

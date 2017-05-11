@@ -23,7 +23,6 @@
 
 #import <UIKit/UIKit.h>
 #import "CCStandardImages.h"
-#import "NCBrandConstant.h"
 
 extern NSString *const appApplicationSupport;
 extern NSString *const appDatabase;

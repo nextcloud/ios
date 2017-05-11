@@ -38,12 +38,7 @@
 #import <Fabric/Fabric.h>
 #import <Crashlytics/Crashlytics.h>
 #import "JDStatusBarNotification.h"
-
-#ifdef CUSTOM_BUILD
-    #import "CustomSwift.h"
-#else
-    #import "Nextcloud-Swift.h"
-#endif
+#import "NCBridgeSwift.h"
 
 @interface AppDelegate () <UNUserNotificationCenterDelegate, FIRMessagingDelegate>
 {
@@ -66,7 +61,7 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     // Brand
-    if (k_option_use_firebase) {
+    if ([NCBrandOptions sharedInstance].use_firebase) {
     
         /*
          In order for this to work, proper GoogleService-Info.plist must be included
@@ -102,7 +97,7 @@
     }
 
     NSString *dir;
-    NSURL *dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:k_capabilitiesGroups];
+    NSURL *dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:[NCBrandOptions sharedInstance].capabilitiesGroups];
     
     NSLog(@"[LOG] Start program group -----------------");
     NSLog(@"%@", dirGroup);    
@@ -990,7 +985,7 @@
     
         tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesForAccount:self.activeAccount];
     
-        if (k_option_use_themingColor && capabilities.themingColor.length > 0) {
+        if ([NCBrandOptions sharedInstance].use_themingColor && capabilities.themingColor.length > 0) {
         
             [NCBrandColor sharedInstance].brand = [CCGraphics colorFromHexString:capabilities.themingColor];
             
@@ -1103,7 +1098,7 @@
     CCBKPasscode *viewController = [[CCBKPasscode alloc] initWithNibName:nil bundle:nil];
     viewController.type = BKPasscodeViewControllerCheckPasscodeType;
     viewController.delegate = self;
-    viewController.title = k_brand;
+    viewController.title = [NCBrandOptions sharedInstance].brand;
     viewController.fromType = CCBKPasscodeFromLockScreen;
     viewController.inputViewTitlePassword = YES;
     

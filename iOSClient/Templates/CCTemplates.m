@@ -22,12 +22,7 @@
 //
 
 #import "CCTemplates.h"
-
-#ifdef CUSTOM_BUILD
-#import "CustomSwift.h"
-#else
-#import "Nextcloud-Swift.h"
-#endif
+#import "NCBridgeSwift.h"
 
 @implementation CCTemplates
 

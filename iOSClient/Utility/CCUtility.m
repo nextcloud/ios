@@ -22,8 +22,8 @@
 //
 
 #import "CCUtility.h"
-
 #import "CCGraphics.h"
+#import "NCBridgeSwift.h"
 
 #import <netinet/in.h>
 #import <openssl/x509.h>
@@ -546,7 +546,7 @@
 // Return path of User Crypto Cloud / <user dir>
 + (NSString *)getDirectoryActiveUser:(NSString *)activeUser activeUrl:(NSString *)activeUrl
 {
-    NSURL *dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:k_capabilitiesGroups];
+    NSURL *dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:[NCBrandOptions sharedInstance].capabilitiesGroups];
     NSString *user = activeUser;
     NSString *baseUrl = [activeUrl lowercaseString];
     NSString *dirUserBaseUrl = nil;
@@ -611,7 +611,7 @@
 // Return the path of directory Cetificates
 + (NSString *)getDirectoryCerificates
 {
-    NSURL *dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:k_capabilitiesGroups];
+    NSURL *dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:[NCBrandOptions sharedInstance].capabilitiesGroups];
     
     NSString *dir = [[dirGroup URLByAppendingPathComponent:appCertificates] path];
     if (![[NSFileManager defaultManager] fileExistsAtPath:dir])
@@ -744,8 +744,8 @@
     else
         translate = NSLocalizedString(localize, nil);
     
-    translate = [translate stringByReplacingOccurrencesOfString:@"_brand_" withString:k_brand];
-    translate = [translate stringByReplacingOccurrencesOfString:@"_mail_me_" withString:k_mailMe];
+    translate = [translate stringByReplacingOccurrencesOfString:@"_brand_" withString:[NCBrandOptions sharedInstance].brand];
+    translate = [translate stringByReplacingOccurrencesOfString:@"_mail_me_" withString:[NCBrandOptions sharedInstance].mailMe];
     
     return translate;
 }

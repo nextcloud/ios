@@ -24,12 +24,7 @@
 #import "CCActivity.h"
 #import "AppDelegate.h"
 #import "CCSection.h"
-
-#ifdef CUSTOM_BUILD
-    #import "CustomSwift.h"
-#else
-    #import "Nextcloud-Swift.h"
-#endif
+#import "NCBridgeSwift.h"
 
 #define fontSizeData    [UIFont boldSystemFontOfSize:15]
 #define fontSizeAction  [UIFont systemFontOfSize:14]

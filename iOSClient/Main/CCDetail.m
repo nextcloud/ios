@@ -24,12 +24,8 @@
 #import "CCDetail.h"
 #import "AppDelegate.h"
 #import "CCMain.h"
+#import "NCBridgeSwift.h"
 
-#ifdef CUSTOM_BUILD
-#import "CustomSwift.h"
-#else
-#import "Nextcloud-Swift.h"
-#endif
 
 #define TOOLBAR_HEIGHT 49.0f
 
@@ -293,7 +289,7 @@
     
     LMMediaItem *item = [[LMMediaItem alloc] initWithInfo:@{LMMediaItemInfoURLKey:[NSURL fileURLWithPath:fileName], LMMediaItemInfoContentTypeKey:@(LMMediaItemContentTypeVideo)}];
     item.title = self.metadataDetail.fileNamePrint;
-    item.artist = k_brand;
+    item.artist = [NCBrandOptions sharedInstance].brand;
     
     [app.player.mediaPlayer removeAllMediaInQueue];
     [app.player.mediaPlayer addMedia:item];

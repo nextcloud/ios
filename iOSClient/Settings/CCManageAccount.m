@@ -24,12 +24,7 @@
 #import "CCManageAccount.h"
 #import "AppDelegate.h"
 #import "CCLogin.h"
-
-#ifdef CUSTOM_BUILD
-#import "CustomSwift.h"
-#else
-#import "Nextcloud-Swift.h"
-#endif
+#import "NCBridgeSwift.h"
 
 #define actionSheetCancellaAccount 1
 
@@ -124,7 +119,7 @@
     [section addFormRow:row];
 
     // Brand
-    if (k_option_disable_multiaccount == NO) {
+    if ([NCBrandOptions sharedInstance].disable_multiaccount == NO) {
     
         // New Account nextcloud
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"addAccountNextcloud" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_add_nextcloud_", nil)];
@@ -207,7 +202,7 @@
     [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:k_taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
     
     // Brand
-    if (k_option_use_login_web) {
+    if ([NCBrandOptions sharedInstance].use_login_web) {
     
         _loginWeb = [CCLoginWeb new];
         _loginWeb.delegate = self;
@@ -228,7 +223,7 @@
 - (void)addAccountFoced
 {
     // Brand
-    if (k_option_use_login_web) {
+    if ([NCBrandOptions sharedInstance].use_login_web) {
     
         _loginWeb = [CCLoginWeb new];
         _loginWeb.delegate = self;
@@ -262,7 +257,7 @@
     [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:k_taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
     
     // Brand
-    if (k_option_use_login_web) {
+    if ([NCBrandOptions sharedInstance].use_login_web) {
     
         _loginWeb = [CCLoginWeb new];
         _loginWeb.delegate = self;

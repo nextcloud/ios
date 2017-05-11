@@ -17,7 +17,7 @@ class NCManageDatabase: NSObject {
     
     override init() {
         
-        let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: k_capabilitiesGroups)
+        let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.sharedInstance.capabilitiesGroups)
         var config = Realm.Configuration()
         
         config.fileURL = dirGroup?.appendingPathComponent("\(appDatabaseNextcloud)/\(k_databaseDefault)")
@@ -62,6 +62,30 @@ class NCManageDatabase: NSObject {
             } catch {
                 // handle error
             }
+        }
+    }
+    
+    //MARK: -
+    //MARK: Table Account
+    
+    func addAccount(_ account: String, url: String, user: String, password: String) {
+
+        let realm = try! Realm()
+        
+        try! realm.write {
+            
+            let addAccount = tableAccount()
+            
+            addAccount.account = account
+            
+            // Brand
+            /*
+            if (k_option_use_default_automatic_upload) {
+
+            } else {
+                
+            }
+            */
         }
     }
     

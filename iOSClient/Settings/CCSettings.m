@@ -29,12 +29,7 @@
 #import "CCAdvanced.h"
 #import "CCManageCryptoCloud.h"
 #import "CCManageAccount.h"
-
-#ifdef CUSTOM_BUILD
-#import "CustomSwift.h"
-#else
-#import "Nextcloud-Swift.h"
-#endif
+#import "NCBridgeSwift.h"
 
 #define alertViewEsci 1
 #define alertViewAzzeraCache 2
@@ -115,7 +110,7 @@
     // Section CRYPTO CLOUD SYSTEM ------------------------------------------
     
     // Brand
-    if (k_option_disable_cryptocloudsystem == NO) {
+    if ([NCBrandOptions sharedInstance].disable_cryptocloudsystem == NO) {
     
         section = [XLFormSectionDescriptor formSection];
         [form addFormSection:section];
@@ -444,8 +439,8 @@
             
             NSString *versionApp = [NSString stringWithFormat:@"%@.%@", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"], [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
             
-            NSString *versionNextcloud = [NSString stringWithFormat:k_textCopyrightNextcloudServer, versionServer];
-            NSString *versionNextcloudiOS = [NSString stringWithFormat:k_textCopyrightNextcloudiOS, versionApp];
+            NSString *versionNextcloud = [NSString stringWithFormat:[NCBrandOptions sharedInstance].textCopyrightNextcloudServer, versionServer];
+            NSString *versionNextcloudiOS = [NSString stringWithFormat:[NCBrandOptions sharedInstance].textCopyrightNextcloudiOS, versionApp];
             
             sectionName = [NSString stringWithFormat:@"%@\n%@", versionNextcloudiOS, versionNextcloud];
         }
@@ -493,8 +488,8 @@
     // Email Recipents
     NSArray *toRecipents;
     
-    messageBody = [NSString stringWithFormat:@"\n\n\n%@ Version %@ (%@)", k_brand,[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"], [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
-    toRecipents = [NSArray arrayWithObject:k_mailMe];
+    messageBody = [NSString stringWithFormat:@"\n\n\n%@ Version %@ (%@)", [NCBrandOptions sharedInstance].brand, [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"], [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
+    toRecipents = [NSArray arrayWithObject:[NCBrandOptions sharedInstance].mailMe];
     
     MFMailComposeViewController *mc = [[MFMailComposeViewController alloc] init];
     mc.mailComposeDelegate = self;

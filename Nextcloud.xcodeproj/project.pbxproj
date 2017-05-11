@@ -738,6 +738,7 @@
 		08EA97451E6554FC004C83FA /* FirebaseCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseCore.framework; sourceTree = "<group>"; };
 		08EA97461E6554FC004C83FA /* FirebaseInstanceID.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseInstanceID.framework; sourceTree = "<group>"; };
 		08EA97471E6554FC004C83FA /* GoogleToolboxForMac.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleToolboxForMac.framework; sourceTree = "<group>"; };
+		F70022201EC46E660080073F /* NCBridgeSwift.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCBridgeSwift.h; sourceTree = "<group>"; };
 		F70211F41BAC56E9003FC03E /* CCCellMain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCCellMain.h; sourceTree = "<group>"; };
 		F70211F51BAC56E9003FC03E /* CCCellMain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCCellMain.m; sourceTree = "<group>"; };
 		F70211F61BAC56E9003FC03E /* CCCellMain.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CCCellMain.xib; sourceTree = "<group>"; };
@@ -1437,7 +1438,6 @@
 		F7C0F46E1C8880540059EC54 /* ShareViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = ShareViewController.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		F7C0F46F1C8880540059EC54 /* ShareViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = ShareViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		F7C1CDCE1E6DFAD1005D92BE /* CCStandardImages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCStandardImages.h; sourceTree = "<group>"; };
-		F7C1CDDA1E6DFC6F005D92BE /* NCBrandConstant.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCBrandConstant.h; sourceTree = "<group>"; };
 		F7C5259F1E3B48B700FFE02C /* CCNotification.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CCNotification.swift; path = Notification/CCNotification.swift; sourceTree = "<group>"; };
 		F7C525A11E3B6DA800FFE02C /* CCNotification.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = CCNotification.storyboard; path = Notification/CCNotification.storyboard; sourceTree = "<group>"; };
 		F7C742C01E7BD01F00D9C973 /* iOSClient.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = iOSClient.entitlements; sourceTree = "<group>"; };
@@ -3014,7 +3014,6 @@
 			isa = PBXGroup;
 			children = (
 				F7C742D31E7BD36600D9C973 /* Supporting Files */,
-				F7C1CDDA1E6DFC6F005D92BE /* NCBrandConstant.h */,
 				F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */,
 			);
 			path = Brand;
@@ -3269,6 +3268,7 @@
 				F7C8C1901B482CEA0048180E /* CCGlobal.h */,
 				F7C8C1911B482CEA0048180E /* CCGlobal.m */,
 				F7C1CDCE1E6DFAD1005D92BE /* CCStandardImages.h */,
+				F70022201EC46E660080073F /* NCBridgeSwift.h */,
 				F78088E51DD3A1DB005C5A7C /* cryptocloud.xcdatamodeld */,
 				F7F67BB81A24D27800EE80DA /* Images.xcassets */,
 				F70211F31BAC56E9003FC03E /* Main */,

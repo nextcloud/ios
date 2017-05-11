@@ -22,30 +22,7 @@
 //
 
 #import "CCExifGeo.h"
-
-#ifndef EXTENSION
-    #ifdef CUSTOM_BUILD
-        #import "CustomSwift.h"
-    #else
-        #import "Nextcloud-Swift.h"
-    #endif
-#else
-    #ifdef EXTENSION_SHARE
-        #ifdef CUSTOM_BUILD
-            #import "CustomSwiftShare.h"
-        #else
-            #import "Share-Swift.h"
-        #endif
-    #endif
-
-    #ifdef EXTENSION_PICKER
-        #ifdef CUSTOM_BUILD
-            #import "CustomSwiftPick.h"
-        #else
-            #import "Picker-Swift.h"
-        #endif
-    #endif
-#endif
+#import "NCBridgeSwift.h"
 
 @implementation CCExifGeo
 

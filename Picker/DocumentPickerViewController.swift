@@ -130,7 +130,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         
         // Theming
         let tableCapabilities = NCManageDatabase.sharedInstance.getCapabilitesForAccount(activeAccount!)
-        if (tableCapabilities != nil && CCGraphics.isOptionUseThemingColor() == true) {
+        if (tableCapabilities != nil && NCBrandOptions.sharedInstance.use_themingColor == true) {
             if ((tableCapabilities?.themingColor.characters.count)! > 0) {
                 NCBrandColor.sharedInstance.brand = CCGraphics.color(fromHexString: tableCapabilities?.themingColor)
             }
@@ -197,7 +197,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         }
         
         if CCUtility.getOnlyLockDir() == false && parameterPasscodeCorrect == false {
-            openBKPasscode(k_brand)
+            openBKPasscode(NCBrandOptions.sharedInstance.brand)
         }
     }
     
@@ -584,7 +584,7 @@ extension DocumentPickerViewController {
     func appGroupContainerURL() -> URL? {
         
         guard let groupURL = FileManager.default
-            .containerURL(forSecurityApplicationGroupIdentifier: k_capabilitiesGroups) else {
+            .containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.sharedInstance.capabilitiesGroups) else {
                 return nil
         }
         
@@ -883,7 +883,7 @@ class providerSessionDB {
     
     private init() {
     
-        let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: k_capabilitiesGroups)
+        let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.sharedInstance.capabilitiesGroups)
         let pathDB = dirGroup?.appendingPathComponent(appDatabase).appendingPathComponent("cryptocloud")
         
         MagicalRecord.setupCoreDataStackWithAutoMigratingSqliteStore(at: pathDB!)

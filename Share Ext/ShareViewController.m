@@ -22,12 +22,7 @@
 //
 
 #import "ShareViewController.h"
-
-#ifdef CUSTOM_BUILD
-    #import "CustomSwiftShare.h"
-#else
-    #import "Share-Swift.h"
-#endif
+#import "NCBridgeSwift.h"
 
 @import MobileCoreServices;
 
@@ -55,7 +50,7 @@
 
 -(void)viewDidLoad
 {
-    dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:k_capabilitiesGroups];
+    dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:[NCBrandOptions sharedInstance].capabilitiesGroups];
     
     [MagicalRecord setupCoreDataStackWithAutoMigratingSqliteStoreNamed:(id)[dirGroup URLByAppendingPathComponent:[appDatabase stringByAppendingPathComponent:@"cryptocloud"]]];
     [MagicalRecord setLoggingLevel:MagicalRecordLoggingLevelOff];
@@ -174,7 +169,7 @@
 
     // Theming
     tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesForAccount:self.activeAccount];
-    if (k_option_use_themingColor && capabilities.themingColor.length > 0)
+    if ([NCBrandOptions sharedInstance].use_themingColor && capabilities.themingColor.length > 0)
         [NCBrandColor sharedInstance].brand = [CCGraphics colorFromHexString:capabilities.themingColor];
 
     self.navigationController.navigationBar.barTintColor = [NCBrandColor sharedInstance].brand;
@@ -207,7 +202,7 @@
     // Title
     [self.navigationController.navigationBar setTitleTextAttributes: @{NSForegroundColorAttributeName:self.navigationController.navigationBar.tintColor}];
     
-    self.navigationItem.title = k_brand;
+    self.navigationItem.title = [NCBrandOptions sharedInstance].brand;
     self.navigationItem.leftBarButtonItem = leftButtonCancel;
     self.navigationItem.rightBarButtonItems = [[NSArray alloc] initWithObjects:rightButtonUpload, rightButtonEncrypt, nil];
     self.navigationItem.hidesBackButton = YES;
@@ -386,7 +381,7 @@
     BKTouchIDManager *touchIDManager = [[BKTouchIDManager alloc] initWithKeychainServiceName:k_serviceShareKeyChain];
     touchIDManager.promptText = NSLocalizedString(@"_scan_fingerprint_", nil);
     viewController.touchIDManager = touchIDManager;
-    viewController.title = k_brand;
+    viewController.title = [NCBrandOptions sharedInstance].brand;
     viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
     viewController.navigationItem.leftBarButtonItem.tintColor = [NCBrandColor sharedInstance].cryptocloud;
     

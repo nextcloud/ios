@@ -28,30 +28,7 @@
 #import "TableAccount+CoreDataClass.h"
 #import "NSDate+ISO8601.h"
 #import "NSString+Encode.h"
-
-#ifndef EXTENSION
-    #ifdef CUSTOM_BUILD
-        #import "CustomSwift.h"
-    #else
-        #import "Nextcloud-Swift.h"
-    #endif
-#else
-    #ifdef EXTENSION_SHARE
-        #ifdef CUSTOM_BUILD
-            #import "CustomSwiftShare.h"
-        #else
-            #import "Share-Swift.h"
-        #endif
-    #endif
-
-    #ifdef EXTENSION_PICKER
-        #ifdef CUSTOM_BUILD
-            #import "CustomSwiftPick.h"
-        #else
-            #import "Picker-Swift.h"
-        #endif
-    #endif
-#endif
+#import "NCBridgeSwift.h"
 
 @interface CCNetworking ()
 {
@@ -1472,9 +1449,9 @@
             if(result.count){
                 asset = result[0];
                 
-                [asset saveToAlbum:k_brand completionBlock:^(BOOL success) {
-                    if (success) NSLog(@"[LOG] Insert file %@ in %@", metadata.fileNamePrint, k_brand);
-                    else NSLog(@"[LOG] File %@ do not insert in %@", metadata.fileNamePrint, k_brand);
+                [asset saveToAlbum:[NCBrandOptions sharedInstance].brand completionBlock:^(BOOL success) {
+                    if (success) NSLog(@"[LOG] Insert file %@ in %@", metadata.fileNamePrint, [NCBrandOptions sharedInstance].brand);
+                    else NSLog(@"[LOG] File %@ do not insert in %@", metadata.fileNamePrint, [NCBrandOptions sharedInstance].brand);
                 }];
             }
         }
