@@ -22,40 +22,7 @@
 //
 
 
-#define image_file                              @"file"
-#define image_file_audio                        @"file_audio"
-#define image_file_compress                     @"file_compress"
-#define image_file_pdf                          @"file_pdf"
-#define image_file_photo                        @"file_photo"
-#define image_filePreviewDownload               @"filePreviewDownload"
-#define image_filePreviewDownloadCrypto         @"filePreviewDownloadCrypto"
-#define image_filePreviewError                  @"filePreviewError"
-#define image_file_code                         @"file_code"
-
-#define image_home                              @"home"
-
-#define image_localStorageNoRecord              @"localStorageNoRecord"
-
-#define image_lock                              @"lock"
-
-#define image_MenuLogoUser                      @"menuLogoUser"
-#define image_MenuDirectoryOnTop                @"menuDirectoryOnTop"
-#define image_MenuGroupByAlphabetic             @"MenuGroupByAlphabetic"
-#define image_MenuGroupByDate                   @"MenuGroupByDate"
-#define image_MenuGroupByTypeFile               @"MenuGroupByTypeFile"
-#define image_MenuOrdeyByDate                   @"MenuOrdeyByDate"
-#define image_MenuOrderByFileName               @"MenuOrderByFileName"
-#define image_MenuOrdinamentoDiscendente        @"MenuOrdinamentoDiscendente"
-#define image_MenuOrdinamentoAscendente         @"MenuOrdinamentoAscendente"
-#define image_MenuExternalSites                 @"menuExternalSites"
-#define image_MenuTemplate                      @"menuTemplate"
-#define image_MenuUploadFile                    @"menuUploadFile"
-#define image_MenuUploadFileCrypto              @"menuUploadFileCrypto"
-#define image_MenuUploadPhoto                   @"menuUploadPhoto"
-#define image_MenuUploadPhotoCrypto             @"menuUploadPhotoCrypto"
 #define image_MenuUploadPlainMode               @"menuUploadPlainMode"
-#define image_moveSelectedFiles                 @"moveSelectedFiles"
-#define image_navigationControllerMenu          @"navigationControllerMenu"
 
 #define image_navBarOffline                     @"navBarOffline"
 #define image_navBarLocal                       @"navBarLocal"
@@ -128,18 +95,5 @@
 #define image_tabBarSettings                    @"tabBarSettings"
 #define image_tabBarMore                        @"tabBarMore"
 
-#define image_thumbs                            @"thumbs"
 
-#define image_transfersNoRecord                 @"transfersNoRecord"
-
-#define image_user                              @"loginUser"
-#define image_uploadchiaro                      @"uploadchiaro"
-#define image_uploadcryptato                    @"uploadcryptato"
-#define image_uploaddisable                     @"uploaddisable"
-#define image_utorrent                          @"utorrent"
-#define image_utorrentcrypto                    @"utorrentcrypto"
-
-#define image_WiFiSmall                         @"WiFiSmall"
-
-#define image_file_xls                          @"file_xls"
 

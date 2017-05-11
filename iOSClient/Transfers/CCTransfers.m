@@ -115,7 +115,7 @@
 
 - (UIImage *)imageForEmptyDataSet:(UIScrollView *)scrollView
 {
-    return [UIImage imageNamed:image_transfersNoRecord];
+    return [UIImage imageNamed:@"transfersNoRecord"];
 }
 
 - (NSAttributedString *)titleForEmptyDataSet:(UIScrollView *)scrollView
@@ -442,7 +442,7 @@
         
         // Add the symbol WiFi and Num record
         NSTextAttachment *attachment = [[NSTextAttachment alloc] init];
-        attachment.image = [UIImage imageNamed:image_WiFiSmall];
+        attachment.image = [UIImage imageNamed:@"WiFiSmall"];
         NSAttributedString *attachmentString = [NSAttributedString attributedStringWithAttachment:attachment];
         NSMutableAttributedString *stringFooter= [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:NSLocalizedString(@"_tite_footer_download_wwan_", nil), app.queueNumDownloadWWan, element_s]];
         [stringFooter insertAttributedString:attachmentString atIndex:0];
@@ -476,7 +476,7 @@
         
         // Add the symbol WiFi and Num record
         NSTextAttachment *attachment = [[NSTextAttachment alloc] init];
-        attachment.image = [UIImage imageNamed:image_WiFiSmall];
+        attachment.image = [UIImage imageNamed:@"WiFiSmall"];
         NSAttributedString *attachmentString = [NSAttributedString attributedStringWithAttachment:attachment];
         NSMutableAttributedString *stringFooter= [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:NSLocalizedString(@"_tite_footer_upload_wwan_", nil), app.queueNumUploadWWan,element_s]];
         [stringFooter insertAttributedString:attachmentString atIndex:0];
@@ -604,7 +604,7 @@
     // File Cyptated
     if (metadata.cryptated && metadata.directory == NO && [metadata.type isEqualToString: k_metadataType_template] == NO) {
         
-        cell.statusImageView.image = [UIImage imageNamed:image_lock];
+        cell.statusImageView.image = [UIImage imageNamed:@"lock"];
     }
     
     // ----------------------------------------------------------------------------------------------------------
@@ -692,7 +692,7 @@
         
         // se non c'è una preview in bianconero metti l'immagine di default
         if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]] == NO)
-            cell.fileImageView.image = [UIImage imageNamed:image_uploaddisable];
+            cell.fileImageView.image = [UIImage imageNamed:@"uploaddisable"];
         
         cell.labelTitle.enabled = NO;
         cell.labelInfoFile.text = [NSString stringWithFormat:@"%@", lunghezzaFile];

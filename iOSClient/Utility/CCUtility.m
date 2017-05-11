@@ -859,12 +859,12 @@
         // Type compress
         if (UTTypeConformsTo(fileUTI, kUTTypeZipArchive) && [(__bridge NSString *)fileUTI containsString:@"org.openxmlformats"] == NO && [(__bridge NSString *)fileUTI containsString:@"oasis"] == NO) {
             metadata.typeFile = k_metadataTypeFile_compress;
-            metadata.iconName = image_file_compress;
+            metadata.iconName = @"file_compress";
         }
         // Type image
         else if (UTTypeConformsTo(fileUTI, kUTTypeImage)) {
             metadata.typeFile = k_metadataTypeFile_image;
-            metadata.iconName = image_file_photo;
+            metadata.iconName = @"file_photo";
         }
         // Type Video
         else if (UTTypeConformsTo(fileUTI, kUTTypeMovie)) {
@@ -874,7 +874,7 @@
         // Type Audio
         else if (UTTypeConformsTo(fileUTI, kUTTypeAudio)) {
             metadata.typeFile = k_metadataTypeFile_audio;
-            metadata.iconName = image_file_audio;
+            metadata.iconName = @"file_audio";
         }
         // Type Document [DOC] [PDF] [XLS] [TXT] (RTF = "public.rtf" - ODT = "org.oasis-open.opendocument.text") [MD]
         else if (UTTypeConformsTo(fileUTI, kUTTypeContent) || [ext isEqualToString:@"MD"]) {
@@ -885,15 +885,15 @@
             NSString *typeFile = (__bridge NSString *)fileUTI;
             
             if ([typeFile isEqualToString:@"com.adobe.pdf"]) {
-                metadata.iconName = image_file_pdf;
+                metadata.iconName = @"file_pdf";
             }
             
             if ([typeFile isEqualToString:@"org.openxmlformats.spreadsheetml.sheet"]) {
-                metadata.iconName = image_file_xls;
+                metadata.iconName = @"file_xls";
             }
             
             if ([typeFile isEqualToString:@"com.microsoft.excel.xls"]) {
-                metadata.iconName = image_file_xls;
+                metadata.iconName = @"file_xls";
             }
             
             if ([typeFile isEqualToString:@"public.plain-text"] || [ext isEqualToString:@"MD"]) {
@@ -901,7 +901,7 @@
             }
             
             if ([typeFile isEqualToString:@"public.html"]) {
-                metadata.iconName = image_file_code;
+                metadata.iconName = @"file_code";
             }
             
         } else {
@@ -912,12 +912,12 @@
             // icon uTorrent
             if ([(__bridge NSString *)fileExtension isEqualToString:@"torrent"]) {
                 
-                metadata.iconName = image_utorrent;
+                metadata.iconName = @"utorrent";
                 
             } else {
             
                 if (metadata.cryptated) metadata.iconName = image_plist;
-                else metadata.iconName = image_file;
+                else metadata.iconName = @"file";
             }
         }
         

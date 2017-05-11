@@ -119,7 +119,7 @@
 
 - (UIImage *)imageForEmptyDataSet:(UIScrollView *)scrollView
 {
-    return [UIImage imageNamed:image_localStorageNoRecord];
+    return [UIImage imageNamed:@"localStorageNoRecord"];
 }
 
 - (NSAttributedString *)titleForEmptyDataSet:(UIScrollView *)scrollView
@@ -450,7 +450,7 @@
     
     // it's encrypted ???
     if (metadata.cryptated && [metadata.type isEqualToString: k_metadataType_template] == NO)
-        cell.statusImageView.image = [UIImage imageNamed:image_lock];
+        cell.statusImageView.image = [UIImage imageNamed:@"lock"];
     
     // text and length
     if (metadata.directory) {

@@ -592,7 +592,7 @@
     UIBarButtonItem *buttonMore, *buttonNotification;
     
     // =
-    buttonMore = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:image_navigationControllerMenu] style:UIBarButtonItemStylePlain target:self action:@selector(toggleReMainMenu)];
+    buttonMore = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"navigationControllerMenu"] style:UIBarButtonItemStylePlain target:self action:@selector(toggleReMainMenu)];
     buttonMore.enabled = true;
     
     // <
@@ -618,7 +618,7 @@
 {
     [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:_isFolderEncrypted online:[app.reachability isReachable] hidden:NO];
     
-    UIImage *icon = [UIImage imageNamed:image_navigationControllerMenu];
+    UIImage *icon = [UIImage imageNamed:@"navigationControllerMenu"];
     UIBarButtonItem *buttonMore = [[UIBarButtonItem alloc] initWithImage:icon style:UIBarButtonItemStylePlain target:self action:@selector(toggleReSelectMenu)];
 
     UIBarButtonItem *leftButton = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIBarButtonItemStylePlain target:self action:@selector(cancelSelect)];
@@ -3302,7 +3302,7 @@
         
         item.title = [record.account stringByTruncatingToWidth:self.view.bounds.size.width - 100 withFont:[UIFont systemFontOfSize:12.0] atEnd:YES];
         item.argument = record.account;
-        item.image = [UIImage imageNamed:image_MenuLogoUser];
+        item.image = [UIImage imageNamed:@"menuLogoUser"];
         item.target = self;
         item.action = @selector(changeDefaultAccount:);
         
@@ -3412,7 +3412,7 @@
     ordinamento = _directoryOrder;
     if ([ordinamento isEqualToString:@"fileName"]) {
         
-        image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:image_MenuOrdeyByDate] color:[NCBrandColor sharedInstance].brand];
+        image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"MenuOrdeyByDate"] color:[NCBrandColor sharedInstance].brand];
         titoloNuovo = NSLocalizedString(@"_order_by_date_", nil);
         titoloAttuale = NSLocalizedString(@"_current_order_name_", nil);
         nuovoOrdinamento = @"fileDate";
@@ -3420,7 +3420,7 @@
     
     if ([ordinamento isEqualToString:@"fileDate"]) {
         
-        image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:image_MenuOrderByFileName] color:[NCBrandColor sharedInstance].brand];
+        image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"MenuOrderByFileName"] color:[NCBrandColor sharedInstance].brand];
         titoloNuovo = NSLocalizedString(@"_order_by_name_", nil);
         titoloAttuale = NSLocalizedString(@"_current_order_date_", nil);
         nuovoOrdinamento = @"fileName";
@@ -3436,7 +3436,7 @@
     
     if (ascendente)  {
         
-        image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:image_MenuOrdinamentoDiscendente] color:[NCBrandColor sharedInstance].brand];
+        image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"MenuOrdinamentoDiscendente"] color:[NCBrandColor sharedInstance].brand];
         titoloNuovo = NSLocalizedString(@"_sort_descending_", nil);
         titoloAttuale = NSLocalizedString(@"_current_sort_ascending_", nil);
         nuovoAscendente = false;
@@ -3444,7 +3444,7 @@
     
     if (!ascendente) {
         
-        image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:image_MenuOrdinamentoAscendente] color:[NCBrandColor sharedInstance].brand];
+        image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"MenuOrdinamentoAscendente"] color:[NCBrandColor sharedInstance].brand];
         titoloNuovo = NSLocalizedString(@"_sort_ascending_", nil);
         titoloAttuale = NSLocalizedString(@"_current_sort_descending_", nil);
         nuovoAscendente = true;
@@ -3460,7 +3460,7 @@
     if ([groupBy isEqualToString:@"alphabetic"])  { titoloNuovo = NSLocalizedString(@"_group_alphabetic_yes_", nil); }
     else { titoloNuovo = NSLocalizedString(@"_group_alphabetic_no_", nil); }
     
-    app.alphabeticItem = [[REMenuItem alloc] initWithTitle:titoloNuovo subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_MenuGroupByAlphabetic] color:[NCBrandColor sharedInstance].brand] highlightedImage:nil action:^(REMenuItem *item) {
+    app.alphabeticItem = [[REMenuItem alloc] initWithTitle:titoloNuovo subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"MenuGroupByAlphabetic"] color:[NCBrandColor sharedInstance].brand] highlightedImage:nil action:^(REMenuItem *item) {
             if ([groupBy isEqualToString:@"alphabetic"]) [self tableGroupBy:@"none"];
             else [self tableGroupBy:@"alphabetic"];
     }];
@@ -3470,7 +3470,7 @@
     if ([groupBy isEqualToString:@"typefile"])  { titoloNuovo = NSLocalizedString(@"_group_typefile_yes_", nil); }
     else { titoloNuovo = NSLocalizedString(@"_group_typefile_no_", nil); }
     
-    app.typefileItem = [[REMenuItem alloc] initWithTitle:titoloNuovo subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_MenuGroupByTypeFile] color:[NCBrandColor sharedInstance].brand] highlightedImage:nil action:^(REMenuItem *item) {
+    app.typefileItem = [[REMenuItem alloc] initWithTitle:titoloNuovo subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"MenuGroupByTypeFile"] color:[NCBrandColor sharedInstance].brand] highlightedImage:nil action:^(REMenuItem *item) {
             if ([groupBy isEqualToString:@"typefile"]) [self tableGroupBy:@"none"];
             else [self tableGroupBy:@"typefile"];
     }];
@@ -3481,7 +3481,7 @@
     if ([groupBy isEqualToString:@"date"])  { titoloNuovo = NSLocalizedString(@"_group_date_yes_", nil); }
     else { titoloNuovo = NSLocalizedString(@"_group_date_no_", nil); }
     
-    app.dateItem = [[REMenuItem alloc] initWithTitle:titoloNuovo   subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_MenuGroupByDate] color:[NCBrandColor sharedInstance].brand] highlightedImage:nil action:^(REMenuItem *item) {
+    app.dateItem = [[REMenuItem alloc] initWithTitle:titoloNuovo   subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"MenuGroupByDate"] color:[NCBrandColor sharedInstance].brand] highlightedImage:nil action:^(REMenuItem *item) {
             if ([groupBy isEqualToString:@"date"]) [self tableGroupBy:@"none"];
             else [self tableGroupBy:@"date"];
     }];
@@ -3491,7 +3491,7 @@
     if ([CCUtility getDirectoryOnTop])  { titoloNuovo = NSLocalizedString(@"_directory_on_top_yes_", nil); }
     else { titoloNuovo = NSLocalizedString(@"_directory_on_top_no_", nil); }
     
-    app.directoryOnTopItem = [[REMenuItem alloc] initWithTitle:titoloNuovo subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_MenuDirectoryOnTop] color:[NCBrandColor sharedInstance].brand] highlightedImage:nil action:^(REMenuItem *item) {
+    app.directoryOnTopItem = [[REMenuItem alloc] initWithTitle:titoloNuovo subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"menuDirectoryOnTop"] color:[NCBrandColor sharedInstance].brand] highlightedImage:nil action:^(REMenuItem *item) {
             if ([CCUtility getDirectoryOnTop]) [self directoryOnTop:NO];
             else [self directoryOnTop:YES];
     }];
@@ -3578,7 +3578,7 @@
     
     // ITEM MOVE ------------------------------------------------------------------------------------------------------
     
-    app.moveItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_move_selected_files_", nil) subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_moveSelectedFiles] color:[NCBrandColor sharedInstance].brand] highlightedImage:nil action:^(REMenuItem *item) {
+    app.moveItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_move_selected_files_", nil) subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"moveSelectedFiles"] color:[NCBrandColor sharedInstance].brand] highlightedImage:nil action:^(REMenuItem *item) {
             [self moveOpenWindow:[self.tableView indexPathsForSelectedRows]];
     }];
     
@@ -5071,7 +5071,7 @@
     // File Cyptated
     if (metadata.cryptated && metadata.directory == NO && [metadata.type isEqualToString: k_metadataType_template] == NO) {
      
-        cell.statusImageView.image = [UIImage imageNamed:image_lock];
+        cell.statusImageView.image = [UIImage imageNamed:@"lock"];
     }
     
     // Directory con passcode lock attivato
@@ -5272,7 +5272,7 @@
         
         // se non c'è una preview in bianconero metti l'immagine di default
         if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]] == NO)
-            cell.fileImageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:image_uploaddisable] color:[NCBrandColor sharedInstance].brand];
+            cell.fileImageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"uploaddisable"] color:[NCBrandColor sharedInstance].brand];
         
         cell.labelTitle.enabled = NO;
         cell.labelInfoFile.text = [NSString stringWithFormat:@"%@", lunghezzaFile];

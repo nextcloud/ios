@@ -402,14 +402,14 @@
         
         if (metadata.cryptated) {
             
-            [self.photos addObject:[MWPhoto photoWithImage:[UIImage imageNamed:image_filePreviewDownloadCrypto]]];
-            [self.thumbs addObject:[MWPhoto photoWithImage:[UIImage imageNamed:image_filePreviewDownloadCrypto]]];
+            [self.photos addObject:[MWPhoto photoWithImage:[UIImage imageNamed:@"filePreviewDownloadCrypto"]]];
+            [self.thumbs addObject:[MWPhoto photoWithImage:[UIImage imageNamed:@"filePreviewDownloadCrypto"]]];
             
         } else {
             
-            [self.photos addObject:[MWPhoto photoWithImage:[UIImage imageNamed:image_filePreviewDownload]]];
+            [self.photos addObject:[MWPhoto photoWithImage:[UIImage imageNamed:@"filePreviewDownload"]]];
             
-            MWPhoto *thumb = [MWPhoto photoWithImage:[UIImage imageNamed:image_filePreviewDownload]];
+            MWPhoto *thumb = [MWPhoto photoWithImage:[UIImage imageNamed:@"filePreviewDownload"]];
             if ([metadata.typeFile isEqualToString: k_metadataTypeFile_video]) thumb.isVideo = YES;
             [self.thumbs addObject:thumb];
         }
@@ -528,7 +528,7 @@
                     
                     if ([metadata.sessionError length] > 0 ) {
                         
-                        [self.photos replaceObjectAtIndex:index withObject:[MWPhoto photoWithImage:[UIImage imageNamed:image_filePreviewError]]];
+                        [self.photos replaceObjectAtIndex:index withObject:[MWPhoto photoWithImage:[UIImage imageNamed:@"filePreviewError"]]];
                         
                     } else {
                         
@@ -557,7 +557,7 @@
                     
                     if ([metadata.sessionError length] > 0 ) {
                         
-                        [self.photos replaceObjectAtIndex:index withObject:[MWPhoto photoWithImage:[UIImage imageNamed:image_filePreviewError]]];
+                        [self.photos replaceObjectAtIndex:index withObject:[MWPhoto photoWithImage:[UIImage imageNamed:@"filePreviewError"]]];
                         
                     } else {
                         
