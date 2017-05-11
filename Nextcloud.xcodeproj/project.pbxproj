@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F700222C1EC479840080073F /* Custom.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F700222B1EC479840080073F /* Custom.xcassets */; };
+		F700222D1EC479840080073F /* Custom.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F700222B1EC479840080073F /* Custom.xcassets */; };
+		F700222E1EC479840080073F /* Custom.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F700222B1EC479840080073F /* Custom.xcassets */; };
 		F708CF6D1E56E8CC00271D8B /* TableMetadata+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF4E1E56E8CB00271D8B /* TableMetadata+CoreDataClass.m */; };
 		F708CF6E1E56E8CC00271D8B /* TableMetadata+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF4E1E56E8CB00271D8B /* TableMetadata+CoreDataClass.m */; };
 		F708CF6F1E56E8CC00271D8B /* TableMetadata+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF4E1E56E8CB00271D8B /* TableMetadata+CoreDataClass.m */; };
@@ -739,6 +742,7 @@
 		08EA97461E6554FC004C83FA /* FirebaseInstanceID.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseInstanceID.framework; sourceTree = "<group>"; };
 		08EA97471E6554FC004C83FA /* GoogleToolboxForMac.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleToolboxForMac.framework; sourceTree = "<group>"; };
 		F70022201EC46E660080073F /* NCBridgeSwift.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCBridgeSwift.h; sourceTree = "<group>"; };
+		F700222B1EC479840080073F /* Custom.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Custom.xcassets; sourceTree = "<group>"; };
 		F70211F41BAC56E9003FC03E /* CCCellMain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCCellMain.h; sourceTree = "<group>"; };
 		F70211F51BAC56E9003FC03E /* CCCellMain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCCellMain.m; sourceTree = "<group>"; };
 		F70211F61BAC56E9003FC03E /* CCCellMain.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CCCellMain.xib; sourceTree = "<group>"; };
@@ -3015,6 +3019,7 @@
 			children = (
 				F7C742D31E7BD36600D9C973 /* Supporting Files */,
 				F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */,
+				F700222B1EC479840080073F /* Custom.xcassets */,
 			);
 			path = Brand;
 			sourceTree = "<group>";
@@ -3633,6 +3638,7 @@
 				F7145A1D1D12E3B700CAFEEC /* BKPasscodeView.strings in Resources */,
 				F7145A211D12E3B700CAFEEC /* Error.strings in Resources */,
 				F7145A231D12E3B700CAFEEC /* Localizable.strings in Resources */,
+				F700222D1EC479840080073F /* Custom.xcassets in Resources */,
 				F7145A241D12E3B700CAFEEC /* CCCellShareExt.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3645,6 +3651,7 @@
 				F7FC88FD1E141A3F006D0506 /* Error.strings in Resources */,
 				F7FC88FB1E141A34006D0506 /* BKPasscodeView.strings in Resources */,
 				F7FC88FC1E141A39006D0506 /* Localizable.strings in Resources */,
+				F700222E1EC479840080073F /* Custom.xcassets in Resources */,
 				F7D2677C1E157053005ACB7E /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3678,6 +3685,7 @@
 				F77B0EFA1D118A16002130FE /* ZSShorizontalrule.png in Resources */,
 				F762CB5C1EACB7D400B38484 /* Reader-Email@2x.png in Resources */,
 				F77B0EFB1D118A16002130FE /* ZSSh3@2x.png in Resources */,
+				F700222C1EC479840080073F /* Custom.xcassets in Resources */,
 				F77B0EFE1D118A16002130FE /* CCUploadFromOtherUpp.storyboard in Resources */,
 				F77B0EFF1D118A16002130FE /* ZSSinsertkeyword.png in Resources */,
 				F78BFED41D3111B800E513CF /* LaunchScreenNextcloud.xib in Resources */,

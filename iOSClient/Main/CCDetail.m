@@ -81,7 +81,7 @@
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(insertGeocoderLocation:) name:@"insertGeocoderLocation" object:nil];
 
-    self.imageBackground.image = [UIImage imageNamed:[NCBrandImages sharedInstance].BackgroundDetail];
+    self.imageBackground.image = [UIImage imageNamed:@"backgroundDetail"];
     
     if ([self.metadataDetail.fileName length] > 0 || [self.metadataDetail.directoryID length] > 0 || [self.metadataDetail.fileID length] > 0) {
     

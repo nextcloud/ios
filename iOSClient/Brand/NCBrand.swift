@@ -52,20 +52,6 @@ class NCBrandColor: NSObject {
     }
 }
 
-class NCBrandImages: NSObject {
-
-    static let sharedInstance: NCBrandImages = {
-        let instance = NCBrandImages()
-        return instance
-    }()
-    
-    public var login:                   String = "loginLogo"
-    public var navigationLogo:          String = "navigationLogo"
-    public var navigationLogoOffline:   String = "navigationLogoOffline"
-    public var BackgroundDetail:        String = "backgroundDetail"
-    public var themingBackground:       String = "themingBackground"
-}
-
 class NCBrandOptions: NSObject {
     
     static let sharedInstance: NCBrandOptions = {

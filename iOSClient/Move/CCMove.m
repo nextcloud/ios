@@ -88,7 +88,7 @@
     if (![_serverUrl length]) {
         
         _serverUrl = [CCUtility getHomeServerUrlActiveUrl:activeUrl];
-        UIImageView *image = [[UIImageView alloc] initWithImage:[UIImage imageNamed: NCBrandImages.sharedInstance.navigationLogo]];
+        UIImageView *image = [[UIImageView alloc] initWithImage:[UIImage imageNamed: @"navigationLogo"]];
         [self.navigationController.navigationBar.topItem setTitleView:image];
         self.title = @"Home";
         

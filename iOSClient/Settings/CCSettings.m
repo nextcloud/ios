@@ -503,7 +503,7 @@
 
 - (void)sendMailEncryptPass
 {
-    [CCUtility sendMailEncryptPass:[CCUtility getEmail] validateEmail:NO form:self nameImage:[NCBrandImages sharedInstance].BackgroundDetail];
+    [CCUtility sendMailEncryptPass:[CCUtility getEmail] validateEmail:NO form:self nameImage:@"backgroundDetail"];
 }
 
 #pragma --------------------------------------------------------------------------------------------

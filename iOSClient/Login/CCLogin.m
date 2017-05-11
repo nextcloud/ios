@@ -40,7 +40,7 @@
 {
     [super viewDidLoad];
     
-    self.imageBrand.image = [UIImage imageNamed:[NCBrandImages sharedInstance].login];
+    self.imageBrand.image = [UIImage imageNamed:@"loginLogo"];
     self.login.backgroundColor = [NCBrandColor sharedInstance].customer;
     
     // Bottom label

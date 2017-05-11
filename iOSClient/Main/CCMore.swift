@@ -52,7 +52,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         
         tableView.separatorColor = NCBrandColor.sharedInstance.seperator
         
-        themingBackground.image = UIImage.init(named: NCBrandImages.sharedInstance.themingBackground)
+        themingBackground.image = UIImage.init(named: "themingBackground")
         
         // create tap gesture recognizer
         let tapQuota = UITapGestureRecognizer(target: self, action: #selector(tapLabelQuotaExternalSite))
@@ -166,7 +166,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         if (theminBackgroundFile != nil) {
             themingBackground.image = theminBackgroundFile
         } else {
-            themingBackground.image = UIImage.init(named: NCBrandImages.sharedInstance.themingBackground)
+            themingBackground.image = UIImage.init(named: "themingBackground")
         }
 
         if (self.isViewLoaded && (self.view.window != nil)) {
