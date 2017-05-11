@@ -1611,7 +1611,7 @@
     
     if (([actualVersion compare:@"2.17.3" options:NSNumericSearch] == NSOrderedAscending)) {
     
-        // Migrate Certificates Table
+        // Migrate Certificates Table From CoreData to Realm
         
         NSArray *listCertificateLocation = [CCCoreData getAllCertificatesLocationOldDB];
         
