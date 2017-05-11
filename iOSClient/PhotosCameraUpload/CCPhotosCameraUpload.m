@@ -1184,7 +1184,11 @@
         metadataNet.session = session;
         metadataNet.taskStatus = k_taskStatusResume;
         
-        [self writeAssetToSandbox:metadataNet];
+        // 
+        if (assetsFull)
+            [self addDatabaseAutomaticUpload:metadataNet assetDate:assetDate assetMediaType:assetMediaType];
+        else
+            [self writeAssetToSandbox:metadataNet];
     }
     
     // end loading
