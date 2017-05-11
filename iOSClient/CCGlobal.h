@@ -22,7 +22,6 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "CCStandardImages.h"
 
 extern NSString *const appApplicationSupport;
 extern NSString *const appDatabase;
