@@ -1184,7 +1184,6 @@
         metadataNet.session = session;
         metadataNet.taskStatus = k_taskStatusResume;
         
-        // 
         if (assetsFull)
             [self addDatabaseAutomaticUpload:metadataNet assetDate:assetDate assetMediaType:assetMediaType];
         else
