@@ -120,7 +120,7 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    func setActiveAccount(_ account: String) -> tableAccount {
+    func setAccountActive(_ account: String) -> tableAccount {
         
         let realm = try! Realm()
         var activeAccount = tableAccount()
@@ -146,7 +146,19 @@ class NCManageDatabase: NSObject {
         return activeAccount
     }
     
-    func getAccount(_ account: String?) -> [tableAccount] {
+    func getAccountActive(_ account: String?) -> tableAccount? {
+        
+        let realm = try! Realm()
+        
+        let results = realm.objects(tableAccount.self).filter("active = true")
+        if (results.count > 0) {
+            return results[0]
+        } else {
+            return nil
+        }
+    }
+
+    func getAccounts(_ account: String?) -> [tableAccount] {
         
         let realm = try! Realm()
         let results : Results<tableAccount>
