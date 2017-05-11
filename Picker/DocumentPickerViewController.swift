@@ -160,7 +160,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         if isCryptoCloudMode == true {
             
             // Encrypted mode
-            encryptedButton.image = UIImage(named:image_shareExtEncrypt)?.withRenderingMode(.automatic)
+            encryptedButton.image = UIImage(named:"shareExtEncrypt")?.withRenderingMode(.automatic)
             
             // Color Button
             if parameterEncrypted == true {

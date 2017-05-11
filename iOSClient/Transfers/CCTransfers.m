@@ -613,19 +613,19 @@
     
     if ([metadata.session length] > 0 && [metadata.session rangeOfString:@"download"].location != NSNotFound) {
         
-        if (metadata.cryptated) cell.statusImageView.image = [UIImage imageNamed:image_statusdownloadcrypto];
-        else cell.statusImageView.image = [UIImage imageNamed:image_statusdownload];
+        if (metadata.cryptated) cell.statusImageView.image = [UIImage imageNamed:@"statusdownloadcrypto"];
+        else cell.statusImageView.image = [UIImage imageNamed:@"statusdownload"];
         
         // Fai comparire il RELOAD e lo STOP solo se non è un Task Plist
         if (metadata.sessionTaskIdentifierPlist == k_taskIdentifierDone) {
             
-            if (metadata.cryptated)[cell.cancelTaskButton setBackgroundImage:[UIImage imageNamed:image_stoptaskcrypto] forState:UIControlStateNormal];
-            else [cell.cancelTaskButton setBackgroundImage:[UIImage imageNamed:image_stoptask] forState:UIControlStateNormal];
+            if (metadata.cryptated)[cell.cancelTaskButton setBackgroundImage:[UIImage imageNamed:@"stoptaskcrypto"] forState:UIControlStateNormal];
+            else [cell.cancelTaskButton setBackgroundImage:[UIImage imageNamed:@"stoptask"] forState:UIControlStateNormal];
             
             cell.cancelTaskButton.hidden = NO;
             
-            if (metadata.cryptated)[cell.reloadTaskButton setBackgroundImage:[UIImage imageNamed:image_reloadtaskcrypto] forState:UIControlStateNormal];
-            else [cell.reloadTaskButton setBackgroundImage:[UIImage imageNamed:image_reloadtask] forState:UIControlStateNormal];
+            if (metadata.cryptated)[cell.reloadTaskButton setBackgroundImage:[UIImage imageNamed:@"reloadtaskcrypto"] forState:UIControlStateNormal];
+            else [cell.reloadTaskButton setBackgroundImage:[UIImage imageNamed:@"reloadtask"] forState:UIControlStateNormal];
             
             cell.reloadTaskButton.hidden = NO;
         }
@@ -648,7 +648,7 @@
         
         if (metadata.sessionTaskIdentifier == k_taskIdentifierError || metadata.sessionTaskIdentifierPlist == k_taskIdentifierError) {
             
-            cell.statusImageView.image = [UIImage imageNamed:image_statuserror];
+            cell.statusImageView.image = [UIImage imageNamed:@"statuserror"];
             
             if ([metadata.sessionError length] == 0)
                 cell.labelInfoFile.text = [NSString stringWithFormat:@"%@, %@", NSLocalizedString(@"_error_",nil), NSLocalizedString(@"_file_not_downloaded_",nil)];
@@ -663,28 +663,28 @@
     
     if ([metadata.session length] > 0 && [metadata.session rangeOfString:@"upload"].location != NSNotFound) {
         
-        if (metadata.cryptated) cell.statusImageView.image = [UIImage imageNamed:image_statusuploadcrypto];
-        else cell.statusImageView.image = [UIImage imageNamed:image_statusupload];
+        if (metadata.cryptated) cell.statusImageView.image = [UIImage imageNamed:@"statusuploadcrypto"];
+        else cell.statusImageView.image = [UIImage imageNamed:@"statusupload"];
         
-        if (metadata.cryptated)[cell.cancelTaskButton setBackgroundImage:[UIImage imageNamed:image_removetaskcrypto] forState:UIControlStateNormal];
-        else [cell.cancelTaskButton setBackgroundImage:[UIImage imageNamed:image_removetask] forState:UIControlStateNormal];
+        if (metadata.cryptated)[cell.cancelTaskButton setBackgroundImage:[UIImage imageNamed:@"removetaskcrypto"] forState:UIControlStateNormal];
+        else [cell.cancelTaskButton setBackgroundImage:[UIImage imageNamed:@"removetask"] forState:UIControlStateNormal];
         cell.cancelTaskButton.hidden = NO;
         
         if (metadata.sessionTaskIdentifier == k_taskIdentifierStop) {
             
-            if (metadata.cryptated)[cell.reloadTaskButton setBackgroundImage:[UIImage imageNamed:image_reloadtaskcrypto] forState:UIControlStateNormal];
-            else [cell.reloadTaskButton setBackgroundImage:[UIImage imageNamed:image_reloadtask] forState:UIControlStateNormal];
+            if (metadata.cryptated)[cell.reloadTaskButton setBackgroundImage:[UIImage imageNamed:@"reloadtaskcrypto"] forState:UIControlStateNormal];
+            else [cell.reloadTaskButton setBackgroundImage:[UIImage imageNamed:@"reloadtask"] forState:UIControlStateNormal];
             
-            if (metadata.cryptated) cell.statusImageView.image = [UIImage imageNamed:image_statusstopcrypto];
-            else cell.statusImageView.image = [UIImage imageNamed:image_statusstop];
+            if (metadata.cryptated) cell.statusImageView.image = [UIImage imageNamed:@"statusstopcrypto"];
+            else cell.statusImageView.image = [UIImage imageNamed:@"statusstop"];
             
             cell.reloadTaskButton.hidden = NO;
             cell.stopTaskButton.hidden = YES;
             
         } else {
             
-            if (metadata.cryptated)[cell.stopTaskButton setBackgroundImage:[UIImage imageNamed:image_stoptaskcrypto] forState:UIControlStateNormal];
-            else [cell.stopTaskButton setBackgroundImage:[UIImage imageNamed:image_stoptask] forState:UIControlStateNormal];
+            if (metadata.cryptated)[cell.stopTaskButton setBackgroundImage:[UIImage imageNamed:@"stoptaskcrypto"] forState:UIControlStateNormal];
+            else [cell.stopTaskButton setBackgroundImage:[UIImage imageNamed:@"stoptask"] forState:UIControlStateNormal];
             
             cell.stopTaskButton.hidden = NO;
             cell.reloadTaskButton.hidden = YES;
@@ -714,7 +714,7 @@
         if (metadata.sessionTaskIdentifier == k_taskIdentifierError || metadata.sessionTaskIdentifierPlist == k_taskIdentifierError) {
             
             cell.labelTitle.enabled = NO;
-            cell.statusImageView.image = [UIImage imageNamed:image_statuserror];
+            cell.statusImageView.image = [UIImage imageNamed:@"statuserror"];
             
             if ([metadata.sessionError length] == 0)
                 cell.labelInfoFile.text = [NSString stringWithFormat:@"%@, %@", NSLocalizedString(@"_error_",nil), NSLocalizedString(@"_file_not_uploaded_",nil)];

@@ -69,7 +69,7 @@
         [row.cellConfig setObject:@(NSTextAlignmentCenter) forKey:@"textLabel.textAlignment"];
         [row.cellConfig setObject:[NCBrandColor sharedInstance].cryptocloud forKey:@"textLabel.textColor"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-        [row.cellConfig setObject:[UIImage imageNamed:image_settingsKeyMail] forKey:@"imageView.image"];
+        [row.cellConfig setObject:[UIImage imageNamed:@"settingsKeyMail"] forKey:@"imageView.image"];
         row.action.formSelector = @selector(sendMailEncryptPass:);
         //row.disabled = @1;
         [section addFormRow:row];

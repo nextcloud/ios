@@ -68,7 +68,7 @@
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"cameraupload" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_uploading_from_camera_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIImage imageNamed:image_settingsCameraUpload] forKey:@"imageView.image"];
+    [row.cellConfig setObject:[UIImage imageNamed:@"settingsCameraUpload"] forKey:@"imageView.image"];
     row.action.formSegueIdentifier = @"CCManageCameraUploadSegue";
     [section addFormRow:row];
 
@@ -78,7 +78,7 @@
     [form addFormSection:section];
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"favoriteoffline" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_favorite_offline_", nil)];
-    [row.cellConfig setObject:[UIImage imageNamed:image_settingsFavoriteOffline] forKey:@"imageView.image"];
+    [row.cellConfig setObject:[UIImage imageNamed:@"settingsFavoriteOffline"] forKey:@"imageView.image"];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
     
@@ -89,7 +89,7 @@
     
     // Passcode
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"bloccopasscode" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_lock_not_active_", nil)];
-    [row.cellConfig setObject:[UIImage imageNamed:image_settingsPasscodeNO] forKey:@"imageView.image"];
+    [row.cellConfig setObject:[UIImage imageNamed:@"settingsPasscodeNO"] forKey:@"imageView.image"];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
@@ -118,7 +118,7 @@
         // Crypto Cloud
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"cryptocloud" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_crypto_cloud_system_", nil)];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-        [row.cellConfig setObject:[UIImage imageNamed:image_settingsCryptoCloud] forKey:@"imageView.image"];
+        [row.cellConfig setObject:[UIImage imageNamed:@"settingsCryptoCloud"] forKey:@"imageView.image"];
         row.action.viewControllerClass = [CCManageCryptoCloud class];
         [section addFormRow:row];
     }
@@ -131,7 +131,7 @@
     // Advanced
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"advanced" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_advanced_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIImage imageNamed:image_settingsAdvanced] forKey:@"imageView.image"];
+    [row.cellConfig setObject:[UIImage imageNamed:@"settingsAdvanced"] forKey:@"imageView.image"];
     row.action.viewControllerClass = [CCAdvanced class];
     [section addFormRow:row];
 
@@ -145,7 +145,7 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
     [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
-    [row.cellConfig setObject:[UIImage imageNamed:image_settingsAcknowledgements] forKey:@"imageView.image"];
+    [row.cellConfig setObject:[UIImage imageNamed:@"settingsAcknowledgements"] forKey:@"imageView.image"];
     row.action.formBlock = ^(XLFormRowDescriptor * sender){
         [self performSegueWithIdentifier:@"AcknowledgementsSegue" sender:sender];
         [self deselectFormRow:sender];
@@ -157,7 +157,7 @@
     [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIImage imageNamed:image_settingsMail] forKey:@"imageView.image"];
+    [row.cellConfig setObject:[UIImage imageNamed:@"settingsMail"] forKey:@"imageView.image"];
     row.action.formSelector = @selector(sendMail:);
     [section addFormRow:row];
    
@@ -203,10 +203,10 @@
     
     if ([[CCUtility getBlockCode] length]) {
         rowBloccoPasscode.title = NSLocalizedString(@"_lock_active_", nil);
-        [rowBloccoPasscode.cellConfig setObject:[UIImage imageNamed:image_settingsPasscodeYES] forKey:@"imageView.image"];
+        [rowBloccoPasscode.cellConfig setObject:[UIImage imageNamed:@"settingsPasscodeYES"] forKey:@"imageView.image"];
     } else {
         rowBloccoPasscode.title = NSLocalizedString(@"_lock_not_active_", nil);
-        [rowBloccoPasscode.cellConfig setObject:[UIImage imageNamed:image_settingsPasscodeNO] forKey:@"imageView.image"];
+        [rowBloccoPasscode.cellConfig setObject:[UIImage imageNamed:@"settingsPasscodeNO"] forKey:@"imageView.image"];
     }
     
     if ([CCUtility getSimplyBlockCode]) [rowSimplyPasscode setValue:@1]; else [rowSimplyPasscode setValue:@0];

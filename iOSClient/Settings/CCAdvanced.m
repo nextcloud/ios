@@ -49,7 +49,7 @@
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"activityVerboseHigh" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_help_activity_verbose_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIImage imageNamed:image_settingsActivityHigh] forKey:@"imageView.image"];
+    [row.cellConfig setObject:[UIImage imageNamed:@"settingsActivityHigh"] forKey:@"imageView.image"];
     if ([CCUtility getActivityVerboseHigh]) row.value = @"1";
     else row.value = @"0";
     [section addFormRow:row];
@@ -58,7 +58,7 @@
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
     [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIImage imageNamed:image_settingsSendActivity] forKey:@"imageView.image"];
+    [row.cellConfig setObject:[UIImage imageNamed:@"settingsSendActivity"] forKey:@"imageView.image"];
     row.action.formSelector = @selector(sendMail:);
     [section addFormRow:row];
 
@@ -66,7 +66,7 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
-    [row.cellConfig setObject:[UIImage imageNamed:image_settingsClearActivity] forKey:@"imageView.image"];
+    [row.cellConfig setObject:[UIImage imageNamed:@"settingsClearActivity"] forKey:@"imageView.image"];
     row.action.formSelector = @selector(clearActivity:);
     [section addFormRow:row];
     
@@ -102,7 +102,7 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
-    [row.cellConfig setObject:[UIImage imageNamed:image_settingsClearCache] forKey:@"imageView.image"];
+    [row.cellConfig setObject:[UIImage imageNamed:@"settingsClearCache"] forKey:@"imageView.image"];
     row.action.formSelector = @selector(clearCache:);
     [section addFormRow:row];
 
@@ -116,7 +116,7 @@
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
     [row.cellConfig setObject:[UIColor redColor] forKey:@"textLabel.textColor"];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIImage imageNamed:image_settingsExit] forKey:@"imageView.image"];
+    [row.cellConfig setObject:[UIImage imageNamed:@"settingsExit"] forKey:@"imageView.image"];
     row.action.formSelector = @selector(exitNextcloud:);
     [section addFormRow:row];
 

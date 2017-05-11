@@ -111,7 +111,7 @@
     // Modify Account
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"changePassword" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_change_password_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIImage imageNamed:image_settingsAccountModify] forKey:@"imageView.image"];
+    [row.cellConfig setObject:[UIImage imageNamed:@"settingsAccountModify"] forKey:@"imageView.image"];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
     [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
     row.action.formSelector = @selector(changePassword:);
@@ -124,7 +124,7 @@
         // New Account nextcloud
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"addAccountNextcloud" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_add_nextcloud_", nil)];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-        [row.cellConfig setObject:[UIImage imageNamed:image_settingsAccountNextcloud] forKey:@"imageView.image"];
+        [row.cellConfig setObject:[UIImage imageNamed:@"settingsAccountNextcloud"] forKey:@"imageView.image"];
         [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
         [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
         row.action.formSelector = @selector(addAccount:);
@@ -135,7 +135,7 @@
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"delAccount" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_delete_account_", nil)];
     if (listAccount.count > 0) [row.cellConfig setObject:[UIColor redColor] forKey:@"textLabel.textColor"];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIImage imageNamed:image_settingsAccountDelete] forKey:@"imageView.image"];
+    [row.cellConfig setObject:[UIImage imageNamed:@"settingsAccountDelete"] forKey:@"imageView.image"];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
     row.action.formSelector = @selector(answerDelAccount:);
     if (listAccount.count == 0) row.disabled = @YES;

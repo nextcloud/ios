@@ -118,7 +118,7 @@
     [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
     
     // select
-    UIImage *icon = [UIImage imageNamed:image_seleziona];
+    UIImage *icon = [UIImage imageNamed:@"seleziona"];
     UIBarButtonItem *buttonSelect = [[UIBarButtonItem alloc] initWithImage:icon style:UIBarButtonItemStylePlain target:self action:@selector(collectionSelectYES)];
     
     if ([_sectionDataSource.allRecordsDataSource count] > 0) {

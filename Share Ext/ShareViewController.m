@@ -191,7 +191,7 @@
     
     // Encrypt ICON
     if (_isCryptoCloudMode) {
-        UIImage *icon = [[UIImage imageNamed:image_shareExtEncrypt] imageWithRenderingMode:UIImageRenderingModeAutomatic];
+        UIImage *icon = [[UIImage imageNamed:@"shareExtEncrypt"] imageWithRenderingMode:UIImageRenderingModeAutomatic];
         rightButtonEncrypt = [[UIBarButtonItem alloc] initWithImage:icon style:UIBarButtonItemStylePlain target:self action:@selector(changeEncrypt)];
         if (self.localCryptated) [rightButtonEncrypt setTintColor:[NCBrandColor sharedInstance].cryptocloud];
     }
