@@ -157,7 +157,7 @@
     else
         predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (verbose == %lu) AND (date > %@)", app.activeAccount, k_activityVerboseDefault, sixDaysAgo];
 
-    _sectionDataSource = [[NCManageDatabase sharedInstance] getAllActivityWithPredicate:predicate];
+    _sectionDataSource = [[NCManageDatabase sharedInstance] getActivityWithPredicate:predicate];
         
     [self reloadCollection];
 }

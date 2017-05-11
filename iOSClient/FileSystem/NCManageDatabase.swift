@@ -79,16 +79,90 @@ class NCManageDatabase: NSObject {
             addAccount.account = account
             
             // Brand
-            /*
-            if (k_option_use_default_automatic_upload) {
-
-            } else {
+            if NCBrandOptions.sharedInstance.use_default_automatic_upload {
                 
+                addAccount.cameraUpload = true
+                addAccount.cameraUploadPhoto = true
+                addAccount.cameraUploadVideo = true
+
+                addAccount.cameraUploadWWAnVideo = true
             }
-            */
+            
+            addAccount.password = password
+            addAccount.url = url
+            addAccount.user = user
         }
     }
     
+    func updateAccount(_ account: String, password: String) {
+        
+        let realm = try! Realm()
+        
+        let results = realm.objects(tableAccount.self).filter("account = '\(account)'")
+        if (results.count > 0) {
+            
+            try! realm.write {
+                results[0].password = password
+            }
+        }
+    }
+    
+    func deleteAccount(_ account: String) {
+        
+        let realm = try! Realm()
+        
+        let results = realm.objects(tableAccount.self).filter("account = '\(account)'")
+        if (results.count > 0) {
+            
+            try! realm.write {
+                realm.delete(results)
+            }
+        }
+    }
+
+    func setActiveAccount(_ account: String) -> tableAccount {
+        
+        let realm = try! Realm()
+        var activeAccount = tableAccount()
+        
+        let results = realm.objects(tableAccount.self)
+        
+        try! realm.write {
+            
+            for result in results {
+                
+                if result.account == account {
+                   
+                    result.active = true
+                    activeAccount = result
+                    
+                } else {
+                    
+                    result.active = false
+                }
+            }
+        }
+        
+        return activeAccount
+    }
+    
+    func getAccount(_ account: String?) -> [tableAccount] {
+        
+        let realm = try! Realm()
+        let results : Results<tableAccount>
+            
+        if account == nil {
+            
+            results = realm.objects(tableAccount.self).sorted(byKeyPath: "account", ascending: true)
+            
+        } else {
+            
+            results = realm.objects(tableAccount.self).filter("account = '\(account!)'").sorted(byKeyPath: "account", ascending: true)
+        }
+        
+        return Array(results)
+    }
+
     //MARK: -
     //MARK: Table Activity
 
@@ -153,7 +227,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func getAllActivityWithPredicate(_ predicate: NSPredicate) -> [tableActivity] {
+    func getActivityWithPredicate(_ predicate: NSPredicate) -> [tableActivity] {
         
         let realm = try! Realm()
 
@@ -227,7 +301,7 @@ class NCManageDatabase: NSObject {
         return metadataNet
     }
     
-    func getAllLockAutomaticUploadForAccount(_ account: String) -> [tableAutomaticUpload] {
+    func getLockAutomaticUploadForAccount(_ account: String) -> [tableAutomaticUpload] {
         
         let realm = try! Realm()
         
@@ -358,7 +432,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func getAllCertificatesLocation(_ localCertificatesFolder: String) -> [String] {
+    func getCertificatesLocation(_ localCertificatesFolder: String) -> [String] {
         
         let realm = try! Realm()
         
@@ -396,7 +470,7 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    func deleteAllExternalSitesForAccount(_ account: String) {
+    func deleteExternalSitesForAccount(_ account: String) {
         
         let realm = try! Realm()
         
@@ -570,7 +644,7 @@ class NCManageDatabase: NSObject {
         return [sharesLink, sharesUserAndGroup]
     }
     
-    func removeAllShareActiveAccount(_ account: String) {
+    func removeShareActiveAccount(_ account: String) {
         
         let realm = try! Realm()
         
@@ -585,7 +659,7 @@ class NCManageDatabase: NSObject {
         var sharesLink = [String:String]()
         var sharesUserAndGroup = [String:String]()
 
-        self.removeAllShareActiveAccount(account)
+        self.removeShareActiveAccount(account)
      
         var itemsLink = [OCSharedDto]()
         var itemsUsersAndGroups = [OCSharedDto]()

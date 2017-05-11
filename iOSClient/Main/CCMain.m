@@ -1081,7 +1081,7 @@
 
 - (void)getExternalSitesServerSuccess:(NSArray *)listOfExternalSites
 {
-    [[NCManageDatabase sharedInstance] deleteAllExternalSitesForAccount:app.activeAccount];
+    [[NCManageDatabase sharedInstance] deleteExternalSitesForAccount:app.activeAccount];
     
     for (OCExternalSites *tableExternalSites in listOfExternalSites)
         [[NCManageDatabase sharedInstance] addExternalSites:tableExternalSites account:app.activeAccount];

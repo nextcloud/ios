@@ -76,7 +76,7 @@ static SecCertificateRef SecTrustGetLeafCertificate(SecTrustRef trust)
         
         NSString *localCertificatesFolder = [CCUtility getDirectoryCerificates];
         
-        NSArray *listCertificateLocation = [[NCManageDatabase sharedInstance] getAllCertificatesLocation:[CCUtility getDirectoryCerificates]];
+        NSArray *listCertificateLocation = [[NCManageDatabase sharedInstance] getCertificatesLocation:[CCUtility getDirectoryCerificates]];
         
         for (int i = 0 ; i < [listCertificateLocation count] ; i++) {
          

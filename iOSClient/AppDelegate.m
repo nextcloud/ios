@@ -1292,7 +1292,7 @@
     _automaticUploadInProgress = YES;
     
     NSArray *uploadInQueue = [CCCoreData getTableMetadataUploadAccount:app.activeAccount];
-    NSArray *recordAutomaticUploadInLock =  [[NCManageDatabase sharedInstance] getAllLockAutomaticUploadForAccount:_activeAccount];
+    NSArray *recordAutomaticUploadInLock =  [[NCManageDatabase sharedInstance] getLockAutomaticUploadForAccount:_activeAccount];
     
     for (tableAutomaticUpload *tableAutomaticUpload in recordAutomaticUploadInLock) {
         
