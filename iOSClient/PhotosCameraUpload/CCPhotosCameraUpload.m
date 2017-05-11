@@ -140,7 +140,7 @@
 {
     UIImage *icon;
     
-    icon = [UIImage imageNamed:image_deleteSelectedFiles];
+    icon = [UIImage imageNamed:@"deleteSelectedFiles"];
     UIBarButtonItem *buttonDelete = [[UIBarButtonItem alloc] initWithImage:icon style:UIBarButtonItemStylePlain target:self action:@selector(deleteSelectedFiles)];
     
     icon = [UIImage imageNamed:image_openSelectedFiles];
@@ -283,7 +283,7 @@
 {
     if ([CCCoreData getCameraUploadActiveAccount:app.activeAccount] == NO) {
     
-        UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:image_button] color:[NCBrandColor sharedInstance].brand];
+        UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"button"] color:[NCBrandColor sharedInstance].brand];
         
         return [CCUtility drawText:NSLocalizedString(@"_activate_camera_upload_", nil) inImage:buttonImage colorText:[UIColor whiteColor]];
         
@@ -616,7 +616,7 @@
     UIVisualEffectView *effect = [cell viewWithTag:200];
 
     UIImageView *checked = [cell viewWithTag:300];
-    checked.image = [UIImage imageNamed:image_checked];
+    checked.image = [UIImage imageNamed:@"checked"];
 
     NSArray *metadatasForKey = [_sectionDataSource.sectionArrayRow objectForKey:[_sectionDataSource.sections objectAtIndex:indexPath.section]];
     NSString *fileID = [metadatasForKey objectAtIndex:indexPath.row];

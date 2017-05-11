@@ -178,8 +178,8 @@
     UIBarButtonItem *fixedSpaceMini = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:self action:nil];
     fixedSpaceMini.width = 25;
     
-    _buttonAction = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:image_actionSheetOpenIn] style:UIBarButtonItemStylePlain target:self action:@selector(actionButtonPressed:)];
-    _buttonShare  = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:image_actionSheetShare] style:UIBarButtonItemStylePlain target:self action:@selector(shareButtonPressed:)];
+    _buttonAction = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"actionSheetOpenIn"] style:UIBarButtonItemStylePlain target:self action:@selector(actionButtonPressed:)];
+    _buttonShare  = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"actionSheetShare"] style:UIBarButtonItemStylePlain target:self action:@selector(shareButtonPressed:)];
     _buttonDelete = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(deleteButtonPressed:)];
     
     [_toolbar setItems:[NSArray arrayWithObjects: flexible, _buttonDelete, fixedSpaceMini, _buttonShare, fixedSpaceMini, _buttonAction,  nil]];
@@ -532,7 +532,7 @@
                         
                     } else {
                         
-                        [self.photos replaceObjectAtIndex:index withObject:[MWPhoto photoWithImage:[CCUtility drawText:[NSLocalizedString(@"_loading_", nil) stringByAppendingString:@"..."] inImage:[UIImage imageNamed:image_button] colorText:[UIColor lightGrayColor]]]];
+                        [self.photos replaceObjectAtIndex:index withObject:[MWPhoto photoWithImage:[CCUtility drawText:[NSLocalizedString(@"_loading_", nil) stringByAppendingString:@"..."] inImage:[UIImage imageNamed:@"button"] colorText:[UIColor lightGrayColor]]]];
                     }
                 }
             }
@@ -561,7 +561,7 @@
                         
                     } else {
                         
-                        [self.photos replaceObjectAtIndex:index withObject:[MWPhoto photoWithImage:[CCUtility drawText:[NSLocalizedString(@"_loading_", nil) stringByAppendingString:@"..."] inImage:[UIImage imageNamed:image_button] colorText:[UIColor lightGrayColor]]]];
+                        [self.photos replaceObjectAtIndex:index withObject:[MWPhoto photoWithImage:[CCUtility drawText:[NSLocalizedString(@"_loading_", nil) stringByAppendingString:@"..."] inImage:[UIImage imageNamed:@"button"] colorText:[UIColor lightGrayColor]]]];
                     }
                 }
             }

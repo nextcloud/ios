@@ -517,13 +517,13 @@
     }
     else if (UTTypeConformsTo(fileUTI, kUTTypeContent)) {
         
-        image = [UIImage imageNamed:image_document];
+        image = [UIImage imageNamed:@"document"];
         
         NSString *typeFile = (__bridge NSString *)fileUTI;
         
         if ([typeFile isEqualToString:@"com.adobe.pdf"]) image = [UIImage imageNamed:image_file_pdf];
         if ([typeFile isEqualToString:@"org.openxmlformats.spreadsheetml.sheet"]) image = [UIImage imageNamed:image_file_xls];
-        if ([typeFile isEqualToString:@"public.plain-text"]) image = [UIImage imageNamed:image_file_txt];
+        if ([typeFile isEqualToString:@"public.plain-text"]) image = [UIImage imageNamed:@"file_txt"];
     }
     else image = [UIImage imageNamed:image_file];
     

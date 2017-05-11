@@ -422,7 +422,7 @@
     if (_isSearchMode)
         return [UIImage imageNamed:image_searchBig];
     else
-        return [CCGraphics changeThemingColorImage:[UIImage imageNamed:image_filesNoFiles] color:[NCBrandColor sharedInstance].brand];
+        return [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"filesNoFiles"] color:[NCBrandColor sharedInstance].brand];
 }
 
 - (NSAttributedString *)titleForEmptyDataSet:(UIScrollView *)scrollView
@@ -3572,7 +3572,7 @@
 {
     // ITEM DELETE ------------------------------------------------------------------------------------------------------
     
-    app.deleteItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_delete_selected_files_", nil) subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_deleteSelectedFiles] color:[NCBrandColor sharedInstance].brand] highlightedImage:nil action:^(REMenuItem *item) {
+    app.deleteItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_delete_selected_files_", nil) subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"deleteSelectedFiles"] color:[NCBrandColor sharedInstance].brand] highlightedImage:nil action:^(REMenuItem *item) {
             [self deleteSelectionFile];
     }];
     
@@ -3586,20 +3586,20 @@
     
         // ITEM ENCRYPTED ------------------------------------------------------------------------------------------------------
     
-        app.encryptItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_encrypted_selected_files_", nil) subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_encryptedSelectedFiles] color:[NCBrandColor sharedInstance].brand] highlightedImage:nil action:^(REMenuItem *item) {
+        app.encryptItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_encrypted_selected_files_", nil) subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"encryptedSelectedFiles"] color:[NCBrandColor sharedInstance].brand] highlightedImage:nil action:^(REMenuItem *item) {
                 [self performSelector:@selector(encryptedSelectedFiles) withObject:nil];
         }];
     
         // ITEM DECRYPTED ----------------------------------------------------------------------------------------------------
     
-        app.decryptItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_decrypted_selected_files_", nil) subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_decryptedSelectedFiles] color:[NCBrandColor sharedInstance].brand] highlightedImage:nil action:^(REMenuItem *item) {
+        app.decryptItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_decrypted_selected_files_", nil) subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"decryptedSelectedFiles"] color:[NCBrandColor sharedInstance].brand] highlightedImage:nil action:^(REMenuItem *item) {
                 [self performSelector:@selector(decryptedSelectedFiles) withObject:nil];
         }];
     }
     
     // ITEM DOWNLOAD ----------------------------------------------------------------------------------------------------
     
-    app.downloadItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_download_selected_files_", nil) subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_downloadSelectedFiles] color:[NCBrandColor sharedInstance].brand] highlightedImage:nil action:^(REMenuItem *item) {
+    app.downloadItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_download_selected_files_", nil) subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"downloadSelectedFiles"] color:[NCBrandColor sharedInstance].brand] highlightedImage:nil action:^(REMenuItem *item) {
             [self downloadSelectedFiles];
     }];
     
@@ -4185,7 +4185,7 @@
         if (!lockDirectory && !_metadata.cryptated) {
             
             [actionSheet addButtonWithTitle:titleFavorite
-                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_actionSheetFavorite] color:[NCBrandColor sharedInstance].brand]
+                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetFavorite"] color:[NCBrandColor sharedInstance].brand]
                             backgroundColor:[UIColor whiteColor]
                                      height: 50.0
                                        type:AHKActionSheetButtonTypeDefault
@@ -4204,7 +4204,7 @@
         if (_metadata.cryptated == NO && !lockDirectory) {
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_share_", nil)
-                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_actionSheetShare] color:[NCBrandColor sharedInstance].brand]
+                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetShare"] color:[NCBrandColor sharedInstance].brand]
                             backgroundColor:[UIColor whiteColor]
                                      height: 50.0
                                        type:AHKActionSheetButtonTypeDefault
@@ -4220,7 +4220,7 @@
         if (!([_metadata.fileName isEqualToString:cameraUploadFolderName] == YES && [serverUrl isEqualToString:cameraUploadFolderPath] == YES) && !lockDirectory) {
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_rename_", nil)
-                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_actionSheetRename] color:[NCBrandColor sharedInstance].brand]
+                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetRename"] color:[NCBrandColor sharedInstance].brand]
                             backgroundColor:[UIColor whiteColor]
                                      height: 50.0
                                        type:AHKActionSheetButtonTypeDefault
@@ -4242,7 +4242,7 @@
         if (!([_metadata.fileName isEqualToString:cameraUploadFolderName] == YES && [serverUrl isEqualToString:cameraUploadFolderPath] == YES) && !lockDirectory) {
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_move_", nil)
-                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_actionSheetMove] color:[NCBrandColor sharedInstance].brand]
+                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetMove"] color:[NCBrandColor sharedInstance].brand]
                             backgroundColor:[UIColor whiteColor]
                                      height: 50.0
                                        type:AHKActionSheetButtonTypeDefault
@@ -4258,7 +4258,7 @@
         if (!([_metadata.fileName isEqualToString:cameraUploadFolderName] == YES && [serverUrl isEqualToString:cameraUploadFolderPath] == YES) && _metadata.cryptated == NO) {
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_folder_automatic_upload_", nil)
-                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_folderphotocamera] color:[NCBrandColor sharedInstance].brand]
+                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderphotocamera"] color:[NCBrandColor sharedInstance].brand]
                             backgroundColor:[UIColor whiteColor]
                                      height: 50.0
                                        type:AHKActionSheetButtonTypeDefault
@@ -4291,7 +4291,7 @@
         if (!([_metadata.fileName isEqualToString:cameraUploadFolderName] == YES && [serverUrl isEqualToString:cameraUploadFolderPath] == YES)) {
             
             [actionSheet addButtonWithTitle:titoloLock
-                                      image:[UIImage imageNamed:image_actionSheetLock]
+                                      image:[UIImage imageNamed:@"actionSheetLock"]
                             backgroundColor:[UIColor whiteColor]
                                      height: 50.0
                                        type:AHKActionSheetButtonTypeEncrypted
@@ -4307,7 +4307,7 @@
         if (!([_metadata.fileName isEqualToString:cameraUploadFolderName] == YES && [serverUrl isEqualToString:cameraUploadFolderPath] == YES) && !lockDirectory && app.isCryptoCloudMode) {
             
             [actionSheet addButtonWithTitle:titoloCriptaDecripta
-                                      image:[UIImage imageNamed:image_actionSheetCrypto]
+                                      image:[UIImage imageNamed:@"actionSheetCrypto"]
                             backgroundColor:[UIColor whiteColor]
                                      height: 50.0
                                        type:AHKActionSheetButtonTypeEncrypted
@@ -4346,7 +4346,7 @@
         if (!_metadata.cryptated) {
             
             [actionSheet addButtonWithTitle:titleFavorite
-                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_actionSheetFavorite] color:[NCBrandColor sharedInstance].brand]
+                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetFavorite"] color:[NCBrandColor sharedInstance].brand]
                             backgroundColor:[UIColor whiteColor]
                                      height: 50.0
                                        type:AHKActionSheetButtonTypeDefault
@@ -4365,7 +4365,7 @@
         if (_metadata.cryptated == NO) {
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_share_", nil)
-                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_actionSheetShare] color:[NCBrandColor sharedInstance].brand]
+                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetShare"] color:[NCBrandColor sharedInstance].brand]
                             backgroundColor:[UIColor whiteColor]
                                      height: 50.0
                                        type:AHKActionSheetButtonTypeDefault
@@ -4379,7 +4379,7 @@
         }
 
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_open_in_", nil)
-                                  image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_actionSheetOpenIn] color:[NCBrandColor sharedInstance].brand]
+                                  image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetOpenIn"] color:[NCBrandColor sharedInstance].brand]
                         backgroundColor:[UIColor whiteColor]
                                  height: 50.0
                                    type:AHKActionSheetButtonTypeDefault
@@ -4392,7 +4392,7 @@
                                 }];
 
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_rename_", nil)
-                                  image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_actionSheetRename] color:[NCBrandColor sharedInstance].brand]
+                                  image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetRename"] color:[NCBrandColor sharedInstance].brand]
                         backgroundColor:[UIColor whiteColor]
                                  height: 50.0
                                    type:AHKActionSheetButtonTypeDefault
@@ -4411,7 +4411,7 @@
                                 }];
         
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_move_", nil)
-                                  image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_actionSheetMove] color:[NCBrandColor sharedInstance].brand]
+                                  image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetMove"] color:[NCBrandColor sharedInstance].brand]
                         backgroundColor:[UIColor whiteColor]
                                  height: 50.0
                                    type:AHKActionSheetButtonTypeDefault
@@ -4426,7 +4426,7 @@
         if (recordLocalFile || [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, _metadata.fileID]]) {
         
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_remove_local_file_", nil)
-                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_actionSheetRemoveLocal] color:[NCBrandColor sharedInstance].brand]
+                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetRemoveLocal"] color:[NCBrandColor sharedInstance].brand]
                             backgroundColor:[UIColor whiteColor]
                                      height: 50.0
                                        type:AHKActionSheetButtonTypeDefault
@@ -4442,7 +4442,7 @@
         if (app.isCryptoCloudMode) {
             
             [actionSheet addButtonWithTitle:titoloCriptaDecripta
-                                      image:[UIImage imageNamed:image_actionSheetCrypto]
+                                      image:[UIImage imageNamed:@"actionSheetCrypto"]
                             backgroundColor:[UIColor whiteColor]
                                      height: 50.0
                                        type:AHKActionSheetButtonTypeEncrypted
@@ -4473,7 +4473,7 @@
         if ([_metadata.model isEqualToString:@"note"]) {
         
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_rename_", nil)
-                                      image:[UIImage imageNamed:image_actionSheetRename]
+                                      image:[UIImage imageNamed:@"actionSheetRename"]
                             backgroundColor:[UIColor whiteColor]
                                      height: 50.0
                                        type:AHKActionSheetButtonTypeDefault
@@ -4493,7 +4493,7 @@
         }
         
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_move_", nil)
-                                  image:[UIImage imageNamed:image_actionSheetMove]
+                                  image:[UIImage imageNamed:@"actionSheetMove"]
                         backgroundColor:[UIColor whiteColor]
                                  height: 50.0
                                    type:AHKActionSheetButtonTypeDefault
@@ -4987,7 +4987,7 @@
         
         if (metadata.favorite) {
             
-            cell.offlineImageView.image = [UIImage imageNamed:image_favorite];
+            cell.offlineImageView.image = [UIImage imageNamed:@"favorite"];
         }
         
     } else {
@@ -5096,7 +5096,7 @@
     
     if (metadata.favorite) {
         
-        cell.offlineImageView.image = [UIImage imageNamed:image_favorite];
+        cell.offlineImageView.image = [UIImage imageNamed:@"favorite"];
     }
     
     // ----------------------------------------------------------------------------------------------------------
@@ -5115,12 +5115,12 @@
        
             if (metadata.directory) {
                 
-                cell.fileImageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:image_folder_shared_with_me] color:[NCBrandColor sharedInstance].brand];
+                cell.fileImageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder_shared_with_me"] color:[NCBrandColor sharedInstance].brand];
                 cell.sharedImageView.userInteractionEnabled = NO;
                 
             } else {
             
-                cell.sharedImageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:image_actionSheetShare] color:[NCBrandColor sharedInstance].brand];
+                cell.sharedImageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetShare"] color:[NCBrandColor sharedInstance].brand];
             
                 UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapActionConnectionMounted:)];
                 [tap setNumberOfTapsRequired:1];
@@ -5133,7 +5133,7 @@
             
             if (metadata.directory) {
                 
-                cell.fileImageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:image_folder_external] color:[NCBrandColor sharedInstance].brand];
+                cell.fileImageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder_external"] color:[NCBrandColor sharedInstance].brand];
                 cell.sharedImageView.userInteractionEnabled = NO;
                 
             } else {
@@ -5152,9 +5152,9 @@
             if (metadata.directory) {
                 
                 if ([shareLink length] > 0)
-                    cell.fileImageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:image_folder_public] color:[NCBrandColor sharedInstance].brand];
+                    cell.fileImageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder_public"] color:[NCBrandColor sharedInstance].brand];
                 if ([shareUserAndGroup length] > 0)
-                    cell.fileImageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:image_folder_shared_with_me] color:[NCBrandColor sharedInstance].brand];
+                    cell.fileImageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder_shared_with_me"] color:[NCBrandColor sharedInstance].brand];
                 
                 cell.sharedImageView.userInteractionEnabled = NO;
                 
@@ -5163,7 +5163,7 @@
                 if ([shareLink length] > 0)
                     cell.sharedImageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:image_shareLink] color:[NCBrandColor sharedInstance].brand];
                 if ([shareUserAndGroup length] > 0)
-                    cell.sharedImageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:image_actionSheetShare] color:[NCBrandColor sharedInstance].brand];
+                    cell.sharedImageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetShare"] color:[NCBrandColor sharedInstance].brand];
                 
                 UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapActionShared:)];
                 [tap setNumberOfTapsRequired:1];

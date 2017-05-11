@@ -21,40 +21,6 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#define image_actionSheetRename                 @"actionSheetRename"
-#define image_actionSheetMove                   @"actionSheetMove"
-#define image_actionSheetCrypto                 @"actionSheetCrypto"
-#define image_actionSheetLock                   @"actionSheetLock"
-#define image_actionSheetShare                  @"actionSheetShare"
-#define image_actionSheetReload                 @"actionSheetReload"
-#define image_actionSheetOpenIn                 @"actionSheetOpenIn"
-#define image_actionSheetOffline                @"actionSheetOffline"
-#define image_actionSheetFavorite               @"actionSheetFavorite"
-#define image_actionSheetLocal                  @"localStorage"
-#define image_actionSheetRemoveLocal            @"actionSheetRemoveLocal"
-
-#define image_activityNoRecord                  @"activityNoRecord"
-
-#define image_avatar                            @"avatar"
-
-#define image_bkfull                            @"bkfull"
-#define image_bkempty                           @"bkempty"
-
-#define image_button                            @"button"
-
-#define image_checked                           @"checked"
-
-#define image_decryptedSelectedFiles            @"decryptedSelectedFiles"
-#define image_delete                            @"delete"
-#define image_deleteSelectedFiles               @"deleteSelectedFiles"
-#define image_document                          @"document"
-#define image_downloadSelectedFiles             @"downloadSelectedFiles"
-#define image_drag                              @"drag"
-
-#define image_encryptedSelectedFiles            @"encryptedSelectedFiles"
-
-#define image_favorite                          @"favorite"
-#define image_favoriteNoFiles                   @"favoriteNoFiles"
 
 #define image_file                              @"file"
 #define image_file_audio                        @"file_audio"
@@ -65,15 +31,6 @@
 #define image_filePreviewDownloadCrypto         @"filePreviewDownloadCrypto"
 #define image_filePreviewError                  @"filePreviewError"
 #define image_file_code                         @"file_code"
-#define image_file_txt                          @"file_txt"
-#define image_file_movie                        @"file_movie"
-#define image_filesNoFiles                      @"filesNoFiles"
-#define image_folderphotocamera                 @"folderphotocamera"
-#define image_folder                            @"folder"
-#define image_foldercrypto                      @"foldercrypto"
-#define image_folder_external                   @"folder_external"
-#define image_folder_public                     @"folder_public"
-#define image_folder_shared_with_me             @"folder_shared_with_me"
 
 #define image_home                              @"home"
 

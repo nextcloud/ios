@@ -126,7 +126,7 @@
 
 - (UIImage *)imageForEmptyDataSet:(UIScrollView *)scrollView
 {
-    return [UIImage imageNamed:image_favoriteNoFiles];
+    return [UIImage imageNamed:@"favoriteNoFiles"];
 }
 
 - (NSAttributedString *)titleForEmptyDataSet:(UIScrollView *)scrollView
@@ -400,7 +400,7 @@
     // ONLY Root Favorites : Remove file/folder Favorites
     if (_serverUrl == nil) {
         
-        [actionSheet addButtonWithTitle:NSLocalizedString(@"_remove_favorites_", nil) image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_actionSheetOffline] color:[NCBrandColor sharedInstance].brand] backgroundColor:[UIColor whiteColor] height: 50.0 type:AHKActionSheetButtonTypeDefault handler:^(AHKActionSheet *as) {
+        [actionSheet addButtonWithTitle:NSLocalizedString(@"_remove_favorites_", nil) image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetOffline"] color:[NCBrandColor sharedInstance].brand] backgroundColor:[UIColor whiteColor] height: 50.0 type:AHKActionSheetButtonTypeDefault handler:^(AHKActionSheet *as) {
                                     
             [self.tableView setEditing:NO animated:YES];
             [[CCActions sharedInstance] settingFavorite:metadata favorite:NO delegate:self];
@@ -410,7 +410,7 @@
     // Share
     if (_metadata.cryptated == NO) {
         
-        [actionSheet addButtonWithTitle:NSLocalizedString(@"_share_", nil) image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_actionSheetShare] color:[NCBrandColor sharedInstance].brand] backgroundColor:[UIColor whiteColor] height: 50.0 type:AHKActionSheetButtonTypeDefault handler:^(AHKActionSheet *as) {
+        [actionSheet addButtonWithTitle:NSLocalizedString(@"_share_", nil) image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetShare"] color:[NCBrandColor sharedInstance].brand] backgroundColor:[UIColor whiteColor] height: 50.0 type:AHKActionSheetButtonTypeDefault handler:^(AHKActionSheet *as) {
                 // close swipe
                 [self setEditing:NO animated:YES];
                                     
@@ -421,7 +421,7 @@
     // NO Directory - NO Template
     if (metadata.directory == NO && [metadata.type isEqualToString:k_metadataType_template] == NO) {
         
-        [actionSheet addButtonWithTitle:NSLocalizedString(@"_open_in_", nil) image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_actionSheetOpenIn] color:[NCBrandColor sharedInstance].brand] backgroundColor:[UIColor whiteColor] height: 50.0 type:AHKActionSheetButtonTypeDefault handler:^(AHKActionSheet *as) {
+        [actionSheet addButtonWithTitle:NSLocalizedString(@"_open_in_", nil) image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetOpenIn"] color:[NCBrandColor sharedInstance].brand] backgroundColor:[UIColor whiteColor] height: 50.0 type:AHKActionSheetButtonTypeDefault handler:^(AHKActionSheet *as) {
                 [self.tableView setEditing:NO animated:YES];
                 [self openWith:metadata];
             }];
@@ -544,7 +544,7 @@
     cell.fileImageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]];
         
     if (_serverUrl == nil)
-        cell.offlineImageView.image = [UIImage imageNamed:image_favorite];
+        cell.offlineImageView.image = [UIImage imageNamed:@"favorite"];
     
     if (cell.fileImageView.image == nil && metadata.thumbnailExists)
         [[CCActions sharedInstance] downloadTumbnail:metadata delegate:self];

@@ -69,9 +69,9 @@
 - (UIImage *)passcodeField:(BKPasscodeField *)aPasscodeField dotImageAtIndex:(NSInteger)aIndex filled:(BOOL)aFilled
 {
     if (aFilled) {
-        return [UIImage imageNamed:image_bkfull];
+        return [UIImage imageNamed:@"bkfull"];
     } else {
-        return [UIImage imageNamed:image_bkempty];
+        return [UIImage imageNamed:@"bkempty"];
     }
 }
 

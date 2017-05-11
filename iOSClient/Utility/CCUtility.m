@@ -869,7 +869,7 @@
         // Type Video
         else if (UTTypeConformsTo(fileUTI, kUTTypeMovie)) {
             metadata.typeFile = k_metadataTypeFile_video;
-            metadata.iconName = image_file_movie;
+            metadata.iconName = @"file_movie";
         }
         // Type Audio
         else if (UTTypeConformsTo(fileUTI, kUTTypeAudio)) {
@@ -880,7 +880,7 @@
         else if (UTTypeConformsTo(fileUTI, kUTTypeContent) || [ext isEqualToString:@"MD"]) {
             
             metadata.typeFile = k_metadataTypeFile_document;
-            metadata.iconName = image_document;
+            metadata.iconName = @"document";
             
             NSString *typeFile = (__bridge NSString *)fileUTI;
             
@@ -897,7 +897,7 @@
             }
             
             if ([typeFile isEqualToString:@"public.plain-text"] || [ext isEqualToString:@"MD"]) {
-                metadata.iconName = image_file_txt;
+                metadata.iconName = @"file_txt";
             }
             
             if ([typeFile isEqualToString:@"public.html"]) {
@@ -925,11 +925,11 @@
         // icon directory
         metadata.typeFile = k_metadataTypeFile_directory;
         
-        if (metadata.cryptated) metadata.iconName = image_foldercrypto;
-        else metadata.iconName = image_folder;
+        if (metadata.cryptated) metadata.iconName = @"foldercrypto";
+        else metadata.iconName = @"folder";
         
         if([metadata.fileName isEqualToString:cameraFolderName] && [directory isEqualToString:cameraFolderPath])
-            metadata.iconName = image_folderphotocamera;
+            metadata.iconName = @"folderphotocamera";
     }
 }
 
