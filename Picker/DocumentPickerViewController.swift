@@ -763,7 +763,7 @@ extension DocumentPickerViewController: UITableViewDataSource {
         }
         
         if metadata.directory && CCCoreData.isDirectoryLock(lockServerUrl, activeAccount: activeAccount) && (passcode?.characters.count)! > 0 {
-            cell.StatusImageView.image = UIImage(named: image_passcode)
+            cell.StatusImageView.image = UIImage(named: "passcode")
         } else {
             cell.StatusImageView.image = nil
         }

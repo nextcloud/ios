@@ -601,7 +601,7 @@
     // Notification
     if ([app.listOfNotifications count] > 0) {
         
-        buttonNotification = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:image_notification] style:UIBarButtonItemStylePlain target:self action:@selector(viewNotification)];
+        buttonNotification = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"notification"] style:UIBarButtonItemStylePlain target:self action:@selector(viewNotification)];
         buttonNotification.tintColor = [NCBrandColor sharedInstance].navigationBarText;
         buttonNotification.enabled = true;
     }
@@ -5077,7 +5077,7 @@
     // Directory con passcode lock attivato
     NSString *lockServerUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileNameData];
     if (metadata.directory && ([CCCoreData isDirectoryLock:lockServerUrl activeAccount:app.activeAccount] && [[CCUtility getBlockCode] length]))
-        cell.statusImageView.image = [UIImage imageNamed:image_passcode];
+        cell.statusImageView.image = [UIImage imageNamed:@"passcode"];
     
     // ----------------------------------------------------------------------------------------------------------
     // Offline
@@ -5087,7 +5087,7 @@
     
     if (isOfflineFile) {
         
-        cell.offlineImageView.image = [UIImage imageNamed:image_offline];
+        cell.offlineImageView.image = [UIImage imageNamed:@"offline"];
     }
     
     // ----------------------------------------------------------------------------------------------------------

@@ -143,7 +143,7 @@
     icon = [UIImage imageNamed:@"deleteSelectedFiles"];
     UIBarButtonItem *buttonDelete = [[UIBarButtonItem alloc] initWithImage:icon style:UIBarButtonItemStylePlain target:self action:@selector(deleteSelectedFiles)];
     
-    icon = [UIImage imageNamed:image_openSelectedFiles];
+    icon = [UIImage imageNamed:@"openSelectedFiles"];
     UIBarButtonItem *buttonOpenWith = [[UIBarButtonItem alloc] initWithImage:icon style:UIBarButtonItemStylePlain target:self action:@selector(openSelectedFiles)];
     
     UIBarButtonItem *leftButton = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIBarButtonItemStylePlain target:self action:@selector(reloadCollection)];
@@ -250,7 +250,7 @@
 
 - (UIImage *)imageForEmptyDataSet:(UIScrollView *)scrollView
 {
-    return [CCGraphics changeThemingColorImage:[UIImage imageNamed:image_photosNoRecord] color:[NCBrandColor sharedInstance].brand];
+    return [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"photosNoRecord"] color:[NCBrandColor sharedInstance].brand];
 }
 
 - (NSAttributedString *)titleForEmptyDataSet:(UIScrollView *)scrollView

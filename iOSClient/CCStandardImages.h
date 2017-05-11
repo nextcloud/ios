@@ -22,20 +22,6 @@
 //
 
 
-#define image_MenuUploadPlainMode               @"menuUploadPlainMode"
-
-#define image_navBarOffline                     @"navBarOffline"
-#define image_navBarLocal                       @"navBarLocal"
-#define image_notification                      @"notification"
-
-#define image_offline                           @"offline"
-#define image_offlineTitle                      @"offlineTitle"
-#define image_openSelectedFiles                 @"openSelectedFiles"
-
-#define image_passcode                          @"passcode"
-#define image_plist                             @"plist"
-#define image_photosNoRecord                    @"photosNoRecord"
-
 #define image_quickActionPhotos                 @"quickActionPhotos"
 #define image_quickActionUpload                 @"quickActionUpload"
 #define image_quickActionUploadEncrypted        @"quickActionUploadEncrypted"
@@ -84,16 +70,6 @@
 #define image_statusuploadcrypto                @"statusuploadcrypto"
 #define image_stoptask                          @"stoptask"
 #define image_stoptaskcrypto                    @"stoptaskcrypto"
-
-#define image_tabBarFiles                       @"tabBarFiles"
-#define image_tabBarActivity                    @"activity"
-#define image_tabBarTransfer                    @"transfer"
-#define image_tabBarFavorite                    @"tabBarFavorite"
-#define image_tabBarOffline                     @"tabBarOffline"
-#define image_tabBarLocal                       @"tabBarLocal"
-#define image_tabBarPhotos                      @"tabBarPhotos"
-#define image_tabBarSettings                    @"tabBarSettings"
-#define image_tabBarMore                        @"tabBarMore"
 
 
 

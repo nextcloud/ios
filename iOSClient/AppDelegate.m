@@ -819,14 +819,14 @@
     // File
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexFile];
     [item setTitle:NSLocalizedString(@"_home_", nil)];
-    item.image = [UIImage imageNamed:image_tabBarFiles];
-    item.selectedImage = [UIImage imageNamed:image_tabBarFiles];
+    item.image = [UIImage imageNamed:@"tabBarFiles"];
+    item.selectedImage = [UIImage imageNamed:@"tabBarFiles"];
     
     // Favorites
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexOffline];
     [item setTitle:NSLocalizedString(@"_favorites_", nil)];
-    item.image = [UIImage imageNamed:image_tabBarFavorite];
-    item.selectedImage = [UIImage imageNamed:image_tabBarFavorite];
+    item.image = [UIImage imageNamed:@"tabBarFavorite"];
+    item.selectedImage = [UIImage imageNamed:@"tabBarFavorite"];
     
     // Hide (PLUS)
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexHide];
@@ -837,14 +837,14 @@
     // Photos
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexPhotos];
     [item setTitle:NSLocalizedString(@"_photo_camera_", nil)];
-    item.image = [UIImage imageNamed:image_tabBarPhotos];
-    item.selectedImage = [UIImage imageNamed:image_tabBarPhotos];
+    item.image = [UIImage imageNamed:@"tabBarPhotos"];
+    item.selectedImage = [UIImage imageNamed:@"tabBarPhotos"];
     
     // More
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexMore];
     [item setTitle:NSLocalizedString(@"_more_", nil)];
-    item.image = [UIImage imageNamed:image_tabBarMore];
-    item.selectedImage = [UIImage imageNamed:image_tabBarMore];
+    item.image = [UIImage imageNamed:@"tabBarMore"];
+    item.selectedImage = [UIImage imageNamed:@"tabBarMore"];
     
     // Plus Button
     UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] color:[NCBrandColor sharedInstance].brand];

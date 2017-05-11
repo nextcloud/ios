@@ -129,7 +129,7 @@ class CreateMenuAdd: NSObject {
             self.createMenuTemplate(view: view)
         })
 
-        actionSheet.addButton(withTitle: NSLocalizedString("_upload_plain_mode", comment: ""), image: UIImage(named: image_MenuUploadPlainMode), backgroundColor: colorLightGray, height: 50.0, type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
+        actionSheet.addButton(withTitle: NSLocalizedString("_upload_plain_mode", comment: ""), image: UIImage(named: "menuUploadPlainMode"), backgroundColor: colorLightGray, height: 50.0, type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
             self.createMenuPlain(view: view)
         })
         

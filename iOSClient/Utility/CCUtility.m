@@ -853,7 +853,7 @@
         // if wrong code, icon protect
         if (metadata.errorPasscode) {
             metadata.typeFile = k_metadataTypeFile_unknown;
-            metadata.iconName = image_plist;
+            metadata.iconName = @"plist";
             return;
         }
         // Type compress
@@ -916,7 +916,7 @@
                 
             } else {
             
-                if (metadata.cryptated) metadata.iconName = image_plist;
+                if (metadata.cryptated) metadata.iconName = @"plist";
                 else metadata.iconName = @"file";
             }
         }
