@@ -36,6 +36,7 @@
 #import "OCExternalSites.h"
 #import "OCCapabilities.h"
 #import "TableAccount+CoreDataClass.h"
+#import "TableCertificates+CoreDataClass.h"
 #import "TableMetadata+CoreDataClass.h"
 #import "TableDirectory+CoreDataClass.h"
 #import "TableLocalFile+CoreDataClass.h"
@@ -168,6 +169,10 @@
 + (NSArray *)getGeoInformationLocalFromFileID:(NSString *)fileID activeAccount:(NSString *)activeAccount;
 + (void)setGeoInformationLocalFromFileID:(NSString *)fileID exifDate:(NSDate *)exifDate exifLatitude:(NSString *)exifLatitude exifLongitude:(NSString *)exifLongitude activeAccount:(NSString *)activeAccount;
 + (void)setGeoInformationLocalNull;
+
+// ===== Certificates =====
+
++ (NSMutableArray *)getAllCertificatesLocationOldDB;
 
 // ===== Offline =====
 

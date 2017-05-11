@@ -1611,6 +1611,12 @@
     
     if (([actualVersion compare:@"2.17.3" options:NSNumericSearch] == NSOrderedAscending)) {
     
+        // Migrate Certificates Table
+        
+        NSArray *listCertificateLocation = [CCCoreData getAllCertificatesLocationOldDB];
+        
+        for (NSString *certificateLocation in listCertificateLocation)
+            [[NCManageDatabase sharedInstance] addCertificates:certificateLocation];
     }
 }
 

@@ -1412,6 +1412,27 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Certificates =====
+#pragma --------------------------------------------------------------------------------------------
+
++ (NSMutableArray *)getAllCertificatesLocationOldDB
+{
+    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
+    NSMutableArray *output = [NSMutableArray new];
+    
+    NSArray *records = [TableCertificates MR_findAllInContext:context];
+    
+    for (TableCertificates *record in records) {
+        
+        if (record.certificateLocation && record.certificateLocation.length > 0)
+            [output addObject:record.certificateLocation];
+        
+    }
+    
+    return output;
+}
+
+#pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Share =====
 #pragma --------------------------------------------------------------------------------------------
 /*

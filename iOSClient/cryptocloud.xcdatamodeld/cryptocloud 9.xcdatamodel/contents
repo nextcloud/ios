@@ -33,6 +33,9 @@
         <attribute name="user" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="webpage" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
+    <entity name="TableCertificates" syncable="YES">
+        <attribute name="certificateLocation" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
     <entity name="TableDirectory" representedClassName="TableDirectory" syncable="YES">
         <attribute name="account" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="dateReadDirectory" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
@@ -98,5 +101,6 @@
         <element name="TableDirectory" positionX="-6372" positionY="111" width="162" height="210"/>
         <element name="TableLocalFile" positionX="-6138" positionY="111" width="162" height="225"/>
         <element name="TableMetadata" positionX="-6138" positionY="402" width="162" height="510"/>
+        <element name="TableCertificates" positionX="-6399" positionY="252" width="128" height="60"/>
     </elements>
 </model>
