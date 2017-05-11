@@ -26,11 +26,11 @@
 #import "CCPhotosCameraUpload.h"
 #import "CCSynchronize.h"
 #import "CCTransfersCell.h"
-#import <OCCommunicationLib/OCActivity.h>
-#import <OCCommunicationLib/OCNotifications.h>
-#import <OCCommunicationLib/OCNotificationsAction.h>
-#import <OCCommunicationLib/OCFrameworkConstants.h>
-#import <OCCommunicationLib/OCCapabilities.h>
+#import "OCActivity.h"
+#import "OCNotifications.h"
+#import "OCNotificationsAction.h"
+#import "OCFrameworkConstants.h"
+#import "OCCapabilities.h"
 #import "CTAssetCheckmark.h"
 #import "NCBridgeSwift.h"
 

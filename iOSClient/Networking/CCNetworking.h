@@ -23,9 +23,9 @@
 
 #import <Foundation/Foundation.h>
 #import <Photos/Photos.h>
-#import <OCCommunicationLib/OCCommunication.h>
-#import <OCCommunicationLib/OCFrameworkConstants.h>
 
+#import "OCCommunication.h"
+#import "OCFrameworkConstants.h"
 #import "AFURLSessionManager.h"
 #import "TWMessageBarManager.h"
 #import "PHAsset+Utility.h"

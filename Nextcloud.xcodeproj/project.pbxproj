@@ -16,6 +16,102 @@
 		F70022391EC49BBE0080073F /* TableCertificates+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022351EC49BBE0080073F /* TableCertificates+CoreDataProperties.m */; };
 		F700223A1EC49BBE0080073F /* TableCertificates+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022351EC49BBE0080073F /* TableCertificates+CoreDataProperties.m */; };
 		F700223B1EC49BBE0080073F /* TableCertificates+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022351EC49BBE0080073F /* TableCertificates+CoreDataProperties.m */; };
+		F70022A11EC4C9100080073F /* AFHTTPSessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F700225A1EC4C9100080073F /* AFHTTPSessionManager.m */; };
+		F70022A21EC4C9100080073F /* AFHTTPSessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F700225A1EC4C9100080073F /* AFHTTPSessionManager.m */; };
+		F70022A31EC4C9100080073F /* AFHTTPSessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F700225A1EC4C9100080073F /* AFHTTPSessionManager.m */; };
+		F70022A41EC4C9100080073F /* AFNetworkReachabilityManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F700225D1EC4C9100080073F /* AFNetworkReachabilityManager.m */; };
+		F70022A51EC4C9100080073F /* AFNetworkReachabilityManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F700225D1EC4C9100080073F /* AFNetworkReachabilityManager.m */; };
+		F70022A61EC4C9100080073F /* AFNetworkReachabilityManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F700225D1EC4C9100080073F /* AFNetworkReachabilityManager.m */; };
+		F70022A71EC4C9100080073F /* AFSecurityPolicy.m in Sources */ = {isa = PBXBuildFile; fileRef = F700225F1EC4C9100080073F /* AFSecurityPolicy.m */; };
+		F70022A81EC4C9100080073F /* AFSecurityPolicy.m in Sources */ = {isa = PBXBuildFile; fileRef = F700225F1EC4C9100080073F /* AFSecurityPolicy.m */; };
+		F70022A91EC4C9100080073F /* AFSecurityPolicy.m in Sources */ = {isa = PBXBuildFile; fileRef = F700225F1EC4C9100080073F /* AFSecurityPolicy.m */; };
+		F70022AA1EC4C9100080073F /* AFURLRequestSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022611EC4C9100080073F /* AFURLRequestSerialization.m */; };
+		F70022AB1EC4C9100080073F /* AFURLRequestSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022611EC4C9100080073F /* AFURLRequestSerialization.m */; };
+		F70022AC1EC4C9100080073F /* AFURLRequestSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022611EC4C9100080073F /* AFURLRequestSerialization.m */; };
+		F70022AD1EC4C9100080073F /* AFURLResponseSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022631EC4C9100080073F /* AFURLResponseSerialization.m */; };
+		F70022AE1EC4C9100080073F /* AFURLResponseSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022631EC4C9100080073F /* AFURLResponseSerialization.m */; };
+		F70022AF1EC4C9100080073F /* AFURLResponseSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022631EC4C9100080073F /* AFURLResponseSerialization.m */; };
+		F70022B01EC4C9100080073F /* AFURLSessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022651EC4C9100080073F /* AFURLSessionManager.m */; };
+		F70022B11EC4C9100080073F /* AFURLSessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022651EC4C9100080073F /* AFURLSessionManager.m */; };
+		F70022B21EC4C9100080073F /* AFURLSessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022651EC4C9100080073F /* AFURLSessionManager.m */; };
+		F70022B31EC4C9100080073F /* OCActivity.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022671EC4C9100080073F /* OCActivity.m */; };
+		F70022B41EC4C9100080073F /* OCActivity.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022671EC4C9100080073F /* OCActivity.m */; };
+		F70022B51EC4C9100080073F /* OCActivity.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022671EC4C9100080073F /* OCActivity.m */; };
+		F70022B61EC4C9100080073F /* OCCapabilities.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022691EC4C9100080073F /* OCCapabilities.m */; };
+		F70022B71EC4C9100080073F /* OCCapabilities.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022691EC4C9100080073F /* OCCapabilities.m */; };
+		F70022B81EC4C9100080073F /* OCCapabilities.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022691EC4C9100080073F /* OCCapabilities.m */; };
+		F70022B91EC4C9100080073F /* OCCommunication.m in Sources */ = {isa = PBXBuildFile; fileRef = F700226B1EC4C9100080073F /* OCCommunication.m */; };
+		F70022BA1EC4C9100080073F /* OCCommunication.m in Sources */ = {isa = PBXBuildFile; fileRef = F700226B1EC4C9100080073F /* OCCommunication.m */; };
+		F70022BB1EC4C9100080073F /* OCCommunication.m in Sources */ = {isa = PBXBuildFile; fileRef = F700226B1EC4C9100080073F /* OCCommunication.m */; };
+		F70022BC1EC4C9100080073F /* OCExternalSites.m in Sources */ = {isa = PBXBuildFile; fileRef = F700226E1EC4C9100080073F /* OCExternalSites.m */; };
+		F70022BD1EC4C9100080073F /* OCExternalSites.m in Sources */ = {isa = PBXBuildFile; fileRef = F700226E1EC4C9100080073F /* OCExternalSites.m */; };
+		F70022BE1EC4C9100080073F /* OCExternalSites.m in Sources */ = {isa = PBXBuildFile; fileRef = F700226E1EC4C9100080073F /* OCExternalSites.m */; };
+		F70022BF1EC4C9100080073F /* OCFileDto.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022701EC4C9100080073F /* OCFileDto.m */; };
+		F70022C01EC4C9100080073F /* OCFileDto.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022701EC4C9100080073F /* OCFileDto.m */; };
+		F70022C11EC4C9100080073F /* OCFileDto.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022701EC4C9100080073F /* OCFileDto.m */; };
+		F70022C21EC4C9100080073F /* OCNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022731EC4C9100080073F /* OCNotifications.m */; };
+		F70022C31EC4C9100080073F /* OCNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022731EC4C9100080073F /* OCNotifications.m */; };
+		F70022C41EC4C9100080073F /* OCNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022731EC4C9100080073F /* OCNotifications.m */; };
+		F70022C51EC4C9100080073F /* OCNotificationsAction.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022751EC4C9100080073F /* OCNotificationsAction.m */; };
+		F70022C61EC4C9100080073F /* OCNotificationsAction.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022751EC4C9100080073F /* OCNotificationsAction.m */; };
+		F70022C71EC4C9100080073F /* OCNotificationsAction.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022751EC4C9100080073F /* OCNotificationsAction.m */; };
+		F70022C81EC4C9100080073F /* OCRichObjectStrings.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022771EC4C9100080073F /* OCRichObjectStrings.m */; };
+		F70022C91EC4C9100080073F /* OCRichObjectStrings.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022771EC4C9100080073F /* OCRichObjectStrings.m */; };
+		F70022CA1EC4C9100080073F /* OCRichObjectStrings.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022771EC4C9100080073F /* OCRichObjectStrings.m */; };
+		F70022CB1EC4C9100080073F /* OCSharedDto.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022791EC4C9100080073F /* OCSharedDto.m */; };
+		F70022CC1EC4C9100080073F /* OCSharedDto.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022791EC4C9100080073F /* OCSharedDto.m */; };
+		F70022CD1EC4C9100080073F /* OCSharedDto.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022791EC4C9100080073F /* OCSharedDto.m */; };
+		F70022CE1EC4C9100080073F /* OCShareUser.m in Sources */ = {isa = PBXBuildFile; fileRef = F700227B1EC4C9100080073F /* OCShareUser.m */; };
+		F70022CF1EC4C9100080073F /* OCShareUser.m in Sources */ = {isa = PBXBuildFile; fileRef = F700227B1EC4C9100080073F /* OCShareUser.m */; };
+		F70022D01EC4C9100080073F /* OCShareUser.m in Sources */ = {isa = PBXBuildFile; fileRef = F700227B1EC4C9100080073F /* OCShareUser.m */; };
+		F70022D11EC4C9100080073F /* OCUserProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = F700227D1EC4C9100080073F /* OCUserProfile.m */; };
+		F70022D21EC4C9100080073F /* OCUserProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = F700227D1EC4C9100080073F /* OCUserProfile.m */; };
+		F70022D31EC4C9100080073F /* OCUserProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = F700227D1EC4C9100080073F /* OCUserProfile.m */; };
+		F70022D41EC4C9100080073F /* NSDate+ISO8601.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022801EC4C9100080073F /* NSDate+ISO8601.m */; };
+		F70022D51EC4C9100080073F /* NSDate+ISO8601.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022801EC4C9100080073F /* NSDate+ISO8601.m */; };
+		F70022D61EC4C9100080073F /* NSDate+ISO8601.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022801EC4C9100080073F /* NSDate+ISO8601.m */; };
+		F70022D71EC4C9100080073F /* NSDate+RFC1123.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022821EC4C9100080073F /* NSDate+RFC1123.m */; };
+		F70022D81EC4C9100080073F /* NSDate+RFC1123.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022821EC4C9100080073F /* NSDate+RFC1123.m */; };
+		F70022D91EC4C9100080073F /* NSDate+RFC1123.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022821EC4C9100080073F /* NSDate+RFC1123.m */; };
+		F70022DA1EC4C9100080073F /* OCHTTPRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022841EC4C9100080073F /* OCHTTPRequestOperation.m */; };
+		F70022DB1EC4C9100080073F /* OCHTTPRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022841EC4C9100080073F /* OCHTTPRequestOperation.m */; };
+		F70022DC1EC4C9100080073F /* OCHTTPRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022841EC4C9100080073F /* OCHTTPRequestOperation.m */; };
+		F70022DD1EC4C9100080073F /* OCWebDAVClient.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022861EC4C9100080073F /* OCWebDAVClient.m */; };
+		F70022DE1EC4C9100080073F /* OCWebDAVClient.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022861EC4C9100080073F /* OCWebDAVClient.m */; };
+		F70022DF1EC4C9100080073F /* OCWebDAVClient.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022861EC4C9100080073F /* OCWebDAVClient.m */; };
+		F70022E01EC4C9100080073F /* OCXMLListParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022891EC4C9100080073F /* OCXMLListParser.m */; };
+		F70022E11EC4C9100080073F /* OCXMLListParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022891EC4C9100080073F /* OCXMLListParser.m */; };
+		F70022E21EC4C9100080073F /* OCXMLListParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022891EC4C9100080073F /* OCXMLListParser.m */; };
+		F70022E31EC4C9100080073F /* OCXMLParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F700228B1EC4C9100080073F /* OCXMLParser.m */; };
+		F70022E41EC4C9100080073F /* OCXMLParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F700228B1EC4C9100080073F /* OCXMLParser.m */; };
+		F70022E51EC4C9100080073F /* OCXMLParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F700228B1EC4C9100080073F /* OCXMLParser.m */; };
+		F70022E61EC4C9100080073F /* OCXMLServerErrorsParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F700228D1EC4C9100080073F /* OCXMLServerErrorsParser.m */; };
+		F70022E71EC4C9100080073F /* OCXMLServerErrorsParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F700228D1EC4C9100080073F /* OCXMLServerErrorsParser.m */; };
+		F70022E81EC4C9100080073F /* OCXMLServerErrorsParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F700228D1EC4C9100080073F /* OCXMLServerErrorsParser.m */; };
+		F70022E91EC4C9100080073F /* OCXMLShareByLinkParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F700228F1EC4C9100080073F /* OCXMLShareByLinkParser.m */; };
+		F70022EA1EC4C9100080073F /* OCXMLShareByLinkParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F700228F1EC4C9100080073F /* OCXMLShareByLinkParser.m */; };
+		F70022EB1EC4C9100080073F /* OCXMLShareByLinkParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F700228F1EC4C9100080073F /* OCXMLShareByLinkParser.m */; };
+		F70022EC1EC4C9100080073F /* OCXMLSharedParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022911EC4C9100080073F /* OCXMLSharedParser.m */; };
+		F70022ED1EC4C9100080073F /* OCXMLSharedParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022911EC4C9100080073F /* OCXMLSharedParser.m */; };
+		F70022EE1EC4C9100080073F /* OCXMLSharedParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022911EC4C9100080073F /* OCXMLSharedParser.m */; };
+		F70022EF1EC4C9100080073F /* test.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = F70022941EC4C9100080073F /* test.jpeg */; };
+		F70022F01EC4C9100080073F /* test.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = F70022941EC4C9100080073F /* test.jpeg */; };
+		F70022F11EC4C9100080073F /* test.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = F70022941EC4C9100080073F /* test.jpeg */; };
+		F70022F21EC4C9100080073F /* video.MOV in Resources */ = {isa = PBXBuildFile; fileRef = F70022951EC4C9100080073F /* video.MOV */; };
+		F70022F31EC4C9100080073F /* video.MOV in Resources */ = {isa = PBXBuildFile; fileRef = F70022951EC4C9100080073F /* video.MOV */; };
+		F70022F41EC4C9100080073F /* video.MOV in Resources */ = {isa = PBXBuildFile; fileRef = F70022951EC4C9100080073F /* video.MOV */; };
+		F70022F51EC4C9100080073F /* OCChunkDto.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022981EC4C9100080073F /* OCChunkDto.m */; };
+		F70022F61EC4C9100080073F /* OCChunkDto.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022981EC4C9100080073F /* OCChunkDto.m */; };
+		F70022F71EC4C9100080073F /* OCChunkDto.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022981EC4C9100080073F /* OCChunkDto.m */; };
+		F70022F81EC4C9100080073F /* OCURLSessionUploadTask.m in Sources */ = {isa = PBXBuildFile; fileRef = F700229A1EC4C9100080073F /* OCURLSessionUploadTask.m */; };
+		F70022F91EC4C9100080073F /* OCURLSessionUploadTask.m in Sources */ = {isa = PBXBuildFile; fileRef = F700229A1EC4C9100080073F /* OCURLSessionUploadTask.m */; };
+		F70022FA1EC4C9100080073F /* OCURLSessionUploadTask.m in Sources */ = {isa = PBXBuildFile; fileRef = F700229A1EC4C9100080073F /* OCURLSessionUploadTask.m */; };
+		F70022FB1EC4C9100080073F /* NSString+Encode.m in Sources */ = {isa = PBXBuildFile; fileRef = F700229D1EC4C9100080073F /* NSString+Encode.m */; };
+		F70022FC1EC4C9100080073F /* NSString+Encode.m in Sources */ = {isa = PBXBuildFile; fileRef = F700229D1EC4C9100080073F /* NSString+Encode.m */; };
+		F70022FD1EC4C9100080073F /* NSString+Encode.m in Sources */ = {isa = PBXBuildFile; fileRef = F700229D1EC4C9100080073F /* NSString+Encode.m */; };
+		F70022FE1EC4C9100080073F /* UtilsFramework.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022A01EC4C9100080073F /* UtilsFramework.m */; };
+		F70022FF1EC4C9100080073F /* UtilsFramework.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022A01EC4C9100080073F /* UtilsFramework.m */; };
+		F70023001EC4C9100080073F /* UtilsFramework.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022A01EC4C9100080073F /* UtilsFramework.m */; };
 		F708CF6D1E56E8CC00271D8B /* TableMetadata+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF4E1E56E8CB00271D8B /* TableMetadata+CoreDataClass.m */; };
 		F708CF6E1E56E8CC00271D8B /* TableMetadata+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF4E1E56E8CB00271D8B /* TableMetadata+CoreDataClass.m */; };
 		F708CF6F1E56E8CC00271D8B /* TableMetadata+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF4E1E56E8CB00271D8B /* TableMetadata+CoreDataClass.m */; };
@@ -89,8 +185,6 @@
 		F7145A211D12E3B700CAFEEC /* Error.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7B381BF1C074E3E004693F8 /* Error.strings */; };
 		F7145A231D12E3B700CAFEEC /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7E70DE91A24DE4100E1B66A /* Localizable.strings */; };
 		F7145A241D12E3B700CAFEEC /* CCCellShareExt.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7296A621C8880C9001A7809 /* CCCellShareExt.xib */; };
-		F71E68001DC1F792003BA52B /* libownCloudiOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F71E67FC1DC1F76F003BA52B /* libownCloudiOS.a */; };
-		F71E68021DC1F79D003BA52B /* libownCloudiOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F71E67FC1DC1F76F003BA52B /* libownCloudiOS.a */; };
 		F720E01F1E48C73E001A4B9E /* CCActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F720E01E1E48C73E001A4B9E /* CCActions.swift */; };
 		F725437C1E12A44A009BF4C2 /* CCSection.m in Sources */ = {isa = PBXBuildFile; fileRef = F78F6FAF1CC8CCB700F4EA25 /* CCSection.m */; };
 		F72AAECA1E5C60C700BB17E1 /* AHKActionSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = F72AAEC31E5C60C700BB17E1 /* AHKActionSheet.m */; };
@@ -133,7 +227,6 @@
 		F73F537F1E929C8500F8678D /* CCMore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73F537E1E929C8500F8678D /* CCMore.swift */; };
 		F74344171E1264EE001CC831 /* DocumentPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74344161E1264EE001CC831 /* DocumentPickerViewController.swift */; };
 		F74344251E1264EE001CC831 /* FileProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74344241E1264EE001CC831 /* FileProvider.swift */; };
-		F74344541E1277D8001CC831 /* libownCloudiOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F71E67FC1DC1F76F003BA52B /* libownCloudiOS.a */; };
 		F74344551E1277E2001CC831 /* libMagicalRecord.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F7B61E9B1DC13C20009E938F /* libMagicalRecord.a */; };
 		F74344561E12784A001CC831 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63061D5B3467004E2AA5 /* libcrypto.a */; };
 		F74344591E12786C001CC831 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63071D5B3467004E2AA5 /* libssl.a */; };
@@ -627,20 +720,6 @@
 			remoteGlobalIDString = F71459B41D12E3B700CAFEEC;
 			remoteInfo = "Share Ext Nextcloud";
 		};
-		F71E67FB1DC1F76F003BA52B /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = F71E67F61DC1F76F003BA52B /* ownCloud iOS library.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = EA7CC897183E11E600B6A4B4;
-			remoteInfo = "ownCloud iOS library";
-		};
-		F71E67FD1DC1F76F003BA52B /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = F71E67F61DC1F76F003BA52B /* ownCloud iOS library.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = EA7CC8A7183E11E600B6A4B4;
-			remoteInfo = "ownCloud iOS libraryTests";
-		};
 		F74344271E1264EE001CC831 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F7F67BA01A24D27800EE80DA /* Project object */;
@@ -753,6 +832,73 @@
 		F70022331EC49BBE0080073F /* TableCertificates+CoreDataClass.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableCertificates+CoreDataClass.m"; sourceTree = "<group>"; };
 		F70022341EC49BBE0080073F /* TableCertificates+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableCertificates+CoreDataProperties.h"; sourceTree = "<group>"; };
 		F70022351EC49BBE0080073F /* TableCertificates+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableCertificates+CoreDataProperties.m"; sourceTree = "<group>"; };
+		F70022591EC4C9100080073F /* AFHTTPSessionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFHTTPSessionManager.h; sourceTree = "<group>"; };
+		F700225A1EC4C9100080073F /* AFHTTPSessionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFHTTPSessionManager.m; sourceTree = "<group>"; };
+		F700225B1EC4C9100080073F /* AFNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFNetworking.h; sourceTree = "<group>"; };
+		F700225C1EC4C9100080073F /* AFNetworkReachabilityManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFNetworkReachabilityManager.h; sourceTree = "<group>"; };
+		F700225D1EC4C9100080073F /* AFNetworkReachabilityManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFNetworkReachabilityManager.m; sourceTree = "<group>"; };
+		F700225E1EC4C9100080073F /* AFSecurityPolicy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFSecurityPolicy.h; sourceTree = "<group>"; };
+		F700225F1EC4C9100080073F /* AFSecurityPolicy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFSecurityPolicy.m; sourceTree = "<group>"; };
+		F70022601EC4C9100080073F /* AFURLRequestSerialization.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFURLRequestSerialization.h; sourceTree = "<group>"; };
+		F70022611EC4C9100080073F /* AFURLRequestSerialization.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFURLRequestSerialization.m; sourceTree = "<group>"; };
+		F70022621EC4C9100080073F /* AFURLResponseSerialization.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFURLResponseSerialization.h; sourceTree = "<group>"; };
+		F70022631EC4C9100080073F /* AFURLResponseSerialization.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFURLResponseSerialization.m; sourceTree = "<group>"; };
+		F70022641EC4C9100080073F /* AFURLSessionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFURLSessionManager.h; sourceTree = "<group>"; };
+		F70022651EC4C9100080073F /* AFURLSessionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFURLSessionManager.m; sourceTree = "<group>"; };
+		F70022661EC4C9100080073F /* OCActivity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCActivity.h; sourceTree = "<group>"; };
+		F70022671EC4C9100080073F /* OCActivity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCActivity.m; sourceTree = "<group>"; };
+		F70022681EC4C9100080073F /* OCCapabilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCCapabilities.h; sourceTree = "<group>"; };
+		F70022691EC4C9100080073F /* OCCapabilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCCapabilities.m; sourceTree = "<group>"; };
+		F700226A1EC4C9100080073F /* OCCommunication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCCommunication.h; sourceTree = "<group>"; };
+		F700226B1EC4C9100080073F /* OCCommunication.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCCommunication.m; sourceTree = "<group>"; };
+		F700226C1EC4C9100080073F /* OCErrorMsg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCErrorMsg.h; sourceTree = "<group>"; };
+		F700226D1EC4C9100080073F /* OCExternalSites.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCExternalSites.h; sourceTree = "<group>"; };
+		F700226E1EC4C9100080073F /* OCExternalSites.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCExternalSites.m; sourceTree = "<group>"; };
+		F700226F1EC4C9100080073F /* OCFileDto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCFileDto.h; sourceTree = "<group>"; };
+		F70022701EC4C9100080073F /* OCFileDto.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCFileDto.m; sourceTree = "<group>"; };
+		F70022711EC4C9100080073F /* OCFrameworkConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCFrameworkConstants.h; sourceTree = "<group>"; };
+		F70022721EC4C9100080073F /* OCNotifications.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCNotifications.h; sourceTree = "<group>"; };
+		F70022731EC4C9100080073F /* OCNotifications.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCNotifications.m; sourceTree = "<group>"; };
+		F70022741EC4C9100080073F /* OCNotificationsAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCNotificationsAction.h; sourceTree = "<group>"; };
+		F70022751EC4C9100080073F /* OCNotificationsAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCNotificationsAction.m; sourceTree = "<group>"; };
+		F70022761EC4C9100080073F /* OCRichObjectStrings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCRichObjectStrings.h; sourceTree = "<group>"; };
+		F70022771EC4C9100080073F /* OCRichObjectStrings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCRichObjectStrings.m; sourceTree = "<group>"; };
+		F70022781EC4C9100080073F /* OCSharedDto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCSharedDto.h; sourceTree = "<group>"; };
+		F70022791EC4C9100080073F /* OCSharedDto.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCSharedDto.m; sourceTree = "<group>"; };
+		F700227A1EC4C9100080073F /* OCShareUser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCShareUser.h; sourceTree = "<group>"; };
+		F700227B1EC4C9100080073F /* OCShareUser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCShareUser.m; sourceTree = "<group>"; };
+		F700227C1EC4C9100080073F /* OCUserProfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCUserProfile.h; sourceTree = "<group>"; };
+		F700227D1EC4C9100080073F /* OCUserProfile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCUserProfile.m; sourceTree = "<group>"; };
+		F700227F1EC4C9100080073F /* NSDate+ISO8601.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDate+ISO8601.h"; sourceTree = "<group>"; };
+		F70022801EC4C9100080073F /* NSDate+ISO8601.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDate+ISO8601.m"; sourceTree = "<group>"; };
+		F70022811EC4C9100080073F /* NSDate+RFC1123.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDate+RFC1123.h"; sourceTree = "<group>"; };
+		F70022821EC4C9100080073F /* NSDate+RFC1123.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDate+RFC1123.m"; sourceTree = "<group>"; };
+		F70022831EC4C9100080073F /* OCHTTPRequestOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCHTTPRequestOperation.h; sourceTree = "<group>"; };
+		F70022841EC4C9100080073F /* OCHTTPRequestOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCHTTPRequestOperation.m; sourceTree = "<group>"; };
+		F70022851EC4C9100080073F /* OCWebDAVClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCWebDAVClient.h; sourceTree = "<group>"; };
+		F70022861EC4C9100080073F /* OCWebDAVClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCWebDAVClient.m; sourceTree = "<group>"; };
+		F70022881EC4C9100080073F /* OCXMLListParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCXMLListParser.h; sourceTree = "<group>"; };
+		F70022891EC4C9100080073F /* OCXMLListParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCXMLListParser.m; sourceTree = "<group>"; };
+		F700228A1EC4C9100080073F /* OCXMLParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCXMLParser.h; sourceTree = "<group>"; };
+		F700228B1EC4C9100080073F /* OCXMLParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCXMLParser.m; sourceTree = "<group>"; };
+		F700228C1EC4C9100080073F /* OCXMLServerErrorsParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCXMLServerErrorsParser.h; sourceTree = "<group>"; };
+		F700228D1EC4C9100080073F /* OCXMLServerErrorsParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCXMLServerErrorsParser.m; sourceTree = "<group>"; };
+		F700228E1EC4C9100080073F /* OCXMLShareByLinkParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCXMLShareByLinkParser.h; sourceTree = "<group>"; };
+		F700228F1EC4C9100080073F /* OCXMLShareByLinkParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCXMLShareByLinkParser.m; sourceTree = "<group>"; };
+		F70022901EC4C9100080073F /* OCXMLSharedParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCXMLSharedParser.h; sourceTree = "<group>"; };
+		F70022911EC4C9100080073F /* OCXMLSharedParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCXMLSharedParser.m; sourceTree = "<group>"; };
+		F70022921EC4C9100080073F /* ownCloud iOS library-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ownCloud iOS library-Prefix.pch"; sourceTree = "<group>"; };
+		F70022941EC4C9100080073F /* test.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = test.jpeg; sourceTree = "<group>"; };
+		F70022951EC4C9100080073F /* video.MOV */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = video.MOV; sourceTree = "<group>"; };
+		F70022971EC4C9100080073F /* OCChunkDto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCChunkDto.h; sourceTree = "<group>"; };
+		F70022981EC4C9100080073F /* OCChunkDto.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCChunkDto.m; sourceTree = "<group>"; };
+		F70022991EC4C9100080073F /* OCURLSessionUploadTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCURLSessionUploadTask.h; sourceTree = "<group>"; };
+		F700229A1EC4C9100080073F /* OCURLSessionUploadTask.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCURLSessionUploadTask.m; sourceTree = "<group>"; };
+		F700229C1EC4C9100080073F /* NSString+Encode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Encode.h"; sourceTree = "<group>"; };
+		F700229D1EC4C9100080073F /* NSString+Encode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Encode.m"; sourceTree = "<group>"; };
+		F700229E1EC4C9100080073F /* OCConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCConstants.h; sourceTree = "<group>"; };
+		F700229F1EC4C9100080073F /* UtilsFramework.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UtilsFramework.h; sourceTree = "<group>"; };
+		F70022A01EC4C9100080073F /* UtilsFramework.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UtilsFramework.m; sourceTree = "<group>"; };
 		F70211F41BAC56E9003FC03E /* CCCellMain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCCellMain.h; sourceTree = "<group>"; };
 		F70211F51BAC56E9003FC03E /* CCCellMain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCCellMain.m; sourceTree = "<group>"; };
 		F70211F61BAC56E9003FC03E /* CCCellMain.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CCCellMain.xib; sourceTree = "<group>"; };
@@ -952,7 +1098,6 @@
 		F7151A841D477A4B00E6AF45 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Error.strings; sourceTree = "<group>"; };
 		F719FDB11CF06645004895D0 /* CCPhotosCameraUpload.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCPhotosCameraUpload.h; sourceTree = "<group>"; };
 		F719FDB21CF06645004895D0 /* CCPhotosCameraUpload.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCPhotosCameraUpload.m; sourceTree = "<group>"; };
-		F71E67F61DC1F76F003BA52B /* ownCloud iOS library.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "ownCloud iOS library.xcodeproj"; path = "Libraries external/OCCommunicationLib/ownCloud iOS library.xcodeproj"; sourceTree = SOURCE_ROOT; };
 		F720E01E1E48C73E001A4B9E /* CCActions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CCActions.swift; path = Actions/CCActions.swift; sourceTree = "<group>"; };
 		F721371D1BAFF0920012B613 /* CCAccountWeb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCAccountWeb.h; sourceTree = "<group>"; };
 		F721371E1BAFF0920012B613 /* CCAccountWeb.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCAccountWeb.m; sourceTree = "<group>"; };
@@ -1625,7 +1770,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F71E68021DC1F79D003BA52B /* libownCloudiOS.a in Frameworks */,
 				F72C63891DC14B0400FA5ED5 /* libMagicalRecord.a in Frameworks */,
 				F7DFE2551EBDC3A400CF5202 /* RealmSwift.framework in Frameworks */,
 				F70A630F1D5B3467004E2AA5 /* libssl.a in Frameworks */,
@@ -1638,7 +1782,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F74344541E1277D8001CC831 /* libownCloudiOS.a in Frameworks */,
 				F74344551E1277E2001CC831 /* libMagicalRecord.a in Frameworks */,
 				F7DFE2561EBDC3A400CF5202 /* RealmSwift.framework in Frameworks */,
 				F74344591E12786C001CC831 /* libssl.a in Frameworks */,
@@ -1662,7 +1805,6 @@
 				F75EDFBF1E8C116D00E6F369 /* libstdc++.tbd in Frameworks */,
 				F75EDFBD1E8C112F00E6F369 /* libsqlite3.0.tbd in Frameworks */,
 				F7DFE2541EBDC3A400CF5202 /* RealmSwift.framework in Frameworks */,
-				F71E68001DC1F792003BA52B /* libownCloudiOS.a in Frameworks */,
 				F714526D1DC1523B0006A5D4 /* libMagicalRecord.a in Frameworks */,
 				F75EDFAC1E8C106900E6F369 /* FirebaseAnalytics.framework in Frameworks */,
 				F75EDFAE1E8C106900E6F369 /* FirebaseInstanceID.framework in Frameworks */,
@@ -1681,6 +1823,137 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		F70022561EC4C9100080073F /* OCCommunicationLib */ = {
+			isa = PBXGroup;
+			children = (
+				F70022571EC4C9100080073F /* ExternalLibs */,
+				F70022661EC4C9100080073F /* OCActivity.h */,
+				F70022671EC4C9100080073F /* OCActivity.m */,
+				F70022681EC4C9100080073F /* OCCapabilities.h */,
+				F70022691EC4C9100080073F /* OCCapabilities.m */,
+				F700226A1EC4C9100080073F /* OCCommunication.h */,
+				F700226B1EC4C9100080073F /* OCCommunication.m */,
+				F700226C1EC4C9100080073F /* OCErrorMsg.h */,
+				F700226D1EC4C9100080073F /* OCExternalSites.h */,
+				F700226E1EC4C9100080073F /* OCExternalSites.m */,
+				F700226F1EC4C9100080073F /* OCFileDto.h */,
+				F70022701EC4C9100080073F /* OCFileDto.m */,
+				F70022711EC4C9100080073F /* OCFrameworkConstants.h */,
+				F70022721EC4C9100080073F /* OCNotifications.h */,
+				F70022731EC4C9100080073F /* OCNotifications.m */,
+				F70022741EC4C9100080073F /* OCNotificationsAction.h */,
+				F70022751EC4C9100080073F /* OCNotificationsAction.m */,
+				F70022761EC4C9100080073F /* OCRichObjectStrings.h */,
+				F70022771EC4C9100080073F /* OCRichObjectStrings.m */,
+				F70022781EC4C9100080073F /* OCSharedDto.h */,
+				F70022791EC4C9100080073F /* OCSharedDto.m */,
+				F700227A1EC4C9100080073F /* OCShareUser.h */,
+				F700227B1EC4C9100080073F /* OCShareUser.m */,
+				F700227C1EC4C9100080073F /* OCUserProfile.h */,
+				F700227D1EC4C9100080073F /* OCUserProfile.m */,
+				F700227E1EC4C9100080073F /* OCWebDavClient */,
+				F70022921EC4C9100080073F /* ownCloud iOS library-Prefix.pch */,
+				F70022931EC4C9100080073F /* Resources */,
+				F70022961EC4C9100080073F /* UploadSupport */,
+				F700229B1EC4C9100080073F /* Utils */,
+			);
+			name = OCCommunicationLib;
+			path = Library/OCCommunicationLib;
+			sourceTree = "<group>";
+		};
+		F70022571EC4C9100080073F /* ExternalLibs */ = {
+			isa = PBXGroup;
+			children = (
+				F70022581EC4C9100080073F /* AFNetworking */,
+			);
+			path = ExternalLibs;
+			sourceTree = "<group>";
+		};
+		F70022581EC4C9100080073F /* AFNetworking */ = {
+			isa = PBXGroup;
+			children = (
+				F70022591EC4C9100080073F /* AFHTTPSessionManager.h */,
+				F700225A1EC4C9100080073F /* AFHTTPSessionManager.m */,
+				F700225B1EC4C9100080073F /* AFNetworking.h */,
+				F700225C1EC4C9100080073F /* AFNetworkReachabilityManager.h */,
+				F700225D1EC4C9100080073F /* AFNetworkReachabilityManager.m */,
+				F700225E1EC4C9100080073F /* AFSecurityPolicy.h */,
+				F700225F1EC4C9100080073F /* AFSecurityPolicy.m */,
+				F70022601EC4C9100080073F /* AFURLRequestSerialization.h */,
+				F70022611EC4C9100080073F /* AFURLRequestSerialization.m */,
+				F70022621EC4C9100080073F /* AFURLResponseSerialization.h */,
+				F70022631EC4C9100080073F /* AFURLResponseSerialization.m */,
+				F70022641EC4C9100080073F /* AFURLSessionManager.h */,
+				F70022651EC4C9100080073F /* AFURLSessionManager.m */,
+			);
+			path = AFNetworking;
+			sourceTree = "<group>";
+		};
+		F700227E1EC4C9100080073F /* OCWebDavClient */ = {
+			isa = PBXGroup;
+			children = (
+				F700227F1EC4C9100080073F /* NSDate+ISO8601.h */,
+				F70022801EC4C9100080073F /* NSDate+ISO8601.m */,
+				F70022811EC4C9100080073F /* NSDate+RFC1123.h */,
+				F70022821EC4C9100080073F /* NSDate+RFC1123.m */,
+				F70022831EC4C9100080073F /* OCHTTPRequestOperation.h */,
+				F70022841EC4C9100080073F /* OCHTTPRequestOperation.m */,
+				F70022851EC4C9100080073F /* OCWebDAVClient.h */,
+				F70022861EC4C9100080073F /* OCWebDAVClient.m */,
+				F70022871EC4C9100080073F /* Parsers */,
+			);
+			path = OCWebDavClient;
+			sourceTree = "<group>";
+		};
+		F70022871EC4C9100080073F /* Parsers */ = {
+			isa = PBXGroup;
+			children = (
+				F70022881EC4C9100080073F /* OCXMLListParser.h */,
+				F70022891EC4C9100080073F /* OCXMLListParser.m */,
+				F700228A1EC4C9100080073F /* OCXMLParser.h */,
+				F700228B1EC4C9100080073F /* OCXMLParser.m */,
+				F700228C1EC4C9100080073F /* OCXMLServerErrorsParser.h */,
+				F700228D1EC4C9100080073F /* OCXMLServerErrorsParser.m */,
+				F700228E1EC4C9100080073F /* OCXMLShareByLinkParser.h */,
+				F700228F1EC4C9100080073F /* OCXMLShareByLinkParser.m */,
+				F70022901EC4C9100080073F /* OCXMLSharedParser.h */,
+				F70022911EC4C9100080073F /* OCXMLSharedParser.m */,
+			);
+			path = Parsers;
+			sourceTree = "<group>";
+		};
+		F70022931EC4C9100080073F /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				F70022941EC4C9100080073F /* test.jpeg */,
+				F70022951EC4C9100080073F /* video.MOV */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		F70022961EC4C9100080073F /* UploadSupport */ = {
+			isa = PBXGroup;
+			children = (
+				F70022971EC4C9100080073F /* OCChunkDto.h */,
+				F70022981EC4C9100080073F /* OCChunkDto.m */,
+				F70022991EC4C9100080073F /* OCURLSessionUploadTask.h */,
+				F700229A1EC4C9100080073F /* OCURLSessionUploadTask.m */,
+			);
+			path = UploadSupport;
+			sourceTree = "<group>";
+		};
+		F700229B1EC4C9100080073F /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				F700229C1EC4C9100080073F /* NSString+Encode.h */,
+				F700229D1EC4C9100080073F /* NSString+Encode.m */,
+				F700229E1EC4C9100080073F /* OCConstants.h */,
+				F700229F1EC4C9100080073F /* UtilsFramework.h */,
+				F70022A01EC4C9100080073F /* UtilsFramework.m */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
 		F70211F31BAC56E9003FC03E /* Main */ = {
 			isa = PBXGroup;
 			children = (
@@ -2033,15 +2306,6 @@
 				F719FDB21CF06645004895D0 /* CCPhotosCameraUpload.m */,
 			);
 			path = PhotosCameraUpload;
-			sourceTree = "<group>";
-		};
-		F71E67F71DC1F76F003BA52B /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				F71E67FC1DC1F76F003BA52B /* libownCloudiOS.a */,
-				F71E67FE1DC1F76F003BA52B /* ownCloud iOS libraryTests.xctest */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		F720E02A1E48C74C001A4B9E /* Actions */ = {
@@ -3276,11 +3540,11 @@
 			isa = PBXGroup;
 			children = (
 				F7B61E861DC13C20009E938F /* MagicalRecord.xcodeproj */,
-				F71E67F61DC1F76F003BA52B /* ownCloud iOS library.xcodeproj */,
 				F70F02A81C889183008DAB36 /* Libraries external */,
 				F75EDFA41E8C106900E6F369 /* Analytics */,
 				F7A377131EB2364A002856D3 /* Fabric */,
 				F7C1CDD91E6DFC6F005D92BE /* Brand */,
+				F70022561EC4C9100080073F /* OCCommunicationLib */,
 				F7A582D71A24DAB500E903D7 /* AppDelegate.h */,
 				F7A582D61A24DAB500E903D7 /* AppDelegate.m */,
 				F7C8C1901B482CEA0048180E /* CCGlobal.h */,
@@ -3551,10 +3815,6 @@
 					ProductGroup = F7B61E871DC13C20009E938F /* Products */;
 					ProjectRef = F7B61E861DC13C20009E938F /* MagicalRecord.xcodeproj */;
 				},
-				{
-					ProductGroup = F71E67F71DC1F76F003BA52B /* Products */;
-					ProjectRef = F71E67F61DC1F76F003BA52B /* ownCloud iOS library.xcodeproj */;
-				},
 			);
 			projectRoot = "";
 			targets = (
@@ -3567,20 +3827,6 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		F71E67FC1DC1F76F003BA52B /* libownCloudiOS.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libownCloudiOS.a;
-			remoteRef = F71E67FB1DC1F76F003BA52B /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		F71E67FE1DC1F76F003BA52B /* ownCloud iOS libraryTests.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = "ownCloud iOS libraryTests.xctest";
-			remoteRef = F71E67FD1DC1F76F003BA52B /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		F7B61E931DC13C20009E938F /* MagicalRecord.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
@@ -3650,8 +3896,10 @@
 				F7145A1D1D12E3B700CAFEEC /* BKPasscodeView.strings in Resources */,
 				F7145A211D12E3B700CAFEEC /* Error.strings in Resources */,
 				F7145A231D12E3B700CAFEEC /* Localizable.strings in Resources */,
+				F70022F31EC4C9100080073F /* video.MOV in Resources */,
 				F700222D1EC479840080073F /* Custom.xcassets in Resources */,
 				F7145A241D12E3B700CAFEEC /* CCCellShareExt.xib in Resources */,
+				F70022F01EC4C9100080073F /* test.jpeg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3659,6 +3907,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F70022F41EC4C9100080073F /* video.MOV in Resources */,
+				F70022F11EC4C9100080073F /* test.jpeg in Resources */,
 				F7C742D81E7BD5C900D9C973 /* MainInterface.storyboard in Resources */,
 				F7FC88FD1E141A3F006D0506 /* Error.strings in Resources */,
 				F7FC88FB1E141A34006D0506 /* BKPasscodeView.strings in Resources */,
@@ -3740,6 +3990,7 @@
 				F7A3217B1E9E3EAF0069AD1B /* CCTransfersCell.xib in Resources */,
 				F77B0F2C1D118A16002130FE /* ZSSlink.png in Resources */,
 				F77B0F2D1D118A16002130FE /* ZSSsuperscript@2x.png in Resources */,
+				F70022F21EC4C9100080073F /* video.MOV in Resources */,
 				F7B1FBC41E72E3D1001781FE /* Media.xcassets in Resources */,
 				F77B0F2E1D118A16002130FE /* ZSScenterjustify.png in Resources */,
 				F77B0F2F1D118A16002130FE /* CCMove.storyboard in Resources */,
@@ -3820,6 +4071,7 @@
 				F762CBBA1EACB89C00B38484 /* LMMediaPlayerView.xib in Resources */,
 				F77B0F791D118A16002130FE /* ZSSunlink.png in Resources */,
 				F77B0F7A1D118A16002130FE /* ZSSredo.png in Resources */,
+				F70022EF1EC4C9100080073F /* test.jpeg in Resources */,
 				F7F54CE51E5B14C700E19C62 /* ImageError.png in Resources */,
 				F77B0F7B1D118A16002130FE /* ZSSrightjustify.png in Resources */,
 				F7F54CFC1E5B14C700E19C62 /* UIBarButtonItemArrowLeft@3x.png in Resources */,
@@ -3905,21 +4157,32 @@
 				F708CF6E1E56E8CC00271D8B /* TableMetadata+CoreDataClass.m in Sources */,
 				F71459BE1D12E3B700CAFEEC /* UIImage+Reflection.m in Sources */,
 				F73CC06D1E813DFF006E3047 /* BKPasscodeField.m in Sources */,
+				F70022C01EC4C9100080073F /* OCFileDto.m in Sources */,
 				F71459BF1D12E3B700CAFEEC /* RNEncryptor.m in Sources */,
 				F71459C21D12E3B700CAFEEC /* ShareViewController.m in Sources */,
 				F71459C31D12E3B700CAFEEC /* UIImage+Filtering.m in Sources */,
 				F77EB6281EC08036003F814F /* CCExifGeo.m in Sources */,
+				F70022A21EC4C9100080073F /* AFHTTPSessionManager.m in Sources */,
+				F70022A51EC4C9100080073F /* AFNetworkReachabilityManager.m in Sources */,
 				F73CC0731E813DFF006E3047 /* BKPasscodeLockScreenManager.m in Sources */,
 				F73CC06A1E813DFF006E3047 /* BKPasscodeDummyViewController.m in Sources */,
 				F73CC07C1E813DFF006E3047 /* BKTouchIDManager.m in Sources */,
+				F70022B71EC4C9100080073F /* OCCapabilities.m in Sources */,
+				F70022FF1EC4C9100080073F /* UtilsFramework.m in Sources */,
 				F71459C41D12E3B700CAFEEC /* UIImage+Saving.m in Sources */,
 				F786AC9D1EBDC88B0055AE9D /* NCDatabase.swift in Sources */,
 				F71459C51D12E3B700CAFEEC /* UIImage+Rotating.m in Sources */,
+				F70022BA1EC4C9100080073F /* OCCommunication.m in Sources */,
+				F70022ED1EC4C9100080073F /* OCXMLSharedParser.m in Sources */,
 				F71459C61D12E3B700CAFEEC /* CCMetadata.m in Sources */,
+				F70022D51EC4C9100080073F /* NSDate+ISO8601.m in Sources */,
+				F70022FC1EC4C9100080073F /* NSString+Encode.m in Sources */,
+				F70022E41EC4C9100080073F /* OCXMLParser.m in Sources */,
 				F708CF771E56E8CC00271D8B /* TableLocalFile+CoreDataProperties.m in Sources */,
 				F71459C91D12E3B700CAFEEC /* OCNetworking.m in Sources */,
 				F71459CC1D12E3B700CAFEEC /* RNCryptorEngine.m in Sources */,
 				F71459CD1D12E3B700CAFEEC /* AFViewShaker.m in Sources */,
+				F70022E11EC4C9100080073F /* OCXMLListParser.m in Sources */,
 				F71459CE1D12E3B700CAFEEC /* NSData+CommonCrypto.m in Sources */,
 				F708CF741E56E8CC00271D8B /* TableLocalFile+CoreDataClass.m in Sources */,
 				F73CC0791E813DFF006E3047 /* BKShiftingView.m in Sources */,
@@ -3932,33 +4195,52 @@
 				F71459D91D12E3B700CAFEEC /* CCCrypto.m in Sources */,
 				F732BA0B1D76DBA500E9878B /* CCNetworking.m in Sources */,
 				F71459DD1D12E3B700CAFEEC /* CCCoreData.m in Sources */,
+				F70022CF1EC4C9100080073F /* OCShareUser.m in Sources */,
 				F71459E11D12E3B700CAFEEC /* CCHud.m in Sources */,
 				F71459E41D12E3B700CAFEEC /* RNDecryptor.m in Sources */,
 				F71459E61D12E3B700CAFEEC /* NYXImagesHelper.m in Sources */,
+				F70022B11EC4C9100080073F /* AFURLSessionManager.m in Sources */,
 				F71459E91D12E3B700CAFEEC /* UIImage+Enhancing.m in Sources */,
 				F71459EA1D12E3B700CAFEEC /* CCCellShareExt.m in Sources */,
 				F73CCE321DC13798007E38D8 /* UICKeyChainStore.m in Sources */,
+				F70022AE1EC4C9100080073F /* AFURLResponseSerialization.m in Sources */,
+				F70022EA1EC4C9100080073F /* OCXMLShareByLinkParser.m in Sources */,
 				F708CF831E56E8CC00271D8B /* TableDirectory+CoreDataProperties.m in Sources */,
 				F71459ED1D12E3B700CAFEEC /* UIImage+Masking.m in Sources */,
 				F71459F01D12E3B700CAFEEC /* NSString+Base64.m in Sources */,
 				F77EB62A1EC0B50A003F814F /* CCCertificate.m in Sources */,
+				F70022D81EC4C9100080073F /* NSDate+RFC1123.m in Sources */,
+				F70022E71EC4C9100080073F /* OCXMLServerErrorsParser.m in Sources */,
+				F70022C91EC4C9100080073F /* OCRichObjectStrings.m in Sources */,
 				F7EF0CAF1D9E95F400A9D15E /* CCSharedDBSession.m in Sources */,
 				F71459F11D12E3B700CAFEEC /* CCMove.m in Sources */,
+				F70022C31EC4C9100080073F /* OCNotifications.m in Sources */,
 				F71459F31D12E3B700CAFEEC /* UIImage+Resizing.m in Sources */,
 				F71459F71D12E3B700CAFEEC /* CCGraphics.m in Sources */,
 				F786ACAB1EBDCCE60055AE9D /* NCManageDatabase.swift in Sources */,
+				F70022BD1EC4C9100080073F /* OCExternalSites.m in Sources */,
 				F71459FB1D12E3B700CAFEEC /* PPImageScrollingCellView.m in Sources */,
+				F70022A81EC4C9100080073F /* AFSecurityPolicy.m in Sources */,
 				F71459FF1D12E3B700CAFEEC /* RNCryptor.m in Sources */,
+				F70022AB1EC4C9100080073F /* AFURLRequestSerialization.m in Sources */,
 				F7145A001D12E3B700CAFEEC /* CCGlobal.m in Sources */,
+				F70022B41EC4C9100080073F /* OCActivity.m in Sources */,
 				F7145A011D12E3B700CAFEEC /* UIImage+Blurring.m in Sources */,
+				F70022CC1EC4C9100080073F /* OCSharedDto.m in Sources */,
+				F70022DB1EC4C9100080073F /* OCHTTPRequestOperation.m in Sources */,
 				F7145A041D12E3B700CAFEEC /* CCloadItemData.swift in Sources */,
 				F73CC07F1E813DFF006E3047 /* BKTouchIDSwitchView.m in Sources */,
 				F76B3CCF1EAE01BD00921AC9 /* NCBrand.swift in Sources */,
+				F70022F61EC4C9100080073F /* OCChunkDto.m in Sources */,
+				F70022F91EC4C9100080073F /* OCURLSessionUploadTask.m in Sources */,
 				F73CC0761E813DFF006E3047 /* BKPasscodeViewController.m in Sources */,
+				F70022D21EC4C9100080073F /* OCUserProfile.m in Sources */,
 				F7145A081D12E3B700CAFEEC /* PPCollectionViewCell.m in Sources */,
 				F7145A0D1D12E3B700CAFEEC /* NSData+Base64.m in Sources */,
 				F78088EB1DD3A1DB005C5A7C /* cryptocloud.xcdatamodeld in Sources */,
+				F70022C61EC4C9100080073F /* OCNotificationsAction.m in Sources */,
 				F7145A0E1D12E3B700CAFEEC /* AESCrypt.m in Sources */,
+				F70022DE1EC4C9100080073F /* OCWebDAVClient.m in Sources */,
 				F7145A111D12E3B700CAFEEC /* PPImageScrollingTableViewCell.m in Sources */,
 				F708CF711E56E8CC00271D8B /* TableMetadata+CoreDataProperties.m in Sources */,
 			);
@@ -3972,37 +4254,66 @@
 				F74344801E127ED3001CC831 /* NSString+Base64.m in Sources */,
 				F708CF9C1E56E8CC00271D8B /* TableAccount+CoreDataProperties.m in Sources */,
 				F708CF811E56E8CC00271D8B /* TableDirectory+CoreDataClass.m in Sources */,
+				F70022AF1EC4C9100080073F /* AFURLResponseSerialization.m in Sources */,
 				F743448C1E128010001CC831 /* CCCrypto.m in Sources */,
 				F725437C1E12A44A009BF4C2 /* CCSection.m in Sources */,
 				F74344651E127DE9001CC831 /* CCNetworking.m in Sources */,
 				F74344641E127DE6001CC831 /* OCNetworking.m in Sources */,
+				F70022CA1EC4C9100080073F /* OCRichObjectStrings.m in Sources */,
+				F70023001EC4C9100080073F /* UtilsFramework.m in Sources */,
 				F786ACAC1EBDCCE60055AE9D /* NCManageDatabase.swift in Sources */,
 				F73CC07A1E813DFF006E3047 /* BKShiftingView.m in Sources */,
+				F70022C11EC4C9100080073F /* OCFileDto.m in Sources */,
+				F70022EE1EC4C9100080073F /* OCXMLSharedParser.m in Sources */,
+				F70022C41EC4C9100080073F /* OCNotifications.m in Sources */,
 				F708CF841E56E8CC00271D8B /* TableDirectory+CoreDataProperties.m in Sources */,
 				F74344821E127F68001CC831 /* MBProgressHUD.m in Sources */,
+				F70022E21EC4C9100080073F /* OCXMLListParser.m in Sources */,
 				F743447D1E127ECB001CC831 /* AESCrypt.m in Sources */,
 				F743447E1E127ECE001CC831 /* NSData+Base64.m in Sources */,
+				F70022A61EC4C9100080073F /* AFNetworkReachabilityManager.m in Sources */,
 				F74344671E127E38001CC831 /* CCMetadata.m in Sources */,
+				F70022E51EC4C9100080073F /* OCXMLParser.m in Sources */,
+				F70022B21EC4C9100080073F /* AFURLSessionManager.m in Sources */,
+				F70022BB1EC4C9100080073F /* OCCommunication.m in Sources */,
+				F70022A31EC4C9100080073F /* AFHTTPSessionManager.m in Sources */,
+				F70022DC1EC4C9100080073F /* OCHTTPRequestOperation.m in Sources */,
 				F73CC0741E813DFF006E3047 /* BKPasscodeLockScreenManager.m in Sources */,
 				F77EB62B1EC0B50B003F814F /* CCCertificate.m in Sources */,
 				F7E718B01EB0FBE700FA58C9 /* CCGraphics.m in Sources */,
 				F74344171E1264EE001CC831 /* DocumentPickerViewController.swift in Sources */,
+				F70022D61EC4C9100080073F /* NSDate+ISO8601.m in Sources */,
 				F74344811E127F49001CC831 /* AFViewShaker.m in Sources */,
+				F70022E81EC4C9100080073F /* OCXMLServerErrorsParser.m in Sources */,
+				F70022D31EC4C9100080073F /* OCUserProfile.m in Sources */,
 				F74344791E127EA1001CC831 /* CCError.m in Sources */,
 				F708CF6F1E56E8CC00271D8B /* TableMetadata+CoreDataClass.m in Sources */,
+				F70022F71EC4C9100080073F /* OCChunkDto.m in Sources */,
+				F70022D01EC4C9100080073F /* OCShareUser.m in Sources */,
+				F70022EB1EC4C9100080073F /* OCXMLShareByLinkParser.m in Sources */,
 				F743447B1E127EAC001CC831 /* CCUtility.m in Sources */,
+				F70022A91EC4C9100080073F /* AFSecurityPolicy.m in Sources */,
+				F70022BE1EC4C9100080073F /* OCExternalSites.m in Sources */,
 				F77EB6291EC08037003F814F /* CCExifGeo.m in Sources */,
+				F70022CD1EC4C9100080073F /* OCSharedDto.m in Sources */,
+				F70022AC1EC4C9100080073F /* AFURLRequestSerialization.m in Sources */,
+				F70022FD1EC4C9100080073F /* NSString+Encode.m in Sources */,
+				F70022B51EC4C9100080073F /* OCActivity.m in Sources */,
+				F70022B81EC4C9100080073F /* OCCapabilities.m in Sources */,
 				F700223B1EC49BBE0080073F /* TableCertificates+CoreDataProperties.m in Sources */,
 				F74344871E127F95001CC831 /* UICKeyChainStore.m in Sources */,
 				F73CC0711E813DFF006E3047 /* BKPasscodeInputView.m in Sources */,
 				F73CC07D1E813DFF006E3047 /* BKTouchIDManager.m in Sources */,
 				F743447F1E127ED1001CC831 /* NSData+CommonCrypto.m in Sources */,
 				F74344891E127FC3001CC831 /* CCGlobal.m in Sources */,
+				F70022D91EC4C9100080073F /* NSDate+RFC1123.m in Sources */,
 				F73CC06E1E813DFF006E3047 /* BKPasscodeField.m in Sources */,
 				F74344841E127F84001CC831 /* RNCryptorEngine.m in Sources */,
 				F74344851E127F86001CC831 /* RNDecryptor.m in Sources */,
+				F70022FA1EC4C9100080073F /* OCURLSessionUploadTask.m in Sources */,
 				F74344881E127F9C001CC831 /* UIImage+animatedGIF.m in Sources */,
 				F73CC0771E813DFF006E3047 /* BKPasscodeViewController.m in Sources */,
+				F70022DF1EC4C9100080073F /* OCWebDAVClient.m in Sources */,
 				F743448A1E127FF2001CC831 /* CCHud.m in Sources */,
 				F74344861E127F89001CC831 /* RNEncryptor.m in Sources */,
 				F73CC06B1E813DFF006E3047 /* BKPasscodeDummyViewController.m in Sources */,
@@ -4016,6 +4327,7 @@
 				F70022381EC49BBE0080073F /* TableCertificates+CoreDataClass.m in Sources */,
 				F73CC0801E813DFF006E3047 /* BKTouchIDSwitchView.m in Sources */,
 				F743447C1E127EB2001CC831 /* NSString+TruncateToWidth.m in Sources */,
+				F70022C71EC4C9100080073F /* OCNotificationsAction.m in Sources */,
 				F708CF751E56E8CC00271D8B /* TableLocalFile+CoreDataClass.m in Sources */,
 				F74344831E127F80001CC831 /* RNCryptor.m in Sources */,
 			);
@@ -4035,9 +4347,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				F762CBBE1EACB89C00B38484 /* LMMediaItemQueueManager.m in Sources */,
+				F70022D71EC4C9100080073F /* NSDate+RFC1123.m in Sources */,
 				F7F06EC51DBFACC600099AE9 /* CTAssetsPickerController.m in Sources */,
 				F77B0DF01D118A16002130FE /* UIImage+Resizing.m in Sources */,
 				F7F06EAB1DBFACC600099AE9 /* CTAssetSelectionButton.m in Sources */,
+				F70022A41EC4C9100080073F /* AFNetworkReachabilityManager.m in Sources */,
 				F762CAFD1EACB66200B38484 /* XLFormInlineSelectorCell.m in Sources */,
 				F762CB691EACB7D400B38484 /* ReaderContentPage.m in Sources */,
 				F77B0DF21D118A16002130FE /* CCUploadFromOtherUpp.m in Sources */,
@@ -4055,7 +4369,9 @@
 				F7F54D091E5B14C800E19C62 /* MWPhoto.m in Sources */,
 				F77B0DFF1D118A16002130FE /* OCNetworking.m in Sources */,
 				F77B0E011D118A16002130FE /* RNCryptor.m in Sources */,
+				F70022DA1EC4C9100080073F /* OCHTTPRequestOperation.m in Sources */,
 				F77B0E021D118A16002130FE /* CCPhotosCameraUpload.m in Sources */,
+				F70022A11EC4C9100080073F /* AFHTTPSessionManager.m in Sources */,
 				F708CF6D1E56E8CC00271D8B /* TableMetadata+CoreDataClass.m in Sources */,
 				F762CB041EACB66200B38484 /* XLFormSwitchCell.m in Sources */,
 				F77B0E031D118A16002130FE /* CCShareInfoCMOC.m in Sources */,
@@ -4065,10 +4381,12 @@
 				F7F06ECD1DBFACC600099AE9 /* CTAssetThumbnailStacks.m in Sources */,
 				F7659A581DC0B760004860C4 /* NSIndexPath+PSTCollectionViewAdditions.m in Sources */,
 				F7659A681DC0B760004860C4 /* PSTCollectionViewUpdateItem.m in Sources */,
+				F70022EC1EC4C9100080073F /* OCXMLSharedParser.m in Sources */,
 				F7F54D061E5B14C800E19C62 /* MWCaptionView.m in Sources */,
 				F77B0E071D118A16002130FE /* ioapi.c in Sources */,
 				F762CB001EACB66200B38484 /* XLFormSegmentedCell.m in Sources */,
 				F732BA061D76CE1500E9878B /* CCNetworking.m in Sources */,
+				F70022B01EC4C9100080073F /* AFURLSessionManager.m in Sources */,
 				F7B1FBC71E72E3D1001781FE /* SwiftWebVC.swift in Sources */,
 				F77B0E111D118A16002130FE /* UIImage+Reflection.m in Sources */,
 				F762CB061EACB66200B38484 /* XLFormTextViewCell.m in Sources */,
@@ -4095,6 +4413,7 @@
 				F77B0E1B1D118A16002130FE /* CCGraphics.m in Sources */,
 				F7659A6E1DC0B760004860C4 /* PSTGridLayoutRow.m in Sources */,
 				F769D39B1E9E1506006DBBB4 /* CCLocalStorageCell.m in Sources */,
+				F70022CB1EC4C9100080073F /* OCSharedDto.m in Sources */,
 				F762CB701EACB7D400B38484 /* ReaderThumbCache.m in Sources */,
 				F762CB111EACB66200B38484 /* NSString+XLFormAdditions.m in Sources */,
 				F762CB6D1EACB7D400B38484 /* ReaderDocumentOutline.m in Sources */,
@@ -4108,6 +4427,7 @@
 				F762CB0E1EACB66200B38484 /* NSExpression+XLFormAdditions.m in Sources */,
 				F77B0E221D118A16002130FE /* CCManageLocation.m in Sources */,
 				F786AC9C1EBDC88B0055AE9D /* NCDatabase.swift in Sources */,
+				F70022C51EC4C9100080073F /* OCNotificationsAction.m in Sources */,
 				F77B0E231D118A16002130FE /* CCSharePermissionOC.m in Sources */,
 				F77B0E241D118A16002130FE /* HRColorCursor.m in Sources */,
 				F762CAF81EACB66200B38484 /* XLFormButtonCell.m in Sources */,
@@ -4117,12 +4437,15 @@
 				F77B0E261D118A16002130FE /* ZSSTextView.m in Sources */,
 				F762CAFC1EACB66200B38484 /* XLFormImageCell.m in Sources */,
 				F77B0E271D118A16002130FE /* CYRLayoutManager.m in Sources */,
+				F70022D11EC4C9100080073F /* OCUserProfile.m in Sources */,
 				F762CB681EACB7D400B38484 /* ReaderConstants.m in Sources */,
 				F7F06E9B1DBFACC600099AE9 /* UICollectionView+CTAssetsPickerController.m in Sources */,
 				F762CAFE1EACB66200B38484 /* XLFormLeftRightSelectorCell.m in Sources */,
 				F77B0E2D1D118A16002130FE /* CYRTextView.m in Sources */,
 				F762CB751EACB7D400B38484 /* ReaderThumbsView.m in Sources */,
 				F77B0E301D118A16002130FE /* CCHud.m in Sources */,
+				F70022E91EC4C9100080073F /* OCXMLShareByLinkParser.m in Sources */,
+				F70022E31EC4C9100080073F /* OCXMLParser.m in Sources */,
 				F762CB671EACB7D400B38484 /* CGPDFDocument.m in Sources */,
 				F77B0E311D118A16002130FE /* CCExifGeo.m in Sources */,
 				F77B0E321D118A16002130FE /* HRCgUtil.m in Sources */,
@@ -4161,6 +4484,7 @@
 				F7FCFFE01D707B83000E6E29 /* CCPeekPop.m in Sources */,
 				F7F06E911DBFACC600099AE9 /* NSIndexSet+CTAssetsPickerController.m in Sources */,
 				F77B0E541D118A16002130FE /* CCMove.m in Sources */,
+				F70022E61EC4C9100080073F /* OCXMLServerErrorsParser.m in Sources */,
 				F762CB171EACB66200B38484 /* XLFormRegexValidator.m in Sources */,
 				F77B0E551D118A16002130FE /* SSZipArchive.m in Sources */,
 				F73CC0691E813DFF006E3047 /* BKPasscodeDummyViewController.m in Sources */,
@@ -4190,6 +4514,7 @@
 				F70022361EC49BBE0080073F /* TableCertificates+CoreDataClass.m in Sources */,
 				F70022391EC49BBE0080073F /* TableCertificates+CoreDataProperties.m in Sources */,
 				F77B0E671D118A16002130FE /* Reachability.m in Sources */,
+				F70022F81EC4C9100080073F /* OCURLSessionUploadTask.m in Sources */,
 				F762CB121EACB66200B38484 /* UIView+XLFormAdditions.m in Sources */,
 				F73CC06F1E813DFF006E3047 /* BKPasscodeInputView.m in Sources */,
 				F77B0E6A1D118A16002130FE /* RNDecryptor.m in Sources */,
@@ -4209,6 +4534,7 @@
 				F7659A5A1DC0B760004860C4 /* PSTCollectionView.m in Sources */,
 				F7BF1B431D51E893000854F6 /* CCLogin.m in Sources */,
 				F77B0E7D1D118A16002130FE /* CYRTextStorage.m in Sources */,
+				F70022FB1EC4C9100080073F /* NSString+Encode.m in Sources */,
 				F77B0E801D118A16002130FE /* ZSSRichTextEditor.m in Sources */,
 				F7F06EC91DBFACC600099AE9 /* CTAssetsViewControllerTransition.m in Sources */,
 				F7659A661DC0B760004860C4 /* PSTCollectionViewLayout.m in Sources */,
@@ -4216,6 +4542,7 @@
 				F762CAFA1EACB66200B38484 /* XLFormDateCell.m in Sources */,
 				F77B0E871D118A16002130FE /* NSData+Base64.m in Sources */,
 				F77B0E8A1D118A16002130FE /* CCCartaDiCredito.m in Sources */,
+				F70022B91EC4C9100080073F /* OCCommunication.m in Sources */,
 				F762CB181EACB66200B38484 /* XLFormValidationStatus.m in Sources */,
 				F77B0E8F1D118A16002130FE /* CCSection.m in Sources */,
 				F72AAECB1E5C60C700BB17E1 /* AHKActionSheetViewController.m in Sources */,
@@ -4231,6 +4558,7 @@
 				F7F06EC11DBFACC600099AE9 /* CTAssetsPickerAccessDeniedView.m in Sources */,
 				F7F06ECB1DBFACC600099AE9 /* CTAssetThumbnailOverlay.m in Sources */,
 				F762CB011EACB66200B38484 /* XLFormSelectorCell.m in Sources */,
+				F70022AD1EC4C9100080073F /* AFURLResponseSerialization.m in Sources */,
 				F77B0E9B1D118A16002130FE /* CCBKPasscode.m in Sources */,
 				F77B0E9D1D118A16002130FE /* HRColorPickerView.m in Sources */,
 				F77B0E9F1D118A16002130FE /* mztools.c in Sources */,
@@ -4241,18 +4569,26 @@
 				F7659A601DC0B760004860C4 /* PSTCollectionViewData.m in Sources */,
 				F77B0EAA1D118A16002130FE /* zip.c in Sources */,
 				F77B0EAB1D118A16002130FE /* HRColorPickerViewController.m in Sources */,
+				F70022C21EC4C9100080073F /* OCNotifications.m in Sources */,
+				F70022BF1EC4C9100080073F /* OCFileDto.m in Sources */,
 				F7A13A041E7F3D5D00016680 /* UINavigationController+CCProgress.m in Sources */,
 				F7F06EB51DBFACC600099AE9 /* CTAssetsGridViewController.m in Sources */,
+				F70022F51EC4C9100080073F /* OCChunkDto.m in Sources */,
 				F73C002F1E55D7DF00EEEFA7 /* CCManageCryptoCloudSecurity.m in Sources */,
 				F7659A621DC0B760004860C4 /* PSTCollectionViewFlowLayout.m in Sources */,
 				F7F06EBD1DBFACC600099AE9 /* CTAssetsPageView.m in Sources */,
+				F70022DD1EC4C9100080073F /* OCWebDAVClient.m in Sources */,
 				F77B0EAD1D118A16002130FE /* CCGlobal.m in Sources */,
 				F7659A641DC0B760004860C4 /* PSTCollectionViewItemKey.m in Sources */,
+				F70022BC1EC4C9100080073F /* OCExternalSites.m in Sources */,
 				F73CC07B1E813DFF006E3047 /* BKTouchIDManager.m in Sources */,
 				F762CB031EACB66200B38484 /* XLFormStepCounterCell.m in Sources */,
 				F7F06ECF1DBFACC600099AE9 /* CTAssetThumbnailView.m in Sources */,
 				F762CAF71EACB66200B38484 /* XLFormBaseCell.m in Sources */,
+				F70022E01EC4C9100080073F /* OCXMLListParser.m in Sources */,
 				F7F06E9F1DBFACC600099AE9 /* CTAssetCheckmark.m in Sources */,
+				F70022B31EC4C9100080073F /* OCActivity.m in Sources */,
+				F70022D41EC4C9100080073F /* NSDate+ISO8601.m in Sources */,
 				F78964AD1EBB576C00403E13 /* JDStatusBarNotification.m in Sources */,
 				F762CB151EACB66200B38484 /* XLFormRowNavigationAccessoryView.m in Sources */,
 				F7F54D081E5B14C800E19C62 /* MWGridViewController.m in Sources */,
@@ -4279,6 +4615,7 @@
 				F77B0EBE1D118A16002130FE /* CCNote.m in Sources */,
 				F7F54D0B1E5B14C800E19C62 /* MWTapDetectingImageView.m in Sources */,
 				F77B0EBF1D118A16002130FE /* RNEncryptor.m in Sources */,
+				F70022A71EC4C9100080073F /* AFSecurityPolicy.m in Sources */,
 				F7F06EBF1DBFACC600099AE9 /* CTAssetsPageViewController.m in Sources */,
 				F7F06EA11DBFACC600099AE9 /* CTAssetCollectionViewCell.m in Sources */,
 				F78964AF1EBB576C00403E13 /* JDStatusBarView.m in Sources */,
@@ -4291,6 +4628,7 @@
 				F77B0EC31D118A16002130FE /* UIImage+Enhancing.m in Sources */,
 				F77B0EC61D118A16002130FE /* CCCellMain.m in Sources */,
 				F77B0EC71D118A16002130FE /* AESCrypt.m in Sources */,
+				F70022B61EC4C9100080073F /* OCCapabilities.m in Sources */,
 				F769D39A1E9E1506006DBBB4 /* CCLocalStorage.m in Sources */,
 				F762CB131EACB66200B38484 /* XLFormRightDetailCell.m in Sources */,
 				F762CB871EACB81000B38484 /* REMenu.m in Sources */,
@@ -4298,12 +4636,15 @@
 				F762CB091EACB66200B38484 /* XLFormViewController.m in Sources */,
 				F762CB161EACB66200B38484 /* XLFormTextView.m in Sources */,
 				F7ECBA6D1E239DCD003E6328 /* CCCreateCloud.swift in Sources */,
+				F70022FE1EC4C9100080073F /* UtilsFramework.m in Sources */,
 				F77B0ECB1D118A16002130FE /* HRBrightnessCursor.m in Sources */,
 				F762CB6E1EACB7D400B38484 /* ReaderMainPagebar.m in Sources */,
 				F77B0ECC1D118A16002130FE /* UIImage+Masking.m in Sources */,
 				F77B0ECE1D118A16002130FE /* NSData+CommonCrypto.m in Sources */,
+				F70022AA1EC4C9100080073F /* AFURLRequestSerialization.m in Sources */,
 				F77B0ECF1D118A16002130FE /* CYRToken.m in Sources */,
 				F72AAECA1E5C60C700BB17E1 /* AHKActionSheet.m in Sources */,
+				F70022C81EC4C9100080073F /* OCRichObjectStrings.m in Sources */,
 				F7F06EB11DBFACC600099AE9 /* CTAssetsGridView.m in Sources */,
 				F7A3217A1E9E3EAF0069AD1B /* CCTransfersCell.m in Sources */,
 				F77B0ED11D118A16002130FE /* Acknowledgements.m in Sources */,
@@ -4311,6 +4652,7 @@
 				F762CB6B1EACB7D400B38484 /* ReaderContentView.m in Sources */,
 				F73CC06C1E813DFF006E3047 /* BKPasscodeField.m in Sources */,
 				F77B0ED51D118A16002130FE /* PHAsset+Utility.m in Sources */,
+				F70022CE1EC4C9100080073F /* OCShareUser.m in Sources */,
 				F7F06E991DBFACC600099AE9 /* PHImageManager+CTAssetsPickerController.m in Sources */,
 				F7F06EBB1DBFACC600099AE9 /* CTAssetsNavigationController.m in Sources */,
 				F77B0ED91D118A16002130FE /* main.m in Sources */,
