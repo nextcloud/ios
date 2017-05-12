@@ -146,7 +146,7 @@ class NCManageDatabase: NSObject {
         return activeAccount
     }
     
-    func getAccountActive(_ account: String?) -> tableAccount? {
+    func getAccountActive() -> tableAccount? {
         
         let realm = try! Realm()
         
@@ -174,7 +174,54 @@ class NCManageDatabase: NSObject {
         
         return Array(results)
     }
+    
+    // getCameraUploadFolderNameActiveAccount + getCameraUploadFolderPathActiveAccount
+    func getCameraUploadFolderName(_ account: String, activeUrl : String?) -> String {
+        
+        let realm = try! Realm()
+        
+        let results = realm.objects(tableAccount.self).filter("account = %@", account)
+        if (results.count > 0) {
+            
+            if results[0].cameraUploadFolderName.characters.count > 0 {
+                
+                if activeUrl == nil {
+                    
+                    return results[0].cameraUploadFolderName
+                    
+                } else {
+                    
+                    return results[0].cameraUploadFolderPath
+                }
+                
+            } else {
+                
+                if activeUrl == nil {
+                    
+                    return k_folderDefaultCameraUpload
+                    
+                } else {
+                    
+                    return CCUtility.getHomeServerUrlActiveUrl(activeUrl!)
+                }
+            }
+        }
+        
+        return ""
+    }
 
+    // getCameraUploadFolderNamePathActiveAccount
+    func getCameraUploadFolderNamePath(_ account: String, activeUrl : String) -> String {
+        
+        let cameraFolderName = self.getCameraUploadFolderName(account, activeUrl: nil)
+        let cameraFolderPath = self.getCameraUploadFolderName(account, activeUrl: activeUrl)
+     
+        let folderPhotos = CCUtility.stringAppendServerUrl(cameraFolderPath, addFileName: cameraFolderName)!
+        
+        return folderPhotos
+    }
+    
+    
     //MARK: -
     //MARK: Table Activity
 

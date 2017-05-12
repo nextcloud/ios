@@ -289,6 +289,8 @@
     else return NO;
 }
 
+// ******** SET *********
+
 + (void)setCameraUpload:(BOOL)state activeAccount:(NSString *)activeAccount
 {
     [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
