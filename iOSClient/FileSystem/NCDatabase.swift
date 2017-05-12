@@ -16,8 +16,8 @@ class tableAccount: Object {
     dynamic var cameraUpload : Bool = false
     dynamic var cameraUploadBackground : Bool = false
     dynamic var cameraUploadCreateSubfolder : Bool = false
-    dynamic var cameraUploadDatePhoto = Date()
-    dynamic var cameraUploadDateVideo = Date()
+    dynamic var cameraUploadDatePhoto = NSDate()
+    dynamic var cameraUploadDateVideo = NSDate()
     dynamic var cameraUploadFolderName = ""
     dynamic var cameraUploadFolderPath = ""
     dynamic var cameraUploadFull : Bool = false
@@ -29,7 +29,7 @@ class tableAccount: Object {
     dynamic var displayName = ""
     dynamic var email = ""
     dynamic var enabled : Bool = false
-    dynamic var optimization = Date()
+    dynamic var optimization = NSDate()
     dynamic var password = ""
     dynamic var phone = ""
     dynamic var quota : Double = 0
@@ -47,7 +47,7 @@ class tableActivity: Object {
     
     dynamic var account = ""
     dynamic var action = "Activity"
-    dynamic var date = Date()
+    dynamic var date = NSDate()
     dynamic var file = ""
     dynamic var fileID = ""
     dynamic var idActivity : Double = 0
@@ -62,7 +62,7 @@ class tableAutomaticUpload: Object {
     
     dynamic var account = ""
     dynamic var assetLocalIdentifier = ""
-    dynamic var date = Date()
+    dynamic var date = NSDate()
     dynamic var fileName = ""
     dynamic var lock : Bool = false
     dynamic var priority : Int = 0

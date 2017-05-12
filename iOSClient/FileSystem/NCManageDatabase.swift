@@ -196,7 +196,7 @@ class NCManageDatabase: NSObject {
                 let addActivity = tableActivity()
                 
                 addActivity.account = account
-                addActivity.date = activity.date
+                addActivity.date = activity.date! as NSDate
                 addActivity.idActivity = Double(activity.idActivity)
                 addActivity.link = activity.link
                 addActivity.note = activity.subject
