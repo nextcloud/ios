@@ -72,7 +72,7 @@
 "_file_too_big_max_100_"    = "File too large (max 100 kb.)";
 "_...loading..._"           = ".. loading ..";
 "_download_plist_"          = " ";
-"_no_reuploadfile_"         = "File not found, can not resend it, delete upload and reload the file to be upload.";
+"_no_reuploadfile_"         = "Could not find nor resend file. Delete the upload and reload the file to upload it.";
 "_file_already_exists_"     = "Unable to complete the operation, there is a file with the same name";
 "_read_file_error_"         = "Read file error";
 
@@ -105,7 +105,7 @@
 "_want_exit_"               = "Attention! _brand_ will be reset to the initial state. Continue?";
 "_proceed_"                 = "Proceed";
 "_delete_cache_"            = "Delete cache";
-"_want_delete_cache_"       = "Do you want to delete cache ?";
+"_want_delete_cache_"       = "Do you want to delete cache?";
 "_mail_deleted_"            = "Email deleted";
 "_mail_saved_"              = "Email saved";
 "_mail_sent_"               = "Email sent successfully";
@@ -116,14 +116,14 @@
 "_change_password_"         = "Change password";
 "_add_nextcloud_"           = "Add Nextcloud account";
 "_delete_account_"          = "Delete account";
-"_want_delete_"             = "Do you really want to delete it?";
-"_no_delete_"               = "No, do not delete it";
-"_yes_delete_"              = "Yes, delete it";
+"_want_delete_"             = "Do you really want to delete?";
+"_no_delete_"               = "No, do not delete";
+"_yes_delete_"              = "Yes, delete";
 "_remove_cache_"            = "Please wait, deleting cache ...";
 "_optimizations_"           = "Optimizations";
 "_synchronizations_"        = "Synchronized folders";
 "_version_server_"          = "Server version";
-"_check_key_aes_256_"       = "Control encryption key passcode";
+"_check_key_aes_256_"       = "Manage encryption key passcode";
 "_encryptpass_by_email_"    = "Send by email";
 "_title_mail_encryptpass_"  = "Encryption Key Passcode _brand_";
 "_text1_mail_encryptpass_"  = "Your encryption key passcode is";
@@ -272,31 +272,31 @@
 "_add_id_card_"                 = "Add ID card template";
 "_add_passport_"                = "Add passport template";
 "_add_atm_card_"                = "ATM card data";
-"_bank_name:_"                  = "Bank name :";
-"_code:_"                       = "Code :";
-"_security_code:_"              = "Security code :";
-"_pin:_"                        = "PIN :";
+"_bank_name:_"                  = "Bank name:";
+"_code:_"                       = "Code:";
+"_security_code:_"              = "Security code:";
+"_pin:_"                        = "PIN:";
 "_atm_card_"                    = "ATM card";
 "_credi_card_data_"             = "Credit Card data";
-"_name_surname:_"               = "Name Surname :";
-"_expiry_date:_"                = "Expiry date :";
+"_name_surname:_"               = "Name Surname:";
+"_expiry_date:_"                = "Expiry date:";
 "_credit_card_"                 = "Credit Card";
 "_id_card_"                     = "ID Card";
-"_number:_"                     = "Number :";
-"_place_of_birth:_"             = "Place of birth :";
-"_date_of_birth:_"              = "Date of birth :";
-"_date_of_issue:_"              = "Date of issue :";
-"_date_of_expiry:_"             = "Date of expiry :";
+"_number:_"                     = "Number:";
+"_place_of_birth:_"             = "Place of birth:";
+"_date_of_birth:_"              = "Date of birth:";
+"_date_of_issue:_"              = "Date of issue:";
+"_date_of_expiry:_"             = "Date of expiry:";
 "_bank_account_data_"           = "Bank account data";
-"_account_n:_"                  = "Account N. :";
-"_iban:_"                       = "IBAN :";
-"_swift:_"                      = "SWIFT :";
-"_agency:_"                     = "Agency :";
+"_account_n:_"                  = "Account N.:";
+"_iban:_"                       = "IBAN:";
+"_swift:_"                      = "SWIFT:";
+"_agency:_"                     = "Agency:";
 "_bank_account_"                = "Bank account";
 "_passport_"                    = "Passport";
 "_driving_license_"             = "Driving license";
-"_license_number:_"             = "License number :";
-"_vehicle_types:_"              = "Vehicle types :";
+"_license_number:_"             = "License number:";
+"_vehicle_types:_"              = "Vehicle types:";
 
 // Utility
 
@@ -332,7 +332,7 @@
 "_encrypted_selected_files_"    = "Encrypted files";
 "_decrypted_selected_files_"    = "Decrypted files";
 "_download_selected_files_"     = "Download files";
-"_error_passcode_"              = "Error: wrong passcode for encryption key.";
+"_error_passcode_"              = "Error: Wrong passcode for encryption key.";
 "_error_operation_canc_"        = "Error, operation canceled.";
 "_only_lock_passcode_"          = "Available only with Lock password activated. Activate in the Settings.";
 "_passcode_protection_"         = "Password protection";
@@ -384,11 +384,11 @@
 "_tite_footer_download_wwan_"   = "  Wi-Fi network required, %lu %@ to download";
 "_tite_footer_download_"        = "%lu %@ to download";
 "_limited_dimension_"           = "Maximum size reached";
-"_same_device_different_passcode_hint_" = "The file was encrypted by the same device but with different Passcode key encryption. Attention if the old Passcode is entered,files encrypted with the new Passcode will not be readable. \n\n Hint : %@";
-"_file_encrypted_another_device_hint_" = "The file was encrypted by another device [%@], enter the Passcode key encryption to read its contents. \n\n Hint : %@";
+"_same_device_different_passcode_hint_" = "The file was encrypted by the same device but with different Passcode key encryption. Attention if the old Passcode is entered,files encrypted with the new Passcode will not be readable. \n\n Hint: %@";
+"_file_encrypted_another_device_hint_" = "The file was encrypted by another device [%@], enter the Passcode key encryption to read its contents. \n\n Hint: %@";
 "_save_selected_files_"         = "Save images and videos to Photo Album";
-"_file_not_saved_cameraroll_"   = "Error, file not saved to Photo Album";
-"_file_saved_cameraroll_"       = "File saved to Photo Album";
+"_file_not_saved_cameraroll_"   = "Error, file not saved in Photo Album";
+"_file_saved_cameraroll_"       = "File saved in Photo Album";
 "_directory_on_top_yes_"        = "✓ Folders on top";
 "_directory_on_top_no_"         = "Folders on top";
 "_folder_automatic_upload_"     = "Folder for Automatic upload";
@@ -419,15 +419,15 @@
 
 "_search_this_folder_"          = "Search in this folder";
 "_search_all_folders_"          = "Search in all folders";
-"_search_sub_folder_"           = "Search here and subfolders";
+"_search_sub_folder_"           = "Search here and in subfolders";
 
 // Security
 
 "_reload_folder_"               = "Please reload folder";
 "_encrypt_error_"               = "During the encryption of file %@ an error occurred. [%@]";
 "_decrypt_error_"               = "During the decryption of file %@ an error occurred. [%@]";
-"_encryption_"                  = "Encrypting ...";
-"_decryption_"                  = "Decrypting ...";
+"_encryption_"                  = "Encrypting …";
+"_decryption_"                  = "Decrypting …";
 
 // CoreData
 
@@ -513,9 +513,9 @@
 
 "_upload_photos_videos_"            = "Upload photos and videos";
 "_upload_file_"                     = "Upload a file";
-"_upload_encrypted_mode"            = "Upload encrypted mode";
+"_upload_encrypted_mode"            = "Upload in encrypted mode";
 "_upload_template_"                 = "Upload a template";
-"_upload_plain_mode"                = "Upload plain mode";
+"_upload_plain_mode"                = "Upload in plain mode";
 
 // Document Picker
 
