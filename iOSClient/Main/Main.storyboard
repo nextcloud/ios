@@ -516,7 +516,7 @@
         <scene sceneID="dMv-43-hWy">
             <objects>
                 <navigationController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="bSZ-tE-FEj" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="File" image="fileNextcloud" id="Zxv-aS-HGF"/>
+                    <tabBarItem key="tabBarItem" title="File" image="tabBarFiles" id="Zxv-aS-HGF"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="cj6-rT-wnB">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
@@ -626,7 +626,7 @@
         <scene sceneID="cip-AF-Ks2">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="Cc7-4O-z6Q" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" enabled="NO" title="" image="Plus" id="vIy-cM-ojV"/>
+                    <tabBarItem key="tabBarItem" enabled="NO" title="" image="tabBarPlus" id="vIy-cM-ojV"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="jCU-so-Np6">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
@@ -828,14 +828,14 @@
         </scene>
     </scenes>
     <resources>
-        <image name="Plus" width="40" height="40"/>
         <image name="avatar" width="25" height="25"/>
         <image name="backgroundDetail" width="223" height="157"/>
         <image name="disclosureIndicator" width="13" height="14"/>
-        <image name="fileNextcloud" width="25" height="25"/>
         <image name="tabBarFavorite" width="25" height="25"/>
+        <image name="tabBarFiles" width="25" height="25"/>
         <image name="tabBarMore" width="25" height="25"/>
         <image name="tabBarPhotos" width="25" height="21"/>
+        <image name="tabBarPlus" width="40" height="40"/>
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="1IV-5w-SfJ"/>
