@@ -1480,9 +1480,15 @@
                         notification.user = [data valueForKey:@"user"];
                     
                     if ([data valueForKey:@"datetime"] && ![[data valueForKey:@"datetime"] isEqual:[NSNull null]]) {
+                        
                         NSString *dateString = [data valueForKey:@"datetime"];
-                        NSISO8601DateFormatter *formatter = [[NSISO8601DateFormatter alloc] init];
-                        notification.date = [formatter dateFromString:dateString];
+                        
+                        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+                        NSLocale *enUSPOSIXLocale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
+                        [dateFormatter setLocale:enUSPOSIXLocale];
+                        [dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ssZZZZZ"];
+                        
+                        notification.date = [dateFormatter dateFromString:dateString];
                     }
                     
                     if ([data valueForKey:@"object_type"] && ![[data valueForKey:@"object_type"] isEqual:[NSNull null]])
@@ -1672,9 +1678,15 @@
                         activity.idActivity = [[data valueForKey:@"id"] integerValue];
                     
                     if ([data valueForKey:@"date"] && ![[data valueForKey:@"date"] isEqual:[NSNull null]]) {
+                        
                         NSString *dateString = [data valueForKey:@"date"];
-                        NSISO8601DateFormatter *formatter = [[NSISO8601DateFormatter alloc] init];
-                        activity.date = [formatter dateFromString:dateString];
+                        
+                        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+                        NSLocale *enUSPOSIXLocale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
+                        [dateFormatter setLocale:enUSPOSIXLocale];
+                        [dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ssZZZZZ"];
+                        
+                        activity.date = [dateFormatter dateFromString:dateString];
                     }
                     
                     if ([data valueForKey:@"file"] && ![[data valueForKey:@"file"] isEqual:[NSNull null]])
