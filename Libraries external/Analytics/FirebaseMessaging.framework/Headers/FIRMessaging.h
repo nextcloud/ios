@@ -100,6 +100,7 @@ typedef NS_ENUM(NSInteger, FIRMessagingMessageStatus) {
  * To support devices running iOS 9 or below, use the local and remote notifications handlers
  * defined in UIApplicationDelegate protocol.
  */
+__IOS_AVAILABLE(10.0)
 @protocol FIRMessagingDelegate <NSObject>
 
 /// The callback to handle data message received via FCM for devices running iOS 10 or above.

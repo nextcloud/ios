@@ -4,7 +4,4 @@ framework module FirebaseCore {
   module * { export *}
   link "c++"
   link "z"
-  link framework "CoreGraphics"
-  link framework "Foundation"
-  link framework "UIKit"
 }

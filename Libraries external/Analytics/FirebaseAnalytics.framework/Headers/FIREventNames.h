@@ -98,6 +98,14 @@ static NSString *const kFIREventBeginCheckout = @"begin_checkout";
 /// </ul>
 static NSString *const kFIREventCampaignDetails = @"campaign_details";
 
+/// Checkout progress. Params:
+///
+/// <ul>
+///    <li>@c kFIRParameterCheckoutStep (unsigned 64-bit integer as NSNumber)</li>
+///    <li>@c kFIRParameterCheckoutOption (NSString) (optional)</li>
+/// </ul>
+static NSString *const kFIREventCheckoutProgress = @"checkout_progress";
+
 /// Earn Virtual Currency event. This event tracks the awarding of virtual currency in your app. Log
 /// this along with @c kFIREventSpendVirtualCurrency to better understand your virtual economy.
 /// Params:
@@ -210,6 +218,24 @@ static NSString *const kFIREventPresentOffer = @"present_offer";
 /// </ul>
 static NSString *const kFIREventPurchaseRefund = @"purchase_refund";
 
+/// Remove from cart event. Params:
+///
+/// <ul>
+///     <li>@c kFIRParameterQuantity (signed 64-bit integer as NSNumber)</li>
+///     <li>@c kFIRParameterItemID (NSString)</li>
+///     <li>@c kFIRParameterItemName (NSString)</li>
+///     <li>@c kFIRParameterItemCategory (NSString)</li>
+///     <li>@c kFIRParameterItemLocationID (NSString) (optional)</li>
+///     <li>@c kFIRParameterPrice (double as NSNumber) (optional)</li>
+///     <li>@c kFIRParameterCurrency (NSString) (optional)</li>
+///     <li>@c kFIRParameterValue (double as NSNumber) (optional)</li>
+///     <li>@c kFIRParameterOrigin (NSString) (optional)</li>
+///     <li>@c kFIRParameterDestination (NSString) (optional)</li>
+///     <li>@c kFIRParameterStartDate (NSString) (optional)</li>
+///     <li>@c kFIRParameterEndDate (NSString) (optional)</li>
+/// </ul>
+static NSString *const kFIREventRemoveFromCart = @"remove_from_cart";
+
 /// Search event. Apps that support search features can use this event to contextualize search
 /// operations by supplying the appropriate, corresponding parameters. This event can help you
 /// identify the most popular content in your app. Params:
@@ -239,6 +265,14 @@ static NSString *const kFIREventSearch = @"search";
 ///     <li>@c kFIRParameterItemID (NSString)</li>
 /// </ul>
 static NSString *const kFIREventSelectContent = @"select_content";
+
+/// Set checkout option. Params:
+///
+/// <ul>
+///    <li>@c kFIRParameterCheckoutStep (unsigned 64-bit integer as NSNumber)</li>
+///    <li>@c kFIRParameterCheckoutOption (NSString)</li>
+/// </ul>
+static NSString *const kFIREventSetCheckoutOption = @"set_checkout_option";
 
 /// Share event. Apps with social features can log the Share event to identify the most viral
 /// content. Params:

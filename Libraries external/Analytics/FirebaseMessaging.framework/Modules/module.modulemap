@@ -2,10 +2,9 @@ framework module FirebaseMessaging {
   umbrella header "FirebaseMessaging.h"
   export *
   module * { export *}
+  link "c++"
   link "sqlite3"
   link "z"
-  link framework "CoreGraphics"
-  link framework "Foundation"
   link framework "SystemConfiguration"
   link framework "UIKit"
 }
