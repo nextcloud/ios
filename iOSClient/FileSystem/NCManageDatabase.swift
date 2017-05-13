@@ -248,7 +248,6 @@ class NCManageDatabase: NSObject {
             
             for activity in listOfActivity {
                 
-                // Verify
                 let results = realm.objects(tableActivity.self).filter("idActivity = %d", activity.idActivity)
                 if (results.count > 0) {
                     continue
@@ -321,7 +320,6 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
         
-        // Verify if exists
         let results = realm.objects(tableAutomaticUpload.self).filter("account = %@ AND assetLocalIdentifier = %@", account, metadataNet.assetLocalIdentifier)
         if (results.count > 0) {
             return false
@@ -353,7 +351,6 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
         
-        // Verify if exists
         let results = realm.objects(tableAutomaticUpload.self).filter("account = %@ AND selector = %@ AND lock == false", account, selector)
         if (results.count == 0) {
             return nil
@@ -371,7 +368,7 @@ class NCManageDatabase: NSObject {
         metadataNet.session = results[0].session
         metadataNet.taskStatus = Int(k_taskStatusResume)
         
-        // Lock True
+        // Lock
         try! realm.write {
             results[0].lock = true
         }
@@ -395,7 +392,7 @@ class NCManageDatabase: NSObject {
         let results = realm.objects(tableAutomaticUpload.self).filter("account = %@ AND assetLocalIdentifier = %@", account, assetLocalIdentifier)
         if (results.count > 0) {
             
-            // Lock False
+            // UnLock
             try! realm.write {
                 results[0].lock = false
             }
