@@ -985,9 +985,12 @@
     
         tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesForAccount:self.activeAccount];
     
-        if ([NCBrandOptions sharedInstance].use_themingColor && capabilities.themingColor.length > 0) {
+        if ([NCBrandOptions sharedInstance].use_themingColor && capabilities.themingColor.length == 7) {
         
-            [NCBrandColor sharedInstance].brand = [CCGraphics colorFromHexString:capabilities.themingColor];
+            if ([[capabilities.themingColor substringWithRange:NSMakeRange(0, 6)] isEqualToString:@"#FFFFF"])
+                [NCBrandColor sharedInstance].brand = [NCBrandColor sharedInstance].customer;
+            else
+                [NCBrandColor sharedInstance].brand = [CCGraphics colorFromHexString:capabilities.themingColor];
             
         } else {
             
