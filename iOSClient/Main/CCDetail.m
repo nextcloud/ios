@@ -105,11 +105,6 @@
         [app plusButtonVisibile:false];
 }
 
-- (void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];    
-}
-
 // E' scomparso
 - (void)viewDidDisappear:(BOOL)animated
 {

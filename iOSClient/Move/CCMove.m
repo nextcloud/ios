@@ -98,22 +98,27 @@
         label.text = self.passMetadata.fileNamePrint;
         
         if (self.passMetadata.cryptated) label.textColor = NCBrandColor.sharedInstance.cryptocloud;
-        else label.textColor = self.tintColorTitle;
+        else label.textColor = NCBrandColor.sharedInstance.navigationBarText;
         
         label.backgroundColor =[UIColor clearColor];
         label.textAlignment = NSTextAlignmentCenter;
         self.navigationItem.titleView=label;
     }
     
-    // Toolbar Color
+    // read folder
+    [self readFolder];
+}
+
+// Apparirà
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    
     self.navigationController.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand;
     self.navigationController.navigationBar.tintColor = NCBrandColor.sharedInstance.navigationBarText;
     
     self.navigationController.toolbar.barTintColor = NCBrandColor.sharedInstance.tabBar;
     self.navigationController.toolbar.tintColor = NCBrandColor.sharedInstance.brand;
-    
-    // read folder
-    [self readFolder];
 }
 
 // MARK: - alertView
@@ -501,9 +506,9 @@
         viewController.onlyClearDirectory = self.onlyClearDirectory;
         viewController.selectedMetadatas = self.selectedMetadatas;
         viewController.move.title = self.move.title;
-        viewController.barTintColor = self.barTintColor;
-        viewController.tintColor = self.tintColor;
-        viewController.tintColorTitle = self.tintColorTitle;
+        //viewController.barTintColor = self.barTintColor;
+        //viewController.tintColor = self.tintColor;
+        //viewController.tintColorTitle = self.tintColorTitle;
         viewController.networkingOperationQueue = _networkingOperationQueue;
 
         viewController.passMetadata = metadata;
