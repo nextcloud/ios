@@ -87,7 +87,12 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         functionMenu.append(item)
         
         item = OCExternalSites.init()
-        item.name = "_activity_"
+        if NCBrandOptions.sharedInstance.use_recent_activity_title == true {
+            item.name = "_recent_activity_"
+        } else {
+            item.name = "_activity_"
+        }
+        
         item.icon = "moreActivity"
         item.url = "segueActivity"
         functionMenu.append(item)
