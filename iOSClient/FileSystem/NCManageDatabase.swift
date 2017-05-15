@@ -412,18 +412,18 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func countAutomaticUploadForAccount(_ account: String, selector: String?) -> Int {
+    func countAutomaticUploadForAccount(_ account: String, session: String?) -> Int {
         
         let realm = try! Realm()
         let results : Results<tableAutomaticUpload>
         
-        if (selector == nil) {
+        if (session == nil) {
             
             results = realm.objects(tableAutomaticUpload.self).filter("account = %@", account)
             
         } else {
             
-            results = realm.objects(tableAutomaticUpload.self).filter("account = %@ AND selector = %@", account, selector!)
+            results = realm.objects(tableAutomaticUpload.self).filter("account = %@ AND session = %@", account, session!)
         }
         
         return results.count

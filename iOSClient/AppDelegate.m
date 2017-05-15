@@ -936,7 +936,7 @@
     NSInteger queueUpload = [self getNumberUploadInQueues] + [self getNumberUploadInQueuesWWan];
     
     // Total
-    NSInteger total = queueDownload + queueUpload + [[NCManageDatabase sharedInstance] countAutomaticUploadForAccount:app.activeAccount selector:nil];
+    NSInteger total = queueDownload + queueUpload + [[NCManageDatabase sharedInstance] countAutomaticUploadForAccount:app.activeAccount session:nil];
     
     [UIApplication sharedApplication].applicationIconBadgeNumber = total;
     
