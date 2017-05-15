@@ -3295,8 +3295,8 @@
 			isa = PBXGroup;
 			children = (
 				F7C742D31E7BD36600D9C973 /* Supporting Files */,
-				F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */,
 				F700222B1EC479840080073F /* Custom.xcassets */,
+				F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */,
 			);
 			path = Brand;
 			sourceTree = "<group>";

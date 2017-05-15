@@ -341,6 +341,11 @@
     NSString *titleSection, *numberTitle;
     NSInteger typeOfSession = 0;
     
+    NSInteger queueDownload = [app getNumberDownloadInQueues];
+    NSInteger queueDownloadWWan = [app getNumberDownloadInQueuesWWan];
+    NSInteger queueUpload = [app getNumberUploadInQueues];
+    NSInteger queueUploadWWan = [app getNumberUploadInQueuesWWan];
+    
     if ([[_sectionDataSource.sections objectAtIndex:section] isKindOfClass:[NSString class]]) titleSection = [_sectionDataSource.sections objectAtIndex:section];
     if ([[_sectionDataSource.sections objectAtIndex:section] isKindOfClass:[NSDate class]]) titleSection = [CCUtility getTitleSectionDate:[_sectionDataSource.sections objectAtIndex:section]];
     
@@ -385,8 +390,8 @@
     elementLabel.textAlignment = NSTextAlignmentRight;
     elementLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     
-    if ((typeOfSession == download && app.queueNunDownload > rowsCount) || (typeOfSession == downloadwwan && app.queueNumDownloadWWan > rowsCount) ||
-        (typeOfSession == upload   && app.queueNumUpload > rowsCount)   || (typeOfSession == uploadwwan && app.queueNumUploadWWan > rowsCount)) {
+    if ((typeOfSession == download && queueDownload > rowsCount) || (typeOfSession == downloadwwan && queueDownloadWWan > rowsCount) ||
+        (typeOfSession == upload   && queueUpload > rowsCount)   || (typeOfSession == uploadwwan && queueUploadWWan > rowsCount)) {
         numberTitle = [NSString stringWithFormat:@"%lu+", (unsigned long)rowsCount];
     } else {
         numberTitle = [NSString stringWithFormat:@"%lu", (unsigned long)rowsCount];
@@ -408,6 +413,11 @@
     NSString *titleSection;
     NSString *element_s;
     
+    NSInteger queueDownload = [app getNumberDownloadInQueues];
+    NSInteger queueDownloadWWan = [app getNumberDownloadInQueuesWWan];
+    NSInteger queueUpload = [app getNumberUploadInQueues];
+    NSInteger queueUploadWWan = [app getNumberUploadInQueuesWWan];
+    
     if ([[_sectionDataSource.sections objectAtIndex:section] isKindOfClass:[NSString class]]) titleSection = [_sectionDataSource.sections objectAtIndex:section];
     
     // Prepare view for title in footer
@@ -422,11 +432,11 @@
     if ([titleSection containsString:@"download"] && ![titleSection containsString:@"wwan"] && titleSection != nil) {
         
         // element or elements ?
-        if (app.queueNunDownload > 1) element_s = NSLocalizedString(@"_elements_",nil);
+        if (queueDownload > 1) element_s = NSLocalizedString(@"_elements_",nil);
         else element_s = NSLocalizedString(@"_element_",nil);
         
         // Num record to upload
-        NSMutableAttributedString *stringFooter= [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:NSLocalizedString(@"_tite_footer_download_", nil), app.queueNunDownload, element_s]];
+        NSMutableAttributedString *stringFooter= [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:NSLocalizedString(@"_tite_footer_download_", nil), queueDownload, element_s]];
         titleFooterLabel.attributedText = stringFooter;
         
         [view addSubview:titleFooterLabel];
@@ -437,14 +447,14 @@
     if ([titleSection containsString:@"download"] && [titleSection containsString:@"wwan"] && titleSection != nil) {
         
         // element or elements ?
-        if (app.queueNumDownloadWWan > 1) element_s = NSLocalizedString(@"_elements_",nil);
+        if (queueDownloadWWan > 1) element_s = NSLocalizedString(@"_elements_",nil);
         else element_s = NSLocalizedString(@"_element_",nil);
         
         // Add the symbol WiFi and Num record
         NSTextAttachment *attachment = [[NSTextAttachment alloc] init];
         attachment.image = [UIImage imageNamed:@"WiFiSmall"];
         NSAttributedString *attachmentString = [NSAttributedString attributedStringWithAttachment:attachment];
-        NSMutableAttributedString *stringFooter= [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:NSLocalizedString(@"_tite_footer_download_wwan_", nil), app.queueNumDownloadWWan, element_s]];
+        NSMutableAttributedString *stringFooter= [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:NSLocalizedString(@"_tite_footer_download_wwan_", nil), queueDownloadWWan, element_s]];
         [stringFooter insertAttributedString:attachmentString atIndex:0];
         titleFooterLabel.attributedText = stringFooter;
         
@@ -456,11 +466,11 @@
     if ([titleSection containsString:@"upload"] && ![titleSection containsString:@"wwan"] && titleSection != nil) {
         
         // element or elements ?
-        if (app.queueNumUpload > 1) element_s = NSLocalizedString(@"_elements_",nil);
+        if (queueUpload > 1) element_s = NSLocalizedString(@"_elements_",nil);
         else element_s = NSLocalizedString(@"_element_",nil);
         
         // Num record to upload
-        NSMutableAttributedString *stringFooter= [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:NSLocalizedString(@"_tite_footer_upload_", nil), app.queueNumUpload, element_s]];
+        NSMutableAttributedString *stringFooter= [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:NSLocalizedString(@"_tite_footer_upload_", nil), queueUpload, element_s]];
         titleFooterLabel.attributedText = stringFooter;
         
         [view addSubview:titleFooterLabel];
@@ -471,14 +481,14 @@
     if ([titleSection containsString:@"upload"] && [titleSection containsString:@"wwan"] && titleSection != nil) {
         
         // element or elements ?
-        if (app.queueNumUploadWWan > 1) element_s = NSLocalizedString(@"_elements_",nil);
+        if (queueUploadWWan > 1) element_s = NSLocalizedString(@"_elements_",nil);
         else element_s = NSLocalizedString(@"_element_",nil);
         
         // Add the symbol WiFi and Num record
         NSTextAttachment *attachment = [[NSTextAttachment alloc] init];
         attachment.image = [UIImage imageNamed:@"WiFiSmall"];
         NSAttributedString *attachmentString = [NSAttributedString attributedStringWithAttachment:attachment];
-        NSMutableAttributedString *stringFooter= [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:NSLocalizedString(@"_tite_footer_upload_wwan_", nil), app.queueNumUploadWWan,element_s]];
+        NSMutableAttributedString *stringFooter= [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:NSLocalizedString(@"_tite_footer_upload_wwan_", nil), queueUploadWWan,element_s]];
         [stringFooter insertAttributedString:attachmentString atIndex:0];
         titleFooterLabel.attributedText = stringFooter;
         

@@ -74,8 +74,6 @@
 @property (nonatomic, strong) NSOperationQueue *netQueueUpload;
 @property (nonatomic, strong) NSOperationQueue *netQueueUploadWWan;
 
-@property NSUInteger queueNunDownload, queueNumDownloadWWan, queueNumUpload, queueNumUploadWWan;
-
 // Networking 
 @property (nonatomic, copy) void (^backgroundSessionCompletionHandler)(void);
 @property (nonatomic, strong) NSDate *sessionDateLastUploadTasks;
@@ -168,6 +166,11 @@
 - (void)loadAutomaticUpload;
 
 - (BOOL)createFolderSubFolderAutomaticUploadFolderPhotos:(NSString *)folderPhotos useSubFolder:(BOOL)useSubFolder assets:(NSArray *)assets selector:(NSString *)selector;
+
+- (NSInteger)getNumberDownloadInQueues;
+- (NSInteger)getNumberDownloadInQueuesWWan;
+- (NSInteger)getNumberUploadInQueues;
+- (NSInteger)getNumberUploadInQueuesWWan;
 
 @end
 

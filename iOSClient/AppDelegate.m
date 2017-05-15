@@ -932,31 +932,11 @@
 
 - (void)updateApplicationIconBadgeNumber
 {
-    // Core Data
-    _queueNunDownload = [[CCCoreData getTableMetadataDownloadAccount:self.activeAccount] count];
-    _queueNumDownloadWWan = [[CCCoreData getTableMetadataDownloadWWanAccount:self.activeAccount] count];
+    NSInteger queueDownload = [self getNumberDownloadInQueues] + [self getNumberDownloadInQueuesWWan];
+    NSInteger queueUpload = [self getNumberUploadInQueues] + [self getNumberUploadInQueuesWWan];
     
-    _queueNumUpload = [[CCCoreData getTableMetadataUploadAccount:self.activeAccount] count];
-    _queueNumUploadWWan = [[CCCoreData getTableMetadataUploadWWanAccount:self.activeAccount] count];
-    
-    // netQueueDownload
-    for (NSOperation *operation in [app.netQueueDownload operations])
-        if (((OCnetworking *)operation).isExecuting == NO) _queueNunDownload++;
-    
-    // netQueueDownloadWWan
-    for (NSOperation *operation in [app.netQueueDownloadWWan operations])
-        if (((OCnetworking *)operation).isExecuting == NO) _queueNumDownloadWWan++;
-    
-    // netQueueUpload
-    for (NSOperation *operation in [app.netQueueUpload operations])
-        if (((OCnetworking *)operation).isExecuting == NO) _queueNumUpload++;
-
-    // netQueueUploadWWan
-    for (NSOperation *operation in [app.netQueueUploadWWan operations])
-        if (((OCnetworking *)operation).isExecuting == NO) _queueNumUploadWWan++;
-
     // Total
-    NSUInteger total = _queueNunDownload + _queueNumDownloadWWan + _queueNumUpload + _queueNumUploadWWan + [[NCManageDatabase sharedInstance] countAutomaticUploadForAccount:app.activeAccount selector:nil];
+    NSInteger total = queueDownload + queueUpload + [[NCManageDatabase sharedInstance] countAutomaticUploadForAccount:app.activeAccount selector:nil];
     
     [UIApplication sharedApplication].applicationIconBadgeNumber = total;
     
@@ -1286,33 +1266,45 @@
 - (NSInteger)getNumberDownloadInQueues
 {
     NSInteger queueNunDownload = [[CCCoreData getTableMetadataDownloadAccount:self.activeAccount] count];
-    NSInteger queueNumDownloadWWan = [[CCCoreData getTableMetadataDownloadWWanAccount:self.activeAccount] count];
     
     // netQueueDownload
     for (NSOperation *operation in [app.netQueueDownload operations])
         if (((OCnetworking *)operation).isExecuting == NO) queueNunDownload++;
     
+    return queueNunDownload;
+}
+
+- (NSInteger)getNumberDownloadInQueuesWWan
+{
+    NSInteger queueNumDownloadWWan = [[CCCoreData getTableMetadataDownloadWWanAccount:self.activeAccount] count];
+    
     // netQueueDownloadWWan
     for (NSOperation *operation in [app.netQueueDownloadWWan operations])
         if (((OCnetworking *)operation).isExecuting == NO) queueNumDownloadWWan++;
     
-    return queueNunDownload + queueNumDownloadWWan;
+    return queueNumDownloadWWan;
 }
 
 - (NSInteger)getNumberUploadInQueues
 {
     NSInteger queueNumUpload = [[CCCoreData getTableMetadataUploadAccount:self.activeAccount] count];
-    NSInteger queueNumUploadWWan = [[CCCoreData getTableMetadataUploadWWanAccount:self.activeAccount] count];
     
     // netQueueUpload
     for (NSOperation *operation in [app.netQueueUpload operations])
         if (((OCnetworking *)operation).isExecuting == NO) queueNumUpload++;
     
+    return queueNumUpload;
+}
+
+- (NSInteger)getNumberUploadInQueuesWWan
+{
+    NSInteger queueNumUploadWWan = [[CCCoreData getTableMetadataUploadWWanAccount:self.activeAccount] count];
+    
     // netQueueUploadWWan
     for (NSOperation *operation in [app.netQueueUploadWWan operations])
         if (((OCnetworking *)operation).isExecuting == NO) queueNumUploadWWan++;
     
-    return queueNumUpload + queueNumUploadWWan;
+    return queueNumUploadWWan;
 }
 
 - (void)loadAutomaticUpload
@@ -1346,7 +1338,7 @@
     // ------------------------- <selectorUploadAutomatic> -------------------------
     
     metadataNet = [[NCManageDatabase sharedInstance] getAutomaticUploadForAccount:self.activeAccount selector:selectorUploadAutomatic];
-    counterUpload = [self getNumberUploadInQueues];
+    counterUpload = [self getNumberUploadInQueues] + [self getNumberUploadInQueuesWWan];
     while (metadataNet && counterUpload < k_maxConcurrentOperationDownloadUpload) {
         
         [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet.assetLocalIdentifier fileName:metadataNet.fileName serverUrl:metadataNet.serverUrl cryptated:metadataNet.cryptated session:metadataNet.session taskStatus:metadataNet.taskStatus selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:metadataNet.errorCode delegate:app.activeMain];
