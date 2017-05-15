@@ -3,7 +3,7 @@
 //  Crypto Cloud Technology Nextcloud
 //
 //  Created by Marino Faggiana on 04/09/14.
-//  Copyright (c) 2014 TWS. All rights reserved.
+//  Copyright (c) 2017 TWS. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
 //
@@ -1602,14 +1602,6 @@
         
         [CCCoreData clearAllDateReadDirectory];
         [CCCoreData flushTableMetadataAccount:nil];
-    }
-    
-    if (([actualVersion compare:@"2.17.1" options:NSNumericSearch] == NSOrderedAscending)) {
-        
-    }
-    
-    if (([actualVersion compare:@"2.17.2" options:NSNumericSearch] == NSOrderedAscending)) {
-        
     }
     
     if (([actualVersion compare:@"2.17.3" options:NSNumericSearch] == NSOrderedAscending)) {
