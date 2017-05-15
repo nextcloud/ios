@@ -94,12 +94,6 @@
 		F70022EC1EC4C9100080073F /* OCXMLSharedParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022911EC4C9100080073F /* OCXMLSharedParser.m */; };
 		F70022ED1EC4C9100080073F /* OCXMLSharedParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022911EC4C9100080073F /* OCXMLSharedParser.m */; };
 		F70022EE1EC4C9100080073F /* OCXMLSharedParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022911EC4C9100080073F /* OCXMLSharedParser.m */; };
-		F70022EF1EC4C9100080073F /* test.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = F70022941EC4C9100080073F /* test.jpeg */; };
-		F70022F01EC4C9100080073F /* test.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = F70022941EC4C9100080073F /* test.jpeg */; };
-		F70022F11EC4C9100080073F /* test.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = F70022941EC4C9100080073F /* test.jpeg */; };
-		F70022F21EC4C9100080073F /* video.MOV in Resources */ = {isa = PBXBuildFile; fileRef = F70022951EC4C9100080073F /* video.MOV */; };
-		F70022F31EC4C9100080073F /* video.MOV in Resources */ = {isa = PBXBuildFile; fileRef = F70022951EC4C9100080073F /* video.MOV */; };
-		F70022F41EC4C9100080073F /* video.MOV in Resources */ = {isa = PBXBuildFile; fileRef = F70022951EC4C9100080073F /* video.MOV */; };
 		F70022F51EC4C9100080073F /* OCChunkDto.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022981EC4C9100080073F /* OCChunkDto.m */; };
 		F70022F61EC4C9100080073F /* OCChunkDto.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022981EC4C9100080073F /* OCChunkDto.m */; };
 		F70022F71EC4C9100080073F /* OCChunkDto.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022981EC4C9100080073F /* OCChunkDto.m */; };
@@ -887,9 +881,6 @@
 		F700228F1EC4C9100080073F /* OCXMLShareByLinkParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCXMLShareByLinkParser.m; sourceTree = "<group>"; };
 		F70022901EC4C9100080073F /* OCXMLSharedParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCXMLSharedParser.h; sourceTree = "<group>"; };
 		F70022911EC4C9100080073F /* OCXMLSharedParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCXMLSharedParser.m; sourceTree = "<group>"; };
-		F70022921EC4C9100080073F /* ownCloud iOS library-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ownCloud iOS library-Prefix.pch"; sourceTree = "<group>"; };
-		F70022941EC4C9100080073F /* test.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = test.jpeg; sourceTree = "<group>"; };
-		F70022951EC4C9100080073F /* video.MOV */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = video.MOV; sourceTree = "<group>"; };
 		F70022971EC4C9100080073F /* OCChunkDto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCChunkDto.h; sourceTree = "<group>"; };
 		F70022981EC4C9100080073F /* OCChunkDto.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCChunkDto.m; sourceTree = "<group>"; };
 		F70022991EC4C9100080073F /* OCURLSessionUploadTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCURLSessionUploadTask.h; sourceTree = "<group>"; };
@@ -1852,8 +1843,6 @@
 				F700227C1EC4C9100080073F /* OCUserProfile.h */,
 				F700227D1EC4C9100080073F /* OCUserProfile.m */,
 				F700227E1EC4C9100080073F /* OCWebDavClient */,
-				F70022921EC4C9100080073F /* ownCloud iOS library-Prefix.pch */,
-				F70022931EC4C9100080073F /* Resources */,
 				F70022961EC4C9100080073F /* UploadSupport */,
 				F700229B1EC4C9100080073F /* Utils */,
 			);
@@ -1920,15 +1909,6 @@
 				F70022911EC4C9100080073F /* OCXMLSharedParser.m */,
 			);
 			path = Parsers;
-			sourceTree = "<group>";
-		};
-		F70022931EC4C9100080073F /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				F70022941EC4C9100080073F /* test.jpeg */,
-				F70022951EC4C9100080073F /* video.MOV */,
-			);
-			path = Resources;
 			sourceTree = "<group>";
 		};
 		F70022961EC4C9100080073F /* UploadSupport */ = {
@@ -3896,10 +3876,8 @@
 				F7145A1D1D12E3B700CAFEEC /* BKPasscodeView.strings in Resources */,
 				F7145A211D12E3B700CAFEEC /* Error.strings in Resources */,
 				F7145A231D12E3B700CAFEEC /* Localizable.strings in Resources */,
-				F70022F31EC4C9100080073F /* video.MOV in Resources */,
 				F700222D1EC479840080073F /* Custom.xcassets in Resources */,
 				F7145A241D12E3B700CAFEEC /* CCCellShareExt.xib in Resources */,
-				F70022F01EC4C9100080073F /* test.jpeg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3907,8 +3885,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F70022F41EC4C9100080073F /* video.MOV in Resources */,
-				F70022F11EC4C9100080073F /* test.jpeg in Resources */,
 				F7C742D81E7BD5C900D9C973 /* MainInterface.storyboard in Resources */,
 				F7FC88FD1E141A3F006D0506 /* Error.strings in Resources */,
 				F7FC88FB1E141A34006D0506 /* BKPasscodeView.strings in Resources */,
@@ -3990,7 +3966,6 @@
 				F7A3217B1E9E3EAF0069AD1B /* CCTransfersCell.xib in Resources */,
 				F77B0F2C1D118A16002130FE /* ZSSlink.png in Resources */,
 				F77B0F2D1D118A16002130FE /* ZSSsuperscript@2x.png in Resources */,
-				F70022F21EC4C9100080073F /* video.MOV in Resources */,
 				F7B1FBC41E72E3D1001781FE /* Media.xcassets in Resources */,
 				F77B0F2E1D118A16002130FE /* ZSScenterjustify.png in Resources */,
 				F77B0F2F1D118A16002130FE /* CCMove.storyboard in Resources */,
@@ -4071,7 +4046,6 @@
 				F762CBBA1EACB89C00B38484 /* LMMediaPlayerView.xib in Resources */,
 				F77B0F791D118A16002130FE /* ZSSunlink.png in Resources */,
 				F77B0F7A1D118A16002130FE /* ZSSredo.png in Resources */,
-				F70022EF1EC4C9100080073F /* test.jpeg in Resources */,
 				F7F54CE51E5B14C700E19C62 /* ImageError.png in Resources */,
 				F77B0F7B1D118A16002130FE /* ZSSrightjustify.png in Resources */,
 				F7F54CFC1E5B14C700E19C62 /* UIBarButtonItemArrowLeft@3x.png in Resources */,
