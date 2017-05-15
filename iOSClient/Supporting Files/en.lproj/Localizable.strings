@@ -114,7 +114,7 @@
 "_credentials_"             = "Credentials";
 "_manage_account_"          = "Manage account";
 "_change_password_"         = "Change password";
-"_add_nextcloud_"           = "Add Nextcloud account";
+"_add_account_"             = "Add account";
 "_delete_account_"          = "Delete account";
 "_want_delete_"             = "Do you really want to delete?";
 "_no_delete_"               = "No, do not delete";
