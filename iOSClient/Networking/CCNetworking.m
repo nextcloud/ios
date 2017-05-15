@@ -827,50 +827,6 @@
                         });
                     }
                 }];
-                
-                /*
-                [[PHImageManager defaultManager] requestAVAssetForVideo:asset options:options resultHandler:^(AVAsset *asset, AVAudioMix *audioMix, NSDictionary *info) {
-            
-                    if ([asset isKindOfClass:[AVURLAsset class]]) {
-
-                        NSData *data = [[NSData alloc] initWithContentsOfURL:[(AVURLAsset *)asset URL] options:0 error:&error];
-                
-                        if (!error || [data length] > 0) {
-                        
-                            [data writeToFile:[NSString stringWithFormat:@"%@/%@", _directoryUser, fileName] options:NSDataWritingAtomic error:&error];
-                        
-                        } else {
-                        
-                            if (!error)
-                                error = [NSError errorWithDomain:@"it.twsweb.cryptocloud" code:kCFURLErrorFileDoesNotExist userInfo:nil];
-                        }
-                    
-                    } else {
-                    
-                        error = [NSError errorWithDomain:@"it.twsweb.cryptocloud" code:kCFURLErrorFileDoesNotExist userInfo:nil];
-                    }
-                
-                    if (error) {
-                    
-                        // Activity
-                        [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:NSLocalizedString(@"_read_file_error_", nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault account:_activeAccount  activeUrl:_activeUrl];
-                        
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                        
-                            // Error for uploadFileFailure
-                            if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
-                                [delegate uploadFileFailure:nil fileID:nil serverUrl:serverUrl selector:selector message:@"_read_file_error_" errorCode:error.code];
-                        });
-                    
-                    } else {
-                    
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                        
-                            [self upload:fileName serverUrl:serverUrl cryptated:cryptated template:NO onlyPlist:NO fileNameTemplate:nil assetLocalIdentifier:assetLocalIdentifier session:session taskStatus:taskStatus selector:selector selectorPost:selectorPost errorCode:errorCode delegate:delegate];
-                        });
-                    }
-                }];
-                */
             }
         }
     

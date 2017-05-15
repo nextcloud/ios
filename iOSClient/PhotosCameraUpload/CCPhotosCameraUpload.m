@@ -1245,44 +1245,6 @@
                     [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionUpload selector:metadataNet.selector note:[NSString stringWithFormat:@"%@ [%@]",NSLocalizedString(@"_read_file_error_", nil), error.description] type:k_activityTypeFailure verbose:k_activityVerboseDefault account:appDelegate.activeAccount activeUrl:appDelegate.activeUrl];
                 }
             }];
-
-            /*
-            PHVideoRequestOptions *options = [PHVideoRequestOptions new];
-            options.version = PHVideoRequestOptionsVersionOriginal;
-            
-            [[PHImageManager defaultManager] requestAVAssetForVideo:asset options:options resultHandler:^(AVAsset *asset, AVAudioMix *audioMix, NSDictionary *info) {
-                
-                if ([asset isKindOfClass:[AVURLAsset class]]) {
-                    
-                    NSData *data = [[NSData alloc] initWithContentsOfURL:[(AVURLAsset *)asset URL] options:0 error:&error];
-                    
-                    if (!error || [data length] > 0) {
-                        
-                        [data writeToFile:[NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, metadataNet.fileName] options:NSDataWritingAtomic error:&error];
-                        
-                    } else {
-                        
-                        if (!error)
-                            error = [NSError errorWithDomain:@"it.twsweb.cryptocloud" code:kCFURLErrorFileDoesNotExist userInfo:nil];
-                    }
-                    
-                } else {
-                    
-                    error = [NSError errorWithDomain:@"it.twsweb.cryptocloud" code:kCFURLErrorFileDoesNotExist userInfo:nil];
-                }
-                
-                if (error) {
-                    
-                    NSString *note = [NSString stringWithFormat:@"%@ [%@]",NSLocalizedString(@"_read_file_error_", nil), error.description];
-                    
-                    [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionUpload selector:metadataNet.selector note:note type:k_activityTypeFailure verbose:k_activityVerboseDefault account:appDelegate.activeAccount activeUrl:appDelegate.activeUrl];
-                    
-                } else {
-                    
-                    [self addDatabaseAutomaticUpload:metadataNet assetDate:assetDate assetMediaType:assetMediaType];
-                }
-            }];
-            */
         }
     }
     
