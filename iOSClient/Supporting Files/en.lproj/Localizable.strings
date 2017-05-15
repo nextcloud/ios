@@ -503,6 +503,7 @@
 "_no_activity_"                     = "No activity yet";
 "_transfers_"                       = "Transfers";
 "_activity_"                        = "Activity";
+"_activity_recent_"                 = "Recent Activity";
 "_activity_file_not_present_"       = "File no longer present";
 
 
