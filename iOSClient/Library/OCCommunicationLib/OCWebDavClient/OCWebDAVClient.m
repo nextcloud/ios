@@ -38,7 +38,6 @@
 #import "OCWebDAVClient.h"
 #import "OCFrameworkConstants.h"
 #import "OCCommunication.h"
-#import "OCChunkDto.h"
 #import "UtilsFramework.h"
 #import "AFURLSessionManager.h"
 #import "NSString+Encode.h"

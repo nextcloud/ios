@@ -94,12 +94,6 @@
 		F70022EC1EC4C9100080073F /* OCXMLSharedParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022911EC4C9100080073F /* OCXMLSharedParser.m */; };
 		F70022ED1EC4C9100080073F /* OCXMLSharedParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022911EC4C9100080073F /* OCXMLSharedParser.m */; };
 		F70022EE1EC4C9100080073F /* OCXMLSharedParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022911EC4C9100080073F /* OCXMLSharedParser.m */; };
-		F70022F51EC4C9100080073F /* OCChunkDto.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022981EC4C9100080073F /* OCChunkDto.m */; };
-		F70022F61EC4C9100080073F /* OCChunkDto.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022981EC4C9100080073F /* OCChunkDto.m */; };
-		F70022F71EC4C9100080073F /* OCChunkDto.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022981EC4C9100080073F /* OCChunkDto.m */; };
-		F70022F81EC4C9100080073F /* OCURLSessionUploadTask.m in Sources */ = {isa = PBXBuildFile; fileRef = F700229A1EC4C9100080073F /* OCURLSessionUploadTask.m */; };
-		F70022F91EC4C9100080073F /* OCURLSessionUploadTask.m in Sources */ = {isa = PBXBuildFile; fileRef = F700229A1EC4C9100080073F /* OCURLSessionUploadTask.m */; };
-		F70022FA1EC4C9100080073F /* OCURLSessionUploadTask.m in Sources */ = {isa = PBXBuildFile; fileRef = F700229A1EC4C9100080073F /* OCURLSessionUploadTask.m */; };
 		F70022FB1EC4C9100080073F /* NSString+Encode.m in Sources */ = {isa = PBXBuildFile; fileRef = F700229D1EC4C9100080073F /* NSString+Encode.m */; };
 		F70022FC1EC4C9100080073F /* NSString+Encode.m in Sources */ = {isa = PBXBuildFile; fileRef = F700229D1EC4C9100080073F /* NSString+Encode.m */; };
 		F70022FD1EC4C9100080073F /* NSString+Encode.m in Sources */ = {isa = PBXBuildFile; fileRef = F700229D1EC4C9100080073F /* NSString+Encode.m */; };
@@ -881,10 +875,6 @@
 		F700228F1EC4C9100080073F /* OCXMLShareByLinkParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCXMLShareByLinkParser.m; sourceTree = "<group>"; };
 		F70022901EC4C9100080073F /* OCXMLSharedParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCXMLSharedParser.h; sourceTree = "<group>"; };
 		F70022911EC4C9100080073F /* OCXMLSharedParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCXMLSharedParser.m; sourceTree = "<group>"; };
-		F70022971EC4C9100080073F /* OCChunkDto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCChunkDto.h; sourceTree = "<group>"; };
-		F70022981EC4C9100080073F /* OCChunkDto.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCChunkDto.m; sourceTree = "<group>"; };
-		F70022991EC4C9100080073F /* OCURLSessionUploadTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCURLSessionUploadTask.h; sourceTree = "<group>"; };
-		F700229A1EC4C9100080073F /* OCURLSessionUploadTask.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCURLSessionUploadTask.m; sourceTree = "<group>"; };
 		F700229C1EC4C9100080073F /* NSString+Encode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Encode.h"; sourceTree = "<group>"; };
 		F700229D1EC4C9100080073F /* NSString+Encode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Encode.m"; sourceTree = "<group>"; };
 		F700229E1EC4C9100080073F /* OCConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCConstants.h; sourceTree = "<group>"; };
@@ -1843,7 +1833,6 @@
 				F700227C1EC4C9100080073F /* OCUserProfile.h */,
 				F700227D1EC4C9100080073F /* OCUserProfile.m */,
 				F700227E1EC4C9100080073F /* OCWebDavClient */,
-				F70022961EC4C9100080073F /* UploadSupport */,
 				F700229B1EC4C9100080073F /* Utils */,
 			);
 			name = OCCommunicationLib;
@@ -1909,17 +1898,6 @@
 				F70022911EC4C9100080073F /* OCXMLSharedParser.m */,
 			);
 			path = Parsers;
-			sourceTree = "<group>";
-		};
-		F70022961EC4C9100080073F /* UploadSupport */ = {
-			isa = PBXGroup;
-			children = (
-				F70022971EC4C9100080073F /* OCChunkDto.h */,
-				F70022981EC4C9100080073F /* OCChunkDto.m */,
-				F70022991EC4C9100080073F /* OCURLSessionUploadTask.h */,
-				F700229A1EC4C9100080073F /* OCURLSessionUploadTask.m */,
-			);
-			path = UploadSupport;
 			sourceTree = "<group>";
 		};
 		F700229B1EC4C9100080073F /* Utils */ = {
@@ -4205,8 +4183,6 @@
 				F7145A041D12E3B700CAFEEC /* CCloadItemData.swift in Sources */,
 				F73CC07F1E813DFF006E3047 /* BKTouchIDSwitchView.m in Sources */,
 				F76B3CCF1EAE01BD00921AC9 /* NCBrand.swift in Sources */,
-				F70022F61EC4C9100080073F /* OCChunkDto.m in Sources */,
-				F70022F91EC4C9100080073F /* OCURLSessionUploadTask.m in Sources */,
 				F73CC0761E813DFF006E3047 /* BKPasscodeViewController.m in Sources */,
 				F70022D21EC4C9100080073F /* OCUserProfile.m in Sources */,
 				F7145A081D12E3B700CAFEEC /* PPCollectionViewCell.m in Sources */,
@@ -4262,7 +4238,6 @@
 				F70022D31EC4C9100080073F /* OCUserProfile.m in Sources */,
 				F74344791E127EA1001CC831 /* CCError.m in Sources */,
 				F708CF6F1E56E8CC00271D8B /* TableMetadata+CoreDataClass.m in Sources */,
-				F70022F71EC4C9100080073F /* OCChunkDto.m in Sources */,
 				F70022D01EC4C9100080073F /* OCShareUser.m in Sources */,
 				F70022EB1EC4C9100080073F /* OCXMLShareByLinkParser.m in Sources */,
 				F743447B1E127EAC001CC831 /* CCUtility.m in Sources */,
@@ -4284,7 +4259,6 @@
 				F73CC06E1E813DFF006E3047 /* BKPasscodeField.m in Sources */,
 				F74344841E127F84001CC831 /* RNCryptorEngine.m in Sources */,
 				F74344851E127F86001CC831 /* RNDecryptor.m in Sources */,
-				F70022FA1EC4C9100080073F /* OCURLSessionUploadTask.m in Sources */,
 				F74344881E127F9C001CC831 /* UIImage+animatedGIF.m in Sources */,
 				F73CC0771E813DFF006E3047 /* BKPasscodeViewController.m in Sources */,
 				F70022DF1EC4C9100080073F /* OCWebDAVClient.m in Sources */,
@@ -4488,7 +4462,6 @@
 				F70022361EC49BBE0080073F /* TableCertificates+CoreDataClass.m in Sources */,
 				F70022391EC49BBE0080073F /* TableCertificates+CoreDataProperties.m in Sources */,
 				F77B0E671D118A16002130FE /* Reachability.m in Sources */,
-				F70022F81EC4C9100080073F /* OCURLSessionUploadTask.m in Sources */,
 				F762CB121EACB66200B38484 /* UIView+XLFormAdditions.m in Sources */,
 				F73CC06F1E813DFF006E3047 /* BKPasscodeInputView.m in Sources */,
 				F77B0E6A1D118A16002130FE /* RNDecryptor.m in Sources */,
@@ -4547,7 +4520,6 @@
 				F70022BF1EC4C9100080073F /* OCFileDto.m in Sources */,
 				F7A13A041E7F3D5D00016680 /* UINavigationController+CCProgress.m in Sources */,
 				F7F06EB51DBFACC600099AE9 /* CTAssetsGridViewController.m in Sources */,
-				F70022F51EC4C9100080073F /* OCChunkDto.m in Sources */,
 				F73C002F1E55D7DF00EEEFA7 /* CCManageCryptoCloudSecurity.m in Sources */,
 				F7659A621DC0B760004860C4 /* PSTCollectionViewFlowLayout.m in Sources */,
 				F7F06EBD1DBFACC600099AE9 /* CTAssetsPageView.m in Sources */,
