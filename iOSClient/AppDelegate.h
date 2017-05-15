@@ -86,7 +86,6 @@
 
 // Check new Asset Photos/Video in progress 
 @property BOOL automaticCheckAssetInProgress;
-@property BOOL automaticUploadInProgress;
 
 // UploadFromOtherUpp
 @property (nonatomic, strong) NSString *fileNameUpload;

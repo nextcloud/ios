@@ -177,7 +177,6 @@
     
     // Check new Asset Photos/Video in progress  
     _automaticCheckAssetInProgress = NO;
-    _automaticUploadInProgress = NO;
     
     // Add notification change session
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(sessionChanged:) name:k_networkingSessionNotification object:nil];
@@ -1313,11 +1312,8 @@
     NSInteger counterUpload = 0;
     
     // Is loading new Asset or this  ?
-    if (_automaticCheckAssetInProgress || _automaticUploadInProgress)
+    if (_automaticCheckAssetInProgress)
         return;
-    
-    // START Automatic Upload in progress
-    _automaticUploadInProgress = YES;
     
     NSArray *uploadInQueue = [CCCoreData getTableMetadataUploadAccount:app.activeAccount];
     NSArray *recordAutomaticUploadInLock =  [[NCManageDatabase sharedInstance] getLockAutomaticUploadForAccount:_activeAccount];
@@ -1350,30 +1346,17 @@
     // ------------------------- <selectorUploadAutomaticAll> -------------------------
     
     // Verify num error MAX 10 after STOP
-    NSUInteger errorCount = [TableMetadata MR_countOfEntitiesWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (sessionSelector == %@) AND ((sessionTaskIdentifier == %i) OR (sessionTaskIdentifierPlist == %i))", app.activeAccount, selectorUploadAutomaticAll,k_taskIdentifierError, k_taskIdentifierError]];
+    NSUInteger errorCount = [TableMetadata MR_countOfEntitiesWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (sessionSelector == %@) AND ((sessionTaskIdentifier == %i) OR (sessionTaskIdentifierPlist == %i))", app.activeAccount, selectorUploadAutomaticAll, k_taskIdentifierError, k_taskIdentifierError]];
     
     if (errorCount >= 10) {
         
         [app messageNotification:@"_error_" description:@"_too_errors_automatic_all_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
-        
-        // STOP Im progress
-        _automaticUploadInProgress = NO;
-        
-        return;
-    }
-    
-    NSUInteger counterUploadAll = [TableMetadata MR_countOfEntitiesWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (sessionSelector == %@) AND ((sessionTaskIdentifier > 0) OR (sessionTaskIdentifierPlist > 0))", app.activeAccount, selectorUploadAutomaticAll]];
-    
-    if (counterUploadAll >= k_maxConcurrentOperationDownloadUpload) {
-        
-        // STOP Im progress
-        _automaticUploadInProgress = NO;
-        
         return;
     }
     
     metadataNet =  [[NCManageDatabase sharedInstance] getAutomaticUploadForAccount:self.activeAccount selector:selectorUploadAutomaticAll];
-    if (metadataNet) {
+    counterUpload = [self getNumberUploadInQueues] + [self getNumberUploadInQueuesWWan];
+    while (metadataNet && counterUpload < k_maxConcurrentOperationDownloadUpload) {
         
         PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[metadataNet.assetLocalIdentifier] options:nil];
         
@@ -1381,16 +1364,17 @@
             
             [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet.assetLocalIdentifier fileName:metadataNet.fileName serverUrl:metadataNet.serverUrl cryptated:metadataNet.cryptated session:metadataNet.session taskStatus:metadataNet.taskStatus selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:metadataNet.errorCode delegate:app.activeMain];
             
+            counterUpload++;
+            
         } else {
             
             [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionUpload selector:selectorUploadAutomatic note:@"Internal error image/video not found [0]" type:k_activityTypeFailure verbose:k_activityVerboseHigh account:_activeAccount activeUrl:_activeUrl];
             
-            [[NCManageDatabase sharedInstance] deleteAutomaticUploadForAccount:_activeAccount assetLocalIdentifier:metadataNet.assetLocalIdentifier];            
+            [[NCManageDatabase sharedInstance] deleteAutomaticUploadForAccount:_activeAccount assetLocalIdentifier:metadataNet.assetLocalIdentifier];
         }
+        
+        metadataNet =  [[NCManageDatabase sharedInstance] getAutomaticUploadForAccount:self.activeAccount selector:selectorUploadAutomaticAll];
     }
-    
-    // STOP Im progress
-    _automaticUploadInProgress = NO;
 }
 
 - (void)verifyDownloadUploadInProgress
