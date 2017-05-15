@@ -39,7 +39,7 @@
 @property BOOL firstChangeAuthorizationDone;
 @property (nonatomic,weak) __weak id<CCManageLocationDelegate> delegate;
 
-+ (CCManageLocation *) sharedSingleton;
++ (CCManageLocation *)sharedInstance;
 
 - (void)startSignificantChangeUpdates;
 - (void)stopSignificantChangeUpdates;

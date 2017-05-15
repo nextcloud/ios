@@ -774,7 +774,7 @@
                 
         [PHPhotoLibrary.sharedPhotoLibrary unregisterChangeObserver:self];
         
-        [[CCManageLocation sharedSingleton] stopSignificantChangeUpdates];
+        [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
     }
 }
 
@@ -798,7 +798,7 @@
                 
         [PHPhotoLibrary.sharedPhotoLibrary unregisterChangeObserver:self];
         
-        [[CCManageLocation sharedSingleton] stopSignificantChangeUpdates];
+        [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
         
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_access_photo_not_enabled_", nil)
                                                         message:NSLocalizedString(@"_access_photo_not_enabled_msg_", nil)
@@ -825,7 +825,7 @@
         
         [PHPhotoLibrary.sharedPhotoLibrary unregisterChangeObserver:self];
         
-        [[CCManageLocation sharedSingleton] stopSignificantChangeUpdates];
+        [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
         
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_access_photo_not_enabled_", nil)
                                                         message:NSLocalizedString(@"_access_photo_not_enabled_msg_", nil)
@@ -842,7 +842,7 @@
 
 - (BOOL)checkIfLocationIsEnabled
 {
-    [CCManageLocation sharedSingleton].delegate = self;
+    [CCManageLocation sharedInstance].delegate = self;
     
     if ([CLLocationManager locationServicesEnabled]) {
         
@@ -853,7 +853,7 @@
             if ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusNotDetermined ) {
                 
                 NSLog(@"[LOG] checkIfLocationIsEnabled : Location services not determined");
-                [[CCManageLocation sharedSingleton] startSignificantChangeUpdates];
+                [[CCManageLocation sharedInstance] startSignificantChangeUpdates];
                 
             } else {
                 
@@ -884,12 +884,12 @@
             if ([ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusAuthorized) {
                 
                 [CCCoreData setCameraUploadBackground:YES activeAccount:app.activeAccount];
-                [[CCManageLocation sharedSingleton] startSignificantChangeUpdates];
+                [[CCManageLocation sharedInstance] startSignificantChangeUpdates];
                 
             } else {
                 
                 [CCCoreData setCameraUploadBackground:NO activeAccount:app.activeAccount];
-                [[CCManageLocation sharedSingleton] stopSignificantChangeUpdates];
+                [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
                 
                 UIAlertView * alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_access_photo_not_enabled_", nil)
                                                                  message:NSLocalizedString(@"_access_photo_not_enabled_msg_", nil)
@@ -903,7 +903,7 @@
     } else {
         
         [CCCoreData setCameraUploadBackground:NO activeAccount:app.activeAccount];
-        [[CCManageLocation sharedSingleton] stopSignificantChangeUpdates];
+        [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
         
         if ([ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusAuthorized) {
             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_location_not_enabled_", nil)
@@ -932,7 +932,7 @@
 {
     if ([CLLocationManager authorizationStatus] != kCLAuthorizationStatusNotDetermined){
         
-        if (![CCManageLocation sharedSingleton].firstChangeAuthorizationDone) {
+        if (![CCManageLocation sharedInstance].firstChangeAuthorizationDone) {
             
             ALAssetsLibrary *assetLibrary = [CCUtility defaultAssetsLibrary];
             
@@ -948,10 +948,10 @@
             
             if ([ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusAuthorized) {
                 
-                if ([CCManageLocation sharedSingleton].firstChangeAuthorizationDone) {
+                if ([CCManageLocation sharedInstance].firstChangeAuthorizationDone) {
                     
                     [CCCoreData setCameraUploadBackground:NO activeAccount:app.activeAccount];
-                    [[CCManageLocation sharedSingleton] stopSignificantChangeUpdates];
+                    [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
                 }
                 
             } else {
@@ -969,7 +969,7 @@
             if ([CCCoreData getCameraUploadBackgroundActiveAccount:app.activeAccount]) {
                 
                 [CCCoreData setCameraUploadBackground:NO activeAccount:app.activeAccount];
-                [[CCManageLocation sharedSingleton] stopSignificantChangeUpdates];
+                [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
                 
                 if ([ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusAuthorized) {
                     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_location_not_enabled_", nil)
@@ -990,9 +990,9 @@
             }
         }
         
-        if (![CCManageLocation sharedSingleton].firstChangeAuthorizationDone) {
+        if (![CCManageLocation sharedInstance].firstChangeAuthorizationDone) {
             
-            [CCManageLocation sharedSingleton].firstChangeAuthorizationDone = YES;
+            [CCManageLocation sharedInstance].firstChangeAuthorizationDone = YES;
         }
     }
 }
@@ -1022,7 +1022,7 @@
             
             [CCCoreData setCameraUploadBackground:NO activeAccount:app.activeAccount];
             
-            [[CCManageLocation sharedSingleton] stopSignificantChangeUpdates];
+            [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
             [PHPhotoLibrary.sharedPhotoLibrary unregisterChangeObserver:self];
         }
     }

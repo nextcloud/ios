@@ -28,16 +28,16 @@
 @implementation CCManageLocation
 
 
-+ (CCManageLocation *)sharedSingleton
++ (CCManageLocation *)sharedInstance
 {
-    static CCManageLocation *sharedSingleton;
+    static CCManageLocation *sharedInstance;
 
     @synchronized(self)
     {
-        if (!sharedSingleton){
-            sharedSingleton = [[CCManageLocation alloc] init];
+        if (!sharedInstance){
+            sharedInstance = [CCManageLocation new];
         }
-        return sharedSingleton;
+        return sharedInstance;
     }
 }
 

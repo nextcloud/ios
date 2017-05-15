@@ -262,7 +262,7 @@
         } else {
             
             [CCCoreData setCameraUploadBackground:NO activeAccount:app.activeAccount];
-            [[CCManageLocation sharedSingleton] stopSignificantChangeUpdates];
+            [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
         }
     }
 
