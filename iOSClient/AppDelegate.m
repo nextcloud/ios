@@ -1283,9 +1283,42 @@
     return metadatasNet;
 }
 
+- (NSInteger)getNumberDownloadInQueues
+{
+    NSInteger queueNunDownload = [[CCCoreData getTableMetadataDownloadAccount:self.activeAccount] count];
+    NSInteger queueNumDownloadWWan = [[CCCoreData getTableMetadataDownloadWWanAccount:self.activeAccount] count];
+    
+    // netQueueDownload
+    for (NSOperation *operation in [app.netQueueDownload operations])
+        if (((OCnetworking *)operation).isExecuting == NO) queueNunDownload++;
+    
+    // netQueueDownloadWWan
+    for (NSOperation *operation in [app.netQueueDownloadWWan operations])
+        if (((OCnetworking *)operation).isExecuting == NO) queueNumDownloadWWan++;
+    
+    return queueNunDownload + queueNumDownloadWWan;
+}
+
+- (NSInteger)getNumberUploadInQueues
+{
+    NSInteger queueNumUpload = [[CCCoreData getTableMetadataUploadAccount:self.activeAccount] count];
+    NSInteger queueNumUploadWWan = [[CCCoreData getTableMetadataUploadWWanAccount:self.activeAccount] count];
+    
+    // netQueueUpload
+    for (NSOperation *operation in [app.netQueueUpload operations])
+        if (((OCnetworking *)operation).isExecuting == NO) queueNumUpload++;
+    
+    // netQueueUploadWWan
+    for (NSOperation *operation in [app.netQueueUploadWWan operations])
+        if (((OCnetworking *)operation).isExecuting == NO) queueNumUploadWWan++;
+    
+    return queueNumUpload + queueNumUploadWWan;
+}
+
 - (void)loadAutomaticUpload
 {
     CCMetadataNet *metadataNet;
+    NSInteger counterUpload = 0;
     
     // Is loading new Asset or this  ?
     if (_automaticCheckAssetInProgress || _automaticUploadInProgress)
@@ -1313,13 +1346,13 @@
     // ------------------------- <selectorUploadAutomatic> -------------------------
     
     metadataNet = [[NCManageDatabase sharedInstance] getAutomaticUploadForAccount:self.activeAccount selector:selectorUploadAutomatic];
-    
-    while (metadataNet) {
+    counterUpload = [self getNumberUploadInQueues];
+    while (metadataNet && counterUpload < k_maxConcurrentOperationDownloadUpload) {
         
         [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet.assetLocalIdentifier fileName:metadataNet.fileName serverUrl:metadataNet.serverUrl cryptated:metadataNet.cryptated session:metadataNet.session taskStatus:metadataNet.taskStatus selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:metadataNet.errorCode delegate:app.activeMain];
-            
-       
+        
         metadataNet =  [[NCManageDatabase sharedInstance] getAutomaticUploadForAccount:self.activeAccount selector:selectorUploadAutomatic];
+        counterUpload++;
     }
     
     // ------------------------- <selectorUploadAutomaticAll> -------------------------
@@ -1337,9 +1370,9 @@
         return;
     }
     
-    NSUInteger count = [TableMetadata MR_countOfEntitiesWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (sessionSelector == %@) AND ((sessionTaskIdentifier > 0) OR (sessionTaskIdentifierPlist > 0))", app.activeAccount, selectorUploadAutomaticAll]];
+    NSUInteger counterUploadAll = [TableMetadata MR_countOfEntitiesWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (sessionSelector == %@) AND ((sessionTaskIdentifier > 0) OR (sessionTaskIdentifierPlist > 0))", app.activeAccount, selectorUploadAutomaticAll]];
     
-    if (count >= k_maxConcurrentOperationDownloadUpload) {
+    if (counterUploadAll >= k_maxConcurrentOperationDownloadUpload) {
         
         // STOP Im progress
         _automaticUploadInProgress = NO;
