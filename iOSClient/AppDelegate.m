@@ -1268,7 +1268,7 @@
     NSInteger queueNunDownload = [[CCCoreData getTableMetadataDownloadAccount:self.activeAccount] count];
     
     // netQueueDownload
-    for (NSOperation *operation in [app.netQueueDownload operations])
+    for (NSOperation *operation in [self.netQueueDownload operations])
         if (((OCnetworking *)operation).isExecuting == NO) queueNunDownload++;
     
     return queueNunDownload;
@@ -1279,7 +1279,7 @@
     NSInteger queueNumDownloadWWan = [[CCCoreData getTableMetadataDownloadWWanAccount:self.activeAccount] count];
     
     // netQueueDownloadWWan
-    for (NSOperation *operation in [app.netQueueDownloadWWan operations])
+    for (NSOperation *operation in [self.netQueueDownloadWWan operations])
         if (((OCnetworking *)operation).isExecuting == NO) queueNumDownloadWWan++;
     
     return queueNumDownloadWWan;
@@ -1290,7 +1290,7 @@
     NSInteger queueNumUpload = [[CCCoreData getTableMetadataUploadAccount:self.activeAccount] count];
     
     // netQueueUpload
-    for (NSOperation *operation in [app.netQueueUpload operations])
+    for (NSOperation *operation in [self.netQueueUpload operations])
         if (((OCnetworking *)operation).isExecuting == NO) queueNumUpload++;
     
     return queueNumUpload;
@@ -1301,7 +1301,7 @@
     NSInteger queueNumUploadWWan = [[CCCoreData getTableMetadataUploadWWanAccount:self.activeAccount] count];
     
     // netQueueUploadWWan
-    for (NSOperation *operation in [app.netQueueUploadWWan operations])
+    for (NSOperation *operation in [self.netQueueUploadWWan operations])
         if (((OCnetworking *)operation).isExecuting == NO) queueNumUploadWWan++;
     
     return queueNumUploadWWan;
