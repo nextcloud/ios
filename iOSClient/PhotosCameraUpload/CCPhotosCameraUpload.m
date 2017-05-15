@@ -1211,6 +1211,43 @@
         @autoreleasepool {
             
             PHVideoRequestOptions *options = [PHVideoRequestOptions new];
+            options.networkAccessAllowed = true;
+            
+            [[PHImageManager defaultManager] requestPlayerItemForVideo:asset options:options resultHandler:^(AVPlayerItem * _Nullable playerItem, NSDictionary * _Nullable info) {
+                
+                if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, metadataNet.fileName]])
+                    [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, metadataNet.fileName] error:nil];
+                
+                AVAssetExportSession *exportSession = [[AVAssetExportSession alloc] initWithAsset:playerItem.asset presetName:AVAssetExportPresetHighestQuality];
+                
+                if (exportSession) {
+                    
+                    exportSession.outputURL = [NSURL fileURLWithPath:[NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, metadataNet.fileName]];
+                    exportSession.outputFileType = AVFileTypeQuickTimeMovie;
+                    
+                    [exportSession exportAsynchronouslyWithCompletionHandler:^{
+                        
+                        if (AVAssetExportSessionStatusCompleted == exportSession.status) {
+                            
+                            [self addDatabaseAutomaticUpload:metadataNet assetDate:assetDate assetMediaType:assetMediaType];
+                            
+                        } else if (AVAssetExportSessionStatusFailed == exportSession.status) {
+                                                        
+                            [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionUpload selector:metadataNet.selector note:[NSString stringWithFormat:@"%@ [%@]",NSLocalizedString(@"_read_file_error_", nil), error.description] type:k_activityTypeFailure verbose:k_activityVerboseDefault account:appDelegate.activeAccount activeUrl:appDelegate.activeUrl];
+                            
+                        } else {
+                            NSLog(@"Export Session Status: %ld", (long)exportSession.status);
+                        }
+                    }];
+                    
+                } else {
+                    
+                    [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionUpload selector:metadataNet.selector note:[NSString stringWithFormat:@"%@ [%@]",NSLocalizedString(@"_read_file_error_", nil), error.description] type:k_activityTypeFailure verbose:k_activityVerboseDefault account:appDelegate.activeAccount activeUrl:appDelegate.activeUrl];
+                }
+            }];
+
+            /*
+            PHVideoRequestOptions *options = [PHVideoRequestOptions new];
             options.version = PHVideoRequestOptionsVersionOriginal;
             
             [[PHImageManager defaultManager] requestAVAssetForVideo:asset options:options resultHandler:^(AVAsset *asset, AVAudioMix *audioMix, NSDictionary *info) {
@@ -1245,6 +1282,7 @@
                     [self addDatabaseAutomaticUpload:metadataNet assetDate:assetDate assetMediaType:assetMediaType];
                 }
             }];
+            */
         }
     }
     

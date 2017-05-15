@@ -774,8 +774,61 @@
             @autoreleasepool {
             
                 PHVideoRequestOptions *options = [PHVideoRequestOptions new];
-                options.version = PHVideoRequestOptionsVersionOriginal;
+                options.networkAccessAllowed = true;
         
+                [[PHImageManager defaultManager] requestPlayerItemForVideo:asset options:options resultHandler:^(AVPlayerItem * _Nullable playerItem, NSDictionary * _Nullable info) {
+                    
+                    if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, fileName]])
+                        [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, fileName] error:nil];
+                
+                    AVAssetExportSession *exportSession = [[AVAssetExportSession alloc] initWithAsset:playerItem.asset presetName:AVAssetExportPresetHighestQuality];
+                    
+                    if (exportSession) {
+                    
+                        exportSession.outputURL = [NSURL fileURLWithPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, fileName]];
+                        exportSession.outputFileType = AVFileTypeQuickTimeMovie;
+                    
+                        [exportSession exportAsynchronouslyWithCompletionHandler:^{
+                        
+                            if (AVAssetExportSessionStatusCompleted == exportSession.status) {
+                                
+                                dispatch_async(dispatch_get_main_queue(), ^{
+                            
+                                    [self upload:fileName serverUrl:serverUrl cryptated:cryptated template:NO onlyPlist:NO fileNameTemplate:nil assetLocalIdentifier:assetLocalIdentifier session:session taskStatus:taskStatus selector:selector selectorPost:selectorPost errorCode:errorCode delegate:delegate];
+                                });
+                                
+                            } else if (AVAssetExportSessionStatusFailed == exportSession.status) {
+                                
+                                // Activity
+                                [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:NSLocalizedString(@"_read_file_error_", nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault account:_activeAccount  activeUrl:_activeUrl];
+                                
+                                dispatch_async(dispatch_get_main_queue(), ^{
+                                    
+                                    // Error for uploadFileFailure
+                                    if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
+                                        [delegate uploadFileFailure:nil fileID:nil serverUrl:serverUrl selector:selector message:@"_read_file_error_" errorCode:[NSError errorWithDomain:@"it.twsweb.cryptocloud" code:kCFURLErrorFileDoesNotExist userInfo:nil].code];
+                                });
+                                                                
+                            } else {
+                                NSLog(@"Export Session Status: %ld", (long)exportSession.status);
+                            }
+                        }];
+                        
+                    } else {
+                        
+                        // Activity
+                        [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:NSLocalizedString(@"_read_file_error_", nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault account:_activeAccount  activeUrl:_activeUrl];
+                        
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            
+                            // Error for uploadFileFailure
+                            if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
+                                [delegate uploadFileFailure:nil fileID:nil serverUrl:serverUrl selector:selector message:@"_read_file_error_" errorCode:[NSError errorWithDomain:@"it.twsweb.cryptocloud" code:kCFURLErrorFileDoesNotExist userInfo:nil].code];
+                        });
+                    }
+                }];
+                
+                /*
                 [[PHImageManager defaultManager] requestAVAssetForVideo:asset options:options resultHandler:^(AVAsset *asset, AVAudioMix *audioMix, NSDictionary *info) {
             
                     if ([asset isKindOfClass:[AVURLAsset class]]) {
@@ -817,6 +870,7 @@
                         });
                     }
                 }];
+                */
             }
         }
     
