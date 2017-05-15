@@ -84,5 +84,6 @@ class NCBrandOptions: NSObject {
     public let disable_request_login_url:       Bool = false
     public let disable_multiaccount:            Bool = false
     public let disable_cryptocloudsystem:       Bool = false
+    public let disable_manage_account:          Bool = false
 }
 

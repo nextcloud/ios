@@ -49,7 +49,7 @@
     
     NSArray *listAccount = [CCCoreData getAllAccount];
 
-    // Section : PICKER ACCOUNT -------------------------------------------
+    // Section : CLOUD ACCOUNT -------------------------------------------
     
     section = [XLFormSectionDescriptor formSectionWithTitle:@"cloud account"];
     [form addFormSection:section];
@@ -101,46 +101,47 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
     [section addFormRow:row];
-
     
     // Section : MANAGE ACCOUNT -------------------------------------------
     
-    section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_manage_account_", nil)];
-    [form addFormSection:section];
+    if ([NCBrandOptions sharedInstance].disable_manage_account == NO) {
     
-    // Modify Account
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"changePassword" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_change_password_", nil)];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIImage imageNamed:@"settingsAccountModify"] forKey:@"imageView.image"];
-    [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
-    [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
-    row.action.formSelector = @selector(changePassword:);
-    if (listAccount.count == 0) row.disabled = @YES;
-    [section addFormRow:row];
-
-    // Brand
-    if ([NCBrandOptions sharedInstance].disable_multiaccount == NO) {
+        section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_manage_account_", nil)];
+        [form addFormSection:section];
     
-        // New Account nextcloud
-        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"addAccount" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_add_account_", nil)];
+        // Modify Account
+        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"changePassword" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_change_password_", nil)];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-        [row.cellConfig setObject:[UIImage imageNamed:@"settingsAccountNextcloud"] forKey:@"imageView.image"];
+        [row.cellConfig setObject:[UIImage imageNamed:@"settingsAccountModify"] forKey:@"imageView.image"];
         [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
         [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
-        row.action.formSelector = @selector(addAccount:);
+        row.action.formSelector = @selector(changePassword:);
+        if (listAccount.count == 0) row.disabled = @YES;
+        [section addFormRow:row];
+
+        // Brand
+        if ([NCBrandOptions sharedInstance].disable_multiaccount == NO) {
+    
+            // New Account nextcloud
+            row = [XLFormRowDescriptor formRowDescriptorWithTag:@"addAccount" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_add_account_", nil)];
+            [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+            [row.cellConfig setObject:[UIImage imageNamed:@"settingsAccountNextcloud"] forKey:@"imageView.image"];
+            [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
+            [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
+            row.action.formSelector = @selector(addAccount:);
+            [section addFormRow:row];
+        }
+    
+        // delete Account
+        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"delAccount" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_delete_account_", nil)];
+        if (listAccount.count > 0) [row.cellConfig setObject:[UIColor redColor] forKey:@"textLabel.textColor"];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+        [row.cellConfig setObject:[UIImage imageNamed:@"settingsAccountDelete"] forKey:@"imageView.image"];
+        [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
+        row.action.formSelector = @selector(answerDelAccount:);
+        if (listAccount.count == 0) row.disabled = @YES;
         [section addFormRow:row];
     }
-    
-    // delete Account
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"delAccount" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_delete_account_", nil)];
-    if (listAccount.count > 0) [row.cellConfig setObject:[UIColor redColor] forKey:@"textLabel.textColor"];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIImage imageNamed:@"settingsAccountDelete"] forKey:@"imageView.image"];
-    [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
-    row.action.formSelector = @selector(answerDelAccount:);
-    if (listAccount.count == 0) row.disabled = @YES;
-    [section addFormRow:row];
-    
     
     return [super initWithForm:form];
 }
