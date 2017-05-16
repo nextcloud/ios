@@ -52,17 +52,41 @@ class NCBrandColor: NSObject {
     }
 }
 
-class NCBrandImages: NSObject {
-
-    static let sharedInstance: NCBrandImages = {
-        let instance = NCBrandImages()
+class NCBrandOptions: NSObject {
+    
+    static let sharedInstance: NCBrandOptions = {
+        let instance = NCBrandOptions()
         return instance
     }()
     
-    public var login:                   String = "loginLogo"
-    public var navigationLogo:          String = "navigationLogo"
-    public var navigationLogoOffline:   String = "navigationLogoOffline"
-    public var BackgroundDetail:        String = "backgroundDetail"
-    public var themingBackground:       String = "themingBackground"
+    public let brand:                           String = "Nextcloud"
+    public let mailMe:                          String = "ios@nextcloud.com"
+    public let textCopyrightNextcloudiOS:       String = "Nextcloud for iOS %@ © 2017 T.W.S. Inc."
+    public let textCopyrightNextcloudServer:    String = "Nextcloud Server %@"
+    public let loginBaseUrl:                    String = "https://cloud.twsweb.it"
+    public let loginBaseUrlMultiDomains:        [String] = ["domain.com", "domain.it"]
+    public let pushNotificationServer:          String = "https://push-notifications.nextcloud.com"
+    public let loginButtonLabelLink:            String = "https://nextcloud.com/providers"
+    public let webLoginAutenticationProtocol:   String = ""
+    
+    // Capabilities Group
+    public let capabilitiesGroups:              String = "group.it.twsweb.Crypto-Cloud"
+    
+    // Options
+    public let use_login_web:                   Bool = false
+    public let use_firebase:                    Bool = false
+    public let use_default_automatic_upload:    Bool = false
+    public let use_themingColor:                Bool = true
+    public let use_themingBackground:           Bool = true
+    public let use_multiDomains:                Bool = false
+    public let use_recent_activity_title:       Bool = false
+    public let use_more_gear_icon_right:        Bool = false
+    public let use_more_quotabar_on_top:        Bool = false
+    
+    public let disable_intro:                   Bool = false
+    public let disable_request_login_url:       Bool = false
+    public let disable_multiaccount:            Bool = false
+    public let disable_cryptocloudsystem:       Bool = false
+    public let disable_manage_account:          Bool = false
 }
 

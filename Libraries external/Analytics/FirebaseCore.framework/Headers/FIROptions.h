@@ -34,6 +34,12 @@
 @property(nonatomic, readonly, copy) NSString *GCMSenderID;
 
 /**
+ * The Project ID from the Firebase console, for example @"abc-xyz-123". Currently only populated
+ * when using [FIROptions defaultOptions].
+ */
+@property(nonatomic, readonly, copy) NSString *projectID;
+
+/**
  * The Android client ID used in Google AppInvite when an iOS app has its Android version, for
  * example @"12345.apps.googleusercontent.com".
  */

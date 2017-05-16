@@ -3,7 +3,7 @@
 //  Crypto Cloud Technology Nextcloud
 //
 //  Created by Marino Faggiana on 03/02/16.
-//  Copyright (c) 2014 TWS. All rights reserved.
+//  Copyright (c) 2017 TWS. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
 //
@@ -22,6 +22,7 @@
 //
 
 #import "CCExifGeo.h"
+#import "NCBridgeSwift.h"
 
 @implementation CCExifGeo
 
@@ -82,7 +83,8 @@
 + (void)setGeocoderFileID:(NSString *)fileID exifDate:(NSDate *)exifDate latitude:(NSString*)latitude longitude:(NSString*)longitude
 {
     // If exists already geocoder data in TableGPS exit
-    if ([CCCoreData getLocationFromGeoLatitude:latitude longitude:longitude]) return;
+    if ([[NCManageDatabase sharedInstance] getLocationFromGeoLatitude:latitude longitude:longitude])
+        return;
     
     CLGeocoder *geocoder = [[CLGeocoder alloc] init];
     CLLocation *location = [[CLLocation alloc] initWithLatitude:[latitude doubleValue] longitude:[longitude doubleValue]];
@@ -113,7 +115,7 @@
             // GPS
             if ([location length] > 0) {
                 
-                [CCCoreData setGeocoderLocation:location placemarkAdministrativeArea:placemark.administrativeArea placemarkCountry:placemark.country placemarkLocality:placemark.locality placemarkPostalCode:placemark.postalCode placemarkThoroughfare:placemark.thoroughfare latitude:latitude longitude:longitude];
+                [[NCManageDatabase sharedInstance] addGeocoderLocation:location placemarkAdministrativeArea:placemark.administrativeArea placemarkCountry:placemark.country placemarkLocality:placemark.locality placemarkPostalCode:placemark.postalCode placemarkThoroughfare:placemark.thoroughfare latitude:latitude longitude:longitude];
                 
                 NSDictionary *dictionary = [[NSDictionary alloc] initWithObjectsAndKeys:exifDate, fileID, nil];
                 

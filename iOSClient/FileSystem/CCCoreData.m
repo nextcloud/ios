@@ -3,7 +3,7 @@
 //  Crypto Cloud Technology Nextcloud
 //
 //  Created by Marino Faggiana on 02/02/16.
-//  Copyright (c) 2014 TWS. All rights reserved.
+//  Copyright (c) 2017 TWS. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
 //
@@ -22,8 +22,8 @@
 //
 
 #import "CCCoreData.h"
-
 #import "CCNetworking.h"
+#import "NCBridgeSwift.h"
 
 @implementation CCCoreData
 
@@ -41,7 +41,7 @@
     record.active = [NSNumber numberWithBool:NO];
         
     // Brand
-    if (k_option_use_default_automatic_upload) {
+    if ([NCBrandOptions sharedInstance].use_default_automatic_upload) {
         
         record.cameraUpload = [NSNumber numberWithBool:YES];
         record.cameraUploadPhoto = [NSNumber numberWithBool:YES];
@@ -63,9 +63,6 @@
         record.cameraUploadWWAnVideo = [NSNumber numberWithBool:NO];
     }
     
-    record.cameraUploadCryptatedPhoto = [NSNumber numberWithBool:NO];
-    record.cameraUploadCryptatedVideo = [NSNumber numberWithBool:NO];
-
     record.optimization = [NSDate date];
     record.password = password;
     record.url = url;
@@ -274,24 +271,6 @@
     else return nil;
 }
 
-+ (BOOL)getCameraUploadCryptatedPhotoActiveAccount:(NSString *)activeAccount
-{
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@)", activeAccount];
-    TableAccount *record = [TableAccount MR_findFirstWithPredicate:predicate];
-    
-    if (record) return [record.cameraUploadCryptatedPhoto boolValue];
-    else return NO;
-}
-
-+ (BOOL)getCameraUploadCryptatedVideoActiveAccount:(NSString *)activeAccount
-{
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@)", activeAccount];
-    TableAccount *record = [TableAccount MR_findFirstWithPredicate:predicate];
-    
-    if (record) return [record.cameraUploadCryptatedVideo boolValue];
-    else return NO;
-}
-
 + (BOOL)getCameraUploadWWanPhotoActiveAccount:(NSString *)activeAccount
 {
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@)", activeAccount];
@@ -309,6 +288,8 @@
     if (record) return [record.cameraUploadWWAnVideo boolValue];
     else return NO;
 }
+
+// ******** SET *********
 
 + (void)setCameraUpload:(BOOL)state activeAccount:(NSString *)activeAccount
 {
@@ -417,30 +398,6 @@
     }
 }
 
-+ (void)setCameraUploadCryptatedPhoto:(BOOL)cryptated activeAccount:(NSString *)activeAccount
-{
-    [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
-
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@)", activeAccount];
-        TableAccount *record = [TableAccount MR_findFirstWithPredicate:predicate inContext:localContext];
-    
-        if (record)
-            record.cameraUploadCryptatedPhoto = [NSNumber numberWithBool:cryptated];
-    }];
-}
-
-+ (void)setCameraUploadCryptatedVideo:(BOOL)cryptated activeAccount:(NSString *)activeAccount
-{
-    [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
-        
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@)", activeAccount];
-        TableAccount *record = [TableAccount MR_findFirstWithPredicate:predicate inContext:localContext];
-    
-        if (record)
-            record.cameraUploadCryptatedVideo = [NSNumber numberWithBool:cryptated];
-    }];
-}
-
 + (void)setCameraUploadWWanPhoto:(BOOL)wWan activeAccount:(NSString *)activeAccount
 {
     [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
@@ -531,40 +488,6 @@
             record.quotaUsed = [NSNumber numberWithDouble:userProfile.quotaUsed];
         }
     }];
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Certificates =====
-#pragma --------------------------------------------------------------------------------------------
-
-+ (void)addCertificate:(NSString *)certificateLocation
-{
-    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
-    
-    TableCertificates *record = [TableCertificates MR_createEntityInContext:context];
-    
-    record.certificateLocation = certificateLocation;
-    
-    [context MR_saveToPersistentStoreAndWait];
-}
-
-+ (NSMutableArray *)getAllCertificatesLocation
-{
-    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
-    NSString *localCertificatesFolder = [CCUtility getDirectoryCerificates];
-    NSMutableArray *output = [NSMutableArray new];
-    
-    NSArray *records = [TableCertificates MR_findAllInContext:context];
-    
-    for (TableCertificates *record in records) {
-        
-        if (record.certificateLocation && record.certificateLocation.length > 0) {
-            NSString *certificatePath = [NSString stringWithFormat:@"%@%@", localCertificatesFolder, record.certificateLocation];
-            [output addObject:certificatePath];
-        }
-    }
-    
-    return output;
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1491,148 +1414,30 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Automatic Upload =====
+#pragma mark ===== Certificates =====
 #pragma --------------------------------------------------------------------------------------------
 
-+ (BOOL)addTableAutomaticUpload:(CCMetadataNet *)metadataNet account:(NSString *)account
-{
-    NSManagedObjectContext *context = [NSManagedObjectContext MR_context];
-    TableAutomaticUpload *record = nil;
-    
-    // Record exists ?
-    record = [TableAutomaticUpload MR_findFirstWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (assetLocalIdentifier == %@)", account, metadataNet.assetLocalIdentifier] inContext:context];
-    if (record)
-        return NO;
-    
-    record = [TableAutomaticUpload MR_createEntityInContext:context];
-        
-    record.account = account;
-    record.assetLocalIdentifier = metadataNet.assetLocalIdentifier;
-    record.lock = [NSNumber numberWithBool:NO];
-    record.date = [NSDate date];
-    record.fileName = metadataNet.fileName;
-    record.selector = metadataNet.selector;
-    record.selectorPost = metadataNet.selectorPost;
-    record.serverUrl = metadataNet.serverUrl;
-    record.session = metadataNet.session;
-    record.priority = [NSNumber numberWithLong:metadataNet.priority];
-        
-    [context MR_saveToPersistentStoreAndWait];
-    
-    return YES;
-}
-
-+ (CCMetadataNet *)getTableAutomaticUploadForAccount:(NSString *)account selector:(NSString *)selector
-{
-    NSManagedObjectContext *context = [NSManagedObjectContext MR_context];
-    
-    TableAutomaticUpload *record = [TableAutomaticUpload MR_findFirstWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (selector == %@) AND (lock == 0)", account, selector] inContext:context];
-    
-    if (record) {
-    
-        CCMetadataNet *metadataNet = [CCMetadataNet new];
-        
-        metadataNet.action = actionUploadAsset;                             // Default
-        metadataNet.assetLocalIdentifier = record.assetLocalIdentifier;
-        metadataNet.fileName = record.fileName;
-        metadataNet.priority = [record.priority longValue];
-        metadataNet.selector = record.selector;
-        metadataNet.selectorPost = record.selectorPost;
-        metadataNet.serverUrl = record.serverUrl;
-        metadataNet.session = record.session;
-        metadataNet.taskStatus = k_taskStatusResume;                        // Default
-        
-        // LOCK
-        record.lock = [NSNumber numberWithBool:YES];
-        [context MR_saveToPersistentStoreAndWait];
-
-        return metadataNet;
-    }
-    
-    return nil;
-}
-
-+ (NSArray *)getAllLockTableAutomaticUploadForAccount:(NSString *)account
-{
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (lock == 1)", account];
-    
-    return [TableAutomaticUpload MR_findAllWithPredicate:predicate];
-}
-
-+ (void)unlockTableAutomaticUploadForAccount:(NSString *)account assetLocalIdentifier:(NSString *)assetLocalIdentifier
-{
-    NSManagedObjectContext *context = [NSManagedObjectContext MR_context];
-    
-    TableAutomaticUpload *record = [TableAutomaticUpload MR_findFirstWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (assetLocalIdentifier == %@)", account, assetLocalIdentifier] inContext:context];
-    
-    if (record) {
-        
-        // UN-LOCK
-        record.lock = [NSNumber numberWithBool:NO];
-        [context MR_saveToPersistentStoreAndWait];
-    }
-}
-
-+ (void)deleteTableAutomaticUploadForAccount:(NSString *)account assetLocalIdentifier:(NSString *)assetLocalIdentifier
-{
-    NSManagedObjectContext *context = [NSManagedObjectContext MR_context];
-    
-    TableAutomaticUpload *record = [TableAutomaticUpload MR_findFirstWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (assetLocalIdentifier == %@)", account, assetLocalIdentifier] inContext:context];
-    
-    if (record) {
-        [record MR_deleteEntityInContext:context];
-        [context MR_saveToPersistentStoreAndWait];
-    }
-}
-
-+ (NSUInteger)countTableAutomaticUploadForAccount:(NSString *)account selector:(NSString *)selector
-{
-    if (selector)
-        return [TableAutomaticUpload MR_countOfEntitiesWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (selector == %@)", account, selector]];
-    else
-        return [TableAutomaticUpload MR_countOfEntitiesWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@)", account]];
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== GPS =====
-#pragma --------------------------------------------------------------------------------------------
-
-+ (void)setGeocoderLocation:(NSString *)location placemarkAdministrativeArea:(NSString *)placemarkAdministrativeArea placemarkCountry:(NSString *)placemarkCountry placemarkLocality:(NSString *)placemarkLocality placemarkPostalCode:(NSString *)placemarkPostalCode placemarkThoroughfare:(NSString *)placemarkThoroughfare latitude:(NSString *)latitude longitude:(NSString *)longitude
++ (NSMutableArray *)getAllCertificatesLocationOldDB
 {
     NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
+    NSMutableArray *output = [NSMutableArray new];
+    
+    NSArray *records = [TableCertificates MR_findAllInContext:context];
+    
+    for (TableCertificates *record in records) {
         
-    TableGPS *record = [TableGPS MR_findFirstWithPredicate:[NSPredicate predicateWithFormat:@"(latitude == %@) AND (longitude == %@)", latitude, longitude] inContext:context];
+        if (record.certificateLocation && record.certificateLocation.length > 0)
+            [output addObject:record.certificateLocation];
         
-    if (!record) {
-        record = [TableGPS MR_createEntityInContext:context];
     }
-        
-    record.latitude = latitude;
-    record.longitude = longitude;
-    if (location) record.location = location;
-    if (placemarkAdministrativeArea) record.placemarkAdministrativeArea = placemarkAdministrativeArea;
-    if (placemarkCountry) record.placemarkCountry = placemarkCountry;
-    if (placemarkLocality) record.placemarkLocality = placemarkLocality;
-    if (placemarkPostalCode) record.placemarkPostalCode = placemarkPostalCode;
-    if (placemarkThoroughfare) record.placemarkThoroughfare = placemarkThoroughfare;
     
-    [context MR_saveToPersistentStoreAndWait];
-}
-
-+ (NSString *)getLocationFromGeoLatitude:(NSString *)latitude longitude:(NSString *)longitude
-{
-    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
-
-    TableGPS *record = [TableGPS MR_findFirstWithPredicate:[NSPredicate predicateWithFormat:@"(latitude == %@) AND (longitude == %@)", latitude, longitude] inContext:context];
-    
-    if (record) return record.location;
-    else return nil;
+    return output;
 }
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Share =====
 #pragma --------------------------------------------------------------------------------------------
-
+/*
 + (void)setShareLink:(NSString *)share fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl sharesLink:(NSMutableDictionary *)sharesLink activeAccount:(NSString *)activeAccount
 {    
     NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
@@ -1742,6 +1547,7 @@
         OCSharedDto *item = [items objectForKey:idRemoteShared];
             
         if (item.shareType == shareTypeLink) [itemsLink addObject:item];
+        
         if ([[item shareWith] length] > 0 && (item.shareType == shareTypeUser || item.shareType == shareTypeGroup || item.shareType == shareTypeRemote)) [itemsUsersAndGroups addObject:item];
     }
         
@@ -1814,7 +1620,7 @@
     
     return;
 }
-
+*/
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Offline =====
 #pragma --------------------------------------------------------------------------------------------
@@ -1874,168 +1680,6 @@
     else descriptor = [[NSSortDescriptor alloc] initWithKey:fieldOrder ascending:ascending selector:@selector(localizedCaseInsensitiveCompare:)];
 
     return [tableMetadatas sortedArrayUsingDescriptors:[NSArray arrayWithObjects:descriptor, nil]];//[NSArray arrayWithArray:tableMetadatas];
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Activity =====
-#pragma --------------------------------------------------------------------------------------------
-
-+ (void)addActivityServer:(OCActivity *)activity account:(NSString *)account
-{
-    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
-    
-    if (activity.idActivity != 0)
-        [TableActivity MR_deleteAllMatchingPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (idActivity == %d)", account, activity.idActivity] inContext:context];
-        
-    TableActivity *record = [TableActivity MR_createEntityInContext:context];
-
-    record.account = account;
-    record.action = @"Activity";
-    record.date = activity.date;
-    record.file = activity.file;
-    record.fileID = @"";
-    record.idActivity = [NSNumber numberWithInteger:activity.idActivity];
-    record.link = activity.link;
-    record.note = activity.subject;
-    record.selector = @"";
-    record.type = k_activityTypeInfo;
-    record.verbose = [NSNumber numberWithInteger:k_activityVerboseDefault];
-    
-    [context MR_saveToPersistentStoreAndWait];
-}
-
-+ (void)addActivityClient:(NSString *)file fileID:(NSString *)fileID action:(NSString *)action selector:(NSString *)selector note:(NSString *)note type:(NSString *)type verbose:(NSInteger)verbose account:(NSString *)account activeUrl:(NSString *)activeUrl
-{
-    note = [note stringByReplacingOccurrencesOfString:[activeUrl stringByAppendingString:webDAV] withString:@""];
-    note = [note stringByReplacingOccurrencesOfString:[k_domain_session_queue stringByAppendingString:@"."] withString:@""];
-
-    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
-    
-    TableActivity *record = [TableActivity MR_createEntityInContext:context];
-        
-    if (!account) record.account = @"";
-    else record.account = account;
-        
-    record.action = action;
-    record.date = [NSDate date];
-    record.file = file;
-    record.fileID = fileID;
-    record.idActivity = 0;
-    record.link = @"";
-    record.note = note;
-    record.selector = selector;
-    record.type = type;
-    record.verbose = [NSNumber numberWithInteger:verbose];
-   
-    [context MR_saveToPersistentStoreAndWait];
-}
-
-+ (NSArray *)getAllTableActivityWithPredicate:(NSPredicate *)predicate
-{
-    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
-    
-    NSArray *records = [TableActivity MR_findAllWithPredicate:predicate inContext:context];
-    
-    if ([records count] == 0) return nil;
-    
-    NSSortDescriptor *descriptor = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:NO selector:nil];
-
-    return [records sortedArrayUsingDescriptors:[NSArray arrayWithObjects:descriptor, nil]];
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== External Sites =====
-#pragma --------------------------------------------------------------------------------------------
-
-+ (void)addExternalSites:(OCExternalSites *)externalSites account:(NSString *)account
-{
-    [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
-        
-        TableExternalSites *record = [TableExternalSites MR_createEntityInContext:localContext];
-        
-        record.account = account;
-        
-        record.idExternalSite = [NSNumber numberWithInteger:externalSites.idExternalSite];
-        record.icon = externalSites.icon;
-        record.lang = externalSites.lang;
-        record.name = externalSites.name;
-        record.url = externalSites.url;
-        record.type = externalSites.type;
-    }];
-}
-
-+ (void)deleteAllExternalSitesForAccount:(NSString *)account
-{
-    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
-    
-    [TableExternalSites MR_deleteAllMatchingPredicate:[NSPredicate predicateWithFormat:@"(account == %@)", account] inContext:context];
-    
-    [context MR_saveToPersistentStoreAndWait];
-}
-
-+ (NSArray *)getAllTableExternalSitesWithPredicate:(NSPredicate *)predicate
-{
-    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
-    
-    NSArray *records = [TableExternalSites MR_findAllWithPredicate:predicate inContext:context];
-    
-    if ([records count] == 0) return nil;
-    
-    NSSortDescriptor *descriptor = [[NSSortDescriptor alloc] initWithKey:@"idExternalSite" ascending:YES selector:nil];
-    
-    return [records sortedArrayUsingDescriptors:[NSArray arrayWithObjects:descriptor, nil]];
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Capabilities =====
-#pragma --------------------------------------------------------------------------------------------
-
-+ (void)setCapabilities:(OCCapabilities *)capabilities account:(NSString *)account
-{
-    [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
-        
-        [TableCapabilities MR_deleteAllMatchingPredicate:[NSPredicate predicateWithFormat:@"(account == %@)", account] inContext:localContext];
-        
-        TableCapabilities *record = [TableCapabilities MR_createEntityInContext:localContext];
-        
-        record.account = account;
-        
-        record.themingBackground = capabilities.themingBackground;
-        record.themingColor = capabilities.themingColor;
-        record.themingLogo = capabilities.themingLogo;
-        record.themingName = capabilities.themingName;
-        record.themingSlogan = capabilities.themingSlogan;
-        record.themingUrl = capabilities.themingUrl;
-        
-        record.versionMajor = [NSNumber numberWithInteger:capabilities.versionMajor];
-        record.versionMinor = [NSNumber numberWithInteger:capabilities.versionMinor];
-        record.versionMicro = [NSNumber numberWithInteger:capabilities.versionMicro];
-        record.versionString = capabilities.versionString;
-    }];
-}
-
-+ (TableCapabilities *)getCapabilitesForAccount:(NSString *)account
-{
-    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
-    
-    return [TableCapabilities MR_findFirstWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@)", account] inContext:context];
-}
-
-+ (NSInteger)getServerVersionAccount:(NSString *)activeAccount
-{
-    if (!activeAccount)
-        return 0;
-    
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@)", activeAccount];
-    TableCapabilities *record = [TableCapabilities MR_findFirstWithPredicate:predicate];
-    
-    if (record) {
-        
-        NSInteger versionMajor = [record.versionMajor integerValue];
-        return versionMajor;
-        
-    } else
-        return 0;
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -2197,7 +1841,7 @@
 + (void)moveCoreDataToGroup
 {
     NSString *applicationName = [[[NSBundle mainBundle] infoDictionary] valueForKey:(NSString *)kCFBundleNameKey];
-    NSURL *dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:k_capabilitiesGroups];
+    NSURL *dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:[NCBrandOptions sharedInstance].capabilitiesGroups];
     NSString *dirToPath = [[dirGroup URLByAppendingPathComponent:appDatabase] path];
 
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES);
@@ -2292,61 +1936,6 @@
     [context MR_saveToPersistentStoreAndWait];
 }
 
-+ (void)flushTableActivityAccount:(NSString *)account
-{
-    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
-    
-    if (account) {
-        
-        [TableActivity MR_deleteAllMatchingPredicate:[NSPredicate predicateWithFormat:@"(account == %@) || (account == '')", account] inContext:context];
-        
-    } else {
-        
-        [TableActivity MR_truncateAllInContext:context];
-    }
-    
-    [context MR_saveToPersistentStoreAndWait];
-}
-
-+ (void)flushTableAutomaticUploadAccount:(NSString *)account selector:(NSString *)selector
-{
-    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
-    
-    if (account && selector)
-        [TableAutomaticUpload MR_deleteAllMatchingPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (selector == %@)", account, selector] inContext:context];
-    else if (account && !selector )
-        [TableAutomaticUpload MR_deleteAllMatchingPredicate:[NSPredicate predicateWithFormat:@"(account == %@)", account] inContext:context];
-    else
-        [TableAutomaticUpload MR_truncateAllInContext:context];
-    
-    [context MR_saveToPersistentStoreAndWait];
-}
-
-+ (void)flushTableCapabilitiesAccount:(NSString *)account
-{
-    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
-    
-    if (account) {
-        
-        [TableCapabilities MR_deleteAllMatchingPredicate:[NSPredicate predicateWithFormat:@"(account == %@)", account] inContext:context];
-        
-    } else {
-        
-        [TableCapabilities MR_truncateAllInContext:context];
-    }
-    
-    [context MR_saveToPersistentStoreAndWait];
-}
-
-+ (void)flushTableCertificates
-{
-    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
-    
-    [TableCertificates MR_truncateAllInContext:context];
-    
-    [context MR_saveToPersistentStoreAndWait];
-}
-
 + (void)flushTableDirectoryAccount:(NSString *)account
 {
     NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
@@ -2359,31 +1948,6 @@
         
         [TableDirectory MR_truncateAllInContext:context];
     }
-    
-    [context MR_saveToPersistentStoreAndWait];
-}
-
-+ (void)flushTableExternalSitesAccount:(NSString *)account
-{
-    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
-    
-    if (account) {
-        
-        [TableExternalSites MR_deleteAllMatchingPredicate:[NSPredicate predicateWithFormat:@"(account == %@)", account] inContext:context];
-        
-    } else {
-        
-        [TableExternalSites MR_truncateAllInContext:context];
-    }
-    
-    [context MR_saveToPersistentStoreAndWait];
-}
-
-+ (void)flushTableGPS
-{
-    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
-    
-    [TableGPS MR_truncateAllInContext:context];
     
     [context MR_saveToPersistentStoreAndWait];
 }
@@ -2420,37 +1984,15 @@
     [context MR_saveToPersistentStoreAndWait];
 }
 
-+ (void)flushTableShareAccount:(NSString *)account
-{
-    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
-    
-    if (account) {
-        
-        [TableShare MR_deleteAllMatchingPredicate:[NSPredicate predicateWithFormat:@"(account == %@)", account] inContext:context];
-        
-    } else {
-        
-        [TableShare MR_truncateAllInContext:context];
-    }
-    
-    [context MR_saveToPersistentStoreAndWait];
-}
-
 
 + (void)flushAllDatabase
 {
     NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
     
     [TableAccount MR_truncateAllInContext:context];
-    [TableActivity MR_truncateAllInContext:context];
-    [TableAutomaticUpload MR_truncateAllInContext:context];
-    [TableCapabilities MR_truncateAllInContext:context];
-    [TableCertificates MR_truncateAllInContext:context];
     [TableDirectory MR_truncateAllInContext:context];
-    [TableGPS MR_truncateAllInContext:context];
     [TableLocalFile MR_truncateAllInContext:context];
     [TableMetadata MR_truncateAllInContext:context];
-    [TableShare MR_truncateAllInContext:context];
     
     [context MR_saveToPersistentStoreAndWait];
 }

@@ -3,7 +3,7 @@
 //  Crypto Cloud Technology Nextcloud
 //
 //  Created by Marino Faggiana on 31/03/16.
-//  Copyright (c) 2014 TWS. All rights reserved.
+//  Copyright (c) 2017 TWS. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
 //
@@ -23,12 +23,7 @@
 
 #import "CCManageCryptoCloudSecurity.h"
 #import "AppDelegate.h"
-
-#ifdef CUSTOM_BUILD
-#import "CustomSwift.h"
-#else
-#import "Nextcloud-Swift.h"
-#endif
+#import "NCBridgeSwift.h"
 
 @interface CCManageCryptoCloudSecurity()
 {
@@ -74,7 +69,7 @@
         [row.cellConfig setObject:@(NSTextAlignmentCenter) forKey:@"textLabel.textAlignment"];
         [row.cellConfig setObject:[NCBrandColor sharedInstance].cryptocloud forKey:@"textLabel.textColor"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-        [row.cellConfig setObject:[UIImage imageNamed:image_settingsKeyMail] forKey:@"imageView.image"];
+        [row.cellConfig setObject:[UIImage imageNamed:@"settingsKeyMail"] forKey:@"imageView.image"];
         row.action.formSelector = @selector(sendMailEncryptPass:);
         //row.disabled = @1;
         [section addFormRow:row];
@@ -149,17 +144,17 @@
     switch (result) {
             
         case MFMailComposeResultCancelled:
-            [app messageNotification:@"_info_" description:@"_mail_deleted_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess];
+            [app messageNotification:@"_info_" description:@"_mail_deleted_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess errorCode:error.code];
             break;
         case MFMailComposeResultSaved:
-            [app messageNotification:@"_info_" description:@"_mail_saved_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess];
+            [app messageNotification:@"_info_" description:@"_mail_saved_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess errorCode:error.code];
             break;
         case MFMailComposeResultSent:
-            [app messageNotification:@"_info_" description:@"_mail_sent_" visible:YES  delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess];
+            [app messageNotification:@"_info_" description:@"_mail_sent_" visible:YES  delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess errorCode:error.code];
             break;
         case MFMailComposeResultFailed: {
             NSString *msg = [NSString stringWithFormat:NSLocalizedString(@"_mail_failure_", nil), [error localizedDescription]];
-            [app messageNotification:@"_error_" description:msg visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
+            [app messageNotification:@"_error_" description:msg visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
         }
             break;
         default:
@@ -179,7 +174,7 @@
     
     XLFormRowDescriptor *row = [self.form formRowWithTag:@"mail"];
     
-    [CCUtility sendMailEncryptPass:row.value validateEmail:YES form:self nameImage:[NCBrandImages sharedInstance].BackgroundDetail];
+    [CCUtility sendMailEncryptPass:row.value validateEmail:YES form:self nameImage:@"backgroundDetail"];
 }
 
 @end

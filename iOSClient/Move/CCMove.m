@@ -3,7 +3,7 @@
 //  Crypto Cloud Technology Nextcloud
 //
 //  Created by Marino Faggiana on 04/09/14.
-//  Copyright (c) 2014 TWS. All rights reserved.
+//  Copyright (c) 2017 TWS. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
 //
@@ -22,26 +22,7 @@
 //
 
 #import "CCMove.h"
-
-#ifndef EXTENSION
-
-    #import "AppDelegate.h"
-
-    #ifdef CUSTOM_BUILD
-    #import "CustomSwift.h"
-    #else
-    #import "Nextcloud-Swift.h"
-    #endif
-
-#else
-
-    #ifdef CUSTOM_BUILD
-    #import "CustomSwiftShare.h"
-    #else
-    #import "Share-Swift.h"
-    #endif
-
-#endif
+#import "NCBridgeSwift.h"
 
 @interface CCMove ()
 {    
@@ -107,7 +88,7 @@
     if (![_serverUrl length]) {
         
         _serverUrl = [CCUtility getHomeServerUrlActiveUrl:activeUrl];
-        UIImageView *image = [[UIImageView alloc] initWithImage:[UIImage imageNamed: NCBrandImages.sharedInstance.navigationLogo]];
+        UIImageView *image = [[UIImageView alloc] initWithImage:[UIImage imageNamed: @"navigationLogo"]];
         [self.navigationController.navigationBar.topItem setTitleView:image];
         self.title = @"Home";
         
@@ -117,22 +98,27 @@
         label.text = self.passMetadata.fileNamePrint;
         
         if (self.passMetadata.cryptated) label.textColor = NCBrandColor.sharedInstance.cryptocloud;
-        else label.textColor = self.tintColorTitle;
+        else label.textColor = NCBrandColor.sharedInstance.navigationBarText;
         
         label.backgroundColor =[UIColor clearColor];
         label.textAlignment = NSTextAlignmentCenter;
         self.navigationItem.titleView=label;
     }
     
-    // Toolbar Color
+    // read folder
+    [self readFolder];
+}
+
+// Apparirà
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    
     self.navigationController.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand;
     self.navigationController.navigationBar.tintColor = NCBrandColor.sharedInstance.navigationBarText;
     
     self.navigationController.toolbar.barTintColor = NCBrandColor.sharedInstance.tabBar;
     self.navigationController.toolbar.tintColor = NCBrandColor.sharedInstance.brand;
-    
-    // read folder
-    [self readFolder];
 }
 
 // MARK: - alertView
@@ -520,9 +506,9 @@
         viewController.onlyClearDirectory = self.onlyClearDirectory;
         viewController.selectedMetadatas = self.selectedMetadatas;
         viewController.move.title = self.move.title;
-        viewController.barTintColor = self.barTintColor;
-        viewController.tintColor = self.tintColor;
-        viewController.tintColorTitle = self.tintColorTitle;
+        //viewController.barTintColor = self.barTintColor;
+        //viewController.tintColor = self.tintColor;
+        //viewController.tintColorTitle = self.tintColorTitle;
         viewController.networkingOperationQueue = _networkingOperationQueue;
 
         viewController.passMetadata = metadata;

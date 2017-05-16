@@ -3,7 +3,7 @@
 //  Picker
 //
 //  Created by Marino Faggiana on 27/12/16.
-//  Copyright © 2016 TWS. All rights reserved.
+//  Copyright © 2017 TWS. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
 //
@@ -129,9 +129,9 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         hud = CCHud.init(view: self.navigationController?.view)
         
         // Theming
-        let tableCapabilities = CCCoreData.getCapabilitesForAccount(activeAccount)
-        if (tableCapabilities != nil && CCGraphics.isOptionUseThemingColor() == true) {
-            if ((tableCapabilities?.themingColor?.characters.count)! > 0) {
+        let tableCapabilities = NCManageDatabase.sharedInstance.getCapabilitesForAccount(activeAccount!)
+        if (tableCapabilities != nil && NCBrandOptions.sharedInstance.use_themingColor == true) {
+            if ((tableCapabilities?.themingColor.characters.count)! > 0) {
                 NCBrandColor.sharedInstance.brand = CCGraphics.color(fromHexString: tableCapabilities?.themingColor)
             }
         }
@@ -160,7 +160,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         if isCryptoCloudMode == true {
             
             // Encrypted mode
-            encryptedButton.image = UIImage(named:image_shareExtEncrypt)?.withRenderingMode(.automatic)
+            encryptedButton.image = UIImage(named:"shareExtEncrypt")?.withRenderingMode(.automatic)
             
             // Color Button
             if parameterEncrypted == true {
@@ -197,7 +197,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         }
         
         if CCUtility.getOnlyLockDir() == false && parameterPasscodeCorrect == false {
-            openBKPasscode(k_brand)
+            openBKPasscode(NCBrandOptions.sharedInstance.brand)
         }
     }
     
@@ -584,7 +584,7 @@ extension DocumentPickerViewController {
     func appGroupContainerURL() -> URL? {
         
         guard let groupURL = FileManager.default
-            .containerURL(forSecurityApplicationGroupIdentifier: k_capabilitiesGroups) else {
+            .containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.sharedInstance.capabilitiesGroups) else {
                 return nil
         }
         
@@ -763,7 +763,7 @@ extension DocumentPickerViewController: UITableViewDataSource {
         }
         
         if metadata.directory && CCCoreData.isDirectoryLock(lockServerUrl, activeAccount: activeAccount) && (passcode?.characters.count)! > 0 {
-            cell.StatusImageView.image = UIImage(named: image_passcode)
+            cell.StatusImageView.image = UIImage(named: "passcode")
         } else {
             cell.StatusImageView.image = nil
         }
@@ -883,7 +883,7 @@ class providerSessionDB {
     
     private init() {
     
-        let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: k_capabilitiesGroups)
+        let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.sharedInstance.capabilitiesGroups)
         let pathDB = dirGroup?.appendingPathComponent(appDatabase).appendingPathComponent("cryptocloud")
         
         MagicalRecord.setupCoreDataStackWithAutoMigratingSqliteStore(at: pathDB!)

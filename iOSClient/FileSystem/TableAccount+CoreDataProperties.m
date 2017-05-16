@@ -19,8 +19,6 @@
 @dynamic cameraUpload;
 @dynamic cameraUploadBackground;
 @dynamic cameraUploadCreateSubfolder;
-@dynamic cameraUploadCryptatedPhoto;
-@dynamic cameraUploadCryptatedVideo;
 @dynamic cameraUploadDatePhoto;
 @dynamic cameraUploadDateVideo;
 @dynamic cameraUploadFolderName;

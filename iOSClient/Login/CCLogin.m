@@ -3,7 +3,7 @@
 //  Crypto Cloud Technology Nextcloud
 //
 //  Created by Marino Faggiana on 09/04/15.
-//  Copyright (c) 2014 TWS. All rights reserved.
+//  Copyright (c) 2017 TWS. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
 //
@@ -25,12 +25,7 @@
 #import "AppDelegate.h"
 #import "CCUtility.h"
 #import "CCCoreData.h"
-
-#ifdef CUSTOM_BUILD
-#import "CustomSwift.h"
-#else
-#import "Nextcloud-Swift.h"
-#endif
+#import "NCBridgeSwift.h"
 
 @interface CCLogin ()
 {
@@ -45,7 +40,7 @@
 {
     [super viewDidLoad];
     
-    self.imageBrand.image = [UIImage imageNamed:[NCBrandImages sharedInstance].login];
+    self.imageBrand.image = [UIImage imageNamed:@"loginLogo"];
     self.login.backgroundColor = [NCBrandColor sharedInstance].customer;
     
     // Bottom label
@@ -87,9 +82,9 @@
     self.loadingBaseUrl.hidden = YES;
     
     // Brand
-    if (k_option_disable_request_login_url) {
+    if ([NCBrandOptions sharedInstance].disable_request_login_url) {
         
-        _baseUrl.text = k_loginBaseUrl;
+        _baseUrl.text = [NCBrandOptions sharedInstance].loginBaseUrl;
         _imageBaseUrl.hidden = YES;
         _baseUrl.hidden = YES;
     }
@@ -163,9 +158,37 @@
 
 - (void)testUrl
 {
+    // Use MultiDomain check if this is correct
+    if ([NCBrandOptions sharedInstance].use_multiDomains == YES) {
+        
+        BOOL foundDomain = NO;
+        NSString *message = @"";
+        
+        for (NSString *domain in [NCBrandOptions sharedInstance].loginBaseUrlMultiDomains) {
+            
+            message = [NSString stringWithFormat:@"%@ %@", message, domain.lowercaseString];
+            
+            if ([self.baseUrl.text.lowercaseString containsString:domain.lowercaseString])
+                foundDomain = YES;
+        }
+        
+        if (!foundDomain) {
+            
+            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:[NSString stringWithFormat:@"%@ %@", NSLocalizedString(@"_error_multidomain_", nil), message]  preferredStyle:UIAlertControllerStyleAlert];
+            
+            [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+                self.baseUrl.text = @"";
+            }]];
+            
+            [self presentViewController:alertController animated:YES completion:nil];
+
+            return;
+        }
+    }
+    
     self.login.enabled = NO;
     self.loadingBaseUrl.hidden = NO;
-  
+    
     // Check whether baseUrl contain protocol. If not add https:// by default.
     if(![self.baseUrl.text hasPrefix:@"https"] && ![self.baseUrl.text hasPrefix:@"http"]) {
       self.baseUrl.text = [NSString stringWithFormat:@"https://%@",self.baseUrl.text];
@@ -331,7 +354,7 @@
 
 - (void)tabBottomLabel
 {
-    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:k_loginButtonLabelLink]];
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NCBrandOptions sharedInstance].loginButtonLabelLink]];
 }
 
 - (IBAction)handlebaseUrlchange:(id)sender

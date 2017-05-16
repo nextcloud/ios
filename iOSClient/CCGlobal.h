@@ -3,7 +3,7 @@
 //  Crypto Cloud Technology Nextcloud
 //
 //  Created by Marino Faggiana on 13/10/14.
-//  Copyright (c) 2014 TWS. All rights reserved.
+//  Copyright (c) 2017 TWS. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
 //
@@ -22,11 +22,10 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "CCStandardImages.h"
-#import "NCBrandConstant.h"
 
 extern NSString *const appApplicationSupport;
 extern NSString *const appDatabase;
+extern NSString *const appDatabaseNextcloud;
 extern NSString *const appCertificates;
 
 extern NSString *const webDAV;
@@ -73,6 +72,9 @@ extern NSString *const urlBaseUploadDB;
 #define k_returnPatenteGuida                            11
 #define k_returnCartaIdentita                           12
 #define k_returnPassaporto                              13
+
+// Name Default DB
+#define k_databaseDefault                               @"nextcloud.realm"
 
 // File Name Const
 #define k_folderDefaultCameraUpload                     @"Photos"
@@ -141,6 +143,7 @@ extern NSString *const urlBaseUploadDB;
 #define k_CCErrorTaskDownloadNotFound                   -9998
 #define k_CCErrorFileUploadNotFound                     -9997
 #define k_CCErrorInternalError                          -9996
+#define k_CCErrorNetworkNowAvailable                    -9995
 
 // Search
 #define k_minCharsSearch                                2

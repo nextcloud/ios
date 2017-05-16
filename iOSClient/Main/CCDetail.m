@@ -3,7 +3,7 @@
 //  Crypto Cloud Technology Nextcloud
 //
 //  Created by Marino Faggiana on 16/01/15.
-//  Copyright (c) 2014 TWS. All rights reserved.
+//  Copyright (c) 2017 TWS. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
 //
@@ -24,12 +24,8 @@
 #import "CCDetail.h"
 #import "AppDelegate.h"
 #import "CCMain.h"
+#import "NCBridgeSwift.h"
 
-#ifdef CUSTOM_BUILD
-#import "CustomSwift.h"
-#else
-#import "Nextcloud-Swift.h"
-#endif
 
 #define TOOLBAR_HEIGHT 49.0f
 
@@ -85,7 +81,7 @@
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(insertGeocoderLocation:) name:@"insertGeocoderLocation" object:nil];
 
-    self.imageBackground.image = [UIImage imageNamed:[NCBrandImages sharedInstance].BackgroundDetail];
+    self.imageBackground.image = [UIImage imageNamed:@"backgroundDetail"];
     
     if ([self.metadataDetail.fileName length] > 0 || [self.metadataDetail.directoryID length] > 0 || [self.metadataDetail.fileID length] > 0) {
     
@@ -107,11 +103,6 @@
     
     if (self.splitViewController.isCollapsed)
         [app plusButtonVisibile:false];
-}
-
-- (void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];    
 }
 
 // E' scomparso
@@ -182,8 +173,8 @@
     UIBarButtonItem *fixedSpaceMini = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:self action:nil];
     fixedSpaceMini.width = 25;
     
-    _buttonAction = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:image_actionSheetOpenIn] style:UIBarButtonItemStylePlain target:self action:@selector(actionButtonPressed:)];
-    _buttonShare  = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:image_actionSheetShare] style:UIBarButtonItemStylePlain target:self action:@selector(shareButtonPressed:)];
+    _buttonAction = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"actionSheetOpenIn"] style:UIBarButtonItemStylePlain target:self action:@selector(actionButtonPressed:)];
+    _buttonShare  = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"actionSheetShare"] style:UIBarButtonItemStylePlain target:self action:@selector(shareButtonPressed:)];
     _buttonDelete = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(deleteButtonPressed:)];
     
     [_toolbar setItems:[NSArray arrayWithObjects: flexible, _buttonDelete, fixedSpaceMini, _buttonShare, fixedSpaceMini, _buttonAction,  nil]];
@@ -293,7 +284,7 @@
     
     LMMediaItem *item = [[LMMediaItem alloc] initWithInfo:@{LMMediaItemInfoURLKey:[NSURL fileURLWithPath:fileName], LMMediaItemInfoContentTypeKey:@(LMMediaItemContentTypeVideo)}];
     item.title = self.metadataDetail.fileNamePrint;
-    item.artist = k_brand;
+    item.artist = [NCBrandOptions sharedInstance].brand;
     
     [app.player.mediaPlayer removeAllMediaInQueue];
     [app.player.mediaPlayer addMedia:item];
@@ -406,14 +397,14 @@
         
         if (metadata.cryptated) {
             
-            [self.photos addObject:[MWPhoto photoWithImage:[UIImage imageNamed:image_filePreviewDownloadCrypto]]];
-            [self.thumbs addObject:[MWPhoto photoWithImage:[UIImage imageNamed:image_filePreviewDownloadCrypto]]];
+            [self.photos addObject:[MWPhoto photoWithImage:[UIImage imageNamed:@"filePreviewDownloadCrypto"]]];
+            [self.thumbs addObject:[MWPhoto photoWithImage:[UIImage imageNamed:@"filePreviewDownloadCrypto"]]];
             
         } else {
             
-            [self.photos addObject:[MWPhoto photoWithImage:[UIImage imageNamed:image_filePreviewDownload]]];
+            [self.photos addObject:[MWPhoto photoWithImage:[UIImage imageNamed:@"filePreviewDownload"]]];
             
-            MWPhoto *thumb = [MWPhoto photoWithImage:[UIImage imageNamed:image_filePreviewDownload]];
+            MWPhoto *thumb = [MWPhoto photoWithImage:[UIImage imageNamed:@"filePreviewDownload"]];
             if ([metadata.typeFile isEqualToString: k_metadataTypeFile_video]) thumb.isVideo = YES;
             [self.thumbs addObject:thumb];
         }
@@ -532,11 +523,11 @@
                     
                     if ([metadata.sessionError length] > 0 ) {
                         
-                        [self.photos replaceObjectAtIndex:index withObject:[MWPhoto photoWithImage:[UIImage imageNamed:image_filePreviewError]]];
+                        [self.photos replaceObjectAtIndex:index withObject:[MWPhoto photoWithImage:[UIImage imageNamed:@"filePreviewError"]]];
                         
                     } else {
                         
-                        [self.photos replaceObjectAtIndex:index withObject:[MWPhoto photoWithImage:[CCUtility drawText:[NSLocalizedString(@"_loading_", nil) stringByAppendingString:@"..."] inImage:[UIImage imageNamed:image_button] colorText:[UIColor lightGrayColor]]]];
+                        [self.photos replaceObjectAtIndex:index withObject:[MWPhoto photoWithImage:[CCUtility drawText:[NSLocalizedString(@"_loading_", nil) stringByAppendingString:@"..."] inImage:[UIImage imageNamed:@"button"] colorText:[UIColor lightGrayColor]]]];
                     }
                 }
             }
@@ -561,11 +552,11 @@
                     
                     if ([metadata.sessionError length] > 0 ) {
                         
-                        [self.photos replaceObjectAtIndex:index withObject:[MWPhoto photoWithImage:[UIImage imageNamed:image_filePreviewError]]];
+                        [self.photos replaceObjectAtIndex:index withObject:[MWPhoto photoWithImage:[UIImage imageNamed:@"filePreviewError"]]];
                         
                     } else {
                         
-                        [self.photos replaceObjectAtIndex:index withObject:[MWPhoto photoWithImage:[CCUtility drawText:[NSLocalizedString(@"_loading_", nil) stringByAppendingString:@"..."] inImage:[UIImage imageNamed:image_button] colorText:[UIColor lightGrayColor]]]];
+                        [self.photos replaceObjectAtIndex:index withObject:[MWPhoto photoWithImage:[CCUtility drawText:[NSLocalizedString(@"_loading_", nil) stringByAppendingString:@"..."] inImage:[UIImage imageNamed:@"button"] colorText:[UIColor lightGrayColor]]]];
                     }
                 }
             }
@@ -693,7 +684,7 @@
     CCMetadata *metadata = [self.dataSourceImagesVideos objectAtIndex:index];
     if (metadata == nil || [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID]] == NO) {
         
-        [app messageNotification:@"_info_" description:@"_file_not_found_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo];
+        [app messageNotification:@"_info_" description:@"_file_not_found_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
         
         return;
     }
@@ -733,7 +724,7 @@
 
 - (void)downloadPhotoBrowserFailure:(NSInteger)errorCode
 {
-    [app messageNotification:@"_download_selected_files_" description:@"_error_download_photobrowser_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
+    [app messageNotification:@"_download_selected_files_" description:@"_error_download_photobrowser_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
 
     [self.photoBrowser reloadData];
 }
@@ -830,8 +821,8 @@
         localFile = [CCCoreData getLocalFileWithFileID:fileID activeAccount:app.activeAccount];
         
         if ([localFile.exifLatitude floatValue] != 0 || [localFile.exifLongitude floatValue] != 0) {
-            
-            NSString *location = [CCCoreData getLocationFromGeoLatitude:localFile.exifLatitude longitude:localFile.exifLongitude];
+                        
+            NSString *location = [[NCManageDatabase sharedInstance] getLocationFromGeoLatitude:localFile.exifLatitude longitude:localFile.exifLongitude];
             
             if ([localFile.exifDate isEqualToDate:[NSDate distantPast]] == NO && location) {
                 

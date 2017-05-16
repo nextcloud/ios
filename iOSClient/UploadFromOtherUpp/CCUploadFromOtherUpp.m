@@ -3,7 +3,7 @@
 //  Crypto Cloud Technology Nextcloud
 //
 //  Created by Marino Faggiana on 01/12/14.
-//  Copyright (c) 2014 TWS. All rights reserved.
+//  Copyright (c) 2017 TWS. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
 //
@@ -23,12 +23,7 @@
 
 #import "CCUploadFromOtherUpp.h"
 #import "AppDelegate.h"
-
-#ifdef CUSTOM_BUILD
-#import "CustomSwift.h"
-#else
-#import "Nextcloud-Swift.h"
-#endif
+#import "NCBridgeSwift.h"
 
 @interface CCUploadFromOtherUpp()
 {
@@ -107,8 +102,8 @@
                 cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
                 UIImageView *img = (UIImageView *)[cell viewWithTag:201];
                                 
-                if ([CCUtility isCryptoString:[serverUrlLocal lastPathComponent]]) img.image = [UIImage imageNamed:image_foldercrypto];
-                else img.image = [UIImage imageNamed:image_folder];
+                if ([CCUtility isCryptoString:[serverUrlLocal lastPathComponent]]) img.image = [UIImage imageNamed:@"foldercrypto"];
+                else img.image = [UIImage imageNamed:@"folder"];
             }
             break;
         case 4:

@@ -20,8 +20,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nullable, nonatomic, copy) NSNumber *cameraUpload;
 @property (nullable, nonatomic, copy) NSNumber *cameraUploadBackground;
 @property (nullable, nonatomic, copy) NSNumber *cameraUploadCreateSubfolder;
-@property (nullable, nonatomic, copy) NSNumber *cameraUploadCryptatedPhoto;
-@property (nullable, nonatomic, copy) NSNumber *cameraUploadCryptatedVideo;
 @property (nullable, nonatomic, copy) NSDate *cameraUploadDatePhoto;
 @property (nullable, nonatomic, copy) NSDate *cameraUploadDateVideo;
 @property (nullable, nonatomic, copy) NSString *cameraUploadFolderName;

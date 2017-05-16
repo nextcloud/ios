@@ -85,9 +85,19 @@ class CCActions: NSObject {
 
     func deleteFileOrFolder(_ metadata: CCMetadata, delegate: AnyObject) {
         
-        let serverUrl = CCCoreData.getServerUrl(fromDirectoryID: metadata.directoryID, activeAccount: appDelegate.activeAccount)!
+        let serverUrl = CCCoreData.getServerUrl(fromDirectoryID: metadata.directoryID, activeAccount: appDelegate.activeAccount)
         let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
 
+        // fix CCActions.swift line 88 2.17.2 (00005)
+        if (serverUrl == nil) {
+            
+            print("[LOG] Server URL not found \(metadata.directoryID)")
+            
+            appDelegate.messageNotification("_delete_", description: "_file_not_found_reload_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
+            
+            return
+        }
+        
         if metadata.cryptated == true {
             
             metadataNet.action = actionDeleteFileDirectory
@@ -140,7 +150,7 @@ class CCActions: NSObject {
 
         if message.length > 0 {
             
-            appDelegate.messageNotification("_delete_", description: message as String, visible: true, delay:TimeInterval(k_dismissAfterSecond), type:TWMessageBarMessageType.error)
+            appDelegate.messageNotification("_delete_", description: message as String, visible: true, delay:TimeInterval(k_dismissAfterSecond), type:TWMessageBarMessageType.error, errorCode: errorCode)
         }
         
         metadataNet.delegate?.deleteFileOrFolderFailure(metadataNet, message: message, errorCode: errorCode)
@@ -178,7 +188,7 @@ class CCActions: NSObject {
                 
                 print("[LOG] Rename cryptated error \(fileName)")
                 
-                appDelegate.messageNotification("_rename_", description: "_file_not_found_reload_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error)
+                appDelegate.messageNotification("_rename_", description: "_file_not_found_reload_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
                 
                 return
             }
@@ -304,7 +314,7 @@ class CCActions: NSObject {
                 title = "_move_"
             }
             
-            appDelegate.messageNotification(title, description: message as String, visible: true, delay:TimeInterval(k_dismissAfterSecond), type:TWMessageBarMessageType.error)
+            appDelegate.messageNotification(title, description: message as String, visible: true, delay:TimeInterval(k_dismissAfterSecond), type:TWMessageBarMessageType.error, errorCode: errorCode)
         }
         
         metadataNet.delegate?.renameMoveFileOrFolderFailure(metadataNet, message: message as NSString, errorCode: errorCode)
@@ -413,7 +423,7 @@ class CCActions: NSObject {
     
     func settingFavoriteFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger) {
         
-        appDelegate.messageNotification("_favorites_", description: message as String, visible: true, delay:TimeInterval(k_dismissAfterSecond), type:TWMessageBarMessageType.error)
+        appDelegate.messageNotification("_favorites_", description: message as String, visible: true, delay:TimeInterval(k_dismissAfterSecond), type:TWMessageBarMessageType.error, errorCode: errorCode)
 
         metadataNet.delegate?.settingFavoriteFailure(metadataNet, message: message, errorCode: errorCode)
     }

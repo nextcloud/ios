@@ -3,7 +3,7 @@
 //  Crypto Cloud Technology Nextcloud
 //
 //  Created by Marino Faggiana on 01/09/15.
-//  Copyright (c) 2014 TWS. All rights reserved.
+//  Copyright (c) 2017 TWS. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
 //
@@ -23,12 +23,7 @@
 
 #import "CCManageCameraUpload.h"
 #import "AppDelegate.h"
-
-#ifdef CUSTOM_BUILD
-#import "CustomSwift.h"
-#else
-#import "Nextcloud-Swift.h"
-#endif
+#import "NCBridgeSwift.h"
 
 @implementation CCManageCameraUpload
 
@@ -93,16 +88,6 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
 
-    if (app.isCryptoCloudMode) {
-        
-        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"camerauploadcryptatedphoto" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_upload_encry_camup_", nil)];
-        row.hidden = [NSString stringWithFormat:@"$%@==0", @"cameraupload"];
-        if ([CCCoreData getCameraUploadCryptatedPhotoActiveAccount:app.activeAccount] == YES) row.value = @1;
-        else row.value = @0;
-        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-        [section addFormRow:row];
-    }
-    
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"camerauploadwwanphoto" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_wifi_only_", nil)];
     row.hidden = [NSString stringWithFormat:@"$%@==0", @"cameraupload"];
     if ([CCCoreData getCameraUploadWWanPhotoActiveAccount:app.activeAccount] == YES) row.value = @1;
@@ -121,16 +106,6 @@
     else row.value = @0;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
-    
-    if (app.isCryptoCloudMode) {
-        
-        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"camerauploadcryptatedvideo" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_upload_encry_camup_", nil)];
-        row.hidden = [NSString stringWithFormat:@"$%@==0", @"cameraupload"];
-        if ([CCCoreData getCameraUploadCryptatedVideoActiveAccount:app.activeAccount] == YES) row.value = @1;
-        else row.value = @0;
-        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-        [section addFormRow:row];
-    }
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"camerauploadwwanvideo" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_wifi_only_", nil)];
     row.hidden = [NSString stringWithFormat:@"$%@==0", @"cameraupload"];
@@ -254,8 +229,7 @@
             [CCCoreData setCameraUploadDateVideo:NULL];
 
             // remove
-            [self dropAutomaticUploadWithSelector:selectorUploadAutomatic];
-            [self dropAutomaticUploadWithSelector:selectorUploadAutomaticAll];
+            [[NCManageDatabase sharedInstance] clearTable:[tableAutomaticUpload class] account:app.activeAccount];
         }
         
         // Initialize Camera Upload
@@ -288,7 +262,7 @@
         } else {
             
             [CCCoreData setCameraUploadBackground:NO activeAccount:app.activeAccount];
-            [[CCManageLocation sharedSingleton] stopSignificantChangeUpdates];
+            [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
         }
     }
 
@@ -302,7 +276,7 @@
             
         } else {
             
-            [self dropAutomaticUploadWithSelector:selectorUploadAutomaticAll];
+            [[NCManageDatabase sharedInstance] clearTable:[tableAutomaticUpload class] account:app.activeAccount];
             [CCCoreData setCameraUploadFullPhotosActiveAccount:NO activeAccount:app.activeAccount];
         }
     }
@@ -319,11 +293,6 @@
         }
         
         [CCCoreData setCameraUploadPhoto:[[rowDescriptor.value valueData] boolValue] activeAccount:app.activeAccount];
-    }
-    
-    if ([rowDescriptor.tag isEqualToString:@"camerauploadcryptatedphoto"]) {
-        
-       [CCCoreData setCameraUploadCryptatedPhoto:[[rowDescriptor.value valueData] boolValue] activeAccount:app.activeAccount];
     }
     
     if ([rowDescriptor.tag isEqualToString:@"camerauploadwwanphoto"]) {
@@ -343,11 +312,6 @@
         }
             
         [CCCoreData setCameraUploadVideo:[[rowDescriptor.value valueData] boolValue] activeAccount:app.activeAccount];
-    }
-    
-    if ([rowDescriptor.tag isEqualToString:@"camerauploadcryptatedvideo"]) {
-        
-        [CCCoreData setCameraUploadCryptatedVideo:[[rowDescriptor.value valueData] boolValue] activeAccount:app.activeAccount];
     }
     
     if ([rowDescriptor.tag isEqualToString:@"camerauploadwwanvideo"]) {
@@ -395,17 +359,11 @@
     if ([CCCoreData getCameraUploadPhotoActiveAccount:app.activeAccount])
         [rowCamerauploadphoto setValue:@1]; else [rowCamerauploadphoto setValue:@0];
     
-    if ([CCCoreData getCameraUploadCryptatedPhotoActiveAccount:app.activeAccount])
-        [rowCamerauploadcryptatedphoto setValue:@1]; else [rowCamerauploadcryptatedphoto setValue:@0];
-    
     if ([CCCoreData getCameraUploadWWanPhotoActiveAccount:app.activeAccount])
         [rowCamerauploadwwanphoto setValue:@1]; else [rowCamerauploadwwanphoto setValue:@0];
     
     if ([CCCoreData getCameraUploadVideoActiveAccount:app.activeAccount])
         [rowCamerauploadvideo setValue:@1]; else [rowCamerauploadvideo setValue:@0];
-    
-    if ([CCCoreData getCameraUploadCryptatedVideoActiveAccount:app.activeAccount])
-        [rowCamerauploadcryptatedvideo setValue:@1]; else [rowCamerauploadcryptatedvideo setValue:@0];
     
     if ([CCCoreData getCameraUploadWWanVideoActiveAccount:app.activeAccount])
         [rowCamerauploadwwanvideo setValue:@1]; else [rowCamerauploadwwanvideo setValue:@0];
@@ -496,11 +454,6 @@
             break;
     }
     return sectionName;
-}
-
-- (void)dropAutomaticUploadWithSelector:(NSString *)selector
-{
-    [CCCoreData flushTableAutomaticUploadAccount:app.activeAccount selector:selector];
 }
 
 @end

@@ -3,7 +3,7 @@
 //  Crypto Cloud Technology Nextcloud
 //
 //  Created by Marino Faggiana on 01/06/15.
-//  Copyright (c) 2014 TWS. All rights reserved.
+//  Copyright (c) 2017 TWS. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
 //
@@ -23,9 +23,9 @@
 
 #import <Foundation/Foundation.h>
 #import <Photos/Photos.h>
-#import <OCCommunicationLib/OCCommunication.h>
-#import <OCCommunicationLib/OCFrameworkConstants.h>
 
+#import "OCCommunication.h"
+#import "OCFrameworkConstants.h"
 #import "AFURLSessionManager.h"
 #import "TWMessageBarManager.h"
 #import "PHAsset+Utility.h"

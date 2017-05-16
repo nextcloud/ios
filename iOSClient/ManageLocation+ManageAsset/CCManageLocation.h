@@ -3,7 +3,7 @@
 //  Crypto Cloud Technology Nextcloud
 //
 //  Created by Marino Faggiana on 23/07/15.
-//  Copyright (c) 2014 TWS. All rights reserved.
+//  Copyright (c) 2017 TWS. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
 //
@@ -39,7 +39,7 @@
 @property BOOL firstChangeAuthorizationDone;
 @property (nonatomic,weak) __weak id<CCManageLocationDelegate> delegate;
 
-+ (CCManageLocation *) sharedSingleton;
++ (CCManageLocation *)sharedInstance;
 
 - (void)startSignificantChangeUpdates;
 - (void)stopSignificantChangeUpdates;

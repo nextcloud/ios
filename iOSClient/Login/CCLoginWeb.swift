@@ -35,7 +35,7 @@ public class CCLoginWeb: UIViewController {
             doneButtonVisible = true
         }
         
-        let webVC = SwiftModalWebVC(urlString: k_loginBaseUrl, theme: .custom, color: NCBrandColor.sharedInstance.brand, colorText: NCBrandColor.sharedInstance.navigationBarText, doneButtonVisible: doneButtonVisible)
+        let webVC = SwiftModalWebVC(urlString: NCBrandOptions.sharedInstance.loginBaseUrl, theme: .custom, color: NCBrandColor.sharedInstance.brand, colorText: NCBrandColor.sharedInstance.navigationBarText, doneButtonVisible: doneButtonVisible)
         webVC.delegateWeb = self
 
         vc.present(webVC, animated: false, completion: nil)
@@ -52,7 +52,7 @@ extension CCLoginWeb: SwiftModalWebVCDelegate {
                 
         let urlString: String = url.absoluteString
         
-        if (urlString.contains(k_webLoginAutenticationProtocol) == true && urlString.contains("login") == true && (loginType == loginAdd || loginType == loginAddForced)) {
+        if (urlString.contains(NCBrandOptions.sharedInstance.webLoginAutenticationProtocol) == true && urlString.contains("login") == true && (loginType == loginAdd || loginType == loginAddForced)) {
             
             let keyValue = url.path.components(separatedBy: "&")
             if (keyValue.count == 3) {

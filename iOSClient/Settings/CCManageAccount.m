@@ -3,7 +3,7 @@
 //  Crypto Cloud Technology Nextcloud
 //
 //  Created by Marino Faggiana on 12/03/15.
-//  Copyright (c) 2014 TWS. All rights reserved.
+//  Copyright (c) 2017 TWS. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
 //
@@ -24,12 +24,7 @@
 #import "CCManageAccount.h"
 #import "AppDelegate.h"
 #import "CCLogin.h"
-
-#ifdef CUSTOM_BUILD
-#import "CustomSwift.h"
-#else
-#import "Nextcloud-Swift.h"
-#endif
+#import "NCBridgeSwift.h"
 
 #define actionSheetCancellaAccount 1
 
@@ -54,7 +49,7 @@
     
     NSArray *listAccount = [CCCoreData getAllAccount];
 
-    // Section : PICKER ACCOUNT -------------------------------------------
+    // Section : CLOUD ACCOUNT -------------------------------------------
     
     section = [XLFormSectionDescriptor formSectionWithTitle:@"cloud account"];
     [form addFormSection:section];
@@ -106,46 +101,47 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
     [section addFormRow:row];
-
     
     // Section : MANAGE ACCOUNT -------------------------------------------
     
-    section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_manage_account_", nil)];
-    [form addFormSection:section];
+    if ([NCBrandOptions sharedInstance].disable_manage_account == NO) {
     
-    // Modify Account
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"changePassword" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_change_password_", nil)];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIImage imageNamed:image_settingsAccountModify] forKey:@"imageView.image"];
-    [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
-    [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
-    row.action.formSelector = @selector(changePassword:);
-    if (listAccount.count == 0) row.disabled = @YES;
-    [section addFormRow:row];
-
-    // Brand
-    if (k_option_disable_multiaccount == NO) {
+        section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_manage_account_", nil)];
+        [form addFormSection:section];
     
-        // New Account nextcloud
-        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"addAccountNextcloud" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_add_nextcloud_", nil)];
+        // Modify Account
+        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"changePassword" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_change_password_", nil)];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-        [row.cellConfig setObject:[UIImage imageNamed:image_settingsAccountNextcloud] forKey:@"imageView.image"];
+        [row.cellConfig setObject:[UIImage imageNamed:@"settingsAccountModify"] forKey:@"imageView.image"];
         [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
         [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
-        row.action.formSelector = @selector(addAccount:);
+        row.action.formSelector = @selector(changePassword:);
+        if (listAccount.count == 0) row.disabled = @YES;
+        [section addFormRow:row];
+
+        // Brand
+        if ([NCBrandOptions sharedInstance].disable_multiaccount == NO) {
+    
+            // New Account nextcloud
+            row = [XLFormRowDescriptor formRowDescriptorWithTag:@"addAccount" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_add_account_", nil)];
+            [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+            [row.cellConfig setObject:[UIImage imageNamed:@"settingsAccountNextcloud"] forKey:@"imageView.image"];
+            [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
+            [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
+            row.action.formSelector = @selector(addAccount:);
+            [section addFormRow:row];
+        }
+    
+        // delete Account
+        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"delAccount" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_delete_account_", nil)];
+        if (listAccount.count > 0) [row.cellConfig setObject:[UIColor redColor] forKey:@"textLabel.textColor"];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+        [row.cellConfig setObject:[UIImage imageNamed:@"settingsAccountDelete"] forKey:@"imageView.image"];
+        [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
+        row.action.formSelector = @selector(answerDelAccount:);
+        if (listAccount.count == 0) row.disabled = @YES;
         [section addFormRow:row];
     }
-    
-    // delete Account
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"delAccount" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_delete_account_", nil)];
-    if (listAccount.count > 0) [row.cellConfig setObject:[UIColor redColor] forKey:@"textLabel.textColor"];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIImage imageNamed:image_settingsAccountDelete] forKey:@"imageView.image"];
-    [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
-    row.action.formSelector = @selector(answerDelAccount:);
-    if (listAccount.count == 0) row.disabled = @YES;
-    [section addFormRow:row];
-    
     
     return [super initWithForm:form];
 }
@@ -207,7 +203,7 @@
     [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:k_taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
     
     // Brand
-    if (k_option_use_login_web) {
+    if ([NCBrandOptions sharedInstance].use_login_web) {
     
         _loginWeb = [CCLoginWeb new];
         _loginWeb.delegate = self;
@@ -228,7 +224,7 @@
 - (void)addAccountFoced
 {
     // Brand
-    if (k_option_use_login_web) {
+    if ([NCBrandOptions sharedInstance].use_login_web) {
     
         _loginWeb = [CCLoginWeb new];
         _loginWeb.delegate = self;
@@ -262,7 +258,7 @@
     [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:k_taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
     
     // Brand
-    if (k_option_use_login_web) {
+    if ([NCBrandOptions sharedInstance].use_login_web) {
     
         _loginWeb = [CCLoginWeb new];
         _loginWeb.delegate = self;
@@ -323,14 +319,17 @@
 - (void)deleteAccount:(NSString *)account
 {
     [CCCoreData flushTableAccount:account];
-    [CCCoreData flushTableActivityAccount:account];
-    [CCCoreData flushTableAutomaticUploadAccount:account selector:nil];
-    [CCCoreData flushTableCapabilitiesAccount:account];
+    
+    [[NCManageDatabase sharedInstance] clearTable:[tableActivity class] account:account];
+    [[NCManageDatabase sharedInstance] clearTable:[tableAutomaticUpload class] account:app.activeAccount];
+    [[NCManageDatabase sharedInstance] clearTable:[tableCapabilities class] account:app.activeAccount];
+    [[NCManageDatabase sharedInstance] clearTable:[tableExternalSites class] account:app.activeAccount];
+
     [CCCoreData flushTableDirectoryAccount:account];
-    [CCCoreData flushTableExternalSitesAccount:account];
     [CCCoreData flushTableLocalFileAccount:account];
     [CCCoreData flushTableMetadataAccount:account];
-    [CCCoreData flushTableShareAccount:account];
+    
+    [[NCManageDatabase sharedInstance] clearTable:[tableShare class] account:app.activeAccount];
 }
 
 - (void)answerDelAccount:(XLFormRowDescriptor *)sender
@@ -353,9 +352,9 @@
 
 - (void)ChangeDefaultAccount:(NSString *)account
 {
-    if ([app.netQueue operationCount] > 0 || [app.netQueueDownload operationCount] > 0 || [app.netQueueDownloadWWan operationCount] > 0 || [app.netQueueUpload operationCount] > 0 || [app.netQueueUploadWWan operationCount] > 0 || [CCCoreData countTableAutomaticUploadForAccount:app.activeAccount selector:nil] > 0) {
+    if ([app.netQueue operationCount] > 0 || [app.netQueueDownload operationCount] > 0 || [app.netQueueDownloadWWan operationCount] > 0 || [app.netQueueUpload operationCount] > 0 || [app.netQueueUploadWWan operationCount] > 0 || [[NCManageDatabase sharedInstance] countAutomaticUploadForAccount:app.activeAccount session:nil] > 0) {
         
-        [app messageNotification:@"_transfers_in_queue_" description:nil visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo];
+        [app messageNotification:@"_transfers_in_queue_" description:nil visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
         [self UpdateForm];
         return;
     }

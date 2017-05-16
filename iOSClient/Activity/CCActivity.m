@@ -3,7 +3,7 @@
 //  Crypto Cloud Technology Nextcloud
 //
 //  Created by Marino Faggiana on 12/04/17.
-//  Copyright (c) 2014 TWS. All rights reserved.
+//  Copyright (c) 2017 TWS. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
 //
@@ -24,12 +24,7 @@
 #import "CCActivity.h"
 #import "AppDelegate.h"
 #import "CCSection.h"
-
-#ifdef CUSTOM_BUILD
-#import "CustomSwift.h"
-#else
-#import "Nextcloud-Swift.h"
-#endif
+#import "NCBridgeSwift.h"
 
 #define fontSizeData    [UIFont boldSystemFontOfSize:15]
 #define fontSizeAction  [UIFont systemFontOfSize:14]
@@ -73,7 +68,11 @@
     
     _sectionDataSource = [NSArray new];
     
-    self.title = NSLocalizedString(@"_activity_", nil);
+    if ([NCBrandOptions sharedInstance].use_recent_activity_title == true)
+        self.title = NSLocalizedString(@"_recent_activity_", nil);
+    else
+        self.title = NSLocalizedString(@"_activity_", nil);
+
     
     [self reloadDatasource];
 }
@@ -131,7 +130,7 @@
 
 - (UIImage *)imageForEmptyDataSet:(UIScrollView *)scrollView
 {
-    return [UIImage imageNamed:image_activityNoRecord];
+    return [UIImage imageNamed:@"activityNoRecord"];
 }
 
 - (NSAttributedString *)titleForEmptyDataSet:(UIScrollView *)scrollView
@@ -162,7 +161,7 @@
     else
         predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (verbose == %lu) AND (date > %@)", app.activeAccount, k_activityVerboseDefault, sixDaysAgo];
 
-    _sectionDataSource = [CCCoreData getAllTableActivityWithPredicate: predicate];
+    _sectionDataSource = [[NCManageDatabase sharedInstance] getActivityWithPredicate:predicate];
         
     [self reloadCollection];
 }
@@ -172,7 +171,7 @@
     NSDate *dateActivity;
     
     if ([_sectionDataSource count] > 0)
-        dateActivity = ((TableActivity *)[_sectionDataSource objectAtIndex:0]).date;
+        dateActivity = ((tableActivity *)[_sectionDataSource objectAtIndex:0]).date;
 
     if ([dateActivity compare:_storeDateFirstActivity] == NSOrderedDescending || _storeDateFirstActivity == nil || dateActivity == nil) {
         _storeDateFirstActivity = dateActivity;
@@ -191,7 +190,7 @@
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    TableActivity *activity = [_sectionDataSource objectAtIndex:section];
+    tableActivity *activity = [_sectionDataSource objectAtIndex:section];
         
     if ([activity.action isEqual: k_activityDebugActionDownload] || [activity.action isEqual: k_activityDebugActionUpload]) {
         
@@ -206,7 +205,7 @@
 
 -(CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section
 {
-    TableActivity *activity = [_sectionDataSource objectAtIndex:section];
+    tableActivity *activity = [_sectionDataSource objectAtIndex:section];
     
     UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, collectionView.frame.size.width - 40, CGFLOAT_MAX)];
     label.numberOfLines = 0;
@@ -241,7 +240,7 @@
     
         reusableview = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:@"header" forIndexPath:indexPath];
         
-        TableActivity *activity = [_sectionDataSource objectAtIndex:indexPath.section];
+        tableActivity *activity = [_sectionDataSource objectAtIndex:indexPath.section];
     
         UILabel *dateLabel = (UILabel *)[reusableview viewWithTag:100];
         UILabel *actionLabel = (UILabel *)[reusableview viewWithTag:101];
@@ -313,7 +312,7 @@
     //cell.backgroundColor = [UIColor clearColor];
     UIImageView *imageView = (UIImageView *)[cell viewWithTag:104];
 
-    TableActivity *activity = [_sectionDataSource objectAtIndex:indexPath.section];
+    tableActivity *activity = [_sectionDataSource objectAtIndex:indexPath.section];
     
     imageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, activity.fileID]];
     
@@ -322,7 +321,7 @@
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    TableActivity *activity = [_sectionDataSource objectAtIndex:indexPath.section];
+    tableActivity *activity = [_sectionDataSource objectAtIndex:indexPath.section];
     
     CCMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileID == %@)", activity.account, activity.fileID] context:nil];
     
@@ -338,7 +337,7 @@
         
     } else {
         
-        [app messageNotification:@"_info_" description:@"_activity_file_not_present_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo];
+        [app messageNotification:@"_info_" description:@"_activity_file_not_present_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
     }
 }
 

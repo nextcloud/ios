@@ -3,7 +3,7 @@
 //  PickerFileProvider
 //
 //  Created by Marino Faggiana on 27/12/16.
-//  Copyright © 2016 TWS. All rights reserved.
+//  Copyright © 2017 TWS. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
 //

@@ -3,7 +3,7 @@
 //  Crypto Cloud Technology Nextcloud
 //
 //  Created by Marino Faggiana on 10/08/16.
-//  Copyright (c) 2014 TWS. All rights reserved.
+//  Copyright (c) 2017 TWS. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
 //
@@ -22,8 +22,8 @@
 //
 
 #import "CCUtility.h"
-#import "CCCoreData.h"
 #import "CCCertificate.h"
+#import "NCBridgeSwift.h"
 
 #import <openssl/x509.h>
 #import <openssl/bio.h>
@@ -76,7 +76,7 @@ static SecCertificateRef SecTrustGetLeafCertificate(SecTrustRef trust)
         
         NSString *localCertificatesFolder = [CCUtility getDirectoryCerificates];
         
-        NSMutableArray *listCertificateLocation = [CCCoreData getAllCertificatesLocation];
+        NSArray *listCertificateLocation = [[NCManageDatabase sharedInstance] getCertificatesLocation:[CCUtility getDirectoryCerificates]];
         
         for (int i = 0 ; i < [listCertificateLocation count] ; i++) {
          
@@ -221,7 +221,7 @@ static SecCertificateRef SecTrustGetLeafCertificate(SecTrustRef trust)
         
     } else {
         
-        [CCCoreData addCertificate:[NSString stringWithFormat:@"%f.der", dateCertificate]];
+        [[NCManageDatabase sharedInstance] addCertificates:[NSString stringWithFormat:@"%f.der", dateCertificate]];
     }
     
     return YES;

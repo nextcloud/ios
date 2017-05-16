@@ -3,7 +3,7 @@
 //  Crypto Cloud Technology Nextcloud
 //
 //  Created by Marino Faggiana on 19/10/16.
-//  Copyright (c) 2016 TWS. All rights reserved.
+//  Copyright (c) 2017 TWS. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
 //
@@ -22,17 +22,10 @@
 //
 
 #import "CCSynchronize.h"
-
 #import "AppDelegate.h"
 #import "CCCoreData.h"
 #import "CCMain.h"
-
-#ifdef CUSTOM_BUILD
-    #import "CustomSwift.h"
-#else
-    #import "Nextcloud-Swift.h"
-#endif
-
+#import "NCBridgeSwift.h"
 
 @interface CCSynchronize () <CCActionsListingFavoritesDelegate>
 {

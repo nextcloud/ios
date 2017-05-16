@@ -3,7 +3,7 @@
 //  Crypto Cloud Technology Nextcloud
 //
 //  Created by Marino Faggiana on 02/02/16.
-//  Copyright (c) 2014 TWS. All rights reserved.
+//  Copyright (c) 2017 TWS. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
 //
@@ -22,8 +22,8 @@
 //
 
 #import "CCUtility.h"
-
 #import "CCGraphics.h"
+#import "NCBridgeSwift.h"
 
 #import <netinet/in.h>
 #import <openssl/x509.h>
@@ -546,7 +546,7 @@
 // Return path of User Crypto Cloud / <user dir>
 + (NSString *)getDirectoryActiveUser:(NSString *)activeUser activeUrl:(NSString *)activeUrl
 {
-    NSURL *dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:k_capabilitiesGroups];
+    NSURL *dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:[NCBrandOptions sharedInstance].capabilitiesGroups];
     NSString *user = activeUser;
     NSString *baseUrl = [activeUrl lowercaseString];
     NSString *dirUserBaseUrl = nil;
@@ -611,7 +611,7 @@
 // Return the path of directory Cetificates
 + (NSString *)getDirectoryCerificates
 {
-    NSURL *dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:k_capabilitiesGroups];
+    NSURL *dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:[NCBrandOptions sharedInstance].capabilitiesGroups];
     
     NSString *dir = [[dirGroup URLByAppendingPathComponent:appCertificates] path];
     if (![[NSFileManager defaultManager] fileExistsAtPath:dir])
@@ -744,8 +744,8 @@
     else
         translate = NSLocalizedString(localize, nil);
     
-    translate = [translate stringByReplacingOccurrencesOfString:@"_brand_" withString:k_brand];
-    translate = [translate stringByReplacingOccurrencesOfString:@"_mail_me_" withString:k_mailMe];
+    translate = [translate stringByReplacingOccurrencesOfString:@"_brand_" withString:[NCBrandOptions sharedInstance].brand];
+    translate = [translate stringByReplacingOccurrencesOfString:@"_mail_me_" withString:[NCBrandOptions sharedInstance].mailMe];
     
     return translate;
 }
@@ -853,55 +853,55 @@
         // if wrong code, icon protect
         if (metadata.errorPasscode) {
             metadata.typeFile = k_metadataTypeFile_unknown;
-            metadata.iconName = image_plist;
+            metadata.iconName = @"plist";
             return;
         }
         // Type compress
         if (UTTypeConformsTo(fileUTI, kUTTypeZipArchive) && [(__bridge NSString *)fileUTI containsString:@"org.openxmlformats"] == NO && [(__bridge NSString *)fileUTI containsString:@"oasis"] == NO) {
             metadata.typeFile = k_metadataTypeFile_compress;
-            metadata.iconName = image_file_compress;
+            metadata.iconName = @"file_compress";
         }
         // Type image
         else if (UTTypeConformsTo(fileUTI, kUTTypeImage)) {
             metadata.typeFile = k_metadataTypeFile_image;
-            metadata.iconName = image_file_photo;
+            metadata.iconName = @"file_photo";
         }
         // Type Video
         else if (UTTypeConformsTo(fileUTI, kUTTypeMovie)) {
             metadata.typeFile = k_metadataTypeFile_video;
-            metadata.iconName = image_file_movie;
+            metadata.iconName = @"file_movie";
         }
         // Type Audio
         else if (UTTypeConformsTo(fileUTI, kUTTypeAudio)) {
             metadata.typeFile = k_metadataTypeFile_audio;
-            metadata.iconName = image_file_audio;
+            metadata.iconName = @"file_audio";
         }
         // Type Document [DOC] [PDF] [XLS] [TXT] (RTF = "public.rtf" - ODT = "org.oasis-open.opendocument.text") [MD]
         else if (UTTypeConformsTo(fileUTI, kUTTypeContent) || [ext isEqualToString:@"MD"]) {
             
             metadata.typeFile = k_metadataTypeFile_document;
-            metadata.iconName = image_document;
+            metadata.iconName = @"document";
             
             NSString *typeFile = (__bridge NSString *)fileUTI;
             
             if ([typeFile isEqualToString:@"com.adobe.pdf"]) {
-                metadata.iconName = image_file_pdf;
+                metadata.iconName = @"file_pdf";
             }
             
             if ([typeFile isEqualToString:@"org.openxmlformats.spreadsheetml.sheet"]) {
-                metadata.iconName = image_file_xls;
+                metadata.iconName = @"file_xls";
             }
             
             if ([typeFile isEqualToString:@"com.microsoft.excel.xls"]) {
-                metadata.iconName = image_file_xls;
+                metadata.iconName = @"file_xls";
             }
             
             if ([typeFile isEqualToString:@"public.plain-text"] || [ext isEqualToString:@"MD"]) {
-                metadata.iconName = image_file_txt;
+                metadata.iconName = @"file_txt";
             }
             
             if ([typeFile isEqualToString:@"public.html"]) {
-                metadata.iconName = image_file_code;
+                metadata.iconName = @"file_code";
             }
             
         } else {
@@ -912,12 +912,12 @@
             // icon uTorrent
             if ([(__bridge NSString *)fileExtension isEqualToString:@"torrent"]) {
                 
-                metadata.iconName = image_utorrent;
+                metadata.iconName = @"utorrent";
                 
             } else {
             
-                if (metadata.cryptated) metadata.iconName = image_plist;
-                else metadata.iconName = image_file;
+                if (metadata.cryptated) metadata.iconName = @"plist";
+                else metadata.iconName = @"file";
             }
         }
         
@@ -925,11 +925,11 @@
         // icon directory
         metadata.typeFile = k_metadataTypeFile_directory;
         
-        if (metadata.cryptated) metadata.iconName = image_foldercrypto;
-        else metadata.iconName = image_folder;
+        if (metadata.cryptated) metadata.iconName = @"foldercrypto";
+        else metadata.iconName = @"folder";
         
         if([metadata.fileName isEqualToString:cameraFolderName] && [directory isEqualToString:cameraFolderPath])
-            metadata.iconName = image_folderphotocamera;
+            metadata.iconName = @"folderphotocamera";
     }
 }
 

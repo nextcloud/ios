@@ -23,12 +23,7 @@
 
 #import "CCFavorites.h"
 #import "AppDelegate.h"
-
-#ifdef CUSTOM_BUILD
-#import "CustomSwift.h"
-#else
-#import "Nextcloud-Swift.h"
-#endif
+#import "NCBridgeSwift.h"
 
 @interface CCFavorites () <CCActionsDeleteDelegate, CCActionsSettingFavoriteDelegate>
 {
@@ -131,7 +126,7 @@
 
 - (UIImage *)imageForEmptyDataSet:(UIScrollView *)scrollView
 {
-    return [UIImage imageNamed:image_favoriteNoFiles];
+    return [UIImage imageNamed:@"favoriteNoFiles"];
 }
 
 - (NSAttributedString *)titleForEmptyDataSet:(UIScrollView *)scrollView
@@ -215,7 +210,7 @@
 
 - (void)downloadFileFailure:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode
 {    
-    [app messageNotification:@"_download_file_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
+    [app messageNotification:@"_download_file_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
 }
 
 - (void)downloadFileSuccess:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost
@@ -351,8 +346,8 @@
                 
                 [_hudDeterminate hideHud];
                 
-                if (succeeded) [app messageNotification:@"_info_" description:@"_file_unpacked_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess];
-                else [app messageNotification:@"_error_" description:[NSString stringWithFormat:@"Error %ld", (long)error.code] visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
+                if (succeeded) [app messageNotification:@"_info_" description:@"_file_unpacked_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess errorCode:0];
+                else [app messageNotification:@"_error_" description:[NSString stringWithFormat:@"Error %ld", (long)error.code] visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
             });
             
         }];
@@ -405,7 +400,7 @@
     // ONLY Root Favorites : Remove file/folder Favorites
     if (_serverUrl == nil) {
         
-        [actionSheet addButtonWithTitle:NSLocalizedString(@"_remove_favorites_", nil) image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_actionSheetOffline] color:[NCBrandColor sharedInstance].brand] backgroundColor:[UIColor whiteColor] height: 50.0 type:AHKActionSheetButtonTypeDefault handler:^(AHKActionSheet *as) {
+        [actionSheet addButtonWithTitle:NSLocalizedString(@"_remove_favorites_", nil) image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetOffline"] color:[NCBrandColor sharedInstance].brand] backgroundColor:[UIColor whiteColor] height: 50.0 type:AHKActionSheetButtonTypeDefault handler:^(AHKActionSheet *as) {
                                     
             [self.tableView setEditing:NO animated:YES];
             [[CCActions sharedInstance] settingFavorite:metadata favorite:NO delegate:self];
@@ -415,7 +410,7 @@
     // Share
     if (_metadata.cryptated == NO) {
         
-        [actionSheet addButtonWithTitle:NSLocalizedString(@"_share_", nil) image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_actionSheetShare] color:[NCBrandColor sharedInstance].brand] backgroundColor:[UIColor whiteColor] height: 50.0 type:AHKActionSheetButtonTypeDefault handler:^(AHKActionSheet *as) {
+        [actionSheet addButtonWithTitle:NSLocalizedString(@"_share_", nil) image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetShare"] color:[NCBrandColor sharedInstance].brand] backgroundColor:[UIColor whiteColor] height: 50.0 type:AHKActionSheetButtonTypeDefault handler:^(AHKActionSheet *as) {
                 // close swipe
                 [self setEditing:NO animated:YES];
                                     
@@ -426,7 +421,7 @@
     // NO Directory - NO Template
     if (metadata.directory == NO && [metadata.type isEqualToString:k_metadataType_template] == NO) {
         
-        [actionSheet addButtonWithTitle:NSLocalizedString(@"_open_in_", nil) image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:image_actionSheetOpenIn] color:[NCBrandColor sharedInstance].brand] backgroundColor:[UIColor whiteColor] height: 50.0 type:AHKActionSheetButtonTypeDefault handler:^(AHKActionSheet *as) {
+        [actionSheet addButtonWithTitle:NSLocalizedString(@"_open_in_", nil) image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetOpenIn"] color:[NCBrandColor sharedInstance].brand] backgroundColor:[UIColor whiteColor] height: 50.0 type:AHKActionSheetButtonTypeDefault handler:^(AHKActionSheet *as) {
                 [self.tableView setEditing:NO animated:YES];
                 [self openWith:metadata];
             }];
@@ -549,7 +544,7 @@
     cell.fileImageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]];
         
     if (_serverUrl == nil)
-        cell.offlineImageView.image = [UIImage imageNamed:image_favorite];
+        cell.offlineImageView.image = [UIImage imageNamed:@"favorite"];
     
     if (cell.fileImageView.image == nil && metadata.thumbnailExists)
         [[CCActions sharedInstance] downloadTumbnail:metadata delegate:self];
@@ -580,7 +575,7 @@
     
     // it's encrypted ???
     if (metadata.cryptated && [metadata.type isEqualToString: k_metadataType_template] == NO)
-        cell.statusImageView.image = [UIImage imageNamed:image_lock];
+        cell.statusImageView.image = [UIImage imageNamed:@"lock"];
     
     // text and length
     if (metadata.directory) {

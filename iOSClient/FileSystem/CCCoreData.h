@@ -3,7 +3,7 @@
 //  Crypto Cloud Technology Nextcloud
 //
 //  Created by Marino Faggiana on 02/02/16.
-//  Copyright (c) 2014 TWS. All rights reserved.
+//  Copyright (c) 2017 TWS. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
 //
@@ -30,23 +30,16 @@
 #import "OCSharedDto.h"
 #import "CCMetadata.h"
 #import "CCUtility.h"
-#import "CCExifGeo.h"
 #import "CCGraphics.h"
 #import "OCUserProfile.h"
 #import "OCActivity.h"
 #import "OCExternalSites.h"
 #import "OCCapabilities.h"
 #import "TableAccount+CoreDataClass.h"
-#import "TableActivity+CoreDataClass.h"
 #import "TableCertificates+CoreDataClass.h"
 #import "TableMetadata+CoreDataClass.h"
 #import "TableDirectory+CoreDataClass.h"
 #import "TableLocalFile+CoreDataClass.h"
-#import "TableGPS+CoreDataClass.h"
-#import "TableShare+CoreDataClass.h"
-#import "TableAutomaticUpload+CoreDataClass.h"
-#import "TableExternalSites+CoreDataClass.h"
-#import "TableCapabilities+CoreDataClass.h"
 
 @interface CCCoreData : NSObject
 
@@ -74,8 +67,6 @@
 + (BOOL)getCameraUploadVideoActiveAccount:(NSString *)activeAccount;
 + (NSDate *)getCameraUploadDatePhotoActiveAccount:(NSString *)activeAccount;
 + (NSDate *)getCameraUploadDateVideoActiveAccount:(NSString *)activeAccount;
-+ (BOOL)getCameraUploadCryptatedPhotoActiveAccount:(NSString *)activeAccount;
-+ (BOOL)getCameraUploadCryptatedVideoActiveAccount:(NSString *)activeAccount;
 + (BOOL)getCameraUploadWWanPhotoActiveAccount:(NSString *)activeAccount;
 + (BOOL)getCameraUploadWWanVideoActiveAccount:(NSString *)activeAccount;
 
@@ -88,8 +79,6 @@
 + (void)setCameraUploadDatePhoto:(NSDate *)date;
 + (void)setCameraUploadDateVideo:(NSDate *)date;
 + (void)setCameraUploadDateAssetType:(PHAssetMediaType)assetMediaType assetDate:(NSDate *)assetDate activeAccount:(NSString *)activeAccount;
-+ (void)setCameraUploadCryptatedPhoto:(BOOL)cryptated activeAccount:(NSString *)activeAccount;
-+ (void)setCameraUploadCryptatedVideo:(BOOL)cryptated activeAccount:(NSString *)activeAccount;
 + (void)setCameraUploadWWanPhoto:(BOOL)wWan activeAccount:(NSString *)activeAccount;
 + (void)setCameraUploadWWanVideo:(BOOL)wWan activeAccount:(NSString *)activeAccount;
 + (void)setCameraUploadFolderName:(NSString *)fileName activeAccount:(NSString *)activeAccount;
@@ -97,11 +86,6 @@
 + (void)setCameraUploadSaveAlbum:(BOOL)saveAlbum activeAccount:(NSString *)activeAccount;
 
 + (void)setUserProfileActiveAccount:(NSString *)activeAccount userProfile:(OCUserProfile *)userProfile;
-
-// ===== Certificates =====
-
-+ (void)addCertificate:(NSString *)certificateLocation;
-+ (NSMutableArray *)getAllCertificatesLocation;
 
 // ===== Metadata =====
 
@@ -186,49 +170,13 @@
 + (void)setGeoInformationLocalFromFileID:(NSString *)fileID exifDate:(NSDate *)exifDate exifLatitude:(NSString *)exifLatitude exifLongitude:(NSString *)exifLongitude activeAccount:(NSString *)activeAccount;
 + (void)setGeoInformationLocalNull;
 
-// ===== Automatic Upload =====
+// ===== Certificates =====
 
-+ (BOOL)addTableAutomaticUpload:(CCMetadataNet *)metadataNet account:(NSString *)account;
-+ (CCMetadataNet *)getTableAutomaticUploadForAccount:(NSString *)account selector:(NSString *)selector;
-+ (NSArray *)getAllLockTableAutomaticUploadForAccount:(NSString *)account;
-+ (void)unlockTableAutomaticUploadForAccount:(NSString *)account assetLocalIdentifier:(NSString *)assetLocalIdentifier;
-+ (void)deleteTableAutomaticUploadForAccount:(NSString *)account assetLocalIdentifier:(NSString *)assetLocalIdentifier;
-+ (NSUInteger)countTableAutomaticUploadForAccount:(NSString *)account selector:(NSString *)selector;
-
-// ===== GPS =====
-
-+ (void)setGeocoderLocation:(NSString *)location placemarkAdministrativeArea:(NSString *)placemarkAdministrativeArea placemarkCountry:(NSString *)placemarkCountry placemarkLocality:(NSString *)placemarkLocality placemarkPostalCode:(NSString *)placemarkPostalCode placemarkThoroughfare:(NSString *)placemarkThoroughfare latitude:(NSString *)latitude longitude:(NSString *)longitude;
-+ (NSString *)getLocationFromGeoLatitude:(NSString *)latitude longitude:(NSString *)longitude;
-
-// ===== Share =====
-
-+ (void)setShareLink:(NSString *)share fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl sharesLink:(NSMutableDictionary *)sharesLink activeAccount:(NSString *)activeAccount;
-+ (void)setShareUserAndGroup:(NSString *)share fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl sharesUserAndGroup:(NSMutableDictionary *)sharesUserAndGroup activeAccount:(NSString *)activeAccount;
-+ (void)unShare:(NSString *)share fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl sharesLink:(NSMutableDictionary *)sharesLink sharesUserAndGroup:(NSMutableDictionary *)sharesUserAndGroup activeAccount:(NSString *)activeAccount;
-+ (void)updateShare:(NSDictionary *)items sharesLink:(NSMutableDictionary *)sharesLink sharesUserAndGroup:(NSMutableDictionary *)sharesUserAndGroup activeAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl;
-+ (void)populateSharesVariableFromDBActiveAccount:(NSString *)activeAccount sharesLink:(NSMutableDictionary *)sharesLink sharesUserAndGroup:(NSMutableDictionary *)sharesUserAndGroup;
++ (NSMutableArray *)getAllCertificatesLocationOldDB;
 
 // ===== Offline =====
 
 + (NSArray *)getHomeOfflineActiveAccount:(NSString *)activeAccount directoryUser:(NSString *)directoryUser fieldOrder:(NSString *)fieldOrder ascending:(BOOL)ascending;
-
-// ===== Activity =====
-
-+ (void)addActivityServer:(OCActivity *)activity account:(NSString *)account;
-+ (void)addActivityClient:(NSString *)file fileID:(NSString *)fileID action:(NSString *)action selector:(NSString *)selector note:(NSString *)note type:(NSString *)type verbose:(NSInteger)verbose account:(NSString *)account activeUrl:(NSString *)activeUrl;
-+ (NSArray *)getAllTableActivityWithPredicate:(NSPredicate *)predicate;
-
-// ===== External Sites =====
-
-+ (void)addExternalSites:(OCExternalSites *)externalSites account:(NSString *)account;
-+ (void)deleteAllExternalSitesForAccount:(NSString *)account;
-+ (NSArray *)getAllTableExternalSitesWithPredicate:(NSPredicate *)predicate;
-
-// ===== Capabilities =====
-
-+ (void)setCapabilities:(OCCapabilities *)capabilities account:(NSString *)account;
-+ (TableCapabilities *)getCapabilitesForAccount:(NSString *)account;
-+ (NSInteger)getServerVersionAccount:(NSString *)activeAccount;
 
 // ===== File System =====
 
@@ -246,19 +194,10 @@
 + (void)moveCoreDataToGroup;
 + (void)moveAllUserToGroup;
 
-//+ (void)verifyVersionCoreData;
-
 + (void)flushTableAccount:(NSString *)account;
-+ (void)flushTableActivityAccount:(NSString *)account;
-+ (void)flushTableAutomaticUploadAccount:(NSString *)account selector:(NSString *)selector;
-+ (void)flushTableCapabilitiesAccount:(NSString *)account;
-+ (void)flushTableCertificates;
 + (void)flushTableDirectoryAccount:(NSString *)account;
-+ (void)flushTableExternalSitesAccount:(NSString *)account;
-+ (void)flushTableGPS;
 + (void)flushTableLocalFileAccount:(NSString *)account;
 + (void)flushTableMetadataAccount:(NSString *)account;
-+ (void)flushTableShareAccount:(NSString *)account;
 
 + (void)flushAllDatabase;
 @end

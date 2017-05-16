@@ -3,7 +3,7 @@
 //  Crypto Cloud Technology Nextcloud
 //
 //  Created by Marino Faggiana on 29/07/15.
-//  Copyright (c) 2014 TWS. All rights reserved.
+//  Copyright (c) 2017 TWS. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
 //
@@ -22,14 +22,8 @@
 //
 
 #import "CCPhotosCameraUpload.h"
-
 #import "AppDelegate.h"
-
-#ifdef CUSTOM_BUILD
-#import "CustomSwift.h"
-#else
-#import "Nextcloud-Swift.h"
-#endif
+#import "NCBridgeSwift.h"
 
 @interface CCPhotosCameraUpload () <CCActionsDeleteDelegate, CCActionsDownloadThumbnailDelegate>
 {
@@ -124,7 +118,7 @@
     [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
     
     // select
-    UIImage *icon = [UIImage imageNamed:image_seleziona];
+    UIImage *icon = [UIImage imageNamed:@"seleziona"];
     UIBarButtonItem *buttonSelect = [[UIBarButtonItem alloc] initWithImage:icon style:UIBarButtonItemStylePlain target:self action:@selector(collectionSelectYES)];
     
     if ([_sectionDataSource.allRecordsDataSource count] > 0) {
@@ -146,10 +140,10 @@
 {
     UIImage *icon;
     
-    icon = [UIImage imageNamed:image_deleteSelectedFiles];
+    icon = [UIImage imageNamed:@"deleteSelectedFiles"];
     UIBarButtonItem *buttonDelete = [[UIBarButtonItem alloc] initWithImage:icon style:UIBarButtonItemStylePlain target:self action:@selector(deleteSelectedFiles)];
     
-    icon = [UIImage imageNamed:image_openSelectedFiles];
+    icon = [UIImage imageNamed:@"openSelectedFiles"];
     UIBarButtonItem *buttonOpenWith = [[UIBarButtonItem alloc] initWithImage:icon style:UIBarButtonItemStylePlain target:self action:@selector(openSelectedFiles)];
     
     UIBarButtonItem *leftButton = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIBarButtonItemStylePlain target:self action:@selector(reloadCollection)];
@@ -217,7 +211,7 @@
     
         if ([localFile.exifLatitude floatValue] > 0 || [localFile.exifLongitude floatValue] > 0) {
         
-            NSString *location = [CCCoreData getLocationFromGeoLatitude:localFile.exifLatitude longitude:localFile.exifLongitude];
+            NSString *location = [[NCManageDatabase sharedInstance] getLocationFromGeoLatitude:localFile.exifLatitude longitude:localFile.exifLongitude];
             
             addLocation = [NSString stringWithFormat:@"%@, %@", addLocation, location];
         
@@ -256,7 +250,7 @@
 
 - (UIImage *)imageForEmptyDataSet:(UIScrollView *)scrollView
 {
-    return [CCGraphics changeThemingColorImage:[UIImage imageNamed:image_photosNoRecord] color:[NCBrandColor sharedInstance].brand];
+    return [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"photosNoRecord"] color:[NCBrandColor sharedInstance].brand];
 }
 
 - (NSAttributedString *)titleForEmptyDataSet:(UIScrollView *)scrollView
@@ -289,7 +283,7 @@
 {
     if ([CCCoreData getCameraUploadActiveAccount:app.activeAccount] == NO) {
     
-        UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:image_button] color:[NCBrandColor sharedInstance].brand];
+        UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"button"] color:[NCBrandColor sharedInstance].brand];
         
         return [CCUtility drawText:NSLocalizedString(@"_activate_camera_upload_", nil) inImage:buttonImage colorText:[UIColor whiteColor]];
         
@@ -375,7 +369,7 @@
 
 - (void)downloadFileFailure:(NSInteger)errorCode
 {
-    [app messageNotification:@"_download_selected_files_" description:@"_error_download_photobrowser_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
+    [app messageNotification:@"_download_selected_files_" description:@"_error_download_photobrowser_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
 }
 
 - (void)downloadFileSuccess:(CCMetadata *)metadata
@@ -622,7 +616,7 @@
     UIVisualEffectView *effect = [cell viewWithTag:200];
 
     UIImageView *checked = [cell viewWithTag:300];
-    checked.image = [UIImage imageNamed:image_checked];
+    checked.image = [UIImage imageNamed:@"checked"];
 
     NSArray *metadatasForKey = [_sectionDataSource.sectionArrayRow objectForKey:[_sectionDataSource.sections objectAtIndex:indexPath.section]];
     NSString *fileID = [metadatasForKey objectAtIndex:indexPath.row];
@@ -644,7 +638,7 @@
     } else {
         
         // Thumbnail not present
-        imageView.image = [UIImage imageNamed:image_file_photo];
+        imageView.image = [UIImage imageNamed:@"file_photo"];
         
         if (metadata.thumbnailExists)
             [[CCActions sharedInstance] downloadTumbnail:metadata delegate:self];
@@ -780,7 +774,7 @@
                 
         [PHPhotoLibrary.sharedPhotoLibrary unregisterChangeObserver:self];
         
-        [[CCManageLocation sharedSingleton] stopSignificantChangeUpdates];
+        [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
     }
 }
 
@@ -804,7 +798,7 @@
                 
         [PHPhotoLibrary.sharedPhotoLibrary unregisterChangeObserver:self];
         
-        [[CCManageLocation sharedSingleton] stopSignificantChangeUpdates];
+        [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
         
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_access_photo_not_enabled_", nil)
                                                         message:NSLocalizedString(@"_access_photo_not_enabled_msg_", nil)
@@ -831,7 +825,7 @@
         
         [PHPhotoLibrary.sharedPhotoLibrary unregisterChangeObserver:self];
         
-        [[CCManageLocation sharedSingleton] stopSignificantChangeUpdates];
+        [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
         
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_access_photo_not_enabled_", nil)
                                                         message:NSLocalizedString(@"_access_photo_not_enabled_msg_", nil)
@@ -848,7 +842,7 @@
 
 - (BOOL)checkIfLocationIsEnabled
 {
-    [CCManageLocation sharedSingleton].delegate = self;
+    [CCManageLocation sharedInstance].delegate = self;
     
     if ([CLLocationManager locationServicesEnabled]) {
         
@@ -859,7 +853,7 @@
             if ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusNotDetermined ) {
                 
                 NSLog(@"[LOG] checkIfLocationIsEnabled : Location services not determined");
-                [[CCManageLocation sharedSingleton] startSignificantChangeUpdates];
+                [[CCManageLocation sharedInstance] startSignificantChangeUpdates];
                 
             } else {
                 
@@ -890,12 +884,12 @@
             if ([ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusAuthorized) {
                 
                 [CCCoreData setCameraUploadBackground:YES activeAccount:app.activeAccount];
-                [[CCManageLocation sharedSingleton] startSignificantChangeUpdates];
+                [[CCManageLocation sharedInstance] startSignificantChangeUpdates];
                 
             } else {
                 
                 [CCCoreData setCameraUploadBackground:NO activeAccount:app.activeAccount];
-                [[CCManageLocation sharedSingleton] stopSignificantChangeUpdates];
+                [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
                 
                 UIAlertView * alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_access_photo_not_enabled_", nil)
                                                                  message:NSLocalizedString(@"_access_photo_not_enabled_msg_", nil)
@@ -909,7 +903,7 @@
     } else {
         
         [CCCoreData setCameraUploadBackground:NO activeAccount:app.activeAccount];
-        [[CCManageLocation sharedSingleton] stopSignificantChangeUpdates];
+        [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
         
         if ([ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusAuthorized) {
             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_location_not_enabled_", nil)
@@ -938,7 +932,7 @@
 {
     if ([CLLocationManager authorizationStatus] != kCLAuthorizationStatusNotDetermined){
         
-        if (![CCManageLocation sharedSingleton].firstChangeAuthorizationDone) {
+        if (![CCManageLocation sharedInstance].firstChangeAuthorizationDone) {
             
             ALAssetsLibrary *assetLibrary = [CCUtility defaultAssetsLibrary];
             
@@ -954,10 +948,10 @@
             
             if ([ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusAuthorized) {
                 
-                if ([CCManageLocation sharedSingleton].firstChangeAuthorizationDone) {
+                if ([CCManageLocation sharedInstance].firstChangeAuthorizationDone) {
                     
                     [CCCoreData setCameraUploadBackground:NO activeAccount:app.activeAccount];
-                    [[CCManageLocation sharedSingleton] stopSignificantChangeUpdates];
+                    [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
                 }
                 
             } else {
@@ -975,7 +969,7 @@
             if ([CCCoreData getCameraUploadBackgroundActiveAccount:app.activeAccount]) {
                 
                 [CCCoreData setCameraUploadBackground:NO activeAccount:app.activeAccount];
-                [[CCManageLocation sharedSingleton] stopSignificantChangeUpdates];
+                [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
                 
                 if ([ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusAuthorized) {
                     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_location_not_enabled_", nil)
@@ -996,9 +990,9 @@
             }
         }
         
-        if (![CCManageLocation sharedSingleton].firstChangeAuthorizationDone) {
+        if (![CCManageLocation sharedInstance].firstChangeAuthorizationDone) {
             
-            [CCManageLocation sharedSingleton].firstChangeAuthorizationDone = YES;
+            [CCManageLocation sharedInstance].firstChangeAuthorizationDone = YES;
         }
     }
 }
@@ -1028,7 +1022,7 @@
             
             [CCCoreData setCameraUploadBackground:NO activeAccount:app.activeAccount];
             
-            [[CCManageLocation sharedSingleton] stopSignificantChangeUpdates];
+            [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
             [PHPhotoLibrary.sharedPhotoLibrary unregisterChangeObserver:self];
         }
     }
@@ -1127,7 +1121,15 @@
     // Create the folder for Photos & if request the subfolders
     if(![app createFolderSubFolderAutomaticUploadFolderPhotos:folderPhotos useSubFolder:useSubFolder assets:newItemsPHAssetToUpload selector:selectorUploadAutomaticAll]) {
             
-        [self endLoadingAssets];
+        // end loading
+        [_hud hideHud];
+        
+        // START
+        app.automaticCheckAssetInProgress = NO;
+        
+        // Enable idle timer
+        [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
+        
         return;
     }
     
@@ -1177,35 +1179,13 @@
         metadataNet.session = session;
         metadataNet.taskStatus = k_taskStatusResume;
         
-        if (![CCCoreData addTableAutomaticUpload:metadataNet account:app.activeAccount]) {
-            
-            [CCCoreData addActivityClient:fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionAutomaticUpload selector:metadataNet.selector note:@"File already present in Table automatic Upload" type:k_activityTypeInfo verbose:k_activityVerboseHigh account:app.activeAccount activeUrl:app.activeUrl];
-            
-            [self endLoadingAssets];
-
-            return;
-        }
-        
-        // Activity
-        NSString *media = @"";
-        if (assetMediaType == PHAssetMediaTypeImage) media = @"Image";
-        if (assetMediaType == PHAssetMediaTypeVideo) media = @"Video";
-        [CCCoreData addActivityClient:fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionAutomaticUpload selector:metadataNet.selector note:[NSString stringWithFormat:@"Add Automatic Upload on Session: %@, Media Type: %@, Asset Data: %@", session, media, [NSDateFormatter localizedStringFromDate:assetDate dateStyle:NSDateFormatterMediumStyle timeStyle:NSDateFormatterMediumStyle]] type:k_activityTypeInfo verbose:k_activityVerboseHigh account:app.activeAccount activeUrl:app.activeUrl];
-        
-        // Upldate Camera Upload data  
-        if ([metadataNet.selector isEqualToString:selectorUploadAutomatic])
-            [CCCoreData setCameraUploadDateAssetType:assetMediaType assetDate:assetDate activeAccount:app.activeAccount];
+        if (assetsFull)
+            [self addDatabaseAutomaticUpload:metadataNet assetDate:assetDate assetMediaType:assetMediaType];
+        else
+            [self writeAssetToSandbox:metadataNet];
     }
     
     // end loading
-    [self endLoadingAssets];
-    
-    // Update icon badge number
-    [app updateApplicationIconBadgeNumber];
-}
-
--(void)endLoadingAssets
-{
     [_hud hideHud];
     
     // START
@@ -1213,6 +1193,111 @@
     
     // Enable idle timer
     [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
+}
+
+- (void)writeAssetToSandbox:(CCMetadataNet *)metadataNet
+{
+    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[metadataNet.assetLocalIdentifier] options:nil];
+    
+    PHAsset *asset = result[0];
+    PHAssetMediaType assetMediaType = asset.mediaType;
+    NSDate *assetDate = asset.creationDate;
+    __block NSError *error = nil;
+    
+    // VIDEO
+    if (assetMediaType == PHAssetMediaTypeVideo) {
+        
+        @autoreleasepool {
+            
+            PHVideoRequestOptions *options = [PHVideoRequestOptions new];
+            options.networkAccessAllowed = true;
+            
+            [[PHImageManager defaultManager] requestPlayerItemForVideo:asset options:options resultHandler:^(AVPlayerItem * _Nullable playerItem, NSDictionary * _Nullable info) {
+                
+                if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, metadataNet.fileName]])
+                    [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, metadataNet.fileName] error:nil];
+                
+                AVAssetExportSession *exportSession = [[AVAssetExportSession alloc] initWithAsset:playerItem.asset presetName:AVAssetExportPresetHighestQuality];
+                
+                if (exportSession) {
+                    
+                    exportSession.outputURL = [NSURL fileURLWithPath:[NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, metadataNet.fileName]];
+                    exportSession.outputFileType = AVFileTypeQuickTimeMovie;
+                    
+                    [exportSession exportAsynchronouslyWithCompletionHandler:^{
+                        
+                        if (AVAssetExportSessionStatusCompleted == exportSession.status) {
+                            
+                            [self addDatabaseAutomaticUpload:metadataNet assetDate:assetDate assetMediaType:assetMediaType];
+                            
+                        } else if (AVAssetExportSessionStatusFailed == exportSession.status) {
+                                                        
+                            [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionUpload selector:metadataNet.selector note:[NSString stringWithFormat:@"%@ [%@]",NSLocalizedString(@"_read_file_error_", nil), error.description] type:k_activityTypeFailure verbose:k_activityVerboseDefault account:appDelegate.activeAccount activeUrl:appDelegate.activeUrl];
+                            
+                        } else {
+                            NSLog(@"Export Session Status: %ld", (long)exportSession.status);
+                        }
+                    }];
+                    
+                } else {
+                    
+                    [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionUpload selector:metadataNet.selector note:[NSString stringWithFormat:@"%@ [%@]",NSLocalizedString(@"_read_file_error_", nil), error.description] type:k_activityTypeFailure verbose:k_activityVerboseDefault account:appDelegate.activeAccount activeUrl:appDelegate.activeUrl];
+                }
+            }];
+        }
+    }
+    
+    // IMAGE
+    if (assetMediaType == PHAssetMediaTypeImage) {
+        
+        @autoreleasepool {
+            
+            PHImageRequestOptions *options = [PHImageRequestOptions new];
+            options.synchronous = NO;
+            
+            [[PHImageManager defaultManager] requestImageDataForAsset:asset options:options resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
+                
+                [imageData writeToFile:[NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, metadataNet.fileName] options:NSDataWritingAtomic error:&error];
+                
+                if (error) {
+                    
+                    NSString *note = [NSString stringWithFormat:@"%@ [%@]",NSLocalizedString(@"_read_file_error_", nil), error.description];
+
+                    [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionUpload selector:metadataNet.selector note:note type:k_activityTypeFailure verbose:k_activityVerboseDefault account:app.activeAccount activeUrl:app.activeUrl];
+                    
+                    [[NCManageDatabase sharedInstance] deleteAutomaticUploadForAccount:appDelegate.activeAccount assetLocalIdentifier:metadataNet.assetLocalIdentifier];
+                } else {
+                    
+                    [self addDatabaseAutomaticUpload:metadataNet assetDate:assetDate assetMediaType:assetMediaType];
+                }
+            }];
+        }
+    }
+}
+
+- (void)addDatabaseAutomaticUpload:(CCMetadataNet *)metadataNet assetDate:(NSDate *)assetDate assetMediaType:(PHAssetMediaType)assetMediaType
+{
+    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    
+    if ([[NCManageDatabase sharedInstance] addAutomaticUpload:metadataNet account:appDelegate.activeAccount]) {
+        
+        [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionAutomaticUpload selector:metadataNet.selector note:[NSString stringWithFormat:@"Add Automatic Upload, Asset Data: %@", [NSDateFormatter localizedStringFromDate:assetDate dateStyle:NSDateFormatterMediumStyle timeStyle:NSDateFormatterMediumStyle]] type:k_activityTypeInfo verbose:k_activityVerboseHigh account:app.activeAccount activeUrl:app.activeUrl];
+       
+    } else {
+        
+        [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionAutomaticUpload selector:metadataNet.selector note:[NSString stringWithFormat:@"Add Automatic Upload [File already present in Table automatic Upload], Asset Data: %@", [NSDateFormatter localizedStringFromDate:assetDate dateStyle:NSDateFormatterMediumStyle timeStyle:NSDateFormatterMediumStyle]] type:k_activityTypeInfo verbose:k_activityVerboseHigh account:app.activeAccount activeUrl:app.activeUrl];
+    }
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        
+        // Update Camera Upload data
+        if ([metadataNet.selector isEqualToString:selectorUploadAutomatic])
+            [CCCoreData setCameraUploadDateAssetType:assetMediaType assetDate:assetDate activeAccount:appDelegate.activeAccount];
+        
+        // Update icon badge number
+        [app updateApplicationIconBadgeNumber];
+    });
 }
 
 @end

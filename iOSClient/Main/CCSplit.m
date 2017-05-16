@@ -3,7 +3,7 @@
 //  Crypto Cloud Technology Nextcloud
 //
 //  Created by Marino Faggiana on 09/10/15.
-//  Copyright (c) 2014 TWS. All rights reserved.
+//  Copyright (c) 2017 TWS. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
 //
@@ -24,12 +24,7 @@
 #import "CCSplit.h"
 #import "AppDelegate.h"
 #import "CCLogin.h"
-
-#ifdef CUSTOM_BUILD
-    #import "CustomSwift.h"
-#else
-    #import "Nextcloud-Swift.h"
-#endif
+#import "NCBridgeSwift.h"
 
 @interface CCSplit ()
 {
@@ -108,7 +103,7 @@
 - (void)showIntro
 {
     // Brand
-    if (k_option_disable_intro) {
+    if ([NCBrandOptions sharedInstance].disable_intro) {
 
         [CCUtility setIntro:@"1.0"];
     
@@ -148,7 +143,7 @@
     if (app.activeAccount.length == 0) {
     
         // Brand
-        if (k_option_use_login_web) {
+        if ([NCBrandOptions sharedInstance].use_login_web) {
         
             _loginWeb = [CCLoginWeb new];
             _loginWeb.delegate = self;

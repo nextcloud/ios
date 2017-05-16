@@ -40,7 +40,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
-    var menuExternalSite: [TableExternalSites]?
+    var menuExternalSite: [tableExternalSites]?
     var tableAccont : TableAccount?
     
     override func viewDidLoad() {
@@ -52,7 +52,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         
         tableView.separatorColor = NCBrandColor.sharedInstance.seperator
         
-        themingBackground.image = UIImage.init(named: NCBrandImages.sharedInstance.themingBackground)
+        themingBackground.image = UIImage.init(named: "themingBackground")
         
         // create tap gesture recognizer
         let tapQuota = UITapGestureRecognizer(target: self, action: #selector(tapLabelQuotaExternalSite))
@@ -87,7 +87,12 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         functionMenu.append(item)
         
         item = OCExternalSites.init()
-        item.name = "_activity_"
+        if NCBrandOptions.sharedInstance.use_recent_activity_title == true {
+            item.name = "_recent_activity_"
+        } else {
+            item.name = "_activity_"
+        }
+        
         item.icon = "moreActivity"
         item.url = "segueActivity"
         functionMenu.append(item)
@@ -105,28 +110,26 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         settingsMenu.append(item)
 
         // External 
-        menuExternalSite = CCCoreData.getAllTableExternalSites(with:  NSPredicate(format: "(account == '\(appDelegate.activeAccount!)')")) as? [TableExternalSites]
+        menuExternalSite = NCManageDatabase.sharedInstance.getAllExternalSitesWithPredicate(NSPredicate(format: "(account == '\(appDelegate.activeAccount!)')"))
         
-        if (menuExternalSite != nil) {
-            for table in menuExternalSite! {
+        for table in menuExternalSite! {
             
-                item = OCExternalSites.init()
+            item = OCExternalSites.init()
             
-                item.name = table.name
-                item.url = table.url
-                item.icon = table.icon
+            item.name = table.name
+            item.url = table.url
+            item.icon = table.icon
             
-                if (table.type == "link") {
-                    item.icon = "moreExternalSite"
-                    functionMenu.append(item)
-                }
-                if (table.type == "settings") {
-                    item.icon = "moreSettingsExternalSite"
-                    settingsMenu.append(item)
-                }
-                if (table.type == "quota") {
-                    quotaMenu.append(item)
-                }
+            if (table.type == "link") {
+                item.icon = "moreExternalSite"
+                functionMenu.append(item)
+            }
+            if (table.type == "settings") {
+                item.icon = "moreSettingsExternalSite"
+                settingsMenu.append(item)
+            }
+            if (table.type == "quota") {
+                quotaMenu.append(item)
             }
         }
         
@@ -168,7 +171,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         if (theminBackgroundFile != nil) {
             themingBackground.image = theminBackgroundFile
         } else {
-            themingBackground.image = UIImage.init(named: NCBrandImages.sharedInstance.themingBackground)
+            themingBackground.image = UIImage.init(named: "themingBackground")
         }
 
         if (self.isViewLoaded && (self.view.window != nil)) {
@@ -205,13 +208,17 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
                 labelUsername.text = self.tableAccont!.user
             }
             
-            progressQuota.progress = Float((self.tableAccont?.quotaRelative)!) / 100
-            progressQuota.progressTintColor = NCBrandColor.sharedInstance.brand
-            
-            let quota : String = CCUtility.transformedSize(Double((self.tableAccont?.quotaTotal)!))
-            let quotaUsed : String = CCUtility.transformedSize(Double((self.tableAccont?.quotaUsed)!))
-            
-            labelQuota.text = String.localizedStringWithFormat(NSLocalizedString("_quota_using_", comment: ""), quotaUsed, quota)
+            // fix CCMore.swift line 208 Version 2.17.2 (00005)
+            if (self.tableAccont?.quotaRelative != nil && self.tableAccont?.quotaTotal != nil && self.tableAccont?.quotaUsed != nil) {
+                
+                progressQuota.progress = Float((self.tableAccont?.quotaRelative)!) / 100
+                progressQuota.progressTintColor = NCBrandColor.sharedInstance.brand
+                
+                let quota : String = CCUtility.transformedSize(Double((self.tableAccont?.quotaTotal)!))
+                let quotaUsed : String = CCUtility.transformedSize(Double((self.tableAccont?.quotaUsed)!))
+                
+                labelQuota.text = String.localizedStringWithFormat(NSLocalizedString("_quota_using_", comment: ""), quotaUsed, quota)
+            }
         }
     }
     

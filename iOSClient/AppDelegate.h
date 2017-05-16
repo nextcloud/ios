@@ -3,7 +3,7 @@
 //  Crypto Cloud Technology Nextcloud
 //
 //  Created by Marino Faggiana on 04/09/14.
-//  Copyright (c) 2014 TWS. All rights reserved.
+//  Copyright (c) 2017 TWS. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
 //
@@ -74,8 +74,6 @@
 @property (nonatomic, strong) NSOperationQueue *netQueueUpload;
 @property (nonatomic, strong) NSOperationQueue *netQueueUploadWWan;
 
-@property NSUInteger queueNunDownload, queueNumDownloadWWan, queueNumUpload, queueNumUploadWWan;
-
 // Networking 
 @property (nonatomic, copy) void (^backgroundSessionCompletionHandler)(void);
 @property (nonatomic, strong) NSDate *sessionDateLastUploadTasks;
@@ -88,7 +86,6 @@
 
 // Check new Asset Photos/Video in progress 
 @property BOOL automaticCheckAssetInProgress;
-@property BOOL automaticUploadInProgress;
 
 // UploadFromOtherUpp
 @property (nonatomic, strong) NSString *fileNameUpload;
@@ -149,7 +146,7 @@
 
 - (void)configDynamicShortcutItems;
 
-- (void)messageNotification:(NSString *)title description:(NSString *)description visible:(BOOL)visible delay:(NSTimeInterval)delay type:(TWMessageBarMessageType)type;
+- (void)messageNotification:(NSString *)title description:(NSString *)description visible:(BOOL)visible delay:(NSTimeInterval)delay type:(TWMessageBarMessageType)type errorCode:(NSInteger)errorcode;
 - (void)updateApplicationIconBadgeNumber;
 - (BOOL)handleShortCutItem:(UIApplicationShortcutItem *)shortcutItem;
 - (void)aspectNavigationControllerBar:(UINavigationBar *)nav encrypted:(BOOL)encrypted online:(BOOL)online hidden:(BOOL)hidden;
@@ -169,7 +166,10 @@
 
 - (BOOL)createFolderSubFolderAutomaticUploadFolderPhotos:(NSString *)folderPhotos useSubFolder:(BOOL)useSubFolder assets:(NSArray *)assets selector:(NSString *)selector;
 
-- (void)logUserCrashlytics;
+- (NSInteger)getNumberDownloadInQueues;
+- (NSInteger)getNumberDownloadInQueuesWWan;
+- (NSInteger)getNumberUploadInQueues;
+- (NSInteger)getNumberUploadInQueuesWWan;
 
 @end
 

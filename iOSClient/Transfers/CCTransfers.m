@@ -3,7 +3,7 @@
 //  Crypto Cloud Technology Nextcloud
 //
 //  Created by Marino Faggiana on 12/04/17.
-//  Copyright (c) 2014 TWS. All rights reserved.
+//  Copyright (c) 2017 TWS. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
 //
@@ -28,12 +28,7 @@
 #import "CCSection.h"
 #import "CCMetadata.h"
 #import "CCTransfersCell.h"
-
-#ifdef CUSTOM_BUILD
-#import "CustomSwift.h"
-#else
-#import "Nextcloud-Swift.h"
-#endif
+#import "NCBridgeSwift.h"
 
 #define download 1
 #define downloadwwan 2
@@ -120,7 +115,7 @@
 
 - (UIImage *)imageForEmptyDataSet:(UIScrollView *)scrollView
 {
-    return [UIImage imageNamed:image_transfersNoRecord];
+    return [UIImage imageNamed:@"transfersNoRecord"];
 }
 
 - (NSAttributedString *)titleForEmptyDataSet:(UIScrollView *)scrollView
@@ -346,6 +341,11 @@
     NSString *titleSection, *numberTitle;
     NSInteger typeOfSession = 0;
     
+    NSInteger queueDownload = [app getNumberDownloadInQueues] + [[NCManageDatabase sharedInstance] countAutomaticUploadForAccount:app.activeAccount session:k_download_session];
+    NSInteger queueDownloadWWan = [app getNumberDownloadInQueuesWWan] + [[NCManageDatabase sharedInstance] countAutomaticUploadForAccount:app.activeAccount session:k_download_session_wwan];
+    NSInteger queueUpload = [app getNumberUploadInQueues] + [[NCManageDatabase sharedInstance] countAutomaticUploadForAccount:app.activeAccount session:k_upload_session];
+    NSInteger queueUploadWWan = [app getNumberUploadInQueuesWWan] + [[NCManageDatabase sharedInstance] countAutomaticUploadForAccount:app.activeAccount session:k_upload_session_wwan];
+    
     if ([[_sectionDataSource.sections objectAtIndex:section] isKindOfClass:[NSString class]]) titleSection = [_sectionDataSource.sections objectAtIndex:section];
     if ([[_sectionDataSource.sections objectAtIndex:section] isKindOfClass:[NSDate class]]) titleSection = [CCUtility getTitleSectionDate:[_sectionDataSource.sections objectAtIndex:section]];
     
@@ -390,8 +390,8 @@
     elementLabel.textAlignment = NSTextAlignmentRight;
     elementLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     
-    if ((typeOfSession == download && app.queueNunDownload > rowsCount) || (typeOfSession == downloadwwan && app.queueNumDownloadWWan > rowsCount) ||
-        (typeOfSession == upload   && app.queueNumUpload > rowsCount)   || (typeOfSession == uploadwwan && app.queueNumUploadWWan > rowsCount)) {
+    if ((typeOfSession == download && queueDownload > rowsCount) || (typeOfSession == downloadwwan && queueDownloadWWan > rowsCount) ||
+        (typeOfSession == upload   && queueUpload > rowsCount)   || (typeOfSession == uploadwwan && queueUploadWWan > rowsCount)) {
         numberTitle = [NSString stringWithFormat:@"%lu+", (unsigned long)rowsCount];
     } else {
         numberTitle = [NSString stringWithFormat:@"%lu", (unsigned long)rowsCount];
@@ -426,12 +426,14 @@
     // Footer Download
     if ([titleSection containsString:@"download"] && ![titleSection containsString:@"wwan"] && titleSection != nil) {
         
+        NSInteger queueDownload = [app getNumberDownloadInQueues] + [[NCManageDatabase sharedInstance] countAutomaticUploadForAccount:app.activeAccount session:k_download_session];
+        
         // element or elements ?
-        if (app.queueNunDownload > 1) element_s = NSLocalizedString(@"_elements_",nil);
+        if (queueDownload > 1) element_s = NSLocalizedString(@"_elements_",nil);
         else element_s = NSLocalizedString(@"_element_",nil);
         
         // Num record to upload
-        NSMutableAttributedString *stringFooter= [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:NSLocalizedString(@"_tite_footer_download_", nil), app.queueNunDownload, element_s]];
+        NSMutableAttributedString *stringFooter= [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:NSLocalizedString(@"_tite_footer_download_", nil), queueDownload, element_s]];
         titleFooterLabel.attributedText = stringFooter;
         
         [view addSubview:titleFooterLabel];
@@ -441,15 +443,17 @@
     // Footer Download WWAN
     if ([titleSection containsString:@"download"] && [titleSection containsString:@"wwan"] && titleSection != nil) {
         
+        NSInteger queueDownloadWWan = [app getNumberDownloadInQueuesWWan] + [[NCManageDatabase sharedInstance] countAutomaticUploadForAccount:app.activeAccount session:k_download_session_wwan];
+        
         // element or elements ?
-        if (app.queueNumDownloadWWan > 1) element_s = NSLocalizedString(@"_elements_",nil);
+        if (queueDownloadWWan > 1) element_s = NSLocalizedString(@"_elements_",nil);
         else element_s = NSLocalizedString(@"_element_",nil);
         
         // Add the symbol WiFi and Num record
         NSTextAttachment *attachment = [[NSTextAttachment alloc] init];
-        attachment.image = [UIImage imageNamed:image_WiFiSmall];
+        attachment.image = [UIImage imageNamed:@"WiFiSmall"];
         NSAttributedString *attachmentString = [NSAttributedString attributedStringWithAttachment:attachment];
-        NSMutableAttributedString *stringFooter= [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:NSLocalizedString(@"_tite_footer_download_wwan_", nil), app.queueNumDownloadWWan, element_s]];
+        NSMutableAttributedString *stringFooter= [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:NSLocalizedString(@"_tite_footer_download_wwan_", nil), queueDownloadWWan, element_s]];
         [stringFooter insertAttributedString:attachmentString atIndex:0];
         titleFooterLabel.attributedText = stringFooter;
         
@@ -460,12 +464,14 @@
     // Footer Upload
     if ([titleSection containsString:@"upload"] && ![titleSection containsString:@"wwan"] && titleSection != nil) {
         
+        NSInteger queueUpload = [app getNumberUploadInQueues] + [[NCManageDatabase sharedInstance] countAutomaticUploadForAccount:app.activeAccount session:k_upload_session];
+        
         // element or elements ?
-        if (app.queueNumUpload > 1) element_s = NSLocalizedString(@"_elements_",nil);
+        if (queueUpload > 1) element_s = NSLocalizedString(@"_elements_",nil);
         else element_s = NSLocalizedString(@"_element_",nil);
         
         // Num record to upload
-        NSMutableAttributedString *stringFooter= [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:NSLocalizedString(@"_tite_footer_upload_", nil), app.queueNumUpload, element_s]];
+        NSMutableAttributedString *stringFooter= [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:NSLocalizedString(@"_tite_footer_upload_", nil), queueUpload, element_s]];
         titleFooterLabel.attributedText = stringFooter;
         
         [view addSubview:titleFooterLabel];
@@ -475,15 +481,17 @@
     // Footer Upload WWAN
     if ([titleSection containsString:@"upload"] && [titleSection containsString:@"wwan"] && titleSection != nil) {
         
+        NSInteger queueUploadWWan = [app getNumberUploadInQueuesWWan] + [[NCManageDatabase sharedInstance] countAutomaticUploadForAccount:app.activeAccount session:k_upload_session_wwan];
+        
         // element or elements ?
-        if (app.queueNumUploadWWan > 1) element_s = NSLocalizedString(@"_elements_",nil);
+        if (queueUploadWWan > 1) element_s = NSLocalizedString(@"_elements_",nil);
         else element_s = NSLocalizedString(@"_element_",nil);
         
         // Add the symbol WiFi and Num record
         NSTextAttachment *attachment = [[NSTextAttachment alloc] init];
-        attachment.image = [UIImage imageNamed:image_WiFiSmall];
+        attachment.image = [UIImage imageNamed:@"WiFiSmall"];
         NSAttributedString *attachmentString = [NSAttributedString attributedStringWithAttachment:attachment];
-        NSMutableAttributedString *stringFooter= [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:NSLocalizedString(@"_tite_footer_upload_wwan_", nil), app.queueNumUploadWWan,element_s]];
+        NSMutableAttributedString *stringFooter= [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:NSLocalizedString(@"_tite_footer_upload_wwan_", nil), queueUploadWWan,element_s]];
         [stringFooter insertAttributedString:attachmentString atIndex:0];
         titleFooterLabel.attributedText = stringFooter;
         
@@ -609,7 +617,7 @@
     // File Cyptated
     if (metadata.cryptated && metadata.directory == NO && [metadata.type isEqualToString: k_metadataType_template] == NO) {
         
-        cell.statusImageView.image = [UIImage imageNamed:image_lock];
+        cell.statusImageView.image = [UIImage imageNamed:@"lock"];
     }
     
     // ----------------------------------------------------------------------------------------------------------
@@ -618,19 +626,19 @@
     
     if ([metadata.session length] > 0 && [metadata.session rangeOfString:@"download"].location != NSNotFound) {
         
-        if (metadata.cryptated) cell.statusImageView.image = [UIImage imageNamed:image_statusdownloadcrypto];
-        else cell.statusImageView.image = [UIImage imageNamed:image_statusdownload];
+        if (metadata.cryptated) cell.statusImageView.image = [UIImage imageNamed:@"statusdownloadcrypto"];
+        else cell.statusImageView.image = [UIImage imageNamed:@"statusdownload"];
         
         // Fai comparire il RELOAD e lo STOP solo se non è un Task Plist
         if (metadata.sessionTaskIdentifierPlist == k_taskIdentifierDone) {
             
-            if (metadata.cryptated)[cell.cancelTaskButton setBackgroundImage:[UIImage imageNamed:image_stoptaskcrypto] forState:UIControlStateNormal];
-            else [cell.cancelTaskButton setBackgroundImage:[UIImage imageNamed:image_stoptask] forState:UIControlStateNormal];
+            if (metadata.cryptated)[cell.cancelTaskButton setBackgroundImage:[UIImage imageNamed:@"stoptaskcrypto"] forState:UIControlStateNormal];
+            else [cell.cancelTaskButton setBackgroundImage:[UIImage imageNamed:@"stoptask"] forState:UIControlStateNormal];
             
             cell.cancelTaskButton.hidden = NO;
             
-            if (metadata.cryptated)[cell.reloadTaskButton setBackgroundImage:[UIImage imageNamed:image_reloadtaskcrypto] forState:UIControlStateNormal];
-            else [cell.reloadTaskButton setBackgroundImage:[UIImage imageNamed:image_reloadtask] forState:UIControlStateNormal];
+            if (metadata.cryptated)[cell.reloadTaskButton setBackgroundImage:[UIImage imageNamed:@"reloadtaskcrypto"] forState:UIControlStateNormal];
+            else [cell.reloadTaskButton setBackgroundImage:[UIImage imageNamed:@"reloadtask"] forState:UIControlStateNormal];
             
             cell.reloadTaskButton.hidden = NO;
         }
@@ -653,7 +661,7 @@
         
         if (metadata.sessionTaskIdentifier == k_taskIdentifierError || metadata.sessionTaskIdentifierPlist == k_taskIdentifierError) {
             
-            cell.statusImageView.image = [UIImage imageNamed:image_statuserror];
+            cell.statusImageView.image = [UIImage imageNamed:@"statuserror"];
             
             if ([metadata.sessionError length] == 0)
                 cell.labelInfoFile.text = [NSString stringWithFormat:@"%@, %@", NSLocalizedString(@"_error_",nil), NSLocalizedString(@"_file_not_downloaded_",nil)];
@@ -668,28 +676,28 @@
     
     if ([metadata.session length] > 0 && [metadata.session rangeOfString:@"upload"].location != NSNotFound) {
         
-        if (metadata.cryptated) cell.statusImageView.image = [UIImage imageNamed:image_statusuploadcrypto];
-        else cell.statusImageView.image = [UIImage imageNamed:image_statusupload];
+        if (metadata.cryptated) cell.statusImageView.image = [UIImage imageNamed:@"statusuploadcrypto"];
+        else cell.statusImageView.image = [UIImage imageNamed:@"statusupload"];
         
-        if (metadata.cryptated)[cell.cancelTaskButton setBackgroundImage:[UIImage imageNamed:image_removetaskcrypto] forState:UIControlStateNormal];
-        else [cell.cancelTaskButton setBackgroundImage:[UIImage imageNamed:image_removetask] forState:UIControlStateNormal];
+        if (metadata.cryptated)[cell.cancelTaskButton setBackgroundImage:[UIImage imageNamed:@"removetaskcrypto"] forState:UIControlStateNormal];
+        else [cell.cancelTaskButton setBackgroundImage:[UIImage imageNamed:@"removetask"] forState:UIControlStateNormal];
         cell.cancelTaskButton.hidden = NO;
         
         if (metadata.sessionTaskIdentifier == k_taskIdentifierStop) {
             
-            if (metadata.cryptated)[cell.reloadTaskButton setBackgroundImage:[UIImage imageNamed:image_reloadtaskcrypto] forState:UIControlStateNormal];
-            else [cell.reloadTaskButton setBackgroundImage:[UIImage imageNamed:image_reloadtask] forState:UIControlStateNormal];
+            if (metadata.cryptated)[cell.reloadTaskButton setBackgroundImage:[UIImage imageNamed:@"reloadtaskcrypto"] forState:UIControlStateNormal];
+            else [cell.reloadTaskButton setBackgroundImage:[UIImage imageNamed:@"reloadtask"] forState:UIControlStateNormal];
             
-            if (metadata.cryptated) cell.statusImageView.image = [UIImage imageNamed:image_statusstopcrypto];
-            else cell.statusImageView.image = [UIImage imageNamed:image_statusstop];
+            if (metadata.cryptated) cell.statusImageView.image = [UIImage imageNamed:@"statusstopcrypto"];
+            else cell.statusImageView.image = [UIImage imageNamed:@"statusstop"];
             
             cell.reloadTaskButton.hidden = NO;
             cell.stopTaskButton.hidden = YES;
             
         } else {
             
-            if (metadata.cryptated)[cell.stopTaskButton setBackgroundImage:[UIImage imageNamed:image_stoptaskcrypto] forState:UIControlStateNormal];
-            else [cell.stopTaskButton setBackgroundImage:[UIImage imageNamed:image_stoptask] forState:UIControlStateNormal];
+            if (metadata.cryptated)[cell.stopTaskButton setBackgroundImage:[UIImage imageNamed:@"stoptaskcrypto"] forState:UIControlStateNormal];
+            else [cell.stopTaskButton setBackgroundImage:[UIImage imageNamed:@"stoptask"] forState:UIControlStateNormal];
             
             cell.stopTaskButton.hidden = NO;
             cell.reloadTaskButton.hidden = YES;
@@ -697,7 +705,7 @@
         
         // se non c'è una preview in bianconero metti l'immagine di default
         if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]] == NO)
-            cell.fileImageView.image = [UIImage imageNamed:image_uploaddisable];
+            cell.fileImageView.image = [UIImage imageNamed:@"uploaddisable"];
         
         cell.labelTitle.enabled = NO;
         cell.labelInfoFile.text = [NSString stringWithFormat:@"%@", lunghezzaFile];
@@ -719,7 +727,7 @@
         if (metadata.sessionTaskIdentifier == k_taskIdentifierError || metadata.sessionTaskIdentifierPlist == k_taskIdentifierError) {
             
             cell.labelTitle.enabled = NO;
-            cell.statusImageView.image = [UIImage imageNamed:image_statuserror];
+            cell.statusImageView.image = [UIImage imageNamed:@"statuserror"];
             
             if ([metadata.sessionError length] == 0)
                 cell.labelInfoFile.text = [NSString stringWithFormat:@"%@, %@", NSLocalizedString(@"_error_",nil), NSLocalizedString(@"_file_not_uploaded_",nil)];

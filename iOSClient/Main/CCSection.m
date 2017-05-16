@@ -3,7 +3,7 @@
 //  Crypto Cloud Technology Nextcloud
 //
 //  Created by Marino Faggiana on 04/02/16.
-//  Copyright (c) 2014 TWS. All rights reserved.
+//  Copyright (c) 2017 TWS. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
 //
@@ -25,6 +25,7 @@
 #import "CCMetadata.h"
 #import "CCCoreData.h"
 #import "CCExifGeo.h"
+#import "NCBridgeSwift.h"
 
 @implementation CCSectionDataSourceMetadata
 
@@ -267,7 +268,7 @@
     CCSectionDataSourceActivity *sectionDataSource = [CCSectionDataSourceActivity new];
     NSDate *oldDate = [NSDate date];
     
-    for (TableActivity *record in records) {
+    for (tableActivity *record in records) {
         
         NSDateComponents* comps = [[NSCalendar currentCalendar] components:NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay fromDate:record.date];
         NSDate *date = [[NSCalendar currentCalendar] dateFromComponents:comps];

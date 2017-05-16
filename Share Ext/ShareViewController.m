@@ -3,7 +3,7 @@
 //  Crypto Cloud Technology Nextcloud
 //
 //  Created by Marino Faggiana on 26/01/16.
-//  Copyright (c) 2014 TWS. All rights reserved.
+//  Copyright (c) 2017 TWS. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
 //
@@ -22,12 +22,7 @@
 //
 
 #import "ShareViewController.h"
-
-#ifdef CUSTOM_BUILD
-    #import "CustomSwiftShare.h"
-#else
-    #import "Share-Swift.h"
-#endif
+#import "NCBridgeSwift.h"
 
 @import MobileCoreServices;
 
@@ -55,7 +50,7 @@
 
 -(void)viewDidLoad
 {
-    dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:k_capabilitiesGroups];
+    dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:[NCBrandOptions sharedInstance].capabilitiesGroups];
     
     [MagicalRecord setupCoreDataStackWithAutoMigratingSqliteStoreNamed:(id)[dirGroup URLByAppendingPathComponent:[appDatabase stringByAppendingPathComponent:@"cryptocloud"]]];
     [MagicalRecord setLoggingLevel:MagicalRecordLoggingLevelOff];
@@ -173,9 +168,9 @@
     UIBarButtonItem *rightButtonUpload, *rightButtonEncrypt, *leftButtonCancel;
 
     // Theming
-    TableCapabilities *tableCapabilities = [CCCoreData getCapabilitesForAccount:self.activeAccount];
-    if (k_option_use_themingColor && tableCapabilities.themingColor.length > 0)
-        [NCBrandColor sharedInstance].brand = [CCGraphics colorFromHexString:tableCapabilities.themingColor];
+    tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesForAccount:self.activeAccount];
+    if ([NCBrandOptions sharedInstance].use_themingColor && capabilities.themingColor.length > 0)
+        [NCBrandColor sharedInstance].brand = [CCGraphics colorFromHexString:capabilities.themingColor];
 
     self.navigationController.navigationBar.barTintColor = [NCBrandColor sharedInstance].brand;
     self.navigationController.navigationBar.tintColor = [NCBrandColor sharedInstance].navigationBarText;
@@ -196,7 +191,7 @@
     
     // Encrypt ICON
     if (_isCryptoCloudMode) {
-        UIImage *icon = [[UIImage imageNamed:image_shareExtEncrypt] imageWithRenderingMode:UIImageRenderingModeAutomatic];
+        UIImage *icon = [[UIImage imageNamed:@"shareExtEncrypt"] imageWithRenderingMode:UIImageRenderingModeAutomatic];
         rightButtonEncrypt = [[UIBarButtonItem alloc] initWithImage:icon style:UIBarButtonItemStylePlain target:self action:@selector(changeEncrypt)];
         if (self.localCryptated) [rightButtonEncrypt setTintColor:[NCBrandColor sharedInstance].cryptocloud];
     }
@@ -207,7 +202,7 @@
     // Title
     [self.navigationController.navigationBar setTitleTextAttributes: @{NSForegroundColorAttributeName:self.navigationController.navigationBar.tintColor}];
     
-    self.navigationItem.title = k_brand;
+    self.navigationItem.title = [NCBrandOptions sharedInstance].brand;
     self.navigationItem.leftBarButtonItem = leftButtonCancel;
     self.navigationItem.rightBarButtonItems = [[NSArray alloc] initWithObjects:rightButtonUpload, rightButtonEncrypt, nil];
     self.navigationItem.hidesBackButton = YES;
@@ -386,7 +381,7 @@
     BKTouchIDManager *touchIDManager = [[BKTouchIDManager alloc] initWithKeychainServiceName:k_serviceShareKeyChain];
     touchIDManager.promptText = NSLocalizedString(@"_scan_fingerprint_", nil);
     viewController.touchIDManager = touchIDManager;
-    viewController.title = k_brand;
+    viewController.title = [NCBrandOptions sharedInstance].brand;
     viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
     viewController.navigationItem.leftBarButtonItem.tintColor = [NCBrandColor sharedInstance].cryptocloud;
     
@@ -513,8 +508,8 @@
     CFStringRef fileExtension = (__bridge CFStringRef)[fileName pathExtension];
     CFStringRef fileUTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, fileExtension, NULL);
 
-    if (UTTypeConformsTo(fileUTI, kUTTypeZipArchive) && [(__bridge NSString *)fileUTI containsString:@"org.openxmlformats"] == NO) image = [UIImage imageNamed:image_file_compress];
-    else if (UTTypeConformsTo(fileUTI, kUTTypeAudio)) image = [UIImage imageNamed:image_file_audio];
+    if (UTTypeConformsTo(fileUTI, kUTTypeZipArchive) && [(__bridge NSString *)fileUTI containsString:@"org.openxmlformats"] == NO) image = [UIImage imageNamed:@"file_compress"];
+    else if (UTTypeConformsTo(fileUTI, kUTTypeAudio)) image = [UIImage imageNamed:@"file_audio"];
     else if ((UTTypeConformsTo(fileUTI, kUTTypeImage)) || (UTTypeConformsTo(fileUTI, kUTTypeMovie))) {
         
         image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", self.directoryUser, fileName]];
@@ -522,15 +517,15 @@
     }
     else if (UTTypeConformsTo(fileUTI, kUTTypeContent)) {
         
-        image = [UIImage imageNamed:image_document];
+        image = [UIImage imageNamed:@"document"];
         
         NSString *typeFile = (__bridge NSString *)fileUTI;
         
-        if ([typeFile isEqualToString:@"com.adobe.pdf"]) image = [UIImage imageNamed:image_file_pdf];
-        if ([typeFile isEqualToString:@"org.openxmlformats.spreadsheetml.sheet"]) image = [UIImage imageNamed:image_file_xls];
-        if ([typeFile isEqualToString:@"public.plain-text"]) image = [UIImage imageNamed:image_file_txt];
+        if ([typeFile isEqualToString:@"com.adobe.pdf"]) image = [UIImage imageNamed:@"file_pdf"];
+        if ([typeFile isEqualToString:@"org.openxmlformats.spreadsheetml.sheet"]) image = [UIImage imageNamed:@"file_xls"];
+        if ([typeFile isEqualToString:@"public.plain-text"]) image = [UIImage imageNamed:@"file_txt"];
     }
-    else image = [UIImage imageNamed:image_file];
+    else image = [UIImage imageNamed:@"file"];
     
     CCCellShareExt *cell = (CCCellShareExt *)[tableView dequeueReusableCellWithIdentifier:@"ShareExtCell" forIndexPath:indexPath];
     

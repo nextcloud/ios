@@ -34,9 +34,9 @@
 /**
  * Handles the event when the app is launched by a URL.
  *
- * Call this method from [UIApplicationDelegate application:openURL:options:] (on iOS 9.0 and
- * above), or [UIApplicationDelegate application:openURL:sourceApplication:annotation:] (on iOS 8.x
- * and below) in your app.
+ * Call this method from [UIApplicationDelegate application:openURL:options:] &#40;on iOS 9.0 and
+ * above&#41;, or [UIApplicationDelegate application:openURL:sourceApplication:annotation:] &#40;on
+ * iOS 8.x and below&#41; in your app.
  *
  * @param url The URL resource to open. This resource can be a network resource or a file.
  */

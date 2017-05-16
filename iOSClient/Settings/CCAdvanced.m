@@ -3,7 +3,7 @@
 //  Crypto Cloud Technology Nextcloud
 //
 //  Created by Marino Faggiana on 06/11/15.
-//  Copyright (c) 2014 TWS. All rights reserved.
+//  Copyright (c) 2017 TWS. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
 //
@@ -24,12 +24,7 @@
 #import "CCAdvanced.h"
 #import "CCUtility.h"
 #import "AppDelegate.h"
-
-#ifdef CUSTOM_BUILD
-#import "CustomSwift.h"
-#else
-#import "Nextcloud-Swift.h"
-#endif
+#import "NCBridgeSwift.h"
 
 @interface CCAdvanced ()
 
@@ -54,7 +49,7 @@
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"activityVerboseHigh" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_help_activity_verbose_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIImage imageNamed:image_settingsActivityHigh] forKey:@"imageView.image"];
+    [row.cellConfig setObject:[UIImage imageNamed:@"settingsActivityHigh"] forKey:@"imageView.image"];
     if ([CCUtility getActivityVerboseHigh]) row.value = @"1";
     else row.value = @"0";
     [section addFormRow:row];
@@ -63,7 +58,7 @@
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
     [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIImage imageNamed:image_settingsSendActivity] forKey:@"imageView.image"];
+    [row.cellConfig setObject:[UIImage imageNamed:@"settingsSendActivity"] forKey:@"imageView.image"];
     row.action.formSelector = @selector(sendMail:);
     [section addFormRow:row];
 
@@ -71,7 +66,7 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
-    [row.cellConfig setObject:[UIImage imageNamed:image_settingsClearActivity] forKey:@"imageView.image"];
+    [row.cellConfig setObject:[UIImage imageNamed:@"settingsClearActivity"] forKey:@"imageView.image"];
     row.action.formSelector = @selector(clearActivity:);
     [section addFormRow:row];
     
@@ -107,7 +102,7 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
-    [row.cellConfig setObject:[UIImage imageNamed:image_settingsClearCache] forKey:@"imageView.image"];
+    [row.cellConfig setObject:[UIImage imageNamed:@"settingsClearCache"] forKey:@"imageView.image"];
     row.action.formSelector = @selector(clearCache:);
     [section addFormRow:row];
 
@@ -121,7 +116,7 @@
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
     [row.cellConfig setObject:[UIColor redColor] forKey:@"textLabel.textColor"];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIImage imageNamed:image_settingsExit] forKey:@"imageView.image"];
+    [row.cellConfig setObject:[UIImage imageNamed:@"settingsExit"] forKey:@"imageView.image"];
     row.action.formSelector = @selector(exitNextcloud:);
     [section addFormRow:row];
 
@@ -192,17 +187,17 @@
     switch (result)
     {
         case MFMailComposeResultCancelled:
-            [app messageNotification:@"_info_" description:@"_mail_deleted_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess];
+            [app messageNotification:@"_info_" description:@"_mail_deleted_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess errorCode: error.code];
             break;
         case MFMailComposeResultSaved:
-            [app messageNotification:@"_info_" description:@"_mail_saved_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess];
+            [app messageNotification:@"_info_" description:@"_mail_saved_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess errorCode: error.code];
             break;
         case MFMailComposeResultSent:
-            [app messageNotification:@"_info_" description:@"_mail_sent_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess];
+            [app messageNotification:@"_info_" description:@"_mail_sent_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess errorCode: error.code];
             break;
         case MFMailComposeResultFailed: {
             NSString *msg = [NSString stringWithFormat:NSLocalizedString(@"_mail_failure_", nil), [error localizedDescription]];
-            [app messageNotification:@"_error_" description:msg visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
+            [app messageNotification:@"_error_" description:msg visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode: error.code];
         }
             break;
         default:
@@ -226,15 +221,15 @@
     // Email Recipents
     NSArray *toRecipents;
     
-    NSArray *activities = [CCCoreData getAllTableActivityWithPredicate:[NSPredicate predicateWithFormat:@"((account == %@) || (account == ''))", app.activeAccount]];
+    NSArray *activities = [[NCManageDatabase sharedInstance] getActivityWithPredicate:[NSPredicate predicateWithFormat:@"((account == %@) || (account == ''))", app.activeAccount]];
     
     if ([activities count] == 0) {
         
-        [app messageNotification:@"_info_" description:@"No activity found" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo];
+        [app messageNotification:@"_info_" description:@"No activity found" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
         return;
     }
     
-    for (TableActivity *activity in activities) {
+    for (tableActivity *activity in activities) {
         
         NSString *date, *type, *actionFile, *note;
         
@@ -253,15 +248,16 @@
         fileAttachment = [fileAttachment stringByAppendingString:[NSString stringWithFormat:@"| %@ | %@ | %@ | %@ |\n", date, type, actionFile, note]];
     }
     
-    messageBody = [NSString stringWithFormat:@"\n\n\n%@ Version %@ (%@)", k_brand,[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"], [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
+    messageBody = [NSString stringWithFormat:@"\n\n\n%@ Version %@ (%@)", [NCBrandOptions sharedInstance].brand, [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"], [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
     
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentsDirectory = [paths objectAtIndex:0];
     NSError *error;
     
-    if ([fileAttachment writeToFile:[documentsDirectory stringByAppendingPathComponent:@"activity.txt"] atomically:YES encoding:NSUTF8StringEncoding error:&error]) {
+    // fix CCAdvanced.m line 276 2.17.2 (00005)
+    if ([fileAttachment writeToFile:[documentsDirectory stringByAppendingPathComponent:@"activity.txt"] atomically:YES encoding:NSUTF8StringEncoding error:&error] && [MFMailComposeViewController canSendMail]) {
         
-        toRecipents = [NSArray arrayWithObject:k_mailMe];
+        toRecipents = [NSArray arrayWithObject:[NCBrandOptions sharedInstance].mailMe];
         
         MFMailComposeViewController *mc = [[MFMailComposeViewController alloc] init];
         mc.mailComposeDelegate = self;
@@ -277,7 +273,7 @@
         
     } else {
         
-        [app messageNotification:@"_error_" description:@"Impossible create file body" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError];
+        [app messageNotification:@"_error_" description:@"Impossible create file body" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
     }
 }
 
@@ -289,8 +285,8 @@
 {
     [self deselectFormRow:sender];
     
-    [CCCoreData flushTableActivityAccount:app.activeAccount];
-    
+    [[NCManageDatabase sharedInstance] clearTable:[tableActivity class] account:app.activeAccount];
+        
     [app.activeActivity reloadDatasource];
 }
 
@@ -316,15 +312,21 @@
             [[NSURLCache sharedURLCache] setMemoryCapacity:0];
             [[NSURLCache sharedURLCache] setDiskCapacity:0];
             
-            [CCCoreData flushTableActivityAccount:app.activeAccount];
-            [CCCoreData flushTableAutomaticUploadAccount:app.activeAccount selector:nil];
-            [CCCoreData flushTableCapabilitiesAccount:app.activeAccount];
+            [[NCManageDatabase sharedInstance] clearTable:[tableActivity class] account:app.activeAccount];
+
+            [[NCManageDatabase sharedInstance] clearTable:[tableAutomaticUpload class] account:app.activeAccount];
+                        
+            [[NCManageDatabase sharedInstance] clearTable:[tableCapabilities class] account:app.activeAccount];
+            
             [CCCoreData flushTableDirectoryAccount:app.activeAccount];
-            [CCCoreData flushTableExternalSitesAccount:app.activeAccount];
-            [CCCoreData flushTableGPS];
+
+            [[NCManageDatabase sharedInstance] clearTable:[tableExternalSites class] account:app.activeAccount];
+            [[NCManageDatabase sharedInstance] clearTable:[tableGPS class] account:nil];
+            
             [CCCoreData flushTableLocalFileAccount:app.activeAccount];
             [CCCoreData flushTableMetadataAccount:app.activeAccount];
-            [CCCoreData flushTableShareAccount:app.activeAccount];
+            
+            [[NCManageDatabase sharedInstance] clearTable:[tableShare class] account:app.activeAccount];
 
             [self emptyUserDirectoryUser:app.activeUser url:app.activeUrl];
             
@@ -405,6 +407,8 @@
             
             [CCCoreData flushAllDatabase];
             
+            [[NCManageDatabase sharedInstance] removeDB];
+            
             [CCUtility deleteAllChainStore];
             
             [self emptyDocumentsDirectory];
@@ -447,7 +451,7 @@
 - (void)emptyGroupApplicationSupport
 {
     NSString *file;
-    NSURL *dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:k_capabilitiesGroups];
+    NSURL *dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:[NCBrandOptions sharedInstance].capabilitiesGroups];
     NSString *dirIniziale = [[dirGroup URLByAppendingPathComponent:appApplicationSupport] path];
     
     NSDirectoryEnumerator *enumerator = [[NSFileManager defaultManager] enumeratorAtPath:dirIniziale];

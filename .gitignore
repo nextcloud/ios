@@ -4,14 +4,13 @@
 #                                                                       #
 #       Title         - .gitignore file                                 #
 #       For           - iOS - Xcode8                                    #
-#       Updated on    - 06/March/2017                                   #
 #                                                                       #
 #########################################################################
 
-############ Various settings ############
+## Nextcloud
+.DS_Store
 *.xcodeproj
 !Nextcloud.xcodeproj
-xcuserdata/
 README.md
 Documentation/
 Custom/

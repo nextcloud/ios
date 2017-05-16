@@ -23,12 +23,7 @@
 
 #import "CCLocalStorage.h"
 #import "AppDelegate.h"
-
-#ifdef CUSTOM_BUILD
-#import "CustomSwift.h"
-#else
-#import "Nextcloud-Swift.h"
-#endif
+#import "NCBridgeSwift.h"
 
 @interface CCLocalStorage ()
 {
@@ -124,7 +119,7 @@
 
 - (UIImage *)imageForEmptyDataSet:(UIScrollView *)scrollView
 {
-    return [UIImage imageNamed:image_localStorageNoRecord];
+    return [UIImage imageNamed:@"localStorageNoRecord"];
 }
 
 - (NSAttributedString *)titleForEmptyDataSet:(UIScrollView *)scrollView
@@ -310,7 +305,7 @@
     // Remove file/folder offline
     if (_serverUrl == nil) {
         
-        [actionSheet addButtonWithTitle:NSLocalizedString(@"_remove_offline_", nil) image:[UIImage imageNamed:image_actionSheetOffline] backgroundColor:[UIColor whiteColor] height: 50.0 type:AHKActionSheetButtonTypeDefault handler:^(AHKActionSheet *as) {
+        [actionSheet addButtonWithTitle:NSLocalizedString(@"_remove_offline_", nil) image:[UIImage imageNamed:@"actionSheetOffline"] backgroundColor:[UIColor whiteColor] height: 50.0 type:AHKActionSheetButtonTypeDefault handler:^(AHKActionSheet *as) {
                                     
             if (metadata.directory) {
                                         
@@ -339,14 +334,14 @@
     // NO Directory - NO Template
     if (metadata.directory == NO && [metadata.type isEqualToString:k_metadataType_template] == NO) {
         
-        [actionSheet addButtonWithTitle:NSLocalizedString(@"_open_in_", nil) image:[UIImage imageNamed:image_actionSheetOpenIn] backgroundColor:[UIColor whiteColor] height: 50.0 type:AHKActionSheetButtonTypeDefault handler:^(AHKActionSheet *as) {
+        [actionSheet addButtonWithTitle:NSLocalizedString(@"_open_in_", nil) image:[UIImage imageNamed:@"actionSheetOpenIn"] backgroundColor:[UIColor whiteColor] height: 50.0 type:AHKActionSheetButtonTypeDefault handler:^(AHKActionSheet *as) {
             
             [self.tableView setEditing:NO animated:YES];
             [self openWith:metadata];
         }];
     }
     
-    [actionSheet addButtonWithTitle:NSLocalizedString(@"_delete_", nil) image:[UIImage imageNamed:image_delete] backgroundColor:[UIColor whiteColor] height: 50.0 type:AHKActionSheetButtonTypeDestructive handler:^(AHKActionSheet *as) {
+    [actionSheet addButtonWithTitle:NSLocalizedString(@"_delete_", nil) image:[UIImage imageNamed:@"delete"] backgroundColor:[UIColor whiteColor] height: 50.0 type:AHKActionSheetButtonTypeDestructive handler:^(AHKActionSheet *as) {
         
         [self requestDeleteMetadata:metadata indexPath:indexPath];
     }];
@@ -455,7 +450,7 @@
     
     // it's encrypted ???
     if (metadata.cryptated && [metadata.type isEqualToString: k_metadataType_template] == NO)
-        cell.statusImageView.image = [UIImage imageNamed:image_lock];
+        cell.statusImageView.image = [UIImage imageNamed:@"lock"];
     
     // text and length
     if (metadata.directory) {
