@@ -45,7 +45,8 @@
 {
     [super viewDidLoad];
     
-    TableAccount *recordAccount = [CCCoreData getActiveAccount];
+    //TableAccount *recordAccount = [CCCoreData getActiveAccount];
+    tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
     
     if (recordAccount) {
         

@@ -90,8 +90,9 @@
 
 - (void)settingAccount
 {
-    TableAccount *tableAccount = [CCCoreData getActiveAccount];
-    
+    //TableAccount *tableAccount = [CCCoreData getActiveAccount];
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
+
     _activeAccount = tableAccount.account;
     _activePassword = tableAccount.password;
     _activeUser = tableAccount.user;

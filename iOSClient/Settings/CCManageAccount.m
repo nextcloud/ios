@@ -30,7 +30,7 @@
 
 @interface CCManageAccount ()
 {
-    TableAccount *_tableAccount;
+    tableAccount *_tableAccount;
 
     CCLoginWeb *_loginWeb;
     CCLogin *_loginVC;
@@ -422,7 +422,8 @@
 
     // --
     
-     _tableAccount = [CCCoreData getActiveAccount];
+    //_tableAccount = [CCCoreData getActiveAccount];
+    _tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
     
     XLFormRowDescriptor *rowUserFullName = [self.form formRowWithTag:@"userfullname"];
     XLFormRowDescriptor *rowUserAddress = [self.form formRowWithTag:@"useraddress"];

@@ -1795,7 +1795,8 @@
 - (void)readFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
     // verify active user
-    TableAccount *record = [CCCoreData getActiveAccount];
+    //TableAccount *record = [CCCoreData getActiveAccount];
+    tableAccount *record = [[NCManageDatabase sharedInstance] getAccountActive];
     
     [_hud hideHud];
 
@@ -1815,7 +1816,8 @@
 - (void)readFolderSuccess:(CCMetadataNet *)metadataNet permissions:(NSString *)permissions etag:(NSString *)etag metadatas:(NSArray *)metadatas
 {
     // verify active user
-    TableAccount *record = [CCCoreData getActiveAccount];
+    //TableAccount *record = [CCCoreData getActiveAccount];
+    tableAccount *record = [[NCManageDatabase sharedInstance] getAccountActive];
 
     if (![record.account isEqualToString:metadataNet.account])
         return;
@@ -2896,7 +2898,8 @@
     AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     
     // change account ?
-    TableAccount *record = [CCCoreData getActiveAccount];
+    //TableAccount *record = [CCCoreData getActiveAccount];
+    tableAccount *record = [[NCManageDatabase sharedInstance] getAccountActive];
     if([record.account isEqualToString:metadataNet.account] == NO)
         return;
     
@@ -3291,7 +3294,9 @@
         return;
     }
     
-    NSArray *listTableAccount = [CCCoreData getAllTableAccount];
+    //NSArray *listTableAccount = [CCCoreData getAllTableAccount];
+    NSArray *listTableAccount = [[NCManageDatabase sharedInstance] getAccounts:nil];
+    
     NSMutableArray *menuArray = [NSMutableArray new];
     
     for (TableAccount *record in listTableAccount) {

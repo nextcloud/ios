@@ -41,7 +41,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
     var menuExternalSite: [tableExternalSites]?
-    var tableAccont : TableAccount?
+    var tabAccount : tableAccount?
     
     override func viewDidLoad() {
         
@@ -193,29 +193,30 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         }
         
         // Display Name user & Quota
-        tableAccont = CCCoreData.getActiveAccount()
-        if (tableAccont != nil) {
+        //tableAccont = CCCoreData.getActiveAccount()
+        tabAccount = NCManageDatabase.sharedInstance.getAccountActive()
+        if (tabAccount != nil) {
             
-            if let displayName = self.tableAccont!.displayName {
+            if let displayName = tabAccount?.displayName {
                 if displayName.isEmpty {
-                    labelUsername.text = self.tableAccont!.user
+                    labelUsername.text = tabAccount!.user
                 }
                 else{
-                    labelUsername.text = self.tableAccont!.displayName
+                    labelUsername.text = tabAccount!.displayName
                 }
             }
             else{
-                labelUsername.text = self.tableAccont!.user
+                labelUsername.text = tabAccount!.user
             }
             
             // fix CCMore.swift line 208 Version 2.17.2 (00005)
-            if (self.tableAccont?.quotaRelative != nil && self.tableAccont?.quotaTotal != nil && self.tableAccont?.quotaUsed != nil) {
+            if (tabAccount?.quotaRelative != nil && tabAccount?.quotaTotal != nil && tabAccount?.quotaUsed != nil) {
                 
-                progressQuota.progress = Float((self.tableAccont?.quotaRelative)!) / 100
+                progressQuota.progress = Float((tabAccount?.quotaRelative)!) / 100
                 progressQuota.progressTintColor = NCBrandColor.sharedInstance.brand
                 
-                let quota : String = CCUtility.transformedSize(Double((self.tableAccont?.quotaTotal)!))
-                let quotaUsed : String = CCUtility.transformedSize(Double((self.tableAccont?.quotaUsed)!))
+                let quota : String = CCUtility.transformedSize(Double((tabAccount?.quotaTotal)!))
+                let quotaUsed : String = CCUtility.transformedSize(Double((tabAccount?.quotaUsed)!))
                 
                 labelQuota.text = String.localizedStringWithFormat(NSLocalizedString("_quota_using_", comment: ""), quotaUsed, quota)
             }

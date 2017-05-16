@@ -143,7 +143,6 @@
 
     return [TableAccount MR_findFirstByAttribute:@"account" withValue:account inContext:context];
 }
- */
 
 + (NSArray *)getAllTableAccount
 {
@@ -168,6 +167,7 @@
     if (record) return record;
     else return nil;
 }
+*/
 
 + (NSString *)getCameraUploadFolderNameActiveAccount:(NSString *)activeAccount
 {

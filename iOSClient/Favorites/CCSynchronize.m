@@ -92,7 +92,8 @@
 - (void)listingFavoritesSuccess:(CCMetadataNet *)metadataNet metadatas:(NSArray *)metadatas
 {
     // verify active user
-    TableAccount *record = [CCCoreData getActiveAccount];
+    //TableAccount *record = [CCCoreData getActiveAccount];
+    tableAccount *record = [[NCManageDatabase sharedInstance] getAccountActive];
     
     if (![record.account isEqualToString:metadataNet.account])
         return;
@@ -247,7 +248,8 @@
 - (void)readFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
     // verify active user
-    TableAccount *recordAccount = [CCCoreData getActiveAccount];
+    //TableAccount *recordAccount = [CCCoreData getActiveAccount];
+    tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
     
     // Folder not present, remove it
     if (errorCode == 404 && [recordAccount.account isEqualToString:metadataNet.account])
@@ -257,7 +259,8 @@
 // MULTI THREAD
 - (void)readFolderSuccess:(CCMetadataNet *)metadataNet permissions:(NSString *)permissions etag:(NSString *)etag metadatas:(NSArray *)metadatas
 {
-    TableAccount *recordAccount = [CCCoreData getActiveAccount];
+    //TableAccount *recordAccount = [CCCoreData getActiveAccount];
+    tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
     
     __block NSMutableArray *metadatasForVerifyChange = [NSMutableArray new];
     
@@ -401,7 +404,8 @@
 - (void)readFileFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
     // verify active user
-    TableAccount *recordAccount = [CCCoreData getActiveAccount];
+    //TableAccount *recordAccount = [CCCoreData getActiveAccount];
+    tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
     
     // File not present, remove it
     if (errorCode == 404 && [recordAccount.account isEqualToString:metadataNet.account]) {

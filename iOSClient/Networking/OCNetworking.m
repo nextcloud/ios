@@ -253,7 +253,8 @@
     
     [communication getRemoteThumbnailByServer:[_activeUrl stringByAppendingString:@"/"] ofFilePath:_metadataNet.fileName withWidth:width andHeight:height onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSData *thumbnail, NSString *redirectedServer) {
         
-        TableAccount *recordAccount = [CCCoreData getActiveAccount];
+        //TableAccount *recordAccount = [CCCoreData getActiveAccount];
+        tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
         
         if ([recordAccount.account isEqualToString:_metadataNet.account] && [thumbnail length] > 0) {
         
@@ -737,7 +738,8 @@
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
-        TableAccount *recordAccount = [CCCoreData getActiveAccount];
+        //TableAccount *recordAccount = [CCCoreData getActiveAccount];
+        tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
 
         [communication createFolder:folderPathName onCommunication:communication withForbiddenCharactersSupported:YES successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
             
@@ -893,7 +895,8 @@
     
     [communication readFile:fileName onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer) {
         
-        TableAccount *recordAccount = [CCCoreData getActiveAccount];
+        //TableAccount *recordAccount = [CCCoreData getActiveAccount];
+        tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
         
         if ([recordAccount.account isEqualToString:_metadataNet.account] && [items count] > 0) {
             
@@ -925,7 +928,8 @@
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
-        TableAccount *recordAccount = [CCCoreData getActiveAccount];
+        //TableAccount *recordAccount = [CCCoreData getActiveAccount];
+        tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
         
         _metadataNet.errorRetry++;
         
@@ -1006,7 +1010,8 @@
         
         [[self getShareID] removeAllObjects];
         
-        TableAccount *recordAccount = [CCCoreData getActiveAccount];
+        //TableAccount *recordAccount = [CCCoreData getActiveAccount];
+        tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
         
         if ([recordAccount.account isEqualToString:_metadataNet.account]) {
         
@@ -1570,7 +1575,8 @@
     
     [communication getCapabilitiesOfServer:[_activeUrl stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, OCCapabilities *capabilities, NSString *redirectedServer) {
         
-        TableAccount *recordAccount = [CCCoreData getActiveAccount];
+        //TableAccount *recordAccount = [CCCoreData getActiveAccount];
+        tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
         
         if ([self.delegate respondsToSelector:@selector(getCapabilitiesOfServerSuccess:)] && [recordAccount.account isEqualToString:_metadataNet.account])
             [self.delegate getCapabilitiesOfServerSuccess:capabilities];

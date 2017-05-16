@@ -89,12 +89,13 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         
         providerDB = providerSessionDB.sharedInstance
         
-        if let record = CCCoreData.getActiveAccount() {
+        //if let record = CCCoreData.getActiveAccount() {
+        if let record = NCManageDatabase.sharedInstance.getAccountActive() {
             
-            activeAccount = record.account!
-            activePassword = record.password!
-            activeUrl = record.url!
-            activeUser = record.user!
+            activeAccount = record.account
+            activePassword = record.password
+            activeUrl = record.url
+            activeUser = record.user
             directoryUser = CCUtility.getDirectoryActiveUser(activeUser, activeUrl: activeUrl)
             
             if (self.serverUrl == nil) {
