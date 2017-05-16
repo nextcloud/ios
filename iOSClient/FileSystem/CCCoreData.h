@@ -45,10 +45,10 @@
 
 // ===== Account =====
 
-+ (void)addAccount:(NSString *)account url:(NSString *)url user:(NSString *)user password:(NSString *)password;
-+ (void)updateAccount:(NSString *)account withPassword:(NSString *)password;
-+ (void)deleteAccount:(NSString *)account;
-+ (TableAccount *)setActiveAccount:(NSString *)account;
+//+ (void)addAccount:(NSString *)account url:(NSString *)url user:(NSString *)user password:(NSString *)password;
+//+ (void)updateAccount:(NSString *)account withPassword:(NSString *)password;
+//+ (void)deleteAccount:(NSString *)account;
+//+ (TableAccount *)setActiveAccount:(NSString *)account;
 
 + (NSArray *)getAllAccount;
 + (TableAccount *)getTableAccountFromAccount:(NSString *)account;

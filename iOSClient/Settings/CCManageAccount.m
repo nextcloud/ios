@@ -365,7 +365,8 @@
     // removed  this -> ?????
     
     // change account
-    TableAccount *tableAccount = [CCCoreData setActiveAccount:account];
+    //TableAccount *tableAccount = [CCCoreData setActiveAccount:account];
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] setAccountActive:account];
     if (tableAccount)
         [app settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activePassword:tableAccount.password];
  

@@ -279,17 +279,22 @@
         
         if (_loginType == loginModifyPasswordUser) {
             
-            [CCCoreData updateAccount:account withPassword:self.password.text];
+            //[CCCoreData updateAccount:account withPassword:self.password.text];
+            [[NCManageDatabase sharedInstance] setAccountPassword:account password:self.password.text];
             
         } else {
 
-            [CCCoreData deleteAccount:account];
+            [[NCManageDatabase sharedInstance] deleteAccount:account];
+            //[CCCoreData deleteAccount:account];
         
             // Add default account
-            [CCCoreData addAccount:account url:self.baseUrl.text user:self.user.text password:self.password.text];
+            //[CCCoreData addAccount:account url:self.baseUrl.text user:self.user.text password:self.password.text];
+            
+            [[NCManageDatabase sharedInstance] addAccount:account url:self.baseUrl.text user:self.user.text password:self.password.text];
         }
         
-        TableAccount *tableAccount = [CCCoreData setActiveAccount:account];
+        //TableAccount *tableAccount = [CCCoreData setActiveAccount:account];
+        tableAccount *tableAccount = [[NCManageDatabase sharedInstance] setAccountActive:account];
         
         // verifica
         if ([tableAccount.account isEqualToString:account]) {
@@ -306,7 +311,8 @@
         } else {
             
             if (_loginType != loginModifyPasswordUser)
-                [CCCoreData deleteAccount:account];
+                [[NCManageDatabase sharedInstance] deleteAccount:account];
+                //[CCCoreData deleteAccount:account];
             
             alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_error_", nil) message:@"Fatal error writing database" delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
             [alertView show];

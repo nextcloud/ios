@@ -31,6 +31,7 @@
 #pragma mark ===== Account =====
 #pragma --------------------------------------------------------------------------------------------
 
+/*
 + (void)addAccount:(NSString *)account url:(NSString *)url user:(NSString *)user password:(NSString *)password
 {
     NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
@@ -71,6 +72,7 @@
     [context MR_saveToPersistentStoreAndWait];
 }
 
+
 + (void)updateAccount:(NSString *)account withPassword:(NSString *)password
 {
     NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
@@ -82,6 +84,7 @@
     [context MR_saveToPersistentStoreAndWait];
 }
 
+
 + (void)deleteAccount:(NSString *)account
 {
     NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
@@ -91,6 +94,7 @@
     
     [context MR_saveToPersistentStoreAndWait];
 }
+
 
 + (TableAccount *)setActiveAccount:(NSString *)account
 {
@@ -117,6 +121,7 @@
         
     return [self getActiveAccount];
 }
+*/
 
 + (NSArray *)getAllAccount
 {
