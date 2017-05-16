@@ -8,6 +8,7 @@
 #########################################################################
 
 ## Nextcloud
+.DS_Store
 *.xcodeproj
 !Nextcloud.xcodeproj
 README.md
@@ -17,14 +18,9 @@ GoogleService-Info.plist
 DevicePushKey-Info.plist
 iOSClient/Brand/Device*
 
-## OS X files
-.DS_Store
-.DS_Store?
-.Trashes
-
-## Xcode build files
+## Xcode private settings
 DerivedData/
 build/
-
-## Xcode private settings
+*.xcuserstate
+project.xcworkspace/
 xcuserdata/
