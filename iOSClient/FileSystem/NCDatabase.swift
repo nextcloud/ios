@@ -37,7 +37,6 @@ class tableAccount: Object {
     dynamic var cameraUploadFolderPath = ""
     dynamic var cameraUploadFull : Bool = false
     dynamic var cameraUploadPhoto : Bool = false
-    dynamic var cameraUploadSaveAlbum : Bool = false
     dynamic var cameraUploadVideo : Bool = false
     dynamic var cameraUploadWWAnPhoto : Bool = false
     dynamic var cameraUploadWWAnVideo : Bool = false

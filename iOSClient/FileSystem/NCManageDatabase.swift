@@ -135,32 +135,6 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    func setAccountActive(_ account: String) -> tableAccount {
-        
-        let realm = try! Realm()
-        var activeAccount = tableAccount()
-        
-        let results = realm.objects(tableAccount.self)
-        
-        try! realm.write {
-            
-            for result in results {
-                
-                if result.account == account {
-                   
-                    result.active = true
-                    activeAccount = result
-                    
-                } else {
-                    
-                    result.active = false
-                }
-            }
-        }
-        
-        return activeAccount
-    }
-    
     func getAccountActive() -> tableAccount? {
         
         let realm = try! Realm()
@@ -191,7 +165,7 @@ class NCManageDatabase: NSObject {
     }
     
     // getCameraUploadFolderNameActiveAccount + getCameraUploadFolderPathActiveAccount
-    func getCameraUploadFolderName(_ account: String, activeUrl : String?) -> String {
+    func getAccountsCameraUploadFolderName(_ account: String, activeUrl : String?) -> String {
         
         let realm = try! Realm()
         
@@ -226,19 +200,163 @@ class NCManageDatabase: NSObject {
     }
 
     // getCameraUploadFolderNamePathActiveAccount
-    func getCameraUploadFolderNamePath(_ account: String, activeUrl : String) -> String {
+    func getAccountsCameraUploadFolderNamePath(_ account: String, activeUrl : String) -> String {
         
-        let cameraFolderName = self.getCameraUploadFolderName(account, activeUrl: nil)
-        let cameraFolderPath = self.getCameraUploadFolderName(account, activeUrl: activeUrl)
+        let cameraFolderName = self.getAccountsCameraUploadFolderName(account, activeUrl: nil)
+        let cameraFolderPath = self.getAccountsCameraUploadFolderName(account, activeUrl: activeUrl)
      
         let folderPhotos = CCUtility.stringAppendServerUrl(cameraFolderPath, addFileName: cameraFolderName)!
         
         return folderPhotos
     }
     
+    func setAccountActive(_ account: String) -> tableAccount {
+        
+        let realm = try! Realm()
+        var activeAccount = tableAccount()
+        
+        let results = realm.objects(tableAccount.self)
+        
+        try! realm.write {
+            
+            for result in results {
+                
+                if result.account == account {
+                    
+                    result.active = true
+                    activeAccount = result
+                    
+                } else {
+                    
+                    result.active = false
+                }
+            }
+        }
+        
+        return activeAccount
+    }
+
+    func setAccountCameraStateFiled(_ account: String, state: Bool, field: String) {
+        
+        let realm = try! Realm()
+        
+        let results = realm.objects(tableAccount.self).filter("account = %@", account)
+        if (results.count > 0) {
+            try! realm.write {
+                
+                switch field {
+                case "cameraUpload":
+                    results[0].cameraUpload = state
+                case "cameraUploadBackground":
+                    results[0].cameraUploadBackground = state
+                case "cameraUploadCreateSubfolder":
+                    results[0].cameraUploadCreateSubfolder = state
+                case "cameraUploadFull":
+                    results[0].cameraUploadFull = state
+                case "cameraUploadPhoto":
+                    results[0].cameraUploadPhoto = state
+                case "cameraUploadVideo":
+                    results[0].cameraUploadVideo = state
+                case "cameraUploadWWAnPhoto":
+                    results[0].cameraUploadWWAnPhoto = state
+                case "cameraUploadWWAnVideo":
+                    results[0].cameraUploadWWAnVideo = state
+                default:
+                    print("No founfd field")
+                }
+            }
+        }
+    }
+    
+    func setAccountsCameraUploadDateAssetType(_ account: String, assetMediaType: PHAssetMediaType, assetDate: NSDate) {
+
+        let realm = try! Realm()
+        
+        let results = realm.objects(tableAccount.self).filter("account = %@", account)
+        
+        try! realm.write {
+            if (assetMediaType == PHAssetMediaType.image && results.count > 0) {
+                results[0].cameraUploadDatePhoto = assetDate
+            }
+            if (assetMediaType == PHAssetMediaType.video && results.count > 0) {
+                results[0].cameraUploadDateVideo = assetDate
+            }
+        }
+    }
+    
+    func setAccountsCameraUploadFolderName(_ account: String, folderName: String?) {
+        
+        let realm = try! Realm()
+        var folderName : String? = folderName
+        
+        if folderName == nil {
+            folderName = self.getAccountsCameraUploadFolderName(account, activeUrl: nil)
+        }
+        
+        let results = realm.objects(tableAccount.self).filter("account = %@", account)
+        if (results.count > 0) {
+            try! realm.write {
+                
+                results[0].cameraUploadFolderName = folderName!
+            }
+        }
+    }
+
+    func setAccountsCameraUploadFolderPath(_ account: String, pathName: String?, activeUrl: String) {
+        
+        let realm = try! Realm()
+        var pathName : String? = pathName
+        
+        if pathName == nil {
+            pathName = self.getAccountsCameraUploadFolderNamePath(account, activeUrl: activeUrl)
+        }
+        
+        let results = realm.objects(tableAccount.self).filter("account = %@", account)
+        if (results.count > 0) {
+            try! realm.write {
+                
+                results[0].cameraUploadFolderPath = pathName!
+            }
+        }
+    }
+    
+    func setAccountsUserProfile(_ account: String, userProfile: OCUserProfile) {
+     
+        let realm = try! Realm()
+        
+        let results = realm.objects(tableAccount.self).filter("account = %@", account)
+        if (results.count > 0) {
+
+            try! realm.write {
+                
+                results[0].enabled = userProfile.enabled
+                results[0].address = userProfile.address
+                results[0].displayName = userProfile.displayName
+                results[0].email = userProfile.email
+                results[0].phone = userProfile.phone
+                results[0].twitter = userProfile.twitter
+                results[0].webpage = results[0].webpage
+                
+                results[0].quota = userProfile.quota
+                results[0].quotaFree = userProfile.quotaFree
+                results[0].quotaRelative = userProfile.quotaRelative
+                results[0].quotaTotal = userProfile.quotaTotal
+                results[0].quotaUsed = userProfile.quotaUsed
+            }
+        }
+    }
     
     //MARK: -
     //MARK: Table Activity
+
+    func getActivityWithPredicate(_ predicate: NSPredicate) -> [tableActivity] {
+        
+        let realm = try! Realm()
+        
+        let results = realm.objects(tableActivity.self).filter(predicate).sorted(byKeyPath: "date", ascending: false)
+        
+        return Array(results)
+    }
 
     func addActivityServer(_ listOfActivity: [OCActivity], account: String) {
     
@@ -302,15 +420,6 @@ class NCManageDatabase: NSObject {
 
             realm.add(addActivity)
         }
-    }
-    
-    func getActivityWithPredicate(_ predicate: NSPredicate) -> [tableActivity] {
-        
-        let realm = try! Realm()
-
-        let results = realm.objects(tableActivity.self).filter(predicate).sorted(byKeyPath: "date", ascending: false)
-        
-        return Array(results)
     }
     
     //MARK: -
