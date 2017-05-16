@@ -28,14 +28,3 @@ build/
 
 ## Xcode private settings
 xcuserdata/
-UserInterfaceState.xcuserstate
-
-## Other
-*.xccheckout
-*.moved-aside
-*.xcuserstate
-*.xcscmblueprint
-
-## Playgrounds
-timeline.xctimeline
-playground.xcworkspace
