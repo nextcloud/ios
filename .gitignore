@@ -21,6 +21,4 @@ iOSClient/Brand/Device*
 ## Xcode private settings
 DerivedData/
 build/
-*.xcuserstate
-project.xcworkspace/
 xcuserdata/
