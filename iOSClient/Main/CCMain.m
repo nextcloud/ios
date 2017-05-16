@@ -3786,7 +3786,10 @@
             NSData *dataMetadata = [dic objectForKey: k_metadataKeyedUnarchiver];
             CCMetadata *metadata = [NSKeyedUnarchiver unarchiveObjectWithData:dataMetadata];
             
-            TableAccount *account = [CCCoreData getTableAccountFromAccount:metadata.account];
+            //TableAccount *account = [CCCoreData getTableAccountFromAccount:metadata.account];
+            
+            NSArray *accounts = [[NCManageDatabase sharedInstance] getAccounts:metadata.account];
+            tableAccount *account = [accounts objectAtIndex:0];
             NSString *directoryUser = [CCUtility getDirectoryActiveUser:account.user activeUrl:account.url];
             
             if (directoryUser) {
@@ -3815,7 +3818,11 @@
             NSData *dataMetadata = [dic objectForKey: k_metadataKeyedUnarchiver];
             CCMetadata *metadata = [NSKeyedUnarchiver unarchiveObjectWithData:dataMetadata];
             
-            TableAccount *account = [CCCoreData getTableAccountFromAccount:metadata.account];
+            //TableAccount *account = [CCCoreData getTableAccountFromAccount:metadata.account];
+            
+            NSArray *accounts = [[NCManageDatabase sharedInstance] getAccounts:metadata.account];
+            tableAccount *account = [accounts objectAtIndex:0];
+            
             NSString *directoryUser = [CCUtility getDirectoryActiveUser:account.user activeUrl:account.url];
             
             if (directoryUser) {
@@ -3930,7 +3937,11 @@
         NSData *dataMetadata = [dic objectForKey: k_metadataKeyedUnarchiver];
         CCMetadata *metadata = [NSKeyedUnarchiver unarchiveObjectWithData:dataMetadata];
             
-        TableAccount *account = [CCCoreData getTableAccountFromAccount:metadata.account];
+        //TableAccount *account = [CCCoreData getTableAccountFromAccount:metadata.account];
+        
+        NSArray *accounts = [[NCManageDatabase sharedInstance] getAccounts:metadata.account];
+        tableAccount *account = [accounts objectAtIndex:0];
+        
         NSString *directoryUser = [CCUtility getDirectoryActiveUser:account.user activeUrl:account.url];
             
         if (directoryUser) {

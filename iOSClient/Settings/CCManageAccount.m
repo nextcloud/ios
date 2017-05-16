@@ -47,7 +47,8 @@
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
     
-    NSArray *listAccount = [CCCoreData getAllAccount];
+    //NSArray *listAccount = [CCCoreData getAllAccount];
+    NSArray *listAccount = [[NCManageDatabase sharedInstance] getAccounts:nil];
 
     // Section : CLOUD ACCOUNT -------------------------------------------
     
@@ -291,7 +292,8 @@
     XLFormPickerCell *pickerAccount = (XLFormPickerCell *)[[self.form formRowWithTag:@"pickerAccount"] cellForFormController:self];
     
     NSString *accountNow = pickerAccount.rowDescriptor.value;
-    NSArray *listAccount = [CCCoreData getAllAccount];
+    //NSArray *listAccount = [CCCoreData getAllAccount];
+    NSArray *listAccount = [[NCManageDatabase sharedInstance] getAccounts:nil];
     
     [actionSheet dismissWithClickedButtonIndex:buttonIndex animated:YES];
     
@@ -306,7 +308,8 @@
         // Clear active user
         [app settingActiveAccount:nil activeUrl:nil activeUser:nil activePassword:nil];
         
-        listAccount = [CCCoreData getAllAccount];
+        //listAccount = [CCCoreData getAllAccount];
+        listAccount = [[NCManageDatabase sharedInstance] getAccounts:nil];
         
         if ([listAccount count] > 0) [self ChangeDefaultAccount:listAccount[0]];
         else {
@@ -382,7 +385,8 @@
 
 - (void)UpdateForm
 {
-    NSArray *listAccount = [CCCoreData getAllAccount];
+    //NSArray *listAccount = [CCCoreData getAllAccount];
+    NSArray *listAccount = [[NCManageDatabase sharedInstance] getAccounts:nil];
     
     if (listAccount == nil) {
         [self addAccountFoced];

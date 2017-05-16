@@ -121,7 +121,6 @@
         
     return [self getActiveAccount];
 }
-*/
 
 + (NSArray *)getAllAccount
 {
@@ -144,6 +143,7 @@
 
     return [TableAccount MR_findFirstByAttribute:@"account" withValue:account inContext:context];
 }
+ */
 
 + (NSArray *)getAllTableAccount
 {
