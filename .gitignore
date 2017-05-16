@@ -4,7 +4,6 @@
 #                                                                       #
 #       Title         - .gitignore file                                 #
 #       For           - iOS - Xcode8                                    #
-#       Updated on    - 06/March/2017                                   #
 #                                                                       #
 #########################################################################
 
@@ -12,16 +11,13 @@
 *.xcodeproj
 !Nextcloud.xcodeproj
 xcuserdata/
+.DS_Store
+.AppleDouble
+.LSOverride
+UserInterfaceState.xcuserstate
 README.md
 Documentation/
 Custom/
 GoogleService-Info.plist
 DevicePushKey-Info.plist
 iOSClient/Brand/Device*
-
-########### OSX ###########
-# OS X temporary files that should never be committed
-
-.DS_Store
-.AppleDouble
-.LSOverride
