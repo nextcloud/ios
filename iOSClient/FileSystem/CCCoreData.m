@@ -457,6 +457,7 @@
     }];
 }
 
+/*
 + (void)setCameraUploadSaveAlbum:(BOOL)saveAlbum activeAccount:(NSString *)activeAccount
 {
     [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
@@ -468,6 +469,7 @@
             record.cameraUploadSaveAlbum = [NSNumber numberWithBool:saveAlbum];
     }];
 }
+
 
 + (void)setUserProfileActiveAccount:(NSString *)activeAccount userProfile:(OCUserProfile *)userProfile
 {
@@ -494,6 +496,7 @@
         }
     }];
 }
+*/
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Metadata =====

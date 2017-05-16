@@ -83,9 +83,9 @@
 + (void)setCameraUploadWWanVideo:(BOOL)wWan activeAccount:(NSString *)activeAccount;
 + (void)setCameraUploadFolderName:(NSString *)fileName activeAccount:(NSString *)activeAccount;
 + (void)setCameraUploadFolderPath:(NSString *)pathName activeUrl:(NSString *)activeUrl activeAccount:(NSString *)activeAccount;
-+ (void)setCameraUploadSaveAlbum:(BOOL)saveAlbum activeAccount:(NSString *)activeAccount;
+//+ (void)setCameraUploadSaveAlbum:(BOOL)saveAlbum activeAccount:(NSString *)activeAccount;
 
-+ (void)setUserProfileActiveAccount:(NSString *)activeAccount userProfile:(OCUserProfile *)userProfile;
+//+ (void)setUserProfileActiveAccount:(NSString *)activeAccount userProfile:(OCUserProfile *)userProfile;
 
 // ===== Metadata =====
 
