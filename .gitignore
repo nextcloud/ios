@@ -25,14 +25,3 @@ iOSClient/Brand/Device*
 .DS_Store
 .AppleDouble
 .LSOverride
-Pods/
-
-# Xcode
-xcuserdata/
-project.xcworkspace/
-DerivedData/
-xcshareddata/
-xcuserdata
-*.xcuserstate
-*.xcbkptlist
-xcdebugger/
