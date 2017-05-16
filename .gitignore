@@ -28,6 +28,7 @@ build/
 
 ## Xcode private settings
 xcuserdata/
+UserInterfaceState.xcuserstate
 
 ## Other
 *.xccheckout
