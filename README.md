@@ -24,4 +24,4 @@ Easy starting points are also reviewing [pull requests](https://github.com/nextc
 
 **License:** [GPLv3](https://github.com/nextcloud/ios/blob/master/LICENSE) with [Apple app store exception](https://github.com/nextcloud/ios/blob/master/COPYING.iOS).
 
-Like to see this app using your languange? Start translating at https://www.transifex.com/nextcloud/nextcloud/dashboard/
+Like to see this app using your language? Start translating at https://www.transifex.com/nextcloud/nextcloud/dashboard/
