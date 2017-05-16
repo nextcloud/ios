@@ -109,7 +109,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func updateAccount(_ account: String, password: String) {
+    func setAccountPassword(_ account: String, password: String) {
         
         let realm = try! Realm()
         
