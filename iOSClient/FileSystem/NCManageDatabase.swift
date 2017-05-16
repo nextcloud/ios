@@ -200,7 +200,7 @@ class NCManageDatabase: NSObject {
     }
 
     // getCameraUploadFolderNamePathActiveAccount
-    func getAccountsCameraUploadFolderNamePath(_ account: String, activeUrl : String) -> String {
+    func getAccountsCameraUploadFolderPath(_ account: String, activeUrl : String) -> String {
         
         let cameraFolderName = self.getAccountsCameraUploadFolderName(account, activeUrl: nil)
         let cameraFolderPath = self.getAccountsCameraUploadFolderName(account, activeUrl: activeUrl)
@@ -308,7 +308,7 @@ class NCManageDatabase: NSObject {
         var pathName : String? = pathName
         
         if pathName == nil {
-            pathName = self.getAccountsCameraUploadFolderNamePath(account, activeUrl: activeUrl)
+            pathName = self.getAccountsCameraUploadFolderPath(account, activeUrl: activeUrl)
         }
         
         let results = realm.objects(tableAccount.self).filter("account = %@", account)
