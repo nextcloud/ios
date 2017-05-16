@@ -18,9 +18,8 @@ GoogleService-Info.plist
 DevicePushKey-Info.plist
 iOSClient/Brand/Device*
 
-########### OSX ###########
-# OS X temporary files that should never be committed
-
-.DS_Store
-.AppleDouble
-.LSOverride
+## Xcode private settings
+DerivedData/
+build/
+xcuserdata/
+UserInterfaceState.xcuserstate
