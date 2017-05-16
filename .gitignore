@@ -7,17 +7,42 @@
 #                                                                       #
 #########################################################################
 
-############ Various settings ############
+## Nextcloud
 *.xcodeproj
 !Nextcloud.xcodeproj
-xcuserdata/
-.DS_Store
-.AppleDouble
-.LSOverride
-UserInterfaceState.xcuserstate
 README.md
 Documentation/
 Custom/
 GoogleService-Info.plist
 DevicePushKey-Info.plist
 iOSClient/Brand/Device*
+
+## OS X files
+.DS_Store
+.DS_Store?
+.Trashes
+
+## Xcode build files
+DerivedData/
+build/
+
+## Xcode private settings
+xcuserdata/
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+
+## Other
+*.xccheckout
+*.moved-aside
+*.xcuserstate
+*.xcscmblueprint
+
+## Playgrounds
+timeline.xctimeline
+playground.xcworkspace
