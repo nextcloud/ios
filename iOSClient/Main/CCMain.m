@@ -1688,7 +1688,7 @@
     NSString *session = [arguments objectAtIndex:4];
     
     //NSString *folderPhotos = [CCCoreData getCameraUploadFolderNamePathActiveAccount:app.activeAccount activeUrl:app.activeUrl];
-    NSString *folderPhotos = [[NCManageDatabase sharedInstance] getAccountsCameraUploadFolderName:app.activeUrl];
+    NSString *folderPhotos = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderPathAndName:app.activeUrl];
 
     NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:app.activeAccount];
     
@@ -2445,7 +2445,7 @@
     if (![fileNameFolder length]) return;
     
     //if (folderCameraUpload) metadataNet.serverUrl = [CCCoreData getCameraUploadFolderPathActiveAccount:app.activeAccount activeUrl:app.activeUrl];
-    if (folderCameraUpload) metadataNet.serverUrl = [[NCManageDatabase sharedInstance] getAccountsCameraUploadFolderPath:app.activeUrl];
+    if (folderCameraUpload) metadataNet.serverUrl = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderPath:app.activeUrl];
     else  metadataNet.serverUrl = _serverUrl;
     
     metadataNet.action = actionCreateFolder;
@@ -2500,7 +2500,7 @@
 
 - (void)createFolderCameraUpload
 {
-    NSString *cameraFolderName = [[NCManageDatabase sharedInstance] getAccountsCameraUploadFolderName:nil];
+    NSString *cameraFolderName = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderName];
 
     [self createFolder:cameraFolderName folderCameraUpload:YES];
 
@@ -4211,8 +4211,8 @@
         //NSString *cameraUploadFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:app.activeAccount];
         //NSString *cameraUploadFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:app.activeAccount activeUrl:app.activeUrl];
         
-        NSString *cameraUploadFolderName = [[NCManageDatabase sharedInstance] getAccountsCameraUploadFolderName:nil];
-        NSString *cameraUploadFolderPath = [[NCManageDatabase sharedInstance] getAccountsCameraUploadFolderPath:app.activeUrl];
+        NSString *cameraUploadFolderName = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderName];
+        NSString *cameraUploadFolderPath = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderPath:app.activeUrl];
         
         [actionSheet addButtonWithTitle: _metadata.fileNamePrint
                                   image: [CCGraphics changeThemingColorImage:[UIImage imageNamed:_metadata.iconName] color:[NCBrandColor sharedInstance].brand]
@@ -4309,7 +4309,7 @@
                                         
                                         // Settings new folder Automatatic upload
                                        // NSString *oldPath = [CCCoreData getCameraUploadFolderPathActiveAccount:app.activeAccount activeUrl:app.activeUrl];
-                                        NSString *oldPath = [[NCManageDatabase sharedInstance] getAccountsCameraUploadFolderPath:app.activeUrl];
+                                        NSString *oldPath = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderPath:app.activeUrl];
 
                                         
                                         //[CCCoreData setCameraUploadFolderName:_metadata.fileName activeAccount:app.activeAccount];
@@ -4328,7 +4328,7 @@
                                         
                                         NSLog(@"[LOG] Update Folder Photo");
                                         //NSString *folderCameraUpload = [CCCoreData getCameraUploadFolderNamePathActiveAccount:app.activeAccount activeUrl:app.activeUrl];
-                                        NSString *folderCameraUpload = [[NCManageDatabase sharedInstance] getAccountsCameraUploadFolderName:app.activeUrl];
+                                        NSString *folderCameraUpload = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderPathAndName:app.activeUrl];
                                         if ([folderCameraUpload length] > 0)
                                             [[CCSynchronize sharedSynchronize] readFolderServerUrl:folderCameraUpload directoryID:[CCCoreData getDirectoryIDFromServerUrl:folderCameraUpload activeAccount:app.activeAccount] selector:selectorReadFolder];
                                         

@@ -241,7 +241,7 @@ class NCManageDatabase: NSObject {
         return Array(results)
     }
     
-    func getAccountsCameraUploadFolderName(_ activeUrl : String?) -> String {
+    func getAccountCameraUploadFolderName() -> String {
         
         let realm = try! Realm()
         
@@ -250,35 +250,41 @@ class NCManageDatabase: NSObject {
             
             if results[0].cameraUploadFolderName.characters.count > 0 {
                 
-                if activeUrl == nil {
-                    
-                    return results[0].cameraUploadFolderName
-                    
-                } else {
-                    
-                    return results[0].cameraUploadFolderPath
-                }
+                return results[0].cameraUploadFolderName
                 
             } else {
                 
-                if activeUrl == nil {
-                    
-                    return k_folderDefaultCameraUpload
-                    
-                } else {
-                    
-                    return CCUtility.getHomeServerUrlActiveUrl(activeUrl!)
-                }
+                return k_folderDefaultCameraUpload
+            }
+        }
+        
+        return ""
+    }
+    
+    func getAccountCameraUploadFolderPath(_ activeUrl : String) -> String {
+        
+        let realm = try! Realm()
+        
+        let results = realm.objects(tableAccount.self).filter("active = true")
+        if (results.count > 0) {
+            
+            if results[0].cameraUploadFolderPath.characters.count > 0 {
+                
+                return results[0].cameraUploadFolderPath
+                
+            } else {
+                
+                return CCUtility.getHomeServerUrlActiveUrl(activeUrl)
             }
         }
         
         return ""
     }
 
-    func getAccountsCameraUploadFolderPath(_ activeUrl : String) -> String {
+    func getAccountCameraUploadFolderPathAndName(_ activeUrl : String) -> String {
         
-        let cameraFolderName = self.getAccountsCameraUploadFolderName(nil)
-        let cameraFolderPath = self.getAccountsCameraUploadFolderName(activeUrl)
+        let cameraFolderName = self.getAccountCameraUploadFolderName()
+        let cameraFolderPath = self.getAccountCameraUploadFolderPath(activeUrl)
      
         let folderPhotos = CCUtility.stringAppendServerUrl(cameraFolderPath, addFileName: cameraFolderName)!
         
@@ -365,7 +371,7 @@ class NCManageDatabase: NSObject {
         var folderName : String? = folderName
         
         if folderName == nil {
-            folderName = self.getAccountsCameraUploadFolderName(nil)
+            folderName = self.getAccountCameraUploadFolderName()
         }
         
         let results = realm.objects(tableAccount.self).filter("active = true")
@@ -383,7 +389,7 @@ class NCManageDatabase: NSObject {
         var pathName : String? = pathName
         
         if pathName == nil {
-            pathName = self.getAccountsCameraUploadFolderPath(activeUrl)
+            pathName = self.getAccountCameraUploadFolderPath(activeUrl)
         }
         
         let results = realm.objects(tableAccount.self).filter("active = true")

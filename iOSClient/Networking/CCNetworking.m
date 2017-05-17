@@ -90,7 +90,6 @@
 
 - (void)settingAccount
 {
-    //TableAccount *tableAccount = [CCCoreData getActiveAccount];
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
 
     _activeAccount = tableAccount.account;
@@ -886,8 +885,8 @@
     // create Metadata
     //NSString *cameraFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:_activeAccount];
     //NSString *cameraFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:_activeAccount activeUrl:_activeUrl];
-    NSString *cameraFolderName = [[NCManageDatabase sharedInstance] getAccountsCameraUploadFolderName:nil];
-    NSString *cameraFolderPath = [[NCManageDatabase sharedInstance] getAccountsCameraUploadFolderPath:_activeUrl];
+    NSString *cameraFolderName = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderName];
+    NSString *cameraFolderPath = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderPath:_activeUrl];
     
     CCMetadata *metadata = [CCUtility insertFileSystemInMetadata:fileName directory:_directoryUser activeAccount:_activeAccount cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath];
     

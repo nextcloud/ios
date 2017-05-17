@@ -534,7 +534,7 @@
         return;
     
     //NSString *serverUrl = [CCCoreData getCameraUploadFolderNamePathActiveAccount:app.activeAccount activeUrl:app.activeUrl];
-    NSString *serverUrl = [[NCManageDatabase sharedInstance] getAccountsCameraUploadFolderName:app.activeUrl];
+    NSString *serverUrl = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderPathAndName:app.activeUrl];
 
     if (_sectionDataSource) {
         
@@ -1003,7 +1003,7 @@
             
             //if ([CCCoreData getCameraUploadBackgroundActiveAccount:app.activeAccount]) {
                 
-               // [CCCoreData setCameraUploadBackground:NO activeAccount:app.activeAccount];
+                //[CCCoreData setCameraUploadBackground:NO activeAccount:app.activeAccount];
                 [[NCManageDatabase sharedInstance] setAccountCameraStateFiledWithField:@"cameraUploadBackground" state:NO];
                 [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
                 
@@ -1157,7 +1157,7 @@
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
     
     //NSString *folderPhotos = [CCCoreData getCameraUploadFolderNamePathActiveAccount:app.activeAccount activeUrl:app.activeUrl];
-    NSString *folderPhotos = [[NCManageDatabase sharedInstance] getAccountsCameraUploadFolderName:app.activeUrl];
+    NSString *folderPhotos = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderPathAndName:app.activeUrl];
     //BOOL useSubFolder = [CCCoreData getCameraUploadCreateSubfolderActiveAccount:app.activeAccount];
     BOOL useSubFolder = tableAccount.cameraUploadCreateSubfolder;
     

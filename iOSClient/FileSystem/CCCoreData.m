@@ -1813,8 +1813,8 @@
     if ([metadata.uuid length]) recordMetadata.uuid = metadata.uuid;
 
     // inseriamo il typeFile e icona di default.
-    NSString *cameraFolderName = [[NCManageDatabase sharedInstance] getAccountsCameraUploadFolderName:nil];
-    NSString *cameraFolderPath = [[NCManageDatabase sharedInstance] getAccountsCameraUploadFolderPath:activeUrl];
+    NSString *cameraFolderName = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderName];
+    NSString *cameraFolderPath = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderPath:activeUrl];
     
     [CCUtility insertTypeFileIconName:metadata directory:[self getServerUrlFromDirectoryID:metadata.directoryID activeAccount:activeAccount] cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath];
     
