@@ -69,7 +69,7 @@
 //+ (NSDate *)getCameraUploadDateVideoActiveAccount:(NSString *)activeAccount;
 //+ (BOOL)getCameraUploadWWanPhotoActiveAccount:(NSString *)activeAccount;
 //+ (BOOL)getCameraUploadWWanVideoActiveAccount:(NSString *)activeAccount;
-
+/*
 + (void)setCameraUpload:(BOOL)state activeAccount:(NSString *)activeAccount;
 + (void)setCameraUploadBackground:(BOOL)state activeAccount:(NSString *)activeAccount;
 + (void)setCameraUploadCreateSubfolderActiveAccount:(BOOL)state activeAccount:(NSString *)activeAccount;
@@ -83,6 +83,7 @@
 + (void)setCameraUploadWWanVideo:(BOOL)wWan activeAccount:(NSString *)activeAccount;
 + (void)setCameraUploadFolderName:(NSString *)fileName activeAccount:(NSString *)activeAccount;
 + (void)setCameraUploadFolderPath:(NSString *)pathName activeUrl:(NSString *)activeUrl activeAccount:(NSString *)activeAccount;
+*/ 
 //+ (void)setCameraUploadSaveAlbum:(BOOL)saveAlbum activeAccount:(NSString *)activeAccount;
 
 //+ (void)setUserProfileActiveAccount:(NSString *)activeAccount userProfile:(OCUserProfile *)userProfile;

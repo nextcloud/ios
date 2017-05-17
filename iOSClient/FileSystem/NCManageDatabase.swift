@@ -164,12 +164,11 @@ class NCManageDatabase: NSObject {
         return Array(results)
     }
     
-    // getCameraUploadFolderNameActiveAccount + getCameraUploadFolderPathActiveAccount
-    func getAccountsCameraUploadFolderName(_ account: String, activeUrl : String?) -> String {
+    func getAccountsCameraUploadFolderName(_ activeUrl : String?) -> String {
         
         let realm = try! Realm()
         
-        let results = realm.objects(tableAccount.self).filter("account = %@", account)
+        let results = realm.objects(tableAccount.self).filter("active = true")
         if (results.count > 0) {
             
             if results[0].cameraUploadFolderName.characters.count > 0 {
@@ -199,11 +198,10 @@ class NCManageDatabase: NSObject {
         return ""
     }
 
-    // getCameraUploadFolderNamePathActiveAccount
-    func getAccountsCameraUploadFolderPath(_ account: String, activeUrl : String) -> String {
+    func getAccountsCameraUploadFolderPath(_ activeUrl : String) -> String {
         
-        let cameraFolderName = self.getAccountsCameraUploadFolderName(account, activeUrl: nil)
-        let cameraFolderPath = self.getAccountsCameraUploadFolderName(account, activeUrl: activeUrl)
+        let cameraFolderName = self.getAccountsCameraUploadFolderName(nil)
+        let cameraFolderPath = self.getAccountsCameraUploadFolderName(activeUrl)
      
         let folderPhotos = CCUtility.stringAppendServerUrl(cameraFolderPath, addFileName: cameraFolderName)!
         
@@ -236,11 +234,11 @@ class NCManageDatabase: NSObject {
         return activeAccount
     }
 
-    func setAccountCameraStateFiled(_ account: String, state: Bool, field: String) {
+    func setAccountCameraStateFiled(field: String, state: Bool) {
         
         let realm = try! Realm()
         
-        let results = realm.objects(tableAccount.self).filter("account = %@", account)
+        let results = realm.objects(tableAccount.self).filter("active = true")
         if (results.count > 0) {
             try! realm.write {
                 
@@ -268,11 +266,11 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func setAccountsCameraUploadDateAssetType(_ account: String, assetMediaType: PHAssetMediaType, assetDate: NSDate) {
+    func setAccountsCameraUploadDateAssetType(assetMediaType: PHAssetMediaType, assetDate: NSDate) {
 
         let realm = try! Realm()
         
-        let results = realm.objects(tableAccount.self).filter("account = %@", account)
+        let results = realm.objects(tableAccount.self).filter("active = true")
         
         try! realm.write {
             if (assetMediaType == PHAssetMediaType.image && results.count > 0) {
@@ -284,16 +282,16 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func setAccountsCameraUploadFolderName(_ account: String, folderName: String?) {
+    func setAccountsCameraUploadFolderName(folderName: String?) {
         
         let realm = try! Realm()
         var folderName : String? = folderName
         
         if folderName == nil {
-            folderName = self.getAccountsCameraUploadFolderName(account, activeUrl: nil)
+            folderName = self.getAccountsCameraUploadFolderName(nil)
         }
         
-        let results = realm.objects(tableAccount.self).filter("account = %@", account)
+        let results = realm.objects(tableAccount.self).filter("active = true")
         if (results.count > 0) {
             try! realm.write {
                 
@@ -302,16 +300,16 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    func setAccountsCameraUploadFolderPath(_ account: String, pathName: String?, activeUrl: String) {
+    func setAccountsCameraUploadFolderPath(pathName: String?, activeUrl: String) {
         
         let realm = try! Realm()
         var pathName : String? = pathName
         
         if pathName == nil {
-            pathName = self.getAccountsCameraUploadFolderPath(account, activeUrl: activeUrl)
+            pathName = self.getAccountsCameraUploadFolderPath(activeUrl)
         }
         
-        let results = realm.objects(tableAccount.self).filter("account = %@", account)
+        let results = realm.objects(tableAccount.self).filter("active = true")
         if (results.count > 0) {
             try! realm.write {
                 

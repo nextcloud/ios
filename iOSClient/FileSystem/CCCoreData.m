@@ -294,7 +294,7 @@
     if (record) return [record.cameraUploadWWAnVideo boolValue];
     else return NO;
 }
-*/
+
 // ******** SET *********
 
 + (void)setCameraUpload:(BOOL)state activeAccount:(NSString *)activeAccount
@@ -395,7 +395,6 @@
 
 + (void)setCameraUploadDateAssetType:(PHAssetMediaType)assetMediaType assetDate:(NSDate *)assetDate activeAccount:(NSString *)activeAccount
 {
-    /*
     if (assetMediaType == PHAssetMediaTypeImage && [assetDate compare:[self getCameraUploadDatePhotoActiveAccount:activeAccount]] ==  NSOrderedDescending && assetDate) {
         [self setCameraUploadDatePhoto:assetDate];
     }
@@ -403,7 +402,6 @@
     if (assetMediaType == PHAssetMediaTypeVideo && [assetDate compare:[self getCameraUploadDateVideoActiveAccount:activeAccount]] ==  NSOrderedDescending && assetDate) {
         [self setCameraUploadDateVideo:assetDate];
     }
-    */ 
 }
 
 + (void)setCameraUploadWWanPhoto:(BOOL)wWan activeAccount:(NSString *)activeAccount
@@ -462,7 +460,7 @@
     }];
 }
 
-/*
+
 + (void)setCameraUploadSaveAlbum:(BOOL)saveAlbum activeAccount:(NSString *)activeAccount
 {
     [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
@@ -1800,8 +1798,8 @@
     if ([metadata.uuid length]) recordMetadata.uuid = metadata.uuid;
 
     // inseriamo il typeFile e icona di default.
-    NSString *cameraFolderName = [[NCManageDatabase sharedInstance] getAccountsCameraUploadFolderName:activeAccount activeUrl:nil];
-    NSString *cameraFolderPath = [[NCManageDatabase sharedInstance] getAccountsCameraUploadFolderPath:activeAccount activeUrl:activeUrl];
+    NSString *cameraFolderName = [[NCManageDatabase sharedInstance] getAccountsCameraUploadFolderName:nil];
+    NSString *cameraFolderPath = [[NCManageDatabase sharedInstance] getAccountsCameraUploadFolderPath:activeUrl];
     
     [CCUtility insertTypeFileIconName:metadata directory:[self getServerUrlFromDirectoryID:metadata.directoryID activeAccount:activeAccount] cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath];
     

@@ -532,7 +532,7 @@
         return;
     
     //NSString *serverUrl = [CCCoreData getCameraUploadFolderNamePathActiveAccount:app.activeAccount activeUrl:app.activeUrl];
-    NSString *serverUrl = [[NCManageDatabase sharedInstance] getAccountsCameraUploadFolderName:app.activeAccount activeUrl:app.activeUrl];
+    NSString *serverUrl = [[NCManageDatabase sharedInstance] getAccountsCameraUploadFolderName:app.activeUrl];
 
     if (_sectionDataSource) {
         
@@ -1141,7 +1141,7 @@
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
     
     //NSString *folderPhotos = [CCCoreData getCameraUploadFolderNamePathActiveAccount:app.activeAccount activeUrl:app.activeUrl];
-    NSString *folderPhotos = [[NCManageDatabase sharedInstance] getAccountsCameraUploadFolderName:app.activeAccount activeUrl:app.activeUrl];
+    NSString *folderPhotos = [[NCManageDatabase sharedInstance] getAccountsCameraUploadFolderName:app.activeUrl];
     //BOOL useSubFolder = [CCCoreData getCameraUploadCreateSubfolderActiveAccount:app.activeAccount];
     BOOL useSubFolder = tableAccount.cameraUploadCreateSubfolder;
     

@@ -783,7 +783,7 @@
         
         [CCCoreData setCameraUploadDatePhoto:[NSDate date]];
         [CCCoreData setCameraUploadDateVideo:[NSDate date]];
-
+        
     }
     
     /*
@@ -4308,7 +4308,7 @@
                                         
                                         // Settings new folder Automatatic upload
                                        // NSString *oldPath = [CCCoreData getCameraUploadFolderPathActiveAccount:app.activeAccount activeUrl:app.activeUrl];
-                                        NSString *oldPath = [[NCManageDatabase sharedInstance] getAccountsCameraUploadFolderPath:app.activeAccount activeUrl:app.activeUrl];
+                                        NSString *oldPath = [[NCManageDatabase sharedInstance] getAccountsCameraUploadFolderPath:app.activeUrl];
 
                                         
                                         [CCCoreData setCameraUploadFolderName:_metadata.fileName activeAccount:app.activeAccount];
@@ -4323,7 +4323,7 @@
                                         
                                         NSLog(@"[LOG] Update Folder Photo");
                                         //NSString *folderCameraUpload = [CCCoreData getCameraUploadFolderNamePathActiveAccount:app.activeAccount activeUrl:app.activeUrl];
-                                        NSString *folderCameraUpload = [[NCManageDatabase sharedInstance] getAccountsCameraUploadFolderName:app.activeAccount activeUrl:app.activeUrl];
+                                        NSString *folderCameraUpload = [[NCManageDatabase sharedInstance] getAccountsCameraUploadFolderName:app.activeUrl];
                                         if ([folderCameraUpload length] > 0)
                                             [[CCSynchronize sharedSynchronize] readFolderServerUrl:folderCameraUpload directoryID:[CCCoreData getDirectoryIDFromServerUrl:folderCameraUpload activeAccount:app.activeAccount] selector:selectorReadFolder];
                                         
