@@ -213,7 +213,7 @@
     if (record) return [record.cameraUpload boolValue];
     else return NO;
 }
-*/
+
 + (BOOL)getCameraUploadBackgroundActiveAccount:(NSString *)activeAccount
 {
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@)", activeAccount];
@@ -294,7 +294,7 @@
     if (record) return [record.cameraUploadWWAnVideo boolValue];
     else return NO;
 }
-
+*/
 // ******** SET *********
 
 + (void)setCameraUpload:(BOOL)state activeAccount:(NSString *)activeAccount
@@ -395,6 +395,7 @@
 
 + (void)setCameraUploadDateAssetType:(PHAssetMediaType)assetMediaType assetDate:(NSDate *)assetDate activeAccount:(NSString *)activeAccount
 {
+    /*
     if (assetMediaType == PHAssetMediaTypeImage && [assetDate compare:[self getCameraUploadDatePhotoActiveAccount:activeAccount]] ==  NSOrderedDescending && assetDate) {
         [self setCameraUploadDatePhoto:assetDate];
     }
@@ -402,6 +403,7 @@
     if (assetMediaType == PHAssetMediaTypeVideo && [assetDate compare:[self getCameraUploadDateVideoActiveAccount:activeAccount]] ==  NSOrderedDescending && assetDate) {
         [self setCameraUploadDateVideo:assetDate];
     }
+    */ 
 }
 
 + (void)setCameraUploadWWanPhoto:(BOOL)wWan activeAccount:(NSString *)activeAccount

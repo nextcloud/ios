@@ -59,6 +59,8 @@
     XLFormDescriptor *form ;
     XLFormSectionDescriptor *section;
     XLFormRowDescriptor *row;
+    
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
 
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
     
@@ -72,7 +74,6 @@
 
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"cameraupload" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_upload_camera_", nil)];
     
-    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
     if (tableAccount.cameraUpload) row.value = @1;
     //if ([CCCoreData getCameraUploadActiveAccount:app.activeAccount]) row.value = @1;
     else row.value = @0;
@@ -86,14 +87,16 @@
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"camerauploadphoto" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_upload_foto_camera_", nil)];
     row.hidden = [NSString stringWithFormat:@"$%@==0", @"cameraupload"];
-    if ([CCCoreData getCameraUploadPhotoActiveAccount:app.activeAccount]) row.value = @1;
+    //if ([CCCoreData getCameraUploadPhotoActiveAccount:app.activeAccount]) row.value = @1;
+    if (tableAccount.cameraUploadPhoto) row.value = @1;
     else row.value = @0;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
 
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"camerauploadwwanphoto" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_wifi_only_", nil)];
     row.hidden = [NSString stringWithFormat:@"$%@==0", @"cameraupload"];
-    if ([CCCoreData getCameraUploadWWanPhotoActiveAccount:app.activeAccount] == YES) row.value = @1;
+    //if ([CCCoreData getCameraUploadWWanPhotoActiveAccount:app.activeAccount] == YES) row.value = @1;
+    if (tableAccount.cameraUploadWWAnPhoto) row.value = @1;
     else row.value = @0;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
@@ -105,14 +108,16 @@
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"camerauploadvideo" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_upload_video_camera_", nil)];
     row.hidden = [NSString stringWithFormat:@"$%@==0", @"cameraupload"];
-    if ([CCCoreData getCameraUploadVideoActiveAccount:app.activeAccount]) row.value = @1;
+    //if ([CCCoreData getCameraUploadVideoActiveAccount:app.activeAccount]) row.value = @1;
+    if (tableAccount.cameraUploadVideo) row.value = @1;
     else row.value = @0;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"camerauploadwwanvideo" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_wifi_only_", nil)];
     row.hidden = [NSString stringWithFormat:@"$%@==0", @"cameraupload"];
-    if ([CCCoreData getCameraUploadWWanVideoActiveAccount:app.activeAccount] == YES) row.value = @1;
+    //if ([CCCoreData getCameraUploadWWanVideoActiveAccount:app.activeAccount] == YES) row.value = @1;
+    if (tableAccount.cameraUploadWWAnVideo) row.value = @1;
     else row.value = @0;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
@@ -124,7 +129,8 @@
 
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"camerauploadbackground" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_upload_camera_background_", nil)];
     row.hidden = [NSString stringWithFormat:@"$%@==0", @"cameraupload"];
-    if ([CCCoreData getCameraUploadBackgroundActiveAccount:app.activeAccount]) row.value = @1;
+    //if ([CCCoreData getCameraUploadBackgroundActiveAccount:app.activeAccount]) row.value = @1;
+    if (tableAccount.cameraUploadBackground) row.value = @1;
     else row.value = @0;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
@@ -137,7 +143,8 @@
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"camerauploadallphotos" rowType:XLFormRowDescriptorTypeBooleanSwitch title:title];
     row.hidden = [NSString stringWithFormat:@"$%@==0", @"cameraupload"];
     row.value = 0;
-    if ([CCCoreData getCameraUploadFullPhotosActiveAccount:app.activeAccount]) row.value = @1;
+    //if ([CCCoreData getCameraUploadFullPhotosActiveAccount:app.activeAccount]) row.value = @1;
+    if (tableAccount.cameraUploadFull) row.value = @1;
     else row.value = @0;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
@@ -149,7 +156,8 @@
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"camerauploadcreatesubfolder" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_upload_camera_create_subfolder_", nil)];
     row.hidden = [NSString stringWithFormat:@"$%@==0", @"cameraupload"];
-    if ([CCCoreData getCameraUploadCreateSubfolderActiveAccount:app.activeAccount]) row.value = @1;
+    //if ([CCCoreData getCameraUploadCreateSubfolderActiveAccount:app.activeAccount]) row.value = @1;
+    if (tableAccount.cameraUploadCreateSubfolder) row.value = @1;
     else row.value = @0;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
@@ -199,6 +207,8 @@
 {
     [super formRowDescriptorValueHasChanged:rowDescriptor oldValue:oldValue newValue:newValue];
     
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
+    
     if ([rowDescriptor.tag isEqualToString:@"cameraupload"]) {
         
         if ([[rowDescriptor.value valueData] boolValue] == YES) {
@@ -214,13 +224,16 @@
             [CCCoreData setCameraUploadFolderPath:nil activeUrl:app.activeUrl activeAccount:app.activeAccount];
             
             // verifichiamo che almeno uno dei servizi (foto video) siano attivi, in caso contrario attiviamo le foto
-            if ([CCCoreData getCameraUploadPhotoActiveAccount:app.activeAccount] == NO && [CCCoreData getCameraUploadVideoActiveAccount:app.activeAccount] == NO)
+            //if ([CCCoreData getCameraUploadPhotoActiveAccount:app.activeAccount] == NO && [CCCoreData getCameraUploadVideoActiveAccount:app.activeAccount] == NO)
+            if (tableAccount.cameraUploadPhoto == NO && tableAccount.cameraUploadVideo == NO)
                 [CCCoreData setCameraUploadPhoto:YES activeAccount:app.activeAccount];
             
             // Settings date
-            if([CCCoreData getCameraUploadPhotoActiveAccount:app.activeAccount])
+            //if([CCCoreData getCameraUploadPhotoActiveAccount:app.activeAccount])
+            if (tableAccount.cameraUploadPhoto)
                 [CCCoreData setCameraUploadDatePhoto:[NSDate date]];
-            if([CCCoreData getCameraUploadVideoActiveAccount:app.activeAccount])
+            //if([CCCoreData getCameraUploadVideoActiveAccount:app.activeAccount])
+            if (tableAccount.cameraUploadVideo)
                 [CCCoreData setCameraUploadDateVideo:[NSDate date]];
             
         } else {
@@ -361,25 +374,32 @@
     if (tableAccount.cameraUpload)
         [rowCameraupload setValue:@1]; else [rowCameraupload setValue:@0];
     
-    if ([CCCoreData getCameraUploadPhotoActiveAccount:app.activeAccount])
+    //if ([CCCoreData getCameraUploadPhotoActiveAccount:app.activeAccount])
+    if (tableAccount.cameraUploadPhoto)
         [rowCamerauploadphoto setValue:@1]; else [rowCamerauploadphoto setValue:@0];
     
-    if ([CCCoreData getCameraUploadWWanPhotoActiveAccount:app.activeAccount])
+    //if ([CCCoreData getCameraUploadWWanPhotoActiveAccount:app.activeAccount])
+    if (tableAccount.cameraUploadWWAnPhoto)
         [rowCamerauploadwwanphoto setValue:@1]; else [rowCamerauploadwwanphoto setValue:@0];
     
-    if ([CCCoreData getCameraUploadVideoActiveAccount:app.activeAccount])
+    //if ([CCCoreData getCameraUploadVideoActiveAccount:app.activeAccount])
+    if (tableAccount.cameraUploadVideo)
         [rowCamerauploadvideo setValue:@1]; else [rowCamerauploadvideo setValue:@0];
     
-    if ([CCCoreData getCameraUploadWWanVideoActiveAccount:app.activeAccount])
+    //if ([CCCoreData getCameraUploadWWanVideoActiveAccount:app.activeAccount])
+    if (tableAccount.cameraUploadWWAnVideo)
         [rowCamerauploadwwanvideo setValue:@1]; else [rowCamerauploadwwanvideo setValue:@0];
     
-    if ([CCCoreData getCameraUploadBackgroundActiveAccount:app.activeAccount])
+    //if ([CCCoreData getCameraUploadBackgroundActiveAccount:app.activeAccount])
+    if (tableAccount.cameraUploadBackground)
         [rowCamerauploadBackground setValue:@1]; else [rowCamerauploadBackground setValue:@0];
     
-    if ([CCCoreData getCameraUploadFullPhotosActiveAccount:app.activeAccount])
+    //if ([CCCoreData getCameraUploadFullPhotosActiveAccount:app.activeAccount])
+    if (tableAccount.cameraUploadFull)
         [rowCamerauploadAllPhotos setValue:@1]; else [rowCamerauploadAllPhotos setValue:@0];
     
-    if ([CCCoreData getCameraUploadCreateSubfolderActiveAccount:app.activeAccount])
+    //if ([CCCoreData getCameraUploadCreateSubfolderActiveAccount:app.activeAccount])
+    if (tableAccount.cameraUploadCreateSubfolder)
         [rowCamerauploadCreateSubfolder setValue:@1]; else [rowCamerauploadCreateSubfolder setValue:@0];
     
     // - HIDDEN ---------------------

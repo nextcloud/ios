@@ -771,17 +771,17 @@
 
 - (void)initStateCameraUpload
 {
-    NSArray *results = [[NCManageDatabase sharedInstance] getAccounts:app.activeAccount];
-    tableAccount *account = [results objectAtIndex:0];
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
 
     
    // if([CCCoreData getCameraUploadActiveAccount:app.activeAccount]) {
     
-    if (account.cameraUpload) {
+    if (tableAccount.cameraUpload) {
         
         [self setupCameraUpload];
         
-        if([CCCoreData getCameraUploadBackgroundActiveAccount:app.activeAccount])
+        //if([CCCoreData getCameraUploadBackgroundActiveAccount:app.activeAccount])
+        if (tableAccount.cameraUploadBackground)
             [self checkIfLocationIsEnabled];
         
     } else {
@@ -940,7 +940,10 @@
         }
     }
     
-    return [CCCoreData getCameraUploadBackgroundActiveAccount:app.activeAccount];
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
+    return tableAccount.cameraUploadBackground;
+    
+   // return [CCCoreData getCameraUploadBackgroundActiveAccount:app.activeAccount];
 }
 
 
@@ -982,7 +985,11 @@
             
         } else if ([CLLocationManager authorizationStatus] != kCLAuthorizationStatusNotDetermined){
             
-            if ([CCCoreData getCameraUploadBackgroundActiveAccount:app.activeAccount]) {
+            tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
+            
+            if (tableAccount.cameraUploadBackground) {
+            
+            //if ([CCCoreData getCameraUploadBackgroundActiveAccount:app.activeAccount]) {
                 
                 [CCCoreData setCameraUploadBackground:NO activeAccount:app.activeAccount];
                 [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
@@ -1068,6 +1075,7 @@
 {
     CCManageAsset *manageAsset = [[CCManageAsset alloc] init];
     NSMutableArray *newItemsToUpload;
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
     
     // Is loading new Asset ?
     if (app.automaticCheckAssetInProgress)
@@ -1080,8 +1088,12 @@
         
     } else {
         
-        NSDate *databaseDateVideo = [CCCoreData getCameraUploadDateVideoActiveAccount:app.activeAccount];
-        NSDate *databaseDatePhoto = [CCCoreData getCameraUploadDatePhotoActiveAccount:app.activeAccount];
+        //NSDate *databaseDateVideo = [CCCoreData getCameraUploadDateVideoActiveAccount:app.activeAccount];
+        //NSDate *databaseDatePhoto = [CCCoreData getCameraUploadDatePhotoActiveAccount:app.activeAccount];
+        
+        NSDate *databaseDatePhoto = tableAccount.cameraUploadDatePhoto;
+        NSDate *databaseDateVideo = tableAccount.cameraUploadDateVideo;
+        
         
         newItemsToUpload = [manageAsset getCameraRollNewItemsWithDatePhoto:databaseDatePhoto dateVideo:databaseDateVideo];
     }
@@ -1126,10 +1138,12 @@
 - (void)uploadAssetsToNetwork:(NSMutableArray *)newItemsToUpload assetsFull:(BOOL)assetsFull
 {
     NSMutableArray *newItemsPHAssetToUpload = [[NSMutableArray alloc] init];
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
     
     //NSString *folderPhotos = [CCCoreData getCameraUploadFolderNamePathActiveAccount:app.activeAccount activeUrl:app.activeUrl];
     NSString *folderPhotos = [[NCManageDatabase sharedInstance] getAccountsCameraUploadFolderName:app.activeAccount activeUrl:app.activeUrl];
-    BOOL useSubFolder = [CCCoreData getCameraUploadCreateSubfolderActiveAccount:app.activeAccount];
+    //BOOL useSubFolder = [CCCoreData getCameraUploadCreateSubfolderActiveAccount:app.activeAccount];
+    BOOL useSubFolder = tableAccount.cameraUploadCreateSubfolder;
     
     // Conversion from ALAsset -to-> PHAsset
     for (ALAsset *asset in newItemsToUpload) {
@@ -1166,11 +1180,18 @@
         
         // Select type of session
         
+        /*
         if (assetMediaType == PHAssetMediaTypeImage && [CCCoreData getCameraUploadWWanPhotoActiveAccount:app.activeAccount] == NO) session = k_upload_session;
         if (assetMediaType == PHAssetMediaTypeVideo && [CCCoreData getCameraUploadWWanVideoActiveAccount:app.activeAccount] == NO) session = k_upload_session;
         if (assetMediaType == PHAssetMediaTypeImage && [CCCoreData getCameraUploadWWanPhotoActiveAccount:app.activeAccount]) session = k_upload_session_wwan;
         if (assetMediaType == PHAssetMediaTypeVideo && [CCCoreData getCameraUploadWWanVideoActiveAccount:app.activeAccount]) session = k_upload_session_wwan;
-
+         */
+        
+        if (assetMediaType == PHAssetMediaTypeImage && tableAccount.cameraUploadWWAnPhoto == NO) session = k_upload_session;
+        if (assetMediaType == PHAssetMediaTypeVideo && tableAccount.cameraUploadWWAnVideo == NO) session = k_upload_session;
+        if (assetMediaType == PHAssetMediaTypeImage && tableAccount.cameraUploadWWAnPhoto) session = k_upload_session_wwan;
+        if (assetMediaType == PHAssetMediaTypeVideo && tableAccount.cameraUploadWWAnVideo) session = k_upload_session_wwan;
+        
         NSDateFormatter *formatter = [NSDateFormatter new];
         
         [formatter setDateFormat:@"yyyy"];

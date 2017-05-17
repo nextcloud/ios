@@ -60,15 +60,15 @@
 //+ (NSString *)getCameraUploadFolderNamePathActiveAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl;
 
 //+ (BOOL)getCameraUploadActiveAccount:(NSString *)activeAccount;
-+ (BOOL)getCameraUploadBackgroundActiveAccount:(NSString *)activeAccount;
-+ (BOOL)getCameraUploadCreateSubfolderActiveAccount:(NSString *)activeAccount;
-+ (BOOL)getCameraUploadFullPhotosActiveAccount:(NSString *)activeAccount;
-+ (BOOL)getCameraUploadPhotoActiveAccount:(NSString *)activeAccount;
-+ (BOOL)getCameraUploadVideoActiveAccount:(NSString *)activeAccount;
-+ (NSDate *)getCameraUploadDatePhotoActiveAccount:(NSString *)activeAccount;
-+ (NSDate *)getCameraUploadDateVideoActiveAccount:(NSString *)activeAccount;
-+ (BOOL)getCameraUploadWWanPhotoActiveAccount:(NSString *)activeAccount;
-+ (BOOL)getCameraUploadWWanVideoActiveAccount:(NSString *)activeAccount;
+//+ (BOOL)getCameraUploadBackgroundActiveAccount:(NSString *)activeAccount;
+//+ (BOOL)getCameraUploadCreateSubfolderActiveAccount:(NSString *)activeAccount;
+//+ (BOOL)getCameraUploadFullPhotosActiveAccount:(NSString *)activeAccount;
+//+ (BOOL)getCameraUploadPhotoActiveAccount:(NSString *)activeAccount;
+//+ (BOOL)getCameraUploadVideoActiveAccount:(NSString *)activeAccount;
+//+ (NSDate *)getCameraUploadDatePhotoActiveAccount:(NSString *)activeAccount;
+//+ (NSDate *)getCameraUploadDateVideoActiveAccount:(NSString *)activeAccount;
+//+ (BOOL)getCameraUploadWWanPhotoActiveAccount:(NSString *)activeAccount;
+//+ (BOOL)getCameraUploadWWanVideoActiveAccount:(NSString *)activeAccount;
 
 + (void)setCameraUpload:(BOOL)state activeAccount:(NSString *)activeAccount;
 + (void)setCameraUploadBackground:(BOOL)state activeAccount:(NSString *)activeAccount;

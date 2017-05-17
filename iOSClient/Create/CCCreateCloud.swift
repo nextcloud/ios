@@ -270,7 +270,10 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         row = XLFormRowDescriptor(tag: "useSubFolder", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_upload_camera_create_subfolder_", comment: ""))
         row.hidden = "$\("useFolderPhoto") == 0"
         
-        if CCCoreData.getCameraUploadCreateSubfolderActiveAccount(appDelegate.activeAccount) == true {
+        let tableAccount = NCManageDatabase.sharedInstance.getAccountActive()
+        
+        //if CCCoreData.getCameraUploadCreateSubfolderActiveAccount(appDelegate.activeAccount) == true {
+        if tableAccount?.cameraUploadCreateSubfolder == true {
             row.value = 1
         } else {
             row.value = 0

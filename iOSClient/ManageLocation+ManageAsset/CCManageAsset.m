@@ -87,7 +87,8 @@
     
     // Photo
     
-    if ([CCCoreData getCameraUploadPhotoActiveAccount:app.activeAccount]) {
+    //if ([CCCoreData getCameraUploadPhotoActiveAccount:app.activeAccount]) {
+    if (tableAccount.cameraUploadPhoto) {
         
         dispatch_semaphore_t semaphoreAsset = dispatch_semaphore_create(0);
 
@@ -118,7 +119,8 @@
     
     // Video
     
-    if ([CCCoreData getCameraUploadVideoActiveAccount:app.activeAccount]) {
+    //if ([CCCoreData getCameraUploadVideoActiveAccount:app.activeAccount]) {
+    if (tableAccount.cameraUploadVideo) {
         
         dispatch_semaphore_t semaphoreAsset = dispatch_semaphore_create(0);
         
