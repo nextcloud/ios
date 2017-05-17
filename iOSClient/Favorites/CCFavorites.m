@@ -160,7 +160,6 @@
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
     
     // evitiamo il rimando della eventuale photo e/o video
-    //if ([CCCoreData getCameraUploadActiveAccount:app.activeAccount]) {
     if (tableAccount.cameraUpload) {
         
         [[NCManageDatabase sharedInstance] setAccountsCameraUploadDateAssetTypeWithAssetMediaType:PHAssetMediaTypeImage assetDate:[NSDate date]];
