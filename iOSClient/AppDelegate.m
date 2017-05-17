@@ -1624,6 +1624,16 @@
         for (NSString *certificateLocation in listCertificateLocation)
             [[NCManageDatabase sharedInstance] addCertificates:certificateLocation];
     }
+    
+    if (([actualVersion compare:@"2.17.3" options:NSNumericSearch] == NSOrderedAscending)) {
+        
+        // Migrate Account Table From CoreData to Realm
+        
+        NSArray *listAccount = [CCCoreData getAllAccount];
+        for (TableAccount account in listAccount)
+            [[NCManageDatabase sharedInstance] addAccount:<#(NSString * _Nonnull)#> url:<#(NSString * _Nonnull)#> user:<#(NSString * _Nonnull)#> password:<#(NSString * _Nonnull)#>]
+
+    }
 }
 
 @end

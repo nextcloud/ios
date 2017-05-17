@@ -106,8 +106,30 @@ class NCManageDatabase: NSObject {
             addAccount.password = password
             addAccount.url = url
             addAccount.user = user
+            
+            realm.add(addAccount)
         }
     }
+    
+    func addTableAccountOldDB(_ table: TableAccount) {
+        
+        let realm = try! Realm()
+        
+        let results = realm.objects(tableAccount.self).filter("account = %@", table.account!)
+        if (results.count == 0) {
+        
+            try! realm.write {
+                
+                let addAccount = tableAccount()
+                
+                
+                
+                
+                realm.add(addAccount)
+            }
+        }
+    }
+
     
     func setAccountPassword(_ account: String, password: String) {
         

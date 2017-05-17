@@ -50,7 +50,7 @@
 //+ (void)deleteAccount:(NSString *)account;
 //+ (TableAccount *)setActiveAccount:(NSString *)account;
 
-//+ (NSArray *)getAllAccount;
++ (NSArray *)getAllAccount;
 //+ (TableAccount *)getTableAccountFromAccount:(NSString *)account;
 //+ (NSArray *)getAllTableAccount;
 //+ (TableAccount *)getActiveAccount;

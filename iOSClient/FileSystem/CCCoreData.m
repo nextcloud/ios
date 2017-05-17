@@ -31,6 +31,21 @@
 #pragma mark ===== Account =====
 #pragma --------------------------------------------------------------------------------------------
 
++ (NSArray *)getAllAccount
+{
+    NSMutableArray *accounts = [NSMutableArray new];
+    NSArray *records;
+    
+    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
+    
+    records = [TableAccount MR_findAllInContext:context];
+    
+    for (TableAccount *tableAccount in records)
+        [accounts addObject:tableAccount.account];
+    
+    return accounts;
+}
+
 /*
 + (void)addAccount:(NSString *)account url:(NSString *)url user:(NSString *)user password:(NSString *)password
 {
