@@ -185,7 +185,6 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    
     func setAccountPassword(_ account: String, password: String) {
         
         let realm = try! Realm()
@@ -224,21 +223,19 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    func getAccounts(_ account: String?) -> [tableAccount] {
+    func getAccounts() -> [String] {
         
         let realm = try! Realm()
         let results : Results<tableAccount>
-            
-        if account == nil {
-            
-            results = realm.objects(tableAccount.self).sorted(byKeyPath: "account", ascending: true)
-            
-        } else {
-            
-            results = realm.objects(tableAccount.self).filter("account = %@", account!).sorted(byKeyPath: "account", ascending: true)
-        }
+        var accounts = [String]()
         
-        return Array(results)
+        results = realm.objects(tableAccount.self).sorted(byKeyPath: "account", ascending: true)
+            
+        for result in results {
+            accounts.append(result.account)
+        }
+
+        return Array(accounts)
     }
     
     func getAccountCameraUploadFolderName() -> String {

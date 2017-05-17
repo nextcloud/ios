@@ -1474,7 +1474,6 @@
         if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image]) {
             
             // evitiamo il rimando photo
-            //[CCCoreData setCameraUploadDatePhoto:[NSDate date]];
             [[NCManageDatabase sharedInstance] setAccountsCameraUploadDateAssetTypeWithAssetMediaType:PHAssetMediaTypeImage assetDate:[NSDate date]];
 
             UIImage *image = [UIImage imageWithContentsOfFile:file];
@@ -1488,7 +1487,6 @@
         if ([metadata.typeFile isEqualToString: k_metadataTypeFile_video]) {
             
             // we avoid the cross-reference video
-            //[CCCoreData setCameraUploadDateVideo:[NSDate date]];
             [[NCManageDatabase sharedInstance] setAccountsCameraUploadDateAssetTypeWithAssetMediaType:PHAssetMediaTypeVideo assetDate:[NSDate date]];
             
             [[NSFileManager defaultManager] linkItemAtPath:file toPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileNamePrint] error:nil];
@@ -1798,7 +1796,6 @@
 - (void)readFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
     // verify active user
-    //TableAccount *record = [CCCoreData getActiveAccount];
     tableAccount *record = [[NCManageDatabase sharedInstance] getAccountActive];
     
     [_hud hideHud];
@@ -3281,9 +3278,6 @@
 
 - (void)menuLogo
 {
-    // Test crash
-    //[[Crashlytics sharedInstance] crash];
-    
     if (app.reSelectMenu.isOpen || app.reMainMenu.isOpen)
         return;
     
@@ -3298,18 +3292,18 @@
     }
     
     //NSArray *listTableAccount = [CCCoreData getAllTableAccount];
-    NSArray *listTableAccount = [[NCManageDatabase sharedInstance] getAccounts:nil];
+    NSArray *listAccount = [[NCManageDatabase sharedInstance] getAccounts];
     
     NSMutableArray *menuArray = [NSMutableArray new];
     
-    for (TableAccount *record in listTableAccount) {
+    for (NSString *account in listAccount) {
      
-        if ([record.account isEqualToString:app.activeAccount]) continue;
+        if ([account isEqualToString:app.activeAccount]) continue;
         
         CCMenuItem *item = [[CCMenuItem alloc] init];
         
-        item.title = [record.account stringByTruncatingToWidth:self.view.bounds.size.width - 100 withFont:[UIFont systemFontOfSize:12.0] atEnd:YES];
-        item.argument = record.account;
+        item.title = [account stringByTruncatingToWidth:self.view.bounds.size.width - 100 withFont:[UIFont systemFontOfSize:12.0] atEnd:YES];
+        item.argument = account;
         item.image = [UIImage imageNamed:@"menuLogoUser"];
         item.target = self;
         item.action = @selector(changeDefaultAccount:);
@@ -3794,8 +3788,7 @@
             NSData *dataMetadata = [dic objectForKey: k_metadataKeyedUnarchiver];
             CCMetadata *metadata = [NSKeyedUnarchiver unarchiveObjectWithData:dataMetadata];
                         
-            NSArray *accounts = [[NCManageDatabase sharedInstance] getAccounts:metadata.account];
-            tableAccount *account = [accounts objectAtIndex:0];
+            tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
             NSString *directoryUser = [CCUtility getDirectoryActiveUser:account.user activeUrl:account.url];
             
             if (directoryUser) {
@@ -3823,11 +3816,7 @@
             
             NSData *dataMetadata = [dic objectForKey: k_metadataKeyedUnarchiver];
             CCMetadata *metadata = [NSKeyedUnarchiver unarchiveObjectWithData:dataMetadata];
-            
-            //TableAccount *account = [CCCoreData getTableAccountFromAccount:metadata.account];
-            
-            NSArray *accounts = [[NCManageDatabase sharedInstance] getAccounts:metadata.account];
-            tableAccount *account = [accounts objectAtIndex:0];
+            tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
             
             NSString *directoryUser = [CCUtility getDirectoryActiveUser:account.user activeUrl:account.url];
             
@@ -3942,11 +3931,8 @@
         
         NSData *dataMetadata = [dic objectForKey: k_metadataKeyedUnarchiver];
         CCMetadata *metadata = [NSKeyedUnarchiver unarchiveObjectWithData:dataMetadata];
-            
-        //TableAccount *account = [CCCoreData getTableAccountFromAccount:metadata.account];
         
-        NSArray *accounts = [[NCManageDatabase sharedInstance] getAccounts:metadata.account];
-        tableAccount *account = [accounts objectAtIndex:0];
+        tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
         
         NSString *directoryUser = [CCUtility getDirectoryActiveUser:account.user activeUrl:account.url];
             

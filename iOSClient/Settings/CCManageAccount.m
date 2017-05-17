@@ -48,7 +48,7 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
     
     //NSArray *listAccount = [CCCoreData getAllAccount];
-    NSArray *listAccount = [[NCManageDatabase sharedInstance] getAccounts:nil];
+    NSArray *listAccount = [[NCManageDatabase sharedInstance] getAccounts];
 
     // Section : CLOUD ACCOUNT -------------------------------------------
     
@@ -293,7 +293,7 @@
     
     NSString *accountNow = pickerAccount.rowDescriptor.value;
     //NSArray *listAccount = [CCCoreData getAllAccount];
-    NSArray *listAccount = [[NCManageDatabase sharedInstance] getAccounts:nil];
+    NSArray *listAccount = [[NCManageDatabase sharedInstance] getAccounts];
     
     [actionSheet dismissWithClickedButtonIndex:buttonIndex animated:YES];
     
@@ -309,7 +309,7 @@
         [app settingActiveAccount:nil activeUrl:nil activeUser:nil activePassword:nil];
         
         //listAccount = [CCCoreData getAllAccount];
-        listAccount = [[NCManageDatabase sharedInstance] getAccounts:nil];
+        listAccount = [[NCManageDatabase sharedInstance] getAccounts];
         
         if ([listAccount count] > 0) [self ChangeDefaultAccount:listAccount[0]];
         else {
@@ -386,7 +386,7 @@
 - (void)UpdateForm
 {
     //NSArray *listAccount = [CCCoreData getAllAccount];
-    NSArray *listAccount = [[NCManageDatabase sharedInstance] getAccounts:nil];
+    NSArray *listAccount = [[NCManageDatabase sharedInstance] getAccounts];
     
     if (listAccount == nil) {
         [self addAccountFoced];
