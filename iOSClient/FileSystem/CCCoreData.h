@@ -59,7 +59,7 @@
 //+ (NSString *)getCameraUploadFolderPathActiveAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl;
 //+ (NSString *)getCameraUploadFolderNamePathActiveAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl;
 
-+ (BOOL)getCameraUploadActiveAccount:(NSString *)activeAccount;
+//+ (BOOL)getCameraUploadActiveAccount:(NSString *)activeAccount;
 + (BOOL)getCameraUploadBackgroundActiveAccount:(NSString *)activeAccount;
 + (BOOL)getCameraUploadCreateSubfolderActiveAccount:(NSString *)activeAccount;
 + (BOOL)getCameraUploadFullPhotosActiveAccount:(NSString *)activeAccount;

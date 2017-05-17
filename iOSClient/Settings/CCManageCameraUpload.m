@@ -71,7 +71,10 @@
     section.footerTitle = NSLocalizedString(@"_photo_folder_photocamera_", nil);
 
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"cameraupload" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_upload_camera_", nil)];
-    if ([CCCoreData getCameraUploadActiveAccount:app.activeAccount]) row.value = @1;
+    
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
+    if (tableAccount.cameraUpload) row.value = @1;
+    //if ([CCCoreData getCameraUploadActiveAccount:app.activeAccount]) row.value = @1;
     else row.value = @0;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
@@ -352,8 +355,10 @@
 
     
     // - STATUS ---------------------
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
     
-    if ([CCCoreData getCameraUploadActiveAccount:app.activeAccount])
+    //if ([CCCoreData getCameraUploadActiveAccount:app.activeAccount])
+    if (tableAccount.cameraUpload)
         [rowCameraupload setValue:@1]; else [rowCameraupload setValue:@0];
     
     if ([CCCoreData getCameraUploadPhotoActiveAccount:app.activeAccount])
@@ -402,30 +407,32 @@
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
     NSString *sectionName;
+    
     switch (section)
     {
         case 0:
             sectionName = NSLocalizedString(@"_uploading_from_camera_", nil);
             break;
         case 1:
-            if ([CCCoreData getCameraUploadActiveAccount:app.activeAccount]) sectionName = NSLocalizedString(@"_upload_automatic_photos_", nil);
+            if (tableAccount.cameraUpload) sectionName = NSLocalizedString(@"_upload_automatic_photos_", nil);
             else sectionName = @"";
             break;
         case 2:
-            if ([CCCoreData getCameraUploadActiveAccount:app.activeAccount]) sectionName = NSLocalizedString(@"_upload_automatic_videos_", nil);
+            if (tableAccount.cameraUpload) sectionName = NSLocalizedString(@"_upload_automatic_videos_", nil);
             else sectionName = @"";
             break;
         case 3:
-            if ([CCCoreData getCameraUploadActiveAccount:app.activeAccount]) sectionName = NSLocalizedString(@"_upload_camera_background_", nil);
+            if (tableAccount.cameraUpload) sectionName = NSLocalizedString(@"_upload_camera_background_", nil);
             else sectionName = @"";
             break;
         case 4:
-            if ([CCCoreData getCameraUploadActiveAccount:app.activeAccount]) sectionName = NSLocalizedString(@"_upload_camera_fullphotos_", nil);
+            if (tableAccount.cameraUpload) sectionName = NSLocalizedString(@"_upload_camera_fullphotos_", nil);
             else sectionName = @"";
             break;
         case 5:
-            if ([CCCoreData getCameraUploadActiveAccount:app.activeAccount]) sectionName = NSLocalizedString(@"_upload_camera_create_subfolder_", nil);
+            if (tableAccount.cameraUpload) sectionName = NSLocalizedString(@"_upload_camera_create_subfolder_", nil);
             else sectionName = @"";
             break;
     }
@@ -434,22 +441,24 @@
 
 - (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section
 {
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
     NSString *sectionName;
+    
     switch (section)
     {
         case 0:
             sectionName = [CCUtility localizableBrand:@"_photo_folder_photocamera_" table:nil];
             break;
         case 3:
-            if ([CCCoreData getCameraUploadActiveAccount:app.activeAccount]) sectionName = [CCUtility localizableBrand:@"_photo_folder_background_" table:nil];
+            if (tableAccount.cameraUpload) sectionName = [CCUtility localizableBrand:@"_photo_folder_background_" table:nil];
             else sectionName = @"";
             break;
         case 4:
-            if ([CCCoreData getCameraUploadActiveAccount:app.activeAccount]) sectionName =  [CCUtility localizableBrand:@"_upload_camera_fullphotos_footer_" table:nil];
+            if (tableAccount.cameraUpload) sectionName =  [CCUtility localizableBrand:@"_upload_camera_fullphotos_footer_" table:nil];
             else sectionName = @"";
             break;
         case 5:
-            if ([CCCoreData getCameraUploadActiveAccount:app.activeAccount]) sectionName =  [CCUtility localizableBrand:@"_upload_camera_create_subfolder_footer_" table:nil];
+            if (tableAccount.cameraUpload) sectionName =  [CCUtility localizableBrand:@"_upload_camera_create_subfolder_footer_" table:nil];
             else sectionName = @"";
             break;
     }

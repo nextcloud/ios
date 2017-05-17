@@ -269,7 +269,11 @@
     paragraph.alignment = NSTextAlignmentCenter;
     NSString *text;
     
-    if ([CCCoreData getCameraUploadActiveAccount:app.activeAccount])
+    NSArray *results = [[NCManageDatabase sharedInstance] getAccounts:app.activeAccount];
+    tableAccount *account = [results objectAtIndex:0];
+    
+    //if ([CCCoreData getCameraUploadActiveAccount:app.activeAccount])
+    if (account.cameraUpload)
         text = [NSString stringWithFormat:@"%@", @"\n\n\n\n"];
     else
         text = [NSString stringWithFormat:@"\n%@\n", NSLocalizedString(@"_tutorial_camera_upload_view_", nil)];
@@ -281,7 +285,12 @@
 
 - (UIImage *)buttonImageForEmptyDataSet:(UIScrollView *)scrollView forState:(UIControlState)state
 {
-    if ([CCCoreData getCameraUploadActiveAccount:app.activeAccount] == NO) {
+    NSArray *results = [[NCManageDatabase sharedInstance] getAccounts:app.activeAccount];
+    tableAccount *account = [results objectAtIndex:0];
+    
+    //if ([CCCoreData getCameraUploadActiveAccount:app.activeAccount] == NO) {
+        
+    if (!account.cameraUpload) {
     
         UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"button"] color:[NCBrandColor sharedInstance].brand];
         
@@ -762,7 +771,13 @@
 
 - (void)initStateCameraUpload
 {
-    if([CCCoreData getCameraUploadActiveAccount:app.activeAccount]) {
+    NSArray *results = [[NCManageDatabase sharedInstance] getAccounts:app.activeAccount];
+    tableAccount *account = [results objectAtIndex:0];
+
+    
+   // if([CCCoreData getCameraUploadActiveAccount:app.activeAccount]) {
+    
+    if (account.cameraUpload) {
         
         [self setupCameraUpload];
         
@@ -1005,7 +1020,13 @@
     [[CCNetworking sharedNetworking] automaticUploadInError];
     
     // solo in background
-    if([CCCoreData getCameraUploadActiveAccount:app.activeAccount] && [CCCoreData getCameraUploadBackgroundActiveAccount:app.activeAccount ] && [[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
+    
+    
+    //if([CCCoreData getCameraUploadActiveAccount:app.activeAccount] && [CCCoreData getCameraUploadBackgroundActiveAccount:app.activeAccount ] && [[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
+    
+    if (tableAccount.cameraUpload && tableAccount.cameraUploadBackground && [[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
+    
         
         if ([ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusAuthorized) {
             

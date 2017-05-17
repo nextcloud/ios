@@ -204,7 +204,7 @@
     NSString *folderPhotos = [CCUtility stringAppendServerUrl:cameraFolderPath addFileName:cameraFolderName];
     return folderPhotos;
 }
-*/
+
 + (BOOL)getCameraUploadActiveAccount:(NSString *)activeAccount
 {
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@)", activeAccount];
@@ -213,7 +213,7 @@
     if (record) return [record.cameraUpload boolValue];
     else return NO;
 }
-
+*/
 + (BOOL)getCameraUploadBackgroundActiveAccount:(NSString *)activeAccount
 {
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@)", activeAccount];

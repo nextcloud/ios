@@ -778,11 +778,21 @@
 - (void)documentInteractionControllerDidDismissOptionsMenu:(UIDocumentInteractionController *)controller
 {
     // evitiamo il rimando della eventuale photo e/o video
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
+    if (tableAccount.cameraUpload) {
+        
+        [CCCoreData setCameraUploadDatePhoto:[NSDate date]];
+        [CCCoreData setCameraUploadDateVideo:[NSDate date]];
+
+    }
+    
+    /*
     if ([CCCoreData getCameraUploadActiveAccount:app.activeAccount]) {
         
         [CCCoreData setCameraUploadDatePhoto:[NSDate date]];
         [CCCoreData setCameraUploadDateVideo:[NSDate date]];
     }
+    */
 }
 
 #pragma --------------------------------------------------------------------------------------------

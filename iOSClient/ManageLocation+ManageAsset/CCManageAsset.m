@@ -22,8 +22,8 @@
 //
 
 #import "CCManageAsset.h"
-
 #import "AppDelegate.h"
+#import "NCBridgeSwift.h"
 
 @implementation CCManageAsset
 
@@ -38,8 +38,10 @@
 {
     self.assetsNewToUpload = [[NSMutableArray alloc] init];
     ALAssetsLibrary *assetLibrary = [CCUtility defaultAssetsLibrary];
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
     
-    if ([CCCoreData getCameraUploadActiveAccount:app.activeAccount]) {
+    //if ([CCCoreData getCameraUploadActiveAccount:app.activeAccount]) {
+    if (tableAccount.cameraUpload) {
         
         dispatch_semaphore_t semaphoreGroup = dispatch_semaphore_create(0);
         
@@ -74,8 +76,12 @@
 
 - (NSMutableArray *)getArrayNewAssetsFromGroup:(ALAssetsGroup *)group datePhoto:(NSDate *)datePhoto dateVideo:(NSDate *)dateVideo
 {
-    if (![CCCoreData getCameraUploadActiveAccount:app.activeAccount])
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
+    if (!tableAccount.cameraUpload)
         return nil;
+
+   // if (![CCCoreData getCameraUploadActiveAccount:app.activeAccount])
+   //     return nil;
     
     NSMutableArray *tmpAssetsNew = [[NSMutableArray alloc] init];
     

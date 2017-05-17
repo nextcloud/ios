@@ -197,8 +197,13 @@
 
 - (void)documentInteractionControllerDidDismissOptionsMenu:(UIDocumentInteractionController *)controller
 {
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
+    
     // evitiamo il rimando della eventuale photo e/o video
-    if ([CCCoreData getCameraUploadActiveAccount:app.activeAccount]) {
+    //if ([CCCoreData getCameraUploadActiveAccount:app.activeAccount]) {
+        
+    if (tableAccount.cameraUpload) {
+        
         
         [CCCoreData setCameraUploadDatePhoto:[NSDate date]];
         [CCCoreData setCameraUploadDateVideo:[NSDate date]];
