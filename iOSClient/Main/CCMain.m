@@ -1686,9 +1686,7 @@
     BOOL useSubFolder = [[arguments objectAtIndex:3] boolValue];
     NSString *session = [arguments objectAtIndex:4];
     
-    //NSString *folderPhotos = [CCCoreData getCameraUploadFolderNamePathActiveAccount:app.activeAccount activeUrl:app.activeUrl];
     NSString *folderPhotos = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderPathAndName:app.activeUrl];
-
     NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:app.activeAccount];
     
     // Create the folder for Photos & if request the subfolders

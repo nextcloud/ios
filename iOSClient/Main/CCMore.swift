@@ -193,7 +193,6 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         }
         
         // Display Name user & Quota
-        //tableAccont = CCCoreData.getActiveAccount()
         tabAccount = NCManageDatabase.sharedInstance.getAccountActive()
         if (tabAccount != nil) {
             

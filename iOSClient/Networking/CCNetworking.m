@@ -883,8 +883,6 @@
     NSString *fileNameCrypto;
     
     // create Metadata
-    //NSString *cameraFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:_activeAccount];
-    //NSString *cameraFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:_activeAccount activeUrl:_activeUrl];
     NSString *cameraFolderName = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderName];
     NSString *cameraFolderPath = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderPath:_activeUrl];
     

@@ -272,7 +272,6 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         
         let tableAccount = NCManageDatabase.sharedInstance.getAccountActive()
         
-        //if CCCoreData.getCameraUploadCreateSubfolderActiveAccount(appDelegate.activeAccount) == true {
         if tableAccount?.cameraUploadCreateSubfolder == true {
             row.value = 1
         } else {
@@ -473,9 +472,7 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
             
             if (useFolderPhotoRow.value! as AnyObject).boolValue == true {
                 
-                self.serverUrl = NCManageDatabase.sharedInstance.getAccountCameraUploadFolderPathAndName(self.appDelegate.activeUrl)
-                
-                //self.serverUrl = CCCoreData.getCameraUploadFolderNamePathActiveAccount(self.appDelegate.activeAccount, activeUrl: self.appDelegate.activeUrl)
+                self.serverUrl = NCManageDatabase.sharedInstance.getAccountCameraUploadFolderPathAndName(self.appDelegate.activeUrl)                
                 useSubFolder = (useSubFolderRow.value! as AnyObject).boolValue
             }
             
