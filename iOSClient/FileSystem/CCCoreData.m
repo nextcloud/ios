@@ -41,7 +41,7 @@
     records = [TableAccount MR_findAllInContext:context];
     
     for (TableAccount *tableAccount in records)
-        [accounts addObject:tableAccount.account];
+        [accounts addObject:tableAccount];
     
     return accounts;
 }

@@ -136,23 +136,23 @@
 #endif
     
     // Verify upgrade
-    [self upgrade];
+    if ([self upgrade]) {
     
-    // Set account, if no exists clear all
-    //TableAccount *recordAccount = [CCCoreData getActiveAccount];
-    tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
+        // Set account, if no exists clear all
+        tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
     
-    if (recordAccount == nil) {
+        if (recordAccount == nil) {
         
-        // remove all the keys Chain
-        [CCUtility deleteAllChainStore];
+            // remove all the keys Chain
+            [CCUtility deleteAllChainStore];
     
-        // remove all the App group key
-        [[NSUserDefaults standardUserDefaults] removePersistentDomainForName:[[NSBundle mainBundle] bundleIdentifier]];
+            // remove all the App group key
+            [[NSUserDefaults standardUserDefaults] removePersistentDomainForName:[[NSBundle mainBundle] bundleIdentifier]];
 
-    } else {
+        } else {
         
-        [self settingActiveAccount:recordAccount.account activeUrl:recordAccount.url activeUser:recordAccount.user activePassword:recordAccount.password];
+            [self settingActiveAccount:recordAccount.account activeUrl:recordAccount.url activeUser:recordAccount.user activePassword:recordAccount.password];
+        }
     }
     
     // Operation Queue OC Networking
@@ -1587,7 +1587,7 @@
 #pragma mark ===== UPGRADE =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)upgrade
+- (BOOL)upgrade
 {
 #ifdef DEBUG
    
@@ -1625,7 +1625,7 @@
             [[NCManageDatabase sharedInstance] addCertificates:certificateLocation];
     }
     
-    if (([actualVersion compare:@"2.17.3" options:NSNumericSearch] == NSOrderedAscending)) {
+    if (([actualVersion compare:@"2.17.5" options:NSNumericSearch] == NSOrderedAscending)) {
         
         // Migrate Account Table From CoreData to Realm
         
@@ -1634,6 +1634,8 @@
             [[NCManageDatabase sharedInstance] addTableAccountOldDB:account];
 
     }
+    
+    return YES;
 }
 
 @end

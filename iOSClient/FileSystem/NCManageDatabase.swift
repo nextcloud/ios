@@ -33,11 +33,25 @@ class NCManageDatabase: NSObject {
     override init() {
         
         let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.sharedInstance.capabilitiesGroups)
-        var config = Realm.Configuration()
+        let config = Realm.Configuration(
         
-        config.fileURL = dirGroup?.appendingPathComponent("\(appDatabaseNextcloud)/\(k_databaseDefault)")
+            fileURL: dirGroup?.appendingPathComponent("\(appDatabaseNextcloud)/\(k_databaseDefault)"),
+            schemaVersion: 1,
+            
+            migrationBlock: { migration, oldSchemaVersion in
+                // We haven’t migrated anything yet, so oldSchemaVersion == 0
+                if (oldSchemaVersion < 1) {
+                    // Nothing to do!
+                    // Realm will automatically detect new properties and removed properties
+                    // And will update the schema on disk automatically
+                }
+        })
+        
+        
+        //config.fileURL = dirGroup?.appendingPathComponent("\(appDatabaseNextcloud)/\(k_databaseDefault)")
         
         Realm.Configuration.defaultConfiguration = config
+        _ = try! Realm()
     }
     
     //MARK: -
@@ -126,7 +140,6 @@ class NCManageDatabase: NSObject {
                 if table.active == 1 {
                     addAccount.active = true
                 }
-                addAccount.address = table.address!
                 if table.cameraUpload == 1 {
                     addAccount.cameraUpload = true
                 }
@@ -142,8 +155,12 @@ class NCManageDatabase: NSObject {
                 if table.cameraUploadDateVideo != nil {
                     addAccount.cameraUploadDateVideo = table.cameraUploadDateVideo! as NSDate
                 }
-                addAccount.cameraUploadFolderName = table.cameraUploadFolderName!
-                addAccount.cameraUploadFolderPath = table.cameraUploadFolderPath!
+                if table.cameraUploadFolderName != nil {
+                    addAccount.cameraUploadFolderName = table.cameraUploadFolderName!
+                }
+                if table.cameraUploadFolderPath != nil {
+                    addAccount.cameraUploadFolderPath = table.cameraUploadFolderPath!
+                }
                 if table.cameraUploadFull == 1 {
                     addAccount.cameraUploadFull = true
                 }
