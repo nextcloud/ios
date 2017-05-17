@@ -292,7 +292,6 @@
     XLFormPickerCell *pickerAccount = (XLFormPickerCell *)[[self.form formRowWithTag:@"pickerAccount"] cellForFormController:self];
     
     NSString *accountNow = pickerAccount.rowDescriptor.value;
-    //NSArray *listAccount = [CCCoreData getAllAccount];
     NSArray *listAccount = [[NCManageDatabase sharedInstance] getAccounts];
     
     [actionSheet dismissWithClickedButtonIndex:buttonIndex animated:YES];
@@ -308,7 +307,6 @@
         // Clear active user
         [app settingActiveAccount:nil activeUrl:nil activeUser:nil activePassword:nil];
         
-        //listAccount = [CCCoreData getAllAccount];
         listAccount = [[NCManageDatabase sharedInstance] getAccounts];
         
         if ([listAccount count] > 0) [self ChangeDefaultAccount:listAccount[0]];
@@ -321,18 +319,17 @@
 
 - (void)deleteAccount:(NSString *)account
 {
-    [CCCoreData flushTableAccount:account];
-    
+    [[NCManageDatabase sharedInstance] clearTable:[tableAccount class] account:account];
     [[NCManageDatabase sharedInstance] clearTable:[tableActivity class] account:account];
-    [[NCManageDatabase sharedInstance] clearTable:[tableAutomaticUpload class] account:app.activeAccount];
-    [[NCManageDatabase sharedInstance] clearTable:[tableCapabilities class] account:app.activeAccount];
-    [[NCManageDatabase sharedInstance] clearTable:[tableExternalSites class] account:app.activeAccount];
+    [[NCManageDatabase sharedInstance] clearTable:[tableAutomaticUpload class] account:account];
+    [[NCManageDatabase sharedInstance] clearTable:[tableCapabilities class] account:account];
+    [[NCManageDatabase sharedInstance] clearTable:[tableExternalSites class] account:account];
 
     [CCCoreData flushTableDirectoryAccount:account];
     [CCCoreData flushTableLocalFileAccount:account];
     [CCCoreData flushTableMetadataAccount:account];
     
-    [[NCManageDatabase sharedInstance] clearTable:[tableShare class] account:app.activeAccount];
+    [[NCManageDatabase sharedInstance] clearTable:[tableShare class] account:account];
 }
 
 - (void)answerDelAccount:(XLFormRowDescriptor *)sender
@@ -368,7 +365,6 @@
     // removed  this -> ?????
     
     // change account
-    //TableAccount *tableAccount = [CCCoreData setActiveAccount:account];
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] setAccountActive:account];
     if (tableAccount)
         [app settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activePassword:tableAccount.password];
@@ -385,7 +381,6 @@
 
 - (void)UpdateForm
 {
-    //NSArray *listAccount = [CCCoreData getAllAccount];
     NSArray *listAccount = [[NCManageDatabase sharedInstance] getAccounts];
     
     if (listAccount == nil) {
@@ -422,7 +417,6 @@
 
     // --
     
-    //_tableAccount = [CCCoreData getActiveAccount];
     _tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
     
     XLFormRowDescriptor *rowUserFullName = [self.form formRowWithTag:@"userfullname"];

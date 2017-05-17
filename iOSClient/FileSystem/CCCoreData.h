@@ -195,7 +195,7 @@
 + (void)moveCoreDataToGroup;
 + (void)moveAllUserToGroup;
 
-+ (void)flushTableAccount:(NSString *)account;
+//+ (void)flushTableAccount:(NSString *)account;
 + (void)flushTableDirectoryAccount:(NSString *)account;
 + (void)flushTableLocalFileAccount:(NSString *)account;
 + (void)flushTableMetadataAccount:(NSString *)account;

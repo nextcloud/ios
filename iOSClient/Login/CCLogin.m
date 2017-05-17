@@ -285,15 +285,12 @@
         } else {
 
             [[NCManageDatabase sharedInstance] deleteAccount:account];
-            //[CCCoreData deleteAccount:account];
         
-            // Add default account
-            //[CCCoreData addAccount:account url:self.baseUrl.text user:self.user.text password:self.password.text];
-            
+            // Add account
             [[NCManageDatabase sharedInstance] addAccount:account url:self.baseUrl.text user:self.user.text password:self.password.text];
         }
         
-        //TableAccount *tableAccount = [CCCoreData setActiveAccount:account];
+        // Set this account as default
         tableAccount *tableAccount = [[NCManageDatabase sharedInstance] setAccountActive:account];
         
         // verifica
