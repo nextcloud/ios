@@ -333,8 +333,11 @@
         
         NSString *directoryID = [CCCoreData addDirectory:_metadataNet.serverUrl permissions:permissions activeAccount:_metadataNet.account];
         
-        NSString *cameraFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:_metadataNet.account];
-        NSString *cameraFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:_metadataNet.account activeUrl:_activeUrl];
+        NSString *cameraFolderName = [[NCManageDatabase sharedInstance] getAccountsCameraUploadFolderName:_metadataNet.account activeUrl:nil];
+        NSString *cameraFolderPath = [[NCManageDatabase sharedInstance] getAccountsCameraUploadFolderPath:_metadataNet.account activeUrl:_activeUrl];
+        
+        //NSString *cameraFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:_metadataNet.account];
+        //NSString *cameraFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:_metadataNet.account activeUrl:_activeUrl];
         NSString *directoryUser = [CCUtility getDirectoryActiveUser:_activeUser activeUrl:_activeUrl];
         
         // Update metadataNet.directoryID
@@ -438,8 +441,11 @@
         
         NSMutableArray *metadatas = [NSMutableArray new];
         
-        NSString *cameraFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:_metadataNet.account];
-        NSString *cameraFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:_metadataNet.account activeUrl:_activeUrl];
+        NSString *cameraFolderName = [[NCManageDatabase sharedInstance] getAccountsCameraUploadFolderName:_metadataNet.account activeUrl:nil];
+        NSString *cameraFolderPath = [[NCManageDatabase sharedInstance] getAccountsCameraUploadFolderPath:_metadataNet.account activeUrl:_activeUrl];
+
+        //NSString *cameraFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:_metadataNet.account];
+        //NSString *cameraFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:_metadataNet.account activeUrl:_activeUrl];
         NSString *directoryUser = [CCUtility getDirectoryActiveUser:_activeUser activeUrl:_activeUrl];
 
         for(OCFileDto *itemDto in items) {
@@ -570,8 +576,11 @@
         
         NSMutableArray *metadatas = [NSMutableArray new];
         
-        NSString *cameraFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:_metadataNet.account];
-        NSString *cameraFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:_metadataNet.account activeUrl:_activeUrl];
+        //NSString *cameraFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:_metadataNet.account];
+        //NSString *cameraFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:_metadataNet.account activeUrl:_activeUrl];
+        NSString *cameraFolderName = [[NCManageDatabase sharedInstance] getAccountsCameraUploadFolderName:_metadataNet.account activeUrl:nil];
+        NSString *cameraFolderPath = [[NCManageDatabase sharedInstance] getAccountsCameraUploadFolderPath:_metadataNet.account activeUrl:_activeUrl];
+
         NSString *directoryUser = [CCUtility getDirectoryActiveUser:_activeUser activeUrl:_activeUrl];
         
         // Order by fileNamePath
@@ -662,6 +671,8 @@
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     
     NSString *nameFolderURL = [NSString stringWithFormat:@"%@/%@", _metadataNet.serverUrl, _metadataNet.fileName];
+    NSString *cameraFolderName = [[NCManageDatabase sharedInstance] getAccountsCameraUploadFolderName:_metadataNet.account activeUrl:nil];
+    NSString *cameraFolderPath = [[NCManageDatabase sharedInstance] getAccountsCameraUploadFolderPath:_metadataNet.account activeUrl:_activeUrl];
     
     [communication setCredentialsWithUser:_activeUser andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent]];
@@ -677,7 +688,7 @@
         
         NSString *message;
         
-        if (([_metadataNet.fileName isEqualToString:[CCCoreData getCameraUploadFolderNameActiveAccount:_metadataNet.account]] == YES && [_metadataNet.serverUrl isEqualToString:[CCCoreData getCameraUploadFolderPathActiveAccount:_metadataNet.account activeUrl:_activeUrl]] == YES))
+        if (([_metadataNet.fileName isEqualToString:cameraFolderName] == YES && [_metadataNet.serverUrl isEqualToString:cameraFolderPath] == YES))
             message = nil;
         else
             message = [CCError manageErrorOC:response.statusCode error:error];
@@ -699,7 +710,7 @@
         
          NSString *message;
         
-        if (([_metadataNet.fileName isEqualToString:[CCCoreData getCameraUploadFolderNameActiveAccount:_metadataNet.account]] == YES && [_metadataNet.serverUrl isEqualToString:[CCCoreData getCameraUploadFolderPathActiveAccount:_metadataNet.account activeUrl:_activeUrl]] == YES))
+        if (([_metadataNet.fileName isEqualToString:cameraFolderName] == YES && [_metadataNet.serverUrl isEqualToString:cameraFolderPath] == YES))
             message = nil;
         else {
             
@@ -906,8 +917,11 @@
             itemDto.fileName = _metadataNet.fileName;
             
             NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:_metadataNet.serverUrl activeAccount:_metadataNet.account];
-            NSString *cameraFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:_metadataNet.account];
-            NSString *cameraFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:_metadataNet.account activeUrl:_activeUrl];
+            NSString *cameraFolderName = [[NCManageDatabase sharedInstance] getAccountsCameraUploadFolderName:_metadataNet.account activeUrl:nil];
+            NSString *cameraFolderPath = [[NCManageDatabase sharedInstance] getAccountsCameraUploadFolderPath:_metadataNet.account activeUrl:_activeUrl];
+
+            //NSString *cameraFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:_metadataNet.account];
+            //NSString *cameraFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:_metadataNet.account activeUrl:_activeUrl];
             NSString *directoryUser = [CCUtility getDirectoryActiveUser:_activeUser activeUrl:_activeUrl];
         
             metadata = [CCUtility trasformedOCFileToCCMetadata:itemDto fileNamePrint:_metadataNet.fileNamePrint serverUrl:_metadataNet.serverUrl directoryID:directoryID cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath activeAccount:_metadataNet.account directoryUser:directoryUser];

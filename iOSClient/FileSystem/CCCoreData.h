@@ -55,9 +55,9 @@
 //+ (NSArray *)getAllTableAccount;
 //+ (TableAccount *)getActiveAccount;
 
-+ (NSString *)getCameraUploadFolderNameActiveAccount:(NSString *)activeAccount;
-+ (NSString *)getCameraUploadFolderPathActiveAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl;
-+ (NSString *)getCameraUploadFolderNamePathActiveAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl;
+//+ (NSString *)getCameraUploadFolderNameActiveAccount:(NSString *)activeAccount;
+//+ (NSString *)getCameraUploadFolderPathActiveAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl;
+//+ (NSString *)getCameraUploadFolderNamePathActiveAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl;
 
 + (BOOL)getCameraUploadActiveAccount:(NSString *)activeAccount;
 + (BOOL)getCameraUploadBackgroundActiveAccount:(NSString *)activeAccount;

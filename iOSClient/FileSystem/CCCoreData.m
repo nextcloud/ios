@@ -167,7 +167,7 @@
     if (record) return record;
     else return nil;
 }
-*/
+
 
 + (NSString *)getCameraUploadFolderNameActiveAccount:(NSString *)activeAccount
 {
@@ -195,6 +195,7 @@
     } else return @"";
 }
 
+
 + (NSString *)getCameraUploadFolderNamePathActiveAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl
 {
     NSString *cameraFolderName = [self getCameraUploadFolderNameActiveAccount:activeAccount];
@@ -203,7 +204,7 @@
     NSString *folderPhotos = [CCUtility stringAppendServerUrl:cameraFolderPath addFileName:cameraFolderName];
     return folderPhotos;
 }
-
+*/
 + (BOOL)getCameraUploadActiveAccount:(NSString *)activeAccount
 {
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@)", activeAccount];
@@ -430,7 +431,8 @@
 + (void)setCameraUploadFolderName:(NSString *)fileName activeAccount:(NSString *)activeAccount
 {
     if (fileName == nil)
-        fileName = [self getCameraUploadFolderNameActiveAccount:activeAccount];
+        fileName = [[NCManageDatabase sharedInstance] getAccountsCameraUploadFolderName:activeAccount activeUrl:nil];
+        //fileName = [self getCameraUploadFolderNameActiveAccount:activeAccount];
     
     [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
 
@@ -444,8 +446,9 @@
 
 + (void)setCameraUploadFolderPath:(NSString *)pathName activeUrl:(NSString *)activeUrl activeAccount:(NSString *)activeAccount
 {
-    if (pathName == nil)
-        pathName = [self getCameraUploadFolderPathActiveAccount:activeAccount activeUrl:activeUrl];
+    //if (pathName == nil)
+        //pathName = [[NCManageDatabase sharedInstance] getAccountsCameraUploadFolderPath:_metadataNet.account activeUrl:_activeUrl];
+        //pathName = [self getCameraUploadFolderPathActiveAccount:activeAccount activeUrl:activeUrl];
     
     [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
         
@@ -1795,7 +1798,10 @@
     if ([metadata.uuid length]) recordMetadata.uuid = metadata.uuid;
 
     // inseriamo il typeFile e icona di default.
-    [CCUtility insertTypeFileIconName:metadata directory:[self getServerUrlFromDirectoryID:metadata.directoryID activeAccount:activeAccount] cameraFolderName:[self getCameraUploadFolderNameActiveAccount:activeAccount] cameraFolderPath:[self getCameraUploadFolderPathActiveAccount:activeAccount activeUrl:activeUrl]];
+    NSString *cameraFolderName = [[NCManageDatabase sharedInstance] getAccountsCameraUploadFolderName:activeAccount activeUrl:nil];
+    NSString *cameraFolderPath = [[NCManageDatabase sharedInstance] getAccountsCameraUploadFolderPath:activeAccount activeUrl:activeUrl];
+    
+    [CCUtility insertTypeFileIconName:metadata directory:[self getServerUrlFromDirectoryID:metadata.directoryID activeAccount:activeAccount] cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath];
     
     recordMetadata.typeFile = metadata.typeFile;
     recordMetadata.iconName = metadata.iconName;
