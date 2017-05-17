@@ -1829,7 +1829,6 @@
 - (void)readFolderSuccess:(CCMetadataNet *)metadataNet permissions:(NSString *)permissions etag:(NSString *)etag metadatas:(NSArray *)metadatas
 {
     // verify active user
-    //TableAccount *record = [CCCoreData getActiveAccount];
     tableAccount *record = [[NCManageDatabase sharedInstance] getAccountActive];
 
     if (![record.account isEqualToString:metadataNet.account])
@@ -2916,7 +2915,6 @@
     AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     
     // change account ?
-    //TableAccount *record = [CCCoreData getActiveAccount];
     tableAccount *record = [[NCManageDatabase sharedInstance] getAccountActive];
     if([record.account isEqualToString:metadataNet.account] == NO)
         return;

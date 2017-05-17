@@ -1016,7 +1016,6 @@
         
         [[self getShareID] removeAllObjects];
         
-        //TableAccount *recordAccount = [CCCoreData getActiveAccount];
         tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
         
         if ([recordAccount.account isEqualToString:_metadataNet.account]) {
