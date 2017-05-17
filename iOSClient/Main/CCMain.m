@@ -784,14 +784,6 @@
         [[NCManageDatabase sharedInstance] setAccountsCameraUploadDateAssetTypeWithAssetMediaType:PHAssetMediaTypeImage assetDate:[NSDate date]];
         [[NCManageDatabase sharedInstance] setAccountsCameraUploadDateAssetTypeWithAssetMediaType:PHAssetMediaTypeVideo assetDate:[NSDate date]];
     }
-    
-    /*
-    if ([CCCoreData getCameraUploadActiveAccount:app.activeAccount]) {
-        
-        [CCCoreData setCameraUploadDatePhoto:[NSDate date]];
-        [CCCoreData setCameraUploadDateVideo:[NSDate date]];
-    }
-    */
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -3801,9 +3793,7 @@
             
             NSData *dataMetadata = [dic objectForKey: k_metadataKeyedUnarchiver];
             CCMetadata *metadata = [NSKeyedUnarchiver unarchiveObjectWithData:dataMetadata];
-            
-            //TableAccount *account = [CCCoreData getTableAccountFromAccount:metadata.account];
-            
+                        
             NSArray *accounts = [[NCManageDatabase sharedInstance] getAccounts:metadata.account];
             tableAccount *account = [accounts objectAtIndex:0];
             NSString *directoryUser = [CCUtility getDirectoryActiveUser:account.user activeUrl:account.url];
