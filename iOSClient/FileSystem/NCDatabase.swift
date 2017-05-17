@@ -31,8 +31,8 @@ class tableAccount: Object {
     dynamic var cameraUpload : Bool = false
     dynamic var cameraUploadBackground : Bool = false
     dynamic var cameraUploadCreateSubfolder : Bool = false
-    dynamic var cameraUploadDatePhoto = NSDate()
-    dynamic var cameraUploadDateVideo = NSDate()
+    dynamic var cameraUploadDatePhoto: NSDate? = nil
+    dynamic var cameraUploadDateVideo: NSDate? = nil
     dynamic var cameraUploadFolderName = ""
     dynamic var cameraUploadFolderPath = ""
     dynamic var cameraUploadFull : Bool = false
