@@ -47,7 +47,6 @@
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
     
-    //NSArray *listAccount = [CCCoreData getAllAccount];
     NSArray *listAccount = [[NCManageDatabase sharedInstance] getAccounts];
 
     // Section : CLOUD ACCOUNT -------------------------------------------
