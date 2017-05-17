@@ -2440,7 +2440,6 @@
     fileNameFolder = [CCUtility removeForbiddenCharactersServer:fileNameFolder];
     if (![fileNameFolder length]) return;
     
-    //if (folderCameraUpload) metadataNet.serverUrl = [CCCoreData getCameraUploadFolderPathActiveAccount:app.activeAccount activeUrl:app.activeUrl];
     if (folderCameraUpload) metadataNet.serverUrl = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderPath:app.activeUrl];
     else  metadataNet.serverUrl = _serverUrl;
     
@@ -2499,8 +2498,6 @@
     NSString *cameraFolderName = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderName];
 
     [self createFolder:cameraFolderName folderCameraUpload:YES];
-
-    //[self createFolder:[CCCoreData getCameraUploadFolderNameActiveAccount:app.activeAccount] folderCameraUpload:YES];
 }
 
 #pragma --------------------------------------------------------------------------------------------

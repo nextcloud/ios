@@ -772,7 +772,6 @@
         
         [self setupCameraUpload];
         
-        //if([CCCoreData getCameraUploadBackgroundActiveAccount:app.activeAccount])
         if (tableAccount.cameraUploadBackground)
             [self checkIfLocationIsEnabled];
         
@@ -895,7 +894,6 @@
             
             if ([ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusAuthorized) {
                 
-                //[CCCoreData setCameraUploadBackground:YES activeAccount:app.activeAccount];ù
                 [[NCManageDatabase sharedInstance] setAccountCameraStateFiledWithField:@"cameraUploadBackground" state:YES];
                 [[CCManageLocation sharedInstance] startSignificantChangeUpdates];
                 
@@ -940,9 +938,7 @@
     }
     
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
-    return tableAccount.cameraUploadBackground;
-    
-   // return [CCCoreData getCameraUploadBackgroundActiveAccount:app.activeAccount];
+    return tableAccount.cameraUploadBackground;    
 }
 
 
@@ -968,7 +964,6 @@
                 
                 if ([CCManageLocation sharedInstance].firstChangeAuthorizationDone) {
                     
-                    //[CCCoreData setCameraUploadBackground:NO activeAccount:app.activeAccount];
                     [[NCManageDatabase sharedInstance] setAccountCameraStateFiledWithField:@"cameraUploadBackground" state:NO];
                     [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
                 }
@@ -1092,12 +1087,8 @@
         
     } else {
         
-        //NSDate *databaseDateVideo = [CCCoreData getCameraUploadDateVideoActiveAccount:app.activeAccount];
-        //NSDate *databaseDatePhoto = [CCCoreData getCameraUploadDatePhotoActiveAccount:app.activeAccount];
-        
         NSDate *databaseDatePhoto = tableAccount.cameraUploadDatePhoto;
         NSDate *databaseDateVideo = tableAccount.cameraUploadDateVideo;
-        
         
         newItemsToUpload = [manageAsset getCameraRollNewItemsWithDatePhoto:databaseDatePhoto dateVideo:databaseDateVideo];
     }
