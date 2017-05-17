@@ -122,8 +122,46 @@ class NCManageDatabase: NSObject {
                 
                 let addAccount = tableAccount()
                 
-                
-                
+                addAccount.account = table.account!
+                if table.active == 1 {
+                    addAccount.active = true
+                }
+                addAccount.address = table.address!
+                if table.cameraUpload == 1 {
+                    addAccount.cameraUpload = true
+                }
+                if table.cameraUploadBackground == 1 {
+                    addAccount.cameraUploadBackground = true
+                }
+                if table.cameraUploadCreateSubfolder == 1 {
+                    addAccount.cameraUploadCreateSubfolder = true
+                }
+                if table.cameraUploadDatePhoto != nil {
+                    addAccount.cameraUploadDatePhoto = table.cameraUploadDatePhoto! as NSDate
+                }
+                if table.cameraUploadDateVideo != nil {
+                    addAccount.cameraUploadDateVideo = table.cameraUploadDateVideo! as NSDate
+                }
+                addAccount.cameraUploadFolderName = table.cameraUploadFolderName!
+                addAccount.cameraUploadFolderPath = table.cameraUploadFolderPath!
+                if table.cameraUploadFull == 1 {
+                    addAccount.cameraUploadFull = true
+                }
+                if table.cameraUploadPhoto == 1 {
+                    addAccount.cameraUploadPhoto = true
+                }
+                if table.cameraUploadVideo == 1 {
+                    addAccount.cameraUploadVideo = true
+                }
+                if table.cameraUploadWWAnPhoto == 1 {
+                    addAccount.cameraUploadWWAnPhoto = true
+                }
+                if table.cameraUploadWWAnVideo == 1 {
+                    addAccount.cameraUploadWWAnVideo = true
+                }
+                addAccount.password = table.password!
+                addAccount.url = table.url!
+                addAccount.user = table.user!
                 
                 realm.add(addAccount)
             }

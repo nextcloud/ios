@@ -1630,8 +1630,8 @@
         // Migrate Account Table From CoreData to Realm
         
         NSArray *listAccount = [CCCoreData getAllAccount];
-        for (TableAccount account in listAccount)
-            [[NCManageDatabase sharedInstance] addAccount:<#(NSString * _Nonnull)#> url:<#(NSString * _Nonnull)#> user:<#(NSString * _Nonnull)#> password:<#(NSString * _Nonnull)#>]
+        for (TableAccount *account in listAccount)
+            [[NCManageDatabase sharedInstance] addTableAccountOldDB:account];
 
     }
 }
