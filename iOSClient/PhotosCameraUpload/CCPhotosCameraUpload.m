@@ -1135,9 +1135,7 @@
     NSMutableArray *newItemsPHAssetToUpload = [[NSMutableArray alloc] init];
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
     
-    //NSString *folderPhotos = [CCCoreData getCameraUploadFolderNamePathActiveAccount:app.activeAccount activeUrl:app.activeUrl];
     NSString *folderPhotos = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderPathAndName:app.activeUrl];
-    //BOOL useSubFolder = [CCCoreData getCameraUploadCreateSubfolderActiveAccount:app.activeAccount];
     BOOL useSubFolder = tableAccount.cameraUploadCreateSubfolder;
     
     // Conversion from ALAsset -to-> PHAsset
@@ -1333,7 +1331,6 @@
         // Update Camera Upload data
         if ([metadataNet.selector isEqualToString:selectorUploadAutomatic])
             [[NCManageDatabase sharedInstance] setAccountsCameraUploadDateAssetTypeWithAssetMediaType:assetMediaType assetDate:assetDate];
-            //[CCCoreData setCameraUploadDateAssetType:assetMediaType assetDate:assetDate activeAccount:appDelegate.activeAccount];
         
         // Update icon badge number
         [app updateApplicationIconBadgeNumber];
