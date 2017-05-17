@@ -268,11 +268,8 @@
     paragraph.lineBreakMode = NSLineBreakByWordWrapping;
     paragraph.alignment = NSTextAlignmentCenter;
     NSString *text;
+    tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
     
-    NSArray *results = [[NCManageDatabase sharedInstance] getAccounts:app.activeAccount];
-    tableAccount *account = [results objectAtIndex:0];
-    
-    //if ([CCCoreData getCameraUploadActiveAccount:app.activeAccount])
     if (account.cameraUpload)
         text = [NSString stringWithFormat:@"%@", @"\n\n\n\n"];
     else
@@ -285,11 +282,8 @@
 
 - (UIImage *)buttonImageForEmptyDataSet:(UIScrollView *)scrollView forState:(UIControlState)state
 {
-    NSArray *results = [[NCManageDatabase sharedInstance] getAccounts:app.activeAccount];
-    tableAccount *account = [results objectAtIndex:0];
-    
-    //if ([CCCoreData getCameraUploadActiveAccount:app.activeAccount] == NO) {
-        
+    tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
+            
     if (!account.cameraUpload) {
     
         UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"button"] color:[NCBrandColor sharedInstance].brand];
@@ -533,7 +527,6 @@
     if (app.activeAccount.length == 0)
         return;
     
-    //NSString *serverUrl = [CCCoreData getCameraUploadFolderNamePathActiveAccount:app.activeAccount activeUrl:app.activeUrl];
     NSString *serverUrl = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderPathAndName:app.activeUrl];
 
     if (_sectionDataSource) {
@@ -775,9 +768,6 @@
 {
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
 
-    
-   // if([CCCoreData getCameraUploadActiveAccount:app.activeAccount]) {
-    
     if (tableAccount.cameraUpload) {
         
         [self setupCameraUpload];
@@ -789,9 +779,7 @@
     } else {
         
         [[NCManageDatabase sharedInstance] setAccountCameraStateFiledWithField:@"cameraUpload" state:NO];
-        
-        //[CCCoreData setCameraUpload:NO activeAccount:app.activeAccount];
-                
+                        
         [PHPhotoLibrary.sharedPhotoLibrary unregisterChangeObserver:self];
         
         [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];

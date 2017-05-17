@@ -1193,7 +1193,6 @@
 
 - (void)getUserProfileSuccess:(CCMetadataNet *)metadataNet userProfile:(OCUserProfile *)userProfile
 {
-    //[CCCoreData setUserProfileActiveAccount:metadataNet.account userProfile:userProfile];
     [[NCManageDatabase sharedInstance] setAccountsUserProfile:metadataNet.account userProfile:userProfile];
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
