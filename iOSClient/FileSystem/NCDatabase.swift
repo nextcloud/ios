@@ -155,14 +155,18 @@ class tableMetadata: Object {
     dynamic var sessionID = ""
     dynamic var sessionSelector = ""
     dynamic var sessionSelectorPost = ""
-    dynamic var sessionTaskIdentifier : Int = 0
-    dynamic var sessionTaskIdentifierPlist : Int = 0
+    dynamic var sessionTaskIdentifier : Int = -1
+    dynamic var sessionTaskIdentifierPlist : Int = -1
     dynamic var size : Double = 0
     dynamic var thumbnailExists : Bool = false
     dynamic var title = ""
     dynamic var type = ""
     dynamic var typeFile = ""
     dynamic var uuid = ""
+    
+    override static func primaryKey() -> String {
+        return "etag"
+    }
 }
 
 class tableShare: Object {

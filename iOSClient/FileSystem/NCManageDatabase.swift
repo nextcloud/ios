@@ -1120,4 +1120,55 @@ class NCManageDatabase: NSObject {
     }
     
     //MARK: -
+    //MARK: Table Metadata
+
+    func addMetadata(_ metadata: tableMetadata) {
+
+        let realm = try! Realm()
+        
+        try! realm.write {
+            
+            realm.add(metadata)
+        }
+    }
+    
+    func deleteMetadata(_ predicate: NSPredicate) {
+    
+        let realm = try! Realm()
+        
+        let results = realm.objects(tableMetadata.self).filter(predicate)
+        try! realm.write {
+            realm.delete(results)
+        }
+    }
+    
+    func moveMetadata(_ fileName: String, directoryID: String, directoryIDTo: String) {
+        
+        let tableAccount = self.getAccountActive()
+        if tableAccount == nil {
+            return
+        }
+        
+        let realm = try! Realm()
+    
+        let results = realm.objects(tableMetadata.self).filter("account = %@ AND fileName == %@ AND directoryID == %@", tableAccount!.account, fileName, directoryID)
+        
+        try! realm.write {
+            
+            for result in results {
+                result.directoryID = directoryIDTo
+            }
+        }
+    }
+    
+    func updateMetadata(_ metadata: tableMetadata) {
+        
+        let realm = try! Realm()
+        
+        try! realm.write {
+            realm.add(metadata, update: true)
+        }
+    }
+    
+    //MARK: -
 }
