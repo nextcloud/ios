@@ -279,7 +279,6 @@
         
         if (_loginType == loginModifyPasswordUser) {
             
-            //[CCCoreData updateAccount:account withPassword:self.password.text];
             [[NCManageDatabase sharedInstance] setAccountPassword:account password:self.password.text];
             
         } else {
@@ -309,7 +308,6 @@
             
             if (_loginType != loginModifyPasswordUser)
                 [[NCManageDatabase sharedInstance] deleteAccount:account];
-                //[CCCoreData deleteAccount:account];
             
             alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_error_", nil) message:@"Fatal error writing database" delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
             [alertView show];
