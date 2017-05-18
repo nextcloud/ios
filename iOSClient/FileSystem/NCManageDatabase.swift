@@ -500,11 +500,17 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Automatic Upload
     
-    func addAutomaticUpload(_ metadataNet: CCMetadataNet, account: String) -> Bool {
+    func addAutomaticUpload(_ metadataNet: CCMetadataNet) -> Bool {
         
         let realm = try! Realm()
         
-        let results = realm.objects(tableAutomaticUpload.self).filter("account = %@ AND assetLocalIdentifier = %@", account, metadataNet.assetLocalIdentifier)
+        let tableAccount = self.getAccountActive()
+        
+        if tableAccount == nil {
+            return false
+        }
+            
+        let results = realm.objects(tableAutomaticUpload.self).filter("account = %@ AND assetLocalIdentifier = %@", tableAccount!.account, metadataNet.assetLocalIdentifier)
         if (results.count > 0) {
             return false
         }
@@ -514,7 +520,7 @@ class NCManageDatabase: NSObject {
             // Add new AutomaticUpload
             let addAutomaticUpload = tableAutomaticUpload()
             
-            addAutomaticUpload.account = account
+            addAutomaticUpload.account = tableAccount!.account
             addAutomaticUpload.assetLocalIdentifier = metadataNet.assetLocalIdentifier
             addAutomaticUpload.fileName = metadataNet.fileName
             addAutomaticUpload.selector = metadataNet.selector
@@ -531,11 +537,17 @@ class NCManageDatabase: NSObject {
         return true
     }
     
-    func getAutomaticUploadForAccount(_ account: String, selector: String) -> CCMetadataNet? {
+    func getAutomaticUpload(_ selector: String) -> CCMetadataNet? {
         
         let realm = try! Realm()
         
-        let results = realm.objects(tableAutomaticUpload.self).filter("account = %@ AND selector = %@ AND lock == false", account, selector)
+        let tableAccount = self.getAccountActive()
+        
+        if tableAccount == nil {
+            return nil
+        }
+        
+        let results = realm.objects(tableAutomaticUpload.self).filter("account = %@ AND selector = %@ AND lock == false", tableAccount!.account, selector)
         if (results.count == 0) {
             return nil
         }
@@ -560,11 +572,17 @@ class NCManageDatabase: NSObject {
         return metadataNet
     }
     
-    func getLockAutomaticUploadForAccount(_ account: String) -> [tableAutomaticUpload] {
+    func getLockAutomaticUpload() -> [tableAutomaticUpload]? {
         
         let realm = try! Realm()
         
-        let results = realm.objects(tableAutomaticUpload.self).filter("account = %@ AND lock = true", account)
+        let tableAccount = self.getAccountActive()
+        
+        if tableAccount == nil {
+            return nil
+        }
+        
+        let results = realm.objects(tableAutomaticUpload.self).filter("account = %@ AND lock = true", tableAccount!.account)
         
         return Array(results)
     }
@@ -583,15 +601,20 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func deleteAutomaticUploadForAccount(_ account: String, assetLocalIdentifier: String) {
+    func deleteAutomaticUpload(_ assetLocalIdentifier: String) {
         
         let realm = try! Realm()
         
-        let results = realm.objects(tableAutomaticUpload.self).filter("account = %@ AND assetLocalIdentifier = %@", account, assetLocalIdentifier)
-        if (results.count > 0) {
+        let tableAccount = self.getAccountActive()
+        
+        if tableAccount != nil {
+        
+            let results = realm.objects(tableAutomaticUpload.self).filter("account = %@ AND assetLocalIdentifier = %@", tableAccount!.account, assetLocalIdentifier)
+            if (results.count > 0) {
             
-            try! realm.write {
-                realm.delete(results)
+                try! realm.write {
+                    realm.delete(results)
+                }
             }
         }
     }

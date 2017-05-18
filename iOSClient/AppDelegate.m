@@ -1317,7 +1317,7 @@
         return;
     
     NSArray *uploadInQueue = [CCCoreData getTableMetadataUploadAccount:app.activeAccount];
-    NSArray *recordAutomaticUploadInLock =  [[NCManageDatabase sharedInstance] getLockAutomaticUploadForAccount:_activeAccount];
+    NSArray *recordAutomaticUploadInLock =  [[NCManageDatabase sharedInstance] getLockAutomaticUpload];
     
     for (tableAutomaticUpload *tableAutomaticUpload in recordAutomaticUploadInLock) {
         
@@ -1334,13 +1334,13 @@
 
     // ------------------------- <selectorUploadAutomatic> -------------------------
     
-    metadataNet = [[NCManageDatabase sharedInstance] getAutomaticUploadForAccount:self.activeAccount selector:selectorUploadAutomatic];
+    metadataNet = [[NCManageDatabase sharedInstance] getAutomaticUpload:selectorUploadAutomatic];
     counterUpload = [self getNumberUploadInQueues] + [self getNumberUploadInQueuesWWan];
     while (metadataNet && counterUpload < k_maxConcurrentOperationDownloadUpload) {
         
         [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet.assetLocalIdentifier fileName:metadataNet.fileName serverUrl:metadataNet.serverUrl cryptated:metadataNet.cryptated session:metadataNet.session taskStatus:metadataNet.taskStatus selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:metadataNet.errorCode delegate:app.activeMain];
         
-        metadataNet =  [[NCManageDatabase sharedInstance] getAutomaticUploadForAccount:self.activeAccount selector:selectorUploadAutomatic];
+        metadataNet =  [[NCManageDatabase sharedInstance] getAutomaticUpload:selectorUploadAutomatic];
         counterUpload++;
     }
     
@@ -1355,7 +1355,7 @@
         return;
     }
     
-    metadataNet =  [[NCManageDatabase sharedInstance] getAutomaticUploadForAccount:self.activeAccount selector:selectorUploadAutomaticAll];
+    metadataNet =  [[NCManageDatabase sharedInstance] getAutomaticUpload:selectorUploadAutomaticAll];
     counterUpload = [self getNumberUploadInQueues] + [self getNumberUploadInQueuesWWan];
     while (metadataNet && counterUpload < k_maxConcurrentOperationDownloadUpload) {
         
@@ -1371,10 +1371,10 @@
             
             [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionUpload selector:selectorUploadAutomatic note:@"Internal error image/video not found [0]" type:k_activityTypeFailure verbose:k_activityVerboseHigh account:_activeAccount activeUrl:_activeUrl];
             
-            [[NCManageDatabase sharedInstance] deleteAutomaticUploadForAccount:_activeAccount assetLocalIdentifier:metadataNet.assetLocalIdentifier];
+            [[NCManageDatabase sharedInstance] deleteAutomaticUpload:metadataNet.assetLocalIdentifier];
         }
         
-        metadataNet =  [[NCManageDatabase sharedInstance] getAutomaticUploadForAccount:self.activeAccount selector:selectorUploadAutomaticAll];
+        metadataNet =  [[NCManageDatabase sharedInstance] getAutomaticUpload:selectorUploadAutomaticAll];
     }
 }
 

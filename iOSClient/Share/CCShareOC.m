@@ -150,10 +150,12 @@
 
 - (void)reloadData
 {
-    self.shareLink = [app.sharesLink objectForKey:[self.serverUrl stringByAppendingString:self.metadata.fileName]];
-    self.shareUserAndGroup = [app.sharesUserAndGroup objectForKey:[self.serverUrl stringByAppendingString:self.metadata.fileName]];
+    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    
+    self.shareLink = [appDelegate.sharesLink objectForKey:[self.serverUrl stringByAppendingString:self.metadata.fileName]];
+    self.shareUserAndGroup = [appDelegate.sharesUserAndGroup objectForKey:[self.serverUrl stringByAppendingString:self.metadata.fileName]];
 
-    self.itemShareLink = [app.sharesID objectForKey:self.shareLink];
+    self.itemShareLink = [appDelegate.sharesID objectForKey:self.shareLink];
     if ([self.shareUserAndGroup length] > 0) self.itemsUserAndGroupLink = [self.shareUserAndGroup componentsSeparatedByString:@","];
     else self.itemsUserAndGroupLink = nil;
 
