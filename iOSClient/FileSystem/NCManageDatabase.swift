@@ -1170,5 +1170,29 @@ class NCManageDatabase: NSObject {
         }
     }
     
+    func setMetadataSession(_ session: String, sessionError: String, sessionSelector: String, sessionSelectorPost: String, sessionTaskIdentifier: Int, sessionTaskIdentifierPlist: Int, predicate: NSPredicate) {
+        
+        let realm = try! Realm()
+        
+        let results = realm.objects(tableMetadata.self).filter(predicate)
+        
+        try! realm.write {
+            
+            for result in results {
+            
+                result.session = session
+                result.sessionError = sessionError
+                result.sessionSelector = sessionSelector
+                result.sessionSelectorPost = sessionSelectorPost
+            
+                if sessionTaskIdentifier != Int(k_taskIdentifierNULL) {
+                    result.sessionTaskIdentifier = sessionTaskIdentifier
+                }
+                if sessionTaskIdentifierPlist != Int(k_taskIdentifierNULL) {
+                    result.sessionTaskIdentifierPlist = sessionTaskIdentifierPlist
+                }
+            }
+        }
+    }
     //MARK: -
 }
