@@ -395,11 +395,16 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func setAccountsUserProfile(_ account: String, userProfile: OCUserProfile) {
+    func setAccountsUserProfile(_ userProfile: OCUserProfile) {
      
+        let tblAccount = self.getAccountActive()
+        if tblAccount == nil {
+            return
+        }
+        
         let realm = try! Realm()
         
-        let results = realm.objects(tableAccount.self).filter("account = %@", account)
+        let results = realm.objects(tableAccount.self).filter("account = %@", tblAccount!.account)
         if (results.count > 0) {
 
             try! realm.write {
