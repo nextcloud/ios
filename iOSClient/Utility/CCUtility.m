@@ -829,7 +829,7 @@
     return metadata;
 }
 
-+ (void)insertTypeFileIconName:(tableMetadata *)metadata directory:(NSString *)directory cameraFolderName:(NSString *)cameraFolderName cameraFolderPath:(NSString *)cameraFolderPath
++ (tableMetadata *)insertTypeFileIconName:(tableMetadata *)metadata directory:(NSString *)directory cameraFolderName:(NSString *)cameraFolderName cameraFolderPath:(NSString *)cameraFolderPath
 {
     if ([metadata.type isEqualToString: k_metadataType_template]) {
         
@@ -854,7 +854,7 @@
         if (metadata.errorPasscode) {
             metadata.typeFile = k_metadataTypeFile_unknown;
             metadata.iconName = @"plist";
-            return;
+            return metadata;
         }
         // Type compress
         if (UTTypeConformsTo(fileUTI, kUTTypeZipArchive) && [(__bridge NSString *)fileUTI containsString:@"org.openxmlformats"] == NO && [(__bridge NSString *)fileUTI containsString:@"oasis"] == NO) {
@@ -931,6 +931,8 @@
         if([metadata.fileName isEqualToString:cameraFolderName] && [directory isEqualToString:cameraFolderPath])
             metadata.iconName = @"folderphotocamera";
     }
+    
+    return metadata;
 }
 
 + (void)insertInformationPlist:(tableMetadata *)metadata directoryUser:(NSString *)directoryUser

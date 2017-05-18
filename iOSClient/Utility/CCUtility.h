@@ -169,7 +169,7 @@
 
 + (tableMetadata *)trasformedOCFileToCCMetadata:(OCFileDto *)itemDto fileNamePrint:(NSString *)fileNamePrint serverUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID cameraFolderName:(NSString *)cameraFolderName cameraFolderPath:(NSString *)cameraFolderPath activeAccount:(NSString *)activeAccount directoryUser:(NSString *)directoryUser;
 
-+ (void)insertTypeFileIconName:(tableMetadata *)metadata directory:(NSString *)directory cameraFolderName:(NSString *)cameraFolderName cameraFolderPath:(NSString *)cameraFolderPath;
++ (tableMetadata *)insertTypeFileIconName:(tableMetadata *)metadata directory:(NSString *)directory cameraFolderName:(NSString *)cameraFolderName cameraFolderPath:(NSString *)cameraFolderPath;
 + (void)insertInformationPlist:(tableMetadata *)metadata directoryUser:(NSString *)directoryUser;
 + (tableMetadata *)insertFileSystemInMetadata:(NSString *)fileName directory:(NSString *)directory activeAccount:(NSString *)activeAccount cameraFolderName:(NSString *)cameraFolderName cameraFolderPath:(NSString *)cameraFolderPath;
 

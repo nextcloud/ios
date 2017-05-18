@@ -1122,13 +1122,19 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Metadata
 
-    func addMetadata(_ metadata: tableMetadata) {
+    func addMetadata(_ metadata: tableMetadata, activeUrl: String) {
 
+        let cameraFolderName = self.getAccountCameraUploadFolderName()
+        let cameraFolderPath = self.getAccountCameraUploadFolderPath(activeUrl)
+        let direcory = CCCoreData.getServerUrl(fromDirectoryID: metadata.directoryID, activeAccount: metadata.account)
+        
+        let metadataWithIcon = CCUtility.insertTypeFileIconName(metadata, directory: direcory, cameraFolderName: cameraFolderName, cameraFolderPath: cameraFolderPath)
+        
         let realm = try! Realm()
         
         try! realm.write {
             
-            realm.add(metadata)
+            realm.add(metadataWithIcon!)
         }
     }
     
@@ -1161,12 +1167,18 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func updateMetadata(_ metadata: tableMetadata) {
+    func updateMetadata(_ metadata: tableMetadata, activeUrl: String) {
         
+        let cameraFolderName = self.getAccountCameraUploadFolderName()
+        let cameraFolderPath = self.getAccountCameraUploadFolderPath(activeUrl)
+        let direcory = CCCoreData.getServerUrl(fromDirectoryID: metadata.directoryID, activeAccount: metadata.account)
+        
+        let metadataWithIcon = CCUtility.insertTypeFileIconName(metadata, directory: direcory, cameraFolderName: cameraFolderName, cameraFolderPath: cameraFolderPath)
+
         let realm = try! Realm()
         
         try! realm.write {
-            realm.add(metadata, update: true)
+            realm.add(metadataWithIcon!, update: true)
         }
     }
     

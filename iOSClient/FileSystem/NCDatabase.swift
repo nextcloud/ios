@@ -169,48 +169,6 @@ class tableMetadata: Object {
     }
 }
 
-/*
-class tableMetadataNet: Object {
-    
-    dynamic var account = ""
-    dynamic var action = ""
-    dynamic var assetLocalIdentifier = ""
-    dynamic var cryptated : Bool = false
-    dynamic var date = NSDate()
-    dynamic var delegate: Any? = nil
-    dynamic var directory: Bool = false
-    dynamic var directoryID = ""
-    dynamic var directoryIDTo = ""
-    dynamic var downloadData: Bool = false
-    dynamic var downloadPlist: Bool = false
-    dynamic var errorCode: Int = 0
-    dynamic var errorRetry: Int = 0
-    dynamic var etag = ""
-    dynamic var expirationTime = ""
-    dynamic var fileName = ""
-    dynamic var fileNameTo = ""
-    dynamic var fileNameLocal = ""
-    dynamic var fileNamePrint = ""
-    dynamic var metadata: tableMetadata? = nil
-    dynamic var password = ""
-    dynamic var pathFolder = ""
-    dynamic var priority: Int = 0
-    dynamic var queue: OperationQueue? = nil
-    dynamic var rev = ""
-    dynamic var serverUrl = ""
-    dynamic var serverUrlTo = ""
-    dynamic var selector = ""
-    dynamic var selectorPost = ""
-    dynamic var session = ""
-    dynamic var sessionID = ""
-    dynamic var share = ""
-    dynamic var shareeType: Int = 0
-    dynamic var sharePermission: Int = 0
-    dynamic var size : Double = 0
-    dynamic var taskStatus: Int = 0
-}
-*/
-
 class tableShare: Object {
     
     dynamic var account = ""
