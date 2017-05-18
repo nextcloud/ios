@@ -61,7 +61,7 @@
     _dataSource = [NSMutableArray new];
     
     // Metadata
-    _metadata = [CCMetadata new];
+    _metadata = [tableMetadata new];
     
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 1)];
     self.tableView.separatorColor = [NCBrandColor sharedInstance].seperator;
@@ -238,7 +238,7 @@
 #pragma mark ===== menu =====
 #pragma--------------------------------------------------------------------------------------------
 
-- (void)openModel:(CCMetadata *)metadata
+- (void)openModel:(tableMetadata *)metadata
 {
     UIViewController *viewController;
     NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:app.activeAccount];
@@ -282,7 +282,7 @@
     }
 }
 
-- (void)openWith:(CCMetadata *)metadata
+- (void)openWith:(tableMetadata *)metadata
 {
     NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID];
     
@@ -300,7 +300,7 @@
     }
 }
 
-- (void)requestDeleteMetadata:(CCMetadata *)metadata indexPath:(NSIndexPath *)indexPath
+- (void)requestDeleteMetadata:(tableMetadata *)metadata indexPath:(NSIndexPath *)indexPath
 {
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
         
@@ -356,7 +356,7 @@
     });
 }
 
-- (void)requestMoreMetadata:(CCMetadata *)metadata indexPath:(NSIndexPath *)indexPath
+- (void)requestMoreMetadata:(tableMetadata *)metadata indexPath:(NSIndexPath *)indexPath
 {
     UIImage *iconHeader;
     
@@ -468,9 +468,9 @@
 #pragma mark ==== Table ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (CCMetadata *)setSelfMetadataFromIndexPath:(NSIndexPath *)indexPath
+- (tableMetadata *)setSelfMetadataFromIndexPath:(NSIndexPath *)indexPath
 {
-    CCMetadata *metadata;
+    tableMetadata *metadata;
     
     NSManagedObject *record = [_dataSource objectAtIndex:indexPath.row];
     metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", [record valueForKey:@"fileID"], app.activeAccount] context:nil];
@@ -527,7 +527,7 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     CCFavoritesCell *cell = (CCFavoritesCell *)[tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
-    CCMetadata *metadata;
+    tableMetadata *metadata;
     
     // separator
     cell.separatorInset = UIEdgeInsetsMake(0.f, 60.f, 0.f, 0.f);
@@ -695,7 +695,7 @@
     
     NSMutableArray *allRecordsDataSourceImagesVideos = [NSMutableArray new];
     
-    for (CCMetadata *metadata in _dataSource) {
+    for (tableMetadata *metadata in _dataSource) {
         if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image] || [metadata.typeFile isEqualToString: k_metadataTypeFile_video])
             [allRecordsDataSourceImagesVideos addObject:metadata];
     }

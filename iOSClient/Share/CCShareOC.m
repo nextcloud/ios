@@ -471,7 +471,7 @@
     [self.delegate shareUserAndGroup:user shareeType:shareeType permission:permission metadata:self.metadata directoryID:self.metadata.directoryID serverUrl:self.serverUrl];
 }
 
-- (void)updateShare:(NSString *)share metadata:(CCMetadata *)metadata serverUrl:(NSString *)serverUrl password:(NSString *)password expirationTime:(NSString *)expirationTime permission:(NSInteger)permission
+- (void)updateShare:(NSString *)share metadata:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl password:(NSString *)password expirationTime:(NSString *)expirationTime permission:(NSInteger)permission
 {
     [self.delegate updateShare:share metadata:metadata serverUrl:serverUrl password:password expirationTime:expirationTime permission:permission];
 }

@@ -32,7 +32,7 @@
     NSUInteger totalSize;
     
     NSExtensionItem *inputItem;
-    CCMetadata *saveMetadataPlist;
+    tableMetadata *saveMetadataPlist;
     
     UIColor *barTintColor;
     UIColor *tintColor;
@@ -337,7 +337,7 @@
 {
     [self.hud hideHud];
     
-    CCMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, _activeAccount] context:nil];
+    tableMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, _activeAccount] context:nil];
         
     [self.filesName removeObject:metadata.fileNamePrint];
     [self.shareTable performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];

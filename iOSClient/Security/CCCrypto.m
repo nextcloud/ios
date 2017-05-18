@@ -22,6 +22,7 @@
 //
 
 #import "CCCrypto.h"
+#import "NCBridgeSwift.h"
 
 @implementation CCCrypto
 
@@ -151,7 +152,7 @@
     return NO;
 }
 
-- (NSString *)createFileDirectoryPlist:(CCMetadata *)metadata
+- (NSString *)createFileDirectoryPlist:(tableMetadata *)metadata
 {
     NSMutableDictionary *data;
     

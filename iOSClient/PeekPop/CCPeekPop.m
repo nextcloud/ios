@@ -25,14 +25,16 @@
 
 #import "AppDelegate.h"
 #import "CCGraphics.h"
+#import "NCBridgeSwift.h"
 
 @interface CCPeekPop ()
+
 
 @end
 
 @implementation CCPeekPop
 
-- (void)setMetadata:(CCMetadata *)newMetadata
+- (void)setMetadata:(tableMetadata *)newMetadata
 {
     if (_metadata != newMetadata)
         _metadata = newMetadata;
@@ -102,7 +104,7 @@
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
-- (void)downloadThumbnail:(CCMetadata *)metadata
+- (void)downloadThumbnail:(tableMetadata *)metadata
 {
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
     

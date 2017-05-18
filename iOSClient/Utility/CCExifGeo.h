@@ -29,9 +29,11 @@
 #import "CCMetadata.h"
 #import "CCCoreData.h"
 
+@class tableMetadata;
+
 @interface CCExifGeo : NSObject
 
-+ (void)setExifLocalTableFileID:(CCMetadata *)metadata directoryUser:(NSString *)directoryUser activeAccount:(NSString *)activeAccount;
++ (void)setExifLocalTableFileID:(tableMetadata *)metadata directoryUser:(NSString *)directoryUser activeAccount:(NSString *)activeAccount;
 
 + (void)setGeocoderFileID:(NSString *)fileID exifDate:(NSDate *)exifDate latitude:(NSString*)latitude longitude:(NSString*)longitude;
 

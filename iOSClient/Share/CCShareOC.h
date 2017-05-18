@@ -28,6 +28,8 @@
 #import "CCSharePermissionOC.h"
 #import "CCMetadata.h"
 
+@class tableMetadata;
+
 @protocol CCShareOCDelegate;
 
 @interface CCShareOC : XLFormViewController <CCShareUserOCDelegate, CCSharePermissionOCDelegate>
@@ -41,7 +43,7 @@
 @property (nonatomic, strong) NSString *serverUrl;
 @property (nonatomic, strong) NSString *shareLink;
 @property (nonatomic, strong) NSString *shareUserAndGroup;
-@property (nonatomic, strong) CCMetadata *metadata;
+@property (nonatomic, strong) tableMetadata *metadata;
 
 @property (nonatomic, strong) OCSharedDto *itemShareLink;
 @property (nonatomic, strong) NSArray *itemsUserAndGroupLink;
@@ -58,12 +60,12 @@
 
 @protocol CCShareOCDelegate
 
-- (void)share:(CCMetadata *)metadata serverUrl:(NSString *)serverUrl password:(NSString *)password;
-- (void)unShare:(NSString *)share metadata:(CCMetadata *)metadata serverUrl:(NSString *)serverUrl;
-- (void)updateShare:(NSString *)share metadata:(CCMetadata *)metadata serverUrl:(NSString *)serverUrl password:(NSString *)password expirationTime:(NSString *)expirationTime permission:(NSInteger)permission;
+- (void)share:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl password:(NSString *)password;
+- (void)unShare:(NSString *)share metadata:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl;
+- (void)updateShare:(NSString *)share metadata:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl password:(NSString *)password expirationTime:(NSString *)expirationTime permission:(NSInteger)permission;
 
 - (void)reloadDatasource:(NSString *)serverUrl fileID:(NSString *)fileID selector:(NSString *)selector;
 - (void)getUserAndGroup:(NSString *)find;
-- (void)shareUserAndGroup:(NSString *)user shareeType:(NSInteger)shareeType permission:(NSInteger)permission metadata:(CCMetadata *)metadata directoryID:(NSString *)directoryID serverUrl:(NSString *)serverUrl;
+- (void)shareUserAndGroup:(NSString *)user shareeType:(NSInteger)shareeType permission:(NSInteger)permission metadata:(tableMetadata *)metadata directoryID:(NSString *)directoryID serverUrl:(NSString *)serverUrl;
 
 @end

@@ -100,7 +100,7 @@
     NSString *father = @"";
     NSMutableArray *filesID = [NSMutableArray new];
     
-    for (CCMetadata *metadata in metadatas) {
+    for (tableMetadata *metadata in metadatas) {
         
         // type of file
         NSInteger typeFilename = [CCUtility getTypeFileName:metadata.fileName];
@@ -194,7 +194,7 @@
         
         NSArray *metadatas = [CCCoreData getOfflineLocalFileActiveAccount:app.activeAccount directoryUser:app.directoryUser];
         
-        for (CCMetadata *metadata in metadatas) {
+        for (tableMetadata *metadata in metadatas) {
             
             [self readFile:metadata withDownload:YES];
         }
@@ -273,30 +273,30 @@
         NSMutableArray *metadatasNotPresents = [[NSMutableArray alloc] init];
         NSArray *tableMetadatas = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND ((session == NULL) OR (session == ''))", app.activeAccount, metadataNet.directoryID] context:nil];
         
-        for (TableMetadata *tableMetadata in tableMetadatas) {
+        for (TableMetadata *record in tableMetadatas) {
             
             // reject cryptated
-            if (tableMetadata.cryptated)
+            if (record.cryptated)
                 continue;
             
             BOOL fileIDFound = NO;
             
-            for (CCMetadata *metadata in metadatas) {
+            for (tableMetadata *metadata in metadatas) {
                 
-                if ([tableMetadata.fileID isEqualToString:metadata.fileID]) {
+                if ([record.fileID isEqualToString:metadata.fileID]) {
                     fileIDFound = YES;
                     break;
                 }
             }
             
             if (!fileIDFound)
-                [metadatasNotPresents addObject:[CCCoreData insertEntityInMetadata:tableMetadata]];
+                [metadatasNotPresents addObject:[CCCoreData insertEntityInMetadata:record]];
         }
         
         dispatch_async(dispatch_get_main_queue(), ^{
             
             // delete metadata not present
-            for (CCMetadata *metadata in metadatasNotPresents) {
+            for (tableMetadata *metadata in metadatasNotPresents) {
                 
                 [CCCoreData deleteFile:metadata serverUrl:metadataNet.serverUrl directoryUser:app.directoryUser activeAccount:app.activeAccount];
             }
@@ -307,7 +307,7 @@
         
         // ----- Test : (MODIFY) -----
         
-        for (CCMetadata *metadata in metadatas) {
+        for (tableMetadata *metadata in metadatas) {
             
             // reject cryptated
             if (metadata.cryptated)
@@ -379,7 +379,7 @@
 #pragma mark ===== Read File =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)readFile:(CCMetadata *)metadata withDownload:(BOOL)withDownload
+- (void)readFile:(tableMetadata *)metadata withDownload:(BOOL)withDownload
 {
     NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:app.activeAccount];
     if (serverUrl == nil) return;
@@ -410,7 +410,7 @@
     }
 }
 
-- (void)readFileSuccess:(CCMetadataNet *)metadataNet metadata:(CCMetadata *)metadata
+- (void)readFileSuccess:(CCMetadataNet *)metadataNet metadata:(tableMetadata *)metadata
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
         
@@ -429,7 +429,7 @@
 {
     NSMutableArray *metadatas = [[NSMutableArray alloc] init];
     
-    for (CCMetadata *metadata in allRecordMetadatas) {
+    for (tableMetadata *metadata in allRecordMetadatas) {
         
         BOOL changeRev = NO;
         
@@ -492,7 +492,7 @@
         
         NSString *oldDirectoryID, *serverUrl;
 
-        for (CCMetadata *metadata in metadatas) {
+        for (tableMetadata *metadata in metadatas) {
         
             NSString *selector, *selectorPost;
             BOOL downloadData = NO, downloadPlist = NO;

@@ -28,6 +28,8 @@
 #import "UtilsFramework.h"
 #import "CCMetadata.h"
 
+@class tableMetadata;
+
 @protocol CCSharePermissionOCDelegate;
 
 @interface CCSharePermissionOC : XLFormViewController
@@ -36,7 +38,7 @@
 
 @property (nonatomic, weak) IBOutlet UIButton *endButton;
 @property (nonatomic, strong) NSString *idRemoteShared;
-@property (nonatomic, strong) CCMetadata *metadata;
+@property (nonatomic, strong) tableMetadata *metadata;
 @property (nonatomic, strong) NSString *serverUrl;
 
 - (IBAction)endButtonAction:(id)sender;
@@ -45,6 +47,6 @@
 
 @protocol CCSharePermissionOCDelegate
 
-- (void)updateShare:(NSString *)share metadata:(CCMetadata *)metadata serverUrl:(NSString *)serverUrl password:(NSString *)password expirationTime:(NSString *)expirationTime permission:(NSInteger)permission;
+- (void)updateShare:(NSString *)share metadata:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl password:(NSString *)password expirationTime:(NSString *)expirationTime permission:(NSInteger)permission;
 
 @end

@@ -1412,7 +1412,7 @@
 - (void)sessionChanged:(NSNotification *)notification
 {
     NSURLSession *session;
-    CCMetadata *metadata;
+    tableMetadata *metadata;
     NSURLSessionTask *task;
     
     for (id object in notification.object) {
@@ -1420,7 +1420,7 @@
         if ([object isKindOfClass:[NSURLSession class]])
             session = object;
         
-        if ([object isKindOfClass:[CCMetadata class]])
+        if ([object isKindOfClass:[tableMetadata class]])
             metadata = object;
         
         if ([object isKindOfClass:[NSURLSessionTask class]])
@@ -1456,7 +1456,7 @@
     }
 }
 
-- (void)changeTask:(CCMetadata *)metadata
+- (void)changeTask:(tableMetadata *)metadata
 {
     NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account];
     

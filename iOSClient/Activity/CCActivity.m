@@ -323,7 +323,7 @@
 {
     tableActivity *activity = [_sectionDataSource objectAtIndex:indexPath.section];
     
-    CCMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileID == %@)", activity.account, activity.fileID] context:nil];
+    tableMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileID == %@)", activity.account, activity.fileID] context:nil];
     
     if (metadata) {
         

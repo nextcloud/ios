@@ -776,9 +776,9 @@
 #pragma mark ===== CCMetadata =====
 #pragma --------------------------------------------------------------------------------------------
 
-+ (CCMetadata *)trasformedOCFileToCCMetadata:(OCFileDto *)itemDto fileNamePrint:(NSString *)fileNamePrint serverUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID cameraFolderName:(NSString *)cameraFolderName cameraFolderPath:(NSString *)cameraFolderPath activeAccount:(NSString *)activeAccount directoryUser:(NSString *)directoryUser
++ (tableMetadata *)trasformedOCFileToCCMetadata:(OCFileDto *)itemDto fileNamePrint:(NSString *)fileNamePrint serverUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID cameraFolderName:(NSString *)cameraFolderName cameraFolderPath:(NSString *)cameraFolderPath activeAccount:(NSString *)activeAccount directoryUser:(NSString *)directoryUser
 {
-    CCMetadata *metadata = [CCMetadata new];
+    tableMetadata *metadata = [tableMetadata new];
     
     metadata.account = activeAccount;
     metadata.cryptated = NO;
@@ -795,7 +795,7 @@
     metadata.model = @"";
     metadata.nameCurrentDevice = [CCUtility getNameCurrentDevice];
     metadata.permissions = itemDto.permissions;
-    metadata.protocol = @"";
+    metadata.protocolCrypto = @"";
     metadata.rev = itemDto.etag;
     metadata.size = itemDto.size;
     metadata.sessionTaskIdentifier = k_taskIdentifierDone;
@@ -829,7 +829,7 @@
     return metadata;
 }
 
-+ (void)insertTypeFileIconName:(CCMetadata *)metadata directory:(NSString *)directory cameraFolderName:(NSString *)cameraFolderName cameraFolderPath:(NSString *)cameraFolderPath
++ (void)insertTypeFileIconName:(tableMetadata *)metadata directory:(NSString *)directory cameraFolderName:(NSString *)cameraFolderName cameraFolderPath:(NSString *)cameraFolderPath
 {
     if ([metadata.type isEqualToString: k_metadataType_template]) {
         
@@ -933,7 +933,7 @@
     }
 }
 
-+ (void)insertInformationPlist:(CCMetadata *)metadata directoryUser:(NSString *)directoryUser
++ (void)insertInformationPlist:(tableMetadata *)metadata directoryUser:(NSString *)directoryUser
 {
     NSString *fileNamePlist, *temp, *passcode;
     NSError *error;
@@ -966,7 +966,7 @@
     metadata.iconName = [data objectForKey:@"icon"];
     metadata.model = [data objectForKey:@"model"];
     metadata.nameCurrentDevice = [data objectForKey:@"namecurrentdevice"];
-    metadata.protocol = [data objectForKey:@"protocol"];
+    metadata.protocolCrypto = [data objectForKey:@"protocol"];
     metadata.size = (long) [len longLongValue];
     if ([data objectForKey:@"image"] == nil)
         metadata.thumbnailExists = NO;
@@ -1023,9 +1023,9 @@
     }
 }
 
-+ (CCMetadata *)insertFileSystemInMetadata:(NSString *)fileName directory:(NSString *)directory activeAccount:(NSString *)activeAccount cameraFolderName:(NSString *)cameraFolderName cameraFolderPath:(NSString *)cameraFolderPath
++ (tableMetadata *)insertFileSystemInMetadata:(NSString *)fileName directory:(NSString *)directory activeAccount:(NSString *)activeAccount cameraFolderName:(NSString *)cameraFolderName cameraFolderPath:(NSString *)cameraFolderPath
 {
-    CCMetadata *metadata = [[CCMetadata alloc] init];
+    tableMetadata *metadata = [[tableMetadata alloc] init];
     
     NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", directory, fileName];
     
@@ -1045,7 +1045,7 @@
     metadata.fileNameData = fileName;
     metadata.fileNamePrint = fileName;
     metadata.nameCurrentDevice = [CCUtility getNameCurrentDevice];
-    metadata.protocol = k_versionProtocolPlist;
+    metadata.protocolCrypto = k_versionProtocolPlist;
     metadata.size = [attributes[NSFileSize] longValue];
     metadata.thumbnailExists = false;
     metadata.type = k_metadataType_local;

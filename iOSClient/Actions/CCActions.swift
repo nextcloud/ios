@@ -83,7 +83,7 @@ class CCActions: NSObject {
     // MARK: Delete File or Folder
     // --------------------------------------------------------------------------------------------
 
-    func deleteFileOrFolder(_ metadata: CCMetadata, delegate: AnyObject) {
+    func deleteFileOrFolder(_ metadata: tableMetadata, delegate: AnyObject) {
         
         let serverUrl = CCCoreData.getServerUrl(fromDirectoryID: metadata.directoryID, activeAccount: appDelegate.activeAccount)
         let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
@@ -160,7 +160,7 @@ class CCActions: NSObject {
     // MARK: Rename File or Folder
     // --------------------------------------------------------------------------------------------
     
-    func renameFileOrFolder(_ metadata: CCMetadata, fileName: String, delegate: AnyObject) {
+    func renameFileOrFolder(_ metadata: tableMetadata, fileName: String, delegate: AnyObject) {
 
         let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
         
@@ -197,7 +197,7 @@ class CCActions: NSObject {
                 
                 do {
                     
-                    let file = "\(appDelegate.directoryUser!)/\(metadata.fileID!)"
+                    let file = "\(appDelegate.directoryUser!)/\(metadata.fileID)"
                     let dataFile = try NSData.init(contentsOfFile: file, options:[])
                     
                     do {
@@ -206,7 +206,7 @@ class CCActions: NSObject {
                         
                         do {
                             
-                            let fileUrl = URL(fileURLWithPath: "\(NSTemporaryDirectory())\(metadata.fileNameData!)")
+                            let fileUrl = URL(fileURLWithPath: "\(NSTemporaryDirectory())\(metadata.fileNameData)")
                             try dataFileEncrypted.write(to: fileUrl, options: [])
                             
                         } catch let error {
@@ -350,7 +350,7 @@ class CCActions: NSObject {
         appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
     }
     
-    func searchSuccess(_ metadataNet: CCMetadataNet, metadatas: [CCMetadata]) {
+    func searchSuccess(_ metadataNet: CCMetadataNet, metadatas: [tableMetadata]) {
         
         metadataNet.delegate?.searchSuccess(metadataNet, metadatas: metadatas)
     }
@@ -364,7 +364,7 @@ class CCActions: NSObject {
     // MARK: Download Tumbnail
     // --------------------------------------------------------------------------------------------
 
-    func downloadTumbnail(_ metadata: CCMetadata, delegate: AnyObject) {
+    func downloadTumbnail(_ metadata: tableMetadata, delegate: AnyObject) {
         
         let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
         let serverUrl = CCCoreData.getServerUrl(fromDirectoryID: metadata.directoryID, activeAccount: appDelegate.activeAccount)
@@ -398,7 +398,7 @@ class CCActions: NSObject {
     // MARK: Setting Favorite
     // --------------------------------------------------------------------------------------------
     
-    func settingFavorite(_ metadata: CCMetadata, favorite: Bool, delegate: AnyObject) {
+    func settingFavorite(_ metadata: tableMetadata, favorite: Bool, delegate: AnyObject) {
         
         let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
         let serverUrl = CCCoreData.getServerUrl(fromDirectoryID: metadata.directoryID, activeAccount: appDelegate.activeAccount)
@@ -444,7 +444,7 @@ class CCActions: NSObject {
         appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
     }
     
-    func listingFavoritesSuccess(_ metadataNet: CCMetadataNet, metadatas: [CCMetadata]) {
+    func listingFavoritesSuccess(_ metadataNet: CCMetadataNet, metadatas: [tableMetadata]) {
         
         metadataNet.delegate?.listingFavoritesSuccess(metadataNet, metadatas: metadatas)
     }

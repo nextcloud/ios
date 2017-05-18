@@ -34,7 +34,7 @@
 {
     NSManagedObjectContext *_context;
     NSMutableDictionary *_taskData;
-    CCMetadata *_currentProgressMetadata;
+    tableMetadata *_currentProgressMetadata;
     
     NSString *_activeAccount;
     NSString *_activePassword;
@@ -64,7 +64,7 @@
     _context = [NSManagedObjectContext MR_context];
    
     _taskData = [[NSMutableDictionary alloc] init];
-    _currentProgressMetadata = [[CCMetadata alloc] init];
+    _currentProgressMetadata = [[tableMetadata alloc] init];
     _delegates = [[NSMutableDictionary alloc] init];
     
     // Initialization Sessions
@@ -376,7 +376,7 @@
     NSString *fileName = [url lastPathComponent];
     NSString *serverUrl = [self getServerUrlFromUrl:url];
     
-    CCMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(session = %@) AND ((sessionTaskIdentifier == %i) OR (sessionTaskIdentifierPlist == %i))",session.sessionDescription, task.taskIdentifier, task.taskIdentifier] context:_context];
+    tableMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(session = %@) AND ((sessionTaskIdentifier == %i) OR (sessionTaskIdentifierPlist == %i))",session.sessionDescription, task.taskIdentifier, task.taskIdentifier] context:_context];
     
     NSInteger errorCode;
     __block NSString *fileID = metadata.fileID;
@@ -488,7 +488,7 @@
 #pragma mark =====  Download =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)downloadFile:(CCMetadata *)metadata serverUrl:(NSString *)serverUrl downloadData:(BOOL)downloadData downloadPlist:(BOOL)downloadPlist selector:(NSString *)selector selectorPost:(NSString *)selectorPost session:(NSString *)session taskStatus:(NSInteger)taskStatus delegate:(id)delegate
+- (void)downloadFile:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl downloadData:(BOOL)downloadData downloadPlist:(BOOL)downloadPlist selector:(NSString *)selector selectorPost:(NSString *)selectorPost session:(NSString *)session taskStatus:(NSInteger)taskStatus delegate:(id)delegate
 {
     // add delegate
     if (delegate)
@@ -634,7 +634,7 @@
     NSURLRequest *url = [downloadTask currentRequest];
     NSString *filename = [[url.URL absoluteString] lastPathComponent];
     
-    CCMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(session = %@) AND ((sessionTaskIdentifier == %i) OR (sessionTaskIdentifierPlist == %i))",session.sessionDescription, downloadTask.taskIdentifier, downloadTask.taskIdentifier] context:_context];
+    tableMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(session = %@) AND ((sessionTaskIdentifier == %i) OR (sessionTaskIdentifierPlist == %i))",session.sessionDescription, downloadTask.taskIdentifier, downloadTask.taskIdentifier] context:_context];
     
     // If the record metadata do not exists, exit
     if (!metadata)
@@ -703,7 +703,7 @@
         
     } else {
         
-        CCMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, _activeAccount] context:_context];
+        tableMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, _activeAccount] context:_context];
         
         if ([CCUtility isCryptoString:fileName] || [CCUtility isFileNotCryptated:fileName]) metadata.sessionTaskIdentifier = k_taskIdentifierDone;
         if ([CCUtility isCryptoPlistString:fileName]) metadata.sessionTaskIdentifierPlist = k_taskIdentifierDone;
@@ -730,7 +730,7 @@
                 [[self getDelegate:fileID] downloadFileSuccess:fileID serverUrl:serverUrl selector:selector selectorPost:selectorPost];
         });
         
-        NSLog(@"[LOG] Download Success Session Metadata : %@ - FileNamePrint : %@ - fileID : %@ - Task : [%i %i]", metadata.fileName, metadata.fileNamePrint, metadata.fileID, metadata.sessionTaskIdentifier, metadata.sessionTaskIdentifierPlist);
+        NSLog(@"[LOG] Download Success Session Metadata : %@ - FileNamePrint : %@ - fileID : %@ - Task : [%li %li]", metadata.fileName, metadata.fileNamePrint, metadata.fileID, (long)metadata.sessionTaskIdentifier, (long)metadata.sessionTaskIdentifierPlist);
     }    
 }
 
@@ -886,7 +886,7 @@
     NSString *cameraFolderName = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderName];
     NSString *cameraFolderPath = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderPath:_activeUrl];
     
-    CCMetadata *metadata = [CCUtility insertFileSystemInMetadata:fileName directory:_directoryUser activeAccount:_activeAccount cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath];
+    tableMetadata *metadata = [CCUtility insertFileSystemInMetadata:fileName directory:_directoryUser activeAccount:_activeAccount cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath];
     
     //fileID
     NSString *uploadID =  [k_uploadSessionID stringByAppendingString:[CCUtility createRandomString:16]];
@@ -1025,7 +1025,7 @@
                 UIAlertAction *overwriteAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_overwrite_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
                     
                     // -- remove record --
-                    CCMetadata *metadataDelete = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileName == %@) AND (directoryID == %@)", _activeAccount, [fileNameCrypto stringByAppendingString:@".plist"], directoryID] context:nil];
+                    tableMetadata *metadataDelete = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileName == %@) AND (directoryID == %@)", _activeAccount, [fileNameCrypto stringByAppendingString:@".plist"], directoryID] context:nil];
                     [CCCoreData deleteFile:metadataDelete serverUrl:serverUrl directoryUser:_directoryUser activeAccount:_activeAccount];
                     
 #ifndef EXTENSION
@@ -1114,7 +1114,7 @@
             UIAlertAction *overwriteAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_overwrite_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
                 
                 // -- remove record --
-                CCMetadata *metadataDelete = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileName == %@) AND (directoryID == %@)", _activeAccount, fileName, directoryID] context:nil];
+                tableMetadata *metadataDelete = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileName == %@) AND (directoryID == %@)", _activeAccount, fileName, directoryID] context:nil];
                 [CCCoreData deleteFile:metadataDelete serverUrl:serverUrl directoryUser:_directoryUser activeAccount:_activeAccount];
                 
                 // -- Go to Upload --
@@ -1150,7 +1150,7 @@
     }
 }
 
-- (void)uploadFileMetadata:(CCMetadata *)metadata taskStatus:(NSInteger)taskStatus
+- (void)uploadFileMetadata:(tableMetadata *)metadata taskStatus:(NSInteger)taskStatus
 {
     BOOL send = NO;
     
@@ -1346,7 +1346,7 @@
     });
 }
 
-- (void)uploadFileSuccessFailure:(CCMetadata *)metadata fileName:(NSString *)fileName fileID:(NSString *)fileID rev:(NSString *)rev date:(NSDate *)date serverUrl:(NSString *)serverUrl errorCode:(NSInteger)errorCode
+- (void)uploadFileSuccessFailure:(tableMetadata *)metadata fileName:(NSString *)fileName fileID:(NSString *)fileID rev:(NSString *)rev date:(NSDate *)date serverUrl:(NSString *)serverUrl errorCode:(NSInteger)errorCode
 {
     NSString *sessionID = metadata.sessionID;
     
@@ -1492,7 +1492,7 @@
     
     for (TableMetadata *record in dataSource) {
         
-        __block CCMetadata *metadata = [CCCoreData insertEntityInMetadata:record];
+        __block tableMetadata *metadata = [CCCoreData insertEntityInMetadata:record];
         
         NSURLSession *session = [self getSessionfromSessionDescription:metadata.session];
         
@@ -1503,7 +1503,7 @@
             
             for (NSURLSessionDownloadTask *downloadTask in downloadTasks) {
                 
-                NSLog(@"[LOG] Find metadata Tasks [%i %i] = [%lu] state : %lu", metadata.sessionTaskIdentifier, metadata.sessionTaskIdentifierPlist ,(unsigned long)downloadTask.taskIdentifier, (unsigned long)[downloadTask state]);
+                NSLog(@"[LOG] Find metadata Tasks [%li %li] = [%lu] state : %lu", (long)metadata.sessionTaskIdentifier, (long)metadata.sessionTaskIdentifierPlist ,(unsigned long)downloadTask.taskIdentifier, (unsigned long)[downloadTask state]);
                 
                 if (metadata.sessionTaskIdentifier == downloadTask.taskIdentifier) findTask = YES;
                 if (metadata.sessionTaskIdentifierPlist == downloadTask.taskIdentifier) findTaskPlist = YES;
@@ -1514,7 +1514,7 @@
             // DATA
             if (findTask == NO && metadata.sessionTaskIdentifier >= 0) {
                 
-                NSLog(@"[LOG] NOT Find metadata Task [%i] fileID : %@ - filename : %@", metadata.sessionTaskIdentifier, metadata.fileID, metadata.fileNameData);
+                NSLog(@"[LOG] NOT Find metadata Task [%li] fileID : %@ - filename : %@", (long)metadata.sessionTaskIdentifier, metadata.fileID, metadata.fileNameData);
                 
                 [CCCoreData setMetadataSession:nil sessionError:[NSString stringWithFormat:@"%@", @k_CCErrorTaskDownloadNotFound] sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier: k_taskIdentifierError sessionTaskIdentifierPlist: k_taskIdentifierNULL predicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", metadata.fileID, _activeAccount] context:_context];
                 
@@ -1529,7 +1529,7 @@
             // PLIST
             if (findTaskPlist == NO && metadata.sessionTaskIdentifierPlist >= 0) {
                 
-                NSLog(@"[LOG] NOT Find metadata TaskPlist [%i] fileID : %@ - filename : %@", metadata.sessionTaskIdentifierPlist, metadata.fileID, metadata.fileName);
+                NSLog(@"[LOG] NOT Find metadata TaskPlist [%li] fileID : %@ - filename : %@", (long)metadata.sessionTaskIdentifierPlist, metadata.fileID, metadata.fileName);
                 
                 [CCCoreData setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier: k_taskIdentifierNULL sessionTaskIdentifierPlist: k_taskIdentifierDone predicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", metadata.fileID, _activeAccount] context:_context];
                 
@@ -1556,7 +1556,7 @@
     
     for (TableMetadata *record in records) {
         
-        CCMetadata *metadata = [CCCoreData insertEntityInMetadata:record];
+        tableMetadata *metadata = [CCCoreData insertEntityInMetadata:record];
         
         NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account];
             
@@ -1568,7 +1568,7 @@
             
         [serversUrl addObject:serverUrl];
             
-        NSLog(@"[LOG] Re download file : %@ - %@ [%i %i]", metadata.fileName, metadata.fileNamePrint, metadata.sessionTaskIdentifier, metadata.sessionTaskIdentifierPlist);
+        NSLog(@"[LOG] Re download file : %@ - %@ [%li %li]", metadata.fileName, metadata.fileNamePrint, (long)metadata.sessionTaskIdentifier, (long)metadata.sessionTaskIdentifierPlist);
     }
     
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -1597,7 +1597,7 @@
     
     for (TableMetadata *record in dataSource) {
         
-        __block CCMetadata *metadata = [CCCoreData insertEntityInMetadata:record];
+        __block tableMetadata *metadata = [CCCoreData insertEntityInMetadata:record];
         __block NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:_activeAccount];
         
         NSURLSession *session = [self getSessionfromSessionDescription:metadata.session];
@@ -1610,7 +1610,7 @@
             // cerchiamo la corrispondenza dei task
             for (NSURLSessionUploadTask *uploadTask in uploadTasks) {
                 
-                NSLog(@"[LOG] Find metadata Tasks [%i %i] = [%lu] state : %lu", metadata.sessionTaskIdentifier, metadata.sessionTaskIdentifierPlist , (unsigned long)uploadTask.taskIdentifier, (unsigned long)[uploadTask state]);
+                NSLog(@"[LOG] Find metadata Tasks [%li %li] = [%lu] state : %lu", (long)metadata.sessionTaskIdentifier, (long)metadata.sessionTaskIdentifierPlist , (unsigned long)uploadTask.taskIdentifier, (unsigned long)[uploadTask state]);
                 
                 if (metadata.sessionTaskIdentifier == uploadTask.taskIdentifier) findTask = YES;
                 if (metadata.sessionTaskIdentifierPlist == uploadTask.taskIdentifier) findTaskPlist = YES;
@@ -1621,7 +1621,7 @@
             // se non c'è (ci sono) il relativo uploadTask.taskIdentifier allora chiediamolo
             if ((metadata.cryptated == YES && findTask == NO && findTaskPlist == NO) || (metadata.cryptated == NO && findTask == NO)) {
                 
-                NSLog(@"[LOG] Call ReadFileVerifyUpload because this file %@ (criptated %i) is in progress but there is no task : [%i %i]", metadata.fileNamePrint, metadata.cryptated, metadata.sessionTaskIdentifier, metadata.sessionTaskIdentifierPlist);
+                NSLog(@"[LOG] Call ReadFileVerifyUpload because this file %@ (criptated %i) is in progress but there is no task : [%li %li]", metadata.fileNamePrint, metadata.cryptated, (long)metadata.sessionTaskIdentifier, (long)metadata.sessionTaskIdentifierPlist);
                 
                 if (metadata.sessionTaskIdentifier >= 0) [self readFileVerifyUpload:metadata.fileNameData fileNamePrint:metadata.fileNamePrint serverUrl:serverUrl];
                 if (metadata.sessionTaskIdentifierPlist >= 0) [self readFileVerifyUpload:metadata.fileName fileNamePrint:metadata.fileNamePrint serverUrl:serverUrl];
@@ -1648,7 +1648,7 @@
     
     for (TableMetadata *record in records) {
         
-        CCMetadata *metadata = [CCCoreData insertEntityInMetadata:record];
+        tableMetadata *metadata = [CCCoreData insertEntityInMetadata:record];
         
         [self uploadFileMetadata:metadata taskStatus: k_taskStatusResume];
             
@@ -1685,7 +1685,7 @@
 //
 // File exists : selectorReadFileVerifyUpload
 //
-- (void)readFileSuccess:(CCMetadataNet *)metadataNet metadata:(CCMetadata *)metadata
+- (void)readFileSuccess:(CCMetadataNet *)metadataNet metadata:(tableMetadata *)metadata
 {
     NSString *fileName;
     
@@ -1696,7 +1696,7 @@
     
     NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:metadataNet.serverUrl activeAccount:_activeAccount];
     
-    CCMetadata *metadataTemp = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileName == %@) AND (directoryID == %@) AND (account == %@)", fileName , directoryID, _activeAccount] context:_context];
+    tableMetadata *metadataTemp = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileName == %@) AND (directoryID == %@) AND (account == %@)", fileName , directoryID, _activeAccount] context:_context];
     
     // is completed ?
     if (metadataTemp.sessionTaskIdentifier == k_taskIdentifierDone && metadataTemp.sessionTaskIdentifierPlist == k_taskIdentifierDone) {
@@ -1731,7 +1731,7 @@
     
     NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:metadataNet.serverUrl activeAccount:_activeAccount];
     
-    CCMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileName == %@) AND (directoryID == %@) AND (account == %@)",fileName , directoryID, _activeAccount] context:_context];
+    tableMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileName == %@) AND (directoryID == %@) AND (account == %@)",fileName , directoryID, _activeAccount] context:_context];
     
     NSInteger error;
     if (errorCode == kOCErrorServerPathNotFound)

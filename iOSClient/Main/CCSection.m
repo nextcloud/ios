@@ -75,13 +75,13 @@
     
     for (id record in records) {
         
-        CCMetadata *metadata;
+        tableMetadata *metadata = [tableMetadata new];
         
         // verify type of class
         if ([record isKindOfClass:[TableMetadata class]])
             metadata = [CCCoreData insertEntityInMetadata:record];
         else
-            metadata = (CCMetadata *)record;
+            metadata = (tableMetadata *)record;
         
         // if exists replace date with exif date
         if (replaceDateToExifDate) {
@@ -106,7 +106,7 @@
      sectionArrayRow
     */
     
-    for (CCMetadata *metadata in copyRecords) {
+    for (tableMetadata *metadata in copyRecords) {
         
         // how many download underway (only for groupSession)
         if ([metadata.session containsString:@"download"] && [groupByField isEqualToString:@"session"]) {
@@ -196,7 +196,7 @@
         
         for (NSString *fileID in rows) {
             
-            CCMetadata *metadata = [dictionaryFileIDMetadataForIndexPath objectForKey:fileID];
+            tableMetadata *metadata = [dictionaryFileIDMetadataForIndexPath objectForKey:fileID];
             
             if (metadata.fileID) {
                 

@@ -41,6 +41,8 @@
 #import "TableDirectory+CoreDataClass.h"
 #import "TableLocalFile+CoreDataClass.h"
 
+@class tableMetadata;
+
 @interface CCCoreData : NSObject
 
 // ===== Account =====
@@ -49,19 +51,19 @@
 
 // ===== Metadata =====
 
-+ (void)addMetadata:(CCMetadata *)metadata activeAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl context:(NSManagedObjectContext *)context;
++ (void)addMetadata:(tableMetadata *)metadata activeAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl context:(NSManagedObjectContext *)context;
 + (void)deleteMetadataWithPredicate:(NSPredicate *)predicate;
 + (void)moveMetadata:(NSString *)fileName directoryID:(NSString *)directoryID directoryIDTo:(NSString *)directoryIDTo activeAccount:(NSString *)activeAccount;
-+ (void)updateMetadata:(CCMetadata *)metadata predicate:(NSPredicate *)predicate activeAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl context:(NSManagedObjectContext *)context;
++ (void)updateMetadata:(tableMetadata *)metadata predicate:(NSPredicate *)predicate activeAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl context:(NSManagedObjectContext *)context;
 + (void)setMetadataSession:(NSString *)session sessionError:(NSString *)sessionError sessionSelector:(NSString *)sessionSelector sessionSelectorPost:(NSString *)sessionSelectorPost sessionTaskIdentifier:(NSInteger)sessionTaskIdentifier sessionTaskIdentifierPlist:(NSInteger)sessionTaskIdentifierPlist predicate:(NSPredicate *)predicate context:(NSManagedObjectContext *)context;
 + (void)setMetadataFavoriteFileID:(NSString *)fileID favorite:(BOOL)favorite activeAccount:(NSString *)activeAccount context:(NSManagedObjectContext *)context;
 
 + (TableMetadata *)getTableMetadataWithPreficate:(NSPredicate *)predicate;
 + (NSArray *)getTableMetadataWithPredicate:(NSPredicate *)predicate context:(NSManagedObjectContext *)context;
 + (NSArray *)getTableMetadataWithPredicate:(NSPredicate *)predicate fieldOrder:(NSString *)fieldOrder ascending:(BOOL)ascending;
-+ (CCMetadata *)getMetadataWithPreficate:(NSPredicate *)predicate context:(NSManagedObjectContext *)context;
-+ (CCMetadata *)getMetadataAtIndex:(NSPredicate *)predicate fieldOrder:(NSString *)fieldOrder ascending:(BOOL)ascending objectAtIndex:(NSUInteger)index;
-+ (CCMetadata *)getMetadataFromFileName:(NSString *)fileName directoryID:(NSString *)directoryID activeAccount:(NSString *)activeAccount context:(NSManagedObjectContext *)context;
++ (tableMetadata *)getMetadataWithPreficate:(NSPredicate *)predicate context:(NSManagedObjectContext *)context;
++ (tableMetadata *)getMetadataAtIndex:(NSPredicate *)predicate fieldOrder:(NSString *)fieldOrder ascending:(BOOL)ascending objectAtIndex:(NSUInteger)index;
++ (tableMetadata *)getMetadataFromFileName:(NSString *)fileName directoryID:(NSString *)directoryID activeAccount:(NSString *)activeAccount context:(NSManagedObjectContext *)context;
 
 + (NSArray *)getTableMetadataDownloadAccount:(NSString *)activeAccount;
 + (NSArray *)getTableMetadataDownloadWWanAccount:(NSString *)activeAccount;
@@ -109,11 +111,11 @@
 
 // ===== LocalFile =====
 
-+ (void)addLocalFile:(CCMetadata *)metadata activeAccount:(NSString *)activeAccount;
++ (void)addLocalFile:(tableMetadata *)metadata activeAccount:(NSString *)activeAccount;
 + (void)deleteLocalFileWithPredicate:(NSPredicate *)predicate;
 
 + (void)renameLocalFileWithFileID:(NSString *)fileID fileNameTo:(NSString *)fileNameTo fileNamePrintTo:(NSString *)fileNamePrintTo activeAccount:(NSString *)activeAccount;
-+ (void)updateLocalFileModel:(CCMetadata *)metadata activeAccount:(NSString *)activeAccount;
++ (void)updateLocalFileModel:(tableMetadata *)metadata activeAccount:(NSString *)activeAccount;
 
 + (TableLocalFile *)getLocalFileWithFileID:(NSString *)fileID activeAccount:(NSString *)activeAccount;
 + (NSArray *)getTableLocalFileWithPredicate:(NSPredicate *)predicate;
@@ -140,14 +142,14 @@
 
 // ===== File System =====
 
-+ (BOOL)downloadFile:(CCMetadata *)metadata directoryUser:(NSString *)directoryUser activeAccount:(NSString *)activeAccount;
-+ (void)downloadFilePlist:(CCMetadata *)metadata activeAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl directoryUser:(NSString *)directoryUser;
-+ (void)deleteFile:(CCMetadata *)metadata serverUrl:(NSString *)serverUrl directoryUser:(NSString *)directoryUser activeAccount:(NSString *)activeAccount;
++ (BOOL)downloadFile:(tableMetadata *)metadata directoryUser:(NSString *)directoryUser activeAccount:(NSString *)activeAccount;
++ (void)downloadFilePlist:(tableMetadata *)metadata activeAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl directoryUser:(NSString *)directoryUser;
++ (void)deleteFile:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl directoryUser:(NSString *)directoryUser activeAccount:(NSString *)activeAccount;
 
 // ===== Metadata <> Entity =====
 
-+ (void)insertMetadataInEntity:(CCMetadata *)metadata recordMetadata:(TableMetadata *)recordMetadata activeAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl;
-+ (CCMetadata *)insertEntityInMetadata:(TableMetadata *)recordMetadata;
++ (void)insertMetadataInEntity:(tableMetadata *)metadata recordMetadata:(TableMetadata *)recordMetadata activeAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl;
++ (tableMetadata *)insertEntityInMetadata:(TableMetadata *)recordMetadata;
 
 // ===== Utility Database =====
 

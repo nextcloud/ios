@@ -140,7 +140,7 @@ class tableMetadata: Object {
     dynamic var directoryID = ""
     dynamic var errorPasscode : Bool = false
     dynamic var favorite : Bool = false
-    dynamic var etag = ""
+    dynamic var fileID = ""
     dynamic var fileName = ""
     dynamic var fileNameData = ""
     dynamic var fileNamePrint = ""
@@ -165,10 +165,11 @@ class tableMetadata: Object {
     dynamic var uuid = ""
     
     override static func primaryKey() -> String {
-        return "etag"
+        return "fileID"
     }
 }
 
+/*
 class tableMetadataNet: Object {
     
     dynamic var account = ""
@@ -208,6 +209,7 @@ class tableMetadataNet: Object {
     dynamic var size : Double = 0
     dynamic var taskStatus: Int = 0
 }
+*/
 
 class tableShare: Object {
     

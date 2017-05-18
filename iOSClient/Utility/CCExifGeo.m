@@ -26,7 +26,7 @@
 
 @implementation CCExifGeo
 
-+ (void)setExifLocalTableFileID:(CCMetadata *)metadata directoryUser:(NSString *)directoryUser activeAccount:(NSString *)activeAccount
++ (void)setExifLocalTableFileID:(tableMetadata *)metadata directoryUser:(NSString *)directoryUser activeAccount:(NSString *)activeAccount
 {
     NSString *stringLatitude;
     NSString *stringLongitude;

@@ -50,7 +50,7 @@
 #pragma mark ===== Metadata =====
 #pragma --------------------------------------------------------------------------------------------
 
-+ (void)addMetadata:(CCMetadata *)metadata activeAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl context:(NSManagedObjectContext *)context
++ (void)addMetadata:(tableMetadata *)metadata activeAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl context:(NSManagedObjectContext *)context
 {
     if (context == nil)
         context = [NSManagedObjectContext MR_context];
@@ -117,7 +117,7 @@
     }];
 }
 
-+ (void)updateMetadata:(CCMetadata *)metadata predicate:(NSPredicate *)predicate activeAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl context:(NSManagedObjectContext *)context
++ (void)updateMetadata:(tableMetadata *)metadata predicate:(NSPredicate *)predicate activeAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl context:(NSManagedObjectContext *)context
 {
     TableMetadata *record;
     
@@ -185,7 +185,7 @@
     }
 }
 
-+ (CCMetadata *)getMetadataWithPreficate:(NSPredicate *)predicate context:(NSManagedObjectContext *)context
++ (tableMetadata *)getMetadataWithPreficate:(NSPredicate *)predicate context:(NSManagedObjectContext *)context
 {
     if (context == nil)
         context = [NSManagedObjectContext MR_defaultContext];
@@ -237,7 +237,7 @@
     return [records sortedArrayUsingDescriptors:[NSArray arrayWithObjects:descriptor, nil]];
 }
 
-+ (CCMetadata *)getMetadataAtIndex:(NSPredicate *)predicate fieldOrder:(NSString *)fieldOrder ascending:(BOOL)ascending objectAtIndex:(NSUInteger)index
++ (tableMetadata *)getMetadataAtIndex:(NSPredicate *)predicate fieldOrder:(NSString *)fieldOrder ascending:(BOOL)ascending objectAtIndex:(NSUInteger)index
 {
     NSArray *records = [self getTableMetadataWithPredicate:predicate fieldOrder:fieldOrder ascending:ascending];
     
@@ -246,7 +246,7 @@
     return [self insertEntityInMetadata:record];
 }
 
-+ (CCMetadata *)getMetadataFromFileName:(NSString *)fileName directoryID:(NSString *)directoryID activeAccount:(NSString *)activeAccount context:(NSManagedObjectContext *)context
++ (tableMetadata *)getMetadataFromFileName:(NSString *)fileName directoryID:(NSString *)directoryID activeAccount:(NSString *)activeAccount context:(NSManagedObjectContext *)context
 {
     if (fileName == nil || directoryID == nil || activeAccount == nil)
         return nil;
@@ -748,7 +748,7 @@
 #pragma mark ===== LocalFile =====
 #pragma --------------------------------------------------------------------------------------------
 
-+ (void)addLocalFile:(CCMetadata *)metadata activeAccount:(NSString *)activeAccount
++ (void)addLocalFile:(tableMetadata *)metadata activeAccount:(NSString *)activeAccount
 {
     [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
         
@@ -805,7 +805,7 @@
     }];
 }
 
-+ (void)updateLocalFileModel:(CCMetadata *)metadata activeAccount:(NSString *)activeAccount
++ (void)updateLocalFileModel:(tableMetadata *)metadata activeAccount:(NSString *)activeAccount
 {
     [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
         
@@ -906,7 +906,7 @@
     for (TableLocalFile *file in files) {
         
         NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", file.fileID, activeAccount];
-        CCMetadata *metadata = [self getMetadataWithPreficate:predicate context:nil];
+        tableMetadata *metadata = [self getMetadataWithPreficate:predicate context:nil];
         
         if (metadata) {
             
@@ -1242,7 +1242,7 @@
 #pragma mark ===== File System =====
 #pragma --------------------------------------------------------------------------------------------
 
-+ (BOOL)downloadFile:(CCMetadata *)metadata directoryUser:(NSString *)directoryUser activeAccount:(NSString *)activeAccount
++ (BOOL)downloadFile:(tableMetadata *)metadata directoryUser:(NSString *)directoryUser activeAccount:(NSString *)activeAccount
 {
     // ----------------------------------------- FILESYSTEM ------------------------------------------
     
@@ -1265,7 +1265,7 @@
     return YES;
 }
 
-+ (void)downloadFilePlist:(CCMetadata *)metadata activeAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl directoryUser:(NSString *)directoryUser
++ (void)downloadFilePlist:(tableMetadata *)metadata activeAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl directoryUser:(NSString *)directoryUser
 {
     // inseriamo le info nel plist
     [CCUtility insertInformationPlist:metadata directoryUser:directoryUser];
@@ -1279,7 +1279,7 @@
     }
 }
 
-+ (void)deleteFile:(CCMetadata *)metadata serverUrl:(NSString *)serverUrl directoryUser:(NSString *)directoryUser activeAccount:(NSString *)activeAccount
++ (void)deleteFile:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl directoryUser:(NSString *)directoryUser activeAccount:(NSString *)activeAccount
 {
     // ----------------------------------------- FILESYSTEM ------------------------------------------
     
@@ -1303,7 +1303,7 @@
 #pragma mark ===== Metadata <> Entity =====
 #pragma --------------------------------------------------------------------------------------------
 
-+ (void)insertMetadataInEntity:(CCMetadata *)metadata recordMetadata:(TableMetadata *)recordMetadata activeAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl
++ (void)insertMetadataInEntity:(tableMetadata *)metadata recordMetadata:(TableMetadata *)recordMetadata activeAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl
 {
     if ([activeAccount length]) recordMetadata.account = activeAccount;
     recordMetadata.cryptated = [NSNumber numberWithBool:metadata.cryptated];
@@ -1320,7 +1320,7 @@
     if ([metadata.model length]) recordMetadata.model = metadata.model;
     if ([metadata.nameCurrentDevice length]) recordMetadata.nameCurrentDevice = metadata.nameCurrentDevice;
     if ([metadata.permissions length]) recordMetadata.permissions = metadata.permissions;
-    if ([metadata.protocol length]) recordMetadata.protocol = metadata.protocol;
+    if ([metadata.protocolCrypto length]) recordMetadata.protocol = metadata.protocolCrypto;
     
     if ([metadata.rev length]) recordMetadata.rev = metadata.rev;
     
@@ -1332,8 +1332,8 @@
     recordMetadata.sessionSelector = metadata.sessionSelector;
     recordMetadata.sessionSelectorPost = metadata.sessionSelectorPost;
 
-    recordMetadata.sessionTaskIdentifier = [NSNumber numberWithInt:metadata.sessionTaskIdentifier];
-    recordMetadata.sessionTaskIdentifierPlist = [NSNumber numberWithInt:metadata.sessionTaskIdentifierPlist];
+    recordMetadata.sessionTaskIdentifier = [NSNumber numberWithLong:metadata.sessionTaskIdentifier];
+    recordMetadata.sessionTaskIdentifierPlist = [NSNumber numberWithLong:metadata.sessionTaskIdentifierPlist];
     
     if (metadata.size) recordMetadata.size = [NSNumber numberWithLong:metadata.size];
     if ([metadata.title length]) recordMetadata.title = metadata.title;
@@ -1352,9 +1352,9 @@
     recordMetadata.iconName = metadata.iconName;
 }
 
-+ (CCMetadata *)insertEntityInMetadata:(TableMetadata *)recordMetadata
++ (tableMetadata *)insertEntityInMetadata:(TableMetadata *)recordMetadata
 {
-    CCMetadata *metadata = [[CCMetadata alloc] init];
+    tableMetadata *metadata = [[tableMetadata alloc] init];
     
     metadata.account = recordMetadata.account;
     metadata.cryptated = [recordMetadata.cryptated boolValue];
@@ -1372,7 +1372,7 @@
     metadata.model = recordMetadata.model;
     metadata.nameCurrentDevice = recordMetadata.nameCurrentDevice;
     metadata.permissions = recordMetadata.permissions;
-    metadata.protocol = recordMetadata.protocol;
+    metadata.protocolCrypto = recordMetadata.protocol;
     metadata.rev = recordMetadata.rev;
     
     metadata.session = recordMetadata.session;

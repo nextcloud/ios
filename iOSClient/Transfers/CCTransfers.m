@@ -187,7 +187,7 @@
     if (indexPath) {
         
         NSString *fileID = [[_sectionDataSource.sectionArrayRow objectForKey:[_sectionDataSource.sections objectAtIndex:indexPath.section]] objectAtIndex:indexPath.row];
-        CCMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:fileID];
+        tableMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:fileID];
         
         if (metadata)
             [app.activeMain reloadTaskButton:metadata];
@@ -201,7 +201,7 @@
     
     for (NSString *key in _sectionDataSource.allRecordsDataSource.allKeys) {
         
-        CCMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:key];
+        tableMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:key];
         
         if ([metadata.session containsString:@"download"] && (metadata.sessionTaskIdentifierPlist != k_taskIdentifierDone))
             continue;
@@ -225,7 +225,7 @@
     if (indexPath) {
         
         NSString *fileID = [[_sectionDataSource.sectionArrayRow objectForKey:[_sectionDataSource.sections objectAtIndex:indexPath.section]] objectAtIndex:indexPath.row];
-        CCMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:fileID];
+        tableMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:fileID];
         
         if (metadata)
             [app.activeMain cancelTaskButton:metadata reloadTable:YES];
@@ -244,7 +244,7 @@
         if ([key isEqualToString:[_sectionDataSource.allRecordsDataSource.allKeys lastObject]])
             lastAndRefresh = YES;
         
-        CCMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:key];
+        tableMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:key];
         
         if ([metadata.session containsString:@"upload"] && metadata.cryptated && ((metadata.sessionTaskIdentifier == k_taskIdentifierDone && metadata.sessionTaskIdentifierPlist >= 0) || (metadata.sessionTaskIdentifier >= 0 && metadata.sessionTaskIdentifierPlist == k_taskIdentifierDone)))
             continue;
@@ -265,7 +265,7 @@
     if (indexPath) {
         
         NSString *fileID = [[_sectionDataSource.sectionArrayRow objectForKey:[_sectionDataSource.sections objectAtIndex:indexPath.section]] objectAtIndex:indexPath.row];
-        CCMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:fileID];
+        tableMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:fileID];
         
         if (metadata)
             [app.activeMain stopTaskButton:metadata];
@@ -279,7 +279,7 @@
     
     for (NSString *key in _sectionDataSource.allRecordsDataSource.allKeys) {
         
-        CCMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:key];
+        tableMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:key];
         
         if ([metadata.session containsString:@"download"]) {
             [app.activeMain cancelTaskButton:metadata reloadTable:YES];
@@ -526,7 +526,7 @@
     NSString *lunghezzaFile;
     
     NSString *fileID = [[_sectionDataSource.sectionArrayRow objectForKey:[_sectionDataSource.sections objectAtIndex:indexPath.section]] objectAtIndex:indexPath.row];
-    CCMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:fileID];
+    tableMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:fileID];
     
     CCTransfersCell *cell = (CCTransfersCell *)[tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
     cell.backgroundColor = [UIColor clearColor];

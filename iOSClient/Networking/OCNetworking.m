@@ -901,7 +901,7 @@
         
         if ([recordAccount.account isEqualToString:_metadataNet.account] && [items count] > 0) {
             
-            CCMetadata *metadata = [[CCMetadata alloc] init];
+            tableMetadata *metadata = [tableMetadata new];
             
             OCFileDto *itemDto = [items objectAtIndex:0];
             itemDto.fileName = _metadataNet.fileName;

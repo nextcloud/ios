@@ -244,7 +244,7 @@
 {
     if ([selector isEqualToString:selectorLoadPlist]) {
 
-        CCMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, activeAccount] context:nil];
+        tableMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, activeAccount] context:nil];
 
         [CCCoreData downloadFilePlist:metadata activeAccount:activeAccount activeUrl:activeUrl directoryUser:directoryUser];
         
@@ -278,7 +278,7 @@
     // remove all record
     [CCCoreData deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND ((session == NULL) OR (session == ''))", activeAccount, metadataNet.directoryID]];
         
-    for (CCMetadata *metadata in metadatas) {
+    for (tableMetadata *metadata in metadatas) {
         
         // do not insert crypto file
         if ([CCUtility isCryptoString:metadata.fileName]) continue;
@@ -288,7 +288,7 @@
             
             BOOL isCryptoComplete = NO;
             
-            for (CCMetadata *completeMetadata in metadatas) {
+            for (tableMetadata *completeMetadata in metadatas) {
                 if ([completeMetadata.fileName isEqualToString:[CCUtility trasformedFileNamePlistInCrypto:metadata.fileName]]) isCryptoComplete = YES;
             }
             if (isCryptoComplete == NO) continue;
@@ -300,7 +300,7 @@
         if ([CCUtility isCryptoPlistString:metadata.fileName] && [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, metadata.fileName]] == NO) {
             
             // download only the directories
-            for (CCMetadata *metadataDirectory in metadatas) {
+            for (tableMetadata *metadataDirectory in metadatas) {
                 
                 if (metadataDirectory.directory == YES && [metadataDirectory.fileName isEqualToString:metadata.fileNameData]) {
                     
@@ -422,7 +422,7 @@
     if (self.onlyClearDirectory) predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND (directory == 1) AND (cryptated == 0)", activeAccount, directoryID];
     else predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND (directory == 1)", activeAccount, directoryID];
 
-    CCMetadata *metadata = [CCCoreData getMetadataAtIndex:predicate fieldOrder:@"fileName" ascending:YES objectAtIndex:indexPath.row];
+    tableMetadata *metadata = [CCCoreData getMetadataAtIndex:predicate fieldOrder:@"fileName" ascending:YES objectAtIndex:indexPath.row];
     
     // colors
     if (metadata.cryptated) {
@@ -456,7 +456,7 @@
     if (self.onlyClearDirectory) predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND (directory == 1) AND (cryptated == 0)", activeAccount, directoryID];
     else predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND (directory == 1)", activeAccount, directoryID];
     
-    CCMetadata *metadata = [CCCoreData getMetadataAtIndex:predicate fieldOrder:@"fileName" ascending:YES objectAtIndex:index.row];
+    tableMetadata *metadata = [CCCoreData getMetadataAtIndex:predicate fieldOrder:@"fileName" ascending:YES objectAtIndex:index.row];
     
     if (metadata.errorPasscode == NO) {
     

@@ -27,7 +27,7 @@
 
 @interface CCPhotosCameraUpload () <CCActionsDeleteDelegate, CCActionsDownloadThumbnailDelegate>
 {
-    CCMetadata *_metadata;
+    tableMetadata *_metadata;
 
     BOOL _cellEditing;
     NSMutableArray *_queueMetadatas;
@@ -172,7 +172,7 @@
     [self collectionSelect:YES];
 }
 
-- (void)cellSelect:(BOOL)select indexPath:(NSIndexPath *)indexPath metadata:(CCMetadata *)metadata
+- (void)cellSelect:(BOOL)select indexPath:(NSIndexPath *)indexPath metadata:(tableMetadata *)metadata
 {
     UICollectionViewCell *cell = [self.collectionView cellForItemAtIndexPath:indexPath];
     UIVisualEffectView *effect = [cell viewWithTag:200];
@@ -310,7 +310,7 @@
 {
     NSMutableArray *dataToShare = [[NSMutableArray alloc] init];
     
-    for (CCMetadata *metadata in _selectedMetadatas) {
+    for (tableMetadata *metadata in _selectedMetadatas) {
     
         NSString *fileNamePath = [NSTemporaryDirectory() stringByAppendingString:metadata.fileNamePrint];
         
@@ -375,7 +375,7 @@
     [app messageNotification:@"_download_selected_files_" description:@"_error_download_photobrowser_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
 }
 
-- (void)downloadFileSuccess:(CCMetadata *)metadata
+- (void)downloadFileSuccess:(tableMetadata *)metadata
 {
     NSIndexPath *indexPath;
     BOOL existsIcon = NO;
@@ -440,7 +440,7 @@
     }
 }
 
-- (void)deleteFileOrFolder:(CCMetadata *)metadata numFile:(NSInteger)numFile ofFile:(NSInteger)ofFile
+- (void)deleteFileOrFolder:(tableMetadata *)metadata numFile:(NSInteger)numFile ofFile:(NSInteger)ofFile
 {
     
     if (metadata.cryptated) {
@@ -623,7 +623,7 @@
 
     NSArray *metadatasForKey = [_sectionDataSource.sectionArrayRow objectForKey:[_sectionDataSource.sections objectAtIndex:indexPath.section]];
     NSString *fileID = [metadatasForKey objectAtIndex:indexPath.row];
-    CCMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:fileID];
+    tableMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:fileID];
     
     // Image
     if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]]) {
@@ -735,7 +735,7 @@
     
     NSMutableArray *allRecordsDataSourceImagesVideos = [[NSMutableArray alloc] init];
     for (NSString *fileID in _sectionDataSource.allFileID) {
-        CCMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:fileID];
+        tableMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:fileID];
         if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image] || [metadata.typeFile isEqualToString: k_metadataTypeFile_video])
             [allRecordsDataSourceImagesVideos addObject:metadata];
     }

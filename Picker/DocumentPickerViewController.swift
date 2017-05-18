@@ -45,7 +45,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
     var parameterEncrypted: Bool? = false
     var isCryptoCloudMode: Bool? = false
     
-    var metadata: CCMetadata?
+    var metadata: tableMetadata?
     var recordsTableMetadata: [TableMetadata]?
     var titleFolder: String?
     
@@ -289,7 +289,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         let predicate = NSPredicate(format: "(account == '\(activeAccount!)') AND (directoryID == '\(metadataNet.directoryID!)') AND ((session == NULL) OR (session == ''))")
         CCCoreData.deleteMetadata(with: predicate)
         
-        for metadata in metadatas as! [CCMetadata] {
+        for metadata in metadatas as! [tableMetadata] {
             
             // do not insert crypto file
             if CCUtility.isCryptoString(metadata.fileName) {
@@ -308,7 +308,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
                 
                 var isCryptoComplete = false
                 
-                for completeMetadata in metadatas as! [CCMetadata] {
+                for completeMetadata in metadatas as! [tableMetadata] {
                     
                     if completeMetadata.fileName == CCUtility.trasformedFileNamePlist(inCrypto: metadata.fileName) {
                         
@@ -326,7 +326,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
             CCCoreData.add(metadata, activeAccount: activeAccount, activeUrl: activeUrl, context: nil)
             
             // if plist do not exists, download it
-            if CCUtility.isCryptoPlistString(metadata.fileName) && FileManager.default.fileExists(atPath: "\(directoryUser!)/\(metadata.fileName!)") == false {
+            if CCUtility.isCryptoPlistString(metadata.fileName) && FileManager.default.fileExists(atPath: "\(directoryUser!)/\(metadata.fileName)") == false {
                 
                 let metadataNet = CCMetadataNet.init(account: activeAccount)!
                 
@@ -375,7 +375,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         }
     }
     
-    func downloadThumbnail(_ metadata : CCMetadata) {
+    func downloadThumbnail(_ metadata : tableMetadata) {
         
         let metadataNet = CCMetadataNet.init(account: activeAccount)!
         
@@ -432,7 +432,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         case selectorLoadFileView :
             
             let sourceUrl = URL(string: "file://\(directoryUser!)/\(fileID!)".addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!)!
-            let destinationUrl : URL! = appGroupContainerURL()?.appendingPathComponent(metadata!.fileNamePrint!)
+            let destinationUrl : URL! = appGroupContainerURL()?.appendingPathComponent(metadata!.fileNamePrint)
             
             // Destination Provider
 
@@ -728,7 +728,7 @@ extension DocumentPickerViewController: UITableViewDataSource {
         let metadata = CCCoreData.insertEntity(in: recordTableMetadata)!
         
         // File Image View
-        let filePath = "\(directoryUser!)/\(metadata.fileID!).ico"
+        let filePath = "\(directoryUser!)/\(metadata.fileID).ico"
         
         if FileManager.default.fileExists(atPath: filePath) {
             
@@ -738,11 +738,11 @@ extension DocumentPickerViewController: UITableViewDataSource {
             
             if metadata.directory {
                 
-                cell.fileImageView.image = CCGraphics.changeThemingColorImage(UIImage(named: metadata.iconName!), color: NCBrandColor.sharedInstance.brand)
+                cell.fileImageView.image = CCGraphics.changeThemingColorImage(UIImage(named: metadata.iconName), color: NCBrandColor.sharedInstance.brand)
                 
             } else {
                 
-                cell.fileImageView.image = UIImage(named: metadata.iconName!)
+                cell.fileImageView.image = UIImage(named: metadata.iconName)
                 if metadata.thumbnailExists {
                     
                     downloadThumbnail(metadata)
@@ -786,9 +786,9 @@ extension DocumentPickerViewController: UITableViewDataSource {
 
         if recordTableMetadata!.directory == 0 {
             
-            if FileManager.default.fileExists(atPath: "\(directoryUser!)/\(String(describing: self.metadata?.fileID!))") {
+            if FileManager.default.fileExists(atPath: "\(directoryUser!)/\(String(describing: self.metadata?.fileID))") {
                 
-                downloadFileSuccess(self.metadata?.fileID!, serverUrl: self.serverUrl!, selector: selectorLoadFileView, selectorPost: nil)
+                downloadFileSuccess(self.metadata?.fileID, serverUrl: self.serverUrl!, selector: selectorLoadFileView, selectorPost: nil)
                 
             } else {
             
@@ -813,7 +813,7 @@ extension DocumentPickerViewController: UITableViewDataSource {
             
         } else {
             
-            var dir : String! = self.metadata?.fileName!
+            var dir : String! = self.metadata?.fileName
             
             if (self.metadata?.cryptated)! {
                 

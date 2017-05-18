@@ -40,6 +40,8 @@
 #import "CCHud.h"
 #import "OCNetworking.h"
 
+@class tableMetadata;
+
 @interface CCPhotosCameraUpload : UICollectionViewController <UICollectionViewDataSource, UICollectionViewDelegate, UIActionSheetDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, CCManageLocationDelegate, PHPhotoLibraryChangeObserver, OCNetworkingDelegate>
 
 @property (nonatomic, weak) CCDetail *detailViewController;
@@ -47,7 +49,7 @@
 
 - (BOOL)checkIfLocationIsEnabled;
 
-- (void)downloadFileSuccess:(CCMetadata *)metadata;
+- (void)downloadFileSuccess:(tableMetadata *)metadata;
 - (void)downloadFileFailure:(NSInteger)errorCode;
 
 - (void)reloadDatasourceForced;

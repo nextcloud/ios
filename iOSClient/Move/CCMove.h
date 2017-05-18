@@ -30,6 +30,8 @@
 #import "OCNetworking.h"
 #import "CCHud.h"
 
+@class tableMetadata;
+
 @protocol CCMoveDelegate;
 
 @interface CCMove : UITableViewController <UIAlertViewDelegate, UITableViewDelegate, OCNetworkingDelegate, BKPasscodeViewControllerDelegate>
@@ -40,7 +42,7 @@
 @property BOOL onlyClearDirectory;
 
 @property (nonatomic, strong) NSString *serverUrl;
-@property (nonatomic, strong) CCMetadata *passMetadata;
+@property (nonatomic, strong) tableMetadata *passMetadata;
 
 //BKPasscodeViewController
 @property (nonatomic) NSUInteger failedAttempts;

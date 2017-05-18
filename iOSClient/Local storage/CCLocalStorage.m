@@ -54,7 +54,7 @@
     dataSource = [NSMutableArray new];
     
     // Metadata
-    _metadata = [CCMetadata new];
+    _metadata = [tableMetadata new];
     
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 1)];
     self.tableView.separatorColor = [NCBrandColor sharedInstance].seperator;
@@ -164,7 +164,7 @@
 #pragma mark ===== menu =====
 #pragma--------------------------------------------------------------------------------------------
 
-- (void)openModel:(CCMetadata *)metadata
+- (void)openModel:(tableMetadata *)metadata
 {
     UIViewController *viewController;
     BOOL isLocal = YES;
@@ -209,7 +209,7 @@
     }
 }
 
-- (void)openWith:(CCMetadata *)metadata
+- (void)openWith:(tableMetadata *)metadata
 {
     NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", _serverUrl, metadata.fileNameData];
         
@@ -227,7 +227,7 @@
     }
 }
 
-- (void)requestDeleteMetadata:(CCMetadata *)metadata indexPath:(NSIndexPath *)indexPath
+- (void)requestDeleteMetadata:(tableMetadata *)metadata indexPath:(NSIndexPath *)indexPath
 {
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
         
@@ -260,7 +260,7 @@
 {
     CGPoint touchPoint = [sender convertPoint:CGPointZero toView:self.tableView];
     NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:touchPoint];
-    CCMetadata *metadata = [CCMetadata new];
+    tableMetadata *metadata = [tableMetadata new];
     UIImage *iconHeader;
         
     NSString *cameraFolderName = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderName];
@@ -356,7 +356,7 @@
 #pragma mark ==== Table ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (CCMetadata *)setSelfMetadataFromIndexPath:(NSIndexPath *)indexPath
+- (tableMetadata *)setSelfMetadataFromIndexPath:(NSIndexPath *)indexPath
 {
     NSString *cameraFolderName = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderName];
     NSString *cameraFolderPath = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderPath:app.activeUrl];
@@ -401,7 +401,7 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     CCLocalStorageCell *cell = (CCLocalStorageCell *)[tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
-    CCMetadata *metadata;
+    tableMetadata *metadata;
     
     // separator
     cell.separatorInset = UIEdgeInsetsMake(0.f, 60.f, 0.f, 0.f);
@@ -563,7 +563,7 @@
         
     for (NSString *fileName in dataSource) {
             
-        CCMetadata *metadata = [CCMetadata new];
+        tableMetadata *metadata = [tableMetadata new];
         metadata = [CCUtility insertFileSystemInMetadata:fileName directory:_serverUrl activeAccount:app.activeAccount cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath];
             
         if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image] || [metadata.typeFile isEqualToString: k_metadataTypeFile_video])

@@ -26,13 +26,15 @@
 #import "CCMetadata.h"
 #import "OCNetworking.h"
 
+@class tableMetadata;
+
 @protocol CCPeekPopDelegate;
 
 @interface CCPeekPop : UIViewController <OCNetworkingDelegate>
 
 @property (nonatomic, weak) id <CCPeekPopDelegate> delegate;
 
-@property (nonatomic, weak) CCMetadata *metadata;
+@property (nonatomic, strong) tableMetadata *metadata;
 
 @property (nonatomic, weak) IBOutlet UIImageView *imagePreview;
 

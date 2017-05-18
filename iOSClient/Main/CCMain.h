@@ -61,6 +61,8 @@
 #import "CCPassaporto.h"
 #import "CCPatenteGuida.h"
 
+@class tableMetadata;
+
 @interface CCMain : UITableViewController <UITableViewDataSource, UITableViewDelegate, UIActionSheetDelegate, UIGestureRecognizerDelegate, UIDocumentInteractionControllerDelegate, UIViewControllerPreviewingDelegate, CCMoveDelegate, CTAssetsPickerControllerDelegate, BKPasscodeViewControllerDelegate, UISplitViewControllerDelegate, UIPopoverControllerDelegate, CCNetworkingDelegate, CCShareOCDelegate, CCAccountWebDelegate, CCBancomatDelegate, CCCartaDiCreditoDelegate, CCCartaIdentitaDelegate, CCContoCorrenteDelegate, CCNoteDelegate, CCPassaportoDelegate, CCPatenteGuidaDelegate, CCPeekPopDelegate, UIDocumentMenuDelegate, UIDocumentPickerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, UIScrollViewDelegate, CCLoginDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate>
 
 @property BOOL isFolderEncrypted;
@@ -82,16 +84,16 @@
 
 - (void)uploadFileAsset:(NSMutableArray *)assets serverUrl:(NSString *)serverUrl cryptated:(BOOL)cryptated useSubFolder:(BOOL)useSubFolder session:(NSString *)session;
 
-- (void)reloadTaskButton:(CCMetadata *)metadata;
-- (void)cancelTaskButton:(CCMetadata *)metadata reloadTable:(BOOL)reloadTable;
-- (void)stopTaskButton:(CCMetadata *)metadata;
+- (void)reloadTaskButton:(tableMetadata *)metadata;
+- (void)cancelTaskButton:(tableMetadata *)metadata reloadTable:(BOOL)reloadTable;
+- (void)stopTaskButton:(tableMetadata *)metadata;
 
 - (void)reloadDatasource;
 - (void)reloadDatasource:(NSString *)serverUrl fileID:(NSString *)fileID selector:(NSString *)selector;
 
 - (void)requestServerCapabilities;
 
-- (void)openWindowShare:(CCMetadata *)metadata;
+- (void)openWindowShare:(tableMetadata *)metadata;
 - (void)synchronizeFolderGraphicsServerUrl:(NSString *)serverUrl animation:(BOOL)animation;
 - (void)clearDateReadDataSource:(NSNotification *)notification;
 - (void)cancelSearchBar;

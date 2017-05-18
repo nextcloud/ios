@@ -58,7 +58,7 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(triggerProgressTask:) name:@"NotificationProgressTask" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
 
-        self.metadataDetail = [[CCMetadata alloc] init];
+        self.metadataDetail = [[tableMetadata alloc] init];
         self.photos = [[NSMutableArray alloc] init];
         self.thumbs = [[NSMutableArray alloc] init];
         self.dataSourceImagesVideos = [[NSMutableArray alloc] init];
@@ -391,7 +391,7 @@
     if ([self.dataSourceImagesVideos count] == 0) return;
     
     NSUInteger index = 0;
-    for (CCMetadata *metadata in self.dataSourceImagesVideos) {
+    for (tableMetadata *metadata in self.dataSourceImagesVideos) {
         
         // start from here ?
         if (self.metadataDetail.fileID && [metadata.fileID isEqualToString:self.metadataDetail.fileID])
@@ -447,7 +447,7 @@
 
 - (NSString *)photoBrowser:(MWPhotoBrowser *)photoBrowser titleForPhotoAtIndex:(NSUInteger)index
 {
-    CCMetadata *metadata = [self.dataSourceImagesVideos objectAtIndex:index];
+    tableMetadata *metadata = [self.dataSourceImagesVideos objectAtIndex:index];
     
     NSString *titleDir = metadata.fileNamePrint;
     self.title = titleDir;
@@ -457,7 +457,7 @@
 
 - (void)photoBrowser:(MWPhotoBrowser *)photoBrowser didDisplayPhotoAtIndex:(NSUInteger)index
 {
-    CCMetadata *metadata = [self.dataSourceImagesVideos objectAtIndex:index];
+    tableMetadata *metadata = [self.dataSourceImagesVideos objectAtIndex:index];
     NSString *directory;
     
     self.indexNowVisible = index;
@@ -496,7 +496,7 @@
     else
         directory = app.directoryUser;
 
-    CCMetadata *metadata = [self.dataSourceImagesVideos objectAtIndex:index];
+    tableMetadata *metadata = [self.dataSourceImagesVideos objectAtIndex:index];
     
     //NSLog(@"[LOG] photoBrowser: photoAtIndex : %lu ---- di totali photo : %lu", (unsigned long)index, (unsigned long)_photos.count);
     
@@ -610,7 +610,7 @@
 {
     NSString *directory;
     
-    CCMetadata *metadata = [self.dataSourceImagesVideos objectAtIndex:index];
+    tableMetadata *metadata = [self.dataSourceImagesVideos objectAtIndex:index];
     
     if (_sourceDirectoryLocal)
         directory = self.metadataDetail.directoryID;
@@ -651,7 +651,7 @@
 {
     NSString *filePath;
 
-    CCMetadata *metadata = [self.dataSourceImagesVideos objectAtIndex:index];
+    tableMetadata *metadata = [self.dataSourceImagesVideos objectAtIndex:index];
     if (metadata == nil) return;
     
     if (_sourceDirectoryLocal) {
@@ -676,14 +676,14 @@
 
 - (void)photoBrowser:(MWPhotoBrowser *)photoBrowser shareButtonPressedForPhotoAtIndex:(NSUInteger)index
 {
-    CCMetadata *metadata = [self.dataSourceImagesVideos objectAtIndex:index];
+    tableMetadata *metadata = [self.dataSourceImagesVideos objectAtIndex:index];
     
     [app.activeMain openWindowShare:metadata];
 }
 
 - (void)photoBrowser:(MWPhotoBrowser *)photoBrowser deleteButtonPressedForPhotoAtIndex:(NSUInteger)index deleteButton:(UIBarButtonItem *)deleteButton
 {
-    CCMetadata *metadata = [self.dataSourceImagesVideos objectAtIndex:index];
+    tableMetadata *metadata = [self.dataSourceImagesVideos objectAtIndex:index];
     if (metadata == nil || [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID]] == NO) {
         
         [app messageNotification:@"_info_" description:@"_file_not_found_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
@@ -731,7 +731,7 @@
     [self.photoBrowser reloadData];
 }
 
-- (void)downloadPhotoBrowserSuccess:(CCMetadata *)metadataVar selector:(NSString *)selector
+- (void)downloadPhotoBrowserSuccess:(tableMetadata *)metadataVar selector:(NSString *)selector
 {
     NSUInteger index = 0;
     
@@ -741,7 +741,7 @@
     
     for (NSUInteger i=0; i < [self.dataSourceImagesVideos count]; i++ ) {
         
-        CCMetadata *metadata = [self.dataSourceImagesVideos objectAtIndex:i];
+        tableMetadata *metadata = [self.dataSourceImagesVideos objectAtIndex:i];
         
         // search index
         if ([metadataVar.fileID isEqualToString:metadata.fileID]) {
@@ -768,7 +768,7 @@
     }    
 }
 
-- (void)downloadPhotoBrowser:(CCMetadata *)metadata
+- (void)downloadPhotoBrowser:(tableMetadata *)metadata
 {
     NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account];
     
@@ -813,7 +813,7 @@
         // Fix BUG Geo latitude & longitude
         if ([localFile.exifLatitude doubleValue] == 9999 || [localFile.exifLongitude doubleValue] == 9999) {
             
-            CCMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, app.activeAccount] context:nil];
+            tableMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, app.activeAccount] context:nil];
             
             [CCExifGeo setExifLocalTableFileID:metadata directoryUser:app.directoryUser activeAccount:app.activeAccount];
         }
@@ -1007,7 +1007,7 @@
         // only photoBrowser if exists
         for (NSUInteger index=0; index < [self.dataSourceImagesVideos count] && _photoBrowser; index++ ) {
         
-            CCMetadata *metadata = [self.dataSourceImagesVideos objectAtIndex:index];
+            tableMetadata *metadata = [self.dataSourceImagesVideos objectAtIndex:index];
         
             // ricerca index
             if ([metadataNet.metadata.fileID isEqualToString:metadata.fileID]) {
