@@ -113,7 +113,7 @@
         [CCCoreData deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND (fileID = %@) AND ((session == NULL) OR (session == ''))", app.activeAccount, metadata.directoryID, metadata.fileID]];
         
         // end test, insert in CoreData
-        [CCCoreData addMetadata:metadata activeAccount:app.activeAccount activeUrl:app.activeUrl context:nil];
+        [[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:app.activeUrl];
         
         // insert for test NOT favorite
         [filesID addObject:metadata.fileID];
@@ -320,12 +320,8 @@
                 NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:app.activeAccount];
                     
                 // Verify if do not exists this Metadata
-                if (![CCCoreData getTableMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileID == %@)", metadataNet.account, metadata.fileID]]) {
-                    
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [CCCoreData addMetadata:metadata activeAccount:app.activeAccount activeUrl:app.activeUrl context:nil];
-                    });
-                }
+                if (![CCCoreData getTableMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileID == %@)", metadataNet.account, metadata.fileID]])
+                    [[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:app.activeUrl];
               
                 // Load if different etag
                 
@@ -360,12 +356,8 @@
                 if ([metadataNet.selector isEqualToString:selectorReadFolder]) {
                     
                     // Verify if do not exists this Metadata
-                    if (![CCCoreData getTableMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileID == %@)", metadataNet.account, metadata.fileID]]) {
-                    
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            [CCCoreData addMetadata:metadata activeAccount:metadataNet.account activeUrl:metadataNet.serverUrl context:nil];
-                        });
-                    }
+                    if (![CCCoreData getTableMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileID == %@)", metadataNet.account, metadata.fileID]])
+                        [[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:metadataNet.serverUrl];
                 }
             }
         }
@@ -520,7 +512,8 @@
                 [CCCoreData clearDateReadAccount:app.activeAccount serverUrl:serverUrl directoryID:nil];
             }
             
-            [CCCoreData addMetadata:metadata activeAccount:app.activeAccount activeUrl:serverUrl context:nil];
+            //[CCCoreData addMetadata:metadata activeAccount:app.activeAccount activeUrl:serverUrl context:nil];
+            [[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:serverUrl];
         
             CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
             

@@ -294,7 +294,8 @@
             if (isCryptoComplete == NO) continue;
         }
         
-        [CCCoreData addMetadata:metadata activeAccount:activeAccount activeUrl:activeUrl context:nil];
+        //[CCCoreData addMetadata:metadata activeAccount:activeAccount activeUrl:activeUrl context:nil];
+        [[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:activeUrl];
         
         // if plist do not exists, download it !
         if ([CCUtility isCryptoPlistString:metadata.fileName] && [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, metadata.fileName]] == NO) {

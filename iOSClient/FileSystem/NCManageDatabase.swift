@@ -1134,7 +1134,7 @@ class NCManageDatabase: NSObject {
         
         try! realm.write {
             
-            realm.add(metadataWithIcon!)
+            realm.add(metadataWithIcon!, update: true)
         }
     }
     

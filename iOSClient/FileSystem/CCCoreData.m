@@ -50,6 +50,7 @@
 #pragma mark ===== Metadata =====
 #pragma --------------------------------------------------------------------------------------------
 
+/*
 + (void)addMetadata:(tableMetadata *)metadata activeAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl context:(NSManagedObjectContext *)context
 {
     if (context == nil)
@@ -78,6 +79,7 @@
     
     [context MR_saveToPersistentStoreAndWait];
 }
+
 
 + (void)deleteMetadataWithPredicate:(NSPredicate *)predicate
 {
@@ -326,7 +328,7 @@
             [self setOfflineLocalFileID:record.fileID offline:NO activeAccount:activeAccount];
     }];
 }
-
+*/
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Directory =====
 #pragma --------------------------------------------------------------------------------------------
@@ -906,7 +908,9 @@
     for (TableLocalFile *file in files) {
         
         NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", file.fileID, activeAccount];
-        tableMetadata *metadata = [self getMetadataWithPreficate:predicate context:nil];
+        //tableMetadata *metadata = [self getMetadataWithPreficate:predicate context:nil];
+        
+        tableMetadata *metadata =  [[NCManageDatabase sharedInstance] getMetadataWithPreficate:predicate];
         
         if (metadata) {
             
@@ -1203,10 +1207,11 @@
             if (upDir && directoryID && fileName) {
             
                 NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(directoryID == %@) AND (account == %@) AND (directory == 1) AND (fileNameData == %@)", directoryID, activeAccount, fileName];
-                TableMetadata *tableMetadata = [self getTableMetadataWithPreficate:predicate];
+                //TableMetadata *tableMetadata = [self getTableMetadataWithPreficate:predicate];
+                tableMetadata *metadata =  [[NCManageDatabase sharedInstance] getMetadataWithPreficate:predicate];
                 
-                if (tableMetadata)
-                    [tableMetadatas addObject:tableMetadata];
+                if (metadata)
+                    [tableMetadatas addObject:metadata];
             }
         }
     }
@@ -1219,10 +1224,11 @@
     for (TableLocalFile *localFile in localFiles) {
         
         NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (fileID == %@)", activeAccount, localFile.fileID];
-        TableMetadata *tableMetadata = [self getTableMetadataWithPreficate:predicate];
+        //TableMetadata *tableMetadata = [self getTableMetadataWithPreficate:predicate];
+        tableMetadata *metadata =  [[NCManageDatabase sharedInstance] getMetadataWithPreficate:predicate];
         
-        if (tableMetadata)
-            [tableMetadatas addObject:tableMetadata];
+        if (metadata)
+            [tableMetadatas addObject:metadata];
     }
     
     // Order
@@ -1271,7 +1277,9 @@
     [CCUtility insertInformationPlist:metadata directoryUser:directoryUser];
     
     // aggiorniamo il CCMetadata
-    [self updateMetadata:metadata predicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", metadata.fileID, activeAccount] activeAccount:activeAccount activeUrl:activeUrl context:nil];
+    //[self updateMetadata:metadata predicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", metadata.fileID, activeAccount] activeAccount:activeAccount activeUrl:activeUrl context:nil];
+    
+    [[NCManageDatabase sharedInstance] updateMetadata:metadata activeUrl:activeUrl];
     
     // se è un template aggiorniamo anche nel FileSystem
     if ([metadata.type isEqualToString: k_metadataType_template]){
@@ -1288,7 +1296,10 @@
     
     // ------------------------------------------ COREDATA -------------------------------------------
     
-    [self deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", metadata.fileID, activeAccount]];
+    //[self deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", metadata.fileID, activeAccount]];
+    
+    [[NCManageDatabase sharedInstance] deleteMetadata:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", metadata.fileID, activeAccount]];
+    
     [self deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", metadata.fileID, activeAccount]];
     
     // se è una directory cancelliamo tutto quello che è della directory

@@ -1910,7 +1910,8 @@
         }
 
         // end test, insert in CoreData
-        [CCCoreData addMetadata:metadata activeAccount:app.activeAccount activeUrl:app.activeUrl context:nil];
+        //[CCCoreData addMetadata:metadata activeAccount:app.activeAccount activeUrl:app.activeUrl context:nil];
+        [[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:app.activeUrl];
     }
     
     // read plist
