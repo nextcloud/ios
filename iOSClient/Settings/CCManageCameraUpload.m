@@ -211,29 +211,29 @@
             if (app.activeMain)
                 [app.activeMain createFolderCameraUpload];
             
-            [[NCManageDatabase sharedInstance] setAccountCameraStateFiledWithField:@"cameraUpload" state:YES];
+            [[NCManageDatabase sharedInstance] setAccountCameraStateFiled:@"cameraUpload" state:YES];
             
             // Default
-            [[NCManageDatabase sharedInstance] setAccountsCameraUploadFolderNameWithFolderName:nil];
-            [[NCManageDatabase sharedInstance] setAccountsCameraUploadFolderPathWithPathName:nil activeUrl:app.activeUrl];
+            [[NCManageDatabase sharedInstance] setAccountCameraUploadFolderName:nil];
+            [[NCManageDatabase sharedInstance] setAccountCameraUploadFolderPath:nil activeUrl:app.activeUrl];
             
             // verifichiamo che almeno uno dei servizi (foto video) siano attivi, in caso contrario attiviamo le foto
             if (tableAccount.cameraUploadPhoto == NO && tableAccount.cameraUploadVideo == NO)
-                [[NCManageDatabase sharedInstance] setAccountCameraStateFiledWithField:@"cameraUploadPhoto" state:YES];
+                [[NCManageDatabase sharedInstance] setAccountCameraStateFiled:@"cameraUploadPhoto" state:YES];
             
             // Settings date
             if (tableAccount.cameraUploadPhoto)
-                [[NCManageDatabase sharedInstance] setAccountCameraUploadDateAssetTypeWithAssetMediaType:PHAssetMediaTypeImage assetDate:[NSDate date]];
+                [[NCManageDatabase sharedInstance] setAccountCameraUploadDateAssetType:PHAssetMediaTypeImage assetDate:[NSDate date]];
             if (tableAccount.cameraUploadVideo)
-                [[NCManageDatabase sharedInstance] setAccountCameraUploadDateAssetTypeWithAssetMediaType:PHAssetMediaTypeVideo assetDate:[NSDate date]];
+                [[NCManageDatabase sharedInstance] setAccountCameraUploadDateAssetType:PHAssetMediaTypeVideo assetDate:[NSDate date]];
             
         } else {
             
-            [[NCManageDatabase sharedInstance] setAccountCameraStateFiledWithField:@"cameraUpload" state:NO];
-            [[NCManageDatabase sharedInstance] setAccountCameraStateFiledWithField:@"cameraUploadFull" state:NO];
+            [[NCManageDatabase sharedInstance] setAccountCameraStateFiled:@"cameraUpload" state:NO];
+            [[NCManageDatabase sharedInstance] setAccountCameraStateFiled:@"cameraUploadFull" state:NO];
             
-            [[NCManageDatabase sharedInstance] setAccountCameraUploadDateAssetTypeWithAssetMediaType:PHAssetMediaTypeImage assetDate:nil];
-            [[NCManageDatabase sharedInstance] setAccountCameraUploadDateAssetTypeWithAssetMediaType:PHAssetMediaTypeVideo assetDate:nil];
+            [[NCManageDatabase sharedInstance] setAccountCameraUploadDateAssetType:PHAssetMediaTypeImage assetDate:nil];
+            [[NCManageDatabase sharedInstance] setAccountCameraUploadDateAssetType:PHAssetMediaTypeVideo assetDate:nil];
 
             // remove
             [[NCManageDatabase sharedInstance] clearTable:[tableAutomaticUpload class] account:app.activeAccount];
@@ -259,7 +259,7 @@
                 UIAlertView * alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_cameraupload_background_title_", nil) message:[CCUtility localizableBrand:@"_cameraupload_background_msg_" table:nil] delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
                 [alertView show];
                     
-                [[NCManageDatabase sharedInstance] setAccountCameraStateFiledWithField:@"cameraUploadBackground" state:YES];
+                [[NCManageDatabase sharedInstance] setAccountCameraStateFiled:@"cameraUploadBackground" state:YES];
                     
             } else {
                  
@@ -268,7 +268,7 @@
             
         } else {
             
-            [[NCManageDatabase sharedInstance] setAccountCameraStateFiledWithField:@"cameraUploadBackground" state:NO];
+            [[NCManageDatabase sharedInstance] setAccountCameraStateFiled:@"cameraUploadBackground" state:NO];
             [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
         }
     }
@@ -278,12 +278,12 @@
         if ([[rowDescriptor.value valueData] boolValue] == YES) {
             
             [[NSNotificationCenter defaultCenter] postNotificationName:@"setupCameraUploadFull" object:nil];
-            [[NCManageDatabase sharedInstance] setAccountCameraStateFiledWithField:@"cameraUploadFull" state:YES];
+            [[NCManageDatabase sharedInstance] setAccountCameraStateFiled:@"cameraUploadFull" state:YES];
             
         } else {
             
             [[NCManageDatabase sharedInstance] clearTable:[tableAutomaticUpload class] account:app.activeAccount];
-            [[NCManageDatabase sharedInstance] setAccountCameraStateFiledWithField:@"cameraUploadFull" state:NO];
+            [[NCManageDatabase sharedInstance] setAccountCameraStateFiled:@"cameraUploadFull" state:NO];
         }
     }
 
@@ -291,44 +291,44 @@
         
         if ([[rowDescriptor.value valueData] boolValue] == YES) {
             
-            [[NCManageDatabase sharedInstance] setAccountCameraUploadDateAssetTypeWithAssetMediaType:PHAssetMediaTypeImage assetDate:[NSDate date]];
+            [[NCManageDatabase sharedInstance] setAccountCameraUploadDateAssetType:PHAssetMediaTypeImage assetDate:[NSDate date]];
             
         } else {
             
-            [[NCManageDatabase sharedInstance] setAccountCameraUploadDateAssetTypeWithAssetMediaType:PHAssetMediaTypeImage assetDate:nil];
+            [[NCManageDatabase sharedInstance] setAccountCameraUploadDateAssetType:PHAssetMediaTypeImage assetDate:nil];
         }
                 
-        [[NCManageDatabase sharedInstance] setAccountCameraStateFiledWithField:@"cameraUploadPhoto" state:[[rowDescriptor.value valueData] boolValue]];
+        [[NCManageDatabase sharedInstance] setAccountCameraStateFiled:@"cameraUploadPhoto" state:[[rowDescriptor.value valueData] boolValue]];
         
     }
     
     if ([rowDescriptor.tag isEqualToString:@"camerauploadwwanphoto"]) {
         
-        [[NCManageDatabase sharedInstance] setAccountCameraStateFiledWithField:@"cameraUploadWWAnPhoto" state:[[rowDescriptor.value valueData] boolValue]];
+        [[NCManageDatabase sharedInstance] setAccountCameraStateFiled:@"cameraUploadWWAnPhoto" state:[[rowDescriptor.value valueData] boolValue]];
     }
     
     if ([rowDescriptor.tag isEqualToString:@"camerauploadvideo"]) {
     
         if ([[rowDescriptor.value valueData] boolValue] == YES) {
                 
-            [[NCManageDatabase sharedInstance] setAccountCameraUploadDateAssetTypeWithAssetMediaType:PHAssetMediaTypeVideo assetDate:[NSDate date]];
+            [[NCManageDatabase sharedInstance] setAccountCameraUploadDateAssetType:PHAssetMediaTypeVideo assetDate:[NSDate date]];
 
         } else {
                 
-            [[NCManageDatabase sharedInstance] setAccountCameraUploadDateAssetTypeWithAssetMediaType:PHAssetMediaTypeVideo assetDate:nil];
+            [[NCManageDatabase sharedInstance] setAccountCameraUploadDateAssetType:PHAssetMediaTypeVideo assetDate:nil];
         }
             
-        [[NCManageDatabase sharedInstance] setAccountCameraStateFiledWithField:@"cameraUploadVideo" state:[[rowDescriptor.value valueData] boolValue]];
+        [[NCManageDatabase sharedInstance] setAccountCameraStateFiled:@"cameraUploadVideo" state:[[rowDescriptor.value valueData] boolValue]];
     }
     
     if ([rowDescriptor.tag isEqualToString:@"camerauploadwwanvideo"]) {
         
-        [[NCManageDatabase sharedInstance] setAccountCameraStateFiledWithField:@"cameraUploadWWAnVideo" state:[[rowDescriptor.value valueData] boolValue]];
+        [[NCManageDatabase sharedInstance] setAccountCameraStateFiled:@"cameraUploadWWAnVideo" state:[[rowDescriptor.value valueData] boolValue]];
     }
     
     if ([rowDescriptor.tag isEqualToString:@"camerauploadcreatesubfolder"]) {
         
-        [[NCManageDatabase sharedInstance] setAccountCameraStateFiledWithField:@"cameraUploadCreateSubfolder" state:[[rowDescriptor.value valueData] boolValue]];
+        [[NCManageDatabase sharedInstance] setAccountCameraStateFiled:@"cameraUploadCreateSubfolder" state:[[rowDescriptor.value valueData] boolValue]];
     }
 }
 

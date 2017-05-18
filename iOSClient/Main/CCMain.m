@@ -781,8 +781,8 @@
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
     if (tableAccount.cameraUpload) {
         
-        [[NCManageDatabase sharedInstance] setAccountCameraUploadDateAssetTypeWithAssetMediaType:PHAssetMediaTypeImage assetDate:[NSDate date]];
-        [[NCManageDatabase sharedInstance] setAccountCameraUploadDateAssetTypeWithAssetMediaType:PHAssetMediaTypeVideo assetDate:[NSDate date]];
+        [[NCManageDatabase sharedInstance] setAccountCameraUploadDateAssetType:PHAssetMediaTypeImage assetDate:[NSDate date]];
+        [[NCManageDatabase sharedInstance] setAccountCameraUploadDateAssetType:PHAssetMediaTypeVideo assetDate:[NSDate date]];
     }
 }
 
@@ -1474,7 +1474,7 @@
         if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image]) {
             
             // evitiamo il rimando photo
-            [[NCManageDatabase sharedInstance] setAccountCameraUploadDateAssetTypeWithAssetMediaType:PHAssetMediaTypeImage assetDate:[NSDate date]];
+            [[NCManageDatabase sharedInstance] setAccountCameraUploadDateAssetType:PHAssetMediaTypeImage assetDate:[NSDate date]];
 
             UIImage *image = [UIImage imageWithContentsOfFile:file];
             
@@ -1487,7 +1487,7 @@
         if ([metadata.typeFile isEqualToString: k_metadataTypeFile_video]) {
             
             // we avoid the cross-reference video
-            [[NCManageDatabase sharedInstance] setAccountCameraUploadDateAssetTypeWithAssetMediaType:PHAssetMediaTypeVideo assetDate:[NSDate date]];
+            [[NCManageDatabase sharedInstance] setAccountCameraUploadDateAssetType:PHAssetMediaTypeVideo assetDate:[NSDate date]];
             
             [[NSFileManager defaultManager] linkItemAtPath:file toPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileNamePrint] error:nil];
             
@@ -4277,8 +4277,8 @@
                                         //[CCCoreData setCameraUploadFolderName:_metadata.fileName activeAccount:app.activeAccount];
                                         //[CCCoreData setCameraUploadFolderPath:serverUrl activeUrl:app.activeUrl activeAccount:app.activeAccount];
                                         
-                                        [[NCManageDatabase sharedInstance] setAccountsCameraUploadFolderNameWithFolderName:_metadata.fileName];
-                                        [[NCManageDatabase sharedInstance] setAccountsCameraUploadFolderPathWithPathName:serverUrl activeUrl:app.activeUrl];
+                                        [[NCManageDatabase sharedInstance] setAccountCameraUploadFolderName:_metadata.fileName];
+                                        [[NCManageDatabase sharedInstance] setAccountCameraUploadFolderPath:serverUrl activeUrl:app.activeUrl];
                                         
                                         
                                         [CCCoreData clearDateReadAccount:app.activeAccount serverUrl:oldPath directoryID:nil];

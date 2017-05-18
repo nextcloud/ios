@@ -314,7 +314,7 @@ class NCManageDatabase: NSObject {
         return activeAccount
     }
 
-    func setAccountCameraStateFiled(field: String, state: Bool) {
+    func setAccountCameraStateFiled(_ field: String, state: Bool) {
         
         let realm = try! Realm()
         
@@ -346,7 +346,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func setAccountCameraUploadDateAssetType(assetMediaType: PHAssetMediaType, assetDate: NSDate?) {
+    func setAccountCameraUploadDateAssetType(_ assetMediaType: PHAssetMediaType, assetDate: NSDate?) {
 
         let realm = try! Realm()
         
@@ -362,7 +362,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func setAccountsCameraUploadFolderName(folderName: String?) {
+    func setAccountCameraUploadFolderName(_ folderName: String?) {
         
         let realm = try! Realm()
         var folderName : String? = folderName
@@ -380,7 +380,7 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    func setAccountsCameraUploadFolderPath(pathName: String?, activeUrl: String) {
+    func setAccountCameraUploadFolderPath(_ pathName: String?, activeUrl: String) {
         
         let realm = try! Realm()
         var pathName : String? = pathName

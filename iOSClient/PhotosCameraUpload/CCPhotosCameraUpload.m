@@ -353,10 +353,10 @@
                     [dataToShare enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
                         
                         if ([obj isKindOfClass:[UIImage class]])
-                            [[NCManageDatabase sharedInstance] setAccountCameraUploadDateAssetTypeWithAssetMediaType:PHAssetMediaTypeImage assetDate:[NSDate date]];
+                            [[NCManageDatabase sharedInstance] setAccountCameraUploadDateAssetType:PHAssetMediaTypeImage assetDate:[NSDate date]];
                         
                         if ([obj isKindOfClass:[NSURL class]])
-                            [[NCManageDatabase sharedInstance] setAccountCameraUploadDateAssetTypeWithAssetMediaType:PHAssetMediaTypeVideo assetDate:[NSDate date]];
+                            [[NCManageDatabase sharedInstance] setAccountCameraUploadDateAssetType:PHAssetMediaTypeVideo assetDate:[NSDate date]];
                     }];
                     
                     [self performSelector:@selector(reloadCollection) withObject:nil];
@@ -775,7 +775,7 @@
         
     } else {
         
-        [[NCManageDatabase sharedInstance] setAccountCameraStateFiledWithField:@"cameraUpload" state:NO];
+        [[NCManageDatabase sharedInstance] setAccountCameraStateFiled:@"cameraUpload" state:NO];
                         
         [PHPhotoLibrary.sharedPhotoLibrary unregisterChangeObserver:self];
         
@@ -799,7 +799,7 @@
         
     } else {
         
-        [[NCManageDatabase sharedInstance] setAccountCameraStateFiledWithField:@"cameraUpload" state:NO];
+        [[NCManageDatabase sharedInstance] setAccountCameraStateFiled:@"cameraUpload" state:NO];
                 
         [PHPhotoLibrary.sharedPhotoLibrary unregisterChangeObserver:self];
         
@@ -826,7 +826,7 @@
         
     } else {
         
-        [[NCManageDatabase sharedInstance] setAccountCameraStateFiledWithField:@"cameraUpload" state:NO];
+        [[NCManageDatabase sharedInstance] setAccountCameraStateFiled:@"cameraUpload" state:NO];
         
         [PHPhotoLibrary.sharedPhotoLibrary unregisterChangeObserver:self];
         
@@ -864,7 +864,7 @@
                 
                 if ([ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusAuthorized) {
                     
-                    [[NCManageDatabase sharedInstance] setAccountCameraStateFiledWithField:@"cameraUploadBackground" state:NO];
+                    [[NCManageDatabase sharedInstance] setAccountCameraStateFiled:@"cameraUploadBackground" state:NO];
                     
                     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_location_not_enabled_", nil)
                                                                     message:NSLocalizedString(@"_location_not_enabled_msg_", nil)
@@ -888,12 +888,12 @@
             
             if ([ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusAuthorized) {
                 
-                [[NCManageDatabase sharedInstance] setAccountCameraStateFiledWithField:@"cameraUploadBackground" state:YES];
+                [[NCManageDatabase sharedInstance] setAccountCameraStateFiled:@"cameraUploadBackground" state:YES];
                 [[CCManageLocation sharedInstance] startSignificantChangeUpdates];
                 
             } else {
                 
-                [[NCManageDatabase sharedInstance] setAccountCameraStateFiledWithField:@"cameraUploadBackground" state:NO];
+                [[NCManageDatabase sharedInstance] setAccountCameraStateFiled:@"cameraUploadBackground" state:NO];
                 [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
                 
                 UIAlertView * alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_access_photo_not_enabled_", nil)
@@ -907,7 +907,7 @@
         
     } else {
         
-        [[NCManageDatabase sharedInstance] setAccountCameraStateFiledWithField:@"cameraUploadBackground" state:NO];
+        [[NCManageDatabase sharedInstance] setAccountCameraStateFiled:@"cameraUploadBackground" state:NO];
         [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
         
         if ([ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusAuthorized) {
@@ -956,7 +956,7 @@
                 
                 if ([CCManageLocation sharedInstance].firstChangeAuthorizationDone) {
                     
-                    [[NCManageDatabase sharedInstance] setAccountCameraStateFiledWithField:@"cameraUploadBackground" state:NO];
+                    [[NCManageDatabase sharedInstance] setAccountCameraStateFiled:@"cameraUploadBackground" state:NO];
                     [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
                 }
                 
@@ -976,7 +976,7 @@
             
             if (tableAccount.cameraUploadBackground) {
                 
-                [[NCManageDatabase sharedInstance] setAccountCameraStateFiledWithField:@"cameraUploadBackground" state:NO];
+                [[NCManageDatabase sharedInstance] setAccountCameraStateFiled:@"cameraUploadBackground" state:NO];
                 [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
                 
                 if ([ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusAuthorized) {
@@ -1028,8 +1028,8 @@
             
         } else {
             
-            [[NCManageDatabase sharedInstance] setAccountCameraStateFiledWithField:@"cameraUpload" state:NO];
-            [[NCManageDatabase sharedInstance] setAccountCameraStateFiledWithField:@"cameraUploadBackground" state:NO];
+            [[NCManageDatabase sharedInstance] setAccountCameraStateFiled:@"cameraUpload" state:NO];
+            [[NCManageDatabase sharedInstance] setAccountCameraStateFiled:@"cameraUploadBackground" state:NO];
             
             [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
             [PHPhotoLibrary.sharedPhotoLibrary unregisterChangeObserver:self];
@@ -1311,7 +1311,7 @@
         
         // Update Camera Upload data
         if ([metadataNet.selector isEqualToString:selectorUploadAutomatic])
-            [[NCManageDatabase sharedInstance] setAccountCameraUploadDateAssetTypeWithAssetMediaType:assetMediaType assetDate:assetDate];
+            [[NCManageDatabase sharedInstance] setAccountCameraUploadDateAssetType:assetMediaType assetDate:assetDate];
         
         // Update icon badge number
         [app updateApplicationIconBadgeNumber];

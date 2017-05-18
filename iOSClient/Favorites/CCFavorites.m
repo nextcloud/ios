@@ -162,8 +162,8 @@
     // evitiamo il rimando della eventuale photo e/o video
     if (tableAccount.cameraUpload) {
         
-        [[NCManageDatabase sharedInstance] setAccountCameraUploadDateAssetTypeWithAssetMediaType:PHAssetMediaTypeImage assetDate:[NSDate date]];
-        [[NCManageDatabase sharedInstance] setAccountCameraUploadDateAssetTypeWithAssetMediaType:PHAssetMediaTypeVideo assetDate:[NSDate date]];
+        [[NCManageDatabase sharedInstance] setAccountCameraUploadDateAssetType:PHAssetMediaTypeImage assetDate:[NSDate date]];
+        [[NCManageDatabase sharedInstance] setAccountCameraUploadDateAssetType:PHAssetMediaTypeVideo assetDate:[NSDate date]];
     }
 }
 
