@@ -197,7 +197,7 @@
     self.searchController.searchBar.delegate = self;
     self.searchController.searchBar.placeholder = NSLocalizedString(@"_search_this_folder_",nil);
     
-    if ([[NCManageDatabase sharedInstance] getServerVersionAccount:app.activeAccount] >= 12) {
+    if ([[NCManageDatabase sharedInstance] getServerVersion] >= 12) {
         
         if (_isRoot)
             self.searchController.searchBar.scopeButtonTitles = [NSArray arrayWithObjects:NSLocalizedString(@"_search_this_folder_",nil),NSLocalizedString(@"_search_all_folders_",nil), nil];
@@ -356,9 +356,11 @@
         
         // populate shared Link & User variable
         
-        NSArray *results = [[NCManageDatabase sharedInstance] getSharesAccount:app.activeAccount];
-        app.sharesLink = results[0];
-        app.sharesUserAndGroup = results[1];
+        NSArray *results = [[NCManageDatabase sharedInstance] getShares];
+        if (results) {
+            app.sharesLink = results[0];
+            app.sharesUserAndGroup = results[1];
+        }
         
         // Setting Theming
         [app settingThemingColorBrand];
@@ -1082,10 +1084,10 @@
 
 - (void)getExternalSitesServerSuccess:(NSArray *)listOfExternalSites
 {
-    [[NCManageDatabase sharedInstance] deleteExternalSitesForAccount:app.activeAccount];
+    [[NCManageDatabase sharedInstance] deleteExternalSites];
     
     for (OCExternalSites *tableExternalSites in listOfExternalSites)
-        [[NCManageDatabase sharedInstance] addExternalSites:tableExternalSites account:app.activeAccount];
+        [[NCManageDatabase sharedInstance] addExternalSites:tableExternalSites];
 }
 
 - (void)getExternalSitesServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
@@ -1218,7 +1220,7 @@
 - (void)getCapabilitiesOfServerSuccess:(OCCapabilities *)capabilities
 {
     // Update capabilities db
-    [[NCManageDatabase sharedInstance] addCapabilities:capabilities account:app.activeAccount];
+    [[NCManageDatabase sharedInstance] addCapabilities:capabilities];
     
     // ------ THEMING -----------------------------------------------------------------------
     
@@ -1242,7 +1244,7 @@
     // ------ SEARCH  ------------------------------------------------------------------------
     
     // Search bar if change version
-    if ([[NCManageDatabase sharedInstance] getServerVersionAccount:app.activeAccount] != capabilities.versionMajor) {
+    if ([[NCManageDatabase sharedInstance] getServerVersion] != capabilities.versionMajor) {
     
         [self cancelSearchBar];
         
@@ -1998,7 +2000,7 @@
         
         _searchFileName = fileName;
         
-        if ([[NCManageDatabase sharedInstance] getServerVersionAccount:app.activeAccount] >= 12 && ![_depth isEqualToString:@"0"]) {
+        if ([[NCManageDatabase sharedInstance] getServerVersion] >= 12 && ![_depth isEqualToString:@"0"]) {
             
             [[CCActions sharedInstance] search:_serverUrl fileName:_searchFileName depth:_depth delegate:self];
             
@@ -2903,9 +2905,11 @@
     if([record.account isEqualToString:metadataNet.account] == NO)
         return;
     
-    NSArray *result = [[NCManageDatabase sharedInstance] updateShare:items account:appDelegate.activeAccount activeUrl:appDelegate.activeUrl];
-    appDelegate.sharesLink = result[0];
-    appDelegate.sharesUserAndGroup = result[1];
+    NSArray *result = [[NCManageDatabase sharedInstance] updateShare:items activeUrl:appDelegate.activeUrl];
+    if (result) {
+        appDelegate.sharesLink = result[0];
+        appDelegate.sharesUserAndGroup = result[1];
+    }
     
     if (openWindow) {
             
@@ -2974,10 +2978,12 @@
     AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
 
     // rimuoviamo la condivisione da db
-    NSArray *result = [[NCManageDatabase sharedInstance] unShare:metadataNet.share fileName:metadataNet.fileName serverUrl:metadataNet.serverUrl sharesLink:appDelegate.sharesLink sharesUserAndGroup:appDelegate.sharesUserAndGroup account:appDelegate.activeAccount];
+    NSArray *result = [[NCManageDatabase sharedInstance] unShare:metadataNet.share fileName:metadataNet.fileName serverUrl:metadataNet.serverUrl sharesLink:appDelegate.sharesLink sharesUserAndGroup:appDelegate.sharesUserAndGroup];
     
-    appDelegate.sharesLink = result[0];
-    appDelegate.sharesUserAndGroup = result[1];
+    if (result) {
+        appDelegate.sharesLink = result[0];
+        appDelegate.sharesUserAndGroup = result[1];
+    }
     
     if (_shareOC)
         [_shareOC reloadData];
@@ -3285,7 +3291,7 @@
     if ([NCBrandOptions sharedInstance].disable_multiaccount)
         return;
     
-    if ([app.netQueue operationCount] > 0 || [app.netQueueDownload operationCount] > 0 || [app.netQueueDownloadWWan operationCount] > 0 || [app.netQueueUpload operationCount] > 0 || [app.netQueueUploadWWan operationCount] > 0 || [[NCManageDatabase sharedInstance] countAutomaticUploadForAccount:app.activeAccount session:nil] > 0) {
+    if ([app.netQueue operationCount] > 0 || [app.netQueueDownload operationCount] > 0 || [app.netQueueDownloadWWan operationCount] > 0 || [app.netQueueUpload operationCount] > 0 || [app.netQueueUploadWWan operationCount] > 0 || [[NCManageDatabase sharedInstance] countAutomaticUpload:nil] > 0) {
         
         [app messageNotification:@"_transfers_in_queue_" description:nil visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
         return;

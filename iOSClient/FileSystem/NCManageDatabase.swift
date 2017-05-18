@@ -505,7 +505,6 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         
         let tableAccount = self.getAccountActive()
-        
         if tableAccount == nil {
             return false
         }
@@ -542,7 +541,6 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         
         let tableAccount = self.getAccountActive()
-        
         if tableAccount == nil {
             return nil
         }
@@ -577,7 +575,6 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         
         let tableAccount = self.getAccountActive()
-        
         if tableAccount == nil {
             return nil
         }
@@ -587,11 +584,16 @@ class NCManageDatabase: NSObject {
         return Array(results)
     }
 
-    func unlockAutomaticUploadForAccount(_ account: String, assetLocalIdentifier: String) {
+    func unlockAutomaticUpload(_ assetLocalIdentifier: String) {
         
         let realm = try! Realm()
         
-        let results = realm.objects(tableAutomaticUpload.self).filter("account = %@ AND assetLocalIdentifier = %@", account, assetLocalIdentifier)
+        let tableAccount = self.getAccountActive()
+        if tableAccount == nil {
+            return
+        }
+        
+        let results = realm.objects(tableAutomaticUpload.self).filter("account = %@ AND assetLocalIdentifier = %@", tableAccount!.account, assetLocalIdentifier)
         if (results.count > 0) {
             
             // UnLock
@@ -606,31 +608,36 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         
         let tableAccount = self.getAccountActive()
+        if tableAccount == nil {
+            return
+        }
         
-        if tableAccount != nil {
-        
-            let results = realm.objects(tableAutomaticUpload.self).filter("account = %@ AND assetLocalIdentifier = %@", tableAccount!.account, assetLocalIdentifier)
-            if (results.count > 0) {
+        let results = realm.objects(tableAutomaticUpload.self).filter("account = %@ AND assetLocalIdentifier = %@", tableAccount!.account, assetLocalIdentifier)
+        if (results.count > 0) {
             
-                try! realm.write {
-                    realm.delete(results)
-                }
+            try! realm.write {
+                realm.delete(results)
             }
         }
     }
     
-    func countAutomaticUploadForAccount(_ account: String, session: String?) -> Int {
+    func countAutomaticUpload(_ session: String?) -> Int {
         
         let realm = try! Realm()
         let results : Results<tableAutomaticUpload>
         
+        let tableAccount = self.getAccountActive()
+        if tableAccount == nil {
+            return 0
+        }
+        
         if (session == nil) {
             
-            results = realm.objects(tableAutomaticUpload.self).filter("account = %@", account)
+            results = realm.objects(tableAutomaticUpload.self).filter("account = %@", tableAccount!.account)
             
         } else {
             
-            results = realm.objects(tableAutomaticUpload.self).filter("account = %@ AND session = %@", account, session!)
+            results = realm.objects(tableAutomaticUpload.self).filter("account = %@ AND session = %@", tableAccount!.account, session!)
         }
         
         return results.count
@@ -639,11 +646,16 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Capabilities
     
-    func addCapabilities(_ capabilities: OCCapabilities, account: String) {
+    func addCapabilities(_ capabilities: OCCapabilities) {
         
         let realm = try! Realm()
         
-        let results = realm.objects(tableCapabilities.self).filter("account = %@", account)
+        let tableAccount = self.getAccountActive()
+        if tableAccount == nil {
+            return
+        }
+
+        let results = realm.objects(tableCapabilities.self).filter("account = %@", tableAccount!.account)
         
         try! realm.write {
             
@@ -653,7 +665,7 @@ class NCManageDatabase: NSObject {
                 resultCapabilities = results[0]
             }
             
-            resultCapabilities.account = account
+            resultCapabilities.account = tableAccount!.account
             resultCapabilities.themingBackground = capabilities.themingBackground
             resultCapabilities.themingColor = capabilities.themingColor
             resultCapabilities.themingLogo = capabilities.themingLogo
@@ -671,11 +683,16 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func getCapabilitesForAccount(_ account: String) -> tableCapabilities? {
+    func getCapabilites() -> tableCapabilities? {
         
         let realm = try! Realm()
         
-        let results = realm.objects(tableCapabilities.self).filter("account = %@", account)
+        let tableAccount = self.getAccountActive()
+        if tableAccount == nil {
+            return nil
+        }
+        
+        let results = realm.objects(tableCapabilities.self).filter("account = %@", tableAccount!.account)
         
         if (results.count > 0) {
             return results[0]
@@ -684,11 +701,16 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func getServerVersionAccount(_ account: String) -> Int {
+    func getServerVersion() -> Int {
 
         let realm = try! Realm()
 
-        let results = realm.objects(tableCapabilities.self).filter("account = %@", account)
+        let tableAccount = self.getAccountActive()
+        if tableAccount == nil {
+            return 0
+        }
+        
+        let results = realm.objects(tableCapabilities.self).filter("account = %@", tableAccount!.account)
 
         if (results.count > 0) {
             return results[0].versionMajor
@@ -732,15 +754,20 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table External Sites
     
-    func addExternalSites(_ externalSites: OCExternalSites, account: String) {
+    func addExternalSites(_ externalSites: OCExternalSites) {
         
         let realm = try! Realm()
+        
+        let tableAccount = self.getAccountActive()
+        if tableAccount == nil {
+            return
+        }
         
         try! realm.write {
             
             let addExternalSite = tableExternalSites()
             
-            addExternalSite.account = account
+            addExternalSite.account = tableAccount!.account
             addExternalSite.idExternalSite = externalSites.idExternalSite
             addExternalSite.icon = externalSites.icon
             addExternalSite.lang = externalSites.lang
@@ -752,11 +779,16 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    func deleteExternalSitesForAccount(_ account: String) {
+    func deleteExternalSites() {
         
         let realm = try! Realm()
         
-        let results = realm.objects(tableExternalSites.self).filter("account = %@", account)
+        let tableAccount = self.getAccountActive()
+        if tableAccount == nil {
+            return
+        }
+        
+        let results = realm.objects(tableExternalSites.self).filter("account = %@", tableAccount!.account)
         try! realm.write {
             realm.delete(results)
         }
@@ -818,12 +850,17 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Share
     
-    func addShareLink(_ share: String, fileName: String, serverUrl: String, account: String) -> [String:String] {
+    func addShareLink(_ share: String, fileName: String, serverUrl: String) -> [String:String]? {
         
         let realm = try! Realm()
         
+        let tableAccount = self.getAccountActive()
+        if tableAccount == nil {
+            return nil
+        }
+        
         // Verify if exists
-        let results = realm.objects(tableShare.self).filter("account = %@ AND fileName = %@ AND serverUrl = %@", account, fileName, serverUrl)
+        let results = realm.objects(tableShare.self).filter("account = %@ AND fileName = %@ AND serverUrl = %@", tableAccount!.account, fileName, serverUrl)
         if (results.count > 0) {
             try! realm.write {
                 results[0].shareLink = share;
@@ -836,7 +873,7 @@ class NCManageDatabase: NSObject {
             
             let addShare = tableShare()
             
-                addShare.account = account
+                addShare.account = tableAccount!.account
                 addShare.fileName = fileName
                 addShare.serverUrl = serverUrl
                 addShare.shareLink = share
@@ -848,12 +885,17 @@ class NCManageDatabase: NSObject {
         return ["\(serverUrl)\(fileName)" : share]
     }
 
-    func addShareUserAndGroup(_ share: String, fileName: String, serverUrl: String, account: String) -> [String:String] {
+    func addShareUserAndGroup(_ share: String, fileName: String, serverUrl: String) -> [String:String]? {
         
         let realm = try! Realm()
         
+        let tableAccount = self.getAccountActive()
+        if tableAccount == nil {
+            return nil
+        }
+        
         // Verify if exists
-        let results = realm.objects(tableShare.self).filter("account = %@ AND fileName = %@ AND serverUrl = %@", account, fileName, serverUrl)
+        let results = realm.objects(tableShare.self).filter("account = %@ AND fileName = %@ AND serverUrl = %@", tableAccount!.account, fileName, serverUrl)
         if (results.count > 0) {
             try! realm.write {
                 results[0].shareUserAndGroup = share;
@@ -866,7 +908,7 @@ class NCManageDatabase: NSObject {
                 
                 let addShare = tableShare()
                 
-                addShare.account = account
+                addShare.account = tableAccount!.account
                 addShare.fileName = fileName
                 addShare.serverUrl = serverUrl
                 addShare.shareUserAndGroup = share
@@ -878,14 +920,19 @@ class NCManageDatabase: NSObject {
         return ["\(serverUrl)\(fileName)" : share]
     }
     
-    func unShare(_ share: String, fileName: String, serverUrl: String, sharesLink: [String:String], sharesUserAndGroup: [String:String], account: String) -> [Any] {
+    func unShare(_ share: String, fileName: String, serverUrl: String, sharesLink: [String:String], sharesUserAndGroup: [String:String]) -> [Any]? {
         
         var sharesLink = sharesLink
         var sharesUserAndGroup = sharesUserAndGroup
         
         let realm = try! Realm()
         
-        let results = realm.objects(tableShare.self).filter("account = %@ AND (shareLink CONTAINS %@ OR shareUserAndGroup CONTAINS %@)", account, share, share)
+        let tableAccount = self.getAccountActive()
+        if tableAccount == nil {
+            return nil
+        }
+        
+        let results = realm.objects(tableShare.self).filter("account = %@ AND (shareLink CONTAINS %@ OR shareUserAndGroup CONTAINS %@)", tableAccount!.account, share, share)
         if (results.count > 0) {
             
             let result = results[0]
@@ -926,22 +973,32 @@ class NCManageDatabase: NSObject {
         return [sharesLink, sharesUserAndGroup]
     }
     
-    func removeShareActiveAccount(_ account: String) {
+    func removeShareActiveAccount() {
         
         let realm = try! Realm()
         
-        let results = realm.objects(tableShare.self).filter("account = %@", account)
+        let tableAccount = self.getAccountActive()
+        if tableAccount == nil {
+            return
+        }
+        
+        let results = realm.objects(tableShare.self).filter("account = %@", tableAccount!.account)
         try! realm.write {
             realm.delete(results)
         }
     }
     
-    func updateShare(_ items: [String:OCSharedDto], account: String, activeUrl: String) -> [Any] {
+    func updateShare(_ items: [String:OCSharedDto], activeUrl: String) -> [Any]? {
+        
+        let tableAccount = self.getAccountActive()
+        if tableAccount == nil {
+            return nil
+        }
         
         var sharesLink = [String:String]()
         var sharesUserAndGroup = [String:String]()
 
-        self.removeShareActiveAccount(account)
+        self.removeShareActiveAccount()
      
         var itemsLink = [OCSharedDto]()
         var itemsUsersAndGroups = [OCSharedDto]()
@@ -970,9 +1027,11 @@ class NCManageDatabase: NSObject {
             }
             
             if itemOCSharedDto.idRemoteShared > 0 {
-                let sharesLinkReturn = self.addShareLink("\(itemOCSharedDto.idRemoteShared)", fileName: fileName, serverUrl: serverUrl, account: account)
-                for (key,value) in sharesLinkReturn {
-                    sharesLink.updateValue(value, forKey:key)
+                let sharesLinkReturn = self.addShareLink("\(itemOCSharedDto.idRemoteShared)", fileName: fileName, serverUrl: serverUrl)
+                if sharesLinkReturn != nil {
+                    for (key,value) in sharesLinkReturn! {
+                        sharesLink.updateValue(value, forKey:key)
+                    }
                 }
             }
         }
@@ -1009,23 +1068,30 @@ class NCManageDatabase: NSObject {
                 serverUrl = NSString(string: serverUrl).substring(to: (serverUrl.characters.count - 1))
             }
             
-            let sharesUserAndGroupReturn = self.addShareUserAndGroup(idsRemoteShared, fileName: fileName, serverUrl: serverUrl, account: account)
-            for (key,value) in sharesUserAndGroupReturn {
-                sharesUserAndGroup.updateValue(value, forKey:key)
+            let sharesUserAndGroupReturn = self.addShareUserAndGroup(idsRemoteShared, fileName: fileName, serverUrl: serverUrl)
+            if sharesUserAndGroupReturn != nil {
+                for (key,value) in sharesUserAndGroupReturn! {
+                    sharesUserAndGroup.updateValue(value, forKey:key)
+                }
             }
         }
         
         return [sharesLink, sharesUserAndGroup]
     }
     
-    func getSharesAccount(_ account: String) -> [Any] {
+    func getShares() -> [Any]? {
 
+        let tableAccount = self.getAccountActive()
+        if tableAccount == nil {
+            return nil
+        }
+        
         var sharesLink = [String:String]()
         var sharesUserAndGroup = [String:String]()
         
         let realm = try! Realm()
 
-        let results = realm.objects(tableShare.self).filter("account = %@", account)
+        let results = realm.objects(tableShare.self).filter("account = %@", tableAccount!.account)
         
         for resultShare in results {
             

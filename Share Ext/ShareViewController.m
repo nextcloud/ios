@@ -168,7 +168,7 @@
     UIBarButtonItem *rightButtonUpload, *rightButtonEncrypt, *leftButtonCancel;
 
     // Theming
-    tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesForAccount:self.activeAccount];
+    tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilites];
     if ([NCBrandOptions sharedInstance].use_themingColor && capabilities.themingColor.length > 0)
         [NCBrandColor sharedInstance].brand = [CCGraphics colorFromHexString:capabilities.themingColor];
 

@@ -129,7 +129,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         hud = CCHud.init(view: self.navigationController?.view)
         
         // Theming
-        let tableCapabilities = NCManageDatabase.sharedInstance.getCapabilitesForAccount(activeAccount!)
+        let tableCapabilities = NCManageDatabase.sharedInstance.getCapabilites()
         if (tableCapabilities != nil && NCBrandOptions.sharedInstance.use_themingColor == true) {
             if ((tableCapabilities?.themingColor.characters.count)! > 0) {
                 NCBrandColor.sharedInstance.brand = CCGraphics.color(fromHexString: tableCapabilities?.themingColor)

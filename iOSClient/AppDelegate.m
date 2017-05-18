@@ -936,7 +936,7 @@
     NSInteger queueUpload = [self getNumberUploadInQueues] + [self getNumberUploadInQueuesWWan];
     
     // Total
-    NSInteger total = queueDownload + queueUpload + [[NCManageDatabase sharedInstance] countAutomaticUploadForAccount:app.activeAccount session:nil];
+    NSInteger total = queueDownload + queueUpload + [[NCManageDatabase sharedInstance] countAutomaticUpload:nil];
     
     [UIApplication sharedApplication].applicationIconBadgeNumber = total;
     
@@ -963,7 +963,7 @@
 {
     if (self.activeAccount.length > 0) {
     
-        tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesForAccount:self.activeAccount];
+        tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilites];
     
         if ([NCBrandOptions sharedInstance].use_themingColor && capabilities.themingColor.length == 7) {
         
@@ -1329,7 +1329,7 @@
         }
         
         if (!recordFound)
-            [[NCManageDatabase sharedInstance] unlockAutomaticUploadForAccount:_activeAccount assetLocalIdentifier:tableAutomaticUpload.assetLocalIdentifier];
+            [[NCManageDatabase sharedInstance] unlockAutomaticUpload:tableAutomaticUpload.assetLocalIdentifier];
     }
 
     // ------------------------- <selectorUploadAutomatic> -------------------------
