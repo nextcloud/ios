@@ -46,10 +46,7 @@ class NCManageDatabase: NSObject {
                     // And will update the schema on disk automatically
                 }
         })
-        
-        
-        //config.fileURL = dirGroup?.appendingPathComponent("\(appDatabaseNextcloud)/\(k_databaseDefault)")
-        
+
         Realm.Configuration.defaultConfiguration = config
         _ = try! Realm()
     }
