@@ -59,6 +59,8 @@ class NCManageDatabase: NSObject {
         let results : Results<Object>
         let realm = try! Realm()
         
+        realm.beginWrite()
+        
         if account != nil {
             
             results = realm.objects(table).filter("account = %@", account!)
@@ -68,9 +70,9 @@ class NCManageDatabase: NSObject {
             results = realm.objects(table)
         }
     
-        try! realm.write {
-            realm.delete(results)
-        }
+        realm.delete(results)
+
+        try! realm.commitWrite()
     }
     
     func removeDB() {
