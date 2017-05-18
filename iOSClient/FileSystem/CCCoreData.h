@@ -45,48 +45,7 @@
 
 // ===== Account =====
 
-//+ (void)addAccount:(NSString *)account url:(NSString *)url user:(NSString *)user password:(NSString *)password;
-//+ (void)updateAccount:(NSString *)account withPassword:(NSString *)password;
-//+ (void)deleteAccount:(NSString *)account;
-//+ (TableAccount *)setActiveAccount:(NSString *)account;
-
 + (NSArray *)getAllAccount;
-//+ (TableAccount *)getTableAccountFromAccount:(NSString *)account;
-//+ (NSArray *)getAllTableAccount;
-//+ (TableAccount *)getActiveAccount;
-
-//+ (NSString *)getCameraUploadFolderNameActiveAccount:(NSString *)activeAccount;
-//+ (NSString *)getCameraUploadFolderPathActiveAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl;
-//+ (NSString *)getCameraUploadFolderNamePathActiveAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl;
-
-//+ (BOOL)getCameraUploadActiveAccount:(NSString *)activeAccount;
-//+ (BOOL)getCameraUploadBackgroundActiveAccount:(NSString *)activeAccount;
-//+ (BOOL)getCameraUploadCreateSubfolderActiveAccount:(NSString *)activeAccount;
-//+ (BOOL)getCameraUploadFullPhotosActiveAccount:(NSString *)activeAccount;
-//+ (BOOL)getCameraUploadPhotoActiveAccount:(NSString *)activeAccount;
-//+ (BOOL)getCameraUploadVideoActiveAccount:(NSString *)activeAccount;
-//+ (NSDate *)getCameraUploadDatePhotoActiveAccount:(NSString *)activeAccount;
-//+ (NSDate *)getCameraUploadDateVideoActiveAccount:(NSString *)activeAccount;
-//+ (BOOL)getCameraUploadWWanPhotoActiveAccount:(NSString *)activeAccount;
-//+ (BOOL)getCameraUploadWWanVideoActiveAccount:(NSString *)activeAccount;
-/*
-+ (void)setCameraUpload:(BOOL)state activeAccount:(NSString *)activeAccount;
-+ (void)setCameraUploadBackground:(BOOL)state activeAccount:(NSString *)activeAccount;
-+ (void)setCameraUploadCreateSubfolderActiveAccount:(BOOL)state activeAccount:(NSString *)activeAccount;
-+ (void)setCameraUploadFullPhotosActiveAccount:(BOOL)state activeAccount:(NSString *)activeAccount;
-+ (void)setCameraUploadPhoto:(BOOL)state activeAccount:(NSString *)activeAccount;
-+ (void)setCameraUploadVideo:(BOOL)video activeAccount:(NSString *)activeAccount;
-+ (void)setCameraUploadDatePhoto:(NSDate *)date;
-+ (void)setCameraUploadDateVideo:(NSDate *)date;
-+ (void)setCameraUploadDateAssetType:(PHAssetMediaType)assetMediaType assetDate:(NSDate *)assetDate activeAccount:(NSString *)activeAccount;
-+ (void)setCameraUploadWWanPhoto:(BOOL)wWan activeAccount:(NSString *)activeAccount;
-+ (void)setCameraUploadWWanVideo:(BOOL)wWan activeAccount:(NSString *)activeAccount;
-+ (void)setCameraUploadFolderName:(NSString *)fileName activeAccount:(NSString *)activeAccount;
-+ (void)setCameraUploadFolderPath:(NSString *)pathName activeUrl:(NSString *)activeUrl activeAccount:(NSString *)activeAccount;
-*/ 
-//+ (void)setCameraUploadSaveAlbum:(BOOL)saveAlbum activeAccount:(NSString *)activeAccount;
-
-//+ (void)setUserProfileActiveAccount:(NSString *)activeAccount userProfile:(OCUserProfile *)userProfile;
 
 // ===== Metadata =====
 
