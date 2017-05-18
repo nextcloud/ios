@@ -23,8 +23,7 @@
 
 #import <UIKit/UIKit.h>
 #import <Photos/Photos.h>
-
-@class tableMetadata;
+#import "NCBridgeSwift.h"
 
 /*
 @interface CCMetadata : NSObject //<NSCopying, NSCoding>
@@ -67,7 +66,7 @@
 @end
 */
 
-@interface CCMetadataNet : NSObject <NSCopying>
+@interface CCMetadataNet : NSObject //<NSCopying>
 
 @property (nonatomic, strong) NSString *account;
 @property (nonatomic, strong) NSString *action;
@@ -88,7 +87,7 @@
 @property (nonatomic, strong) NSString *fileNameLocal;
 @property (nonatomic, strong) NSString *fileNamePrint;
 @property (nonatomic, strong) NSString *assetLocalIdentifier;
-@property (nonatomic, strong) tableMetadata *metadata;
+@property (nonatomic, strong)  *metadata;
 @property (nonatomic, strong) id options;
 @property (nonatomic, strong) NSString *password;
 @property (nonatomic, strong) NSString *pathFolder;
@@ -108,6 +107,6 @@
 @property NSInteger taskStatus;
 
 - (id)initWithAccount:(NSString *)withAccount;
-- (id)copyWithZone:(NSZone *)zone;
+//- (id)copyWithZone:(NSZone *)zone;
 
 @end

@@ -241,6 +241,9 @@
 		F743448C1E128010001CC831 /* CCCrypto.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FE125F1BAC03FB0041924B /* CCCrypto.m */; };
 		F74344921E128EB0001CC831 /* Picker.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = F74344901E128E8F001CC831 /* Picker.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		F74344931E128EB4001CC831 /* PickerFileProvider.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = F74344911E128E96001CC831 /* PickerFileProvider.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		F743A65D1ECDD57F0092249E /* CCMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = F743A65C1ECDD57F0092249E /* CCMetadata.m */; };
+		F743A65E1ECDD57F0092249E /* CCMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = F743A65C1ECDD57F0092249E /* CCMetadata.m */; };
+		F743A65F1ECDD57F0092249E /* CCMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = F743A65C1ECDD57F0092249E /* CCMetadata.m */; };
 		F749E4E91DC1FB38009BA2FD /* Share.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = F7CE8AFB1DC1F8D8009CAE48 /* Share.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		F750374D1DBFA91A008FB480 /* ALView+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F75037441DBFA91A008FB480 /* ALView+PureLayout.m */; };
 		F750374F1DBFA91A008FB480 /* NSArray+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F75037461DBFA91A008FB480 /* NSArray+PureLayout.m */; };
@@ -1144,6 +1147,8 @@
 		F74344521E126D06001CC831 /* Picker-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Picker-Bridging-Header.h"; sourceTree = "<group>"; };
 		F74344901E128E8F001CC831 /* Picker.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = Picker.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		F74344911E128E96001CC831 /* PickerFileProvider.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = PickerFileProvider.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		F743A65B1ECDD57F0092249E /* CCMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCMetadata.h; sourceTree = "<group>"; };
+		F743A65C1ECDD57F0092249E /* CCMetadata.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCMetadata.m; sourceTree = "<group>"; };
 		F743B2C31C95BBE8006F5B4A /* CCShareInfoCMOC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCShareInfoCMOC.h; sourceTree = "<group>"; };
 		F743B2C41C95BBE8006F5B4A /* CCShareInfoCMOC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCShareInfoCMOC.m; sourceTree = "<group>"; };
 		F744BE921BEBB2EE004FFF66 /* CCIntro.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCIntro.h; sourceTree = "<group>"; };
@@ -3394,6 +3399,8 @@
 				F77F86401B4ABF6D009F0A10 /* Table */,
 				F7B81D7F1C64E77F006D02DF /* CCCoreData.h */,
 				F7B81D801C64E77F006D02DF /* CCCoreData.m */,
+				F743A65B1ECDD57F0092249E /* CCMetadata.h */,
+				F743A65C1ECDD57F0092249E /* CCMetadata.m */,
 				F786AC9B1EBDC88B0055AE9D /* NCDatabase.swift */,
 				F786ACA91EBDCCE60055AE9D /* NCManageDatabase.swift */,
 			);
@@ -4254,6 +4261,7 @@
 				F70022371EC49BBE0080073F /* TableCertificates+CoreDataClass.m in Sources */,
 				F71459D31D12E3B700CAFEEC /* CCBKPasscode.m in Sources */,
 				F700223A1EC49BBE0080073F /* TableCertificates+CoreDataProperties.m in Sources */,
+				F743A65E1ECDD57F0092249E /* CCMetadata.m in Sources */,
 				F71459D51D12E3B700CAFEEC /* MBProgressHUD.m in Sources */,
 				F708CF801E56E8CC00271D8B /* TableDirectory+CoreDataClass.m in Sources */,
 				F71459D91D12E3B700CAFEEC /* CCCrypto.m in Sources */,
@@ -4332,6 +4340,7 @@
 				F74344821E127F68001CC831 /* MBProgressHUD.m in Sources */,
 				F70022E21EC4C9100080073F /* OCXMLListParser.m in Sources */,
 				F743447D1E127ECB001CC831 /* AESCrypt.m in Sources */,
+				F743A65F1ECDD57F0092249E /* CCMetadata.m in Sources */,
 				F743447E1E127ECE001CC831 /* NSData+Base64.m in Sources */,
 				F70022A61EC4C9100080073F /* AFNetworkReachabilityManager.m in Sources */,
 				F70022E51EC4C9100080073F /* OCXMLParser.m in Sources */,
@@ -4419,6 +4428,7 @@
 				F7F06EA91DBFACC600099AE9 /* CTAssetScrollView.m in Sources */,
 				F762CB771EACB7D400B38484 /* ReaderViewController.m in Sources */,
 				F7F06E931DBFACC600099AE9 /* NSNumberFormatter+CTAssetsPickerController.m in Sources */,
+				F743A65D1ECDD57F0092249E /* CCMetadata.m in Sources */,
 				F72AAECC1E5C60C700BB17E1 /* UIImage+AHKAdditions.m in Sources */,
 				F762CB071EACB66200B38484 /* XLFormOptionsObject.m in Sources */,
 				F7C525A01E3B48B700FFE02C /* CCNotification.swift in Sources */,
