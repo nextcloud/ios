@@ -59,7 +59,7 @@ class NCManageDatabase: NSObject {
         let results : Results<Object>
         let realm = try! Realm()
         
-        if (account != nil) {
+        if account != nil {
             
             results = realm.objects(table).filter("account = %@", account!)
 
@@ -1194,5 +1194,191 @@ class NCManageDatabase: NSObject {
             }
         }
     }
+    
+    func setMetadataFavorite(_ etag: String, favorite: Bool) {
+        
+        let tableAccount = self.getAccountActive()
+        if tableAccount == nil {
+            return
+        }
+        
+        let realm = try! Realm()
+        
+        let results = realm.objects(tableMetadata.self).filter("account = %@ AND etag = %@", tableAccount!.account, etag)
+        if (results.count > 0) {
+            
+            try! realm.write {
+                results[0].favorite = favorite
+            }
+        }
+    }
+
+    func getMetadataWithPreficate(_ predicate: NSPredicate) -> tableMetadata? {
+        
+        let realm = try! Realm()
+        
+        let results = realm.objects(tableMetadata.self).filter(predicate)
+        
+        if (results.count > 0) {
+            
+            return results[0]
+            
+        } else {
+            
+            return nil
+        }
+    }
+
+    func getMetadatasWithPreficate(_ predicate: NSPredicate, sorted: String?, ascending: Bool) -> [tableMetadata]? {
+        
+        let realm = try! Realm()
+        let results : Results<tableMetadata>
+
+        if sorted == nil {
+            
+            results = realm.objects(tableMetadata.self).filter(predicate)
+            
+        } else {
+            
+            results = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: sorted!, ascending: ascending)
+        }
+        
+        if (results.count > 0) {
+            
+            return Array(results)
+            
+        } else {
+            
+            return nil
+        }
+    }
+    
+    func getMetadataAtIndex(_ predicate: NSPredicate, sorted: String?, ascending: Bool, index: Int) -> tableMetadata? {
+
+        let realm = try! Realm()
+        
+        let results = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: sorted!, ascending: ascending)
+        
+        if (results.count > 0  && results.count > index) {
+            
+            return results[index]
+            
+        } else {
+            
+            return nil
+        }
+    }
+    
+    func getMetadataFromFileName(_ fileName: String, directoryID: String) -> tableMetadata? {
+    
+        let tableAccount = self.getAccountActive()
+        if tableAccount == nil {
+            return nil
+        }
+        
+        let realm = try! Realm()
+        
+        let results = realm.objects(tableMetadata.self).filter("(account = %@) AND (directoryID = %@) AND ((fileName = %@) OR (fileNameData = %@))", tableAccount!.account, directoryID, fileName, fileName)
+        
+        if (results.count > 0) {
+
+            return results[0]
+            
+        } else {
+            
+            return nil
+        }
+    }
+    
+    func getTableMetadataDownload() -> [tableMetadata]? {
+    
+        let tableAccount = self.getAccountActive()
+        if tableAccount == nil {
+            return nil
+        }
+        
+        let predicate = NSPredicate(format: "(account == %@) AND ((session == %@) || (session == %@)) AND ((sessionTaskIdentifier != %i) OR (sessionTaskIdentifierPlist != %i))", tableAccount!.account, k_download_session, k_download_session_foreground, k_taskIdentifierDone, k_taskIdentifierDone)
+        
+        return self.getMetadatasWithPreficate(predicate, sorted: nil, ascending: false)
+    }
+    
+    func getTableMetadataDownloadWWan() -> [tableMetadata]? {
+        
+        let tableAccount = self.getAccountActive()
+        if tableAccount == nil {
+            return nil
+        }
+        
+        let predicate = NSPredicate(format: "(account == %@) AND (session == %@) AND ((sessionTaskIdentifier != %i) OR (sessionTaskIdentifierPlist != %i))", tableAccount!.account, k_download_session_wwan, k_taskIdentifierDone, k_taskIdentifierDone)
+        
+        return self.getMetadatasWithPreficate(predicate, sorted: nil, ascending: false)
+    }
+    
+    func getTableMetadataUpload() -> [tableMetadata]? {
+        
+        let tableAccount = self.getAccountActive()
+        if tableAccount == nil {
+            return nil
+        }
+        
+        let predicate = NSPredicate(format: "(account == %@) AND ((session == %@) || (session == %@)) AND ((sessionTaskIdentifier != %i) OR (sessionTaskIdentifierPlist != %i))", tableAccount!.account, k_upload_session, k_upload_session_foreground, k_taskIdentifierDone, k_taskIdentifierDone)
+        
+        return self.getMetadatasWithPreficate(predicate, sorted: nil, ascending: false)
+    }
+
+    func getTableMetadataUploadWWan() -> [tableMetadata]? {
+        
+        let tableAccount = self.getAccountActive()
+        if tableAccount == nil {
+            return nil
+        }
+        
+        let predicate = NSPredicate(format: "(account == %@) AND (session == %@) AND ((sessionTaskIdentifier != %i) OR (sessionTaskIdentifierPlist != %i))", tableAccount!.account, k_upload_session_wwan, k_taskIdentifierDone, k_taskIdentifierDone)
+        
+        return self.getMetadatasWithPreficate(predicate, sorted: nil, ascending: false)
+    }
+
+    func getRecordsTableMetadataPhotosCameraUpload(_ serverUrl: String) -> [tableMetadata]? {
+        
+        let tableAccount = self.getAccountActive()
+        if tableAccount == nil {
+            return nil
+        }
+        
+        let realm = try! Realm()
+        
+        let predicate = NSPredicate(format: "(account == %@) AND (serverUrl == %@) AND ((session == NULL) OR (session == '')) AND (type == 'file') AND ((typeFile == %@) OR (typeFile == %@))", tableAccount!.account, serverUrl, k_metadataTypeFile_image, k_metadataTypeFile_video)
+        
+        let sorted = CCUtility.getOrderSettings()
+        let ascending = CCUtility.getAscendingSettings()
+        
+        let results = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: sorted!, ascending: ascending)
+        
+        if results.count > 0 {
+            
+            return Array(results)
+            
+        } else {
+            
+            return nil
+        }
+    }
+
+    func removeOfflineAllFileFromServerUrl(_ serverUrl: String) {
+        
+        let tableAccount = self.getAccountActive()
+        if tableAccount == nil {
+            return
+        }
+        
+        let realm = try! Realm()
+
+        let results = realm.objects(tableMetadata.self).filter("account = %@ AND directoryID = %@", tableAccount!.account, serverUrl)
+
+        try! realm.write {
+            realm.delete(results)
+        }
+    }
+    
     //MARK: -
 }
