@@ -1018,15 +1018,11 @@
 
 - (void)changedLocation
 {
-    //Verifica
     [[CCNetworking sharedNetworking] automaticDownloadInError];
     [[CCNetworking sharedNetworking] automaticUploadInError];
     
-    // solo in background
+    // Only in background
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
-    
-    
-    //if([CCCoreData getCameraUploadActiveAccount:app.activeAccount] && [CCCoreData getCameraUploadBackgroundActiveAccount:app.activeAccount ] && [[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
     
     if (tableAccount.cameraUpload && tableAccount.cameraUploadBackground && [[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
     
@@ -1043,12 +1039,8 @@
             
         } else {
             
-            //[CCCoreData setCameraUpload:NO activeAccount:app.activeAccount];
-            
             [[NCManageDatabase sharedInstance] setAccountCameraStateFiledWithField:@"cameraUpload" state:NO];
             [[NCManageDatabase sharedInstance] setAccountCameraStateFiledWithField:@"cameraUploadBackground" state:NO];
-            
-            //[CCCoreData setCameraUploadBackground:NO activeAccount:app.activeAccount];
             
             [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
             [PHPhotoLibrary.sharedPhotoLibrary unregisterChangeObserver:self];

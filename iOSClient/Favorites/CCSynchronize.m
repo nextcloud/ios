@@ -247,7 +247,6 @@
 - (void)readFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
     // verify active user
-    //TableAccount *recordAccount = [CCCoreData getActiveAccount];
     tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
     
     // Folder not present, remove it

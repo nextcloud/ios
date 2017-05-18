@@ -1624,7 +1624,7 @@
             [[NCManageDatabase sharedInstance] addCertificates:certificateLocation];
     }
     
-    if (([actualVersion compare:@"2.17.5" options:NSNumericSearch] == NSOrderedAscending)) {
+    if (([actualVersion compare:@"2.17.4" options:NSNumericSearch] == NSOrderedAscending)) {
         
         // Migrate Account Table From CoreData to Realm
         
