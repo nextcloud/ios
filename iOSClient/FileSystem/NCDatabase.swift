@@ -130,6 +130,41 @@ class tableGPS: Object {
     dynamic var placemarkThoroughfare = ""
 }
 
+class tableMetadata: Object {
+    
+    dynamic var account = ""
+    dynamic var assetLocalIdentifier = ""
+    dynamic var cryptated : Bool = false
+    dynamic var date = NSDate()
+    dynamic var directory : Bool = false
+    dynamic var directoryID = ""
+    dynamic var errorPasscode : Bool = false
+    dynamic var favorite : Bool = false
+    dynamic var etag = ""
+    dynamic var fileName = ""
+    dynamic var fileNameData = ""
+    dynamic var fileNamePrint = ""
+    dynamic var iconName = ""
+    dynamic var model = ""
+    dynamic var nameCurrentDevice = ""
+    dynamic var permissions = ""
+    dynamic var protocolCrypto = ""
+    dynamic var rev = ""
+    dynamic var session = ""
+    dynamic var sessionError = ""
+    dynamic var sessionID = ""
+    dynamic var sessionSelector = ""
+    dynamic var sessionSelectorPost = ""
+    dynamic var sessionTaskIdentifier : Int = 0
+    dynamic var sessionTaskIdentifierPlist : Int = 0
+    dynamic var size : Double = 0
+    dynamic var thumbnailExists : Bool = false
+    dynamic var title = ""
+    dynamic var type = ""
+    dynamic var typeFile = ""
+    dynamic var uuid = ""
+}
+
 class tableShare: Object {
     
     dynamic var account = ""

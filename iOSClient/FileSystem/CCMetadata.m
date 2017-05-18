@@ -32,6 +32,7 @@
     return self;
 }
 
+/*
 - (id)initWithCCMetadata:(CCMetadata *)metadata {
     self = [self init];
     return [metadata copy];
@@ -76,7 +77,7 @@
     return metadata;
 }
 
-/** Implentation of the NSCoding protocol. */
+// Implentation of the NSCoding protocol.
 
 -(id)initWithCoder:(NSCoder *)decoder
 {
@@ -152,7 +153,7 @@
     [encoder encodeObject:_typeFile forKey:@"typeFile"];
     [encoder encodeObject:_uuid forKey:@"uuid"];
 }
-
+*/
 @end
 
 
@@ -178,6 +179,7 @@
     return self;
 }
 
+/*
 - (id)copyWithZone: (NSZone *) zone
 {
     CCMetadataNet *metadataNet = [[CCMetadataNet allocWithZone: zone] init];
@@ -222,5 +224,6 @@
     
     return metadataNet;
 }
+*/
 
 @end

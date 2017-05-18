@@ -24,7 +24,7 @@
 #import <UIKit/UIKit.h>
 #import <Photos/Photos.h>
 
-@interface CCMetadata : NSObject <NSCopying, NSCoding>
+@interface CCMetadata : NSObject //<NSCopying, NSCoding>
 
 @property (nonatomic, strong) NSString *account;
 @property BOOL cryptated;
@@ -58,13 +58,13 @@
 @property (nonatomic, strong) NSString *typeFile;
 @property (nonatomic, strong) NSString *uuid;
 
-- (id)copyWithZone:(NSZone *)zone;
-- (id)initWithCCMetadata:(CCMetadata *)metadata;
+//- (id)copyWithZone:(NSZone *)zone;
+//- (id)initWithCCMetadata:(CCMetadata *)metadata;
 
 @end
 
 
-@interface CCMetadataNet : NSObject <NSCopying>
+@interface CCMetadataNet : NSObject //<NSCopying>
 
 @property (nonatomic, strong) NSString *account;
 @property (nonatomic, strong) NSString *action;
@@ -105,6 +105,6 @@
 @property NSInteger taskStatus;
 
 - (id)initWithAccount:(NSString *)withAccount;
-- (id)copyWithZone:(NSZone *)zone;
+//- (id)copyWithZone:(NSZone *)zone;
 
 @end
