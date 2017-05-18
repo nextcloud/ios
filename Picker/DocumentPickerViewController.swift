@@ -89,7 +89,6 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         
         providerDB = providerSessionDB.sharedInstance
         
-        //if let record = CCCoreData.getActiveAccount() {
         if let record = NCManageDatabase.sharedInstance.getAccountActive() {
             
             activeAccount = record.account

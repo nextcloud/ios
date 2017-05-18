@@ -401,7 +401,6 @@
 - (void)readFileFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
     // verify active user
-    //TableAccount *recordAccount = [CCCoreData getActiveAccount];
     tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
     
     // File not present, remove it

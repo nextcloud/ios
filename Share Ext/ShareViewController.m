@@ -55,7 +55,6 @@
     [MagicalRecord setupCoreDataStackWithAutoMigratingSqliteStoreNamed:(id)[dirGroup URLByAppendingPathComponent:[appDatabase stringByAppendingPathComponent:@"cryptocloud"]]];
     [MagicalRecord setLoggingLevel:MagicalRecordLoggingLevelOff];
 
-    //TableAccount *recordAccount = [CCCoreData getActiveAccount];
     tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
     if (recordAccount == nil) {
         
@@ -261,7 +260,7 @@
         
         [self addNetworkingQueue:metadataNet];
         
-        [self.hud visibleHudTitle:NSLocalizedString(@"_uploading_", nil) mode:MBProgressHUDModeDeterminateHorizontalBar color:self.view.tintColor];
+        [self.hud visibleHudTitle:NSLocalizedString(@"_uploading_", nil) mode:MBProgressHUDModeDeterminateHorizontalBar color:[NCBrandColor sharedInstance].brand];
        
         [self.hud AddButtonCancelWithTarget:self selector:@"cancelTransfer"];
     }

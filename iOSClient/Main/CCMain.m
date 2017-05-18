@@ -4173,9 +4173,6 @@
         // Directory bloccata ?
         if ([CCCoreData isDirectoryLock:dirServerUrl activeAccount:app.activeAccount] && [[CCUtility getBlockCode] length] && app.sessionePasscodeLock == nil) lockDirectory = YES;
         
-        //NSString *cameraUploadFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:app.activeAccount];
-        //NSString *cameraUploadFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:app.activeAccount activeUrl:app.activeUrl];
-        
         NSString *cameraUploadFolderName = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderName];
         NSString *cameraUploadFolderPath = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderPath:app.activeUrl];
         
