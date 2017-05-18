@@ -26,7 +26,6 @@
 #import "XLFormViewController.h"
 #import "CCShareUserOC.h"
 #import "CCSharePermissionOC.h"
-#import "CCMetadata.h"
 
 @class tableMetadata;
 

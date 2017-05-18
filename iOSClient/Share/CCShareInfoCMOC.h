@@ -25,7 +25,6 @@
 
 #import "XLFormViewController.h"
 #import "UtilsFramework.h"
-#import "CCMetadata.h"
 
 @class tableMetadata;
 

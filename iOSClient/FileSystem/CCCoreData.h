@@ -28,7 +28,6 @@
 #import <MagicalRecord/MagicalRecord.h>
 
 #import "OCSharedDto.h"
-#import "CCMetadata.h"
 #import "CCUtility.h"
 #import "CCGraphics.h"
 #import "OCUserProfile.h"

@@ -23,7 +23,6 @@
 
 #import <Foundation/Foundation.h>
 
-#import "CCMetadata.h"
 #import "CCHud.h"
 #import "CCCellMain.h"
 

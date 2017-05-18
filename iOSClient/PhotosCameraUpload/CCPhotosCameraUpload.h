@@ -30,7 +30,6 @@
 #import "TWMessageBarManager.h"
 #import "UINavigationController+CCProgress.h"
 #import "CCManageLocation.h"
-#import "CCMetadata.h"
 #import "CCDetail.h"
 #import "CCUtility.h"
 #import "CCCoreData.h"

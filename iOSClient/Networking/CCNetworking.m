@@ -1780,3 +1780,77 @@
 }
 
 @end
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark =====  CCMetadataNet =====
+#pragma --------------------------------------------------------------------------------------------
+
+
+@implementation CCMetadataNet
+
+- (id)init
+{
+    self = [super init];
+    self.priority = NSOperationQueuePriorityNormal;
+    return self;
+}
+
+- (id)initWithAccount:(NSString *)withAccount
+{
+    self = [super init];
+    
+    if (self) {
+        
+        _account = withAccount;
+        _priority = NSOperationQueuePriorityNormal;
+    }
+    
+    return self;
+}
+
+- (id)copyWithZone: (NSZone *) zone
+{
+    CCMetadataNet *metadataNet = [[CCMetadataNet allocWithZone: zone] init];
+    
+    [metadataNet setAccount: self.account];
+    [metadataNet setAction: self.action];
+    [metadataNet setAssetLocalIdentifier: self.assetLocalIdentifier];
+    [metadataNet setCryptated: self.cryptated];
+    [metadataNet setDate: self.date];
+    [metadataNet setDelegate: self.delegate];
+    [metadataNet setDirectory: self.directory];
+    [metadataNet setDirectoryID: self.directoryID];
+    [metadataNet setDirectoryIDTo: self.directoryIDTo];
+    [metadataNet setDownloadData: self.downloadData];
+    [metadataNet setDownloadPlist: self.downloadPlist];
+    [metadataNet setErrorCode: self.errorCode];
+    [metadataNet setErrorRetry: self.errorRetry];
+    [metadataNet setExpirationTime: self.expirationTime];
+    [metadataNet setFileID: self.fileID];
+    [metadataNet setFileName: self.fileName];
+    [metadataNet setFileNameTo: self.fileNameTo];
+    [metadataNet setFileNameLocal: self.fileNameLocal];
+    [metadataNet setFileNamePrint: self.fileNamePrint];
+    [metadataNet setMetadata: self.metadata];
+    [metadataNet setOptions: self.options];
+    [metadataNet setPassword: self.password];
+    [metadataNet setPathFolder: self.pathFolder];
+    [metadataNet setPriority: self.priority];
+    [metadataNet setQueue: self.queue];
+    [metadataNet setRev:self.rev];
+    [metadataNet setServerUrl: self.serverUrl];
+    [metadataNet setServerUrlTo: self.serverUrlTo];
+    [metadataNet setSelector: self.selector];
+    [metadataNet setSelectorPost: self.selectorPost];
+    [metadataNet setSession: self.session];
+    [metadataNet setSessionID: self.sessionID];
+    [metadataNet setShare: self.share];
+    [metadataNet setShareeType: self.shareeType];
+    [metadataNet setSharePermission: self.sharePermission];
+    [metadataNet setSize: self.size];
+    [metadataNet setTaskStatus: self.taskStatus];
+    
+    return metadataNet;
+}
+
+@end

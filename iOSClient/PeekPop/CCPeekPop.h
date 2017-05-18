@@ -22,8 +22,6 @@
 //
 
 #import <UIKit/UIKit.h>
-
-#import "CCMetadata.h"
 #import "OCNetworking.h"
 
 @class tableMetadata;

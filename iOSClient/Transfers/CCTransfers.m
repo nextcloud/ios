@@ -26,7 +26,6 @@
 #import "CCMain.h"
 #import "CCDetail.h"
 #import "CCSection.h"
-#import "CCMetadata.h"
 #import "CCTransfersCell.h"
 #import "NCBridgeSwift.h"
 

@@ -25,8 +25,6 @@
 #import <CoreLocation/CoreLocation.h>
 #import <ImageIO/ImageIO.h>
 #import <UIKit/UIKit.h>
-
-#import "CCMetadata.h"
 #import "CCCoreData.h"
 
 @class tableMetadata;

@@ -31,7 +31,6 @@
 #import "MWPhotoBrowser.h"
 #import "ReaderViewController.h"
 #import "UINavigationController+CCProgress.h"
-#import "CCMetadata.h"
 #import "CCGraphics.h"
 #import "CCCoreData.h"
 

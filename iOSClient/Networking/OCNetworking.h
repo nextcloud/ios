@@ -26,7 +26,6 @@
 #import "AFURLSessionManager.h"
 #import "TWMessageBarManager.h"
 #import "CCNetworking.h"
-#import "CCMetadata.h"
 #import "CCError.h"
 #import "CCCoreData.h"
 

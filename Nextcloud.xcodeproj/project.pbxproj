@@ -138,7 +138,6 @@
 		F71459C31D12E3B700CAFEEC /* UIImage+Filtering.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04C41C889184008DAB36 /* UIImage+Filtering.m */; };
 		F71459C41D12E3B700CAFEEC /* UIImage+Saving.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04CE1C889184008DAB36 /* UIImage+Saving.m */; };
 		F71459C51D12E3B700CAFEEC /* UIImage+Rotating.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04CC1C889184008DAB36 /* UIImage+Rotating.m */; };
-		F71459C61D12E3B700CAFEEC /* CCMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = F7C8C1731B482A920048180E /* CCMetadata.m */; };
 		F71459C91D12E3B700CAFEEC /* OCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F74D3DBE1BAC1941000BAE4B /* OCNetworking.m */; };
 		F71459CC1D12E3B700CAFEEC /* RNCryptorEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F05371C889184008DAB36 /* RNCryptorEngine.m */; };
 		F71459CD1D12E3B700CAFEEC /* AFViewShaker.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02B41C889183008DAB36 /* AFViewShaker.m */; };
@@ -222,7 +221,6 @@
 		F74344641E127DE6001CC831 /* OCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F74D3DBE1BAC1941000BAE4B /* OCNetworking.m */; };
 		F74344651E127DE9001CC831 /* CCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F732BA041D76CE1500E9878B /* CCNetworking.m */; };
 		F74344661E127E35001CC831 /* CCCoreData.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B81D801C64E77F006D02DF /* CCCoreData.m */; };
-		F74344671E127E38001CC831 /* CCMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = F7C8C1731B482A920048180E /* CCMetadata.m */; };
 		F74344791E127EA1001CC831 /* CCError.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B881C638A4C00DC4301 /* CCError.m */; };
 		F743447B1E127EAC001CC831 /* CCUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = F7053E3D1C639DF500741EA5 /* CCUtility.m */; };
 		F743447C1E127EB2001CC831 /* NSString+TruncateToWidth.m in Sources */ = {isa = PBXBuildFile; fileRef = F73049B91CB567F000C7C320 /* NSString+TruncateToWidth.m */; };
@@ -448,7 +446,6 @@
 		F77B0EAA1D118A16002130FE /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = F70F0F9B1C889487008DAB36 /* zip.c */; };
 		F77B0EAB1D118A16002130FE /* HRColorPickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0DEA1C889300008DAB36 /* HRColorPickerViewController.m */; };
 		F77B0EAD1D118A16002130FE /* CCGlobal.m in Sources */ = {isa = PBXBuildFile; fileRef = F7C8C1911B482CEA0048180E /* CCGlobal.m */; };
-		F77B0EB11D118A16002130FE /* CCMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = F7C8C1731B482A920048180E /* CCMetadata.m */; };
 		F77B0EB61D118A16002130FE /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04841C889183008DAB36 /* MBProgressHUD.m */; };
 		F77B0EB81D118A16002130FE /* CCAccountWeb.m in Sources */ = {isa = PBXBuildFile; fileRef = F721371E1BAFF0920012B613 /* CCAccountWeb.m */; };
 		F77B0EB91D118A16002130FE /* HRColorUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0DEC1C889300008DAB36 /* HRColorUtil.m */; };
@@ -1689,8 +1686,6 @@
 		F7C742D41E7BD44400D9C973 /* Picker.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = Picker.entitlements; sourceTree = "<group>"; };
 		F7C742D71E7BD5C900D9C973 /* MainInterface.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = MainInterface.storyboard; sourceTree = "<group>"; };
 		F7C742E61E7BD71A00D9C973 /* PickerFileProvider.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = PickerFileProvider.entitlements; sourceTree = "<group>"; };
-		F7C8C1721B482A920048180E /* CCMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = CCMetadata.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
-		F7C8C1731B482A920048180E /* CCMetadata.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = CCMetadata.m; sourceTree = "<group>"; };
 		F7C8C1901B482CEA0048180E /* CCGlobal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCGlobal.h; sourceTree = "<group>"; };
 		F7C8C1911B482CEA0048180E /* CCGlobal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCGlobal.m; sourceTree = "<group>"; };
 		F7CD0FF91C8DDA7D006520C5 /* CCSharePermissionOC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCSharePermissionOC.h; sourceTree = "<group>"; };
@@ -3399,8 +3394,6 @@
 				F77F86401B4ABF6D009F0A10 /* Table */,
 				F7B81D7F1C64E77F006D02DF /* CCCoreData.h */,
 				F7B81D801C64E77F006D02DF /* CCCoreData.m */,
-				F7C8C1721B482A920048180E /* CCMetadata.h */,
-				F7C8C1731B482A920048180E /* CCMetadata.m */,
 				F786AC9B1EBDC88B0055AE9D /* NCDatabase.swift */,
 				F786ACA91EBDCCE60055AE9D /* NCManageDatabase.swift */,
 			);
@@ -4246,7 +4239,6 @@
 				F71459C51D12E3B700CAFEEC /* UIImage+Rotating.m in Sources */,
 				F70022BA1EC4C9100080073F /* OCCommunication.m in Sources */,
 				F70022ED1EC4C9100080073F /* OCXMLSharedParser.m in Sources */,
-				F71459C61D12E3B700CAFEEC /* CCMetadata.m in Sources */,
 				F70022D51EC4C9100080073F /* NSDate+ISO8601.m in Sources */,
 				F70022FC1EC4C9100080073F /* NSString+Encode.m in Sources */,
 				F70022E41EC4C9100080073F /* OCXMLParser.m in Sources */,
@@ -4342,7 +4334,6 @@
 				F743447D1E127ECB001CC831 /* AESCrypt.m in Sources */,
 				F743447E1E127ECE001CC831 /* NSData+Base64.m in Sources */,
 				F70022A61EC4C9100080073F /* AFNetworkReachabilityManager.m in Sources */,
-				F74344671E127E38001CC831 /* CCMetadata.m in Sources */,
 				F70022E51EC4C9100080073F /* OCXMLParser.m in Sources */,
 				F70022B21EC4C9100080073F /* AFURLSessionManager.m in Sources */,
 				F70022BB1EC4C9100080073F /* OCCommunication.m in Sources */,
@@ -4659,7 +4650,6 @@
 				F762CB151EACB66200B38484 /* XLFormRowNavigationAccessoryView.m in Sources */,
 				F7F54D081E5B14C800E19C62 /* MWGridViewController.m in Sources */,
 				F7F06E971DBFACC600099AE9 /* PHAssetCollection+CTAssetsPickerController.m in Sources */,
-				F77B0EB11D118A16002130FE /* CCMetadata.m in Sources */,
 				F7F06E9D1DBFACC600099AE9 /* UIImage+CTAssetsPickerController.m in Sources */,
 				F762CB6C1EACB7D400B38484 /* ReaderDocument.m in Sources */,
 				F762CB721EACB7D400B38484 /* ReaderThumbQueue.m in Sources */,

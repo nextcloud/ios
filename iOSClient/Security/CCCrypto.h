@@ -27,7 +27,6 @@
 #import "AESCrypt.h"
 #import "RNEncryptor.h"
 #import "RNDecryptor.h"
-#import "CCMetadata.h"
 #import "CCUtility.h"
 
 @class tableMetadata;

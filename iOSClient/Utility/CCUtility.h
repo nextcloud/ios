@@ -30,9 +30,9 @@
 #import <UICKeyChainStore/UICKeyChainStore.h>
 
 #import "OCFileDto.h"
-#import "CCMetadata.h"
 #import "CCCrypto.h"
 #import "CCGlobal.h"
+#import "CCNetworking.h"
 
 @class tableMetadata;
 

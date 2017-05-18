@@ -22,7 +22,6 @@
 //
 
 #import "CCSection.h"
-#import "CCMetadata.h"
 #import "CCCoreData.h"
 #import "CCExifGeo.h"
 #import "NCBridgeSwift.h"

@@ -26,7 +26,6 @@
 #import "XLFormViewController.h"
 #import "OCShareUser.h"
 #import "OCConstants.h"
-#import "CCMetadata.h"
 
 @protocol CCShareUserOCDelegate;
 
