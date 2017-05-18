@@ -346,7 +346,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func setAccountsCameraUploadDateAssetType(assetMediaType: PHAssetMediaType, assetDate: NSDate?) {
+    func setAccountCameraUploadDateAssetType(assetMediaType: PHAssetMediaType, assetDate: NSDate?) {
 
         let realm = try! Realm()
         

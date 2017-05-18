@@ -223,17 +223,17 @@
             
             // Settings date
             if (tableAccount.cameraUploadPhoto)
-                [[NCManageDatabase sharedInstance] setAccountsCameraUploadDateAssetTypeWithAssetMediaType:PHAssetMediaTypeImage assetDate:[NSDate date]];
+                [[NCManageDatabase sharedInstance] setAccountCameraUploadDateAssetTypeWithAssetMediaType:PHAssetMediaTypeImage assetDate:[NSDate date]];
             if (tableAccount.cameraUploadVideo)
-                [[NCManageDatabase sharedInstance] setAccountsCameraUploadDateAssetTypeWithAssetMediaType:PHAssetMediaTypeVideo assetDate:[NSDate date]];
+                [[NCManageDatabase sharedInstance] setAccountCameraUploadDateAssetTypeWithAssetMediaType:PHAssetMediaTypeVideo assetDate:[NSDate date]];
             
         } else {
             
             [[NCManageDatabase sharedInstance] setAccountCameraStateFiledWithField:@"cameraUpload" state:NO];
             [[NCManageDatabase sharedInstance] setAccountCameraStateFiledWithField:@"cameraUploadFull" state:NO];
             
-            [[NCManageDatabase sharedInstance] setAccountsCameraUploadDateAssetTypeWithAssetMediaType:PHAssetMediaTypeImage assetDate:nil];
-            [[NCManageDatabase sharedInstance] setAccountsCameraUploadDateAssetTypeWithAssetMediaType:PHAssetMediaTypeVideo assetDate:nil];
+            [[NCManageDatabase sharedInstance] setAccountCameraUploadDateAssetTypeWithAssetMediaType:PHAssetMediaTypeImage assetDate:nil];
+            [[NCManageDatabase sharedInstance] setAccountCameraUploadDateAssetTypeWithAssetMediaType:PHAssetMediaTypeVideo assetDate:nil];
 
             // remove
             [[NCManageDatabase sharedInstance] clearTable:[tableAutomaticUpload class] account:app.activeAccount];
@@ -291,11 +291,11 @@
         
         if ([[rowDescriptor.value valueData] boolValue] == YES) {
             
-            [[NCManageDatabase sharedInstance] setAccountsCameraUploadDateAssetTypeWithAssetMediaType:PHAssetMediaTypeImage assetDate:[NSDate date]];
+            [[NCManageDatabase sharedInstance] setAccountCameraUploadDateAssetTypeWithAssetMediaType:PHAssetMediaTypeImage assetDate:[NSDate date]];
             
         } else {
             
-            [[NCManageDatabase sharedInstance] setAccountsCameraUploadDateAssetTypeWithAssetMediaType:PHAssetMediaTypeImage assetDate:nil];
+            [[NCManageDatabase sharedInstance] setAccountCameraUploadDateAssetTypeWithAssetMediaType:PHAssetMediaTypeImage assetDate:nil];
         }
                 
         [[NCManageDatabase sharedInstance] setAccountCameraStateFiledWithField:@"cameraUploadPhoto" state:[[rowDescriptor.value valueData] boolValue]];
@@ -311,13 +311,11 @@
     
         if ([[rowDescriptor.value valueData] boolValue] == YES) {
                 
-           // [CCCoreData setCameraUploadDateVideo:[NSDate date]];
-            [[NCManageDatabase sharedInstance] setAccountsCameraUploadDateAssetTypeWithAssetMediaType:PHAssetMediaTypeVideo assetDate:[NSDate date]];
+            [[NCManageDatabase sharedInstance] setAccountCameraUploadDateAssetTypeWithAssetMediaType:PHAssetMediaTypeVideo assetDate:[NSDate date]];
 
         } else {
                 
-           //[CCCoreData setCameraUploadDateVideo:NULL];
-            [[NCManageDatabase sharedInstance] setAccountsCameraUploadDateAssetTypeWithAssetMediaType:PHAssetMediaTypeVideo assetDate:nil];
+            [[NCManageDatabase sharedInstance] setAccountCameraUploadDateAssetTypeWithAssetMediaType:PHAssetMediaTypeVideo assetDate:nil];
         }
             
         [[NCManageDatabase sharedInstance] setAccountCameraStateFiledWithField:@"cameraUploadVideo" state:[[rowDescriptor.value valueData] boolValue]];

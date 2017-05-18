@@ -353,12 +353,10 @@
                     [dataToShare enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
                         
                         if ([obj isKindOfClass:[UIImage class]])
-                            [[NCManageDatabase sharedInstance] setAccountsCameraUploadDateAssetTypeWithAssetMediaType:PHAssetMediaTypeImage assetDate:[NSDate date]];
-                            //[CCCoreData setCameraUploadDatePhoto:[NSDate date]];
+                            [[NCManageDatabase sharedInstance] setAccountCameraUploadDateAssetTypeWithAssetMediaType:PHAssetMediaTypeImage assetDate:[NSDate date]];
                         
                         if ([obj isKindOfClass:[NSURL class]])
-                            [[NCManageDatabase sharedInstance] setAccountsCameraUploadDateAssetTypeWithAssetMediaType:PHAssetMediaTypeVideo assetDate:[NSDate date]];
-                            //[CCCoreData setCameraUploadDateVideo:[NSDate date]];
+                            [[NCManageDatabase sharedInstance] setAccountCameraUploadDateAssetTypeWithAssetMediaType:PHAssetMediaTypeVideo assetDate:[NSDate date]];
                     }];
                     
                     [self performSelector:@selector(reloadCollection) withObject:nil];
@@ -800,8 +798,6 @@
         [self uploadNewAssets];
         
     } else {
-    
-       // [CCCoreData setCameraUpload:NO activeAccount:app.activeAccount];
         
         [[NCManageDatabase sharedInstance] setAccountCameraStateFiledWithField:@"cameraUpload" state:NO];
                 
@@ -830,7 +826,6 @@
         
     } else {
         
-        //[CCCoreData setCameraUpload:NO activeAccount:app.activeAccount];
         [[NCManageDatabase sharedInstance] setAccountCameraStateFiledWithField:@"cameraUpload" state:NO];
         
         [PHPhotoLibrary.sharedPhotoLibrary unregisterChangeObserver:self];
@@ -869,7 +864,6 @@
                 
                 if ([ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusAuthorized) {
                     
-                    //[CCCoreData setCameraUploadBackground:NO activeAccount:app.activeAccount];
                     [[NCManageDatabase sharedInstance] setAccountCameraStateFiledWithField:@"cameraUploadBackground" state:NO];
                     
                     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_location_not_enabled_", nil)
@@ -899,7 +893,6 @@
                 
             } else {
                 
-               // [CCCoreData setCameraUploadBackground:NO activeAccount:app.activeAccount];
                 [[NCManageDatabase sharedInstance] setAccountCameraStateFiledWithField:@"cameraUploadBackground" state:NO];
                 [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
                 
@@ -914,7 +907,6 @@
         
     } else {
         
-        //[CCCoreData setCameraUploadBackground:NO activeAccount:app.activeAccount];
         [[NCManageDatabase sharedInstance] setAccountCameraStateFiledWithField:@"cameraUploadBackground" state:NO];
         [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
         
@@ -983,10 +975,7 @@
             tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
             
             if (tableAccount.cameraUploadBackground) {
-            
-            //if ([CCCoreData getCameraUploadBackgroundActiveAccount:app.activeAccount]) {
                 
-                //[CCCoreData setCameraUploadBackground:NO activeAccount:app.activeAccount];
                 [[NCManageDatabase sharedInstance] setAccountCameraStateFiledWithField:@"cameraUploadBackground" state:NO];
                 [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
                 
@@ -1322,7 +1311,7 @@
         
         // Update Camera Upload data
         if ([metadataNet.selector isEqualToString:selectorUploadAutomatic])
-            [[NCManageDatabase sharedInstance] setAccountsCameraUploadDateAssetTypeWithAssetMediaType:assetMediaType assetDate:assetDate];
+            [[NCManageDatabase sharedInstance] setAccountCameraUploadDateAssetTypeWithAssetMediaType:assetMediaType assetDate:assetDate];
         
         // Update icon badge number
         [app updateApplicationIconBadgeNumber];

@@ -70,13 +70,9 @@ extension CCLoginWeb: SwiftModalWebVCDelegate {
                 
                     let account : String = "\(username) \(serverUrl)"
                 
-                    //CCCoreData.deleteAccount(account)
-                    //CCCoreData.addAccount(account, url: serverUrl, user: username, password: password)
                     NCManageDatabase.sharedInstance.deleteAccount(account)
                     NCManageDatabase.sharedInstance.addAccount(account, url: serverUrl, user: username, password: password)
-                
-                    //let tableAccount : TableAccount = CCCoreData.setActiveAccount(account)
-                    
+                                    
                     let tableAccount : tableAccount = NCManageDatabase.sharedInstance.setAccountActive(account)
                 
                     if (tableAccount.account == account) {
