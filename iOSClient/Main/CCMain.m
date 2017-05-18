@@ -1101,7 +1101,7 @@
 
 - (void)getActivityServerSuccess:(NSArray *)listOfActivity
 {
-    [[NCManageDatabase sharedInstance] addActivityServer:listOfActivity account:app.activeAccount];
+    [[NCManageDatabase sharedInstance] addActivityServer:listOfActivity];
     
     // Reload Activity Data Source
     [app.activeActivity reloadDatasource];

@@ -433,8 +433,13 @@ class NCManageDatabase: NSObject {
         return Array(results)
     }
 
-    func addActivityServer(_ listOfActivity: [OCActivity], account: String) {
+    func addActivityServer(_ listOfActivity: [OCActivity]) {
     
+        let tableAccount = self.getAccountActive()
+        if tableAccount == nil {
+            return
+        }
+        
         let realm = try! Realm()
         
         try! realm.write {
@@ -449,7 +454,7 @@ class NCManageDatabase: NSObject {
                 // Add new Activity
                 let addActivity = tableActivity()
                 
-                addActivity.account = account
+                addActivity.account = tableAccount!.account
                 
                 if activity.date != nil {
                     addActivity.date = activity.date! as NSDate
@@ -465,8 +470,13 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func addActivityClient(_ file: String, fileID: String, action: String, selector: String, note: String, type: String, verbose: Bool, account: String?, activeUrl: String?) {
+    func addActivityClient(_ file: String, fileID: String, action: String, selector: String, note: String, type: String, verbose: Bool, activeUrl: String?) {
 
+        let tableAccount = self.getAccountActive()
+        if tableAccount == nil {
+            return
+        }
+        
         var noteReplacing : String = ""
         
         if (activeUrl != nil) {
@@ -481,10 +491,7 @@ class NCManageDatabase: NSObject {
             // Add new Activity
             let addActivity = tableActivity()
 
-            if (account != nil) {
-                addActivity.account = account!
-            }
-            
+            addActivity.account = tableAccount!.account
             addActivity.action = action
             addActivity.file = file
             addActivity.fileID = fileID
