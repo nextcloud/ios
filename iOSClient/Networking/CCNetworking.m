@@ -662,7 +662,11 @@
     NSURLRequest *url = [downloadTask currentRequest];
     NSString *filename = [[url.URL absoluteString] lastPathComponent];
     
-    tableMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(session = %@) AND ((sessionTaskIdentifier == %i) OR (sessionTaskIdentifierPlist == %i))",session.sessionDescription, downloadTask.taskIdentifier, downloadTask.taskIdentifier] context:_context];
+    //tableMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(session = %@) AND ((sessionTaskIdentifier == %i) OR (sessionTaskIdentifierPlist == %i))",session.sessionDescription, downloadTask.taskIdentifier, downloadTask.taskIdentifier] context:_context];
+    
+    
+    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(session = %@) AND ((sessionTaskIdentifier == %i) OR (sessionTaskIdentifierPlist == %i))",session.sessionDescription, downloadTask.taskIdentifier, downloadTask.taskIdentifier]];
+    
     
     // If the record metadata do not exists, exit
     if (!metadata)
@@ -735,7 +739,9 @@
         
     } else {
         
-        tableMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, _activeAccount] context:_context];
+        //tableMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, _activeAccount] context:_context];
+        
+        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, _activeAccount]];
         
         if ([CCUtility isCryptoString:fileName] || [CCUtility isFileNotCryptated:fileName]) metadata.sessionTaskIdentifier = k_taskIdentifierDone;
         if ([CCUtility isCryptoPlistString:fileName]) metadata.sessionTaskIdentifierPlist = k_taskIdentifierDone;
@@ -1063,7 +1069,11 @@
                 UIAlertAction *overwriteAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_overwrite_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
                     
                     // -- remove record --
-                    tableMetadata *metadataDelete = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileName == %@) AND (directoryID == %@)", _activeAccount, [fileNameCrypto stringByAppendingString:@".plist"], directoryID] context:nil];
+                    //tableMetadata *metadataDelete = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileName == %@) AND (directoryID == %@)", _activeAccount, [fileNameCrypto stringByAppendingString:@".plist"], directoryID] context:nil];
+                    
+                    tableMetadata *metadataDelete = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileName == %@) AND (directoryID == %@)", _activeAccount, [fileNameCrypto stringByAppendingString:@".plist"], directoryID]];
+                    
+                    
                     [CCCoreData deleteFile:metadataDelete serverUrl:serverUrl directoryUser:_directoryUser activeAccount:_activeAccount];
                     
 #ifndef EXTENSION
@@ -1154,7 +1164,11 @@
             UIAlertAction *overwriteAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_overwrite_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
                 
                 // -- remove record --
-                tableMetadata *metadataDelete = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileName == %@) AND (directoryID == %@)", _activeAccount, fileName, directoryID] context:nil];
+                //tableMetadata *metadataDelete = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileName == %@) AND (directoryID == %@)", _activeAccount, fileName, directoryID] context:nil];
+                
+                tableMetadata *metadataDelete = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileName == %@) AND (directoryID == %@)", _activeAccount, fileName, directoryID]];
+                
+                
                 [CCCoreData deleteFile:metadataDelete serverUrl:serverUrl directoryUser:_directoryUser activeAccount:_activeAccount];
                 
                 // -- Go to Upload --
@@ -1375,9 +1389,11 @@
     
     float progress = (float) totalBytesSent / (float)totalBytesExpectedToSend;
 
-    if ([_currentProgressMetadata.fileName isEqualToString:fileName] == NO && [_currentProgressMetadata.fileNameData isEqualToString:fileName] == NO)
+    if ([_currentProgressMetadata.fileName isEqualToString:fileName] == NO && [_currentProgressMetadata.fileNameData isEqualToString:fileName] == NO) {
+        
         _currentProgressMetadata = [CCCoreData getMetadataFromFileName:fileName directoryID:[CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:_activeAccount] activeAccount:_activeAccount context:_context];
-    
+    }
+        
     //NSLog(@"[LOG] %@ - %f", fileName, progress);
     
     dispatch_async(dispatch_get_main_queue(), ^{
