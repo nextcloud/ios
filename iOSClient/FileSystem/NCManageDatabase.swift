@@ -1155,11 +1155,9 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
         
-        realm.beginWrite()
-            
-        realm.add(metadataWithIcon!, update: true)
-        
-        try! realm.commitWrite()
+        try! realm.write {
+            realm.add(metadataWithIcon!, update: true)
+        }
     }
     
     func deleteMetadata(_ predicate: NSPredicate) {
@@ -1171,13 +1169,11 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
         
-        realm.beginWrite()
-        
         let results = realm.objects(tableMetadata.self).filter(predicate)
         
-        realm.delete(results)
-        
-        try! realm.commitWrite()
+        try! realm.write {
+            realm.delete(results)
+        }
     }
     
     func moveMetadata(_ fileName: String, directoryID: String, directoryIDTo: String) {
