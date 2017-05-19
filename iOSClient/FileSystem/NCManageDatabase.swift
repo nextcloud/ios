@@ -93,6 +93,19 @@ class NCManageDatabase: NSObject {
         }
     }
     
+    func getThreadConfined(_ table: Object) -> Any {
+     
+        return ThreadSafeReference(to: table)
+    }
+    
+    func putThreadConfined(_ tableRef: Any) -> Object? {
+        
+        let realm = try! Realm()
+        
+        return realm.resolve(tableRef as! ThreadSafeReference<Object>)
+    }
+
+    
     //MARK: -
     //MARK: Table Account
     

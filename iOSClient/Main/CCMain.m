@@ -2831,26 +2831,34 @@
 }
 
 - (void)cancelTaskButton:(tableMetadata *)metadata reloadTable:(BOOL)reloadTable
-{
+{    
     NSURLSession *session = [[CCNetworking sharedNetworking] getSessionfromSessionDescription:metadata.session];
     __block NSURLSessionTask *findTask;
-
+    
+    NSInteger sessionTaskIdentifier = metadata.sessionTaskIdentifier;
+    NSInteger sessionTaskIdentifierPlist = metadata.sessionTaskIdentifierPlist;
+    NSString *fileID = metadata.fileID;
+    
     // DOWNLOAD
     if ([metadata.session length] > 0 && [metadata.session containsString:@"download"]) {
         
         [session getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
             
             for (NSURLSessionTask *task in downloadTasks)
-                if (task.taskIdentifier == metadata.sessionTaskIdentifier || task.taskIdentifier == metadata.sessionTaskIdentifierPlist) {
+                if (task.taskIdentifier == sessionTaskIdentifier || task.taskIdentifier == sessionTaskIdentifierPlist) {
                     findTask = task;
-                    [app.listChangeTask setObject:@"cancelDownload" forKey:metadata.fileID];
+                    [app.listChangeTask setObject:@"cancelDownload" forKey:fileID];
                     [task cancel];
                 }
             
             if (!findTask) {
-                [app.listChangeTask setObject:@"cancelDownload" forKey:metadata.fileID];
-                NSArray *object = [[NSArray alloc] initWithObjects:session, metadata, findTask, nil];
-                [[NSNotificationCenter defaultCenter] postNotificationName:k_networkingSessionNotification object:object];
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    
+                    [app.listChangeTask setObject:@"cancelDownload" forKey:metadata.fileID];
+                    NSArray *object = [[NSArray alloc] initWithObjects:session, metadata, findTask, nil];
+                    [[NSNotificationCenter defaultCenter] postNotificationName:k_networkingSessionNotification object:object];
+                });
             }
         }];
     }
@@ -2861,14 +2869,16 @@
         [session getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
             
             for (NSURLSessionUploadTask *task in uploadTasks)
-                if (task.taskIdentifier == metadata.sessionTaskIdentifier ||  task.taskIdentifier == metadata.sessionTaskIdentifierPlist) {
+                if (task.taskIdentifier == sessionTaskIdentifier ||  task.taskIdentifier == sessionTaskIdentifierPlist) {
                     findTask = task;
-                    [app.listChangeTask setObject:@"cancelUpload" forKey:metadata.fileID];
+                    [app.listChangeTask setObject:@"cancelUpload" forKey:fileID];
                     [task cancel];
                 }
             
             if (!findTask) {
+                
                 dispatch_async(dispatch_get_main_queue(), ^{
+                    
                     [app.listChangeTask setObject:@"cancelUpload" forKey:metadata.fileID];
                     NSArray *object = [[NSArray alloc] initWithObjects:session, metadata, findTask, nil];
                     [[NSNotificationCenter defaultCenter] postNotificationName:k_networkingSessionNotification object:object];
