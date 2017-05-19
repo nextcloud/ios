@@ -1608,9 +1608,9 @@
             CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
                 
             metadataNet.action = actionDownloadFile;
-            metadataNet.metadata = [CCCoreData insertEntityInMetadata:recordMetadata];
             metadataNet.downloadData = NO;
             metadataNet.downloadPlist = YES;
+            metadataNet.fileID = recordMetadata.fileID;
             metadataNet.selector = selectorLoadPlist;
             metadataNet.serverUrl = serverUrl;
             metadataNet.session = k_download_session_foreground;

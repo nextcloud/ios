@@ -312,9 +312,9 @@
                     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:activeAccount];
                     
                     metadataNet.action = actionDownloadFile;
-                    metadataNet.metadata = metadata;
                     metadataNet.downloadData = NO;
                     metadataNet.downloadPlist = YES;
+                    metadataNet.fileID = metadata.fileID;
                     metadataNet.selector = selectorLoadPlist;
                     metadataNet.serverUrl = _serverUrl;
                     metadataNet.session = k_download_session_foreground;

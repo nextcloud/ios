@@ -535,9 +535,9 @@
             CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
             
             metadataNet.action = actionDownloadFile;
-            metadataNet.metadata = metadata;
             metadataNet.downloadData = downloadData;
             metadataNet.downloadPlist = downloadPlist;
+            metadataNet.fileID = metadata.fileID;
             metadataNet.selector = selector;
             metadataNet.selectorPost = selectorPost;
             metadataNet.serverUrl = serverUrl;

@@ -332,9 +332,9 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
                 let metadataNet = CCMetadataNet.init(account: activeAccount)!
                 
                 metadataNet.action = actionDownloadFile
-                metadataNet.metadata = metadata
                 metadataNet.downloadData = false
                 metadataNet.downloadPlist = true
+                metadataNet.fileID = metadata.fileID
                 metadataNet.selector = selectorLoadPlist
                 metadataNet.serverUrl = self.serverUrl
                 metadataNet.session = k_download_session_foreground
@@ -807,7 +807,7 @@ extension DocumentPickerViewController: UITableViewDataSource {
                 metadataNet.action = actionDownloadFile
                 metadataNet.downloadData = true
                 metadataNet.downloadPlist = false
-                metadataNet.metadata = metadata
+                metadataNet.fileID = metadata?.fileID
                 metadataNet.selector = selectorLoadFileView
                 metadataNet.serverUrl = self.serverUrl
                 metadataNet.session = k_download_session_foreground

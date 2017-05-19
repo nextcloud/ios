@@ -104,7 +104,6 @@ class CCActions: NSObject {
             metadataNet.delegate = delegate
             metadataNet.fileID = metadata.fileID
             metadataNet.fileNamePrint = metadata.fileNamePrint
-            metadataNet.metadata = metadata
             metadataNet.serverUrl = serverUrl
             
             // data crypto
@@ -126,7 +125,6 @@ class CCActions: NSObject {
             metadataNet.fileID = metadata.fileID
             metadataNet.fileName = metadata.fileName
             metadataNet.fileNamePrint = metadata.fileNamePrint
-            metadataNet.metadata = metadata
             metadataNet.selector = selectorDelete
             metadataNet.serverUrl = serverUrl
 
@@ -227,8 +225,8 @@ class CCActions: NSObject {
             
             metadataNet.action = actionUploadOnlyPlist
             metadataNet.delegate = delegate
+            metadataNet.fileID = metadata.fileID
             metadataNet.fileName = metadata.fileName
-            metadataNet.metadata = metadata
             metadataNet.selectorPost = selectorReadFolderForced
             metadataNet.serverUrl = serverUrl
             metadataNet.session = k_upload_session_foreground
@@ -272,7 +270,6 @@ class CCActions: NSObject {
             metadataNet.fileName = metadata.fileName
             metadataNet.fileNamePrint = metadata.fileNamePrint
             metadataNet.fileNameTo = fileName
-            metadataNet.metadata = metadata
             metadataNet.selector = selectorRename
             metadataNet.serverUrl = serverUrl
             metadataNet.serverUrlTo = serverUrl
@@ -375,7 +372,6 @@ class CCActions: NSObject {
         metadataNet.fileName = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: serverUrl, activeUrl: appDelegate.activeUrl)
         metadataNet.fileNameLocal = metadata.fileID
         metadataNet.fileNamePrint = metadata.fileNamePrint
-        metadataNet.metadata = metadata
         metadataNet.options = "m"
         metadataNet.priority = Operation.QueuePriority.low.rawValue
         metadataNet.selector = selectorDownloadThumbnail;
@@ -407,7 +403,6 @@ class CCActions: NSObject {
         metadataNet.delegate = delegate
         metadataNet.fileID = metadata.fileID
         metadataNet.fileName = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: serverUrl, activeUrl: appDelegate.activeUrl)
-        metadataNet.metadata = metadata
         metadataNet.options = "\(favorite)"
         metadataNet.priority = Operation.QueuePriority.normal.rawValue
         metadataNet.selector = selectorAddFavorite
