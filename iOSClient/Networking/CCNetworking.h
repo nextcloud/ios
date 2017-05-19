@@ -114,7 +114,6 @@
 @property (nonatomic, strong) NSString *fileNameLocal;
 @property (nonatomic, strong) NSString *fileNamePrint;
 @property (nonatomic, strong) NSString *assetLocalIdentifier;
-@property (nonatomic, strong) tableMetadata *metadata;
 @property (nonatomic, strong) id options;
 @property (nonatomic, strong) NSString *password;
 @property (nonatomic, strong) NSString *pathFolder;

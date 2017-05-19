@@ -1814,7 +1814,6 @@
     [metadataNet setFileNameTo: self.fileNameTo];
     [metadataNet setFileNameLocal: self.fileNameLocal];
     [metadataNet setFileNamePrint: self.fileNamePrint];
-    [metadataNet setMetadata: self.metadata];
     [metadataNet setOptions: self.options];
     [metadataNet setPassword: self.password];
     [metadataNet setPathFolder: self.pathFolder];
