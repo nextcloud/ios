@@ -1577,10 +1577,8 @@
     
     NSLog(@"[LOG] Verify download file in progress n. %lu", (unsigned long)[dataSource count]);
     
-    for (TableMetadata *record in dataSource) {
-        
-        __block tableMetadata *metadata = [CCCoreData insertEntityInMetadata:record];
-        
+    for (tableMetadata *metadata in dataSource) {
+                
         NSURLSession *session = [self getSessionfromSessionDescription:metadata.session];
         
         [session getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {

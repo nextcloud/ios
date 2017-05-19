@@ -5108,11 +5108,13 @@
         
         if (cell.fileImageView.image == nil) {
             
+            NSString *fileID = metadata.fileID;
+            
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
                 
-                UIImage *image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]];
+                UIImage *image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, fileID]];
                 
-                [app.icoImagesCache setObject:image forKey:metadata.fileID];
+                [app.icoImagesCache setObject:image forKey:fileID];
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
                     
