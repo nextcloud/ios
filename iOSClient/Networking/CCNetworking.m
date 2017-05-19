@@ -600,9 +600,7 @@
         if ([CCUtility isCryptoString:fileName] || [CCUtility isFileNotCryptated:fileName]) sessionTaskIdentifier = downloadTask.taskIdentifier;
         if ([CCUtility isCryptoPlistString:fileName]) sessionTaskIdentifierPlist = downloadTask.taskIdentifier;
         
-        //[CCCoreData setMetadataSession:nil sessionError:@"" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:sessionTaskIdentifier sessionTaskIdentifierPlist:sessionTaskIdentifierPlist predicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, _activeAccount] context:_context];
-        
-        [[NCManageDatabase sharedInstance] setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier:sessionTaskIdentifier sessionTaskIdentifierPlist:sessionTaskIdentifierPlist predicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, _activeAccount]];
+        [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:nil sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:sessionTaskIdentifier sessionTaskIdentifierPlist:sessionTaskIdentifierPlist predicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
         
         NSLog(@"[LOG] downloadFileSession %@ - %@ Task [%lu %lu]", fileID, fileNamePrint, (unsigned long)sessionTaskIdentifier, (unsigned long)sessionTaskIdentifierPlist);
     }
@@ -710,15 +708,11 @@
         //
         if (errorCode == kCFURLErrorCancelled || [CCUtility isCryptoPlistString:fileName]) {
             
-            //[CCCoreData setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier: k_taskIdentifierDone sessionTaskIdentifierPlist: k_taskIdentifierDone predicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, _activeAccount] context:_context];
-            
-            [[NCManageDatabase sharedInstance] setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier:k_taskIdentifierDone sessionTaskIdentifierPlist:k_taskIdentifierDone predicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, _activeAccount]];
+            [[NCManageDatabase sharedInstance] setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier:k_taskIdentifierDone sessionTaskIdentifierPlist:k_taskIdentifierDone predicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
             
         } else {
             
-            //[CCCoreData setMetadataSession:nil sessionError:[NSString stringWithFormat:@"%@", @(errorCode)] sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier: k_taskIdentifierError sessionTaskIdentifierPlist: k_taskIdentifierNULL predicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, _activeAccount] context:_context];
-            
-            [[NCManageDatabase sharedInstance] setMetadataSession:@"" sessionError:[NSString stringWithFormat:@"%@", @(errorCode)] sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier:k_taskIdentifierError sessionTaskIdentifierPlist:k_taskIdentifierNULL predicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, _activeAccount]];
+            [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:[NSString stringWithFormat:@"%@", @(errorCode)] sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:k_taskIdentifierError sessionTaskIdentifierPlist:k_taskIdentifierNULL predicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
         }
         
         // Delegate downloadFileFailure:
@@ -741,15 +735,12 @@
         
         if (metadata.sessionTaskIdentifier == k_taskIdentifierDone && metadata.sessionTaskIdentifierPlist == k_taskIdentifierDone) {
             
-            //[CCCoreData setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier:metadata.sessionTaskIdentifier sessionTaskIdentifierPlist:metadata.sessionTaskIdentifierPlist predicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, _activeAccount] context:_context];
-            
-            [[NCManageDatabase sharedInstance] setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier:metadata.sessionTaskIdentifier sessionTaskIdentifierPlist:metadata.sessionTaskIdentifierPlist predicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, _activeAccount]];
+            [[NCManageDatabase sharedInstance] setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier:metadata.sessionTaskIdentifier sessionTaskIdentifierPlist:metadata.sessionTaskIdentifierPlist predicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
             
         } else {
             
-            //[CCCoreData setMetadataSession:nil sessionError:nil sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:metadata.sessionTaskIdentifier sessionTaskIdentifierPlist:metadata.sessionTaskIdentifierPlist predicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, _activeAccount] context:_context];
-            
-            [[NCManageDatabase sharedInstance] setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier:metadata.sessionTaskIdentifier sessionTaskIdentifierPlist:metadata.sessionTaskIdentifierPlist predicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, _activeAccount]];
+
+            [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:nil sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:metadata.sessionTaskIdentifier sessionTaskIdentifierPlist:metadata.sessionTaskIdentifierPlist predicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
         }
         
         // DATA
@@ -1232,10 +1223,7 @@
         
         NSLog(@"[LOG] Re-upload File : %@ - fileID : %@", metadata.fileNamePrint, metadata.fileID);
         
-        // update Coredata
-        //[CCCoreData setMetadataSession:nil sessionError:@"" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier: k_taskIdentifierNULL sessionTaskIdentifierPlist: k_taskIdentifierNULL predicate:[NSPredicate predicateWithFormat:@"(sessionID == %@) AND (account == %@)", metadata.sessionID, _activeAccount] context:_context];
-        
-        [[NCManageDatabase sharedInstance] setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier:k_taskIdentifierNULL sessionTaskIdentifierPlist:k_taskIdentifierNULL predicate:[NSPredicate predicateWithFormat:@"(sessionID == %@) AND (account == %@)", metadata.sessionID, _activeAccount]];
+        [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:@"" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:k_taskIdentifierNULL sessionTaskIdentifierPlist:k_taskIdentifierNULL predicate:[NSPredicate predicateWithFormat:@"sessionID = %@ AND account == %@", metadata.sessionID, _activeAccount]];
         
     } else {
         
@@ -1323,9 +1311,7 @@
         if ([CCUtility isFileNotCryptated:fileName] || [CCUtility isCryptoString:fileName]) sessionTaskIdentifier = k_taskIdentifierError;
         if ([CCUtility isCryptoPlistString:fileName]) sessionTaskIdentifierPlist = k_taskIdentifierError;
         
-        //[CCCoreData setMetadataSession:session sessionError:[NSString stringWithFormat:@"%@", @k_CCErrorTaskNil] sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:sessionTaskIdentifier sessionTaskIdentifierPlist:sessionTaskIdentifierPlist predicate:[NSPredicate predicateWithFormat:@"(sessionID == %@) AND (account == %@)", sessionID, _activeAccount] context:_context];
-        
-        [[NCManageDatabase sharedInstance] setMetadataSession:session sessionError:[NSString stringWithFormat:@"%@", @k_CCErrorTaskNil] sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier:sessionTaskIdentifier sessionTaskIdentifierPlist:sessionTaskIdentifierPlist predicate:[NSPredicate predicateWithFormat:@"(sessionID == %@) AND (account == %@)", sessionID, _activeAccount]];
+        [[NCManageDatabase sharedInstance] setMetadataSession:session sessionError:[NSString stringWithFormat:@"%@", @k_CCErrorTaskNil] sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:sessionTaskIdentifier sessionTaskIdentifierPlist:sessionTaskIdentifierPlist predicate:[NSPredicate predicateWithFormat:@"sessionID = %@ AND account = %@", sessionID, _activeAccount]];
         
         NSLog(@"[LOG] Upload file TaskIdentifier [error CCErrorTaskNil] - %@ - %@", fileName, fileNamePrint);
         
@@ -1337,9 +1323,7 @@
         if ([CCUtility isCryptoString:fileName] || [CCUtility isFileNotCryptated:fileName]) sessionTaskIdentifier = uploadTask.taskIdentifier;
         if ([CCUtility isCryptoPlistString:fileName]) sessionTaskIdentifierPlist = uploadTask.taskIdentifier;
         
-        //[CCCoreData setMetadataSession:session sessionError:@"" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:sessionTaskIdentifier sessionTaskIdentifierPlist:sessionTaskIdentifierPlist predicate:[NSPredicate predicateWithFormat:@"(sessionID == %@) AND (account == %@)", sessionID, _activeAccount] context:_context];
-        
-        [[NCManageDatabase sharedInstance] setMetadataSession:session sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier:sessionTaskIdentifier sessionTaskIdentifierPlist:sessionTaskIdentifierPlist predicate:[NSPredicate predicateWithFormat:@"(sessionID == %@) AND (account == %@)", sessionID, _activeAccount]];
+        [[NCManageDatabase sharedInstance] setMetadataSession:session sessionError:@"" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:sessionTaskIdentifier sessionTaskIdentifierPlist:sessionTaskIdentifierPlist predicate:[NSPredicate predicateWithFormat:@"sessionID = %@ AND account = %@", sessionID, _activeAccount]];
         
         // Delete record on Table Automatic Upload
         if ([selector isEqualToString:selectorUploadAutomatic] || [selector isEqualToString:selectorUploadAutomaticAll])
@@ -1433,9 +1417,7 @@
             if ([CCUtility isFileNotCryptated:fileName] || [CCUtility isCryptoString:fileName]) sessionTaskIdentifier = k_taskIdentifierError;
             if ([CCUtility isCryptoPlistString:fileName]) sessionTaskIdentifierPlist = k_taskIdentifierError;
         
-            //[CCCoreData setMetadataSession:nil sessionError:[NSString stringWithFormat:@"%@", @(errorCode)] sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:sessionTaskIdentifier sessionTaskIdentifierPlist:sessionTaskIdentifierPlist predicate:[NSPredicate predicateWithFormat:@"(sessionID == %@) AND (account == %@)", metadata.sessionID, _activeAccount] context:_context];
-            
-            [[NCManageDatabase sharedInstance] setMetadataSession:@"" sessionError:[NSString stringWithFormat:@"%@", @(errorCode)] sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier:sessionTaskIdentifier sessionTaskIdentifierPlist:sessionTaskIdentifierPlist predicate:[NSPredicate predicateWithFormat:@"(sessionID == %@) AND (account == %@)", metadata.sessionID, _activeAccount]];
+            [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:[NSString stringWithFormat:@"%@", @(errorCode)] sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:sessionTaskIdentifier sessionTaskIdentifierPlist:sessionTaskIdentifierPlist predicate:[NSPredicate predicateWithFormat:@"sessionID = %@ AND account = %@", metadata.sessionID, _activeAccount]];
         }
         
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -1586,10 +1568,7 @@
                 
                     NSLog(@"[LOG] NOT Find metadata Task [%li] fileID : %@ - filename : %@", (long)metadata.sessionTaskIdentifier, metadata.fileID, metadata.fileNameData);
                 
-                //[CCCoreData setMetadataSession:nil sessionError:[NSString stringWithFormat:@"%@", @k_CCErrorTaskDownloadNotFound] sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier: k_taskIdentifierError sessionTaskIdentifierPlist: k_taskIdentifierNULL predicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", metadata.fileID, _activeAccount] context:_context];
-                
-                
-                    [[NCManageDatabase sharedInstance] setMetadataSession:@"" sessionError:[NSString stringWithFormat:@"%@", @k_CCErrorTaskDownloadNotFound] sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier:k_taskIdentifierError sessionTaskIdentifierPlist:k_taskIdentifierNULL predicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", metadata.fileID, _activeAccount]];
+                    [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:[NSString stringWithFormat:@"%@", @k_CCErrorTaskDownloadNotFound] sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:k_taskIdentifierError sessionTaskIdentifierPlist:k_taskIdentifierNULL predicate:[NSPredicate predicateWithFormat:@"fileID = %@ ", metadata.fileID]];
                 
                     if ([self.delegate respondsToSelector:@selector(reloadDatasource:fileID:selector:)])
                         [self.delegate reloadDatasource:[CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account] fileID:metadata.fileID selector:nil];
@@ -1600,10 +1579,7 @@
                 
                     NSLog(@"[LOG] NOT Find metadata TaskPlist [%li] fileID : %@ - filename : %@", (long)metadata.sessionTaskIdentifierPlist, metadata.fileID, metadata.fileName);
                 
-                    //[CCCoreData setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier: k_taskIdentifierNULL sessionTaskIdentifierPlist: k_taskIdentifierDone predicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", metadata.fileID, _activeAccount] context:_context];
-                
-                
-                    [[NCManageDatabase sharedInstance] setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier:k_taskIdentifierNULL sessionTaskIdentifierPlist:k_taskIdentifierDone predicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", metadata.fileID, _activeAccount]];
+                    [[NCManageDatabase sharedInstance] setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier:k_taskIdentifierNULL sessionTaskIdentifierPlist:k_taskIdentifierDone predicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadata.fileID]];
                 
                     if ([self.delegate respondsToSelector:@selector(reloadDatasource:fileID:selector:)])
                         [self.delegate reloadDatasource:[CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account] fileID:metadata.fileID selector:nil];
