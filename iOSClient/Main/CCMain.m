@@ -1715,7 +1715,7 @@
         }
         
         // Check if is in upload 
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND (fileName == %@) AND (session != NULL) AND (session != '')", app.activeAccount, directoryID, fileName];
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account = %@) AND (directoryID = %@) AND (fileName = %@) AND (session != '')", app.activeAccount, directoryID, fileName];
         //NSArray *isRecordInSessions = [CCCoreData getTableMetadataWithPredicate:predicate context:nil];
         
         NSArray *isRecordInSessions = [[NCManageDatabase sharedInstance] getMetadatasWithPreficate:predicate sorted:nil ascending:NO];
@@ -1843,7 +1843,7 @@
         
         //recordsInSessions = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (session != NULL) AND (session != '')", metadataNet.account] context:nil];
         
-        recordsInSessions = [[NCManageDatabase sharedInstance] getMetadatasWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (session != NULL) AND (session != '')", metadataNet.account] sorted:nil ascending:NO];
+        recordsInSessions = [[NCManageDatabase sharedInstance] getMetadatasWithPreficate:[NSPredicate predicateWithFormat:@"(account = %@) AND (session != '')", metadataNet.account] sorted:nil ascending:NO];
         
     } else {
         
