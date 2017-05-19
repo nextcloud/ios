@@ -1935,7 +1935,6 @@
         }
 
         // end test, insert in CoreData
-        //[CCCoreData addMetadata:metadata activeAccount:app.activeAccount activeUrl:app.activeUrl context:nil];
         [[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:app.activeUrl];
     }
     
@@ -1943,10 +1942,8 @@
     [self downloadPlist:metadataNet.directoryID serverUrl:metadataNet.serverUrl];
     
     // File is changed ??
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
-        if (!_isSearchMode)
+    if (!_isSearchMode)
             [[CCSynchronize sharedSynchronize] verifyChangeMedatas:metadatas serverUrl:metadataNet.serverUrl account:app.activeAccount withDownload:NO];
-    });
 
     // Search Mode
     if (_isSearchMode)

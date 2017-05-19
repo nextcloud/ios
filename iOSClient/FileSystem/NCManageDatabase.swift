@@ -100,28 +100,29 @@ class NCManageDatabase: NSObject {
 
         let realm = try! Realm()
         
-        try! realm.write {
+        realm.beginWrite()
             
-            let addAccount = tableAccount()
+        let addAccount = tableAccount()
             
-            addAccount.account = account
+        addAccount.account = account
             
-            // Brand
-            if NCBrandOptions.sharedInstance.use_default_automatic_upload {
+        // Brand
+        if NCBrandOptions.sharedInstance.use_default_automatic_upload {
                 
-                addAccount.cameraUpload = true
-                addAccount.cameraUploadPhoto = true
-                addAccount.cameraUploadVideo = true
+            addAccount.cameraUpload = true
+            addAccount.cameraUploadPhoto = true
+            addAccount.cameraUploadVideo = true
 
-                addAccount.cameraUploadWWAnVideo = true
-            }
-            
-            addAccount.password = password
-            addAccount.url = url
-            addAccount.user = user
-            
-            realm.add(addAccount)
+            addAccount.cameraUploadWWAnVideo = true
         }
+            
+        addAccount.password = password
+        addAccount.url = url
+        addAccount.user = user
+            
+        realm.add(addAccount)
+        
+        try! realm.commitWrite()
     }
     
     func addTableAccountOldDB(_ table: TableAccount) {
@@ -1126,6 +1127,11 @@ class NCManageDatabase: NSObject {
 
     func addMetadata(_ metadata: tableMetadata, activeUrl: String) {
 
+        let tableAccount = self.getAccountActive()
+        if tableAccount == nil {
+            return
+        }
+        
         let cameraFolderName = self.getAccountCameraUploadFolderName()
         let cameraFolderPath = self.getAccountCameraUploadFolderPath(activeUrl)
         let direcory = CCCoreData.getServerUrl(fromDirectoryID: metadata.directoryID, activeAccount: metadata.account)
@@ -1134,20 +1140,29 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
         
-        try! realm.write {
+        realm.beginWrite()
             
-            realm.add(metadataWithIcon!, update: true)
-        }
+        realm.add(metadataWithIcon!, update: true)
+        
+        try! realm.commitWrite()
     }
     
     func deleteMetadata(_ predicate: NSPredicate) {
     
+        let tableAccount = self.getAccountActive()
+        if tableAccount == nil {
+            return
+        }
+        
         let realm = try! Realm()
         
+        realm.beginWrite()
+        
         let results = realm.objects(tableMetadata.self).filter(predicate)
-        try! realm.write {
-            realm.delete(results)
-        }
+        
+        realm.delete(results)
+        
+        try! realm.commitWrite()
     }
     
     func moveMetadata(_ fileName: String, directoryID: String, directoryIDTo: String) {
@@ -1171,6 +1186,11 @@ class NCManageDatabase: NSObject {
     
     func updateMetadata(_ metadata: tableMetadata, activeUrl: String) {
         
+        let tableAccount = self.getAccountActive()
+        if tableAccount == nil {
+            return
+        }
+        
         let cameraFolderName = self.getAccountCameraUploadFolderName()
         let cameraFolderPath = self.getAccountCameraUploadFolderPath(activeUrl)
         let direcory = CCCoreData.getServerUrl(fromDirectoryID: metadata.directoryID, activeAccount: metadata.account)
@@ -1185,6 +1205,11 @@ class NCManageDatabase: NSObject {
     }
     
     func setMetadataSession(_ session: String, sessionError: String, sessionSelector: String, sessionSelectorPost: String, sessionTaskIdentifier: Int, sessionTaskIdentifierPlist: Int, predicate: NSPredicate) {
+        
+        let tableAccount = self.getAccountActive()
+        if tableAccount == nil {
+            return
+        }
         
         let realm = try! Realm()
         
@@ -1229,6 +1254,11 @@ class NCManageDatabase: NSObject {
 
     func getMetadataWithPreficate(_ predicate: NSPredicate) -> tableMetadata? {
         
+        let tableAccount = self.getAccountActive()
+        if tableAccount == nil {
+            return nil
+        }
+        
         let realm = try! Realm()
         
         let results = realm.objects(tableMetadata.self).filter(predicate)
@@ -1244,6 +1274,11 @@ class NCManageDatabase: NSObject {
     }
 
     func getMetadatasWithPreficate(_ predicate: NSPredicate, sorted: String?, ascending: Bool) -> [tableMetadata]? {
+        
+        let tableAccount = self.getAccountActive()
+        if tableAccount == nil {
+            return nil
+        }
         
         let realm = try! Realm()
         let results : Results<tableMetadata>
@@ -1269,6 +1304,11 @@ class NCManageDatabase: NSObject {
     
     func getMetadataAtIndex(_ predicate: NSPredicate, sorted: String?, ascending: Bool, index: Int) -> tableMetadata? {
 
+        let tableAccount = self.getAccountActive()
+        if tableAccount == nil {
+            return nil
+        }
+        
         let realm = try! Realm()
         
         let results = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: sorted!, ascending: ascending)
