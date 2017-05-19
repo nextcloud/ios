@@ -1474,50 +1474,49 @@
     
     NSLog(@"[LOG] Verify download file in progress n. %lu", (unsigned long)[dataSource count]);
     
-    for (tableMetadata *record in dataSource) {
+    for (tableMetadata *metadata in dataSource) {
                 
-        NSURLSession *session = [self getSessionfromSessionDescription:record.session];
-        
-        id tradeReference = [[NCManageDatabase sharedInstance] getThreadConfined:record];
+        NSURLSession *session = [self getSessionfromSessionDescription:metadata.session];
         
         [session getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
             
-            tableMetadata *metadata = (tableMetadata *)[[NCManageDatabase sharedInstance] putThreadConfined:tradeReference];
+            dispatch_async(dispatch_get_main_queue(), ^{
             
-            BOOL findTask = NO;
-            BOOL findTaskPlist = NO;
+                BOOL findTask = NO;
+                BOOL findTaskPlist = NO;
             
-            for (NSURLSessionDownloadTask *downloadTask in downloadTasks) {
+                for (NSURLSessionDownloadTask *downloadTask in downloadTasks) {
                 
-                NSLog(@"[LOG] Find metadata Tasks [%li %li] = [%lu] state : %lu", (long)metadata.sessionTaskIdentifier, (long)metadata.sessionTaskIdentifierPlist ,(unsigned long)downloadTask.taskIdentifier, (unsigned long)[downloadTask state]);
+                    NSLog(@"[LOG] Find metadata Tasks [%li %li] = [%lu] state : %lu", (long)metadata.sessionTaskIdentifier, (long)metadata.sessionTaskIdentifierPlist ,(unsigned long)downloadTask.taskIdentifier, (unsigned long)[downloadTask state]);
                 
-                if (metadata.sessionTaskIdentifier == downloadTask.taskIdentifier) findTask = YES;
-                if (metadata.sessionTaskIdentifierPlist == downloadTask.taskIdentifier) findTaskPlist = YES;
+                    if (metadata.sessionTaskIdentifier == downloadTask.taskIdentifier) findTask = YES;
+                    if (metadata.sessionTaskIdentifierPlist == downloadTask.taskIdentifier) findTaskPlist = YES;
                 
-                if (findTask == YES || findTaskPlist == YES) break; // trovati, download ancora in corso
-            }
+                    if (findTask == YES || findTaskPlist == YES) break; // trovati, download ancora in corso
+                }
             
-            // DATA
-            if (findTask == NO && metadata.sessionTaskIdentifier >= 0) {
+                // DATA
+                if (findTask == NO && metadata.sessionTaskIdentifier >= 0) {
                 
-                NSLog(@"[LOG] NOT Find metadata Task [%li] fileID : %@ - filename : %@", (long)metadata.sessionTaskIdentifier, metadata.fileID, metadata.fileNameData);
+                    NSLog(@"[LOG] NOT Find metadata Task [%li] fileID : %@ - filename : %@", (long)metadata.sessionTaskIdentifier, metadata.fileID, metadata.fileNameData);
                 
-                [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:[NSString stringWithFormat:@"%@", @k_CCErrorTaskDownloadNotFound] sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:k_taskIdentifierError sessionTaskIdentifierPlist:k_taskIdentifierNULL predicate:[NSPredicate predicateWithFormat:@"fileID = %@ ", metadata.fileID]];
+                    [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:[NSString stringWithFormat:@"%@", @k_CCErrorTaskDownloadNotFound] sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:k_taskIdentifierError sessionTaskIdentifierPlist:k_taskIdentifierNULL predicate:[NSPredicate predicateWithFormat:@"fileID = %@ ", metadata.fileID]];
                 
-                if ([self.delegate respondsToSelector:@selector(reloadDatasource:fileID:selector:)])
+                    if ([self.delegate respondsToSelector:@selector(reloadDatasource:fileID:selector:)])
                     [self.delegate reloadDatasource:[CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account] fileID:metadata.fileID selector:nil];
-            }
+                }
             
-            // PLIST
-            if (findTaskPlist == NO && metadata.sessionTaskIdentifierPlist >= 0) {
+                // PLIST
+                if (findTaskPlist == NO && metadata.sessionTaskIdentifierPlist >= 0) {
                 
-                NSLog(@"[LOG] NOT Find metadata TaskPlist [%li] fileID : %@ - filename : %@", (long)metadata.sessionTaskIdentifierPlist, metadata.fileID, metadata.fileName);
+                    NSLog(@"[LOG] NOT Find metadata TaskPlist [%li] fileID : %@ - filename : %@", (long)metadata.sessionTaskIdentifierPlist, metadata.fileID, metadata.fileName);
                 
-                [[NCManageDatabase sharedInstance] setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier:k_taskIdentifierNULL sessionTaskIdentifierPlist:k_taskIdentifierDone predicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadata.fileID]];
+                    [[NCManageDatabase sharedInstance] setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier:k_taskIdentifierNULL sessionTaskIdentifierPlist:k_taskIdentifierDone predicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadata.fileID]];
                 
-                if ([self.delegate respondsToSelector:@selector(reloadDatasource:fileID:selector:)])
+                    if ([self.delegate respondsToSelector:@selector(reloadDatasource:fileID:selector:)])
                     [self.delegate reloadDatasource:[CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account] fileID:metadata.fileID selector:nil];
-            }
+                }
+            });
         }];
     }
     

@@ -1011,9 +1011,6 @@
 
 - (void)changedLocation
 {
-    [[CCNetworking sharedNetworking] automaticDownloadInError];
-    [[CCNetworking sharedNetworking] automaticUploadInError];
-    
     // Only in background
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
     

@@ -1181,9 +1181,6 @@
     // after 20 sec verify Re
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 20 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         
-        [[CCNetworking sharedNetworking] automaticDownloadInError];
-        [[CCNetworking sharedNetworking] automaticUploadInError];
-        
         NSLog(@"[LOG] End Fetch 20 sec.");
     });
     
@@ -1214,9 +1211,6 @@
     NSLog(@"[LOG] Start completition handler from background - identifier : %@", identifier);
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 25 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        
-        [[CCNetworking sharedNetworking] automaticDownloadInError];
-        [[CCNetworking sharedNetworking] automaticUploadInError];
         
         self.backgroundSessionCompletionHandler = completionHandler;
         void (^completionHandler)() = self.backgroundSessionCompletionHandler;
