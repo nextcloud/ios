@@ -321,8 +321,7 @@
     // COREDATA FILE SYSTEM
     
     if (download && taskStatus == k_taskStatusCancel) {
-        //[CCCoreData setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier: k_taskIdentifierDone sessionTaskIdentifierPlist: k_taskIdentifierDone predicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (session CONTAINS 'download')", _activeAccount] context:_context];
-        
+                
         [[NCManageDatabase sharedInstance] setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier:k_taskIdentifierDone sessionTaskIdentifierPlist:k_taskIdentifierDone predicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (session CONTAINS 'download')", _activeAccount]];        
     }
     
