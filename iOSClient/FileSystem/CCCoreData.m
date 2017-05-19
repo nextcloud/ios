@@ -1294,20 +1294,17 @@
     [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, metadata.fileID] error:nil];
     [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@.ico", directoryUser, metadata.fileID] error:nil];
     
-    // ------------------------------------------ COREDATA -------------------------------------------
-    
-    //[self deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", metadata.fileID, activeAccount]];
-    
-    [[NCManageDatabase sharedInstance] deleteMetadata:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", metadata.fileID, activeAccount]];
-    
-    [self deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", metadata.fileID, activeAccount]];
-    
+    // ------------------------------------------ DATABASE -------------------------------------------
+
     // se è una directory cancelliamo tutto quello che è della directory
     if (metadata.directory && serverUrl) {
         
         NSString *dirForDelete = [CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileNameData];
         [self deleteDirectoryAndSubDirectory:dirForDelete activeAccount:activeAccount];
     }
+    
+    [self deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", metadata.fileID, activeAccount]];
+    [[NCManageDatabase sharedInstance] deleteMetadata:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", metadata.fileID, activeAccount]];
 }
 
 #pragma --------------------------------------------------------------------------------------------

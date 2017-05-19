@@ -1234,8 +1234,8 @@ class NCManageDatabase: NSObject {
                 
                 realm.delete(metadata)
                 
-                metadata.fileID = fileID!
-                realm.add(metadata, update: true)
+                //metadata.fileID = fileID!
+                //realm.add(metadata, update: true)
                 
                 
                 
@@ -1247,6 +1247,7 @@ class NCManageDatabase: NSObject {
                 realm.add(metadataWithIcon!, update: true)
             }
         }
+        
     }
     
     func setMetadataSession(_ session: String?, sessionError: String?, sessionSelector: String?, sessionSelectorPost: String?, sessionTaskIdentifier: Int, sessionTaskIdentifierPlist: Int, predicate: NSPredicate) {
