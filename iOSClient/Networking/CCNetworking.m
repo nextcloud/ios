@@ -1562,9 +1562,6 @@
 
 - (void)verifyUploadInProgress
 {
-    //NSArray *dataSourceUpload = [CCCoreData getTableMetadataUploadAccount:_activeAccount];
-    //NSArray *dataSourceUploadWWan = [CCCoreData getTableMetadataUploadWWanAccount:_activeAccount];
-
     NSArray *dataSourceUpload = [[NCManageDatabase sharedInstance] getTableMetadataUpload];
     NSArray *dataSourceUploadWWan = [[NCManageDatabase sharedInstance] getTableMetadataUploadWWan];
     
@@ -1575,9 +1572,8 @@
     
     NSLog(@"[LOG] Verify upload file in progress n. %lu", (unsigned long)[dataSource count]);
     
-    for (TableMetadata *record in dataSource) {
+    for (tableMetadata *metadata in dataSource) {
         
-        __block tableMetadata *metadata = [CCCoreData insertEntityInMetadata:record];
         __block NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:_activeAccount];
         
         NSURLSession *session = [self getSessionfromSessionDescription:metadata.session];

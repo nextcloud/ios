@@ -1194,7 +1194,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func updateMetadata(_ metadata: tableMetadata, date: NSDate?, rev: String?, session: String?, sessionError: String?, sessionTaskIdentifier: Int, sessionTaskIdentifierPlist: Int, activeUrl: String) {
+    func updateMetadata(_ metadata: tableMetadata, date: NSDate?, fileID: String?, rev: String?, session: String?, sessionError: String?, sessionTaskIdentifier: Int, sessionTaskIdentifierPlist: Int, activeUrl: String) {
         
         let tableAccount = self.getAccountActive()
         if tableAccount == nil {
@@ -1230,7 +1230,22 @@ class NCManageDatabase: NSObject {
                 metadata.sessionTaskIdentifierPlist = sessionTaskIdentifierPlist
             }
             
-            realm.add(metadataWithIcon!, update: true)
+            if fileID != nil {
+                
+                realm.delete(metadata)
+                
+                metadata.fileID = fileID!
+                realm.add(metadata, update: true)
+                
+                
+                
+                //let x =  realm.create(tableMetadata.self, value: metadata, update: false)
+                //x.fileID = fileID!
+                
+            } else {
+                
+                realm.add(metadataWithIcon!, update: true)
+            }
         }
     }
     
