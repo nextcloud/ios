@@ -1190,10 +1190,7 @@
     // after 25 sec
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 25 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         
-        //NSArray *records = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (session != NULL) AND (session != '')", self.activeAccount] context:nil];
-        
-        
-        NSArray *records = [[NCManageDatabase sharedInstance] getMetadatasWithPreficate:[NSPredicate predicateWithFormat:@"(account = %@) AND (session != '')", self.activeAccount] sorted:nil ascending:NO];
+        NSArray *records = [[NCManageDatabase sharedInstance] getMetadatasWithPreficate:[NSPredicate predicateWithFormat:@"account = %@ AND session != ''", self.activeAccount] sorted:nil ascending:NO];
         
         if ([records count] > 0) {
             completionHandler(UIBackgroundFetchResultNewData);
@@ -1326,9 +1323,7 @@
     // Is loading new Asset or this  ?
     if (_automaticCheckAssetInProgress)
         return;
-    
-    //NSArray *uploadInQueue = [CCCoreData getTableMetadataUploadAccount:app.activeAccount];
-    
+        
     NSArray *uploadInQueue = [[NCManageDatabase sharedInstance] getTableMetadataUpload];
     
     NSArray *recordAutomaticUploadInLock =  [[NCManageDatabase sharedInstance] getLockAutomaticUpload];

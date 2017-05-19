@@ -813,11 +813,10 @@
         // Fix BUG Geo latitude & longitude
         if ([localFile.exifLatitude doubleValue] == 9999 || [localFile.exifLongitude doubleValue] == 9999) {
             
-            //tableMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, app.activeAccount] context:nil];
-            tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, app.activeAccount]];
-
-            
-            [CCExifGeo setExifLocalTableFileID:metadata directoryUser:app.directoryUser activeAccount:app.activeAccount];
+            tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
+            if (metadata) {
+                [CCExifGeo setExifLocalTableFileID:metadata directoryUser:app.directoryUser activeAccount:app.activeAccount];
+            }
         }
         
         [CCExifGeo setGeocoderFileID:fileID exifDate:localFile.exifDate latitude:localFile.exifLatitude longitude:localFile.exifLongitude];
