@@ -544,8 +544,10 @@
     
     if (downloadPlist) {
         
+        tableMetadata *result = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileID == %@) AND (session CONTAINS 'download') AND (sessionTaskIdentifierPlist >= 0)", _activeAccount, metadata.fileID]];
+        
         // it's in download
-        if ([CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileID == %@) AND (session CONTAINS 'download') AND (sessionTaskIdentifierPlist >= 0)", _activeAccount, metadata.fileID] context:_context]) {
+        if (result) {
             
             NSLog(@"[LOG] Download file already in progress %@ - %@", metadata.fileName, metadata.fileNamePrint);
             
@@ -643,9 +645,14 @@
 
     float progress = (float) totalBytesWritten / (float)totalBytesExpectedToWrite;
     
-    if ([_currentProgressMetadata.fileName isEqualToString:fileName] == NO && [_currentProgressMetadata.fileNameData isEqualToString:fileName] == NO)
-        _currentProgressMetadata = [CCCoreData getMetadataFromFileName:fileName directoryID:[CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:_activeAccount] activeAccount:_activeAccount context:_context];
+    if ([_currentProgressMetadata.fileName isEqualToString:fileName] == NO && [_currentProgressMetadata.fileNameData isEqualToString:fileName] == NO) {
+        
+        _currentProgressMetadata = [[NCManageDatabase sharedInstance] getMetadataFromFileName:fileName directoryID:[CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:_activeAccount]];
+        
+        
+        //_currentProgressMetadata = [CCCoreData getMetadataFromFileName:fileName directoryID:[CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:_activeAccount] activeAccount:_activeAccount context:_context];
     
+    }
     dispatch_async(dispatch_get_main_queue(), ^{
         
         if (_currentProgressMetadata) {
@@ -1298,7 +1305,10 @@
             if ([[self getDelegate:sessionID] respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
                 [[self getDelegate:sessionID] uploadFileFailure:nil fileID:sessionID serverUrl:serverUrl selector:selector message:NSLocalizedString(@"_file_not_present_", nil) errorCode:404];
             
-            [CCCoreData deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(sessionID == %@) AND (account == %@)", sessionID, _activeAccount]];
+            //[CCCoreData deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(sessionID == %@) AND (account == %@)", sessionID, _activeAccount]];
+            
+            [[NCManageDatabase sharedInstance] deleteMetadata:[NSPredicate predicateWithFormat:@"(sessionID == %@) AND (account == %@)", sessionID, _activeAccount]];
+            
         });
 
         return;
@@ -1391,7 +1401,9 @@
 
     if ([_currentProgressMetadata.fileName isEqualToString:fileName] == NO && [_currentProgressMetadata.fileNameData isEqualToString:fileName] == NO) {
         
-        _currentProgressMetadata = [CCCoreData getMetadataFromFileName:fileName directoryID:[CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:_activeAccount] activeAccount:_activeAccount context:_context];
+        _currentProgressMetadata = [[NCManageDatabase sharedInstance] getMetadataFromFileName:fileName directoryID:[CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:_activeAccount]];
+        
+        //_currentProgressMetadata = [CCCoreData getMetadataFromFileName:fileName directoryID:[CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:_activeAccount] activeAccount:_activeAccount context:_context];
     }
         
     //NSLog(@"[LOG] %@ - %f", fileName, progress);
@@ -1463,7 +1475,9 @@
         // copy ico in new fileID
         [CCUtility copyFileAtPath:[NSString stringWithFormat:@"%@/%@.ico", _directoryUser, sessionID] toPath:[NSString stringWithFormat:@"%@/%@.ico", _directoryUser, fileID]];
         
-        [CCCoreData updateMetadata:metadata predicate:[NSPredicate predicateWithFormat:@"(sessionID == %@) AND (account == %@)", sessionID, _activeAccount] activeAccount:_activeAccount activeUrl:_activeUrl context:_context];
+        //[CCCoreData updateMetadata:metadata predicate:[NSPredicate predicateWithFormat:@"(sessionID == %@) AND (account == %@)", sessionID, _activeAccount] activeAccount:_activeAccount activeUrl:_activeUrl context:_context];
+        
+        [[NCManageDatabase sharedInstance] updateMetadata:metadata activeUrl:_activeUrl];
     }
     
     // CRYPTO
@@ -1471,7 +1485,9 @@
         
         metadata.sessionTaskIdentifier = k_taskIdentifierDone;
         
-        [CCCoreData updateMetadata:metadata predicate:[NSPredicate predicateWithFormat:@"(sessionID == %@) AND (account == %@)", sessionID, _activeAccount] activeAccount:_activeAccount activeUrl:_activeUrl context:_context];
+        //[CCCoreData updateMetadata:metadata predicate:[NSPredicate predicateWithFormat:@"(sessionID == %@) AND (account == %@)", sessionID, _activeAccount] activeAccount:_activeAccount activeUrl:_activeUrl context:_context];
+        
+        [[NCManageDatabase sharedInstance] updateMetadata:metadata activeUrl:_activeUrl];
     }
     
     // ALL TASK DONE (PLAIN/CRYPTO)
@@ -1488,7 +1504,9 @@
         metadata.sessionError = @"";
         metadata.sessionID = @"";
         
-        [CCCoreData updateMetadata:metadata predicate:[NSPredicate predicateWithFormat:@"(sessionID == %@) AND (account == %@)", sessionID, _activeAccount] activeAccount:_activeAccount activeUrl:_activeUrl context:_context];
+        //[CCCoreData updateMetadata:metadata predicate:[NSPredicate predicateWithFormat:@"(sessionID == %@) AND (account == %@)", sessionID, _activeAccount] activeAccount:_activeAccount activeUrl:_activeUrl context:_context];
+        
+        [[NCManageDatabase sharedInstance] updateMetadata:metadata activeUrl:_activeUrl];
         
         // rename file sessionID -> fileID
         [CCUtility moveFileAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, sessionID]  toPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadata.fileID]];
@@ -1546,8 +1564,11 @@
 
 - (void)verifyDownloadInProgress
 {
-    NSArray *dataSourceDownload = [CCCoreData getTableMetadataDownloadAccount:_activeAccount];
-    NSArray *dataSourceDownloadWWan = [CCCoreData getTableMetadataDownloadWWanAccount:_activeAccount];
+    //NSArray *dataSourceDownload = [CCCoreData getTableMetadataDownloadAccount:_activeAccount];
+    //NSArray *dataSourceDownloadWWan = [CCCoreData getTableMetadataDownloadWWanAccount:_activeAccount];
+    
+    NSArray *dataSourceDownload = [[NCManageDatabase sharedInstance] getTableMetadataDownload];
+    NSArray *dataSourceDownloadWWan = [[NCManageDatabase sharedInstance] getTableMetadataDownloadWWan];
     
     NSMutableArray *dataSource = [[NSMutableArray alloc] init];
     
@@ -1625,7 +1646,9 @@
 {
     NSMutableSet *serversUrl = [[NSMutableSet alloc] init];
     
-    NSArray *records = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (session CONTAINS 'download') AND ((sessionTaskIdentifier == %i) OR (sessionTaskIdentifierPlist == %i))", _activeAccount, k_taskIdentifierError, k_taskIdentifierError] context:nil];
+    //NSArray *records = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (session CONTAINS 'download') AND ((sessionTaskIdentifier == %i) OR (sessionTaskIdentifierPlist == %i))", _activeAccount, k_taskIdentifierError, k_taskIdentifierError] context:nil];
+    
+    NSArray *records = [[NCManageDatabase sharedInstance] getMetadatasWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (session CONTAINS 'download') AND ((sessionTaskIdentifier == %i) OR (sessionTaskIdentifierPlist == %i))", _activeAccount, k_taskIdentifierError, k_taskIdentifierError] sorted:nil ascending:NO];
     
     NSLog(@"[LOG] Verify re download n. %lu", (unsigned long)[records count]);
     
@@ -1660,9 +1683,12 @@
 
 - (void)verifyUploadInProgress
 {
-    NSArray *dataSourceUpload = [CCCoreData getTableMetadataUploadAccount:_activeAccount];
-    NSArray *dataSourceUploadWWan = [CCCoreData getTableMetadataUploadWWanAccount:_activeAccount];
+    //NSArray *dataSourceUpload = [CCCoreData getTableMetadataUploadAccount:_activeAccount];
+    //NSArray *dataSourceUploadWWan = [CCCoreData getTableMetadataUploadWWanAccount:_activeAccount];
 
+    NSArray *dataSourceUpload = [[NCManageDatabase sharedInstance] getTableMetadataUpload];
+    NSArray *dataSourceUploadWWan = [[NCManageDatabase sharedInstance] getTableMetadataUploadWWan];
+    
     NSMutableArray *dataSource = [[NSMutableArray alloc] init];
     
     [dataSource addObjectsFromArray:dataSourceUpload];
@@ -1717,7 +1743,9 @@
 {
     NSMutableSet *directoryIDs = [[NSMutableSet alloc] init];
     
-    NSArray *records = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (session CONTAINS 'upload') AND ((sessionTaskIdentifier == %i) OR (sessionTaskIdentifierPlist == %i))", _activeAccount, k_taskIdentifierError, k_taskIdentifierError] context:nil];
+    //NSArray *records = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (session CONTAINS 'upload') AND ((sessionTaskIdentifier == %i) OR (sessionTaskIdentifierPlist == %i))", _activeAccount, k_taskIdentifierError, k_taskIdentifierError] context:nil];
+    
+    NSArray *records = [[NCManageDatabase sharedInstance] getMetadatasWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (session CONTAINS 'upload') AND ((sessionTaskIdentifier == %i) OR (sessionTaskIdentifierPlist == %i))", _activeAccount, k_taskIdentifierError, k_taskIdentifierError] sorted:nil ascending:NO];
     
     NSLog(@"[LOG] Verify re upload n. %lu", (unsigned long)[records count]);
     
