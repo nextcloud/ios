@@ -2139,7 +2139,7 @@
         if (_isSearchMode)
             [self readFolderWithForced:YES serverUrl:metadataNet.serverUrl];
         else
-            [self reloadDatasource:metadataNet.serverUrl fileID:metadataNet.metadata.fileID selector:metadataNet.selector];
+            [self reloadDatasource:metadataNet.serverUrl fileID:metadataNet.fileID selector:metadataNet.selector];
         
         // next
         if ([_selectedMetadatas count] > 0) {

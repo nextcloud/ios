@@ -982,14 +982,16 @@
     if (_webView || _readerPDFViewController)
         [self removeAllView];
     
+    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"fileID = %@", metadataNet.fileID]];
+    
     // if a message for a directory of these
-    if (![_dataSourceDirectoryID containsObject:metadataNet.metadata.directoryID])
+    if (![_dataSourceDirectoryID containsObject:metadata.directoryID])
         return;
     
     // if we are not in browserPhoto and it's removed photo/video in preview then "< Back"
-    if (!self.photoBrowser && [self.metadataDetail.fileID isEqualToString:metadataNet.metadata.fileID]) {
+    if (!self.photoBrowser && [self.metadataDetail.fileID isEqualToString:metadata.fileID]) {
         
-        if ([metadataNet.metadata.typeFile isEqualToString: k_metadataTypeFile_audio])
+        if ([metadata.typeFile isEqualToString: k_metadataTypeFile_audio])
             [app.player.mediaPlayer stop];
         
         NSArray *viewsToRemove = [self.view subviews];
@@ -1011,7 +1013,7 @@
             tableMetadata *metadata = [self.dataSourceImagesVideos objectAtIndex:index];
         
             // ricerca index
-            if ([metadataNet.metadata.fileID isEqualToString:metadata.fileID]) {
+            if ([metadata.fileID isEqualToString:metadata.fileID]) {
             
                 [self.dataSourceImagesVideos removeObjectAtIndex:index];
             

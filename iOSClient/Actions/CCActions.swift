@@ -134,7 +134,9 @@ class CCActions: NSObject {
     
     func deleteFileOrFolderSuccess(_ metadataNet: CCMetadataNet) {
         
-        CCCoreData.deleteFile(metadataNet.metadata, serverUrl: metadataNet.serverUrl, directoryUser: appDelegate.directoryUser, activeAccount: appDelegate.activeAccount)
+        let metadata = NCManageDatabase.sharedInstance.getMetadataWithPreficate(NSPredicate(format: "fileID == %@", metadataNet.fileID))
+        
+        CCCoreData.deleteFile(metadata, serverUrl: metadataNet.serverUrl, directoryUser: appDelegate.directoryUser, activeAccount: appDelegate.activeAccount)
         
         metadataNet.delegate?.deleteFileOrFolderSuccess(metadataNet)
     }
@@ -143,7 +145,9 @@ class CCActions: NSObject {
         
         if errorCode == 404 {
             
-            CCCoreData.deleteFile(metadataNet.metadata, serverUrl: metadataNet.serverUrl, directoryUser: appDelegate.directoryUser, activeAccount: appDelegate.activeAccount)
+            let metadata = NCManageDatabase.sharedInstance.getMetadataWithPreficate(NSPredicate(format: "fileID == %@", metadataNet.fileID))
+            
+            CCCoreData.deleteFile(metadata, serverUrl: metadataNet.serverUrl, directoryUser: appDelegate.directoryUser, activeAccount: appDelegate.activeAccount)
         }
 
         if message.length > 0 {
@@ -280,7 +284,9 @@ class CCActions: NSObject {
     
     func renameSuccess(_ metadataNet: CCMetadataNet) {
         
-        if metadataNet.metadata.directory {
+        let metadata = NCManageDatabase.sharedInstance.getMetadataWithPreficate(NSPredicate(format: "fileID == %@", metadataNet.fileID))
+        
+        if metadata?.directory == true {
             
             let directory = CCUtility.stringAppendServerUrl(metadataNet.serverUrl, addFileName: metadataNet.fileName)
             let directoryTo = CCUtility.stringAppendServerUrl(metadataNet.serverUrl, addFileName: metadataNet.fileNameTo)
@@ -289,7 +295,7 @@ class CCActions: NSObject {
             
         } else {
             
-            CCCoreData.renameLocalFile(withFileID: metadataNet.metadata.fileID, fileNameTo: metadataNet.fileNameTo, fileNamePrintTo: metadataNet.fileNameTo, activeAccount: appDelegate.activeAccount)
+            CCCoreData.renameLocalFile(withFileID: metadataNet.fileID, fileNameTo: metadataNet.fileNameTo, fileNamePrintTo: metadataNet.fileNameTo, activeAccount: appDelegate.activeAccount)
         }
         
         metadataNet.delegate?.renameSuccess(metadataNet)
