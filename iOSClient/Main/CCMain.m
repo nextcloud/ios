@@ -1585,7 +1585,7 @@
                 
                 NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account];
                 
-                [[CCNetworking sharedNetworking] downloadFile:metadata serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorDownloadFile selectorPost:nil session:k_download_session taskStatus: k_taskStatusResume delegate:self];
+                [[CCNetworking sharedNetworking] downloadFile:metadata.fileID serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorDownloadFile selectorPost:nil session:k_download_session taskStatus: k_taskStatusResume delegate:self];
             }
         }
         
@@ -2622,7 +2622,7 @@
             
             NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account];
             
-            [[CCNetworking sharedNetworking] downloadFile:metadata serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorEncryptFile selectorPost:nil session:k_download_session taskStatus: k_taskStatusResume delegate:self];
+            [[CCNetworking sharedNetworking] downloadFile:metadata.fileID serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorEncryptFile selectorPost:nil session:k_download_session taskStatus: k_taskStatusResume delegate:self];
         }
     }
     
@@ -2648,7 +2648,7 @@
             
             NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account];
             
-            [[CCNetworking sharedNetworking] downloadFile:metadata serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorDecryptFile selectorPost:nil session:k_download_session taskStatus: k_taskStatusResume delegate:self];
+            [[CCNetworking sharedNetworking] downloadFile:metadata.fileID serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorDecryptFile selectorPost:nil session:k_download_session taskStatus: k_taskStatusResume delegate:self];
         }
     }
     
@@ -2664,7 +2664,7 @@
     
     NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:_metadata.account];
     
-    [[CCNetworking sharedNetworking] downloadFile:_metadata serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selector selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
+    [[CCNetworking sharedNetworking] downloadFile:_metadata.fileID serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selector selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
 }
 
 - (void)encryptedFile:(tableMetadata *)metadata
@@ -3218,7 +3218,7 @@
     
         NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account];
     
-        [[CCNetworking sharedNetworking] downloadFile:metadata serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorAddFavorite selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
+        [[CCNetworking sharedNetworking] downloadFile:metadata.fileID serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorAddFavorite selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
     }
 }
 
@@ -3235,7 +3235,7 @@
 {
     NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account];
     
-    [[CCNetworking sharedNetworking] downloadFile:metadata serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorAddOffline selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
+    [[CCNetworking sharedNetworking] downloadFile:metadata.fileID serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorAddOffline selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
     
     NSIndexPath *indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:metadata.fileID];
     if (indexPath) [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObjects:indexPath, nil] withRowAnimation:UITableViewRowAnimationAutomatic];
@@ -3261,7 +3261,7 @@
     NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account];
 
     if ([metadata.type isEqualToString: k_metadataType_file])
-        [[CCNetworking sharedNetworking] downloadFile:metadata serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorAddLocal selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
+        [[CCNetworking sharedNetworking] downloadFile:metadata.fileID serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorAddLocal selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
     
     if ([metadata.type isEqualToString: k_metadataType_template]) {
         
@@ -3282,7 +3282,7 @@
 {
     NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account];
 
-    [[CCNetworking sharedNetworking] downloadFile:metadata serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorOpenIn selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
+    [[CCNetworking sharedNetworking] downloadFile:metadata.fileID serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorOpenIn selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
     
     NSIndexPath *indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:metadata.fileID];
     if (indexPath) [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObjects:indexPath, nil] withRowAnimation:UITableViewRowAnimationAutomatic];
@@ -3912,7 +3912,7 @@
         
         NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:_metadata.account];
         
-        [[CCNetworking sharedNetworking] downloadFile:_metadata serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorLoadCopy selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
+        [[CCNetworking sharedNetworking] downloadFile:_metadata.fileID serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorLoadCopy selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
     }
 }
 
@@ -3934,7 +3934,7 @@
 
             NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:_metadata.account];
 
-            [[CCNetworking sharedNetworking] downloadFile:metadata serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorLoadCopy selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
+            [[CCNetworking sharedNetworking] downloadFile:metadata.fileID serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorLoadCopy selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
         }
     }
     
@@ -5518,7 +5518,7 @@
         if ([_metadata.type isEqualToString: k_metadataType_template]) selector = selectorLoadModelView;
         else selector = selectorLoadPlist;
         
-        [[CCNetworking sharedNetworking] downloadFile:_metadata serverUrl:serverUrl downloadData:NO downloadPlist:YES selector:selector selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
+        [[CCNetworking sharedNetworking] downloadFile:_metadata.fileID serverUrl:serverUrl downloadData:NO downloadPlist:YES selector:selector selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
         
         return;
     }
@@ -5536,7 +5536,7 @@
             
         } else {
                 
-            [[CCNetworking sharedNetworking] downloadFile:_metadata serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorLoadFileView selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
+            [[CCNetworking sharedNetworking] downloadFile:_metadata.fileID serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorLoadFileView selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
             
             NSIndexPath *indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:_metadata.fileID];
             if (indexPath) [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObjects:indexPath, nil] withRowAnimation:UITableViewRowAnimationAutomatic];

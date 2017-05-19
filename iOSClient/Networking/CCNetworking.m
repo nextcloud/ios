@@ -1540,10 +1540,10 @@
         NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account];
             
         if (metadata.sessionTaskIdentifier == k_taskIdentifierError)
-            [self downloadFile:metadata serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:metadata.sessionSelector selectorPost:nil session:k_download_session taskStatus: k_taskStatusResume delegate:nil];
+            [self downloadFile:metadata.fileID serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:metadata.sessionSelector selectorPost:nil session:k_download_session taskStatus: k_taskStatusResume delegate:nil];
             
         if (metadata.sessionTaskIdentifierPlist == k_taskIdentifierError)
-            [self downloadFile:metadata serverUrl:serverUrl downloadData:NO downloadPlist:YES selector:metadata.sessionSelector selectorPost:nil session:k_download_session taskStatus: k_taskStatusResume delegate:nil];
+            [self downloadFile:metadata.fileID serverUrl:serverUrl downloadData:NO downloadPlist:YES selector:metadata.sessionSelector selectorPost:nil session:k_download_session taskStatus: k_taskStatusResume delegate:nil];
             
         [serversUrl addObject:serverUrl];
             
