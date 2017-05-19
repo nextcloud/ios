@@ -1504,5 +1504,44 @@ class NCManageDatabase: NSObject {
         }
     }
     
+    func copyTableMetadata(_ metadata: tableMetadata) -> tableMetadata {
+        
+        let copyMetadata = tableMetadata()
+        
+        copyMetadata.account = metadata.account
+        copyMetadata.assetLocalIdentifier = metadata.assetLocalIdentifier
+        copyMetadata.cryptated = metadata.cryptated
+        copyMetadata.date = metadata.date
+        copyMetadata.directory = metadata.directory
+        copyMetadata.directoryID = metadata.directoryID
+        copyMetadata.errorPasscode = metadata.errorPasscode
+        copyMetadata.favorite = metadata.favorite
+        copyMetadata.fileID = metadata.fileID
+        copyMetadata.fileName = metadata.fileName
+        copyMetadata.fileNameData = metadata.fileNameData
+        copyMetadata.fileNamePrint = metadata.fileNamePrint
+        copyMetadata.iconName = metadata.iconName
+        copyMetadata.model = metadata.model
+        copyMetadata.nameCurrentDevice = metadata.nameCurrentDevice
+        copyMetadata.permissions = metadata.permissions
+        copyMetadata.protocolCrypto = metadata.protocolCrypto
+        copyMetadata.rev = metadata.rev
+        copyMetadata.session = metadata.session
+        copyMetadata.sessionError = metadata.sessionError
+        copyMetadata.sessionID = metadata.sessionID
+        copyMetadata.sessionSelector = metadata.sessionSelector
+        copyMetadata.sessionSelectorPost = metadata.sessionSelectorPost
+        copyMetadata.sessionTaskIdentifier = metadata.sessionTaskIdentifier
+        copyMetadata.sessionTaskIdentifierPlist = metadata.sessionTaskIdentifierPlist
+        copyMetadata.size = metadata.size
+        copyMetadata.thumbnailExists = metadata.thumbnailExists
+        copyMetadata.title = metadata.title
+        copyMetadata.type = metadata.type
+        copyMetadata.typeFile = metadata.typeFile
+        copyMetadata.uuid = metadata.uuid
+        
+        return copyMetadata
+    }
+    
     //MARK: -
 }
