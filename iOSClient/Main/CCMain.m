@@ -2770,20 +2770,26 @@
     NSURLSession *session = [[CCNetworking sharedNetworking] getSessionfromSessionDescription:metadata.session];
     __block NSURLSessionTask *findTask;
     
+    NSInteger sessionTaskIdentifier = metadata.sessionTaskIdentifier;
+    NSInteger sessionTaskIdentifierPlist = metadata.sessionTaskIdentifierPlist;
+    NSString *fileID = metadata.fileID;
+    
     // DOWNLOAD
     if ([metadata.session length] > 0 && [metadata.session containsString:@"download"]) {
         
         [session getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
             
             for (NSURLSessionUploadTask *task in downloadTasks)
-                if (task.taskIdentifier == metadata.sessionTaskIdentifier || task.taskIdentifier == metadata.sessionTaskIdentifierPlist) {
+                if (task.taskIdentifier == sessionTaskIdentifier || task.taskIdentifier == sessionTaskIdentifierPlist) {
                     findTask = task;
-                    [app.listChangeTask setObject:@"reloadDownload" forKey:metadata.fileID];
+                    [app.listChangeTask setObject:@"reloadDownload" forKey:fileID];
                     [task cancel];
                 }
             
             if (!findTask) {
+                
                 dispatch_async(dispatch_get_main_queue(), ^{
+                    
                     [app.listChangeTask setObject:@"reloadDownload" forKey:metadata.fileID];
                     NSArray *object = [[NSArray alloc] initWithObjects:session, metadata, findTask, nil];
                     [[NSNotificationCenter defaultCenter] postNotificationName:k_networkingSessionNotification object:object];
@@ -2798,14 +2804,16 @@
         [session getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
             
             for (NSURLSessionUploadTask *task in uploadTasks)
-                if (task.taskIdentifier == metadata.sessionTaskIdentifier || task.taskIdentifier == metadata.sessionTaskIdentifierPlist) {
+                if (task.taskIdentifier == sessionTaskIdentifier || task.taskIdentifier == sessionTaskIdentifierPlist) {
                     findTask = task;
-                    [app.listChangeTask setObject:@"reloadUpload" forKey:metadata.fileID];
+                    [app.listChangeTask setObject:@"reloadUpload" forKey:fileID];
                     [task cancel];
                 }
             
             if (!findTask) {
+                
                 dispatch_async(dispatch_get_main_queue(), ^{
+                    
                     [app.listChangeTask setObject:@"reloadUpload" forKey:metadata.fileID];
                     NSArray *object = [[NSArray alloc] initWithObjects:session, metadata, findTask, nil];
                     [[NSNotificationCenter defaultCenter] postNotificationName:k_networkingSessionNotification object:object];
@@ -2908,20 +2916,26 @@
     NSURLSession *session = [[CCNetworking sharedNetworking] getSessionfromSessionDescription:metadata.session];
     __block NSURLSessionTask *findTask;
 
+    NSInteger sessionTaskIdentifier = metadata.sessionTaskIdentifier;
+    NSInteger sessionTaskIdentifierPlist = metadata.sessionTaskIdentifierPlist;
+    NSString *fileID = metadata.fileID;
+    
     // UPLOAD
     if ([metadata.session length] > 0 && [metadata.session containsString:@"upload"]) {
         
         [session getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
             
             for (NSURLSessionUploadTask *task in uploadTasks)
-                if (task.taskIdentifier == metadata.sessionTaskIdentifier || task.taskIdentifier == metadata.sessionTaskIdentifierPlist) {                    
-                    [app.listChangeTask setObject:@"stopUpload" forKey:metadata.fileID];
+                if (task.taskIdentifier == sessionTaskIdentifier || task.taskIdentifier == sessionTaskIdentifierPlist) {
+                    [app.listChangeTask setObject:@"stopUpload" forKey:fileID];
                     findTask = task;
                     [task cancel];
                 }
             
             if (!findTask) {
+                
                 dispatch_async(dispatch_get_main_queue(), ^{
+                    
                     [app.listChangeTask setObject:@"stopUpload" forKey:metadata.fileID];
                     NSArray *object = [[NSArray alloc] initWithObjects:session, metadata, findTask, nil];
                     [[NSNotificationCenter defaultCenter] postNotificationName:k_networkingSessionNotification object:object];
