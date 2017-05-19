@@ -324,7 +324,6 @@
     }
     
     if (upload && taskStatus == k_taskStatusCancel) {
-        //[CCCoreData deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(session CONTAINS 'upload')"]];
         
         [[NCManageDatabase sharedInstance] deleteMetadata:[NSPredicate predicateWithFormat:@"(session CONTAINS 'upload')"]];
         
@@ -485,22 +484,11 @@
     if (downloadData) {
         
         // it's in download
-        
-        tableMetadata *result = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileID == %@) AND (session CONTAINS 'download') AND (sessionTaskIdentifier >= 0)", _activeAccount, metadata.fileID]];
-        
-        //if ([CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileID == %@) AND (session CONTAINS 'download') AND (sessionTaskIdentifier >= 0)", _activeAccount, metadata.fileID] context:_context])
-        
-        if (result) {
-            
-            NSLog(@"[LOG] Download file already in progress %@ - %@", metadata.fileNameData, metadata.fileNamePrint);
-            
-            return;
-        }
+        tableMetadata *result = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"fileID = %@ AND session CONTAINS 'download' AND sessionTaskIdentifier >= 0", _activeAccount, metadata.fileID]];
+        if (result) return;
         
         // File exists ?
         if ([CCCoreData getLocalFileWithFileID:metadata.fileID activeAccount:_activeAccount] && [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadata.fileID]]) {
-                
-            NSLog(@"[LOG] Download file already exists %@ - %@", metadata.fileNameData, metadata.fileNamePrint);
             
             [[NCManageDatabase sharedInstance] setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier:k_taskIdentifierDone sessionTaskIdentifierPlist:k_taskIdentifierDone predicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadata.fileID]];
                 
@@ -586,16 +574,13 @@
         NSLog(@"[LOG] downloadFileSession %@ - %@ Task [%lu %lu]", fileID, fileNamePrint, (unsigned long)sessionTaskIdentifier, (unsigned long)sessionTaskIdentifierPlist);
     }
     
-    dispatch_async(dispatch_get_main_queue(), ^{
-    
-        // Refresh datasource if is not a Plist
-        if ([_delegate respondsToSelector:@selector(reloadDatasource:fileID:selector:)] && [CCUtility isCryptoPlistString:fileName] == NO)
-            [_delegate reloadDatasource:serverUrl fileID:fileID selector:selector];
+    // Refresh datasource if is not a Plist
+    if ([_delegate respondsToSelector:@selector(reloadDatasource:fileID:selector:)] && [CCUtility isCryptoPlistString:fileName] == NO)
+        [_delegate reloadDatasource:serverUrl fileID:fileID selector:selector];
         
 #ifndef EXTENSION
         [app updateApplicationIconBadgeNumber];
 #endif
-    });
 }
 
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didWriteData:(int64_t)bytesWritten totalBytesWritten:(int64_t)totalBytesWritten totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite

@@ -286,8 +286,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
     func readFolderSuccess(_ metadataNet: CCMetadataNet!, permissions: String!, etag: String!, metadatas: [Any]!) {
         
         // remove all record
-        var predicate = NSPredicate(format: "account = %@ AND directoryID == %@ AND (session = NULL OR session = '')", activeAccount!, metadataNet.directoryID!)
-        //CCCoreData.deleteMetadata(with: predicate)
+        var predicate = NSPredicate(format: "account = %@ AND directoryID = %@ AND session = ''", activeAccount!, metadataNet.directoryID!)
         NCManageDatabase.sharedInstance.deleteMetadata(predicate)
         
         for metadata in metadatas as! [tableMetadata] {
