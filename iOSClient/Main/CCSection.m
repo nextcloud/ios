@@ -60,8 +60,8 @@
     id dataSection;
     long counterSessionDownload = 0;
     long counterSessionUpload = 0;
-    NSMutableArray *copyRecords = [[NSMutableArray alloc] init];
-    NSMutableDictionary *dictionaryFileIDMetadataForIndexPath = [[NSMutableDictionary alloc] init];
+    NSMutableArray *copyRecords = [NSMutableArray new];
+    NSMutableDictionary *dictionaryFileIDMetadataForIndexPath = [NSMutableDictionary new];
     
     CCSectionDataSourceMetadata *sectionDataSource = [CCSectionDataSourceMetadata new];
     

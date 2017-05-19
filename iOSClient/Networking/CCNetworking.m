@@ -412,7 +412,6 @@
             if (!metadata) return;
             
             NSString *rev = metadata.rev;
-            
             NSDictionary *fields = [httpResponse allHeaderFields];
             
             if (errorCode == 0) {
@@ -611,7 +610,6 @@
 
     float progress = (float) totalBytesWritten / (float)totalBytesExpectedToWrite;
     
-    
     dispatch_async(dispatch_get_main_queue(), ^{
         
         tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataFromFileName:fileName directoryID:[CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:_activeAccount]];
@@ -630,15 +628,10 @@
     NSURLRequest *url = [downloadTask currentRequest];
     NSString *filename = [[url.URL absoluteString] lastPathComponent];
     
-    //tableMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(session = %@) AND ((sessionTaskIdentifier == %i) OR (sessionTaskIdentifierPlist == %i))",session.sessionDescription, downloadTask.taskIdentifier, downloadTask.taskIdentifier] context:_context];
-    
-    
-    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(session = %@) AND ((sessionTaskIdentifier == %i) OR (sessionTaskIdentifierPlist == %i))",session.sessionDescription, downloadTask.taskIdentifier, downloadTask.taskIdentifier]];
-    
+    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"session = %@ AND (sessionTaskIdentifier = %i OR sessionTaskIdentifierPlist = %i)",session.sessionDescription, downloadTask.taskIdentifier, downloadTask.taskIdentifier]];
     
     // If the record metadata do not exists, exit
-    if (!metadata)
-        return;
+    if (!metadata) return;
     
     NSHTTPURLResponse* httpResponse = (NSHTTPURLResponse*)downloadTask.response;
     
@@ -656,10 +649,13 @@
             else destinationFilePath = [NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryActiveUser:_activeUser activeUrl:_activeUrl], metadata.fileID];
         }
         
-        NSURL *destinationURL = [NSURL fileURLWithPath:destinationFilePath];
+        @autoreleasepool {
+            
+            NSURL *destinationURL = [NSURL fileURLWithPath:destinationFilePath];
         
-        [[NSFileManager defaultManager] removeItemAtURL:destinationURL error:NULL];
-        [[NSFileManager defaultManager] copyItemAtURL:location toURL:destinationURL error:nil];
+            [[NSFileManager defaultManager] removeItemAtURL:destinationURL error:NULL];
+            [[NSFileManager defaultManager] copyItemAtURL:location toURL:destinationURL error:nil];
+        }
     }
 }
 
@@ -671,8 +667,7 @@
 #endif
     
     // If fileID do not exists return.
-    if (!fileID)
-        return;
+    if (!fileID) return;
     
     // Progress Task
     NSDictionary* userInfo = @{@"fileID": (fileID), @"serverUrl": (serverUrl), @"cryptated": ([NSNumber numberWithBool:NO]), @"progress": ([NSNumber numberWithFloat:0.0])};
@@ -680,7 +675,6 @@
 
     if (errorCode != 0) {
         
-        //
         // if cancel or was a xxxxxx.plist delete session
         //
         if (errorCode == kCFURLErrorCancelled || [CCUtility isCryptoPlistString:fileName]) {
@@ -692,32 +686,27 @@
             [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:[NSString stringWithFormat:@"%@", @(errorCode)] sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:k_taskIdentifierError sessionTaskIdentifierPlist:k_taskIdentifierNULL predicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
         }
         
-        // Delegate downloadFileFailure:
-        dispatch_async(dispatch_get_main_queue(), ^{
-            
-            if ([[self getDelegate:fileID] respondsToSelector:@selector(downloadFileFailure:serverUrl:selector:message:errorCode:)])
-                [[self getDelegate:fileID] downloadFileFailure:fileID serverUrl:serverUrl selector:selector message:[CCError manageErrorKCF:errorCode withNumberError:YES] errorCode:errorCode];
-        });
-        
-        NSLog(@"[LOG] Download Failure Session Filename : %@ ERROR : %@", fileName, [NSString stringWithFormat:@"%@", @(errorCode)]);
+        if ([[self getDelegate:fileID] respondsToSelector:@selector(downloadFileFailure:serverUrl:selector:message:errorCode:)])
+            [[self getDelegate:fileID] downloadFileFailure:fileID serverUrl:serverUrl selector:selector message:[CCError manageErrorKCF:errorCode withNumberError:YES] errorCode:errorCode];
         
     } else {
         
-        //tableMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, _activeAccount] context:_context];
+        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
+        if (!metadata) return;
         
-        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, _activeAccount]];
+        NSInteger sessionTaskIdentifier = metadata.sessionTaskIdentifier;
+        NSInteger sessionTaskIdentifierPlist = metadata.sessionTaskIdentifierPlist;
         
-        if ([CCUtility isCryptoString:fileName] || [CCUtility isFileNotCryptated:fileName]) metadata.sessionTaskIdentifier = k_taskIdentifierDone;
-        if ([CCUtility isCryptoPlistString:fileName]) metadata.sessionTaskIdentifierPlist = k_taskIdentifierDone;
+        if ([CCUtility isCryptoString:fileName] || [CCUtility isFileNotCryptated:fileName]) sessionTaskIdentifier = k_taskIdentifierDone;
+        if ([CCUtility isCryptoPlistString:fileName]) sessionTaskIdentifierPlist = k_taskIdentifierDone;
         
-        if (metadata.sessionTaskIdentifier == k_taskIdentifierDone && metadata.sessionTaskIdentifierPlist == k_taskIdentifierDone) {
+        if (sessionTaskIdentifier == k_taskIdentifierDone && sessionTaskIdentifierPlist == k_taskIdentifierDone) {
             
-            [[NCManageDatabase sharedInstance] setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier:metadata.sessionTaskIdentifier sessionTaskIdentifierPlist:metadata.sessionTaskIdentifierPlist predicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
+            [[NCManageDatabase sharedInstance] setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier:sessionTaskIdentifier sessionTaskIdentifierPlist:sessionTaskIdentifierPlist predicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
             
         } else {
             
-
-            [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:nil sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:metadata.sessionTaskIdentifier sessionTaskIdentifierPlist:metadata.sessionTaskIdentifierPlist predicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
+            [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:nil sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:sessionTaskIdentifier sessionTaskIdentifierPlist:sessionTaskIdentifierPlist predicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
         }
         
         // DATA
@@ -726,15 +715,9 @@
             [CCCoreData downloadFile:metadata directoryUser:_directoryUser activeAccount:_activeAccount];
         }
         
-        // download File Success
-        dispatch_async(dispatch_get_main_queue(), ^{
-            
-            if ([[self getDelegate:fileID] respondsToSelector:@selector(downloadFileSuccess:serverUrl:selector:selectorPost:)])
-                [[self getDelegate:fileID] downloadFileSuccess:fileID serverUrl:serverUrl selector:selector selectorPost:selectorPost];
-        });
-        
-        NSLog(@"[LOG] Download Success Session Metadata : %@ - FileNamePrint : %@ - fileID : %@ - Task : [%li %li]", metadata.fileName, metadata.fileNamePrint, metadata.fileID, (long)metadata.sessionTaskIdentifier, (long)metadata.sessionTaskIdentifierPlist);
-    }    
+        if ([[self getDelegate:fileID] respondsToSelector:@selector(downloadFileSuccess:serverUrl:selector:selectorPost:)])
+            [[self getDelegate:fileID] downloadFileSuccess:fileID serverUrl:serverUrl selector:selector selectorPost:selectorPost];
+        }
 }
 
 #pragma --------------------------------------------------------------------------------------------
