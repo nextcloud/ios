@@ -34,7 +34,6 @@
 {
     NSManagedObjectContext *_context;
     NSMutableDictionary *_taskData;
-    tableMetadata *_currentProgressMetadata;
     
     NSString *_activeAccount;
     NSString *_activePassword;
@@ -64,7 +63,6 @@
     _context = [NSManagedObjectContext MR_context];
    
     _taskData = [[NSMutableDictionary alloc] init];
-    _currentProgressMetadata = [[tableMetadata alloc] init];
     _delegates = [[NSMutableDictionary alloc] init];
     
     // Initialization Sessions
@@ -392,9 +390,6 @@
     __block NSDate *date = [NSDate date];
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"EEE, dd MMM y HH:mm:ss zzz"];
-
-    // remove Current Progress Metadata
-    _currentProgressMetadata = nil;
     
     NSHTTPURLResponse* httpResponse = (NSHTTPURLResponse*)task.response;
     
@@ -629,19 +624,14 @@
 
     float progress = (float) totalBytesWritten / (float)totalBytesExpectedToWrite;
     
-    if ([_currentProgressMetadata.fileName isEqualToString:fileName] == NO && [_currentProgressMetadata.fileNameData isEqualToString:fileName] == NO) {
-        
-        _currentProgressMetadata = [[NCManageDatabase sharedInstance] getMetadataFromFileName:fileName directoryID:[CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:_activeAccount]];
-        
-        
-        //_currentProgressMetadata = [CCCoreData getMetadataFromFileName:fileName directoryID:[CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:_activeAccount] activeAccount:_activeAccount context:_context];
     
-    }
     dispatch_async(dispatch_get_main_queue(), ^{
         
-        if (_currentProgressMetadata) {
-            
-            NSDictionary* userInfo = @{@"fileID": (_currentProgressMetadata.fileID), @"serverUrl": (serverUrl), @"cryptated": ([NSNumber numberWithBool:_currentProgressMetadata.cryptated]), @"progress": ([NSNumber numberWithFloat:progress])};
+        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataFromFileName:fileName directoryID:[CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:_activeAccount]];
+        
+        if (metadata) {
+        
+            NSDictionary* userInfo = @{@"fileID": (metadata.fileID), @"serverUrl": (serverUrl), @"cryptated": ([NSNumber numberWithBool:metadata.cryptated]), @"progress": ([NSNumber numberWithFloat:progress])};
             
             [[NSNotificationCenter defaultCenter] postNotificationName:@"NotificationProgressTask" object:nil userInfo:userInfo];
         }
@@ -1369,25 +1359,15 @@
     
     float progress = (float) totalBytesSent / (float)totalBytesExpectedToSend;
 
-    if ([_currentProgressMetadata.fileName isEqualToString:fileName] == NO && [_currentProgressMetadata.fileNameData isEqualToString:fileName] == NO) {
-        
-        _currentProgressMetadata = [[NCManageDatabase sharedInstance] getMetadataFromFileName:fileName directoryID:[CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:_activeAccount]];
-        
-        //_currentProgressMetadata = [CCCoreData getMetadataFromFileName:fileName directoryID:[CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:_activeAccount] activeAccount:_activeAccount context:_context];
-    }
-        
-    //NSLog(@"[LOG] %@ - %f", fileName, progress);
-    
     dispatch_async(dispatch_get_main_queue(), ^{
+
+        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataFromFileName:fileName directoryID:[CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:_activeAccount]];
         
-        if (_currentProgressMetadata) {
+        if (metadata) {
             
-            if (_currentProgressMetadata) {
+            NSDictionary* userInfo = @{@"fileID": (metadata.fileID), @"serverUrl": (serverUrl), @"cryptated": ([NSNumber numberWithBool:metadata.cryptated]), @"progress": ([NSNumber numberWithFloat:progress])};
                 
-                NSDictionary* userInfo = @{@"fileID": (_currentProgressMetadata.fileID), @"serverUrl": (serverUrl), @"cryptated": ([NSNumber numberWithBool:_currentProgressMetadata.cryptated]), @"progress": ([NSNumber numberWithFloat:progress])};
-                
-                [[NSNotificationCenter defaultCenter] postNotificationName:@"NotificationProgressTask" object:nil userInfo:userInfo];
-            }
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"NotificationProgressTask" object:nil userInfo:userInfo];
         }
     });
 }
@@ -1583,10 +1563,8 @@
                 
                     if ([self.delegate respondsToSelector:@selector(reloadDatasource:fileID:selector:)])
                         [self.delegate reloadDatasource:[CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account] fileID:metadata.fileID selector:nil];
-               
                 }
-                
-              });
+            });
         }];
     }
     
