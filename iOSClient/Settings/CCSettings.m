@@ -397,7 +397,9 @@
 
 - (void)synchronizeFavorites
 {
-    NSArray *recordsTableMetadata = [CCCoreData  getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (favorite == 1)", app.activeAccount] context:nil];
+    //NSArray *recordsTableMetadata = [CCCoreData  getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (favorite == 1)", app.activeAccount] context:nil];
+    
+    NSArray *recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (favorite == 1)", app.activeAccount]  sorted:nil ascending:NO];
     
     for (TableMetadata *tableMetadata in recordsTableMetadata) {
         

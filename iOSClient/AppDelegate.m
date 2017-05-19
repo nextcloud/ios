@@ -1190,7 +1190,10 @@
     // after 25 sec
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 25 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         
-        NSArray *records = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (session != NULL) AND (session != '')", self.activeAccount] context:nil];
+        //NSArray *records = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (session != NULL) AND (session != '')", self.activeAccount] context:nil];
+        
+        
+        NSArray *records = [[NCManageDatabase sharedInstance] getMetadatasWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (session != NULL) AND (session != '')", self.activeAccount] sorted:nil ascending:NO];
         
         if ([records count] > 0) {
             completionHandler(UIBackgroundFetchResultNewData);
@@ -1265,7 +1268,9 @@
 
 - (NSInteger)getNumberDownloadInQueues
 {
-    NSInteger queueNunDownload = [[CCCoreData getTableMetadataDownloadAccount:self.activeAccount] count];
+    NSArray *results = [[NCManageDatabase sharedInstance] getTableMetadataDownload];
+    
+    NSInteger queueNunDownload = [results count];
     
     // netQueueDownload
     for (NSOperation *operation in [self.netQueueDownload operations])
@@ -1276,7 +1281,9 @@
 
 - (NSInteger)getNumberDownloadInQueuesWWan
 {
-    NSInteger queueNumDownloadWWan = [[CCCoreData getTableMetadataDownloadWWanAccount:self.activeAccount] count];
+    NSArray *results = [[NCManageDatabase sharedInstance] getTableMetadataDownloadWWan];
+    
+    NSInteger queueNumDownloadWWan = [results count];
     
     // netQueueDownloadWWan
     for (NSOperation *operation in [self.netQueueDownloadWWan operations])
@@ -1287,7 +1294,9 @@
 
 - (NSInteger)getNumberUploadInQueues
 {
-    NSInteger queueNumUpload = [[CCCoreData getTableMetadataUploadAccount:self.activeAccount] count];
+    NSArray *results = [[NCManageDatabase sharedInstance] getTableMetadataUpload];
+    
+    NSInteger queueNumUpload = [results count];
     
     // netQueueUpload
     for (NSOperation *operation in [self.netQueueUpload operations])
@@ -1298,7 +1307,9 @@
 
 - (NSInteger)getNumberUploadInQueuesWWan
 {
-    NSInteger queueNumUploadWWan = [[CCCoreData getTableMetadataUploadWWanAccount:self.activeAccount] count];
+    NSArray *results = [[NCManageDatabase sharedInstance] getTableMetadataUploadWWan];
+    
+    NSInteger queueNumUploadWWan = [results count];
     
     // netQueueUploadWWan
     for (NSOperation *operation in [self.netQueueUploadWWan operations])
@@ -1316,7 +1327,10 @@
     if (_automaticCheckAssetInProgress)
         return;
     
-    NSArray *uploadInQueue = [CCCoreData getTableMetadataUploadAccount:app.activeAccount];
+    //NSArray *uploadInQueue = [CCCoreData getTableMetadataUploadAccount:app.activeAccount];
+    
+    NSArray *uploadInQueue = [[NCManageDatabase sharedInstance] getTableMetadataUpload];
+    
     NSArray *recordAutomaticUploadInLock =  [[NCManageDatabase sharedInstance] getLockAutomaticUpload];
     
     for (tableAutomaticUpload *tableAutomaticUpload in recordAutomaticUploadInLock) {
@@ -1463,7 +1477,10 @@
     if ([[_listChangeTask objectForKey:metadata.fileID] isEqualToString:@"stopUpload"]) {
         
         // sessionTaskIdentifier on Stop
-        [CCCoreData setMetadataSession:nil sessionError:@"" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:k_taskIdentifierStop sessionTaskIdentifierPlist:k_taskIdentifierDone predicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", metadata.fileID, self.activeAccount] context:nil];
+        //[CCCoreData setMetadataSession:nil sessionError:@"" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:k_taskIdentifierStop sessionTaskIdentifierPlist:k_taskIdentifierDone predicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", metadata.fileID, self.activeAccount] context:nil];
+        
+        [[NCManageDatabase sharedInstance] setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier:k_taskIdentifierStop sessionTaskIdentifierPlist:k_taskIdentifierDone predicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", metadata.fileID, self.activeAccount]];
+        
     }
     else if ([[_listChangeTask objectForKey:metadata.fileID] isEqualToString:@"reloadUpload"]) {
         
@@ -1487,14 +1504,18 @@
     else if ([[_listChangeTask objectForKey:metadata.fileID] isEqualToString:@"cancelUpload"]) {
         
         // remove the file
-        [CCCoreData deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", metadata.fileID, app.activeAccount]];
+        //[CCCoreData deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", metadata.fileID, app.activeAccount]];
+        
+        [[NCManageDatabase sharedInstance] deleteMetadata:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", metadata.fileID, app.activeAccount]];
         
         [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID] error:nil];
         [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID] error:nil];
     }
     else if ([[_listChangeTask objectForKey:metadata.fileID] isEqualToString:@"cancelDownload"]) {
         
-        [CCCoreData setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier:k_taskIdentifierDone sessionTaskIdentifierPlist:k_taskIdentifierDone predicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", metadata.fileID, self.activeAccount] context:nil];
+        //[CCCoreData setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier:k_taskIdentifierDone sessionTaskIdentifierPlist:k_taskIdentifierDone predicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", metadata.fileID, self.activeAccount] context:nil];
+        
+        [[NCManageDatabase sharedInstance] setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier:k_taskIdentifierDone sessionTaskIdentifierPlist:k_taskIdentifierDone predicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", metadata.fileID, self.activeAccount]];
     }
     
     // remove ChangeTask (fileID) from the list

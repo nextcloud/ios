@@ -110,7 +110,9 @@
             continue;
 
         // Delete Record NOT in session
-        [CCCoreData deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND (fileID = %@) AND ((session == NULL) OR (session == ''))", app.activeAccount, metadata.directoryID, metadata.fileID]];
+        //[CCCoreData deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND (fileID = %@) AND ((session == NULL) OR (session == ''))", app.activeAccount, metadata.directoryID, metadata.fileID]];
+        
+        [[NCManageDatabase sharedInstance] deleteMetadata:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND (fileID = %@) AND ((session == NULL) OR (session == ''))", app.activeAccount, metadata.directoryID, metadata.fileID]];
         
         // end test, insert in CoreData
         [[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:app.activeUrl];
@@ -151,11 +153,15 @@
     }
     
     // Verify remove favorite
-    NSArray *allRecordFavorite = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (favorite == 1)", app.activeAccount] context:nil];
+    //NSArray *allRecordFavorite = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (favorite == 1)", app.activeAccount] context:nil];
+    
+    NSArray *allRecordFavorite = [[NCManageDatabase sharedInstance] getMetadatasWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (favorite == 1)", app.activeAccount] sorted:nil ascending:NO];
     
     for (TableMetadata *tableMetadata in allRecordFavorite)
         if (![filesID containsObject:tableMetadata.fileID])
-            [CCCoreData setMetadataFavoriteFileID:tableMetadata.fileID favorite:NO activeAccount:app.activeAccount context:nil];
+            [[NCManageDatabase sharedInstance] setMetadataFavorite:tableMetadata.fileID favorite:NO];
+    
+            //[CCCoreData setMetadataFavoriteFileID:tableMetadata.fileID favorite:NO activeAccount:app.activeAccount context:nil];
     
     [[NSNotificationCenter defaultCenter] postNotificationName:@"clearDateReadDataSource" object:nil];
 }
@@ -266,12 +272,17 @@
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         
-        NSArray *recordsInSessions = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND (session != NULL) AND (session != '')", app.activeAccount, metadataNet.directoryID] context:nil];
+        //NSArray *recordsInSessions = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND (session != NULL) AND (session != '')", app.activeAccount, metadataNet.directoryID] context:nil];
+        
+        NSArray *recordsInSessions = [[NCManageDatabase sharedInstance] getMetadatasWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND (session != NULL) AND (session != '')", app.activeAccount, metadataNet.directoryID] sorted:nil ascending:NO];
         
         // ----- Test : (DELETE) -----
         
         NSMutableArray *metadatasNotPresents = [[NSMutableArray alloc] init];
-        NSArray *tableMetadatas = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND ((session == NULL) OR (session == ''))", app.activeAccount, metadataNet.directoryID] context:nil];
+        
+        //NSArray *tableMetadatas = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND ((session == NULL) OR (session == ''))", app.activeAccount, metadataNet.directoryID] context:nil];
+        
+        NSArray *tableMetadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND ((session == NULL) OR (session == ''))", app.activeAccount, metadataNet.directoryID] sorted:nil ascending:NO];
         
         for (TableMetadata *record in tableMetadatas) {
             
@@ -320,7 +331,9 @@
                 NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:app.activeAccount];
                     
                 // Verify if do not exists this Metadata
-                if (![CCCoreData getTableMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileID == %@)", metadataNet.account, metadata.fileID]])
+                tableMetadata *result = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileID == %@)", metadataNet.account, metadata.fileID]];
+
+                if (!result)
                     [[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:app.activeUrl];
               
                 // Load if different etag
@@ -356,7 +369,9 @@
                 if ([metadataNet.selector isEqualToString:selectorReadFolder]) {
                     
                     // Verify if do not exists this Metadata
-                    if (![CCCoreData getTableMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileID == %@)", metadataNet.account, metadata.fileID]])
+                    tableMetadata *result = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileID == %@)", metadataNet.account, metadata.fileID]];
+
+                    if (!result)
                         [[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:metadataNet.serverUrl];
                 }
             }
@@ -398,7 +413,9 @@
     // File not present, remove it
     if (errorCode == 404 && [recordAccount.account isEqualToString:metadataNet.account]) {
         [CCCoreData deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileID == %@)", metadataNet.account, metadataNet.fileID]];
-        [CCCoreData deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileID == %@)", metadataNet.account, metadataNet.fileID]];
+        //[CCCoreData deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileID == %@)", metadataNet.account, metadataNet.fileID]];
+        
+        [[NCManageDatabase sharedInstance] deleteMetadata:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileID == %@)", metadataNet.account, metadataNet.fileID]];
     }
 }
 

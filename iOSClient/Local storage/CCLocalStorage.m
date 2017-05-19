@@ -318,8 +318,11 @@
                                         
                 for (TableDirectory *directory in directories)
                     if ([directory.serverUrl containsString:dirServerUrl]) {
+                        
                         [CCCoreData setOfflineDirectoryServerUrl:directory.serverUrl offline:NO activeAccount:app.activeAccount];
-                        [CCCoreData removeOfflineAllFileFromServerUrl:directory.serverUrl activeAccount:app.activeAccount];
+                        //[CCCoreData removeOfflineAllFileFromServerUrl:directory.serverUrl activeAccount:app.activeAccount];
+                        
+                        [[NCManageDatabase sharedInstance] removeOfflineAllFileFromServerUrl:directory.serverUrl];
                     }
                                         
             } else {
