@@ -1232,7 +1232,7 @@ class NCManageDatabase: NSObject {
             
             if fileID != nil {
                 
-                realm.delete(metadata)
+                //realm.delete(metadata)
                 
                 //metadata.fileID = fileID!
                 //realm.add(metadata, update: true)
@@ -1241,6 +1241,9 @@ class NCManageDatabase: NSObject {
                 
                 //let x =  realm.create(tableMetadata.self, value: metadata, update: false)
                 //x.fileID = fileID!
+                
+                metadata.fileID = fileID!
+                realm.add(metadataWithIcon!, update: true)
                 
             } else {
                 
