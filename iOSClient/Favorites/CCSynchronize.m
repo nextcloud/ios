@@ -112,7 +112,7 @@
         // Delete Record NOT in session
         //[CCCoreData deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND (fileID = %@) AND ((session == NULL) OR (session == ''))", app.activeAccount, metadata.directoryID, metadata.fileID]];
         
-        [[NCManageDatabase sharedInstance] deleteMetadata:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND (fileID = %@) AND ((session == NULL) OR (session == ''))", app.activeAccount, metadata.directoryID, metadata.fileID]];
+        [[NCManageDatabase sharedInstance] deleteMetadata:[NSPredicate predicateWithFormat:@"(account = %@) AND (directoryID = %@) AND (fileID = %@) AND (session = '')", app.activeAccount, metadata.directoryID, metadata.fileID]];
         
         // end test, insert in CoreData
         [[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:app.activeUrl];
@@ -282,7 +282,7 @@
         
         //NSArray *tableMetadatas = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND ((session == NULL) OR (session == ''))", app.activeAccount, metadataNet.directoryID] context:nil];
         
-        NSArray *tableMetadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND ((session == NULL) OR (session == ''))", app.activeAccount, metadataNet.directoryID] sorted:nil ascending:NO];
+        NSArray *tableMetadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPreficate:[NSPredicate predicateWithFormat:@"(account = %@) AND (directoryID = %@) AND (session = '')", app.activeAccount, metadataNet.directoryID] sorted:nil ascending:NO];
         
         for (TableMetadata *record in tableMetadatas) {
             

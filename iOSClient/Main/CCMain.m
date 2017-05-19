@@ -1599,7 +1599,7 @@
 {
     //NSArray *records = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND ((session == NULL) OR (session == ''))", app.activeAccount, directoryID] context:nil];
     
-    NSArray *records = [[NCManageDatabase sharedInstance] getMetadatasWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND ((session == NULL) OR (session == ''))", app.activeAccount, directoryID] sorted:nil ascending:NO];
+    NSArray *records = [[NCManageDatabase sharedInstance] getMetadatasWithPreficate:[NSPredicate predicateWithFormat:@"(account = %@) AND (directoryID = %@) AND (session = '')", app.activeAccount, directoryID] sorted:nil ascending:NO];
     
     for (TableMetadata *recordMetadata in records) {
             
@@ -1851,9 +1851,9 @@
         
         //[CCCoreData deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND ((session == NULL) OR (session == ''))", metadataNet.account, metadataNet.directoryID]];
         
-        [[NCManageDatabase sharedInstance] deleteMetadata:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND ((session == NULL) OR (session == ''))", metadataNet.account, metadataNet.directoryID]];
+        [[NCManageDatabase sharedInstance] deleteMetadata:[NSPredicate predicateWithFormat:@"(account = %@) AND (directoryID = %@) AND (session = '')", metadataNet.account, metadataNet.directoryID]];
         
-        recordsInSessions = [[NCManageDatabase sharedInstance] getMetadatasWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND (session != NULL) AND (session != '')", metadataNet.account, metadataNet.directoryID] sorted:nil ascending:NO];
+        recordsInSessions = [[NCManageDatabase sharedInstance] getMetadatasWithPreficate:[NSPredicate predicateWithFormat:@"(account = %@) AND (directoryID = %@) AND (session != '')", metadataNet.account, metadataNet.directoryID] sorted:nil ascending:NO];
     
         //recordsInSessions = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND (session != NULL) AND (session != '')", metadataNet.account, metadataNet.directoryID] context:nil];
 
@@ -1867,7 +1867,7 @@
             
             //[CCCoreData deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND (fileID = %@) AND ((session == NULL) OR (session == ''))", metadataNet.account, metadata.directoryID, metadata.fileID]];
             
-            [[NCManageDatabase sharedInstance] deleteMetadata:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND (fileID = %@) AND ((session == NULL) OR (session == ''))", metadataNet.account, metadata.directoryID, metadata.fileID]];
+            [[NCManageDatabase sharedInstance] deleteMetadata:[NSPredicate predicateWithFormat:@"(account = %@) AND (directoryID = %@) AND (fileID = %@) AND (session = '')", metadataNet.account, metadata.directoryID, metadata.fileID]];
             
         }
         

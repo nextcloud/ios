@@ -280,7 +280,7 @@
     // remove all record
     //[CCCoreData deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND ((session == NULL) OR (session == ''))", activeAccount, metadataNet.directoryID]];
     
-    [[NCManageDatabase sharedInstance] deleteMetadata:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND ((session == NULL) OR (session == ''))", activeAccount, metadataNet.directoryID]];
+    [[NCManageDatabase sharedInstance] deleteMetadata:[NSPredicate predicateWithFormat:@"(account = %@) AND (directoryID = %@) AND (session = '')", activeAccount, metadataNet.directoryID]];
     
     for (tableMetadata *metadata in metadatas) {
         

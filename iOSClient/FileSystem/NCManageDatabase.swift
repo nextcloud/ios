@@ -1361,7 +1361,21 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
         
-        let predicate = NSPredicate(format: "(account == %@) AND (serverUrl == %@) AND ((session == NULL) OR (session == '')) AND (type == 'file') AND ((typeFile == %@) OR (typeFile == %@))", tableAccount!.account, serverUrl, k_metadataTypeFile_image, k_metadataTypeFile_video)
+        /*
+        var recordsPhotosCameraUpload = [tableMetadata]()
+        let tableDirectoryes = CCCoreData.getDirectoryIDsFromBegins(withServerUrl: serverUrl, activeAccount: tableAccount!.account)
+        
+        for result in tableDirectoryes! {
+            
+            
+        
+        }
+        */
+        
+        let directoryID = CCCoreData.getDirectoryID(fromServerUrl: serverUrl, activeAccount: tableAccount!.account)
+        
+        
+        let predicate = NSPredicate(format: "(account == %@) AND (directoryID == %@) AND (session == '')AND (type == 'file') AND ((typeFile == %@) OR (typeFile == %@))", tableAccount!.account, directoryID!, k_metadataTypeFile_image, k_metadataTypeFile_video)
         
         let sorted = CCUtility.getOrderSettings()
         let ascending = CCUtility.getAscendingSettings()
