@@ -95,11 +95,13 @@ class NCManageDatabase: NSObject {
     
     func getThreadConfined(_ table: Object) -> Any {
      
+        // id tradeReference = [[NCManageDatabase sharedInstance] getThreadConfined:metadata];
         return ThreadSafeReference(to: table)
     }
     
     func putThreadConfined(_ tableRef: Any) -> Object? {
         
+        //tableMetadata *metadataThread = (tableMetadata *)[[NCManageDatabase sharedInstance] putThreadConfined:tradeReference];
         let realm = try! Realm()
         
         return realm.resolve(tableRef as! ThreadSafeReference<Object>)
@@ -1217,7 +1219,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func setMetadataSession(_ session: String, sessionError: String, sessionSelector: String, sessionSelectorPost: String, sessionTaskIdentifier: Int, sessionTaskIdentifierPlist: Int, predicate: NSPredicate) {
+    func setMetadataSession(_ session: String?, sessionError: String?, sessionSelector: String?, sessionSelectorPost: String?, sessionTaskIdentifier: Int, sessionTaskIdentifierPlist: Int, predicate: NSPredicate) {
         
         let tableAccount = self.getAccountActive()
         if tableAccount == nil {
@@ -1232,11 +1234,18 @@ class NCManageDatabase: NSObject {
             
             for result in results {
             
-                result.session = session
-                result.sessionError = sessionError
-                result.sessionSelector = sessionSelector
-                result.sessionSelectorPost = sessionSelectorPost
-            
+                if session != nil {
+                    result.session = session!
+                }
+                if sessionError != nil {
+                    result.sessionError = sessionError!
+                }
+                if sessionSelector != nil {
+                    result.sessionSelector = sessionSelector!
+                }
+                if sessionSelectorPost != nil {
+                    result.sessionSelectorPost = sessionSelectorPost!
+                }
                 if sessionTaskIdentifier != Int(k_taskIdentifierNULL) {
                     result.sessionTaskIdentifier = sessionTaskIdentifier
                 }
