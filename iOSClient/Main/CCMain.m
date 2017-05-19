@@ -1920,7 +1920,7 @@
                 
                 //[CCCoreData updateMetadata:metadataDB predicate:[NSPredicate predicateWithFormat:@"(sessionID == %@) AND (account == %@)", sessionID, app.activeAccount] activeAccount:app.activeAccount activeUrl:app.activeUrl context:nil];
                 
-                [[NCManageDatabase sharedInstance] updateMetadata:metadataDB activeUrl:app.activeUrl];
+                //[[NCManageDatabase sharedInstance] updateMetadata:metadataDB activeUrl:app.activeUrl];
                 
                 [CCCoreData addLocalFile:metadataDB activeAccount:app.activeAccount];
                 

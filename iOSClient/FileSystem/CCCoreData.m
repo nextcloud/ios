@@ -1279,7 +1279,7 @@
     // aggiorniamo il CCMetadata
     //[self updateMetadata:metadata predicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", metadata.fileID, activeAccount] activeAccount:activeAccount activeUrl:activeUrl context:nil];
     
-    [[NCManageDatabase sharedInstance] updateMetadata:metadata activeUrl:activeUrl];
+    //[[NCManageDatabase sharedInstance] updateMetadata:metadata activeUrl:activeUrl];
     
     // se è un template aggiorniamo anche nel FileSystem
     if ([metadata.type isEqualToString: k_metadataType_template]){

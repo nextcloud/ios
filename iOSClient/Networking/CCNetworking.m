@@ -1355,11 +1355,8 @@
             [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:[NSString stringWithFormat:@"%@", @(errorCode)] sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:sessionTaskIdentifier sessionTaskIdentifierPlist:sessionTaskIdentifierPlist predicate:[NSPredicate predicateWithFormat:@"sessionID = %@ AND account = %@", metadata.sessionID, _activeAccount]];
         }
         
-        dispatch_async(dispatch_get_main_queue(), ^{
-            
-            if ([[self getDelegate:sessionID] respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
-                [[self getDelegate:sessionID] uploadFileFailure:nil fileID:fileID serverUrl:serverUrl selector:metadata.sessionSelector message:[CCError manageErrorKCF:errorCode withNumberError:YES] errorCode:errorCode];
-        });
+        if ([[self getDelegate:sessionID] respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
+            [[self getDelegate:sessionID] uploadFileFailure:nil fileID:fileID serverUrl:serverUrl selector:metadata.sessionSelector message:[CCError manageErrorKCF:errorCode withNumberError:YES] errorCode:errorCode];
         
         return;
     }
@@ -1367,30 +1364,33 @@
     // PLAIN or PLIST
     if ([CCUtility isFileNotCryptated:fileName] || [CCUtility isCryptoPlistString:fileName]) {
         
-        metadata.fileID = fileID;
-        metadata.rev = rev;
-        metadata.date = date;
-        metadata.sessionTaskIdentifierPlist = k_taskIdentifierDone;
+        NSInteger sessionTaskIdentifierPlist = k_taskIdentifierDone;
+        NSInteger sessionTaskIdentifier = k_taskIdentifierNULL;
+        
+        //metadata.fileID = fileID;
+        //metadata.rev = rev;
+        //metadata.date = date;
+        //metadata.sessionTaskIdentifierPlist = k_taskIdentifierDone;
         
         if ([CCUtility isFileNotCryptated:fileName])
-            metadata.sessionTaskIdentifier = k_taskIdentifierDone;
+            sessionTaskIdentifier = k_taskIdentifierDone;
         
         // copy ico in new fileID
         [CCUtility copyFileAtPath:[NSString stringWithFormat:@"%@/%@.ico", _directoryUser, sessionID] toPath:[NSString stringWithFormat:@"%@/%@.ico", _directoryUser, fileID]];
         
         //[CCCoreData updateMetadata:metadata predicate:[NSPredicate predicateWithFormat:@"(sessionID == %@) AND (account == %@)", sessionID, _activeAccount] activeAccount:_activeAccount activeUrl:_activeUrl context:_context];
         
-        [[NCManageDatabase sharedInstance] updateMetadata:metadata activeUrl:_activeUrl];
+        [[NCManageDatabase sharedInstance] updateMetadata:metadata date:date fileID:fileID rev:rev session:nil sessionError:nil sessionTaskIdentifier:sessionTaskIdentifier sessionTaskIdentifierPlist:sessionTaskIdentifierPlist activeUrl:_activeUrl];
     }
     
     // CRYPTO
     if ([CCUtility isCryptoString:fileName]) {
         
-        metadata.sessionTaskIdentifier = k_taskIdentifierDone;
+        //metadata.sessionTaskIdentifier = k_taskIdentifierDone;
         
         //[CCCoreData updateMetadata:metadata predicate:[NSPredicate predicateWithFormat:@"(sessionID == %@) AND (account == %@)", sessionID, _activeAccount] activeAccount:_activeAccount activeUrl:_activeUrl context:_context];
         
-        [[NCManageDatabase sharedInstance] updateMetadata:metadata activeUrl:_activeUrl];
+        [[NCManageDatabase sharedInstance] updateMetadata:metadata date:nil fileID:nil rev:nil session:nil sessionError:nil sessionTaskIdentifier:k_taskIdentifierDone sessionTaskIdentifierPlist:k_taskIdentifierNULL activeUrl:_activeUrl];
     }
     
     // ALL TASK DONE (PLAIN/CRYPTO)
@@ -1409,7 +1409,7 @@
         
         //[CCCoreData updateMetadata:metadata predicate:[NSPredicate predicateWithFormat:@"(sessionID == %@) AND (account == %@)", sessionID, _activeAccount] activeAccount:_activeAccount activeUrl:_activeUrl context:_context];
         
-        [[NCManageDatabase sharedInstance] updateMetadata:metadata activeUrl:_activeUrl];
+        //[[NCManageDatabase sharedInstance] updateMetadata:metadata activeUrl:_activeUrl];
         
         // rename file sessionID -> fileID
         [CCUtility moveFileAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, sessionID]  toPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadata.fileID]];
@@ -1453,11 +1453,8 @@
             }
         }
         
-        dispatch_async(dispatch_get_main_queue(), ^{
-            
-            if ([[self getDelegate:sessionID] respondsToSelector:@selector(uploadFileSuccess:fileID:serverUrl:selector:selectorPost:)])
-                [[self getDelegate:sessionID] uploadFileSuccess:nil fileID:metadata.fileID serverUrl:serverUrl selector:metadata.sessionSelector selectorPost:metadata.sessionSelectorPost];
-        });
+        if ([[self getDelegate:sessionID] respondsToSelector:@selector(uploadFileSuccess:fileID:serverUrl:selector:selectorPost:)])
+            [[self getDelegate:sessionID] uploadFileSuccess:nil fileID:metadata.fileID serverUrl:serverUrl selector:metadata.sessionSelector selectorPost:metadata.sessionSelectorPost];
     }
 }
 

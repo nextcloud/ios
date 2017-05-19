@@ -106,7 +106,6 @@ class NCManageDatabase: NSObject {
         
         return realm.resolve(tableRef as! ThreadSafeReference<Object>)
     }
-
     
     //MARK: -
     //MARK: Table Account
@@ -1195,7 +1194,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func updateMetadata(_ metadata: tableMetadata, activeUrl: String) {
+    func updateMetadata(_ metadata: tableMetadata, date: NSDate?, rev: String?, session: String?, sessionError: String?, sessionTaskIdentifier: Int, sessionTaskIdentifierPlist: Int, activeUrl: String) {
         
         let tableAccount = self.getAccountActive()
         if tableAccount == nil {
@@ -1206,11 +1205,31 @@ class NCManageDatabase: NSObject {
         let cameraFolderPath = self.getAccountCameraUploadFolderPath(activeUrl)
         let direcory = CCCoreData.getServerUrl(fromDirectoryID: metadata.directoryID, activeAccount: metadata.account)
         
-        let metadataWithIcon = CCUtility.insertTypeFileIconName(metadata, directory: direcory, cameraFolderName: cameraFolderName, cameraFolderPath: cameraFolderPath)
-
         let realm = try! Realm()
         
         try! realm.write {
+            
+            let metadataWithIcon = CCUtility.insertTypeFileIconName(metadata, directory: direcory, cameraFolderName: cameraFolderName, cameraFolderPath: cameraFolderPath)
+            
+            if date != nil {
+                metadata.date = date!
+            }
+            if rev != nil {
+                metadata.rev = rev!
+            }
+            if session != nil {
+                metadata.session = session!
+            }
+            if sessionError != nil {
+                metadata.sessionError = sessionError!
+            }
+            if sessionTaskIdentifier != Int(k_taskIdentifierNULL) {
+                metadata.sessionTaskIdentifier = sessionTaskIdentifier
+            }
+            if sessionTaskIdentifierPlist != Int(k_taskIdentifierNULL) {
+                metadata.sessionTaskIdentifierPlist = sessionTaskIdentifierPlist
+            }
+            
             realm.add(metadataWithIcon!, update: true)
         }
     }
