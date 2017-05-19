@@ -69,10 +69,7 @@
 
 // Verify
 - (void)verifyDownloadInProgress;
-- (void)automaticDownloadInError;
-
 - (void)verifyUploadInProgress;
-- (void)automaticUploadInError;
 
 @end
 
