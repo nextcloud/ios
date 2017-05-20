@@ -1600,18 +1600,18 @@
 {
     //NSArray *records = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND ((session == NULL) OR (session == ''))", app.activeAccount, directoryID] context:nil];
     
-    NSArray *records = [[NCManageDatabase sharedInstance] getMetadatasWithPreficate:[NSPredicate predicateWithFormat:@"(account = %@) AND (directoryID = %@) AND (session = '')", app.activeAccount, directoryID] sorted:nil ascending:NO];
+    NSArray *results = [[NCManageDatabase sharedInstance] getMetadatasWithPreficate:[NSPredicate predicateWithFormat:@"(account = %@) AND (directoryID = %@) AND (session = '')", app.activeAccount, directoryID] sorted:nil ascending:NO];
     
-    for (TableMetadata *recordMetadata in records) {
+    for (tableMetadata *metadata in results) {
             
-        if ([CCUtility isCryptoPlistString:recordMetadata.fileName] && [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, recordMetadata.fileName]] == NO && [recordMetadata.session length] == 0) {
+        if ([CCUtility isCryptoPlistString:metadata.fileName] && [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileName]] == NO && [metadata.session length] == 0) {
         
             CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
                 
             metadataNet.action = actionDownloadFile;
             metadataNet.downloadData = NO;
             metadataNet.downloadPlist = YES;
-            metadataNet.fileID = recordMetadata.fileID;
+            metadataNet.fileID = metadata.fileID;
             metadataNet.selector = selectorLoadPlist;
             metadataNet.serverUrl = serverUrl;
             metadataNet.session = k_download_session_foreground;
@@ -2042,8 +2042,8 @@
             NSArray *records = [[NCManageDatabase sharedInstance] getMetadatasWithPreficate:predicate sorted:nil ascending:NO];
             
             [_searchResultMetadatas removeAllObjects];
-            for (TableMetadata *record in records)
-                [_searchResultMetadatas addObject:[CCCoreData insertEntityInMetadata:record]];
+            for (tableMetadata *record in records)
+                [_searchResultMetadatas addObject:record];
             
             CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
             

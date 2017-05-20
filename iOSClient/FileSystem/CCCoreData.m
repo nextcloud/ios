@@ -406,7 +406,9 @@
             // remove directory in Metadata come cazzo si fa a saperlo
             //[TableMetadata MR_findAllWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@)", activeAccount, recordDirectory.directoryID] inContext:context];
             
+            /*
             NSArray *tableMetadatas = [TableMetadata MR_findAllWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@)", activeAccount, recordDirectory.directoryID] inContext:context];
+            
             for(TableMetadata *recordMetadata in tableMetadatas) {
                 
                 // remove if in session
@@ -426,6 +428,7 @@
             }
             
             [recordDirectory MR_deleteEntityInContext:context];
+            */ 
         }
     }
 
@@ -716,6 +719,7 @@
 
 + (BOOL)isBlockZone:(NSString *)serverUrl activeAccount:(NSString *)activeAccount
 {
+    /*
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (directory == 1)", activeAccount];
     NSArray *records = [TableMetadata MR_findAllWithPredicate:predicate];
     
@@ -742,6 +746,7 @@
             }
         }
     }
+    */
     
     return NO;
 }
@@ -1289,6 +1294,8 @@
 
 + (void)deleteFile:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl directoryUser:(NSString *)directoryUser activeAccount:(NSString *)activeAccount
 {
+    if (!metadata) return;
+    
     // ----------------------------------------- FILESYSTEM ------------------------------------------
     
     [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, metadata.fileID] error:nil];
@@ -1305,100 +1312,6 @@
     
     [self deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", metadata.fileID, activeAccount]];
     [[NCManageDatabase sharedInstance] deleteMetadata:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", metadata.fileID, activeAccount]];
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Metadata <> Entity =====
-#pragma --------------------------------------------------------------------------------------------
-
-+ (void)insertMetadataInEntity:(tableMetadata *)metadata recordMetadata:(TableMetadata *)recordMetadata activeAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl
-{
-    if ([activeAccount length]) recordMetadata.account = activeAccount;
-    recordMetadata.cryptated = [NSNumber numberWithBool:metadata.cryptated];
-    if (metadata.date) recordMetadata.date = metadata.date;
-    recordMetadata.directory = [NSNumber numberWithBool:metadata.directory];
-    recordMetadata.errorPasscode = [NSNumber numberWithBool:metadata.errorPasscode];
-    recordMetadata.favorite = [NSNumber numberWithBool:metadata.favorite];
-    if ([metadata.fileID length]) recordMetadata.fileID = metadata.fileID;
-    if ([metadata.directoryID length]) recordMetadata.directoryID = metadata.directoryID;
-    if ([metadata.fileName length]) recordMetadata.fileName = metadata.fileName;
-    if ([metadata.fileName length]) recordMetadata.fileNameData = [CCUtility trasformedFileNamePlistInCrypto:metadata.fileName];
-    if ([metadata.fileNamePrint length]) recordMetadata.fileNamePrint = metadata.fileNamePrint;
-    if ([metadata.assetLocalIdentifier length]) recordMetadata.assetLocalIdentifier = metadata.assetLocalIdentifier;
-    if ([metadata.model length]) recordMetadata.model = metadata.model;
-    if ([metadata.nameCurrentDevice length]) recordMetadata.nameCurrentDevice = metadata.nameCurrentDevice;
-    if ([metadata.permissions length]) recordMetadata.permissions = metadata.permissions;
-    if ([metadata.protocolCrypto length]) recordMetadata.protocol = metadata.protocolCrypto;
-    
-    if ([metadata.rev length]) recordMetadata.rev = metadata.rev;
-    
-    if (metadata.session) recordMetadata.session = metadata.session;
-    else metadata.session = @"";
-    
-    recordMetadata.sessionError = metadata.sessionError;
-    recordMetadata.sessionID = metadata.sessionID;
-    recordMetadata.sessionSelector = metadata.sessionSelector;
-    recordMetadata.sessionSelectorPost = metadata.sessionSelectorPost;
-
-    recordMetadata.sessionTaskIdentifier = [NSNumber numberWithLong:metadata.sessionTaskIdentifier];
-    recordMetadata.sessionTaskIdentifierPlist = [NSNumber numberWithLong:metadata.sessionTaskIdentifierPlist];
-    
-    if (metadata.size) recordMetadata.size = [NSNumber numberWithLong:metadata.size];
-    if ([metadata.title length]) recordMetadata.title = metadata.title;
-    recordMetadata.thumbnailExists = [NSNumber numberWithBool:metadata.thumbnailExists];
-
-    if ([metadata.type length]) recordMetadata.type = metadata.type;
-    if ([metadata.uuid length]) recordMetadata.uuid = metadata.uuid;
-
-    // inseriamo il typeFile e icona di default.
-    NSString *cameraFolderName = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderName];
-    NSString *cameraFolderPath = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderPath:activeUrl];
-    
-    [CCUtility insertTypeFileIconName:metadata directory:[self getServerUrlFromDirectoryID:metadata.directoryID activeAccount:activeAccount] cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath];
-    
-    recordMetadata.typeFile = metadata.typeFile;
-    recordMetadata.iconName = metadata.iconName;
-}
-
-+ (tableMetadata *)insertEntityInMetadata:(TableMetadata *)recordMetadata
-{
-    tableMetadata *metadata = [[tableMetadata alloc] init];
-    
-    metadata.account = recordMetadata.account;
-    metadata.cryptated = [recordMetadata.cryptated boolValue];
-    metadata.date = recordMetadata.date;
-    metadata.directory = [recordMetadata.directory boolValue];
-    metadata.errorPasscode = [recordMetadata.errorPasscode boolValue];
-    metadata.favorite = [recordMetadata.favorite boolValue];
-    metadata.fileID = recordMetadata.fileID;
-    metadata.directoryID = recordMetadata.directoryID;
-    metadata.fileName = recordMetadata.fileName;
-    metadata.fileNameData = recordMetadata.fileNameData;
-    metadata.fileNamePrint = recordMetadata.fileNamePrint;
-    metadata.iconName = recordMetadata.iconName;
-    metadata.assetLocalIdentifier = recordMetadata.assetLocalIdentifier;
-    metadata.model = recordMetadata.model;
-    metadata.nameCurrentDevice = recordMetadata.nameCurrentDevice;
-    metadata.permissions = recordMetadata.permissions;
-    metadata.protocolCrypto = recordMetadata.protocol;
-    metadata.rev = recordMetadata.rev;
-    
-    metadata.session = recordMetadata.session;
-    metadata.sessionError = recordMetadata.sessionError;
-    metadata.sessionID = recordMetadata.sessionID;
-    metadata.sessionSelector = recordMetadata.sessionSelector;
-    metadata.sessionSelectorPost = recordMetadata.sessionSelectorPost;
-    metadata.sessionTaskIdentifier = [recordMetadata.sessionTaskIdentifier intValue];
-    metadata.sessionTaskIdentifierPlist = [recordMetadata.sessionTaskIdentifierPlist intValue];
-    
-    metadata.size = [recordMetadata.size longValue];
-    metadata.thumbnailExists = [recordMetadata.thumbnailExists boolValue];
-    metadata.title = recordMetadata.title;
-    metadata.type = recordMetadata.type;
-    metadata.typeFile = recordMetadata.typeFile;
-    metadata.uuid = recordMetadata.uuid;
-    
-    return metadata;
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1519,21 +1432,6 @@
     [context MR_saveToPersistentStoreAndWait];
 }
 
-+ (void)flushTableMetadataAccount:(NSString *)account
-{
-    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
-    
-    if (account) {
-        
-        [TableMetadata MR_deleteAllMatchingPredicate:[NSPredicate predicateWithFormat:@"(account == %@)", account] inContext:context];
-        
-    } else {
-        
-        [TableMetadata MR_truncateAllInContext:context];
-    }
-    
-    [context MR_saveToPersistentStoreAndWait];
-}
 
 
 + (void)flushAllDatabase
@@ -1543,7 +1441,6 @@
     [TableAccount MR_truncateAllInContext:context];
     [TableDirectory MR_truncateAllInContext:context];
     [TableLocalFile MR_truncateAllInContext:context];
-    [TableMetadata MR_truncateAllInContext:context];
     
     [context MR_saveToPersistentStoreAndWait];
 }

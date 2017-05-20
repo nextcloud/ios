@@ -157,9 +157,9 @@
     
     NSArray *allRecordFavorite = [[NCManageDatabase sharedInstance] getMetadatasWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (favorite == 1)", app.activeAccount] sorted:nil ascending:NO];
     
-    for (TableMetadata *tableMetadata in allRecordFavorite)
-        if (![filesID containsObject:tableMetadata.fileID])
-            [[NCManageDatabase sharedInstance] setMetadataFavorite:tableMetadata.fileID favorite:NO];
+    for (tableMetadata *metadata in allRecordFavorite)
+        if (![filesID containsObject:metadata.fileID])
+            [[NCManageDatabase sharedInstance] setMetadataFavorite:metadata.fileID favorite:NO];
     
             //[CCCoreData setMetadataFavoriteFileID:tableMetadata.fileID favorite:NO activeAccount:app.activeAccount context:nil];
     
@@ -284,7 +284,7 @@
         
         NSArray *tableMetadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPreficate:[NSPredicate predicateWithFormat:@"(account = %@) AND (directoryID = %@) AND (session = '')", app.activeAccount, metadataNet.directoryID] sorted:nil ascending:NO];
         
-        for (TableMetadata *record in tableMetadatas) {
+        for (tableMetadata *record in tableMetadatas) {
             
             // reject cryptated
             if (record.cryptated)
@@ -301,7 +301,7 @@
             }
             
             if (!fileIDFound)
-                [metadatasNotPresents addObject:[CCCoreData insertEntityInMetadata:record]];
+                [metadatasNotPresents addObject:record];
         }
         
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -352,7 +352,7 @@
                     
                     // It's in session
                     BOOL recordInSession = NO;
-                    for (TableMetadata *record in recordsInSessions) {
+                    for (tableMetadata *record in recordsInSessions) {
                         if ([record.fileID isEqualToString:metadata.fileID]) {
                             recordInSession = YES;
                             break;

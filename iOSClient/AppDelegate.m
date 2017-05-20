@@ -1350,7 +1350,9 @@
     // ------------------------- <selectorUploadAutomaticAll> -------------------------
     
     // Verify num error MAX 10 after STOP
-    NSUInteger errorCount = [TableMetadata MR_countOfEntitiesWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (sessionSelector == %@) AND ((sessionTaskIdentifier == %i) OR (sessionTaskIdentifierPlist == %i))", app.activeAccount, selectorUploadAutomaticAll, k_taskIdentifierError, k_taskIdentifierError]];
+    NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPreficate:[NSPredicate predicateWithFormat:@"account = %@ AND sessionSelector = %@ AND (sessionTaskIdentifier = %i OR sessionTaskIdentifierPlist = %i)", app.activeAccount, selectorUploadAutomaticAll, k_taskIdentifierError, k_taskIdentifierError] sorted:nil ascending:NO];
+    
+    NSInteger errorCount = [metadatas count];
     
     if (errorCount >= 10) {
         
@@ -1603,7 +1605,6 @@
      
         [CCCoreData flushTableDirectoryAccount:nil];
         [CCCoreData flushTableLocalFileAccount:nil];
-        [CCCoreData flushTableMetadataAccount:nil];
     }
     
     if (([actualVersion compare:@"2.15" options:NSNumericSearch] == NSOrderedAscending)) {
@@ -1614,7 +1615,6 @@
     if (([actualVersion compare:@"2.17" options:NSNumericSearch] == NSOrderedAscending)) {
         
         [CCCoreData clearAllDateReadDirectory];
-        [CCCoreData flushTableMetadataAccount:nil];
     }
     
     if (([actualVersion compare:@"2.17.3" options:NSNumericSearch] == NSOrderedAscending)) {

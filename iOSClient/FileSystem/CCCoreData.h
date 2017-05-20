@@ -36,7 +36,6 @@
 #import "OCCapabilities.h"
 #import "TableAccount+CoreDataClass.h"
 #import "TableCertificates+CoreDataClass.h"
-#import "TableMetadata+CoreDataClass.h"
 #import "TableDirectory+CoreDataClass.h"
 #import "TableLocalFile+CoreDataClass.h"
 
@@ -147,11 +146,6 @@
 + (void)downloadFilePlist:(tableMetadata *)metadata activeAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl directoryUser:(NSString *)directoryUser;
 + (void)deleteFile:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl directoryUser:(NSString *)directoryUser activeAccount:(NSString *)activeAccount;
 
-// ===== Metadata <> Entity =====
-
-+ (void)insertMetadataInEntity:(tableMetadata *)metadata recordMetadata:(TableMetadata *)recordMetadata activeAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl;
-+ (tableMetadata *)insertEntityInMetadata:(TableMetadata *)recordMetadata;
-
 // ===== Utility Database =====
 
 + (void)moveCoreDataToGroup;
@@ -160,7 +154,6 @@
 //+ (void)flushTableAccount:(NSString *)account;
 + (void)flushTableDirectoryAccount:(NSString *)account;
 + (void)flushTableLocalFileAccount:(NSString *)account;
-+ (void)flushTableMetadataAccount:(NSString *)account;
 
 + (void)flushAllDatabase;
 @end

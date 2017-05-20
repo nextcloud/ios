@@ -1529,9 +1529,7 @@
     
     NSLog(@"[LOG] Verify re download n. %lu", (unsigned long)[records count]);
     
-    for (TableMetadata *record in records) {
-        
-        tableMetadata *metadata = [CCCoreData insertEntityInMetadata:record];
+    for (tableMetadata *metadata in records) {
         
         NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account];
             
@@ -1623,10 +1621,8 @@
     
     NSLog(@"[LOG] Verify re upload n. %lu", (unsigned long)[records count]);
     
-    for (TableMetadata *record in records) {
-        
-        tableMetadata *metadata = [CCCoreData insertEntityInMetadata:record];
-        
+    for (tableMetadata *metadata in records) {
+                
         [self uploadFileMetadata:metadata taskStatus: k_taskStatusResume];
             
         [directoryIDs addObject:metadata.directoryID];

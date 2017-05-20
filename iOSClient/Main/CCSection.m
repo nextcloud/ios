@@ -72,15 +72,7 @@
     NSInteger numDirectory = 0;
     BOOL directoryOnTop = [CCUtility getDirectoryOnTop];
     
-    for (id record in records) {
-        
-        tableMetadata *metadata = [tableMetadata new];
-        
-        // verify type of class
-        if ([record isKindOfClass:[TableMetadata class]])
-            metadata = [CCCoreData insertEntityInMetadata:record];
-        else
-            metadata = (tableMetadata *)record;
+    for (tableMetadata* metadata in records) {
         
         // if exists replace date with exif date
         /*

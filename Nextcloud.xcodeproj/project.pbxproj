@@ -100,12 +100,6 @@
 		F70022FE1EC4C9100080073F /* UtilsFramework.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022A01EC4C9100080073F /* UtilsFramework.m */; };
 		F70022FF1EC4C9100080073F /* UtilsFramework.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022A01EC4C9100080073F /* UtilsFramework.m */; };
 		F70023001EC4C9100080073F /* UtilsFramework.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022A01EC4C9100080073F /* UtilsFramework.m */; };
-		F708CF6D1E56E8CC00271D8B /* TableMetadata+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF4E1E56E8CB00271D8B /* TableMetadata+CoreDataClass.m */; };
-		F708CF6E1E56E8CC00271D8B /* TableMetadata+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF4E1E56E8CB00271D8B /* TableMetadata+CoreDataClass.m */; };
-		F708CF6F1E56E8CC00271D8B /* TableMetadata+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF4E1E56E8CB00271D8B /* TableMetadata+CoreDataClass.m */; };
-		F708CF701E56E8CC00271D8B /* TableMetadata+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF501E56E8CB00271D8B /* TableMetadata+CoreDataProperties.m */; };
-		F708CF711E56E8CC00271D8B /* TableMetadata+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF501E56E8CB00271D8B /* TableMetadata+CoreDataProperties.m */; };
-		F708CF721E56E8CC00271D8B /* TableMetadata+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF501E56E8CB00271D8B /* TableMetadata+CoreDataProperties.m */; };
 		F708CF731E56E8CC00271D8B /* TableLocalFile+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF521E56E8CB00271D8B /* TableLocalFile+CoreDataClass.m */; };
 		F708CF741E56E8CC00271D8B /* TableLocalFile+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF521E56E8CB00271D8B /* TableLocalFile+CoreDataClass.m */; };
 		F708CF751E56E8CC00271D8B /* TableLocalFile+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F708CF521E56E8CB00271D8B /* TableLocalFile+CoreDataClass.m */; };
@@ -887,10 +881,6 @@
 		F70211FB1BAC56E9003FC03E /* CCMain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCMain.m; sourceTree = "<group>"; };
 		F7053E3C1C639DF500741EA5 /* CCUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCUtility.h; sourceTree = "<group>"; };
 		F7053E3D1C639DF500741EA5 /* CCUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCUtility.m; sourceTree = "<group>"; };
-		F708CF4D1E56E8CB00271D8B /* TableMetadata+CoreDataClass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableMetadata+CoreDataClass.h"; sourceTree = "<group>"; };
-		F708CF4E1E56E8CB00271D8B /* TableMetadata+CoreDataClass.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableMetadata+CoreDataClass.m"; sourceTree = "<group>"; };
-		F708CF4F1E56E8CB00271D8B /* TableMetadata+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableMetadata+CoreDataProperties.h"; sourceTree = "<group>"; };
-		F708CF501E56E8CB00271D8B /* TableMetadata+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableMetadata+CoreDataProperties.m"; sourceTree = "<group>"; };
 		F708CF511E56E8CB00271D8B /* TableLocalFile+CoreDataClass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableLocalFile+CoreDataClass.h"; sourceTree = "<group>"; };
 		F708CF521E56E8CB00271D8B /* TableLocalFile+CoreDataClass.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TableLocalFile+CoreDataClass.m"; sourceTree = "<group>"; };
 		F708CF531E56E8CB00271D8B /* TableLocalFile+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableLocalFile+CoreDataProperties.h"; sourceTree = "<group>"; };
@@ -1096,6 +1086,7 @@
 		F721372F1BAFF0920012B613 /* CCTemplates.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCTemplates.h; sourceTree = "<group>"; };
 		F72137301BAFF0920012B613 /* CCTemplates.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCTemplates.m; sourceTree = "<group>"; };
 		F7229B491DF71BB300E8C4E7 /* AUTHORS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AUTHORS; sourceTree = SOURCE_ROOT; };
+		F72651E61ED03F4B002231E0 /* cryptocloud 10.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "cryptocloud 10.xcdatamodel"; sourceTree = "<group>"; };
 		F7296A601C8880C9001A7809 /* CCCellShareExt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCCellShareExt.h; sourceTree = "<group>"; };
 		F7296A611C8880C9001A7809 /* CCCellShareExt.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCCellShareExt.m; sourceTree = "<group>"; };
 		F7296A621C8880C9001A7809 /* CCCellShareExt.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CCCellShareExt.xib; sourceTree = "<group>"; };
@@ -3125,10 +3116,6 @@
 				F70022331EC49BBE0080073F /* TableCertificates+CoreDataClass.m */,
 				F70022341EC49BBE0080073F /* TableCertificates+CoreDataProperties.h */,
 				F70022351EC49BBE0080073F /* TableCertificates+CoreDataProperties.m */,
-				F708CF4D1E56E8CB00271D8B /* TableMetadata+CoreDataClass.h */,
-				F708CF4E1E56E8CB00271D8B /* TableMetadata+CoreDataClass.m */,
-				F708CF4F1E56E8CB00271D8B /* TableMetadata+CoreDataProperties.h */,
-				F708CF501E56E8CB00271D8B /* TableMetadata+CoreDataProperties.m */,
 				F708CF511E56E8CB00271D8B /* TableLocalFile+CoreDataClass.h */,
 				F708CF521E56E8CB00271D8B /* TableLocalFile+CoreDataClass.m */,
 				F708CF531E56E8CB00271D8B /* TableLocalFile+CoreDataProperties.h */,
@@ -4219,7 +4206,6 @@
 				F708CF981E56E8CC00271D8B /* TableAccount+CoreDataClass.m in Sources */,
 				F71459BC1D12E3B700CAFEEC /* Reachability.m in Sources */,
 				F71459BD1D12E3B700CAFEEC /* UIImage+animatedGIF.m in Sources */,
-				F708CF6E1E56E8CC00271D8B /* TableMetadata+CoreDataClass.m in Sources */,
 				F71459BE1D12E3B700CAFEEC /* UIImage+Reflection.m in Sources */,
 				F73CC06D1E813DFF006E3047 /* BKPasscodeField.m in Sources */,
 				F70022C01EC4C9100080073F /* OCFileDto.m in Sources */,
@@ -4304,7 +4290,6 @@
 				F7145A0E1D12E3B700CAFEEC /* AESCrypt.m in Sources */,
 				F70022DE1EC4C9100080073F /* OCWebDAVClient.m in Sources */,
 				F7145A111D12E3B700CAFEEC /* PPImageScrollingTableViewCell.m in Sources */,
-				F708CF711E56E8CC00271D8B /* TableMetadata+CoreDataProperties.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4348,7 +4333,6 @@
 				F70022E81EC4C9100080073F /* OCXMLServerErrorsParser.m in Sources */,
 				F70022D31EC4C9100080073F /* OCUserProfile.m in Sources */,
 				F74344791E127EA1001CC831 /* CCError.m in Sources */,
-				F708CF6F1E56E8CC00271D8B /* TableMetadata+CoreDataClass.m in Sources */,
 				F70022D01EC4C9100080073F /* OCShareUser.m in Sources */,
 				F70022EB1EC4C9100080073F /* OCXMLShareByLinkParser.m in Sources */,
 				F743447B1E127EAC001CC831 /* CCUtility.m in Sources */,
@@ -4378,7 +4362,6 @@
 				F73CC06B1E813DFF006E3047 /* BKPasscodeDummyViewController.m in Sources */,
 				F708CF991E56E8CC00271D8B /* TableAccount+CoreDataClass.m in Sources */,
 				F7FC88FA1E140558006D0506 /* cryptocloud.xcdatamodeld in Sources */,
-				F708CF721E56E8CC00271D8B /* TableMetadata+CoreDataProperties.m in Sources */,
 				F74344631E127D79001CC831 /* CCBKPasscode.m in Sources */,
 				F786AC9E1EBDC88B0055AE9D /* NCDatabase.swift in Sources */,
 				F74344661E127E35001CC831 /* CCCoreData.m in Sources */,
@@ -4423,7 +4406,6 @@
 				F762CB071EACB66200B38484 /* XLFormOptionsObject.m in Sources */,
 				F7C525A01E3B48B700FFE02C /* CCNotification.swift in Sources */,
 				F77B0DFB1D118A16002130FE /* NYXProgressiveImageView.m in Sources */,
-				F708CF701E56E8CC00271D8B /* TableMetadata+CoreDataProperties.m in Sources */,
 				F7F54D0E1E5B14C800E19C62 /* UIImage+MWPhotoBrowser.m in Sources */,
 				F7F54D091E5B14C800E19C62 /* MWPhoto.m in Sources */,
 				F77B0DFF1D118A16002130FE /* OCNetworking.m in Sources */,
@@ -4431,7 +4413,6 @@
 				F70022DA1EC4C9100080073F /* OCHTTPRequestOperation.m in Sources */,
 				F77B0E021D118A16002130FE /* CCPhotosCameraUpload.m in Sources */,
 				F70022A11EC4C9100080073F /* AFHTTPSessionManager.m in Sources */,
-				F708CF6D1E56E8CC00271D8B /* TableMetadata+CoreDataClass.m in Sources */,
 				F762CB041EACB66200B38484 /* XLFormSwitchCell.m in Sources */,
 				F77B0E031D118A16002130FE /* CCShareInfoCMOC.m in Sources */,
 				F77B0E041D118A16002130FE /* UIImage+animatedGIF.m in Sources */,
@@ -5392,6 +5373,7 @@
 		F78088E51DD3A1DB005C5A7C /* cryptocloud.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				F72651E61ED03F4B002231E0 /* cryptocloud 10.xcdatamodel */,
 				F77EB61C1EC07913003F814F /* cryptocloud 9.xcdatamodel */,
 				F76B3CDC1EAE4D9100921AC9 /* cryptocloud 8.xcdatamodel */,
 				F7C00D4A1E2D10BB0032160B /* cryptocloud 7.xcdatamodel */,
@@ -5401,7 +5383,7 @@
 				F78088E81DD3A1DB005C5A7C /* cryptocloud 4.xcdatamodel */,
 				F78088E91DD3A1DB005C5A7C /* cryptocloud.xcdatamodel */,
 			);
-			currentVersion = F77EB61C1EC07913003F814F /* cryptocloud 9.xcdatamodel */;
+			currentVersion = F72651E61ED03F4B002231E0 /* cryptocloud 10.xcdatamodel */;
 			path = cryptocloud.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
