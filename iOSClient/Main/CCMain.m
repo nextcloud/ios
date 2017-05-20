@@ -1351,8 +1351,6 @@
 
 - (void)downloadFileFailure:(NSString *)etag serverUrl:(NSString *)serverUrl selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    //tableMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(etag == %@) AND (account == %@)", etag, app.activeAccount] context:nil];
-    
     tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(etag == %@) AND (account == %@)", etag, app.activeAccount]];
     
     // File do not exists on server, remove in local
@@ -1379,7 +1377,7 @@
             [app messageNotification:@"_download_file_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
     }
 
-    [self reloadDatasource:serverUrl etag:metadata.etag selector:selector];
+    [self reloadDatasource:serverUrl etag:etag selector:selector];
 }
 
 - (void)downloadFileSuccess:(NSString *)etag serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost
