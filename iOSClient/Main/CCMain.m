@@ -1984,8 +1984,6 @@
             
             NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:_serverUrl activeAccount:app.activeAccount];
             NSPredicate *predicate = [NSPredicate predicateWithFormat:@"directoryID == %@ AND account == %@ AND fileNamePrint CONTAINS[cd] %@", directoryID, app.activeAccount, fileName];
-            //NSArray *records = [CCCoreData getTableMetadataWithPredicate:predicate context:nil];
-            
             NSArray *records = [[NCManageDatabase sharedInstance] getMetadatasWithPreficate:predicate sorted:nil ascending:NO];
             
             [_searchResultMetadatas removeAllObjects];
@@ -2921,9 +2919,7 @@
                 
         } else {
             
-            //tableMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(etag == %@) AND (account == %@)", metadataNet.etag, app.activeAccount] context:nil];
-            
-            tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(etag == %@) AND (account == %@)", metadataNet.etag, app.activeAccount]];
+            tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"etag = %@", metadataNet.etag]];
             
             // Apriamo la view
             _shareOC = [[UIStoryboard storyboardWithName:@"CCShare" bundle:nil] instantiateViewControllerWithIdentifier:@"CCShareOC"];
