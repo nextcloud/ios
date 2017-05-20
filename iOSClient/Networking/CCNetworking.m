@@ -1525,11 +1525,11 @@
 {
     NSMutableSet *serversUrl = [[NSMutableSet alloc] init];
     
-    NSArray *records = [[NCManageDatabase sharedInstance] getMetadatasWithPreficate:[NSPredicate predicateWithFormat:@"account = %@ AND session CONTAINS 'download' AND (sessionTaskIdentifier == %i OR sessionTaskIdentifierPlist == %i)", _activeAccount, k_taskIdentifierError, k_taskIdentifierError] sorted:nil ascending:NO];
+    NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPreficate:[NSPredicate predicateWithFormat:@"account = %@ AND session CONTAINS 'download' AND (sessionTaskIdentifier = %i OR sessionTaskIdentifierPlist = %i)", _activeAccount, k_taskIdentifierError, k_taskIdentifierError] sorted:nil ascending:NO];
     
-    NSLog(@"[LOG] Verify re download n. %lu", (unsigned long)[records count]);
+    NSLog(@"[LOG] Verify re download n. %lu", (unsigned long)[metadatas count]);
     
-    for (tableMetadata *metadata in records) {
+    for (tableMetadata *metadata in metadatas) {
         
         NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account];
             
