@@ -216,8 +216,13 @@
     // verifico se esiste l'icona e se la posso creare
     if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, self.metadataDetail.fileID]] == NO) {
         
+        id tradeReference = [[NCManageDatabase sharedInstance] getThreadConfined:self.metadataDetail];
+        
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),^{
-            [CCGraphics createNewImageFrom:self.metadataDetail.fileID directoryUser:app.directoryUser fileNameTo:self.metadataDetail.fileID fileNamePrint:self.metadataDetail.fileNamePrint size:@"m" imageForUpload:NO typeFile:self.metadataDetail.typeFile writePreview:YES optimizedFileName:[CCUtility getOptimizedPhoto]];
+            
+            tableMetadata *metadataThread = (tableMetadata *)[[NCManageDatabase sharedInstance] putThreadConfined:tradeReference];
+            
+            [CCGraphics createNewImageFrom:metadataThread.fileID directoryUser:app.directoryUser fileNameTo:metadataThread.fileID fileNamePrint:metadataThread.fileNamePrint size:@"m" imageForUpload:NO typeFile:metadataThread.typeFile writePreview:YES optimizedFileName:[CCUtility getOptimizedPhoto]];
         });
     }
     
