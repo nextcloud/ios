@@ -77,11 +77,6 @@
     
     _hud = [[CCHud alloc] initWithView:self.view];
 
-    // TableView : at the end of rows nothing
-    self.tableView.tableFooterView = [UIView new];
-    
-    self.tableView.separatorColor =  NCBrandColor.sharedInstance.seperator;
-
     [self.cancel setTitle:NSLocalizedString(@"_cancel_", nil)];
     [self.create setTitle:NSLocalizedString(@"_create_folder_", nil)];
 
@@ -105,6 +100,10 @@
         self.navigationItem.titleView=label;
     }
     
+    // TableView : at the end of rows nothing
+    self.tableView.tableFooterView = [UIView new];
+    self.tableView.separatorColor =  NCBrandColor.sharedInstance.seperator;
+
     // read folder
     [self readFolder];
 }
@@ -244,9 +243,7 @@
 {
     if ([selector isEqualToString:selectorLoadPlist]) {
 
-        //tableMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, activeAccount] context:nil];
-        
-        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, activeAccount]];
+        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
         
         [CCCoreData downloadFilePlist:metadata activeAccount:activeAccount activeUrl:activeUrl directoryUser:directoryUser];
         
@@ -278,8 +275,6 @@
 - (void)readFolderSuccess:(CCMetadataNet *)metadataNet permissions:(NSString *)permissions fileID:(NSString *)fileID metadatas:(NSArray *)metadatas
 {
     // remove all record
-    //[CCCoreData deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND ((session == NULL) OR (session == ''))", activeAccount, metadataNet.directoryID]];
-    
     [[NCManageDatabase sharedInstance] deleteMetadata:[NSPredicate predicateWithFormat:@"(account = %@) AND (directoryID = %@) AND (session = '')", activeAccount, metadataNet.directoryID]];
     
     for (tableMetadata *metadata in metadatas) {
@@ -298,7 +293,6 @@
             if (isCryptoComplete == NO) continue;
         }
         
-        //[CCCoreData addMetadata:metadata activeAccount:activeAccount activeUrl:activeUrl context:nil];
         [[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:activeUrl];
         
         // if plist do not exists, download it !
@@ -405,8 +399,8 @@
     NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:_serverUrl activeAccount:activeAccount];
     NSPredicate *predicate;
     
-    if (self.onlyClearDirectory) predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND (directory == 1) AND (cryptated == 0)", activeAccount, directoryID];
-    else predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND (directory == 1)", activeAccount, directoryID];
+    if (self.onlyClearDirectory) predicate = [NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND directory = 1 AND cryptated = 0", activeAccount, directoryID];
+    else predicate = [NSPredicate predicateWithFormat:@"account == %@ AND directoryID = %@ AND directory = 1", activeAccount, directoryID];
     
     NSArray *result = [[NCManageDatabase sharedInstance] getMetadatasWithPreficate:predicate sorted:nil ascending:NO];
     
@@ -470,7 +464,6 @@
     if (self.onlyClearDirectory) predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND (directory == 1) AND (cryptated == 0)", activeAccount, directoryID];
     else predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND (directory == 1)", activeAccount, directoryID];
     
-    //tableMetadata *metadata = [CCCoreData getMetadataAtIndex:predicate fieldOrder:@"fileName" ascending:YES objectAtIndex:index.row];
     tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataAtIndex:predicate sorted:@"fileName" ascending:YES index:index.row];
     
     if (metadata.errorPasscode == NO) {
