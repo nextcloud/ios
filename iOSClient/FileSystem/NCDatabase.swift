@@ -107,6 +107,25 @@ class tableCertificates: Object {
     dynamic var certificateLocation = ""
 }
 
+class tableDirectory: Object {
+    
+    dynamic var account = ""
+    dynamic var dateReadDirectory = NSDate()
+    dynamic var directoryID = ""
+    dynamic var favorite: Bool = false
+    dynamic var fileID = ""
+    dynamic var lock : Bool = false
+    dynamic var offline : Bool = false
+    dynamic var permissions = ""
+    dynamic var rev = ""
+    dynamic var serverUrl = ""
+    dynamic var synchronized: Bool = false
+    
+    override static func primaryKey() -> String {
+        return "directoryID"
+    }
+}
+
 class tableExternalSites: Object {
     
     dynamic var account = ""
@@ -128,6 +147,26 @@ class tableGPS: Object {
     dynamic var placemarkLocality = ""
     dynamic var placemarkPostalCode = ""
     dynamic var placemarkThoroughfare = ""
+}
+
+class tableLocalFile: Object {
+    
+    dynamic var account = ""
+    dynamic var date = NSDate()
+    dynamic var exifDate = NSDate()
+    dynamic var exifLatitude = ""
+    dynamic var exifLongitude = ""
+    dynamic var favorite: Bool = false
+    dynamic var fileID = ""
+    dynamic var fileName = ""
+    dynamic var fileNamePrint = ""
+    dynamic var offline : Bool = false
+    dynamic var rev = ""
+    dynamic var size : Double = 0
+    
+    override static func primaryKey() -> String {
+        return "fileID"
+    }
 }
 
 class tableMetadata: Object {
