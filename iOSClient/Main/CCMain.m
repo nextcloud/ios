@@ -126,6 +126,7 @@
     _hudDeterminate = [[CCHud alloc] initWithView:[[[UIApplication sharedApplication] delegate] window]];
     _selectedMetadatas = [NSMutableArray new];
     _queueSelector = [NSMutableArray new];
+    _sectionDataSource = [CCSectionDataSourceMetadata new];
     _isViewDidLoad = YES;
     _fatherPermission = @"";
     _searchController = [[UISearchController alloc] initWithSearchResultsController:nil];
@@ -4601,10 +4602,12 @@
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    tableMetadata *metadata = [self getMetadataFromSectionDataSource:indexPath];
+    
     BOOL lockDirectory = NO;
     
     // Directory locked ?
-    NSString *lockServerUrl = [CCUtility stringAppendServerUrl:[CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:_metadata.account] addFileName:_metadata.fileNameData];
+    NSString *lockServerUrl = [CCUtility stringAppendServerUrl:[CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account] addFileName:metadata.fileNameData];
     
     if ([CCCoreData isDirectoryLock:lockServerUrl activeAccount:app.activeAccount] && [[CCUtility getBlockCode] length] && app.sessionePasscodeLock == nil) lockDirectory = YES;
     
@@ -4616,8 +4619,6 @@
     }
 
     if (editingStyle == UITableViewCellEditingStyleDelete) {
-        
-        _metadata = [self getMetadataFromSectionDataSource:indexPath];
         
         UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
         
@@ -4736,6 +4737,7 @@
     
         NSArray *recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@)", app.activeAccount, [CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:app.activeAccount]] sorted:[CCUtility getOrderSettings] ascending:[CCUtility getAscendingSettings]];
         
+        _sectionDataSource = [CCSectionDataSourceMetadata new];
         _sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:_directoryGroupBy replaceDateToExifDate:NO activeAccount:app.activeAccount];
         
     } else {
