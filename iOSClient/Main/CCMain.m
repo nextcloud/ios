@@ -1942,7 +1942,7 @@
     
     // File is changed ??
     if (!_isSearchMode)
-            [[CCSynchronize sharedSynchronize] verifyChangeMedatas:metadatas serverUrl:metadataNet.serverUrl account:app.activeAccount withDownload:NO];
+        [[CCSynchronize sharedSynchronize] verifyChangeMedatas:metadatas serverUrl:metadataNet.serverUrl account:app.activeAccount withDownload:NO];
 
     // Search Mode
     if (_isSearchMode)
