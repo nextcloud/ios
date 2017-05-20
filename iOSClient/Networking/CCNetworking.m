@@ -1366,37 +1366,38 @@
     // PLAIN or PLIST
     if ([CCUtility isFileNotCryptated:fileName] || [CCUtility isCryptoPlistString:fileName]) {
         
-        NSInteger sessionTaskIdentifierPlist = k_taskIdentifierDone;
-        NSInteger sessionTaskIdentifier = k_taskIdentifierNULL;
-        
-        //metadata.fileID = fileID;
-        //metadata.rev = rev;
-        //metadata.date = date;
-        //metadata.sessionTaskIdentifierPlist = k_taskIdentifierDone;
-        
-        if ([CCUtility isFileNotCryptated:fileName])
-            sessionTaskIdentifier = k_taskIdentifierDone;
-        
         // copy ico in new fileID
         [CCUtility copyFileAtPath:[NSString stringWithFormat:@"%@/%@.ico", _directoryUser, sessionID] toPath:[NSString stringWithFormat:@"%@/%@.ico", _directoryUser, fileID]];
         
-        //[CCCoreData updateMetadata:metadata predicate:[NSPredicate predicateWithFormat:@"(sessionID == %@) AND (account == %@)", sessionID, _activeAccount] activeAccount:_activeAccount activeUrl:_activeUrl context:_context];
+        metadata = [[NCManageDatabase sharedInstance] copyTableMetadata:metadata];
+        metadata.fileID = fileID;
+        metadata.rev = rev;
+        metadata.date = date;
+        metadata.sessionTaskIdentifierPlist = k_taskIdentifierDone;
         
-        [[NCManageDatabase sharedInstance] updateMetadata:metadata date:date fileID:fileID rev:rev session:nil sessionError:nil sessionTaskIdentifier:sessionTaskIdentifier sessionTaskIdentifierPlist:sessionTaskIdentifierPlist activeUrl:_activeUrl];
+        if ([CCUtility isFileNotCryptated:fileName])
+            metadata.sessionTaskIdentifier = k_taskIdentifierDone;
+        
+        [[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:_activeUrl];
+        [[NCManageDatabase sharedInstance] deleteMetadata:[NSPredicate predicateWithFormat:@"fileID = %@", sessionID]];
     }
     
     // CRYPTO
     if ([CCUtility isCryptoString:fileName]) {
         
-        //metadata.sessionTaskIdentifier = k_taskIdentifierDone;
+        metadata = [[NCManageDatabase sharedInstance] copyTableMetadata:metadata];
+        metadata.sessionTaskIdentifier = k_taskIdentifierDone;
         
+        [[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:_activeUrl];
+        [[NCManageDatabase sharedInstance] deleteMetadata:[NSPredicate predicateWithFormat:@"fileID = %@", sessionID]];
+
         //[CCCoreData updateMetadata:metadata predicate:[NSPredicate predicateWithFormat:@"(sessionID == %@) AND (account == %@)", sessionID, _activeAccount] activeAccount:_activeAccount activeUrl:_activeUrl context:_context];
-        
-        [[NCManageDatabase sharedInstance] updateMetadata:metadata date:nil fileID:nil rev:nil session:nil sessionError:nil sessionTaskIdentifier:k_taskIdentifierDone sessionTaskIdentifierPlist:k_taskIdentifierNULL activeUrl:_activeUrl];
     }
     
     // ALL TASK DONE (PLAIN/CRYPTO)
     if (metadata.sessionTaskIdentifier == k_taskIdentifierDone && metadata.sessionTaskIdentifierPlist == k_taskIdentifierDone) {
+        
+        metadata = [[NCManageDatabase sharedInstance] copyTableMetadata:metadata];
         
 #ifndef EXTENSION
         if (sessionID)
@@ -1408,6 +1409,8 @@
         metadata.session = @"";
         metadata.sessionError = @"";
         metadata.sessionID = @"";
+        
+        
         
         //[CCCoreData updateMetadata:metadata predicate:[NSPredicate predicateWithFormat:@"(sessionID == %@) AND (account == %@)", sessionID, _activeAccount] activeAccount:_activeAccount activeUrl:_activeUrl context:_context];
         
