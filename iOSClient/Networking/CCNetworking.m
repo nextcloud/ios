@@ -1390,8 +1390,6 @@
         
         [[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:_activeUrl];
         [[NCManageDatabase sharedInstance] deleteMetadata:[NSPredicate predicateWithFormat:@"fileID = %@", sessionID]];
-
-        //[CCCoreData updateMetadata:metadata predicate:[NSPredicate predicateWithFormat:@"(sessionID == %@) AND (account == %@)", sessionID, _activeAccount] activeAccount:_activeAccount activeUrl:_activeUrl context:_context];
     }
     
     // ALL TASK DONE (PLAIN/CRYPTO)
@@ -1410,11 +1408,7 @@
         metadata.sessionError = @"";
         metadata.sessionID = @"";
         
-        
-        
-        //[CCCoreData updateMetadata:metadata predicate:[NSPredicate predicateWithFormat:@"(sessionID == %@) AND (account == %@)", sessionID, _activeAccount] activeAccount:_activeAccount activeUrl:_activeUrl context:_context];
-        
-        //[[NCManageDatabase sharedInstance] updateMetadata:metadata activeUrl:_activeUrl];
+        [[NCManageDatabase sharedInstance] updateMetadata:metadata activeUrl:_activeUrl];
         
         // rename file sessionID -> fileID
         [CCUtility moveFileAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, sessionID]  toPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadata.fileID]];
