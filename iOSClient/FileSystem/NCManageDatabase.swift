@@ -1509,4 +1509,43 @@ class NCManageDatabase: NSObject {
     }
     
     //MARK: -
+    //MARK: Table Directory
+    
+    func addDirectory(_ directory: tableDirectory) {
+        
+        let tableAccount = self.getAccountActive()
+        if tableAccount == nil {
+            return
+        }
+        
+        let realm = try! Realm()
+        
+        try! realm.write {
+            
+            if (directory.realm == nil) {
+                directory.directoryID = CCUtility.createRandomString(16)  //[CCUtility createRandomString:16];
+            }
+            
+            realm.add(directory, update: true)
+        }
+    }
+    
+    func deleteDirectory(_ predicate: NSPredicate) {
+        
+        let tableAccount = self.getAccountActive()
+        if tableAccount == nil {
+            return
+        }
+        
+        let realm = try! Realm()
+        
+        let results = realm.objects(tableDirectory.self).filter(predicate)
+        
+        try! realm.write {
+            realm.delete(results)
+        }
+    }
+
+
+    //MARK: -
 }
