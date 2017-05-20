@@ -1382,8 +1382,6 @@
 
 - (void)downloadFileSuccess:(NSString *)etag serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost
 {
-    //tableMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(etag == %@) AND (account == %@)", etag, app.activeAccount] context:nil];
-    
     tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(etag == %@) AND (account == %@)", etag, app.activeAccount]];
     
     if (metadata == nil) return;
@@ -1631,9 +1629,7 @@
     // Read File test do not exists
     if (errorCode == k_CCErrorFileUploadNotFound && etag) {
        
-        //tableMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(etag == %@) AND (account == %@)", etag, app.activeAccount] context:nil];
-        
-        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(etag == %@) AND (account == %@)", etag, app.activeAccount]];
+        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"etag == %@", etag]];
         
         // reUpload
         if (metadata)
@@ -1712,9 +1708,7 @@
         }
         
         // Check if is in upload 
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account = %@) AND (directoryID = %@) AND (fileName = %@) AND (session != '')", app.activeAccount, directoryID, fileName];
-        //NSArray *isRecordInSessions = [CCCoreData getTableMetadataWithPredicate:predicate context:nil];
-        
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND fileName = %@ AND session != ''", app.activeAccount, directoryID, fileName];
         NSArray *isRecordInSessions = [[NCManageDatabase sharedInstance] getMetadatasWithPreficate:predicate sorted:nil ascending:NO];
 
         if ([isRecordInSessions count] > 0) {
@@ -1838,21 +1832,15 @@
     
     if (_isSearchMode) {
         
-        //recordsInSessions = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (session != NULL) AND (session != '')", metadataNet.account] context:nil];
-        
-        recordsInSessions = [[NCManageDatabase sharedInstance] getMetadatasWithPreficate:[NSPredicate predicateWithFormat:@"(account = %@) AND (session != '')", metadataNet.account] sorted:nil ascending:NO];
+        recordsInSessions = [[NCManageDatabase sharedInstance] getMetadatasWithPreficate:[NSPredicate predicateWithFormat:@"account = %@ AND session != ''", metadataNet.account] sorted:nil ascending:NO];
         
     } else {
         
         [CCCoreData updateDirectoryEtagServerUrl:metadataNet.serverUrl etag:etag activeAccount:metadataNet.account];
         
-        //[CCCoreData deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND ((session == NULL) OR (session == ''))", metadataNet.account, metadataNet.directoryID]];
+        [[NCManageDatabase sharedInstance] deleteMetadata:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND session = ''", metadataNet.account, metadataNet.directoryID]];
         
-        [[NCManageDatabase sharedInstance] deleteMetadata:[NSPredicate predicateWithFormat:@"(account = %@) AND (directoryID = %@) AND (session = '')", metadataNet.account, metadataNet.directoryID]];
-        
-        recordsInSessions = [[NCManageDatabase sharedInstance] getMetadatasWithPreficate:[NSPredicate predicateWithFormat:@"(account = %@) AND (directoryID = %@) AND (session != '')", metadataNet.account, metadataNet.directoryID] sorted:nil ascending:NO];
-    
-        //recordsInSessions = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND (session != NULL) AND (session != '')", metadataNet.account, metadataNet.directoryID] context:nil];
+        recordsInSessions = [[NCManageDatabase sharedInstance] getMetadatasWithPreficate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND session != ''", metadataNet.account, metadataNet.directoryID] sorted:nil ascending:NO];
 
         [CCCoreData setDateReadDirectoryID:metadataNet.directoryID activeAccount:app.activeAccount];
     }
@@ -1862,10 +1850,7 @@
         // Delete Record only in Search Mode
         if (_isSearchMode) {
             
-            //[CCCoreData deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND (etag = %@) AND ((session == NULL) OR (session == ''))", metadataNet.account, metadata.directoryID, metadata.etag]];
-            
-            [[NCManageDatabase sharedInstance] deleteMetadata:[NSPredicate predicateWithFormat:@"(account = %@) AND (directoryID = %@) AND (etag = %@) AND (session = '')", metadataNet.account, metadata.directoryID, metadata.etag]];
-            
+            [[NCManageDatabase sharedInstance] deleteMetadata:[NSPredicate predicateWithFormat:@"etag = %@ AND session = ''", metadata.etag]];
         }
         
         // type of file
@@ -2032,7 +2017,7 @@
         } else {
             
             NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:_serverUrl activeAccount:app.activeAccount];
-            NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(directoryID == %@) AND (account == %@) AND (fileNamePrint CONTAINS[cd] %@)", directoryID, app.activeAccount, fileName];
+            NSPredicate *predicate = [NSPredicate predicateWithFormat:@"directoryID == %@ AND account == %@ AND fileNamePrint CONTAINS[cd] %@", directoryID, app.activeAccount, fileName];
             //NSArray *records = [CCCoreData getTableMetadataWithPredicate:predicate context:nil];
             
             NSArray *records = [[NCManageDatabase sharedInstance] getMetadatasWithPreficate:predicate sorted:nil ascending:NO];
