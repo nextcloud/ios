@@ -1150,12 +1150,16 @@ class NCManageDatabase: NSObject {
         let cameraFolderPath = self.getAccountCameraUploadFolderPath(activeUrl)
         let direcory = CCCoreData.getServerUrl(fromDirectoryID: metadata.directoryID, activeAccount: metadata.account)
         
-        let metadataWithIcon = CCUtility.insertTypeFileIconName(metadata, directory: direcory, cameraFolderName: cameraFolderName, cameraFolderPath: cameraFolderPath)
-        
         let realm = try! Realm()
         
         try! realm.write {
-            realm.add(metadataWithIcon!, update: true)
+            
+            if (metadata.realm == nil) {
+                let metadataWithIcon = CCUtility.insertTypeFileIconName(metadata, directory: direcory, cameraFolderName: cameraFolderName, cameraFolderPath: cameraFolderPath)
+                realm.add(metadataWithIcon!, update: true)
+            } else {
+                realm.add(metadata, update: true)
+            }
         }
     }
     

@@ -1847,12 +1847,6 @@
     
     for (tableMetadata *metadata in metadatas) {
         
-        // Delete Record only in Search Mode
-        if (_isSearchMode) {
-            
-            [[NCManageDatabase sharedInstance] deleteMetadata:[NSPredicate predicateWithFormat:@"etag = %@ AND session = ''", metadata.etag]];
-        }
-        
         // type of file
         NSInteger typeFilename = [CCUtility getTypeFileName:metadata.fileName];
         
@@ -1915,13 +1909,14 @@
             if (metadataDB.session && [metadataDB.session containsString:@"download"])
                 continue;
         }
-
-        // end test, insert in CoreData
+        
+        // end test, insert in Database
         [[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:app.activeUrl];
     }
     
     // read plist
-    [self downloadPlist:metadataNet.directoryID serverUrl:metadataNet.serverUrl];
+    if (!_isSearchMode)
+        [self downloadPlist:metadataNet.directoryID serverUrl:metadataNet.serverUrl];
     
     // File is changed ??
     if (!_isSearchMode)
