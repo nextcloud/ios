@@ -1873,41 +1873,12 @@
         // verify if the record is in download/upload progress
         if (metadata.directory == NO && [recordsInSessions count] > 0) {
             
-            //tableMetadata *metadataDB = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND (fileName == %@)", app.activeAccount, metadataNet.directoryID, metadata.fileName] context:nil];
+            tableMetadata *metadataTransfer = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND fileName = %@", app.activeAccount, metadataNet.directoryID, metadata.fileName]];
             
-            tableMetadata *metadataDB = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND (fileName == %@)", app.activeAccount, metadataNet.directoryID, metadata.fileName]];
-            
-            // is in Upload
-            if (metadataDB.session && [metadataDB.session containsString:@"upload"]) {
-                
-                NSString *sessionID = metadataDB.sessionID;
-                
-                // rename SessionID -> etag
-                [CCUtility moveFileAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, sessionID]  toPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.etag]];
-                
-                metadataDB.session = @"";
-                metadataDB.date = metadata.date;
-                metadataDB.etag = metadata.etag;
-                metadataDB.rev = metadata.etag;
-                metadataDB.sessionError = @"";
-                metadataDB.sessionID = @"";
-                metadataDB.sessionTaskIdentifier = k_taskIdentifierDone;
-                metadataDB.sessionTaskIdentifierPlist = k_taskIdentifierDone;
-                
-                //[CCCoreData updateMetadata:metadataDB predicate:[NSPredicate predicateWithFormat:@"(sessionID == %@) AND (account == %@)", sessionID, app.activeAccount] activeAccount:app.activeAccount activeUrl:app.activeUrl context:nil];
-                
-                //[[NCManageDatabase sharedInstance] updateMetadata:metadataDB activeUrl:app.activeUrl];
-                
-                [CCCoreData addLocalFile:metadataDB activeAccount:app.activeAccount];
-                
-                [CCGraphics createNewImageFrom:metadata.etag directoryUser:app.directoryUser fileNameTo:metadata.etag fileNamePrint:metadata.fileNamePrint size:@"m" imageForUpload:NO typeFile:metadata.typeFile writePreview:YES optimizedFileName:[CCUtility getOptimizedPhoto]];
-                
+            // is in Download or Upload
+            if ([metadataTransfer.session containsString:@"upload"] || [metadataTransfer.session containsString:@"download"]) {
                 continue;
             }
-            
-            // download in progress
-            if (metadataDB.session && [metadataDB.session containsString:@"download"])
-                continue;
         }
         
         // end test, insert in Database
@@ -2766,8 +2737,8 @@
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
                     
-                    [app.listChangeTask setObject:@"reloadDownload" forKey:metadata.etag];
-                    NSArray *object = [[NSArray alloc] initWithObjects:session, metadata, findTask, nil];
+                    [app.listChangeTask setObject:@"reloadDownload" forKey:etag];
+                    NSArray *object = [[NSArray alloc] initWithObjects:session, etag, findTask, nil];
                     [[NSNotificationCenter defaultCenter] postNotificationName:k_networkingSessionNotification object:object];
                 });
             }
@@ -2790,8 +2761,8 @@
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
                     
-                    [app.listChangeTask setObject:@"reloadUpload" forKey:metadata.etag];
-                    NSArray *object = [[NSArray alloc] initWithObjects:session, metadata, findTask, nil];
+                    [app.listChangeTask setObject:@"reloadUpload" forKey:etag];
+                    NSArray *object = [[NSArray alloc] initWithObjects:session, etag, findTask, nil];
                     [[NSNotificationCenter defaultCenter] postNotificationName:k_networkingSessionNotification object:object];
                 });
             }
@@ -2839,8 +2810,8 @@
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
                     
-                    [app.listChangeTask setObject:@"cancelDownload" forKey:metadata.etag];
-                    NSArray *object = [[NSArray alloc] initWithObjects:session, metadata, findTask, nil];
+                    [app.listChangeTask setObject:@"cancelDownload" forKey:etag];
+                    NSArray *object = [[NSArray alloc] initWithObjects:session, etag, findTask, nil];
                     [[NSNotificationCenter defaultCenter] postNotificationName:k_networkingSessionNotification object:object];
                 });
             }
@@ -2863,8 +2834,8 @@
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
                     
-                    [app.listChangeTask setObject:@"cancelUpload" forKey:metadata.etag];
-                    NSArray *object = [[NSArray alloc] initWithObjects:session, metadata, findTask, nil];
+                    [app.listChangeTask setObject:@"cancelUpload" forKey:etag];
+                    NSArray *object = [[NSArray alloc] initWithObjects:session, etag, findTask, nil];
                     [[NSNotificationCenter defaultCenter] postNotificationName:k_networkingSessionNotification object:object];
                 });
             }
@@ -2912,8 +2883,8 @@
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
                     
-                    [app.listChangeTask setObject:@"stopUpload" forKey:metadata.etag];
-                    NSArray *object = [[NSArray alloc] initWithObjects:session, metadata, findTask, nil];
+                    [app.listChangeTask setObject:@"stopUpload" forKey:etag];
+                    NSArray *object = [[NSArray alloc] initWithObjects:session, etag, findTask, nil];
                     [[NSNotificationCenter defaultCenter] postNotificationName:k_networkingSessionNotification object:object];
                 });
             }
@@ -3158,7 +3129,6 @@
 
 - (void)settingFavoriteSuccess:(CCMetadataNet *)metadataNet
 {
-    //[CCCoreData setMetadataFavoriteEtag:metadataNet.etag favorite:[metadataNet.options boolValue] activeAccount:app.activeAccount context:nil];
     _dateReadDataSource = nil;
     
     [[NCManageDatabase sharedInstance] setMetadataFavorite:metadataNet.etag favorite:[metadataNet.options boolValue]];
@@ -3168,9 +3138,8 @@
     else
         [self reloadDatasource:metadataNet.serverUrl etag:metadataNet.etag selector:metadataNet.selector];
     
-    //tableMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(etag == %@) AND (account == %@)", metadataNet.etag, app.activeAccount] context:nil];
     
-    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(etag == %@) AND (account == %@)", metadataNet.etag, app.activeAccount]];
+    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"etag = %@", metadataNet.etag]];
     
     if (metadata.directory && metadata.favorite) {
         
@@ -4565,6 +4534,8 @@
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
 {
     tableMetadata *metadata = [self getMetadataFromSectionDataSource:indexPath];
+    if (!metadata || [[NCManageDatabase sharedInstance] isTableInvalidated:metadata])
+        return NO;
     
     if (metadata == nil || metadata.errorPasscode || (metadata.cryptated && [metadata.title length] == 0) || metadata.sessionTaskIdentifier  >= 0 || metadata.sessionTaskIdentifier >= 0) return NO;
     else return YES;
@@ -4778,8 +4749,9 @@
     }
     
     NSString *etag = [etags objectAtIndex:indexPath.row];
+    tableMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:etag];
     
-    return [_sectionDataSource.allRecordsDataSource objectForKey:etag];
+    return metadata;
 }
 
 - (NSArray *)getMetadatasFromSectionDataSource:(NSInteger)section
@@ -4966,13 +4938,14 @@
     
     tableMetadata *metadata = [self getMetadataFromSectionDataSource:indexPath];
     
+    if (!metadata || [[NCManageDatabase sharedInstance] isTableInvalidated:metadata]) {
+        return [tableView dequeueReusableCellWithIdentifier:@"CellMainTransfer"];
+    }
+    
     NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account];
     
     if ([metadata.session isEqualToString:@""] || metadata.session == nil) typeCell = @"CellMain";
     else typeCell = @"CellMainTransfer";
-    
-    if (!metadata)
-        return [tableView dequeueReusableCellWithIdentifier:typeCell];
     
     CCCellMainTransfer *cell = (CCCellMainTransfer *)[tableView dequeueReusableCellWithIdentifier:typeCell forIndexPath:indexPath];
     

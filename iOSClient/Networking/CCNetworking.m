@@ -411,6 +411,7 @@
             if (!metadata) return;
             
             NSString *rev = metadata.rev;
+            NSString *etag = metadata.etag;
             NSDictionary *fields = [httpResponse allHeaderFields];
             
             if (errorCode == 0) {
@@ -427,7 +428,7 @@
                 [[NCManageDatabase sharedInstance] addActivityClient:fileName etag:metadata.etag action:k_activityDebugActionDownload selector:metadata.sessionSelector note:[NSString stringWithFormat:@"Server: %@ Error: %@", serverUrl, [CCError manageErrorKCF:errorCode withNumberError:YES]] type:k_activityTypeFailure verbose:k_activityVerboseDefault  activeUrl:_activeUrl];
             }
         
-            NSArray *object = [[NSArray alloc] initWithObjects:session, metadata, task, nil];
+            NSArray *object = [[NSArray alloc] initWithObjects:session, etag, task, nil];
             [[NSNotificationCenter defaultCenter] postNotificationName:k_networkingSessionNotification object:object];
                 
             [self downloadFileSuccessFailure:fileName etag:metadata.etag rev:rev date:date serverUrl:serverUrl selector:metadata.sessionSelector selectorPost:metadata.sessionSelectorPost errorCode:errorCode];
@@ -463,7 +464,7 @@
                 [[NCManageDatabase sharedInstance] addActivityClient:fileName etag:metadata.etag action:k_activityDebugActionUpload selector:metadata.sessionSelector note:[NSString stringWithFormat:@"Server: %@ Error: %@", serverUrl, [CCError manageErrorKCF:errorCode withNumberError:YES]] type:k_activityTypeFailure verbose:k_activityVerboseDefault   activeUrl:_activeUrl];
             }
                     
-            NSArray *object = [[NSArray alloc] initWithObjects:session, metadata, task, nil];
+            NSArray *object = [[NSArray alloc] initWithObjects:session, etag, task, nil];
             [[NSNotificationCenter defaultCenter] postNotificationName:k_networkingSessionNotification object:object];
                 
             [self uploadFileSuccessFailure:metadata fileName:fileName etag:etag rev:rev date:date serverUrl:serverUrl errorCode:errorCode];

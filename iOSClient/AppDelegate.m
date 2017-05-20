@@ -1417,7 +1417,7 @@
 - (void)sessionChanged:(NSNotification *)notification
 {
     NSURLSession *session;
-    tableMetadata *metadata;
+    NSString *etag;
     NSURLSessionTask *task;
     
     for (id object in notification.object) {
@@ -1425,8 +1425,8 @@
         if ([object isKindOfClass:[NSURLSession class]])
             session = object;
         
-        if ([object isKindOfClass:[tableMetadata class]])
-            metadata = object;
+        if ([object isKindOfClass:[NSString class]])
+            etag = object;
         
         if ([object isKindOfClass:[NSURLSessionTask class]])
             task = object;
@@ -1441,9 +1441,9 @@
     if ([task isKindOfClass:[NSURLSessionUploadTask class]])
         app.sessionDateLastUploadTasks = [NSDate date];
     
-    if (metadata && [_listChangeTask objectForKey:metadata.etag])
+    if (etag && [_listChangeTask objectForKey:etag])
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self changeTask:metadata];
+            [self changeTask:etag];
         });
         
     /* 
@@ -1461,15 +1461,17 @@
     }
 }
 
-- (void)changeTask:(tableMetadata *)metadata
+- (void)changeTask:(NSString *)etag
 {
+    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"etag == %@", etag]];
+    if (!metadata) return;
     NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account];
     
-    if ([[_listChangeTask objectForKey:metadata.etag] isEqualToString:@"stopUpload"]) {
+    if ([[_listChangeTask objectForKey:etag] isEqualToString:@"stopUpload"]) {
         
-        [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:@"" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:k_taskIdentifierStop sessionTaskIdentifierPlist:k_taskIdentifierDone predicate:[NSPredicate predicateWithFormat:@"etag = %@", metadata.etag]];
+        [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:@"" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:k_taskIdentifierStop sessionTaskIdentifierPlist:k_taskIdentifierDone predicate:[NSPredicate predicateWithFormat:@"etag = %@", etag]];
     }
-    else if ([[_listChangeTask objectForKey:metadata.etag] isEqualToString:@"reloadUpload"]) {
+    else if ([[_listChangeTask objectForKey:etag] isEqualToString:@"reloadUpload"]) {
         
         // V 1.8 if upload_session_wwan change in upload_session
         if ([metadata.session isEqualToString:k_upload_session_wwan])
@@ -1477,7 +1479,7 @@
         
         [[CCNetworking sharedNetworking] uploadFileMetadata:metadata taskStatus:k_taskStatusResume];
     }
-    else if ([[_listChangeTask objectForKey:metadata.etag] isEqualToString:@"reloadDownload"]) {
+    else if ([[_listChangeTask objectForKey:etag] isEqualToString:@"reloadDownload"]) {
         
         BOOL downloadData = NO, downloadPlist = NO;
             
@@ -1485,37 +1487,37 @@
         if (metadata.sessionTaskIdentifierPlist != k_taskIdentifierDone) downloadPlist = YES;
         
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-            [[CCNetworking sharedNetworking] downloadFile:metadata.etag serverUrl:serverUrl downloadData:downloadData downloadPlist:downloadPlist selector:metadata.sessionSelector selectorPost:metadata.sessionSelectorPost session:k_download_session taskStatus:k_taskStatusResume delegate:nil];
+            [[CCNetworking sharedNetworking] downloadFile:etag serverUrl:serverUrl downloadData:downloadData downloadPlist:downloadPlist selector:metadata.sessionSelector selectorPost:metadata.sessionSelectorPost session:k_download_session taskStatus:k_taskStatusResume delegate:nil];
         });
     }
     else if ([[_listChangeTask objectForKey:metadata.etag] isEqualToString:@"cancelUpload"]) {
         
         // remove the file
         
-        [[NCManageDatabase sharedInstance] deleteMetadata:[NSPredicate predicateWithFormat:@"etag = %@", metadata.etag]];
+        [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, etag] error:nil];
+        [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, etag] error:nil];
         
-        [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.etag] error:nil];
-        [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.etag] error:nil];
+        [[NCManageDatabase sharedInstance] deleteMetadata:[NSPredicate predicateWithFormat:@"etag = %@", etag]];
     }
-    else if ([[_listChangeTask objectForKey:metadata.etag] isEqualToString:@"cancelDownload"]) {
+    else if ([[_listChangeTask objectForKey:etag] isEqualToString:@"cancelDownload"]) {
         
-        [[NCManageDatabase sharedInstance] setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier:k_taskIdentifierDone sessionTaskIdentifierPlist:k_taskIdentifierDone predicate:[NSPredicate predicateWithFormat:@"etag = %@", metadata.etag]];
+        [[NCManageDatabase sharedInstance] setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier:k_taskIdentifierDone sessionTaskIdentifierPlist:k_taskIdentifierDone predicate:[NSPredicate predicateWithFormat:@"etag = %@", etag]];
     }
     
     // remove ChangeTask (etag) from the list
-    [_listChangeTask removeObjectForKey:metadata.etag];
+    [_listChangeTask removeObjectForKey:etag];
     
     // delete progress
-    [_listProgressMetadata removeObjectForKey:metadata.etag];
+    [_listProgressMetadata removeObjectForKey:etag];
     
     // Progress Task
-    NSDictionary* userInfo = @{@"etag": (metadata.etag), @"serverUrl": (serverUrl), @"cryptated": ([NSNumber numberWithBool:NO]), @"progress": ([NSNumber numberWithFloat:0.0])};
+    NSDictionary* userInfo = @{@"etag": (etag), @"serverUrl": (serverUrl), @"cryptated": ([NSNumber numberWithBool:NO]), @"progress": ([NSNumber numberWithFloat:0.0])};
     
     [[NSNotificationCenter defaultCenter] postNotificationName:@"NotificationProgressTask" object:nil userInfo:userInfo];
 
     // Refresh
     if (_activeMain && [_listChangeTask count] == 0) {
-        [_activeMain reloadDatasource:[CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account] etag:nil selector:nil];
+        [_activeMain reloadDatasource:serverUrl etag:nil selector:nil];
     }
 }
 

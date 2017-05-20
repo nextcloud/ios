@@ -107,6 +107,11 @@ class NCManageDatabase: NSObject {
         return realm.resolve(tableRef as! ThreadSafeReference<Object>)
     }
     
+    func isTableInvalidated(_ table: Object) -> Bool {
+     
+        return table.isInvalidated
+    }
+    
     //MARK: -
     //MARK: Table Account
     
