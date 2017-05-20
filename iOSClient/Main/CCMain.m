@@ -3844,18 +3844,18 @@
         
         if ([items count] == 1) {
             
-            // Value : (NSData) metadata
+            // Value : (NSData) fileID
             
             NSDictionary *dic = [items objectAtIndex:0];
             
-            NSData *dataMetadata = [dic objectForKey: k_metadataKeyedUnarchiver];
-            tableMetadata *metadata = [NSKeyedUnarchiver unarchiveObjectWithData:dataMetadata];
+            NSData *dataFileID = [dic objectForKey: k_metadataKeyedUnarchiver];
+            NSString *fileID = [NSKeyedUnarchiver unarchiveObjectWithData:dataFileID];
                         
             tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
             NSString *directoryUser = [CCUtility getDirectoryActiveUser:account.user activeUrl:account.url];
             
             if (directoryUser) {
-                if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, metadata.fileID]])
+                if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileID]])
                     return YES;
             }
             
@@ -3875,16 +3875,16 @@
         
         for (NSDictionary *dic in items) {
             
-            // Value : (NSData) metadata
+            // Value : (NSData) fileID
             
-            NSData *dataMetadata = [dic objectForKey: k_metadataKeyedUnarchiver];
-            tableMetadata *metadata = [NSKeyedUnarchiver unarchiveObjectWithData:dataMetadata];
+            NSData *dataFileID = [dic objectForKey: k_metadataKeyedUnarchiver];
+            NSString *fileID = [NSKeyedUnarchiver unarchiveObjectWithData:dataFileID];
             tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
             
             NSString *directoryUser = [CCUtility getDirectoryActiveUser:account.user activeUrl:account.url];
             
             if (directoryUser) {
-                if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, metadata.fileID]])
+                if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileID]])
                     isValid = YES;
             }
         }
@@ -3945,9 +3945,9 @@
     UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
     NSMutableArray *items = [[NSMutableArray alloc] initWithArray:pasteboard.items];
     
-    // Value : (NSData) metadata
+    // Value : (NSData) fileID
     
-    NSDictionary *item = [NSDictionary dictionaryWithObjectsAndKeys:[NSKeyedArchiver archivedDataWithRootObject:metadata], k_metadataKeyedUnarchiver,nil];
+    NSDictionary *item = [NSDictionary dictionaryWithObjectsAndKeys:[NSKeyedArchiver archivedDataWithRootObject:metadata.fileID], k_metadataKeyedUnarchiver,nil];
     [items addObject:item];
     
     [pasteboard setItems:items];
@@ -3990,18 +3990,21 @@
 {
     for (NSDictionary *dic in items) {
         
-        // Value : (NSData) metadata
+        // Value : (NSData) fileID
         
-        NSData *dataMetadata = [dic objectForKey: k_metadataKeyedUnarchiver];
-        tableMetadata *metadata = [NSKeyedUnarchiver unarchiveObjectWithData:dataMetadata];
+        NSData *dataFileID = [dic objectForKey: k_metadataKeyedUnarchiver];
+        NSString *fileID = [NSKeyedUnarchiver unarchiveObjectWithData:dataFileID];
         
         tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
+        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
+        
+        if (!metadata || !account) return;
         
         NSString *directoryUser = [CCUtility getDirectoryActiveUser:account.user activeUrl:account.url];
             
         if (directoryUser) {
             
-            if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, metadata.fileID]]) {
+            if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileID]]) {
                 
                 [CCUtility copyFileAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, metadata.fileID] toPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileNamePrint]];
             

@@ -67,9 +67,9 @@
 
 - (void)startQuickActionsEncrypted:(BOOL)cryptated viewController:(UITableViewController *)viewController
 {
-    NSArray *results = [[NCManageDatabase sharedInstance] getMetadatasWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (session CONTAINS 'upload') AND ((sessionTaskIdentifier >= 0) OR (sessionTaskIdentifierPlist >= 0))", app.activeAccount] sorted:nil ascending:NO];
+    NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPreficate:[NSPredicate predicateWithFormat:@"account = %@ AND session CONTAINS 'upload' AND (sessionTaskIdentifier >= 0 OR sessionTaskIdentifierPlist >= 0)", app.activeAccount] sorted:nil ascending:NO];
     
-    _numTaskUploadInProgress = [results count];
+    _numTaskUploadInProgress = [metadatas count];
     
     //_numTaskUploadInProgress =  [[CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (session CONTAINS 'upload') AND ((sessionTaskIdentifier >= 0) OR (sessionTaskIdentifierPlist >= 0))", app.activeAccount] context:nil] count];
     
