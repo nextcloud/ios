@@ -194,7 +194,7 @@
         
     if ([activity.action isEqual: k_activityDebugActionDownload] || [activity.action isEqual: k_activityDebugActionUpload]) {
         
-        if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, activity.fileID]])
+        if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, activity.etag]])
             return 1;
         else
             return 0;
@@ -314,7 +314,7 @@
 
     tableActivity *activity = [_sectionDataSource objectAtIndex:indexPath.section];
     
-    imageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, activity.fileID]];
+    imageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, activity.etag]];
     
     return cell;
 }
@@ -322,7 +322,7 @@
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
     tableActivity *activity = [_sectionDataSource objectAtIndex:indexPath.section];
-    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"fileID = %@", activity.fileID]];
+    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"etag = %@", activity.etag]];
     
     if (metadata) {
         

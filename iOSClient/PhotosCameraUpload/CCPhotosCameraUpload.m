@@ -203,11 +203,11 @@
 {
     NSString *addLocation = @"";
     
-    NSArray *fileIDsForKey = [_sectionDataSource.sectionArrayRow objectForKey:[_sectionDataSource.sections objectAtIndex:section]];
+    NSArray *etagsForKey = [_sectionDataSource.sectionArrayRow objectForKey:[_sectionDataSource.sections objectAtIndex:section]];
     
-    for (NSString *fileID in fileIDsForKey) {
+    for (NSString *etag in etagsForKey) {
     
-        TableLocalFile *localFile = [CCCoreData getLocalFileWithFileID:fileID activeAccount:app.activeAccount];
+        TableLocalFile *localFile = [CCCoreData getLocalFileWithEtag:etag activeAccount:app.activeAccount];
     
         if ([localFile.exifLatitude floatValue] > 0 || [localFile.exifLongitude floatValue] > 0) {
         
@@ -314,7 +314,7 @@
     
         NSString *fileNamePath = [NSTemporaryDirectory() stringByAppendingString:metadata.fileNamePrint];
         
-        [[NSFileManager defaultManager] linkItemAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID] toPath:fileNamePath error:nil];
+        [[NSFileManager defaultManager] linkItemAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.etag] toPath:fileNamePath error:nil];
         
         if ([[NSFileManager defaultManager] fileExistsAtPath:fileNamePath]) {
             
@@ -380,9 +380,9 @@
     NSIndexPath *indexPath;
     BOOL existsIcon = NO;
     
-    if (metadata.fileID) {
-        existsIcon = [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]];
-        indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:metadata.fileID];
+    if (metadata.etag) {
+        existsIcon = [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.etag]];
+        indexPath = [_sectionDataSource.etagIndexPath objectForKey:metadata.etag];
     }
     
     if (indexPath && existsIcon) {
@@ -394,11 +394,11 @@
             UIVisualEffectView *effect = [cell viewWithTag:200];
             UIImageView *checked = [cell viewWithTag:300];
             
-            imageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]];
+            imageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.etag]];
             effect.hidden = YES;
             checked.hidden = YES;
             
-            [app.icoImagesCache setObject:imageView.image forKey:metadata.fileID];
+            [app.icoImagesCache setObject:imageView.image forKey:metadata.etag];
         }
     }
 }
@@ -492,9 +492,9 @@
 
 - (void)downloadThumbnailSuccess:(CCMetadataNet *)metadataNet
 {
-    NSIndexPath *indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:metadataNet.fileID];
+    NSIndexPath *indexPath = [_sectionDataSource.etagIndexPath objectForKey:metadataNet.etag];
     
-    if (indexPath && [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadataNet.fileID]])
+    if (indexPath && [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadataNet.etag]])
         [self.collectionView reloadItemsAtIndexPaths:@[indexPath]];
 }
 
@@ -626,20 +626,20 @@
     checked.image = [UIImage imageNamed:@"checked"];
 
     NSArray *metadatasForKey = [_sectionDataSource.sectionArrayRow objectForKey:[_sectionDataSource.sections objectAtIndex:indexPath.section]];
-    NSString *fileID = [metadatasForKey objectAtIndex:indexPath.row];
-    tableMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:fileID];
+    NSString *etag = [metadatasForKey objectAtIndex:indexPath.row];
+    tableMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:etag];
     
     // Image
-    if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]]) {
+    if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.etag]]) {
         
-        imageView.image = [app.icoImagesCache objectForKey:metadata.fileID];
+        imageView.image = [app.icoImagesCache objectForKey:metadata.etag];
         
         if (imageView.image == nil) {
             
                 // insert Image
-                UIImage *image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]];
+                UIImage *image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.etag]];
                 imageView.image = image;
-                [app.icoImagesCache setObject:image forKey:metadata.fileID];
+                [app.icoImagesCache setObject:image forKey:metadata.etag];
         }
         
     } else {
@@ -667,8 +667,8 @@
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
     NSArray *metadatasForKey = [_sectionDataSource.sectionArrayRow objectForKey:[_sectionDataSource.sections objectAtIndex:indexPath.section]];
-    NSString *fileID = [metadatasForKey objectAtIndex:indexPath.row];
-    _metadata = [_sectionDataSource.allRecordsDataSource objectForKey:fileID];
+    NSString *etag = [metadatasForKey objectAtIndex:indexPath.row];
+    _metadata = [_sectionDataSource.allRecordsDataSource objectForKey:etag];
     
     //UICollectionViewCell *cell =[collectionView cellForItemAtIndexPath:indexPath];
     
@@ -691,8 +691,8 @@
     //UICollectionViewCell *cell =[collectionView cellForItemAtIndexPath:indexPath];
     
     NSArray *metadatasForKey = [_sectionDataSource.sectionArrayRow objectForKey:[_sectionDataSource.sections objectAtIndex:indexPath.section]];
-    NSString *fileID = [metadatasForKey objectAtIndex:indexPath.row];
-    _metadata = [_sectionDataSource.allRecordsDataSource objectForKey:fileID];
+    NSString *etag = [metadatasForKey objectAtIndex:indexPath.row];
+    _metadata = [_sectionDataSource.allRecordsDataSource objectForKey:etag];
     
     [self cellSelect:NO indexPath:indexPath metadata:_metadata];
 }
@@ -738,8 +738,8 @@
     }
     
     NSMutableArray *allRecordsDataSourceImagesVideos = [[NSMutableArray alloc] init];
-    for (NSString *fileID in _sectionDataSource.allFileID) {
-        tableMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:fileID];
+    for (NSString *etag in _sectionDataSource.allEtag) {
+        tableMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:etag];
         if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image] || [metadata.typeFile isEqualToString: k_metadataTypeFile_video])
             [allRecordsDataSourceImagesVideos addObject:metadata];
     }
@@ -1252,7 +1252,7 @@
                             
                         } else if (AVAssetExportSessionStatusFailed == exportSession.status) {
                                                         
-                            [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionUpload selector:metadataNet.selector note:[NSString stringWithFormat:@"%@ [%@]",NSLocalizedString(@"_read_file_error_", nil), error.description] type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:appDelegate.activeUrl];
+                            [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName etag:metadataNet.assetLocalIdentifier action:k_activityDebugActionUpload selector:metadataNet.selector note:[NSString stringWithFormat:@"%@ [%@]",NSLocalizedString(@"_read_file_error_", nil), error.description] type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:appDelegate.activeUrl];
                             
                         } else {
                             NSLog(@"Export Session Status: %ld", (long)exportSession.status);
@@ -1261,7 +1261,7 @@
                     
                 } else {
                     
-                    [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionUpload selector:metadataNet.selector note:[NSString stringWithFormat:@"%@ [%@]",NSLocalizedString(@"_read_file_error_", nil), error.description] type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:appDelegate.activeUrl];
+                    [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName etag:metadataNet.assetLocalIdentifier action:k_activityDebugActionUpload selector:metadataNet.selector note:[NSString stringWithFormat:@"%@ [%@]",NSLocalizedString(@"_read_file_error_", nil), error.description] type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:appDelegate.activeUrl];
                 }
             }];
         }
@@ -1283,7 +1283,7 @@
                     
                     NSString *note = [NSString stringWithFormat:@"%@ [%@]",NSLocalizedString(@"_read_file_error_", nil), error.description];
 
-                    [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionUpload selector:metadataNet.selector note:note type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:app.activeUrl];
+                    [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName etag:metadataNet.assetLocalIdentifier action:k_activityDebugActionUpload selector:metadataNet.selector note:note type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:app.activeUrl];
                     
                     [[NCManageDatabase sharedInstance] deleteAutomaticUpload:metadataNet.assetLocalIdentifier];
                     
@@ -1300,11 +1300,11 @@
 {    
     if ([[NCManageDatabase sharedInstance] addAutomaticUpload:metadataNet]) {
         
-        [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionAutomaticUpload selector:metadataNet.selector note:[NSString stringWithFormat:@"Add Automatic Upload, Asset Data: %@", [NSDateFormatter localizedStringFromDate:assetDate dateStyle:NSDateFormatterMediumStyle timeStyle:NSDateFormatterMediumStyle]] type:k_activityTypeInfo verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
+        [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName etag:metadataNet.assetLocalIdentifier action:k_activityDebugActionAutomaticUpload selector:metadataNet.selector note:[NSString stringWithFormat:@"Add Automatic Upload, Asset Data: %@", [NSDateFormatter localizedStringFromDate:assetDate dateStyle:NSDateFormatterMediumStyle timeStyle:NSDateFormatterMediumStyle]] type:k_activityTypeInfo verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
        
     } else {
         
-        [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionAutomaticUpload selector:metadataNet.selector note:[NSString stringWithFormat:@"Add Automatic Upload [File already present in Table automatic Upload], Asset Data: %@", [NSDateFormatter localizedStringFromDate:assetDate dateStyle:NSDateFormatterMediumStyle timeStyle:NSDateFormatterMediumStyle]] type:k_activityTypeInfo verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
+        [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName etag:metadataNet.assetLocalIdentifier action:k_activityDebugActionAutomaticUpload selector:metadataNet.selector note:[NSString stringWithFormat:@"Add Automatic Upload [File already present in Table automatic Upload], Asset Data: %@", [NSDateFormatter localizedStringFromDate:assetDate dateStyle:NSDateFormatterMediumStyle timeStyle:NSDateFormatterMediumStyle]] type:k_activityTypeInfo verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
     }
     
     dispatch_async(dispatch_get_main_queue(), ^{

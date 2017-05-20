@@ -188,16 +188,16 @@
         if (imageForUpload) {
             
             // write image preview in tmp for plist
-            [self saveIcoWithFileID:fileNameTo image:scaleImage writeToFile:[NSTemporaryDirectory() stringByAppendingString:fileNameTo] copy:NO move:NO fromPath:nil toPath:nil];
+            [self saveIcoWithEtag:fileNameTo image:scaleImage writeToFile:[NSTemporaryDirectory() stringByAppendingString:fileNameTo] copy:NO move:NO fromPath:nil toPath:nil];
             
             // if it is preview for Upload then trasform it in gray scale
             //TODO: Crash with swift
             scaleImage = [scaleImage grayscale];
-            [self saveIcoWithFileID:fileNameTo image:scaleImage writeToFile:[NSString stringWithFormat:@"%@/%@.ico", directoryUser, fileNameTo] copy:NO move:NO fromPath:nil toPath:nil];
+            [self saveIcoWithEtag:fileNameTo image:scaleImage writeToFile:[NSString stringWithFormat:@"%@/%@.ico", directoryUser, fileNameTo] copy:NO move:NO fromPath:nil toPath:nil];
             
         } else {
             
-            [self saveIcoWithFileID:fileNameTo image:scaleImage writeToFile:[NSString stringWithFormat:@"%@/%@.ico", directoryUser, fileNameTo] copy:NO move:NO fromPath:nil toPath:nil];
+            [self saveIcoWithEtag:fileNameTo image:scaleImage writeToFile:[NSString stringWithFormat:@"%@/%@.ico", directoryUser, fileNameTo] copy:NO move:NO fromPath:nil toPath:nil];
         }
     }
     
@@ -247,7 +247,7 @@
     return scaleImage;
 }
 
-+ (void)saveIcoWithFileID:(NSString *)fileID image:(UIImage *)image writeToFile:(NSString *)writeToFile copy:(BOOL)copy move:(BOOL)move fromPath:(NSString *)fromPath toPath:(NSString *)toPath
++ (void)saveIcoWithEtag:(NSString *)etag image:(UIImage *)image writeToFile:(NSString *)writeToFile copy:(BOOL)copy move:(BOOL)move fromPath:(NSString *)fromPath toPath:(NSString *)toPath
 {
     if (writeToFile)
         [UIImagePNGRepresentation(image) writeToFile:writeToFile atomically: YES];
@@ -259,8 +259,8 @@
         [[NSFileManager defaultManager] moveItemAtPath:fromPath toPath:toPath error:nil];
 
 #ifndef EXTENSION
-    if (image && fileID)
-        [app.icoImagesCache setObject:image forKey:fileID];
+    if (image && etag)
+        [app.icoImagesCache setObject:image forKey:etag];
 #endif
 }
 

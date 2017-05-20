@@ -492,7 +492,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func addActivityClient(_ file: String, fileID: String, action: String, selector: String, note: String, type: String, verbose: Bool, activeUrl: String?) {
+    func addActivityClient(_ file: String, etag: String, action: String, selector: String, note: String, type: String, verbose: Bool, activeUrl: String?) {
 
         let tableAccount = self.getAccountActive()
         if tableAccount == nil {
@@ -516,7 +516,7 @@ class NCManageDatabase: NSObject {
             addActivity.account = tableAccount!.account
             addActivity.action = action
             addActivity.file = file
-            addActivity.fileID = fileID
+            addActivity.etag = etag
             addActivity.note = noteReplacing
             addActivity.selector = selector
             addActivity.type = type
@@ -1471,8 +1471,8 @@ class NCManageDatabase: NSObject {
         copyMetadata.directory = metadata.directory
         copyMetadata.directoryID = metadata.directoryID
         copyMetadata.errorPasscode = metadata.errorPasscode
+        copyMetadata.etag = metadata.etag
         copyMetadata.favorite = metadata.favorite
-        copyMetadata.fileID = metadata.fileID
         copyMetadata.fileName = metadata.fileName
         copyMetadata.fileNameData = metadata.fileNameData
         copyMetadata.fileNamePrint = metadata.fileNamePrint

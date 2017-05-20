@@ -33,10 +33,10 @@
     self = [super init];
     
     _allRecordsDataSource = [[NSMutableDictionary alloc] init];
-    _allFileID  = [[NSMutableArray alloc] init];
+    _allEtag  = [[NSMutableArray alloc] init];
     _sections = [[NSMutableArray alloc] init];
     _sectionArrayRow = [[NSMutableDictionary alloc] init];
-    _fileIDIndexPath = [[NSMutableDictionary alloc] init];
+    _etagIndexPath = [[NSMutableDictionary alloc] init];
     
     _image = 0;
     _video = 0;
@@ -61,7 +61,7 @@
     long counterSessionDownload = 0;
     long counterSessionUpload = 0;
     NSMutableArray *copyRecords = [NSMutableArray new];
-    NSMutableDictionary *dictionaryFileIDMetadataForIndexPath = [NSMutableDictionary new];
+    NSMutableDictionary *dictionaryEtagMetadataForIndexPath = [NSMutableDictionary new];
     
     CCSectionDataSourceMetadata *sectionDataSource = [CCSectionDataSourceMetadata new];
     
@@ -77,13 +77,13 @@
         // if exists replace date with exif date
         /*
         if (replaceDateToExifDate) {
-            TableLocalFile *localFile = [CCCoreData getLocalFileWithFileID:metadata.fileID activeAccount:activeAccount];
+            TableLocalFile *localFile = [CCCoreData getLocalFileWithFileID:metadata.etag activeAccount:activeAccount];
             if (localFile.exifDate)
                 metadata.date = localFile.exifDate;
         }
         */
         
-        if ([listProgressMetadata objectForKey:metadata.fileID] && [groupByField isEqualToString:@"session"]) {
+        if ([listProgressMetadata objectForKey:metadata.etag] && [groupByField isEqualToString:@"session"]) {
             [copyRecords insertObject:metadata atIndex:0];
         } else {
             
@@ -132,18 +132,18 @@
         if (metadatas) {
             
             // ROW ++
-            [metadatas addObject:metadata.fileID];
+            [metadatas addObject:metadata.etag];
             [sectionDataSource.sectionArrayRow setObject:metadatas forKey:dataSection];
             
         } else {
             
             // SECTION ++
-            metadatas = [[NSMutableArray alloc] initWithObjects:metadata.fileID, nil];
+            metadatas = [[NSMutableArray alloc] initWithObjects:metadata.etag, nil];
             [sectionDataSource.sectionArrayRow setObject:metadatas forKey:dataSection];
         }
 
-        if (metadata && [metadata.fileID length] > 0)
-            [dictionaryFileIDMetadataForIndexPath setObject:metadata forKey:metadata.fileID];
+        if (metadata && [metadata.etag length] > 0)
+            [dictionaryEtagMetadataForIndexPath setObject:metadata forKey:metadata.etag];
     }
     
     /*
@@ -175,7 +175,7 @@
     }];
     
     /*
-    create allFileID, allRecordsDataSource, fileIDIndexPath, section
+    create allEtag, allRecordsDataSource, etagIndexPath, section
     */
     
     NSInteger indexSection = 0;
@@ -187,15 +187,15 @@
         
         NSArray *rows = [sectionDataSource.sectionArrayRow objectForKey:section];
         
-        for (NSString *fileID in rows) {
+        for (NSString *etag in rows) {
             
-            tableMetadata *metadata = [dictionaryFileIDMetadataForIndexPath objectForKey:fileID];
+            tableMetadata *metadata = [dictionaryEtagMetadataForIndexPath objectForKey:etag];
             
-            if (metadata.fileID) {
+            if (metadata.etag) {
                 
-                [sectionDataSource.allFileID addObject:metadata.fileID];
-                [sectionDataSource.allRecordsDataSource setObject:metadata forKey:metadata.fileID];
-                [sectionDataSource.fileIDIndexPath setObject:[NSIndexPath indexPathForRow:indexRow inSection:indexSection] forKey:metadata.fileID];
+                [sectionDataSource.allEtag addObject:metadata.etag];
+                [sectionDataSource.allRecordsDataSource setObject:metadata forKey:metadata.etag];
+                [sectionDataSource.etagIndexPath setObject:[NSIndexPath indexPathForRow:indexRow inSection:indexSection] forKey:metadata.etag];
                 
                 if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image])
                     sectionDataSource.image++;
@@ -225,10 +225,10 @@
 + (void)removeAllObjectsSectionDataSource:(CCSectionDataSourceMetadata *)sectionDataSource
 {
     [sectionDataSource.allRecordsDataSource removeAllObjects];
-    [sectionDataSource.allFileID removeAllObjects];
+    [sectionDataSource.allEtag removeAllObjects];
     [sectionDataSource.sections removeAllObjects];
     [sectionDataSource.sectionArrayRow removeAllObjects];
-    [sectionDataSource.fileIDIndexPath removeAllObjects];
+    [sectionDataSource.etagIndexPath removeAllObjects];
     
     sectionDataSource.image = 0;
     sectionDataSource.video = 0;

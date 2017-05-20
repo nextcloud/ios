@@ -55,7 +55,7 @@
 + (void)moveMetadata:(NSString *)fileName directoryID:(NSString *)directoryID directoryIDTo:(NSString *)directoryIDTo activeAccount:(NSString *)activeAccount;
 + (void)updateMetadata:(tableMetadata *)metadata predicate:(NSPredicate *)predicate activeAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl context:(NSManagedObjectContext *)context;
 + (void)setMetadataSession:(NSString *)session sessionError:(NSString *)sessionError sessionSelector:(NSString *)sessionSelector sessionSelectorPost:(NSString *)sessionSelectorPost sessionTaskIdentifier:(NSInteger)sessionTaskIdentifier sessionTaskIdentifierPlist:(NSInteger)sessionTaskIdentifierPlist predicate:(NSPredicate *)predicate context:(NSManagedObjectContext *)context;
-+ (void)setMetadataFavoriteFileID:(NSString *)fileID favorite:(BOOL)favorite activeAccount:(NSString *)activeAccount context:(NSManagedObjectContext *)context;
++ (void)setMetadataFavoriteFileID:(NSString *)etag favorite:(BOOL)favorite activeAccount:(NSString *)activeAccount context:(NSManagedObjectContext *)context;
 
 + (TableMetadata *)getTableMetadataWithPreficate:(NSPredicate *)predicate;
 + (NSArray *)getTableMetadataWithPredicate:(NSPredicate *)predicate context:(NSManagedObjectContext *)context;
@@ -114,22 +114,22 @@
 + (void)addLocalFile:(tableMetadata *)metadata activeAccount:(NSString *)activeAccount;
 + (void)deleteLocalFileWithPredicate:(NSPredicate *)predicate;
 
-+ (void)renameLocalFileWithFileID:(NSString *)fileID fileNameTo:(NSString *)fileNameTo fileNamePrintTo:(NSString *)fileNamePrintTo activeAccount:(NSString *)activeAccount;
++ (void)renameLocalFileWithEtag:(NSString *)etag fileNameTo:(NSString *)fileNameTo fileNamePrintTo:(NSString *)fileNamePrintTo activeAccount:(NSString *)activeAccount;
 + (void)updateLocalFileModel:(tableMetadata *)metadata activeAccount:(NSString *)activeAccount;
 
-+ (TableLocalFile *)getLocalFileWithFileID:(NSString *)fileID activeAccount:(NSString *)activeAccount;
++ (TableLocalFile *)getLocalFileWithEtag:(NSString *)etag activeAccount:(NSString *)activeAccount;
 + (NSArray *)getTableLocalFileWithPredicate:(NSPredicate *)predicate;
 
 // ===== Offline LocalFile =====
 
-+ (void)setOfflineLocalFileID:(NSString *)fileID offline:(BOOL)offline activeAccount:(NSString *)activeAccount;
-+ (BOOL)isOfflineLocalFileID:(NSString *)fileID activeAccount:(NSString *)activeAccount;
++ (void)setOfflineLocalEtag:(NSString *)etag offline:(BOOL)offline activeAccount:(NSString *)activeAccount;
++ (BOOL)isOfflineLocalEtag:(NSString *)etag activeAccount:(NSString *)activeAccount;
 + (NSArray *)getOfflineLocalFileActiveAccount:(NSString *)activeAccount directoryUser:(NSString *)directoryUser;
 
 // ===== GeoInformation =====
 
-+ (NSArray *)getGeoInformationLocalFromFileID:(NSString *)fileID activeAccount:(NSString *)activeAccount;
-+ (void)setGeoInformationLocalFromFileID:(NSString *)fileID exifDate:(NSDate *)exifDate exifLatitude:(NSString *)exifLatitude exifLongitude:(NSString *)exifLongitude activeAccount:(NSString *)activeAccount;
++ (NSArray *)getGeoInformationLocalFromEtag:(NSString *)etag activeAccount:(NSString *)activeAccount;
++ (void)setGeoInformationLocalFromEtag:(NSString *)etag exifDate:(NSDate *)exifDate exifLatitude:(NSString *)exifLatitude exifLongitude:(NSString *)exifLongitude activeAccount:(NSString *)activeAccount;
 + (void)setGeoInformationLocalNull;
 
 // ===== Certificates =====

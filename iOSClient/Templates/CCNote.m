@@ -31,13 +31,13 @@
     CCTemplates *templates;
     
     NSString *initHtml;
-    NSString *_saveFileID;
+    NSString *_saveEtag;
 }
 @end
 
 @implementation CCNote
 
-- (id)initWithDelegate:(id <CCNoteDelegate>)delegate fileName:(NSString *)fileName uuid:(NSString *)uuid fileID:(NSString *)fileID isLocal:(BOOL)isLocal serverUrl:(NSString *)serverUrl
+- (id)initWithDelegate:(id <CCNoteDelegate>)delegate fileName:(NSString *)fileName uuid:(NSString *)uuid etag:(NSString *)etag isLocal:(BOOL)isLocal serverUrl:(NSString *)serverUrl
 {
     self = [super init];
     
@@ -46,7 +46,7 @@
         self.delegate = delegate;
         self.fileName = fileName;
         self.isLocal = isLocal;
-        self.fileID = fileID;
+        self.etag = etag;
         self.uuid = uuid;
         self.serverUrl = serverUrl;
         
@@ -156,22 +156,22 @@
     }
 }
 
-- (void)uploadFileFailure:(CCMetadataNet *)metadataNet fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode
+- (void)uploadFileFailure:(CCMetadataNet *)metadataNet etag:(NSString *)etag serverUrl:(NSString *)serverUrl selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    if (![_saveFileID isEqualToString:fileID]) {
+    if (![_saveEtag isEqualToString:etag]) {
         
-        _saveFileID = fileID;
+        _saveEtag = etag;
         
         [app messageNotification:@"_upload_file_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
         
         // remove the file
-        [[NCManageDatabase sharedInstance] deleteMetadata:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
+        [[NCManageDatabase sharedInstance] deleteMetadata:[NSPredicate predicateWithFormat:@"etag = %@", etag]];
         
         [self.delegate readFolderWithForced:YES serverUrl:self.serverUrl];
     }
 }
 
-- (void)uploadFileSuccess:(CCMetadataNet *)metadataNet fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost
+- (void)uploadFileSuccess:(CCMetadataNet *)metadataNet etag:(NSString *)etag serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost
 {
     [self dismissViewControllerAnimated:YES completion:nil];
 }

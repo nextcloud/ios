@@ -120,9 +120,9 @@
     
     [self reloadData];
     
-    if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, self.metadata.fileID]]) {
+    if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, self.metadata.etag]]) {
         
-        self.fileImageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, self.metadata.fileID]];
+        self.fileImageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, self.metadata.etag]];
         
     } else {
         
@@ -446,7 +446,7 @@
     [self.tableView endEditing:YES];
     
     // reload delegate
-    [self.delegate reloadDatasource:[CCCoreData getServerUrlFromDirectoryID:self.metadata.directoryID activeAccount:self.metadata.account] fileID:nil selector:nil];
+    [self.delegate reloadDatasource:[CCCoreData getServerUrlFromDirectoryID:self.metadata.directoryID activeAccount:self.metadata.account] etag:nil selector:nil];
     
     [self dismissViewControllerAnimated:YES completion:nil];
 }

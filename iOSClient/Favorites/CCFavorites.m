@@ -192,9 +192,9 @@
 
 - (void)settingFavoriteSuccess:(CCMetadataNet *)metadataNet
 {
-    //[CCCoreData setMetadataFavoriteFileID:metadataNet.fileID favorite:[metadataNet.options boolValue] activeAccount:app.activeAccount context:nil];
+    //[CCCoreData setMetadataFavoriteFileID:metadataNet.etag favorite:[metadataNet.options boolValue] activeAccount:app.activeAccount context:nil];
     
-    [[NCManageDatabase sharedInstance] setMetadataFavorite:metadataNet.fileID favorite:[metadataNet.options boolValue]];
+    [[NCManageDatabase sharedInstance] setMetadataFavorite:metadataNet.etag favorite:[metadataNet.options boolValue]];
  
     [self reloadDatasource];
 }
@@ -212,20 +212,20 @@
 #pragma mark ==== Download <Delegate> ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)downloadFileFailure:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode
+- (void)downloadFileFailure:(NSString *)etag serverUrl:(NSString *)serverUrl selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode
 {    
     [app messageNotification:@"_download_file_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
 }
 
-- (void)downloadFileSuccess:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost
+- (void)downloadFileSuccess:(NSString *)etag serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost
 {
-    //_metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, app.activeAccount] context:nil];
+    //_metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(etag == %@) AND (account == %@)", etag, app.activeAccount] context:nil];
     
-    _metadata = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, app.activeAccount]];
+    _metadata = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(etag == %@) AND (account == %@)", etag, app.activeAccount]];
     
     if ([_metadata.typeFile isEqualToString: k_metadataTypeFile_compress]) {
         
-        [self performSelector:@selector(unZipFile:) withObject:_metadata.fileID];
+        [self performSelector:@selector(unZipFile:) withObject:_metadata.etag];
         
     } else if ([_metadata.typeFile isEqualToString: k_metadataTypeFile_unknown]) {
         
@@ -248,29 +248,29 @@
     NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:app.activeAccount];
     
     if ([metadata.model isEqualToString:@"cartadicredito"])
-        viewController = [[CCCartaDiCredito alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid fileID:metadata.fileID isLocal:NO serverUrl:serverUrl];
+        viewController = [[CCCartaDiCredito alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid etag:metadata.etag isLocal:NO serverUrl:serverUrl];
     
     if ([metadata.model isEqualToString:@"bancomat"])
-        viewController = [[CCBancomat alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid fileID:metadata.fileID isLocal:NO serverUrl:serverUrl];
+        viewController = [[CCBancomat alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid etag:metadata.etag isLocal:NO serverUrl:serverUrl];
     
     if ([metadata.model isEqualToString:@"contocorrente"])
-        viewController = [[CCContoCorrente alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid fileID:metadata.fileID isLocal:NO serverUrl:serverUrl];
+        viewController = [[CCContoCorrente alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid etag:metadata.etag isLocal:NO serverUrl:serverUrl];
     
     if ([metadata.model isEqualToString:@"accountweb"])
-        viewController = [[CCAccountWeb alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid fileID:metadata.fileID isLocal:NO serverUrl:serverUrl];
+        viewController = [[CCAccountWeb alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid etag:metadata.etag isLocal:NO serverUrl:serverUrl];
     
     if ([metadata.model isEqualToString:@"patenteguida"])
-        viewController = [[CCPatenteGuida alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid fileID:metadata.fileID isLocal:NO serverUrl:serverUrl];
+        viewController = [[CCPatenteGuida alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid etag:metadata.etag isLocal:NO serverUrl:serverUrl];
     
     if ([metadata.model isEqualToString:@"cartaidentita"])
-        viewController = [[CCCartaIdentita alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid fileID:metadata.fileID isLocal:NO serverUrl:serverUrl];
+        viewController = [[CCCartaIdentita alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid etag:metadata.etag isLocal:NO serverUrl:serverUrl];
     
     if ([metadata.model isEqualToString:@"passaporto"])
-        viewController = [[CCPassaporto alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid fileID:metadata.fileID isLocal:NO serverUrl:serverUrl];
+        viewController = [[CCPassaporto alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid etag:metadata.etag isLocal:NO serverUrl:serverUrl];
     
     if ([metadata.model isEqualToString:@"note"]) {
         
-        viewController = [[CCNote alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid fileID:metadata.fileID isLocal:NO serverUrl:serverUrl];
+        viewController = [[CCNote alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid etag:metadata.etag isLocal:NO serverUrl:serverUrl];
         
         UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
         
@@ -288,7 +288,7 @@
 
 - (void)openWith:(tableMetadata *)metadata
 {
-    NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID];
+    NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.etag];
     
     if ([[NSFileManager defaultManager] fileExistsAtPath:fileNamePath]) {
         
@@ -331,13 +331,13 @@
 #pragma mark ===== UnZipFile =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)unZipFile:(NSString *)fileID
+- (void)unZipFile:(NSString *)etag
 {
     [_hudDeterminate visibleHudTitle:NSLocalizedString(@"_unzip_in_progress_", nil) mode:MBProgressHUDModeDeterminate color:nil];
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         
-        NSString *fileZip = [NSString stringWithFormat:@"%@/%@", app.directoryUser, fileID];
+        NSString *fileZip = [NSString stringWithFormat:@"%@/%@", app.directoryUser, etag];
         
         [SSZipArchive unzipFileAtPath:fileZip toDestination:[CCUtility getDirectoryLocal] overwrite:YES password:nil progressHandler:^(NSString *entry, unz_file_info zipInfo, long entryNumber, long total) {
             
@@ -388,9 +388,9 @@
     actionSheet.cancelButtonTitle = NSLocalizedString(@"_cancel_",nil);
     
     // assegnamo l'immagine anteprima se esiste, altrimenti metti quella standars
-    if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]]) {
+    if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.etag]]) {
         
-        iconHeader = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]];
+        iconHeader = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.etag]];
         
     } else {
         
@@ -477,8 +477,8 @@
     tableMetadata *metadata;
     
     NSManagedObject *record = [_dataSource objectAtIndex:indexPath.row];
-    //metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", [record valueForKey:@"fileID"], app.activeAccount] context:nil];
-    metadata = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", [record valueForKey:@"fileID"], app.activeAccount]];
+    //metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(etag == %@) AND (account == %@)", [record valueForKey:@"etag"], app.activeAccount] context:nil];
+    metadata = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(etag == %@) AND (account == %@)", [record valueForKey:@"etag"], app.activeAccount]];
 
     return metadata;
 }
@@ -509,9 +509,9 @@
         
     CCSectionDataSourceMetadata *sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:nil replaceDateToExifDate:NO activeAccount:app.activeAccount];
         
-    NSArray *fileIDs = [sectionDataSource.sectionArrayRow objectForKey:@"_none_"];
-    for (NSString *fileID in fileIDs)
-        [metadatas addObject:[sectionDataSource.allRecordsDataSource objectForKey:fileID]];
+    NSArray *etags = [sectionDataSource.sectionArrayRow objectForKey:@"_none_"];
+    for (NSString *etag in etags)
+        [metadatas addObject:[sectionDataSource.allRecordsDataSource objectForKey:etag]];
         
     _dataSource = [NSArray arrayWithArray:metadatas];
     
@@ -552,7 +552,7 @@
     
     metadata = [_dataSource objectAtIndex:indexPath.row];
         
-    cell.fileImageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]];
+    cell.fileImageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.etag]];
         
     if (_serverUrl == nil)
         cell.offlineImageView.image = [UIImage imageNamed:@"favorite"];
@@ -605,7 +605,7 @@
         
         if ([metadata.type isEqualToString: k_metadataType_file] || [metadata.type isEqualToString: k_metadataType_local]) {
             
-            BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID]];
+            BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.etag]];
             
             if (fileExists)
                 cell.labelInfoFile.text = [NSString stringWithFormat:@"%@ • %@", date, length];
@@ -637,13 +637,13 @@
         // File do not exists
         NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:_metadata.account];
 
-        if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, _metadata.fileID]]) {
+        if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, _metadata.etag]]) {
             
-            [self downloadFileSuccess:_metadata.fileID serverUrl:serverUrl selector:selectorLoadFileView selectorPost:nil];
+            [self downloadFileSuccess:_metadata.etag serverUrl:serverUrl selector:selectorLoadFileView selectorPost:nil];
             
         } else {
             
-            [[CCNetworking sharedNetworking] downloadFile:_metadata.fileID serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorLoadFileView selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
+            [[CCNetworking sharedNetworking] downloadFile:_metadata.etag serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorLoadFileView selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
         }
     }
     

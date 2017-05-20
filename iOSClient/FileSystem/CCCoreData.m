@@ -56,8 +56,8 @@
     if (context == nil)
         context = [NSManagedObjectContext MR_context];
 
-    // remove all fileID (BUG 2.10)
-    [TableMetadata MR_deleteAllMatchingPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileID == %@)", activeAccount, metadata.fileID] inContext:context];
+    // remove all etag (BUG 2.10)
+    [TableMetadata MR_deleteAllMatchingPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (etag == %@)", activeAccount, metadata.etag] inContext:context];
     [context MR_saveToPersistentStoreAndWait];
     
     // remove record if exists
@@ -169,12 +169,12 @@
     [context MR_saveToPersistentStoreAndWait];
 }
 
-+ (void)setMetadataFavoriteFileID:(NSString *)fileID favorite:(BOOL)favorite activeAccount:(NSString *)activeAccount context:(NSManagedObjectContext *)context
++ (void)setMetadataFavoriteFileID:(NSString *)etag favorite:(BOOL)favorite activeAccount:(NSString *)activeAccount context:(NSManagedObjectContext *)context
 {
     if (context == nil)
         context = [NSManagedObjectContext MR_defaultContext];
     
-    TableMetadata *tableMetadata = [TableMetadata MR_findFirstWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileID == %@)", activeAccount, fileID] inContext:context];
+    TableMetadata *tableMetadata = [TableMetadata MR_findFirstWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (etag == %@)", activeAccount, etag] inContext:context];
     
     if (tableMetadata) {
         
@@ -325,7 +325,7 @@
         NSArray *records = [TableMetadata MR_findAllWithPredicate:predicate];
         
         for (TableMetadata *record in records)
-            [self setOfflineLocalFileID:record.fileID offline:NO activeAccount:activeAccount];
+            [self setOfflineLocalFileID:record.etag offline:NO activeAccount:activeAccount];
     }];
 }
 */
@@ -422,8 +422,8 @@
                 }
                 
                 // remove file local
-                NSLog(@"[LOG] %@", recordMetadata.fileID);
-                [self deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileID == %@)", activeAccount, recordMetadata.fileID]];
+                NSLog(@"[LOG] %@", recordMetadata.etag);
+                [self deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (etag == %@)", activeAccount, recordMetadata.etag]];
                 [recordMetadata MR_deleteEntityInContext:context];
             }
             
@@ -761,7 +761,7 @@
         
         BOOL offline = NO;
     
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (fileID == %@)", activeAccount, metadata.fileID];
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (etag == %@)", activeAccount, metadata.etag];
         TableLocalFile *record = [TableLocalFile MR_findFirstWithPredicate:predicate inContext:localContext];
         
         if (record) {
@@ -775,7 +775,7 @@
         
         record.account = activeAccount;
         record.date = metadata.date;
-        record.fileID = metadata.fileID;
+        record.etag = metadata.etag;
     
         record.exifDate = [NSDate date];
         record.exifLatitude = @"-1";
@@ -797,11 +797,11 @@
     }];
 }
 
-+ (void)renameLocalFileWithFileID:(NSString *)fileID fileNameTo:(NSString *)fileNameTo fileNamePrintTo:(NSString *)fileNamePrintTo activeAccount:(NSString *)activeAccount
++ (void)renameLocalFileWithEtag:(NSString *)etag fileNameTo:(NSString *)fileNameTo fileNamePrintTo:(NSString *)fileNamePrintTo activeAccount:(NSString *)activeAccount
 {
     [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
         
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, activeAccount];
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(etag == %@) AND (account == %@)", etag, activeAccount];
         TableLocalFile *record = [TableLocalFile MR_findFirstWithPredicate:predicate inContext:localContext];
     
         if (record) {
@@ -821,7 +821,7 @@
     
         if (record) {
             
-            record.fileID = metadata.fileID;
+            record.etag = metadata.etag;
             record.date = metadata.date;
             record.fileNamePrint = metadata.fileNamePrint;
         
@@ -832,9 +832,9 @@
     }];
 }
 
-+ (TableLocalFile *)getLocalFileWithFileID:(NSString *)fileID activeAccount:(NSString *)activeAccount
++ (TableLocalFile *)getLocalFileWithEtag:(NSString *)etag activeAccount:(NSString *)activeAccount
 {
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, activeAccount];
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(etag == %@) AND (account == %@)", etag, activeAccount];
     TableLocalFile *record = [TableLocalFile MR_findFirstWithPredicate:predicate];
     
     if (record) {
@@ -856,13 +856,13 @@
             
             if (controlZombie) {
                 
-                NSString *fileID = record.fileID;
-                NSString *FilePathFileID = [NSString stringWithFormat:@"%@/%@", directoryUser, fileID];
+                NSString *etag = record.etag;
+                NSString *FilePathEtag = [NSString stringWithFormat:@"%@/%@", directoryUser, etag];
                 NSString *FilePathFileName = [NSString stringWithFormat:@"%@/%@", directoryUser, record.fileName];
-                if (![[NSFileManager defaultManager] fileExistsAtPath:FilePathFileID] && ![[NSFileManager defaultManager] fileExistsAtPath:FilePathFileName] && controlZombie) {
+                if (![[NSFileManager defaultManager] fileExistsAtPath:FilePathEtag] && ![[NSFileManager defaultManager] fileExistsAtPath:FilePathFileName] && controlZombie) {
                     
-                    // non esiste nè il file fileID e nemmeno il plist, eliminiamolo.
-                    [self deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, activeAccount]];
+                    // non esiste nè il file etag e nemmeno il plist, eliminiamolo.
+                    [self deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"(etag == %@) AND (account == %@)", etag, activeAccount]];
                     
                     
                 } else [ritorno addObject:record];
@@ -884,11 +884,11 @@
 #pragma mark ===== Offline LocalFile =====
 #pragma --------------------------------------------------------------------------------------------
 
-+ (void)setOfflineLocalFileID:(NSString *)fileID offline:(BOOL)offline activeAccount:(NSString *)activeAccount
++ (void)setOfflineLocalEtag:(NSString *)etag offline:(BOOL)offline activeAccount:(NSString *)activeAccount
 {
     [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
         
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, activeAccount];
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(etag == %@) AND (account == %@)", etag, activeAccount];
         TableLocalFile *record = [TableLocalFile MR_findFirstWithPredicate:predicate inContext:localContext];
         
         if (record)
@@ -896,9 +896,9 @@
     }];
 }
 
-+ (BOOL)isOfflineLocalFileID:(NSString *)fileID activeAccount:(NSString *)activeAccount
++ (BOOL)isOfflineLocalEtag:(NSString *)etag activeAccount:(NSString *)activeAccount
 {
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(fileID == %@) AND (offline == 1) AND (account == %@)", fileID, activeAccount];
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(etag == %@) AND (offline == 1) AND (account == %@)", etag, activeAccount];
     TableLocalFile *record = [TableLocalFile MR_findFirstWithPredicate:predicate];
     
     if (record) return YES;
@@ -912,7 +912,7 @@
     
     for (TableLocalFile *file in files) {
         
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", file.fileID, activeAccount];
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(etag == %@) AND (account == %@)", file.etag, activeAccount];
         //tableMetadata *metadata = [self getMetadataWithPreficate:predicate context:nil];
         
         tableMetadata *metadata =  [[NCManageDatabase sharedInstance] getMetadataWithPreficate:predicate];
@@ -937,20 +937,20 @@
 #pragma mark ===== GeoInformation =====
 #pragma --------------------------------------------------------------------------------------------
 
-+ (NSArray *)getGeoInformationLocalFromFileID:(NSString *)fileID activeAccount:(NSString *)activeAccount
++ (NSArray *)getGeoInformationLocalFromEtag:(NSString *)etag activeAccount:(NSString *)activeAccount
 {
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, activeAccount];
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(etag == %@) AND (account == %@)", etag, activeAccount];
     TableLocalFile *record = [TableLocalFile MR_findFirstWithPredicate:predicate];
     
     if (record) return [[NSArray alloc] initWithObjects:record.exifDate, record.exifLatitude, record.exifLongitude, nil];
     else return nil;
 }
 
-+ (void)setGeoInformationLocalFromFileID:(NSString *)fileID exifDate:(NSDate *)exifDate exifLatitude:(NSString *)exifLatitude exifLongitude:(NSString *)exifLongitude activeAccount:(NSString *)activeAccount
++ (void)setGeoInformationLocalFromEtag:(NSString *)etag exifDate:(NSDate *)exifDate exifLatitude:(NSString *)exifLatitude exifLongitude:(NSString *)exifLongitude activeAccount:(NSString *)activeAccount
 {
     [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
         
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (fileID == %@)", activeAccount, fileID];
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (etag == %@)", activeAccount, etag];
         TableLocalFile *record = [TableLocalFile MR_findFirstWithPredicate:predicate inContext:localContext];
     
         if (record) {
@@ -1228,7 +1228,7 @@
     
     for (TableLocalFile *localFile in localFiles) {
         
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (fileID == %@)", activeAccount, localFile.fileID];
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (etag == %@)", activeAccount, localFile.etag];
         //TableMetadata *tableMetadata = [self getTableMetadataWithPreficate:predicate];
         tableMetadata *metadata =  [[NCManageDatabase sharedInstance] getMetadataWithPreficate:predicate];
         
@@ -1259,7 +1259,7 @@
     
     // if encrypted, rewrite
     if (metadata.cryptated == YES)
-        if ([[CCCrypto sharedManager] decrypt:metadata.fileID fileNameDecrypted:metadata.fileID fileNamePrint:metadata.fileNamePrint password:[[CCCrypto sharedManager] getKeyPasscode:metadata.uuid] directoryUser:directoryUser] == 0) return NO;
+        if ([[CCCrypto sharedManager] decrypt:metadata.etag fileNameDecrypted:metadata.etag fileNamePrint:metadata.fileNamePrint password:[[CCCrypto sharedManager] getKeyPasscode:metadata.uuid] directoryUser:directoryUser] == 0) return NO;
     
     // ------------------------------------------ COREDATA -------------------------------------------
     
@@ -1268,10 +1268,10 @@
     
     // EXIF
     if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image])
-        [CCExifGeo setExifLocalTableFileID:metadata directoryUser:directoryUser activeAccount:activeAccount];
+        [CCExifGeo setExifLocalTableEtag:metadata directoryUser:directoryUser activeAccount:activeAccount];
     
     // Icon
-    [CCGraphics createNewImageFrom:metadata.fileID directoryUser:directoryUser fileNameTo:metadata.fileID fileNamePrint:metadata.fileNamePrint size:@"m" imageForUpload:NO typeFile:metadata.typeFile writePreview:YES optimizedFileName:[CCUtility getOptimizedPhoto]];
+    [CCGraphics createNewImageFrom:metadata.etag directoryUser:directoryUser fileNameTo:metadata.etag fileNamePrint:metadata.fileNamePrint size:@"m" imageForUpload:NO typeFile:metadata.typeFile writePreview:YES optimizedFileName:[CCUtility getOptimizedPhoto]];
     
     return YES;
 }
@@ -1295,8 +1295,8 @@
     
     // ----------------------------------------- FILESYSTEM ------------------------------------------
     
-    [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, metadata.fileID] error:nil];
-    [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@.ico", directoryUser, metadata.fileID] error:nil];
+    [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, metadata.etag] error:nil];
+    [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@.ico", directoryUser, metadata.etag] error:nil];
     
     // ------------------------------------------ DATABASE -------------------------------------------
 
@@ -1307,8 +1307,8 @@
         [self deleteDirectoryAndSubDirectory:dirForDelete activeAccount:activeAccount];
     }
     
-    [self deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", metadata.fileID, activeAccount]];
-    [[NCManageDatabase sharedInstance] deleteMetadata:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", metadata.fileID, activeAccount]];
+    [self deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"(etag == %@) AND (account == %@)", metadata.etag, activeAccount]];
+    [[NCManageDatabase sharedInstance] deleteMetadata:[NSPredicate predicateWithFormat:@"(etag == %@) AND (account == %@)", metadata.etag, activeAccount]];
 }
 
 #pragma --------------------------------------------------------------------------------------------

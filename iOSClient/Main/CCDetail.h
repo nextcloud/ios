@@ -52,7 +52,7 @@
 @property (nonatomic, strong) MWPhotoBrowser *photoBrowser;
 @property (nonatomic, strong) NSMutableArray *photos;
 @property (nonatomic, strong) NSMutableArray *thumbs;
-@property (nonatomic, strong) NSString *fileIDNowVisible;
+@property (nonatomic, strong) NSString *etagNowVisible;
 @property (nonatomic) NSUInteger indexNowVisible;
 
 // PDF

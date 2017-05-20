@@ -171,29 +171,29 @@
     NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:app.activeAccount];
     
     if ([metadata.model isEqualToString:@"cartadicredito"])
-        viewController = [[CCCartaDiCredito alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid fileID:metadata.fileID isLocal:isLocal serverUrl:serverUrl];
+        viewController = [[CCCartaDiCredito alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid etag:metadata.etag isLocal:isLocal serverUrl:serverUrl];
     
     if ([metadata.model isEqualToString:@"bancomat"])
-        viewController = [[CCBancomat alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid fileID:metadata.fileID isLocal:isLocal serverUrl:serverUrl];
+        viewController = [[CCBancomat alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid etag:metadata.etag isLocal:isLocal serverUrl:serverUrl];
     
     if ([metadata.model isEqualToString:@"contocorrente"])
-        viewController = [[CCContoCorrente alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid fileID:metadata.fileID isLocal:isLocal serverUrl:serverUrl];
+        viewController = [[CCContoCorrente alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid etag:metadata.etag isLocal:isLocal serverUrl:serverUrl];
     
     if ([metadata.model isEqualToString:@"accountweb"])
-        viewController = [[CCAccountWeb alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid fileID:metadata.fileID isLocal:isLocal serverUrl:serverUrl];
+        viewController = [[CCAccountWeb alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid etag:metadata.etag isLocal:isLocal serverUrl:serverUrl];
     
     if ([metadata.model isEqualToString:@"patenteguida"])
-        viewController = [[CCPatenteGuida alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid fileID:metadata.fileID isLocal:isLocal serverUrl:serverUrl];
+        viewController = [[CCPatenteGuida alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid etag:metadata.etag isLocal:isLocal serverUrl:serverUrl];
     
     if ([metadata.model isEqualToString:@"cartaidentita"])
-        viewController = [[CCCartaIdentita alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid fileID:metadata.fileID isLocal:isLocal serverUrl:serverUrl];
+        viewController = [[CCCartaIdentita alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid etag:metadata.etag isLocal:isLocal serverUrl:serverUrl];
     
     if ([metadata.model isEqualToString:@"passaporto"])
-        viewController = [[CCPassaporto alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid fileID:metadata.fileID isLocal:isLocal serverUrl:serverUrl];
+        viewController = [[CCPassaporto alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid etag:metadata.etag isLocal:isLocal serverUrl:serverUrl];
     
     if ([metadata.model isEqualToString:@"note"]) {
         
-        viewController = [[CCNote alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid fileID:metadata.fileID isLocal:isLocal serverUrl:serverUrl];
+        viewController = [[CCNote alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid etag:metadata.etag isLocal:isLocal serverUrl:serverUrl];
         
         UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
         
@@ -291,8 +291,8 @@
     actionSheet.cancelButtonTitle = NSLocalizedString(@"_cancel_",nil);
     
     // assegnamo l'immagine anteprima se esiste, altrimenti metti quella standars
-    if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]])
-        iconHeader = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.etag]])
+        iconHeader = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.etag]];
     else
         iconHeader = [UIImage imageNamed:metadata.iconName];
     
@@ -327,7 +327,7 @@
                                         
             } else {
                                         
-                [CCCoreData setOfflineLocalFileID:metadata.fileID offline:NO activeAccount:app.activeAccount];
+                [CCCoreData setOfflineLocalEtag:metadata.etag offline:NO activeAccount:app.activeAccount];
             }
                                     
             [self.tableView setEditing:NO animated:YES];
@@ -427,10 +427,10 @@
         
     if (!cell.fileImageView.image) {
             
-        UIImage *icon = [CCGraphics createNewImageFrom:metadata.fileID directoryUser:_serverUrl fileNameTo:metadata.fileID fileNamePrint:metadata.fileNamePrint size:@"m" imageForUpload:NO typeFile:metadata.typeFile writePreview:NO optimizedFileName:[CCUtility getOptimizedPhoto]];
+        UIImage *icon = [CCGraphics createNewImageFrom:metadata.etag directoryUser:_serverUrl fileNameTo:metadata.etag fileNamePrint:metadata.fileNamePrint size:@"m" imageForUpload:NO typeFile:metadata.typeFile writePreview:NO optimizedFileName:[CCUtility getOptimizedPhoto]];
             
         if (icon) {
-            [CCGraphics saveIcoWithFileID:metadata.fileNamePrint image:icon writeToFile:[NSString stringWithFormat:@"%@/.%@.ico", _serverUrl, metadata.fileNamePrint] copy:NO move:NO fromPath:nil toPath:nil];
+            [CCGraphics saveIcoWithEtag:metadata.fileNamePrint image:icon writeToFile:[NSString stringWithFormat:@"%@/.%@.ico", _serverUrl, metadata.fileNamePrint] copy:NO move:NO fromPath:nil toPath:nil];
             cell.fileImageView.image = icon;
         }
     }

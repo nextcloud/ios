@@ -26,12 +26,12 @@
 
 @implementation CCExifGeo
 
-+ (void)setExifLocalTableFileID:(tableMetadata *)metadata directoryUser:(NSString *)directoryUser activeAccount:(NSString *)activeAccount
++ (void)setExifLocalTableEtag:(tableMetadata *)metadata directoryUser:(NSString *)directoryUser activeAccount:(NSString *)activeAccount
 {
     NSString *stringLatitude;
     NSString *stringLongitude;
     
-    NSURL *url = [NSURL fileURLWithPath:[NSString stringWithFormat:@"%@/%@", directoryUser, metadata.fileID]];
+    NSURL *url = [NSURL fileURLWithPath:[NSString stringWithFormat:@"%@/%@", directoryUser, metadata.etag]];
     
     CGImageSourceRef originalSource =  CGImageSourceCreateWithURL((CFURLRef) url, NULL);
     
@@ -77,10 +77,10 @@
     }
     
     // Wite data EXIF in TableLocalFile
-    [CCCoreData setGeoInformationLocalFromFileID:metadata.fileID exifDate:date exifLatitude:stringLatitude exifLongitude:stringLongitude activeAccount:activeAccount];
+    [CCCoreData setGeoInformationLocalFromEtag:metadata.etag exifDate:date exifLatitude:stringLatitude exifLongitude:stringLongitude activeAccount:activeAccount];
 }
 
-+ (void)setGeocoderFileID:(NSString *)fileID exifDate:(NSDate *)exifDate latitude:(NSString*)latitude longitude:(NSString*)longitude
++ (void)setGeocoderEtag:(NSString *)etag exifDate:(NSDate *)exifDate latitude:(NSString*)latitude longitude:(NSString*)longitude
 {
     // If exists already geocoder data in TableGPS exit
     if ([[NCManageDatabase sharedInstance] getLocationFromGeoLatitude:latitude longitude:longitude])
@@ -117,7 +117,7 @@
                 
                 [[NCManageDatabase sharedInstance] addGeocoderLocation:location placemarkAdministrativeArea:placemark.administrativeArea placemarkCountry:placemark.country placemarkLocality:placemark.locality placemarkPostalCode:placemark.postalCode placemarkThoroughfare:placemark.thoroughfare latitude:latitude longitude:longitude];
                 
-                NSDictionary *dictionary = [[NSDictionary alloc] initWithObjectsAndKeys:exifDate, fileID, nil];
+                NSDictionary *dictionary = [[NSDictionary alloc] initWithObjectsAndKeys:exifDate, etag, nil];
                 
                 // Notify for CCDetail
                 [[NSNotificationCenter defaultCenter] postNotificationName:@"insertGeocoderLocation" object:nil userInfo:dictionary];

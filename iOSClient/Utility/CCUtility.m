@@ -786,7 +786,7 @@
     metadata.directory = itemDto.isDirectory;
     metadata.errorPasscode = false;
     metadata.favorite = itemDto.isFavorite;
-    metadata.fileID = itemDto.ocId;
+    metadata.etag = itemDto.ocId;
     metadata.directoryID = directoryID;
     metadata.fileName = [CCUtility removeForbiddenCharactersServer:itemDto.fileName];
     metadata.fileNameData = [CCUtility trasformedFileNamePlistInCrypto:metadata.fileName];
@@ -979,7 +979,7 @@
     metadata.uuid = uuid;
     
     // Optimization V2.12
-    if (![[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", directoryUser, metadata.fileID]] && !metadata.directory) {
+    if (![[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", directoryUser, metadata.etag]] && !metadata.directory) {
     
         // exists image V1.8
         NSData *imageData = [data objectForKey:@"image"];
@@ -994,9 +994,9 @@
                 if (image) {
                 
                     if (image.size.width == 128 && image.size.height == 128)
-                        [CCGraphics saveIcoWithFileID:metadata.fileID image:image writeToFile:[NSString stringWithFormat:@"%@/%@.ico", directoryUser, metadata.fileID] copy:NO move:NO fromPath:nil toPath:nil];
+                        [CCGraphics saveIcoWithEtag:metadata.etag image:image writeToFile:[NSString stringWithFormat:@"%@/%@.ico", directoryUser, metadata.etag] copy:NO move:NO fromPath:nil toPath:nil];
                     else
-                        [CCGraphics saveIcoWithFileID:metadata.fileID image:[CCGraphics scaleImage:image toSize:CGSizeMake(128, 128)] writeToFile:[NSString stringWithFormat:@"%@/%@.ico", directoryUser, metadata.fileID] copy:NO move:NO fromPath:nil toPath:nil];
+                        [CCGraphics saveIcoWithEtag:metadata.etag image:[CCGraphics scaleImage:image toSize:CGSizeMake(128, 128)] writeToFile:[NSString stringWithFormat:@"%@/%@.ico", directoryUser, metadata.etag] copy:NO move:NO fromPath:nil toPath:nil];
                 }
             }
         }
@@ -1041,7 +1041,7 @@
     metadata.directory = isDirectory;
     
     metadata.errorPasscode = false;
-    metadata.fileID = fileName;
+    metadata.etag = fileName;
     metadata.directoryID = directory;
     metadata.fileName = fileName;
     metadata.fileNameData = fileName;

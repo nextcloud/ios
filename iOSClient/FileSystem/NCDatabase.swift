@@ -62,8 +62,8 @@ class tableActivity: Object {
     dynamic var account = ""
     dynamic var action = "Activity"
     dynamic var date = NSDate()
+    dynamic var etag = ""
     dynamic var file = ""
-    dynamic var fileID = ""
     dynamic var idActivity : Double = 0
     dynamic var link = ""
     dynamic var note = ""
@@ -139,8 +139,8 @@ class tableMetadata: Object {
     dynamic var directory : Bool = false
     dynamic var directoryID = ""
     dynamic var errorPasscode : Bool = false
+    dynamic var etag = ""
     dynamic var favorite : Bool = false
-    dynamic var fileID = ""
     dynamic var fileName = ""
     dynamic var fileNameData = ""
     dynamic var fileNamePrint = ""
@@ -165,7 +165,7 @@ class tableMetadata: Object {
     dynamic var uuid = ""
     
     override static func primaryKey() -> String {
-        return "fileID"
+        return "etag"
     }
 }
 

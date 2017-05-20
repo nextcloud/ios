@@ -1374,7 +1374,7 @@
             
         } else {
             
-            [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionUpload selector:selectorUploadAutomatic note:@"Internal error image/video not found [0]" type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
+            [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName etag:metadataNet.assetLocalIdentifier action:k_activityDebugActionUpload selector:selectorUploadAutomatic note:@"Internal error image/video not found [0]" type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
             
             [[NCManageDatabase sharedInstance] deleteAutomaticUpload:metadataNet.assetLocalIdentifier];
         }
@@ -1441,7 +1441,7 @@
     if ([task isKindOfClass:[NSURLSessionUploadTask class]])
         app.sessionDateLastUploadTasks = [NSDate date];
     
-    if (metadata && [_listChangeTask objectForKey:metadata.fileID])
+    if (metadata && [_listChangeTask objectForKey:metadata.etag])
         dispatch_async(dispatch_get_main_queue(), ^{
             [self changeTask:metadata];
         });
@@ -1465,11 +1465,11 @@
 {
     NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account];
     
-    if ([[_listChangeTask objectForKey:metadata.fileID] isEqualToString:@"stopUpload"]) {
+    if ([[_listChangeTask objectForKey:metadata.etag] isEqualToString:@"stopUpload"]) {
         
-        [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:@"" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:k_taskIdentifierStop sessionTaskIdentifierPlist:k_taskIdentifierDone predicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadata.fileID]];
+        [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:@"" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:k_taskIdentifierStop sessionTaskIdentifierPlist:k_taskIdentifierDone predicate:[NSPredicate predicateWithFormat:@"etag = %@", metadata.etag]];
     }
-    else if ([[_listChangeTask objectForKey:metadata.fileID] isEqualToString:@"reloadUpload"]) {
+    else if ([[_listChangeTask objectForKey:metadata.etag] isEqualToString:@"reloadUpload"]) {
         
         // V 1.8 if upload_session_wwan change in upload_session
         if ([metadata.session isEqualToString:k_upload_session_wwan])
@@ -1477,7 +1477,7 @@
         
         [[CCNetworking sharedNetworking] uploadFileMetadata:metadata taskStatus:k_taskStatusResume];
     }
-    else if ([[_listChangeTask objectForKey:metadata.fileID] isEqualToString:@"reloadDownload"]) {
+    else if ([[_listChangeTask objectForKey:metadata.etag] isEqualToString:@"reloadDownload"]) {
         
         BOOL downloadData = NO, downloadPlist = NO;
             
@@ -1485,37 +1485,37 @@
         if (metadata.sessionTaskIdentifierPlist != k_taskIdentifierDone) downloadPlist = YES;
         
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-            [[CCNetworking sharedNetworking] downloadFile:metadata.fileID serverUrl:serverUrl downloadData:downloadData downloadPlist:downloadPlist selector:metadata.sessionSelector selectorPost:metadata.sessionSelectorPost session:k_download_session taskStatus:k_taskStatusResume delegate:nil];
+            [[CCNetworking sharedNetworking] downloadFile:metadata.etag serverUrl:serverUrl downloadData:downloadData downloadPlist:downloadPlist selector:metadata.sessionSelector selectorPost:metadata.sessionSelectorPost session:k_download_session taskStatus:k_taskStatusResume delegate:nil];
         });
     }
-    else if ([[_listChangeTask objectForKey:metadata.fileID] isEqualToString:@"cancelUpload"]) {
+    else if ([[_listChangeTask objectForKey:metadata.etag] isEqualToString:@"cancelUpload"]) {
         
         // remove the file
         
-        [[NCManageDatabase sharedInstance] deleteMetadata:[NSPredicate predicateWithFormat:@"fileID = %@", metadata.fileID]];
+        [[NCManageDatabase sharedInstance] deleteMetadata:[NSPredicate predicateWithFormat:@"etag = %@", metadata.etag]];
         
-        [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID] error:nil];
-        [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID] error:nil];
+        [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.etag] error:nil];
+        [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.etag] error:nil];
     }
-    else if ([[_listChangeTask objectForKey:metadata.fileID] isEqualToString:@"cancelDownload"]) {
+    else if ([[_listChangeTask objectForKey:metadata.etag] isEqualToString:@"cancelDownload"]) {
         
-        [[NCManageDatabase sharedInstance] setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier:k_taskIdentifierDone sessionTaskIdentifierPlist:k_taskIdentifierDone predicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadata.fileID]];
+        [[NCManageDatabase sharedInstance] setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier:k_taskIdentifierDone sessionTaskIdentifierPlist:k_taskIdentifierDone predicate:[NSPredicate predicateWithFormat:@"etag = %@", metadata.etag]];
     }
     
-    // remove ChangeTask (fileID) from the list
-    [_listChangeTask removeObjectForKey:metadata.fileID];
+    // remove ChangeTask (etag) from the list
+    [_listChangeTask removeObjectForKey:metadata.etag];
     
     // delete progress
-    [_listProgressMetadata removeObjectForKey:metadata.fileID];
+    [_listProgressMetadata removeObjectForKey:metadata.etag];
     
     // Progress Task
-    NSDictionary* userInfo = @{@"fileID": (metadata.fileID), @"serverUrl": (serverUrl), @"cryptated": ([NSNumber numberWithBool:NO]), @"progress": ([NSNumber numberWithFloat:0.0])};
+    NSDictionary* userInfo = @{@"etag": (metadata.etag), @"serverUrl": (serverUrl), @"cryptated": ([NSNumber numberWithBool:NO]), @"progress": ([NSNumber numberWithFloat:0.0])};
     
     [[NSNotificationCenter defaultCenter] postNotificationName:@"NotificationProgressTask" object:nil userInfo:userInfo];
 
     // Refresh
     if (_activeMain && [_listChangeTask count] == 0) {
-        [_activeMain reloadDatasource:[CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account] fileID:nil selector:nil];
+        [_activeMain reloadDatasource:[CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account] etag:nil selector:nil];
     }
 }
 
@@ -1526,7 +1526,7 @@
     if(![ocNetworking automaticCreateFolderSync:folderPhotos]) {
         
         // Activity
-        [[NCManageDatabase sharedInstance] addActivityClient:folderPhotos fileID:@"" action:k_activityDebugActionAutomaticUpload selector:selector note:NSLocalizedStringFromTable(@"_not_possible_create_folder_", @"Error", nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:_activeUrl];
+        [[NCManageDatabase sharedInstance] addActivityClient:folderPhotos etag:@"" action:k_activityDebugActionAutomaticUpload selector:selector note:NSLocalizedStringFromTable(@"_not_possible_create_folder_", @"Error", nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:_activeUrl];
         
         return false;
     }
@@ -1539,7 +1539,7 @@
             if(![ocNetworking automaticCreateFolderSync:[NSString stringWithFormat:@"%@/%@", folderPhotos, dateSubFolder]]) {
                 
                 // Activity
-                [[NCManageDatabase sharedInstance] addActivityClient:[NSString stringWithFormat:@"%@/%@", folderPhotos, dateSubFolder] fileID:@"" action:k_activityDebugActionAutomaticUpload selector:selector note:NSLocalizedString(@"_error_createsubfolders_upload_",nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:_activeUrl];
+                [[NCManageDatabase sharedInstance] addActivityClient:[NSString stringWithFormat:@"%@/%@", folderPhotos, dateSubFolder] etag:@"" action:k_activityDebugActionAutomaticUpload selector:selector note:NSLocalizedString(@"_error_createsubfolders_upload_",nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:_activeUrl];
                 
                 return false;
             }

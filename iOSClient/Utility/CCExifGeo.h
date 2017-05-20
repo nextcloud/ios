@@ -31,8 +31,8 @@
 
 @interface CCExifGeo : NSObject
 
-+ (void)setExifLocalTableFileID:(tableMetadata *)metadata directoryUser:(NSString *)directoryUser activeAccount:(NSString *)activeAccount;
++ (void)setExifLocalTableEtag:(tableMetadata *)metadata directoryUser:(NSString *)directoryUser activeAccount:(NSString *)activeAccount;
 
-+ (void)setGeocoderFileID:(NSString *)fileID exifDate:(NSDate *)exifDate latitude:(NSString*)latitude longitude:(NSString*)longitude;
++ (void)setGeocoderEtag:(NSString *)etag exifDate:(NSDate *)exifDate latitude:(NSString*)latitude longitude:(NSString*)longitude;
 
 @end

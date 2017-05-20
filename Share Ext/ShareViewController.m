@@ -307,16 +307,16 @@
     [self.hud progress:progress];
 }
 
-- (void)uploadFileFailure:(CCMetadataNet *)metadataNet fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode
+- (void)uploadFileFailure:(CCMetadataNet *)metadataNet etag:(NSString *)etag serverUrl:(NSString *)serverUrl selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode
 {
     [self.hud hideHud];
     
     // remove file 
-    //[CCCoreData deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, _activeAccount]];
-    [[NCManageDatabase sharedInstance] deleteMetadata:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, _activeAccount]];
+    //[CCCoreData deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(etag == %@) AND (account == %@)", etag, _activeAccount]];
+    [[NCManageDatabase sharedInstance] deleteMetadata:[NSPredicate predicateWithFormat:@"(etag == %@) AND (account == %@)", etag, _activeAccount]];
     
-    [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, fileID] error:nil];
-    [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@.ico", _directoryUser, fileID] error:nil];
+    [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, etag] error:nil];
+    [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@.ico", _directoryUser, etag] error:nil];
 
     // message error
     if (errorCode != kCFURLErrorCancelled) {
@@ -334,13 +334,13 @@
         [self closeShareViewController];
 }
 
-- (void)uploadFileSuccess:(CCMetadataNet *)metadataNet fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost
+- (void)uploadFileSuccess:(CCMetadataNet *)metadataNet etag:(NSString *)etag serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost
 {
     [self.hud hideHud];
     
-    //tableMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, _activeAccount] context:nil];
+    //tableMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(etag == %@) AND (account == %@)", etag, _activeAccount] context:nil];
     
-    tableMetadata *metadata =  [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, _activeAccount]];
+    tableMetadata *metadata =  [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(etag == %@) AND (account == %@)", etag, _activeAccount]];
     
     
     [self.filesName removeObject:metadata.fileNamePrint];

@@ -20,7 +20,7 @@
 @dynamic exifLatitude;
 @dynamic exifLongitude;
 @dynamic favorite;
-@dynamic fileID;
+@dynamic etag;
 @dynamic fileName;
 @dynamic fileNamePrint;
 @dynamic offline;

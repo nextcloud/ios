@@ -110,15 +110,15 @@
             continue;
 
         // Delete Record NOT in session
-        //[CCCoreData deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND (fileID = %@) AND ((session == NULL) OR (session == ''))", app.activeAccount, metadata.directoryID, metadata.fileID]];
+        //[CCCoreData deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND (etag = %@) AND ((session == NULL) OR (session == ''))", app.activeAccount, metadata.directoryID, metadata.etag]];
         
-        [[NCManageDatabase sharedInstance] deleteMetadata:[NSPredicate predicateWithFormat:@"(account = %@) AND (directoryID = %@) AND (fileID = %@) AND (session = '')", app.activeAccount, metadata.directoryID, metadata.fileID]];
+        [[NCManageDatabase sharedInstance] deleteMetadata:[NSPredicate predicateWithFormat:@"(account = %@) AND (directoryID = %@) AND (etag = %@) AND (session = '')", app.activeAccount, metadata.directoryID, metadata.etag]];
         
         // end test, insert in CoreData
         [[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:app.activeUrl];
         
         // insert for test NOT favorite
-        [filesID addObject:metadata.fileID];
+        [filesID addObject:metadata.etag];
         
         // ---- Synchronized ----
         
@@ -158,10 +158,10 @@
     NSArray *allRecordFavorite = [[NCManageDatabase sharedInstance] getMetadatasWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (favorite == 1)", app.activeAccount] sorted:nil ascending:NO];
     
     for (tableMetadata *metadata in allRecordFavorite)
-        if (![filesID containsObject:metadata.fileID])
-            [[NCManageDatabase sharedInstance] setMetadataFavorite:metadata.fileID favorite:NO];
+        if (![filesID containsObject:metadata.etag])
+            [[NCManageDatabase sharedInstance] setMetadataFavorite:metadata.etag favorite:NO];
     
-            //[CCCoreData setMetadataFavoriteFileID:tableMetadata.fileID favorite:NO activeAccount:app.activeAccount context:nil];
+            //[CCCoreData setMetadataFavoriteFileID:tableMetadata.etag favorite:NO activeAccount:app.activeAccount context:nil];
     
     [[NSNotificationCenter defaultCenter] postNotificationName:@"clearDateReadDataSource" object:nil];
 }
@@ -290,17 +290,17 @@
             if (record.cryptated)
                 continue;
             
-            BOOL fileIDFound = NO;
+            BOOL etagFound = NO;
             
             for (tableMetadata *metadata in metadatas) {
                 
-                if ([record.fileID isEqualToString:metadata.fileID]) {
-                    fileIDFound = YES;
+                if ([record.etag isEqualToString:metadata.etag]) {
+                    etagFound = YES;
                     break;
                 }
             }
             
-            if (!fileIDFound)
+            if (!etagFound)
                 [metadatasNotPresents addObject:record];
         }
         
@@ -313,7 +313,7 @@
             }
             
             if ([metadatasNotPresents count] > 0)
-                [app.activeMain reloadDatasource:metadataNet.serverUrl fileID:nil selector:nil];
+                [app.activeMain reloadDatasource:metadataNet.serverUrl etag:nil selector:nil];
         });
         
         // ----- Test : (MODIFY) -----
@@ -331,7 +331,7 @@
                 NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:app.activeAccount];
                     
                 // Verify if do not exists this Metadata
-                tableMetadata *result = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileID == %@)", metadataNet.account, metadata.fileID]];
+                tableMetadata *result = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (etag == %@)", metadataNet.account, metadata.etag]];
 
                 if (!result)
                     [[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:app.activeUrl];
@@ -353,7 +353,7 @@
                     // It's in session
                     BOOL recordInSession = NO;
                     for (tableMetadata *record in recordsInSessions) {
-                        if ([record.fileID isEqualToString:metadata.fileID]) {
+                        if ([record.etag isEqualToString:metadata.etag]) {
                             recordInSession = YES;
                             break;
                         }
@@ -369,7 +369,7 @@
                 if ([metadataNet.selector isEqualToString:selectorReadFolder]) {
                     
                     // Verify if do not exists this Metadata
-                    tableMetadata *result = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileID == %@)", metadataNet.account, metadata.fileID]];
+                    tableMetadata *result = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (etag == %@)", metadataNet.account, metadata.etag]];
 
                     if (!result)
                         [[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:metadataNet.serverUrl];
@@ -394,7 +394,7 @@
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
         
     metadataNet.action = actionReadFile;
-    metadataNet.fileID = metadata.fileID;
+    metadataNet.etag = metadata.etag;
     metadataNet.fileName = metadata.fileName;
     metadataNet.fileNamePrint = metadata.fileNamePrint;
     metadataNet.options = [NSNumber numberWithBool:withDownload] ;
@@ -412,10 +412,10 @@
     
     // File not present, remove it
     if (errorCode == 404 && [recordAccount.account isEqualToString:metadataNet.account]) {
-        [CCCoreData deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileID == %@)", metadataNet.account, metadataNet.fileID]];
-        //[CCCoreData deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileID == %@)", metadataNet.account, metadataNet.fileID]];
+        [CCCoreData deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (etag == %@)", metadataNet.account, metadataNet.etag]];
+        //[CCCoreData deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (etag == %@)", metadataNet.account, metadataNet.etag]];
         
-        [[NCManageDatabase sharedInstance] deleteMetadata:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileID == %@)", metadataNet.account, metadataNet.fileID]];
+        [[NCManageDatabase sharedInstance] deleteMetadata:[NSPredicate predicateWithFormat:@"(account == %@) AND (etag == %@)", metadataNet.account, metadataNet.etag]];
     }
 }
 
@@ -450,7 +450,7 @@
         if (metadata.directory)
             continue;
         
-        TableLocalFile *record = [TableLocalFile MR_findFirstWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileID == %@)", app.activeAccount, metadata.fileID]];
+        TableLocalFile *record = [TableLocalFile MR_findFirstWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (etag == %@)", app.activeAccount, metadata.etag]];
         
         if (withDownload) {
             
@@ -468,8 +468,8 @@
             if ([metadata.type isEqualToString: k_metadataType_file]) {
                 
                 // remove file and ico
-                [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID] error:nil];
-                [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID] error:nil];
+                [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.etag] error:nil];
+                [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.etag] error:nil];
             }
             
             if ([metadata.type isEqualToString: k_metadataType_template]) {
@@ -507,7 +507,7 @@
             BOOL downloadData = NO, downloadPlist = NO;
         
             // it's a offline ?
-            BOOL isOffline = [CCCoreData isOfflineLocalFileID:metadata.fileID activeAccount:app.activeAccount];
+            BOOL isOffline = [CCCoreData isOfflineLocalEtag:metadata.etag activeAccount:app.activeAccount];
         
             if (isOffline)
                 selectorPost = selectorAddOffline;
@@ -537,7 +537,7 @@
             metadataNet.action = actionDownloadFile;
             metadataNet.downloadData = downloadData;
             metadataNet.downloadPlist = downloadPlist;
-            metadataNet.fileID = metadata.fileID;
+            metadataNet.etag = metadata.etag;
             metadataNet.selector = selector;
             metadataNet.selectorPost = selectorPost;
             metadataNet.serverUrl = serverUrl;
@@ -547,7 +547,7 @@
             [app addNetworkingOperationQueue:app.netQueueDownload delegate:app.activeMain metadataNet:metadataNet];
         }
         
-        [app.activeMain reloadDatasource:serverUrl fileID:nil selector:nil];
+        [app.activeMain reloadDatasource:serverUrl etag:nil selector:nil];
         
         [_hud hideHud];
     });
