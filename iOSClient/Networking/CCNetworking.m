@@ -1388,8 +1388,7 @@
         metadata = [[NCManageDatabase sharedInstance] copyTableMetadata:metadata];
         metadata.sessionTaskIdentifier = k_taskIdentifierDone;
         
-        [[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:_activeUrl];
-        [[NCManageDatabase sharedInstance] deleteMetadata:[NSPredicate predicateWithFormat:@"fileID = %@", sessionID]];
+        [[NCManageDatabase sharedInstance] updateMetadata:metadata activeUrl:_activeUrl];
     }
     
     // ALL TASK DONE (PLAIN/CRYPTO)
