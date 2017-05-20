@@ -4594,9 +4594,9 @@
 
 - (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    tableMetadata *metadata = [self getMetadataFromSectionDataSource:indexPath];
+    _metadata = [self getMetadataFromSectionDataSource:indexPath];
     
-    if (metadata.errorPasscode || (metadata.cryptated && [metadata.title length] == 0) || metadata.sessionTaskIdentifier >= 0 || metadata.sessionTaskIdentifier >= 0) return UITableViewCellEditingStyleNone;
+    if (_metadata.errorPasscode || (_metadata.cryptated && [_metadata.title length] == 0) || _metadata.sessionTaskIdentifier >= 0 || _metadata.sessionTaskIdentifier >= 0) return UITableViewCellEditingStyleNone;
     else return UITableViewCellEditingStyleDelete;
 }
 
@@ -5439,6 +5439,9 @@
     
     UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
     
+    // settiamo il record file.
+    _metadata = [self getMetadataFromSectionDataSource:indexPath];
+    
     // se non può essere selezionata deseleziona
     if ([cell isEditing] == NO)
         [tableView deselectRowAtIndexPath:indexPath animated:YES];
@@ -5454,10 +5457,6 @@
     NSArray *metadatas = [_sectionDataSource.sectionArrayRow objectForKey:[_sectionDataSource.sections objectAtIndex:indexPath.section]];
     if (indexPath.row >= [metadatas count]) return;
     
-    // settiamo il record file.
-    _metadata = [self getMetadataFromSectionDataSource:indexPath];
-    
-    //
     NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:_metadata.account];
     
     // se è in corso una sessione
