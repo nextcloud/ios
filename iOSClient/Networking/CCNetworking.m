@@ -1617,11 +1617,11 @@
     
     //NSArray *records = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (session CONTAINS 'upload') AND ((sessionTaskIdentifier == %i) OR (sessionTaskIdentifierPlist == %i))", _activeAccount, k_taskIdentifierError, k_taskIdentifierError] context:nil];
     
-    NSArray *records = [[NCManageDatabase sharedInstance] getMetadatasWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (session CONTAINS 'upload') AND ((sessionTaskIdentifier == %i) OR (sessionTaskIdentifierPlist == %i))", _activeAccount, k_taskIdentifierError, k_taskIdentifierError] sorted:nil ascending:NO];
+    NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (session CONTAINS 'upload') AND ((sessionTaskIdentifier == %i) OR (sessionTaskIdentifierPlist == %i))", _activeAccount, k_taskIdentifierError, k_taskIdentifierError] sorted:nil ascending:NO];
     
-    NSLog(@"[LOG] Verify re upload n. %lu", (unsigned long)[records count]);
+    NSLog(@"[LOG] Verify re upload n. %lu", (unsigned long)[metadatas count]);
     
-    for (tableMetadata *metadata in records) {
+    for (tableMetadata *metadata in metadatas) {
                 
         [self uploadFileMetadata:metadata taskStatus: k_taskStatusResume];
             
