@@ -34,8 +34,8 @@ import Foundation
     func renameSuccess(_ metadataNet: CCMetadataNet)
     func renameMoveFileOrFolderFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger)
     
-    func uploadFileSuccess(_ metadataNet: CCMetadataNet, etag: String, serverUrl: String, selector: String, selectorPost: String)
-    func uploadFileFailure(_ metadataNet: CCMetadataNet, etag: String, serverUrl: String, selector: String, message: String, errorCode: NSInteger)
+    func uploadFileSuccess(_ metadataNet: CCMetadataNet, fileID: String, serverUrl: String, selector: String, selectorPost: String)
+    func uploadFileFailure(_ metadataNet: CCMetadataNet, fileID: String, serverUrl: String, selector: String, message: String, errorCode: NSInteger)
 }
 
 @objc protocol CCActionsSearchDelegate {
@@ -102,7 +102,7 @@ class CCActions: NSObject {
             
             metadataNet.action = actionDeleteFileDirectory
             metadataNet.delegate = delegate
-            metadataNet.etag = metadata.etag
+            metadataNet.fileID = metadata.fileID
             metadataNet.fileNamePrint = metadata.fileNamePrint
             metadataNet.serverUrl = serverUrl
             
@@ -122,7 +122,7 @@ class CCActions: NSObject {
             
             metadataNet.action = actionDeleteFileDirectory
             metadataNet.delegate = delegate
-            metadataNet.etag = metadata.etag
+            metadataNet.fileID = metadata.fileID
             metadataNet.fileName = metadata.fileName
             metadataNet.fileNamePrint = metadata.fileNamePrint
             metadataNet.selector = selectorDelete
@@ -134,7 +134,7 @@ class CCActions: NSObject {
     
     func deleteFileOrFolderSuccess(_ metadataNet: CCMetadataNet) {
         
-        let metadata = NCManageDatabase.sharedInstance.getMetadataWithPreficate(NSPredicate(format: "etag == %@", metadataNet.etag))
+        let metadata = NCManageDatabase.sharedInstance.getMetadataWithPreficate(NSPredicate(format: "fileID == %@", metadataNet.fileID))
         
         CCCoreData.deleteFile(metadata, serverUrl: metadataNet.serverUrl, directoryUser: appDelegate.directoryUser, activeAccount: appDelegate.activeAccount)
         
@@ -145,7 +145,7 @@ class CCActions: NSObject {
         
         if errorCode == 404 {
             
-            let metadata = NCManageDatabase.sharedInstance.getMetadataWithPreficate(NSPredicate(format: "etag == %@", metadataNet.etag))
+            let metadata = NCManageDatabase.sharedInstance.getMetadataWithPreficate(NSPredicate(format: "fileID == %@", metadataNet.fileID))
             
             CCCoreData.deleteFile(metadata, serverUrl: metadataNet.serverUrl, directoryUser: appDelegate.directoryUser, activeAccount: appDelegate.activeAccount)
         }
@@ -199,7 +199,7 @@ class CCActions: NSObject {
                 
                 do {
                     
-                    let file = "\(appDelegate.directoryUser!)/\(metadata.etag)"
+                    let file = "\(appDelegate.directoryUser!)/\(metadata.fileID)"
                     let dataFile = try NSData.init(contentsOfFile: file, options:[])
                     
                     do {
@@ -229,14 +229,14 @@ class CCActions: NSObject {
             
             metadataNet.action = actionUploadOnlyPlist
             metadataNet.delegate = delegate
-            metadataNet.etag = metadata.etag
+            metadataNet.fileID = metadata.fileID
             metadataNet.fileName = metadata.fileName
             metadataNet.selectorPost = selectorReadFolderForced
             metadataNet.serverUrl = serverUrl
             metadataNet.session = k_upload_session_foreground
             metadataNet.taskStatus = Int(k_taskStatusResume)
             
-            if CCCoreData.isOfflineLocalEtag(metadata.etag, activeAccount: appDelegate.activeAccount) {
+            if CCCoreData.isOfflineLocalEtag(metadata.fileID, activeAccount: appDelegate.activeAccount) {
                 metadataNet.selectorPost = selectorAddOffline
             }
             
@@ -270,7 +270,7 @@ class CCActions: NSObject {
             
             metadataNet.action = actionMoveFileOrFolder
             metadataNet.delegate = delegate
-            metadataNet.etag = metadata.etag
+            metadataNet.fileID = metadata.fileID
             metadataNet.fileName = metadata.fileName
             metadataNet.fileNamePrint = metadata.fileNamePrint
             metadataNet.fileNameTo = fileName
@@ -284,7 +284,7 @@ class CCActions: NSObject {
     
     func renameSuccess(_ metadataNet: CCMetadataNet) {
         
-        let metadata = NCManageDatabase.sharedInstance.getMetadataWithPreficate(NSPredicate(format: "etag = %@", metadataNet.etag))
+        let metadata = NCManageDatabase.sharedInstance.getMetadataWithPreficate(NSPredicate(format: "fileID = %@", metadataNet.fileID))
         
         if metadata?.directory == true {
             
@@ -295,7 +295,7 @@ class CCActions: NSObject {
             
         } else {
             
-            CCCoreData.renameLocalFile(withEtag: metadataNet.etag, fileNameTo: metadataNet.fileNameTo, fileNamePrintTo: metadataNet.fileNameTo, activeAccount: appDelegate.activeAccount)
+            CCCoreData.renameLocalFile(withEtag: metadataNet.fileID, fileNameTo: metadataNet.fileNameTo, fileNamePrintTo: metadataNet.fileNameTo, activeAccount: appDelegate.activeAccount)
         }
         
         metadataNet.delegate?.renameSuccess(metadataNet)
@@ -323,14 +323,14 @@ class CCActions: NSObject {
         metadataNet.delegate?.renameMoveFileOrFolderFailure(metadataNet, message: message as NSString, errorCode: errorCode)
     }
     
-    func uploadFileSuccess(_ metadataNet: CCMetadataNet, etag: String, serverUrl: String, selector: String, selectorPost: String) {
+    func uploadFileSuccess(_ metadataNet: CCMetadataNet, fileID: String, serverUrl: String, selector: String, selectorPost: String) {
         
-        metadataNet.delegate?.uploadFileSuccess(metadataNet, etag:etag, serverUrl: serverUrl, selector: selector, selectorPost: selectorPost)
+        metadataNet.delegate?.uploadFileSuccess(metadataNet, fileID:fileID, serverUrl: serverUrl, selector: selector, selectorPost: selectorPost)
     }
     
-    func uploadFileFailure(_ metadataNet: CCMetadataNet, etag: String, serverUrl: String, selector: String, message: String, errorCode: NSInteger) {
+    func uploadFileFailure(_ metadataNet: CCMetadataNet, fileID: String, serverUrl: String, selector: String, message: String, errorCode: NSInteger) {
         
-        metadataNet.delegate?.uploadFileFailure(metadataNet, etag:etag, serverUrl: serverUrl, selector: selector, message: message, errorCode: errorCode)
+        metadataNet.delegate?.uploadFileFailure(metadataNet, fileID:fileID, serverUrl: serverUrl, selector: selector, message: message, errorCode: errorCode)
     }
     
     // --------------------------------------------------------------------------------------------
@@ -374,9 +374,9 @@ class CCActions: NSObject {
         
         metadataNet.action = actionDownloadThumbnail
         metadataNet.delegate = delegate
-        metadataNet.etag = metadata.etag
+        metadataNet.fileID = metadata.fileID
         metadataNet.fileName = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: serverUrl, activeUrl: appDelegate.activeUrl)
-        metadataNet.fileNameLocal = metadata.etag
+        metadataNet.fileNameLocal = metadata.fileID
         metadataNet.fileNamePrint = metadata.fileNamePrint
         metadataNet.options = "m"
         metadataNet.priority = Operation.QueuePriority.low.rawValue
@@ -407,7 +407,7 @@ class CCActions: NSObject {
         
         metadataNet.action = actionSettingFavorite
         metadataNet.delegate = delegate
-        metadataNet.etag = metadata.etag
+        metadataNet.fileID = metadata.fileID
         metadataNet.fileName = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: serverUrl, activeUrl: appDelegate.activeUrl)
         metadataNet.options = "\(favorite)"
         metadataNet.priority = Operation.QueuePriority.normal.rawValue

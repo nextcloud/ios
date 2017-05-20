@@ -36,12 +36,12 @@
 
 @property(nonatomic, weak) id <CCCartaIdentitaDelegate> delegate;
 
-- (id)initWithDelegate:(id <CCCartaIdentitaDelegate>)delegate fileName:(NSString *)fileName uuid:(NSString *)uuid etag:(NSString *)etag isLocal:(BOOL)isLocal serverUrl:(NSString *)serverUrl;
+- (id)initWithDelegate:(id <CCCartaIdentitaDelegate>)delegate fileName:(NSString *)fileName uuid:(NSString *)uuid fileID:(NSString *)fileID isLocal:(BOOL)isLocal serverUrl:(NSString *)serverUrl;
 
 @property (nonatomic, strong) NSString *fileName;
 @property (nonatomic, strong) NSString *uuid;
 @property (nonatomic, strong) NSString *rev;
-@property (nonatomic, strong) NSString *etag;
+@property (nonatomic, strong) NSString *fileID;
 @property (nonatomic, strong) NSString *serverUrl;
 @property BOOL isLocal;
 

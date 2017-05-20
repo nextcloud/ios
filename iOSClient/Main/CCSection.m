@@ -36,7 +36,7 @@
     _allEtag  = [[NSMutableArray alloc] init];
     _sections = [[NSMutableArray alloc] init];
     _sectionArrayRow = [[NSMutableDictionary alloc] init];
-    _etagIndexPath = [[NSMutableDictionary alloc] init];
+    _fileIDIndexPath = [[NSMutableDictionary alloc] init];
     
     _image = 0;
     _video = 0;
@@ -77,13 +77,13 @@
         // if exists replace date with exif date
         /*
         if (replaceDateToExifDate) {
-            TableLocalFile *localFile = [CCCoreData getLocalFileWithFileID:metadata.etag activeAccount:activeAccount];
+            TableLocalFile *localFile = [CCCoreData getLocalFileWithFileID:metadata.fileID activeAccount:activeAccount];
             if (localFile.exifDate)
                 metadata.date = localFile.exifDate;
         }
         */
         
-        if ([listProgressMetadata objectForKey:metadata.etag] && [groupByField isEqualToString:@"session"]) {
+        if ([listProgressMetadata objectForKey:metadata.fileID] && [groupByField isEqualToString:@"session"]) {
             [copyRecords insertObject:metadata atIndex:0];
         } else {
             
@@ -132,18 +132,18 @@
         if (metadatas) {
             
             // ROW ++
-            [metadatas addObject:metadata.etag];
+            [metadatas addObject:metadata.fileID];
             [sectionDataSource.sectionArrayRow setObject:metadatas forKey:dataSection];
             
         } else {
             
             // SECTION ++
-            metadatas = [[NSMutableArray alloc] initWithObjects:metadata.etag, nil];
+            metadatas = [[NSMutableArray alloc] initWithObjects:metadata.fileID, nil];
             [sectionDataSource.sectionArrayRow setObject:metadatas forKey:dataSection];
         }
 
-        if (metadata && [metadata.etag length] > 0)
-            [dictionaryEtagMetadataForIndexPath setObject:metadata forKey:metadata.etag];
+        if (metadata && [metadata.fileID length] > 0)
+            [dictionaryEtagMetadataForIndexPath setObject:metadata forKey:metadata.fileID];
     }
     
     /*
@@ -175,7 +175,7 @@
     }];
     
     /*
-    create allEtag, allRecordsDataSource, etagIndexPath, section
+    create allEtag, allRecordsDataSource, fileIDIndexPath, section
     */
     
     NSInteger indexSection = 0;
@@ -187,15 +187,15 @@
         
         NSArray *rows = [sectionDataSource.sectionArrayRow objectForKey:section];
         
-        for (NSString *etag in rows) {
+        for (NSString *fileID in rows) {
             
-            tableMetadata *metadata = [dictionaryEtagMetadataForIndexPath objectForKey:etag];
+            tableMetadata *metadata = [dictionaryEtagMetadataForIndexPath objectForKey:fileID];
             
-            if (metadata.etag) {
+            if (metadata.fileID) {
                 
-                [sectionDataSource.allEtag addObject:metadata.etag];
-                [sectionDataSource.allRecordsDataSource setObject:metadata forKey:metadata.etag];
-                [sectionDataSource.etagIndexPath setObject:[NSIndexPath indexPathForRow:indexRow inSection:indexSection] forKey:metadata.etag];
+                [sectionDataSource.allEtag addObject:metadata.fileID];
+                [sectionDataSource.allRecordsDataSource setObject:metadata forKey:metadata.fileID];
+                [sectionDataSource.fileIDIndexPath setObject:[NSIndexPath indexPathForRow:indexRow inSection:indexSection] forKey:metadata.fileID];
                 
                 if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image])
                     sectionDataSource.image++;
@@ -228,7 +228,7 @@
     [sectionDataSource.allEtag removeAllObjects];
     [sectionDataSource.sections removeAllObjects];
     [sectionDataSource.sectionArrayRow removeAllObjects];
-    [sectionDataSource.etagIndexPath removeAllObjects];
+    [sectionDataSource.fileIDIndexPath removeAllObjects];
     
     sectionDataSource.image = 0;
     sectionDataSource.video = 0;

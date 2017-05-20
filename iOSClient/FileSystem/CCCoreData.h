@@ -55,7 +55,7 @@
 + (void)moveMetadata:(NSString *)fileName directoryID:(NSString *)directoryID directoryIDTo:(NSString *)directoryIDTo activeAccount:(NSString *)activeAccount;
 + (void)updateMetadata:(tableMetadata *)metadata predicate:(NSPredicate *)predicate activeAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl context:(NSManagedObjectContext *)context;
 + (void)setMetadataSession:(NSString *)session sessionError:(NSString *)sessionError sessionSelector:(NSString *)sessionSelector sessionSelectorPost:(NSString *)sessionSelectorPost sessionTaskIdentifier:(NSInteger)sessionTaskIdentifier sessionTaskIdentifierPlist:(NSInteger)sessionTaskIdentifierPlist predicate:(NSPredicate *)predicate context:(NSManagedObjectContext *)context;
-+ (void)setMetadataFavoriteFileID:(NSString *)etag favorite:(BOOL)favorite activeAccount:(NSString *)activeAccount context:(NSManagedObjectContext *)context;
++ (void)setMetadataFavoriteFileID:(NSString *)fileID favorite:(BOOL)favorite activeAccount:(NSString *)activeAccount context:(NSManagedObjectContext *)context;
 
 + (TableMetadata *)getTableMetadataWithPreficate:(NSPredicate *)predicate;
 + (NSArray *)getTableMetadataWithPredicate:(NSPredicate *)predicate context:(NSManagedObjectContext *)context;
@@ -77,7 +77,7 @@
 // ===== Directory =====
 
 + (NSString *)addDirectory:(NSString *)serverUrl permissions:(NSString *)permissions activeAccount:(NSString *)activeAccount;
-+ (void)updateDirectoryEtagServerUrl:(NSString *)serverUrl etag:(NSString *)etag activeAccount:(NSString *)activeAccount;
++ (void)updateDirectoryEtagServerUrl:(NSString *)serverUrl fileID:(NSString *)fileID activeAccount:(NSString *)activeAccount;
 + (void)deleteDirectoryFromPredicate:(NSPredicate *)predicate;
 + (NSArray *)deleteDirectoryAndSubDirectory:(NSString *)serverUrl activeAccount:(NSString *)activeAccount;
 + (void)renameDirectory:(NSString *)serverUrl serverUrlTo:(NSString *)serverUrlTo activeAccount:(NSString *)activeAccount;
@@ -114,22 +114,22 @@
 + (void)addLocalFile:(tableMetadata *)metadata activeAccount:(NSString *)activeAccount;
 + (void)deleteLocalFileWithPredicate:(NSPredicate *)predicate;
 
-+ (void)renameLocalFileWithEtag:(NSString *)etag fileNameTo:(NSString *)fileNameTo fileNamePrintTo:(NSString *)fileNamePrintTo activeAccount:(NSString *)activeAccount;
++ (void)renameLocalFileWithEtag:(NSString *)fileID fileNameTo:(NSString *)fileNameTo fileNamePrintTo:(NSString *)fileNamePrintTo activeAccount:(NSString *)activeAccount;
 + (void)updateLocalFileModel:(tableMetadata *)metadata activeAccount:(NSString *)activeAccount;
 
-+ (TableLocalFile *)getLocalFileWithEtag:(NSString *)etag activeAccount:(NSString *)activeAccount;
++ (TableLocalFile *)getLocalFileWithEtag:(NSString *)fileID activeAccount:(NSString *)activeAccount;
 + (NSArray *)getTableLocalFileWithPredicate:(NSPredicate *)predicate;
 
 // ===== Offline LocalFile =====
 
-+ (void)setOfflineLocalEtag:(NSString *)etag offline:(BOOL)offline activeAccount:(NSString *)activeAccount;
-+ (BOOL)isOfflineLocalEtag:(NSString *)etag activeAccount:(NSString *)activeAccount;
++ (void)setOfflineLocalEtag:(NSString *)fileID offline:(BOOL)offline activeAccount:(NSString *)activeAccount;
++ (BOOL)isOfflineLocalEtag:(NSString *)fileID activeAccount:(NSString *)activeAccount;
 + (NSArray *)getOfflineLocalFileActiveAccount:(NSString *)activeAccount directoryUser:(NSString *)directoryUser;
 
 // ===== GeoInformation =====
 
-+ (NSArray *)getGeoInformationLocalFromEtag:(NSString *)etag activeAccount:(NSString *)activeAccount;
-+ (void)setGeoInformationLocalFromEtag:(NSString *)etag exifDate:(NSDate *)exifDate exifLatitude:(NSString *)exifLatitude exifLongitude:(NSString *)exifLongitude activeAccount:(NSString *)activeAccount;
++ (NSArray *)getGeoInformationLocalFromEtag:(NSString *)fileID activeAccount:(NSString *)activeAccount;
++ (void)setGeoInformationLocalFromEtag:(NSString *)fileID exifDate:(NSDate *)exifDate exifLatitude:(NSString *)exifLatitude exifLongitude:(NSString *)exifLongitude activeAccount:(NSString *)activeAccount;
 + (void)setGeoInformationLocalNull;
 
 // ===== Certificates =====

@@ -247,7 +247,7 @@
     return scaleImage;
 }
 
-+ (void)saveIcoWithEtag:(NSString *)etag image:(UIImage *)image writeToFile:(NSString *)writeToFile copy:(BOOL)copy move:(BOOL)move fromPath:(NSString *)fromPath toPath:(NSString *)toPath
++ (void)saveIcoWithEtag:(NSString *)fileID image:(UIImage *)image writeToFile:(NSString *)writeToFile copy:(BOOL)copy move:(BOOL)move fromPath:(NSString *)fromPath toPath:(NSString *)toPath
 {
     if (writeToFile)
         [UIImagePNGRepresentation(image) writeToFile:writeToFile atomically: YES];
@@ -259,8 +259,8 @@
         [[NSFileManager defaultManager] moveItemAtPath:fromPath toPath:toPath error:nil];
 
 #ifndef EXTENSION
-    if (image && etag)
-        [app.icoImagesCache setObject:image forKey:etag];
+    if (image && fileID)
+        [app.icoImagesCache setObject:image forKey:fileID];
 #endif
 }
 

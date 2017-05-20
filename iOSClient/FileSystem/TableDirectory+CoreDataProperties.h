@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nullable, nonatomic, copy) NSDate *dateReadDirectory;
 @property (nullable, nonatomic, copy) NSString *directoryID;
 @property (nullable, nonatomic, copy) NSNumber *favorite;
-@property (nullable, nonatomic, copy) NSString *etag;
+@property (nullable, nonatomic, copy) NSString *fileID;
 @property (nullable, nonatomic, copy) NSNumber *lock;
 @property (nullable, nonatomic, copy) NSNumber *offline;
 @property (nullable, nonatomic, copy) NSString *permissions;

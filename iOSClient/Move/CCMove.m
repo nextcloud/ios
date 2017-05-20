@@ -240,13 +240,13 @@
 
 // MARK: - Download File
 
-- (void)downloadFileSuccess:(NSString *)etag serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost
+- (void)downloadFileSuccess:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost
 {
     if ([selector isEqualToString:selectorLoadPlist]) {
 
-        //tableMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(etag == %@) AND (account == %@)", etag, activeAccount] context:nil];
+        //tableMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, activeAccount] context:nil];
         
-        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(etag == %@) AND (account == %@)", etag, activeAccount]];
+        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, activeAccount]];
         
         [CCCoreData downloadFilePlist:metadata activeAccount:activeAccount activeUrl:activeUrl directoryUser:directoryUser];
         
@@ -254,7 +254,7 @@
     }
 }
 
-- (void)downloadFileFailure:(NSString *)etag serverUrl:(NSString *)serverUrl selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode
+- (void)downloadFileFailure:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode
 {
     self.move.enabled = NO;
 }
@@ -275,7 +275,7 @@
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
-- (void)readFolderSuccess:(CCMetadataNet *)metadataNet permissions:(NSString *)permissions etag:(NSString *)etag metadatas:(NSArray *)metadatas
+- (void)readFolderSuccess:(CCMetadataNet *)metadataNet permissions:(NSString *)permissions fileID:(NSString *)fileID metadatas:(NSArray *)metadatas
 {
     // remove all record
     //[CCCoreData deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND ((session == NULL) OR (session == ''))", activeAccount, metadataNet.directoryID]];
@@ -314,7 +314,7 @@
                     metadataNet.action = actionDownloadFile;
                     metadataNet.downloadData = NO;
                     metadataNet.downloadPlist = YES;
-                    metadataNet.etag = metadata.etag;
+                    metadataNet.fileID = metadata.fileID;
                     metadataNet.selector = selectorLoadPlist;
                     metadataNet.serverUrl = _serverUrl;
                     metadataNet.session = k_download_session_foreground;

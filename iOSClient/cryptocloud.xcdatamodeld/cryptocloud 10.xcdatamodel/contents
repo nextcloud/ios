@@ -40,8 +40,8 @@
         <attribute name="account" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="dateReadDirectory" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="directoryID" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="etag" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="favorite" optional="YES" attributeType="Boolean" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="fileID" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="lock" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="offline" optional="YES" attributeType="Boolean" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="permissions" optional="YES" attributeType="String" syncable="YES"/>
@@ -52,11 +52,11 @@
     <entity name="TableLocalFile" representedClassName="TableLocalFile" syncable="YES">
         <attribute name="account" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
-        <attribute name="etag" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="exifDate" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="exifLatitude" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="exifLongitude" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="favorite" optional="YES" attributeType="Boolean" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="fileID" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="fileName" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="fileNamePrint" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="offline" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="NO" syncable="YES"/>

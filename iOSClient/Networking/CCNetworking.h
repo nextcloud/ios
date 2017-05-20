@@ -59,7 +59,7 @@
 - (void)settingSession:(NSString *)sessionDescription sessionTaskIdentifier:(NSUInteger)sessionTaskIdentifier taskStatus:(NSInteger)taskStatus;
 
 // Download
-- (void)downloadFile:(NSString *)etag serverUrl:(NSString *)serverUrl downloadData:(BOOL)downloadData downloadPlist:(BOOL)downloadPlist selector:(NSString *)selector selectorPost:(NSString *)selectorPost session:(NSString *)session taskStatus:(NSInteger)taskStatus delegate:(id)delegate;
+- (void)downloadFile:(NSString *)fileID serverUrl:(NSString *)serverUrl downloadData:(BOOL)downloadData downloadPlist:(BOOL)downloadPlist selector:(NSString *)selector selectorPost:(NSString *)selectorPost session:(NSString *)session taskStatus:(NSInteger)taskStatus delegate:(id)delegate;
 
 // Upload
 - (void)uploadFileFromAssetLocalIdentifier:(NSString *)assetLocalIdentifier fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl cryptated:(BOOL)cryptated session:(NSString *)session taskStatus:(NSInteger)taskStatus selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorCode:(NSInteger)errorCode delegate:(id)delegate;
@@ -75,16 +75,16 @@
 
 @protocol CCNetworkingDelegate <NSObject>
 
-@optional - (void)reloadDatasource:(NSString *)serverUrl etag:(NSString *)etag selector:(NSString *)selector;
+@optional - (void)reloadDatasource:(NSString *)serverUrl fileID:(NSString *)fileID selector:(NSString *)selector;
 @optional - (void)comandoCreaCartella:(NSString *)fileNameFolder cameraUpload:(BOOL)cameraUpload;
 
 @optional - (void)downloadTaskSave:(NSURLSessionDownloadTask *)downloadTask;
-@optional - (void)downloadFileSuccess:(NSString *)etag serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost;
-@optional - (void)downloadFileFailure:(NSString *)etag serverUrl:(NSString *)serverUrl selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode;
+@optional - (void)downloadFileSuccess:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost;
+@optional - (void)downloadFileFailure:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode;
 
 @optional - (void)uploadTaskSave:(NSURLSessionUploadTask *)uploadTask;
-@optional - (void)uploadFileSuccess:(CCMetadataNet *)metadataNet etag:(NSString *)etag serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost;
-@optional - (void)uploadFileFailure:(CCMetadataNet *)metadataNet etag:(NSString *)etag serverUrl:(NSString *)serverUrl selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode;
+@optional - (void)uploadFileSuccess:(CCMetadataNet *)metadataNet fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost;
+@optional - (void)uploadFileFailure:(CCMetadataNet *)metadataNet fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode;
 
 @end
 
@@ -108,7 +108,7 @@
 @property NSInteger errorCode;
 @property NSInteger errorRetry;
 @property (nonatomic, strong) NSString *expirationTime;
-@property (nonatomic, strong) NSString *etag;
+@property (nonatomic, strong) NSString *fileID;
 @property (nonatomic, strong) NSString *fileName;
 @property (nonatomic, strong) NSString *fileNameTo;
 @property (nonatomic, strong) NSString *fileNameLocal;

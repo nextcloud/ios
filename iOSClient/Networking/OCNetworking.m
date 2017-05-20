@@ -145,7 +145,7 @@
 
 - (void)downloadFile
 {
-    [[CCNetworking sharedNetworking] downloadFile:_metadataNet.etag serverUrl:_metadataNet.serverUrl downloadData:_metadataNet.downloadData downloadPlist:_metadataNet.downloadPlist selector:_metadataNet.selector selectorPost:_metadataNet.selectorPost session:_metadataNet.session taskStatus:_metadataNet.taskStatus delegate:self];
+    [[CCNetworking sharedNetworking] downloadFile:_metadataNet.fileID serverUrl:_metadataNet.serverUrl downloadData:_metadataNet.downloadData downloadPlist:_metadataNet.downloadPlist selector:_metadataNet.selector selectorPost:_metadataNet.selectorPost session:_metadataNet.session taskStatus:_metadataNet.taskStatus delegate:self];
 }
 
 - (void)downloadTaskSave:(NSURLSessionDownloadTask *)downloadTask
@@ -156,20 +156,20 @@
         [self.delegate downloadTaskSave:downloadTask];
 }
 
-- (void)downloadFileSuccess:(NSString *)etag serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost
+- (void)downloadFileSuccess:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost
 {
     [self complete];
     
     if ([self.delegate respondsToSelector:@selector(downloadFileSuccess:serverUrl:selector:selectorPost:)])
-        [self.delegate downloadFileSuccess:etag serverUrl:serverUrl selector:selector selectorPost:selectorPost];
+        [self.delegate downloadFileSuccess:fileID serverUrl:serverUrl selector:selector selectorPost:selectorPost];
 }
 
-- (void)downloadFileFailure:(NSString *)etag serverUrl:(NSString *)serverUrl selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode
+- (void)downloadFileFailure:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode
 {
     [self complete];
  
     if ([self.delegate respondsToSelector:@selector(downloadFileFailure:serverUrl:selector:message:errorCode:)])
-        [self.delegate downloadFileFailure:etag serverUrl:serverUrl selector:selector message:message errorCode:errorCode];
+        [self.delegate downloadFileFailure:fileID serverUrl:serverUrl selector:selector message:message errorCode:errorCode];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -204,20 +204,20 @@
         [self.delegate uploadTaskSave:uploadTask];
 }
 
-- (void)uploadFileSuccess:(CCMetadataNet *)metadataNet etag:(NSString *)etag serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost
+- (void)uploadFileSuccess:(CCMetadataNet *)metadataNet fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost
 {
     [self complete];
     
-    if ([self.delegate respondsToSelector:@selector(uploadFileSuccess:etag:serverUrl:selector:selectorPost:)])
-        [self.delegate uploadFileSuccess:_metadataNet etag:etag serverUrl:serverUrl selector:selector selectorPost:selectorPost];
+    if ([self.delegate respondsToSelector:@selector(uploadFileSuccess:fileID:serverUrl:selector:selectorPost:)])
+        [self.delegate uploadFileSuccess:_metadataNet fileID:fileID serverUrl:serverUrl selector:selector selectorPost:selectorPost];
 }
 
-- (void)uploadFileFailure:(CCMetadataNet *)metadataNet etag:(NSString *)etag serverUrl:(NSString *)serverUrl selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode
+- (void)uploadFileFailure:(CCMetadataNet *)metadataNet fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode
 {
     [self complete];
     
-    if ([self.delegate respondsToSelector:@selector(uploadFileFailure:etag:serverUrl:selector:message:errorCode:)])
-        [self.delegate uploadFileFailure:_metadataNet etag:etag serverUrl:serverUrl selector:selector message:message errorCode:errorCode];
+    if ([self.delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
+        [self.delegate uploadFileFailure:_metadataNet fileID:fileID serverUrl:serverUrl selector:selector message:message errorCode:errorCode];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -315,8 +315,8 @@
 
             dispatch_async(dispatch_get_main_queue(), ^{
                 
-                if ([self.delegate respondsToSelector:@selector(readFolderSuccess:permissions:etag:metadatas:)])
-                    [self.delegate readFolderSuccess:_metadataNet permissions:@"" etag:@"" metadatas:metadatas];
+                if ([self.delegate respondsToSelector:@selector(readFolderSuccess:permissions:fileID:metadatas:)])
+                    [self.delegate readFolderSuccess:_metadataNet permissions:@"" fileID:@"" metadatas:metadatas];
             });
 
             [self complete];
@@ -327,7 +327,7 @@
         // directory [0]
         OCFileDto *itemDtoDirectory = [items objectAtIndex:0];
         NSString *permissions = itemDtoDirectory.permissions;
-        NSString *etagDirectory = itemDtoDirectory.etag;
+        NSString *fileIDDirectory = itemDtoDirectory.etag;
         //NSDate *date = [NSDate dateWithTimeIntervalSince1970:itemDtoDirectory.date];
         
         NSString *directoryID = [CCCoreData addDirectory:_metadataNet.serverUrl permissions:permissions activeAccount:_metadataNet.account];
@@ -376,7 +376,7 @@
                 // ----- BUG #942 ---------
                 if ([itemDto.etag length] == 0) {
 #ifndef EXTENSION
-                    [app messageNotification:@"Server error" description:@"Metadata etag absent, record excluded, please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
+                    [app messageNotification:@"Server error" description:@"Metadata fileID absent, record excluded, please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
 #endif
                     continue;
                 }
@@ -387,8 +387,8 @@
             
             dispatch_async(dispatch_get_main_queue(), ^{
                 
-                if ([self.delegate respondsToSelector:@selector(readFolderSuccess:permissions:etag:metadatas:)])
-                    [self.delegate readFolderSuccess:_metadataNet permissions:permissions etag:etagDirectory metadatas:metadatas];
+                if ([self.delegate respondsToSelector:@selector(readFolderSuccess:permissions:fileID:metadatas:)])
+                    [self.delegate readFolderSuccess:_metadataNet permissions:permissions fileID:fileIDDirectory metadatas:metadatas];
             });
         });
         
@@ -414,7 +414,7 @@
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
         
         // Activity
-        [[NCManageDatabase sharedInstance] addActivityClient:_metadataNet.serverUrl etag:@"" action:k_activityDebugActionReadFolder selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
+        [[NCManageDatabase sharedInstance] addActivityClient:_metadataNet.serverUrl fileID:@"" action:k_activityDebugActionReadFolder selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
         
         [self complete];
     }];
@@ -457,7 +457,7 @@
             // ----- BUG #942 ---------
             if ([itemDto.etag length] == 0) {
 #ifndef EXTENSION
-                [app messageNotification:@"Server error" description:@"Metadata etag absent, record excluded, please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
+                [app messageNotification:@"Server error" description:@"Metadata fileID absent, record excluded, please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
 #endif
                 continue;
             }
@@ -603,7 +603,7 @@
             // ----- BUG #942 ---------
             if ([itemDto.etag length] == 0) {
 #ifndef EXTENSION
-                [app messageNotification:@"Server error" description:@"Metadata etag absent, record excluded, please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
+                [app messageNotification:@"Server error" description:@"Metadata fileID absent, record excluded, please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
 #endif
                 continue;
             }
@@ -1360,7 +1360,7 @@
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
         
         // Activity
-        [[NCManageDatabase sharedInstance] addActivityClient:_activeUrl etag:@"" action:k_activityDebugActionGetNotification selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
+        [[NCManageDatabase sharedInstance] addActivityClient:_activeUrl fileID:@"" action:k_activityDebugActionGetNotification selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
         
         [self complete];
     }];
@@ -1430,7 +1430,7 @@
         [communication subscribingPushProxy:[NCBrandOptions sharedInstance].pushNotificationServer pushToken:pushToken deviceIdentifier:deviceIdentifier deviceIdentifierSignature:signature userPublicKey:[CCUtility URLEncodeStringFromString:publicKey] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
             
             // Activity
-            [[NCManageDatabase sharedInstance] addActivityClient:[NCBrandOptions sharedInstance].pushNotificationServer etag:@"" action:k_activityDebugActionPushProxy selector:@"" note:@"Service registered." type:k_activityTypeSuccess verbose:k_activityVerboseHigh activeUrl:_activeUrl];
+            [[NCManageDatabase sharedInstance] addActivityClient:[NCBrandOptions sharedInstance].pushNotificationServer fileID:@"" action:k_activityDebugActionPushProxy selector:@"" note:@"Service registered." type:k_activityTypeSuccess verbose:k_activityVerboseHigh activeUrl:_activeUrl];
             
             [self complete];
             
@@ -1454,7 +1454,7 @@
                 [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
 
             // Activity
-            [[NCManageDatabase sharedInstance] addActivityClient:[NCBrandOptions sharedInstance].pushNotificationServer etag:@"" action:k_activityDebugActionPushProxy selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
+            [[NCManageDatabase sharedInstance] addActivityClient:[NCBrandOptions sharedInstance].pushNotificationServer fileID:@"" action:k_activityDebugActionPushProxy selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
             
             [self complete];
         }];
@@ -1479,7 +1479,7 @@
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
         
         // Activity
-        [[NCManageDatabase sharedInstance] addActivityClient:_activeUrl etag:@"" action:k_activityDebugActionServerPush selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
+        [[NCManageDatabase sharedInstance] addActivityClient:_activeUrl fileID:@"" action:k_activityDebugActionServerPush selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
         
         [self complete];
     }];
@@ -1602,7 +1602,7 @@
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
 
         // Activity
-        [[NCManageDatabase sharedInstance] addActivityClient:_activeUrl etag:@"" action:k_activityDebugActionCapabilities selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
+        [[NCManageDatabase sharedInstance] addActivityClient:_activeUrl fileID:@"" action:k_activityDebugActionCapabilities selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
         
         [self complete];
     }];

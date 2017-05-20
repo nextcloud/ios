@@ -76,7 +76,7 @@
         
         NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:_metadata.account];
         
-        [[CCNetworking sharedNetworking] downloadFile:_metadata.etag serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorOpenIn selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self.delegate];
+        [[CCNetworking sharedNetworking] downloadFile:_metadata.fileID serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorOpenIn selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self.delegate];
     }];
     
     return @[previewAction1];
@@ -88,7 +88,7 @@
 
 - (void)downloadThumbnailSuccess:(CCMetadataNet *)metadataNet
 {
-    UIImage *image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.pvw",app.directoryUser, _metadata.etag]];
+    UIImage *image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.pvw",app.directoryUser, _metadata.fileID]];
     
     _imagePreview.image = image;
     
@@ -111,9 +111,9 @@
     NSString *serverUrl = app.activeMain.serverUrl;
     
     metadataNet.action = actionDownloadThumbnail;
-    metadataNet.etag = metadata.etag;
+    metadataNet.fileID = metadata.fileID;
     metadataNet.fileName = [self returnFileNamePathFromFileName:metadata.fileName serverUrl:serverUrl];
-    metadataNet.fileNameLocal = metadata.etag;
+    metadataNet.fileNameLocal = metadata.fileID;
     metadataNet.fileNamePrint = metadata.fileNamePrint;
     metadataNet.options = @"l";
     metadataNet.priority = NSOperationQueuePriorityLow;

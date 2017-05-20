@@ -283,7 +283,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         self.present(alert, animated: true, completion: nil)
     }
     
-    func readFolderSuccess(_ metadataNet: CCMetadataNet!, permissions: String!, etag: String!, metadatas: [Any]!) {
+    func readFolderSuccess(_ metadataNet: CCMetadataNet!, permissions: String!, fileID: String!, metadatas: [Any]!) {
         
         // remove all record
         var predicate = NSPredicate(format: "account = %@ AND directoryID = %@ AND session = ''", activeAccount!, metadataNet.directoryID!)
@@ -334,7 +334,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
                 metadataNet.action = actionDownloadFile
                 metadataNet.downloadData = false
                 metadataNet.downloadPlist = true
-                metadataNet.etag = metadata.etag
+                metadataNet.fileID = metadata.fileID
                 metadataNet.selector = selectorLoadPlist
                 metadataNet.serverUrl = self.serverUrl
                 metadataNet.session = k_download_session_foreground
@@ -365,9 +365,9 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
     
     func downloadThumbnailSuccess(_ metadataNet: CCMetadataNet!) {
         
-        if let indexPath = thumbnailInLoading[metadataNet.etag] {
+        if let indexPath = thumbnailInLoading[metadataNet.fileID] {
             
-            let path = "\(directoryUser!)/\(metadataNet.etag!).ico"
+            let path = "\(directoryUser!)/\(metadataNet.fileID!).ico"
             
             if FileManager.default.fileExists(atPath: path) {
                 
@@ -384,9 +384,9 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         let metadataNet = CCMetadataNet.init(account: activeAccount)!
         
         metadataNet.action = actionDownloadThumbnail
-        metadataNet.etag = metadata.etag
+        metadataNet.fileID = metadata.fileID
         metadataNet.fileName = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: self.serverUrl, activeUrl: activeUrl)
-        metadataNet.fileNameLocal = metadata.etag;
+        metadataNet.fileNameLocal = metadata.fileID;
         metadataNet.fileNamePrint = metadata.fileNamePrint;
         metadataNet.options = "m";
         metadataNet.selector = selectorDownloadThumbnail;
@@ -398,7 +398,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
 
     //  MARK: - Download / Upload
     
-    func progressTask(_ etag: String!, serverUrl: String!, cryptated: Bool, progress: Float) {
+    func progressTask(_ fileID: String!, serverUrl: String!, cryptated: Bool, progress: Float) {
         
         hud.progress(progress)
     }
@@ -410,7 +410,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
 
     //  MARK: - Download
 
-    func downloadFileFailure(_ etag: String!, serverUrl: String!, selector: String!, message: String!, errorCode: Int) {
+    func downloadFileFailure(_ fileID: String!, serverUrl: String!, selector: String!, message: String!, errorCode: Int) {
         
         hud.hideHud()
         
@@ -418,27 +418,27 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
             
             let alert = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: message, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default) { action in
-                NSLog("[LOG] Download Error \(etag) \(message) (error \(errorCode))");
+                NSLog("[LOG] Download Error \(fileID) \(message) (error \(errorCode))");
             })
             
             self.present(alert, animated: true, completion: nil)
         }
     }
 
-    func downloadFileSuccess(_ etag: String!, serverUrl: String!, selector: String!, selectorPost: String!) {
+    func downloadFileSuccess(_ fileID: String!, serverUrl: String!, selector: String!, selectorPost: String!) {
         
         hud.hideHud()
         
-        let predicate = NSPredicate(format: "account = %@ AND etag == %@", activeAccount!, etag!)
+        let predicate = NSPredicate(format: "account = %@ AND fileID == %@", activeAccount!, fileID!)
         metadata = NCManageDatabase.sharedInstance.getMetadataWithPreficate(predicate)
         
-        //let metadata = CCCoreData.getMetadataWithPreficate(NSPredicate(format: "(account == '\(activeAccount!)') AND (etag == '\(etag!)')"), context: nil)
+        //let metadata = CCCoreData.getMetadataWithPreficate(NSPredicate(format: "(account == '\(activeAccount!)') AND (fileID == '\(fileID!)')"), context: nil)
         
         switch selector {
             
         case selectorLoadFileView :
             
-            let sourceUrl = URL(string: "file://\(directoryUser!)/\(etag!)".addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!)!
+            let sourceUrl = URL(string: "file://\(directoryUser!)/\(fileID!)".addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!)!
             let destinationUrl : URL! = appGroupContainerURL()?.appendingPathComponent(metadata!.fileNamePrint)
             
             // Destination Provider
@@ -473,13 +473,13 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
  
     //  MARK: - Upload
     
-    func uploadFileFailure(_ metadataNet: CCMetadataNet, etag: String, serverUrl: String, selector: String, message: String, errorCode: NSInteger){
+    func uploadFileFailure(_ metadataNet: CCMetadataNet, fileID: String, serverUrl: String, selector: String, message: String, errorCode: NSInteger){
         
         hud.hideHud()
         
         // remove file
-        //CCCoreData.deleteMetadata(with: NSPredicate(format: "(account == '\(activeAccount!)') AND (etag == '\(etag)')"))
-        let predicate = NSPredicate(format: "account = %@ AND etag == %@", activeAccount!, etag)
+        //CCCoreData.deleteMetadata(with: NSPredicate(format: "(account == '\(activeAccount!)') AND (fileID == '\(fileID)')"))
+        let predicate = NSPredicate(format: "account = %@ AND fileID == %@", activeAccount!, fileID)
         NCManageDatabase.sharedInstance.deleteMetadata(predicate)
         
         if errorCode != -999 {
@@ -487,14 +487,14 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
             let alert = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: message, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default) { action in
                 //self.dismissGrantingAccess(to: nil)
-                NSLog("[LOG] Download Error \(etag) \(message) (error \(errorCode))");
+                NSLog("[LOG] Download Error \(fileID) \(message) (error \(errorCode))");
             })
             
             self.present(alert, animated: true, completion: nil)
         }
     }
     
-    func uploadFileSuccess(_ metadataNet: CCMetadataNet, etag: String, serverUrl: String, selector: String, selectorPost: String) {
+    func uploadFileSuccess(_ metadataNet: CCMetadataNet, fileID: String, serverUrl: String, selector: String, selectorPost: String) {
         
         hud.hideHud()
                 
@@ -737,7 +737,7 @@ extension DocumentPickerViewController: UITableViewDataSource {
         //let metadata = CCCoreData.insertEntity(in: recordTableMetadata)!
         
         // File Image View
-        let filePath = "\(directoryUser!)/\(metadata!.etag)).ico"
+        let filePath = "\(directoryUser!)/\(metadata!.fileID)).ico"
         
         if FileManager.default.fileExists(atPath: filePath) {
             
@@ -755,7 +755,7 @@ extension DocumentPickerViewController: UITableViewDataSource {
                 if (metadata?.thumbnailExists)! {
                     
                     downloadThumbnail(metadata!)
-                    thumbnailInLoading[metadata!.etag] = indexPath
+                    thumbnailInLoading[metadata!.fileID] = indexPath
                 }
             }
         }
@@ -795,9 +795,9 @@ extension DocumentPickerViewController: UITableViewDataSource {
 
         if metadata!.directory == false {
             
-            if FileManager.default.fileExists(atPath: "\(directoryUser!)/\(String(describing: self.metadata?.etag))") {
+            if FileManager.default.fileExists(atPath: "\(directoryUser!)/\(String(describing: self.metadata?.fileID))") {
                 
-                downloadFileSuccess(self.metadata?.etag, serverUrl: self.serverUrl!, selector: selectorLoadFileView, selectorPost: nil)
+                downloadFileSuccess(self.metadata?.fileID, serverUrl: self.serverUrl!, selector: selectorLoadFileView, selectorPost: nil)
                 
             } else {
             
@@ -807,7 +807,7 @@ extension DocumentPickerViewController: UITableViewDataSource {
                 metadataNet.action = actionDownloadFile
                 metadataNet.downloadData = true
                 metadataNet.downloadPlist = false
-                metadataNet.etag = metadata?.etag
+                metadataNet.fileID = metadata?.fileID
                 metadataNet.selector = selectorLoadFileView
                 metadataNet.serverUrl = self.serverUrl
                 metadataNet.session = k_download_session_foreground

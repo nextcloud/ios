@@ -497,7 +497,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func addActivityClient(_ file: String, etag: String, action: String, selector: String, note: String, type: String, verbose: Bool, activeUrl: String?) {
+    func addActivityClient(_ file: String, fileID: String, action: String, selector: String, note: String, type: String, verbose: Bool, activeUrl: String?) {
 
         let tableAccount = self.getAccountActive()
         if tableAccount == nil {
@@ -521,7 +521,7 @@ class NCManageDatabase: NSObject {
             addActivity.account = tableAccount!.account
             addActivity.action = action
             addActivity.file = file
-            addActivity.etag = etag
+            addActivity.fileID = fileID
             addActivity.note = noteReplacing
             addActivity.selector = selector
             addActivity.type = type
@@ -1255,7 +1255,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func setMetadataFavorite(_ etag: String, favorite: Bool) {
+    func setMetadataFavorite(_ fileID: String, favorite: Bool) {
         
         let tableAccount = self.getAccountActive()
         if tableAccount == nil {
@@ -1264,7 +1264,7 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
         
-        let results = realm.objects(tableMetadata.self).filter("account = %@ AND etag = %@", tableAccount!.account, etag)
+        let results = realm.objects(tableMetadata.self).filter("account = %@ AND fileID = %@", tableAccount!.account, fileID)
         if (results.count > 0) {
             
             try! realm.write {
@@ -1480,7 +1480,7 @@ class NCManageDatabase: NSObject {
         copyMetadata.directory = metadata.directory
         copyMetadata.directoryID = metadata.directoryID
         copyMetadata.errorPasscode = metadata.errorPasscode
-        copyMetadata.etag = metadata.etag
+        copyMetadata.fileID = metadata.fileID
         copyMetadata.favorite = metadata.favorite
         copyMetadata.fileName = metadata.fileName
         copyMetadata.fileNameData = metadata.fileNameData

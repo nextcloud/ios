@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nullable, nonatomic, copy) NSString *exifLatitude;
 @property (nullable, nonatomic, copy) NSString *exifLongitude;
 @property (nullable, nonatomic, copy) NSNumber *favorite;
-@property (nullable, nonatomic, copy) NSString *etag;
+@property (nullable, nonatomic, copy) NSString *fileID;
 @property (nullable, nonatomic, copy) NSString *fileName;
 @property (nullable, nonatomic, copy) NSString *fileNamePrint;
 @property (nullable, nonatomic, copy) NSNumber *offline;

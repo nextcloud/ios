@@ -878,7 +878,7 @@
 		F70211F81BAC56E9003FC03E /* CCCellMainTransfer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCCellMainTransfer.m; sourceTree = "<group>"; };
 		F70211F91BAC56E9003FC03E /* CCCellMainTransfer.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CCCellMainTransfer.xib; sourceTree = "<group>"; };
 		F70211FA1BAC56E9003FC03E /* CCMain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCMain.h; sourceTree = "<group>"; };
-		F70211FB1BAC56E9003FC03E /* CCMain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCMain.m; sourceTree = "<group>"; };
+		F70211FB1BAC56E9003FC03E /* CCMain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = CCMain.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		F7053E3C1C639DF500741EA5 /* CCUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCUtility.h; sourceTree = "<group>"; };
 		F7053E3D1C639DF500741EA5 /* CCUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCUtility.m; sourceTree = "<group>"; };
 		F708CF511E56E8CB00271D8B /* TableLocalFile+CoreDataClass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TableLocalFile+CoreDataClass.h"; sourceTree = "<group>"; };
@@ -1066,7 +1066,7 @@
 		F7151A841D477A4B00E6AF45 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Error.strings; sourceTree = "<group>"; };
 		F719FDB11CF06645004895D0 /* CCPhotosCameraUpload.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCPhotosCameraUpload.h; sourceTree = "<group>"; };
 		F719FDB21CF06645004895D0 /* CCPhotosCameraUpload.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCPhotosCameraUpload.m; sourceTree = "<group>"; };
-		F720E01E1E48C73E001A4B9E /* CCActions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CCActions.swift; path = Actions/CCActions.swift; sourceTree = "<group>"; };
+		F720E01E1E48C73E001A4B9E /* CCActions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; name = CCActions.swift; path = Actions/CCActions.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		F721371D1BAFF0920012B613 /* CCAccountWeb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCAccountWeb.h; sourceTree = "<group>"; };
 		F721371E1BAFF0920012B613 /* CCAccountWeb.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCAccountWeb.m; sourceTree = "<group>"; };
 		F72137211BAFF0920012B613 /* CCBancomat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCBancomat.h; sourceTree = "<group>"; };
@@ -1559,7 +1559,7 @@
 		F768EAFC1BFB7CD800B6E341 /* CCShareOC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCShareOC.m; sourceTree = "<group>"; };
 		F768EB021BFB7EA900B6E341 /* CCShare.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = CCShare.storyboard; sourceTree = "<group>"; };
 		F769D3951E9E1506006DBBB4 /* CCLocalStorage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCLocalStorage.h; sourceTree = "<group>"; };
-		F769D3961E9E1506006DBBB4 /* CCLocalStorage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCLocalStorage.m; sourceTree = "<group>"; };
+		F769D3961E9E1506006DBBB4 /* CCLocalStorage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = CCLocalStorage.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		F769D3971E9E1506006DBBB4 /* CCLocalStorageCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCLocalStorageCell.h; sourceTree = "<group>"; };
 		F769D3981E9E1506006DBBB4 /* CCLocalStorageCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCLocalStorageCell.m; sourceTree = "<group>"; };
 		F769D3991E9E1506006DBBB4 /* CCLocalStorageCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CCLocalStorageCell.xib; sourceTree = "<group>"; };
@@ -1602,14 +1602,14 @@
 		F7A13A011E7F3D5D00016680 /* UINavigationController+CCProgress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UINavigationController+CCProgress.h"; sourceTree = "<group>"; };
 		F7A13A021E7F3D5D00016680 /* UINavigationController+CCProgress.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UINavigationController+CCProgress.m"; sourceTree = "<group>"; };
 		F7A3214E1E9E2A070069AD1B /* CCFavorites.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCFavorites.h; sourceTree = "<group>"; };
-		F7A3214F1E9E2A070069AD1B /* CCFavorites.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCFavorites.m; sourceTree = "<group>"; };
+		F7A3214F1E9E2A070069AD1B /* CCFavorites.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = CCFavorites.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		F7A321501E9E2A070069AD1B /* CCFavoritesCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCFavoritesCell.h; sourceTree = "<group>"; };
 		F7A321511E9E2A070069AD1B /* CCFavoritesCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCFavoritesCell.m; sourceTree = "<group>"; };
 		F7A321521E9E2A070069AD1B /* CCFavoritesCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CCFavoritesCell.xib; sourceTree = "<group>"; };
 		F7A321531E9E2A070069AD1B /* CCSynchronize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCSynchronize.h; sourceTree = "<group>"; };
 		F7A321541E9E2A070069AD1B /* CCSynchronize.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCSynchronize.m; sourceTree = "<group>"; };
 		F7A321631E9E37960069AD1B /* CCActivity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCActivity.h; sourceTree = "<group>"; };
-		F7A321641E9E37960069AD1B /* CCActivity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCActivity.m; sourceTree = "<group>"; };
+		F7A321641E9E37960069AD1B /* CCActivity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = CCActivity.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		F7A321741E9E3EAF0069AD1B /* CCTransfers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCTransfers.h; sourceTree = "<group>"; };
 		F7A321751E9E3EAF0069AD1B /* CCTransfers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCTransfers.m; sourceTree = "<group>"; };
 		F7A321761E9E3EAF0069AD1B /* CCTransfersCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCTransfersCell.h; sourceTree = "<group>"; };
@@ -1686,8 +1686,8 @@
 		F7D02A461C5F9E4400D6F972 /* CCMove.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCMove.h; sourceTree = "<group>"; };
 		F7D02A471C5F9E4400D6F972 /* CCMove.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCMove.m; sourceTree = "<group>"; };
 		F7D02A481C5F9E4400D6F972 /* CCMove.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = CCMove.storyboard; sourceTree = "<group>"; };
-		F7D0E65E1BC5042E008D989A /* CCDetail.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCDetail.h; sourceTree = "<group>"; };
-		F7D0E65F1BC5042E008D989A /* CCDetail.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCDetail.m; sourceTree = "<group>"; };
+		F7D0E65E1BC5042E008D989A /* CCDetail.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = CCDetail.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		F7D0E65F1BC5042E008D989A /* CCDetail.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = CCDetail.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		F7D154271E2392A300202FD9 /* Nextcloud-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Nextcloud-Bridging-Header.h"; sourceTree = "<group>"; };
 		F7DFE24F1EBDC3A400CF5202 /* Realm.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Realm.framework; sourceTree = "<group>"; };
 		F7DFE2501EBDC3A400CF5202 /* RealmSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = RealmSwift.framework; sourceTree = "<group>"; };

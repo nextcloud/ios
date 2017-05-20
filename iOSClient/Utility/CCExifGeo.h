@@ -33,6 +33,6 @@
 
 + (void)setExifLocalTableEtag:(tableMetadata *)metadata directoryUser:(NSString *)directoryUser activeAccount:(NSString *)activeAccount;
 
-+ (void)setGeocoderEtag:(NSString *)etag exifDate:(NSDate *)exifDate latitude:(NSString*)latitude longitude:(NSString*)longitude;
++ (void)setGeocoderEtag:(NSString *)fileID exifDate:(NSDate *)exifDate latitude:(NSString*)latitude longitude:(NSString*)longitude;
 
 @end

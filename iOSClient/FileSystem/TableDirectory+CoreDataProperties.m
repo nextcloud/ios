@@ -18,7 +18,7 @@
 @dynamic dateReadDirectory;
 @dynamic directoryID;
 @dynamic favorite;
-@dynamic etag;
+@dynamic fileID;
 @dynamic lock;
 @dynamic offline;
 @dynamic permissions;

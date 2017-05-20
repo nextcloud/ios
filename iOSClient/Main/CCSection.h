@@ -29,7 +29,7 @@
 @property (nonatomic, strong) NSMutableArray *allEtag;
 @property (nonatomic, strong) NSMutableArray *sections;
 @property (nonatomic, strong) NSMutableDictionary *sectionArrayRow;
-@property (nonatomic, strong) NSMutableDictionary *etagIndexPath;
+@property (nonatomic, strong) NSMutableDictionary *fileIDIndexPath;
 
 @property NSInteger video;
 @property NSInteger image;

@@ -146,17 +146,17 @@
 - (void)triggerProgressTask:(NSNotification *)notification
 {
     NSDictionary *dict = notification.userInfo;
-    NSString *etag = [dict valueForKey:@"etag"];
+    NSString *fileID = [dict valueForKey:@"fileID"];
     BOOL cryptated = [[dict valueForKey:@"cryptated"] boolValue];
     float progress = [[dict valueForKey:@"progress"] floatValue];
     
     // Check
-    if (!etag)
+    if (!fileID)
         return;
     
-    [app.listProgressMetadata setObject:[NSNumber numberWithFloat:progress] forKey:etag];
+    [app.listProgressMetadata setObject:[NSNumber numberWithFloat:progress] forKey:fileID];
     
-    NSIndexPath *indexPath = [_sectionDataSource.etagIndexPath objectForKey:etag];
+    NSIndexPath *indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:fileID];
     
     if (indexPath && indexPath.row == 0) {
         
@@ -185,8 +185,8 @@
     
     if (indexPath) {
         
-        NSString *etag = [[_sectionDataSource.sectionArrayRow objectForKey:[_sectionDataSource.sections objectAtIndex:indexPath.section]] objectAtIndex:indexPath.row];
-        tableMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:etag];
+        NSString *fileID = [[_sectionDataSource.sectionArrayRow objectForKey:[_sectionDataSource.sections objectAtIndex:indexPath.section]] objectAtIndex:indexPath.row];
+        tableMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:fileID];
         
         if (metadata)
             [app.activeMain reloadTaskButton:metadata];
@@ -223,8 +223,8 @@
     
     if (indexPath) {
         
-        NSString *etag = [[_sectionDataSource.sectionArrayRow objectForKey:[_sectionDataSource.sections objectAtIndex:indexPath.section]] objectAtIndex:indexPath.row];
-        tableMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:etag];
+        NSString *fileID = [[_sectionDataSource.sectionArrayRow objectForKey:[_sectionDataSource.sections objectAtIndex:indexPath.section]] objectAtIndex:indexPath.row];
+        tableMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:fileID];
         
         if (metadata)
             [app.activeMain cancelTaskButton:metadata reloadTable:YES];
@@ -263,8 +263,8 @@
     
     if (indexPath) {
         
-        NSString *etag = [[_sectionDataSource.sectionArrayRow objectForKey:[_sectionDataSource.sections objectAtIndex:indexPath.section]] objectAtIndex:indexPath.row];
-        tableMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:etag];
+        NSString *fileID = [[_sectionDataSource.sectionArrayRow objectForKey:[_sectionDataSource.sections objectAtIndex:indexPath.section]] objectAtIndex:indexPath.row];
+        tableMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:fileID];
         
         if (metadata)
             [app.activeMain stopTaskButton:metadata];
@@ -527,8 +527,8 @@
     NSString *dataFile;
     NSString *lunghezzaFile;
     
-    NSString *etag = [[_sectionDataSource.sectionArrayRow objectForKey:[_sectionDataSource.sections objectAtIndex:indexPath.section]] objectAtIndex:indexPath.row];
-    tableMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:etag];
+    NSString *fileID = [[_sectionDataSource.sectionArrayRow objectForKey:[_sectionDataSource.sections objectAtIndex:indexPath.section]] objectAtIndex:indexPath.row];
+    tableMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:fileID];
     
     CCTransfersCell *cell = (CCTransfersCell *)[tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
     cell.backgroundColor = [UIColor clearColor];
@@ -603,9 +603,9 @@
     // ----------------------------------------------------------------------------------------------------------
     
     // assegnamo l'immagine anteprima se esiste, altrimenti metti quella standars
-    if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.etag]]) {
+    if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]]) {
         
-        cell.fileImageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.etag]];
+        cell.fileImageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]];
         
     } else {
         
@@ -647,7 +647,7 @@
         
         cell.labelInfoFile.text = [NSString stringWithFormat:@"%@", lunghezzaFile];
         
-        float progress = [[app.listProgressMetadata objectForKey:metadata.etag] floatValue];
+        float progress = [[app.listProgressMetadata objectForKey:metadata.fileID] floatValue];
         if (progress > 0) {
             
             if (metadata.cryptated) cell.progressView.progressTintColor = [NCBrandColor sharedInstance].cryptocloud;
@@ -706,13 +706,13 @@
         }
         
         // se non c'è una preview in bianconero metti l'immagine di default
-        if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.etag]] == NO)
+        if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]] == NO)
             cell.fileImageView.image = [UIImage imageNamed:@"uploaddisable"];
         
         cell.labelTitle.enabled = NO;
         cell.labelInfoFile.text = [NSString stringWithFormat:@"%@", lunghezzaFile];
         
-        float progress = [[app.listProgressMetadata objectForKey:metadata.etag] floatValue];
+        float progress = [[app.listProgressMetadata objectForKey:metadata.fileID] floatValue];
         if (progress > 0) {
             
             if (metadata.cryptated) cell.progressView.progressTintColor = [NCBrandColor sharedInstance].cryptocloud;
