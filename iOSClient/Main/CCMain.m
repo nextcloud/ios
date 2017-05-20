@@ -4724,6 +4724,7 @@
     
     // Controllo data lettura Data Source
     NSDate *dateDateRecordDirectory = [CCCoreData getDateReadDirectoryID:[CCCoreData getDirectoryIDFromServerUrl:_serverUrl activeAccount:app.activeAccount] activeAccount:app.activeAccount];
+    dateDateRecordDirectory = nil;
     
     if ([dateDateRecordDirectory compare:_dateReadDataSource] == NSOrderedDescending || dateDateRecordDirectory == nil || _dateReadDataSource == nil) {
         
@@ -4732,8 +4733,6 @@
         _dateReadDataSource = [NSDate date];
     
         // Data Source
-    
-        //NSArray *recordsTableMetadata = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@)", app.activeAccount, [CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:app.activeAccount]] fieldOrder:[CCUtility getOrderSettings] ascending:[CCUtility getAscendingSettings]];
     
         NSArray *recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@)", app.activeAccount, [CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:app.activeAccount]] sorted:[CCUtility getOrderSettings] ascending:[CCUtility getAscendingSettings]];
         
