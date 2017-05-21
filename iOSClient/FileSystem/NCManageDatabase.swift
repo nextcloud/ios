@@ -1563,6 +1563,63 @@ class NCManageDatabase: NSObject {
         }
     }
     
+    func deleteDirectoryAndSubDirectory(_ serverUrl: String) {
+        
+        let tableAccount = self.getAccountActive()
+        if tableAccount == nil {
+            return
+        }
+        
+        let realm = try! Realm()
+        
+        let results = realm.objects(tableDirectory.self).filter("account = %@ AND serverUrl BEGINSWITH %@", tableAccount!.account, serverUrl)
+        
+        try! realm.write {
+            
+            for result in results {
+                
+                // delete metadata
+                self.deleteMetadata(NSPredicate(format: "directoryID = %@", result.directoryID))
+                
+                /*
+                // remove if in session
+                if ([recordMetadata.session length] >0) {
+                 if (recordMetadata.sessionTaskIdentifier >= 0)
+                  [[CCNetworking sharedNetworking] settingSession:recordMetadata.session sessionTaskIdentifier:[recordMetadata.sessionTaskIdentifier integerValue] taskStatus: k_taskStatusCancel];
+ 
+                 if (recordMetadata.sessionTaskIdentifierPlist >= 0)
+                  [[CCNetworking sharedNetworking] settingSession:recordMetadata.session sessionTaskIdentifier:[recordMetadata.sessionTaskIdentifierPlist integerValue] taskStatus: k_taskStatusCancel];
+ 
+                 }
+                 */
+ 
+                // delete local
+                //[self deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileID == %@)", activeAccount, recordMetadata.fileID]];
+
+            }
+ 
+            realm.delete(results)
+        }
+    }
+
+    func renameDirectory(_ serverUrl: String, serverUrlTo: String) {
+    
+        let tableAccount = self.getAccountActive()
+        if tableAccount == nil {
+            return
+        }
+        
+        let realm = try! Realm()
+        
+        try! realm.write {
+            let results = realm.objects(tableDirectory.self).filter("serverUrl = %@", serverUrl)
+            
+            if results.count > 0 {
+                results[0].serverUrl = serverUrlTo
+            }
+        }
+    }
+    
     func clearDateRead(_ serverUrl: String?, directoryID: String?) {
         
         let tableAccount = self.getAccountActive()

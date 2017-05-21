@@ -246,6 +246,7 @@
     
     // Folder not present, remove it
     if (errorCode == 404 && [recordAccount.account isEqualToString:metadataNet.account]) {
+        
         [CCCoreData deleteDirectoryAndSubDirectory:metadataNet.serverUrl activeAccount:app.activeAccount];
         [app.activeMain reloadDatasource:metadataNet.serverUrl fileID:nil selector:nil];
     }

@@ -846,7 +846,7 @@
         fileName = _metadata.fileName;
         uuid = _metadata.uuid;
         fileID = _metadata.fileID;
-        NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID];
+        serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID];
     }
     
     if ([tipo isEqualToString:@"cartadicredito"])
@@ -1842,7 +1842,7 @@
         
         recordsInSessions = [[NCManageDatabase sharedInstance] getMetadatasWithPreficate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND session != ''", metadataNet.account, metadataNet.directoryID] sorted:nil ascending:NO];
 
-        [CCCoreData setDateReadDirectoryID:metadataNet.directoryID activeAccount:app.activeAccount];
+        [[NCManageDatabase sharedInstance] setDateReadDirectory:metadataNet.directoryID];
     }
     
     for (tableMetadata *metadata in metadatas) {
