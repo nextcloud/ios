@@ -332,7 +332,7 @@
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Directory =====
 #pragma --------------------------------------------------------------------------------------------
-
+/*
 + (NSString *)addDirectory:(NSString *)serverUrl permissions:(NSString *)permissions activeAccount:(NSString *)activeAccount
 {
     NSString *directoryID;
@@ -406,7 +406,6 @@
             // remove directory in Metadata come cazzo si fa a saperlo
             //[TableMetadata MR_findAllWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@)", activeAccount, recordDirectory.directoryID] inContext:context];
             
-            /*
             NSArray *tableMetadatas = [TableMetadata MR_findAllWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@)", activeAccount, recordDirectory.directoryID] inContext:context];
             
             for(TableMetadata *recordMetadata in tableMetadatas) {
@@ -428,7 +427,6 @@
             }
             
             [recordDirectory MR_deleteEntityInContext:context];
-            */ 
         }
     }
 
@@ -719,7 +717,6 @@
 
 + (BOOL)isBlockZone:(NSString *)serverUrl activeAccount:(NSString *)activeAccount
 {
-    /*
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (directory == 1)", activeAccount];
     NSArray *records = [TableMetadata MR_findAllWithPredicate:predicate];
     
@@ -746,11 +743,10 @@
             }
         }
     }
-    */
-    
+ 
     return NO;
 }
-
+*/
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== LocalFile =====
 #pragma --------------------------------------------------------------------------------------------

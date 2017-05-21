@@ -771,10 +771,13 @@ extension DocumentPickerViewController: UITableViewDataSource {
             passcode = ""
         }
         
-        if metadata!.directory && CCCoreData.isDirectoryLock(lockServerUrl, activeAccount: activeAccount) && (passcode?.characters.count)! > 0 {
-            cell.StatusImageView.image = UIImage(named: "passcode")
-        } else {
-            cell.StatusImageView.image = nil
+        let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectoryWithPreficate(NSPredicate(format: "serverUrl = %@", lockServerUrl!))
+        if tableDirectory != nil {
+            if metadata!.directory &&  (tableDirectory?.lock)! && (passcode?.characters.count)! > 0 {
+                cell.StatusImageView.image = UIImage(named: "passcode")
+            } else {
+                cell.StatusImageView.image = nil
+            }
         }
         
         return cell
@@ -836,13 +839,22 @@ extension DocumentPickerViewController: UITableViewDataSource {
                 passcode = ""
             }
             
-            if CCCoreData.isDirectoryLock(serverUrlPush, activeAccount: activeAccount) && (passcode?.characters.count)! > 0 {
+            let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectoryWithPreficate(NSPredicate(format: "serverUrl = %@", serverUrlPush!))
+
+            if tableDirectory != nil {
                 
-                self.passcodeIsPush = true
-                openBKPasscode(self.metadata?.fileNamePrint)
+                if (tableDirectory?.lock)! && (passcode?.characters.count)! > 0 {
+                    
+                    self.passcodeIsPush = true
+                    openBKPasscode(self.metadata?.fileNamePrint)
+                    
+                } else {
+                    
+                    performSegue()
+                }
                 
             } else {
-            
+                
                 performSegue()
             }
         }

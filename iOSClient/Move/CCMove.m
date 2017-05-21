@@ -459,7 +459,7 @@
     NSPredicate *predicate;
 
     NSIndexPath *index = [self.tableView indexPathForSelectedRow];
-    NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:_serverUrl activeAccount:activeAccount];
+    NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:_serverUrl];
     
     if (self.onlyClearDirectory) predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND (directory == 1) AND (cryptated == 0)", activeAccount, directoryID];
     else predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND (directory == 1)", activeAccount, directoryID];
@@ -471,8 +471,10 @@
         // lockServerUrl
         NSString *lockServerUrl = [CCUtility stringAppendServerUrl:_serverUrl addFileName:metadata.fileNameData];
         
-        // SE siamo in presenza di una directory bloccata E è attivo il block E la sessione PASSWORD Lock è senza data ALLORA chiediamo la password per procedere
-        if ([CCCoreData isDirectoryLock:lockServerUrl activeAccount:activeAccount] && [[CCUtility getBlockCode] length] && controlPasscode) {
+        // Se siamo in presenza di una directory bloccata E è attivo il block E la sessione PASSWORD Lock è senza data ALLORA chiediamo la password per procedere
+        tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPreficate:[NSPredicate predicateWithFormat:@"serverUrl = %@", lockServerUrl]];
+        
+        if (directory.lock && [[CCUtility getBlockCode] length] && controlPasscode) {
             
             CCBKPasscode *viewController = [[CCBKPasscode alloc] initWithNibName:nil bundle:nil];
             viewController.delegate = self;

@@ -76,6 +76,7 @@
 
 // ===== Directory =====
 
+/*
 + (NSString *)addDirectory:(NSString *)serverUrl permissions:(NSString *)permissions activeAccount:(NSString *)activeAccount;
 + (void)updateDirectoryEtagServerUrl:(NSString *)serverUrl fileID:(NSString *)fileID activeAccount:(NSString *)activeAccount;
 + (void)deleteDirectoryFromPredicate:(NSPredicate *)predicate;
@@ -108,6 +109,7 @@
 + (void)setAllDirectoryUnLockForAccount:(NSString *)activeAccount;
 + (BOOL)isDirectoryLock:(NSString *)serverUrl activeAccount:(NSString *)activeAccount;
 + (BOOL)isBlockZone:(NSString *)serverUrl activeAccount:(NSString *)activeAccount;
+*/
 
 // ===== LocalFile =====
 

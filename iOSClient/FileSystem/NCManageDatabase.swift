@@ -1153,14 +1153,14 @@ class NCManageDatabase: NSObject {
         
         let cameraFolderName = self.getAccountCameraUploadFolderName()
         let cameraFolderPath = self.getAccountCameraUploadFolderPath(activeUrl)
-        let direcory = CCCoreData.getServerUrl(fromDirectoryID: metadata.directoryID, activeAccount: metadata.account)
+        let directory = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID)
         
         let realm = try! Realm()
         
         try! realm.write {
             
             if (metadata.realm == nil) {
-                let metadataWithIcon = CCUtility.insertTypeFileIconName(metadata, directory: direcory, cameraFolderName: cameraFolderName, cameraFolderPath: cameraFolderPath)
+                let metadataWithIcon = CCUtility.insertTypeFileIconName(metadata, directory: directory, cameraFolderName: cameraFolderName, cameraFolderPath: cameraFolderPath)
                 realm.add(metadataWithIcon!, update: true)
             } else {
                 realm.add(metadata, update: true)
@@ -1216,9 +1216,9 @@ class NCManageDatabase: NSObject {
         
         let cameraFolderName = self.getAccountCameraUploadFolderName()
         let cameraFolderPath = self.getAccountCameraUploadFolderPath(activeUrl)
-        let direcory = CCCoreData.getServerUrl(fromDirectoryID: metadata.directoryID, activeAccount: metadata.account)
+        let serverUrl = self.getServerUrl(metadata.directoryID)
         
-        let metadataWithIcon = CCUtility.insertTypeFileIconName(metadata, directory: direcory, cameraFolderName: cameraFolderName, cameraFolderPath: cameraFolderPath)
+        let metadataWithIcon = CCUtility.insertTypeFileIconName(metadata, directory: serverUrl, cameraFolderName: cameraFolderName, cameraFolderPath: cameraFolderPath)
         
         let realm = try! Realm()
         
@@ -1449,10 +1449,10 @@ class NCManageDatabase: NSObject {
         }
         */
         
-        let directoryID = CCCoreData.getDirectoryID(fromServerUrl: serverUrl, activeAccount: tableAccount!.account)
+        let directoryID = self.getDirectoryID(serverUrl)
         
         
-        let predicate = NSPredicate(format: "(account == %@) AND (directoryID == %@) AND (session == '')AND (type == 'file') AND ((typeFile == %@) OR (typeFile == %@))", tableAccount!.account, directoryID!, k_metadataTypeFile_image, k_metadataTypeFile_video)
+        let predicate = NSPredicate(format: "(account == %@) AND (directoryID == %@) AND (session == '')AND (type == 'file') AND ((typeFile == %@) OR (typeFile == %@))", tableAccount!.account, directoryID, k_metadataTypeFile_image, k_metadataTypeFile_video)
         
         let sorted = CCUtility.getOrderSettings()
         let ascending = CCUtility.getAscendingSettings()
@@ -1543,6 +1543,27 @@ class NCManageDatabase: NSObject {
         
         try! realm.write {
             realm.delete(results)
+        }
+    }
+
+    func getTableDirectoryWithPreficate(_ predicate: NSPredicate) -> tableDirectory? {
+        
+        let tableAccount = self.getAccountActive()
+        if tableAccount == nil {
+            return nil
+        }
+        
+        let realm = try! Realm()
+        
+        let results = realm.objects(tableDirectory.self).filter(predicate)
+        
+        if (results.count > 0) {
+            
+            return results[0]
+            
+        } else {
+            
+            return nil
         }
     }
 
