@@ -322,7 +322,7 @@
                         [CCCoreData setOfflineDirectoryServerUrl:directory.serverUrl offline:NO activeAccount:app.activeAccount];
                         //[CCCoreData removeOfflineAllFileFromServerUrl:directory.serverUrl activeAccount:app.activeAccount];
                         
-                        [[NCManageDatabase sharedInstance] removeOfflineAllFileFromServerUrl:directory.serverUrl];
+                        //[[NCManageDatabase sharedInstance] removeOfflineAllFileFromServerUrl:directory.serverUrl];
                     }
                                         
             } else {
