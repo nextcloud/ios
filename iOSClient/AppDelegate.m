@@ -1630,20 +1630,6 @@
     
     /* ---------------------- UPGRADE VERSION ----------------------- */
     
-    if (([actualVersion compare:@"2.13" options:NSNumericSearch] == NSOrderedAscending)) {
-     
-        [CCCoreData flushTableDirectoryAccount:nil];
-        [CCCoreData flushTableLocalFileAccount:nil];
-    }
-    
-    if (([actualVersion compare:@"2.15" options:NSNumericSearch] == NSOrderedAscending)) {
-        
-        [CCCoreData setGeoInformationLocalNull];
-    }
-    
-    if (([actualVersion compare:@"2.17" options:NSNumericSearch] == NSOrderedAscending)) {
-    }
-    
     if (([actualVersion compare:@"2.17.3" options:NSNumericSearch] == NSOrderedAscending)) {
     
         // Migrate Certificates Table From CoreData to Realm

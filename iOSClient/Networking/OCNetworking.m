@@ -331,14 +331,13 @@
         //NSDate *date = [NSDate dateWithTimeIntervalSince1970:itemDtoDirectory.date];
         
         NSString *directoryID = [[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:_metadataNet.serverUrl permissions:permissions];
-        
+        _metadataNet.directoryID = directoryID;
+
         NSString *cameraFolderName = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderName];
         NSString *cameraFolderPath = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderPath:_activeUrl];
         
         NSString *directoryUser = [CCUtility getDirectoryActiveUser:_activeUser activeUrl:_activeUrl];
         
-        // Update metadataNet.directoryID
-        _metadataNet.directoryID = directoryID;
         
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
 

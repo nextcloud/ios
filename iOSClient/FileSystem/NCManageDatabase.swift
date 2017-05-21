@@ -1707,7 +1707,6 @@ class NCManageDatabase: NSObject {
         }
     }
 
-
     func getDirectoryID(_ serverUrl: String) -> String {
         
         let tableAccount = self.getAccountActive()

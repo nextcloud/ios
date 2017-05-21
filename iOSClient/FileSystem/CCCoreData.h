@@ -150,7 +150,7 @@
 + (void)moveAllUserToGroup;
 
 //+ (void)flushTableAccount:(NSString *)account;
-+ (void)flushTableDirectoryAccount:(NSString *)account;
+//+ (void)flushTableDirectoryAccount:(NSString *)account;
 + (void)flushTableLocalFileAccount:(NSString *)account;
 
 + (void)flushAllDatabase;

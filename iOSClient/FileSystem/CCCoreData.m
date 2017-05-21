@@ -1395,22 +1395,6 @@
 #pragma mark ===== Flush Database =====
 #pragma --------------------------------------------------------------------------------------------
 
-+ (void)flushTableDirectoryAccount:(NSString *)account
-{
-    NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];
-    
-    if (account) {
-        
-        [TableDirectory MR_deleteAllMatchingPredicate:[NSPredicate predicateWithFormat:@"(account == %@)", account] inContext:context];
-        
-    } else {
-        
-        [TableDirectory MR_truncateAllInContext:context];
-    }
-    
-    [context MR_saveToPersistentStoreAndWait];
-}
-
 + (void)flushTableLocalFileAccount:(NSString *)account
 {
     NSManagedObjectContext *context = [NSManagedObjectContext MR_defaultContext];

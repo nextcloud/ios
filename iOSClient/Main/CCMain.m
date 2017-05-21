@@ -1921,21 +1921,27 @@
         
         return;
     }
+    
+    BOOL isDirectoryOutOfDate = true;
     tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"serverUrl = %@", serverUrl]];
-    NSString *directoryID = directory.directoryID;
     
-    // Is Directory Out Of Date ?
-    BOOL isDirectoryOutOfDate = false;
-    NSDateComponents *dateComponents = [NSDateComponents new];
-    [dateComponents setWeekday:k_dayForceReadFolder];
-    NSCalendar *calendar = [NSCalendar currentCalendar];
+    if (directory) {
     
-    NSDate *datePlus = [calendar dateByAddingComponents:dateComponents toDate:directory.dateReadDirectory options:0];
-    NSDate *now = [NSDate date];
+        // Is Directory Out Of Date ?
+        NSDateComponents *dateComponents = [NSDateComponents new];
+        [dateComponents setWeekday:k_dayForceReadFolder];
+        NSCalendar *calendar = [NSCalendar currentCalendar];
     
-    // usa la Cache se richiesto e se la data è entro X giorni dall'ultima volta che l'hai letta.
-    if ([now compare:datePlus] == NSOrderedDescending)
-        isDirectoryOutOfDate = true;
+        NSDate *datePlus = [calendar dateByAddingComponents:dateComponents toDate:directory.dateReadDirectory options:0];
+        NSDate *now = [NSDate date];
+    
+        // usa la Cache se richiesto e se la data è entro X giorni dall'ultima volta che l'hai letta.
+        if ([now compare:datePlus] == NSOrderedDescending)
+            isDirectoryOutOfDate = true;
+        else
+            isDirectoryOutOfDate = false;
+
+    }
     
     if (isDirectoryOutOfDate || forced) {
         
@@ -1946,7 +1952,7 @@
         
         metadataNet.action = actionReadFolder;
         metadataNet.date = [NSDate date];
-        metadataNet.directoryID = directoryID;
+        metadataNet.directoryID = directory.directoryID;
         metadataNet.priority = NSOperationQueuePriorityHigh;
         metadataNet.selector = selectorReadFolder;
         metadataNet.serverUrl = serverUrl;

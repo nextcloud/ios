@@ -322,10 +322,10 @@
     [[NCManageDatabase sharedInstance] clearTable:[tableActivity class] account:account];
     [[NCManageDatabase sharedInstance] clearTable:[tableAutomaticUpload class] account:account];
     [[NCManageDatabase sharedInstance] clearTable:[tableCapabilities class] account:account];
+    [[NCManageDatabase sharedInstance] clearTable:[tableDirectory class] account:app.activeAccount];
     [[NCManageDatabase sharedInstance] clearTable:[tableExternalSites class] account:account];
     [[NCManageDatabase sharedInstance] clearTable:[tableMetadata class] account:account];
 
-    [CCCoreData flushTableDirectoryAccount:account];
     [CCCoreData flushTableLocalFileAccount:account];
     
     [[NCManageDatabase sharedInstance] clearTable:[tableShare class] account:account];
