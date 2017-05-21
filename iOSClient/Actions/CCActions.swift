@@ -236,10 +236,6 @@ class CCActions: NSObject {
             metadataNet.session = k_upload_session_foreground
             metadataNet.taskStatus = Int(k_taskStatusResume)
             
-            if CCCoreData.isOfflineLocalEtag(metadata.fileID, activeAccount: appDelegate.activeAccount) {
-                metadataNet.selectorPost = selectorAddOffline
-            }
-            
             appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
             
             // delete file in filesystem

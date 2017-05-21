@@ -427,12 +427,6 @@
         NSString *selector, *selectorPost;
         BOOL downloadData = NO, downloadPlist = NO;
         
-        // it's a offline ?
-        BOOL isOffline = [CCCoreData isOfflineLocalEtag:metadata.fileID activeAccount:app.activeAccount];
-        
-        if (isOffline)
-            selectorPost = selectorAddOffline;
-        
         if ([metadata.type isEqualToString: k_metadataType_file]) {
             downloadData = YES;
             selector = selectorDownloadSynchronize;

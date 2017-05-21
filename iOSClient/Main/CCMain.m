@@ -1391,12 +1391,6 @@
         [[CCActions sharedInstance] settingFavorite:metadata favorite:YES delegate:self];
     }
     
-    // add Offline
-    if ([selector isEqualToString:selectorAddOffline]) {
-        [CCCoreData setOfflineLocalEtag:metadata.fileID offline:YES activeAccount:app.activeAccount];
-        [self reloadDatasource:serverUrl fileID:metadata.fileID selector:selector];
-    }
-    
     // encrypted file
     if ([selector isEqualToString:selectorEncryptFile]) {
         [self encryptedFile:metadata];
@@ -2179,9 +2173,6 @@
         metadataNet.serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
         metadataNet.session = k_upload_session_foreground;
         metadataNet.taskStatus = k_taskStatusResume;
-        
-        if ([CCCoreData isOfflineLocalEtag:metadata.fileID activeAccount:app.activeAccount])
-            metadataNet.selectorPost = selectorAddOffline;
         
         [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
     }
@@ -3159,29 +3150,6 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Offline =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)addOffline:(tableMetadata *)metadata
-{
-    NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
-    
-    [[CCNetworking sharedNetworking] downloadFile:metadata.fileID serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorAddOffline selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
-    
-    NSIndexPath *indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:metadata.fileID];
-    if (indexPath) [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObjects:indexPath, nil] withRowAnimation:UITableViewRowAnimationAutomatic];
-}
-
-- (void)removeOffline:(tableMetadata *)metadata
-{
-    [CCCoreData setOfflineLocalEtag:metadata.fileID offline:NO activeAccount:app.activeAccount];
-    
-    NSIndexPath *indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:metadata.fileID];
-    if (indexPath) [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObjects:indexPath, nil] withRowAnimation:UITableViewRowAnimationAutomatic];
-}
-
-
-#pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Local =====
 #pragma --------------------------------------------------------------------------------------------
 
@@ -4107,13 +4075,10 @@
     
     NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID];
     
-    NSString *titoloCriptaDecripta, *titoloOffline, *titoloLock, *titleFavorite;
+    NSString *titoloCriptaDecripta, *titoloLock, *titleFavorite;
     
     if (_metadata.cryptated) titoloCriptaDecripta = [NSString stringWithFormat:NSLocalizedString(@"_decrypt_", nil)];
     else titoloCriptaDecripta = [NSString stringWithFormat:NSLocalizedString(@"_encrypt_", nil)];
-    
-    if ([CCCoreData isOfflineLocalEtag:_metadata.fileID activeAccount:app.activeAccount]) titoloOffline = [NSString stringWithFormat:NSLocalizedString(@"_remove_offline_", nil)];
-    else titoloOffline = [NSString stringWithFormat:NSLocalizedString(@"_add_offline_", nil)];
     
     if (_metadata.favorite) {
         
@@ -5086,17 +5051,6 @@
     
     if (metadata.directory && (directory.lock && [[CCUtility getBlockCode] length]))
         cell.statusImageView.image = [UIImage imageNamed:@"passcode"];
-    
-    // ----------------------------------------------------------------------------------------------------------
-    // Offline
-    // ----------------------------------------------------------------------------------------------------------
-
-    BOOL isOfflineFile = [CCCoreData isOfflineLocalEtag:metadata.fileID activeAccount:app.activeAccount];
-    
-    if (isOfflineFile) {
-        
-        cell.offlineImageView.image = [UIImage imageNamed:@"offline"];
-    }
     
     // ----------------------------------------------------------------------------------------------------------
     // Favorite
