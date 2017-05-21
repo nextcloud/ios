@@ -70,7 +70,7 @@
 
 - (void)addFavoriteFolder:(NSString *)serverUrl
 {
-    NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:app.activeAccount];
+    NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
     NSString *selector;
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
     
@@ -126,7 +126,7 @@
             
             if (metadata.directory) {
                 
-                NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:app.activeAccount];
+                NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
                 NSString *selector;
                 
                 if ([CCUtility getFavoriteOffline])
@@ -204,7 +204,7 @@
 //
 - (void)addOfflineFolder:(NSString *)serverUrl
 {
-    NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:app.activeAccount];
+    NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
     
     // Set offline directory
     [CCCoreData setOfflineDirectoryServerUrl:serverUrl offline:YES activeAccount:app.activeAccount];
@@ -314,7 +314,7 @@
             if (metadata.directory) {
                 
                 NSString *serverUrl = [CCUtility stringAppendServerUrl:metadataNet.serverUrl addFileName:metadata.fileNameData];
-                NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:app.activeAccount];
+                NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
                     
                 // Verify if do not exists this Metadata
                 tableMetadata *result = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileID == %@)", metadataNet.account, metadata.fileID]];

@@ -1536,7 +1536,7 @@
                 countSelectorLoadPlist++;
         }
         
-        if ((countSelectorLoadPlist == 0 || countSelectorLoadPlist % k_maxConcurrentOperation == 0) && [metadata.directoryID isEqualToString:[CCCoreData getDirectoryIDFromServerUrl:_serverUrl activeAccount:app.activeAccount]]) {
+        if ((countSelectorLoadPlist == 0 || countSelectorLoadPlist % k_maxConcurrentOperation == 0) && [metadata.directoryID isEqualToString:[[NCManageDatabase sharedInstance] getDirectoryID:_serverUrl]]) {
             
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self reloadDatasource:serverUrl fileID:metadata.fileID selector:selector];
@@ -1680,7 +1680,7 @@
     NSString *session = [arguments objectAtIndex:4];
     
     NSString *folderPhotos = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderPathAndName:app.activeUrl];
-    NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:app.activeAccount];
+    NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
     
     // Create the folder for Photos & if request the subfolders
     if (![app createFolderSubFolderAutomaticUploadFolderPhotos:folderPhotos useSubFolder:useSubFolder assets:assets selector:selectorUploadFile])
@@ -1934,7 +1934,7 @@
         return;
     }
     
-    NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:app.activeAccount];
+    NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
     
     if ([CCCoreData isDirectoryOutOfDate:k_dayForceReadFolder directoryID:directoryID activeAccount:app.activeAccount] || forced) {
         
@@ -1982,7 +1982,7 @@
 
         } else {
             
-            NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:_serverUrl activeAccount:app.activeAccount];
+            NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:_serverUrl];
             NSPredicate *predicate = [NSPredicate predicateWithFormat:@"directoryID == %@ AND account == %@ AND fileNamePrint CONTAINS[cd] %@", directoryID, app.activeAccount, fileName];
             NSArray *records = [[NCManageDatabase sharedInstance] getMetadatasWithPreficate:predicate sorted:nil ascending:NO];
             
@@ -2287,7 +2287,7 @@
             metadataNet.directory = metadata.directory;
             metadataNet.fileID = metadata.fileID;
             metadataNet.directoryID = metadata.directoryID;
-            metadataNet.directoryIDTo = [CCCoreData getDirectoryIDFromServerUrl:serverUrlTo activeAccount:app.activeAccount];
+            metadataNet.directoryIDTo = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrlTo];
             metadataNet.fileName = metadata.fileName;
             metadataNet.fileNamePrint = metadataNet.fileNamePrint;
             metadataNet.fileNameTo = metadata.fileName;
@@ -2310,7 +2310,7 @@
             metadataNet.directory = metadata.directory;
             metadataNet.fileID = metadata.fileID;
             metadataNet.directoryID = metadata.directoryID;
-            metadataNet.directoryIDTo = [CCCoreData getDirectoryIDFromServerUrl:serverUrlTo activeAccount:app.activeAccount];
+            metadataNet.directoryIDTo = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrlTo];
             metadataNet.fileNamePrint = metadata.fileNamePrint;
             metadataNet.rev = metadata.rev;
             metadataNet.serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
@@ -4301,7 +4301,7 @@
                                         NSLog(@"[LOG] Update Folder Photo");
                                         NSString *folderCameraUpload = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderPathAndName:app.activeUrl];
                                         if ([folderCameraUpload length] > 0)
-                                            [[CCSynchronize sharedSynchronize] readFolderServerUrl:folderCameraUpload directoryID:[CCCoreData getDirectoryIDFromServerUrl:folderCameraUpload activeAccount:app.activeAccount] selector:selectorReadFolder];
+                                            [[CCSynchronize sharedSynchronize] readFolderServerUrl:folderCameraUpload directoryID:[[NCManageDatabase sharedInstance] getDirectoryID:folderCameraUpload] selector:selectorReadFolder];
                                         
                                     }];
         }
@@ -4676,7 +4676,7 @@
     _directoryOrder = [CCUtility getOrderSettings];
     
     // Controllo data lettura Data Source
-    NSDate *dateDateRecordDirectory = [CCCoreData getDateReadDirectoryID:[CCCoreData getDirectoryIDFromServerUrl:_serverUrl activeAccount:app.activeAccount] activeAccount:app.activeAccount];
+    NSDate *dateDateRecordDirectory = [CCCoreData getDateReadDirectoryID:[[NCManageDatabase sharedInstance] getDirectoryID:_serverUrl] activeAccount:app.activeAccount];
     dateDateRecordDirectory = nil;
     
     if ([dateDateRecordDirectory compare:_dateReadDataSource] == NSOrderedDescending || dateDateRecordDirectory == nil || _dateReadDataSource == nil) {
@@ -4687,7 +4687,7 @@
     
         // Data Source
     
-        NSArray *recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@)", app.activeAccount, [CCCoreData getDirectoryIDFromServerUrl:serverUrl activeAccount:app.activeAccount]] sorted:[CCUtility getOrderSettings] ascending:[CCUtility getAscendingSettings]];
+        NSArray *recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@)", app.activeAccount, [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl]] sorted:[CCUtility getOrderSettings] ascending:[CCUtility getAscendingSettings]];
         
         _sectionDataSource = [CCSectionDataSourceMetadata new];
         _sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:_directoryGroupBy replaceDateToExifDate:NO activeAccount:app.activeAccount];
