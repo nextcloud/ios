@@ -2235,6 +2235,7 @@
             
             // Add new directory
             NSString *newDirectory = [NSString stringWithFormat:@"%@/%@", serverUrlTo, fileName];
+                    
             [CCCoreData addDirectory:newDirectory permissions:nil activeAccount:app.activeAccount];
             
             // Check Offline

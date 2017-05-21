@@ -1511,23 +1511,40 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Directory
     
-    func addDirectory(_ directory: tableDirectory) {
+    func addDirectory(_ serverUrl: String, permissions: String) -> String {
         
         let tableAccount = self.getAccountActive()
         if tableAccount == nil {
-            return
+            return ""
         }
         
         let realm = try! Realm()
-        
+        let results = realm.objects(tableDirectory.self).filter("serverUrl = %@", serverUrl)
+        var directoryID: String = ""
+
         try! realm.write {
             
-            if (directory.realm == nil) {
-                directory.directoryID = CCUtility.createRandomString(16)  //[CCUtility createRandomString:16];
+            if results.count > 0 {
+                
+                results[0].permissions = permissions
+                directoryID = results[0].directoryID
+                realm.add(results, update: true)
+                
+            } else {
+                
+                let addDirectory = tableDirectory()
+                addDirectory.account = tableAccount!.account
+                
+                directoryID = CCUtility.createRandomString(16)
+                addDirectory.directoryID = directoryID
+                
+                addDirectory.permissions = permissions
+                addDirectory.serverUrl = serverUrl
+                realm.add(addDirectory, update: true)
             }
-            
-            realm.add(directory, update: true)
         }
+        
+        return directoryID
     }
     
     func deleteDirectory(_ predicate: NSPredicate) {
@@ -1576,7 +1593,7 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
         
-        let results = realm.objects(tableDirectory.self).filter("account = %@ AND serverUrl = %@", tableAccount!.account, serverUrl)
+        let results = realm.objects(tableDirectory.self).filter("serverUrl = %@", serverUrl)
         if results.count > 0 {
             return results[0].directoryID
         } else {
@@ -1592,7 +1609,7 @@ class NCManageDatabase: NSObject {
         }
         
         let realm = try! Realm()
-        let results = realm.objects(tableDirectory.self).filter("account = %@ AND directoryID = %@", tableAccount!.account, directoryID)
+        let results = realm.objects(tableDirectory.self).filter("directoryID = %@", directoryID)
 
         if results.count > 0 {
             return results[0].serverUrl
