@@ -1535,7 +1535,7 @@ class NCManageDatabase: NSObject {
                 let addDirectory = tableDirectory()
                 addDirectory.account = tableAccount!.account
                 
-                directoryID = CCUtility.createRandomString(16)
+                directoryID =  NSUUID().uuidString
                 addDirectory.directoryID = directoryID
                 
                 addDirectory.permissions = permissions
@@ -1767,7 +1767,7 @@ class NCManageDatabase: NSObject {
         }
         
         let realm = try! Realm()
-        let results = realm.objects(tableDirectory.self)//.filter("account = %@", tableAccount!.account)
+        let results = realm.objects(tableDirectory.self)
         
         try! realm.write {
             
