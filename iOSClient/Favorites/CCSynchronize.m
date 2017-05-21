@@ -163,64 +163,6 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Read Offline =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)readOffline
-{
-    // test
-    if (app.activeAccount.length == 0)
-        return;
-    
-    // verify is offline procedure is in progress selectorDownloadSynchronize
-    if ([[app verifyExistsInQueuesDownloadSelector:selectorDownloadSynchronize] count] > 0)
-        return;
-    
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-        
-        NSString *father = @"";
-        NSArray *directories = [CCCoreData getOfflineDirectoryActiveAccount:app.activeAccount];
-
-        for (TableDirectory *directory in directories) {
-        
-            if (![directory.serverUrl containsString:father]) {
-             
-                father = directory.serverUrl;
-                [self readFolderServerUrl:directory.serverUrl directoryID:directory.directoryID selector:selectorReadFolder];
-            }
-        }
-        
-        NSArray *metadatas = [CCCoreData getOfflineLocalFileActiveAccount:app.activeAccount directoryUser:app.directoryUser];
-        
-        for (tableMetadata *metadata in metadatas) {
-            
-            [self readFile:metadata withDownload:YES];
-        }
-    });
-}
-
-//
-// Add Folder offline
-//
-- (void)addOfflineFolder:(NSString *)serverUrl
-{
-    NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
-    
-    // Set offline directory
-    [CCCoreData setOfflineDirectoryServerUrl:serverUrl offline:YES activeAccount:app.activeAccount];
-    
-    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
-    
-    metadataNet.action = actionReadFolder;
-    metadataNet.directoryID = directoryID;
-    metadataNet.priority = NSOperationQueuePriorityNormal;
-    metadataNet.selector = selectorReadFolder;
-    metadataNet.serverUrl = serverUrl;
-    
-    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];    
-}
-
-#pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Read Folder =====
 #pragma --------------------------------------------------------------------------------------------
 
@@ -247,7 +189,7 @@
     // Folder not present, remove it
     if (errorCode == 404 && [recordAccount.account isEqualToString:metadataNet.account]) {
         
-        [CCCoreData deleteDirectoryAndSubDirectory:metadataNet.serverUrl activeAccount:app.activeAccount];
+        [[NCManageDatabase sharedInstance] deleteDirectoryAndSubDirectory:metadataNet.serverUrl];
         [app.activeMain reloadDatasource:metadataNet.serverUrl fileID:nil selector:nil];
     }
 }
@@ -325,7 +267,7 @@
               
                 // Load if different fileID
                 
-                TableDirectory *tableDirectory = [CCCoreData getTableDirectoryWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (serverUrl == %@)", metadataNet.account, serverUrl]];
+                tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", metadataNet.account, serverUrl]];
                 
                 if (![tableDirectory.rev isEqualToString:metadata.rev]) {
                     
@@ -403,7 +345,7 @@
         [CCCoreData deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileID == %@)", metadataNet.account, metadataNet.fileID]];
         [[NCManageDatabase sharedInstance] deleteMetadata:[NSPredicate predicateWithFormat:@"fileID == %@", metadataNet.account, metadataNet.fileID]];
         
-        NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
+        NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadataNet.directoryID];
         [app.activeMain reloadDatasource:serverUrl fileID:nil selector:nil];
     }
 }
@@ -505,7 +447,7 @@
         if (![oldDirectoryID isEqualToString:metadata.directoryID]) {
             serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
             oldDirectoryID = metadata.directoryID;
-            [CCCoreData clearDateReadAccount:app.activeAccount serverUrl:serverUrl directoryID:nil];
+            [[NCManageDatabase sharedInstance] clearDateRead:serverUrl directoryID:nil];
         }
             
         [[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:serverUrl];

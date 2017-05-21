@@ -256,105 +256,6 @@
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
--(void)cellButtonDownWasTapped:(id)sender
-{
-    CGPoint touchPoint = [sender convertPoint:CGPointZero toView:self.tableView];
-    NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:touchPoint];
-    tableMetadata *metadata = [tableMetadata new];
-    UIImage *iconHeader;
-        
-    NSString *cameraFolderName = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderName];
-    NSString *cameraFolderPath = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderPath:app.activeUrl];
-
-    metadata = [CCUtility insertFileSystemInMetadata:[dataSource objectAtIndex:indexPath.row] directory:_serverUrl activeAccount:app.activeAccount cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath];
-        
-    
-    AHKActionSheet *actionSheet = [[AHKActionSheet alloc] initWithView:self.view title:nil];
-    
-    actionSheet.animationDuration = 0.2;
-    
-    actionSheet.blurRadius = 0.0f;
-    actionSheet.blurTintColor = [UIColor colorWithWhite:0.0f alpha:0.50f];
-    
-    actionSheet.buttonHeight = 50.0;
-    actionSheet.cancelButtonHeight = 50.0f;
-    actionSheet.separatorHeight = 5.0f;
-    
-    actionSheet.automaticallyTintButtonImages = @(NO);
-    
-    actionSheet.encryptedButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:[NCBrandColor sharedInstance].cryptocloud };
-    actionSheet.buttonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:[UIColor blackColor] };
-    actionSheet.cancelButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:[NCBrandColor sharedInstance].brand };
-    actionSheet.disableButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:[UIColor blackColor] };
-    
-    actionSheet.separatorColor = [NCBrandColor sharedInstance].seperator;
-    actionSheet.cancelButtonTitle = NSLocalizedString(@"_cancel_",nil);
-    
-    // assegnamo l'immagine anteprima se esiste, altrimenti metti quella standars
-    if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]])
-        iconHeader = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]];
-    else
-        iconHeader = [UIImage imageNamed:metadata.iconName];
-    
-    [actionSheet addButtonWithTitle: metadata.fileNamePrint
-                              image: iconHeader
-                    backgroundColor: [NCBrandColor sharedInstance].tabBar
-                             height: 50.0
-                               type: AHKActionSheetButtonTypeDisabled
-                            handler: nil
-    ];
-
-    // Remove file/folder offline
-    if (_serverUrl == nil) {
-        
-        [actionSheet addButtonWithTitle:NSLocalizedString(@"_remove_offline_", nil) image:[UIImage imageNamed:@"actionSheetOffline"] backgroundColor:[UIColor whiteColor] height: 50.0 type:AHKActionSheetButtonTypeDefault handler:^(AHKActionSheet *as) {
-                                    
-            if (metadata.directory) {
-                                        
-                // remove tag offline for all folder/subfolder/file
-                NSString *relativeRoot = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
-                NSString *dirServerUrl = [CCUtility stringAppendServerUrl:relativeRoot addFileName:metadata.fileNameData];
-                //NSArray *directories = [CCCoreData getOfflineDirectoryActiveAccount:app.activeAccount];
-                                        
-                for (TableDirectory *directory in directories)
-                    if ([directory.serverUrl containsString:dirServerUrl]) {
-                        
-                        //[CCCoreData setOfflineDirectoryServerUrl:directory.serverUrl offline:NO activeAccount:app.activeAccount];
-                        //[CCCoreData removeOfflineAllFileFromServerUrl:directory.serverUrl activeAccount:app.activeAccount];
-                        
-                        //[[NCManageDatabase sharedInstance] removeOfflineAllFileFromServerUrl:directory.serverUrl];
-                    }
-                                        
-            } else {
-                                        
-                [CCCoreData setOfflineLocalEtag:metadata.fileID offline:NO activeAccount:app.activeAccount];
-            }
-                                    
-            [self.tableView setEditing:NO animated:YES];
-                                    
-            [self reloadDatasource];
-        }];
-    }
-    
-    // NO Directory - NO Template
-    if (metadata.directory == NO && [metadata.type isEqualToString:k_metadataType_template] == NO) {
-        
-        [actionSheet addButtonWithTitle:NSLocalizedString(@"_open_in_", nil) image:[UIImage imageNamed:@"actionSheetOpenIn"] backgroundColor:[UIColor whiteColor] height: 50.0 type:AHKActionSheetButtonTypeDefault handler:^(AHKActionSheet *as) {
-            
-            [self.tableView setEditing:NO animated:YES];
-            [self openWith:metadata];
-        }];
-    }
-    
-    [actionSheet addButtonWithTitle:NSLocalizedString(@"_delete_", nil) image:[UIImage imageNamed:@"delete"] backgroundColor:[UIColor whiteColor] height: 50.0 type:AHKActionSheetButtonTypeDestructive handler:^(AHKActionSheet *as) {
-        
-        [self requestDeleteMetadata:metadata indexPath:indexPath];
-    }];
-
-    
-    [actionSheet show];
-}
-
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ==== Table ====
 #pragma --------------------------------------------------------------------------------------------
@@ -434,9 +335,6 @@
             cell.fileImageView.image = icon;
         }
     }
-    
-    // ButtonDown Tapped
-    [cell.buttonDown addTarget:self action:@selector(cellButtonDownWasTapped:) forControlEvents:UIControlEventTouchUpInside];
     
     // encrypted color
     if (metadata.cryptated) {

@@ -35,13 +35,9 @@
 @property (nonatomic, strong) NSMutableOrderedSet *foldersInSynchronized;
 
 - (void)readListingFavorites;
-- (void)readOffline;
-
 - (void)addFavoriteFolder:(NSString *)serverUrl;
-- (void)addOfflineFolder:(NSString *)serverUrl;
 
 - (void)verifyChangeMedatas:(NSArray *)allRecordMetadatas serverUrl:(NSString *)serverUrl account:(NSString *)account withDownload:(BOOL)withDownload;
-
 - (void)readFolderServerUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID selector:(NSString *)selector;
 
 @end

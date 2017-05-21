@@ -405,12 +405,16 @@
         
             NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
             serverUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileNamePrint];
-        
-            NSArray *TableDirectories = [CCCoreData getDirectoryIDsFromBeginsWithServerUrl:serverUrl activeAccount:app.activeAccount];
-        
-            for (TableDirectory *tableDirecory in TableDirectories)
-                [CCCoreData clearDateReadAccount:app.activeAccount serverUrl:nil directoryID:tableDirecory.directoryID];
+
+            NSString *serverUrlBeginWith = serverUrl;
             
+            if (![serverUrl hasSuffix:@"/"])
+                serverUrlBeginWith = [serverUrl stringByAppendingString:@"/"];
+
+            NSArray *directories = [[NCManageDatabase sharedInstance] getTablesDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND (serverUrl = %@ OR serverUrl BEGINSWITH %@)", app.activeAccount, serverUrl, serverUrlBeginWith] sorted:@"serverUrl" ascending:true];
+            
+            for (tableDirectory *directory in directories)
+                [[NCManageDatabase sharedInstance] clearDateRead:nil directoryID:directory.directoryID];
         } 
     }
     
@@ -529,7 +533,7 @@
             if (aViewController.fromType == CCBKPasscodeFromSettingsPasscode) {
                 
                 [CCUtility setBlockCode:@""];
-                [CCCoreData setAllDirectoryUnLockForAccount:app.activeAccount];
+                [[NCManageDatabase sharedInstance] setAllDirectoryUnLock];
                 [app.activeMain.tableView reloadData];
             }
             
@@ -542,7 +546,7 @@
                 
                 // disable passcode
                 [CCUtility setBlockCode:@""];
-                [CCCoreData setAllDirectoryUnLockForAccount:app.activeAccount];
+                [[NCManageDatabase sharedInstance] setAllDirectoryUnLock];
                 [app.activeMain.tableView reloadData];
                 
                 [CCUtility setSimplyBlockCode:![CCUtility getSimplyBlockCode]];

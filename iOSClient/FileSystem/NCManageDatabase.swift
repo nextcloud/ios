@@ -1673,7 +1673,7 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    func getTableDirectoryWithPreficate(_ predicate: NSPredicate) -> tableDirectory? {
+    func getTableDirectory(predicate: NSPredicate) -> tableDirectory? {
         
         let tableAccount = self.getAccountActive()
         if tableAccount == nil {
@@ -1693,6 +1693,36 @@ class NCManageDatabase: NSObject {
             return nil
         }
     }
+    
+    func getTablesDirectory(predicate: NSPredicate, sorted: String?, ascending: Bool) -> [tableDirectory]? {
+        
+        let tableAccount = self.getAccountActive()
+        if tableAccount == nil {
+            return nil
+        }
+        
+        let realm = try! Realm()
+        let results : Results<tableDirectory>
+        
+        if sorted == nil {
+            
+            results = realm.objects(tableDirectory.self).filter(predicate)
+            
+        } else {
+            
+            results = realm.objects(tableDirectory.self).filter(predicate).sorted(byKeyPath: sorted!, ascending: ascending)
+        }
+        
+        if (results.count > 0) {
+            
+            return Array(results)
+            
+        } else {
+            
+            return nil
+        }
+    }
+
 
     func getDirectoryID(_ serverUrl: String) -> String {
         
@@ -1746,6 +1776,25 @@ class NCManageDatabase: NSObject {
         }
     }
     
+    func setClearAllDateReadDirectory() {
+        
+        let tableAccount = self.getAccountActive()
+        if tableAccount == nil {
+            return
+        }
+        
+        let realm = try! Realm()
+        let results = realm.objects(tableDirectory.self)//.filter("account = %@", tableAccount!.account)
+        
+        try! realm.write {
+            
+            for result in results {
+                result.dateReadDirectory = nil;
+                result.rev = ""
+            }
+        }
+    }
+
     func setDirectoryLock(serverUrl: String, lock: Bool) -> Bool {
         
         var update = false
@@ -1770,6 +1819,24 @@ class NCManageDatabase: NSObject {
         }
         
         return update
+    }
+    
+    func setAllDirectoryUnLock() {
+        
+        let tableAccount = self.getAccountActive()
+        if tableAccount == nil {
+            return
+        }
+        
+        let realm = try! Realm()
+        let results = realm.objects(tableDirectory.self).filter("account = %@", tableAccount!.account)
+        
+        try! realm.write {
+            
+            for result in results {
+                result.lock = false;
+            }
+        }
     }
 
     func copyTableDirectory(_ table: tableDirectory) -> tableDirectory {

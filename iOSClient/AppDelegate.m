@@ -1062,6 +1062,7 @@
 {
     // ServerUrl active
     NSString *serverUrl = self.activeMain.serverUrl;
+    BOOL isBlockZone = false;
     
     // fermiamo la data della sessione
     self.sessionePasscodeLock = nil;
@@ -1071,8 +1072,20 @@
     // se non c'è attivo un account esci con NON attivare la richiesta password
     if ([self.activeAccount length] == 0) return NO;
     // se non è attivo il OnlyLockDir esci con NON attivare la richiesta password
-    if ([CCUtility getOnlyLockDir] && ![CCCoreData isBlockZone:serverUrl activeAccount:self.activeAccount]) return NO;
-        
+    for (;;) {
+    
+        tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"serverUrl == %@", serverUrl]];
+        if (directory.lock) {
+            isBlockZone = true;
+            break;
+        } else {
+            serverUrl = [CCUtility deletingLastPathComponentFromServerUrl:serverUrl];
+            if (serverUrl == self.activeUrl)
+                break;
+        }
+    }
+    if ([CCUtility getOnlyLockDir] && !isBlockZone) return NO;
+    
     return YES;
 }
 
@@ -1113,10 +1126,24 @@
         [aViewController dismissViewControllerAnimated:YES completion:nil];
         
         // start session Passcode Lock
+        BOOL isBlockZone = false;
         NSString *serverUrl = self.activeMain.serverUrl;
-        if ([CCCoreData isBlockZone:serverUrl activeAccount:self.activeAccount])
+        
+        for (;;) {
+            
+            tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"serverUrl == %@", serverUrl]];
+            if (directory.lock) {
+                isBlockZone = true;
+                break;
+            } else {
+                serverUrl = [CCUtility deletingLastPathComponentFromServerUrl:serverUrl];
+                if (serverUrl == self.activeUrl)
+                    break;
+            }
+        }
+        if (isBlockZone)
             self.sessionePasscodeLock = [NSDate date];
-    }
+     }
 }
 
 - (void)passcodeViewController:(CCBKPasscode *)aViewController authenticatePasscode:(NSString *)aPasscode resultHandler:(void (^)(BOOL))aResultHandler
@@ -1614,7 +1641,7 @@
         [CCCoreData setGeoInformationLocalNull];
     }
     
-    if (([actualVersion compare:@"2.17" options:NSNumericSearch] == NSOrderedAscending)) {        
+    if (([actualVersion compare:@"2.17" options:NSNumericSearch] == NSOrderedAscending)) {
     }
     
     if (([actualVersion compare:@"2.17.3" options:NSNumericSearch] == NSOrderedAscending)) {

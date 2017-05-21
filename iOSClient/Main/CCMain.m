@@ -37,7 +37,6 @@
 #define alertCreateFolder 1
 #define alertCreateFolderCrypto 2
 #define alertRename 3
-#define alertOfflineFolder 4
 
 @interface CCMain () <CCActionsDeleteDelegate, CCActionsRenameDelegate, CCActionsSearchDelegate, CCActionsDownloadThumbnailDelegate, CCActionsSettingFavoriteDelegate>
 {
@@ -483,16 +482,6 @@
             [self renameFile:_metadata fileName:[alertView textFieldAtIndex:0].text];
         }
     }
-    if (alertView.tag == alertOfflineFolder && buttonIndex == 1) {
-        
-        NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID];
-
-        NSString *dir = [CCUtility stringAppendServerUrl:serverUrl addFileName:_metadata.fileNameData];
-        
-        [[CCSynchronize sharedSynchronize] addOfflineFolder:dir];
-        
-        [self performSelector:@selector(reloadDatasource) withObject:nil];
-    }
 }
 
 // accept only number char > 0
@@ -516,8 +505,7 @@
      4> return YES or NO Based on the length
      */
     
-    if (alertView.tag == alertOfflineFolder) return YES;
-    else return ([[[alertView textFieldAtIndex:0] text] length]>0)?YES:NO;
+    return ([[[alertView textFieldAtIndex:0] text] length]>0)?YES:NO;
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1933,8 +1921,7 @@
         
         return;
     }
-    
-    tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPreficate:[NSPredicate predicateWithFormat:@"serverUrl = %@", serverUrl]];
+    tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"serverUrl = %@", serverUrl]];
     NSString *directoryID = directory.directoryID;
     
     // Is Directory Out Of Date ?
@@ -4051,7 +4038,7 @@
     
     // se è richiesta la disattivazione si chiede la password
     
-    tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPreficate:[NSPredicate predicateWithFormat:@"serverUrl = %@", lockServerUrl]];
+    tableDirectory *directory =  [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"serverUrl = %@", lockServerUrl]];
     if (directory.lock) {
         
         CCBKPasscode *viewController = [[CCBKPasscode alloc] initWithNibName:nil bundle:nil];
@@ -4133,7 +4120,7 @@
     if (_metadata.directory) {
         // calcolo lockServerUrl
         NSString *lockServerUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:_metadata.fileNameData];
-        tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPreficate:[NSPredicate predicateWithFormat:@"serverUrl = %@", lockServerUrl]];
+        tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"serverUrl = %@", lockServerUrl]];
         
         if (directory.lock)
             titoloLock = [NSString stringWithFormat:NSLocalizedString(@"_remove_passcode_", nil)];
@@ -4174,7 +4161,7 @@
         NSString *dirServerUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:_metadata.fileNameData];
 
         // Directory bloccata ?
-        tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPreficate:[NSPredicate predicateWithFormat:@"serverUrl = %@", dirServerUrl]];
+        tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"serverUrl = %@", dirServerUrl]];
         if (directory.lock && [[CCUtility getBlockCode] length] && app.sessionePasscodeLock == nil) lockDirectory = YES;
         
         NSString *cameraUploadFolderName = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderName];
@@ -4546,7 +4533,7 @@
     
     // Directory locked ?
     NSString *lockServerUrl = [CCUtility stringAppendServerUrl:[[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID] addFileName:_metadata.fileNameData];
-    tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPreficate:[NSPredicate predicateWithFormat:@"serverUrl = %@", lockServerUrl]];
+    tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"serverUrl = %@", lockServerUrl]];
     
     if (directory.lock && [[CCUtility getBlockCode] length] && app.sessionePasscodeLock == nil)
         lockDirectory = YES;
@@ -4661,7 +4648,7 @@
     _directoryOrder = [CCUtility getOrderSettings];
     
     // Controllo data lettura Data Source
-    tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPreficate:[NSPredicate predicateWithFormat:@"serverUrl == %@", serverUrl]];
+    tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"serverUrl == %@", serverUrl]];
     NSDate *dateDateRecordDirectory = directory.dateReadDirectory;
     
     if ([dateDateRecordDirectory compare:_dateReadDataSource] == NSOrderedDescending || dateDateRecordDirectory == nil || _dateReadDataSource == nil) {
@@ -5089,7 +5076,7 @@
     
     // Directory con passcode lock attivato
     NSString *lockServerUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileNameData];
-    tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPreficate:[NSPredicate predicateWithFormat:@"serverUrl = %@", lockServerUrl]];
+    tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"serverUrl = %@", lockServerUrl]];
     
     if (metadata.directory && (directory.lock && [[CCUtility getBlockCode] length]))
         cell.statusImageView.image = [UIImage imageNamed:@"passcode"];
@@ -5607,7 +5594,7 @@
         
         NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID];
         NSString *lockServerUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:_metadata.fileNameData];
-        tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPreficate:[NSPredicate predicateWithFormat:@"serverUrl = %@", lockServerUrl]];
+        tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"serverUrl = %@", lockServerUrl]];
 
         // SE siamo in presenza di una directory bloccata E è attivo il block E la sessione password Lock è senza data ALLORA chiediamo la password per procedere
         if (directory.lock && [[CCUtility getBlockCode] length] && app.sessionePasscodeLock == nil && controlPasscode) {

@@ -172,7 +172,7 @@
                     app.isCryptoCloudMode = YES;
                         
                     // force reload all directory for all users
-                    [CCCoreData clearAllDateReadDirectory];
+                    [[NCManageDatabase sharedInstance] setClearAllDateReadDirectory];
                     
                     // 3D Touch
                     [app configDynamicShortcutItems];
@@ -201,7 +201,7 @@
             [app configDynamicShortcutItems];
 
             // force reload all directory for all users and all metadata cryptated
-            [CCCoreData clearAllDateReadDirectory];
+            [[NCManageDatabase sharedInstance] setClearAllDateReadDirectory];
             [[NCManageDatabase sharedInstance] deleteMetadata:[NSPredicate predicateWithFormat:@"(cryptated == 1)"]];
             
             UIAlertView * alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_info_", nil) message:NSLocalizedString(@"_alert_deactivation_crypto_cloud_", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
