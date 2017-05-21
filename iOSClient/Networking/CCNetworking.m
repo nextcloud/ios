@@ -1142,7 +1142,7 @@
 {
     BOOL send = NO;
     
-    NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:_activeAccount];
+    NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
     
     if (metadata.cryptated) {
         
@@ -1500,7 +1500,7 @@
                     [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:[NSString stringWithFormat:@"%@", @k_CCErrorTaskDownloadNotFound] sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:k_taskIdentifierError sessionTaskIdentifierPlist:k_taskIdentifierNULL predicate:[NSPredicate predicateWithFormat:@"fileID = %@ ", metadata.fileID]];
                 
                     if ([self.delegate respondsToSelector:@selector(reloadDatasource:fileID:selector:)])
-                    [self.delegate reloadDatasource:[CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account] fileID:metadata.fileID selector:nil];
+                    [self.delegate reloadDatasource:[[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID] fileID:metadata.fileID selector:nil];
                 }
             
                 // PLIST
@@ -1511,7 +1511,7 @@
                     [[NCManageDatabase sharedInstance] setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier:k_taskIdentifierNULL sessionTaskIdentifierPlist:k_taskIdentifierDone predicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadata.fileID]];
                 
                     if ([self.delegate respondsToSelector:@selector(reloadDatasource:fileID:selector:)])
-                    [self.delegate reloadDatasource:[CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account] fileID:metadata.fileID selector:nil];
+                    [self.delegate reloadDatasource:[[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID] fileID:metadata.fileID selector:nil];
                 }
             });
         }];
@@ -1530,7 +1530,7 @@
     
     for (tableMetadata *metadata in metadatas) {
         
-        NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account];
+        NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
             
         if (metadata.sessionTaskIdentifier == k_taskIdentifierError)
             [self downloadFile:metadata.fileID serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:metadata.sessionSelector selectorPost:nil session:k_download_session taskStatus: k_taskStatusResume delegate:nil];
@@ -1569,7 +1569,7 @@
     
     for (tableMetadata *record in dataSource) {
         
-        __block NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:record.directoryID activeAccount:_activeAccount];
+        __block NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:record.directoryID];
         
         NSURLSession *session = [self getSessionfromSessionDescription:record.session];
         
@@ -1633,7 +1633,7 @@
         
         for (NSString *directoryID in directoryIDs)
             if ([self.delegate respondsToSelector:@selector(reloadDatasource:fileID:selector:)])
-                [self.delegate reloadDatasource:[CCCoreData getServerUrlFromDirectoryID:directoryID activeAccount:_activeAccount] fileID:nil selector:nil];
+                [self.delegate reloadDatasource:[[NCManageDatabase sharedInstance] getServerUrl:directoryID] fileID:nil selector:nil];
     });
 }
 
@@ -1680,7 +1680,7 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             
             if ([self.delegate respondsToSelector:@selector(reloadDatasource:fileID:selector:)])
-                [self.delegate reloadDatasource:[CCCoreData getServerUrlFromDirectoryID:directoryID activeAccount:_activeAccount] fileID:metadataTemp.fileID selector:metadataNet.selector];
+                [self.delegate reloadDatasource:[[NCManageDatabase sharedInstance] getServerUrl:directoryID] fileID:metadataTemp.fileID selector:metadataNet.selector];
         });
         
     } else {

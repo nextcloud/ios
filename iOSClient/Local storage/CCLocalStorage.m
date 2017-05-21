@@ -168,7 +168,7 @@
 {
     UIViewController *viewController;
     BOOL isLocal = YES;
-    NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:app.activeAccount];
+    NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID];
     
     if ([metadata.model isEqualToString:@"cartadicredito"])
         viewController = [[CCCartaDiCredito alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid fileID:metadata.fileID isLocal:isLocal serverUrl:serverUrl];
@@ -312,14 +312,14 @@
             if (metadata.directory) {
                                         
                 // remove tag offline for all folder/subfolder/file
-                NSString *relativeRoot = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:app.activeAccount];
+                NSString *relativeRoot = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
                 NSString *dirServerUrl = [CCUtility stringAppendServerUrl:relativeRoot addFileName:metadata.fileNameData];
-                NSArray *directories = [CCCoreData getOfflineDirectoryActiveAccount:app.activeAccount];
+                //NSArray *directories = [CCCoreData getOfflineDirectoryActiveAccount:app.activeAccount];
                                         
                 for (TableDirectory *directory in directories)
                     if ([directory.serverUrl containsString:dirServerUrl]) {
                         
-                        [CCCoreData setOfflineDirectoryServerUrl:directory.serverUrl offline:NO activeAccount:app.activeAccount];
+                        //[CCCoreData setOfflineDirectoryServerUrl:directory.serverUrl offline:NO activeAccount:app.activeAccount];
                         //[CCCoreData removeOfflineAllFileFromServerUrl:directory.serverUrl activeAccount:app.activeAccount];
                         
                         //[[NCManageDatabase sharedInstance] removeOfflineAllFileFromServerUrl:directory.serverUrl];

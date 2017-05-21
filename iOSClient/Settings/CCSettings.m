@@ -403,7 +403,7 @@
         
         if (metadata.directory) {
         
-            NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:app.activeAccount];
+            NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
             serverUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileNamePrint];
         
             NSArray *TableDirectories = [CCCoreData getDirectoryIDsFromBeginsWithServerUrl:serverUrl activeAccount:app.activeAccount];

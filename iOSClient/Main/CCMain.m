@@ -485,7 +485,7 @@
     }
     if (alertView.tag == alertOfflineFolder && buttonIndex == 1) {
         
-        NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:_metadata.account];
+        NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID];
 
         NSString *dir = [CCUtility stringAppendServerUrl:serverUrl addFileName:_metadata.fileNameData];
         
@@ -846,7 +846,7 @@
         fileName = _metadata.fileName;
         uuid = _metadata.uuid;
         fileID = _metadata.fileID;
-        serverUrl = [CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:_metadata.account];
+        NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID];
     }
     
     if ([tipo isEqualToString:@"cartadicredito"])
@@ -999,7 +999,7 @@
             
             if (metadata.directory == NO && [metadata.type isEqualToString: k_metadataType_file] && ([metadata.typeFile isEqualToString: k_metadataTypeFile_image] || [metadata.typeFile isEqualToString: k_metadataTypeFile_video])) {
                 
-                NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account];
+                NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
                 
                 [[CCNetworking sharedNetworking] downloadFile:metadata.fileID serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorSave selectorPost:nil session:k_download_session taskStatus: k_taskStatusResume delegate:self];
             }
@@ -1580,7 +1580,7 @@
             
             if (metadata.directory == NO && [metadata.type isEqualToString: k_metadataType_file]) {
                 
-                NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account];
+                NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
                 
                 [[CCNetworking sharedNetworking] downloadFile:metadata.fileID serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorDownloadFile selectorPost:nil session:k_download_session taskStatus: k_taskStatusResume delegate:self];
             }
@@ -2169,7 +2169,7 @@
         metadataNet.fileName = [CCUtility trasformedFileNamePlistInCrypto:fileNameModel];
         metadataNet.fileNamePrint = fileName;
         metadataNet.rev = metadata.rev;
-        metadataNet.serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account];
+        metadataNet.serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
         metadataNet.session = k_upload_session_foreground;
         metadataNet.taskStatus = k_taskStatusResume;
         
@@ -2205,8 +2205,7 @@
         NSString *fileName = [CCUtility trasformedFileNameCryptoInPlist:metadataNet.fileName];
         NSString *directoryID = metadataNet.directoryID;
         NSString *directoryIDTo = metadataNet.directoryIDTo;
-        
-        NSString *serverUrlTo = [CCCoreData getServerUrlFromDirectoryID:directoryIDTo activeAccount:app.activeAccount];
+        NSString *serverUrlTo = [[NCManageDatabase sharedInstance] getServerUrl:directoryIDTo];
 
         // FILE -> Metadata
         if (metadataNet.directory == NO) {
@@ -2294,7 +2293,7 @@
             metadataNet.fileNameTo = metadata.fileName;
             metadataNet.rev = metadata.rev;
             metadataNet.selector = selectorMove;
-            metadataNet.serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account];
+            metadataNet.serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
             metadataNet.serverUrlTo = serverUrlTo;
             
             [_queueSelector addObject:metadataNet.selector];
@@ -2314,7 +2313,7 @@
             metadataNet.directoryIDTo = [CCCoreData getDirectoryIDFromServerUrl:serverUrlTo activeAccount:app.activeAccount];
             metadataNet.fileNamePrint = metadata.fileNamePrint;
             metadataNet.rev = metadata.rev;
-            metadataNet.serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account];
+            metadataNet.serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
             metadataNet.serverUrlTo = serverUrlTo;
             
             // data
@@ -2473,7 +2472,7 @@
 
 - (void)encyptedDecryptedFolder
 {
-    NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:_metadata.account];
+    NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID];
     
     if (_metadata.cryptated) {
         
@@ -2565,7 +2564,7 @@
     
         for (tableMetadata* metadata in metadatas) {
             
-            NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account];
+            NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
             
             [[CCNetworking sharedNetworking] downloadFile:metadata.fileID serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorEncryptFile selectorPost:nil session:k_download_session taskStatus: k_taskStatusResume delegate:self];
         }
@@ -2591,7 +2590,7 @@
         
         for (tableMetadata* metadata in metadatas) {
             
-            NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account];
+            NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
             
             [[CCNetworking sharedNetworking] downloadFile:metadata.fileID serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorDecryptFile selectorPost:nil session:k_download_session taskStatus: k_taskStatusResume delegate:self];
         }
@@ -2607,7 +2606,7 @@
     if (_metadata.cryptated == YES) selector = selectorDecryptFile;
     if (_metadata.cryptated == NO) selector = selectorEncryptFile;
     
-    NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:_metadata.account];
+    NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID];
     
     [[CCNetworking sharedNetworking] downloadFile:_metadata.fileID serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selector selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
 }
@@ -2620,7 +2619,7 @@
     
     if ([[NSFileManager defaultManager] fileExistsAtPath:fileNameTo]) {
         
-        NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:app.activeAccount];
+        NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
                 
         dispatch_async(dispatch_get_main_queue(), ^{
             [[CCNetworking sharedNetworking] uploadFile:metadata.fileName serverUrl:serverUrl cryptated:YES onlyPlist:NO session:k_upload_session taskStatus:k_taskStatusResume selector:nil selectorPost:nil errorCode:0 delegate:nil];
@@ -2642,7 +2641,7 @@
     
     if ([[NSFileManager defaultManager] fileExistsAtPath:fileNameTo]) {
         
-        NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:app.activeAccount];
+        NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
         
         dispatch_async(dispatch_get_main_queue(), ^{
             [[CCNetworking sharedNetworking] uploadFile:metadata.fileNamePrint serverUrl:serverUrl cryptated:NO onlyPlist:NO session:k_upload_session taskStatus:k_taskStatusResume selector:nil selectorPost:nil errorCode:0 delegate:nil];
@@ -3083,7 +3082,7 @@
     metadataNet.fileName = metadata.fileName;
     metadataNet.fileNamePrint = metadata.fileNamePrint;
     metadataNet.selector = selectorOpenWindowShare;
-    metadataNet.serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account];
+    metadataNet.serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
     
     [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
     
@@ -3157,8 +3156,8 @@
         
     } else {
     
-        NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account];
-    
+        NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
+        
         [[CCNetworking sharedNetworking] downloadFile:metadata.fileID serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorAddFavorite selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
     }
 }
@@ -3174,7 +3173,7 @@
 
 - (void)addOffline:(tableMetadata *)metadata
 {
-    NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account];
+    NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
     
     [[CCNetworking sharedNetworking] downloadFile:metadata.fileID serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorAddOffline selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
     
@@ -3199,7 +3198,7 @@
 {
     if (metadata.errorPasscode || !metadata.uuid) return;
     
-    NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account];
+    NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
 
     if ([metadata.type isEqualToString: k_metadataType_file])
         [[CCNetworking sharedNetworking] downloadFile:metadata.fileID serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorAddLocal selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
@@ -3221,7 +3220,7 @@
 
 - (void)openIn:(tableMetadata *)metadata
 {
-    NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account];
+    NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
 
     [[CCNetworking sharedNetworking] downloadFile:metadata.fileID serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorOpenIn selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
     
@@ -3235,7 +3234,7 @@
 
 - (void)removeLocalFile:(tableMetadata *)metadata
 {
-    NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:_metadata.account];
+    NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID];
 
     [CCCoreData deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileID == %@)", app.activeAccount, metadata.fileID]];
     
@@ -3851,7 +3850,7 @@
         
     } else {
         
-        NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:_metadata.account];
+        NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID];
         
         [[CCNetworking sharedNetworking] downloadFile:_metadata.fileID serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorLoadCopy selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
     }
@@ -3873,7 +3872,7 @@
             
         } else {
 
-            NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:_metadata.account];
+            NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID];
 
             [[CCNetworking sharedNetworking] downloadFile:metadata.fileID serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorLoadCopy selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
         }
@@ -4023,7 +4022,7 @@
             // disattivazione lock cartella
             if (aViewController.fromType == CCBKPasscodeFromDisactivateDirectory) {
                 
-                NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:_metadata.account];
+                NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID];
                 NSString *lockServerUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:_metadata.fileNameData];
                 
                 if ([CCCoreData setDirectoryUnLock:lockServerUrl activeAccount:app.activeAccount] == NO) {
@@ -4042,7 +4041,7 @@
 
 - (void)comandoLockPassword
 {
-    NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:_metadata.account];
+    NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID];
     NSString *lockServerUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:_metadata.fileNameData];
 
     // se non è abilitato il Lock Passcode esci
@@ -4116,7 +4115,7 @@
 {
     _metadata = [self getMetadataFromSectionDataSource:indexPath];
     
-    NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:_metadata.account];
+    NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID];
     
     NSString *titoloCriptaDecripta, *titoloOffline, *titoloLock, *titleOfflineFolder, *titleFavorite;
     BOOL offlineFolder = NO;
@@ -4558,7 +4557,7 @@
     BOOL lockDirectory = NO;
     
     // Directory locked ?
-    NSString *lockServerUrl = [CCUtility stringAppendServerUrl:[CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:_metadata.account] addFileName:_metadata.fileNameData];
+    NSString *lockServerUrl = [CCUtility stringAppendServerUrl:[[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID] addFileName:_metadata.fileNameData];
     tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPreficate:[NSPredicate predicateWithFormat:@"serverUrl = %@", dirServerUrl]];
     
     if (directory.lock && [[CCUtility getBlockCode] length] && app.sessionePasscodeLock == nil)
@@ -4946,7 +4945,7 @@
         return [tableView dequeueReusableCellWithIdentifier:@"CellMainTransfer"];
     }
     
-    NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:metadata.account];
+    NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
     
     if ([metadata.session isEqualToString:@""] || metadata.session == nil) typeCell = @"CellMain";
     else typeCell = @"CellMainTransfer";
@@ -5414,7 +5413,7 @@
     NSArray *metadatas = [_sectionDataSource.sectionArrayRow objectForKey:[_sectionDataSource.sections objectAtIndex:indexPath.section]];
     if (indexPath.row >= [metadatas count]) return;
     
-    NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:_metadata.account];
+    NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID];
     
     // se è in corso una sessione
     if ([_metadata.session length] > 0) return;
@@ -5621,7 +5620,7 @@
 
     if(self.tableView.editing == NO && _metadata.errorPasscode == NO){
         
-        NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:_metadata.directoryID activeAccount:_metadata.account];
+        NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID];
         NSString *lockServerUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:_metadata.fileNameData];
         tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPreficate:[NSPredicate predicateWithFormat:@"serverUrl = %@", dirServerUrl]];
 

@@ -119,7 +119,7 @@
         // ---- Synchronized ----
         
         // Get ServerUrl
-        NSString* serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:app.activeAccount];
+        NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
         serverUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileNameData];
         
         if (![serverUrl containsString:father]) {
@@ -374,7 +374,7 @@
 
 - (void)readFile:(tableMetadata *)metadata withDownload:(BOOL)withDownload
 {
-    NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:app.activeAccount];
+    NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
     if (serverUrl == nil) return;
         
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
@@ -402,7 +402,7 @@
         [CCCoreData deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileID == %@)", metadataNet.account, metadataNet.fileID]];
         [[NCManageDatabase sharedInstance] deleteMetadata:[NSPredicate predicateWithFormat:@"fileID == %@", metadataNet.account, metadataNet.fileID]];
         
-        NSString* serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadataNet.directoryID activeAccount:app.activeAccount];
+        NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
         [app.activeMain reloadDatasource:serverUrl fileID:nil selector:nil];
     }
 }
@@ -502,7 +502,7 @@
             
         // Clear date for dorce refresh view
         if (![oldDirectoryID isEqualToString:metadata.directoryID]) {
-            serverUrl = [CCCoreData getServerUrlFromDirectoryID:metadata.directoryID activeAccount:app.activeAccount];
+            serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
             oldDirectoryID = metadata.directoryID;
             [CCCoreData clearDateReadAccount:app.activeAccount serverUrl:serverUrl directoryID:nil];
         }
