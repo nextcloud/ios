@@ -110,7 +110,7 @@ class tableCertificates: Object {
 class tableDirectory: Object {
     
     dynamic var account = ""
-    dynamic var dateReadDirectory = NSDate()
+    dynamic var dateReadDirectory: NSDate? = nil
     dynamic var directoryID = ""
     dynamic var favorite: Bool = false
     dynamic var fileID = ""

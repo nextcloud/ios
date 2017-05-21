@@ -1185,7 +1185,7 @@
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Offline =====
 #pragma --------------------------------------------------------------------------------------------
-
+/*
 + (NSArray *)getHomeOfflineActiveAccount:(NSString *)activeAccount directoryUser:(NSString *)directoryUser fieldOrder:(NSString *)fieldOrder ascending:(BOOL)ascending
 {
     NSMutableArray *tableMetadatas = [NSMutableArray new];
@@ -1244,6 +1244,7 @@
 
     return [tableMetadatas sortedArrayUsingDescriptors:[NSArray arrayWithObjects:descriptor, nil]];//[NSArray arrayWithArray:tableMetadatas];
 }
+*/
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== File System =====

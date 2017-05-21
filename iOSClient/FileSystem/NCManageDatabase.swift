@@ -1562,6 +1562,40 @@ class NCManageDatabase: NSObject {
             realm.delete(results)
         }
     }
+    
+    func clearDateRead(_ serverUrl: String?, directoryID: String?) {
+        
+        let tableAccount = self.getAccountActive()
+        if tableAccount == nil {
+            return
+        }
+        
+        let realm = try! Realm()
+        
+        try! realm.write {
+            
+            var results : Results<tableDirectory>?
+            
+            if serverUrl != nil {
+                results = realm.objects(tableDirectory.self).filter("serverUrl = %@", serverUrl!)
+            }
+        
+            if directoryID != nil {
+                results = realm.objects(tableDirectory.self).filter("directoryID = %@", directoryID!)
+            }
+        
+            if results != nil {
+                
+                if results!.count > 0 {
+                
+                    results![0].dateReadDirectory = nil
+                    results![0].rev = ""
+                    realm.add(results!, update: true)
+                }
+            }
+        }
+    }
+
 
     func getTableDirectoryWithPreficate(_ predicate: NSPredicate) -> tableDirectory? {
         
