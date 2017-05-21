@@ -1614,9 +1614,7 @@
         [CCCoreData setGeoInformationLocalNull];
     }
     
-    if (([actualVersion compare:@"2.17" options:NSNumericSearch] == NSOrderedAscending)) {
-        
-        [CCCoreData clearAllDateReadDirectory];
+    if (([actualVersion compare:@"2.17" options:NSNumericSearch] == NSOrderedAscending)) {        
     }
     
     if (([actualVersion compare:@"2.17.3" options:NSNumericSearch] == NSOrderedAscending)) {

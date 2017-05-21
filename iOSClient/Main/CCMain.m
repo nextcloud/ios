@@ -2234,26 +2234,15 @@
         if (metadataNet.directory == YES) {
         
             // delete all dir / subdir
-            NSArray *directoryIDs = [CCCoreData deleteDirectoryAndSubDirectory:[CCUtility stringAppendServerUrl:metadataNet.serverUrl addFileName:fileName] activeAccount:app.activeAccount];
-        
-            // delete all metadata and local file in dir / subdir
-            for (NSString *directoryIDDelete in directoryIDs) {
-                
-                //[CCCoreData deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(directoryID == %@)AND (account == %@)",directoryIDDelete, app.activeAccount]];
-                
-                [[NCManageDatabase sharedInstance] deleteMetadata:[NSPredicate predicateWithFormat:@"(directoryID == %@)AND (account == %@)",directoryIDDelete, app.activeAccount]];
-            }
+            [[NCManageDatabase sharedInstance] deleteDirectoryAndSubDirectory:[CCUtility stringAppendServerUrl:metadataNet.serverUrl addFileName:fileName]];
+            
             // move metadata
             //[CCCoreData moveMetadata:fileName directoryID:directoryID directoryIDTo:directoryIDTo activeAccount:app.activeAccount];
             [[NCManageDatabase sharedInstance] moveMetadata:fileName directoryID:directoryID directoryIDTo:directoryIDTo];
             
             // Add new directory
             NSString *newDirectory = [NSString stringWithFormat:@"%@/%@", serverUrlTo, fileName];
-            NSString *directoryID = [[NCManageDatabase sharedInstance] addDirectory:newDirectory permissions:@""];
-            
-            // Check Offline
-            if ([CCCoreData isOfflineDirectoryServerUrl:serverUrlTo activeAccount:app.activeAccount])
-                [CCCoreData setOfflineDirectoryServerUrl:newDirectory offline:YES activeAccount:app.activeAccount];
+            (void)[[NCManageDatabase sharedInstance] addDirectory:newDirectory permissions:@""];
         }
     
         // reload Datasource
@@ -2399,10 +2388,6 @@
     
     NSString *newDirectory = [NSString stringWithFormat:@"%@/%@", metadataNet.serverUrl, metadataNet.fileName];    
     (void)[[NCManageDatabase sharedInstance] addDirectory:newDirectory permissions:@""];
-    
-    // Check Offline
-    if ([CCCoreData isOfflineDirectoryServerUrl:_serverUrl activeAccount:app.activeAccount])
-        [CCCoreData setOfflineDirectoryServerUrl:newDirectory offline:YES activeAccount:app.activeAccount];
     
     // Load Folder or the Datasource
     if ([metadataNet.selectorPost isEqualToString:selectorReadFolderForced]) {
@@ -4038,8 +4023,8 @@
                 NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID];
                 NSString *lockServerUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:_metadata.fileNameData];
                 
-                if ([CCCoreData setDirectoryUnLock:lockServerUrl activeAccount:app.activeAccount] == NO) {
-                    
+                if (![[NCManageDatabase sharedInstance] setDirectoryLockWithServerUrl:lockServerUrl lock:NO]) {
+                
                     [app messageNotification:@"_error_" description:@"_error_operation_canc_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
                 }
                 
@@ -4102,11 +4087,10 @@
     
     // ---------------- ACTIVATE PASSWORD
     
-    if([CCCoreData setDirectoryLock:lockServerUrl activeAccount:app.activeAccount]) {
+    if ([[NCManageDatabase sharedInstance] setDirectoryLockWithServerUrl:lockServerUrl lock:YES]) {
         
         NSIndexPath *indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:_metadata.fileID];
         if (indexPath) [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObjects:indexPath, nil] withRowAnimation:UITableViewRowAnimationAutomatic];
-
         
     } else {
         
@@ -4295,7 +4279,7 @@
                                         [[NCManageDatabase sharedInstance] setAccountCameraUploadFolderName:_metadata.fileName];
                                         [[NCManageDatabase sharedInstance] setAccountCameraUploadFolderPath:serverUrl activeUrl:app.activeUrl];
                                         
-                                        [CCCoreData clearDateReadAccount:app.activeAccount serverUrl:oldPath directoryID:nil];
+                                        [[NCManageDatabase sharedInstance] clearDateRead:oldPath directoryID:nil];
                                         
                                         if (app.activeAccount.length > 0 && app.activePhotosCameraUpload)
                                             [app.activePhotosCameraUpload reloadDatasourceForced];
@@ -4561,8 +4545,8 @@
     BOOL lockDirectory = NO;
     
     // Directory locked ?
-    NSString *lockServerUrl = [CCUtility stringAppendServerUrl:[[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID] addFileName:_metadata.fileNameData];
-    tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPreficate:[NSPredicate predicateWithFormat:@"serverUrl = %@", dirServerUrl]];
+    NSString *lockServerUrl = [CCUtility stringAppendServerUrl:[[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID] addFileName:_metadata.fileNameData];
+    tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPreficate:[NSPredicate predicateWithFormat:@"serverUrl = %@", lockServerUrl]];
     
     if (directory.lock && [[CCUtility getBlockCode] length] && app.sessionePasscodeLock == nil)
         lockDirectory = YES;
@@ -4670,9 +4654,6 @@
         return;
     }
     
-    // Offline folder ?
-    _isOfflineServerUrl = [CCCoreData isOfflineDirectoryServerUrl:_serverUrl activeAccount:app.activeAccount];
-    
     [app.activeTransfers reloadDatasource];
     
     // Settaggio variabili per le ottimizzazioni
@@ -4680,8 +4661,8 @@
     _directoryOrder = [CCUtility getOrderSettings];
     
     // Controllo data lettura Data Source
-    NSDate *dateDateRecordDirectory = [CCCoreData getDateReadDirectoryID:[[NCManageDatabase sharedInstance] getDirectoryID:_serverUrl] activeAccount:app.activeAccount];
-    dateDateRecordDirectory = nil;
+    tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPreficate:[NSPredicate predicateWithFormat:@"serverUrl == %@", serverUrl]];
+    NSDate *dateDateRecordDirectory = directory.dateReadDirectory;
     
     if ([dateDateRecordDirectory compare:_dateReadDataSource] == NSOrderedDescending || dateDateRecordDirectory == nil || _dateReadDataSource == nil) {
         
@@ -5108,7 +5089,7 @@
     
     // Directory con passcode lock attivato
     NSString *lockServerUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileNameData];
-    tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPreficate:[NSPredicate predicateWithFormat:@"serverUrl = %@", dirServerUrl]];
+    tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPreficate:[NSPredicate predicateWithFormat:@"serverUrl = %@", lockServerUrl]];
     
     if (metadata.directory && (directory.lock && [[CCUtility getBlockCode] length]))
         cell.statusImageView.image = [UIImage imageNamed:@"passcode"];
@@ -5626,7 +5607,7 @@
         
         NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID];
         NSString *lockServerUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:_metadata.fileNameData];
-        tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPreficate:[NSPredicate predicateWithFormat:@"serverUrl = %@", dirServerUrl]];
+        tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPreficate:[NSPredicate predicateWithFormat:@"serverUrl = %@", lockServerUrl]];
 
         // SE siamo in presenza di una directory bloccata E è attivo il block E la sessione password Lock è senza data ALLORA chiediamo la password per procedere
         if (directory.lock && [[CCUtility getBlockCode] length] && app.sessionePasscodeLock == nil && controlPasscode) {

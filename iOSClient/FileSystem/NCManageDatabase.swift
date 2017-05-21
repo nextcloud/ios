@@ -1640,7 +1640,6 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    
     func clearDateRead(_ serverUrl: String?, directoryID: String?) {
         
         let tableAccount = self.getAccountActive()
@@ -1673,7 +1672,6 @@ class NCManageDatabase: NSObject {
             }
         }
     }
-
 
     func getTableDirectoryWithPreficate(_ predicate: NSPredicate) -> tableDirectory? {
         
@@ -1748,6 +1746,32 @@ class NCManageDatabase: NSObject {
         }
     }
     
+    func setDirectoryLock(serverUrl: String, lock: Bool) -> Bool {
+        
+        var update = false
+
+        let tableAccount = self.getAccountActive()
+        if tableAccount == nil {
+            return update
+        }
+        
+        let realm = try! Realm()
+        
+        try! realm.write {
+            
+            let results = realm.objects(tableDirectory.self).filter("account = %@ AND serverUrl = %@", tableAccount!.account, serverUrl)
+            
+            if results.count > 0 {
+                
+                results[0].lock = lock
+                update = true
+                
+            }
+        }
+        
+        return update
+    }
+
     func copyTableDirectory(_ table: tableDirectory) -> tableDirectory {
         
         let copyTable = tableDirectory.init(value: table)
