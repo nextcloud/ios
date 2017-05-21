@@ -1166,6 +1166,8 @@ class NCManageDatabase: NSObject {
                 realm.add(metadata, update: true)
             }
         }
+        
+        self.setDateReadDirectory(metadata.directoryID)
     }
     
     func deleteMetadata(_ predicate: NSPredicate) {
@@ -1178,6 +1180,10 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         
         let results = realm.objects(tableMetadata.self).filter(predicate)
+        
+        for result in results {
+            self.setDateReadDirectory(result.directoryID)
+        }
         
         try! realm.write {
             realm.delete(results)
@@ -1201,6 +1207,9 @@ class NCManageDatabase: NSObject {
                 result.directoryID = directoryIDTo
             }
         }
+        
+        self.setDateReadDirectory(directoryID)
+        self.setDateReadDirectory(directoryIDTo)
     }
     
     func updateMetadata(_ metadata: tableMetadata, activeUrl: String) {
@@ -1216,6 +1225,8 @@ class NCManageDatabase: NSObject {
         try! realm.write {
             realm.add(metadataWithIcon!, update: true)
         }
+        
+        self.setDateReadDirectory(metadata.directoryID)
     }
     
     func setMetadataSession(_ session: String?, sessionError: String?, sessionSelector: String?, sessionSelectorPost: String?, sessionTaskIdentifier: Int, sessionTaskIdentifierPlist: Int, predicate: NSPredicate) {
@@ -1251,6 +1262,8 @@ class NCManageDatabase: NSObject {
                 if sessionTaskIdentifierPlist != Int(k_taskIdentifierNULL) {
                     result.sessionTaskIdentifierPlist = sessionTaskIdentifierPlist
                 }
+                
+                self.setDateReadDirectory(result.directoryID)
             }
         }
     }
@@ -1265,11 +1278,14 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         
         let results = realm.objects(tableMetadata.self).filter("account = %@ AND fileID = %@", tableAccount!.account, fileID)
+        
         if (results.count > 0) {
             
             try! realm.write {
                 results[0].favorite = favorite
             }
+            
+            self.setDateReadDirectory(results[0].directoryID)
         }
     }
 
@@ -1453,22 +1469,6 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    func removeOfflineAllFileFromServerUrl(_ serverUrl: String) {
-        
-        let tableAccount = self.getAccountActive()
-        if tableAccount == nil {
-            return
-        }
-        
-        let realm = try! Realm()
-
-        let results = realm.objects(tableMetadata.self).filter("account = %@ AND directoryID = %@", tableAccount!.account, serverUrl)
-
-        try! realm.write {
-            realm.delete(results)
-        }
-    }
-    
     func copyTableMetadata(_ metadata: tableMetadata) -> tableMetadata {
         
         let copyMetadata = tableMetadata()
@@ -1546,6 +1546,57 @@ class NCManageDatabase: NSObject {
         }
     }
 
+    func getDirectoryID(_ serverUrl: String) -> String {
+        
+        let tableAccount = self.getAccountActive()
+        if tableAccount == nil {
+            return ""
+        }
+        
+        let realm = try! Realm()
+        
+        let results = realm.objects(tableDirectory.self).filter("account = %@ AND serverUrl = %@", tableAccount!.account, serverUrl)
+        if results.count > 0 {
+            return results[0].directoryID
+        } else {
+            return ""
+        }
+    }
+
+    func getServerUrl(_ directoryID: String) -> String {
+        
+        let tableAccount = self.getAccountActive()
+        if tableAccount == nil {
+            return ""
+        }
+        
+        let realm = try! Realm()
+        let results = realm.objects(tableDirectory.self).filter("account = %@ AND directoryID = %@", tableAccount!.account, directoryID)
+
+        if results.count > 0 {
+            return results[0].serverUrl
+        } else {
+            return ""
+        }
+    }
+    
+    func setDateReadDirectory(_ directoryID: String) {
+        
+        let tableAccount = self.getAccountActive()
+        if tableAccount == nil {
+            return
+        }
+        
+        let realm = try! Realm()
+        let results = realm.objects(tableDirectory.self).filter("account = %@ AND directoryID = %@", tableAccount!.account, directoryID)
+
+        try! realm.write {
+            
+            if results.count > 0 {
+                return results[0].dateReadDirectory = NSDate()
+            }
+        }
+    }
 
 
     //MARK: -
