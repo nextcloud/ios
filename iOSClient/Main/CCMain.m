@@ -1836,7 +1836,7 @@
         
     } else {
         
-        [CCCoreData updateDirectoryEtagServerUrl:metadataNet.serverUrl fileID:fileID activeAccount:metadataNet.account];
+        [[NCManageDatabase sharedInstance] updateDirectoryFileID:metadataNet.serverUrl fileID:fileID];
         
         [[NCManageDatabase sharedInstance] deleteMetadata:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND session = ''", metadataNet.account, metadataNet.directoryID]];
         
@@ -1924,7 +1924,7 @@
         
         if (forced) {
             
-            [CCCoreData clearDateReadAccount:app.activeAccount serverUrl:serverUrl directoryID:nil];
+            [[NCManageDatabase sharedInstance] clearDateRead:serverUrl directoryID:nil];
             
             _searchFileName = @"";                          // forced reload searchg
         }
@@ -1934,9 +1934,23 @@
         return;
     }
     
-    NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
+    tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPreficate:[NSPredicate predicateWithFormat:@"serverUrl = %@", serverUrl]];
+    NSString *directoryID = directory.directoryID;
     
-    if ([CCCoreData isDirectoryOutOfDate:k_dayForceReadFolder directoryID:directoryID activeAccount:app.activeAccount] || forced) {
+    // Is Directory Out Of Date ?
+    BOOL isDirectoryOutOfDate = false;
+    NSDateComponents *dateComponents = [NSDateComponents new];
+    [dateComponents setWeekday:k_dayForceReadFolder];
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+    
+    NSDate *datePlus = [calendar dateByAddingComponents:dateComponents toDate:directory.dateReadDirectory options:0];
+    NSDate *now = [NSDate date];
+    
+    // usa la Cache se richiesto e se la data è entro X giorni dall'ultima volta che l'hai letta.
+    if ([now compare:datePlus] == NSOrderedDescending)
+        isDirectoryOutOfDate = true;
+    
+    if (isDirectoryOutOfDate || forced) {
         
         if (_refreshControl.isRefreshing == NO)
             [_hud visibleIndeterminateHud];
@@ -4116,22 +4130,13 @@
     
     NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID];
     
-    NSString *titoloCriptaDecripta, *titoloOffline, *titoloLock, *titleOfflineFolder, *titleFavorite;
-    BOOL offlineFolder = NO;
+    NSString *titoloCriptaDecripta, *titoloOffline, *titoloLock, *titleFavorite;
     
     if (_metadata.cryptated) titoloCriptaDecripta = [NSString stringWithFormat:NSLocalizedString(@"_decrypt_", nil)];
     else titoloCriptaDecripta = [NSString stringWithFormat:NSLocalizedString(@"_encrypt_", nil)];
     
     if ([CCCoreData isOfflineLocalEtag:_metadata.fileID activeAccount:app.activeAccount]) titoloOffline = [NSString stringWithFormat:NSLocalizedString(@"_remove_offline_", nil)];
     else titoloOffline = [NSString stringWithFormat:NSLocalizedString(@"_add_offline_", nil)];
-    
-    NSString *offlineServerUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:_metadata.fileNameData];
-    if (_metadata.directory && [CCCoreData isOfflineDirectoryServerUrl:offlineServerUrl activeAccount:app.activeAccount]) {
-        
-        titleOfflineFolder = [NSString stringWithFormat:NSLocalizedString(@"_remove_offline_", nil)];
-        offlineFolder = YES;
-        
-    } else titleOfflineFolder = [NSString stringWithFormat:NSLocalizedString(@"_add_offline_", nil)];
     
     if (_metadata.favorite) {
         

@@ -330,7 +330,7 @@
                 if (![tableDirectory.rev isEqualToString:metadata.rev]) {
                     
                     [self readFolderServerUrl:serverUrl directoryID:directoryID selector:metadataNet.selector];
-                    [CCCoreData updateDirectoryEtagServerUrl:serverUrl fileID:metadata.rev activeAccount:metadataNet.account];
+                    [[NCManageDatabase sharedInstance] updateDirectoryFileID:serverUrl fileID:metadata.rev];
                 }
                 
             } else {

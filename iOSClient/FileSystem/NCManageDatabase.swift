@@ -1620,6 +1620,27 @@ class NCManageDatabase: NSObject {
         }
     }
     
+    func updateDirectoryFileID(_ serverUrl: String, fileID: String) {
+        
+        let tableAccount = self.getAccountActive()
+        if tableAccount == nil {
+            return
+        }
+        
+        let realm = try! Realm()
+        
+        try! realm.write {
+            
+            let results = realm.objects(tableDirectory.self).filter("serverUrl = %@", serverUrl)
+            
+            if results.count > 0 {
+                
+                results[0].rev = fileID
+            }
+        }
+    }
+    
+    
     func clearDateRead(_ serverUrl: String?, directoryID: String?) {
         
         let tableAccount = self.getAccountActive()
@@ -1726,6 +1747,15 @@ class NCManageDatabase: NSObject {
             }
         }
     }
+    
+    func copyTableDirectory(_ table: tableDirectory) -> tableDirectory {
+        
+        let copyTable = tableDirectory.init(value: table)
+        
+        
+        return copyTable
+    }
+
 
 
     //MARK: -
