@@ -189,7 +189,7 @@
     // Folder not present, remove it
     if (errorCode == 404 && [recordAccount.account isEqualToString:metadataNet.account]) {
         
-        [[NCManageDatabase sharedInstance] deleteDirectoryAndSubDirectory:metadataNet.serverUrl];
+        [[NCManageDatabase sharedInstance] deleteDirectoryAndSubDirectoryWithServerUrl:metadataNet.serverUrl];
         [app.activeMain reloadDatasource:metadataNet.serverUrl fileID:nil selector:nil];
     }
 }
@@ -272,7 +272,7 @@
                 if (![tableDirectory.rev isEqualToString:metadata.rev]) {
                     
                     [self readFolderServerUrl:serverUrl directoryID:directoryID selector:metadataNet.selector];
-                    [[NCManageDatabase sharedInstance] updateDirectoryFileID:serverUrl fileID:metadata.rev];
+                    [[NCManageDatabase sharedInstance] updateDirectoryFileIDWithServerUrl:serverUrl fileID:metadata.rev];
                 }
                 
             } else {
@@ -447,7 +447,7 @@
         if (![oldDirectoryID isEqualToString:metadata.directoryID]) {
             serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
             oldDirectoryID = metadata.directoryID;
-            [[NCManageDatabase sharedInstance] clearDateRead:serverUrl directoryID:nil];
+            [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:serverUrl directoryID:nil];
         }
             
         [[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:serverUrl];

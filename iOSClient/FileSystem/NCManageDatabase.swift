@@ -1167,7 +1167,7 @@ class NCManageDatabase: NSObject {
             }
         }
         
-        self.setDateReadDirectory(metadata.directoryID)
+        self.setDateReadDirectory(directoryID: metadata.directoryID)
     }
     
     func deleteMetadata(_ predicate: NSPredicate) {
@@ -1182,7 +1182,7 @@ class NCManageDatabase: NSObject {
         let results = realm.objects(tableMetadata.self).filter(predicate)
         
         for result in results {
-            self.setDateReadDirectory(result.directoryID)
+            self.setDateReadDirectory(directoryID: result.directoryID)
         }
         
         try! realm.write {
@@ -1208,8 +1208,8 @@ class NCManageDatabase: NSObject {
             }
         }
         
-        self.setDateReadDirectory(directoryID)
-        self.setDateReadDirectory(directoryIDTo)
+        self.setDateReadDirectory(directoryID: directoryID)
+        self.setDateReadDirectory(directoryID: directoryIDTo)
     }
     
     func updateMetadata(_ metadata: tableMetadata, activeUrl: String) {
@@ -1226,7 +1226,7 @@ class NCManageDatabase: NSObject {
             realm.add(metadataWithIcon!, update: true)
         }
         
-        self.setDateReadDirectory(metadata.directoryID)
+        self.setDateReadDirectory(directoryID: metadata.directoryID)
     }
     
     func setMetadataSession(_ session: String?, sessionError: String?, sessionSelector: String?, sessionSelectorPost: String?, sessionTaskIdentifier: Int, sessionTaskIdentifierPlist: Int, predicate: NSPredicate) {
@@ -1263,7 +1263,7 @@ class NCManageDatabase: NSObject {
                     result.sessionTaskIdentifierPlist = sessionTaskIdentifierPlist
                 }
                 
-                self.setDateReadDirectory(result.directoryID)
+                self.setDateReadDirectory(directoryID: result.directoryID)
             }
         }
     }
@@ -1285,7 +1285,7 @@ class NCManageDatabase: NSObject {
                 results[0].favorite = favorite
             }
             
-            self.setDateReadDirectory(results[0].directoryID)
+            self.setDateReadDirectory(directoryID: results[0].directoryID)
         }
     }
 
@@ -1511,7 +1511,7 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Directory
     
-    func addDirectory(_ serverUrl: String, permissions: String) -> String {
+    func addDirectory(serverUrl: String, permissions: String) -> String {
         
         let tableAccount = self.getAccountActive()
         if tableAccount == nil {
@@ -1547,23 +1547,7 @@ class NCManageDatabase: NSObject {
         return directoryID
     }
     
-    func deleteDirectory(_ predicate: NSPredicate) {
-        
-        let tableAccount = self.getAccountActive()
-        if tableAccount == nil {
-            return
-        }
-        
-        let realm = try! Realm()
-        
-        let results = realm.objects(tableDirectory.self).filter(predicate)
-        
-        try! realm.write {
-            realm.delete(results)
-        }
-    }
-    
-    func deleteDirectoryAndSubDirectory(_ serverUrl: String) {
+    func deleteDirectoryAndSubDirectory(serverUrl: String) {
         
         let tableAccount = self.getAccountActive()
         if tableAccount == nil {
@@ -1602,7 +1586,7 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    func renameDirectory(_ serverUrl: String, serverUrlTo: String) {
+    func renameDirectory(serverUrl: String, serverUrlTo: String) {
     
         let tableAccount = self.getAccountActive()
         if tableAccount == nil {
@@ -1620,7 +1604,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func updateDirectoryFileID(_ serverUrl: String, fileID: String) {
+    func updateDirectoryFileID(serverUrl: String, fileID: String) {
         
         let tableAccount = self.getAccountActive()
         if tableAccount == nil {
@@ -1640,7 +1624,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func clearDateRead(_ serverUrl: String?, directoryID: String?) {
+    func clearDateRead(serverUrl: String?, directoryID: String?) {
         
         let tableAccount = self.getAccountActive()
         if tableAccount == nil {
@@ -1758,7 +1742,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func setDateReadDirectory(_ directoryID: String) {
+    func setDateReadDirectory(directoryID: String) {
         
         let tableAccount = self.getAccountActive()
         if tableAccount == nil {

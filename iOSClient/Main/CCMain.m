@@ -1824,13 +1824,13 @@
         
     } else {
         
-        [[NCManageDatabase sharedInstance] updateDirectoryFileID:metadataNet.serverUrl fileID:fileID];
+        [[NCManageDatabase sharedInstance] updateDirectoryFileIDWithServerUrl:metadataNet.serverUrl fileID:fileID];
         
         [[NCManageDatabase sharedInstance] deleteMetadata:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND session = ''", metadataNet.account, metadataNet.directoryID]];
         
         recordsInSessions = [[NCManageDatabase sharedInstance] getMetadatasWithPreficate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND session != ''", metadataNet.account, metadataNet.directoryID] sorted:nil ascending:NO];
 
-        [[NCManageDatabase sharedInstance] setDateReadDirectory:metadataNet.directoryID];
+        [[NCManageDatabase sharedInstance] setDateReadDirectoryWithDirectoryID:metadataNet.directoryID];
     }
     
     for (tableMetadata *metadata in metadatas) {
@@ -1912,7 +1912,7 @@
         
         if (forced) {
             
-            [[NCManageDatabase sharedInstance] clearDateRead:serverUrl directoryID:nil];
+            [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:serverUrl directoryID:nil];
             
             _searchFileName = @"";                          // forced reload searchg
         }
@@ -2221,7 +2221,7 @@
         if (metadataNet.directory == YES) {
         
             // delete all dir / subdir
-            [[NCManageDatabase sharedInstance] deleteDirectoryAndSubDirectory:[CCUtility stringAppendServerUrl:metadataNet.serverUrl addFileName:fileName]];
+            [[NCManageDatabase sharedInstance] deleteDirectoryAndSubDirectoryWithServerUrl:[CCUtility stringAppendServerUrl:metadataNet.serverUrl addFileName:fileName]];
             
             // move metadata
             //[CCCoreData moveMetadata:fileName directoryID:directoryID directoryIDTo:directoryIDTo activeAccount:app.activeAccount];
@@ -2229,7 +2229,7 @@
             
             // Add new directory
             NSString *newDirectory = [NSString stringWithFormat:@"%@/%@", serverUrlTo, fileName];
-            (void)[[NCManageDatabase sharedInstance] addDirectory:newDirectory permissions:@""];
+            (void)[[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:newDirectory permissions:@""];
         }
     
         // reload Datasource
@@ -2374,7 +2374,7 @@
     [_hud hideHud];
     
     NSString *newDirectory = [NSString stringWithFormat:@"%@/%@", metadataNet.serverUrl, metadataNet.fileName];    
-    (void)[[NCManageDatabase sharedInstance] addDirectory:newDirectory permissions:@""];
+    (void)[[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:newDirectory permissions:@""];
     
     // Load Folder or the Datasource
     if ([metadataNet.selectorPost isEqualToString:selectorReadFolderForced]) {
@@ -4266,7 +4266,7 @@
                                         [[NCManageDatabase sharedInstance] setAccountCameraUploadFolderName:_metadata.fileName];
                                         [[NCManageDatabase sharedInstance] setAccountCameraUploadFolderPath:serverUrl activeUrl:app.activeUrl];
                                         
-                                        [[NCManageDatabase sharedInstance] clearDateRead:oldPath directoryID:nil];
+                                        [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:oldPath directoryID:nil];
                                         
                                         if (app.activeAccount.length > 0 && app.activePhotosCameraUpload)
                                             [app.activePhotosCameraUpload reloadDatasourceForced];

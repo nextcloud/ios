@@ -1302,7 +1302,7 @@
         
         NSString *dirForDelete = [CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileNameData];
         
-        [[NCManageDatabase sharedInstance] deleteDirectoryAndSubDirectory:dirForDelete];        
+        [[NCManageDatabase sharedInstance] deleteDirectoryAndSubDirectoryWithServerUrl:dirForDelete];
     }
     
     [self deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", metadata.fileID, activeAccount]];

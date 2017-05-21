@@ -358,7 +358,7 @@
 {
     [_hud hideHud];
     
-    (void)[[NCManageDatabase sharedInstance] addDirectory:[NSString stringWithFormat:@"%@/%@", metadataNet.serverUrl, metadataNet.fileName] permissions:@""];
+    (void)[[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:[NSString stringWithFormat:@"%@/%@", metadataNet.serverUrl, metadataNet.fileName] permissions:@""];
     
     // Load Folder or the Datasource
     [self readFolder];

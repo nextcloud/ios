@@ -330,7 +330,7 @@
         NSString *fileIDDirectory = itemDtoDirectory.etag;
         //NSDate *date = [NSDate dateWithTimeIntervalSince1970:itemDtoDirectory.date];
         
-        NSString *directoryID = [[NCManageDatabase sharedInstance] addDirectory:_metadataNet.serverUrl permissions:permissions];
+        NSString *directoryID = [[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:_metadataNet.serverUrl permissions:permissions];
         
         NSString *cameraFolderName = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderName];
         NSString *cameraFolderPath = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderPath:_activeUrl];
@@ -365,7 +365,7 @@
                         NSString *serverUrl = [CCUtility stringAppendServerUrl:_metadataNet.serverUrl addFileName:fileName];
                         
                         dispatch_async(dispatch_get_main_queue(), ^{
-                            (void)[[NCManageDatabase sharedInstance] addDirectory:serverUrl permissions:permissions];
+                            (void)[[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:serverUrl permissions:permissions];
                         });
                     }
                     
@@ -475,7 +475,7 @@
             
             serverUrl = [CCUtility stringAppendServerUrl:[_activeUrl stringByAppendingString:webDAV] addFileName:serverUrl];
             
-            NSString *directoryID = [[NCManageDatabase sharedInstance] addDirectory:serverUrl permissions:itemDto.permissions];
+            NSString *directoryID = [[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:serverUrl permissions:itemDto.permissions];
 
             [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileNamePrint:itemDto.fileName serverUrl:serverUrl directoryID:directoryID cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath activeAccount:_metadataNet.account directoryUser:directoryUser]];
         }
@@ -621,7 +621,7 @@
             
             serverUrl = [CCUtility stringAppendServerUrl:[_activeUrl stringByAppendingString:webDAV] addFileName:serverUrl];
             
-            NSString *directoryID = [[NCManageDatabase sharedInstance] addDirectory:serverUrl permissions:itemDto.permissions];
+            NSString *directoryID = [[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:serverUrl permissions:itemDto.permissions];
             
             [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileNamePrint:itemDto.fileName serverUrl:serverUrl directoryID:directoryID cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath activeAccount:_metadataNet.account directoryUser:directoryUser]];
         }
@@ -743,7 +743,7 @@
         
         [communication createFolder:folderPathName onCommunication:communication withForbiddenCharactersSupported:YES successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
             
-            [[NCManageDatabase sharedInstance] clearDateRead:[CCUtility deletingLastPathComponentFromServerUrl:folderPathName] directoryID:nil];
+            [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:[CCUtility deletingLastPathComponentFromServerUrl:folderPathName] directoryID:nil];
             
             dispatch_semaphore_signal(semaphore);
             
