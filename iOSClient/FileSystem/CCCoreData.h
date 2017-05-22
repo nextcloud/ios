@@ -23,12 +23,6 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
-#import <MagicalRecord/MagicalRecord.h>
-
-#import "TableAccount+CoreDataClass.h"
-#import "TableCertificates+CoreDataClass.h"
-#import "TableDirectory+CoreDataClass.h"
-#import "TableLocalFile+CoreDataClass.h"
 
 @class tableMetadata;
 

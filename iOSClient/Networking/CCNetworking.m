@@ -59,9 +59,7 @@
 - (id)init
 {    
     self = [super init];
-    
-    _context = [NSManagedObjectContext MR_context];
-   
+       
     _taskData = [[NSMutableDictionary alloc] init];
     _delegates = [[NSMutableDictionary alloc] init];
     

@@ -14,3 +14,8 @@
 #import "OCCapabilities.h"
 #import "OCExternalSites.h"
 #import "OCSharedDto.h"
+
+#import "TableAccount+CoreDataClass.h"
+#import "TableCertificates+CoreDataClass.h"
+#import "TableDirectory+CoreDataClass.h"
+#import "TableLocalFile+CoreDataClass.h"

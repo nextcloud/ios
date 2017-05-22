@@ -912,10 +912,10 @@ class providerSessionDB {
     
     private init() {
     
-        let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.sharedInstance.capabilitiesGroups)
-        let pathDB = dirGroup?.appendingPathComponent(appDatabase).appendingPathComponent("cryptocloud")
+        //let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.sharedInstance.capabilitiesGroups)
+        //let pathDB = dirGroup?.appendingPathComponent(appDatabase).appendingPathComponent("cryptocloud")
         
-        MagicalRecord.setupCoreDataStackWithAutoMigratingSqliteStore(at: pathDB!)
-        MagicalRecord.setLoggingLevel(MagicalRecordLoggingLevel.off)
+        //MagicalRecord.setupCoreDataStackWithAutoMigratingSqliteStore(at: pathDB!)
+        //MagicalRecord.setLoggingLevel(MagicalRecordLoggingLevel.off)
     }
 }

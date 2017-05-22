@@ -23,6 +23,8 @@
 
 #import "AppDelegate.h"
 
+#import <MagicalRecord/MagicalRecord.h>
+#import "CCCoreData.h"
 #import "iRate.h"
 #import "AFURLSessionManager.h"
 #import "CCNetworking.h"

@@ -23,6 +23,13 @@
 
 #import "CCCoreData.h"
 
+#import "TableAccount+CoreDataClass.h"
+#import "TableCertificates+CoreDataClass.h"
+#import "TableDirectory+CoreDataClass.h"
+#import "TableLocalFile+CoreDataClass.h"
+
+#import <MagicalRecord/MagicalRecord.h>
+
 @implementation CCCoreData
 
 + (NSArray *)getAllAccount
@@ -30,7 +37,7 @@
     NSMutableArray *accounts = [NSMutableArray new];
     NSArray *records;
     
-    records = [TableAccount MR_find];
+    records = [TableAccount MR_findAll];
     
     for (TableAccount *tableAccount in records)
         [accounts addObject:tableAccount];

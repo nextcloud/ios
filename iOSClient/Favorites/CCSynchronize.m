@@ -391,16 +391,16 @@
         if (metadata.directory)
             continue;
         
-        TableLocalFile *record = [TableLocalFile MR_findFirstWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileID == %@)", app.activeAccount, metadata.fileID]];
+        tableLocalFile *localFile = [[NCManageDatabase sharedInstance] getTableLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadata.fileID]];
         
         if (withDownload) {
             
-            if (![record.rev isEqualToString:metadata.rev])
+            if (![localFile.rev isEqualToString:metadata.rev])
                 changeRev = YES;
             
         } else {
             
-            if (record && ![record.rev isEqualToString:metadata.rev]) // it must be in TableRecord
+            if (localFile && ![localFile.rev isEqualToString:metadata.rev]) // it must be in TableRecord
                 changeRev = YES;
         }
         
