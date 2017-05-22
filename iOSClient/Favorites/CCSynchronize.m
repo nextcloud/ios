@@ -23,7 +23,6 @@
 
 #import "CCSynchronize.h"
 #import "AppDelegate.h"
-#import "CCCoreData.h"
 #import "CCMain.h"
 #import "NCBridgeSwift.h"
 

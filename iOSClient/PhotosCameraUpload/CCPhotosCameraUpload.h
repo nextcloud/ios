@@ -32,7 +32,6 @@
 #import "CCManageLocation.h"
 #import "CCDetail.h"
 #import "CCUtility.h"
-#import "CCCoreData.h"
 #import "CCManageAsset.h"
 #import "CCManageCameraUpload.h"
 #import "CCSection.h"

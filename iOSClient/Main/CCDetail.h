@@ -32,7 +32,6 @@
 #import "ReaderViewController.h"
 #import "UINavigationController+CCProgress.h"
 #import "CCGraphics.h"
-#import "CCCoreData.h"
 
 @class tableMetadata;
 

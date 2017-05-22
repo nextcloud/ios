@@ -26,7 +26,6 @@
 #import "TWMessageBarManager.h"
 #import "CCBKPasscode.h"
 #import "CCUtility.h"
-#import "CCCoreData.h"
 #import "OCNetworking.h"
 #import "CCHud.h"
 

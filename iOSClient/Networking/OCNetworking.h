@@ -27,7 +27,6 @@
 #import "TWMessageBarManager.h"
 #import "CCNetworking.h"
 #import "CCError.h"
-#import "CCCoreData.h"
 
 @class tableMetadata;
 

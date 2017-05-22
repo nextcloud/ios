@@ -29,7 +29,6 @@
 #import "AFURLSessionManager.h"
 #import "TWMessageBarManager.h"
 #import "PHAsset+Utility.h"
-#import "CCCoreData.h"
 #import "CCCrypto.h"
 #import "CCExifGeo.h"
 #import "CCGraphics.h"

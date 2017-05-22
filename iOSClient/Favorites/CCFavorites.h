@@ -29,7 +29,6 @@
 #import "AHKActionSheet.h"
 #import "CCFavoritesCell.h"
 #import "CCUtility.h"
-#import "CCCoreData.h"
 #import "CCMain.h"
 #import "CCGraphics.h"
 #import "CCAccountWeb.h"

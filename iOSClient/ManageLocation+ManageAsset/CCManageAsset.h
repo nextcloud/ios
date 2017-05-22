@@ -26,7 +26,6 @@
 #import <Photos/Photos.h>
 
 #import "CCUtility.h"
-#import "CCCoreData.h"
 
 @interface CCManageAsset : NSObject
 

@@ -26,7 +26,6 @@
 #import "iRate.h"
 #import "AFURLSessionManager.h"
 #import "CCNetworking.h"
-#import "CCCoreData.h"
 #import "CCCrypto.h"
 #import "CCManageAsset.h"
 #import "CCGraphics.h"

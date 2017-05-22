@@ -23,7 +23,6 @@
 
 #import "XLFormViewController.h"
 #import "CCMain.h"
-#import "CCCoreData.h"
 #import "CCManageLocation.h"
 #import "CCPhotosCameraUpload.h"
 

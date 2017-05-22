@@ -44,7 +44,6 @@
 #import "CCShareOC.h"
 #import "CCShareInfoCMOC.h"
 #import "CCNetworking.h"
-#import "CCCoreData.h"
 #import "CCMove.h"
 #import "CCGraphics.h"
 #import "CCSection.h"

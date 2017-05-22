@@ -24,7 +24,6 @@
 #import "CCLogin.h"
 #import "AppDelegate.h"
 #import "CCUtility.h"
-#import "CCCoreData.h"
 #import "NCBridgeSwift.h"
 
 @interface CCLogin ()
