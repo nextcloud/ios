@@ -143,19 +143,10 @@
 
 
 // ===== File System =====
-
+/*
 + (BOOL)downloadFile:(tableMetadata *)metadata directoryUser:(NSString *)directoryUser activeAccount:(NSString *)activeAccount;
 + (void)downloadFilePlist:(tableMetadata *)metadata activeAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl directoryUser:(NSString *)directoryUser;
 + (void)deleteFile:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl directoryUser:(NSString *)directoryUser activeAccount:(NSString *)activeAccount;
+*/
 
-// ===== Utility Database =====
-
-+ (void)moveCoreDataToGroup;
-+ (void)moveAllUserToGroup;
-
-//+ (void)flushTableAccount:(NSString *)account;
-//+ (void)flushTableDirectoryAccount:(NSString *)account;
-//+ (void)flushTableLocalFileAccount:(NSString *)account;
-
-//+ (void)flushAllDatabase;
 @end

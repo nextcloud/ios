@@ -1192,7 +1192,7 @@
     return [tableMetadatas sortedArrayUsingDescriptors:[NSArray arrayWithObjects:descriptor, nil]];//[NSArray arrayWithArray:tableMetadatas];
 }
 */
-
+/*
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== File System =====
 #pragma --------------------------------------------------------------------------------------------
@@ -1224,7 +1224,7 @@
 {
     metadata = [[NCManageDatabase sharedInstance] copyTableMetadata:metadata];
     
-    [CCUtility insertInformationPlist:metadata directoryUser:directoryUser];    
+    metadata =  [CCUtility insertInformationPlist:metadata directoryUser:directoryUser];    
     [[NCManageDatabase sharedInstance] updateMetadata:metadata activeUrl:activeUrl];
     
     // se è un template aggiorniamo anche nel FileSystem
@@ -1253,43 +1253,8 @@
     }
     
     [self deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", metadata.fileID, activeAccount]];
-    [[NCManageDatabase sharedInstance] deleteMetadata:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", metadata.fileID, activeAccount]];
+    [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", metadata.fileID, activeAccount]];
 }
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Utility Database =====
-#pragma --------------------------------------------------------------------------------------------
-
-+ (void)moveCoreDataToGroup
-{
-    NSString *applicationName = [[[NSBundle mainBundle] infoDictionary] valueForKey:(NSString *)kCFBundleNameKey];
-    NSURL *dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:[NCBrandOptions sharedInstance].capabilitiesGroups];
-    NSString *dirToPath = [[dirGroup URLByAppendingPathComponent:appDatabase] path];
-
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES);
-    NSString *dirFromPath = [[paths lastObject] stringByAppendingPathComponent:applicationName];
-    NSArray *files = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:dirFromPath error:nil];
-    NSError *error;
-    
-    for(NSString *filename in files)
-        [[NSFileManager defaultManager] moveItemAtPath:[dirFromPath stringByAppendingPathComponent:filename] toPath:[dirToPath stringByAppendingPathComponent:filename] error:&error];
-}
-
-+ (void)moveAllUserToGroup
-{    
-    NSArray *records = [TableAccount MR_findAll];
-
-    for (TableAccount *record in records) {
-                
-        NSString *dirFromPath = [CCUtility getOLDDirectoryActiveUser:record.user activeUrl:record.url];
-        NSString *dirToPath = [CCUtility getDirectoryActiveUser:record.user activeUrl:record.url];
-        
-        NSArray *files = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:dirFromPath error:nil];
-        NSError *error;
-
-        for(NSString *filename in files)
-            [[NSFileManager defaultManager] moveItemAtPath:[dirFromPath stringByAppendingPathComponent:filename] toPath:[dirToPath stringByAppendingPathComponent:filename] error:&error];        
-    }
-}
+*/
 
 @end

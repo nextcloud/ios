@@ -1170,7 +1170,7 @@ class NCManageDatabase: NSObject {
         self.setDateReadDirectory(directoryID: metadata.directoryID)
     }
     
-    func deleteMetadata(_ predicate: NSPredicate) {
+    func deleteMetadata(predicate: NSPredicate) {
     
         let tableAccount = self.getAccountActive()
         if tableAccount == nil {
@@ -1563,7 +1563,10 @@ class NCManageDatabase: NSObject {
             for result in results {
                 
                 // delete metadata
-                self.deleteMetadata(NSPredicate(format: "directoryID = %@", result.directoryID))
+                self.deleteMetadata(predicate: NSPredicate(format: "directoryID = %@", result.directoryID))
+                
+                // delete local file
+                self.deleteLocalFile(predicate: NSPredicate(format: "fileID = %@", result.fileID))
                 
                 /*
                 // remove if in session

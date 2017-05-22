@@ -935,7 +935,7 @@
     return metadata;
 }
 
-+ (void)insertInformationPlist:(tableMetadata *)metadata directoryUser:(NSString *)directoryUser
++ (tableMetadata *)insertInformationPlist:(tableMetadata *)metadata directoryUser:(NSString *)directoryUser
 {
     NSString *fileNamePlist, *temp, *passcode;
     NSError *error;
@@ -951,7 +951,7 @@
         if ([[NSFileManager defaultManager] fileExistsAtPath:temp]) fileNamePlist = temp;
     }
     
-    if (!fileNamePlist) return;
+    if (!fileNamePlist) return metadata;
     
     NSMutableDictionary *data = [[NSMutableDictionary alloc] initWithContentsOfFile:fileNamePlist];
     NSString *title =  [data objectForKey:@"title"];
@@ -1023,6 +1023,8 @@
         if (!metadata.uuid) metadata.fileNamePrint = NSLocalizedString(@"_download_plist_", nil);
         else metadata.fileNamePrint = NSLocalizedString(@"_insert_password_", nil);
     }
+    
+    return metadata;
 }
 
 + (tableMetadata *)insertFileSystemInMetadata:(NSString *)fileName directory:(NSString *)directory activeAccount:(NSString *)activeAccount cameraFolderName:(NSString *)cameraFolderName cameraFolderPath:(NSString *)cameraFolderPath
@@ -1055,7 +1057,7 @@
     metadata.uuid = [CCUtility getUUID];
     
     if ([CCUtility isCryptoPlistString:fileName])
-        [CCUtility insertInformationPlist:metadata directoryUser:directory];
+        metadata = [CCUtility insertInformationPlist:metadata directoryUser:directory];
     
     [self insertTypeFileIconName:metadata directory:directory cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath];
     

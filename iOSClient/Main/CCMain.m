@@ -1339,11 +1339,23 @@
 
 - (void)downloadFileFailure:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, app.activeAccount]];
+    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
     
     // File do not exists on server, remove in local
     if (errorCode == kOCErrorServerPathNotFound || errorCode == kCFURLErrorBadServerResponse) {
-        [CCCoreData deleteFile:metadata serverUrl:serverUrl directoryUser:app.directoryUser activeAccount:app.activeAccount];
+        
+        [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, fileID] error:nil];
+        [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, fileID] error:nil];
+
+        if (metadata.directory && serverUrl) {
+            
+            NSString *dirForDelete = [CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileNameData];
+            
+            [[NCManageDatabase sharedInstance] deleteDirectoryAndSubDirectoryWithServerUrl:dirForDelete];
+        }
+
+        [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
+        [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
     }
     
     if ([selector isEqualToString:selectorLoadViewImage]) {
@@ -1498,18 +1510,32 @@
     // download and view a template
     if ([selector isEqualToString:selectorLoadModelView]) {
         
-        [CCCoreData downloadFilePlist:metadata activeAccount:app.activeAccount activeUrl:app.activeUrl directoryUser:app.directoryUser];
+        metadata = [[NCManageDatabase sharedInstance] copyTableMetadata:metadata];
+        metadata = [CCUtility insertInformationPlist:metadata directoryUser:app.directoryUser];
+        [[NCManageDatabase sharedInstance] updateMetadata:metadata activeUrl:app.activeUrl];
+        
+        // se è un template aggiorniamo anche nel FileSystem
+        if ([metadata.type isEqualToString: k_metadataType_template]) {
+            [[NCManageDatabase sharedInstance] setLocalFileWithFileID:metadata.fileID date:metadata.date exifDate:nil exifLatitude:nil exifLongitude:nil fileName:nil fileNamePrint:metadata.fileNamePrint];
+        }
         
         [self openModel:metadata.model isNew:false];
-        
+    
         [self reloadDatasource:serverUrl fileID:metadata.fileID selector:selector];
     }
     
     //download file plist
     if ([selector isEqualToString:selectorLoadPlist]) {
         
-        [CCCoreData downloadFilePlist:metadata activeAccount:app.activeAccount activeUrl:app.activeUrl directoryUser:app.directoryUser];
+        metadata = [[NCManageDatabase sharedInstance] copyTableMetadata:metadata];
+        metadata = [CCUtility insertInformationPlist:metadata directoryUser:app.directoryUser];
+        [[NCManageDatabase sharedInstance] updateMetadata:metadata activeUrl:app.activeUrl];
         
+        // se è un template aggiorniamo anche nel FileSystem
+        if ([metadata.type isEqualToString: k_metadataType_template]) {
+            [[NCManageDatabase sharedInstance] setLocalFileWithFileID:metadata.fileID date:metadata.date exifDate:nil exifLatitude:nil exifLongitude:nil fileName:nil fileNamePrint:metadata.fileNamePrint];
+        }
+
         long countSelectorLoadPlist = 0;
         
         for (NSOperation *operation in [app.netQueue operations]) {
@@ -1820,7 +1846,7 @@
         
         [[NCManageDatabase sharedInstance] updateDirectoryFileIDWithServerUrl:metadataNet.serverUrl fileID:fileID];
         
-        [[NCManageDatabase sharedInstance] deleteMetadata:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND session = ''", metadataNet.account, metadataNet.directoryID]];
+        [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND session = ''", metadataNet.account, metadataNet.directoryID]];
         
         recordsInSessions = [[NCManageDatabase sharedInstance] getMetadatasWithPreficate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND session != ''", metadataNet.account, metadataNet.directoryID] sorted:nil ascending:NO];
 

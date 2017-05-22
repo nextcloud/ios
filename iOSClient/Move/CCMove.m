@@ -245,8 +245,15 @@
 
         tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
         
-        [CCCoreData downloadFilePlist:metadata activeAccount:activeAccount activeUrl:activeUrl directoryUser:directoryUser];
+        metadata = [[NCManageDatabase sharedInstance] copyTableMetadata:metadata];
+        metadata = [CCUtility insertInformationPlist:metadata directoryUser:directoryUser];
+        [[NCManageDatabase sharedInstance] updateMetadata:metadata activeUrl:activeUrl];
         
+        // se è un template aggiorniamo anche nel FileSystem
+        if ([metadata.type isEqualToString: k_metadataType_template]) {
+            [[NCManageDatabase sharedInstance] setLocalFileWithFileID:metadata.fileID date:metadata.date exifDate:nil exifLatitude:nil exifLongitude:nil fileName:nil fileNamePrint:metadata.fileNamePrint];
+        }
+
         [self.tableView reloadData];
     }
 }
@@ -275,7 +282,7 @@
 - (void)readFolderSuccess:(CCMetadataNet *)metadataNet permissions:(NSString *)permissions fileID:(NSString *)fileID metadatas:(NSArray *)metadatas
 {
     // remove all record
-    [[NCManageDatabase sharedInstance] deleteMetadata:[NSPredicate predicateWithFormat:@"(account = %@) AND (directoryID = %@) AND (session = '')", activeAccount, metadataNet.directoryID]];
+    [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account = %@) AND (directoryID = %@) AND (session = '')", activeAccount, metadataNet.directoryID]];
     
     for (tableMetadata *metadata in metadatas) {
         

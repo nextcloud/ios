@@ -136,7 +136,9 @@ class CCActions: NSObject {
         
         let metadata = NCManageDatabase.sharedInstance.getMetadataWithPreficate(NSPredicate(format: "fileID == %@", metadataNet.fileID))
         
-        CCCoreData.deleteFile(metadata, serverUrl: metadataNet.serverUrl, directoryUser: appDelegate.directoryUser, activeAccount: appDelegate.activeAccount)
+        if metadata != nil {
+            self.deleteFile(metadata: metadata!, serverUrl: metadataNet.serverUrl)
+        }
         
         metadataNet.delegate?.deleteFileOrFolderSuccess(metadataNet)
     }
@@ -147,7 +149,9 @@ class CCActions: NSObject {
             
             let metadata = NCManageDatabase.sharedInstance.getMetadataWithPreficate(NSPredicate(format: "fileID == %@", metadataNet.fileID))
             
-            CCCoreData.deleteFile(metadata, serverUrl: metadataNet.serverUrl, directoryUser: appDelegate.directoryUser, activeAccount: appDelegate.activeAccount)
+            if metadata != nil {
+                self.deleteFile(metadata: metadata!, serverUrl: metadataNet.serverUrl)
+            }
         }
 
         if message.length > 0 {
@@ -239,7 +243,7 @@ class CCActions: NSObject {
             appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
             
             // delete file in filesystem
-            CCCoreData.deleteFile(metadata, serverUrl: serverUrl, directoryUser: appDelegate.directoryUser, activeAccount: appDelegate.activeAccount)
+            self.deleteFile(metadata: metadata, serverUrl: serverUrl)
  
         } else {
  
@@ -450,10 +454,33 @@ class CCActions: NSObject {
         
         metadataNet.delegate?.listingFavoritesFailure(metadataNet, message: message, errorCode: errorCode)
     }
-
+    
+    // --------------------------------------------------------------------------------------------
+    // MARK: Utility
+    // --------------------------------------------------------------------------------------------
+    
+    func deleteFile(metadata: tableMetadata, serverUrl: String) {
+        
+        do {
+            try FileManager.default.removeItem(atPath: "\(appDelegate.directoryUser)/\(metadata.fileID)")
+        } catch {
+            // handle error
+        }
+        do {
+            try FileManager.default.removeItem(atPath: "\(appDelegate.directoryUser)/\(metadata.fileID).ico")
+        } catch {
+            // handle error
+        }
+        
+        if metadata.directory {
+            let dirForDelete = CCUtility.stringAppendServerUrl(serverUrl, addFileName: metadata.fileNameData)
+            NCManageDatabase.sharedInstance.deleteDirectoryAndSubDirectory(serverUrl: dirForDelete!)
+        }
+        
+        NCManageDatabase.sharedInstance.deleteLocalFile(predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
+        NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
+    }
 }
-
-
 
 
 

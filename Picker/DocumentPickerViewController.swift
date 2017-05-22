@@ -287,7 +287,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         
         // remove all record
         var predicate = NSPredicate(format: "account = %@ AND directoryID = %@ AND session = ''", activeAccount!, metadataNet.directoryID!)
-        NCManageDatabase.sharedInstance.deleteMetadata(predicate)
+        NCManageDatabase.sharedInstance.deleteMetadata(predicate: predicate)
         
         for metadata in metadatas as! [tableMetadata] {
             
@@ -461,7 +461,15 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
             
         case selectorLoadPlist :
             
-            CCCoreData.downloadFilePlist(metadata, activeAccount: activeAccount, activeUrl: activeUrl,directoryUser: directoryUser)
+            var metadata = NCManageDatabase.sharedInstance.copyTableMetadata(self.metadata!)
+            metadata = CCUtility.insertInformationPlist(metadata, directoryUser: directoryUser)
+            
+            NCManageDatabase.sharedInstance.updateMetadata(metadata, activeUrl: activeUrl!)
+            
+            if metadata.type == k_metadataType_template {
+                NCManageDatabase.sharedInstance.setLocalFile(fileID: metadata.fileID, date: metadata.date, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, fileNamePrint: metadata.fileNamePrint)
+            }
+            
             tableView.reloadData()
             
         default :
@@ -480,7 +488,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         // remove file
         //CCCoreData.deleteMetadata(with: NSPredicate(format: "(account == '\(activeAccount!)') AND (fileID == '\(fileID)')"))
         let predicate = NSPredicate(format: "account = %@ AND fileID == %@", activeAccount!, fileID)
-        NCManageDatabase.sharedInstance.deleteMetadata(predicate)
+        NCManageDatabase.sharedInstance.deleteMetadata(predicate: predicate)
         
         if errorCode != -999 {
             
