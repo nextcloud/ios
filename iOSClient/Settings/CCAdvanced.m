@@ -318,10 +318,9 @@
             [[NCManageDatabase sharedInstance] clearTable:[tableDirectory class] account:app.activeAccount];
             [[NCManageDatabase sharedInstance] clearTable:[tableExternalSites class] account:app.activeAccount];
             [[NCManageDatabase sharedInstance] clearTable:[tableGPS class] account:nil];
+            [[NCManageDatabase sharedInstance] clearTable:[tableLocalFile class] account:app.activeAccount];
             [[NCManageDatabase sharedInstance] clearTable:[tableMetadata class] account:app.activeAccount];
             [[NCManageDatabase sharedInstance] clearTable:[tableShare class] account:app.activeAccount];
-            
-            [CCCoreData flushTableLocalFileAccount:app.activeAccount];
             
             [self emptyUserDirectoryUser:app.activeUser url:app.activeUrl];
             
@@ -399,9 +398,7 @@
             [[NSURLCache sharedURLCache] setDiskCapacity:0];
             
             [[CCNetworking sharedNetworking] invalidateAndCancelAllSession];
-            
-            [CCCoreData flushAllDatabase];
-            
+                        
             [[NCManageDatabase sharedInstance] removeDB];
             
             [CCUtility deleteAllChainStore];

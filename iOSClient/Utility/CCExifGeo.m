@@ -77,7 +77,7 @@
     }
     
     // Wite data EXIF in TableLocalFile
-    [CCCoreData setGeoInformationLocalFromEtag:metadata.fileID exifDate:date exifLatitude:stringLatitude exifLongitude:stringLongitude activeAccount:activeAccount];
+    [[NCManageDatabase sharedInstance] setLocalFileWithFileID:metadata.fileID date:nil exifDate:date exifLatitude:stringLatitude exifLongitude:stringLongitude fileName:nil fileNamePrint:nil];
 }
 
 + (void)setGeocoderEtag:(NSString *)fileID exifDate:(NSDate *)exifDate latitude:(NSString*)latitude longitude:(NSString*)longitude

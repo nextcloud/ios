@@ -131,9 +131,11 @@
 
 // ===== GeoInformation =====
 
+/*
 + (NSArray *)getGeoInformationLocalFromEtag:(NSString *)fileID activeAccount:(NSString *)activeAccount;
 + (void)setGeoInformationLocalFromEtag:(NSString *)fileID exifDate:(NSDate *)exifDate exifLatitude:(NSString *)exifLatitude exifLongitude:(NSString *)exifLongitude activeAccount:(NSString *)activeAccount;
 + (void)setGeoInformationLocalNull;
+*/
 
 // ===== Certificates =====
 
@@ -153,7 +155,7 @@
 
 //+ (void)flushTableAccount:(NSString *)account;
 //+ (void)flushTableDirectoryAccount:(NSString *)account;
-+ (void)flushTableLocalFileAccount:(NSString *)account;
+//+ (void)flushTableLocalFileAccount:(NSString *)account;
 
-+ (void)flushAllDatabase;
+//+ (void)flushAllDatabase;
 @end
