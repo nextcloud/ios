@@ -936,7 +936,7 @@
     NSInteger queueUpload = [self getNumberUploadInQueues] + [self getNumberUploadInQueuesWWan];
     
     // Total
-    NSInteger total = queueDownload + queueUpload + [[NCManageDatabase sharedInstance] countAutomaticUpload:nil];
+    NSInteger total = queueDownload + queueUpload + [[NCManageDatabase sharedInstance] countAutomaticUploadWithSession:nil];
     
     [UIApplication sharedApplication].applicationIconBadgeNumber = total;
     
@@ -1359,18 +1359,18 @@
         }
         
         if (!recordFound)
-            [[NCManageDatabase sharedInstance] unlockAutomaticUpload:tableAutomaticUpload.assetLocalIdentifier];
+            [[NCManageDatabase sharedInstance] unlockAutomaticUploadWithAssetLocalIdentifier:tableAutomaticUpload.assetLocalIdentifier];
     }
 
     // ------------------------- <selectorUploadAutomatic> -------------------------
     
-    metadataNet = [[NCManageDatabase sharedInstance] getAutomaticUpload:selectorUploadAutomatic];
+    metadataNet = [[NCManageDatabase sharedInstance] getAutomaticUploadWithSelector:selectorUploadAutomatic];
     counterUpload = [self getNumberUploadInQueues] + [self getNumberUploadInQueuesWWan];
     while (metadataNet && counterUpload < k_maxConcurrentOperationDownloadUpload) {
         
         [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet.assetLocalIdentifier fileName:metadataNet.fileName serverUrl:metadataNet.serverUrl cryptated:metadataNet.cryptated session:metadataNet.session taskStatus:metadataNet.taskStatus selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:metadataNet.errorCode delegate:app.activeMain];
         
-        metadataNet =  [[NCManageDatabase sharedInstance] getAutomaticUpload:selectorUploadAutomatic];
+        metadataNet =  [[NCManageDatabase sharedInstance] getAutomaticUploadWithSelector:selectorUploadAutomatic];
         counterUpload++;
     }
     
@@ -1387,7 +1387,7 @@
         return;
     }
     
-    metadataNet =  [[NCManageDatabase sharedInstance] getAutomaticUpload:selectorUploadAutomaticAll];
+    metadataNet =  [[NCManageDatabase sharedInstance] getAutomaticUploadWithSelector:selectorUploadAutomaticAll];
     counterUpload = [self getNumberUploadInQueues] + [self getNumberUploadInQueuesWWan];
     while (metadataNet && counterUpload < k_maxConcurrentOperationDownloadUpload) {
         
@@ -1403,10 +1403,10 @@
             
             [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionUpload selector:selectorUploadAutomatic note:@"Internal error image/video not found [0]" type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
             
-            [[NCManageDatabase sharedInstance] deleteAutomaticUpload:metadataNet.assetLocalIdentifier];
+            [[NCManageDatabase sharedInstance] deleteAutomaticUploadWithAssetLocalIdentifier:metadataNet.assetLocalIdentifier];
         }
         
-        metadataNet =  [[NCManageDatabase sharedInstance] getAutomaticUpload:selectorUploadAutomaticAll];
+        metadataNet =  [[NCManageDatabase sharedInstance] getAutomaticUploadWithSelector:selectorUploadAutomaticAll];
     }
 }
 

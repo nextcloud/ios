@@ -531,7 +531,7 @@
         
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
             
-            NSArray *results = [[NCManageDatabase sharedInstance] getRecordsTableMetadataPhotosCameraUpload:serverUrl];
+            NSArray *results = [[NCManageDatabase sharedInstance] getRecordsTableMetadataPhotosCameraUploadWithServerUrl:serverUrl];
             
             _sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:results listProgressMetadata:nil groupByField:@"date" replaceDateToExifDate:YES activeAccount:app.activeAccount];
             
@@ -542,7 +542,7 @@
 
     } else {
         
-        NSArray *results = [[NCManageDatabase sharedInstance] getRecordsTableMetadataPhotosCameraUpload:serverUrl];
+        NSArray *results = [[NCManageDatabase sharedInstance] getRecordsTableMetadataPhotosCameraUploadWithServerUrl:serverUrl];
         
         _sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:results listProgressMetadata:nil groupByField:@"date" replaceDateToExifDate:YES activeAccount:app.activeAccount];
         [self reloadCollection];
@@ -1285,7 +1285,7 @@
 
                     [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionUpload selector:metadataNet.selector note:note type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:app.activeUrl];
                     
-                    [[NCManageDatabase sharedInstance] deleteAutomaticUpload:metadataNet.assetLocalIdentifier];
+                    [[NCManageDatabase sharedInstance] deleteAutomaticUploadWithAssetLocalIdentifier:metadataNet.assetLocalIdentifier];
                     
                 } else {
                     
@@ -1298,7 +1298,7 @@
 
 - (void)addDatabaseAutomaticUpload:(CCMetadataNet *)metadataNet assetDate:(NSDate *)assetDate assetMediaType:(PHAssetMediaType)assetMediaType
 {    
-    if ([[NCManageDatabase sharedInstance] addAutomaticUpload:metadataNet]) {
+    if ([[NCManageDatabase sharedInstance] addAutomaticUploadWithMetadataNet:metadataNet]) {
         
         [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionAutomaticUpload selector:metadataNet.selector note:[NSString stringWithFormat:@"Add Automatic Upload, Asset Data: %@", [NSDateFormatter localizedStringFromDate:assetDate dateStyle:NSDateFormatterMediumStyle timeStyle:NSDateFormatterMediumStyle]] type:k_activityTypeInfo verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
        

@@ -1309,7 +1309,7 @@
         
         // Delete record on Table Automatic Upload
         if ([selector isEqualToString:selectorUploadAutomatic] || [selector isEqualToString:selectorUploadAutomaticAll])
-            [[NCManageDatabase sharedInstance] deleteAutomaticUpload:assetLocalIdentifier];
+            [[NCManageDatabase sharedInstance] deleteAutomaticUploadWithAssetLocalIdentifier:assetLocalIdentifier];
         
         NSLog(@"[LOG] Upload file %@ - %@ TaskIdentifier %lu", fileName,fileNamePrint, (unsigned long)uploadTask.taskIdentifier);
     }

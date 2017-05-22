@@ -451,7 +451,7 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Activity
 
-    func getActivityWithPredicate(_ predicate: NSPredicate) -> [tableActivity] {
+    func getActivity(predicate: NSPredicate) -> [tableActivity] {
         
         let realm = try! Realm()
         
@@ -534,7 +534,7 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Automatic Upload
     
-    func addAutomaticUpload(_ metadataNet: CCMetadataNet) -> Bool {
+    func addAutomaticUpload(metadataNet: CCMetadataNet) -> Bool {
         
         let tableAccount = self.getAccountActive()
         if tableAccount == nil {
@@ -570,7 +570,7 @@ class NCManageDatabase: NSObject {
         return true
     }
     
-    func getAutomaticUpload(_ selector: String) -> CCMetadataNet? {
+    func getAutomaticUpload(selector: String) -> CCMetadataNet? {
         
         let tableAccount = self.getAccountActive()
         if tableAccount == nil {
@@ -618,7 +618,7 @@ class NCManageDatabase: NSObject {
         return Array(results)
     }
 
-    func unlockAutomaticUpload(_ assetLocalIdentifier: String) {
+    func unlockAutomaticUpload(assetLocalIdentifier: String) {
         
         let tableAccount = self.getAccountActive()
         if tableAccount == nil {
@@ -637,7 +637,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func deleteAutomaticUpload(_ assetLocalIdentifier: String) {
+    func deleteAutomaticUpload(assetLocalIdentifier: String) {
         
         let tableAccount = self.getAccountActive()
         if tableAccount == nil {
@@ -655,7 +655,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func countAutomaticUpload(_ session: String?) -> Int {
+    func countAutomaticUpload(session: String?) -> Int {
         
         let tableAccount = self.getAccountActive()
         if tableAccount == nil {
@@ -828,7 +828,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func getAllExternalSitesWithPredicate(_ predicate: NSPredicate) -> [tableExternalSites] {
+    func getAllExternalSites(predicate: NSPredicate) -> [tableExternalSites] {
         
         let realm = try! Realm()
         
@@ -1190,7 +1190,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func moveMetadata(_ fileName: String, directoryID: String, directoryIDTo: String) {
+    func moveMetadata(fileName: String, directoryID: String, directoryIDTo: String) {
         
         let tableAccount = self.getAccountActive()
         if tableAccount == nil {
@@ -1199,7 +1199,7 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
     
-        let results = realm.objects(tableMetadata.self).filter("account = %@ AND fileName == %@ AND directoryID == %@", tableAccount!.account, fileName, directoryID)
+        let results = realm.objects(tableMetadata.self).filter("account = %@ AND fileName = %@ AND directoryID = %@", tableAccount!.account, fileName, directoryID)
         
         try! realm.write {
             
@@ -1429,7 +1429,7 @@ class NCManageDatabase: NSObject {
         return self.getMetadatas(predicate: predicate, sorted: nil, ascending: false)
     }
 
-    func getRecordsTableMetadataPhotosCameraUpload(_ serverUrl: String) -> [tableMetadata]? {
+    func getRecordsTableMetadataPhotosCameraUpload(serverUrl: String) -> [tableMetadata]? {
         
         let tableAccount = self.getAccountActive()
         if tableAccount == nil {
