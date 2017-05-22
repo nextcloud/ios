@@ -1877,7 +1877,7 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    func renameLocalFile(fileID: String, fileName: String, fileNamePrint: String) {
+    func setLocalFile(fileID: String, date: NSDate?, exifDate: NSDate?, exifLatitude: String?, exifLongitude: String?, fileName: String?, fileNamePrint: String?) {
         
         let tableAccount = self.getAccountActive()
         if tableAccount == nil {
@@ -1892,8 +1892,24 @@ class NCManageDatabase: NSObject {
         
             try! realm.write {
                 
-                results[0].fileName = fileName
-                results[0].fileNamePrint = fileNamePrint
+                if date != nil {
+                    results[0].date = date!
+                }
+                if exifDate != nil {
+                    results[0].exifDate = exifDate!
+                }
+                if exifLatitude != nil {
+                    results[0].exifLatitude = exifLatitude!
+                }
+                if exifLongitude != nil {
+                    results[0].exifLongitude = exifLongitude!
+                }
+                if fileName != nil {
+                    results[0].fileName = fileName!
+                }
+                if fileNamePrint != nil {
+                    results[0].fileNamePrint = fileNamePrint!
+                }
             }
         }
     }
@@ -1916,29 +1932,6 @@ class NCManageDatabase: NSObject {
         } else {
             
             return nil
-        }
-    }
-    
-    func setGeoInformationLocal(fileID: String, exifDate: NSDate, exifLatitude: String, exifLongitude: String) {
-        
-        let tableAccount = self.getAccountActive()
-        if tableAccount == nil {
-            return
-        }
-        
-        let realm = try! Realm()
-        
-        let results = realm.objects(tableLocalFile.self).filter("fileID = %@", fileID)
-        
-        if results.count > 0 {
-            
-            try! realm.write {
-                
-                results[0].exifDate = exifDate
-                results[0].exifLatitude = exifLatitude
-                results[0].exifLongitude = exifLongitude
-
-            }
         }
     }
     

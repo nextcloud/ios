@@ -112,7 +112,7 @@
 */
 
 // ===== LocalFile =====
-
+/*
 + (void)addLocalFile:(tableMetadata *)metadata activeAccount:(NSString *)activeAccount;
 + (void)deleteLocalFileWithPredicate:(NSPredicate *)predicate;
 
@@ -123,7 +123,7 @@
 + (NSArray *)getTableLocalFileWithPredicate:(NSPredicate *)predicate;
 
 // ===== Offline LocalFile =====
-/*
+
 + (void)setOfflineLocalEtag:(NSString *)fileID offline:(BOOL)offline activeAccount:(NSString *)activeAccount;
 + (BOOL)isOfflineLocalEtag:(NSString *)fileID activeAccount:(NSString *)activeAccount;
 + (NSArray *)getOfflineLocalFileActiveAccount:(NSString *)activeAccount directoryUser:(NSString *)directoryUser;

@@ -491,7 +491,10 @@
         if (result) return;
         
         // File exists ?
-        if ([CCCoreData getLocalFileWithEtag:metadata.fileID activeAccount:_activeAccount] && [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadata.fileID]]) {
+        
+        tableLocalFile *localfile = [[NCManageDatabase sharedInstance] getTableLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadata.fileID]];
+        
+        if (localfile != nil && [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadata.fileID]]) {
             
             [[NCManageDatabase sharedInstance] setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier:k_taskIdentifierDone sessionTaskIdentifierPlist:k_taskIdentifierDone predicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadata.fileID]];
                 
@@ -1421,7 +1424,7 @@
         
         // Local
         if (metadata.directory == NO)
-            [CCCoreData addLocalFile:metadata activeAccount:_activeAccount];
+            [[NCManageDatabase sharedInstance] addLocalFileWithMetadata:metadata];
         
         // EXIF
         if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image])

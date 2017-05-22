@@ -207,7 +207,7 @@
     
     for (NSString *fileID in fileIDsForKey) {
     
-        TableLocalFile *localFile = [CCCoreData getLocalFileWithEtag:fileID activeAccount:app.activeAccount];
+        tableLocalFile *localFile = [[NCManageDatabase sharedInstance] getTableLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
     
         if ([localFile.exifLatitude floatValue] > 0 || [localFile.exifLongitude floatValue] > 0) {
         

@@ -808,10 +808,10 @@
 
 - (void)setLocationCaptionPhoto:(MWPhoto *)photo fileID:(NSString *)fileID
 {
-    TableLocalFile *localFile;
+    tableLocalFile *localFile;
 
     // read Geocoder
-    localFile = [CCCoreData getLocalFileWithEtag:fileID activeAccount:app.activeAccount];
+    localFile = [[NCManageDatabase sharedInstance] getTableLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
     
     if ([localFile.exifLatitude doubleValue] != 0 || [localFile.exifLongitude doubleValue] != 0) {
         
@@ -826,7 +826,7 @@
         
         [CCExifGeo setGeocoderEtag:fileID exifDate:localFile.exifDate latitude:localFile.exifLatitude longitude:localFile.exifLongitude];
         
-        localFile = [CCCoreData getLocalFileWithEtag:fileID activeAccount:app.activeAccount];
+        localFile = [[NCManageDatabase sharedInstance] getTableLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
         
         if ([localFile.exifLatitude floatValue] != 0 || [localFile.exifLongitude floatValue] != 0) {
                         
