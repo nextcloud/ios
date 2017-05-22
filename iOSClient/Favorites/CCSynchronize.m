@@ -282,7 +282,8 @@
                 if (![tableDirectory.rev isEqualToString:metadata.rev]) {
                     
                     [self readFolderServerUrl:serverUrl directoryID:directoryID selector:metadataNet.selector];
-                    [[NCManageDatabase sharedInstance] updateDirectoryFileIDWithServerUrl:serverUrl fileID:metadata.rev];
+                    
+                    [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:serverUrl serverUrlTo:nil fileID:metadata.rev];                    
                 }
                 
             } else {

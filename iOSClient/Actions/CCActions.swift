@@ -291,7 +291,7 @@ class CCActions: NSObject {
             let directory = CCUtility.stringAppendServerUrl(metadataNet.serverUrl, addFileName: metadataNet.fileName)
             let directoryTo = CCUtility.stringAppendServerUrl(metadataNet.serverUrl, addFileName: metadataNet.fileNameTo)
 
-            NCManageDatabase.sharedInstance.renameDirectory(serverUrl: directory!, serverUrlTo: directoryTo!)
+            NCManageDatabase.sharedInstance.setDirectory(serverUrl: directory!, serverUrlTo: directoryTo!, fileID: nil)
             
         } else {
             

@@ -1844,7 +1844,7 @@
         
     } else {
         
-        [[NCManageDatabase sharedInstance] updateDirectoryFileIDWithServerUrl:metadataNet.serverUrl fileID:fileID];
+        [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:metadataNet.serverUrl serverUrlTo:nil fileID:fileID];
         
         [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND session = ''", metadataNet.account, metadataNet.directoryID]];
         
