@@ -1262,9 +1262,11 @@ class NCManageDatabase: NSObject {
                 if sessionTaskIdentifierPlist != Int(k_taskIdentifierNULL) {
                     result.sessionTaskIdentifierPlist = sessionTaskIdentifierPlist
                 }
-                
-                self.setDateReadDirectory(directoryID: result.directoryID)
             }
+        }
+        
+        if results.count > 0 {
+            self.setDateReadDirectory(directoryID: results[0].directoryID)
         }
     }
     
@@ -1429,7 +1431,7 @@ class NCManageDatabase: NSObject {
         return self.getMetadatas(predicate: predicate, sorted: nil, ascending: false)
     }
 
-    func getRecordsTableMetadataPhotosCameraUpload(serverUrl: String) -> [tableMetadata]? {
+    func getTableMetadatasPhotosCameraUpload(serverUrl: String) -> [tableMetadata]? {
         
         let tableAccount = self.getAccountActive()
         if tableAccount == nil {

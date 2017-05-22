@@ -531,7 +531,7 @@
         
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
             
-            NSArray *results = [[NCManageDatabase sharedInstance] getRecordsTableMetadataPhotosCameraUploadWithServerUrl:serverUrl];
+            NSArray *results = [[NCManageDatabase sharedInstance] getTableMetadatasPhotosCameraUploadWithServerUrl:serverUrl];
             
             _sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:results listProgressMetadata:nil groupByField:@"date" replaceDateToExifDate:YES activeAccount:app.activeAccount];
             
@@ -542,7 +542,7 @@
 
     } else {
         
-        NSArray *results = [[NCManageDatabase sharedInstance] getRecordsTableMetadataPhotosCameraUploadWithServerUrl:serverUrl];
+        NSArray *results = [[NCManageDatabase sharedInstance] getTableMetadatasPhotosCameraUploadWithServerUrl:serverUrl];
         
         _sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:results listProgressMetadata:nil groupByField:@"date" replaceDateToExifDate:YES activeAccount:app.activeAccount];
         [self reloadCollection];
