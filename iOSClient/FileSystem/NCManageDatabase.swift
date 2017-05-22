@@ -1830,7 +1830,117 @@ class NCManageDatabase: NSObject {
         return copyTable
     }
 
+    //MARK: -
+    //MARK: Table LocalFile
 
+    func addLocalFile(metadata: tableMetadata) {
+        
+        let tableAccount = self.getAccountActive()
+        if tableAccount == nil {
+            return
+        }
+        
+        let realm = try! Realm()
+        
+        try! realm.write {
+            
+            let addLocaFile = tableLocalFile()
+            
+            addLocaFile.account = tableAccount!.account
+            addLocaFile.date = metadata.date
+            addLocaFile.fileID = metadata.fileID
+            addLocaFile.exifDate = NSDate()
+            addLocaFile.exifLatitude = "-1"
+            addLocaFile.exifLongitude = "-1"
+            addLocaFile.fileName = metadata.fileName
+            addLocaFile.fileNamePrint = metadata.fileNamePrint
+            addLocaFile.rev = metadata.rev
+            addLocaFile.size = metadata.size
+            
+            realm.add(addLocaFile, update: true)
+        }
+    }
 
+    func deleteLocalFile(predicate: NSPredicate) {
+        
+        let tableAccount = self.getAccountActive()
+        if tableAccount == nil {
+            return
+        }
+        
+        let realm = try! Realm()
+        
+        let results = realm.objects(tableLocalFile.self).filter(predicate)
+        
+        try! realm.write {
+            realm.delete(results)
+        }
+    }
+
+    func renameLocalFile(fileID: String, fileName: String, fileNamePrint: String) {
+        
+        let tableAccount = self.getAccountActive()
+        if tableAccount == nil {
+            return
+        }
+        
+        let realm = try! Realm()
+        
+        let results = realm.objects(tableLocalFile.self).filter("fileID = %@", fileID)
+        
+        if results.count > 0 {
+        
+            try! realm.write {
+                
+                results[0].fileName = fileName
+                results[0].fileNamePrint = fileNamePrint
+            }
+        }
+    }
+
+    func getTableLocalFile(predicate: NSPredicate) -> tableLocalFile? {
+        
+        let tableAccount = self.getAccountActive()
+        if tableAccount == nil {
+            return nil
+        }
+        
+        let realm = try! Realm()
+        
+        let results = realm.objects(tableLocalFile.self).filter(predicate)
+        
+        if (results.count > 0) {
+            
+            return results[0]
+            
+        } else {
+            
+            return nil
+        }
+    }
+    
+    func setGeoInformationLocal(fileID: String, exifDate: NSDate, exifLatitude: String, exifLongitude: String) {
+        
+        let tableAccount = self.getAccountActive()
+        if tableAccount == nil {
+            return
+        }
+        
+        let realm = try! Realm()
+        
+        let results = realm.objects(tableLocalFile.self).filter("fileID = %@", fileID)
+        
+        if results.count > 0 {
+            
+            try! realm.write {
+                
+                results[0].exifDate = exifDate
+                results[0].exifLatitude = exifLatitude
+                results[0].exifLongitude = exifLongitude
+
+            }
+        }
+    }
+    
     //MARK: -
 }
