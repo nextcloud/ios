@@ -4,3 +4,10 @@
 
 #import "CCHud.h"
 #import "ShareViewController.h"
+
+#import "OCActivity.h"
+#import "OCUserProfile.h"
+#import "OCCapabilities.h"
+#import "OCExternalSites.h"
+#import "OCSharedDto.h"
+

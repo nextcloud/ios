@@ -9,6 +9,7 @@
 #import "CCManageAccount.h"
 #import "CCGraphics.h"
 
+#import "OCUserProfile.h"
 #import "OCNotifications.h"
 #import "OCNotificationsAction.h"
 #import "OCFrameworkConstants.h"

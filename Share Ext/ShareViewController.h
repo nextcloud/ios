@@ -21,8 +21,6 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#import <MagicalRecord/MagicalRecord.h>
-
 #import "OCCommunication.h"
 #import "AFURLSessionManager.h"
 #import "MBProgressHUD.h"
@@ -36,8 +34,6 @@
 #import "CCMove.h"
 #import "CCError.h"
 #import "CCHud.h"
-
-#import "TableAccount+CoreDataClass.h"
 
 @interface ShareViewController : UIViewController <UITableViewDelegate, OCNetworkingDelegate, MBProgressHUDDelegate, BKPasscodeViewControllerDelegate, CCNetworkingDelegate, CCMoveDelegate>
 
