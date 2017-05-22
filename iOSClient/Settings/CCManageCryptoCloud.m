@@ -202,7 +202,7 @@
 
             // force reload all directory for all users and all metadata cryptated
             [[NCManageDatabase sharedInstance] setClearAllDateReadDirectory];
-            [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(cryptated == 1)"]];
+            [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"cryptated == true"]];
             
             UIAlertView * alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_info_", nil) message:NSLocalizedString(@"_alert_deactivation_crypto_cloud_", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
             [alertView show];

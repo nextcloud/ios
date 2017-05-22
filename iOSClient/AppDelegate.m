@@ -1075,7 +1075,7 @@
     // se non è attivo il OnlyLockDir esci con NON attivare la richiesta password
     for (;;) {
     
-        tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"serverUrl == %@", serverUrl]];
+        tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"serverUrl = %@", serverUrl]];
         if (directory.lock) {
             isBlockZone = true;
             break;
@@ -1132,7 +1132,7 @@
         
         for (;;) {
             
-            tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"serverUrl == %@", serverUrl]];
+            tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"serverUrl = %@", serverUrl]];
             if (directory.lock) {
                 isBlockZone = true;
                 break;

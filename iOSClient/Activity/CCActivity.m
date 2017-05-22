@@ -157,9 +157,9 @@
     NSDate *sixDaysAgo = [[NSCalendar currentCalendar] dateByAddingUnit:NSCalendarUnitDay value:-k_daysOfActivity toDate:[NSDate date] options:0];
         
     if (_verbose)
-        predicate = [NSPredicate predicateWithFormat:@"((account == %@) || (account == '')) AND (date > %@)", app.activeAccount, sixDaysAgo];
+        predicate = [NSPredicate predicateWithFormat:@"account = %@ AND date > %@", app.activeAccount, sixDaysAgo];
     else
-        predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (verbose == %lu) AND (date > %@)", app.activeAccount, k_activityVerboseDefault, sixDaysAgo];
+        predicate = [NSPredicate predicateWithFormat:@"account = %@ AND verbose = %lu AND date > %@", app.activeAccount, k_activityVerboseDefault, sixDaysAgo];
 
     _sectionDataSource = [[NCManageDatabase sharedInstance] getActivityWithPredicate:predicate];
         
