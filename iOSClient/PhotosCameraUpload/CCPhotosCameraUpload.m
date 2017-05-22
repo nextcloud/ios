@@ -525,20 +525,20 @@
     if (app.activeAccount.length == 0)
         return;
     
-    NSString *serverUrl = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderPathWithActiveUrl:app.activeUrl];
-
+    NSString *serverUrl = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderPathAndNameWithActiveUrl:app.activeUrl];
+    
     if (_sectionDataSource) {
         
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        //dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
             
-            NSArray *results = [[NCManageDatabase sharedInstance] getTableMetadatasPhotosCameraUploadWithServerUrl:serverUrl];
+            NSArray *metadatas = [[NCManageDatabase sharedInstance] getTableMetadatasPhotosCameraUploadWithServerUrl:serverUrl];
             
-            _sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:results listProgressMetadata:nil groupByField:@"date" replaceDateToExifDate:YES activeAccount:app.activeAccount];
+            _sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:metadatas listProgressMetadata:nil groupByField:@"date" replaceDateToExifDate:YES activeAccount:app.activeAccount];
             
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self reloadCollection];
             });
-        });
+        //});
 
     } else {
         
