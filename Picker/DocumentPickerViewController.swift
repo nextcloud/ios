@@ -349,7 +349,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         //recordsTableMetadata = CCCoreData.getTableMetadata(with: NSPredicate(format: "(account == '\(activeAccount!)') AND (directoryID == '\(metadataNet.directoryID!)')"), fieldOrder: "fileName", ascending: true) as? [TableMetadata]
         
         predicate = NSPredicate(format: "account = %@ AND directoryID == %@", activeAccount!, metadataNet.directoryID!)
-        recordsTableMetadata = NCManageDatabase.sharedInstance.getMetadatasWithPreficate(predicate, sorted: "fileName", ascending: true)
+        recordsTableMetadata = NCManageDatabase.sharedInstance.getMetadatas(predicate: predicate, sorted: "fileName", ascending: true)
         
         tableView.reloadData()
         
@@ -430,7 +430,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         hud.hideHud()
         
         let predicate = NSPredicate(format: "account = %@ AND fileID == %@", activeAccount!, fileID!)
-        metadata = NCManageDatabase.sharedInstance.getMetadataWithPreficate(predicate)
+        metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: predicate)
         
         //let metadata = CCCoreData.getMetadataWithPreficate(NSPredicate(format: "(account == '\(activeAccount!)') AND (fileID == '\(fileID!)')"), context: nil)
         

@@ -525,7 +525,7 @@
     if (app.activeAccount.length == 0)
         return;
     
-    NSString *serverUrl = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderPathAndName:app.activeUrl];
+    NSString *serverUrl = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderPathWithActiveUrl:app.activeUrl];
 
     if (_sectionDataSource) {
         
@@ -1117,7 +1117,7 @@
     NSMutableArray *newItemsPHAssetToUpload = [[NSMutableArray alloc] init];
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
     
-    NSString *folderPhotos = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderPathAndName:app.activeUrl];
+    NSString *folderPhotos = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderPathWithActiveUrl:app.activeUrl];
     BOOL useSubFolder = tableAccount.cameraUploadCreateSubfolder;
     
     // Conversion from ALAsset -to-> PHAsset

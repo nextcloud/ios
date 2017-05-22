@@ -243,7 +243,7 @@
 {
     if ([selector isEqualToString:selectorLoadPlist]) {
 
-        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
+        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
         
         metadata = [[NCManageDatabase sharedInstance] copyTableMetadata:metadata];
         metadata = [CCUtility insertInformationPlist:metadata directoryUser:directoryUser];
@@ -409,7 +409,7 @@
     if (self.onlyClearDirectory) predicate = [NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND directory = 1 AND cryptated = 0", activeAccount, directoryID];
     else predicate = [NSPredicate predicateWithFormat:@"account == %@ AND directoryID = %@ AND directory = 1", activeAccount, directoryID];
     
-    NSArray *result = [[NCManageDatabase sharedInstance] getMetadatasWithPreficate:predicate sorted:nil ascending:NO];
+    NSArray *result = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:predicate sorted:nil ascending:NO];
     
     if (result)
         return [result count];
@@ -434,10 +434,8 @@
     
     if (self.onlyClearDirectory) predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND (directory == 1) AND (cryptated == 0)", activeAccount, directoryID];
     else predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND (directory == 1)", activeAccount, directoryID];
-
-    //tableMetadata *metadata = [CCCoreData getMetadataAtIndex:predicate fieldOrder:@"fileName" ascending:YES objectAtIndex:indexPath.row];
     
-    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataAtIndex:predicate sorted:@"fileName" ascending:YES index:indexPath.row];
+    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataAtIndexWithPredicate:predicate sorted:@"fileName" ascending:YES index:indexPath.row];
     
     // colors
     if (metadata.cryptated) {
@@ -471,7 +469,7 @@
     if (self.onlyClearDirectory) predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND (directory == 1) AND (cryptated == 0)", activeAccount, directoryID];
     else predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@) AND (directory == 1)", activeAccount, directoryID];
     
-    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataAtIndex:predicate sorted:@"fileName" ascending:YES index:index.row];
+    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataAtIndexWithPredicate:predicate sorted:@"fileName" ascending:YES index:index.row];
     
     if (metadata.errorPasscode == NO) {
     

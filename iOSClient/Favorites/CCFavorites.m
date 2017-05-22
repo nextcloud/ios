@@ -192,7 +192,7 @@
 
 - (void)settingFavoriteSuccess:(CCMetadataNet *)metadataNet
 {
-    [[NCManageDatabase sharedInstance] setMetadataFavorite:metadataNet.fileID favorite:[metadataNet.options boolValue]];
+    [[NCManageDatabase sharedInstance] setMetadataFavoriteWithFileID:metadataNet.fileID favorite:[metadataNet.options boolValue]];
  
     [self reloadDatasource];
 }
@@ -217,9 +217,7 @@
 
 - (void)downloadFileSuccess:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost
 {
-    //_metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, app.activeAccount] context:nil];
-    
-    _metadata = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, app.activeAccount]];
+    _metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@)", fileID]];
     
     if ([_metadata.typeFile isEqualToString: k_metadataTypeFile_compress]) {
         
@@ -474,7 +472,7 @@
 {
     NSManagedObject *record = [_dataSource objectAtIndex:indexPath.row];
     
-    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"fileID = %@", [record valueForKey:@"fileID"]]];
+    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", [record valueForKey:@"fileID"]]];
 
     return metadata;
 }
@@ -491,13 +489,13 @@
         
     if (!_serverUrl) {
             
-        recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPreficate:[NSPredicate predicateWithFormat:@"account = %@ AND favorite == 1", app.activeAccount] sorted:nil ascending:NO];
+        recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND favorite = 1", app.activeAccount] sorted:nil ascending:NO];
             
     } else {
         
         NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:_serverUrl];        
         
-        recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPreficate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@", app.activeAccount, directoryID] sorted:[CCUtility getOrderSettings] ascending:[CCUtility getAscendingSettings]];
+        recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@", app.activeAccount, directoryID] sorted:[CCUtility getOrderSettings] ascending:[CCUtility getAscendingSettings]];
     }
         
     CCSectionDataSourceMetadata *sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:nil replaceDateToExifDate:NO activeAccount:app.activeAccount];

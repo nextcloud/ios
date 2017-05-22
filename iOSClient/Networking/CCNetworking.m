@@ -406,7 +406,7 @@
         
         dispatch_async(dispatch_get_main_queue(), ^{
             
-            tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(session = %@) AND ((sessionTaskIdentifier == %i) OR (sessionTaskIdentifierPlist == %i))",session.sessionDescription, task.taskIdentifier, task.taskIdentifier]];
+            tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(session = %@) AND ((sessionTaskIdentifier == %i) OR (sessionTaskIdentifierPlist == %i))",session.sessionDescription, task.taskIdentifier, task.taskIdentifier]];
             
             if (!metadata) return;
             
@@ -441,7 +441,7 @@
         
         dispatch_async(dispatch_get_main_queue(), ^{
             
-            tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(session = %@) AND ((sessionTaskIdentifier == %i) OR (sessionTaskIdentifierPlist == %i))",session.sessionDescription, task.taskIdentifier, task.taskIdentifier]];
+            tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(session = %@) AND ((sessionTaskIdentifier == %i) OR (sessionTaskIdentifierPlist == %i))",session.sessionDescription, task.taskIdentifier, task.taskIdentifier]];
 
             if (!metadata) return;
             
@@ -482,12 +482,12 @@
     if (delegate)
         [_delegates setObject:delegate forKey:fileID];
     
-    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
+    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
     
     if (downloadData) {
         
         // it's in download
-        tableMetadata *result = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"fileID = %@ AND session CONTAINS 'download' AND sessionTaskIdentifier >= 0", _activeAccount, metadata.fileID]];
+        tableMetadata *result = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@ AND session CONTAINS 'download' AND sessionTaskIdentifier >= 0", _activeAccount, metadata.fileID]];
         if (result) return;
         
         // File exists ?
@@ -511,7 +511,7 @@
     
     if (downloadPlist) {
         
-        tableMetadata *result = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileID == %@) AND (session CONTAINS 'download') AND (sessionTaskIdentifierPlist >= 0)", _activeAccount, metadata.fileID]];
+        tableMetadata *result = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileID == %@) AND (session CONTAINS 'download') AND (sessionTaskIdentifierPlist >= 0)", _activeAccount, metadata.fileID]];
         
         // it's in download
         if (result) {
@@ -619,7 +619,7 @@
     NSURLRequest *url = [downloadTask currentRequest];
     NSString *filename = [[url.URL absoluteString] lastPathComponent];
     
-    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"session = %@ AND (sessionTaskIdentifier = %i OR sessionTaskIdentifierPlist = %i)",session.sessionDescription, downloadTask.taskIdentifier, downloadTask.taskIdentifier]];
+    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"session = %@ AND (sessionTaskIdentifier = %i OR sessionTaskIdentifierPlist = %i)",session.sessionDescription, downloadTask.taskIdentifier, downloadTask.taskIdentifier]];
     
     // If the record metadata do not exists, exit
     if (!metadata) return;
@@ -683,7 +683,7 @@
         
     } else {
         
-        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
+        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
         if (!metadata) return;
         
         NSInteger sessionTaskIdentifier = metadata.sessionTaskIdentifier;
@@ -878,7 +878,7 @@
     
     // create Metadata
     NSString *cameraFolderName = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderName];
-    NSString *cameraFolderPath = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderPath:_activeUrl];
+    NSString *cameraFolderPath = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderPathWithActiveUrl:_activeUrl];
     
     tableMetadata *metadata = [CCUtility insertFileSystemInMetadata:fileName directory:_directoryUser activeAccount:_activeAccount cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath];
     
@@ -1022,7 +1022,7 @@
                     
                     // -- remove record --
                     
-                    tableMetadata *metadataDelete = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"account = %@ AND fileName = %@ AND directoryID = %@", _activeAccount, [fileNameCrypto stringByAppendingString:@".plist"], directoryID]];
+                    tableMetadata *metadataDelete = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND fileName = %@ AND directoryID = %@", _activeAccount, [fileNameCrypto stringByAppendingString:@".plist"], directoryID]];
                     
                     [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadataDelete.fileID] error:nil];
                     [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@.ico", _directoryUser, metadataDelete.fileID] error:nil];
@@ -1124,7 +1124,7 @@
             UIAlertAction *overwriteAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_overwrite_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
                 
                 // -- remove record --
-                tableMetadata *metadataDelete = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"account = %@ AND fileName = %@ AND directoryID = %@", _activeAccount, fileName, directoryID]];
+                tableMetadata *metadataDelete = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND fileName = %@ AND directoryID = %@", _activeAccount, fileName, directoryID]];
                 
                 [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadataDelete.fileID] error:nil];
                 [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@.ico", _directoryUser, metadataDelete.fileID] error:nil];
@@ -1560,7 +1560,7 @@
 {
     NSMutableSet *serversUrl = [[NSMutableSet alloc] init];
     
-    NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPreficate:[NSPredicate predicateWithFormat:@"account = %@ AND session CONTAINS 'download' AND (sessionTaskIdentifier = %i OR sessionTaskIdentifierPlist = %i)", _activeAccount, k_taskIdentifierError, k_taskIdentifierError] sorted:nil ascending:NO];
+    NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND session CONTAINS 'download' AND (sessionTaskIdentifier = %i OR sessionTaskIdentifierPlist = %i)", _activeAccount, k_taskIdentifierError, k_taskIdentifierError] sorted:nil ascending:NO];
     
     NSLog(@"[LOG] Verify re download n. %lu", (unsigned long)[metadatas count]);
     
@@ -1652,7 +1652,7 @@
     
     //NSArray *records = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (session CONTAINS 'upload') AND ((sessionTaskIdentifier == %i) OR (sessionTaskIdentifierPlist == %i))", _activeAccount, k_taskIdentifierError, k_taskIdentifierError] context:nil];
     
-    NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (session CONTAINS 'upload') AND ((sessionTaskIdentifier == %i) OR (sessionTaskIdentifierPlist == %i))", _activeAccount, k_taskIdentifierError, k_taskIdentifierError] sorted:nil ascending:NO];
+    NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (session CONTAINS 'upload') AND ((sessionTaskIdentifier == %i) OR (sessionTaskIdentifierPlist == %i))", _activeAccount, k_taskIdentifierError, k_taskIdentifierError] sorted:nil ascending:NO];
     
     NSLog(@"[LOG] Verify re upload n. %lu", (unsigned long)[metadatas count]);
     
@@ -1704,7 +1704,7 @@
     
     NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:metadataNet.serverUrl];
     
-    tableMetadata *metadataTemp = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"fileName = %@ AND directoryID = %@ AND account = %@", fileName , directoryID, _activeAccount]];
+    tableMetadata *metadataTemp = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileName = %@ AND directoryID = %@ AND account = %@", fileName , directoryID, _activeAccount]];
     
     // is completed ?
     if (metadataTemp.sessionTaskIdentifier == k_taskIdentifierDone && metadataTemp.sessionTaskIdentifierPlist == k_taskIdentifierDone) {
@@ -1738,10 +1738,7 @@
         fileName = metadataNet.fileName;
     
     NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:metadataNet.serverUrl];
-    
-    //tableMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileName == %@) AND (directoryID == %@) AND (account == %@)",fileName , directoryID, _activeAccount] context:_context];
-    
-    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileName == %@) AND (directoryID == %@) AND (account == %@)",fileName , directoryID, _activeAccount]];
+    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileName = %@ AND directoryID = %@ AND account = %@",fileName , directoryID, _activeAccount]];
     
     NSInteger error;
     if (errorCode == kOCErrorServerPathNotFound)

@@ -818,7 +818,7 @@
         // Fix BUG Geo latitude & longitude
         if ([localFile.exifLatitude doubleValue] == 9999 || [localFile.exifLongitude doubleValue] == 9999) {
             
-            tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
+            tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
             if (metadata) {
                 [CCExifGeo setExifLocalTableEtag:metadata directoryUser:app.directoryUser activeAccount:app.activeAccount];
             }
@@ -987,7 +987,7 @@
     if (_webView || _readerPDFViewController)
         [self removeAllView];
     
-    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"fileID = %@", metadataNet.fileID]];
+    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadataNet.fileID]];
     
     // if a message for a directory of these
     if (![_dataSourceDirectoryID containsObject:metadata.directoryID])

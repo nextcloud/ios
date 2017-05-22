@@ -263,7 +263,7 @@
 - (tableMetadata *)setSelfMetadataFromIndexPath:(NSIndexPath *)indexPath
 {
     NSString *cameraFolderName = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderName];
-    NSString *cameraFolderPath = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderPath:app.activeUrl];
+    NSString *cameraFolderPath = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderPathWithActiveUrl:app.activeUrl];
         
     return [CCUtility insertFileSystemInMetadata:[dataSource objectAtIndex:indexPath.row] directory:_serverUrl activeAccount:app.activeAccount cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath];
 }
@@ -320,7 +320,7 @@
     cell.selectedBackgroundView = selectionColor;
     
     NSString *cameraFolderName = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderName];
-    NSString *cameraFolderPath = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderPath:app.activeUrl];
+    NSString *cameraFolderPath = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderPathWithActiveUrl:app.activeUrl];
         
     metadata = [CCUtility insertFileSystemInMetadata:[dataSource objectAtIndex:indexPath.row] directory:_serverUrl activeAccount:app.activeAccount cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath];
         
@@ -460,7 +460,7 @@
     NSMutableArray *allRecordsDataSourceImagesVideos = [NSMutableArray new];
     
     NSString *cameraFolderName = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderName];
-    NSString *cameraFolderPath = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderPath:app.activeUrl];
+    NSString *cameraFolderPath = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderPathWithActiveUrl:app.activeUrl];
         
     for (NSString *fileName in dataSource) {
             

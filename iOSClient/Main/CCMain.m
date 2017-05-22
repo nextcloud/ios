@@ -1339,7 +1339,7 @@
 
 - (void)downloadFileFailure:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
+    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
     
     // File do not exists on server, remove in local
     if (errorCode == kOCErrorServerPathNotFound || errorCode == kCFURLErrorBadServerResponse) {
@@ -1382,7 +1382,7 @@
 
 - (void)downloadFileSuccess:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost
 {
-    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
+    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
     
     if (metadata == nil) return;
     
@@ -1602,7 +1602,7 @@
 
 - (void)downloadPlist:(NSString *)directoryID serverUrl:(NSString *)serverUrl
 {
-    NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPreficate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND session = ''", app.activeAccount, directoryID] sorted:nil ascending:NO];
+    NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND session = ''", app.activeAccount, directoryID] sorted:nil ascending:NO];
     
     for (tableMetadata *metadata in metadatas) {
             
@@ -1637,7 +1637,7 @@
     // Read File test do not exists
     if (errorCode == k_CCErrorFileUploadNotFound && fileID) {
        
-        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];
+        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];
         
         // reUpload
         if (metadata)
@@ -1687,7 +1687,7 @@
     BOOL useSubFolder = [[arguments objectAtIndex:3] boolValue];
     NSString *session = [arguments objectAtIndex:4];
     
-    NSString *folderPhotos = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderPathAndName:app.activeUrl];
+    NSString *folderPhotos = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderPathWithActiveUrl:app.activeUrl];
     NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
     
     // Create the folder for Photos & if request the subfolders
@@ -1717,7 +1717,7 @@
         
         // Check if is in upload 
         NSPredicate *predicate = [NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND fileName = %@ AND session != ''", app.activeAccount, directoryID, fileName];
-        NSArray *isRecordInSessions = [[NCManageDatabase sharedInstance] getMetadatasWithPreficate:predicate sorted:nil ascending:NO];
+        NSArray *isRecordInSessions = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:predicate sorted:nil ascending:NO];
 
         if ([isRecordInSessions count] > 0) {
             
@@ -1840,7 +1840,7 @@
     
     if (_isSearchMode) {
         
-        recordsInSessions = [[NCManageDatabase sharedInstance] getMetadatasWithPreficate:[NSPredicate predicateWithFormat:@"account = %@ AND session != ''", metadataNet.account] sorted:nil ascending:NO];
+        recordsInSessions = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND session != ''", metadataNet.account] sorted:nil ascending:NO];
         
     } else {
         
@@ -1848,7 +1848,7 @@
         
         [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND session = ''", metadataNet.account, metadataNet.directoryID]];
         
-        recordsInSessions = [[NCManageDatabase sharedInstance] getMetadatasWithPreficate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND session != ''", metadataNet.account, metadataNet.directoryID] sorted:nil ascending:NO];
+        recordsInSessions = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND session != ''", metadataNet.account, metadataNet.directoryID] sorted:nil ascending:NO];
 
         [[NCManageDatabase sharedInstance] setDateReadDirectoryWithDirectoryID:metadataNet.directoryID];
     }
@@ -1881,7 +1881,7 @@
         // verify if the record is in download/upload progress
         if (metadata.directory == NO && [recordsInSessions count] > 0) {
             
-            tableMetadata *metadataTransfer = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND fileName = %@", app.activeAccount, metadataNet.directoryID, metadata.fileName]];
+            tableMetadata *metadataTransfer = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND fileName = %@", app.activeAccount, metadataNet.directoryID, metadata.fileName]];
             
             // is in Download or Upload
             if ([metadataTransfer.session containsString:@"upload"] || [metadataTransfer.session containsString:@"download"]) {
@@ -2010,8 +2010,8 @@
         } else {
             
             NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:_serverUrl];
-            NSPredicate *predicate = [NSPredicate predicateWithFormat:@"directoryID == %@ AND account == %@ AND fileNamePrint CONTAINS[cd] %@", directoryID, app.activeAccount, fileName];
-            NSArray *records = [[NCManageDatabase sharedInstance] getMetadatasWithPreficate:predicate sorted:nil ascending:NO];
+            NSPredicate *predicate = [NSPredicate predicateWithFormat:@"directoryID = %@ AND account = %@ AND fileNamePrint CONTAINS[cd] %@", directoryID, app.activeAccount, fileName];
+            NSArray *records = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:predicate sorted:nil ascending:NO];
             
             [_searchResultMetadatas removeAllObjects];
             for (tableMetadata *record in records)
@@ -2414,7 +2414,7 @@
     fileNameFolder = [CCUtility removeForbiddenCharactersServer:fileNameFolder];
     if (![fileNameFolder length]) return;
     
-    if (folderCameraUpload) metadataNet.serverUrl = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderPath:app.activeUrl];
+    if (folderCameraUpload) metadataNet.serverUrl = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderPathWithActiveUrl:app.activeUrl];
     else  metadataNet.serverUrl = _serverUrl;
     
     metadataNet.action = actionCreateFolder;
@@ -2926,7 +2926,7 @@
                 
         } else {
             
-            tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"fileID = %@", metadataNet.fileID]];
+            tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadataNet.fileID]];
             
             // Apriamo la view
             _shareOC = [[UIStoryboard storyboardWithName:@"CCShare" bundle:nil] instantiateViewControllerWithIdentifier:@"CCShareOC"];
@@ -3134,7 +3134,7 @@
 {
     _dateReadDataSource = nil;
     
-    [[NCManageDatabase sharedInstance] setMetadataFavorite:metadataNet.fileID favorite:[metadataNet.options boolValue]];
+    [[NCManageDatabase sharedInstance] setMetadataFavoriteWithFileID:metadataNet.fileID favorite:[metadataNet.options boolValue]];
     
     if (_isSearchMode)
         [self readFolderWithForced:YES serverUrl:metadataNet.serverUrl];
@@ -3142,7 +3142,7 @@
         [self reloadDatasource:metadataNet.serverUrl fileID:metadataNet.fileID selector:metadataNet.selector];
     
     
-    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"fileID = %@", metadataNet.fileID]];
+    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadataNet.fileID]];
     
     if (metadata.directory && metadata.favorite) {
         
@@ -3922,7 +3922,7 @@
         NSString *fileID = [NSKeyedUnarchiver unarchiveObjectWithData:dataEtag];
         
         tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
-        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
+        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
         
         if (!metadata || !account) return;
         
@@ -4162,7 +4162,7 @@
         if (directory.lock && [[CCUtility getBlockCode] length] && app.sessionePasscodeLock == nil) lockDirectory = YES;
         
         NSString *cameraUploadFolderName = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderName];
-        NSString *cameraUploadFolderPath = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderPath:app.activeUrl];
+        NSString *cameraUploadFolderPath = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderPathWithActiveUrl:app.activeUrl];
         
         [actionSheet addButtonWithTitle: _metadata.fileNamePrint
                                   image: [CCGraphics changeThemingColorImage:[UIImage imageNamed:_metadata.iconName] color:[NCBrandColor sharedInstance].brand]
@@ -4258,7 +4258,7 @@
                                         [self setEditing:NO animated:YES];
                                         
                                         // Settings new folder Automatatic upload
-                                        NSString *oldPath = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderPath:app.activeUrl];
+                                        NSString *oldPath = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderPathWithActiveUrl:app.activeUrl];
 
                                         [[NCManageDatabase sharedInstance] setAccountCameraUploadFolderName:_metadata.fileName];
                                         [[NCManageDatabase sharedInstance] setAccountCameraUploadFolderPath:serverUrl activeUrl:app.activeUrl];
@@ -4271,7 +4271,7 @@
                                         [self readFolderWithForced:YES serverUrl:serverUrl];
                                         
                                         NSLog(@"[LOG] Update Folder Photo");
-                                        NSString *folderCameraUpload = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderPathAndName:app.activeUrl];
+                                        NSString *folderCameraUpload = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderPathWithActiveUrl:app.activeUrl];
                                         if ([folderCameraUpload length] > 0)
                                             [[CCSynchronize sharedSynchronize] readFolderServerUrl:folderCameraUpload directoryID:[[NCManageDatabase sharedInstance] getDirectoryID:folderCameraUpload] selector:selectorReadFolder];
                                         
@@ -4656,7 +4656,7 @@
     
         // Data Source
     
-        NSArray *recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@)", app.activeAccount, [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl]] sorted:[CCUtility getOrderSettings] ascending:[CCUtility getAscendingSettings]];
+        NSArray *recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (directoryID == %@)", app.activeAccount, [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl]] sorted:[CCUtility getOrderSettings] ascending:[CCUtility getAscendingSettings]];
         
         _sectionDataSource = [CCSectionDataSourceMetadata new];
         _sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:_directoryGroupBy replaceDateToExifDate:NO activeAccount:app.activeAccount];

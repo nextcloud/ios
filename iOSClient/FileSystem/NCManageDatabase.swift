@@ -277,7 +277,7 @@ class NCManageDatabase: NSObject {
         return ""
     }
     
-    func getAccountCameraUploadFolderPath(_ activeUrl : String) -> String {
+    func getAccountCameraUploadFolderPath(activeUrl : String) -> String {
         
         let realm = try! Realm()
         
@@ -297,10 +297,10 @@ class NCManageDatabase: NSObject {
         return ""
     }
 
-    func getAccountCameraUploadFolderPathAndName(_ activeUrl : String) -> String {
+    func getAccountCameraUploadFolderPathAndName(activeUrl : String) -> String {
         
         let cameraFolderName = self.getAccountCameraUploadFolderName()
-        let cameraFolderPath = self.getAccountCameraUploadFolderPath(activeUrl)
+        let cameraFolderPath = self.getAccountCameraUploadFolderPath(activeUrl: activeUrl)
      
         let folderPhotos = CCUtility.stringAppendServerUrl(cameraFolderPath, addFileName: cameraFolderName)!
         
@@ -405,7 +405,7 @@ class NCManageDatabase: NSObject {
         var pathName : String? = pathName
         
         if pathName == nil {
-            pathName = self.getAccountCameraUploadFolderPath(activeUrl)
+            pathName = self.getAccountCameraUploadFolderPath(activeUrl: activeUrl)
         }
         
         let results = realm.objects(tableAccount.self).filter("active = true")
@@ -1152,7 +1152,7 @@ class NCManageDatabase: NSObject {
         }
         
         let cameraFolderName = self.getAccountCameraUploadFolderName()
-        let cameraFolderPath = self.getAccountCameraUploadFolderPath(activeUrl)
+        let cameraFolderPath = self.getAccountCameraUploadFolderPath(activeUrl: activeUrl)
         let directory = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID)
         
         let realm = try! Realm()
@@ -1215,7 +1215,7 @@ class NCManageDatabase: NSObject {
     func updateMetadata(_ metadata: tableMetadata, activeUrl: String) {
         
         let cameraFolderName = self.getAccountCameraUploadFolderName()
-        let cameraFolderPath = self.getAccountCameraUploadFolderPath(activeUrl)
+        let cameraFolderPath = self.getAccountCameraUploadFolderPath(activeUrl: activeUrl)
         let serverUrl = self.getServerUrl(metadata.directoryID)
         
         let metadataWithIcon = CCUtility.insertTypeFileIconName(metadata, directory: serverUrl, cameraFolderName: cameraFolderName, cameraFolderPath: cameraFolderPath)
@@ -1268,7 +1268,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func setMetadataFavorite(_ fileID: String, favorite: Bool) {
+    func setMetadataFavorite(fileID: String, favorite: Bool) {
         
         let tableAccount = self.getAccountActive()
         if tableAccount == nil {
@@ -1289,7 +1289,7 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    func getMetadataWithPreficate(_ predicate: NSPredicate) -> tableMetadata? {
+    func getMetadata(predicate: NSPredicate) -> tableMetadata? {
         
         let tableAccount = self.getAccountActive()
         if tableAccount == nil {
@@ -1310,7 +1310,7 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    func getMetadatasWithPreficate(_ predicate: NSPredicate, sorted: String?, ascending: Bool) -> [tableMetadata]? {
+    func getMetadatas(predicate: NSPredicate, sorted: String?, ascending: Bool) -> [tableMetadata]? {
         
         let tableAccount = self.getAccountActive()
         if tableAccount == nil {
@@ -1339,7 +1339,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func getMetadataAtIndex(_ predicate: NSPredicate, sorted: String?, ascending: Bool, index: Int) -> tableMetadata? {
+    func getMetadataAtIndex(predicate: NSPredicate, sorted: String?, ascending: Bool, index: Int) -> tableMetadata? {
 
         let tableAccount = self.getAccountActive()
         if tableAccount == nil {
@@ -1390,7 +1390,7 @@ class NCManageDatabase: NSObject {
         
         let predicate = NSPredicate(format: "(account == %@) AND ((session == %@) || (session == %@)) AND ((sessionTaskIdentifier != %i) OR (sessionTaskIdentifierPlist != %i))", tableAccount!.account, k_download_session, k_download_session_foreground, k_taskIdentifierDone, k_taskIdentifierDone)
         
-        return self.getMetadatasWithPreficate(predicate, sorted: nil, ascending: false)
+        return self.getMetadatas(predicate: predicate, sorted: nil, ascending: false)
     }
     
     func getTableMetadataDownloadWWan() -> [tableMetadata]? {
@@ -1402,7 +1402,7 @@ class NCManageDatabase: NSObject {
         
         let predicate = NSPredicate(format: "(account == %@) AND (session == %@) AND ((sessionTaskIdentifier != %i) OR (sessionTaskIdentifierPlist != %i))", tableAccount!.account, k_download_session_wwan, k_taskIdentifierDone, k_taskIdentifierDone)
         
-        return self.getMetadatasWithPreficate(predicate, sorted: nil, ascending: false)
+        return self.getMetadatas(predicate: predicate, sorted: nil, ascending: false)
     }
     
     func getTableMetadataUpload() -> [tableMetadata]? {
@@ -1414,7 +1414,7 @@ class NCManageDatabase: NSObject {
         
         let predicate = NSPredicate(format: "(account == %@) AND ((session == %@) || (session == %@)) AND ((sessionTaskIdentifier != %i) OR (sessionTaskIdentifierPlist != %i))", tableAccount!.account, k_upload_session, k_upload_session_foreground, k_taskIdentifierDone, k_taskIdentifierDone)
         
-        return self.getMetadatasWithPreficate(predicate, sorted: nil, ascending: false)
+        return self.getMetadatas(predicate: predicate, sorted: nil, ascending: false)
     }
 
     func getTableMetadataUploadWWan() -> [tableMetadata]? {
@@ -1426,7 +1426,7 @@ class NCManageDatabase: NSObject {
         
         let predicate = NSPredicate(format: "(account == %@) AND (session == %@) AND ((sessionTaskIdentifier != %i) OR (sessionTaskIdentifierPlist != %i))", tableAccount!.account, k_upload_session_wwan, k_taskIdentifierDone, k_taskIdentifierDone)
         
-        return self.getMetadatasWithPreficate(predicate, sorted: nil, ascending: false)
+        return self.getMetadatas(predicate: predicate, sorted: nil, ascending: false)
     }
 
     func getRecordsTableMetadataPhotosCameraUpload(_ serverUrl: String) -> [tableMetadata]? {

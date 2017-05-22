@@ -134,7 +134,7 @@ class CCActions: NSObject {
     
     func deleteFileOrFolderSuccess(_ metadataNet: CCMetadataNet) {
         
-        let metadata = NCManageDatabase.sharedInstance.getMetadataWithPreficate(NSPredicate(format: "fileID == %@", metadataNet.fileID))
+        let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID == %@", metadataNet.fileID))
         
         if metadata != nil {
             self.deleteFile(metadata: metadata!, serverUrl: metadataNet.serverUrl)
@@ -147,7 +147,7 @@ class CCActions: NSObject {
         
         if errorCode == 404 {
             
-            let metadata = NCManageDatabase.sharedInstance.getMetadataWithPreficate(NSPredicate(format: "fileID == %@", metadataNet.fileID))
+            let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID == %@", metadataNet.fileID))
             
             if metadata != nil {
                 self.deleteFile(metadata: metadata!, serverUrl: metadataNet.serverUrl)
@@ -284,7 +284,7 @@ class CCActions: NSObject {
     
     func renameSuccess(_ metadataNet: CCMetadataNet) {
         
-        let metadata = NCManageDatabase.sharedInstance.getMetadataWithPreficate(NSPredicate(format: "fileID = %@", metadataNet.fileID))
+        let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID = %@", metadataNet.fileID))
         
         if metadata?.directory == true {
             

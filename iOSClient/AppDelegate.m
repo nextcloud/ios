@@ -338,7 +338,7 @@
     // Execute : now
     
     NSLog(@"[LOG] Update Folder Photo");
-    NSString *folderCameraUpload = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderPathAndName:_activeUrl];
+    NSString *folderCameraUpload = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderPathWithActiveUrl:_activeUrl];
     if ([folderCameraUpload length] > 0)
         [[CCSynchronize sharedSynchronize] readFolderServerUrl:folderCameraUpload directoryID:[[NCManageDatabase sharedInstance] getDirectoryID:folderCameraUpload] selector:selectorReadFolder];
 
@@ -1214,7 +1214,7 @@
     // after 25 sec
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 25 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         
-        NSArray *records = [[NCManageDatabase sharedInstance] getMetadatasWithPreficate:[NSPredicate predicateWithFormat:@"account = %@ AND session != ''", self.activeAccount] sorted:nil ascending:NO];
+        NSArray *records = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND session != ''", self.activeAccount] sorted:nil ascending:NO];
         
         if ([records count] > 0) {
             completionHandler(UIBackgroundFetchResultNewData);
@@ -1377,7 +1377,7 @@
     // ------------------------- <selectorUploadAutomaticAll> -------------------------
     
     // Verify num error MAX 10 after STOP
-    NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPreficate:[NSPredicate predicateWithFormat:@"account = %@ AND sessionSelector = %@ AND (sessionTaskIdentifier = %i OR sessionTaskIdentifierPlist = %i)", app.activeAccount, selectorUploadAutomaticAll, k_taskIdentifierError, k_taskIdentifierError] sorted:nil ascending:NO];
+    NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND sessionSelector = %@ AND (sessionTaskIdentifier = %i OR sessionTaskIdentifierPlist = %i)", app.activeAccount, selectorUploadAutomaticAll, k_taskIdentifierError, k_taskIdentifierError] sorted:nil ascending:NO];
     
     NSInteger errorCount = [metadatas count];
     
@@ -1490,7 +1490,7 @@
 
 - (void)changeTask:(NSString *)fileID
 {
-    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];
+    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
     if (!metadata) return;
     NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
     
