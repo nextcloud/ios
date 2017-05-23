@@ -80,9 +80,7 @@ class NCBrandOptions: NSObject {
     public let use_themingBackground:           Bool = true
     public let use_multiDomains:                Bool = false
     public let use_recent_activity_title:       Bool = false
-    public let use_more_gear_icon_right:        Bool = false
-    public let use_more_quotabar_on_top:        Bool = false
-    
+        
     public let disable_intro:                   Bool = false
     public let disable_request_login_url:       Bool = false
     public let disable_multiaccount:            Bool = false

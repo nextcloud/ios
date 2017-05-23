@@ -375,6 +375,8 @@
 		F76B3CCF1EAE01BD00921AC9 /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
 		F76B3CD01EAE01BD00921AC9 /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
 		F76B3CD11EAE01BD00921AC9 /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
+		F76F23251ED45D2F00C40023 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F76F23241ED45D2F00C40023 /* Main.storyboard */; };
+		F76F23341ED4603700C40023 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = F76F23331ED4603700C40023 /* LaunchScreen.xib */; };
 		F77B0DF01D118A16002130FE /* UIImage+Resizing.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04CA1C889184008DAB36 /* UIImage+Resizing.m */; };
 		F77B0DF21D118A16002130FE /* CCUploadFromOtherUpp.m in Sources */ = {isa = PBXBuildFile; fileRef = F7956FCA1B4886E60085DEA3 /* CCUploadFromOtherUpp.m */; };
 		F77B0DF41D118A16002130FE /* CCMain.m in Sources */ = {isa = PBXBuildFile; fileRef = F70211FB1BAC56E9003FC03E /* CCMain.m */; };
@@ -491,7 +493,6 @@
 		F77B0F211D118A16002130FE /* ZSSh6.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DA31C889300008DAB36 /* ZSSh6.png */; };
 		F77B0F231D118A16002130FE /* ZSSh3.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0D9D1C889300008DAB36 /* ZSSh3.png */; };
 		F77B0F251D118A16002130FE /* ZSSh1.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0D991C889300008DAB36 /* ZSSh1.png */; };
-		F77B0F281D118A16002130FE /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F787E5581BC503ED00AFBFE1 /* Main.storyboard */; };
 		F77B0F291D118A16002130FE /* ZSSleftjustify.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DB11C889300008DAB36 /* ZSSleftjustify.png */; };
 		F77B0F2B1D118A16002130FE /* ZSSclearstyle@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0D961C889300008DAB36 /* ZSSclearstyle@2x.png */; };
 		F77B0F2C1D118A16002130FE /* ZSSlink.png in Resources */ = {isa = PBXBuildFile; fileRef = F70F0DB31C889300008DAB36 /* ZSSlink.png */; };
@@ -560,7 +561,6 @@
 		F78964AD1EBB576C00403E13 /* JDStatusBarNotification.m in Sources */ = {isa = PBXBuildFile; fileRef = F78964A81EBB576C00403E13 /* JDStatusBarNotification.m */; };
 		F78964AE1EBB576C00403E13 /* JDStatusBarStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = F78964AA1EBB576C00403E13 /* JDStatusBarStyle.m */; };
 		F78964AF1EBB576C00403E13 /* JDStatusBarView.m in Sources */ = {isa = PBXBuildFile; fileRef = F78964AC1EBB576C00403E13 /* JDStatusBarView.m */; };
-		F78BFED41D3111B800E513CF /* LaunchScreenNextcloud.xib in Resources */ = {isa = PBXBuildFile; fileRef = F78BFECA1D3111B800E513CF /* LaunchScreenNextcloud.xib */; };
 		F78BFEE11D31126B00E513CF /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F78BFEDE1D31126B00E513CF /* MainInterface.storyboard */; };
 		F7A13A031E7F3D5D00016680 /* CCProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A13A001E7F3D5D00016680 /* CCProgressView.m */; };
 		F7A13A041E7F3D5D00016680 /* UINavigationController+CCProgress.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A13A021E7F3D5D00016680 /* UINavigationController+CCProgress.m */; };
@@ -802,7 +802,6 @@
 		08EA97451E6554FC004C83FA /* FirebaseCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseCore.framework; sourceTree = "<group>"; };
 		08EA97461E6554FC004C83FA /* FirebaseInstanceID.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseInstanceID.framework; sourceTree = "<group>"; };
 		08EA97471E6554FC004C83FA /* GoogleToolboxForMac.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleToolboxForMac.framework; sourceTree = "<group>"; };
-		F70022201EC46E660080073F /* NCBridgeSwift.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCBridgeSwift.h; sourceTree = "<group>"; };
 		F700222B1EC479840080073F /* Custom.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Custom.xcassets; sourceTree = "<group>"; };
 		F70022591EC4C9100080073F /* AFHTTPSessionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFHTTPSessionManager.h; sourceTree = "<group>"; };
 		F700225A1EC4C9100080073F /* AFHTTPSessionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFHTTPSessionManager.m; sourceTree = "<group>"; };
@@ -1570,6 +1569,10 @@
 		F76C3B841C6388BC00DC4301 /* CCGraphics.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCGraphics.m; sourceTree = "<group>"; };
 		F76C3B871C638A4C00DC4301 /* CCError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCError.h; sourceTree = "<group>"; };
 		F76C3B881C638A4C00DC4301 /* CCError.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCError.m; sourceTree = "<group>"; };
+		F76F23241ED45D2F00C40023 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
+		F76F23271ED45EC600C40023 /* NCBridgeSwift.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCBridgeSwift.h; sourceTree = "<group>"; };
+		F76F23321ED4600700C40023 /* Share-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Share-Bridging-Header.h"; sourceTree = "<group>"; };
+		F76F23331ED4603700C40023 /* LaunchScreen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LaunchScreen.xib; sourceTree = "<group>"; };
 		F777F0301C29717F00CE81CB /* PHAsset+Utility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "PHAsset+Utility.h"; sourceTree = "<group>"; };
 		F777F0311C29717F00CE81CB /* PHAsset+Utility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "PHAsset+Utility.m"; sourceTree = "<group>"; };
 		F77D49A71DC238E500CDC568 /* loading@2x.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = "loading@2x.gif"; sourceTree = "<group>"; };
@@ -1580,14 +1583,12 @@
 		F78088E91DD3A1DB005C5A7C /* cryptocloud.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = cryptocloud.xcdatamodel; sourceTree = "<group>"; };
 		F78316861C0CB3CA00C43975 /* CCShareUserOC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCShareUserOC.h; sourceTree = "<group>"; };
 		F78316871C0CB3CA00C43975 /* CCShareUserOC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCShareUserOC.m; sourceTree = "<group>"; };
-		F787E5581BC503ED00AFBFE1 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		F78964A71EBB576C00403E13 /* JDStatusBarNotification.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JDStatusBarNotification.h; sourceTree = "<group>"; };
 		F78964A81EBB576C00403E13 /* JDStatusBarNotification.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JDStatusBarNotification.m; sourceTree = "<group>"; };
 		F78964A91EBB576C00403E13 /* JDStatusBarStyle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JDStatusBarStyle.h; sourceTree = "<group>"; };
 		F78964AA1EBB576C00403E13 /* JDStatusBarStyle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JDStatusBarStyle.m; sourceTree = "<group>"; };
 		F78964AB1EBB576C00403E13 /* JDStatusBarView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JDStatusBarView.h; sourceTree = "<group>"; };
 		F78964AC1EBB576C00403E13 /* JDStatusBarView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JDStatusBarView.m; sourceTree = "<group>"; };
-		F78BFECA1D3111B800E513CF /* LaunchScreenNextcloud.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LaunchScreenNextcloud.xib; sourceTree = "<group>"; };
 		F78BFEDE1D31126B00E513CF /* MainInterface.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = MainInterface.storyboard; sourceTree = "<group>"; };
 		F78F6FAE1CC8CCB700F4EA25 /* CCSection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCSection.h; sourceTree = "<group>"; };
 		F78F6FAF1CC8CCB700F4EA25 /* CCSection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCSection.m; sourceTree = "<group>"; };
@@ -1688,7 +1689,6 @@
 		F7D154271E2392A300202FD9 /* Nextcloud-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Nextcloud-Bridging-Header.h"; sourceTree = "<group>"; };
 		F7DFE24F1EBDC3A400CF5202 /* Realm.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Realm.framework; sourceTree = "<group>"; };
 		F7DFE2501EBDC3A400CF5202 /* RealmSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = RealmSwift.framework; sourceTree = "<group>"; };
-		F7E456D41C89D54A00BD63F0 /* Share Ext-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Share Ext-Bridging-Header.h"; sourceTree = "<group>"; };
 		F7ECBA6C1E239DCD003E6328 /* CCCreateCloud.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CCCreateCloud.swift; sourceTree = "<group>"; };
 		F7F0617A1BAACDD300846525 /* CryptoCloud.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CryptoCloud.pch; sourceTree = "<group>"; };
 		F7F06E2B1DBFACC600099AE9 /* CTAssetsPageViewController+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CTAssetsPageViewController+Internal.h"; sourceTree = "<group>"; };
@@ -2001,7 +2001,6 @@
 		F70211F31BAC56E9003FC03E /* Main */ = {
 			isa = PBXGroup;
 			children = (
-				F787E5581BC503ED00AFBFE1 /* Main.storyboard */,
 				F70211F51BAC56E9003FC03E /* CCCellMain.m */,
 				F70211F61BAC56E9003FC03E /* CCCellMain.xib */,
 				F70211F41BAC56E9003FC03E /* CCCellMain.h */,
@@ -3334,11 +3333,10 @@
 				F78BFEDE1D31126B00E513CF /* MainInterface.storyboard */,
 				F7C0F46E1C8880540059EC54 /* ShareViewController.h */,
 				F7C0F46F1C8880540059EC54 /* ShareViewController.m */,
+				F76F23321ED4600700C40023 /* Share-Bridging-Header.h */,
 				F7296A661C8880ED001A7809 /* CCloadItemData.swift */,
-				F7E456D41C89D54A00BD63F0 /* Share Ext-Bridging-Header.h */,
 			);
-			name = Share;
-			path = "Share Ext";
+			path = Share;
 			sourceTree = "<group>";
 		};
 		F7C1CDD91E6DFC6F005D92BE /* Brand */ = {
@@ -3346,6 +3344,9 @@
 			children = (
 				F7C742D31E7BD36600D9C973 /* Supporting Files */,
 				F700222B1EC479840080073F /* Custom.xcassets */,
+				F76F23331ED4603700C40023 /* LaunchScreen.xib */,
+				F76F23241ED45D2F00C40023 /* Main.storyboard */,
+				F76F23271ED45EC600C40023 /* NCBridgeSwift.h */,
 				F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */,
 			);
 			path = Brand;
@@ -3579,16 +3580,15 @@
 				F70F02A81C889183008DAB36 /* Libraries external */,
 				F75EDFA41E8C106900E6F369 /* Analytics */,
 				F7A377131EB2364A002856D3 /* Fabric */,
-				F7C1CDD91E6DFC6F005D92BE /* Brand */,
 				F70022561EC4C9100080073F /* OCCommunicationLib */,
 				F7A582D71A24DAB500E903D7 /* AppDelegate.h */,
 				F7A582D61A24DAB500E903D7 /* AppDelegate.m */,
 				F7C8C1901B482CEA0048180E /* CCGlobal.h */,
 				F7C8C1911B482CEA0048180E /* CCGlobal.m */,
-				F70022201EC46E660080073F /* NCBridgeSwift.h */,
 				F78088E51DD3A1DB005C5A7C /* cryptocloud.xcdatamodeld */,
 				F7F67BB81A24D27800EE80DA /* Images.xcassets */,
 				F70211F31BAC56E9003FC03E /* Main */,
+				F7C1CDD91E6DFC6F005D92BE /* Brand */,
 				F720E02A1E48C74C001A4B9E /* Actions */,
 				F7A321621E9E37960069AD1B /* Activity */,
 				F7ECBA6B1E239DCD003E6328 /* Create */,
@@ -3624,7 +3624,6 @@
 				F75CDBF51DF063AD00116AD0 /* .gitignore */,
 				F7229B491DF71BB300E8C4E7 /* AUTHORS */,
 				F7F0617A1BAACDD300846525 /* CryptoCloud.pch */,
-				F78BFECA1D3111B800E513CF /* LaunchScreenNextcloud.xib */,
 				F77D49A71DC238E500CDC568 /* loading@2x.gif */,
 				F7F67BAD1A24D27800EE80DA /* main.m */,
 				F7D154271E2392A300202FD9 /* Nextcloud-Bridging-Header.h */,
@@ -3997,7 +3996,6 @@
 				F700222C1EC479840080073F /* Custom.xcassets in Resources */,
 				F77B0EFE1D118A16002130FE /* CCUploadFromOtherUpp.storyboard in Resources */,
 				F77B0EFF1D118A16002130FE /* ZSSinsertkeyword.png in Resources */,
-				F78BFED41D3111B800E513CF /* LaunchScreenNextcloud.xib in Resources */,
 				F762CBB91EACB89C00B38484 /* LMMediaPlayerView.bundle in Resources */,
 				F77B0F041D118A16002130FE /* ZSSoutdent@2x.png in Resources */,
 				F762CB611EACB7D400B38484 /* Reader-Mark-Y.png in Resources */,
@@ -4028,7 +4026,6 @@
 				F77B0F231D118A16002130FE /* ZSSh3.png in Resources */,
 				F769D39C1E9E1506006DBBB4 /* CCLocalStorageCell.xib in Resources */,
 				F77B0F251D118A16002130FE /* ZSSh1.png in Resources */,
-				F77B0F281D118A16002130FE /* Main.storyboard in Resources */,
 				F762CB621EACB7D400B38484 /* Reader-Mark-Y@2x.png in Resources */,
 				F762CB571EACB7D400B38484 /* Reader-Button-H.png in Resources */,
 				F762CB661EACB7D400B38484 /* Reader-Thumbs@2x.png in Resources */,
@@ -4053,6 +4050,7 @@
 				F762CB971EACB84400B38484 /* icon-info.png in Resources */,
 				F77B0F391D118A16002130FE /* ZSStable@2x.png in Resources */,
 				F77B0F3B1D118A16002130FE /* ZSSredo@2x.png in Resources */,
+				F76F23251ED45D2F00C40023 /* Main.storyboard in Resources */,
 				F77B0F3D1D118A16002130FE /* ZSSh5.png in Resources */,
 				F77B0F3E1D118A16002130FE /* ZSSquicklink@2x.png in Resources */,
 				F77B0F411D118A16002130FE /* ZSStextcolor@2x.png in Resources */,
@@ -4095,6 +4093,7 @@
 				F77B0F631D118A16002130FE /* Localizable.strings in Resources */,
 				F7F54CFB1E5B14C700E19C62 /* UIBarButtonItemArrowLeft@2x.png in Resources */,
 				F77B0F641D118A16002130FE /* ZSSh4.png in Resources */,
+				F76F23341ED4603700C40023 /* LaunchScreen.xib in Resources */,
 				F77B0F671D118A16002130FE /* InfoPlist.strings in Resources */,
 				F762CB5F1EACB7D400B38484 /* Reader-Mark-N.png in Resources */,
 				F7C525A21E3B6DA800FFE02C /* CCNotification.storyboard in Resources */,
@@ -4928,7 +4927,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.Nextcloud.Share;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = "Share Ext/Share Ext-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "Share/Share-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -4972,7 +4971,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.Nextcloud.Share;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = "Share Ext/Share Ext-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "Share/Share-Bridging-Header.h";
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USE_HEADERMAP = YES;
@@ -5121,7 +5120,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIconNextcloud;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = iOSClient/Brand/iOSClient.entitlements;
@@ -5168,7 +5167,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIconNextcloud;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = iOSClient/Brand/iOSClient.entitlements;

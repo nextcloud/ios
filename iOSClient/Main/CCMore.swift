@@ -313,7 +313,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             
             if (self.splitViewController?.isCollapsed)! {
                 
-                let webVC = SwiftWebVC(urlString: item.url)
+                let webVC = SwiftWebVC(urlString: item.url, hideToolbar: false)
                 self.navigationController?.pushViewController(webVC, animated: true)
                 self.navigationController?.navigationBar.isHidden = false
                 
@@ -333,7 +333,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             
             if (self.splitViewController?.isCollapsed)! {
                 
-                let webVC = SwiftWebVC(urlString: item.url)
+                let webVC = SwiftWebVC(urlString: item.url, hideToolbar: false)
                 self.navigationController?.pushViewController(webVC, animated: true)
                 self.navigationController?.navigationBar.isHidden = false
                 
