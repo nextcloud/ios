@@ -73,6 +73,9 @@ class NCBrandOptions: NSObject {
     public let loginButtonLabelLink:            String = "https://nextcloud.com/providers"
     public let webLoginAutenticationProtocol:   String = ""
     
+    // Auto Upload default folder
+    public var folderDefaultCameraUpload:       String = "Auto upload" // Photos
+    
     // Capabilities Group
     public let capabilitiesGroups:              String = "group.it.twsweb.Crypto-Cloud"
     

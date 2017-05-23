@@ -77,7 +77,7 @@ extern NSString *const urlBaseUploadDB;
 #define k_databaseDefault                               @"nextcloud.realm"
 
 // File Name Const
-#define k_folderDefaultCameraUpload                     @"Photos"
+//#define k_folderDefaultCameraUpload                     @"Photos"
 
 // Picker select image
 #define k_pickerControllerMax                           100.0
