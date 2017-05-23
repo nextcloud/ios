@@ -76,7 +76,7 @@ class NCBrandOptions: NSObject {
     // Auto Upload default folder
     public var folderDefaultCameraUpload:       String = "Photos"
     // Auto Upload brand folder
-    public let folderBrandCameraUpload:         String = ""
+    public let folderBrandCameraUpload:         String = NSLocalizedString("_auto_upload_folder_", comment: "")
     
     // Capabilities Group
     public let capabilitiesGroups:              String = "group.it.twsweb.Crypto-Cloud"
@@ -100,7 +100,7 @@ class NCBrandOptions: NSObject {
         
         if folderBrandCameraUpload != "" {
             
-            //self.folderDefaultCameraUpload = NSLocalizedString("_auto_upload_folder_brand_", comment: "")
+            self.folderDefaultCameraUpload = folderBrandCameraUpload
         }
         
     }
