@@ -31,9 +31,9 @@ class NCBrandColor: NSObject {
     }()
 
     // Color
-    public var brand:                   UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)    // BLU NC : #0082c9
     public let customer:                UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)    // BLU NC : #0082c9
 
+    public var brand:                   UIColor
     public var connectionNo:            UIColor = UIColor(red: 204.0/255.0, green: 204.0/255.0, blue: 204.0/255.0, alpha: 1.0)
     public var cryptocloud:             UIColor = UIColor(red: 241.0/255.0, green: 90.0/255.0, blue: 34.0/255.0, alpha: 1.0)
     public var navigationBarProgress:   UIColor = .white
@@ -45,6 +45,10 @@ class NCBrandColor: NSObject {
     public var tabBar:                  UIColor = .white
     public var tableBackground:         UIColor = .white
     public var transferBackground:      UIColor = UIColor(red: 178.0/255.0, green: 244.0/255.0, blue: 258.0/255.0, alpha: 0.1)
+    
+    override init() {
+        self.brand = self.customer
+    }
     
     // Color modify
     public func getColorSelectBackgrond() -> UIColor {
