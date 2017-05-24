@@ -30,7 +30,7 @@
 
 @interface CCManageAccount ()
 {
-    tableAccount *_tableAccount;
+    TableAccount *_tableAccount;
 
     CCLoginWeb *_loginWeb;
     CCLogin *_loginVC;
@@ -47,7 +47,7 @@
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
     
-    NSArray *listAccount = [[NCManageDatabase sharedInstance] getAccounts];
+    NSArray *listAccount = [CCCoreData getAllAccount];
 
     // Section : CLOUD ACCOUNT -------------------------------------------
     
@@ -290,34 +290,27 @@
 {
     XLFormPickerCell *pickerAccount = (XLFormPickerCell *)[[self.form formRowWithTag:@"pickerAccount"] cellForFormController:self];
     
-    NSString *accountNow = pickerAccount.rowDescriptor.value;
-    NSArray *listAccount = [[NCManageDatabase sharedInstance] getAccounts];
-    
     [actionSheet dismissWithClickedButtonIndex:buttonIndex animated:YES];
     
     if (buttonIndex == 0 && actionSheet.tag == actionSheetCancellaAccount) {
         
-        [app cancelAllOperations];
+        NSString *accountNow = pickerAccount.rowDescriptor.value;
         
-        [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:k_taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
-
         [self deleteAccount:accountNow];
         
-        // Clear active user
-        [app settingActiveAccount:nil activeUrl:nil activeUser:nil activePassword:nil];
-        
-        listAccount = [[NCManageDatabase sharedInstance] getAccounts];
-        
+        NSArray *listAccount = [CCCoreData getAllAccount];
         if ([listAccount count] > 0) [self ChangeDefaultAccount:listAccount[0]];
         else {
             [self addAccountFoced];
-            return;
         }
     }
 }
 
 - (void)deleteAccount:(NSString *)account
 {
+    [app cancelAllOperations];
+    [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:k_taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
+    
     [[NCManageDatabase sharedInstance] clearTable:[tableAccount class] account:account];
     [[NCManageDatabase sharedInstance] clearTable:[tableActivity class] account:account];
     [[NCManageDatabase sharedInstance] clearTable:[tableAutomaticUpload class] account:account];
@@ -327,6 +320,9 @@
     [[NCManageDatabase sharedInstance] clearTable:[tableLocalFile class] account:app.activeAccount];
     [[NCManageDatabase sharedInstance] clearTable:[tableMetadata class] account:account];
     [[NCManageDatabase sharedInstance] clearTable:[tableShare class] account:account];
+    
+    // Clear active user
+    [app settingActiveAccount:nil activeUrl:nil activeUser:nil activePassword:nil];
 }
 
 - (void)answerDelAccount:(XLFormRowDescriptor *)sender

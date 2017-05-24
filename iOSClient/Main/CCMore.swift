@@ -79,38 +79,44 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         quotaMenu.removeAll()
         labelQuotaExternalSite.text = ""
         
-        // Internal
+        // ITEM : Transfer
         var item = OCExternalSites.init()
         item.name = "_transfers_"
         item.icon = "moreTransfers"
         item.url = "segueTransfers"
         functionMenu.append(item)
         
+        // ITEM : Activity
         item = OCExternalSites.init()
         if NCBrandOptions.sharedInstance.use_recent_activity_title == true {
             item.name = "_recent_activity_"
         } else {
             item.name = "_activity_"
         }
-        
         item.icon = "moreActivity"
         item.url = "segueActivity"
         functionMenu.append(item)
         
+        // ITEM : Notification [CUSTOM]
+        if NCBrandOptions.sharedInstance.use_notification_on_menu_more == true {
+            
+            item = OCExternalSites.init()
+            item.name = "_notifications_"
+            item.icon = "notification"
+            item.url = "openCCNotification"
+            functionMenu.append(item)
+        }
+        
+        // ITEM : Local storage
         item = OCExternalSites.init()
         item.name = "_local_storage_"
         item.icon = "moreLocalStorage"
         item.url = "segueLocalStorage"
         functionMenu.append(item)
         
-        item = OCExternalSites.init()
-        item.name = "_settings_"
-        item.icon = "moreSettings"
-        item.url = "segueSettings"
-        settingsMenu.append(item)
-
-        // External 
+        // ITEM : External
         menuExternalSite = NCManageDatabase.sharedInstance.getAllExternalSites(predicate: NSPredicate(format: "(account == '\(appDelegate.activeAccount!)')"))
+        //menuExternalSite = NCManageDatabase.sharedInstance.getAllExternalSitesWithPredicate(NSPredicate(format: "(account == '\(appDelegate.activeAccount!)')"))
         
         for table in menuExternalSite! {
             
@@ -133,10 +139,27 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             }
         }
         
+        // ITEM : Settings
+        item = OCExternalSites.init()
+        item.name = "_settings_"
+        item.icon = "moreSettings"
+        item.url = "segueSettings"
+        settingsMenu.append(item)
+        
         if (quotaMenu.count > 0) {
             
             let item = quotaMenu[0]
             labelQuotaExternalSite.text = item.name
+        }
+        
+        // ITEM : Logout [CUSTOM]
+        if NCBrandOptions.sharedInstance.use_logout_on_menu_more == true {
+            
+            item = OCExternalSites.init()
+            item.name = "_logout_"
+            item.icon = "logout"
+            item.url = "logout"
+            settingsMenu.append(item)
         }
         
         // User data & Theming
@@ -293,23 +316,31 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         var item: OCExternalSites = OCExternalSites.init()
         
         // Menu Function
-        if (indexPath.section == 0) {
+        if indexPath.section == 0 {
             
             item = functionMenu[indexPath.row]
         }
         
         // Menu Settings
-        if (indexPath.section == 1) {
+        if indexPath.section == 1 {
             
             item = settingsMenu[indexPath.row]
         }
         
-        if (item.url.contains("segue") && !item.url.contains("//")) {
+        // Action
+        if item.url.contains("segue") && !item.url.contains("//") {
             
             self.navigationController?.performSegue(withIdentifier: item.url, sender: self)
-        }
         
-        if (item.url.contains("//")) {
+        } else if item.url.contains("open") && !item.url.contains("//") {
+            
+            let nameStoryboard = item.url.substring(from: item.url.index(item.url.startIndex, offsetBy: 4))
+            
+            let storyboard = UIStoryboard(name: nameStoryboard, bundle: nil)
+            let controller = storyboard.instantiateViewController(withIdentifier: nameStoryboard)
+            self.present(controller, animated: true, completion: nil)
+            
+        } else if item.url.contains("//") {
             
             if (self.splitViewController?.isCollapsed)! {
                 
@@ -322,6 +353,25 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
                 let webVC = SwiftModalWebVC(urlString: item.url)
                 self.present(webVC, animated: true, completion: nil)
             }
+            
+        } else if item.url == "logout" {
+            
+            let alertController = UIAlertController(title: "", message: NSLocalizedString("_want_delete_", comment: ""), preferredStyle: .alert)
+            
+            let actionYes = UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (action:UIAlertAction) in
+                
+                let manageAccount = CCManageAccount()
+                manageAccount.delete(self.appDelegate.activeAccount)
+                manageAccount.addFoced()
+            }
+            
+            let actionNo = UIAlertAction(title: NSLocalizedString("_no_delete_", comment: ""), style: .default) { (action:UIAlertAction) in
+                print("You've pressed No button");
+            }
+            
+            alertController.addAction(actionYes)
+            alertController.addAction(actionNo)
+            self.present(alertController, animated: true, completion:nil)
         }
     }
     
