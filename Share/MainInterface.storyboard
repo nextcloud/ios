@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10117" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="yQd-yC-53O">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+    </dependencies>
+    <scenes>
+        <!--Navigation Controller-->
+        <scene sceneID="ueh-Ta-TQZ">
+            <objects>
+                <navigationController id="yQd-yC-53O" sceneMemberID="viewController">
+                    <nil key="simulatedStatusBarMetrics"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" translucent="NO" id="Qr0-yX-mDZ">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="j1y-V4-xli" kind="relationship" relationship="rootViewController" id="dCI-hj-EK1"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="SCm-q2-twq" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1057" y="-210"/>
+        </scene>
+        <!--Share View Controller-->
+        <scene sceneID="ceB-am-kn3">
+            <objects>
+                <viewController id="j1y-V4-xli" customClass="ShareViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="8bI-gs-bmD"/>
+                        <viewControllerLayoutGuide type="bottom" id="d5i-Ba-RvD"/>
+                    </layoutGuides>
+                    <view key="view" opaque="NO" contentMode="scaleToFill" id="wbc-yd-nQP">
+                        <rect key="frame" x="0.0" y="44" width="600" height="556"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <toolbar contentMode="scaleToFill" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gad-k1-Oh8">
+                                <rect key="frame" x="-4" y="512" width="604" height="44"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="44" id="rZR-ep-syc"/>
+                                </constraints>
+                                <items>
+                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="ski-H2-N9g"/>
+                                    <barButtonItem title="Item" id="Dpo-t5-Knx">
+                                        <connections>
+                                            <action selector="destinyFolderButtonTapped:" destination="j1y-V4-xli" id="vt9-MN-l6i"/>
+                                        </connections>
+                                    </barButtonItem>
+                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="eZh-WQ-5L1"/>
+                                </items>
+                            </toolbar>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="110" sectionHeaderHeight="40" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="6bg-ed-mfL">
+                                <rect key="frame" x="1" y="0.0" width="598" height="512"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <connections>
+                                    <outlet property="dataSource" destination="j1y-V4-xli" id="cqC-oT-nbV"/>
+                                    <outlet property="delegate" destination="j1y-V4-xli" id="WE4-Xb-ohZ"/>
+                                </connections>
+                            </tableView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="trailingMargin" secondItem="gad-k1-Oh8" secondAttribute="trailing" constant="-20" id="Ogc-Ss-sTA"/>
+                            <constraint firstItem="d5i-Ba-RvD" firstAttribute="top" secondItem="gad-k1-Oh8" secondAttribute="bottom" id="ZbI-py-8av"/>
+                            <constraint firstItem="6bg-ed-mfL" firstAttribute="leading" secondItem="wbc-yd-nQP" secondAttribute="leadingMargin" constant="-19" id="aoW-xE-g2g"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="6bg-ed-mfL" secondAttribute="trailing" constant="-19" id="fyA-0H-E9s"/>
+                            <constraint firstItem="d5i-Ba-RvD" firstAttribute="top" secondItem="gad-k1-Oh8" secondAttribute="bottom" id="n1F-h4-Uxd"/>
+                            <constraint firstItem="gad-k1-Oh8" firstAttribute="top" secondItem="6bg-ed-mfL" secondAttribute="bottom" id="qEs-cg-DMH"/>
+                            <constraint firstItem="gad-k1-Oh8" firstAttribute="leadingMargin" secondItem="wbc-yd-nQP" secondAttribute="leadingMargin" constant="-16" id="qnK-zI-jNY"/>
+                            <constraint firstItem="6bg-ed-mfL" firstAttribute="top" secondItem="8bI-gs-bmD" secondAttribute="bottom" id="sKS-dx-tS9"/>
+                            <constraint firstItem="gad-k1-Oh8" firstAttribute="top" secondItem="6bg-ed-mfL" secondAttribute="bottom" id="xUM-bt-esX"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="DwO-O2-rAX"/>
+                    <nil key="simulatedStatusBarMetrics"/>
+                    <connections>
+                        <outlet property="constraintTopTableView" destination="sKS-dx-tS9" id="Cps-IG-Eih"/>
+                        <outlet property="destinyFolderButton" destination="Dpo-t5-Knx" id="9p8-c0-Ocm"/>
+                        <outlet property="shareTable" destination="6bg-ed-mfL" id="tzz-SO-m9D"/>
+                        <outlet property="toolBar" destination="gad-k1-Oh8" id="gAK-GL-EcZ"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="CEy-Cv-SGf" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-290" y="-210"/>
+        </scene>
+    </scenes>
+</document>
