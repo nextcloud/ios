@@ -32,7 +32,7 @@
     NSUInteger totalSize;
     
     NSExtensionItem *inputItem;
-    CCMetadata *saveMetadataPlist;
+    tableMetadata *saveMetadataPlist;
     
     UIColor *barTintColor;
     UIColor *tintColor;
@@ -50,12 +50,8 @@
 
 -(void)viewDidLoad
 {
-    dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:[NCBrandOptions sharedInstance].capabilitiesGroups];
+    tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
     
-    [MagicalRecord setupCoreDataStackWithAutoMigratingSqliteStoreNamed:(id)[dirGroup URLByAppendingPathComponent:[appDatabase stringByAppendingPathComponent:@"cryptocloud"]]];
-    [MagicalRecord setLoggingLevel:MagicalRecordLoggingLevelOff];
-
-    TableAccount *recordAccount = [CCCoreData getActiveAccount];
     if (recordAccount == nil) {
         
         // close now
@@ -168,7 +164,7 @@
     UIBarButtonItem *rightButtonUpload, *rightButtonEncrypt, *leftButtonCancel;
 
     // Theming
-    tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesForAccount:self.activeAccount];
+    tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilites];
     if ([NCBrandOptions sharedInstance].use_themingColor && capabilities.themingColor.length > 0)
         [NCBrandColor sharedInstance].brand = [CCGraphics colorFromHexString:capabilities.themingColor];
 
@@ -311,8 +307,8 @@
 {
     [self.hud hideHud];
     
-    // remove file 
-    [CCCoreData deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, _activeAccount]];
+    // remove file
+    [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
     
     [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, fileID] error:nil];
     [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@.ico", _directoryUser, fileID] error:nil];
@@ -337,8 +333,8 @@
 {
     [self.hud hideHud];
     
-    CCMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, _activeAccount] context:nil];
-        
+    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
+    
     [self.filesName removeObject:metadata.fileNamePrint];
     [self.shareTable performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];
     

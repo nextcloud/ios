@@ -1511,7 +1511,7 @@
     if ([selector isEqualToString:selectorLoadModelView]) {
         
         metadata = [CCUtility insertInformationPlist:metadata directoryUser:app.directoryUser];
-        [[NCManageDatabase sharedInstance] updateMetadata:metadata activeUrl:app.activeUrl];
+        metadata = [[NCManageDatabase sharedInstance] updateMetadata:metadata activeUrl:app.activeUrl];
         
         // se è un template aggiorniamo anche nel FileSystem
         if ([metadata.type isEqualToString: k_metadataType_template]) {
@@ -1527,7 +1527,7 @@
     if ([selector isEqualToString:selectorLoadPlist]) {
         
         metadata = [CCUtility insertInformationPlist:metadata directoryUser:app.directoryUser];
-        [[NCManageDatabase sharedInstance] updateMetadata:metadata activeUrl:app.activeUrl];
+        metadata = [[NCManageDatabase sharedInstance] updateMetadata:metadata activeUrl:app.activeUrl];
         
         // se è un template aggiorniamo anche nel FileSystem
         if ([metadata.type isEqualToString: k_metadataType_template]) {
