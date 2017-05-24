@@ -30,7 +30,7 @@
 
 @interface CCManageAccount ()
 {
-    TableAccount *_tableAccount;
+    tableAccount *_tableAccount;
 
     CCLoginWeb *_loginWeb;
     CCLogin *_loginVC;
