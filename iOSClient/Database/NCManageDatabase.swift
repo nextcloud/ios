@@ -1013,8 +1013,8 @@ class NCManageDatabase: NSObject {
         }
         
         let realm = try! Realm()
-        let results = realm.objects(tableDirectory.self).filter("account = %@ AND directoryID = %@", tableAccount!.account, directoryID)
-        
+            let results = realm.objects(tableDirectory.self).filter("account = %@ AND directoryID = %@", tableAccount!.account, directoryID)
+            
         try! realm.write {
             
             if results.count > 0 {
@@ -1341,6 +1341,7 @@ class NCManageDatabase: NSObject {
         }
         
         try! realm.write {
+            
             realm.delete(results)
         }
     }
@@ -1609,7 +1610,9 @@ class NCManageDatabase: NSObject {
                 
                 if metadatas.count > 0 {
                     
-                    recordsPhotosCameraUpload.append(contentsOf: metadatas)
+                    for metadata in metadatas {
+                        recordsPhotosCameraUpload.append(tableMetadata.init(value: metadata))
+                    }
                 }
             }
         }

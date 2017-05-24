@@ -3236,10 +3236,18 @@
 		F7BAAD951ED5A63D00B7EAD4 /* Database */ = {
 			isa = PBXGroup;
 			children = (
-				F7BAADB21ED5A87C00B7EAD4 /* CCCoreData.h */,
-				F7BAADB31ED5A87C00B7EAD4 /* CCCoreData.m */,
+				F7BAAE001ED5B33200B7EAD4 /* CoreData */,
 				F7BAADB41ED5A87C00B7EAD4 /* NCDatabase.swift */,
 				F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */,
+			);
+			path = Database;
+			sourceTree = "<group>";
+		};
+		F7BAAE001ED5B33200B7EAD4 /* CoreData */ = {
+			isa = PBXGroup;
+			children = (
+				F7BAADB21ED5A87C00B7EAD4 /* CCCoreData.h */,
+				F7BAADB31ED5A87C00B7EAD4 /* CCCoreData.m */,
 				F7BAADB61ED5A87C00B7EAD4 /* TableAccount+CoreDataClass.h */,
 				F7BAADB71ED5A87C00B7EAD4 /* TableAccount+CoreDataClass.m */,
 				F7BAADB81ED5A87C00B7EAD4 /* TableAccount+CoreDataProperties.h */,
@@ -3257,7 +3265,7 @@
 				F7BAADC31ED5A87C00B7EAD4 /* TableLocalFile+CoreDataProperties.h */,
 				F7BAADC41ED5A87C00B7EAD4 /* TableLocalFile+CoreDataProperties.m */,
 			);
-			path = Database;
+			name = CoreData;
 			sourceTree = "<group>";
 		};
 		F7BE6E2A1D2D5C3B00106933 /* QuickActions */ = {
