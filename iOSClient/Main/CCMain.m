@@ -1510,7 +1510,6 @@
     // download and view a template
     if ([selector isEqualToString:selectorLoadModelView]) {
         
-        metadata = [[NCManageDatabase sharedInstance] copyTableMetadata:metadata];
         metadata = [CCUtility insertInformationPlist:metadata directoryUser:app.directoryUser];
         [[NCManageDatabase sharedInstance] updateMetadata:metadata activeUrl:app.activeUrl];
         
@@ -1527,7 +1526,6 @@
     //download file plist
     if ([selector isEqualToString:selectorLoadPlist]) {
         
-        metadata = [[NCManageDatabase sharedInstance] copyTableMetadata:metadata];
         metadata = [CCUtility insertInformationPlist:metadata directoryUser:app.directoryUser];
         [[NCManageDatabase sharedInstance] updateMetadata:metadata activeUrl:app.activeUrl];
         
@@ -1890,7 +1888,7 @@
         }
         
         // end test, insert in Database
-        [[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:app.activeUrl];
+        (void)[[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:app.activeUrl];
     }
     
     // read plist

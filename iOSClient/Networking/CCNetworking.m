@@ -878,7 +878,7 @@
     NSString *cameraFolderName = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderName];
     NSString *cameraFolderPath = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderPathWithActiveUrl:_activeUrl];
     
-    tableMetadata *metadata = [CCUtility insertFileSystemInMetadata:fileName directory:_directoryUser activeAccount:_activeAccount cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath];
+    __block tableMetadata *metadata = [CCUtility insertFileSystemInMetadata:fileName directory:_directoryUser activeAccount:_activeAccount cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath];
     
     //fileID
     NSString *uploadID =  [k_uploadSessionID stringByAppendingString:[CCUtility createRandomString:16]];
@@ -905,7 +905,7 @@
         metadata.typeFile = k_metadataTypeFile_unknown;
         
         //[CCCoreData addMetadata:metadata activeAccount:_activeAccount activeUrl:_activeUrl context:_context];
-        [[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:_activeUrl];
+        metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:_activeUrl];
         
         [self uploadURLSession:fileName fileNamePrint:metadata.fileNamePrint serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetLocalIdentifier:assetLocalIdentifier cryptated:cryptated onlyPlist:onlyPlist selector:selector];
     }
@@ -936,7 +936,7 @@
             metadata.typeFile = k_metadataTypeFile_template;
             
             //[CCCoreData addMetadata:metadata activeAccount:_activeAccount activeUrl:_activeUrl context:_context];
-            [[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:_activeUrl];
+            metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:_activeUrl];
             
             // DATA
             [self uploadURLSession:fileNameCrypto fileNamePrint:fileName serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetLocalIdentifier:assetLocalIdentifier cryptated:cryptated onlyPlist:onlyPlist selector:selector];
@@ -1042,7 +1042,7 @@
                     if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image] || [metadata.typeFile isEqualToString: k_metadataTypeFile_video])
                         [[CCCrypto sharedManager] addPlistImage:[NSString stringWithFormat:@"%@/%@", _directoryUser, [fileNameCrypto stringByAppendingString:@".plist"]] fileNamePathImage:[NSTemporaryDirectory() stringByAppendingString:uploadID]];
                     
-                    [[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:_activeUrl];
+                    metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:_activeUrl];
                     
                     // DATA
                     [self uploadURLSession:fileNameCrypto fileNamePrint:fileName serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetLocalIdentifier:assetLocalIdentifier cryptated:cryptated onlyPlist:onlyPlist selector:selector];
@@ -1072,7 +1072,7 @@
                     [[CCCrypto sharedManager] addPlistImage:[NSString stringWithFormat:@"%@/%@", _directoryUser, [fileNameCrypto stringByAppendingString:@".plist"]] fileNamePathImage:[NSTemporaryDirectory() stringByAppendingString:uploadID]];
                 
                 //[CCCoreData addMetadata:metadata activeAccount:_activeAccount activeUrl:_activeUrl context:_context];
-                [[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:_activeUrl];
+                metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:_activeUrl];
                 
                 // DATA
                 [self uploadURLSession:fileNameCrypto fileNamePrint:fileName serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetLocalIdentifier:assetLocalIdentifier cryptated:cryptated onlyPlist:onlyPlist selector:selector];
@@ -1141,7 +1141,7 @@
                 [CCGraphics createNewImageFrom:metadata.fileNamePrint directoryUser:_directoryUser fileNameTo:metadata.fileID fileNamePrint:metadata.fileNamePrint size:@"m" imageForUpload:YES typeFile:metadata.typeFile writePreview:YES optimizedFileName:NO];
                 
                 //[CCCoreData addMetadata:metadata activeAccount:_activeAccount activeUrl:_activeUrl context:_context];
-                [[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:_activeUrl];
+                metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:_activeUrl];
                 
                 [self uploadURLSession:fileName fileNamePrint:fileName serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetLocalIdentifier:assetLocalIdentifier cryptated:cryptated onlyPlist:onlyPlist selector:selector];
             }];
@@ -1165,7 +1165,7 @@
             [CCGraphics createNewImageFrom:metadata.fileNamePrint directoryUser:_directoryUser fileNameTo:metadata.fileID fileNamePrint:metadata.fileNamePrint size:@"m" imageForUpload:YES typeFile:metadata.typeFile writePreview:YES optimizedFileName:NO];
 #endif
             //[CCCoreData addMetadata:metadata activeAccount:_activeAccount activeUrl:_activeUrl context:_context];
-            [[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:_activeUrl];
+            metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:_activeUrl];
             
             [self uploadURLSession:fileName fileNamePrint:fileName serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetLocalIdentifier:assetLocalIdentifier cryptated:cryptated onlyPlist:onlyPlist selector:selector];
         }
@@ -1402,7 +1402,6 @@
         // copy ico in new fileID
         [CCUtility copyFileAtPath:[NSString stringWithFormat:@"%@/%@.ico", _directoryUser, sessionID] toPath:[NSString stringWithFormat:@"%@/%@.ico", _directoryUser, fileID]];
         
-        metadata = [[NCManageDatabase sharedInstance] copyTableMetadata:metadata];
         metadata.fileID = fileID;
         metadata.rev = rev;
         metadata.date = date;
@@ -1411,14 +1410,13 @@
         if ([CCUtility isFileNotCryptated:fileName])
             metadata.sessionTaskIdentifier = k_taskIdentifierDone;
         
-        [[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:_activeUrl];
+        metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:_activeUrl];
         [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", sessionID]];
     }
     
     // CRYPTO
     if ([CCUtility isCryptoString:fileName]) {
         
-        metadata = [[NCManageDatabase sharedInstance] copyTableMetadata:metadata];
         metadata.sessionTaskIdentifier = k_taskIdentifierDone;
         
         [[NCManageDatabase sharedInstance] updateMetadata:metadata activeUrl:_activeUrl];
@@ -1427,7 +1425,6 @@
     // ALL TASK DONE (PLAIN/CRYPTO)
     if (metadata.sessionTaskIdentifier == k_taskIdentifierDone && metadata.sessionTaskIdentifierPlist == k_taskIdentifierDone) {
         
-        metadata = [[NCManageDatabase sharedInstance] copyTableMetadata:metadata];
         
 #ifndef EXTENSION
         if (sessionID)

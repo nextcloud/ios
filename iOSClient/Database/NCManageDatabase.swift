@@ -1298,11 +1298,11 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Metadata
     
-    func addMetadata(_ metadata: tableMetadata, activeUrl: String) {
+    func addMetadata(_ metadata: tableMetadata, activeUrl: String) -> tableMetadata {
         
         let tableAccount = self.getAccountActive()
         if tableAccount == nil {
-            return
+            return metadata
         }
         
         let cameraFolderName = self.getAccountCameraUploadFolderName()
@@ -1322,6 +1322,8 @@ class NCManageDatabase: NSObject {
         }
         
         self.setDateReadDirectory(directoryID: metadata.directoryID)
+        
+        return tableMetadata.init(value: metadata)
     }
     
     func deleteMetadata(predicate: NSPredicate) {
@@ -1624,45 +1626,6 @@ class NCManageDatabase: NSObject {
             
             return nil
         }
-    }
-    
-    func copyTableMetadata(_ metadata: tableMetadata) -> tableMetadata {
-        
-        let copyMetadata = tableMetadata()
-        
-        copyMetadata.account = metadata.account
-        copyMetadata.assetLocalIdentifier = metadata.assetLocalIdentifier
-        copyMetadata.cryptated = metadata.cryptated
-        copyMetadata.date = metadata.date
-        copyMetadata.directory = metadata.directory
-        copyMetadata.directoryID = metadata.directoryID
-        copyMetadata.errorPasscode = metadata.errorPasscode
-        copyMetadata.fileID = metadata.fileID
-        copyMetadata.favorite = metadata.favorite
-        copyMetadata.fileName = metadata.fileName
-        copyMetadata.fileNameData = metadata.fileNameData
-        copyMetadata.fileNamePrint = metadata.fileNamePrint
-        copyMetadata.iconName = metadata.iconName
-        copyMetadata.model = metadata.model
-        copyMetadata.nameCurrentDevice = metadata.nameCurrentDevice
-        copyMetadata.permissions = metadata.permissions
-        copyMetadata.protocolCrypto = metadata.protocolCrypto
-        copyMetadata.rev = metadata.rev
-        copyMetadata.session = metadata.session
-        copyMetadata.sessionError = metadata.sessionError
-        copyMetadata.sessionID = metadata.sessionID
-        copyMetadata.sessionSelector = metadata.sessionSelector
-        copyMetadata.sessionSelectorPost = metadata.sessionSelectorPost
-        copyMetadata.sessionTaskIdentifier = metadata.sessionTaskIdentifier
-        copyMetadata.sessionTaskIdentifierPlist = metadata.sessionTaskIdentifierPlist
-        copyMetadata.size = metadata.size
-        copyMetadata.thumbnailExists = metadata.thumbnailExists
-        copyMetadata.title = metadata.title
-        copyMetadata.type = metadata.type
-        copyMetadata.typeFile = metadata.typeFile
-        copyMetadata.uuid = metadata.uuid
-        
-        return copyMetadata
     }
     
     func convertMetadataToUnmanagedMetadata(_ metadatas: Results<tableMetadata>) -> [tableMetadata] {

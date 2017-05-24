@@ -245,7 +245,6 @@
 
         tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
         
-        metadata = [[NCManageDatabase sharedInstance] copyTableMetadata:metadata];
         metadata = [CCUtility insertInformationPlist:metadata directoryUser:directoryUser];
         [[NCManageDatabase sharedInstance] updateMetadata:metadata activeUrl:activeUrl];
         
@@ -300,7 +299,7 @@
             if (isCryptoComplete == NO) continue;
         }
         
-        [[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:activeUrl];
+        (void)[[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:activeUrl];
         
         // if plist do not exists, download it !
         if ([CCUtility isCryptoPlistString:metadata.fileName] && [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, metadata.fileName]] == NO) {

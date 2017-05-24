@@ -323,8 +323,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
             }
             
             // Add record
-            //CCCoreData.add(metadata, activeAccount: activeAccount, activeUrl: activeUrl, context: nil)
-            NCManageDatabase.sharedInstance.addMetadata(metadata, activeUrl: activeUrl!)
+            _ = NCManageDatabase.sharedInstance.addMetadata(metadata, activeUrl: activeUrl!)
             
             // if plist do not exists, download it
             if CCUtility.isCryptoPlistString(metadata.fileName) && FileManager.default.fileExists(atPath: "\(directoryUser!)/\(metadata.fileName)") == false {
@@ -461,8 +460,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
             
         case selectorLoadPlist :
             
-            var metadata = NCManageDatabase.sharedInstance.copyTableMetadata(self.metadata!)
-            metadata = CCUtility.insertInformationPlist(metadata, directoryUser: directoryUser)
+            let metadata = CCUtility.insertInformationPlist(self.metadata, directoryUser: directoryUser)!
             
             NCManageDatabase.sharedInstance.updateMetadata(metadata, activeUrl: activeUrl!)
             

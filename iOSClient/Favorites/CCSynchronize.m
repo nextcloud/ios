@@ -110,7 +110,7 @@
 
         // Reinsert
         [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@ AND session = ''", metadata.fileID]];
-        [[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:app.activeUrl];
+        (void)[[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:app.activeUrl];
         
         // insert for test NOT favorite
         [filesEtag addObject:metadata.fileID];
@@ -274,7 +274,7 @@
                 tableMetadata *result = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadata.fileID]];
 
                 if (!result)
-                    [[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:app.activeUrl];
+                    (void)[[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:app.activeUrl];
               
                 // Load if different fileID
                 
@@ -313,7 +313,7 @@
                     tableMetadata *result = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadata.fileID]];
 
                     if (!result)
-                        [[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:metadataNet.serverUrl];
+                        (void)[[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:metadataNet.serverUrl];
                 }
             }
         }
@@ -456,7 +456,7 @@
             [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:serverUrl directoryID:nil];
         }
             
-        [[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:serverUrl];
+        (void)[[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:serverUrl];
         
         CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
             
