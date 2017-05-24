@@ -339,7 +339,7 @@
     // Execute : now
     
     NSLog(@"[LOG] Update Folder Photo");
-    NSString *folderCameraUpload = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderPathWithActiveUrl:_activeUrl];
+    NSString *folderCameraUpload = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderPathAndNameWithActiveUrl:_activeUrl];
     if ([folderCameraUpload length] > 0)
         [[CCSynchronize sharedSynchronize] readFolderServerUrl:folderCameraUpload directoryID:[[NCManageDatabase sharedInstance] getDirectoryID:folderCameraUpload] selector:selectorReadFolder];
 

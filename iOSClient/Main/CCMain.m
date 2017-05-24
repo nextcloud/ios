@@ -1945,7 +1945,7 @@
     BOOL isDirectoryOutOfDate = true;
     tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"serverUrl = %@", serverUrl]];
     
-    if (directory) {
+    if (directory.dateReadDirectory) {
     
         // Is Directory Out Of Date ?
         NSDateComponents *dateComponents = [NSDateComponents new];

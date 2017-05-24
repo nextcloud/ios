@@ -835,30 +835,29 @@ class NCManageDatabase: NSObject {
         
         let results = realm.objects(tableDirectory.self).filter("account = %@ AND serverUrl BEGINSWITH %@", tableAccount!.account, serverUrl)
         
+        for result in results {
+            
+            // delete metadata
+            self.deleteMetadata(predicate: NSPredicate(format: "directoryID = %@", result.directoryID))
+            
+            // delete local file
+            self.deleteLocalFile(predicate: NSPredicate(format: "fileID = %@", result.fileID))
+            
+            /*
+             // remove if in session
+             if ([recordMetadata.session length] >0) {
+             if (recordMetadata.sessionTaskIdentifier >= 0)
+             [[CCNetworking sharedNetworking] settingSession:recordMetadata.session sessionTaskIdentifier:[recordMetadata.sessionTaskIdentifier integerValue] taskStatus: k_taskStatusCancel];
+             
+             if (recordMetadata.sessionTaskIdentifierPlist >= 0)
+             [[CCNetworking sharedNetworking] settingSession:recordMetadata.session sessionTaskIdentifier:[recordMetadata.sessionTaskIdentifierPlist integerValue] taskStatus: k_taskStatusCancel];
+             
+             }
+             */
+        }
+        
+        // Delete table Dirrectory
         try! realm.write {
-            
-            for result in results {
-                
-                // delete metadata
-                self.deleteMetadata(predicate: NSPredicate(format: "directoryID = %@", result.directoryID))
-                
-                // delete local file
-                self.deleteLocalFile(predicate: NSPredicate(format: "fileID = %@", result.fileID))
-                
-                /*
-                 // remove if in session
-                 if ([recordMetadata.session length] >0) {
-                 if (recordMetadata.sessionTaskIdentifier >= 0)
-                 [[CCNetworking sharedNetworking] settingSession:recordMetadata.session sessionTaskIdentifier:[recordMetadata.sessionTaskIdentifier integerValue] taskStatus: k_taskStatusCancel];
-                 
-                 if (recordMetadata.sessionTaskIdentifierPlist >= 0)
-                 [[CCNetworking sharedNetworking] settingSession:recordMetadata.session sessionTaskIdentifier:[recordMetadata.sessionTaskIdentifierPlist integerValue] taskStatus: k_taskStatusCancel];
-                 
-                 }
-                 */
-                
-            }
-            
             realm.delete(results)
         }
     }
@@ -1336,13 +1335,13 @@ class NCManageDatabase: NSObject {
         
         let results = realm.objects(tableMetadata.self).filter(predicate)
         
-        for result in results {
-            self.setDateReadDirectory(directoryID: result.directoryID)
-        }
-        
         try! realm.write {
             
             realm.delete(results)
+        }
+        
+        for result in results {
+            self.setDateReadDirectory(directoryID: result.directoryID)
         }
     }
     
@@ -1442,9 +1441,9 @@ class NCManageDatabase: NSObject {
             try! realm.write {
                 results[0].favorite = favorite
             }
-            
-            self.setDateReadDirectory(directoryID: results[0].directoryID)
         }
+        
+        self.setDateReadDirectory(directoryID: results[0].directoryID)
     }
     
     func getMetadata(predicate: NSPredicate) -> tableMetadata? {
@@ -1489,7 +1488,7 @@ class NCManageDatabase: NSObject {
         
         if (results.count > 0) {
             
-            return Array(convertMetadataToUnmanagedMetadata(results)!)
+            return Array(convertMetadataToUnmanagedMetadata(results))
             
         } else {
             
@@ -1666,17 +1665,12 @@ class NCManageDatabase: NSObject {
         return copyMetadata
     }
     
-    func convertMetadataToUnmanagedMetadata(_ metadatas: Results<tableMetadata>?) -> [tableMetadata]? {
+    func convertMetadataToUnmanagedMetadata(_ metadatas: Results<tableMetadata>) -> [tableMetadata] {
         
         var unmanageMetadatas = [tableMetadata]()
         
-        if metadatas == nil {
-            return nil
-        } else {
-            
-            for metadata in metadatas! {
-                unmanageMetadatas.append(tableMetadata.init(value: metadata))
-            }
+        for metadata in metadatas {
+            unmanageMetadatas.append(tableMetadata.init(value: metadata))
         }
         
         return unmanageMetadatas

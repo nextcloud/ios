@@ -159,6 +159,7 @@
 
 - (void)listingFavoritesFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
+    NSLog(@"Read Favorites Failure");
 }
 
 #pragma --------------------------------------------------------------------------------------------
