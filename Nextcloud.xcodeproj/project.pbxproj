@@ -552,6 +552,9 @@
 		F7B1FBC91E72E3D1001781FE /* SwiftWebVCActivityChrome.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B1FBC21E72E3D1001781FE /* SwiftWebVCActivityChrome.swift */; };
 		F7B1FBCA1E72E3D1001781FE /* SwiftWebVCActivitySafari.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B1FBC31E72E3D1001781FE /* SwiftWebVCActivitySafari.swift */; };
 		F7B3A4EE1E97818A000DACE8 /* CCLoginWeb.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B3A4ED1E97818A000DACE8 /* CCLoginWeb.swift */; };
+		F7BAAD971ED5A63D00B7EAD4 /* NCManageDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAAD961ED5A63D00B7EAD4 /* NCManageDatabase.swift */; };
+		F7BAAD981ED5A63D00B7EAD4 /* NCManageDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAAD961ED5A63D00B7EAD4 /* NCManageDatabase.swift */; };
+		F7BAAD991ED5A63D00B7EAD4 /* NCManageDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAAD961ED5A63D00B7EAD4 /* NCManageDatabase.swift */; };
 		F7BB14961D5B62C000ECEE68 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63061D5B3467004E2AA5 /* libcrypto.a */; };
 		F7BB14971D5B62C000ECEE68 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63071D5B3467004E2AA5 /* libssl.a */; };
 		F7BE6E2F1D2D5C3B00106933 /* CCQuickActions.m in Sources */ = {isa = PBXBuildFile; fileRef = F7BE6E2C1D2D5C3B00106933 /* CCQuickActions.m */; };
@@ -1605,6 +1608,7 @@
 		F7B1FBC31E72E3D1001781FE /* SwiftWebVCActivitySafari.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftWebVCActivitySafari.swift; sourceTree = "<group>"; };
 		F7B3A4ED1E97818A000DACE8 /* CCLoginWeb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CCLoginWeb.swift; sourceTree = "<group>"; };
 		F7B61E861DC13C20009E938F /* MagicalRecord.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MagicalRecord.xcodeproj; path = "Libraries external/MagicalRecord/MagicalRecord.xcodeproj"; sourceTree = SOURCE_ROOT; };
+		F7BAAD961ED5A63D00B7EAD4 /* NCManageDatabase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCManageDatabase.swift; sourceTree = "<group>"; };
 		F7BE6E2B1D2D5C3B00106933 /* CCQuickActions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCQuickActions.h; sourceTree = "<group>"; };
 		F7BE6E2C1D2D5C3B00106933 /* CCQuickActions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCQuickActions.m; sourceTree = "<group>"; };
 		F7BF1B3F1D51E893000854F6 /* CCLogin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCLogin.h; sourceTree = "<group>"; };
@@ -3196,6 +3200,14 @@
 			path = ../../Database;
 			sourceTree = "<group>";
 		};
+		F7BAAD951ED5A63D00B7EAD4 /* Database */ = {
+			isa = PBXGroup;
+			children = (
+				F7BAAD961ED5A63D00B7EAD4 /* NCManageDatabase.swift */,
+			);
+			path = Database;
+			sourceTree = "<group>";
+		};
 		F7BE6E2A1D2D5C3B00106933 /* QuickActions */ = {
 			isa = PBXGroup;
 			children = (
@@ -3504,6 +3516,7 @@
 				F70022561EC4C9100080073F /* OCCommunicationLib */,
 				F7A582D71A24DAB500E903D7 /* AppDelegate.h */,
 				F7A582D61A24DAB500E903D7 /* AppDelegate.m */,
+				F7BAAD951ED5A63D00B7EAD4 /* Database */,
 				F7C8C1901B482CEA0048180E /* CCGlobal.h */,
 				F7C8C1911B482CEA0048180E /* CCGlobal.m */,
 				F73CB5771ED46807005F2A5A /* NCBridgeSwift.h */,
@@ -4126,6 +4139,7 @@
 				F71459C31D12E3B700CAFEEC /* UIImage+Filtering.m in Sources */,
 				F77EB6281EC08036003F814F /* CCExifGeo.m in Sources */,
 				F70022A21EC4C9100080073F /* AFHTTPSessionManager.m in Sources */,
+				F7BAAD981ED5A63D00B7EAD4 /* NCManageDatabase.swift in Sources */,
 				F70022A51EC4C9100080073F /* AFNetworkReachabilityManager.m in Sources */,
 				F73CC0731E813DFF006E3047 /* BKPasscodeLockScreenManager.m in Sources */,
 				F73CC06A1E813DFF006E3047 /* BKPasscodeDummyViewController.m in Sources */,
@@ -4234,6 +4248,7 @@
 				F70022EB1EC4C9100080073F /* OCXMLShareByLinkParser.m in Sources */,
 				F743447B1E127EAC001CC831 /* CCUtility.m in Sources */,
 				F70022A91EC4C9100080073F /* AFSecurityPolicy.m in Sources */,
+				F7BAAD991ED5A63D00B7EAD4 /* NCManageDatabase.swift in Sources */,
 				F70022BE1EC4C9100080073F /* OCExternalSites.m in Sources */,
 				F77EB6291EC08037003F814F /* CCExifGeo.m in Sources */,
 				F70022CD1EC4C9100080073F /* OCSharedDto.m in Sources */,
@@ -4444,6 +4459,7 @@
 				F7F06E8F1DBFACC600099AE9 /* NSDateFormatter+CTAssetsPickerController.m in Sources */,
 				F7F6AC4E1E525AD300E8EB45 /* CCManageCryptoCloud.m in Sources */,
 				F77B0E731D118A16002130FE /* PPImageScrollingTableViewCell.m in Sources */,
+				F7BAAD971ED5A63D00B7EAD4 /* NCManageDatabase.swift in Sources */,
 				F762CBBD1EACB89C00B38484 /* LMMediaItem.m in Sources */,
 				F7659A2E1DC0B72F004860C4 /* EARestrictedScrollView.m in Sources */,
 				F77B0E741D118A16002130FE /* CCBancomat.m in Sources */,
