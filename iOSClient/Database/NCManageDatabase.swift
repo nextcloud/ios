@@ -1369,7 +1369,7 @@ class NCManageDatabase: NSObject {
         self.setDateReadDirectory(directoryID: directoryIDTo)
     }
     
-    func updateMetadata(_ metadata: tableMetadata, activeUrl: String) {
+    func updateMetadata(_ metadata: tableMetadata, activeUrl: String) -> tableMetadata {
         
         let cameraFolderName = self.getAccountCameraUploadFolderName()
         let cameraFolderPath = self.getAccountCameraUploadFolderPath(activeUrl: activeUrl)
@@ -1384,6 +1384,8 @@ class NCManageDatabase: NSObject {
         }
         
         self.setDateReadDirectory(directoryID: metadata.directoryID)
+        
+        return tableMetadata.init(value: metadata)
     }
     
     func setMetadataSession(_ session: String?, sessionError: String?, sessionSelector: String?, sessionSelectorPost: String?, sessionTaskIdentifier: Int, sessionTaskIdentifierPlist: Int, predicate: NSPredicate) {

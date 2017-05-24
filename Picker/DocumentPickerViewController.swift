@@ -460,9 +460,9 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
             
         case selectorLoadPlist :
             
-            let metadata = CCUtility.insertInformationPlist(self.metadata, directoryUser: directoryUser)!
+            var metadata = CCUtility.insertInformationPlist(self.metadata, directoryUser: directoryUser)!
             
-            NCManageDatabase.sharedInstance.updateMetadata(metadata, activeUrl: activeUrl!)
+            metadata = NCManageDatabase.sharedInstance.updateMetadata(metadata, activeUrl: activeUrl!)
             
             if metadata.type == k_metadataType_template {
                 NCManageDatabase.sharedInstance.setLocalFile(fileID: metadata.fileID, date: metadata.date, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, fileNamePrint: metadata.fileNamePrint)

@@ -1419,7 +1419,7 @@
         
         metadata.sessionTaskIdentifier = k_taskIdentifierDone;
         
-        [[NCManageDatabase sharedInstance] updateMetadata:metadata activeUrl:_activeUrl];
+        metadata = [[NCManageDatabase sharedInstance] updateMetadata:metadata activeUrl:_activeUrl];
     }
     
     // ALL TASK DONE (PLAIN/CRYPTO)
@@ -1437,7 +1437,7 @@
         metadata.sessionError = @"";
         metadata.sessionID = @"";
         
-        [[NCManageDatabase sharedInstance] updateMetadata:metadata activeUrl:_activeUrl];
+        metadata = [[NCManageDatabase sharedInstance] updateMetadata:metadata activeUrl:_activeUrl];
         
         // rename file sessionID -> fileID
         [CCUtility moveFileAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, sessionID]  toPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadata.fileID]];
@@ -1598,17 +1598,14 @@
     
     NSLog(@"[LOG] Verify upload file in progress n. %lu", (unsigned long)[dataSource count]);
     
-    for (tableMetadata *record in dataSource) {
+    for (tableMetadata *metadata in dataSource) {
         
-        __block NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:record.directoryID];
+        __block NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
         
-        NSURLSession *session = [self getSessionfromSessionDescription:record.session];
-        
-        id tradeReference = [[NCManageDatabase sharedInstance] getThreadConfined:record];
-        
+        NSURLSession *session = [self getSessionfromSessionDescription:metadata.session];
+                
         [session getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
             
-            tableMetadata *metadata = (tableMetadata *)[[NCManageDatabase sharedInstance] putThreadConfined:tradeReference];
             BOOL findTask = NO;
             BOOL findTaskPlist = NO;
             
@@ -1634,7 +1631,7 @@
         }];
         
         // Notification change session
-        NSArray *object = [[NSArray alloc] initWithObjects:session, record, nil];
+        NSArray *object = [[NSArray alloc] initWithObjects:session, metadata, nil];
         [[NSNotificationCenter defaultCenter] postNotificationName:k_networkingSessionNotification object:object];
     }
     
