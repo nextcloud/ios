@@ -1337,13 +1337,13 @@ class NCManageDatabase: NSObject {
         
         let results = realm.objects(tableMetadata.self).filter(predicate)
         
+        for result in results {
+            self.setDateReadDirectory(directoryID: result.directoryID)
+        }
+        
         try! realm.write {
             
             realm.delete(results)
-        }
-        
-        for result in results {
-            self.setDateReadDirectory(directoryID: result.directoryID)
         }
     }
     
