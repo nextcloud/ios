@@ -3192,14 +3192,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		F7BAAD231ED5A33900B7EAD4 /* Database */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Database;
-			path = ../../Database;
-			sourceTree = "<group>";
-		};
 		F7BAAD951ED5A63D00B7EAD4 /* Database */ = {
 			isa = PBXGroup;
 			children = (
@@ -3527,7 +3519,6 @@
 				F720E02A1E48C74C001A4B9E /* Actions */,
 				F7A321621E9E37960069AD1B /* Activity */,
 				F7ECBA6B1E239DCD003E6328 /* Create */,
-				F7BAAD231ED5A33900B7EAD4 /* Database */,
 				F7A3214D1E9E2A070069AD1B /* Favorites */,
 				F744BE911BEBB2EE004FFF66 /* Intro */,
 				F7F54CAC1E5B143100E19C62 /* Library */,
