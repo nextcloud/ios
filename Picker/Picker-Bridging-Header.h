@@ -1,5 +1,9 @@
 //
-//  Use this file to import your target's public headers that you would like to expose to Swift.
+//  Picker-Bridging-Header.h
+//  Nextcloud
+//
+//  Created by Marino Faggiana on 24/05/17.
+//  Copyright © 2017 TWS. All rights reserved.
 //
 
 #import "CCNetworking.h"

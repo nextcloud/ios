@@ -16,3 +16,8 @@
 #import "OCSharedDto.h"
 #import "OCNotifications.h"
 #import "OCNotificationsAction.h"
+
+#import "TableAccount+CoreDataClass.h"
+#import "TableCertificates+CoreDataClass.h"
+#import "TableDirectory+CoreDataClass.h"
+#import "TableLocalFile+CoreDataClass.h"
