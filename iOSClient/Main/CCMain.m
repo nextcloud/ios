@@ -3406,10 +3406,10 @@
         image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"MenuOrdeyByDate"] color:[NCBrandColor sharedInstance].brand];
         titoloNuovo = NSLocalizedString(@"_order_by_date_", nil);
         titoloAttuale = NSLocalizedString(@"_current_order_name_", nil);
-        nuovoOrdinamento = @"fileDate";
+        nuovoOrdinamento = @"date";
     }
     
-    if ([ordinamento isEqualToString:@"fileDate"]) {
+    if ([ordinamento isEqualToString:@"date"]) {
         
         image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"MenuOrderByFileName"] color:[NCBrandColor sharedInstance].brand];
         titoloNuovo = NSLocalizedString(@"_order_by_name_", nil);
