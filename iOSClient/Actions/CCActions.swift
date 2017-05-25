@@ -102,6 +102,7 @@ class CCActions: NSObject {
             
             metadataNet.action = actionDeleteFileDirectory
             metadataNet.delegate = delegate
+            metadataNet.directoryID = metadata.directoryID
             metadataNet.fileID = metadata.fileID
             metadataNet.fileNamePrint = metadata.fileNamePrint
             metadataNet.serverUrl = serverUrl
@@ -122,6 +123,7 @@ class CCActions: NSObject {
             
             metadataNet.action = actionDeleteFileDirectory
             metadataNet.delegate = delegate
+            metadataNet.directoryID = metadata.directoryID
             metadataNet.fileID = metadata.fileID
             metadataNet.fileName = metadata.fileName
             metadataNet.fileNamePrint = metadata.fileNamePrint

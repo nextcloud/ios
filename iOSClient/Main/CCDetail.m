@@ -33,6 +33,8 @@
 
 @interface CCDetail () <CCActionsDeleteDelegate>
 {
+    AppDelegate *appDelegate;
+    
     UIToolbar *_toolbar;
     
     UIBarButtonItem *_buttonAction;
@@ -78,6 +80,8 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(insertGeocoderLocation:) name:@"insertGeocoderLocation" object:nil];
 
@@ -128,8 +132,8 @@
 - (void)removeAllView
 {
     // Audio
-    if (app.player)
-        [app.player removeFromSuperview];
+    if (appDelegate.player)
+        [appDelegate.player removeFromSuperview];
         
     // Document
     if (_webView) {
@@ -278,20 +282,20 @@
         [[NSFileManager defaultManager] linkItemAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, self.metadataDetail.fileID] toPath:fileName error:nil];
     }
     
-    app.player.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height - TOOLBAR_HEIGHT);
-    app.player.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    appDelegate.player.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height - TOOLBAR_HEIGHT);
+    appDelegate.player.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
-    app.player.nextButton.hidden = true;
-    app.player.previousButton.hidden = true;
-    app.player.fullscreenButton_.hidden = true;
+    appDelegate.player.nextButton.hidden = true;
+    appDelegate.player.previousButton.hidden = true;
+    appDelegate.player.fullscreenButton_.hidden = true;
     
     LMMediaItem *item = [[LMMediaItem alloc] initWithInfo:@{LMMediaItemInfoURLKey:[NSURL fileURLWithPath:fileName], LMMediaItemInfoContentTypeKey:@(LMMediaItemContentTypeVideo)}];
     item.title = self.metadataDetail.fileNamePrint;
     item.artist = [NCBrandOptions sharedInstance].brand;
     
-    [app.player.mediaPlayer removeAllMediaInQueue];
-    [app.player.mediaPlayer addMedia:item];
-    [app.player.mediaPlayer play];
+    [appDelegate.player.mediaPlayer removeAllMediaInQueue];
+    [appDelegate.player.mediaPlayer addMedia:item];
+    [appDelegate.player.mediaPlayer play];
     
     // Info
     NSMutableDictionary *songInfo = [[NSMutableDictionary alloc] init];
@@ -299,7 +303,7 @@
     [songInfo setObject:app.player.mediaPlayer.nowPlayingItem.artist forKey:MPMediaItemPropertyArtist];
     [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:songInfo];
     
-    [self.view addSubview:app.player];
+    [self.view addSubview:appDelegate.player];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -982,18 +986,15 @@
     // If removed document (web) or PDF close
     if (_webView || _readerPDFViewController)
         [self removeAllView];
-    
-    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadataNet.fileID]];
-    
+        
     // if a message for a directory of these
-    if (![_dataSourceDirectoryID containsObject:metadata.directoryID])
+    if (![_dataSourceDirectoryID containsObject:metadataNet.directoryID])
         return;
     
     // if we are not in browserPhoto and it's removed photo/video in preview then "< Back"
-    if (!self.photoBrowser && [self.metadataDetail.fileID isEqualToString:metadata.fileID]) {
+    if (!self.photoBrowser && [self.metadataDetail.fileID isEqualToString:metadataNet.fileID]) {
         
-        if ([metadata.typeFile isEqualToString: k_metadataTypeFile_audio])
-            [app.player.mediaPlayer stop];
+        [app.player.mediaPlayer stop];
         
         NSArray *viewsToRemove = [self.view subviews];
         for (id element in viewsToRemove) {
@@ -1014,7 +1015,7 @@
             tableMetadata *metadata = [self.dataSourceImagesVideos objectAtIndex:index];
         
             // ricerca index
-            if ([metadata.fileID isEqualToString:metadata.fileID]) {
+            if ([metadata.fileID isEqualToString:metadataNet.fileID]) {
             
                 [self.dataSourceImagesVideos removeObjectAtIndex:index];
             
