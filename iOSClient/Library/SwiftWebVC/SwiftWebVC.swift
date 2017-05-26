@@ -323,6 +323,25 @@ extension SwiftWebVC: WKNavigationDelegate {
         
     }
     
+    public func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+        
+        if #available(iOS 9.0, *) {
+            decisionHandler(.allow)
+        } else {
+            
+            let userAgent : String = CCUtility.getUserAgent()
+
+            if (navigationAction.request.value(forHTTPHeaderField: "User-Agent") == userAgent) {
+                decisionHandler(.allow)
+            } else {
+                let newRequest : NSMutableURLRequest = navigationAction.request as! NSMutableURLRequest
+                newRequest.setValue(userAgent, forHTTPHeaderField: "User-Agent")
+                decisionHandler(.cancel)
+                webView.load(newRequest as URLRequest)
+            }
+        }
+    }
+    
     public func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
         self.delegate?.didFinishLoading(success: false)
         self.delegate?.didFinishLoading(success: false, url: webView.url!)

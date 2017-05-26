@@ -55,6 +55,8 @@
     [iRate sharedInstance].usesUntilPrompt = 10;
     [iRate sharedInstance].promptForNewVersionIfUserRated = true;
     
+    [[NSUserDefaults standardUserDefaults] registerDefaults:@{@"UserAgent": [CCUtility getUserAgent]}];
+
     //enable preview mode
     //[iRate sharedInstance].previewMode = YES;
 }

@@ -1155,13 +1155,6 @@
         
         // Select type of session
         
-        /*
-        if (assetMediaType == PHAssetMediaTypeImage && [CCCoreData getCameraUploadWWanPhotoActiveAccount:app.activeAccount] == NO) session = k_upload_session;
-        if (assetMediaType == PHAssetMediaTypeVideo && [CCCoreData getCameraUploadWWanVideoActiveAccount:app.activeAccount] == NO) session = k_upload_session;
-        if (assetMediaType == PHAssetMediaTypeImage && [CCCoreData getCameraUploadWWanPhotoActiveAccount:app.activeAccount]) session = k_upload_session_wwan;
-        if (assetMediaType == PHAssetMediaTypeVideo && [CCCoreData getCameraUploadWWanVideoActiveAccount:app.activeAccount]) session = k_upload_session_wwan;
-         */
-        
         if (assetMediaType == PHAssetMediaTypeImage && tableAccount.cameraUploadWWAnPhoto == NO) session = k_upload_session;
         if (assetMediaType == PHAssetMediaTypeVideo && tableAccount.cameraUploadWWAnVideo == NO) session = k_upload_session;
         if (assetMediaType == PHAssetMediaTypeImage && tableAccount.cameraUploadWWAnPhoto) session = k_upload_session_wwan;
