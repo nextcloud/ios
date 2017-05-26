@@ -335,6 +335,14 @@
 		F7659A6C1DC0B760004860C4 /* PSTGridLayoutItem.m in Sources */ = {isa = PBXBuildFile; fileRef = F7659A521DC0B760004860C4 /* PSTGridLayoutItem.m */; };
 		F7659A6E1DC0B760004860C4 /* PSTGridLayoutRow.m in Sources */ = {isa = PBXBuildFile; fileRef = F7659A541DC0B760004860C4 /* PSTGridLayoutRow.m */; };
 		F7659A701DC0B760004860C4 /* PSTGridLayoutSection.m in Sources */ = {isa = PBXBuildFile; fileRef = F7659A561DC0B760004860C4 /* PSTGridLayoutSection.m */; };
+		F76607721ED7FF110073CEC2 /* TableDirectory+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADC11ED5A87C00B7EAD4 /* TableDirectory+CoreDataProperties.m */; };
+		F76607731ED7FF120073CEC2 /* TableDirectory+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADC11ED5A87C00B7EAD4 /* TableDirectory+CoreDataProperties.m */; };
+		F76607741ED7FF150073CEC2 /* TableDirectory+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADBF1ED5A87C00B7EAD4 /* TableDirectory+CoreDataClass.m */; };
+		F76607751ED7FF160073CEC2 /* TableDirectory+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADBF1ED5A87C00B7EAD4 /* TableDirectory+CoreDataClass.m */; };
+		F76607761ED7FFEC0073CEC2 /* TableLocalFile+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADFE1ED5B2A500B7EAD4 /* TableLocalFile+CoreDataClass.m */; };
+		F76607771ED7FFEC0073CEC2 /* TableLocalFile+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADFE1ED5B2A500B7EAD4 /* TableLocalFile+CoreDataClass.m */; };
+		F76607781ED7FFF20073CEC2 /* TableLocalFile+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADC41ED5A87C00B7EAD4 /* TableLocalFile+CoreDataProperties.m */; };
+		F76607791ED7FFF20073CEC2 /* TableLocalFile+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADC41ED5A87C00B7EAD4 /* TableLocalFile+CoreDataProperties.m */; };
 		F769D39A1E9E1506006DBBB4 /* CCLocalStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = F769D3961E9E1506006DBBB4 /* CCLocalStorage.m */; };
 		F769D39B1E9E1506006DBBB4 /* CCLocalStorageCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F769D3981E9E1506006DBBB4 /* CCLocalStorageCell.m */; };
 		F769D39C1E9E1506006DBBB4 /* CCLocalStorageCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F769D3991E9E1506006DBBB4 /* CCLocalStorageCell.xib */; };
@@ -1230,13 +1238,6 @@
 		F75B91F81ECAE26400199C96 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-BR"; path = "pt-BR.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		F75B91F91ECAE26400199C96 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-BR"; path = "pt-BR.lproj/Intro.strings"; sourceTree = "<group>"; };
 		F75B91FA1ECAE26400199C96 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-BR"; path = "pt-BR.lproj/Error.strings"; sourceTree = "<group>"; };
-		F75B91FB1ECAE28C00199C96 /* fi-FI */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "fi-FI"; path = "fi-FI.lproj/CTAssetsPicker.strings"; sourceTree = "<group>"; };
-		F75B91FC1ECAE28C00199C96 /* fi-FI */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "fi-FI"; path = "fi-FI.lproj/SwiftWebVC.strings"; sourceTree = "<group>"; };
-		F75B91FD1ECAE28D00199C96 /* fi-FI */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "fi-FI"; path = "fi-FI.lproj/BKPasscodeView.strings"; sourceTree = "<group>"; };
-		F75B91FE1ECAE28D00199C96 /* fi-FI */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "fi-FI"; path = "fi-FI.lproj/Localizable.strings"; sourceTree = "<group>"; };
-		F75B91FF1ECAE28D00199C96 /* fi-FI */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "fi-FI"; path = "fi-FI.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
-		F75B92001ECAE28D00199C96 /* fi-FI */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "fi-FI"; path = "fi-FI.lproj/Intro.strings"; sourceTree = "<group>"; };
-		F75B92011ECAE28D00199C96 /* fi-FI */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "fi-FI"; path = "fi-FI.lproj/Error.strings"; sourceTree = "<group>"; };
 		F75B92021ECAE29900199C96 /* el */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el; path = el.lproj/CTAssetsPicker.strings; sourceTree = "<group>"; };
 		F75B92031ECAE29900199C96 /* el */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el; path = el.lproj/SwiftWebVC.strings; sourceTree = "<group>"; };
 		F75B92041ECAE29900199C96 /* el */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el; path = el.lproj/BKPasscodeView.strings; sourceTree = "<group>"; };
@@ -3831,7 +3832,6 @@
 				es,
 				"es-MX",
 				"pt-BR",
-				"fi-FI",
 				el,
 				is,
 				pl,
@@ -4214,6 +4214,7 @@
 				F71459D21D12E3B700CAFEEC /* CCUtility.m in Sources */,
 				F71459D31D12E3B700CAFEEC /* CCBKPasscode.m in Sources */,
 				F7BAADFA1ED5B22700B7EAD4 /* TableCertificates+CoreDataProperties.m in Sources */,
+				F76607721ED7FF110073CEC2 /* TableDirectory+CoreDataProperties.m in Sources */,
 				F7BAADC61ED5A87C00B7EAD4 /* CCCoreData.m in Sources */,
 				F7F8D71C1ED6183000E711F3 /* CCCellShareExt.m in Sources */,
 				F71459D51D12E3B700CAFEEC /* MBProgressHUD.m in Sources */,
@@ -4221,8 +4222,10 @@
 				F732BA0B1D76DBA500E9878B /* CCNetworking.m in Sources */,
 				F70022CF1EC4C9100080073F /* OCShareUser.m in Sources */,
 				F71459E11D12E3B700CAFEEC /* CCHud.m in Sources */,
+				F76607781ED7FFF20073CEC2 /* TableLocalFile+CoreDataProperties.m in Sources */,
 				F71459E41D12E3B700CAFEEC /* RNDecryptor.m in Sources */,
 				F71459E61D12E3B700CAFEEC /* NYXImagesHelper.m in Sources */,
+				F76607741ED7FF150073CEC2 /* TableDirectory+CoreDataClass.m in Sources */,
 				F70022B11EC4C9100080073F /* AFURLSessionManager.m in Sources */,
 				F71459E91D12E3B700CAFEEC /* UIImage+Enhancing.m in Sources */,
 				F73CCE321DC13798007E38D8 /* UICKeyChainStore.m in Sources */,
@@ -4254,6 +4257,7 @@
 				F76B3CCF1EAE01BD00921AC9 /* NCBrand.swift in Sources */,
 				F73CC0761E813DFF006E3047 /* BKPasscodeViewController.m in Sources */,
 				F70022D21EC4C9100080073F /* OCUserProfile.m in Sources */,
+				F76607761ED7FFEC0073CEC2 /* TableLocalFile+CoreDataClass.m in Sources */,
 				F7145A081D12E3B700CAFEEC /* PPCollectionViewCell.m in Sources */,
 				F7145A0D1D12E3B700CAFEEC /* NSData+Base64.m in Sources */,
 				F78088EB1DD3A1DB005C5A7C /* cryptocloud.xcdatamodeld in Sources */,
@@ -4308,12 +4312,14 @@
 				F70022EB1EC4C9100080073F /* OCXMLShareByLinkParser.m in Sources */,
 				F743447B1E127EAC001CC831 /* CCUtility.m in Sources */,
 				F70022A91EC4C9100080073F /* AFSecurityPolicy.m in Sources */,
+				F76607731ED7FF120073CEC2 /* TableDirectory+CoreDataProperties.m in Sources */,
 				F70022BE1EC4C9100080073F /* OCExternalSites.m in Sources */,
 				F77EB6291EC08037003F814F /* CCExifGeo.m in Sources */,
 				F70022CD1EC4C9100080073F /* OCSharedDto.m in Sources */,
 				F70022AC1EC4C9100080073F /* AFURLRequestSerialization.m in Sources */,
 				F7BAADC71ED5A87C00B7EAD4 /* CCCoreData.m in Sources */,
 				F70022FD1EC4C9100080073F /* NSString+Encode.m in Sources */,
+				F76607791ED7FFF20073CEC2 /* TableLocalFile+CoreDataProperties.m in Sources */,
 				F70022B51EC4C9100080073F /* OCActivity.m in Sources */,
 				F70022B81EC4C9100080073F /* OCCapabilities.m in Sources */,
 				F74344871E127F95001CC831 /* UICKeyChainStore.m in Sources */,
@@ -4327,9 +4333,11 @@
 				F74344851E127F86001CC831 /* RNDecryptor.m in Sources */,
 				F74344881E127F9C001CC831 /* UIImage+animatedGIF.m in Sources */,
 				F73CC0771E813DFF006E3047 /* BKPasscodeViewController.m in Sources */,
+				F76607771ED7FFEC0073CEC2 /* TableLocalFile+CoreDataClass.m in Sources */,
 				F70022DF1EC4C9100080073F /* OCWebDAVClient.m in Sources */,
 				F743448A1E127FF2001CC831 /* CCHud.m in Sources */,
 				F74344861E127F89001CC831 /* RNEncryptor.m in Sources */,
+				F76607751ED7FF160073CEC2 /* TableDirectory+CoreDataClass.m in Sources */,
 				F73CC06B1E813DFF006E3047 /* BKPasscodeDummyViewController.m in Sources */,
 				F7BAADF61ED5B20E00B7EAD4 /* TableAccount+CoreDataClass.m in Sources */,
 				F7FC88FA1E140558006D0506 /* cryptocloud.xcdatamodeld in Sources */,
@@ -4696,7 +4704,6 @@
 				F75B91E81ECAE24500199C96 /* es */,
 				F75B91EF1ECAE25100199C96 /* es-MX */,
 				F75B91F61ECAE26300199C96 /* pt-BR */,
-				F75B91FD1ECAE28D00199C96 /* fi-FI */,
 				F75B92041ECAE29900199C96 /* el */,
 				F75B920B1ECAE2B800199C96 /* is */,
 				F75B92121ECAE2C700199C96 /* pl */,
@@ -4722,7 +4729,6 @@
 				F75B91E71ECAE24500199C96 /* es */,
 				F75B91EE1ECAE25000199C96 /* es-MX */,
 				F75B91F51ECAE26300199C96 /* pt-BR */,
-				F75B91FC1ECAE28C00199C96 /* fi-FI */,
 				F75B92031ECAE29900199C96 /* el */,
 				F75B920A1ECAE2B800199C96 /* is */,
 				F75B92111ECAE2C600199C96 /* pl */,
@@ -4748,7 +4754,6 @@
 				F75B91EB1ECAE24500199C96 /* es */,
 				F75B91F21ECAE25100199C96 /* es-MX */,
 				F75B91F91ECAE26400199C96 /* pt-BR */,
-				F75B92001ECAE28D00199C96 /* fi-FI */,
 				F75B92071ECAE29900199C96 /* el */,
 				F75B920E1ECAE2B800199C96 /* is */,
 				F75B92151ECAE2C700199C96 /* pl */,
@@ -4774,7 +4779,6 @@
 				F75B91E61ECAE24400199C96 /* es */,
 				F75B91ED1ECAE25000199C96 /* es-MX */,
 				F75B91F41ECAE26300199C96 /* pt-BR */,
-				F75B91FB1ECAE28C00199C96 /* fi-FI */,
 				F75B92021ECAE29900199C96 /* el */,
 				F75B92091ECAE2B800199C96 /* is */,
 				F75B92101ECAE2C600199C96 /* pl */,
@@ -4800,7 +4804,6 @@
 				F75B91EC1ECAE24500199C96 /* es */,
 				F75B91F31ECAE25100199C96 /* es-MX */,
 				F75B91FA1ECAE26400199C96 /* pt-BR */,
-				F75B92011ECAE28D00199C96 /* fi-FI */,
 				F75B92081ECAE29900199C96 /* el */,
 				F75B920F1ECAE2B900199C96 /* is */,
 				F75B92161ECAE2C700199C96 /* pl */,
@@ -4826,7 +4829,6 @@
 				F75B91EA1ECAE24500199C96 /* es */,
 				F75B91F11ECAE25100199C96 /* es-MX */,
 				F75B91F81ECAE26400199C96 /* pt-BR */,
-				F75B91FF1ECAE28D00199C96 /* fi-FI */,
 				F75B92061ECAE29900199C96 /* el */,
 				F75B920D1ECAE2B800199C96 /* is */,
 				F75B92141ECAE2C700199C96 /* pl */,
@@ -4852,7 +4854,6 @@
 				F75B91E91ECAE24500199C96 /* es */,
 				F75B91F01ECAE25100199C96 /* es-MX */,
 				F75B91F71ECAE26300199C96 /* pt-BR */,
-				F75B91FE1ECAE28D00199C96 /* fi-FI */,
 				F75B92051ECAE29900199C96 /* el */,
 				F75B920C1ECAE2B800199C96 /* is */,
 				F75B92131ECAE2C700199C96 /* pl */,

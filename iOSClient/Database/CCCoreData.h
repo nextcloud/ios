@@ -29,6 +29,8 @@
 @interface CCCoreData : NSObject
 
 + (NSArray *)getAllAccount;
-+ (NSMutableArray *)getAllCertificatesLocationOldDB;
++ (NSArray *)getAllCertificatesLocation;
++ (NSArray *)getAllDirectories;
++ (NSArray *)getAllLocalFile;
 
 @end

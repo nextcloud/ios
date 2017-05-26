@@ -45,7 +45,7 @@
     return accounts;
 }
 
-+ (NSMutableArray *)getAllCertificatesLocationOldDB
++ (NSArray *)getAllCertificatesLocation
 {
     NSMutableArray *output = [NSMutableArray new];
     
@@ -55,6 +55,38 @@
         
         if (record.certificateLocation && record.certificateLocation.length > 0)
             [output addObject:record.certificateLocation];
+        
+    }
+    
+    return output;
+}
+
++ (NSArray *)getAllDirectories
+{
+    NSMutableArray *output = [NSMutableArray new];
+    
+    NSArray *records = [TableDirectory MR_findAll];
+    
+    for (TableDirectory *record in records) {
+        
+        if (record.account && record.account.length > 0 && record.directoryID && record.directoryID.length > 0 && record.fileID && record.fileID.length > 0)
+            [output addObject:record];
+        
+    }
+    
+    return output;
+}
+
++ (NSArray *)getAllLocalFile
+{
+    NSMutableArray *output = [NSMutableArray new];
+    
+    NSArray *records = [TableLocalFile MR_findAll];
+    
+    for (TableLocalFile *record in records) {
+        
+        if (record.account && record.account.length > 0 && record.fileID && record.fileID.length > 0)
+            [output addObject:record];
         
     }
     

@@ -1635,7 +1635,7 @@
     
         // Migrate Certificates Table From CoreData to Realm
         
-        NSArray *listCertificateLocation = [CCCoreData getAllCertificatesLocationOldDB];
+        NSArray *listCertificateLocation = [CCCoreData getAllCertificatesLocation];
         
         for (NSString *certificateLocation in listCertificateLocation)
             [[NCManageDatabase sharedInstance] addCertificates:certificateLocation];
