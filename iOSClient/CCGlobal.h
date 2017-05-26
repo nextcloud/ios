@@ -132,8 +132,9 @@ extern NSString *const urlBaseUploadDB;
 #define k_timerProcess                                  7
 #define k_timerUpdateApplicationIconBadgeNumber         2
 
-#define k_maxConcurrentOperation                        10
-#define k_maxConcurrentOperationDownloadUpload          10
+#define k_maxConcurrentOperation                         10
+#define k_maxConcurrentOperationDownloadUpload           10
+#define k_maxConcurrentOperationDownloadUploadBackground 1
 
 // Error
 #define k_CCErrorTaskNil                                -9999

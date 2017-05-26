@@ -379,7 +379,7 @@
 
         // ONLY FOREFROUND
         
-        [app performSelectorOnMainThread:@selector(loadAutomaticUpload) withObject:nil waitUntilDone:NO];
+        [app performSelectorOnMainThread:@selector(loadAutomaticUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUpload] waitUntilDone:NO];
     
     }
 }
@@ -1336,10 +1336,11 @@
     return queueNumUploadWWan;
 }
 
-- (void)loadAutomaticUpload
+- (void)loadAutomaticUpload:(NSNumber *)maxConcurrent
 {
     CCMetadataNet *metadataNet;
     NSInteger counterUpload = 0;
+    NSInteger maxConcurrentOperationDownloadUpload = [maxConcurrent integerValue];
     
     NSArray *uploadInQueue = [[NCManageDatabase sharedInstance] getTableMetadataUpload];
     
@@ -1362,7 +1363,7 @@
     
     metadataNet = [[NCManageDatabase sharedInstance] getAutomaticUploadWithSelector:selectorUploadAutomatic];
     counterUpload = [self getNumberUploadInQueues] + [self getNumberUploadInQueuesWWan];
-    while (metadataNet && counterUpload < k_maxConcurrentOperationDownloadUpload) {
+    while (metadataNet && counterUpload < maxConcurrentOperationDownloadUpload) {
         
         [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet.assetLocalIdentifier fileName:metadataNet.fileName serverUrl:metadataNet.serverUrl cryptated:metadataNet.cryptated session:metadataNet.session taskStatus:metadataNet.taskStatus selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:metadataNet.errorCode delegate:app.activeMain];
         
@@ -1385,7 +1386,7 @@
     
     metadataNet =  [[NCManageDatabase sharedInstance] getAutomaticUploadWithSelector:selectorUploadAutomaticAll];
     counterUpload = [self getNumberUploadInQueues] + [self getNumberUploadInQueuesWWan];
-    while (metadataNet && counterUpload < k_maxConcurrentOperationDownloadUpload) {
+    while (metadataNet && counterUpload < maxConcurrentOperationDownloadUpload) {
         
         PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[metadataNet.assetLocalIdentifier] options:nil];
         

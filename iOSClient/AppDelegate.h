@@ -158,7 +158,7 @@
 
 - (NSMutableArray *)verifyExistsInQueuesDownloadSelector:(NSString *)selector;
 
-- (void)loadAutomaticUpload;
+- (void)loadAutomaticUpload:(NSNumber *)maxConcurrent;
 
 - (BOOL)createFolderSubFolderAutomaticUploadFolderPhotos:(NSString *)folderPhotos useSubFolder:(BOOL)useSubFolder assets:(NSArray *)assets selector:(NSString *)selector;
 

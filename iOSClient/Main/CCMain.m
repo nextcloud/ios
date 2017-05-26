@@ -1628,7 +1628,7 @@
 {
     // Automatic upload All
     if([selector isEqualToString:selectorUploadAutomaticAll])
-        [app performSelectorOnMainThread:@selector(loadAutomaticUpload) withObject:nil waitUntilDone:NO];
+        [app performSelectorOnMainThread:@selector(loadAutomaticUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUpload] waitUntilDone:NO];
     
     // Read File test do not exists
     if (errorCode == k_CCErrorFileUploadNotFound && fileID) {
@@ -1653,7 +1653,7 @@
 {
     // Automatic upload All
     if([selector isEqualToString:selectorUploadAutomaticAll])
-        [app performSelectorOnMainThread:@selector(loadAutomaticUpload) withObject:nil waitUntilDone:NO];
+        [app performSelectorOnMainThread:@selector(loadAutomaticUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUpload] waitUntilDone:NO];
     
     if ([selectorPost isEqualToString:selectorReadFolderForced] ) {
             
