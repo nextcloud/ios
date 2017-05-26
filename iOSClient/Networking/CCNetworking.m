@@ -417,11 +417,11 @@
             etag = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-ETag"]];
             
             NSString *dateString = [fields objectForKey:@"Date"];
-            date = [dateFormatter dateFromString:dateString];
-            if (date == nil)
+            if (![dateFormatter getObjectValue:&date forString:dateString range:nil error:&error]) {
+                NSLog(@"Date '%@' could not be parsed: %@", dateString, error);
                 date = [NSDate date];
-
-
+            }
+            
             // Activity
             [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:metadata.fileID action:k_activityDebugActionDownload selector:metadata.sessionSelector note:serverUrl type:k_activityTypeSuccess verbose:k_activityVerboseDefault activeUrl:_activeUrl];
                 
@@ -459,14 +459,8 @@
             NSString *dateString = [fields objectForKey:@"Date"];
             if (![dateFormatter getObjectValue:&date forString:dateString range:nil error:&error]) {
                 NSLog(@"Date '%@' could not be parsed: %@", dateString, error);
-            }
-            
-            /*
-            NSString *dateString = [fields objectForKey:@"Date"];
-            date = [dateFormatter dateFromString:dateString];
-            if (date == nil)
                 date = [NSDate date];
-            */
+            }
             
             // Activity
             [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:fileID action:k_activityDebugActionUpload selector:metadata.sessionSelector note:serverUrl type:k_activityTypeSuccess verbose:k_activityVerboseDefault activeUrl:_activeUrl];
