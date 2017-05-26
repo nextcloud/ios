@@ -83,9 +83,6 @@
 @property (nonatomic, strong) NSMutableDictionary *sharesLink;
 @property (nonatomic, strong) NSMutableDictionary *sharesUserAndGroup;
 
-// Check new Asset Photos/Video in progress 
-@property BOOL automaticCheckAssetInProgress;
-
 // UploadFromOtherUpp
 @property (nonatomic, strong) NSString *fileNameUpload;
 

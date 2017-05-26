@@ -179,9 +179,6 @@
     _netQueueUploadWWan.name = k_upload_queuewwan;
     _netQueueUploadWWan.maxConcurrentOperationCount = k_maxConcurrentOperationDownloadUpload;
     
-    // Check new Asset Photos/Video in progress  
-    _automaticCheckAssetInProgress = NO;
-    
     // Add notification change session
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(sessionChanged:) name:k_networkingSessionNotification object:nil];
         
@@ -1344,10 +1341,6 @@
     CCMetadataNet *metadataNet;
     NSInteger counterUpload = 0;
     
-    // Is loading new Asset or this  ?
-    if (_automaticCheckAssetInProgress)
-        return;
-        
     NSArray *uploadInQueue = [[NCManageDatabase sharedInstance] getTableMetadataUpload];
     
     NSArray *recordAutomaticUploadInLock =  [[NCManageDatabase sharedInstance] getLockAutomaticUpload];

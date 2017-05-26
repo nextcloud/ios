@@ -1058,10 +1058,6 @@
     NSMutableArray *newItemsToUpload;
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
     
-    // Is loading new Asset ?
-    if (app.automaticCheckAssetInProgress)
-        return;
-    
     // Check Asset : NEW or FULL
     if (assetsFull) {
         
@@ -1078,9 +1074,6 @@
     // News Assets ? if no verify if blocked Table Automatic Upload -> Autostart
     if ([newItemsToUpload count] == 0)
         return;
-    
-    // STOP
-    app.automaticCheckAssetInProgress = YES;
     
     // Disable idle timer
     [[UIApplication sharedApplication] setIdleTimerDisabled: YES];
@@ -1135,9 +1128,6 @@
             
         // end loading
         [_hud hideHud];
-        
-        // START
-        app.automaticCheckAssetInProgress = NO;
         
         // Enable idle timer
         [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
@@ -1199,9 +1189,6 @@
     
     // end loading
     [_hud hideHud];
-    
-    // START
-    app.automaticCheckAssetInProgress = NO;
     
     // Enable idle timer
     [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
