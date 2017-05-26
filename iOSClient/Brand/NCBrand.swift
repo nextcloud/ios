@@ -72,11 +72,10 @@ class NCBrandOptions: NSObject {
     public let pushNotificationServer:          String = "https://push-notifications.nextcloud.com"
     public let loginButtonLabelLink:            String = "https://nextcloud.com/providers"
     public let webLoginAutenticationProtocol:   String = ""
-    
+    public let folderBrandCameraUpload:         String = ""
+
     // Auto Upload default folder
     public var folderDefaultCameraUpload:       String = "Photos"
-    // Auto Upload brand folder
-    public let folderBrandCameraUpload:         String = ""
     
     // Capabilities Group
     public let capabilitiesGroups:              String = "group.it.twsweb.Crypto-Cloud"
@@ -104,7 +103,6 @@ class NCBrandOptions: NSObject {
             
             self.folderDefaultCameraUpload = folderBrandCameraUpload
         }
-        
     }
 }
 
