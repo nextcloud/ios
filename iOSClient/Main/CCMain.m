@@ -1724,15 +1724,31 @@
             
             CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
             
-            metadataNet.action = actionReadFile;
-            metadataNet.assetLocalIdentifier = asset.localIdentifier;
-            metadataNet.cryptated = cryptated;
-            metadataNet.fileName = fileName;
-            metadataNet.priority = NSOperationQueuePriorityNormal;
-            metadataNet.session = session;
-            metadataNet.selector = selectorReadFileUploadFile;
-            metadataNet.serverUrl = serverUrl;
+            if (cryptated) {
                 
+                metadataNet.action = actionUploadAsset;
+                metadataNet.assetLocalIdentifier = asset.localIdentifier;
+                metadataNet.cryptated = cryptated;
+                metadataNet.fileName = fileName;
+                metadataNet.priority = NSOperationQueuePriorityNormal;
+                metadataNet.session = session;
+                metadataNet.selector = selectorUploadFile;
+                metadataNet.selectorPost = nil;
+                metadataNet.serverUrl = serverUrl;
+                metadataNet.taskStatus = k_taskStatusResume;
+
+            } else {
+            
+                metadataNet.action = actionReadFile;
+                metadataNet.assetLocalIdentifier = asset.localIdentifier;
+                metadataNet.cryptated = cryptated;
+                metadataNet.fileName = fileName;
+                metadataNet.priority = NSOperationQueuePriorityNormal;
+                metadataNet.session = session;
+                metadataNet.selector = selectorReadFileUploadFile;
+                metadataNet.serverUrl = serverUrl;
+            }
+            
             [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
         }
     }
