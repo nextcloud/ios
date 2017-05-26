@@ -1103,16 +1103,16 @@ class NCManageDatabase: NSObject {
             
             // Add new GPS
             let addGPS = tableGPS()
-                
+            
+            addGPS.latitude = latitude
             addGPS.location = location
+            addGPS.longitude = longitude
             addGPS.placemarkAdministrativeArea = placemarkAdministrativeArea
             addGPS.placemarkCountry = placemarkCountry
             addGPS.placemarkLocality = placemarkLocality
             addGPS.placemarkPostalCode = placemarkPostalCode
             addGPS.placemarkThoroughfare = placemarkThoroughfare
-            addGPS.latitude = latitude
-            addGPS.longitude = longitude
-                
+            
             realm.add(addGPS)
         }
     }
@@ -1148,13 +1148,13 @@ class NCManageDatabase: NSObject {
             
             addLocaFile.account = tableAccount!.account
             addLocaFile.date = metadata.date
-            addLocaFile.fileID = metadata.fileID
+            addLocaFile.etag = metadata.etag
             addLocaFile.exifDate = NSDate()
             addLocaFile.exifLatitude = "-1"
             addLocaFile.exifLongitude = "-1"
+            addLocaFile.fileID = metadata.fileID
             addLocaFile.fileName = metadata.fileName
             addLocaFile.fileNamePrint = metadata.fileNamePrint
-            addLocaFile.etag = metadata.etag
             addLocaFile.size = metadata.size
             
             realm.add(addLocaFile, update: true)
@@ -1904,5 +1904,66 @@ class NCManageDatabase: NSObject {
         }
     }
 
+    func addTableDirectoryFromCoredata(_ table: TableDirectory) {
+        
+        let realm = try! Realm()
+        
+        let results = realm.objects(tableDirectory.self).filter("directoryID = %@", table.directoryID!)
+        if (results.count == 0) {
+            
+            try! realm.write {
+                
+                let addDirectory = tableDirectory()
+                
+                addDirectory.account = table.account!
+                addDirectory.directoryID = table.directoryID!
+                addDirectory.etag = table.rev!
+                if table.favorite == 1 {
+                    addDirectory.favorite = true
+                }
+                addDirectory.fileID = table.fileID!
+                if table.lock == 1 {
+                    addDirectory.lock = true
+                }
+                addDirectory.permissions = table.permissions!
+                addDirectory.serverUrl = table.serverUrl!
+                                
+                realm.add(addDirectory)
+            }
+        }
+    }
+
+    func addTableDirectoryFromLocalFile(_ table: TableLocalFile) {
+        
+        let realm = try! Realm()
+        
+        let results = realm.objects(tableLocalFile.self).filter("fileID = %@", table.fileID!)
+        if (results.count == 0) {
+            
+            try! realm.write {
+                
+                let addLocalFile = tableLocalFile()
+                
+                addLocalFile.account = table.account!
+                addLocalFile.date = table.date! as NSDate
+                addLocalFile.etag = table.rev!
+                if table.exifDate != nil {
+                    addLocalFile.exifDate = table.exifDate! as NSDate
+                }
+                addLocalFile.exifLatitude = table.exifLatitude!
+                addLocalFile.exifLongitude = table.exifLongitude!
+                if table.favorite == 1 {
+                    addLocalFile.favorite = true
+                }
+                addLocalFile.fileID = table.fileID!
+                addLocalFile.fileName = table.fileName!
+                addLocalFile.fileNamePrint = table.fileNamePrint!
+                addLocalFile.size = table.size as! Double
+
+                realm.add(addLocalFile)
+            }
+        }
+    }
+    
     //MARK: -
 }

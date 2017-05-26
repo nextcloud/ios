@@ -111,14 +111,12 @@ class tableDirectory: Object {
     dynamic var account = ""
     dynamic var dateReadDirectory: NSDate? = nil
     dynamic var directoryID = ""
+    dynamic var etag = ""
     dynamic var favorite: Bool = false
     dynamic var fileID = ""
     dynamic var lock : Bool = false
-    dynamic var offline : Bool = false
     dynamic var permissions = ""
-    dynamic var etag = ""
     dynamic var serverUrl = ""
-    dynamic var synchronized: Bool = false
     
     override static func primaryKey() -> String {
         return "directoryID"
@@ -152,6 +150,7 @@ class tableLocalFile: Object {
     
     dynamic var account = ""
     dynamic var date = NSDate()
+    dynamic var etag = ""
     dynamic var exifDate = NSDate()
     dynamic var exifLatitude = ""
     dynamic var exifLongitude = ""
@@ -159,7 +158,6 @@ class tableLocalFile: Object {
     dynamic var fileID = ""
     dynamic var fileName = ""
     dynamic var fileNamePrint = ""
-    dynamic var etag = ""
     dynamic var size : Double = 0
     
     override static func primaryKey() -> String {
@@ -176,6 +174,7 @@ class tableMetadata: Object {
     dynamic var directory : Bool = false
     dynamic var directoryID = ""
     dynamic var errorPasscode : Bool = false
+    dynamic var etag = ""
     dynamic var favorite : Bool = false
     dynamic var fileID = ""
     dynamic var fileName = ""
@@ -186,7 +185,6 @@ class tableMetadata: Object {
     dynamic var nameCurrentDevice = ""
     dynamic var permissions = ""
     dynamic var protocolCrypto = ""
-    dynamic var etag = ""
     dynamic var session = ""
     dynamic var sessionError = ""
     dynamic var sessionID = ""
