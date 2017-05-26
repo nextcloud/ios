@@ -145,7 +145,6 @@ static SecCertificateRef SecTrustGetLeafCertificate(SecTrustRef trust)
 {    
     if (![viewController isKindOfClass:[UIViewController class]])
         return;
-        //viewController = [[UIApplication sharedApplication] keyWindow].rootViewController;
     
     _delegate = delegate;
     

@@ -376,8 +376,10 @@
     NSString *serverUrl = [self getServerUrlFromUrl:url];
     
     NSInteger errorCode;
-    __block NSDate *date = [NSDate date];
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    NSDate *date = [NSDate date];
+    NSDateFormatter *dateFormatter = [NSDateFormatter new];
+    NSLocale *enUSPOSIXLocale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
+    [dateFormatter setLocale:enUSPOSIXLocale];
     [dateFormatter setDateFormat:@"EEE, dd MMM y HH:mm:ss zzz"];
     
     NSHTTPURLResponse* httpResponse = (NSHTTPURLResponse*)task.response;
@@ -402,71 +404,85 @@
     
     if ([task isKindOfClass:[NSURLSessionDownloadTask class]]) {
         
-        dispatch_async(dispatch_get_main_queue(), ^{
+        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"session = %@ AND (sessionTaskIdentifier == %i OR sessionTaskIdentifierPlist == %i)",session.sessionDescription, task.taskIdentifier, task.taskIdentifier]];
             
-            tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"session = %@ AND (sessionTaskIdentifier == %i OR sessionTaskIdentifierPlist == %i)",session.sessionDescription, task.taskIdentifier, task.taskIdentifier]];
+        if (!metadata) return;
             
-            if (!metadata) return;
+        NSString *etag = metadata.etag;
+        NSString *fileID = metadata.fileID;
+        NSDictionary *fields = [httpResponse allHeaderFields];
             
-            NSString *etag = metadata.etag;
-            NSString *fileID = metadata.fileID;
-            NSDictionary *fields = [httpResponse allHeaderFields];
+        if (errorCode == 0) {
             
-            if (errorCode == 0) {
+            etag = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-ETag"]];
             
-                etag = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-ETag"]];
-                date = [dateFormatter dateFromString:[fields objectForKey:@"Date"]];
+            NSString *dateString = [fields objectForKey:@"Date"];
+            date = [dateFormatter dateFromString:dateString];
+            if (date == nil)
+                date = [NSDate date];
 
-                // Activity
-                [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:metadata.fileID action:k_activityDebugActionDownload selector:metadata.sessionSelector note:serverUrl type:k_activityTypeSuccess verbose:k_activityVerboseDefault activeUrl:_activeUrl];
+
+            // Activity
+            [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:metadata.fileID action:k_activityDebugActionDownload selector:metadata.sessionSelector note:serverUrl type:k_activityTypeSuccess verbose:k_activityVerboseDefault activeUrl:_activeUrl];
                 
-            } else {
+        } else {
             
-                // Activity
-                [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:metadata.fileID action:k_activityDebugActionDownload selector:metadata.sessionSelector note:[NSString stringWithFormat:@"Server: %@ Error: %@", serverUrl, [CCError manageErrorKCF:errorCode withNumberError:YES]] type:k_activityTypeFailure verbose:k_activityVerboseDefault  activeUrl:_activeUrl];
-            }
+            // Activity
+            [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:metadata.fileID action:k_activityDebugActionDownload selector:metadata.sessionSelector note:[NSString stringWithFormat:@"Server: %@ Error: %@", serverUrl, [CCError manageErrorKCF:errorCode withNumberError:YES]] type:k_activityTypeFailure verbose:k_activityVerboseDefault  activeUrl:_activeUrl];
+        }
         
+        dispatch_async(dispatch_get_main_queue(), ^{
             NSArray *object = [[NSArray alloc] initWithObjects:session, fileID, task, nil];
             [[NSNotificationCenter defaultCenter] postNotificationName:k_networkingSessionNotification object:object];
-                
-            [self downloadFileSuccessFailure:fileName fileID:metadata.fileID etag:etag date:date serverUrl:serverUrl selector:metadata.sessionSelector selectorPost:metadata.sessionSelectorPost errorCode:errorCode];
         });
+        
+        [self downloadFileSuccessFailure:fileName fileID:metadata.fileID etag:etag date:date serverUrl:serverUrl selector:metadata.sessionSelector selectorPost:metadata.sessionSelectorPost errorCode:errorCode];
     }
     
     // ------------------------ UPLOAD -----------------------
     
     if ([task isKindOfClass:[NSURLSessionUploadTask class]]) {
         
-        dispatch_async(dispatch_get_main_queue(), ^{
-            
-            tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"session = %@ AND (sessionTaskIdentifier == %i OR sessionTaskIdentifierPlist == %i)",session.sessionDescription, task.taskIdentifier, task.taskIdentifier]];
+        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"session = %@ AND (sessionTaskIdentifier == %i OR sessionTaskIdentifierPlist == %i)",session.sessionDescription, task.taskIdentifier, task.taskIdentifier]];
 
-            if (!metadata) return;
+        if (!metadata) return;
             
-            NSDictionary *fields = [httpResponse allHeaderFields];
-            __block NSString *fileID = metadata.fileID;
-            __block NSString *etag = metadata.etag;
+        NSDictionary *fields = [httpResponse allHeaderFields];
+        __block NSString *fileID = metadata.fileID;
+        __block NSString *etag = metadata.etag;
             
-            if (errorCode == 0) {
+        if (errorCode == 0) {
             
-                fileID = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-FileId"]];
-                etag = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-ETag"]];
-                date = [dateFormatter dateFromString:[fields objectForKey:@"Date"]];
+            fileID = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-FileId"]];
+            etag = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-ETag"]];
             
-                // Activity
-                [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:fileID action:k_activityDebugActionUpload selector:metadata.sessionSelector note:serverUrl type:k_activityTypeSuccess verbose:k_activityVerboseDefault activeUrl:_activeUrl];
-
-            } else {
-            
-                // Activity
-                [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:metadata.fileID action:k_activityDebugActionUpload selector:metadata.sessionSelector note:[NSString stringWithFormat:@"Server: %@ Error: %@", serverUrl, [CCError manageErrorKCF:errorCode withNumberError:YES]] type:k_activityTypeFailure verbose:k_activityVerboseDefault   activeUrl:_activeUrl];
+            NSString *dateString = [fields objectForKey:@"Date"];
+            if (![dateFormatter getObjectValue:&date forString:dateString range:nil error:&error]) {
+                NSLog(@"Date '%@' could not be parsed: %@", dateString, error);
             }
-                    
+            
+            /*
+            NSString *dateString = [fields objectForKey:@"Date"];
+            date = [dateFormatter dateFromString:dateString];
+            if (date == nil)
+                date = [NSDate date];
+            */
+            
+            // Activity
+            [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:fileID action:k_activityDebugActionUpload selector:metadata.sessionSelector note:serverUrl type:k_activityTypeSuccess verbose:k_activityVerboseDefault activeUrl:_activeUrl];
+
+        } else {
+            
+            // Activity
+            [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:metadata.fileID action:k_activityDebugActionUpload selector:metadata.sessionSelector note:[NSString stringWithFormat:@"Server: %@ Error: %@", serverUrl, [CCError manageErrorKCF:errorCode withNumberError:YES]] type:k_activityTypeFailure verbose:k_activityVerboseDefault   activeUrl:_activeUrl];
+        }
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
             NSArray *object = [[NSArray alloc] initWithObjects:session, fileID, task, nil];
             [[NSNotificationCenter defaultCenter] postNotificationName:k_networkingSessionNotification object:object];
-                
-            [self uploadFileSuccessFailure:metadata fileName:fileName fileID:fileID etag:etag date:date serverUrl:serverUrl errorCode:errorCode];
         });
+        
+        [self uploadFileSuccessFailure:metadata fileName:fileName fileID:fileID etag:etag date:date serverUrl:serverUrl errorCode:errorCode];
     }
 }
 
@@ -1304,8 +1320,10 @@
     NSString *sessionID = metadata.sessionID;
     
     // Progress Task
-    NSDictionary* userInfo = @{@"fileID": (fileID), @"serverUrl": (serverUrl), @"cryptated": ([NSNumber numberWithBool:NO]), @"progress": ([NSNumber numberWithFloat:0.0])};
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"NotificationProgressTask" object:nil userInfo:userInfo];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSDictionary* userInfo = @{@"fileID": (fileID), @"serverUrl": (serverUrl), @"cryptated": ([NSNumber numberWithBool:NO]), @"progress": ([NSNumber numberWithFloat:0.0])};
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"NotificationProgressTask" object:nil userInfo:userInfo];
+    });
     
     // ERRORE
     if (errorCode != 0) {
