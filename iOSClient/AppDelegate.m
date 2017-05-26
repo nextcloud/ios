@@ -1371,7 +1371,7 @@
         counterUpload++;
     }
     
-    // ------------------------- <selectorUploadAutomaticAll> -------------------------
+    // ------------------------- <selectorUploadAutomaticAll> ----------------------
     
     // Verify num error MAX 10 after STOP
     NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND sessionSelector = %@ AND (sessionTaskIdentifier = %i OR sessionTaskIdentifierPlist = %i)", app.activeAccount, selectorUploadAutomaticAll, k_taskIdentifierError, k_taskIdentifierError] sorted:nil ascending:NO];
