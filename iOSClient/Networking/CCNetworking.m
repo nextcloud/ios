@@ -618,9 +618,9 @@
 
     float progress = (float) totalBytesWritten / (float)totalBytesExpectedToWrite;
     
+    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataFromFileName:fileName directoryID:[[NCManageDatabase sharedInstance] getDirectoryID:serverUrl]];
+    
     dispatch_async(dispatch_get_main_queue(), ^{
-        
-        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataFromFileName:fileName directoryID:[[NCManageDatabase sharedInstance] getDirectoryID:serverUrl]];
         
         if (metadata) {
         
@@ -1297,10 +1297,10 @@
     
     float progress = (float) totalBytesSent / (float)totalBytesExpectedToSend;
 
+    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataFromFileName:fileName directoryID:[[NCManageDatabase sharedInstance] getDirectoryID:serverUrl]];
+    
     dispatch_async(dispatch_get_main_queue(), ^{
 
-        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataFromFileName:fileName directoryID:[[NCManageDatabase sharedInstance] getDirectoryID:serverUrl]];
-        
         if (metadata) {
             
             NSDictionary* userInfo = @{@"fileID": (metadata.fileID), @"serverUrl": (serverUrl), @"cryptated": ([NSNumber numberWithBool:metadata.cryptated]), @"progress": ([NSNumber numberWithFloat:progress])};
@@ -1375,7 +1375,6 @@
     
     // ALL TASK DONE (PLAIN/CRYPTO)
     if (metadata.sessionTaskIdentifier == k_taskIdentifierDone && metadata.sessionTaskIdentifierPlist == k_taskIdentifierDone) {
-        
         
 #ifndef EXTENSION
         [app.listProgressMetadata removeObjectForKey:sessionID];
