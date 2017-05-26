@@ -101,7 +101,7 @@ class NCBrandOptions: NSObject {
         
         if folderBrandCameraUpload != "" {
             
-            self.folderDefaultCameraUpload = folderBrandCameraUpload
+            self.folderDefaultCameraUpload = self.folderBrandCameraUpload
         }
     }
 }
