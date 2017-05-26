@@ -32,7 +32,7 @@
 
 @implementation CCCoreData
 
-+ (NSArray *)getAllAccount
++ (NSArray *)migrateAccount
 {
     NSMutableArray *accounts = [NSMutableArray new];
     NSArray *records;
@@ -45,7 +45,7 @@
     return accounts;
 }
 
-+ (NSArray *)getAllCertificatesLocation
++ (NSArray *)migrateCertificatesLocation
 {
     NSMutableArray *output = [NSMutableArray new];
     
@@ -61,7 +61,7 @@
     return output;
 }
 
-+ (NSArray *)getAllDirectories
++ (NSArray *)migrateDirectories
 {
     NSMutableArray *output = [NSMutableArray new];
     
@@ -77,7 +77,7 @@
     return output;
 }
 
-+ (NSArray *)getAllLocalFile
++ (NSArray *)migrateLocalFile
 {
     NSMutableArray *output = [NSMutableArray new];
     

@@ -47,7 +47,7 @@
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
     
-    NSArray *listAccount = [CCCoreData getAllAccount];
+    NSArray *listAccount = [[NCManageDatabase sharedInstance] getAccounts];
 
     // Section : CLOUD ACCOUNT -------------------------------------------
     
@@ -134,7 +134,8 @@
     
         // delete Account
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"delAccount" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_delete_account_", nil)];
-        if (listAccount.count > 0) [row.cellConfig setObject:[UIColor redColor] forKey:@"textLabel.textColor"];
+        if (listAccount.count > 0)
+            [row.cellConfig setObject:[UIColor redColor] forKey:@"textLabel.textColor"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
         [row.cellConfig setObject:[UIImage imageNamed:@"settingsAccountDelete"] forKey:@"imageView.image"];
         [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
@@ -298,7 +299,7 @@
         
         [self deleteAccount:accountNow];
         
-        NSArray *listAccount = [CCCoreData getAllAccount];
+        NSArray *listAccount = [[NCManageDatabase sharedInstance] getAccounts];
         if ([listAccount count] > 0) [self ChangeDefaultAccount:listAccount[0]];
         else {
             [self addAccountFoced];

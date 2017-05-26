@@ -827,8 +827,8 @@
         if ([_metadataNet.selector isEqualToString:selectorRename] && [self.delegate respondsToSelector:@selector(renameSuccess:)])
             [self.delegate renameSuccess:_metadataNet];
         
-        if ([_metadataNet.selector rangeOfString:selectorMove].location != NSNotFound && [self.delegate respondsToSelector:@selector(moveSuccess:revTo:)])
-            [self.delegate moveSuccess:_metadataNet revTo:nil];
+        if ([_metadataNet.selector rangeOfString:selectorMove].location != NSNotFound && [self.delegate respondsToSelector:@selector(moveSuccess:)])
+            [self.delegate moveSuccess:_metadataNet];
         
         [self complete];
         

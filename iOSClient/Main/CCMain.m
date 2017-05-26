@@ -755,9 +755,7 @@
         UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:form];
         
         [navigationController setModalPresentationStyle:UIModalPresentationFormSheet];
-        
-        //navController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-        
+                
         [self presentViewController:navigationController animated:YES completion:nil];        
     }];
 }
@@ -2216,7 +2214,7 @@
     }
 }
 
-- (void)moveSuccess:(CCMetadataNet *)metadataNet revTo:(NSString *)revTo
+- (void)moveSuccess:(CCMetadataNet *)metadataNet
 {
     [_queueSelector removeObject:metadataNet.selector];
     

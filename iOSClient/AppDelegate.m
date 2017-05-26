@@ -1635,7 +1635,7 @@
     
         // Migrate Certificates Table From CoreData to Realm
         
-        NSArray *listCertificateLocation = [CCCoreData getAllCertificatesLocation];
+        NSArray *listCertificateLocation = [CCCoreData migrateCertificatesLocation];
         
         for (NSString *certificateLocation in listCertificateLocation)
             [[NCManageDatabase sharedInstance] addCertificates:certificateLocation];
@@ -1645,15 +1645,15 @@
         
         // Migrate Account Table From CoreData to Realm
         
-        NSArray *listAccount = [CCCoreData getAllAccount];
+        NSArray *listAccount = [CCCoreData migrateAccount];
         for (TableAccount *account in listAccount)
             [[NCManageDatabase sharedInstance] addTableAccountFromCoredata:account];
         
-        NSArray *listDirectories = [CCCoreData getAllDirectories];
+        NSArray *listDirectories = [CCCoreData migrateDirectories];
         for (TableDirectory *directory in listDirectories)
             [[NCManageDatabase sharedInstance] addTableDirectoryFromCoredata:directory];
         
-        NSArray *listLocalFile = [CCCoreData getAllLocalFile];
+        NSArray *listLocalFile = [CCCoreData migrateLocalFile];
         for (TableLocalFile *localFile in listLocalFile)
             [[NCManageDatabase sharedInstance] addTableLocalFileFromCoredata:localFile];
     }
