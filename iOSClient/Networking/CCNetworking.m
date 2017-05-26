@@ -408,13 +408,13 @@
             
             if (!metadata) return;
             
-            NSString *rev = metadata.rev;
+            NSString *etag = metadata.etag;
             NSString *fileID = metadata.fileID;
             NSDictionary *fields = [httpResponse allHeaderFields];
             
             if (errorCode == 0) {
             
-                rev = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-ETag"]];
+                etag = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-ETag"]];
                 date = [dateFormatter dateFromString:[fields objectForKey:@"Date"]];
 
                 // Activity
@@ -429,7 +429,7 @@
             NSArray *object = [[NSArray alloc] initWithObjects:session, fileID, task, nil];
             [[NSNotificationCenter defaultCenter] postNotificationName:k_networkingSessionNotification object:object];
                 
-            [self downloadFileSuccessFailure:fileName fileID:metadata.fileID rev:rev date:date serverUrl:serverUrl selector:metadata.sessionSelector selectorPost:metadata.sessionSelectorPost errorCode:errorCode];
+            [self downloadFileSuccessFailure:fileName fileID:metadata.fileID etag:etag date:date serverUrl:serverUrl selector:metadata.sessionSelector selectorPost:metadata.sessionSelectorPost errorCode:errorCode];
         });
     }
     
@@ -445,12 +445,12 @@
             
             NSDictionary *fields = [httpResponse allHeaderFields];
             __block NSString *fileID = metadata.fileID;
-            __block NSString *rev = metadata.rev;
+            __block NSString *etag = metadata.etag;
             
             if (errorCode == 0) {
             
                 fileID = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-FileId"]];
-                rev = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-ETag"]];
+                etag = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-ETag"]];
                 date = [dateFormatter dateFromString:[fields objectForKey:@"Date"]];
             
                 // Activity
@@ -465,7 +465,7 @@
             NSArray *object = [[NSArray alloc] initWithObjects:session, fileID, task, nil];
             [[NSNotificationCenter defaultCenter] postNotificationName:k_networkingSessionNotification object:object];
                 
-            [self uploadFileSuccessFailure:metadata fileName:fileName fileID:fileID rev:rev date:date serverUrl:serverUrl errorCode:errorCode];
+            [self uploadFileSuccessFailure:metadata fileName:fileName fileID:fileID etag:etag date:date serverUrl:serverUrl errorCode:errorCode];
         });
     }
 }
@@ -648,7 +648,7 @@
     }
 }
 
-- (void)downloadFileSuccessFailure:(NSString *)fileName fileID:(NSString *)fileID rev:(NSString *)rev date:(NSDate *)date serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorCode:(NSInteger)errorCode
+- (void)downloadFileSuccessFailure:(NSString *)fileName fileID:(NSString *)fileID etag:(NSString *)etag date:(NSDate *)date serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorCode:(NSInteger)errorCode
 {
 #ifndef EXTENSION
     if (fileID)
@@ -1362,7 +1362,7 @@
     });
 }
 
-- (void)uploadFileSuccessFailure:(tableMetadata *)metadata fileName:(NSString *)fileName fileID:(NSString *)fileID rev:(NSString *)rev date:(NSDate *)date serverUrl:(NSString *)serverUrl errorCode:(NSInteger)errorCode
+- (void)uploadFileSuccessFailure:(tableMetadata *)metadata fileName:(NSString *)fileName fileID:(NSString *)fileID etag:(NSString *)etag date:(NSDate *)date serverUrl:(NSString *)serverUrl errorCode:(NSInteger)errorCode
 {
     NSString *sessionID = metadata.sessionID;
     
@@ -1403,7 +1403,7 @@
         [CCUtility copyFileAtPath:[NSString stringWithFormat:@"%@/%@.ico", _directoryUser, sessionID] toPath:[NSString stringWithFormat:@"%@/%@.ico", _directoryUser, fileID]];
         
         metadata.fileID = fileID;
-        metadata.rev = rev;
+        metadata.etag = etag;
         metadata.date = date;
         metadata.sessionTaskIdentifierPlist = k_taskIdentifierDone;
         
@@ -1711,7 +1711,7 @@
         
     } else {
         
-        [self uploadFileSuccessFailure:metadataTemp fileName:metadataNet.fileName fileID:metadata.fileID rev:metadata.rev date:metadata.date serverUrl:metadataNet.serverUrl errorCode:0];
+        [self uploadFileSuccessFailure:metadataTemp fileName:metadataNet.fileName fileID:metadata.fileID etag:metadata.etag date:metadata.date serverUrl:metadataNet.serverUrl errorCode:0];
     }
 }
 
@@ -1738,7 +1738,7 @@
     
     // fix CCNetworking.m line 1340 2.17.2 (00005)
     if (metadata)
-        [self uploadFileSuccessFailure:metadata fileName:metadataNet.fileName fileID:metadata.fileID rev:metadata.rev date:metadata.date serverUrl:metadataNet.serverUrl errorCode:error];
+        [self uploadFileSuccessFailure:metadata fileName:metadataNet.fileName fileID:metadata.fileID etag:metadata.etag date:metadata.date serverUrl:metadataNet.serverUrl errorCode:error];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1822,6 +1822,7 @@
     [metadataNet setDownloadPlist: self.downloadPlist];
     [metadataNet setErrorCode: self.errorCode];
     [metadataNet setErrorRetry: self.errorRetry];
+    [metadataNet setEtag:self.etag];
     [metadataNet setExpirationTime: self.expirationTime];
     [metadataNet setFileID: self.fileID];
     [metadataNet setFileName: self.fileName];
@@ -1833,7 +1834,6 @@
     [metadataNet setPathFolder: self.pathFolder];
     [metadataNet setPriority: self.priority];
     [metadataNet setQueue: self.queue];
-    [metadataNet setRev:self.rev];
     [metadataNet setServerUrl: self.serverUrl];
     [metadataNet setServerUrlTo: self.serverUrlTo];
     [metadataNet setSelector: self.selector];

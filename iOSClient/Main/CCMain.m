@@ -2193,7 +2193,7 @@
         metadataNet.action = actionUploadTemplate;
         metadataNet.fileName = [CCUtility trasformedFileNamePlistInCrypto:fileNameModel];
         metadataNet.fileNamePrint = fileName;
-        metadataNet.rev = metadata.rev;
+        metadataNet.etag = metadata.etag;
         metadataNet.serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
         metadataNet.session = k_upload_session_foreground;
         metadataNet.taskStatus = k_taskStatusResume;
@@ -2302,7 +2302,7 @@
             metadataNet.fileName = metadata.fileName;
             metadataNet.fileNamePrint = metadataNet.fileNamePrint;
             metadataNet.fileNameTo = metadata.fileName;
-            metadataNet.rev = metadata.rev;
+            metadataNet.etag = metadata.etag;
             metadataNet.selector = selectorMove;
             metadataNet.serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
             metadataNet.serverUrlTo = serverUrlTo;
@@ -2323,7 +2323,7 @@
             metadataNet.directoryID = metadata.directoryID;
             metadataNet.directoryIDTo = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrlTo];
             metadataNet.fileNamePrint = metadata.fileNamePrint;
-            metadataNet.rev = metadata.rev;
+            metadataNet.etag = metadata.etag;
             metadataNet.serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
             metadataNet.serverUrlTo = serverUrlTo;
             

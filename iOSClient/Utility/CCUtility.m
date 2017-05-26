@@ -796,7 +796,7 @@
     metadata.nameCurrentDevice = [CCUtility getNameCurrentDevice];
     metadata.permissions = itemDto.permissions;
     metadata.protocolCrypto = @"";
-    metadata.rev = itemDto.etag;
+    metadata.etag = itemDto.etag;
     metadata.size = itemDto.size;
     metadata.sessionTaskIdentifier = k_taskIdentifierDone;
     metadata.sessionTaskIdentifierPlist = k_taskIdentifierDone;

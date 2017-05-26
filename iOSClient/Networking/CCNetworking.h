@@ -106,6 +106,7 @@
 @property BOOL downloadPlist;
 @property NSInteger errorCode;
 @property NSInteger errorRetry;
+@property (nonatomic, strong) NSString *etag;
 @property (nonatomic, strong) NSString *expirationTime;
 @property (nonatomic, strong) NSString *fileID;
 @property (nonatomic, strong) NSString *fileName;
@@ -118,7 +119,6 @@
 @property (nonatomic, strong) NSString *pathFolder;
 @property NSInteger priority;
 @property (nonatomic, strong) NSOperationQueue *queue;
-@property (nonatomic, strong) NSString *rev;
 @property (nonatomic, strong) NSString *serverUrl;
 @property (nonatomic, strong) NSString *serverUrlTo;
 @property (nonatomic, strong) NSString *selector;

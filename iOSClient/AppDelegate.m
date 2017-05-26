@@ -1647,7 +1647,7 @@
         
         NSArray *listAccount = [CCCoreData getAllAccount];
         for (TableAccount *account in listAccount)
-            [[NCManageDatabase sharedInstance] addTableAccountOldDB:account];
+            [[NCManageDatabase sharedInstance] addTableAccountFromCoredata:account];
     }
     
     return YES;

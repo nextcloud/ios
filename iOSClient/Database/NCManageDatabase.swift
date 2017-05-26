@@ -144,66 +144,6 @@ class NCManageDatabase: NSObject {
         try! realm.commitWrite()
     }
     
-    func addTableAccountOldDB(_ table: TableAccount) {
-        
-        let realm = try! Realm()
-        
-        let results = realm.objects(tableAccount.self).filter("account = %@", table.account!)
-        if (results.count == 0) {
-        
-            try! realm.write {
-                
-                let addAccount = tableAccount()
-                
-                addAccount.account = table.account!
-                if table.active == 1 {
-                    addAccount.active = true
-                }
-                if table.cameraUpload == 1 {
-                    addAccount.cameraUpload = true
-                }
-                if table.cameraUploadBackground == 1 {
-                    addAccount.cameraUploadBackground = true
-                }
-                if table.cameraUploadCreateSubfolder == 1 {
-                    addAccount.cameraUploadCreateSubfolder = true
-                }
-                if table.cameraUploadDatePhoto != nil {
-                    addAccount.cameraUploadDatePhoto = table.cameraUploadDatePhoto! as NSDate
-                }
-                if table.cameraUploadDateVideo != nil {
-                    addAccount.cameraUploadDateVideo = table.cameraUploadDateVideo! as NSDate
-                }
-                if table.cameraUploadFolderName != nil {
-                    addAccount.cameraUploadFolderName = table.cameraUploadFolderName!
-                }
-                if table.cameraUploadFolderPath != nil {
-                    addAccount.cameraUploadFolderPath = table.cameraUploadFolderPath!
-                }
-                if table.cameraUploadFull == 1 {
-                    addAccount.cameraUploadFull = true
-                }
-                if table.cameraUploadPhoto == 1 {
-                    addAccount.cameraUploadPhoto = true
-                }
-                if table.cameraUploadVideo == 1 {
-                    addAccount.cameraUploadVideo = true
-                }
-                if table.cameraUploadWWAnPhoto == 1 {
-                    addAccount.cameraUploadWWAnPhoto = true
-                }
-                if table.cameraUploadWWAnVideo == 1 {
-                    addAccount.cameraUploadWWAnVideo = true
-                }
-                addAccount.password = table.password!
-                addAccount.url = table.url!
-                addAccount.user = table.user!
-                
-                realm.add(addAccount)
-            }
-        }
-    }
-
     func setAccountPassword(_ account: String, password: String) {
         
         let realm = try! Realm()
@@ -913,7 +853,7 @@ class NCManageDatabase: NSObject {
                 if results!.count > 0 {
                     
                     results![0].dateReadDirectory = nil
-                    results![0].rev = ""
+                    results![0].etag = ""
                     realm.add(results!, update: true)
                 }
             }
@@ -1036,7 +976,7 @@ class NCManageDatabase: NSObject {
             
             for result in results {
                 result.dateReadDirectory = nil;
-                result.rev = ""
+                result.etag = ""
             }
         }
     }
@@ -1214,7 +1154,7 @@ class NCManageDatabase: NSObject {
             addLocaFile.exifLongitude = "-1"
             addLocaFile.fileName = metadata.fileName
             addLocaFile.fileNamePrint = metadata.fileNamePrint
-            addLocaFile.rev = metadata.rev
+            addLocaFile.etag = metadata.etag
             addLocaFile.size = metadata.size
             
             realm.add(addLocaFile, update: true)
@@ -1901,5 +1841,68 @@ class NCManageDatabase: NSObject {
         return [sharesLink, sharesUserAndGroup]
     }
     
+    //MARK: -
+    //MARK: Migrate func
+    
+    func addTableAccountFromCoredata(_ table: TableAccount) {
+        
+        let realm = try! Realm()
+        
+        let results = realm.objects(tableAccount.self).filter("account = %@", table.account!)
+        if (results.count == 0) {
+            
+            try! realm.write {
+                
+                let addAccount = tableAccount()
+                
+                addAccount.account = table.account!
+                if table.active == 1 {
+                    addAccount.active = true
+                }
+                if table.cameraUpload == 1 {
+                    addAccount.cameraUpload = true
+                }
+                if table.cameraUploadBackground == 1 {
+                    addAccount.cameraUploadBackground = true
+                }
+                if table.cameraUploadCreateSubfolder == 1 {
+                    addAccount.cameraUploadCreateSubfolder = true
+                }
+                if table.cameraUploadDatePhoto != nil {
+                    addAccount.cameraUploadDatePhoto = table.cameraUploadDatePhoto! as NSDate
+                }
+                if table.cameraUploadDateVideo != nil {
+                    addAccount.cameraUploadDateVideo = table.cameraUploadDateVideo! as NSDate
+                }
+                if table.cameraUploadFolderName != nil {
+                    addAccount.cameraUploadFolderName = table.cameraUploadFolderName!
+                }
+                if table.cameraUploadFolderPath != nil {
+                    addAccount.cameraUploadFolderPath = table.cameraUploadFolderPath!
+                }
+                if table.cameraUploadFull == 1 {
+                    addAccount.cameraUploadFull = true
+                }
+                if table.cameraUploadPhoto == 1 {
+                    addAccount.cameraUploadPhoto = true
+                }
+                if table.cameraUploadVideo == 1 {
+                    addAccount.cameraUploadVideo = true
+                }
+                if table.cameraUploadWWAnPhoto == 1 {
+                    addAccount.cameraUploadWWAnPhoto = true
+                }
+                if table.cameraUploadWWAnVideo == 1 {
+                    addAccount.cameraUploadWWAnVideo = true
+                }
+                addAccount.password = table.password!
+                addAccount.url = table.url!
+                addAccount.user = table.user!
+                
+                realm.add(addAccount)
+            }
+        }
+    }
+
     //MARK: -
 }

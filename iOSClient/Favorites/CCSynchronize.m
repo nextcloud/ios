@@ -280,11 +280,11 @@
                 
                 tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", metadataNet.account, serverUrl]];
                 
-                if (![tableDirectory.rev isEqualToString:metadata.rev]) {
+                if (![tableDirectory.etag isEqualToString:metadata.etag]) {
                     
                     [self readFolderServerUrl:serverUrl directoryID:directoryID selector:metadataNet.selector];
                     
-                    [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:serverUrl serverUrlTo:nil fileID:metadata.rev];                    
+                    [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:serverUrl serverUrlTo:nil fileID:metadata.etag];
                 }
                 
             } else {
@@ -397,12 +397,12 @@
         
         if (withDownload) {
             
-            if (![localFile.rev isEqualToString:metadata.rev])
+            if (![localFile.etag isEqualToString:metadata.etag])
                 changeRev = YES;
             
         } else {
             
-            if (localFile && ![localFile.rev isEqualToString:metadata.rev]) // it must be in TableRecord
+            if (localFile && ![localFile.etag isEqualToString:metadata.etag]) // it must be in TableRecord
                 changeRev = YES;
         }
         

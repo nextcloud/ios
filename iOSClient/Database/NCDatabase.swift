@@ -116,7 +116,7 @@ class tableDirectory: Object {
     dynamic var lock : Bool = false
     dynamic var offline : Bool = false
     dynamic var permissions = ""
-    dynamic var rev = ""
+    dynamic var etag = ""
     dynamic var serverUrl = ""
     dynamic var synchronized: Bool = false
     
@@ -159,8 +159,7 @@ class tableLocalFile: Object {
     dynamic var fileID = ""
     dynamic var fileName = ""
     dynamic var fileNamePrint = ""
-    dynamic var offline : Bool = false
-    dynamic var rev = ""
+    dynamic var etag = ""
     dynamic var size : Double = 0
     
     override static func primaryKey() -> String {
@@ -187,7 +186,7 @@ class tableMetadata: Object {
     dynamic var nameCurrentDevice = ""
     dynamic var permissions = ""
     dynamic var protocolCrypto = ""
-    dynamic var rev = ""
+    dynamic var etag = ""
     dynamic var session = ""
     dynamic var sessionError = ""
     dynamic var sessionID = ""
