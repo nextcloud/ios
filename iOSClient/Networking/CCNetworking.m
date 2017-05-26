@@ -670,12 +670,8 @@
 - (void)downloadFileSuccessFailure:(NSString *)fileName fileID:(NSString *)fileID etag:(NSString *)etag date:(NSDate *)date serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorCode:(NSInteger)errorCode
 {
 #ifndef EXTENSION
-    if (fileID)
-        [app.listProgressMetadata removeObjectForKey:fileID];
+    [app.listProgressMetadata removeObjectForKey:fileID];
 #endif
-    
-    // If fileID do not exists return.
-    if (!fileID) return;
     
     dispatch_async(dispatch_get_main_queue(), ^{
         // Progress Task
@@ -1328,8 +1324,7 @@
     if (errorCode != 0) {
         
 #ifndef EXTENSION
-        if (sessionID)
-            [app.listProgressMetadata removeObjectForKey:sessionID];
+        [app.listProgressMetadata removeObjectForKey:sessionID];
 #endif
         
         // Mark error only if not Cancelled Task
@@ -1383,8 +1378,7 @@
         
         
 #ifndef EXTENSION
-        if (sessionID)
-            [app.listProgressMetadata removeObjectForKey:sessionID];
+        [app.listProgressMetadata removeObjectForKey:sessionID];
 #endif
         
         NSLog(@"[LOG] Insert new upload : %@ - FileNamePrint : %@ - fileID : %@", metadata.fileName, metadata.fileNamePrint, metadata.fileID);
