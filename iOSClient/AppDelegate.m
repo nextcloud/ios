@@ -1648,6 +1648,14 @@
         NSArray *listAccount = [CCCoreData getAllAccount];
         for (TableAccount *account in listAccount)
             [[NCManageDatabase sharedInstance] addTableAccountFromCoredata:account];
+        
+        NSArray *listDirectories = [CCCoreData getAllDirectories];
+        for (TableDirectory *directory in listDirectories)
+            [[NCManageDatabase sharedInstance] addTableDirectoryFromCoredata:directory];
+        
+        NSArray *listLocalFile = [CCCoreData getAllLocalFile];
+        for (TableLocalFile *localFile in listLocalFile)
+            [[NCManageDatabase sharedInstance] addTableLocalFileFromCoredata:localFile];
     }
     
     return YES;

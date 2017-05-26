@@ -1933,7 +1933,7 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    func addTableDirectoryFromLocalFile(_ table: TableLocalFile) {
+    func addTableLocalFileFromCoredata(_ table: TableLocalFile) {
         
         let realm = try! Realm()
         
