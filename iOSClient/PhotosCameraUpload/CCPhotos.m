@@ -1,5 +1,5 @@
 //
-//  CCPhotosCameraUpload.m
+//  CCPhotos.m
 //  Crypto Cloud Technology Nextcloud
 //
 //  Created by Marino Faggiana on 29/07/15.
@@ -21,11 +21,11 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#import "CCPhotosCameraUpload.h"
+#import "CCPhotos.h"
 #import "AppDelegate.h"
 #import "NCBridgeSwift.h"
 
-@interface CCPhotosCameraUpload () <CCActionsDeleteDelegate, CCActionsDownloadThumbnailDelegate>
+@interface CCPhotos () <CCActionsDeleteDelegate, CCActionsDownloadThumbnailDelegate>
 {
     tableMetadata *_metadata;
 
@@ -40,7 +40,7 @@
 }
 @end
 
-@implementation CCPhotosCameraUpload
+@implementation CCPhotos
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Init =====
@@ -50,12 +50,12 @@
 {
     if (self = [super initWithCoder:aDecoder])  {
         
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initStateCameraUpload:) name:@"initStateCameraUpload" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setupCameraUploadFull) name:@"setupCameraUploadFull" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initStateAutoUpload:) name:@"initStateAutoUpload" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setupAutoUploadFull) name:@"setupAutoUploadFull" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(triggerProgressTask:) name:@"NotificationProgressTask" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
         
-        app.activePhotosCameraUpload = self;
+        app.activePhotos = self;
     }
     
     return self;
@@ -531,7 +531,7 @@
         
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
             
-            NSArray *metadatas = [[NCManageDatabase sharedInstance] getTableMetadatasPhotosCameraUploadWithServerUrl:serverUrl];
+            NSArray *metadatas = [[NCManageDatabase sharedInstance] getTableMetadatasPhotosWithServerUrl:serverUrl];
             
             _sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:metadatas listProgressMetadata:nil groupByField:@"date" replaceDateToExifDate:YES activeAccount:app.activeAccount];
             
@@ -542,7 +542,7 @@
 
     } else {
         
-        NSArray *results = [[NCManageDatabase sharedInstance] getTableMetadatasPhotosCameraUploadWithServerUrl:serverUrl];
+        NSArray *results = [[NCManageDatabase sharedInstance] getTableMetadatasPhotosWithServerUrl:serverUrl];
         
         _sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:results listProgressMetadata:nil groupByField:@"date" replaceDateToExifDate:YES activeAccount:app.activeAccount];
         [self reloadCollection];
@@ -747,32 +747,31 @@
     self.detailViewController.dataSourceImagesVideos = allRecordsDataSourceImagesVideos;
     self.detailViewController.metadataDetail = _metadata;
     self.detailViewController.dateFilterQuery = _metadata.date;
-    self.detailViewController.isCameraUpload = YES;
     
     [self.detailViewController setTitle:_metadata.fileNamePrint];
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark === initStateCameraUpload ===
+#pragma mark === initStateAutoUpload ===
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)initStateCameraUpload:(NSNotification *)notification
+- (void)initStateAutoUpload:(NSNotification *)notification
 {
     int afterDelay = 0;
     
     if (notification.object)
         afterDelay = [[notification.object objectForKey:@"afterDelay"] intValue];
     
-    [self performSelector:@selector(initStateCameraUpload) withObject:nil afterDelay:afterDelay];
+    [self performSelector:@selector(initStateAutoUpload) withObject:nil afterDelay:afterDelay];
 }
 
-- (void)initStateCameraUpload
+- (void)initStateAutoUpload
 {
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
 
     if (tableAccount.autoUpload) {
         
-        [self setupCameraUpload];
+        [self setupAutoUpload];
         
         if (tableAccount.autoUploadBackground)
             [self checkIfLocationIsEnabled];
@@ -791,7 +790,7 @@
 #pragma mark === Camera Upload & Full ===
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)setupCameraUpload
+- (void)setupAutoUpload
 {
     if ([ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusAuthorized) {
         
@@ -818,7 +817,7 @@
     }
 }
 
-- (void)setupCameraUploadFull
+- (void)setupAutoUploadFull
 {
     if ([ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusAuthorized) {
         

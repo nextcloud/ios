@@ -77,7 +77,7 @@
 - (void)closeAllMenu;
 - (void)returnCreate:(NSInteger)type;
 
-- (void)createFolderCameraUpload;
+- (void)createFolderAutoUpload;
 - (void)createFolder:(NSString *)fileNameFolder autoUploadDirectory:(BOOL)autoUploadDirectory;
 - (void)readFolderWithForced:(BOOL)forced serverUrl:(NSString *)serverUrl;
 

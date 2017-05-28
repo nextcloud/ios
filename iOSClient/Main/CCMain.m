@@ -23,7 +23,7 @@
 
 #import "CCMain.h"
 #import "AppDelegate.h"
-#import "CCPhotosCameraUpload.h"
+#import "CCPhotos.h"
 #import "CCSynchronize.h"
 #import "CCTransfersCell.h"
 #import "OCActivity.h"
@@ -372,8 +372,8 @@
         [self readFolderWithForced:NO serverUrl:_serverUrl];
         
         // Load photo datasorce
-        if (app.activePhotosCameraUpload)
-            [app.activePhotosCameraUpload reloadDatasourceForced];
+        if (app.activePhotos)
+            [app.activePhotos reloadDatasourceForced];
         
         // remove all of detail
         if (app.activeDetail)
@@ -1361,8 +1361,8 @@
                 [app.activeDetail downloadPhotoBrowserFailure:errorCode];
             
             // Updating Photos
-            if (app.activePhotosCameraUpload)
-                [app.activePhotosCameraUpload downloadFileFailure:errorCode];
+            if (app.activePhotos)
+                [app.activePhotos downloadFileFailure:errorCode];
         });
         
     } else {
@@ -1554,8 +1554,8 @@
                 [app.activeDetail downloadPhotoBrowserSuccess:metadata selector:selector];
             
             // Photos
-            if (app.activePhotosCameraUpload)
-                [app.activePhotosCameraUpload downloadFileSuccess:metadata];
+            if (app.activePhotos)
+                [app.activePhotos downloadFileSuccess:metadata];
         });
 
         [self reloadDatasource:serverUrl fileID:metadata.fileID selector:selector];
@@ -2427,7 +2427,7 @@
     
     metadataNet.action = actionCreateFolder;
     if (autoUploadDirectory)
-        metadataNet.options = @"folderCameraUpload";
+        metadataNet.options = @"folderAutoUpload";
     metadataNet.fileName = fileNameFolder;
     metadataNet.selector = selectorCreateFolder;
     metadataNet.selectorPost = selectorReadFolderForced;
@@ -2475,7 +2475,7 @@
     [_hud visibleHudTitle:NSLocalizedString(@"_create_folder_", nil) mode:MBProgressHUDModeIndeterminate color:nil];
 }
 
-- (void)createFolderCameraUpload
+- (void)createFolderAutoUpload
 {
     NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
 
@@ -4258,8 +4258,8 @@
                                         
                                         [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:oldAutoUploadDirectory directoryID:nil];
                                         
-                                        if (app.activeAccount.length > 0 && app.activePhotosCameraUpload)
-                                            [app.activePhotosCameraUpload reloadDatasourceForced];
+                                        if (app.activeAccount.length > 0 && app.activePhotos)
+                                            [app.activePhotos reloadDatasourceForced];
                                         
                                         [self readFolderWithForced:YES serverUrl:serverUrl];
                                         
@@ -5559,7 +5559,6 @@
     _detailViewController.metadataDetail = metadata;
     _detailViewController.dataSourceImagesVideos = allRecordsDataSourceImagesVideos;
     _detailViewController.dateFilterQuery = nil;
-    _detailViewController.isCameraUpload = NO;
     
     [_detailViewController setTitle:metadata.fileNamePrint];
 }

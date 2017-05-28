@@ -207,7 +207,7 @@
                         
             // Create Folder
             if (app.activeMain)
-                [app.activeMain createFolderCameraUpload];
+                [app.activeMain createFolderAutoUpload];
             
             [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUpload" state:YES];
             
@@ -238,7 +238,7 @@
         }
         
         // Initialize Auto Upload
-        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initStateCameraUpload" object:nil];
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initStateAutoUpload" object:nil];
         
         [self reloadForm];
     }
@@ -249,8 +249,8 @@
             
             BOOL isLocationIsEnabled = NO;
                 
-            if (app.activePhotosCameraUpload)
-                [app.activePhotosCameraUpload checkIfLocationIsEnabled];
+            if (app.activePhotos)
+                [app.activePhotos checkIfLocationIsEnabled];
                 
             if(isLocationIsEnabled == YES) {
                     
@@ -275,7 +275,7 @@
         
         if ([[rowDescriptor.value valueData] boolValue] == YES) {
             
-            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"setupCameraUploadFull" object:nil];
+            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"setupAutoUploadFull" object:nil];
             [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUploadFull" state:YES];
             
         } else {

@@ -474,7 +474,6 @@
     _detailViewController.sourceDirectoryLocal = YES;
     _detailViewController.metadataDetail = _metadata;
     _detailViewController.dateFilterQuery = nil;
-    _detailViewController.isCameraUpload = NO;
     _detailViewController.dataSourceImagesVideos = allRecordsDataSourceImagesVideos;
 
     [_detailViewController setTitle:_metadata.fileNamePrint];

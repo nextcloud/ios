@@ -31,7 +31,7 @@
 #import "CCCrypto.h"
 #import "CCManageAsset.h"
 #import "CCGraphics.h"
-#import "CCPhotosCameraUpload.h"
+#import "CCPhotos.h"
 #import "CCSynchronize.h"
 #import "CCMain.h"
 #import "CCDetail.h"
@@ -352,14 +352,14 @@
             [_activeMain requestServerCapabilities];
     
         NSLog(@"[LOG] Initialize Camera Upload");
-        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initStateCameraUpload" object:nil];
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initStateAutoUpload" object:nil];
         
         NSLog(@"[LOG] Listning Favorites");
         [[CCSynchronize sharedSynchronize] readListingFavorites];        
     });
     
     // Initialize Camera Upload
-    //[[NSNotificationCenter defaultCenter] postNotificationName:@"initStateCameraUpload" object:@{@"afterDelay": @(2)}];
+    //[[NSNotificationCenter defaultCenter] postNotificationName:@"initStateAutoUpload" object:@{@"afterDelay": @(2)}];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1203,7 +1203,7 @@
     NSLog(@"[LOG] Start Fetch");
     
     // Verify new photo
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initStateCameraUpload" object:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initStateAutoUpload" object:nil];
     
     // after 20 sec verify Re
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 20 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{

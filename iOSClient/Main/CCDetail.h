@@ -39,7 +39,7 @@
 
 @property (nonatomic, strong) tableMetadata *metadataDetail;
 @property BOOL sourceDirectoryLocal;
-@property BOOL isCameraUpload;
+//@property BOOL isAutoUpload;
 @property (nonatomic, strong) NSDate *dateFilterQuery;
 
 // Document

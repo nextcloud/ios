@@ -66,10 +66,10 @@
     section = [XLFormSectionDescriptor formSection];
     [form addFormSection:section];
     
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"cameraupload" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_uploading_from_camera_", nil)];
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"autoUpload" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_uploading_from_camera_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:[UIImage imageNamed:@"settingsCameraUpload"] forKey:@"imageView.image"];
-    row.action.formSegueIdentifier = @"CCManageCameraUploadSegue";
+    row.action.formSegueIdentifier = @"CCManageAutoUploadSegue";
     [section addFormRow:row];
 
     // Section FOLDERS FAVORITES OFFLINE ------------------------------------

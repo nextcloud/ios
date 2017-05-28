@@ -1,5 +1,5 @@
 //
-//  CCPhotosCameraUpload.h
+//  CCPhotos.h
 //  Crypto Cloud Technology Nextcloud
 //
 //  Created by Marino Faggiana on 29/07/15.
@@ -40,7 +40,7 @@
 
 @class tableMetadata;
 
-@interface CCPhotosCameraUpload : UICollectionViewController <UICollectionViewDataSource, UICollectionViewDelegate, UIActionSheetDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, CCManageLocationDelegate, PHPhotoLibraryChangeObserver, OCNetworkingDelegate>
+@interface CCPhotos: UICollectionViewController <UICollectionViewDataSource, UICollectionViewDelegate, UIActionSheetDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, CCManageLocationDelegate, PHPhotoLibraryChangeObserver, OCNetworkingDelegate>
 
 @property (nonatomic, weak) CCDetail *detailViewController;
 @property (nonatomic, strong) PHFetchResult *assetsFetchResult;
@@ -51,6 +51,5 @@
 - (void)downloadFileFailure:(NSInteger)errorCode;
 
 - (void)reloadDatasourceForced;
-//- (BOOL)automaticCreateFolder:(NSString *)folderPathName;
 
 @end

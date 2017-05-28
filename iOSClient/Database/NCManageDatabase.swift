@@ -210,7 +210,7 @@ class NCManageDatabase: NSObject {
                 
             } else {
                 
-                return NCBrandOptions.sharedInstance.folderDefaultCameraUpload
+                return NCBrandOptions.sharedInstance.folderDefaultAutoUpload
             }
         }
         
@@ -1531,7 +1531,7 @@ class NCManageDatabase: NSObject {
         return self.getMetadatas(predicate: predicate, sorted: nil, ascending: false)
     }
     
-    func getTableMetadatasPhotosCameraUpload(serverUrl: String) -> [tableMetadata]? {
+    func getTableMetadatasPhotos(serverUrl: String) -> [tableMetadata]? {
         
         let tableAccount = self.getAccountActive()
         if tableAccount == nil {
@@ -1542,7 +1542,7 @@ class NCManageDatabase: NSObject {
         let sorted = CCUtility.getOrderSettings()
         let ascending = CCUtility.getAscendingSettings()
         
-        var recordsPhotosCameraUpload = [tableMetadata]()
+        var recordsPhotosAutoUpload = [tableMetadata]()
         let directories = self.getTablesDirectory(predicate: NSPredicate(format: "account = %@ AND serverUrl BEGINSWITH %@", tableAccount!.account, serverUrl), sorted: "serverUrl", ascending: true)
         
         if directories != nil {
@@ -1555,15 +1555,15 @@ class NCManageDatabase: NSObject {
                 if metadatas.count > 0 {
                     
                     for metadata in metadatas {
-                        recordsPhotosCameraUpload.append(tableMetadata.init(value: metadata))
+                        recordsPhotosAutoUpload.append(tableMetadata.init(value: metadata))
                     }
                 }
             }
         }
         
-        if recordsPhotosCameraUpload.count > 0 {
+        if recordsPhotosAutoUpload.count > 0 {
             
-            return Array(recordsPhotosCameraUpload)
+            return Array(recordsPhotosAutoUpload)
             
         } else {
             

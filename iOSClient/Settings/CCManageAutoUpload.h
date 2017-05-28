@@ -24,7 +24,7 @@
 #import "XLFormViewController.h"
 #import "CCMain.h"
 #import "CCManageLocation.h"
-#import "CCPhotosCameraUpload.h"
+#import "CCPhotos.h"
 
 @interface CCManageAutoUpload : XLFormViewController
 
