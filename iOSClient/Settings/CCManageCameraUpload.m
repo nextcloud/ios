@@ -74,7 +74,7 @@
 
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"cameraupload" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_upload_camera_", nil)];
     
-    if (tableAccount.cameraUpload) row.value = @1;
+    if (tableAccount.autoUpload) row.value = @1;
     else row.value = @0;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
@@ -87,7 +87,7 @@
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"camerauploadphoto" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_upload_foto_camera_", nil)];
     row.hidden = [NSString stringWithFormat:@"$%@==0", @"cameraupload"];
     //if ([CCCoreData getCameraUploadPhotoActiveAccount:app.activeAccount]) row.value = @1;
-    if (tableAccount.cameraUploadPhoto) row.value = @1;
+    if (tableAccount.autoUploadPhoto) row.value = @1;
     else row.value = @0;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
@@ -95,7 +95,7 @@
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"camerauploadwwanphoto" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_wifi_only_", nil)];
     row.hidden = [NSString stringWithFormat:@"$%@==0", @"cameraupload"];
     //if ([CCCoreData getCameraUploadWWanPhotoActiveAccount:app.activeAccount] == YES) row.value = @1;
-    if (tableAccount.cameraUploadWWAnPhoto) row.value = @1;
+    if (tableAccount.autoUploadWWAnPhoto) row.value = @1;
     else row.value = @0;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
@@ -107,14 +107,14 @@
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"camerauploadvideo" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_upload_video_camera_", nil)];
     row.hidden = [NSString stringWithFormat:@"$%@==0", @"cameraupload"];
-    if (tableAccount.cameraUploadVideo) row.value = @1;
+    if (tableAccount.autoUploadVideo) row.value = @1;
     else row.value = @0;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"camerauploadwwanvideo" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_wifi_only_", nil)];
     row.hidden = [NSString stringWithFormat:@"$%@==0", @"cameraupload"];
-    if (tableAccount.cameraUploadWWAnVideo) row.value = @1;
+    if (tableAccount.autoUploadWWAnVideo) row.value = @1;
     else row.value = @0;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
@@ -126,7 +126,7 @@
 
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"camerauploadbackground" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_upload_camera_background_", nil)];
     row.hidden = [NSString stringWithFormat:@"$%@==0", @"cameraupload"];
-    if (tableAccount.cameraUploadBackground) row.value = @1;
+    if (tableAccount.autoUploadBackground) row.value = @1;
     else row.value = @0;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
@@ -139,7 +139,7 @@
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"camerauploadallphotos" rowType:XLFormRowDescriptorTypeBooleanSwitch title:title];
     row.hidden = [NSString stringWithFormat:@"$%@==0", @"cameraupload"];
     row.value = 0;
-    if (tableAccount.cameraUploadFull) row.value = @1;
+    if (tableAccount.autoUploadFull) row.value = @1;
     else row.value = @0;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
@@ -151,7 +151,7 @@
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"camerauploadcreatesubfolder" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_upload_camera_create_subfolder_", nil)];
     row.hidden = [NSString stringWithFormat:@"$%@==0", @"cameraupload"];
-    if (tableAccount.cameraUploadCreateSubfolder) row.value = @1;
+    if (tableAccount.autoUploadCreateSubfolder) row.value = @1;
     else row.value = @0;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
@@ -211,29 +211,29 @@
             if (app.activeMain)
                 [app.activeMain createFolderCameraUpload];
             
-            [[NCManageDatabase sharedInstance] setAccountCameraStateFiled:@"cameraUpload" state:YES];
+            [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUpload" state:YES];
             
             // Default
-            [[NCManageDatabase sharedInstance] setAccountCameraUploadFolderName:nil];
-            [[NCManageDatabase sharedInstance] setAccountCameraUploadFolderPath:nil activeUrl:app.activeUrl];
+            [[NCManageDatabase sharedInstance] setAccountAutoUploadFileName:nil];
+            [[NCManageDatabase sharedInstance] setAccountAutoUploadDirectory:nil activeUrl:app.activeUrl];
             
             // verifichiamo che almeno uno dei servizi (foto video) siano attivi, in caso contrario attiviamo le foto
-            if (tableAccount.cameraUploadPhoto == NO && tableAccount.cameraUploadVideo == NO)
-                [[NCManageDatabase sharedInstance] setAccountCameraStateFiled:@"cameraUploadPhoto" state:YES];
+            if (tableAccount.autoUploadPhoto == NO && tableAccount.autoUploadVideo == NO)
+                [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUploadPhoto" state:YES];
             
             // Settings date
-            if (tableAccount.cameraUploadPhoto)
-                [[NCManageDatabase sharedInstance] setAccountCameraUploadDateAssetType:PHAssetMediaTypeImage assetDate:[NSDate date]];
-            if (tableAccount.cameraUploadVideo)
-                [[NCManageDatabase sharedInstance] setAccountCameraUploadDateAssetType:PHAssetMediaTypeVideo assetDate:[NSDate date]];
+            if (tableAccount.autoUploadPhoto)
+                [[NCManageDatabase sharedInstance] setAccountAutoUploadDateAssetType:PHAssetMediaTypeImage assetDate:[NSDate date]];
+            if (tableAccount.autoUploadVideo)
+                [[NCManageDatabase sharedInstance] setAccountAutoUploadDateAssetType:PHAssetMediaTypeVideo assetDate:[NSDate date]];
             
         } else {
             
-            [[NCManageDatabase sharedInstance] setAccountCameraStateFiled:@"cameraUpload" state:NO];
-            [[NCManageDatabase sharedInstance] setAccountCameraStateFiled:@"cameraUploadFull" state:NO];
+            [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUpload" state:NO];
+            [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUploadFull" state:NO];
             
-            [[NCManageDatabase sharedInstance] setAccountCameraUploadDateAssetType:PHAssetMediaTypeImage assetDate:nil];
-            [[NCManageDatabase sharedInstance] setAccountCameraUploadDateAssetType:PHAssetMediaTypeVideo assetDate:nil];
+            [[NCManageDatabase sharedInstance] setAccountAutoUploadDateAssetType:PHAssetMediaTypeImage assetDate:nil];
+            [[NCManageDatabase sharedInstance] setAccountAutoUploadDateAssetType:PHAssetMediaTypeVideo assetDate:nil];
 
             // remove
             [[NCManageDatabase sharedInstance] clearTable:[tableAutomaticUpload class] account:app.activeAccount];
@@ -259,7 +259,7 @@
                 UIAlertView * alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_cameraupload_background_title_", nil) message:[CCUtility localizableBrand:@"_cameraupload_background_msg_" table:nil] delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
                 [alertView show];
                     
-                [[NCManageDatabase sharedInstance] setAccountCameraStateFiled:@"cameraUploadBackground" state:YES];
+                [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUploadBackground" state:YES];
                     
             } else {
                  
@@ -268,7 +268,7 @@
             
         } else {
             
-            [[NCManageDatabase sharedInstance] setAccountCameraStateFiled:@"cameraUploadBackground" state:NO];
+            [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUploadBackground" state:NO];
             [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
         }
     }
@@ -278,12 +278,12 @@
         if ([[rowDescriptor.value valueData] boolValue] == YES) {
             
             [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"setupCameraUploadFull" object:nil];
-            [[NCManageDatabase sharedInstance] setAccountCameraStateFiled:@"cameraUploadFull" state:YES];
+            [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUploadFull" state:YES];
             
         } else {
             
             [[NCManageDatabase sharedInstance] clearTable:[tableAutomaticUpload class] account:app.activeAccount];
-            [[NCManageDatabase sharedInstance] setAccountCameraStateFiled:@"cameraUploadFull" state:NO];
+            [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUploadFull" state:NO];
         }
     }
 
@@ -291,44 +291,44 @@
         
         if ([[rowDescriptor.value valueData] boolValue] == YES) {
             
-            [[NCManageDatabase sharedInstance] setAccountCameraUploadDateAssetType:PHAssetMediaTypeImage assetDate:[NSDate date]];
+            [[NCManageDatabase sharedInstance] setAccountAutoUploadDateAssetType:PHAssetMediaTypeImage assetDate:[NSDate date]];
             
         } else {
             
-            [[NCManageDatabase sharedInstance] setAccountCameraUploadDateAssetType:PHAssetMediaTypeImage assetDate:nil];
+            [[NCManageDatabase sharedInstance] setAccountAutoUploadDateAssetType:PHAssetMediaTypeImage assetDate:nil];
         }
                 
-        [[NCManageDatabase sharedInstance] setAccountCameraStateFiled:@"cameraUploadPhoto" state:[[rowDescriptor.value valueData] boolValue]];
+        [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUploadPhoto" state:[[rowDescriptor.value valueData] boolValue]];
         
     }
     
     if ([rowDescriptor.tag isEqualToString:@"camerauploadwwanphoto"]) {
         
-        [[NCManageDatabase sharedInstance] setAccountCameraStateFiled:@"cameraUploadWWAnPhoto" state:[[rowDescriptor.value valueData] boolValue]];
+        [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUploadWWAnPhoto" state:[[rowDescriptor.value valueData] boolValue]];
     }
     
     if ([rowDescriptor.tag isEqualToString:@"camerauploadvideo"]) {
     
         if ([[rowDescriptor.value valueData] boolValue] == YES) {
                 
-            [[NCManageDatabase sharedInstance] setAccountCameraUploadDateAssetType:PHAssetMediaTypeVideo assetDate:[NSDate date]];
+            [[NCManageDatabase sharedInstance] setAccountAutoUploadDateAssetType:PHAssetMediaTypeVideo assetDate:[NSDate date]];
 
         } else {
                 
-            [[NCManageDatabase sharedInstance] setAccountCameraUploadDateAssetType:PHAssetMediaTypeVideo assetDate:nil];
+            [[NCManageDatabase sharedInstance] setAccountAutoUploadDateAssetType:PHAssetMediaTypeVideo assetDate:nil];
         }
             
-        [[NCManageDatabase sharedInstance] setAccountCameraStateFiled:@"cameraUploadVideo" state:[[rowDescriptor.value valueData] boolValue]];
+        [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUploadVideo" state:[[rowDescriptor.value valueData] boolValue]];
     }
     
     if ([rowDescriptor.tag isEqualToString:@"camerauploadwwanvideo"]) {
         
-        [[NCManageDatabase sharedInstance] setAccountCameraStateFiled:@"cameraUploadWWAnVideo" state:[[rowDescriptor.value valueData] boolValue]];
+        [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUploadWWAnVideo" state:[[rowDescriptor.value valueData] boolValue]];
     }
     
     if ([rowDescriptor.tag isEqualToString:@"camerauploadcreatesubfolder"]) {
         
-        [[NCManageDatabase sharedInstance] setAccountCameraStateFiled:@"cameraUploadCreateSubfolder" state:[[rowDescriptor.value valueData] boolValue]];
+        [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUploadCreateSubfolder" state:[[rowDescriptor.value valueData] boolValue]];
     }
 }
 
@@ -361,35 +361,35 @@
     // - STATUS ---------------------
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
     
-    if (tableAccount.cameraUpload)
+    if (tableAccount.autoUpload)
         [rowCameraupload setValue:@1]; else [rowCameraupload setValue:@0];
     
     //if ([CCCoreData getCameraUploadPhotoActiveAccount:app.activeAccount])
-    if (tableAccount.cameraUploadPhoto)
+    if (tableAccount.autoUploadPhoto)
         [rowCamerauploadphoto setValue:@1]; else [rowCamerauploadphoto setValue:@0];
     
     //if ([CCCoreData getCameraUploadWWanPhotoActiveAccount:app.activeAccount])
-    if (tableAccount.cameraUploadWWAnPhoto)
+    if (tableAccount.autoUploadWWAnPhoto)
         [rowCamerauploadwwanphoto setValue:@1]; else [rowCamerauploadwwanphoto setValue:@0];
     
     //if ([CCCoreData getCameraUploadVideoActiveAccount:app.activeAccount])
-    if (tableAccount.cameraUploadVideo)
+    if (tableAccount.autoUploadVideo)
         [rowCamerauploadvideo setValue:@1]; else [rowCamerauploadvideo setValue:@0];
     
     //if ([CCCoreData getCameraUploadWWanVideoActiveAccount:app.activeAccount])
-    if (tableAccount.cameraUploadWWAnVideo)
+    if (tableAccount.autoUploadWWAnVideo)
         [rowCamerauploadwwanvideo setValue:@1]; else [rowCamerauploadwwanvideo setValue:@0];
     
     //if ([CCCoreData getCameraUploadBackgroundActiveAccount:app.activeAccount])
-    if (tableAccount.cameraUploadBackground)
+    if (tableAccount.autoUploadBackground)
         [rowCamerauploadBackground setValue:@1]; else [rowCamerauploadBackground setValue:@0];
     
     //if ([CCCoreData getCameraUploadFullPhotosActiveAccount:app.activeAccount])
-    if (tableAccount.cameraUploadFull)
+    if (tableAccount.autoUploadFull)
         [rowCamerauploadAllPhotos setValue:@1]; else [rowCamerauploadAllPhotos setValue:@0];
     
     //if ([CCCoreData getCameraUploadCreateSubfolderActiveAccount:app.activeAccount])
-    if (tableAccount.cameraUploadCreateSubfolder)
+    if (tableAccount.autoUploadCreateSubfolder)
         [rowCamerauploadCreateSubfolder setValue:@1]; else [rowCamerauploadCreateSubfolder setValue:@0];
     
     // - HIDDEN ---------------------
@@ -426,23 +426,23 @@
             sectionName = NSLocalizedString(@"_uploading_from_camera_", nil);
             break;
         case 1:
-            if (tableAccount.cameraUpload) sectionName = NSLocalizedString(@"_upload_automatic_photos_", nil);
+            if (tableAccount.autoUpload) sectionName = NSLocalizedString(@"_upload_automatic_photos_", nil);
             else sectionName = @"";
             break;
         case 2:
-            if (tableAccount.cameraUpload) sectionName = NSLocalizedString(@"_upload_automatic_videos_", nil);
+            if (tableAccount.autoUpload) sectionName = NSLocalizedString(@"_upload_automatic_videos_", nil);
             else sectionName = @"";
             break;
         case 3:
-            if (tableAccount.cameraUpload) sectionName = NSLocalizedString(@"_upload_camera_background_", nil);
+            if (tableAccount.autoUpload) sectionName = NSLocalizedString(@"_upload_camera_background_", nil);
             else sectionName = @"";
             break;
         case 4:
-            if (tableAccount.cameraUpload) sectionName = NSLocalizedString(@"_upload_camera_fullphotos_", nil);
+            if (tableAccount.autoUpload) sectionName = NSLocalizedString(@"_upload_camera_fullphotos_", nil);
             else sectionName = @"";
             break;
         case 5:
-            if (tableAccount.cameraUpload) sectionName = NSLocalizedString(@"_upload_camera_create_subfolder_", nil);
+            if (tableAccount.autoUpload) sectionName = NSLocalizedString(@"_upload_camera_create_subfolder_", nil);
             else sectionName = @"";
             break;
     }
@@ -460,15 +460,15 @@
             sectionName = [CCUtility localizableBrand:@"_photo_folder_photocamera_" table:nil];
             break;
         case 3:
-            if (tableAccount.cameraUpload) sectionName = [CCUtility localizableBrand:@"_photo_folder_background_" table:nil];
+            if (tableAccount.autoUpload) sectionName = [CCUtility localizableBrand:@"_photo_folder_background_" table:nil];
             else sectionName = @"";
             break;
         case 4:
-            if (tableAccount.cameraUpload) sectionName =  [CCUtility localizableBrand:@"_upload_camera_fullphotos_footer_" table:nil];
+            if (tableAccount.autoUpload) sectionName =  [CCUtility localizableBrand:@"_upload_camera_fullphotos_footer_" table:nil];
             else sectionName = @"";
             break;
         case 5:
-            if (tableAccount.cameraUpload) sectionName =  [CCUtility localizableBrand:@"_upload_camera_create_subfolder_footer_" table:nil];
+            if (tableAccount.autoUpload) sectionName =  [CCUtility localizableBrand:@"_upload_camera_create_subfolder_footer_" table:nil];
             else sectionName = @"";
             break;
     }

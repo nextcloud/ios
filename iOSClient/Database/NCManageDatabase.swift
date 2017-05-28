@@ -217,16 +217,16 @@ class NCManageDatabase: NSObject {
         return ""
     }
     
-    func getAccountAutoUploadServerUrl(_ activeUrl : String) -> String {
+    func getAccountAutoUploadDirectory(_ activeUrl : String) -> String {
         
         let realm = try! Realm()
         
         let results = realm.objects(tableAccount.self).filter("active = true")
         if (results.count > 0) {
             
-            if results[0].autoUploadServerUrl.characters.count > 0 {
+            if results[0].autoUploadDirectory.characters.count > 0 {
                 
-                return results[0].autoUploadServerUrl
+                return results[0].autoUploadDirectory
                 
             } else {
                 
@@ -237,12 +237,12 @@ class NCManageDatabase: NSObject {
         return ""
     }
 
-    func getAccountAutoUpload(_ activeUrl : String) -> String {
+    func getAccountAutoUploadPath(_ activeUrl : String) -> String {
         
         let cameraFileName = self.getAccountAutoUploadFileName()
-        let cameraServerUrl = self.getAccountAutoUploadServerUrl(activeUrl)
+        let cameraDirectory = self.getAccountAutoUploadDirectory(activeUrl)
      
-        let folderPhotos = CCUtility.stringAppendServerUrl(cameraServerUrl, addFileName: cameraFileName)!
+        let folderPhotos = CCUtility.stringAppendServerUrl(cameraDirectory, addFileName: cameraFileName)!
         
         return folderPhotos
     }
@@ -273,7 +273,7 @@ class NCManageDatabase: NSObject {
         return activeAccount
     }
 
-    func setAccountCameraStateFiled(_ field: String, state: Bool) {
+    func setAccountAutoUploadFiled(_ field: String, state: Bool) {
         
         let realm = try! Realm()
         
@@ -339,20 +339,20 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    func setAccountAutoUploadServerUrl(_ serverUrl: String?, activeUrl: String) {
+    func setAccountAutoUploadDirectory(_ serverUrl: String?, activeUrl: String) {
         
         let realm = try! Realm()
         var serverUrl : String? = serverUrl
         
         if serverUrl == nil {
-            serverUrl = self.getAccountAutoUploadServerUrl(activeUrl)
+            serverUrl = self.getAccountAutoUploadDirectory(activeUrl)
         }
         
         let results = realm.objects(tableAccount.self).filter("active = true")
         if (results.count > 0) {
             try! realm.write {
                 
-                results[0].autoUploadServerUrl = serverUrl!
+                results[0].autoUploadDirectory = serverUrl!
             }
         }
     }
@@ -1247,7 +1247,7 @@ class NCManageDatabase: NSObject {
         }
         
         let autoUploadFileName = self.getAccountAutoUploadFileName()
-        let autoUploadServerUrl = self.getAccountAutoUploadServerUrl(activeUrl)
+        let autoUploadDirectory = self.getAccountAutoUploadDirectory(activeUrl)
         let directory = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID)
         
         let realm = try! Realm()
@@ -1255,7 +1255,7 @@ class NCManageDatabase: NSObject {
         try! realm.write {
             
             if (metadata.realm == nil) {
-                let metadataWithIcon = CCUtility.insertTypeFileIconName(metadata, directory: directory, cameraFolderName: autoUploadFileName, cameraFolderPath: autoUploadServerUrl)
+                let metadataWithIcon = CCUtility.insertTypeFileIconName(metadata, directory: directory, autoUploadFileName: autoUploadFileName, autoUploadDirectory: autoUploadDirectory)
                 realm.add(metadataWithIcon!, update: true)
             } else {
                 realm.add(metadata, update: true)
@@ -1313,10 +1313,10 @@ class NCManageDatabase: NSObject {
     func updateMetadata(_ metadata: tableMetadata, activeUrl: String) -> tableMetadata {
         
         let autoUploadFileName = self.getAccountAutoUploadFileName()
-        let autoUploadServerUrl = self.getAccountAutoUploadServerUrl(activeUrl)
+        let autoUploadDirectory = self.getAccountAutoUploadDirectory(activeUrl)
         let serverUrl = self.getServerUrl(metadata.directoryID)
         
-        let metadataWithIcon = CCUtility.insertTypeFileIconName(metadata, directory: serverUrl, cameraFolderName: autoUploadFileName, cameraFolderPath: autoUploadServerUrl)
+        let metadataWithIcon = CCUtility.insertTypeFileIconName(metadata, directory: serverUrl, autoUploadFileName: autoUploadFileName, autoUploadDirectory: autoUploadDirectory)
         
         let realm = try! Realm()
         
@@ -1879,7 +1879,7 @@ class NCManageDatabase: NSObject {
                     addAccount.autoUploadFileName = table.cameraUploadFolderName!
                 }
                 if table.cameraUploadFolderPath != nil {
-                    addAccount.autoUploadServerUrl = table.cameraUploadFolderPath!
+                    addAccount.autoUploadDirectory = table.cameraUploadFolderPath!
                 }
                 if table.cameraUploadFull == 1 {
                     addAccount.autoUploadFull = true

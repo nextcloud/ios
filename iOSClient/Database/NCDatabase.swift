@@ -34,7 +34,7 @@ class tableAccount: Object {
     dynamic var autoUploadDatePhoto: NSDate? = nil
     dynamic var autoUploadDateVideo: NSDate? = nil
     dynamic var autoUploadFileName = ""
-    dynamic var autoUploadServerUrl = ""
+    dynamic var autoUploadDirectory = ""
     dynamic var autoUploadFull : Bool = false
     dynamic var autoUploadPhoto : Bool = false
     dynamic var autoUploadVideo : Bool = false

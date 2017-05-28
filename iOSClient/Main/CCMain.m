@@ -467,7 +467,7 @@
 {
     [alertView dismissWithClickedButtonIndex:buttonIndex animated:YES];
         
-    if (alertView.tag == alertCreateFolder && buttonIndex == 1) [self createFolder:[alertView textFieldAtIndex:0].text folderCameraUpload:NO];
+    if (alertView.tag == alertCreateFolder && buttonIndex == 1) [self createFolder:[alertView textFieldAtIndex:0].text autoUploadDirectory:NO];
     
     if (alertView.tag == alertCreateFolderCrypto && buttonIndex == 1) [self createFolderEncrypted:[alertView textFieldAtIndex:0].text];
     
@@ -768,10 +768,10 @@
 {
     // evitiamo il rimando della eventuale photo e/o video
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
-    if (tableAccount.cameraUpload) {
+    if (tableAccount.autoUpload) {
         
-        [[NCManageDatabase sharedInstance] setAccountCameraUploadDateAssetType:PHAssetMediaTypeImage assetDate:[NSDate date]];
-        [[NCManageDatabase sharedInstance] setAccountCameraUploadDateAssetType:PHAssetMediaTypeVideo assetDate:[NSDate date]];
+        [[NCManageDatabase sharedInstance] setAccountAutoUploadDateAssetType:PHAssetMediaTypeImage assetDate:[NSDate date]];
+        [[NCManageDatabase sharedInstance] setAccountAutoUploadDateAssetType:PHAssetMediaTypeVideo assetDate:[NSDate date]];
     }
 }
 
@@ -1465,7 +1465,7 @@
         if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image]) {
             
             // evitiamo il rimando photo
-            [[NCManageDatabase sharedInstance] setAccountCameraUploadDateAssetType:PHAssetMediaTypeImage assetDate:[NSDate date]];
+            [[NCManageDatabase sharedInstance] setAccountAutoUploadDateAssetType:PHAssetMediaTypeImage assetDate:[NSDate date]];
 
             UIImage *image = [UIImage imageWithContentsOfFile:file];
             
@@ -1478,7 +1478,7 @@
         if ([metadata.typeFile isEqualToString: k_metadataTypeFile_video]) {
             
             // we avoid the cross-reference video
-            [[NCManageDatabase sharedInstance] setAccountCameraUploadDateAssetType:PHAssetMediaTypeVideo assetDate:[NSDate date]];
+            [[NCManageDatabase sharedInstance] setAccountAutoUploadDateAssetType:PHAssetMediaTypeVideo assetDate:[NSDate date]];
             
             [[NSFileManager defaultManager] linkItemAtPath:file toPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileNamePrint] error:nil];
             
@@ -1679,7 +1679,7 @@
     BOOL useSubFolder = [[arguments objectAtIndex:3] boolValue];
     NSString *session = [arguments objectAtIndex:4];
     
-    NSString *folderPhotos = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderPathWithActiveUrl:app.activeUrl];
+    NSString *folderPhotos = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:app.activeUrl];
     NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
     
     // Create the folder for Photos & if request the subfolders
@@ -2415,18 +2415,18 @@
     }
 }
 
-- (void)createFolder:(NSString *)fileNameFolder folderCameraUpload:(BOOL)folderCameraUpload
+- (void)createFolder:(NSString *)fileNameFolder autoUploadDirectory:(BOOL)autoUploadDirectory
 {
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
     
     fileNameFolder = [CCUtility removeForbiddenCharactersServer:fileNameFolder];
     if (![fileNameFolder length]) return;
     
-    if (folderCameraUpload) metadataNet.serverUrl = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderPathWithActiveUrl:app.activeUrl];
+    if (autoUploadDirectory) metadataNet.serverUrl = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:app.activeUrl];
     else  metadataNet.serverUrl = _serverUrl;
     
     metadataNet.action = actionCreateFolder;
-    if (folderCameraUpload)
+    if (autoUploadDirectory)
         metadataNet.options = @"folderCameraUpload";
     metadataNet.fileName = fileNameFolder;
     metadataNet.selector = selectorCreateFolder;
@@ -2434,7 +2434,7 @@
     
     [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
     
-    if (!folderCameraUpload)
+    if (!autoUploadDirectory)
         [_hud visibleHudTitle:NSLocalizedString(@"_create_folder_", nil) mode:MBProgressHUDModeIndeterminate color:nil];
 }
 
@@ -2477,9 +2477,9 @@
 
 - (void)createFolderCameraUpload
 {
-    NSString *cameraFolderName = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderName];
+    NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
 
-    [self createFolder:cameraFolderName folderCameraUpload:YES];
+    [self createFolder:autoUploadFileName autoUploadDirectory:YES];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -4154,8 +4154,8 @@
         tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"serverUrl = %@", dirServerUrl]];
         if (directory.lock && [[CCUtility getBlockCode] length] && app.sessionePasscodeLock == nil) lockDirectory = YES;
         
-        NSString *cameraUploadFolderName = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderName];
-        NSString *cameraUploadFolderPath = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderPathWithActiveUrl:app.activeUrl];
+        NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
+        NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:app.activeUrl];
         
         [actionSheet addButtonWithTitle: _metadata.fileNamePrint
                                   image: [CCGraphics changeThemingColorImage:[UIImage imageNamed:_metadata.iconName] color:[NCBrandColor sharedInstance].brand]
@@ -4200,7 +4200,7 @@
                                     }];
         }
 
-        if (!([_metadata.fileName isEqualToString:cameraUploadFolderName] == YES && [serverUrl isEqualToString:cameraUploadFolderPath] == YES) && !lockDirectory) {
+        if (!([_metadata.fileName isEqualToString:autoUploadFileName] == YES && [serverUrl isEqualToString:autoUploadDirectory] == YES) && !lockDirectory) {
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_rename_", nil)
                                       image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetRename"] color:[NCBrandColor sharedInstance].brand]
@@ -4222,7 +4222,7 @@
                                     }];
         }
         
-        if (!([_metadata.fileName isEqualToString:cameraUploadFolderName] == YES && [serverUrl isEqualToString:cameraUploadFolderPath] == YES) && !lockDirectory) {
+        if (!([_metadata.fileName isEqualToString:autoUploadFileName] == YES && [serverUrl isEqualToString:autoUploadDirectory] == YES) && !lockDirectory) {
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_move_", nil)
                                       image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetMove"] color:[NCBrandColor sharedInstance].brand]
@@ -4238,7 +4238,7 @@
                                     }];
         }
         
-        if (!([_metadata.fileName isEqualToString:cameraUploadFolderName] == YES && [serverUrl isEqualToString:cameraUploadFolderPath] == YES) && _metadata.cryptated == NO) {
+        if (!([_metadata.fileName isEqualToString:autoUploadFileName] == YES && [serverUrl isEqualToString:autoUploadDirectory] == YES) && _metadata.cryptated == NO) {
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_folder_automatic_upload_", nil)
                                       image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderphotocamera"] color:[NCBrandColor sharedInstance].brand]
@@ -4251,12 +4251,12 @@
                                         [self setEditing:NO animated:YES];
                                         
                                         // Settings new folder Automatatic upload
-                                        NSString *oldPath = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderPathWithActiveUrl:app.activeUrl];
+                                        NSString *oldAutoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:app.activeUrl];
 
-                                        [[NCManageDatabase sharedInstance] setAccountCameraUploadFolderName:_metadata.fileName];
-                                        [[NCManageDatabase sharedInstance] setAccountCameraUploadFolderPath:serverUrl activeUrl:app.activeUrl];
+                                        [[NCManageDatabase sharedInstance] setAccountAutoUploadFileName:_metadata.fileName];
+                                        [[NCManageDatabase sharedInstance] setAccountAutoUploadDirectory:serverUrl activeUrl:app.activeUrl];
                                         
-                                        [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:oldPath directoryID:nil];
+                                        [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:oldAutoUploadDirectory directoryID:nil];
                                         
                                         if (app.activeAccount.length > 0 && app.activePhotosCameraUpload)
                                             [app.activePhotosCameraUpload reloadDatasourceForced];
@@ -4264,14 +4264,14 @@
                                         [self readFolderWithForced:YES serverUrl:serverUrl];
                                         
                                         NSLog(@"[LOG] Update Folder Photo");
-                                        NSString *folderCameraUpload = [[NCManageDatabase sharedInstance] getAccountCameraUploadFolderPathWithActiveUrl:app.activeUrl];
-                                        if ([folderCameraUpload length] > 0)
-                                            [[CCSynchronize sharedSynchronize] readFolderServerUrl:folderCameraUpload directoryID:[[NCManageDatabase sharedInstance] getDirectoryID:folderCameraUpload] selector:selectorReadFolder];
+                                        NSString *directoryAutoUpload = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:app.activeUrl];
+                                        if ([directoryAutoUpload length] > 0)
+                                            [[CCSynchronize sharedSynchronize] readFolderServerUrl:directoryAutoUpload directoryID:[[NCManageDatabase sharedInstance] getDirectoryID:directoryAutoUpload] selector:selectorReadFolder];
                                         
                                     }];
         }
 
-        if (!([_metadata.fileName isEqualToString:cameraUploadFolderName] == YES && [serverUrl isEqualToString:cameraUploadFolderPath] == YES)) {
+        if (!([_metadata.fileName isEqualToString:autoUploadFileName] == YES && [serverUrl isEqualToString:autoUploadDirectory] == YES)) {
             
             [actionSheet addButtonWithTitle:titoloLock
                                       image:[UIImage imageNamed:@"actionSheetLock"]
@@ -4287,7 +4287,7 @@
                                     }];
         }
 
-        if (!([_metadata.fileName isEqualToString:cameraUploadFolderName] == YES && [serverUrl isEqualToString:cameraUploadFolderPath] == YES) && !lockDirectory && app.isCryptoCloudMode) {
+        if (!([_metadata.fileName isEqualToString:autoUploadFileName] == YES && [serverUrl isEqualToString:autoUploadDirectory] == YES) && !lockDirectory && app.isCryptoCloudMode) {
             
             [actionSheet addButtonWithTitle:titoloCriptaDecripta
                                       image:[UIImage imageNamed:@"actionSheetCrypto"]

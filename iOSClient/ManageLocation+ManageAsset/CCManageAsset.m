@@ -40,7 +40,7 @@
     ALAssetsLibrary *assetLibrary = [CCUtility defaultAssetsLibrary];
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
     
-    if (tableAccount.cameraUpload) {
+    if (tableAccount.autoUpload) {
         
         dispatch_semaphore_t semaphoreGroup = dispatch_semaphore_create(0);
         
@@ -76,14 +76,14 @@
 - (NSMutableArray *)getArrayNewAssetsFromGroup:(ALAssetsGroup *)group datePhoto:(NSDate *)datePhoto dateVideo:(NSDate *)dateVideo
 {
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
-    if (!tableAccount.cameraUpload)
+    if (!tableAccount.autoUpload)
         return nil;
 
     NSMutableArray *tmpAssetsNew = [[NSMutableArray alloc] init];
     
     // Photo
     
-    if (tableAccount.cameraUploadPhoto) {
+    if (tableAccount.autoUploadPhoto) {
         
         dispatch_semaphore_t semaphoreAsset = dispatch_semaphore_create(0);
 
@@ -114,7 +114,7 @@
     
     // Video
     
-    if (tableAccount.cameraUploadVideo) {
+    if (tableAccount.autoUploadVideo) {
         
         dispatch_semaphore_t semaphoreAsset = dispatch_semaphore_create(0);
         

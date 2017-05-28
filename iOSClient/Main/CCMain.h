@@ -78,7 +78,7 @@
 - (void)returnCreate:(NSInteger)type;
 
 - (void)createFolderCameraUpload;
-- (void)createFolder:(NSString *)fileNameFolder folderCameraUpload:(BOOL)folderCameraUpload;
+- (void)createFolder:(NSString *)fileNameFolder autoUploadDirectory:(BOOL)autoUploadDirectory;
 - (void)readFolderWithForced:(BOOL)forced serverUrl:(NSString *)serverUrl;
 
 - (void)uploadFileAsset:(NSMutableArray *)assets serverUrl:(NSString *)serverUrl cryptated:(BOOL)cryptated useSubFolder:(BOOL)useSubFolder session:(NSString *)session;

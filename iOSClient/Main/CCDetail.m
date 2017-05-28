@@ -204,10 +204,10 @@
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
     
     // evitiamo il rimando della eventuale photo e/o video        
-    if (tableAccount.cameraUpload) {
+    if (tableAccount.autoUpload) {
         
-        [[NCManageDatabase sharedInstance] setAccountCameraUploadDateAssetType:PHAssetMediaTypeImage assetDate:[NSDate date]];
-        [[NCManageDatabase sharedInstance] setAccountCameraUploadDateAssetType:PHAssetMediaTypeVideo assetDate:[NSDate date]];
+        [[NCManageDatabase sharedInstance] setAccountAutoUploadDateAssetType:PHAssetMediaTypeImage assetDate:[NSDate date]];
+        [[NCManageDatabase sharedInstance] setAccountAutoUploadDateAssetType:PHAssetMediaTypeVideo assetDate:[NSDate date]];
     }
 }
 
