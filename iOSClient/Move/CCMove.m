@@ -314,26 +314,19 @@
         for (tableMetadata *metadata in metadatas) {
         
             if ([CCUtility isCryptoPlistString:metadata.fileName] && [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, metadata.fileName]] == NO) {
-            
-                // download only the directories
-                for (tableMetadata *metadataDirectory in metadatas) {
                 
-                    if (metadataDirectory.directory == YES && [metadataDirectory.fileName isEqualToString:metadata.fileNameData]) {
+                    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:activeAccount];
                     
-                        CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:activeAccount];
+                    metadataNet.action = actionDownloadFile;
+                    metadataNet.downloadData = NO;
+                    metadataNet.downloadPlist = YES;
+                    metadataNet.fileID = metadata.fileID;
+                    metadataNet.selector = selectorLoadPlist;
+                    metadataNet.serverUrl = _serverUrl;
+                    metadataNet.session = k_download_session_foreground;
+                    metadataNet.taskStatus = k_taskStatusResume;
                     
-                        metadataNet.action = actionDownloadFile;
-                        metadataNet.downloadData = NO;
-                        metadataNet.downloadPlist = YES;
-                        metadataNet.fileID = metadata.fileID;
-                        metadataNet.selector = selectorLoadPlist;
-                        metadataNet.serverUrl = _serverUrl;
-                        metadataNet.session = k_download_session_foreground;
-                        metadataNet.taskStatus = k_taskStatusResume;
-                    
-                        [self addNetworkingQueue:metadataNet];
-                    }
-                }
+                    [self addNetworkingQueue:metadataNet];
             }
         }
     });    
