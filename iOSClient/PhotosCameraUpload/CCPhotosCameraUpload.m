@@ -525,7 +525,7 @@
     if (app.activeAccount.length == 0)
         return;
     
-    NSString *serverUrl = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:app.activeUrl];
+    NSString *serverUrl = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:app.activeUrl];
     
     if (_sectionDataSource) {
         
@@ -1110,7 +1110,7 @@
     NSMutableArray *newItemsPHAssetToUpload = [[NSMutableArray alloc] init];
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
     
-    NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:app.activeUrl];
+    NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:app.activeUrl];
     BOOL useSubFolder = tableAccount.autoUploadCreateSubfolder;
     
     // Conversion from ALAsset -to-> PHAsset
@@ -1124,7 +1124,7 @@
     }
     
     // Create the folder for Photos & if request the subfolders
-    if(![app createFolderSubFolderAutomaticUploadFolderPhotos:autoUploadDirectory useSubFolder:useSubFolder assets:newItemsPHAssetToUpload selector:selectorUploadAutomaticAll]) {
+    if(![app createFolderSubFolderAutomaticUploadFolderPhotos:autoUploadPath useSubFolder:useSubFolder assets:newItemsPHAssetToUpload selector:selectorUploadAutomaticAll]) {
             
         // end loading
         [_hud hideHud];
@@ -1159,9 +1159,9 @@
         NSString *monthString = [formatter stringFromDate:assetDate];
 
         if (useSubFolder)
-            serverUrl = [NSString stringWithFormat:@"%@/%@/%@", autoUploadDirectory, yearString, monthString];
+            serverUrl = [NSString stringWithFormat:@"%@/%@/%@", autoUploadPath, yearString, monthString];
         else
-            serverUrl = autoUploadDirectory;
+            serverUrl = autoUploadPath;
         
         CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
             
