@@ -74,13 +74,12 @@
     for (tableMetadata* metadata in records) {
         
         // if exists replace date with exif date
-        /*
         if (replaceDateToExifDate) {
-            TableLocalFile *localFile = [CCCoreData getLocalFileWithFileID:metadata.fileID activeAccount:activeAccount];
+            
+            tableLocalFile *localFile = [[NCManageDatabase sharedInstance] getTableLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadata.fileID]];
             if (localFile.exifDate)
                 metadata.date = localFile.exifDate;
         }
-        */
         
         if ([listProgressMetadata objectForKey:metadata.fileID] && [groupByField isEqualToString:@"session"]) {
             [copyRecords insertObject:metadata atIndex:0];
