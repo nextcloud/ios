@@ -266,7 +266,7 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         row.value = 0
         section.addFormRow(row)
         
-        row = XLFormRowDescriptor(tag: "useSubFolder", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_upload_camera_create_subfolder_", comment: ""))
+        row = XLFormRowDescriptor(tag: "useSubFolder", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_autoupload_create_subfolder_", comment: ""))
         row.hidden = "$\("useFolderPhoto") == 0"
         
         let tableAccount = NCManageDatabase.sharedInstance.getAccountActive()

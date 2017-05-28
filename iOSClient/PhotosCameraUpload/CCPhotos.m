@@ -273,7 +273,7 @@
     if (account.autoUpload)
         text = [NSString stringWithFormat:@"%@", @"\n\n\n\n"];
     else
-        text = [NSString stringWithFormat:@"\n%@\n", NSLocalizedString(@"_tutorial_camera_upload_view_", nil)];
+        text = [NSString stringWithFormat:@"\n%@\n", NSLocalizedString(@"_tutorial_autoupload_view_", nil)];
     
     NSDictionary *attributes = @{NSFontAttributeName: [UIFont systemFontOfSize:14.0], NSForegroundColorAttributeName: [UIColor lightGrayColor], NSParagraphStyleAttributeName: paragraph};
 
@@ -288,7 +288,7 @@
     
         UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"button"] color:[NCBrandColor sharedInstance].brand];
         
-        return [CCUtility drawText:NSLocalizedString(@"_activate_camera_upload_", nil) inImage:buttonImage colorText:[UIColor whiteColor]];
+        return [CCUtility drawText:NSLocalizedString(@"_activate_autoupload_", nil) inImage:buttonImage colorText:[UIColor whiteColor]];
         
     } else return nil;
 }

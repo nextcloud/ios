@@ -64,7 +64,7 @@
 
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
     
-    form = [XLFormDescriptor formDescriptorWithTitle:NSLocalizedString(@"_uploading_from_camera_", nil)];
+    form = [XLFormDescriptor formDescriptorWithTitle:NSLocalizedString(@"_settings_autoupload_", nil)];
     
     // Auto Upload
     
@@ -72,7 +72,7 @@
     [form addFormSection:section];
     section.footerTitle = NSLocalizedString(@"_photo_folder_photocamera_", nil);
 
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"autoUpload" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_upload_camera_", nil)];
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"autoUpload" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_autoupload_", nil)];
     
     if (tableAccount.autoUpload) row.value = @1;
     else row.value = @0;
@@ -84,7 +84,7 @@
     section = [XLFormSectionDescriptor formSection];
     [form addFormSection:section];
     
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"autoUploadPhoto" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_upload_foto_camera_", nil)];
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"autoUploadPhoto" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_autoupload_photos_", nil)];
     row.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
     if (tableAccount.autoUploadPhoto) row.value = @1;
     else row.value = @0;
@@ -103,7 +103,7 @@
     section = [XLFormSectionDescriptor formSection];
     [form addFormSection:section];
     
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"autoUploadVideo" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_upload_video_camera_", nil)];
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"autoUploadVideo" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_autoupload_videos_", nil)];
     row.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
     if (tableAccount.autoUploadVideo) row.value = @1;
     else row.value = @0;
@@ -122,7 +122,7 @@
     section = [XLFormSectionDescriptor formSection];
     [form addFormSection:section];
 
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"autoUploadBackground" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_upload_camera_background_", nil)];
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"autoUploadBackground" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_autoupload_background_", nil)];
     row.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
     if (tableAccount.autoUploadBackground) row.value = @1;
     else row.value = @0;
@@ -133,7 +133,7 @@
     section = [XLFormSectionDescriptor formSection];
     [form addFormSection:section];
     
-    NSString *title = NSLocalizedString(@"_upload_camera_fullphotos_", nil);
+    NSString *title = NSLocalizedString(@"_autoupload_fullphotos_", nil);
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"autoUploadFull" rowType:XLFormRowDescriptorTypeBooleanSwitch title:title];
     row.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
     row.value = 0;
@@ -147,7 +147,7 @@
     section = [XLFormSectionDescriptor formSection];
     [form addFormSection:section];
     
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"autoUploadCreateSubfolder" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_upload_camera_create_subfolder_", nil)];
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"autoUploadCreateSubfolder" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_autoupload_create_subfolder_", nil)];
     row.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
     if (tableAccount.autoUploadCreateSubfolder) row.value = @1;
     else row.value = @0;
@@ -254,7 +254,7 @@
                 
             if(isLocationIsEnabled == YES) {
                     
-                UIAlertView * alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_cameraupload_background_title_", nil) message:[CCUtility localizableBrand:@"_cameraupload_background_msg_" table:nil] delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
+                UIAlertView * alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_autoupload_background_title_", nil) message:[CCUtility localizableBrand:@"_autoupload_background_msg_" table:nil] delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
                 [alertView show];
                     
                 [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUploadBackground" state:YES];
@@ -410,26 +410,26 @@
     switch (section)
     {
         case 0:
-            sectionName = NSLocalizedString(@"_uploading_from_camera_", nil);
+            sectionName = NSLocalizedString(@"_settings_autoupload_", nil);
             break;
         case 1:
-            if (tableAccount.autoUpload) sectionName = NSLocalizedString(@"_upload_automatic_photos_", nil);
+            if (tableAccount.autoUpload) sectionName = NSLocalizedString(@"_autoupload_photos_", nil);
             else sectionName = @"";
             break;
         case 2:
-            if (tableAccount.autoUpload) sectionName = NSLocalizedString(@"_upload_automatic_videos_", nil);
+            if (tableAccount.autoUpload) sectionName = NSLocalizedString(@"_autoupload_videos_", nil);
             else sectionName = @"";
             break;
         case 3:
-            if (tableAccount.autoUpload) sectionName = NSLocalizedString(@"_upload_camera_background_", nil);
+            if (tableAccount.autoUpload) sectionName = NSLocalizedString(@"_autoupload_background_", nil);
             else sectionName = @"";
             break;
         case 4:
-            if (tableAccount.autoUpload) sectionName = NSLocalizedString(@"_upload_camera_fullphotos_", nil);
+            if (tableAccount.autoUpload) sectionName = NSLocalizedString(@"_autoupload_fullphotos_", nil);
             else sectionName = @"";
             break;
         case 5:
-            if (tableAccount.autoUpload) sectionName = NSLocalizedString(@"_upload_camera_create_subfolder_", nil);
+            if (tableAccount.autoUpload) sectionName = NSLocalizedString(@"_autoupload_create_subfolder_", nil);
             else sectionName = @"";
             break;
     }
@@ -451,11 +451,11 @@
             else sectionName = @"";
             break;
         case 4:
-            if (tableAccount.autoUpload) sectionName =  [CCUtility localizableBrand:@"_upload_camera_fullphotos_footer_" table:nil];
+            if (tableAccount.autoUpload) sectionName =  [CCUtility localizableBrand:@"_autoupload_fullphotos_footer_" table:nil];
             else sectionName = @"";
             break;
         case 5:
-            if (tableAccount.autoUpload) sectionName =  [CCUtility localizableBrand:@"_upload_camera_create_subfolder_footer_" table:nil];
+            if (tableAccount.autoUpload) sectionName =  [CCUtility localizableBrand:@"_autoupload_create_subfolder_footer_" table:nil];
             else sectionName = @"";
             break;
     }
