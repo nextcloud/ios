@@ -189,7 +189,7 @@
 - (void)loginSuccess:(NSInteger)loginType
 {
     if (loginType == loginAddForced)
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"initializeMain" object:nil];
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -364,7 +364,7 @@
         [app settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activePassword:tableAccount.password];
  
     // Init home
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"initializeMain" object:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil];
         
     [self UpdateForm];
 }

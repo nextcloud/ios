@@ -333,7 +333,7 @@
             [self recalculateSize];
             
             // Inizialized home
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"initializeMain" object:nil];
+            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil];
             
             [self.hud hideHud];
         });

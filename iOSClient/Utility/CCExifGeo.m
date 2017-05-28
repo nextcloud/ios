@@ -120,7 +120,7 @@
                 NSDictionary *dictionary = [[NSDictionary alloc] initWithObjectsAndKeys:exifDate, fileID, nil];
                 
                 // Notify for CCDetail
-                [[NSNotificationCenter defaultCenter] postNotificationName:@"insertGeocoderLocation" object:nil userInfo:dictionary];
+                [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"insertGeocoderLocation" object:nil userInfo:dictionary];
             }
         } else {
             //NSLog(@"[LOG] setGeocoderFileID : %@", error.debugDescription);

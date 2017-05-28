@@ -23,7 +23,7 @@
 
 #import "NSNotificationCenter+MainThread.h"
 
-@implementation NSNotificationCenter_MainThread
+@implementation NSNotificationCenter (MainThread)
 
 - (void)postNotificationOnMainThread:(NSNotification *)notification
 {

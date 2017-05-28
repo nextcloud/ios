@@ -240,7 +240,7 @@
         }
         
         // Initialize Camera Upload
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"initStateCameraUpload" object:nil];
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initStateCameraUpload" object:nil];
         
         [self reloadForm];
     }
@@ -277,7 +277,7 @@
         
         if ([[rowDescriptor.value valueData] boolValue] == YES) {
             
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"setupCameraUploadFull" object:nil];
+            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"setupCameraUploadFull" object:nil];
             [[NCManageDatabase sharedInstance] setAccountCameraStateFiled:@"cameraUploadFull" state:YES];
             
         } else {

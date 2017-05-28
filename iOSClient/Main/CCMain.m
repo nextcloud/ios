@@ -1130,9 +1130,7 @@
             appDelegate.listOfNotifications = [[NSMutableArray alloc] initWithArray:sortedListOfNotifications];
         
             // reload Notification view
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [[NSNotificationCenter defaultCenter] postNotificationName:@"notificationReloadData" object:nil];
-            });
+            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"notificationReloadData" object:nil];
         }
     
         // Update NavigationBar
@@ -1185,9 +1183,7 @@
         else
             [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/avatar.png", app.directoryUser] error:nil];
         
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"changeUserProfile" object:nil];
-        });
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"changeUserProfile" object:nil];
     });
 }
 
@@ -2752,12 +2748,9 @@
             
             if (!findTask) {
                 
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    
-                    [app.listChangeTask setObject:@"reloadDownload" forKey:fileID];
-                    NSArray *object = [[NSArray alloc] initWithObjects:session, fileID, findTask, nil];
-                    [[NSNotificationCenter defaultCenter] postNotificationName:k_networkingSessionNotification object:object];
-                });
+                [app.listChangeTask setObject:@"reloadDownload" forKey:fileID];
+                NSArray *object = [[NSArray alloc] initWithObjects:session, fileID, findTask, nil];
+                [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_networkingSessionNotification object:object];
             }
         }];
     }
@@ -2776,12 +2769,9 @@
             
             if (!findTask) {
                 
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    
-                    [app.listChangeTask setObject:@"reloadUpload" forKey:fileID];
-                    NSArray *object = [[NSArray alloc] initWithObjects:session, fileID, findTask, nil];
-                    [[NSNotificationCenter defaultCenter] postNotificationName:k_networkingSessionNotification object:object];
-                });
+                [app.listChangeTask setObject:@"reloadUpload" forKey:fileID];
+                NSArray *object = [[NSArray alloc] initWithObjects:session, fileID, findTask, nil];
+                [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_networkingSessionNotification object:object];
             }
         }];
     }
@@ -2825,12 +2815,9 @@
             
             if (!findTask) {
                 
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    
-                    [app.listChangeTask setObject:@"cancelDownload" forKey:fileID];
-                    NSArray *object = [[NSArray alloc] initWithObjects:session, fileID, findTask, nil];
-                    [[NSNotificationCenter defaultCenter] postNotificationName:k_networkingSessionNotification object:object];
-                });
+                [app.listChangeTask setObject:@"cancelDownload" forKey:fileID];
+                NSArray *object = [[NSArray alloc] initWithObjects:session, fileID, findTask, nil];
+                [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_networkingSessionNotification object:object];
             }
         }];
     }
@@ -2849,12 +2836,9 @@
             
             if (!findTask) {
                 
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    
-                    [app.listChangeTask setObject:@"cancelUpload" forKey:fileID];
-                    NSArray *object = [[NSArray alloc] initWithObjects:session, fileID, findTask, nil];
-                    [[NSNotificationCenter defaultCenter] postNotificationName:k_networkingSessionNotification object:object];
-                });
+                [app.listChangeTask setObject:@"cancelUpload" forKey:fileID];
+                NSArray *object = [[NSArray alloc] initWithObjects:session, fileID, findTask, nil];
+                [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_networkingSessionNotification object:object];
             }
         }];
     }
@@ -2898,12 +2882,9 @@
             
             if (!findTask) {
                 
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    
-                    [app.listChangeTask setObject:@"stopUpload" forKey:fileID];
-                    NSArray *object = [[NSArray alloc] initWithObjects:session, fileID, findTask, nil];
-                    [[NSNotificationCenter defaultCenter] postNotificationName:k_networkingSessionNotification object:object];
-                });
+                [app.listChangeTask setObject:@"stopUpload" forKey:fileID];
+                NSArray *object = [[NSArray alloc] initWithObjects:session, fileID, findTask, nil];
+                [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_networkingSessionNotification object:object];
             }
         }];
     }
@@ -3249,7 +3230,7 @@
     [CCUtility setOrderSettings:order];
     
     // Clear data-read of DataSource
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"clearDateReadDataSource" object:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"clearDateReadDataSource" object:nil];
 }
 
 - (void)ascendingTable:(BOOL)ascending
@@ -3257,7 +3238,7 @@
     [CCUtility setAscendingSettings:ascending];
     
     // Clear data-read of DataSource
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"clearDateReadDataSource" object:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"clearDateReadDataSource" object:nil];
 }
 
 - (void)directoryOnTop:(BOOL)directoryOnTop
@@ -3265,7 +3246,7 @@
     [CCUtility setDirectoryOnTop:directoryOnTop];
     
     // Clear data-read of DataSource
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"clearDateReadDataSource" object:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"clearDateReadDataSource" object:nil];
 }
 
 - (void)tableGroupBy:(NSString *)groupBy
@@ -3273,7 +3254,7 @@
     [CCUtility setGroupBySettings:groupBy];
     
     // Clear data-read of DataSource
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"clearDateReadDataSource" object:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"clearDateReadDataSource" object:nil];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -3365,7 +3346,7 @@
             [app settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activePassword:tableAccount.password];
     
         // go to home sweet home
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"initializeMain" object:nil];
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil];
         
         [_ImageTitleHomeCryptoCloud setUserInteractionEnabled:YES];
     });

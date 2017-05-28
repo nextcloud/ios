@@ -93,7 +93,7 @@
     self.version = [CCUtility setVersionCryptoCloud];
     
     // init home
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"initializeMain" object:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -135,7 +135,7 @@
 
 - (void)loginSuccess:(NSInteger)loginType
 {
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"initializeMain" object:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil];
 }
 
 - (void)newAccount

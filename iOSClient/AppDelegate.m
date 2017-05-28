@@ -352,7 +352,7 @@
             [_activeMain requestServerCapabilities];
     
         NSLog(@"[LOG] Initialize Camera Upload");
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"initStateCameraUpload" object:nil];
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initStateCameraUpload" object:nil];
         
         NSLog(@"[LOG] Listning Favorites");
         [[CCSynchronize sharedSynchronize] readListingFavorites];        
@@ -982,7 +982,7 @@
         [NCBrandColor sharedInstance].brand = [NCBrandColor sharedInstance].customer;
     }
     
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"changeTheming" object:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"changeTheming" object:nil];
 }
 
 - (void)changeTheming:(UIViewController *)vc
@@ -1191,7 +1191,7 @@
     if ([self.reachability isReachableViaWiFi]) NSLog(@"[LOG] Reachability Changed: WiFi");
     if ([self.reachability isReachableViaWWAN]) NSLog(@"[LOG] Reachability Changed: WWAn");
     
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"setTitleMain" object:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"setTitleMain" object:nil];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1203,7 +1203,7 @@
     NSLog(@"[LOG] Start Fetch");
     
     // Verify new photo
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"initStateCameraUpload" object:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initStateCameraUpload" object:nil];
     
     // after 20 sec verify Re
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 20 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
@@ -1537,7 +1537,7 @@
     // Progress Task
     NSDictionary* userInfo = @{@"fileID": (fileID), @"serverUrl": (serverUrl), @"cryptated": ([NSNumber numberWithBool:NO]), @"progress": ([NSNumber numberWithFloat:0.0])};
     
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"NotificationProgressTask" object:nil userInfo:userInfo];
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"NotificationProgressTask" object:nil userInfo:userInfo];
 
     // Refresh
     if (_activeMain && [_listChangeTask count] == 0) {
