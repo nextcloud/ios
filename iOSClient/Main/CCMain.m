@@ -1903,20 +1903,23 @@
     }
     
     // insert in Database
-    (void)[[NCManageDatabase sharedInstance] addMetadatas:metadatasToInsertInDB activeUrl:app.activeUrl serverUrl:metadataNet.serverUrl];
+    metadatasToInsertInDB = (NSMutableArray *)[[NCManageDatabase sharedInstance] addMetadatas:metadatasToInsertInDB activeUrl:app.activeUrl serverUrl:metadataNet.serverUrl];
     
-    // read plist
-    if (!_isSearchMode)
-        [self downloadPlist:metadataNet.directoryID serverUrl:metadataNet.serverUrl];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
+        
+        // read plist
+        if (!_isSearchMode)
+            [self downloadPlist:metadataNet.directoryID serverUrl:metadataNet.serverUrl];
     
-    // File is changed ??
-    if (!_isSearchMode)
-        [[CCSynchronize sharedSynchronize] verifyChangeMedatas:metadatas serverUrl:metadataNet.serverUrl account:app.activeAccount withDownload:NO];
-
+        // File is changed ??
+        if (!_isSearchMode)
+            [[CCSynchronize sharedSynchronize] verifyChangeMedatas:metadatasToInsertInDB serverUrl:metadataNet.serverUrl account:app.activeAccount withDownload:NO];
+    });
+    
     // Search Mode
     if (_isSearchMode)
         [self reloadDatasource:metadataNet.serverUrl fileID:nil selector:metadataNet.selector];
-    
+
     // this is the same directory
     if ([metadataNet.serverUrl isEqualToString:_serverUrl] && !_isSearchMode) {
         
