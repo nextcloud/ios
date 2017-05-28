@@ -809,12 +809,12 @@
             break;
     }
     
-    [self insertTypeFileIconName:metadata directory:serverUrl autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory];
+    [self insertTypeFileIconName:metadata serverUrl:serverUrl autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory];
     
     return metadata;
 }
 
-+ (tableMetadata *)insertTypeFileIconName:(tableMetadata *)metadata directory:(NSString *)directory autoUploadFileName:(NSString *)autoUploadFileName autoUploadDirectory:(NSString *)autoUploadDirectory
++ (tableMetadata *)insertTypeFileIconName:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl autoUploadFileName:(NSString *)autoUploadFileName autoUploadDirectory:(NSString *)autoUploadDirectory
 {
     if ([metadata.type isEqualToString: k_metadataType_template]) {
         
@@ -913,7 +913,7 @@
         if (metadata.cryptated) metadata.iconName = @"foldercrypto";
         else metadata.iconName = @"folder";
         
-        if([metadata.fileName isEqualToString:autoUploadFileName] && [directory isEqualToString:autoUploadDirectory])
+        if([metadata.fileName isEqualToString:autoUploadFileName] && [serverUrl isEqualToString:autoUploadDirectory])
             metadata.iconName = @"folderphotocamera";
     }
     
@@ -1044,7 +1044,7 @@
     if ([CCUtility isCryptoPlistString:fileName])
         metadata = [CCUtility insertInformationPlist:metadata directoryUser:directory];
     
-    [self insertTypeFileIconName:metadata directory:directory autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory];
+    [self insertTypeFileIconName:metadata serverUrl:directory autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory];
     
     return metadata;
 }

@@ -171,7 +171,7 @@
 
 + (tableMetadata *)insertFileSystemInMetadata:(NSString *)fileName directory:(NSString *)directory activeAccount:(NSString *)activeAccount autoUploadFileName:(NSString *)autoUploadFileName autoUploadDirectory:(NSString *)autoUploadDirectory;
 
-+ (tableMetadata *)insertTypeFileIconName:(tableMetadata *)metadata directory:(NSString *)directory autoUploadFileName:(NSString *)autoUploadFileName autoUploadDirectory:(NSString *)autoUploadDirectory;
++ (tableMetadata *)insertTypeFileIconName:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl autoUploadFileName:(NSString *)autoUploadFileName autoUploadDirectory:(NSString *)autoUploadDirectory;
 
 + (NSString *)trasformedFileNamePlistInCrypto:(NSString *)fileName;
 + (NSString *)trasformedFileNameCryptoInPlist:(NSString *)fileName;

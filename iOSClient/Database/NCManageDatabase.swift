@@ -1248,14 +1248,14 @@ class NCManageDatabase: NSObject {
         
         let autoUploadFileName = self.getAccountAutoUploadFileName()
         let autoUploadDirectory = self.getAccountAutoUploadDirectory(activeUrl)
-        let directory = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID)
+        let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID)
         
         let realm = try! Realm()
         
         try! realm.write {
             
             if (metadata.realm == nil) {
-                let metadataWithIcon = CCUtility.insertTypeFileIconName(metadata, directory: directory, autoUploadFileName: autoUploadFileName, autoUploadDirectory: autoUploadDirectory)
+                let metadataWithIcon = CCUtility.insertTypeFileIconName(metadata, serverUrl: serverUrl, autoUploadFileName: autoUploadFileName, autoUploadDirectory: autoUploadDirectory)
                 realm.add(metadataWithIcon!, update: true)
             } else {
                 realm.add(metadata, update: true)
@@ -1279,7 +1279,7 @@ class NCManageDatabase: NSObject {
             for metadata in metadatas {
             
                 if (metadata.realm == nil) {
-                    let metadataWithIcon = CCUtility.insertTypeFileIconName(metadata, directory: serverUrl, autoUploadFileName: autoUploadFileName, autoUploadDirectory: autoUploadDirectory)
+                    let metadataWithIcon = CCUtility.insertTypeFileIconName(metadata, serverUrl: serverUrl, autoUploadFileName: autoUploadFileName, autoUploadDirectory: autoUploadDirectory)
                     realm.add(metadataWithIcon!, update: true)
                 } else {
                     realm.add(metadata, update: true)
@@ -1341,7 +1341,7 @@ class NCManageDatabase: NSObject {
         let autoUploadDirectory = self.getAccountAutoUploadDirectory(activeUrl)
         let serverUrl = self.getServerUrl(metadata.directoryID)
         
-        let metadataWithIcon = CCUtility.insertTypeFileIconName(metadata, directory: serverUrl, autoUploadFileName: autoUploadFileName, autoUploadDirectory: autoUploadDirectory)
+        let metadataWithIcon = CCUtility.insertTypeFileIconName(metadata, serverUrl: serverUrl, autoUploadFileName: autoUploadFileName, autoUploadDirectory: autoUploadDirectory)
         
         let realm = try! Realm()
         

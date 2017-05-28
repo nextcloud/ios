@@ -1845,6 +1845,7 @@
         _fatherPermission = permissions;
     
     NSArray *recordsInSessions;
+    NSMutableArray *metadatasToInsertInDB = [NSMutableArray new];
     
     if (_isSearchMode) {
         
@@ -1897,9 +1898,12 @@
             }
         }
         
-        // end test, insert in Database
-        (void)[[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:app.activeUrl];
+        // Insert in Array
+        [metadatasToInsertInDB addObject:metadata];
     }
+    
+    // insert in Database
+    [[NCManageDatabase sharedInstance] addMetadatas:metadatasToInsertInDB activeUrl:app.activeUrl serverUrl:metadataNet.serverUrl];
     
     // read plist
     if (!_isSearchMode)
