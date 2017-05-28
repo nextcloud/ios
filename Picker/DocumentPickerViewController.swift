@@ -288,6 +288,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         // remove all record
         var predicate = NSPredicate(format: "account = %@ AND directoryID = %@ AND session = ''", activeAccount!, metadataNet.directoryID!)
         NCManageDatabase.sharedInstance.deleteMetadata(predicate: predicate)
+        //let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID)
         
         for metadata in metadatas as! [tableMetadata] {
             
@@ -323,7 +324,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
             }
             
             // Add record
-            _ = NCManageDatabase.sharedInstance.addMetadata(metadata, activeUrl: activeUrl!)
+            _ = NCManageDatabase.sharedInstance.addMetadata(metadata, activeUrl: activeUrl!, serverUrl: metadataNet.serverUrl)
             
             // if plist do not exists, download it
             if CCUtility.isCryptoPlistString(metadata.fileName) && FileManager.default.fileExists(atPath: "\(directoryUser!)/\(metadata.fileName)") == false {

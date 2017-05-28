@@ -110,7 +110,7 @@
 
         // Reinsert
         [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@ AND session = ''", metadata.fileID]];
-        (void)[[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:app.activeUrl];
+        (void)[[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:app.activeUrl serverUrl:metadataNet.serverUrl];
         
         // insert for test NOT favorite
         [filesEtag addObject:metadata.fileID];
@@ -274,7 +274,7 @@
                 tableMetadata *result = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadata.fileID]];
 
                 if (!result)
-                    (void)[[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:app.activeUrl];
+                    (void)[[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:app.activeUrl serverUrl:metadataNet.serverUrl];
               
                 // Load if different etag
                 tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", metadataNet.account, serverUrl]];
@@ -312,7 +312,7 @@
                     tableMetadata *result = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadata.fileID]];
 
                     if (!result)
-                        (void)[[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:metadataNet.serverUrl];
+                        (void)[[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:metadataNet.serverUrl serverUrl:metadataNet.serverUrl];
                 }
             }
         }
@@ -455,7 +455,7 @@
             [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:serverUrl directoryID:nil];
         }
             
-        (void)[[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:serverUrl];
+        (void)[[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:serverUrl serverUrl:serverUrl];
         
         CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
             

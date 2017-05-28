@@ -283,6 +283,8 @@
     // remove all record
     [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND session = ''", activeAccount, metadataNet.directoryID]];
     
+    NSMutableArray *metadatasToInsertInDB = [NSMutableArray new];
+    
     for (tableMetadata *metadata in metadatas) {
         
         // do not insert crypto file
@@ -299,32 +301,42 @@
             if (isCryptoComplete == NO) continue;
         }
         
-        (void)[[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:activeUrl];
+        // Insert in Array
+        [metadatasToInsertInDB addObject:metadata];
+    }
+
+    // insert in Database
+    metadatas = [[NCManageDatabase sharedInstance] addMetadatas:metadatasToInsertInDB activeUrl:activeUrl serverUrl:metadataNet.serverUrl];
+
+    // Plist MULTI THREAD
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
         
-        // if plist do not exists, download it !
-        if ([CCUtility isCryptoPlistString:metadata.fileName] && [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, metadata.fileName]] == NO) {
+        for (tableMetadata *metadata in metadatas) {
+        
+            if ([CCUtility isCryptoPlistString:metadata.fileName] && [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, metadata.fileName]] == NO) {
             
-            // download only the directories
-            for (tableMetadata *metadataDirectory in metadatas) {
+                // download only the directories
+                for (tableMetadata *metadataDirectory in metadatas) {
                 
-                if (metadataDirectory.directory == YES && [metadataDirectory.fileName isEqualToString:metadata.fileNameData]) {
+                    if (metadataDirectory.directory == YES && [metadataDirectory.fileName isEqualToString:metadata.fileNameData]) {
                     
-                    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:activeAccount];
+                        CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:activeAccount];
                     
-                    metadataNet.action = actionDownloadFile;
-                    metadataNet.downloadData = NO;
-                    metadataNet.downloadPlist = YES;
-                    metadataNet.fileID = metadata.fileID;
-                    metadataNet.selector = selectorLoadPlist;
-                    metadataNet.serverUrl = _serverUrl;
-                    metadataNet.session = k_download_session_foreground;
-                    metadataNet.taskStatus = k_taskStatusResume;
+                        metadataNet.action = actionDownloadFile;
+                        metadataNet.downloadData = NO;
+                        metadataNet.downloadPlist = YES;
+                        metadataNet.fileID = metadata.fileID;
+                        metadataNet.selector = selectorLoadPlist;
+                        metadataNet.serverUrl = _serverUrl;
+                        metadataNet.session = k_download_session_foreground;
+                        metadataNet.taskStatus = k_taskStatusResume;
                     
-                    [self addNetworkingQueue:metadataNet];
+                        [self addNetworkingQueue:metadataNet];
+                    }
                 }
             }
         }
-    }
+    });    
     
     [self.tableView reloadData];
     

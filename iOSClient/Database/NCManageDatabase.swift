@@ -1239,7 +1239,7 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Metadata
     
-    func addMetadata(_ metadata: tableMetadata, activeUrl: String) -> tableMetadata {
+    func addMetadata(_ metadata: tableMetadata, activeUrl: String, serverUrl: String) -> tableMetadata {
         
         let tableAccount = self.getAccountActive()
         if tableAccount == nil {
@@ -1248,7 +1248,6 @@ class NCManageDatabase: NSObject {
         
         let autoUploadFileName = self.getAccountAutoUploadFileName()
         let autoUploadDirectory = self.getAccountAutoUploadDirectory(activeUrl)
-        let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID)
         
         let realm = try! Realm()
         
@@ -1267,10 +1266,11 @@ class NCManageDatabase: NSObject {
         return tableMetadata.init(value: metadata)
     }
     
-    func addMetadatas(_ metadatas: [tableMetadata], activeUrl: String, serverUrl: String) {
+    func addMetadatas(_ metadatas: [tableMetadata], activeUrl: String, serverUrl: String) -> [tableMetadata] {
         
         let autoUploadFileName = self.getAccountAutoUploadFileName()
         let autoUploadDirectory = self.getAccountAutoUploadDirectory(activeUrl)
+        var arrayMetadatas = [tableMetadata]()
         
         let realm = try! Realm()
         
@@ -1284,11 +1284,15 @@ class NCManageDatabase: NSObject {
                 } else {
                     realm.add(metadata, update: true)
                 }
+                
+                arrayMetadatas.append(tableMetadata.init(value: metadata))
             }
         }
         
         let directoryID = self.getDirectoryID(serverUrl)
         self.setDateReadDirectory(directoryID: directoryID)
+        
+        return arrayMetadatas
     }
 
     

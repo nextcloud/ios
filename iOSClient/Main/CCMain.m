@@ -1903,7 +1903,7 @@
     }
     
     // insert in Database
-    [[NCManageDatabase sharedInstance] addMetadatas:metadatasToInsertInDB activeUrl:app.activeUrl serverUrl:metadataNet.serverUrl];
+    (void)[[NCManageDatabase sharedInstance] addMetadatas:metadatasToInsertInDB activeUrl:app.activeUrl serverUrl:metadataNet.serverUrl];
     
     // read plist
     if (!_isSearchMode)
