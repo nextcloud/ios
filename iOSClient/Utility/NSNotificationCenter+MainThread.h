@@ -1,8 +1,8 @@
 //
-//  CryptoCloud.pch
+//  NSNotificationCenter+MainThread.h
 //  Crypto Cloud Technology Nextcloud
 //
-//  Created by Marino Faggiana on 17/09/15.
+//  Created by Marino Faggiana on 28/05/17.
 //  Copyright (c) 2017 TWS. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
@@ -21,20 +21,12 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef CryptoCloud_pch
-#define CryptoCloud_pch
-
-// Include any system framework and library headers here that should be included in all compilation units.
-// You will also need to set the Prefix Header build setting of one or more of your targets to reference this file.
-
-#endif /* CryptoCloud_pch */
-
-#ifdef __OBJC__
-
-#import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
-#import <QuartzCore/QuartzCore.h>
-#import "CCGlobal.h"
-#import "NSNotificationCenter+MainThread.h"
 
-#endif
+@interface NSNotificationCenter (MainThread)
+
+- (void)postNotificationOnMainThread:(NSNotification *)notification;
+- (void)postNotificationOnMainThreadName:(NSString *)aName object:(id)anObject;
+- (void)postNotificationOnMainThreadName:(NSString *)aName object:(id)anObject userInfo:(NSDictionary *)aUserInfo;
+
+@end

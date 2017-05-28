@@ -531,6 +531,9 @@
 		F77EB6291EC08037003F814F /* CCExifGeo.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A54C351C6267B500E2C8BF /* CCExifGeo.m */; };
 		F77EB62A1EC0B50A003F814F /* CCCertificate.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F801011D98205A007537BC /* CCCertificate.m */; };
 		F77EB62B1EC0B50B003F814F /* CCCertificate.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F801011D98205A007537BC /* CCCertificate.m */; };
+		F78071091EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m in Sources */ = {isa = PBXBuildFile; fileRef = F78071081EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m */; };
+		F780710A1EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m in Sources */ = {isa = PBXBuildFile; fileRef = F78071081EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m */; };
+		F780710B1EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m in Sources */ = {isa = PBXBuildFile; fileRef = F78071081EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m */; };
 		F78088EA1DD3A1DB005C5A7C /* cryptocloud.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = F78088E51DD3A1DB005C5A7C /* cryptocloud.xcdatamodeld */; };
 		F78088EB1DD3A1DB005C5A7C /* cryptocloud.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = F78088E51DD3A1DB005C5A7C /* cryptocloud.xcdatamodeld */; };
 		F78964AD1EBB576C00403E13 /* JDStatusBarNotification.m in Sources */ = {isa = PBXBuildFile; fileRef = F78964A81EBB576C00403E13 /* JDStatusBarNotification.m */; };
@@ -1548,6 +1551,8 @@
 		F777F0311C29717F00CE81CB /* PHAsset+Utility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "PHAsset+Utility.m"; sourceTree = "<group>"; };
 		F77D49A71DC238E500CDC568 /* loading@2x.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = "loading@2x.gif"; sourceTree = "<group>"; };
 		F77EB61C1EC07913003F814F /* cryptocloud 9.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "cryptocloud 9.xcdatamodel"; sourceTree = "<group>"; };
+		F78071071EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSNotificationCenter+MainThread.h"; sourceTree = "<group>"; };
+		F78071081EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSNotificationCenter+MainThread.m"; sourceTree = "<group>"; };
 		F78088E61DD3A1DB005C5A7C /* cryptocloud 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "cryptocloud 2.xcdatamodel"; sourceTree = "<group>"; };
 		F78088E71DD3A1DB005C5A7C /* cryptocloud 3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "cryptocloud 3.xcdatamodel"; sourceTree = "<group>"; };
 		F78088E81DD3A1DB005C5A7C /* cryptocloud 4.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "cryptocloud 4.xcdatamodel"; sourceTree = "<group>"; };
@@ -3307,6 +3312,8 @@
 				F7053E3D1C639DF500741EA5 /* CCUtility.m */,
 				F73049B81CB567F000C7C320 /* NSString+TruncateToWidth.h */,
 				F73049B91CB567F000C7C320 /* NSString+TruncateToWidth.m */,
+				F78071071EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.h */,
+				F78071081EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m */,
 			);
 			path = Utility;
 			sourceTree = "<group>";
@@ -4243,6 +4250,7 @@
 				F71459F71D12E3B700CAFEEC /* CCGraphics.m in Sources */,
 				F7BAADC91ED5A87C00B7EAD4 /* NCDatabase.swift in Sources */,
 				F70022BD1EC4C9100080073F /* OCExternalSites.m in Sources */,
+				F780710A1EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m in Sources */,
 				F71459FB1D12E3B700CAFEEC /* PPImageScrollingCellView.m in Sources */,
 				F70022A81EC4C9100080073F /* AFSecurityPolicy.m in Sources */,
 				F71459FF1D12E3B700CAFEEC /* RNCryptor.m in Sources */,
@@ -4317,6 +4325,7 @@
 				F77EB6291EC08037003F814F /* CCExifGeo.m in Sources */,
 				F70022CD1EC4C9100080073F /* OCSharedDto.m in Sources */,
 				F70022AC1EC4C9100080073F /* AFURLRequestSerialization.m in Sources */,
+				F780710B1EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m in Sources */,
 				F7BAADC71ED5A87C00B7EAD4 /* CCCoreData.m in Sources */,
 				F70022FD1EC4C9100080073F /* NSString+Encode.m in Sources */,
 				F76607791ED7FFF20073CEC2 /* TableLocalFile+CoreDataProperties.m in Sources */,
@@ -4538,6 +4547,7 @@
 				F7659A2E1DC0B72F004860C4 /* EARestrictedScrollView.m in Sources */,
 				F77B0E741D118A16002130FE /* CCBancomat.m in Sources */,
 				F77B0E7B1D118A16002130FE /* CCPassaporto.m in Sources */,
+				F78071091EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m in Sources */,
 				F76B3CCE1EAE01BD00921AC9 /* NCBrand.swift in Sources */,
 				F7B1FBC91E72E3D1001781FE /* SwiftWebVCActivityChrome.swift in Sources */,
 				F7F06EA51DBFACC600099AE9 /* CTAssetItemViewController.m in Sources */,

@@ -431,11 +431,9 @@
                 [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:metadata.fileID action:k_activityDebugActionDownload selector:metadata.sessionSelector note:[NSString stringWithFormat:@"Server: %@ Error: %@", serverUrl, [CCError manageErrorKCF:errorCode withNumberError:YES]] type:k_activityTypeFailure verbose:k_activityVerboseDefault  activeUrl:_activeUrl];
             }
         
-            dispatch_async(dispatch_get_main_queue(), ^{
-                NSArray *object = [[NSArray alloc] initWithObjects:session, fileID, task, nil];
-                [[NSNotificationCenter defaultCenter] postNotificationName:k_networkingSessionNotification object:object];
-            });
-        
+            NSArray *object = [[NSArray alloc] initWithObjects:session, fileID, task, nil];
+            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_networkingSessionNotification object:object];
+            
             if (fileName.length > 0 && serverUrl.length > 0)
                 [self downloadFileSuccessFailure:fileName fileID:metadata.fileID etag:etag date:date serverUrl:serverUrl selector:metadata.sessionSelector selectorPost:metadata.sessionSelectorPost errorCode:errorCode];
         }
@@ -473,10 +471,8 @@
                 [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:metadata.fileID action:k_activityDebugActionUpload selector:metadata.sessionSelector note:[NSString stringWithFormat:@"Server: %@ Error: %@", serverUrl, [CCError manageErrorKCF:errorCode withNumberError:YES]] type:k_activityTypeFailure verbose:k_activityVerboseDefault   activeUrl:_activeUrl];
             }
         
-            dispatch_async(dispatch_get_main_queue(), ^{
-                NSArray *object = [[NSArray alloc] initWithObjects:session, fileID, task, nil];
-                [[NSNotificationCenter defaultCenter] postNotificationName:k_networkingSessionNotification object:object];
-            });
+            NSArray *object = [[NSArray alloc] initWithObjects:session, fileID, task, nil];
+            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_networkingSessionNotification object:object];
         
             if (fileName.length > 0 && fileID.length > 0 && etag.length > 0 && serverUrl.length > 0)
                 [self uploadFileSuccessFailure:metadata fileName:fileName fileID:fileID etag:etag date:date serverUrl:serverUrl errorCode:errorCode];
@@ -620,15 +616,12 @@
     
     tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataFromFileName:fileName directoryID:[[NCManageDatabase sharedInstance] getDirectoryID:serverUrl]];
     
-    dispatch_async(dispatch_get_main_queue(), ^{
+    if (metadata) {
         
-        if (metadata) {
-        
-            NSDictionary* userInfo = @{@"fileID": (metadata.fileID), @"serverUrl": (serverUrl), @"cryptated": ([NSNumber numberWithBool:metadata.cryptated]), @"progress": ([NSNumber numberWithFloat:progress])};
+        NSDictionary* userInfo = @{@"fileID": (metadata.fileID), @"serverUrl": (serverUrl), @"cryptated": ([NSNumber numberWithBool:metadata.cryptated]), @"progress": ([NSNumber numberWithFloat:progress])};
             
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"NotificationProgressTask" object:nil userInfo:userInfo];
-        }
-    });
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"NotificationProgressTask" object:nil userInfo:userInfo];
+    }
 }
 
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location
@@ -673,11 +666,9 @@
     [app.listProgressMetadata removeObjectForKey:fileID];
 #endif
     
-    dispatch_async(dispatch_get_main_queue(), ^{
-        // Progress Task
-        NSDictionary* userInfo = @{@"fileID": (fileID), @"serverUrl": (serverUrl), @"cryptated": ([NSNumber numberWithBool:NO]), @"progress": ([NSNumber numberWithFloat:0.0])};
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"NotificationProgressTask" object:nil userInfo:userInfo];
-    });
+    // Progress Task
+    NSDictionary* userInfo = @{@"fileID": (fileID), @"serverUrl": (serverUrl), @"cryptated": ([NSNumber numberWithBool:NO]), @"progress": ([NSNumber numberWithFloat:0.0])};
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"NotificationProgressTask" object:nil userInfo:userInfo];
         
     if (errorCode != 0) {
         
@@ -1299,15 +1290,12 @@
 
     tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataFromFileName:fileName directoryID:[[NCManageDatabase sharedInstance] getDirectoryID:serverUrl]];
     
-    dispatch_async(dispatch_get_main_queue(), ^{
-
-        if (metadata) {
+    if (metadata) {
             
-            NSDictionary* userInfo = @{@"fileID": (metadata.fileID), @"serverUrl": (serverUrl), @"cryptated": ([NSNumber numberWithBool:metadata.cryptated]), @"progress": ([NSNumber numberWithFloat:progress])};
+        NSDictionary* userInfo = @{@"fileID": (metadata.fileID), @"serverUrl": (serverUrl), @"cryptated": ([NSNumber numberWithBool:metadata.cryptated]), @"progress": ([NSNumber numberWithFloat:progress])};
                 
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"NotificationProgressTask" object:nil userInfo:userInfo];
-        }
-    });
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"NotificationProgressTask" object:nil userInfo:userInfo];
+    }
 }
 
 - (void)uploadFileSuccessFailure:(tableMetadata *)metadata fileName:(NSString *)fileName fileID:(NSString *)fileID etag:(NSString *)etag date:(NSDate *)date serverUrl:(NSString *)serverUrl errorCode:(NSInteger)errorCode
@@ -1315,10 +1303,8 @@
     NSString *sessionID = metadata.sessionID;
     
     // Progress Task
-    dispatch_async(dispatch_get_main_queue(), ^{
-        NSDictionary* userInfo = @{@"fileID": (fileID), @"serverUrl": (serverUrl), @"cryptated": ([NSNumber numberWithBool:NO]), @"progress": ([NSNumber numberWithFloat:0.0])};
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"NotificationProgressTask" object:nil userInfo:userInfo];
-    });
+    NSDictionary* userInfo = @{@"fileID": (fileID), @"serverUrl": (serverUrl), @"cryptated": ([NSNumber numberWithBool:NO]), @"progress": ([NSNumber numberWithFloat:0.0])};
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"NotificationProgressTask" object:nil userInfo:userInfo];
     
     // ERRORE
     if (errorCode != 0) {
@@ -1586,7 +1572,7 @@
         
         // Notification change session
         NSArray *object = [[NSArray alloc] initWithObjects:session, metadata, nil];
-        [[NSNotificationCenter defaultCenter] postNotificationName:k_networkingSessionNotification object:object];
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_networkingSessionNotification object:object];
     }
     
     [self automaticUploadInError];
