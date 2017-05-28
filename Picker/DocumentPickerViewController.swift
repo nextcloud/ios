@@ -287,8 +287,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         
         // remove all record
         var predicate = NSPredicate(format: "account = %@ AND directoryID = %@ AND session = ''", activeAccount!, metadataNet.directoryID!)
-        NCManageDatabase.sharedInstance.deleteMetadata(predicate: predicate)
-        //let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID)
+        NCManageDatabase.sharedInstance.deleteMetadata(predicate: predicate, clearDateReadDirectoryID: metadataNet.directoryID!)
         
         for metadata in metadatas as! [tableMetadata] {
             
@@ -485,9 +484,8 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         hud.hideHud()
         
         // remove file
-        //CCCoreData.deleteMetadata(with: NSPredicate(format: "(account == '\(activeAccount!)') AND (fileID == '\(fileID)')"))
         let predicate = NSPredicate(format: "account = %@ AND fileID == %@", activeAccount!, fileID)
-        NCManageDatabase.sharedInstance.deleteMetadata(predicate: predicate)
+        NCManageDatabase.sharedInstance.deleteMetadata(predicate: predicate, clearDateReadDirectoryID: nil)
         
         if errorCode != -999 {
             

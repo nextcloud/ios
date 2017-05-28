@@ -109,7 +109,7 @@
             continue;
 
         // Reinsert
-        [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@ AND session = ''", metadata.fileID]];
+        [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@ AND session = ''", metadata.fileID] clearDateReadDirectoryID:nil];
         (void)[[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:app.activeUrl serverUrl:metadataNet.serverUrl];
         
         // insert for test NOT favorite
@@ -247,7 +247,7 @@
                 [[NCManageDatabase sharedInstance] deleteDirectoryAndSubDirectoryWithServerUrl:dirForDelete];
             }
             
-            [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadata.fileID]];
+            [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadata.fileID] clearDateReadDirectoryID:nil];
             [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadata.fileID]];
         }
         
@@ -354,7 +354,7 @@
     if (errorCode == 404 && [recordAccount.account isEqualToString:metadataNet.account]) {
         
         [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadataNet.fileID]];
-        [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadataNet.account, metadataNet.fileID]];
+        [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadataNet.account, metadataNet.fileID] clearDateReadDirectoryID:nil];
         
         NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadataNet.directoryID];
         [app.activeMain reloadDatasource:serverUrl fileID:nil selector:nil];

@@ -778,7 +778,7 @@ class NCManageDatabase: NSObject {
         for result in results {
             
             // delete metadata
-            self.deleteMetadata(predicate: NSPredicate(format: "directoryID = %@", result.directoryID))
+            self.deleteMetadata(predicate: NSPredicate(format: "directoryID = %@", result.directoryID), clearDateReadDirectoryID: result.directoryID)
             
             // delete local file
             self.deleteLocalFile(predicate: NSPredicate(format: "fileID = %@", result.fileID))
@@ -1296,7 +1296,7 @@ class NCManageDatabase: NSObject {
     }
 
     
-    func deleteMetadata(predicate: NSPredicate) {
+    func deleteMetadata(predicate: NSPredicate, clearDateReadDirectoryID: String?) {
         
         let tableAccount = self.getAccountActive()
         if tableAccount == nil {
@@ -1307,8 +1307,13 @@ class NCManageDatabase: NSObject {
         
         let results = realm.objects(tableMetadata.self).filter(predicate)
         
-        for result in results {
-            self.setDateReadDirectory(directoryID: result.directoryID)
+        if clearDateReadDirectoryID == nil {
+            for result in results {
+                self.setDateReadDirectory(directoryID: result.directoryID)
+            }
+        
+        } else {
+            self.setDateReadDirectory(directoryID: clearDateReadDirectoryID!)
         }
         
         try! realm.write {

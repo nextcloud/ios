@@ -281,7 +281,7 @@
 - (void)readFolderSuccess:(CCMetadataNet *)metadataNet permissions:(NSString *)permissions etag:(NSString *)etag metadatas:(NSArray *)metadatas
 {
     // remove all record
-    [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND session = ''", activeAccount, metadataNet.directoryID]];
+    [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND session = ''", activeAccount, metadataNet.directoryID] clearDateReadDirectoryID: metadataNet.directoryID];
     
     NSMutableArray *metadatasToInsertInDB = [NSMutableArray new];
     
