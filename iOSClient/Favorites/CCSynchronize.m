@@ -195,17 +195,17 @@
 }
 
 // MULTI THREAD
-- (void)readFolderSuccess:(CCMetadataNet *)metadataNet permissions:(NSString *)permissions fileID:(NSString *)fileID metadatas:(NSArray *)metadatas
+- (void)readFolderSuccess:(CCMetadataNet *)metadataNet permissions:(NSString *)permissions etag:(NSString *)etag metadatas:(NSArray *)metadatas
 {
-    tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
-    
-    __block NSMutableArray *metadatasForVerifyChange = [NSMutableArray new];
-    
-    if ([recordAccount.account isEqualToString:metadataNet.account] == NO)
-        return;
-    
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         
+        tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
+    
+        NSMutableArray *metadatasForVerifyChange = [NSMutableArray new];
+    
+        if ([recordAccount.account isEqualToString:metadataNet.account] == NO)
+            return;
+
         NSArray *recordsInSessions = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND session != ''", app.activeAccount, metadataNet.directoryID] sorted:nil ascending:NO];
         
         // ----- Test : (DELETE) -----
@@ -276,15 +276,14 @@
                 if (!result)
                     (void)[[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:app.activeUrl];
               
-                // Load if different fileID
-                
+                // Load if different etag
                 tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", metadataNet.account, serverUrl]];
                 
                 if (![tableDirectory.etag isEqualToString:metadata.etag]) {
                     
-                    [self readFolderServerUrl:serverUrl directoryID:directoryID selector:metadataNet.selector];
+                    [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:serverUrl serverUrlTo:nil etag:metadata.etag];
                     
-                    [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:serverUrl serverUrlTo:nil fileID:metadata.etag];
+                    [self readFolderServerUrl:serverUrl directoryID:directoryID selector:metadataNet.selector];
                 }
                 
             } else {

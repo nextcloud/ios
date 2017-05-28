@@ -802,7 +802,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func setDirectory(serverUrl: String, serverUrlTo: String?, fileID: String?) {
+    func setDirectory(serverUrl: String, serverUrlTo: String?, etag: String?) {
         
         let tableAccount = self.getAccountActive()
         if tableAccount == nil {
@@ -812,6 +812,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         
         try! realm.write {
+            
             let results = realm.objects(tableDirectory.self).filter("serverUrl = %@", serverUrl)
             
             if results.count > 0 {
@@ -819,8 +820,8 @@ class NCManageDatabase: NSObject {
                 if serverUrlTo != nil {
                     results[0].serverUrl = serverUrlTo!
                 }
-                if fileID != nil {
-                    results[0].fileID = fileID!
+                if etag != nil {
+                    results[0].etag = etag!
                 }
                 
             }

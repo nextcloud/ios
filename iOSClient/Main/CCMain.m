@@ -1832,7 +1832,7 @@
         [self changePasswordAccount];
 }
 
-- (void)readFolderSuccess:(CCMetadataNet *)metadataNet permissions:(NSString *)permissions fileID:(NSString *)fileID metadatas:(NSArray *)metadatas
+- (void)readFolderSuccess:(CCMetadataNet *)metadataNet permissions:(NSString *)permissions etag:(NSString *)etag metadatas:(NSArray *)metadatas
 {
     // verify active user
     tableAccount *record = [[NCManageDatabase sharedInstance] getAccountActive];
@@ -1852,7 +1852,7 @@
         
     } else {
         
-        [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:metadataNet.serverUrl serverUrlTo:nil fileID:fileID];
+        [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:metadataNet.serverUrl serverUrlTo:nil etag:etag];
         
         [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND session = ''", metadataNet.account, metadataNet.directoryID]];
         
@@ -2033,7 +2033,7 @@
             metadataNet.selector = selectorSearch;
             metadataNet.serverUrl = _serverUrl;
 
-            [self readFolderSuccess:metadataNet permissions:@"" fileID:@"" metadatas:_searchResultMetadatas];
+            [self readFolderSuccess:metadataNet permissions:@"" etag:@"" metadatas:_searchResultMetadatas];
         }
     }
     
@@ -2062,7 +2062,7 @@
 {
     _searchResultMetadatas = [[NSMutableArray alloc] initWithArray:metadatas];
     
-    [self readFolderSuccess:metadataNet permissions:nil fileID:nil metadatas:metadatas];
+    [self readFolderSuccess:metadataNet permissions:nil etag:nil metadatas:metadatas];
 }
 
 - (void)cancelSearchBar
