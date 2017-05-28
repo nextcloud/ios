@@ -913,7 +913,6 @@
         metadata.sessionSelectorPost = selectorPost;
         metadata.typeFile = k_metadataTypeFile_unknown;
         
-        //[CCCoreData addMetadata:metadata activeAccount:_activeAccount activeUrl:_activeUrl context:_context];
         metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:_activeUrl];
         
         [self uploadURLSession:fileName fileNamePrint:metadata.fileNamePrint serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetLocalIdentifier:assetLocalIdentifier cryptated:cryptated onlyPlist:onlyPlist selector:selector];
@@ -944,7 +943,6 @@
             metadata.sessionSelectorPost = selectorPost;
             metadata.typeFile = k_metadataTypeFile_template;
             
-            //[CCCoreData addMetadata:metadata activeAccount:_activeAccount activeUrl:_activeUrl context:_context];
             metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:_activeUrl];
             
             // DATA
@@ -1013,7 +1011,6 @@
             if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image] || [metadata.typeFile isEqualToString: k_metadataTypeFile_video])
                 [[CCCrypto sharedManager] addPlistImage:[NSString stringWithFormat:@"%@/%@", _directoryUser, [fileNameCrypto stringByAppendingString:@".plist"]] fileNamePathImage:[NSTemporaryDirectory() stringByAppendingString:uploadID]];
                 
-            //[CCCoreData addMetadata:metadata activeAccount:_activeAccount activeUrl:_activeUrl context:_context];
             metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:_activeUrl];
                 
             // DATA
@@ -1080,7 +1077,6 @@
                     // -- Go to Upload --
                     [CCGraphics createNewImageFrom:metadata.fileNamePrint directoryUser:_directoryUser fileNameTo:metadata.fileID fileNamePrint:metadata.fileNamePrint size:@"m" imageForUpload:YES typeFile:metadata.typeFile writePreview:YES optimizedFileName:NO];
                 
-                    //[CCCoreData addMetadata:metadata activeAccount:_activeAccount activeUrl:_activeUrl context:_context];
                     metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:_activeUrl];
                 
                     [self uploadURLSession:fileName fileNamePrint:fileName serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetLocalIdentifier:assetLocalIdentifier cryptated:cryptated onlyPlist:onlyPlist selector:selector];

@@ -1267,6 +1267,31 @@ class NCManageDatabase: NSObject {
         return tableMetadata.init(value: metadata)
     }
     
+    func addMetadatas(_ metadatas: [tableMetadata], activeUrl: String, serverUrl: String) {
+        
+        let autoUploadFileName = self.getAccountAutoUploadFileName()
+        let autoUploadDirectory = self.getAccountAutoUploadDirectory(activeUrl)
+        
+        let realm = try! Realm()
+        
+        try! realm.write {
+            
+            for metadata in metadatas {
+            
+                if (metadata.realm == nil) {
+                    let metadataWithIcon = CCUtility.insertTypeFileIconName(metadata, directory: serverUrl, autoUploadFileName: autoUploadFileName, autoUploadDirectory: autoUploadDirectory)
+                    realm.add(metadataWithIcon!, update: true)
+                } else {
+                    realm.add(metadata, update: true)
+                }
+            }
+        }
+        
+        let directoryID = self.getDirectoryID(serverUrl)
+        self.setDateReadDirectory(directoryID: directoryID)
+    }
+
+    
     func deleteMetadata(predicate: NSPredicate) {
         
         let tableAccount = self.getAccountActive()
