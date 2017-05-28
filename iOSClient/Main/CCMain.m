@@ -1679,11 +1679,11 @@
     BOOL useSubFolder = [[arguments objectAtIndex:3] boolValue];
     NSString *session = [arguments objectAtIndex:4];
     
-    NSString *folderPhotos = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:app.activeUrl];
+    NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:app.activeUrl];
     NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
     
     // Create the folder for Photos & if request the subfolders
-    if (![app createFolderSubFolderAutomaticUploadFolderPhotos:folderPhotos useSubFolder:useSubFolder assets:assets selector:selectorUploadFile])
+    if (![app createFolderSubFolderAutomaticUploadFolderPhotos:autoUploadPath useSubFolder:useSubFolder assets:assets selector:selectorUploadFile])
         return;
     
     NSLog(@"[LOG] Asset N. %lu", (unsigned long)[assets count]);
@@ -1704,7 +1704,7 @@
             [formatter setDateFormat:@"MM"];
             NSString *monthString = [formatter stringFromDate:assetDate];
             
-            serverUrl = [NSString stringWithFormat:@"%@/%@/%@", folderPhotos, yearString, monthString];
+            serverUrl = [NSString stringWithFormat:@"%@/%@/%@", autoUploadPath, yearString, monthString];
         }
         
         // Check if is in upload 
@@ -4264,9 +4264,9 @@
                                         [self readFolderWithForced:YES serverUrl:serverUrl];
                                         
                                         NSLog(@"[LOG] Update Folder Photo");
-                                        NSString *directoryAutoUpload = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:app.activeUrl];
-                                        if ([directoryAutoUpload length] > 0)
-                                            [[CCSynchronize sharedSynchronize] readFolderServerUrl:directoryAutoUpload directoryID:[[NCManageDatabase sharedInstance] getDirectoryID:directoryAutoUpload] selector:selectorReadFolder];
+                                        NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:app.activeUrl];
+                                        if ([autoUploadPath length] > 0)
+                                            [[CCSynchronize sharedSynchronize] readFolderServerUrl:autoUploadPath directoryID:[[NCManageDatabase sharedInstance] getDirectoryID:autoUploadPath] selector:selectorReadFolder];
                                         
                                     }];
         }
