@@ -128,11 +128,11 @@ class NCManageDatabase: NSObject {
         // Brand
         if NCBrandOptions.sharedInstance.use_default_automatic_upload {
                 
-            addAccount.cameraUpload = true
-            addAccount.cameraUploadPhoto = true
-            addAccount.cameraUploadVideo = true
+            addAccount.autoUpload = true
+            addAccount.autoUploadPhoto = true
+            addAccount.autoUploadVideo = true
 
-            addAccount.cameraUploadWWAnVideo = true
+            addAccount.autoUploadWWAnVideo = true
         }
             
         addAccount.password = password
@@ -197,16 +197,16 @@ class NCManageDatabase: NSObject {
         return Array(accounts)
     }
     
-    func getAccountCameraUploadFolderName() -> String {
+    func getAccountAutoUploadFileName() -> String {
         
         let realm = try! Realm()
         
         let results = realm.objects(tableAccount.self).filter("active = true")
         if (results.count > 0) {
             
-            if results[0].cameraUploadFolderName.characters.count > 0 {
+            if results[0].autoUploadFileName.characters.count > 0 {
                 
-                return results[0].cameraUploadFolderName
+                return results[0].autoUploadFileName
                 
             } else {
                 
@@ -217,16 +217,16 @@ class NCManageDatabase: NSObject {
         return ""
     }
     
-    func getAccountCameraUploadFolderPath(activeUrl : String) -> String {
+    func getAccountAutoUploadServerUrl(_ activeUrl : String) -> String {
         
         let realm = try! Realm()
         
         let results = realm.objects(tableAccount.self).filter("active = true")
         if (results.count > 0) {
             
-            if results[0].cameraUploadFolderPath.characters.count > 0 {
+            if results[0].autoUploadServerUrl.characters.count > 0 {
                 
-                return results[0].cameraUploadFolderPath
+                return results[0].autoUploadServerUrl
                 
             } else {
                 
@@ -237,12 +237,12 @@ class NCManageDatabase: NSObject {
         return ""
     }
 
-    func getAccountCameraUploadFolderPathAndName(activeUrl : String) -> String {
+    func getAccountAutoUpload(_ activeUrl : String) -> String {
         
-        let cameraFolderName = self.getAccountCameraUploadFolderName()
-        let cameraFolderPath = self.getAccountCameraUploadFolderPath(activeUrl: activeUrl)
+        let cameraFileName = self.getAccountAutoUploadFileName()
+        let cameraServerUrl = self.getAccountAutoUploadServerUrl(activeUrl)
      
-        let folderPhotos = CCUtility.stringAppendServerUrl(cameraFolderPath, addFileName: cameraFolderName)!
+        let folderPhotos = CCUtility.stringAppendServerUrl(cameraServerUrl, addFileName: cameraFileName)!
         
         return folderPhotos
     }
@@ -282,22 +282,22 @@ class NCManageDatabase: NSObject {
             try! realm.write {
                 
                 switch field {
-                case "cameraUpload":
-                    results[0].cameraUpload = state
-                case "cameraUploadBackground":
-                    results[0].cameraUploadBackground = state
-                case "cameraUploadCreateSubfolder":
-                    results[0].cameraUploadCreateSubfolder = state
-                case "cameraUploadFull":
-                    results[0].cameraUploadFull = state
-                case "cameraUploadPhoto":
-                    results[0].cameraUploadPhoto = state
-                case "cameraUploadVideo":
-                    results[0].cameraUploadVideo = state
-                case "cameraUploadWWAnPhoto":
-                    results[0].cameraUploadWWAnPhoto = state
-                case "cameraUploadWWAnVideo":
-                    results[0].cameraUploadWWAnVideo = state
+                case "autoUpload":
+                    results[0].autoUpload = state
+                case "autoUploadBackground":
+                    results[0].autoUploadBackground = state
+                case "autoUploadCreateSubfolder":
+                    results[0].autoUploadCreateSubfolder = state
+                case "autoUploadFull":
+                    results[0].autoUploadFull = state
+                case "autoUploadPhoto":
+                    results[0].autoUploadPhoto = state
+                case "autoUploadVideo":
+                    results[0].autoUploadVideo = state
+                case "autoUploadWWAnPhoto":
+                    results[0].autoUploadWWAnPhoto = state
+                case "autoUploadWWAnVideo":
+                    results[0].autoUploadWWAnVideo = state
                 default:
                     print("No founfd field")
                 }
@@ -305,7 +305,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func setAccountCameraUploadDateAssetType(_ assetMediaType: PHAssetMediaType, assetDate: NSDate?) {
+    func setAccountAutoUploadDateAssetType(_ assetMediaType: PHAssetMediaType, assetDate: NSDate?) {
 
         let realm = try! Realm()
         
@@ -313,46 +313,46 @@ class NCManageDatabase: NSObject {
         
         try! realm.write {
             if (assetMediaType == PHAssetMediaType.image && results.count > 0) {
-                results[0].cameraUploadDatePhoto = assetDate
+                results[0].autoUploadDatePhoto = assetDate
             }
             if (assetMediaType == PHAssetMediaType.video && results.count > 0) {
-                results[0].cameraUploadDateVideo = assetDate
+                results[0].autoUploadDateVideo = assetDate
             }
         }
     }
     
-    func setAccountCameraUploadFolderName(_ folderName: String?) {
+    func setAccountAutoUploadFileName(_ fileName: String?) {
         
         let realm = try! Realm()
-        var folderName : String? = folderName
+        var fileName : String? = fileName
         
-        if folderName == nil {
-            folderName = self.getAccountCameraUploadFolderName()
+        if fileName == nil {
+            fileName = self.getAccountAutoUploadFileName()
         }
         
         let results = realm.objects(tableAccount.self).filter("active = true")
         if (results.count > 0) {
             try! realm.write {
                 
-                results[0].cameraUploadFolderName = folderName!
+                results[0].autoUploadFileName = fileName!
             }
         }
     }
 
-    func setAccountCameraUploadFolderPath(_ pathName: String?, activeUrl: String) {
+    func setAccountAutoUploadServerUrl(_ serverUrl: String?, activeUrl: String) {
         
         let realm = try! Realm()
-        var pathName : String? = pathName
+        var serverUrl : String? = serverUrl
         
-        if pathName == nil {
-            pathName = self.getAccountCameraUploadFolderPath(activeUrl: activeUrl)
+        if serverUrl == nil {
+            serverUrl = self.getAccountAutoUploadServerUrl(activeUrl)
         }
         
         let results = realm.objects(tableAccount.self).filter("active = true")
         if (results.count > 0) {
             try! realm.write {
                 
-                results[0].cameraUploadFolderPath = pathName!
+                results[0].autoUploadServerUrl = serverUrl!
             }
         }
     }
@@ -1246,8 +1246,8 @@ class NCManageDatabase: NSObject {
             return metadata
         }
         
-        let cameraFolderName = self.getAccountCameraUploadFolderName()
-        let cameraFolderPath = self.getAccountCameraUploadFolderPath(activeUrl: activeUrl)
+        let autoUploadFileName = self.getAccountAutoUploadFileName()
+        let autoUploadServerUrl = self.getAccountAutoUploadServerUrl(activeUrl)
         let directory = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID)
         
         let realm = try! Realm()
@@ -1255,7 +1255,7 @@ class NCManageDatabase: NSObject {
         try! realm.write {
             
             if (metadata.realm == nil) {
-                let metadataWithIcon = CCUtility.insertTypeFileIconName(metadata, directory: directory, cameraFolderName: cameraFolderName, cameraFolderPath: cameraFolderPath)
+                let metadataWithIcon = CCUtility.insertTypeFileIconName(metadata, directory: directory, cameraFolderName: autoUploadFileName, cameraFolderPath: autoUploadServerUrl)
                 realm.add(metadataWithIcon!, update: true)
             } else {
                 realm.add(metadata, update: true)
@@ -1312,11 +1312,11 @@ class NCManageDatabase: NSObject {
     
     func updateMetadata(_ metadata: tableMetadata, activeUrl: String) -> tableMetadata {
         
-        let cameraFolderName = self.getAccountCameraUploadFolderName()
-        let cameraFolderPath = self.getAccountCameraUploadFolderPath(activeUrl: activeUrl)
+        let autoUploadFileName = self.getAccountAutoUploadFileName()
+        let autoUploadServerUrl = self.getAccountAutoUploadServerUrl(activeUrl)
         let serverUrl = self.getServerUrl(metadata.directoryID)
         
-        let metadataWithIcon = CCUtility.insertTypeFileIconName(metadata, directory: serverUrl, cameraFolderName: cameraFolderName, cameraFolderPath: cameraFolderPath)
+        let metadataWithIcon = CCUtility.insertTypeFileIconName(metadata, directory: serverUrl, cameraFolderName: autoUploadFileName, cameraFolderPath: autoUploadServerUrl)
         
         let realm = try! Realm()
         
@@ -1861,40 +1861,40 @@ class NCManageDatabase: NSObject {
                     addAccount.active = true
                 }
                 if table.cameraUpload == 1 {
-                    addAccount.cameraUpload = true
+                    addAccount.autoUpload = true
                 }
                 if table.cameraUploadBackground == 1 {
-                    addAccount.cameraUploadBackground = true
+                    addAccount.autoUploadBackground = true
                 }
                 if table.cameraUploadCreateSubfolder == 1 {
-                    addAccount.cameraUploadCreateSubfolder = true
+                    addAccount.autoUploadCreateSubfolder = true
                 }
                 if table.cameraUploadDatePhoto != nil {
-                    addAccount.cameraUploadDatePhoto = table.cameraUploadDatePhoto! as NSDate
+                    addAccount.autoUploadDatePhoto = table.cameraUploadDatePhoto! as NSDate
                 }
                 if table.cameraUploadDateVideo != nil {
-                    addAccount.cameraUploadDateVideo = table.cameraUploadDateVideo! as NSDate
+                    addAccount.autoUploadDateVideo = table.cameraUploadDateVideo! as NSDate
                 }
                 if table.cameraUploadFolderName != nil {
-                    addAccount.cameraUploadFolderName = table.cameraUploadFolderName!
+                    addAccount.autoUploadFileName = table.cameraUploadFolderName!
                 }
                 if table.cameraUploadFolderPath != nil {
-                    addAccount.cameraUploadFolderPath = table.cameraUploadFolderPath!
+                    addAccount.autoUploadServerUrl = table.cameraUploadFolderPath!
                 }
                 if table.cameraUploadFull == 1 {
-                    addAccount.cameraUploadFull = true
+                    addAccount.autoUploadFull = true
                 }
                 if table.cameraUploadPhoto == 1 {
-                    addAccount.cameraUploadPhoto = true
+                    addAccount.autoUploadPhoto = true
                 }
                 if table.cameraUploadVideo == 1 {
-                    addAccount.cameraUploadVideo = true
+                    addAccount.autoUploadVideo = true
                 }
                 if table.cameraUploadWWAnPhoto == 1 {
-                    addAccount.cameraUploadWWAnPhoto = true
+                    addAccount.autoUploadWWAnPhoto = true
                 }
                 if table.cameraUploadWWAnVideo == 1 {
-                    addAccount.cameraUploadWWAnVideo = true
+                    addAccount.autoUploadWWAnVideo = true
                 }
                 addAccount.password = table.password!
                 addAccount.url = table.url!
