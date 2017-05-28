@@ -70,7 +70,7 @@
     
     section = [XLFormSectionDescriptor formSection];
     [form addFormSection:section];
-    section.footerTitle = NSLocalizedString(@"_photo_folder_photocamera_", nil);
+    section.footerTitle = NSLocalizedString(@"_autoupload_description_", nil);
 
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"autoUpload" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_autoupload_", nil)];
     
@@ -256,7 +256,7 @@
                 
             if(isLocationIsEnabled == YES) {
                     
-                UIAlertView * alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_autoupload_background_title_", nil) message:[CCUtility localizableBrand:@"_autoupload_background_msg_" table:nil] delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
+                UIAlertView * alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_autoupload_background_title_", nil) message:NSLocalizedString(@"_autoupload_background_msg_", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
                 [alertView show];
                     
                 [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUploadBackground" state:YES];
@@ -446,18 +446,18 @@
     switch (section)
     {
         case 0:
-            sectionName = [CCUtility localizableBrand:@"_photo_folder_photocamera_" table:nil];
+            sectionName = NSLocalizedString(@"_autoupload_description_", nil);
             break;
         case 3:
-            if (tableAccount.autoUpload) sectionName = [CCUtility localizableBrand:@"_photo_folder_background_" table:nil];
+            if (tableAccount.autoUpload) sectionName = NSLocalizedString(@"_autoupload_description_background_", nil);
             else sectionName = @"";
             break;
         case 4:
-            if (tableAccount.autoUpload) sectionName =  [CCUtility localizableBrand:@"_autoupload_fullphotos_footer_" table:nil];
+            if (tableAccount.autoUpload) sectionName =  NSLocalizedString(@"_autoupload_fullphotos_footer_", nil);
             else sectionName = @"";
             break;
         case 5:
-            if (tableAccount.autoUpload) sectionName =  [CCUtility localizableBrand:@"_autoupload_create_subfolder_footer_" table:nil];
+            if (tableAccount.autoUpload) sectionName =  NSLocalizedString(@"_autoupload_create_subfolder_footer_", nil);
             else sectionName = @"";
             break;
     }

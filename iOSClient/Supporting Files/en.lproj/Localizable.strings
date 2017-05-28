@@ -35,7 +35,7 @@
 "_no_"                      = "No";
 "_yes_"                     = "Yes";
 "_select_"                  = "Select";
-"_crypto_cloud_upload_"     = "_brand_ - Upload";
+"_crypto_cloud_upload_"     = "Upload";
 "_home_"                    = "Files";
 "_file_to_upload_"          = "File to upload";
 "_destination_"             = "Destination";
@@ -101,11 +101,11 @@
 "_contact_by_email_"        = "Contact us by email";
 "_clear_cache_"             = "Clear Cache (%@ used)";
 "_clear_cache_no_size_"     = "Clear Cache";
-"_exit_"                    = "Exit _brand_";
+"_exit_"                    = "Exit";
 "_funct_not_enabled_"       = "Functionality not enabled";
 "_passcode_activate_"       = "Password Lock activated";
 "_disabling_passcode_"      = "Disabling Password Lock";
-"_want_exit_"               = "Attention! _brand_ will be reset to the initial state. Continue?";
+"_want_exit_"               = "Attention!  Will be reset all to the initial state. Continue?";
 "_proceed_"                 = "Proceed";
 "_delete_cache_"            = "Delete cache";
 "_want_delete_cache_"       = "Do you want to delete cache?";
@@ -128,7 +128,7 @@
 "_version_server_"          = "Server version";
 "_check_key_aes_256_"       = "Manage encryption key passcode";
 "_encryptpass_by_email_"    = "Send by email";
-"_title_mail_encryptpass_"  = "Encryption Key Passcode _brand_";
+"_title_mail_encryptpass_"  = "Encryption Key Passcode Nextcloud";
 "_text1_mail_encryptpass_"  = "Your encryption key passcode is";
 "_text2_mail_encryptpass_"  = "store it securely and away from prying eyes.";
 "_help_"                    = "Help";
@@ -156,17 +156,16 @@
 "_autoupload_background_"       = "Auto upload in the background";
 "_autoupload_photos_"           = "Auto upload photos";
 "_autoupload_videos_"           = "Auto upload videos";
-"_photo_folder_photocamera_"    = "The news photos/videos will be uploaded in your Cloud";
-"_photo_folder_background_"     = "This option requires the use of GPS to trigger the detection of new photos/videos in the camera roll once the location changes significantly";
+"_autoupload_description_"      = "The news photos/videos will be uploaded in your Cloud";
+"_autoupload_description_background_"  = "This option requires the use of GPS to trigger the detection of new photos/videos in the camera roll once the location changes significantly";
 "_autoupload_background_title_" = "Limitations";
-"_autoupload_background_msg_"   = "Due to IOS restrictions, it is not yet possible to perform background processes, unless GPS services are activated. Once the cell in the cellular network is changed, the system wakes up _brand_ for a short time and checks for new photos to upload to the cloud.";
+"_autoupload_background_msg_"   = "Due to IOS restrictions, it is not yet possible to perform background processes, unless GPS services are activated. Once the cell in the cellular network is changed, the system wakes up for a short time and checks for new photos to upload to the cloud.";
 "_autoupload_change_location_"  = "Change folder";
 "_autoupload_location_now_"     = "Folder";
 "_autoupload_location_default_" = "Restore default folder";
 "_autoupload_change_location_footer_" = "Change Photos folder that is used for 'Automatic upload of camera photos' (if the option is enabled)";
 "_autoupload_not_select_home_"  = "Select a folder";
 "_autoupload_save_album_"       = "Copy photo or video in the photo album";
-"_autoupload_save_album_footer_" = "After the automatic sending of the photo or video, a copy is saved in the photo album : _brand_ (does not require more space in the camera roll)";
 "_autoupload_fullphotos_"        = "Upload all camera roll";
 "_autoupload_fullphotos_footer_" = "Select the options above before uploading";
 "_autoupload_create_subfolder_" = "Use subfolders";
@@ -184,7 +183,7 @@
 // Manage Help
 
 "_help_tutorial_"               = "Tutorial";
-"_help_intro_"                  = "Introduction _brand_";
+"_help_intro_"                  = "Introduction Nextcloud";
 "_help_activity_verbose_"       = "Detailed Activity feed";
 "_help_activity_mail_"          = "Send activity by mail";
 "_help_activity_clear_"         = "Clear activity";
@@ -195,7 +194,7 @@
 "_optimized_photos_"            = "Optimized photos resolution";
 "_upload_del_photos_"           = "Remove files after upload";
 "_optimized_photos_how_"        = "If your iPhone is low on space, full-resolution photos are automatically replaced with optimized versions. The full-resolution versions are stored in your Cloud.";
-"_upload_del_photos_how_"       = "Files will be removed from _brand_ memory after they’ve been uploaded to the Cloud. They will remain in the camera roll. Just download the files to see them.";
+"_upload_del_photos_how_"       = "Files will be removed from device memory after they’ve been uploaded to the Cloud. They will remain in the camera roll. Just download the files to see them.";
 
 // Login
 

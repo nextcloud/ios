@@ -351,14 +351,14 @@
         if (_activeMain)
             [_activeMain requestServerCapabilities];
     
-        NSLog(@"[LOG] Initialize Camera Upload");
+        NSLog(@"[LOG] Initialize Auto upload");
         [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initStateAutoUpload" object:nil];
         
         NSLog(@"[LOG] Listning Favorites");
         [[CCSynchronize sharedSynchronize] readListingFavorites];        
     });
     
-    // Initialize Camera Upload
+    // Initialize Auto upload
     //[[NSNotificationCenter defaultCenter] postNotificationName:@"initStateAutoUpload" object:@{@"afterDelay": @(2)}];
 }
 
@@ -732,7 +732,7 @@
             } else {
                 
                 [TWMessageBarManager sharedInstance].styleSheet = self;
-                [[TWMessageBarManager sharedInstance] showMessageWithTitle:[NSString stringWithFormat:@"%@\n",[CCUtility localizableBrand:title table:nil]] description:[CCUtility localizableBrand:description table:nil] type:type duration:delay];
+                [[TWMessageBarManager sharedInstance] showMessageWithTitle:[NSString stringWithFormat:@"%@\n", NSLocalizedString(title, nil)] description:NSLocalizedString(description, nil) type:type duration:delay];
             }
             
         } else {
@@ -1110,7 +1110,7 @@
     }
 
     viewController.touchIDManager = [[BKTouchIDManager alloc] initWithKeychainServiceName: k_serviceShareKeyChain];
-    viewController.touchIDManager.promptText = [CCUtility localizableBrand:@"_scan_fingerprint_" table:nil];
+    viewController.touchIDManager.promptText = NSLocalizedString(@"_scan_fingerprint_", nil);
 
     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
     return navigationController;

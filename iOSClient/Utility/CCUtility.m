@@ -709,7 +709,7 @@
         MFMailComposeViewController *mc = [[MFMailComposeViewController alloc] init];
         mc.mailComposeDelegate = form;
         
-        [mc setSubject:[self localizableBrand:@"_title_mail_encryptpass_" table:nil]];
+        [mc setSubject:NSLocalizedString(@"_title_mail_encryptpass_", nil)];
         
         NSString *htmlMsg =[NSString stringWithFormat:@"<html><body><p>%@ : %@ , %@</p></body></html>", NSLocalizedString(@"_text1_mail_encryptpass_", nil), key, NSLocalizedString(@"_text2_mail_encryptpass_", nil)];
         
@@ -733,21 +733,6 @@
         [alert addAction:ok];
         [form presentViewController:alert animated:YES completion:nil];
     }
-}
-
-+ (NSString *)localizableBrand:(NSString *)localize table:(NSString *)table
-{
-    NSString *translate;
-    
-    if (table)
-        translate = NSLocalizedStringFromTable(localize, table, nil);
-    else
-        translate = NSLocalizedString(localize, nil);
-    
-    translate = [translate stringByReplacingOccurrencesOfString:@"_brand_" withString:[NCBrandOptions sharedInstance].brand];
-    translate = [translate stringByReplacingOccurrencesOfString:@"_mail_me_" withString:[NCBrandOptions sharedInstance].mailMe];
-    
-    return translate;
 }
 
 + (NSArray *)createNameSubFolder:(NSArray *)alassets

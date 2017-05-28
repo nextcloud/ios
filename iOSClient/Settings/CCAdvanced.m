@@ -84,7 +84,7 @@
     
     section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_upload_del_photos_", nil)];
     [form addFormSection:section];
-    section.footerTitle = [CCUtility localizableBrand:@"_upload_del_photos_how_" table:nil];
+    section.footerTitle = NSLocalizedString(@"_upload_del_photos_how_", nil);
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"uploadremovephoto" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_upload_del_photos_", nil)];
     if ([CCUtility getUploadAndRemovePhoto]) row.value = @"1";
@@ -112,7 +112,7 @@
     [form addFormSection:section];
     
     // Exit
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"esci" rowType:XLFormRowDescriptorTypeButton title:[CCUtility localizableBrand:@"_exit_" table:nil]];
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"esci" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_exit_", nil)];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
     [row.cellConfig setObject:[UIColor redColor] forKey:@"textLabel.textColor"];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
@@ -383,7 +383,7 @@
 {
     [self deselectFormRow:sender];
     
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"" message:[CCUtility localizableBrand:@"_want_exit_" table:nil] preferredStyle:UIAlertControllerStyleActionSheet];
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"" message:NSLocalizedString(@"_want_exit_", nil) preferredStyle:UIAlertControllerStyleActionSheet];
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
         

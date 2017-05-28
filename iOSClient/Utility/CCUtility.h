@@ -161,8 +161,6 @@
 
 + (void)sendMailEncryptPass:(NSString *)recipient validateEmail:(BOOL)validateEmail form:(id)form nameImage:(NSString *)nameImage;
 
-+ (NSString *)localizableBrand:(NSString *)localize table:(NSString *)table;
-
 + (NSArray *)createNameSubFolder:(NSArray *)assets;
 
 // ===== CCMetadata =====
