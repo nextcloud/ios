@@ -216,8 +216,10 @@
             [[NCManageDatabase sharedInstance] setAccountAutoUploadDirectory:nil activeUrl:app.activeUrl];
             
             // verifichiamo che almeno uno dei servizi (foto video) siano attivi, in caso contrario attiviamo le foto
-            if (tableAccount.autoUploadPhoto == NO && tableAccount.autoUploadVideo == NO)
+            if (tableAccount.autoUploadPhoto == NO && tableAccount.autoUploadVideo == NO) {
                 [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUploadPhoto" state:YES];
+                [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUploadVideo" state:YES];
+            }
             
             // Settings date
             if (tableAccount.autoUploadPhoto)
