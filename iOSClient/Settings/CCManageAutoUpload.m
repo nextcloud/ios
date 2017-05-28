@@ -1,5 +1,5 @@
 //
-//  CCManageCameraUpload.m
+//  CCManageAutoUpload.m
 //  Crypto Cloud Technology Nextcloud
 //
 //  Created by Marino Faggiana on 01/09/15.
@@ -21,11 +21,11 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#import "CCManageCameraUpload.h"
+#import "CCManageAutoUpload.h"
 #import "AppDelegate.h"
 #import "NCBridgeSwift.h"
 
-@implementation CCManageCameraUpload
+@implementation CCManageAutoUpload
 
 //  From Settings
 - (id)initWithCoder:(NSCoder *)aDecoder
@@ -66,91 +66,89 @@
     
     form = [XLFormDescriptor formDescriptorWithTitle:NSLocalizedString(@"_uploading_from_camera_", nil)];
     
-    // Camera Upload
+    // Auto Upload
     
     section = [XLFormSectionDescriptor formSection];
     [form addFormSection:section];
     section.footerTitle = NSLocalizedString(@"_photo_folder_photocamera_", nil);
 
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"cameraupload" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_upload_camera_", nil)];
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"autoUpload" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_upload_camera_", nil)];
     
     if (tableAccount.autoUpload) row.value = @1;
     else row.value = @0;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
 
-    // Camera Upload Photo
+    // Auto Upload Photo
     
     section = [XLFormSectionDescriptor formSection];
     [form addFormSection:section];
     
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"camerauploadphoto" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_upload_foto_camera_", nil)];
-    row.hidden = [NSString stringWithFormat:@"$%@==0", @"cameraupload"];
-    //if ([CCCoreData getCameraUploadPhotoActiveAccount:app.activeAccount]) row.value = @1;
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"autoUploadPhoto" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_upload_foto_camera_", nil)];
+    row.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
     if (tableAccount.autoUploadPhoto) row.value = @1;
     else row.value = @0;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
 
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"camerauploadwwanphoto" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_wifi_only_", nil)];
-    row.hidden = [NSString stringWithFormat:@"$%@==0", @"cameraupload"];
-    //if ([CCCoreData getCameraUploadWWanPhotoActiveAccount:app.activeAccount] == YES) row.value = @1;
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"autoUploadWWAnPhoto" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_wifi_only_", nil)];
+    row.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
     if (tableAccount.autoUploadWWAnPhoto) row.value = @1;
     else row.value = @0;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
     
-    // Camera Upload Video
+    // Auto Upload Video
     
     section = [XLFormSectionDescriptor formSection];
     [form addFormSection:section];
     
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"camerauploadvideo" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_upload_video_camera_", nil)];
-    row.hidden = [NSString stringWithFormat:@"$%@==0", @"cameraupload"];
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"autoUploadVideo" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_upload_video_camera_", nil)];
+    row.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
     if (tableAccount.autoUploadVideo) row.value = @1;
     else row.value = @0;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
     
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"camerauploadwwanvideo" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_wifi_only_", nil)];
-    row.hidden = [NSString stringWithFormat:@"$%@==0", @"cameraupload"];
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"autoUploadWWAnVideo" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_wifi_only_", nil)];
+    row.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
     if (tableAccount.autoUploadWWAnVideo) row.value = @1;
     else row.value = @0;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
     
-    // Camera Upload Background
+    // Auto Upload Background
     
     section = [XLFormSectionDescriptor formSection];
     [form addFormSection:section];
 
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"camerauploadbackground" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_upload_camera_background_", nil)];
-    row.hidden = [NSString stringWithFormat:@"$%@==0", @"cameraupload"];
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"autoUploadBackground" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_upload_camera_background_", nil)];
+    row.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
     if (tableAccount.autoUploadBackground) row.value = @1;
     else row.value = @0;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
     
-    // Camera Upload All Photo
+    // Auto Upload Full
     section = [XLFormSectionDescriptor formSection];
     [form addFormSection:section];
     
     NSString *title = NSLocalizedString(@"_upload_camera_fullphotos_", nil);
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"camerauploadallphotos" rowType:XLFormRowDescriptorTypeBooleanSwitch title:title];
-    row.hidden = [NSString stringWithFormat:@"$%@==0", @"cameraupload"];
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"autoUploadFull" rowType:XLFormRowDescriptorTypeBooleanSwitch title:title];
+    row.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
     row.value = 0;
     if (tableAccount.autoUploadFull) row.value = @1;
     else row.value = @0;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
     
-    // Camera Upload create subfolder
+    // Auto Upload create subfolder
 
     section = [XLFormSectionDescriptor formSection];
     [form addFormSection:section];
     
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"camerauploadcreatesubfolder" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_upload_camera_create_subfolder_", nil)];
-    row.hidden = [NSString stringWithFormat:@"$%@==0", @"cameraupload"];
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"autoUploadCreateSubfolder" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_upload_camera_create_subfolder_", nil)];
+    row.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
     if (tableAccount.autoUploadCreateSubfolder) row.value = @1;
     else row.value = @0;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
@@ -203,11 +201,11 @@
     
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
     
-    if ([rowDescriptor.tag isEqualToString:@"cameraupload"]) {
+    if ([rowDescriptor.tag isEqualToString:@"autoUpload"]) {
         
         if ([[rowDescriptor.value valueData] boolValue] == YES) {
                         
-            // Create Folder cameraUpload
+            // Create Folder
             if (app.activeMain)
                 [app.activeMain createFolderCameraUpload];
             
@@ -239,13 +237,13 @@
             [[NCManageDatabase sharedInstance] clearTable:[tableAutomaticUpload class] account:app.activeAccount];
         }
         
-        // Initialize Camera Upload
+        // Initialize Auto Upload
         [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initStateCameraUpload" object:nil];
         
         [self reloadForm];
     }
     
-    if ([rowDescriptor.tag isEqualToString:@"camerauploadbackground"]) {
+    if ([rowDescriptor.tag isEqualToString:@"autoUploadBackground"]) {
         
         if ([[rowDescriptor.value valueData] boolValue] == YES) {
             
@@ -273,7 +271,7 @@
         }
     }
 
-    if ([rowDescriptor.tag isEqualToString:@"camerauploadallphotos"]) {
+    if ([rowDescriptor.tag isEqualToString:@"autoUploadFull"]) {
         
         if ([[rowDescriptor.value valueData] boolValue] == YES) {
             
@@ -287,7 +285,7 @@
         }
     }
 
-    if ([rowDescriptor.tag isEqualToString:@"camerauploadphoto"]) {
+    if ([rowDescriptor.tag isEqualToString:@"autoUploadPhoto"]) {
         
         if ([[rowDescriptor.value valueData] boolValue] == YES) {
             
@@ -302,12 +300,12 @@
         
     }
     
-    if ([rowDescriptor.tag isEqualToString:@"camerauploadwwanphoto"]) {
+    if ([rowDescriptor.tag isEqualToString:@"autoUploadWWAnPhoto"]) {
         
         [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUploadWWAnPhoto" state:[[rowDescriptor.value valueData] boolValue]];
     }
     
-    if ([rowDescriptor.tag isEqualToString:@"camerauploadvideo"]) {
+    if ([rowDescriptor.tag isEqualToString:@"autoUploadVideo"]) {
     
         if ([[rowDescriptor.value valueData] boolValue] == YES) {
                 
@@ -321,12 +319,12 @@
         [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUploadVideo" state:[[rowDescriptor.value valueData] boolValue]];
     }
     
-    if ([rowDescriptor.tag isEqualToString:@"camerauploadwwanvideo"]) {
+    if ([rowDescriptor.tag isEqualToString:@"autoUploadWWAnVideo"]) {
         
         [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUploadWWAnVideo" state:[[rowDescriptor.value valueData] boolValue]];
     }
     
-    if ([rowDescriptor.tag isEqualToString:@"camerauploadcreatesubfolder"]) {
+    if ([rowDescriptor.tag isEqualToString:@"autoUploadCreateSubfolder"]) {
         
         [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUploadCreateSubfolder" state:[[rowDescriptor.value valueData] boolValue]];
     }
@@ -341,72 +339,61 @@
 {
     self.form.delegate = nil;
     
-    XLFormRowDescriptor *rowCameraupload = [self.form formRowWithTag:@"cameraupload"];
+    XLFormRowDescriptor *rowAutoUpload = [self.form formRowWithTag:@"autoUpload"];
     
-    XLFormRowDescriptor *rowCamerauploadphoto = [self.form formRowWithTag:@"camerauploadphoto"];
-    XLFormRowDescriptor *rowCamerauploadcryptatedphoto = [self.form formRowWithTag:@"camerauploadcryptatedphoto"];
-    XLFormRowDescriptor *rowCamerauploadwwanphoto = [self.form formRowWithTag:@"camerauploadwwanphoto"];
+    XLFormRowDescriptor *rowAutoUploadPhoto = [self.form formRowWithTag:@"autoUploadPhoto"];
+    XLFormRowDescriptor *rowAutoUploadWWAnPhoto = [self.form formRowWithTag:@"autoUploadWWAnPhoto"];
     
-    XLFormRowDescriptor *rowCamerauploadvideo = [self.form formRowWithTag:@"camerauploadvideo"];
-    XLFormRowDescriptor *rowCamerauploadcryptatedvideo = [self.form formRowWithTag:@"camerauploadcryptatedvideo"];
-    XLFormRowDescriptor *rowCamerauploadwwanvideo = [self.form formRowWithTag:@"camerauploadwwanvideo"];
+    XLFormRowDescriptor *rowAutoUploadVideo = [self.form formRowWithTag:@"autoUploadVideo"];
+    XLFormRowDescriptor *rowAutoUploadWWAnVideo = [self.form formRowWithTag:@"autoUploadWWAnVideo"];
     
-    XLFormRowDescriptor *rowCamerauploadBackground = [self.form formRowWithTag:@"camerauploadbackground"];
+    XLFormRowDescriptor *rowAutoUploadBackground = [self.form formRowWithTag:@"autoUploadBackground"];
     
-    XLFormRowDescriptor *rowCamerauploadAllPhotos = [self.form formRowWithTag:@"camerauploadallphotos"];
+    XLFormRowDescriptor *rowAutoUploadFull = [self.form formRowWithTag:@"autoUploadFull"];
     
-    XLFormRowDescriptor *rowCamerauploadCreateSubfolder = [self.form formRowWithTag:@"camerauploadcreatesubfolder"];
+    XLFormRowDescriptor *rowAutoUploadCreateSubfolder = [self.form formRowWithTag:@"autoUploadCreateSubfolder"];
 
     
     // - STATUS ---------------------
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
     
     if (tableAccount.autoUpload)
-        [rowCameraupload setValue:@1]; else [rowCameraupload setValue:@0];
+        [rowAutoUpload setValue:@1]; else [rowAutoUpload setValue:@0];
     
-    //if ([CCCoreData getCameraUploadPhotoActiveAccount:app.activeAccount])
     if (tableAccount.autoUploadPhoto)
-        [rowCamerauploadphoto setValue:@1]; else [rowCamerauploadphoto setValue:@0];
+        [rowAutoUploadPhoto setValue:@1]; else [rowAutoUploadPhoto setValue:@0];
     
-    //if ([CCCoreData getCameraUploadWWanPhotoActiveAccount:app.activeAccount])
     if (tableAccount.autoUploadWWAnPhoto)
-        [rowCamerauploadwwanphoto setValue:@1]; else [rowCamerauploadwwanphoto setValue:@0];
+        [rowAutoUploadWWAnPhoto setValue:@1]; else [rowAutoUploadWWAnPhoto setValue:@0];
     
-    //if ([CCCoreData getCameraUploadVideoActiveAccount:app.activeAccount])
     if (tableAccount.autoUploadVideo)
-        [rowCamerauploadvideo setValue:@1]; else [rowCamerauploadvideo setValue:@0];
+        [rowAutoUploadVideo setValue:@1]; else [rowAutoUploadVideo setValue:@0];
     
-    //if ([CCCoreData getCameraUploadWWanVideoActiveAccount:app.activeAccount])
     if (tableAccount.autoUploadWWAnVideo)
-        [rowCamerauploadwwanvideo setValue:@1]; else [rowCamerauploadwwanvideo setValue:@0];
+        [rowAutoUploadWWAnVideo setValue:@1]; else [rowAutoUploadWWAnVideo setValue:@0];
     
-    //if ([CCCoreData getCameraUploadBackgroundActiveAccount:app.activeAccount])
     if (tableAccount.autoUploadBackground)
-        [rowCamerauploadBackground setValue:@1]; else [rowCamerauploadBackground setValue:@0];
+        [rowAutoUploadBackground setValue:@1]; else [rowAutoUploadBackground setValue:@0];
     
-    //if ([CCCoreData getCameraUploadFullPhotosActiveAccount:app.activeAccount])
     if (tableAccount.autoUploadFull)
-        [rowCamerauploadAllPhotos setValue:@1]; else [rowCamerauploadAllPhotos setValue:@0];
+        [rowAutoUploadFull setValue:@1]; else [rowAutoUploadFull setValue:@0];
     
-    //if ([CCCoreData getCameraUploadCreateSubfolderActiveAccount:app.activeAccount])
     if (tableAccount.autoUploadCreateSubfolder)
-        [rowCamerauploadCreateSubfolder setValue:@1]; else [rowCamerauploadCreateSubfolder setValue:@0];
+        [rowAutoUploadCreateSubfolder setValue:@1]; else [rowAutoUploadCreateSubfolder setValue:@0];
     
     // - HIDDEN ---------------------
     
-    rowCamerauploadphoto.hidden = [NSString stringWithFormat:@"$%@==0", @"cameraupload"];
-    rowCamerauploadcryptatedphoto.hidden = [NSString stringWithFormat:@"$%@==0", @"cameraupload"];
-    rowCamerauploadwwanphoto.hidden = [NSString stringWithFormat:@"$%@==0", @"cameraupload"];
+    rowAutoUploadPhoto.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
+    rowAutoUploadWWAnPhoto.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
     
-    rowCamerauploadvideo.hidden = [NSString stringWithFormat:@"$%@==0", @"cameraupload"];
-    rowCamerauploadcryptatedvideo.hidden = [NSString stringWithFormat:@"$%@==0", @"cameraupload"];
-    rowCamerauploadwwanvideo.hidden = [NSString stringWithFormat:@"$%@==0", @"cameraupload"];
+    rowAutoUploadVideo.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
+    rowAutoUploadWWAnVideo.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
     
-    rowCamerauploadBackground.hidden = [NSString stringWithFormat:@"$%@==0", @"cameraupload"];
+    rowAutoUploadBackground.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
     
-    rowCamerauploadAllPhotos.hidden = [NSString stringWithFormat:@"$%@==0", @"cameraupload"];
+    rowAutoUploadFull.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
     
-    rowCamerauploadCreateSubfolder.hidden = [NSString stringWithFormat:@"$%@==0", @"cameraupload"];
+    rowAutoUploadCreateSubfolder.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
 
     // ----------------------
     

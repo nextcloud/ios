@@ -33,7 +33,7 @@
 #import "CCDetail.h"
 #import "CCUtility.h"
 #import "CCManageAsset.h"
-#import "CCManageCameraUpload.h"
+#import "CCManageAutoUpload.h"
 #import "CCSection.h"
 #import "CCHud.h"
 #import "OCNetworking.h"

@@ -295,7 +295,7 @@
 
 - (void)emptyDataSetDidTapButton:(UIScrollView *)scrollView
 {    
-    CCManageCameraUpload *viewController = [[CCManageCameraUpload alloc] initWithNibName:nil bundle:nil];
+    CCManageAutoUpload *viewController = [[CCManageAutoUpload alloc] initWithNibName:nil bundle:nil];
     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
     
     [navigationController setModalPresentationStyle:UIModalPresentationFullScreen];

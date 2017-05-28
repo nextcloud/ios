@@ -1,5 +1,5 @@
 //
-//  CCManageCameraUpload.h
+//  CCManageAutoUpload.h
 //  Crypto Cloud Technology Nextcloud
 //
 //  Created by Marino Faggiana on 01/09/15.
@@ -26,6 +26,6 @@
 #import "CCManageLocation.h"
 #import "CCPhotosCameraUpload.h"
 
-@interface CCManageCameraUpload : XLFormViewController
+@interface CCManageAutoUpload : XLFormViewController
 
 @end
