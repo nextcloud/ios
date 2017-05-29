@@ -1363,11 +1363,11 @@ class NCManageDatabase: NSObject {
         return tableMetadata.init(value: metadata)
     }
     
-    func setMetadataSession(_ session: String?, sessionError: String?, sessionSelector: String?, sessionSelectorPost: String?, sessionTaskIdentifier: Int, sessionTaskIdentifierPlist: Int, predicate: NSPredicate) -> Bool {
+    func setMetadataSession(_ session: String?, sessionError: String?, sessionSelector: String?, sessionSelectorPost: String?, sessionTaskIdentifier: Int, sessionTaskIdentifierPlist: Int, predicate: NSPredicate) {
         
         let tableAccount = self.getAccountActive()
         if tableAccount == nil {
-            return false
+            return
         }
         
         let realm = try! Realm()
@@ -1398,19 +1398,12 @@ class NCManageDatabase: NSObject {
                 }
             }
             
-        } else {
-            
-           return false
         }
         
         // Update Date Read Directory
         if result != nil {
             self.setDateReadDirectory(directoryID: result!.directoryID)
         }
-        
-        print("\(predicate) \(result!.isInvalidated)")
-        
-        return true
     }
     
     func setMetadataFavorite(fileID: String, favorite: Bool) {
