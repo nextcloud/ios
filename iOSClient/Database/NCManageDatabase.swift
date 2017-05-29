@@ -1397,7 +1397,6 @@ class NCManageDatabase: NSObject {
                     result?.sessionTaskIdentifierPlist = sessionTaskIdentifierPlist
                 }
             }
-            
         }
         
         // Update Date Read Directory
