@@ -339,8 +339,8 @@
     
     NSLog(@"[LOG] Update Folder Photo");
     NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:_activeUrl];
-    if ([autoUploadPath length] > 0)
-        [[CCSynchronize sharedSynchronize] readFolderServerUrl:autoUploadPath directoryID:[[NCManageDatabase sharedInstance] getDirectoryID:autoUploadPath] selector:selectorReadFolder];
+    //if ([autoUploadPath length] > 0)
+    //    [[CCSynchronize sharedSynchronize] readFolderServerUrl:autoUploadPath directoryID:[[NCManageDatabase sharedInstance] getDirectoryID:autoUploadPath] selector:selectorReadFolder];
 
     // Execute : after 0.5 sec.
     
@@ -1493,7 +1493,9 @@
     
     if ([[_listChangeTask objectForKey:fileID] isEqualToString:@"stopUpload"]) {
         
-        [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:@"" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:k_taskIdentifierStop sessionTaskIdentifierPlist:k_taskIdentifierDone predicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
+        if (![[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:@"" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:k_taskIdentifierStop sessionTaskIdentifierPlist:k_taskIdentifierDone predicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]])
+            NSLog(@"Metadata not found");
+            
     }
     else if ([[_listChangeTask objectForKey:fileID] isEqualToString:@"reloadUpload"]) {
         
@@ -1525,7 +1527,8 @@
     }
     else if ([[_listChangeTask objectForKey:fileID] isEqualToString:@"cancelDownload"]) {
         
-        [[NCManageDatabase sharedInstance] setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier:k_taskIdentifierDone sessionTaskIdentifierPlist:k_taskIdentifierDone predicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
+        if(![[NCManageDatabase sharedInstance] setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier:k_taskIdentifierDone sessionTaskIdentifierPlist:k_taskIdentifierDone predicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]])
+            NSLog(@"Metadata not found");
     }
     
     // remove ChangeTask (fileID) from the list
