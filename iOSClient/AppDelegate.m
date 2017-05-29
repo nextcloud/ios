@@ -1073,6 +1073,7 @@
     // se non c'è attivo un account esci con NON attivare la richiesta password
     if ([self.activeAccount length] == 0) return NO;
     // se non è attivo il OnlyLockDir esci con NON attivare la richiesta password
+    /*
     for (;;) {
     
         tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"serverUrl = %@", serverUrl]];
@@ -1085,6 +1086,7 @@
                 break;
         }
     }
+    */ 
     if ([CCUtility getOnlyLockDir] && !isBlockZone) return NO;
     
     return YES;
@@ -1130,6 +1132,7 @@
         BOOL isBlockZone = false;
         NSString *serverUrl = self.activeMain.serverUrl;
         
+        /*
         for (;;) {
             
             tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"serverUrl = %@", serverUrl]];
@@ -1142,6 +1145,7 @@
                     break;
             }
         }
+        */ 
         if (isBlockZone)
             self.sessionePasscodeLock = [NSDate date];
      }
