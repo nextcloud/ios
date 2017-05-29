@@ -436,6 +436,8 @@
             
             if (fileName.length > 0 && serverUrl.length > 0)
                 [self downloadFileSuccessFailure:fileName fileID:metadata.fileID etag:etag date:date serverUrl:serverUrl selector:metadata.sessionSelector selectorPost:metadata.sessionSelectorPost errorCode:errorCode];
+        } else {
+            NSLog(@"metadata not found");
         }
     }
     
@@ -632,8 +634,10 @@
     tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"session = %@ AND (sessionTaskIdentifier = %i OR sessionTaskIdentifierPlist = %i)",session.sessionDescription, downloadTask.taskIdentifier, downloadTask.taskIdentifier]];
     
     // If the record metadata do not exists, exit
-    if (!metadata) return;
-    
+    if (!metadata) {
+        NSLog(@"metadata not found");
+        return;
+    }
     NSHTTPURLResponse* httpResponse = (NSHTTPURLResponse*)downloadTask.response;
     
     if (httpResponse.statusCode >= 200 && httpResponse.statusCode < 300) {
@@ -692,7 +696,10 @@
     } else {
         
         tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
-        if (!metadata) return;
+        if (!metadata) {
+            NSLog(@"metadata not found");
+            return;
+        }
         
         NSInteger sessionTaskIdentifier = metadata.sessionTaskIdentifier;
         NSInteger sessionTaskIdentifierPlist = metadata.sessionTaskIdentifierPlist;

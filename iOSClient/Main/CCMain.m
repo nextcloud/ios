@@ -1910,7 +1910,7 @@
         // read plist
         if (!_isSearchMode)
             [self downloadPlist:metadataNet.directoryID serverUrl:metadataNet.serverUrl];
-    
+        
         // File is changed ??
         if (!_isSearchMode)
             [[CCSynchronize sharedSynchronize] verifyChangeMedatas:metadatasToInsertInDB serverUrl:metadataNet.serverUrl account:app.activeAccount withDownload:NO];
