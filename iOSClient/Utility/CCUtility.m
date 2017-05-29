@@ -936,7 +936,8 @@
         if ([[NSFileManager defaultManager] fileExistsAtPath:temp]) fileNamePlist = temp;
     }
     
-    if (!fileNamePlist) return metadata;
+    if (!fileNamePlist)
+        return nil;
     
     NSMutableDictionary *data = [[NSMutableDictionary alloc] initWithContentsOfFile:fileNamePlist];
     NSString *title =  [data objectForKey:@"title"];

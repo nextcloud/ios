@@ -652,13 +652,10 @@
             else destinationFilePath = [NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryActiveUser:_activeUser activeUrl:_activeUrl], metadata.fileID];
         }
         
-        @autoreleasepool {
-            
-            NSURL *destinationURL = [NSURL fileURLWithPath:destinationFilePath];
+        NSURL *destinationURL = [NSURL fileURLWithPath:destinationFilePath];
         
-            [[NSFileManager defaultManager] removeItemAtURL:destinationURL error:NULL];
-            [[NSFileManager defaultManager] copyItemAtURL:location toURL:destinationURL error:nil];
-        }
+        [[NSFileManager defaultManager] removeItemAtURL:destinationURL error:NULL];
+        [[NSFileManager defaultManager] copyItemAtURL:location toURL:destinationURL error:nil];
     }
 }
 
