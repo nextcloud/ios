@@ -148,14 +148,6 @@
     [[CCNetworking sharedNetworking] downloadFile:_metadataNet.fileID serverUrl:_metadataNet.serverUrl downloadData:_metadataNet.downloadData downloadPlist:_metadataNet.downloadPlist selector:_metadataNet.selector selectorPost:_metadataNet.selectorPost session:_metadataNet.session taskStatus:_metadataNet.taskStatus delegate:self];
 }
 
-- (void)downloadTaskSave:(NSURLSessionDownloadTask *)downloadTask
-{
-    _downloadTask= downloadTask;
-    
-    if ([self.delegate respondsToSelector:@selector(downloadTaskSave:)])
-        [self.delegate downloadTaskSave:downloadTask];
-}
-
 - (void)downloadFileSuccess:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost
 {
     [self complete];
@@ -194,14 +186,6 @@
 - (void)uploadTemplate
 {
     [[CCNetworking sharedNetworking] uploadTemplate:_metadataNet.fileNamePrint fileNameCrypto:_metadataNet.fileName serverUrl:_metadataNet.serverUrl session:_metadataNet.session taskStatus:_metadataNet.taskStatus selector:_metadataNet.selector selectorPost:_metadataNet.selectorPost errorCode:_metadataNet.errorCode delegate:self];
-}
-
-- (void)uploadTaskSave:(NSURLSessionUploadTask *)uploadTask
-{
-    _uploadTask = uploadTask;
-    
-    if ([self.delegate respondsToSelector:@selector(uploadTaskSave:)])
-        [self.delegate uploadTaskSave:uploadTask];
 }
 
 - (void)uploadFileSuccess:(CCMetadataNet *)metadataNet fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost

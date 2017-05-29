@@ -586,11 +586,6 @@
         else if (taskStatus == k_taskStatusSuspend) [downloadTask suspend];
         else if (taskStatus == k_taskStatusResume) [downloadTask resume];
         
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if ([[self getDelegate:fileID] respondsToSelector:@selector(downloadTaskSave:)])
-                [[self getDelegate:fileID] downloadTaskSave:downloadTask];
-        });
-
         NSLog(@"[LOG] downloadFileSession %@ - %@ Task [%lu %lu]", fileID, fileNamePrint, (unsigned long)sessionTaskIdentifier, (unsigned long)sessionTaskIdentifierPlist);
     }
     
@@ -1247,11 +1242,6 @@
         else if (taskStatus == k_taskStatusSuspend) [uploadTask suspend];
         else if (taskStatus == k_taskStatusResume) [uploadTask resume];
         
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if ([[self getDelegate:sessionID] respondsToSelector:@selector(uploadTaskSave:)])
-                [[self getDelegate:sessionID] uploadTaskSave:uploadTask];
-        });
-
         NSLog(@"[LOG] Upload file %@ - %@ TaskIdentifier %lu", fileName,fileNamePrint, (unsigned long)uploadTask.taskIdentifier);
     }
 
