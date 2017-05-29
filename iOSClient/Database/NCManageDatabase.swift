@@ -1372,37 +1372,40 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
         
-        let results = realm.objects(tableMetadata.self).filter(predicate)
+        let result = realm.objects(tableMetadata.self).filter(predicate).first
         
-        try! realm.write {
+        if result != nil {
             
-            for result in results {
-                
+            try! realm.write {
+            
                 if session != nil {
-                    result.session = session!
+                    result!.session = session!
                 }
                 if sessionError != nil {
-                    result.sessionError = sessionError!
+                    result!.sessionError = sessionError!
                 }
                 if sessionSelector != nil {
-                    result.sessionSelector = sessionSelector!
+                    result!.sessionSelector = sessionSelector!
                 }
                 if sessionSelectorPost != nil {
-                    result.sessionSelectorPost = sessionSelectorPost!
+                    result!.sessionSelectorPost = sessionSelectorPost!
                 }
                 if sessionTaskIdentifier != Int(k_taskIdentifierNULL) {
-                    result.sessionTaskIdentifier = sessionTaskIdentifier
+                    result!.sessionTaskIdentifier = sessionTaskIdentifier
                 }
                 if sessionTaskIdentifierPlist != Int(k_taskIdentifierNULL) {
-                    result.sessionTaskIdentifierPlist = sessionTaskIdentifierPlist
+                    result!.sessionTaskIdentifierPlist = sessionTaskIdentifierPlist
                 }
             }
+            
+        } else {
+            
+           return false
         }
         
-        if results.count > 0 {
-            self.setDateReadDirectory(directoryID: results[0].directoryID)
-        } else {
-            return false
+        // Update Date Read Directory
+        if result != nil {
+            self.setDateReadDirectory(directoryID: result!.directoryID)
         }
         
         return true

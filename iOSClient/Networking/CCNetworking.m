@@ -710,6 +710,8 @@
         NSInteger sessionTaskIdentifier = metadata.sessionTaskIdentifier;
         NSInteger sessionTaskIdentifierPlist = metadata.sessionTaskIdentifierPlist;
         
+        NSLog(@"Task %li", (long)sessionTaskIdentifierPlist);
+        
         if ([CCUtility isCryptoString:fileName] || [CCUtility isFileNotCryptated:fileName]) sessionTaskIdentifier = k_taskIdentifierDone;
         if ([CCUtility isCryptoPlistString:fileName]) sessionTaskIdentifierPlist = k_taskIdentifierDone;
         
