@@ -1376,7 +1376,7 @@
 
 - (void)downloadFileSuccess:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost
 {
-    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
+    __block tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
     
     if (metadata == nil) return;
     
@@ -1520,28 +1520,31 @@
     //download file plist
     if ([selector isEqualToString:selectorLoadPlist]) {
         
-        metadata = [CCUtility insertInformationPlist:metadata directoryUser:app.directoryUser];
-        metadata = [[NCManageDatabase sharedInstance] updateMetadata:metadata activeUrl:app.activeUrl];
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
         
-        // se è un template aggiorniamo anche nel FileSystem
-        if ([metadata.type isEqualToString: k_metadataType_template]) {
-            [[NCManageDatabase sharedInstance] setLocalFileWithFileID:metadata.fileID date:metadata.date exifDate:nil exifLatitude:nil exifLongitude:nil fileName:nil fileNamePrint:metadata.fileNamePrint];
-        }
+            metadata = [CCUtility insertInformationPlist:metadata directoryUser:app.directoryUser];
+            metadata = [[NCManageDatabase sharedInstance] updateMetadata:metadata activeUrl:app.activeUrl];
+            
+            // se è un template aggiorniamo anche nel FileSystem
+            if ([metadata.type isEqualToString: k_metadataType_template]) {
+                [[NCManageDatabase sharedInstance] setLocalFileWithFileID:metadata.fileID date:metadata.date exifDate:nil exifLatitude:nil exifLongitude:nil fileName:nil fileNamePrint:metadata.fileNamePrint];
+            }
 
-        long countSelectorLoadPlist = 0;
+            long countSelectorLoadPlist = 0;
         
-        for (NSOperation *operation in [app.netQueue operations]) {
+            for (NSOperation *operation in [app.netQueue operations]) {
             
-            if ([((OCnetworking *)operation).metadataNet.selector isEqualToString:selectorLoadPlist])
-                countSelectorLoadPlist++;
-        }
+                if ([((OCnetworking *)operation).metadataNet.selector isEqualToString:selectorLoadPlist])
+                    countSelectorLoadPlist++;
+            }
         
-        if ((countSelectorLoadPlist == 0 || countSelectorLoadPlist % k_maxConcurrentOperation == 0) && [metadata.directoryID isEqualToString:[[NCManageDatabase sharedInstance] getDirectoryID:_serverUrl]]) {
+            if ((countSelectorLoadPlist == 0 || countSelectorLoadPlist % k_maxConcurrentOperation == 0) && [metadata.directoryID isEqualToString:[[NCManageDatabase sharedInstance] getDirectoryID:_serverUrl]]) {
             
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self reloadDatasource:serverUrl fileID:metadata.fileID selector:selector];
-            });
-        }
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self reloadDatasource:serverUrl fileID:metadata.fileID selector:selector];
+                });
+            }
+        });
     }
     
     //selectorLoadViewImage
@@ -1612,6 +1615,8 @@
             metadataNet.taskStatus = k_taskStatusResume;
             
             [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+            
+            //[[CCNetworking sharedNetworking] downloadFile:metadata.fileID serverUrl:serverUrl downloadData:NO downloadPlist:YES selector:selectorLoadPlist selectorPost:nil session:k_download_session_foreground taskStatus:k_taskStatusResume delegate:self];
         }
     }
 }
@@ -1910,7 +1915,7 @@
         // read plist
         if (!_isSearchMode)
             [self downloadPlist:metadataNet.directoryID serverUrl:metadataNet.serverUrl];
-        
+
         // File is changed ??
         if (!_isSearchMode)
             [[CCSynchronize sharedSynchronize] verifyChangeMedatas:metadatasToInsertInDB serverUrl:metadataNet.serverUrl account:app.activeAccount withDownload:NO];
