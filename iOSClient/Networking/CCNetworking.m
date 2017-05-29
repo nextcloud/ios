@@ -690,7 +690,7 @@
         
     } else {
         
-        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
+        __block tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
         if (!metadata) {
             NSLog(@"metadata not found");
             return;
@@ -706,7 +706,18 @@
         
         if (sessionTaskIdentifier == k_taskIdentifierDone && sessionTaskIdentifierPlist == k_taskIdentifierDone) {
             
-            [[NCManageDatabase sharedInstance] setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier:sessionTaskIdentifier sessionTaskIdentifierPlist:sessionTaskIdentifierPlist predicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
+            metadata.session = @"";
+            metadata.sessionError = @"";
+            metadata.sessionSelector = @"";
+            metadata.sessionSelectorPost = @"";
+            metadata.sessionTaskIdentifier = k_taskIdentifierDone;
+            metadata.sessionTaskIdentifierPlist = k_taskIdentifierDone;
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if([selector isEqualToString:selectorLoadPlist] || [selector isEqualToString:selectorLoadModelView])
+                    metadata = [CCUtility insertInformationPlist:metadata directoryUser:_directoryUser];
+                metadata = [[NCManageDatabase sharedInstance] updateMetadata:metadata activeUrl:_activeUrl];
+            });
             
         } else {
             

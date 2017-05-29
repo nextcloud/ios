@@ -1504,9 +1504,6 @@
     // download and view a template
     if ([selector isEqualToString:selectorLoadModelView]) {
         
-        metadata = [CCUtility insertInformationPlist:metadata directoryUser:app.directoryUser];
-        metadata = [[NCManageDatabase sharedInstance] updateMetadata:metadata activeUrl:app.activeUrl];
-        
         // se è un template aggiorniamo anche nel FileSystem
         if ([metadata.type isEqualToString: k_metadataType_template]) {
             [[NCManageDatabase sharedInstance] setLocalFileWithFileID:metadata.fileID date:metadata.date exifDate:nil exifLatitude:nil exifLongitude:nil fileName:nil fileNamePrint:metadata.fileNamePrint];
@@ -1522,20 +1519,6 @@
         
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
         
-            metadata = [CCUtility insertInformationPlist:metadata directoryUser:app.directoryUser];
-            
-            if (metadata) {
-                
-                metadata = [[NCManageDatabase sharedInstance] updateMetadata:metadata activeUrl:app.activeUrl];
-            
-                // se è un template aggiorniamo anche nel FileSystem
-                if ([metadata.type isEqualToString: k_metadataType_template]) {
-                    [[NCManageDatabase sharedInstance] setLocalFileWithFileID:metadata.fileID date:metadata.date exifDate:nil exifLatitude:nil exifLongitude:nil fileName:nil fileNamePrint:metadata.fileNamePrint];
-                }
-            } else {
-                NSLog(@"x");
-            }
-            
             long countSelectorLoadPlist = 0;
         
             for (NSOperation *operation in [app.netQueue operations]) {
@@ -1550,7 +1533,6 @@
                     [self reloadDatasource:serverUrl fileID:metadata.fileID selector:selector];
                 });
             }
-            
         });
     }
     
