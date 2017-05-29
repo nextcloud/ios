@@ -1408,6 +1408,8 @@ class NCManageDatabase: NSObject {
             self.setDateReadDirectory(directoryID: result!.directoryID)
         }
         
+        print("\(predicate) \(result!.isInvalidated)")
+        
         return true
     }
     
