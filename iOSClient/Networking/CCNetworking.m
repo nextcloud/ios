@@ -713,11 +713,16 @@
             metadata.sessionTaskIdentifier = k_taskIdentifierDone;
             metadata.sessionTaskIdentifierPlist = k_taskIdentifierDone;
             
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if([selector isEqualToString:selectorLoadPlist] || [selector isEqualToString:selectorLoadModelView])
-                    metadata = [CCUtility insertInformationPlist:metadata directoryUser:_directoryUser];
+            // Fix Main Thread for insertInformationPlist
+            if([selector isEqualToString:selectorLoadPlist] || [selector isEqualToString:selectorLoadModelView]) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if([selector isEqualToString:selectorLoadPlist] || [selector isEqualToString:selectorLoadModelView])
+                        metadata = [CCUtility insertInformationPlist:metadata directoryUser:_directoryUser];
+                    metadata = [[NCManageDatabase sharedInstance] updateMetadata:metadata activeUrl:_activeUrl];
+                });
+            } else {
                 metadata = [[NCManageDatabase sharedInstance] updateMetadata:metadata activeUrl:_activeUrl];
-            });
+            }
             
         } else {
             
