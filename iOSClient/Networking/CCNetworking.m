@@ -559,15 +559,6 @@
     
     NSURLSessionDownloadTask *downloadTask = [sessionDownload downloadTaskWithRequest:request];
     
-    if (taskStatus == k_taskStatusCancel) [downloadTask cancel];
-    else if (taskStatus == k_taskStatusSuspend) [downloadTask suspend];
-    else if (taskStatus == k_taskStatusResume) [downloadTask resume];
-
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if ([[self getDelegate:fileID] respondsToSelector:@selector(downloadTaskSave:)])
-            [[self getDelegate:fileID] downloadTaskSave:downloadTask];
-    });
-    
     if (downloadTask == nil) {
         
         NSUInteger sessionTaskIdentifier = k_taskIdentifierNULL;
@@ -590,6 +581,16 @@
         
         [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:nil sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:sessionTaskIdentifier sessionTaskIdentifierPlist:sessionTaskIdentifierPlist predicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
         
+        // Manage uploadTask cancel,suspend,resume
+        if (taskStatus == k_taskStatusCancel) [downloadTask cancel];
+        else if (taskStatus == k_taskStatusSuspend) [downloadTask suspend];
+        else if (taskStatus == k_taskStatusResume) [downloadTask resume];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if ([[self getDelegate:fileID] respondsToSelector:@selector(downloadTaskSave:)])
+                [[self getDelegate:fileID] downloadTaskSave:downloadTask];
+        });
+
         NSLog(@"[LOG] downloadFileSession %@ - %@ Task [%lu %lu]", fileID, fileNamePrint, (unsigned long)sessionTaskIdentifier, (unsigned long)sessionTaskIdentifierPlist);
     }
     
@@ -1215,17 +1216,6 @@
 
     NSURLSessionUploadTask *uploadTask = [sessionUpload uploadTaskWithRequest:request fromFile:[NSURL fileURLWithPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, fileNameForUpload]]];
     
-    if (taskStatus == k_taskStatusCancel) [uploadTask cancel];
-    else if (taskStatus == k_taskStatusSuspend) [uploadTask suspend];
-    else if (taskStatus == k_taskStatusResume) [uploadTask resume];
-    
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if ([[self getDelegate:sessionID] respondsToSelector:@selector(uploadTaskSave:)])
-            [[self getDelegate:sessionID] uploadTaskSave:uploadTask];
-    });
-    
-    // COREDATA
-    
     if (uploadTask == nil) {
         
         NSUInteger sessionTaskIdentifier = k_taskIdentifierNULL;
@@ -1252,6 +1242,16 @@
         if ([selector isEqualToString:selectorUploadAutomatic] || [selector isEqualToString:selectorUploadAutomaticAll])
             [[NCManageDatabase sharedInstance] deleteAutomaticUploadWithAssetLocalIdentifier:assetLocalIdentifier];
         
+        // Manage uploadTask cancel,suspend,resume
+        if (taskStatus == k_taskStatusCancel) [uploadTask cancel];
+        else if (taskStatus == k_taskStatusSuspend) [uploadTask suspend];
+        else if (taskStatus == k_taskStatusResume) [uploadTask resume];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if ([[self getDelegate:sessionID] respondsToSelector:@selector(uploadTaskSave:)])
+                [[self getDelegate:sessionID] uploadTaskSave:uploadTask];
+        });
+
         NSLog(@"[LOG] Upload file %@ - %@ TaskIdentifier %lu", fileName,fileNamePrint, (unsigned long)uploadTask.taskIdentifier);
     }
 
