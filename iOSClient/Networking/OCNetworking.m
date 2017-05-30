@@ -336,24 +336,18 @@
                 
                 OCFileDto *itemDto = [itemsSortedArray objectAtIndex:i];
                 itemDto.fileName = [itemDto.fileName stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+                NSString *fileName = itemDto.fileName;
                 
-                // Not in Crypto Cloud Mode skip File Crypto
-                if (_isCryptoCloudMode == NO) {
-                    
-                    NSString *fileName = itemDto.fileName;
-                    
-                    if (itemDto.isDirectory) {
+                // Skip if not CryptoMode
+                if (_isCryptoCloudMode == NO && [CCUtility isFileCryptated:fileName])
+                    continue;
+                
+                if (itemDto.isDirectory) {
                         
-                        fileName = [fileName substringToIndex:[fileName length] - 1];
-                        NSString *serverUrl = [CCUtility stringAppendServerUrl:_metadataNet.serverUrl addFileName:fileName];
+                    fileName = [fileName substringToIndex:[fileName length] - 1];
+                    NSString *serverUrl = [CCUtility stringAppendServerUrl:_metadataNet.serverUrl addFileName:fileName];
                         
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            (void)[[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:serverUrl permissions:permissions];
-                        });
-                    }
-                    
-                    if ([CCUtility isFileCryptated:fileName])
-                        continue;
+                    (void)[[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:serverUrl permissions:permissions];
                 }
                 
                 // ----- BUG #942 ---------

@@ -143,9 +143,9 @@
     if ([self upgrade]) {
     
         // Set account, if no exists clear all
-        tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
+        tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
     
-        if (recordAccount == nil) {
+        if (account == nil) {
         
             // remove all the keys Chain
             [CCUtility deleteAllChainStore];
@@ -155,7 +155,7 @@
 
         } else {
         
-            [self settingActiveAccount:recordAccount.account activeUrl:recordAccount.url activeUser:recordAccount.user activePassword:recordAccount.password];
+            [self settingActiveAccount:account.account activeUrl:account.url activeUser:account.user activePassword:account.password];
         }
     }
     
@@ -1073,9 +1073,7 @@
     // se non c'è attivo un account esci con NON attivare la richiesta password
     if ([self.activeAccount length] == 0) return NO;
     // se non è attivo il OnlyLockDir esci con NON attivare la richiesta password
-    /*
-    for (;;) {
-    
+    while (![serverUrl isEqualToString:[CCUtility getHomeServerUrlActiveUrl:_activeUrl]]) {
         tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"serverUrl = %@", serverUrl]];
         if (directory.lock) {
             isBlockZone = true;
@@ -1086,7 +1084,6 @@
                 break;
         }
     }
-    */ 
     if ([CCUtility getOnlyLockDir] && !isBlockZone) return NO;
     
     return YES;
@@ -1132,9 +1129,7 @@
         BOOL isBlockZone = false;
         NSString *serverUrl = self.activeMain.serverUrl;
         
-        /*
-        for (;;) {
-            
+        while (![serverUrl isEqualToString:[CCUtility getHomeServerUrlActiveUrl:_activeUrl]]) {
             tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"serverUrl = %@", serverUrl]];
             if (directory.lock) {
                 isBlockZone = true;
@@ -1145,7 +1140,6 @@
                     break;
             }
         }
-        */ 
         if (isBlockZone)
             self.sessionePasscodeLock = [NSDate date];
      }

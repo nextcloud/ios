@@ -148,11 +148,11 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
         
-        let results = realm.objects(tableAccount.self).filter("account = %@", account)
-        if (results.count > 0) {
-            
+        let result = realm.objects(tableAccount.self).filter("account = %@", account).first
+        
+        if result != nil {
             try! realm.write {
-                results[0].password = password
+                result?.password = password
             }
         }
     }
@@ -161,11 +161,11 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
         
-        let results = realm.objects(tableAccount.self).filter("account = %@", account)
-        if (results.count > 0) {
-            
+        let result = realm.objects(tableAccount.self).filter("account = %@", account).first
+        
+        if result != nil {
             try! realm.write {
-                realm.delete(results)
+                realm.delete(result!)
             }
         }
     }
@@ -174,9 +174,9 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
         
-        let results = realm.objects(tableAccount.self).filter("active = true")
-        if (results.count > 0) {
-            return results[0]
+        let result = realm.objects(tableAccount.self).filter("active = true").first
+        if result != nil {
+            return result
         } else {
             return nil
         }
@@ -201,12 +201,13 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
         
-        let results = realm.objects(tableAccount.self).filter("active = true")
-        if (results.count > 0) {
+        let result = realm.objects(tableAccount.self).filter("active = true").first
+        
+        if result != nil {
             
-            if results[0].autoUploadFileName.characters.count > 0 {
+            if result!.autoUploadFileName.characters.count > 0 {
                 
-                return results[0].autoUploadFileName
+                return result!.autoUploadFileName
                 
             } else {
                 
@@ -221,12 +222,13 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
         
-        let results = realm.objects(tableAccount.self).filter("active = true")
-        if (results.count > 0) {
+        let result = realm.objects(tableAccount.self).filter("active = true").first
+        
+        if result != nil {
             
-            if results[0].autoUploadDirectory.characters.count > 0 {
+            if result!.autoUploadDirectory.characters.count > 0 {
                 
-                return results[0].autoUploadDirectory
+                return result!.autoUploadDirectory
                 
             } else {
                 
@@ -277,27 +279,28 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
         
-        let results = realm.objects(tableAccount.self).filter("active = true")
-        if (results.count > 0) {
+        let result = realm.objects(tableAccount.self).filter("active = true").first
+        
+        if result != nil {
             try! realm.write {
                 
                 switch field {
                 case "autoUpload":
-                    results[0].autoUpload = state
+                    result?.autoUpload = state
                 case "autoUploadBackground":
-                    results[0].autoUploadBackground = state
+                    result?.autoUploadBackground = state
                 case "autoUploadCreateSubfolder":
-                    results[0].autoUploadCreateSubfolder = state
+                    result?.autoUploadCreateSubfolder = state
                 case "autoUploadFull":
-                    results[0].autoUploadFull = state
+                    result?.autoUploadFull = state
                 case "autoUploadPhoto":
-                    results[0].autoUploadPhoto = state
+                    result?.autoUploadPhoto = state
                 case "autoUploadVideo":
-                    results[0].autoUploadVideo = state
+                    result?.autoUploadVideo = state
                 case "autoUploadWWAnPhoto":
-                    results[0].autoUploadWWAnPhoto = state
+                    result?.autoUploadWWAnPhoto = state
                 case "autoUploadWWAnVideo":
-                    results[0].autoUploadWWAnVideo = state
+                    result?.autoUploadWWAnVideo = state
                 default:
                     print("No founfd field")
                 }
@@ -309,14 +312,14 @@ class NCManageDatabase: NSObject {
 
         let realm = try! Realm()
         
-        let results = realm.objects(tableAccount.self).filter("active = true")
+        let result = realm.objects(tableAccount.self).filter("active = true").first
         
         try! realm.write {
-            if (assetMediaType == PHAssetMediaType.image && results.count > 0) {
-                results[0].autoUploadDatePhoto = assetDate
+            if (assetMediaType == PHAssetMediaType.image && result != nil) {
+                result?.autoUploadDatePhoto = assetDate
             }
-            if (assetMediaType == PHAssetMediaType.video && results.count > 0) {
-                results[0].autoUploadDateVideo = assetDate
+            if (assetMediaType == PHAssetMediaType.video && result != nil) {
+                result?.autoUploadDateVideo = assetDate
             }
         }
     }
@@ -330,11 +333,11 @@ class NCManageDatabase: NSObject {
             fileName = self.getAccountAutoUploadFileName()
         }
         
-        let results = realm.objects(tableAccount.self).filter("active = true")
-        if (results.count > 0) {
+        let result = realm.objects(tableAccount.self).filter("active = true").first
+        
+        if result != nil {
             try! realm.write {
-                
-                results[0].autoUploadFileName = fileName!
+                result?.autoUploadFileName = fileName!
             }
         }
     }
@@ -348,11 +351,11 @@ class NCManageDatabase: NSObject {
             serverUrl = self.getAccountAutoUploadDirectory(activeUrl)
         }
         
-        let results = realm.objects(tableAccount.self).filter("active = true")
-        if (results.count > 0) {
+        let result = realm.objects(tableAccount.self).filter("active = true").first
+        
+        if result != nil {
             try! realm.write {
-                
-                results[0].autoUploadDirectory = serverUrl!
+                result?.autoUploadDirectory = serverUrl!
             }
         }
     }
@@ -366,24 +369,25 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
         
-        let results = realm.objects(tableAccount.self).filter("account = %@", tblAccount!.account)
-        if (results.count > 0) {
-
+        let result = realm.objects(tableAccount.self).filter("account = %@", tblAccount!.account).first
+        
+        if result != nil {
+            
             try! realm.write {
                 
-                results[0].enabled = userProfile.enabled
-                results[0].address = userProfile.address
-                results[0].displayName = userProfile.displayName
-                results[0].email = userProfile.email
-                results[0].phone = userProfile.phone
-                results[0].twitter = userProfile.twitter
-                results[0].webpage = results[0].webpage
+                result?.enabled = userProfile.enabled
+                result?.address = userProfile.address
+                result?.displayName = userProfile.displayName
+                result?.email = userProfile.email
+                result?.phone = userProfile.phone
+                result?.twitter = userProfile.twitter
+                result?.webpage = userProfile.webpage
                 
-                results[0].quota = userProfile.quota
-                results[0].quotaFree = userProfile.quotaFree
-                results[0].quotaRelative = userProfile.quotaRelative
-                results[0].quotaTotal = userProfile.quotaTotal
-                results[0].quotaUsed = userProfile.quotaUsed
+                result?.quota = userProfile.quota
+                result?.quotaFree = userProfile.quotaFree
+                result?.quotaRelative = userProfile.quotaRelative
+                result?.quotaTotal = userProfile.quotaTotal
+                result?.quotaUsed = userProfile.quotaUsed
             }
         }
     }
@@ -413,8 +417,9 @@ class NCManageDatabase: NSObject {
             
             for activity in listOfActivity {
                 
-                let results = realm.objects(tableActivity.self).filter("idActivity = %d", activity.idActivity)
-                if (results.count > 0) {
+                let result = realm.objects(tableActivity.self).filter("idActivity = %d", activity.idActivity).first
+                
+                if result != nil {
                     continue
                 }
                 
@@ -483,8 +488,9 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
             
-        let results = realm.objects(tableAutomaticUpload.self).filter("account = %@ AND assetLocalIdentifier = %@", tableAccount!.account, metadataNet.assetLocalIdentifier)
-        if (results.count > 0) {
+        let result = realm.objects(tableAutomaticUpload.self).filter("account = %@ AND assetLocalIdentifier = %@", tableAccount!.account, metadataNet.assetLocalIdentifier).first
+        
+        if result != nil {
             return false
         }
         
@@ -519,26 +525,27 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
         
-        let results = realm.objects(tableAutomaticUpload.self).filter("account = %@ AND selector = %@ AND lock == false", tableAccount!.account, selector)
-        if (results.count == 0) {
+        let result = realm.objects(tableAutomaticUpload.self).filter("account = %@ AND selector = %@ AND lock == false", tableAccount!.account, selector).first
+        
+        if result == nil {
             return nil
         }
 
         let metadataNet = CCMetadataNet()
         
         metadataNet.action = actionUploadAsset
-        metadataNet.assetLocalIdentifier = results[0].assetLocalIdentifier
-        metadataNet.fileName = results[0].fileName
-        metadataNet.priority = results[0].priority
-        metadataNet.selector = results[0].selector
-        metadataNet.selectorPost = results[0].selectorPost
-        metadataNet.serverUrl = results[0].serverUrl
-        metadataNet.session = results[0].session
+        metadataNet.assetLocalIdentifier = result?.assetLocalIdentifier
+        metadataNet.fileName = result?.fileName
+        metadataNet.priority = result!.priority
+        metadataNet.selector = result?.selector
+        metadataNet.selectorPost = result?.selectorPost
+        metadataNet.serverUrl = result?.serverUrl
+        metadataNet.session = result?.session
         metadataNet.taskStatus = Int(k_taskStatusResume)
         
         // Lock
         try! realm.write {
-            results[0].lock = true
+            result?.lock = true
         }
         
         return metadataNet
@@ -567,12 +574,13 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
         
-        let results = realm.objects(tableAutomaticUpload.self).filter("account = %@ AND assetLocalIdentifier = %@", tableAccount!.account, assetLocalIdentifier)
-        if (results.count > 0) {
+        let result = realm.objects(tableAutomaticUpload.self).filter("account = %@ AND assetLocalIdentifier = %@", tableAccount!.account, assetLocalIdentifier).first
+        
+        if result != nil {
             
             // UnLock
             try! realm.write {
-                results[0].lock = false
+                result?.lock = false
             }
         }
     }
@@ -586,11 +594,12 @@ class NCManageDatabase: NSObject {
 
         let realm = try! Realm()
 
-        let results = realm.objects(tableAutomaticUpload.self).filter("account = %@ AND assetLocalIdentifier = %@", tableAccount!.account, assetLocalIdentifier)
-        if (results.count > 0) {
+        let result = realm.objects(tableAutomaticUpload.self).filter("account = %@ AND assetLocalIdentifier = %@", tableAccount!.account, assetLocalIdentifier).first
+        
+        if result != nil {
             
             try! realm.write {
-                realm.delete(results)
+                realm.delete(result!)
             }
         }
     }
@@ -629,14 +638,14 @@ class NCManageDatabase: NSObject {
 
         let realm = try! Realm()
 
-        let results = realm.objects(tableCapabilities.self).filter("account = %@", tableAccount!.account)
+        let result = realm.objects(tableCapabilities.self).filter("account = %@", tableAccount!.account).first
         
         try! realm.write {
             
             var resultCapabilities = tableCapabilities()
             
-            if (results.count > 0) {
-                resultCapabilities = results[0]
+            if result != nil {
+                resultCapabilities = result!
             }
             
             resultCapabilities.account = tableAccount!.account
@@ -651,7 +660,7 @@ class NCManageDatabase: NSObject {
             resultCapabilities.versionMicro = capabilities.versionMicro
             resultCapabilities.versionString = capabilities.versionString
             
-            if (results.count == 0) {
+            if result == nil {
                 realm.add(resultCapabilities)
             }
         }
@@ -666,10 +675,10 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
 
-        let results = realm.objects(tableCapabilities.self).filter("account = %@", tableAccount!.account)
+        let result = realm.objects(tableCapabilities.self).filter("account = %@", tableAccount!.account).first
         
-        if (results.count > 0) {
-            return results[0]
+        if result != nil {
+            return result
         } else {
             return nil
         }
@@ -684,10 +693,10 @@ class NCManageDatabase: NSObject {
 
         let realm = try! Realm()
         
-        let results = realm.objects(tableCapabilities.self).filter("account = %@", tableAccount!.account)
+        let result = realm.objects(tableCapabilities.self).filter("account = %@", tableAccount!.account).first
 
-        if (results.count > 0) {
-            return results[0].versionMajor
+        if result != nil {
+            return result!.versionMajor
         } else {
             return 0
         }
@@ -736,16 +745,18 @@ class NCManageDatabase: NSObject {
         }
         
         let realm = try! Realm()
-        let results = realm.objects(tableDirectory.self).filter("serverUrl = %@", serverUrl)
+        
+        let result = realm.objects(tableDirectory.self).filter("serverUrl = %@", serverUrl).first
+        
         var directoryID: String = ""
         
         try! realm.write {
             
-            if results.count > 0 {
+            if result != nil {
                 
-                results[0].permissions = permissions
-                directoryID = results[0].directoryID
-                realm.add(results, update: true)
+                result?.permissions = permissions
+                directoryID = result!.directoryID
+                realm.add(result!, update: true)
                 
             } else {
                 
@@ -813,15 +824,15 @@ class NCManageDatabase: NSObject {
         
         try! realm.write {
             
-            let results = realm.objects(tableDirectory.self).filter("serverUrl = %@", serverUrl)
+            let result = realm.objects(tableDirectory.self).filter("serverUrl = %@", serverUrl).first
             
-            if results.count > 0 {
+            if result != nil {
                 
                 if serverUrlTo != nil {
-                    results[0].serverUrl = serverUrlTo!
+                    result?.serverUrl = serverUrlTo!
                 }
                 if etag != nil {
-                    results[0].etag = etag!
+                    result?.etag = etag!
                 }
                 
             }
@@ -870,11 +881,11 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
         
-        let results = realm.objects(tableDirectory.self).filter(predicate)
+        let result = realm.objects(tableDirectory.self).filter(predicate).first
         
-        if (results.count > 0) {
+        if result != nil {
             
-            return results[0]
+            return result
             
         } else {
             
@@ -920,11 +931,12 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
         
-        let results = realm.objects(tableDirectory.self).filter("serverUrl = %@", serverUrl)
-        if results.count > 0 {
-            return results[0].directoryID
+        let result = realm.objects(tableDirectory.self).filter("serverUrl = %@", serverUrl).first
+        
+        if result != nil {
+            return (result?.directoryID)!
         } else {
-            return ""
+            return self.addDirectory(serverUrl: serverUrl, permissions: "")
         }
     }
     
@@ -936,10 +948,11 @@ class NCManageDatabase: NSObject {
         }
         
         let realm = try! Realm()
-        let results = realm.objects(tableDirectory.self).filter("directoryID = %@", directoryID)
         
-        if results.count > 0 {
-            return results[0].serverUrl
+        let result = realm.objects(tableDirectory.self).filter("directoryID = %@", directoryID).first
+        
+        if result != nil {
+            return (result?.serverUrl)!
         } else {
             return ""
         }
@@ -953,12 +966,13 @@ class NCManageDatabase: NSObject {
         }
         
         let realm = try! Realm()
-            let results = realm.objects(tableDirectory.self).filter("account = %@ AND directoryID = %@", tableAccount!.account, directoryID)
+        
+        let result = realm.objects(tableDirectory.self).filter("account = %@ AND directoryID = %@", tableAccount!.account, directoryID).first
             
         try! realm.write {
             
-            if results.count > 0 {
-                return results[0].dateReadDirectory = NSDate()
+            if result != nil {
+                result?.dateReadDirectory = NSDate()
             }
         }
     }
@@ -971,6 +985,7 @@ class NCManageDatabase: NSObject {
         }
         
         let realm = try! Realm()
+        
         let results = realm.objects(tableDirectory.self)
         
         try! realm.write {
@@ -995,13 +1010,12 @@ class NCManageDatabase: NSObject {
         
         try! realm.write {
             
-            let results = realm.objects(tableDirectory.self).filter("account = %@ AND serverUrl = %@", tableAccount!.account, serverUrl)
+            let result = realm.objects(tableDirectory.self).filter("account = %@ AND serverUrl = %@", tableAccount!.account, serverUrl).first
             
-            if results.count > 0 {
+            if result != nil {
                 
-                results[0].lock = lock
+                result?.lock = lock
                 update = true
-                
             }
         }
         
@@ -1073,6 +1087,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
 
         let results = realm.objects(tableExternalSites.self).filter("account = %@", tableAccount!.account)
+        
         try! realm.write {
             realm.delete(results)
         }
@@ -1095,8 +1110,9 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
 
         // Verify if exists
-        let results = realm.objects(tableGPS.self).filter("latitude = %@ AND longitude = %@", latitude, longitude)
-        if (results.count > 0) {
+        let result = realm.objects(tableGPS.self).filter("latitude = %@ AND longitude = %@", latitude, longitude).first
+        
+        if result != nil {
             return
         }
                 
@@ -1122,12 +1138,12 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
         
-        let results = realm.objects(tableGPS.self).filter("latitude = %@ AND longitude = %@", latitude, longitude)
+        let result = realm.objects(tableGPS.self).filter("latitude = %@ AND longitude = %@", latitude, longitude).first
         
-        if (results.count == 0) {
+        if result == nil {
             return nil
         } else {
-            return results[0].location
+            return result!.location
         }
     }
 
@@ -1187,29 +1203,29 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
         
-        let results = realm.objects(tableLocalFile.self).filter("fileID = %@", fileID)
+        let result = realm.objects(tableLocalFile.self).filter("fileID = %@", fileID).first
         
-        if results.count > 0 {
+        if result != nil {
             
             try! realm.write {
                 
                 if date != nil {
-                    results[0].date = date!
+                    result?.date = date!
                 }
                 if exifDate != nil {
-                    results[0].exifDate = exifDate!
+                    result?.exifDate = exifDate!
                 }
                 if exifLatitude != nil {
-                    results[0].exifLatitude = exifLatitude!
+                    result?.exifLatitude = exifLatitude!
                 }
                 if exifLongitude != nil {
-                    results[0].exifLongitude = exifLongitude!
+                    result?.exifLongitude = exifLongitude!
                 }
                 if fileName != nil {
-                    results[0].fileName = fileName!
+                    result?.fileName = fileName!
                 }
                 if fileNamePrint != nil {
-                    results[0].fileNamePrint = fileNamePrint!
+                    result?.fileNamePrint = fileNamePrint!
                 }
             }
         }
@@ -1224,16 +1240,7 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
         
-        let results = realm.objects(tableLocalFile.self).filter(predicate)
-        
-        if (results.count > 0) {
-            
-            return results[0]
-            
-        } else {
-            
-            return nil
-        }
+        return realm.objects(tableLocalFile.self).filter(predicate).first
     }
 
     //MARK: -
@@ -1414,16 +1421,16 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
         
-        let results = realm.objects(tableMetadata.self).filter("account = %@ AND fileID = %@", tableAccount!.account, fileID)
+        let result = realm.objects(tableMetadata.self).filter("account = %@ AND fileID = %@", tableAccount!.account, fileID).first
         
-        if (results.count > 0) {
+        if result != nil {
             
             try! realm.write {
-                results[0].favorite = favorite
+                result?.favorite = favorite
             }
+            
+            self.setDateReadDirectory(directoryID: result!.directoryID)
         }
-        
-        self.setDateReadDirectory(directoryID: results[0].directoryID)
     }
     
     func getMetadata(predicate: NSPredicate) -> tableMetadata? {
@@ -1435,14 +1442,11 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
         
-        let results = realm.objects(tableMetadata.self).filter(predicate)
+        let result = realm.objects(tableMetadata.self).filter(predicate).first
         
-        if (results.count > 0) {
-                        
-            return tableMetadata.init(value: results[0])
-            
+        if result != nil {
+            return tableMetadata.init(value: result!)
         } else {
-            
             return nil
         }
     }
@@ -1506,14 +1510,11 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
         
-        let results = realm.objects(tableMetadata.self).filter("account = %@ AND directoryID = %@ AND (fileName = %@ OR fileNameData = %@)", tableAccount!.account, directoryID, fileName, fileName)
+        let result = realm.objects(tableMetadata.self).filter("account = %@ AND directoryID = %@ AND (fileName = %@ OR fileNameData = %@)", tableAccount!.account, directoryID, fileName, fileName).first
         
-        if (results.count > 0) {
-            
-            return tableMetadata.init(value: results[0])
-            
+        if result != nil {
+            return tableMetadata.init(value: result!)
         } else {
-            
             return nil
         }
     }
@@ -1630,10 +1631,11 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
 
         // Verify if exists
-        let results = realm.objects(tableShare.self).filter("account = %@ AND fileName = %@ AND serverUrl = %@", tableAccount!.account, fileName, serverUrl)
-        if (results.count > 0) {
+        let result = realm.objects(tableShare.self).filter("account = %@ AND fileName = %@ AND serverUrl = %@", tableAccount!.account, fileName, serverUrl).first
+        
+        if result != nil {
             try! realm.write {
-                results[0].shareLink = share;
+                result?.shareLink = share
             }
             
         } else {
@@ -1665,10 +1667,10 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
 
         // Verify if exists
-        let results = realm.objects(tableShare.self).filter("account = %@ AND fileName = %@ AND serverUrl = %@", tableAccount!.account, fileName, serverUrl)
-        if (results.count > 0) {
+        let result = realm.objects(tableShare.self).filter("account = %@ AND fileName = %@ AND serverUrl = %@", tableAccount!.account, fileName, serverUrl).first
+        if result != nil {
             try! realm.write {
-                results[0].shareUserAndGroup = share;
+                result?.shareUserAndGroup = share
             }
             
         } else {
@@ -1703,6 +1705,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         
         let results = realm.objects(tableShare.self).filter("account = %@ AND (shareLink CONTAINS %@ OR shareUserAndGroup CONTAINS %@)", tableAccount!.account, share, share)
+        
         if (results.count > 0) {
             
             let result = results[0]
@@ -1753,6 +1756,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         
         let results = realm.objects(tableShare.self).filter("account = %@", tableAccount!.account)
+        
         try! realm.write {
             realm.delete(results)
         }
