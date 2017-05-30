@@ -43,7 +43,7 @@
 "_beta_version_"            = "Beta version";
 "_function_in_testing_"     = "Function in testing, please send information to any problems or malfunctions.";
 "_done_"                    = "Done";
-"_passcode_too_short_"      = "Passcode too short, at least 4 characters are required";
+"_passcode_too_short_"      = "Passcode too short, at least 4 characters required";
 "_selected_"                = "Selected";
 "_scan_fingerprint_"        = "Scan fingerprint to authenticate";
 "_no_active_account_"       = "No account found";
@@ -51,19 +51,19 @@
 "_save_exit_"               = "Do you want to exit without saving?";
 "_video_"                   = "Video";
 "_overwrite_"               = "Overwrite";
-"_transfers_in_queue_"      = "Tranfers in progress, please wait ...";
-"_too_errors_automatic_all_"= "Too many errors, go to Control Center to verify the problem";
+"_transfers_in_queue_"      = "Tranfers in progress, please wait…";
+"_too_errors_automatic_all_"= "Too many errors, go to \"Control Center\" to verify the problem";
 "_create_folder_"           = "Create folder";
 "_close_"                   = "Close";
 "_postpone_"                = "Postpone";
 "_remove_"                  = "Remove";
 "_file_not_found_"          = "File not found";
-"_continue_"                = "Do you want to continue ?";
+"_continue_"                = "Do you want to continue?";
 "_auto_upload_folder_"      = "Auto upload";
 
 // App
 
-"_synchronization_header_"  = "Synchronization of encrypted header in progress ...";
+"_synchronization_header_"  = "Synchronization of encrypted header in progress…";
 "_network_available_"       = "Network available";
 "_network_not_available_"   = "Network not available";
 
@@ -71,7 +71,7 @@
 
 "_file_too_big_"            = "File too large to be encrypted/decrypted";
 "_file_too_big_max_100_"    = "File too large (max 100 kb.)";
-"_...loading..._"           = ".. loading ..";
+"_...loading..._"           = "Loading…";
 "_download_plist_"          = " ";
 "_no_reuploadfile_"         = "Could not find nor resend file. Delete the upload and reload the file to upload it.";
 "_file_already_exists_"     = "Unable to complete the operation, there is a file with the same name";
@@ -88,8 +88,8 @@
 "_acknowledgements_"        = "Acknowledgements";
 "_settings_"                = "Settings";
 "_passcode_"                = "Password";
-"_lock_active_"             = "Lock : Active";
-"_lock_not_active_"         = "Lock : Not Active";
+"_lock_active_"             = "Lock: Active";
+"_lock_not_active_"         = "Lock: Not Active";
 "_lock_protection_folder_"  = "Lock only for protected folders";
 "_url_"                     = "URL";
 "_username_"                = "Username";
@@ -111,8 +111,8 @@
 "_want_delete_cache_"       = "Do you want to delete cache?";
 "_mail_deleted_"            = "Email deleted";
 "_mail_saved_"              = "Email saved";
-"_mail_sent_"               = "Email sent successfully";
-"_mail_failure_"            = "Failed to send Email: %@";
+"_mail_sent_"               = "Email sent";
+"_mail_failure_"            = "Failed to send email: %@";
 "_information_req_"         = "Information request";
 "_credentials_"             = "Credentials";
 "_manage_account_"          = "Manage account";
@@ -122,7 +122,7 @@
 "_want_delete_"             = "Do you really want to delete?";
 "_no_delete_"               = "No, do not delete";
 "_yes_delete_"              = "Yes, delete";
-"_remove_cache_"            = "Please wait, deleting cache ...";
+"_remove_cache_"            = "Please wait, deleting cache…";
 "_optimizations_"           = "Optimizations";
 "_synchronizations_"        = "Synchronized folders";
 "_version_server_"          = "Server version";
@@ -159,7 +159,7 @@
 "_autoupload_description_"      = "The news photos/videos will be uploaded in your Cloud";
 "_autoupload_description_background_"  = "This option requires the use of GPS to trigger the detection of new photos/videos in the camera roll once the location changes significantly";
 "_autoupload_background_title_" = "Limitations";
-"_autoupload_background_msg_"   = "Due to IOS restrictions, it is not yet possible to perform background processes, unless GPS services are activated. Once the cell in the cellular network is changed, the system wakes up for a short time and checks for new photos to upload to the cloud.";
+"_autoupload_background_msg_"   = "Due to iOS restrictions, it is not yet possible to perform background processes, unless GPS services are activated. Once the cell in the cellular network is changed, the system wakes up for a short time and checks for new photos to upload to the cloud.";
 "_autoupload_change_location_"  = "Change folder";
 "_autoupload_location_now_"     = "Folder";
 "_autoupload_location_default_" = "Restore default folder";
@@ -174,8 +174,8 @@
 // Manage Crypto Cloud
 
 "_crypto_cloud_system_"             = "Crypto Cloud System";
-"_alert_activation_crypto_cloud_"   = "Crypto Cloud System activated correctly";
-"_alert_deactivation_crypto_cloud_" = "Crypto Cloud System deactivated correctly";
+"_alert_activation_crypto_cloud_"   = "Crypto Cloud System activated";
+"_alert_deactivation_crypto_cloud_" = "Crypto Cloud System deactivated";
 "_activation_crypto_cloud_"         = "Activation Crypto Cloud System";
 "_deactivation_crypto_cloud_"       = "Deactivation Crypto Cloud System";
 "_footer_crypto_cloud_"             = "Based on the encryption AES-256, Crypto Cloud System will enable you to store all your private data (documents, templates, photos, videos, etc…) in your Cloud, thus keeping them safe from possible 'prying eyes'.\n\nYou will be asked to enter a encryption key (minimum 4 characters, maximum 64 characters). You will never be able to retrieve it and your files will remain encrypted. Should you re-install Nextcloud or access to your data from another iOS system, use the same combination.\n\nAny file can be encrypted or decrypted. The name of folders containing your files can be encrypted as well (so as to hide any possible hint at their contents).\n\nAny kind of document, either in standard or in encrypted format, can be uploaded from Nextcloud onto your Cloud. All encrypted files and folders will be marked in orange colour. If they are in preview mode, they will be identified by a 3 bullets orange label instead.\n\nTemplates for recording your confidential data (note, payment card, ATM card, bank accounts, passwords to websites, etc…) are available and they can be saved in your Cloud in encrypted mode as well.\n\nActive/Disactive whenever you want, but remember to always use the same encryption key.\n\nAt the moment the encrypted files with Crypto Cloud System can be viewed only with iOS system.";
@@ -185,7 +185,7 @@
 "_help_tutorial_"               = "Tutorial";
 "_help_intro_"                  = "Introduction Nextcloud";
 "_help_activity_verbose_"       = "Detailed Activity feed";
-"_help_activity_mail_"          = "Send activity by mail";
+"_help_activity_mail_"          = "Send activity via email";
 "_help_activity_clear_"         = "Clear activity";
 
 
@@ -229,18 +229,18 @@
 
 "_pull_down_"                               = "Pull down to refresh";
 "_no_photo_load_"                           = "No Photo or Video";
-"_tutorial_autoupload_view_"                = "You can enable auto upload from the settings";
+"_tutorial_autoupload_view_"                = "You can enable auto uploads from the \"Settings\"";
 "_no_date_"                                 = "No date";
 "_today_"                                   = "Today";
 "_time_"                                    = "Time : %@\n\n%@";
 "_location_not_enabled_"                    = "Location Services not enabled";
-"_location_not_enabled_msg_"                = "Please go to Settings and turn on Location Services to allow automatic photo/video uploads.";
+"_location_not_enabled_msg_"                = "Please go to \"Settings\" and turn on \"Location Services\" to allow automatic photo/video uploads.";
 "_access_photo_not_enabled_"                = "Access to Photos not enabled";
-"_access_photo_not_enabled_msg_"            = "Please go to Settings and turn on Photo Access to allow automatic photo/video uploads.";
+"_access_photo_not_enabled_msg_"            = "Please go to \"Settings\" and turn on \"Photo Access\" to allow automatic photo/video uploads.";
 "_access_photo_location_not_enabled_"       = "Access to Photos and Location not enabled";
-"_access_photo_location_not_enabled_msg_"   = "Please go to Setting and turn on Photo Access and Location Services to allow automatic photo/video uploads.";
+"_access_photo_location_not_enabled_msg_"   = "Please go to \"Settings\" and turn on \"Photo Access\" and \"Location Services\" to allow automatic photo/video uploads.";
 "_tutorial_photo_view_"                     = "No photos or videos uploaded yet";
-"_create_full_upload_"                      = "Creating archive .. may take a long time, please wait";
+"_create_full_upload_"                      = "Creating archive… May take a long time, please wait";
 "_error_createsubfolders_upload_"           = "Error creating subfolders";
 "_activate_autoupload_"                     = "Enable auto upload";
 
@@ -248,8 +248,8 @@
 
 "_title_"                       = "Title";
 "_web_account_data_"            = "Web account data";
-"_url:_"                        = "URL :";
-"_login:_"                      = "Login :";
+"_url:_"                        = "URL:";
+"_login:_"                      = "Login:";
 "_password:_"                   = "Password :";
 "_notes_"                       = "Notes";
 "_web_account_"                 = "Web account";
@@ -301,18 +301,18 @@
 "_hours_ago_"                   = "%d hours ago";
 "_days_ago_"                    = "%d days ago";
 "_over_30_days_"                = "over 30 days";
-"_connection_internet_offline_" = "The internet connection appears to be offline or Wi-Fi is required";
+"_connection_internet_offline_" = "The Internet connection appears to be offline or Wi-Fi is required";
 "_insert_password_"             = "enter password";
-"_update_in_progress_"          = "Version upgrade, please wait ...";
+"_update_in_progress_"          = "Version upgrade, please wait…";
 "_forbidden_characters_"        = "The file or folder name contains not allowed characters";
 "_mail_not_can_send_mail_"      = "No configured account or wrong email address entered";
 
 // File
 
 "_photo_camera_"                = "Photos";
-"_unzip_in_progress_"           = "Unzip in progress on local storage ...";
-"_file_unpacked_"               = "File successfully unpacked on local storage";
-"_file_saved_local_"            = "File saved successfully on local storage.";
+"_unzip_in_progress_"           = "Extraction in progress on local storage…";
+"_file_unpacked_"               = "File unpacked on local storage";
+"_file_saved_local_"            = "File saved on local storage.";
 "_file_not_present_"            = "Error: File not present, please reload.";
 "_order_by_date_"               = "Sort by date";
 "_current_order_name_"          = "(currently sorted by name)";
@@ -329,7 +329,7 @@
 "_download_selected_files_"     = "Download files";
 "_error_passcode_"              = "Error: Wrong passcode for encryption key.";
 "_error_operation_canc_"        = "Error, operation canceled.";
-"_only_lock_passcode_"          = "Available only with Lock password activated. Activate in the Settings.";
+"_only_lock_passcode_"          = "Available only with Lock password activated. Activate it in the \"Settings\".";
 "_passcode_protection_"         = "Password protection";
 "_encrypt_"                     = "Encrypt";
 "_decrypt_"                     = "Decrypt";
@@ -341,7 +341,7 @@
 "_protect_passcode_"            = "Protect with password";
 "_share_"                       = "Share";
 "_reload_"                      = "Reload";
-"_open_in_"                     = "Open in...";
+"_open_in_"                     = "Open in…";
 "_remove_local_file_"           = "Remove from cache";
 "_add_local_"                   = "Add to local storage";
 "_comm_erro_pull_down_"         = "Attention communication error with the server, pull down to refresh.";
@@ -352,9 +352,9 @@
 "_files_"                       = "files";
 "_file_"                        = "file";
 "_folder_blocked_"              = "Folder blocked";
-"_downloading_progress_"        = "Initiating download of files ...";
-"_encrypted_progress_"          = "Encrypted ...";
-"_decrypted_progress_"          = "Decrypted ...";
+"_downloading_progress_"        = "Initiating download of files…";
+"_encrypted_progress_"          = "Encrypted…";
+"_decrypted_progress_"          = "Decrypted…";
 "_no_file_pull_down_"           = "Upload a file or pull down to refresh";
 "_browse_images_"               = "Browse images";
 "_synchronized_folder_"         = "Keep the folder synchronized";
@@ -388,7 +388,7 @@
 "_directory_on_top_no_"         = "Folders on top";
 "_folder_automatic_upload_"     = "Folder for Automatic upload";
 "_search_no_record_found_"      = "No result";
-"_search_in_progress_"          = "Search in progress...";
+"_search_in_progress_"          = "Search in progress…";
 "_search_instruction_"          = "Search for file (minimum 2 characters)";
 "_files_no_files_"              = "No files in here";
 
@@ -421,8 +421,8 @@
 "_reload_folder_"               = "Please reload folder";
 "_encrypt_error_"               = "During the encryption of file %@ an error occurred. [%@]";
 "_decrypt_error_"               = "During the decryption of file %@ an error occurred. [%@]";
-"_encryption_"                  = "Encrypting …";
-"_decryption_"                  = "Decrypting …";
+"_encryption_"                  = "Encrypting…";
+"_decryption_"                  = "Decrypting…";
 
 // CoreData
 
@@ -437,7 +437,7 @@
 // Share
 
 "_share_link_"                  = "Share link";
-"_share_link_button_"           = "Send link to ...";
+"_share_link_button_"           = "Send link to…";
 "_password_"                    = "Password";
 "_share_password_"              = "Password protected link";
 "_share_expirationdate_"        = "Set expiration date for link";
@@ -446,12 +446,12 @@
 "_add_sharee_"                  = "Add users or groups";
 "_add_sharee_footer_"           = "You can share this resource by adding users or groups. To remove a share, remove all users and groups";
 "_find_sharee_title_"           = "Search";
-"_find_sharee_"                 = "Search user or group ...";
+"_find_sharee_"                 = "Search for user or group…";
 "_find_sharee_footer_"          = "Enter part of the name of the user or group to search for (at least 2 characters) followed by 'Return', select the users that should be allowed to access the share followed by 'Done' to confirm";
 "_user_is_group_"               = " (group)";
 "_direct_sharee_title_"         = "Share";
 "_direct_sharee_footer_"        = "If you already know the name, enter it, then select the share type and press 'Done' to confirm";
-"_direct_sharee_"               = "Enter the username ...";
+"_direct_sharee_"               = "Enter the username…";
 "_user_sharee_footer_"          = "Tap for change privileges";
 "_share_type_title_"            = "Type of share";
 "_share_type_user_"             = "User";
