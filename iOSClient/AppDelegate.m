@@ -956,6 +956,31 @@
     }
 }
 
+- (void)selectedTabBarController:(NSInteger)index
+{
+    UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
+    
+    if (splitViewController.isCollapsed) {
+        
+        UITabBarController *tbc = splitViewController.viewControllers.firstObject;
+        for (UINavigationController *nvc in tbc.viewControllers) {
+            
+            if ([nvc.topViewController isKindOfClass:[CCDetail class]])
+                [nvc popToRootViewControllerAnimated:NO];
+        }
+        
+        [tbc setSelectedIndex: index];
+        
+    } else {
+        
+        UINavigationController *nvcDetail = splitViewController.viewControllers.lastObject;
+        [nvcDetail popToRootViewControllerAnimated:NO];
+        
+        UITabBarController *tbc = splitViewController.viewControllers.firstObject;
+        [tbc setSelectedIndex: index];
+    }
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Theming Color =====
 #pragma --------------------------------------------------------------------------------------------
