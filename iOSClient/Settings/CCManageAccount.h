@@ -30,6 +30,5 @@
 @interface CCManageAccount : XLFormViewController <CCLoginDelegate>
 
 - (void)deleteAccount:(NSString *)account;
-- (void)addAccountFoced;
 
 @end
