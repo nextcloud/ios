@@ -3768,8 +3768,8 @@
             
             NSDictionary *dic = [items objectAtIndex:0];
             
-            NSData *dataEtag = [dic objectForKey: k_metadataKeyedUnarchiver];
-            NSString *fileID = [NSKeyedUnarchiver unarchiveObjectWithData:dataEtag];
+            NSData *dataFileID = [dic objectForKey: k_metadataKeyedUnarchiver];
+            NSString *fileID = [NSKeyedUnarchiver unarchiveObjectWithData:dataFileID];
                         
             tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
             NSString *directoryUser = [CCUtility getDirectoryActiveUser:account.user activeUrl:account.url];
@@ -3797,8 +3797,8 @@
             
             // Value : (NSData) fileID
             
-            NSData *dataEtag = [dic objectForKey: k_metadataKeyedUnarchiver];
-            NSString *fileID = [NSKeyedUnarchiver unarchiveObjectWithData:dataEtag];
+            NSData *dataFileID = [dic objectForKey: k_metadataKeyedUnarchiver];
+            NSString *fileID = [NSKeyedUnarchiver unarchiveObjectWithData:dataFileID];
             tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
             
             NSString *directoryUser = [CCUtility getDirectoryActiveUser:account.user activeUrl:account.url];
@@ -3912,8 +3912,8 @@
         
         // Value : (NSData) fileID
         
-        NSData *dataEtag = [dic objectForKey: k_metadataKeyedUnarchiver];
-        NSString *fileID = [NSKeyedUnarchiver unarchiveObjectWithData:dataEtag];
+        NSData *dataFileID = [dic objectForKey: k_metadataKeyedUnarchiver];
+        NSString *fileID = [NSKeyedUnarchiver unarchiveObjectWithData:dataFileID];
         
         tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
         tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
