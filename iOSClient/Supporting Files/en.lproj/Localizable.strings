@@ -214,9 +214,6 @@
 // Favorite
 
 "_favorites_"                   = "Favorites";
-"_offline_"                     = "Offline";
-"_local_storage_"               = "Local storage";
-"_local_storage_no_record_"     = "No files yet";
 "_no_files_uploaded_"           = "No files uploaded";
 "_tutorial_favorite_view_"      = "Files and folders you mark as favorite will show up here";
 "_tutorial_offline_view_"       = "Copy here the files that should be available offline.\n\nThey will be synchronized with your cloud.";
@@ -501,9 +498,13 @@
 "_activity_file_not_present_"       = "File no longer present";
 
 
-// Offline
+// Offline - Local Storage
 
 "_create_synchronization_"          = "Create synchronization";
+"_available_offline_"               = "Available offline";
+"_offline_"                         = "Offline";
+"_local_storage_"                   = "Local storage";
+"_local_storage_no_record_"         = "No files yet";
 
 // Create Cloud
 
