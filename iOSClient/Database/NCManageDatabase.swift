@@ -884,11 +884,8 @@ class NCManageDatabase: NSObject {
         let result = realm.objects(tableDirectory.self).filter(predicate).first
         
         if result != nil {
-            
             return result
-            
         } else {
-            
             return nil
         }
     }
@@ -1039,15 +1036,6 @@ class NCManageDatabase: NSObject {
             }
         }
     }
-    
-    func copyTableDirectory(_ table: tableDirectory) -> tableDirectory {
-        
-        let copyTable = tableDirectory.init(value: table)
-        
-        
-        return copyTable
-    }
-
 
     //MARK: -
     //MARK: Table External Sites
