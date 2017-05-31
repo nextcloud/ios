@@ -325,7 +325,7 @@
 "_decrypted_selected_files_"    = "Decrypted files";
 "_download_selected_files_"     = "Download files";
 "_error_passcode_"              = "Error: Wrong passcode for encryption key.";
-"_error_operation_canc_"        = "Error, operation canceled.";
+"_error_operation_canc_"        = "Error: Operation canceled.";
 "_only_lock_passcode_"          = "Available only with Lock password activated. Activate it in the \"Settings\".";
 "_passcode_protection_"         = "Password protection";
 "_encrypt_"                     = "Encrypt";
@@ -379,7 +379,7 @@
 "_same_device_different_passcode_hint_" = "The file was encrypted by the same device but with different Passcode key encryption. Attention if the old Passcode is entered,files encrypted with the new Passcode will not be readable. \n\n Hint: %@";
 "_file_encrypted_another_device_hint_" = "The file was encrypted by another device [%@], enter the Passcode key encryption to read its contents. \n\n Hint: %@";
 "_save_selected_files_"         = "Save images and videos to Photo Album";
-"_file_not_saved_cameraroll_"   = "Error, file not saved in Photo Album";
+"_file_not_saved_cameraroll_"   = "Error: File not saved in Photo Album";
 "_file_saved_cameraroll_"       = "File saved in Photo Album";
 "_directory_on_top_yes_"        = "✓ Folders on top";
 "_directory_on_top_no_"         = "Folders on top";
@@ -429,7 +429,7 @@
 
 "_insert_password_pfd_"         = "Secured PDF. Enter password";
 "_password_pdf_error_"          = "Wrong password";
-"_error_download_photobrowser_" = "Error, unable to download the photo";
+"_error_download_photobrowser_" = "Error: Unable to download the photo";
 
 // Share
 
