@@ -26,7 +26,7 @@
 "_reauthenticate_user_"                 = "Access expired, please re-authenticate the user";
 "_server_error_retry_"                  = "The server is temporarily unavailable";
 "_too_many_files_"                      = "Too many files would be involved in this operation to complete successfully";
-"_too_many_request_"                    = "Rate limit is reached - too many requests were send";
+"_too_many_request_"                    = "Rate limit reached—too many requests sent";
 "_user_over_quota_"                     = "Storage quota is reached";
 
 "_ssl_connection_error_"                = "Connection SSL error, try again";
