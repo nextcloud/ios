@@ -149,6 +149,11 @@
 "_favorite_offline_"        = "Favorites available offline";
 "_favorite_offline_footer_" = "Making all favorites available offline may take a long time with a high memory occupation.";
 "_advanced_"                = "Advanced";
+"_legal_"                   = "Legal";
+"_terms_conditions_"        = "Terms & Conditions";
+"_privacy_notice_"          = "Privacy Notice";
+"_about_"                   = "About";
+"_about_us_"                = "About us";
 
 // Manage AutoUpload
 
