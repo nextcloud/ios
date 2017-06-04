@@ -752,13 +752,7 @@ class NCManageDatabase: NSObject {
         
         try! realm.write {
             
-            if result != nil {
-                
-                result?.permissions = permissions
-                directoryID = result!.directoryID
-                realm.add(result!, update: true)
-                
-            } else {
+            if result == nil || (result?.isInvalidated)! {
                 
                 let addDirectory = tableDirectory()
                 addDirectory.account = tableAccount!.account
@@ -769,6 +763,13 @@ class NCManageDatabase: NSObject {
                 addDirectory.permissions = permissions
                 addDirectory.serverUrl = serverUrl
                 realm.add(addDirectory, update: true)
+                
+            } else {
+                
+                result?.permissions = permissions
+                directoryID = result!.directoryID
+                realm.add(result!, update: true)
+
             }
         }
         
