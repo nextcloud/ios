@@ -1906,7 +1906,7 @@
             [self downloadPlist:metadataNet.directoryID serverUrl:metadataNet.serverUrl];
 
         // File is changed ??
-        if (!_isSearchMode)
+        if (!_isSearchMode && metadatasToInsertInDB)
             [[CCSynchronize sharedSynchronize] verifyChangeMedatas:metadatasToInsertInDB serverUrl:metadataNet.serverUrl account:app.activeAccount withDownload:NO];
     });
     

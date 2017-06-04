@@ -964,14 +964,15 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
         
+        realm.beginWrite()
+        
         let result = realm.objects(tableDirectory.self).filter("account = %@ AND directoryID = %@", tableAccount!.account, directoryID).first
             
-        try! realm.write {
-            
-            if result != nil {
-                result?.dateReadDirectory = NSDate()
-            }
+        if result != nil {
+            result?.dateReadDirectory = NSDate()
         }
+        
+        try! realm.commitWrite()
     }
     
     func setClearAllDateReadDirectory() {
@@ -1234,11 +1235,11 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Metadata
     
-    func addMetadata(_ metadata: tableMetadata, activeUrl: String, serverUrl: String) -> tableMetadata {
+    func addMetadata(_ metadata: tableMetadata, activeUrl: String, serverUrl: String) -> tableMetadata? {
         
         let tableAccount = self.getAccountActive()
         if tableAccount == nil {
-            return metadata
+            return nil
         }
         
         let autoUploadFileName = self.getAccountAutoUploadFileName()
@@ -1258,6 +1259,10 @@ class NCManageDatabase: NSObject {
         
         self.setDateReadDirectory(directoryID: metadata.directoryID)
         
+        if metadata.realm == nil {
+            return nil
+        }
+        
         return tableMetadata.init(value: metadata)
     }
     
@@ -1273,7 +1278,7 @@ class NCManageDatabase: NSObject {
             
             for metadata in metadatas {
             
-                if (metadata.realm == nil) {
+                if metadata.realm == nil {
                     let metadataWithIcon = CCUtility.insertTypeFileIconName(metadata, serverUrl: serverUrl, autoUploadFileName: autoUploadFileName, autoUploadDirectory: autoUploadDirectory)
                     realm.add(metadataWithIcon!, update: true)
                 } else {

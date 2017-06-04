@@ -323,17 +323,19 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
             }
             
             // Add record
+            let fileID = metadata.fileID
+            let fileName = metadata.fileName
             _ = NCManageDatabase.sharedInstance.addMetadata(metadata, activeUrl: activeUrl!, serverUrl: metadataNet.serverUrl)
             
             // if plist do not exists, download it
-            if CCUtility.isCryptoPlistString(metadata.fileName) && FileManager.default.fileExists(atPath: "\(directoryUser!)/\(metadata.fileName)") == false {
+            if CCUtility.isCryptoPlistString(fileName) && FileManager.default.fileExists(atPath: "\(directoryUser!)/\(fileName)") == false {
                 
                 let metadataNet = CCMetadataNet.init(account: activeAccount)!
                 
                 metadataNet.action = actionDownloadFile
                 metadataNet.downloadData = false
                 metadataNet.downloadPlist = true
-                metadataNet.fileID = metadata.fileID
+                metadataNet.fileID = fileID
                 metadataNet.selector = selectorLoadPlist
                 metadataNet.serverUrl = self.serverUrl
                 metadataNet.session = k_download_session_foreground
