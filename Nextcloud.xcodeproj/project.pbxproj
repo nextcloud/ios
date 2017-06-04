@@ -140,6 +140,7 @@
 		F7145A211D12E3B700CAFEEC /* Error.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7B381BF1C074E3E004693F8 /* Error.strings */; };
 		F7145A231D12E3B700CAFEEC /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7E70DE91A24DE4100E1B66A /* Localizable.strings */; };
 		F720E01F1E48C73E001A4B9E /* CCActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F720E01E1E48C73E001A4B9E /* CCActions.swift */; };
+		F7226EDC1EE4089300EBECB1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7226EDB1EE4089300EBECB1 /* Main.storyboard */; };
 		F725437C1E12A44A009BF4C2 /* CCSection.m in Sources */ = {isa = PBXBuildFile; fileRef = F78F6FAF1CC8CCB700F4EA25 /* CCSection.m */; };
 		F72AAECA1E5C60C700BB17E1 /* AHKActionSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = F72AAEC31E5C60C700BB17E1 /* AHKActionSheet.m */; };
 		F72AAECB1E5C60C700BB17E1 /* AHKActionSheetViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F72AAEC51E5C60C700BB17E1 /* AHKActionSheetViewController.m */; };
@@ -350,7 +351,6 @@
 		F76B3CCF1EAE01BD00921AC9 /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
 		F76B3CD01EAE01BD00921AC9 /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
 		F76B3CD11EAE01BD00921AC9 /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
-		F76F23251ED45D2F00C40023 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F76F23241ED45D2F00C40023 /* Main.storyboard */; };
 		F76F23341ED4603700C40023 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = F76F23331ED4603700C40023 /* LaunchScreen.xib */; };
 		F77B0DF01D118A16002130FE /* UIImage+Resizing.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04CA1C889184008DAB36 /* UIImage+Resizing.m */; };
 		F77B0DF21D118A16002130FE /* CCUploadFromOtherUpp.m in Sources */ = {isa = PBXBuildFile; fileRef = F7956FCA1B4886E60085DEA3 /* CCUploadFromOtherUpp.m */; };
@@ -1068,6 +1068,7 @@
 		F721372E1BAFF0920012B613 /* CCPatenteGuida.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCPatenteGuida.m; sourceTree = "<group>"; };
 		F721372F1BAFF0920012B613 /* CCTemplates.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCTemplates.h; sourceTree = "<group>"; };
 		F72137301BAFF0920012B613 /* CCTemplates.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCTemplates.m; sourceTree = "<group>"; };
+		F7226EDB1EE4089300EBECB1 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		F7229B491DF71BB300E8C4E7 /* AUTHORS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AUTHORS; sourceTree = SOURCE_ROOT; };
 		F72651E61ED03F4B002231E0 /* cryptocloud 10.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "cryptocloud 10.xcdatamodel"; sourceTree = "<group>"; };
 		F7296A661C8880ED001A7809 /* CCloadItemData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CCloadItemData.swift; sourceTree = "<group>"; };
@@ -1472,7 +1473,6 @@
 		F76C3B841C6388BC00DC4301 /* CCGraphics.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCGraphics.m; sourceTree = "<group>"; };
 		F76C3B871C638A4C00DC4301 /* CCError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCError.h; sourceTree = "<group>"; };
 		F76C3B881C638A4C00DC4301 /* CCError.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCError.m; sourceTree = "<group>"; };
-		F76F23241ED45D2F00C40023 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		F76F23321ED4600700C40023 /* Share-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Share-Bridging-Header.h"; sourceTree = "<group>"; };
 		F76F23331ED4603700C40023 /* LaunchScreen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LaunchScreen.xib; sourceTree = "<group>"; };
 		F777F0301C29717F00CE81CB /* PHAsset+Utility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "PHAsset+Utility.h"; sourceTree = "<group>"; };
@@ -1933,6 +1933,7 @@
 				F73B4F781E8D3BF800A97F07 /* CCMainTabBarController.swift */,
 				F70211FA1BAC56E9003FC03E /* CCMain.h */,
 				F70211FB1BAC56E9003FC03E /* CCMain.m */,
+				F7226EDB1EE4089300EBECB1 /* Main.storyboard */,
 				F7D0E65E1BC5042E008D989A /* CCDetail.h */,
 				F7D0E65F1BC5042E008D989A /* CCDetail.m */,
 				F73F537E1E929C8500F8678D /* CCMore.swift */,
@@ -3262,7 +3263,6 @@
 				F7C742D31E7BD36600D9C973 /* Supporting Files */,
 				F700222B1EC479840080073F /* Custom.xcassets */,
 				F76F23331ED4603700C40023 /* LaunchScreen.xib */,
-				F76F23241ED45D2F00C40023 /* Main.storyboard */,
 				F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */,
 			);
 			path = Brand;
@@ -3955,8 +3955,8 @@
 				F762CB971EACB84400B38484 /* icon-info.png in Resources */,
 				F77B0F391D118A16002130FE /* ZSStable@2x.png in Resources */,
 				F77B0F3B1D118A16002130FE /* ZSSredo@2x.png in Resources */,
-				F76F23251ED45D2F00C40023 /* Main.storyboard in Resources */,
 				F77B0F3D1D118A16002130FE /* ZSSh5.png in Resources */,
+				F7226EDC1EE4089300EBECB1 /* Main.storyboard in Resources */,
 				F77B0F3E1D118A16002130FE /* ZSSquicklink@2x.png in Resources */,
 				F77B0F411D118A16002130FE /* ZSStextcolor@2x.png in Resources */,
 				F77B0F471D118A16002130FE /* ZSSbgcolor@2x.png in Resources */,
