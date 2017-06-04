@@ -108,14 +108,8 @@
         if (typeFilename == k_metadataTypeFilenameCrypto || typeFilename == k_metadataTypeFilenamePlist)
             continue;
 
-        // Reinsert
-        [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@ AND session = ''", metadata.fileID] clearDateReadDirectoryID:nil];
-        (void)[[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:app.activeUrl serverUrl:metadataNet.serverUrl];
-        
         // insert for test NOT favorite
         [filesEtag addObject:metadata.fileID];
-        
-        // ---- Synchronized ----
         
         // Get ServerUrl
         NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
@@ -269,7 +263,8 @@
                 
                 NSString *serverUrl = [CCUtility stringAppendServerUrl:metadataNet.serverUrl addFileName:metadata.fileNameData];
                 NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
-                    
+                NSString *etag = metadata.etag;
+                
                 // Verify if do not exists this Metadata
                 tableMetadata *result = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadata.fileID]];
 
@@ -279,9 +274,9 @@
                 // Load if different etag
                 tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", metadataNet.account, serverUrl]];
                 
-                if (![tableDirectory.etag isEqualToString:metadata.etag]) {
+                if (![tableDirectory.etag isEqualToString:etag]) {
                     
-                    [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:serverUrl serverUrlTo:nil etag:metadata.etag];
+                    [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:serverUrl serverUrlTo:nil etag:etag];
                     
                     [self readFolderServerUrl:serverUrl directoryID:directoryID selector:metadataNet.selector];
                 }
@@ -431,7 +426,7 @@
 // MULTI THREAD
 - (void)SynchronizeMetadatas:(NSArray *)metadatas withDownload:(BOOL)withDownload
 {
-    NSString *oldDirectoryID, *serverUrl;
+    NSString *oldDirectoryID, *serverUrl, *fileID;
 
     for (tableMetadata *metadata in metadatas) {
         
@@ -454,7 +449,8 @@
             oldDirectoryID = metadata.directoryID;
             [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:serverUrl directoryID:nil];
         }
-            
+        
+        fileID = metadata.fileID;
         (void)[[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:serverUrl serverUrl:serverUrl];
         
         CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
@@ -462,7 +458,7 @@
         metadataNet.action = actionDownloadFile;
         metadataNet.downloadData = downloadData;
         metadataNet.downloadPlist = downloadPlist;
-        metadataNet.fileID = metadata.fileID;
+        metadataNet.fileID = fileID;
         metadataNet.selector = selector;
         metadataNet.selectorPost = selectorPost;
         metadataNet.serverUrl = serverUrl;
