@@ -1247,23 +1247,28 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
         
-        try! realm.write {
-            
-            if (metadata.realm == nil) {
-                let metadataWithIcon = CCUtility.insertTypeFileIconName(metadata, serverUrl: serverUrl, autoUploadFileName: autoUploadFileName, autoUploadDirectory: autoUploadDirectory)
-                realm.add(metadataWithIcon!, update: true)
-            } else {
-                realm.add(metadata, update: true)
-            }
+        realm.beginWrite()
+        
+        if (metadata.realm == nil) {
+            let metadataWithIcon = CCUtility.insertTypeFileIconName(metadata, serverUrl: serverUrl, autoUploadFileName: autoUploadFileName, autoUploadDirectory: autoUploadDirectory)
+            realm.add(metadataWithIcon!, update: true)
+        } else {
+            realm.add(metadata, update: true)
+        }
+        
+        try! realm.commitWrite()
+        
+        if metadata.isInvalidated {
+            return nil
         }
         
         self.setDateReadDirectory(directoryID: metadata.directoryID)
         
-        if metadata.realm == nil {
+        if metadata.isInvalidated {
             return nil
+        } else {
+            return tableMetadata.init(value: metadata)
         }
-        
-        return tableMetadata.init(value: metadata)
     }
     
     func addMetadatas(_ metadatas: [tableMetadata], activeUrl: String, serverUrl: String) -> [tableMetadata] {
