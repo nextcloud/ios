@@ -139,6 +139,9 @@
 		F7145A1D1D12E3B700CAFEEC /* BKPasscodeView.strings in Resources */ = {isa = PBXBuildFile; fileRef = F72B60911A24F00B004EF66F /* BKPasscodeView.strings */; };
 		F7145A211D12E3B700CAFEEC /* Error.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7B381BF1C074E3E004693F8 /* Error.strings */; };
 		F7145A231D12E3B700CAFEEC /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7E70DE91A24DE4100E1B66A /* Localizable.strings */; };
+		F7169A1C1EE590930086BD69 /* NCShares.m in Sources */ = {isa = PBXBuildFile; fileRef = F7169A181EE590930086BD69 /* NCShares.m */; };
+		F7169A1D1EE590930086BD69 /* NCSharesCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F7169A1A1EE590930086BD69 /* NCSharesCell.m */; };
+		F7169A1E1EE590930086BD69 /* NCSharesCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7169A1B1EE590930086BD69 /* NCSharesCell.xib */; };
 		F720E01F1E48C73E001A4B9E /* CCActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F720E01E1E48C73E001A4B9E /* CCActions.swift */; };
 		F7226EDC1EE4089300EBECB1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7226EDB1EE4089300EBECB1 /* Main.storyboard */; };
 		F725437C1E12A44A009BF4C2 /* CCSection.m in Sources */ = {isa = PBXBuildFile; fileRef = F78F6FAF1CC8CCB700F4EA25 /* CCSection.m */; };
@@ -1049,6 +1052,11 @@
 		F7151A821D477A4B00E6AF45 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		F7151A831D477A4B00E6AF45 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Intro.strings; sourceTree = "<group>"; };
 		F7151A841D477A4B00E6AF45 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Error.strings; sourceTree = "<group>"; };
+		F7169A171EE590930086BD69 /* NCShares.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCShares.h; sourceTree = "<group>"; };
+		F7169A181EE590930086BD69 /* NCShares.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCShares.m; sourceTree = "<group>"; };
+		F7169A191EE590930086BD69 /* NCSharesCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCSharesCell.h; sourceTree = "<group>"; };
+		F7169A1A1EE590930086BD69 /* NCSharesCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCSharesCell.m; sourceTree = "<group>"; };
+		F7169A1B1EE590930086BD69 /* NCSharesCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCSharesCell.xib; sourceTree = "<group>"; };
 		F720E01E1E48C73E001A4B9E /* CCActions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; name = CCActions.swift; path = Actions/CCActions.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		F721371D1BAFF0920012B613 /* CCAccountWeb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCAccountWeb.h; sourceTree = "<group>"; };
 		F721371E1BAFF0920012B613 /* CCAccountWeb.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCAccountWeb.m; sourceTree = "<group>"; };
@@ -2264,6 +2272,18 @@
 				F70F0F9C1C889487008DAB36 /* zip.h */,
 			);
 			path = minizip;
+			sourceTree = "<group>";
+		};
+		F7169A161EE590930086BD69 /* Shares */ = {
+			isa = PBXGroup;
+			children = (
+				F7169A171EE590930086BD69 /* NCShares.h */,
+				F7169A181EE590930086BD69 /* NCShares.m */,
+				F7169A191EE590930086BD69 /* NCSharesCell.h */,
+				F7169A1A1EE590930086BD69 /* NCSharesCell.m */,
+				F7169A1B1EE590930086BD69 /* NCSharesCell.xib */,
+			);
+			path = Shares;
 			sourceTree = "<group>";
 		};
 		F720E02A1E48C74C001A4B9E /* Actions */ = {
@@ -3526,6 +3546,7 @@
 				F7FE125B1BAC03FB0041924B /* Security */,
 				F7ACE4281BAC0268006C0017 /* Settings */,
 				F728CE741BF6322C00E69702 /* Share */,
+				F7169A161EE590930086BD69 /* Shares */,
 				F721371B1BAFF0920012B613 /* Templates */,
 				F7A321731E9E3EAF0069AD1B /* Transfers */,
 				F70784811A2C8A0D00AC9FFF /* UploadFromOtherUpp */,
@@ -3956,6 +3977,7 @@
 				F77B0F391D118A16002130FE /* ZSStable@2x.png in Resources */,
 				F77B0F3B1D118A16002130FE /* ZSSredo@2x.png in Resources */,
 				F77B0F3D1D118A16002130FE /* ZSSh5.png in Resources */,
+				F7169A1E1EE590930086BD69 /* NCSharesCell.xib in Resources */,
 				F7226EDC1EE4089300EBECB1 /* Main.storyboard in Resources */,
 				F77B0F3E1D118A16002130FE /* ZSSquicklink@2x.png in Resources */,
 				F77B0F411D118A16002130FE /* ZSStextcolor@2x.png in Resources */,
@@ -4498,6 +4520,7 @@
 				F77B0E9F1D118A16002130FE /* mztools.c in Sources */,
 				F7F06EC71DBFACC600099AE9 /* CTAssetsPickerNoAssetsView.m in Sources */,
 				F7659A271DC0B726004860C4 /* EAIntroPage.m in Sources */,
+				F7169A1D1EE590930086BD69 /* NCSharesCell.m in Sources */,
 				F77B0EA61D118A16002130FE /* NSString+TruncateToWidth.m in Sources */,
 				F78088EA1DD3A1DB005C5A7C /* cryptocloud.xcdatamodeld in Sources */,
 				F7659A601DC0B760004860C4 /* PSTCollectionViewData.m in Sources */,
@@ -4561,6 +4584,7 @@
 				F7F06EAD1DBFACC600099AE9 /* CTAssetSelectionLabel.m in Sources */,
 				F762CB711EACB7D400B38484 /* ReaderThumbFetch.m in Sources */,
 				F7BAADD11ED5A87C00B7EAD4 /* TableAccount+CoreDataProperties.m in Sources */,
+				F7169A1C1EE590930086BD69 /* NCShares.m in Sources */,
 				F7659A701DC0B760004860C4 /* PSTGridLayoutSection.m in Sources */,
 				F77B0EC31D118A16002130FE /* UIImage+Enhancing.m in Sources */,
 				F77B0EC61D118A16002130FE /* CCCellMain.m in Sources */,

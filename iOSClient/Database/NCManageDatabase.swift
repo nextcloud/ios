@@ -1880,6 +1880,21 @@ class NCManageDatabase: NSObject {
         return [sharesLink, sharesUserAndGroup]
     }
     
+    func getTableShares() -> [tableShare]? {
+        
+        let tableAccount = self.getAccountActive()
+            if tableAccount == nil {
+                return nil
+        }
+        
+        let realm = try! Realm()
+        
+        let results = realm.objects(tableShare.self).filter("account = %@", tableAccount!.account).sorted(byKeyPath: "fileName", ascending: true)
+        
+        return Array(results)
+    }
+
+    
     //MARK: -
     //MARK: Migrate func
     
