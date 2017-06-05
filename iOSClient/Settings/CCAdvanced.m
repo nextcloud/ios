@@ -123,6 +123,13 @@
     return [super initWithForm:form];
 }
 
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    
+    _hud = [[CCHud alloc] initWithView:[[[UIApplication sharedApplication] delegate] window]];
+}
+
 // Apparirà
 - (void)viewWillAppear:(BOOL)animated
 {
@@ -304,11 +311,11 @@
         
         [self.hud visibleHudTitle:NSLocalizedString(@"_remove_cache_", nil) mode:MBProgressHUDModeIndeterminate color:nil];
         
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC),dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            
-            [app cancelAllOperations];
-            
-            [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:k_taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
+        [app cancelAllOperations];
+        
+        [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:k_taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
+
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 3 * NSEC_PER_SEC),dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             
             [[NSURLCache sharedURLCache] setMemoryCapacity:0];
             [[NSURLCache sharedURLCache] setDiskCapacity:0];
@@ -334,9 +341,11 @@
             [self recalculateSize];
             
             dispatch_async(dispatch_get_main_queue(), ^{
+                // Close HUD
+                [self.hud hideHud];
                 // Inizialized home
                 [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil];
-                [self.hud hideHud];
+
             });
         });
     }]];

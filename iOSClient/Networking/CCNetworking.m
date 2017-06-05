@@ -492,6 +492,9 @@
     if (delegate)
         [_delegates setObject:delegate forKey:fileID];
     
+    if (fileID.length == 0)
+        return;
+    
     tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
     
     if (downloadData) {
