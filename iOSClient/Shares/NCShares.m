@@ -341,6 +341,7 @@
             
         metadataNet.action = actionReadFile;
         metadataNet.fileName = table.fileName;
+        metadataNet.fileNamePrint = table.fileName;
         metadataNet.serverUrl = table.serverUrl;
         
         [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
