@@ -493,7 +493,6 @@
 
 "_destiny_folder_"                  = "Folder : %@";
 
-
 "_no_transfer_"                     = "No transfers yet";
 "_no_transfer_sub_"                 = "Uploads and downloads from this device will show up here";
 "_no_activity_"                     = "No activity yet";
@@ -502,6 +501,11 @@
 "_recent_activity_"                 = "Recent Activity";
 "_activity_file_not_present_"       = "File no longer present";
 
+// List Shares
+
+"_list_shares_"                     = "Shares";
+"_list_shares_no_files_"            = "No shares yet";
+"_tutorial_list_shares_view_"       = "Files and folders you shares will show up here";
 
 // Offline - Local Storage
 
