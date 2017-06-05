@@ -109,6 +109,13 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
             functionMenu.append(item)
         }
         
+        // ITEM : Shares
+        item = OCExternalSites.init()
+        item.name = "_list_shares_"
+        item.icon = "moreShares"
+        item.url = "segueShares"
+        functionMenu.append(item)
+        
         // ITEM : Local storage
         item = OCExternalSites.init()
         item.name = "_local_storage_"
