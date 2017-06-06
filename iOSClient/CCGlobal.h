@@ -248,7 +248,6 @@ extern NSString *const urlBaseUploadDB;
 #define k_tabBarApplicationIndexMore                    4
 
 #define k_keyFileNameMask                               @"fileNameMask"
-#define k_keyFileNameMaskAutomaticPhotos                @"fileNameMaskAutomaticPhotos"
 
 // Type of page Offline
 #define k_pageOfflineFavorites                          @"Favorites"
