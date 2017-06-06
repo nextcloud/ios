@@ -1641,14 +1641,21 @@
 
 - (void)uploadFileSuccess:(CCMetadataNet *)metadataNet fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost
 {
-    // Auto upload All
-    if([selector isEqualToString:selectorUploadAutomaticAll])
-        [app performSelectorOnMainThread:@selector(loadAutomaticUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUpload] waitUntilDone:NO];
+    if([selector isEqualToString:selectorUploadAutomatic] || [selector isEqualToString:selectorUploadAutomaticAll]) {
     
-    // Auto Upload
-    if([selector isEqualToString:selectorUploadAutomatic])
-        [app performSelectorOnMainThread:@selector(loadAutomaticUpload:) withObject:[NSNumber numberWithInt:1] waitUntilDone:NO];
-
+        if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
+        
+            // ONLY BACKGROUND
+            [app performSelectorOnMainThread:@selector(loadAutomaticUpload:) withObject:[NSNumber numberWithInt:1] waitUntilDone:NO];
+        
+        } else {
+        
+            // ONLY FOREFROUND
+        
+            [app performSelectorOnMainThread:@selector(loadAutomaticUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUpload] waitUntilDone:NO];
+        }
+    }
+    
     if ([selectorPost isEqualToString:selectorReadFolderForced] ) {
             
         [self readFolderWithForced:YES serverUrl:serverUrl];

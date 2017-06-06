@@ -1234,8 +1234,6 @@
     // after 20 sec
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 20 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         
-        [app performSelectorOnMainThread:@selector(loadAutomaticUpload:) withObject:[NSNumber numberWithInt:1] waitUntilDone:NO];
-        
         NSArray *records = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND session != ''", self.activeAccount] sorted:nil ascending:NO];
         
         if ([records count] > 0) {
@@ -1261,9 +1259,6 @@
     
     // after 20 sec
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 20 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        
-        // ONLY BACKGROUND
-        [app performSelectorOnMainThread:@selector(loadAutomaticUpload:) withObject:[NSNumber numberWithInt:1] waitUntilDone:NO];
         
         self.backgroundSessionCompletionHandler = completionHandler;
         void (^completionHandler)() = self.backgroundSessionCompletionHandler;
