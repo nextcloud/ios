@@ -499,7 +499,7 @@
 
 "_list_shares_"                     = "Shares";
 "_list_shares_no_files_"            = "No shares yet";
-"_tutorial_list_shares_view_"       = "Files and folders you shares will show up here";
+"_tutorial_list_shares_view_"       = "Files and folders you share will show up here";
 
 // Offline - Local Storage
 
