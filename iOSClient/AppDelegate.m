@@ -371,7 +371,7 @@
 {
     // BACKGROND & FOREGROUND
 
-    NSLog(@"-P-R-O-C-E-S-S-");
+    NSLog(@"-PROCESS-AUTO-UPLOAD-");
     
     if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
 
