@@ -72,7 +72,7 @@ class tableActivity: Object {
     dynamic var verbose : Bool = false
 }
 
-class tableAutomaticUpload: Object {
+class tableAutoUpload: Object {
     
     dynamic var account = ""
     dynamic var assetLocalIdentifier = ""

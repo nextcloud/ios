@@ -236,7 +236,7 @@
             [[NCManageDatabase sharedInstance] setAccountAutoUploadDateAssetType:PHAssetMediaTypeVideo assetDate:nil];
 
             // remove
-            [[NCManageDatabase sharedInstance] clearTable:[tableAutomaticUpload class] account:app.activeAccount];
+            [[NCManageDatabase sharedInstance] clearTable:[tableAutoUpload class] account:app.activeAccount];
         }
         
         // Initialize Auto Upload
@@ -282,7 +282,7 @@
             
         } else {
             
-            [[NCManageDatabase sharedInstance] clearTable:[tableAutomaticUpload class] account:app.activeAccount];
+            [[NCManageDatabase sharedInstance] clearTable:[tableAutoUpload class] account:app.activeAccount];
             [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUploadFull" state:NO];
         }
     }

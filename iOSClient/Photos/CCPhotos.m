@@ -1123,7 +1123,7 @@
     }
     
     // Create the folder for Photos & if request the subfolders
-    if(![app createFolderSubFolderAutomaticUploadFolderPhotos:autoUploadPath useSubFolder:useSubFolder assets:newItemsPHAssetToUpload selector:selectorUploadAutomaticAll]) {
+    if(![app createFolderSubFolderAutomaticUploadFolderPhotos:autoUploadPath useSubFolder:useSubFolder assets:newItemsPHAssetToUpload selector:selectorUploadAutoUploadAll]) {
             
         // end loading
         [_hud hideHud];
@@ -1167,11 +1167,11 @@
         metadataNet.action = actionUploadAsset;
         metadataNet.assetLocalIdentifier = asset.localIdentifier;
         if (assetsFull) {
-            metadataNet.selector = selectorUploadAutomaticAll;
+            metadataNet.selector = selectorUploadAutoUploadAll;
             metadataNet.selectorPost = selectorUploadRemovePhoto;
             metadataNet.priority = NSOperationQueuePriorityLow;
         } else {
-            metadataNet.selector = selectorUploadAutomatic;
+            metadataNet.selector = selectorUploadAutoUpload;
             metadataNet.selectorPost = nil;
             metadataNet.priority = NSOperationQueuePriorityNormal;
         }
@@ -1264,7 +1264,7 @@
 
                     [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionUpload selector:metadataNet.selector note:note type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:app.activeUrl];
                     
-                    [[NCManageDatabase sharedInstance] deleteAutomaticUploadWithAssetLocalIdentifier:metadataNet.assetLocalIdentifier];
+                    [[NCManageDatabase sharedInstance] deleteAutoUploadWithAssetLocalIdentifier:metadataNet.assetLocalIdentifier];
                     
                 } else {
                     
@@ -1277,7 +1277,7 @@
 
 - (void)addDatabaseAutomaticUpload:(CCMetadataNet *)metadataNet assetDate:(NSDate *)assetDate assetMediaType:(PHAssetMediaType)assetMediaType
 {    
-    if ([[NCManageDatabase sharedInstance] addAutomaticUploadWithMetadataNet:metadataNet]) {
+    if ([[NCManageDatabase sharedInstance] addAutoUploadWithMetadataNet:metadataNet]) {
         
         [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionAutomaticUpload selector:metadataNet.selector note:[NSString stringWithFormat:@"Add Automatic Upload, Asset Data: %@", [NSDateFormatter localizedStringFromDate:assetDate dateStyle:NSDateFormatterMediumStyle timeStyle:NSDateFormatterMediumStyle]] type:k_activityTypeInfo verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
        
@@ -1288,8 +1288,8 @@
     
     dispatch_async(dispatch_get_main_queue(), ^{
         
-        // Update Camera Upload data
-        if ([metadataNet.selector isEqualToString:selectorUploadAutomatic])
+        // Update Camera Auto Upload data
+        if ([metadataNet.selector isEqualToString:selectorUploadAutoUpload])
             [[NCManageDatabase sharedInstance] setAccountAutoUploadDateAssetType:assetMediaType assetDate:assetDate];
         
         // Update icon badge number

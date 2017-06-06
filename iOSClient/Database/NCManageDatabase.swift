@@ -479,7 +479,7 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Automatic Upload
     
-    func addAutomaticUpload(metadataNet: CCMetadataNet) -> Bool {
+    func addAutoUpload(metadataNet: CCMetadataNet) -> Bool {
         
         let tableAccount = self.getAccountActive()
         if tableAccount == nil {
@@ -488,7 +488,7 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
             
-        let result = realm.objects(tableAutomaticUpload.self).filter("account = %@ AND assetLocalIdentifier = %@", tableAccount!.account, metadataNet.assetLocalIdentifier).first
+        let result = realm.objects(tableAutoUpload.self).filter("account = %@ AND assetLocalIdentifier = %@", tableAccount!.account, metadataNet.assetLocalIdentifier).first
         
         if result != nil {
             return false
@@ -496,27 +496,27 @@ class NCManageDatabase: NSObject {
         
         try! realm.write {
             
-            // Add new AutomaticUpload
-            let addAutomaticUpload = tableAutomaticUpload()
+            // Add new Auto Upload
+            let addAutoUpload = tableAutoUpload()
             
-            addAutomaticUpload.account = tableAccount!.account
-            addAutomaticUpload.assetLocalIdentifier = metadataNet.assetLocalIdentifier
-            addAutomaticUpload.fileName = metadataNet.fileName
-            addAutomaticUpload.selector = metadataNet.selector
+            addAutoUpload.account = tableAccount!.account
+            addAutoUpload.assetLocalIdentifier = metadataNet.assetLocalIdentifier
+            addAutoUpload.fileName = metadataNet.fileName
+            addAutoUpload.selector = metadataNet.selector
             if (metadataNet.selectorPost != nil) {
-                addAutomaticUpload.selectorPost = metadataNet.selectorPost
+                addAutoUpload.selectorPost = metadataNet.selectorPost
             }
-            addAutomaticUpload.serverUrl = metadataNet.serverUrl
-            addAutomaticUpload.session = metadataNet.session
-            addAutomaticUpload.priority = metadataNet.priority
+            addAutoUpload.serverUrl = metadataNet.serverUrl
+            addAutoUpload.session = metadataNet.session
+            addAutoUpload.priority = metadataNet.priority
             
-            realm.add(addAutomaticUpload)
+            realm.add(addAutoUpload)
         }
 
         return true
     }
     
-    func getAutomaticUpload(selector: String) -> CCMetadataNet? {
+    func getAutoUpload(selector: String) -> CCMetadataNet? {
         
         let tableAccount = self.getAccountActive()
         if tableAccount == nil {
@@ -525,7 +525,7 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
         
-        let result = realm.objects(tableAutomaticUpload.self).filter("account = %@ AND selector = %@ AND lock == false", tableAccount!.account, selector).first
+        let result = realm.objects(tableAutoUpload.self).filter("account = %@ AND selector = %@ AND lock == false", tableAccount!.account, selector).first
         
         if result == nil {
             return nil
@@ -551,7 +551,7 @@ class NCManageDatabase: NSObject {
         return metadataNet
     }
     
-    func getLockAutomaticUpload() -> [tableAutomaticUpload]? {
+    func getLockAutoUpload() -> [tableAutoUpload]? {
         
         let tableAccount = self.getAccountActive()
         if tableAccount == nil {
@@ -560,12 +560,12 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
         
-        let results = realm.objects(tableAutomaticUpload.self).filter("account = %@ AND lock = true", tableAccount!.account)
+        let results = realm.objects(tableAutoUpload.self).filter("account = %@ AND lock = true", tableAccount!.account)
         
         return Array(results)
     }
 
-    func unlockAutomaticUpload(assetLocalIdentifier: String) {
+    func unlockAutoUpload(assetLocalIdentifier: String) {
         
         let tableAccount = self.getAccountActive()
         if tableAccount == nil {
@@ -574,7 +574,7 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
         
-        let result = realm.objects(tableAutomaticUpload.self).filter("account = %@ AND assetLocalIdentifier = %@", tableAccount!.account, assetLocalIdentifier).first
+        let result = realm.objects(tableAutoUpload.self).filter("account = %@ AND assetLocalIdentifier = %@", tableAccount!.account, assetLocalIdentifier).first
         
         if result != nil {
             
@@ -585,7 +585,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func deleteAutomaticUpload(assetLocalIdentifier: String) {
+    func deleteAutoUpload(assetLocalIdentifier: String) {
         
         let tableAccount = self.getAccountActive()
         if tableAccount == nil {
@@ -594,7 +594,7 @@ class NCManageDatabase: NSObject {
 
         let realm = try! Realm()
 
-        let result = realm.objects(tableAutomaticUpload.self).filter("account = %@ AND assetLocalIdentifier = %@", tableAccount!.account, assetLocalIdentifier).first
+        let result = realm.objects(tableAutoUpload.self).filter("account = %@ AND assetLocalIdentifier = %@", tableAccount!.account, assetLocalIdentifier).first
         
         if result != nil {
             
@@ -604,7 +604,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func countAutomaticUpload(session: String?) -> Int {
+    func countAutoUpload(session: String?) -> Int {
         
         let tableAccount = self.getAccountActive()
         if tableAccount == nil {
@@ -612,15 +612,15 @@ class NCManageDatabase: NSObject {
         }
 
         let realm = try! Realm()
-        let results : Results<tableAutomaticUpload>
+        let results : Results<tableAutoUpload>
         
         if (session == nil) {
             
-            results = realm.objects(tableAutomaticUpload.self).filter("account = %@", tableAccount!.account)
+            results = realm.objects(tableAutoUpload.self).filter("account = %@", tableAccount!.account)
             
         } else {
             
-            results = realm.objects(tableAutomaticUpload.self).filter("account = %@ AND session = %@", tableAccount!.account, session!)
+            results = realm.objects(tableAutoUpload.self).filter("account = %@ AND session = %@", tableAccount!.account, session!)
         }
         
         return results.count

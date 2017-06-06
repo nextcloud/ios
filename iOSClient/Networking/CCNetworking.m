@@ -771,14 +771,14 @@
     if (delegate == nil)
         delegate = self.delegate;
     
-    // *** Upload Automatic ***
+    // *** Auto Upload ***
     
-    if ([selector isEqualToString:selectorUploadAutomatic]) {
+    if ([selector isEqualToString:selectorUploadAutoUpload]) {
         
         [self upload:fileName serverUrl:serverUrl cryptated:NO template:NO onlyPlist:NO fileNameTemplate:nil assetLocalIdentifier:assetLocalIdentifier session:session taskStatus:taskStatus selector:selector selectorPost:selectorPost errorCode:errorCode delegate:delegate];
     } else {
     
-        // *** Manual Upload & Upload Automatic All ***
+        // *** Manual Upload & Auto Upload All ***
         
         PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[assetLocalIdentifier] options:nil];
         
@@ -1266,9 +1266,9 @@
         
         [[NCManageDatabase sharedInstance] setMetadataSession:session sessionError:@"" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:sessionTaskIdentifier sessionTaskIdentifierPlist:sessionTaskIdentifierPlist predicate:[NSPredicate predicateWithFormat:@"sessionID = %@ AND account = %@", sessionID, _activeAccount]];
         
-        // Delete record on Table Automatic Upload
-        if ([selector isEqualToString:selectorUploadAutomatic] || [selector isEqualToString:selectorUploadAutomaticAll])
-            [[NCManageDatabase sharedInstance] deleteAutomaticUploadWithAssetLocalIdentifier:assetLocalIdentifier];
+        // Delete record on Table Auto Upload
+        if ([selector isEqualToString:selectorUploadAutoUpload] || [selector isEqualToString:selectorUploadAutoUploadAll])
+            [[NCManageDatabase sharedInstance] deleteAutoUploadWithAssetLocalIdentifier:assetLocalIdentifier];
         
         // Manage uploadTask cancel,suspend,resume
         if (taskStatus == k_taskStatusCancel) [uploadTask cancel];
@@ -1431,8 +1431,8 @@
         if ([CCUtility getUploadAndRemovePhoto] || [metadata.sessionSelectorPost isEqualToString:selectorUploadRemovePhoto])
             [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadata.fileID] error:nil];
         
-        // Copy photo or video in the photo album for automatic upload
-        if ([metadata.assetLocalIdentifier length] > 0 && [metadata.sessionSelector isEqualToString:selectorUploadAutomatic]) {
+        // Copy photo or video in the photo album for auto upload
+        if ([metadata.assetLocalIdentifier length] > 0 && [metadata.sessionSelector isEqualToString:selectorUploadAutoUpload]) {
             
             PHAsset *asset;
             PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[metadata.assetLocalIdentifier] options:nil];

@@ -1616,9 +1616,20 @@
 
 - (void)uploadFileFailure:(CCMetadataNet *)metadataNet fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    // Automatic upload All
-    if([selector isEqualToString:selectorUploadAutomaticAll])
-        [app performSelectorOnMainThread:@selector(loadAutomaticUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUpload] waitUntilDone:NO];
+    // Auto Upload
+    if([selector isEqualToString:selectorUploadAutoUpload] || [selector isEqualToString:selectorUploadAutoUploadAll]) {
+        
+        if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
+            
+            // ONLY BACKGROUND
+            [app performSelectorOnMainThread:@selector(loadAutoUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUploadBackground] waitUntilDone:NO];
+            
+        } else {
+            
+            // ONLY FOREFROUND
+            [app performSelectorOnMainThread:@selector(loadAutoUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUpload] waitUntilDone:NO];
+        }
+    }
     
     // Read File test do not exists
     if (errorCode == k_CCErrorFileUploadNotFound && fileID) {
@@ -1641,17 +1652,18 @@
 
 - (void)uploadFileSuccess:(CCMetadataNet *)metadataNet fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost
 {
-    if([selector isEqualToString:selectorUploadAutomatic] || [selector isEqualToString:selectorUploadAutomaticAll]) {
+    // Auto Upload
+    if([selector isEqualToString:selectorUploadAutoUpload] || [selector isEqualToString:selectorUploadAutoUploadAll]) {
     
         if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
         
             // ONLY BACKGROUND
-            [app performSelectorOnMainThread:@selector(loadAutomaticUpload:) withObject:[NSNumber numberWithInt:1] waitUntilDone:NO];
+            [app performSelectorOnMainThread:@selector(loadAutoUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUploadBackground] waitUntilDone:NO];
         
         } else {
         
             // ONLY FOREFROUND
-            [app performSelectorOnMainThread:@selector(loadAutomaticUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUpload] waitUntilDone:NO];
+            [app performSelectorOnMainThread:@selector(loadAutoUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUpload] waitUntilDone:NO];
         }
     }
     
@@ -3284,7 +3296,7 @@
     if ([NCBrandOptions sharedInstance].disable_multiaccount)
         return;
     
-    if ([app.netQueue operationCount] > 0 || [app.netQueueDownload operationCount] > 0 || [app.netQueueDownloadWWan operationCount] > 0 || [app.netQueueUpload operationCount] > 0 || [app.netQueueUploadWWan operationCount] > 0 || [[NCManageDatabase sharedInstance] countAutomaticUploadWithSession:nil] > 0) {
+    if ([app.netQueue operationCount] > 0 || [app.netQueueDownload operationCount] > 0 || [app.netQueueDownloadWWan operationCount] > 0 || [app.netQueueUpload operationCount] > 0 || [app.netQueueUploadWWan operationCount] > 0 || [[NCManageDatabase sharedInstance] countAutoUploadWithSession:nil] > 0) {
         
         [app messageNotification:@"_transfers_in_queue_" description:nil visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
         return;
