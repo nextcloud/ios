@@ -126,7 +126,7 @@ class NCManageDatabase: NSObject {
         addAccount.account = account
             
         // Brand
-        if NCBrandOptions.sharedInstance.use_default_automatic_upload {
+        if NCBrandOptions.sharedInstance.use_default_auto_upload {
                 
             addAccount.autoUpload = true
             addAccount.autoUploadPhoto = true
@@ -477,7 +477,7 @@ class NCManageDatabase: NSObject {
     }
     
     //MARK: -
-    //MARK: Table Automatic Upload
+    //MARK: Table Auto Upload
     
     func addAutoUpload(metadataNet: CCMetadataNet) -> Bool {
         

@@ -271,7 +271,7 @@ extern NSString *const urlBaseUploadDB;
 #define k_activityDebugActionUpload                     @"Upload"
 #define k_activityDebugActionUploadPicker               @"Upload Picker"
 #define k_activityDebugActionUploadShare                @"Upload Share"
-#define k_activityDebugActionAutomaticUpload            @"Automatic Upload"
+#define k_activityDebugActionAutoUpload                 @"Auto Upload"
 #define k_activityDebugActionReadFolder                 @"Read Folder"
 #define k_activityDebugActionGetNotification            @"Get Notification Server"
 #define k_activityDebugActionPushProxy                  @"Subscribing Push Proxy"

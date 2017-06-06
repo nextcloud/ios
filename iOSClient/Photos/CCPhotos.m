@@ -1070,7 +1070,7 @@
         newItemsToUpload = [manageAsset getCameraRollNewItemsWithDatePhoto:databaseDatePhoto dateVideo:databaseDateVideo];
     }
     
-    // News Assets ? if no verify if blocked Table Automatic Upload -> Autostart
+    // News Assets ? if no verify if blocked Table Auto Upload -> Autostart
     if ([newItemsToUpload count] == 0)
         return;
     
@@ -1123,7 +1123,7 @@
     }
     
     // Create the folder for Photos & if request the subfolders
-    if(![app createFolderSubFolderAutomaticUploadFolderPhotos:autoUploadPath useSubFolder:useSubFolder assets:newItemsPHAssetToUpload selector:selectorUploadAutoUploadAll]) {
+    if(![app createFolderSubFolderAutoUploadFolderPhotos:autoUploadPath useSubFolder:useSubFolder assets:newItemsPHAssetToUpload selector:selectorUploadAutoUploadAll]) {
             
         // end loading
         [_hud hideHud];
@@ -1181,7 +1181,7 @@
         metadataNet.taskStatus = k_taskStatusResume;
         
         if (assetsFull)
-            [self addDatabaseAutomaticUpload:metadataNet assetDate:assetDate assetMediaType:assetMediaType];
+            [self addDatabaseAutoUpload:metadataNet assetDate:assetDate assetMediaType:assetMediaType];
         else
             [self writeAssetToSandbox:metadataNet];
     }
@@ -1227,7 +1227,7 @@
                         
                         if (AVAssetExportSessionStatusCompleted == exportSession.status) {
                             
-                            [self addDatabaseAutomaticUpload:metadataNet assetDate:assetDate assetMediaType:assetMediaType];
+                            [self addDatabaseAutoUpload:metadataNet assetDate:assetDate assetMediaType:assetMediaType];
                             
                         } else if (AVAssetExportSessionStatusFailed == exportSession.status) {
                                                         
@@ -1268,22 +1268,22 @@
                     
                 } else {
                     
-                    [self addDatabaseAutomaticUpload:metadataNet assetDate:assetDate assetMediaType:assetMediaType];
+                    [self addDatabaseAutoUpload:metadataNet assetDate:assetDate assetMediaType:assetMediaType];
                 }
             }];
         }
     }
 }
 
-- (void)addDatabaseAutomaticUpload:(CCMetadataNet *)metadataNet assetDate:(NSDate *)assetDate assetMediaType:(PHAssetMediaType)assetMediaType
+- (void)addDatabaseAutoUpload:(CCMetadataNet *)metadataNet assetDate:(NSDate *)assetDate assetMediaType:(PHAssetMediaType)assetMediaType
 {    
     if ([[NCManageDatabase sharedInstance] addAutoUploadWithMetadataNet:metadataNet]) {
         
-        [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionAutomaticUpload selector:metadataNet.selector note:[NSString stringWithFormat:@"Add Automatic Upload, Asset Data: %@", [NSDateFormatter localizedStringFromDate:assetDate dateStyle:NSDateFormatterMediumStyle timeStyle:NSDateFormatterMediumStyle]] type:k_activityTypeInfo verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
+        [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionAutoUpload selector:metadataNet.selector note:[NSString stringWithFormat:@"Add Automatic Upload, Asset Data: %@", [NSDateFormatter localizedStringFromDate:assetDate dateStyle:NSDateFormatterMediumStyle timeStyle:NSDateFormatterMediumStyle]] type:k_activityTypeInfo verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
        
     } else {
         
-        [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionAutomaticUpload selector:metadataNet.selector note:[NSString stringWithFormat:@"Add Automatic Upload [File already present in Table automatic Upload], Asset Data: %@", [NSDateFormatter localizedStringFromDate:assetDate dateStyle:NSDateFormatterMediumStyle timeStyle:NSDateFormatterMediumStyle]] type:k_activityTypeInfo verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
+        [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionAutoUpload selector:metadataNet.selector note:[NSString stringWithFormat:@"Add Automatic Upload [File already present in Table automatic Upload], Asset Data: %@", [NSDateFormatter localizedStringFromDate:assetDate dateStyle:NSDateFormatterMediumStyle timeStyle:NSDateFormatterMediumStyle]] type:k_activityTypeInfo verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
     }
     
     dispatch_async(dispatch_get_main_queue(), ^{

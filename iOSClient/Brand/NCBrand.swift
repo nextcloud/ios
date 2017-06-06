@@ -83,7 +83,7 @@ class NCBrandOptions: NSObject {
     // Options
     public let use_login_web:                   Bool = false
     public let use_firebase:                    Bool = false
-    public let use_default_automatic_upload:    Bool = false
+    public let use_default_auto_upload:         Bool = false
     public let use_themingColor:                Bool = true
     public let use_themingBackground:           Bool = true
     public let use_multiDomains:                Bool = false

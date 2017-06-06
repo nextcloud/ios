@@ -1699,7 +1699,7 @@
     NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
     
     // Create the folder for Photos & if request the subfolders
-    if (![app createFolderSubFolderAutomaticUploadFolderPhotos:autoUploadPath useSubFolder:useSubFolder assets:assets selector:selectorUploadFile])
+    if (![app createFolderSubFolderAutoUploadFolderPhotos:autoUploadPath useSubFolder:useSubFolder assets:assets selector:selectorUploadFile])
         return;
     
     NSLog(@"[LOG] Asset N. %lu", (unsigned long)[assets count]);

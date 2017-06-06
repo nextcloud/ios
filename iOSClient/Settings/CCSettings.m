@@ -61,7 +61,7 @@
     form = [XLFormDescriptor formDescriptorWithTitle:NSLocalizedString(@"_settings_", nil)];
     form.rowNavigationOptions = XLFormRowNavigationOptionNone;
     
-    // Section AUTOMATIC UPLOAD OF CAMERA IMAGES ----------------------------
+    // Section AUTO UPLOAD OF CAMERA IMAGES ----------------------------
     
     section = [XLFormSectionDescriptor formSection];
     [form addFormSection:section];
