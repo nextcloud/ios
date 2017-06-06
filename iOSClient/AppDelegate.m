@@ -381,9 +381,7 @@
     } else {
 
         // ONLY FOREFROUND
-        
-        [app performSelectorOnMainThread:@selector(loadAutomaticUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUpload] waitUntilDone:NO];
-    
+        [app performSelectorOnMainThread:@selector(loadAutomaticUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUpload] waitUntilDone:NO];    
     }
 }
 
