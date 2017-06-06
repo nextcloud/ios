@@ -149,32 +149,26 @@
 "_favorite_offline_"        = "Favorites available offline";
 "_favorite_offline_footer_" = "Making all favorites available offline may take a long time with a high memory occupation.";
 "_advanced_"                = "Advanced";
-"_legal_"                   = "Legal";
-"_terms_conditions_"        = "Terms & Conditions";
-"_privacy_notice_"          = "Privacy Notice";
-"_about_"                   = "About";
-"_about_us_"                = "About us";
-"_version_"                 = "Version";
 
 // Manage AutoUpload
 
-"_autoupload_"                  = "Auto upload photos/videos";
-"_autoupload_background_"       = "Auto upload in the background";
-"_autoupload_photos_"           = "Auto upload photos";
-"_autoupload_videos_"           = "Auto upload videos";
-"_autoupload_description_"      = "The news photos/videos will be uploaded in your Cloud";
+"_autoupload_"                      = "Auto upload photos/videos";
+"_autoupload_background_"           = "Auto upload in the background";
+"_autoupload_photos_"               = "Auto upload photos";
+"_autoupload_videos_"               = "Auto upload videos";
+"_autoupload_description_"          = "The news photos/videos will be uploaded in your Cloud";
 "_autoupload_description_background_"  = "This option requires the use of GPS to trigger the detection of new photos/videos in the camera roll once the location changes significantly";
-"_autoupload_background_title_" = "Limitations";
-"_autoupload_background_msg_"   = "Due to iOS restrictions, it is not yet possible to perform background processes, unless GPS services are activated. Once the cell in the cellular network is changed, the system wakes up for a short time and checks for new photos to upload to the cloud.";
-"_autoupload_change_location_"  = "Change folder";
-"_autoupload_location_now_"     = "Folder";
-"_autoupload_location_default_" = "Restore default folder";
+"_autoupload_background_title_"     = "Limitations";
+"_autoupload_background_msg_"       = "Due to iOS restrictions, it is not yet possible to perform background processes, unless GPS services are activated. Once the cell in the cellular network is changed, the system wakes up for a short time and checks for new photos to upload to the cloud.";
+"_autoupload_change_location_"      = "Change folder";
+"_autoupload_location_now_"         = "Folder";
+"_autoupload_location_default_"     = "Restore default folder";
 "_autoupload_change_location_footer_" = "Change Photos folder that is used for 'Automatic upload of camera photos' (if the option is enabled)";
-"_autoupload_not_select_home_"  = "Select a folder";
-"_autoupload_save_album_"       = "Copy photo or video in the photo album";
-"_autoupload_fullphotos_"        = "Upload all camera roll";
-"_autoupload_fullphotos_footer_" = "Select the options above before uploading";
-"_autoupload_create_subfolder_" = "Use subfolders";
+"_autoupload_not_select_home_"      = "Select a folder";
+"_autoupload_save_album_"           = "Copy photo or video in the photo album";
+"_autoupload_fullphotos_"           = "Upload all camera roll";
+"_autoupload_fullphotos_footer_"    = "Select the options above before uploading";
+"_autoupload_create_subfolder_"     = "Use subfolders";
 "_autoupload_create_subfolder_footer_" = "Store in subfolders based on year and month";
 
 // Manage Crypto Cloud
@@ -499,7 +493,6 @@
 "_no_activity_"                     = "No activity yet";
 "_transfers_"                       = "Transfers";
 "_activity_"                        = "Activity";
-"_recent_activity_"                 = "Recent Activity";
 "_activity_file_not_present_"       = "File no longer present";
 
 // List Shares
@@ -511,7 +504,6 @@
 // Offline - Local Storage
 
 "_create_synchronization_"          = "Create synchronization";
-"_available_offline_"               = "Available offline";
 "_offline_"                         = "Offline";
 "_local_storage_"                   = "Local storage";
 "_local_storage_no_record_"         = "No files yet";
@@ -549,4 +541,6 @@
 "photos"                            = "photos";
 "of"                                = "of";
 "%i of %i"                          = "%1$i of %2$i";
+
+
 

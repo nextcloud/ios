@@ -68,12 +68,8 @@
     
     _sectionDataSource = [NSArray new];
     
-    if ([NCBrandOptions sharedInstance].use_recent_activity_title == true)
-        self.title = NSLocalizedString(@"_recent_activity_", nil);
-    else
-        self.title = NSLocalizedString(@"_activity_", nil);
+    self.title = NSLocalizedString(@"_activity_", nil);
 
-    
     [self reloadDatasource];
 }
 

@@ -90,24 +90,10 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         
         // ITEM : Activity
         item = OCExternalSites.init()
-        if NCBrandOptions.sharedInstance.use_recent_activity_title == true {
-            item.name = "_recent_activity_"
-        } else {
-            item.name = "_activity_"
-        }
+        item.name = "_activity_"
         item.icon = "moreActivity"
         item.url = "segueActivity"
         functionMenu.append(item)
-        
-        // ITEM : Notification [CUSTOM]
-        if NCBrandOptions.sharedInstance.use_notification_on_menu_more == true {
-            
-            item = OCExternalSites.init()
-            item.name = "_notifications_"
-            item.icon = "notification"
-            item.url = "openCCNotification"
-            functionMenu.append(item)
-        }
         
         // ITEM : Shares
         item = OCExternalSites.init()
@@ -159,16 +145,6 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
             
             let item = quotaMenu[0]
             labelQuotaExternalSite.text = item.name
-        }
-        
-        // ITEM : Logout [CUSTOM]
-        if NCBrandOptions.sharedInstance.use_logout_on_menu_more == true {
-            
-            item = OCExternalSites.init()
-            item.name = "_logout_"
-            item.icon = "logout"
-            item.url = "logout"
-            settingsMenu.append(item)
         }
         
         // User data & Theming
