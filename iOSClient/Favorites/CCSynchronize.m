@@ -119,7 +119,6 @@
             
             if (metadata.directory) {
                 
-                NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
                 NSString *selector;
                 
                 if ([CCUtility getFavoriteOffline])
@@ -127,7 +126,7 @@
                 else
                     selector = selectorReadFolder;
                 
-                [self readFolderServerUrl:serverUrl directoryID:directoryID selector:selector];
+                [self readFolderServerUrl:serverUrl selector:selector];
                 
             } else {
                 
@@ -160,12 +159,17 @@
 #pragma mark ===== Read Folder =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)readFolderServerUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID selector:(NSString *)selector
+// serverUrl    : start
+// directoryID  : start
+// selector     : selectorReadFolder, selectorReadFolderWithDownload
+//
+
+- (void)readFolderServerUrl:(NSString *)serverUrl selector:(NSString *)selector
 {
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
     
     metadataNet.action = actionReadFolder;
-    metadataNet.directoryID = directoryID;
+    metadataNet.directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
     metadataNet.priority = NSOperationQueuePriorityNormal;
     metadataNet.selector = selector;
     metadataNet.serverUrl = serverUrl;
@@ -262,7 +266,6 @@
             if (metadata.directory) {
                 
                 NSString *serverUrl = [CCUtility stringAppendServerUrl:metadataNet.serverUrl addFileName:metadata.fileNameData];
-                NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
                 NSString *etag = metadata.etag;
                 
                 // Verify if do not exists this Metadata
@@ -278,7 +281,7 @@
                     
                     [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:serverUrl serverUrlTo:nil etag:etag];
                     
-                    [self readFolderServerUrl:serverUrl directoryID:directoryID selector:metadataNet.selector];
+                    [self readFolderServerUrl:serverUrl selector:metadataNet.selector];
                 }
                 
             } else {
