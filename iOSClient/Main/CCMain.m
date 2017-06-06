@@ -1641,10 +1641,14 @@
 
 - (void)uploadFileSuccess:(CCMetadataNet *)metadataNet fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost
 {
-    // Automatic upload All
+    // Auto upload All
     if([selector isEqualToString:selectorUploadAutomaticAll])
         [app performSelectorOnMainThread:@selector(loadAutomaticUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUpload] waitUntilDone:NO];
     
+    // Auto Upload
+    if([selector isEqualToString:selectorUploadAutomatic])
+        [app performSelectorOnMainThread:@selector(loadAutomaticUpload:) withObject:[NSNumber numberWithInt:1] waitUntilDone:NO];
+
     if ([selectorPost isEqualToString:selectorReadFolderForced] ) {
             
         [self readFolderWithForced:YES serverUrl:serverUrl];

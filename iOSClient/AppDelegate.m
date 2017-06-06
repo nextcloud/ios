@@ -371,11 +371,13 @@
 {
     // BACKGROND & FOREGROUND
 
+    NSLog(@"-P-R-O-C-E-S-S-");
     
     if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
 
         // ONLY BACKGROUND
-       
+        [app performSelectorOnMainThread:@selector(loadAutomaticUpload:) withObject:[NSNumber numberWithInt:1] waitUntilDone:NO];
+        
     } else {
 
         // ONLY FOREFROUND
@@ -1224,19 +1226,15 @@
 
 - (void)application:(UIApplication *)application performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
 {
-    NSLog(@"[LOG] Start Fetch");
+    NSLog(@"[LOG] Start perform Fetch With Completion Handler");
     
     // Verify new photo
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initStateAutoUpload" object:nil];
     
-    // after 20 sec verify Re
+    // after 20 sec
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 20 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         
-        NSLog(@"[LOG] End Fetch 20 sec.");
-    });
-    
-    // after 25 sec
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 25 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        [app performSelectorOnMainThread:@selector(loadAutomaticUpload:) withObject:[NSNumber numberWithInt:1] waitUntilDone:NO];
         
         NSArray *records = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND session != ''", self.activeAccount] sorted:nil ascending:NO];
         
@@ -1246,7 +1244,7 @@
             completionHandler(UIBackgroundFetchResultNoData);
         }
         
-        NSLog(@"[LOG] End Fetch 25 sec.");
+        NSLog(@"[LOG] End 20 sec. perform Fetch With Completion Handler");
     });
 }
 
@@ -1259,16 +1257,20 @@
 //
 - (void)application:(UIApplication *)application handleEventsForBackgroundURLSession:(NSString *)identifier completionHandler:(void (^)())completionHandler
 {
-    NSLog(@"[LOG] Start completition handler from background - identifier : %@", identifier);
+    NSLog(@"[LOG] Start handle Events For Background URLSession: %@", identifier);
     
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 25 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+    // after 20 sec
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 20 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        
+        // ONLY BACKGROUND
+        [app performSelectorOnMainThread:@selector(loadAutomaticUpload:) withObject:[NSNumber numberWithInt:1] waitUntilDone:NO];
         
         self.backgroundSessionCompletionHandler = completionHandler;
         void (^completionHandler)() = self.backgroundSessionCompletionHandler;
         self.backgroundSessionCompletionHandler = nil;
         completionHandler();
         
-        NSLog(@"[LOG] End 25 sec. completition handler - identifier : %@", identifier);
+        NSLog(@"[LOG] End 20 sec. Start handle Events For Background URLSession: %@", identifier);
     });
 }
 
