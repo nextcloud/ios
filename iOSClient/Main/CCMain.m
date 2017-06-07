@@ -3167,7 +3167,7 @@
         
         NSString *dir = [CCUtility stringAppendServerUrl:metadataNet.serverUrl addFileName:metadata.fileNameData];
         
-        [[CCSynchronize sharedSynchronize] addFavoriteFolder:dir];
+        [app.activeFavorites addFavoriteFolder:dir];
     }
 }
 

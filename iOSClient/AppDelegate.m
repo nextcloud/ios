@@ -356,7 +356,7 @@
         [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initStateAutoUpload" object:nil];
         
         NSLog(@"[LOG] Listning Favorites");
-        [[CCSynchronize sharedSynchronize] readListingFavorites];        
+        [_activeFavorites readListingFavorites];
     });
     
     // Initialize Auto upload

@@ -418,7 +418,7 @@
         } 
     }
     
-    [[CCSynchronize sharedSynchronize] readListingFavorites];
+    [app.activeFavorites readListingFavorites];
 }
 
 #pragma --------------------------------------------------------------------------------------------
