@@ -1999,7 +1999,12 @@ class NCManageDatabase: NSObject {
                 let addLocalFile = tableLocalFile()
                 
                 addLocalFile.account = table.account!
-                addLocalFile.date = table.date! as NSDate
+                
+                if table.date != nil {
+                    addLocalFile.date = table.date! as NSDate
+                } else {
+                    addLocalFile.date = NSDate()
+                }
                 addLocalFile.etag = table.rev!
                 if table.exifDate != nil {
                     addLocalFile.exifDate = table.exifDate! as NSDate
