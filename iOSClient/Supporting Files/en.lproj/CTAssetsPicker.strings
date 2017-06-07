@@ -22,7 +22,7 @@
 
 /* Messages if privacy is not granted */
 "This app does not have access to your photos or videos." = "This app does not have access to your photos or videos.";
-"You can enable access in Privacy Settings." = "You can enable access in Privacy Settings.";
+"You can enable access in Privacy Settings." = "You can grant access in Privacy Settings.";
 
 /* Messages if no assets */
 "No Photos or Videos" = "No Photos or Videos";
