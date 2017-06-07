@@ -81,10 +81,13 @@
     NSString *_depth;
     NSString *_noFilesSearchTitle;
     NSString *_noFilesSearchDescription;
-    
+    NSTimer *_timerWaitInput;
+
     // Login
     CCLoginWeb *_loginWeb;
     CCLogin *_loginVC;
+    
+    
 }
 @end
 
@@ -196,7 +199,7 @@
     [self.searchController.searchBar sizeToFit];
     self.searchController.searchBar.delegate = self;
     self.searchController.searchBar.placeholder = NSLocalizedString(@"_search_this_folder_",nil);
-    
+
     if ([[NCManageDatabase sharedInstance] getServerVersion] >= 12) {
         
         if (_isRoot)
@@ -2021,6 +2024,16 @@
 #pragma mark ===== Search =====
 #pragma --------------------------------------------------------------------------------------------
 
+-(void)searchStartTimer
+{
+    [[CCActions sharedInstance] search:_serverUrl fileName:_searchFileName depth:_depth date:nil selector:selectorSearch delegate:self];
+
+    _noFilesSearchTitle = @"";
+    _noFilesSearchDescription = NSLocalizedString(@"_search_in_progress_", nil);
+    
+    [self.tableView reloadEmptyDataSet];
+}
+
 -(void)updateSearchResultsForSearchController:(UISearchController *)searchController
 {
     _isSearchMode = YES;
@@ -2034,13 +2047,9 @@
         
         if ([[NCManageDatabase sharedInstance] getServerVersion] >= 12 && ![_depth isEqualToString:@"0"]) {
             
-            [[CCActions sharedInstance] search:_serverUrl fileName:_searchFileName depth:_depth date:nil selector:selectorSearch delegate:self];
+            [_timerWaitInput invalidate];
+            _timerWaitInput = [NSTimer scheduledTimerWithTimeInterval:1.5 target:self selector:@selector(searchStartTimer) userInfo:nil repeats:NO];
             
-            _noFilesSearchTitle = @"";
-            _noFilesSearchDescription = NSLocalizedString(@"_search_in_progress_", nil);
-        
-            [self.tableView reloadEmptyDataSet];
-
         } else {
             
             NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:_serverUrl];
