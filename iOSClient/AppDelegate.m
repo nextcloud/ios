@@ -377,12 +377,12 @@
     if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
 
         // ONLY BACKGROUND
-        [app performSelectorOnMainThread:@selector(loadAutoUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUploadBackground] waitUntilDone:NO];
+        [[NCAutoUpload sharedInstance] performSelectorOnMainThread:@selector(loadAutoUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUploadBackground] waitUntilDone:NO];
         
     } else {
 
         // ONLY FOREFROUND
-        [app performSelectorOnMainThread:@selector(loadAutoUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUpload] waitUntilDone:NO];
+        [[NCAutoUpload sharedInstance] performSelectorOnMainThread:@selector(loadAutoUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUpload] waitUntilDone:NO];
     }
 }
 
@@ -1356,77 +1356,6 @@
     return queueNumUploadWWan;
 }
 
-- (void)loadAutoUpload:(NSNumber *)maxConcurrent
-{
-    CCMetadataNet *metadataNet;
-    NSInteger counterUpload = 0;
-    NSInteger maxConcurrentOperationDownloadUpload = [maxConcurrent integerValue];
-    
-    NSArray *uploadInQueue = [[NCManageDatabase sharedInstance] getTableMetadataUpload];
-    
-    NSArray *recordAutomaticUploadInLock =  [[NCManageDatabase sharedInstance] getLockAutoUpload];
-    
-    for (tableAutoUpload *tableAutoUpload in recordAutomaticUploadInLock) {
-        
-        BOOL recordFound = NO;
-        
-        for (CCMetadataNet *metadataNet in uploadInQueue) {
-            if (metadataNet.assetLocalIdentifier == tableAutoUpload.assetLocalIdentifier)
-                recordFound = YES;
-        }
-        
-        if (!recordFound)
-            [[NCManageDatabase sharedInstance] unlockAutoUploadWithAssetLocalIdentifier:tableAutoUpload.assetLocalIdentifier];
-    }
-
-    // ------------------------- <selector Auto Upload> -------------------------
-    
-    metadataNet = [[NCManageDatabase sharedInstance] getAutoUploadWithSelector:selectorUploadAutoUpload];
-    counterUpload = [self getNumberUploadInQueues] + [self getNumberUploadInQueuesWWan];
-    while (metadataNet && counterUpload < maxConcurrentOperationDownloadUpload) {
-        
-        [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet.assetLocalIdentifier fileName:metadataNet.fileName serverUrl:metadataNet.serverUrl cryptated:metadataNet.cryptated session:metadataNet.session taskStatus:metadataNet.taskStatus selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:metadataNet.errorCode delegate:app.activeMain];
-        
-        metadataNet =  [[NCManageDatabase sharedInstance] getAutoUploadWithSelector:selectorUploadAutoUpload];
-        counterUpload++;
-    }
-    
-    // ------------------------- <selector Auto Upload All> ----------------------
-    
-    // Verify num error MAX 10 after STOP
-    NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND sessionSelector = %@ AND (sessionTaskIdentifier = %i OR sessionTaskIdentifierPlist = %i)", app.activeAccount, selectorUploadAutoUploadAll, k_taskIdentifierError, k_taskIdentifierError] sorted:nil ascending:NO];
-    
-    NSInteger errorCount = [metadatas count];
-    
-    if (errorCount >= 10) {
-        
-        [app messageNotification:@"_error_" description:@"_too_errors_automatic_all_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
-        return;
-    }
-    
-    metadataNet =  [[NCManageDatabase sharedInstance] getAutoUploadWithSelector:selectorUploadAutoUploadAll];
-    counterUpload = [self getNumberUploadInQueues] + [self getNumberUploadInQueuesWWan];
-    while (metadataNet && counterUpload < maxConcurrentOperationDownloadUpload) {
-        
-        PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[metadataNet.assetLocalIdentifier] options:nil];
-        
-        if (result.count > 0) {
-            
-            [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet.assetLocalIdentifier fileName:metadataNet.fileName serverUrl:metadataNet.serverUrl cryptated:metadataNet.cryptated session:metadataNet.session taskStatus:metadataNet.taskStatus selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:metadataNet.errorCode delegate:app.activeMain];
-            
-            counterUpload++;
-            
-        } else {
-            
-            [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionUpload selector:selectorUploadAutoUploadAll note:@"Internal error image/video not found [0]" type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
-            
-            [[NCManageDatabase sharedInstance] deleteAutoUploadWithAssetLocalIdentifier:metadataNet.assetLocalIdentifier];
-        }
-        
-        metadataNet =  [[NCManageDatabase sharedInstance] getAutoUploadWithSelector:selectorUploadAutoUploadAll];
-    }
-}
-
 - (void)verifyDownloadUploadInProgress
 {
     BOOL callVerifyDownload = NO;
@@ -1564,44 +1493,6 @@
     if (_activeMain && [_listChangeTask count] == 0) {
         [_activeMain reloadDatasource:serverUrl fileID:nil selector:nil];
     }
-}
-
-- (BOOL)createFolderSubFolderAutoUploadFolderPhotos:(NSString *)folderPhotos useSubFolder:(BOOL)useSubFolder assets:(NSArray *)assets selector:(NSString *)selector
-{
-    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:_activeUser withPassword:_activePassword withUrl:_activeUrl isCryptoCloudMode:NO];
-
-    if ([ocNetworking automaticCreateFolderSync:folderPhotos]) {
-    
-        (void)[[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:folderPhotos permissions:@""];
-    
-    } else {
-        
-        // Activity
-        [[NCManageDatabase sharedInstance] addActivityClient:folderPhotos fileID:@"" action:k_activityDebugActionAutoUpload selector:selector note:NSLocalizedStringFromTable(@"_not_possible_create_folder_", @"Error", nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:_activeUrl];
-        
-        return false;
-    }
-    
-    // Create if request the subfolders
-    if (useSubFolder) {
-        
-        for (NSString *dateSubFolder in [CCUtility createNameSubFolder:assets]) {
-            
-            if ([ocNetworking automaticCreateFolderSync:[NSString stringWithFormat:@"%@/%@", folderPhotos, dateSubFolder]]) {
-                
-                (void)[[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:[NSString stringWithFormat:@"%@/%@", folderPhotos, dateSubFolder] permissions:@""];
-                
-            } else {
-                
-                // Activity
-                [[NCManageDatabase sharedInstance] addActivityClient:[NSString stringWithFormat:@"%@/%@", folderPhotos, dateSubFolder] fileID:@"" action:k_activityDebugActionAutoUpload selector:selector note:NSLocalizedString(@"_error_createsubfolders_upload_",nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:_activeUrl];
-                
-                return false;
-            }
-        }
-    }
-    
-    return true;
 }
 
 #pragma --------------------------------------------------------------------------------------------
