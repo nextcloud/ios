@@ -775,6 +775,7 @@
     }
 }
 
+/*
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== UnZipFile =====
 #pragma --------------------------------------------------------------------------------------------
@@ -807,6 +808,7 @@
         }];
     });
 }
+*/
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Create New (OpenModel) =====
@@ -1414,7 +1416,8 @@
         
         if ([metadata.typeFile isEqualToString: k_metadataTypeFile_compress]) {
             
-            [self performSelector:@selector(unZipFile:) withObject:metadata.fileID];
+            selector = selectorOpenIn;
+            //[self performSelector:@selector(unZipFile:) withObject:metadata.fileID];
             
         } else if ([metadata.typeFile isEqualToString: k_metadataTypeFile_unknown]) {
             
