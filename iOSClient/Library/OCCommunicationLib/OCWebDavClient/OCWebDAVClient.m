@@ -298,7 +298,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     
     if (dateLastModified.length > 0) {
         
-         body = [NSString stringWithFormat:@"%@</d:prop></d:select><d:from><d:scope><d:href>/files/%@%@</d:href><d:depth>infinity</d:depth></d:scope></d:from><d:where><d:like><d:prop><d:displayname/></d:prop><d:literal>%@</d:literal></d:like></d:where><d:orderby/></d:basicsearch></d:searchrequest>", body, user, folder, fileName];
+         body = [NSString stringWithFormat:@"%@</d:prop></d:select><d:from><d:scope><d:href>/files/%@%@</d:href><d:depth>infinity</d:depth></d:scope></d:from><d:where><d:like><d:prop><d:displayname/></d:prop><d:literal>%@</d:literal><d:prop><d:getlastmodifed/></d:prop><d:literal>%@</d:literal></d:like></d:where><d:orderby/></d:basicsearch></d:searchrequest>", body, user, folder, fileName, dateLastModified];
         
     } else {
         
