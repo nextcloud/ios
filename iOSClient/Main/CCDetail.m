@@ -462,33 +462,44 @@
 
 - (void)photoBrowser:(MWPhotoBrowser *)photoBrowser didDisplayPhotoAtIndex:(NSUInteger)index
 {
-    tableMetadata *metadata = [self.dataSourceImagesVideos objectAtIndex:index];
-    NSString *directory;
+    if (index != _indexNowVisible) {
     
-    self.indexNowVisible = index;
-    self.fileIDNowVisible = metadata.fileID;
+        tableMetadata *metadata = [self.dataSourceImagesVideos objectAtIndex:index];
     
-    photoBrowser.toolbar.hidden = NO;
+        NSString *directory;
+        NSString *fileID = metadata.fileID;
+    
+        self.indexNowVisible = index;
+        self.fileIDNowVisible = metadata.fileID;
+    
+        photoBrowser.toolbar.hidden = NO;
+    
+        
+    
+        if (_sourceDirectoryLocal)
+            directory = self.metadataDetail.directoryID;
+        else
+            directory = app.directoryUser;
+
+        // Download
+        if (fileID) {
+        
+            metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
+        
+            if (metadata && [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", directory, metadata.fileID]] == NO && [metadata.session length] == 0)
+                [self performSelector:@selector(downloadPhotoBrowser:) withObject:metadata afterDelay:0.1];
+        
+            // Title
+            if (metadata && !photoBrowser.isGridController)
+                self.title = metadata.fileNamePrint;
+        }
+    }
     
     if (_reload) {
         
-        [self.photoBrowser performSelector:@selector(reloadData) withObject:nil afterDelay:0.1];
-        
+        [self.photoBrowser performSelector:@selector(reloadData) withObject:nil];
         _reload = NO;
     }
-    
-    if (_sourceDirectoryLocal)
-        directory = self.metadataDetail.directoryID;
-    else
-        directory = app.directoryUser;
-
-    // Download
-    if (metadata && [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", directory, metadata.fileID]] == NO && [metadata.session length] == 0)
-        [self performSelector:@selector(downloadPhotoBrowser:) withObject:metadata afterDelay:0.1];
-    
-    // Title
-    if (metadata && !photoBrowser.isGridController)
-        self.title = metadata.fileNamePrint;
 }
 
 - (id <MWPhoto>)photoBrowser:(MWPhotoBrowser *)photoBrowser photoAtIndex:(NSUInteger)index

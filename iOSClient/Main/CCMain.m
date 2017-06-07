@@ -1545,16 +1545,13 @@
     //selectorLoadViewImage
     if ([selector isEqualToString:selectorLoadViewImage]) {
         
-        dispatch_async(dispatch_get_main_queue(), ^{
+        // Detail
+        if (app.activeDetail)
+            [app.activeDetail downloadPhotoBrowserSuccess:metadata selector:selector];
             
-            // Detail
-            if (app.activeDetail)
-                [app.activeDetail downloadPhotoBrowserSuccess:metadata selector:selector];
-            
-            // Photos
-            if (app.activePhotos)
-                [app.activePhotos downloadFileSuccess:metadata];
-        });
+        // Photos
+        if (app.activePhotos)
+            [app.activePhotos downloadFileSuccess:metadata];
 
         [self reloadDatasource:serverUrl fileID:metadata.fileID selector:selector];
     }

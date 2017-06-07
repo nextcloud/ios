@@ -52,8 +52,6 @@ extern NSString *const urlBaseUploadDB;
 
 #define k_dismissAfterSecond                            4
 
-#define k_MaxDimensionUpload                            524288000       // 500 MB
-
 #define k_dayForceReadFolder                            3
 
 #define k_daysOfActivity                                7
