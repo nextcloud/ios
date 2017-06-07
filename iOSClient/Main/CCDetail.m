@@ -41,6 +41,9 @@
     UIBarButtonItem *_buttonShare;
     UIBarButtonItem *_buttonDelete;
     
+    NSInteger _indexNowVisible;
+    NSString *_fileIDNowVisible;
+
     BOOL _reload;
     
     NSMutableOrderedSet *_dataSourceDirectoryID;
@@ -65,8 +68,8 @@
         self.thumbs = [[NSMutableArray alloc] init];
         self.dataSourceImagesVideos = [[NSMutableArray alloc] init];
         _dataSourceDirectoryID = [[NSMutableOrderedSet alloc] init];
-        self.indexNowVisible = 0;
-        self.fileIDNowVisible = nil;
+        _indexNowVisible = -1;
+        _fileIDNowVisible = nil;
         
         app.activeDetail = self;
     }
@@ -387,6 +390,8 @@
 {
     self.photoBrowser = [[MWPhotoBrowser alloc] initWithDelegate:self];
     _reload = NO;
+    _indexNowVisible = -1;
+    _fileIDNowVisible = nil;
     
     [self.photos removeAllObjects];
     [self.thumbs removeAllObjects];
@@ -469,8 +474,8 @@
         NSString *directory;
         NSString *fileID = metadata.fileID;
     
-        self.indexNowVisible = index;
-        self.fileIDNowVisible = metadata.fileID;
+        _indexNowVisible = index;
+        _fileIDNowVisible = metadata.fileID;
     
         photoBrowser.toolbar.hidden = NO;
     
@@ -545,7 +550,7 @@
                         
                     } else {
                         
-                        [self.photos replaceObjectAtIndex:index withObject:[MWPhoto photoWithImage:[CCUtility drawText:[NSLocalizedString(@"_loading_", nil) stringByAppendingString:@"..."] inImage:[UIImage imageNamed:@"button"] colorText:[UIColor lightGrayColor]]]];
+                        [self.photos replaceObjectAtIndex:index withObject:[MWPhoto photoWithImage:[CCUtility drawText:[NSLocalizedString(@"_loading_", nil) stringByAppendingString:@"..."] inImage:[UIImage imageNamed:@"button1000x200"] colorText:[UIColor lightGrayColor] sizeOfFont:50]]];
                     }
                 }
             }
@@ -574,7 +579,7 @@
                         
                     } else {
                         
-                        [self.photos replaceObjectAtIndex:index withObject:[MWPhoto photoWithImage:[CCUtility drawText:[NSLocalizedString(@"_loading_", nil) stringByAppendingString:@"..."] inImage:[UIImage imageNamed:@"button"] colorText:[UIColor lightGrayColor]]]];
+                        [self.photos replaceObjectAtIndex:index withObject:[MWPhoto photoWithImage:[CCUtility drawText:[NSLocalizedString(@"_loading_", nil) stringByAppendingString:@"..."] inImage:[UIImage imageNamed:@"button1000x200"] colorText:[UIColor lightGrayColor] sizeOfFont:50]]];
                     }
                 }
             }
@@ -772,7 +777,7 @@
     
     //NSLog(@"[LOG] Add Download Photo Browser");
     
-    if ([metadataVar.fileID isEqualToString:self.fileIDNowVisible] || [self.photoBrowser isGridReload:index]) {
+    if ([metadataVar.fileID isEqualToString:_fileIDNowVisible] || [self.photoBrowser isGridReload:index]) {
         
         [self.photoBrowser reloadData];
         
@@ -800,12 +805,12 @@
     //NSDate *date = [[notification.userInfo allValues] objectAtIndex:0];
  
     // test [Chrash V 1.14,15]
-    if (self.indexNowVisible >= [self.photos count])
+    if (_indexNowVisible >= [self.photos count])
         return;
     
-    if ([fileID isEqualToString:self.fileIDNowVisible]) {
+    if ([fileID isEqualToString:_fileIDNowVisible]) {
             
-        MWPhoto *photo = [self.photos objectAtIndex:self.indexNowVisible];
+        MWPhoto *photo = [self.photos objectAtIndex:_indexNowVisible];
             
         [self setLocationCaptionPhoto:photo fileID:fileID];
             

@@ -39,7 +39,6 @@
 
 @property (nonatomic, strong) tableMetadata *metadataDetail;
 @property BOOL sourceDirectoryLocal;
-//@property BOOL isAutoUpload;
 @property (nonatomic, strong) NSDate *dateFilterQuery;
 
 // Document
@@ -51,8 +50,6 @@
 @property (nonatomic, strong) MWPhotoBrowser *photoBrowser;
 @property (nonatomic, strong) NSMutableArray *photos;
 @property (nonatomic, strong) NSMutableArray *thumbs;
-@property (nonatomic, strong) NSString *fileIDNowVisible;
-@property (nonatomic) NSUInteger indexNowVisible;
 
 // PDF
 @property (nonatomic, strong) ReaderViewController *readerPDFViewController;

@@ -795,7 +795,7 @@
         case k_metadataTypeFilenamePlist:
             
             metadata.cryptated = YES;            
-            metadata.fileNamePrint = NSLocalizedString(@"_download_plist_", nil);
+            metadata.fileNamePrint = @" ";
             
             [self insertInformationPlist:metadata directoryUser:directoryUser];
             
@@ -1006,7 +1006,7 @@
     } else {
         
         metadata.errorPasscode = true;
-        if (!metadata.uuid) metadata.fileNamePrint = NSLocalizedString(@"_download_plist_", nil);
+        if (!metadata.uuid) metadata.fileNamePrint = @" ";
         else metadata.fileNamePrint = NSLocalizedString(@"_insert_password_", nil);
     }
     
@@ -1248,9 +1248,9 @@
     return [emailTest evaluateWithObject:checkString];
 }
 
-+ (UIImage*)drawText:(NSString*)text inImage:(UIImage*)image colorText:(UIColor *)colorText
++ (UIImage*)drawText:(NSString*)text inImage:(UIImage*)image colorText:(UIColor *)colorText sizeOfFont:(CGFloat)sizeOfFont
 {
-    NSDictionary* attributes = @{NSFontAttributeName: [UIFont systemFontOfSize:26], NSForegroundColorAttributeName:colorText};
+    NSDictionary* attributes = @{NSFontAttributeName: [UIFont systemFontOfSize:sizeOfFont], NSForegroundColorAttributeName:colorText};
     NSAttributedString* attributedString = [[NSAttributedString alloc] initWithString:text attributes:attributes];
     
     int x = image.size.width/2 - attributedString.size.width/2;

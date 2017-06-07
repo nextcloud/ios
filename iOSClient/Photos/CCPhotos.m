@@ -286,9 +286,9 @@
             
     if (!account.autoUpload) {
     
-        UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"button"] color:[NCBrandColor sharedInstance].brand];
+        UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"button500x100"] color:[NCBrandColor sharedInstance].brand];
         
-        return [CCUtility drawText:NSLocalizedString(@"_activate_autoupload_", nil) inImage:buttonImage colorText:[UIColor whiteColor]];
+        return [CCUtility drawText:NSLocalizedString(@"_activate_autoupload_", nil) inImage:buttonImage colorText:[UIColor whiteColor] sizeOfFont:26];
         
     } else return nil;
 }
