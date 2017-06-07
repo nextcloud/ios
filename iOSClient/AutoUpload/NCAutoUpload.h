@@ -30,8 +30,6 @@
 
 + (NCAutoUpload *)sharedInstance;
 
-@property (nonatomic, strong) PHFetchResult *assetsFetchResult;
-
 - (void)initStateAutoUpload;
 - (BOOL)checkIfLocationIsEnabled;
 - (void)setupAutoUploadFull;

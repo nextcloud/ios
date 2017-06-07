@@ -27,6 +27,8 @@
 
 @interface NCAutoUpload ()
 {
+    PHFetchResult *_assetsFetchResult;
+
     CCHud *_hud;
 }
 @end
@@ -102,7 +104,7 @@
 {
     if ([ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusAuthorized) {
         
-        self.assetsFetchResult = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum | PHAssetCollectionTypeAlbum subtype:PHAssetCollectionSubtypeAny options:nil];
+        _assetsFetchResult = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum | PHAssetCollectionTypeAlbum subtype:PHAssetCollectionSubtypeAny options:nil];
         
         [PHPhotoLibrary.sharedPhotoLibrary registerChangeObserver:self];
         
@@ -129,7 +131,7 @@
 {
     if ([ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusAuthorized) {
         
-        self.assetsFetchResult = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum | PHAssetCollectionTypeAlbum subtype:PHAssetCollectionSubtypeAny options:nil];
+        _assetsFetchResult = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum | PHAssetCollectionTypeAlbum subtype:PHAssetCollectionSubtypeAny options:nil];
         
         [PHPhotoLibrary.sharedPhotoLibrary registerChangeObserver:self];
         
