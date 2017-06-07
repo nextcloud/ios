@@ -550,7 +550,7 @@
                         
                     } else {
                         
-                        [self.photos replaceObjectAtIndex:index withObject:[MWPhoto photoWithImage:[CCUtility drawText:[NSLocalizedString(@"_loading_", nil) stringByAppendingString:@"..."] inImage:[UIImage imageNamed:@"button1000x200"] colorText:[UIColor lightGrayColor] sizeOfFont:50]]];
+                        [self.photos replaceObjectAtIndex:index withObject:[MWPhoto photoWithImage:[CCUtility drawText:[NSLocalizedString(@"_loading_", nil) stringByAppendingString:@"..."] inImage:[UIImage imageNamed:@"button1000x200"] colorText:[UIColor darkGrayColor] sizeOfFont:50]]];
                     }
                 }
             }
@@ -579,7 +579,7 @@
                         
                     } else {
                         
-                        [self.photos replaceObjectAtIndex:index withObject:[MWPhoto photoWithImage:[CCUtility drawText:[NSLocalizedString(@"_loading_", nil) stringByAppendingString:@"..."] inImage:[UIImage imageNamed:@"button1000x200"] colorText:[UIColor lightGrayColor] sizeOfFont:50]]];
+                        [self.photos replaceObjectAtIndex:index withObject:[MWPhoto photoWithImage:[CCUtility drawText:[NSLocalizedString(@"_loading_", nil) stringByAppendingString:@"..."] inImage:[UIImage imageNamed:@"button1000x200"] colorText:[UIColor darkGrayColor] sizeOfFont:50]]];
                     }
                 }
             }
