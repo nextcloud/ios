@@ -22,7 +22,18 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <Photos/Photos.h>
+#import "CCManageAsset.h"
+#import "CCManageAutoUpload.h"
 
-@interface NCAutoUpload : NSObject
+@interface NCAutoUpload : NSObject <PHPhotoLibraryChangeObserver, CCManageLocationDelegate>
+
++ (NCAutoUpload *)sharedInstance;
+
+@property (nonatomic, strong) PHFetchResult *assetsFetchResult;
+
+- (void)initStateAutoUpload;
+- (BOOL)checkIfLocationIsEnabled;
+- (void)setupAutoUploadFull;
 
 @end

@@ -26,6 +26,8 @@
 #import "CCHud.h"
 #import "CCCellMain.h"
 
+@class tableMetadata;
+
 @interface CCSynchronize : NSObject
 
 @property (nonatomic, strong) CCHud *hud;
@@ -35,7 +37,7 @@
 @property (nonatomic, strong) NSMutableOrderedSet *foldersInSynchronized;
 
 - (void)readFolderServerUrl:(NSString *)serverUrl selector:(NSString *)selector;
-- (void)readFile:(id)metadata withDownload:(BOOL)withDownload;
+- (void)readFile:(tableMetadata *)metadata withDownload:(BOOL)withDownload;
 
 - (void)verifyChangeMedatas:(NSArray *)allRecordMetadatas serverUrl:(NSString *)serverUrl account:(NSString *)account withDownload:(BOOL)withDownload;
 

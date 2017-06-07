@@ -40,6 +40,7 @@
 #import <Crashlytics/Crashlytics.h>
 #import "JDStatusBarNotification.h"
 #import "NCBridgeSwift.h"
+#import "NCAutoUpload.h"
 
 @interface AppDelegate () <UNUserNotificationCenterDelegate, FIRMessagingDelegate>
 {
@@ -266,7 +267,7 @@
     
     // Fabric
     [Fabric with:@[[Crashlytics class]]];
-    
+        
     return YES;
 }
 
@@ -353,7 +354,7 @@
             [_activeMain requestServerCapabilities];
     
         NSLog(@"[LOG] Initialize Auto upload");
-        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initStateAutoUpload" object:nil];
+        [[NCAutoUpload sharedInstance] initStateAutoUpload];
         
         NSLog(@"[LOG] Listning Favorites");
         [_activeFavorites readListingFavorites];
@@ -1227,7 +1228,7 @@
     NSLog(@"[LOG] Start perform Fetch With Completion Handler");
     
     // Verify new photo
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initStateAutoUpload" object:nil];
+    [[NCAutoUpload sharedInstance] initStateAutoUpload];
     
     // after 20 sec
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 20 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{

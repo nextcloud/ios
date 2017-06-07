@@ -557,7 +557,6 @@
 		F7A377161EB2364A002856D3 /* Crashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7A377141EB2364A002856D3 /* Crashlytics.framework */; };
 		F7A3771A1EB2364A002856D3 /* Fabric.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7A377151EB2364A002856D3 /* Fabric.framework */; };
 		F7B0C0CD1EE7E7750033AC24 /* CCSynchronize.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B0C0CC1EE7E7750033AC24 /* CCSynchronize.m */; };
-		F7B0C1721EE8397E0033AC24 /* test.txt in Resources */ = {isa = PBXBuildFile; fileRef = F7B0C1711EE8397E0033AC24 /* test.txt */; };
 		F7B0C1751EE839A30033AC24 /* NCAutoUpload.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B0C1741EE839A30033AC24 /* NCAutoUpload.m */; };
 		F7B1FBC41E72E3D1001781FE /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7B1FBB11E72E3D1001781FE /* Media.xcassets */; };
 		F7B1FBC61E72E3D1001781FE /* SwiftModalWebVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B1FBBF1E72E3D1001781FE /* SwiftModalWebVC.swift */; };
@@ -1606,7 +1605,6 @@
 		F7ACE4311BAC0268006C0017 /* CCSettings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCSettings.m; sourceTree = "<group>"; };
 		F7B0C0CB1EE7E7750033AC24 /* CCSynchronize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCSynchronize.h; sourceTree = "<group>"; };
 		F7B0C0CC1EE7E7750033AC24 /* CCSynchronize.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCSynchronize.m; sourceTree = "<group>"; };
-		F7B0C1711EE8397E0033AC24 /* test.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = test.txt; sourceTree = "<group>"; };
 		F7B0C1731EE839A30033AC24 /* NCAutoUpload.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCAutoUpload.h; sourceTree = "<group>"; };
 		F7B0C1741EE839A30033AC24 /* NCAutoUpload.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCAutoUpload.m; sourceTree = "<group>"; };
 		F7B1A7731EBB3C8000BFB6D1 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/CTAssetsPicker.strings; sourceTree = "<group>"; };
@@ -3208,7 +3206,6 @@
 		F7B0C1701EE8397E0033AC24 /* AutoUpload */ = {
 			isa = PBXGroup;
 			children = (
-				F7B0C1711EE8397E0033AC24 /* test.txt */,
 				F7B0C1731EE839A30033AC24 /* NCAutoUpload.h */,
 				F7B0C1741EE839A30033AC24 /* NCAutoUpload.m */,
 			);
@@ -4038,7 +4035,6 @@
 				F77B0F211D118A16002130FE /* ZSSh6.png in Resources */,
 				F762CB5D1EACB7D400B38484 /* Reader-Export.png in Resources */,
 				F77B0F231D118A16002130FE /* ZSSh3.png in Resources */,
-				F7B0C1721EE8397E0033AC24 /* test.txt in Resources */,
 				F769D39C1E9E1506006DBBB4 /* CCLocalStorageCell.xib in Resources */,
 				F77B0F251D118A16002130FE /* ZSSh1.png in Resources */,
 				F762CB621EACB7D400B38484 /* Reader-Mark-Y@2x.png in Resources */,

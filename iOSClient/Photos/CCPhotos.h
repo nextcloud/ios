@@ -32,20 +32,15 @@
 #import "CCManageLocation.h"
 #import "CCDetail.h"
 #import "CCUtility.h"
-#import "CCManageAsset.h"
-#import "CCManageAutoUpload.h"
 #import "CCSection.h"
 #import "CCHud.h"
 #import "OCNetworking.h"
 
 @class tableMetadata;
 
-@interface CCPhotos: UICollectionViewController <UICollectionViewDataSource, UICollectionViewDelegate, UIActionSheetDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, CCManageLocationDelegate, PHPhotoLibraryChangeObserver, OCNetworkingDelegate>
+@interface CCPhotos: UICollectionViewController <UICollectionViewDataSource, UICollectionViewDelegate, UIActionSheetDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, OCNetworkingDelegate>
 
 @property (nonatomic, weak) CCDetail *detailViewController;
-@property (nonatomic, strong) PHFetchResult *assetsFetchResult;
-
-- (BOOL)checkIfLocationIsEnabled;
 
 - (void)downloadFileSuccess:(tableMetadata *)metadata;
 - (void)downloadFileFailure:(NSInteger)errorCode;

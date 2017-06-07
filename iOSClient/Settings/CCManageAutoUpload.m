@@ -22,6 +22,7 @@
 //
 
 #import "CCManageAutoUpload.h"
+#import "NCAutoUpload.h"
 #import "AppDelegate.h"
 #import "NCBridgeSwift.h"
 
@@ -240,7 +241,7 @@
         }
         
         // Initialize Auto Upload
-        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initStateAutoUpload" object:nil];
+        [[NCAutoUpload sharedInstance] initStateAutoUpload];
         
         [self reloadForm];
     }
@@ -250,10 +251,9 @@
         if ([[rowDescriptor.value valueData] boolValue] == YES) {
             
             BOOL isLocationIsEnabled = NO;
-                
-            if (app.activePhotos)
-                [app.activePhotos checkIfLocationIsEnabled];
-                
+            
+            [[NCAutoUpload sharedInstance] checkIfLocationIsEnabled];
+                            
             if(isLocationIsEnabled == YES) {
                     
                 UIAlertView * alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_autoupload_background_title_", nil) message:NSLocalizedString(@"_autoupload_background_msg_", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
@@ -277,7 +277,7 @@
         
         if ([[rowDescriptor.value valueData] boolValue] == YES) {
             
-            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"setupAutoUploadFull" object:nil];
+            [[NCAutoUpload sharedInstance] setupAutoUploadFull];
             [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUploadFull" state:YES];
             
         } else {
