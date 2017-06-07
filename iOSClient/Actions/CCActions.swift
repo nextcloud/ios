@@ -339,17 +339,18 @@ class CCActions: NSObject {
     // MARK: Search
     // --------------------------------------------------------------------------------------------
     
-    func search(_ serverUrl : String, fileName : String, depth : String, delegate: AnyObject) {
+    func search(_ serverUrl: String, fileName: String, depth: String, date: Date?, selector: String, delegate: AnyObject) {
         
         // Search DAV API
             
         let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
             
         metadataNet.action = actionSearch
+        metadataNet.date = date
         metadataNet.delegate = delegate
         metadataNet.fileName = fileName
         metadataNet.options = depth
-        metadataNet.selector = selectorSearch
+        metadataNet.selector = selector
         metadataNet.serverUrl = serverUrl
 
         appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)

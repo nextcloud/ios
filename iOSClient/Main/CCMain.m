@@ -2034,7 +2034,7 @@
         
         if ([[NCManageDatabase sharedInstance] getServerVersion] >= 12 && ![_depth isEqualToString:@"0"]) {
             
-            [[CCActions sharedInstance] search:_serverUrl fileName:_searchFileName depth:_depth delegate:self];
+            [[CCActions sharedInstance] search:_serverUrl fileName:_searchFileName depth:_depth date:nil selector:selectorSearch delegate:self];
             
             _noFilesSearchTitle = @"";
             _noFilesSearchDescription = NSLocalizedString(@"_search_in_progress_", nil);
