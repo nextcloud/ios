@@ -548,7 +548,6 @@
 		F7A321551E9E2A070069AD1B /* CCFavorites.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A3214F1E9E2A070069AD1B /* CCFavorites.m */; };
 		F7A321561E9E2A070069AD1B /* CCFavoritesCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A321511E9E2A070069AD1B /* CCFavoritesCell.m */; };
 		F7A321571E9E2A070069AD1B /* CCFavoritesCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7A321521E9E2A070069AD1B /* CCFavoritesCell.xib */; };
-		F7A321581E9E2A070069AD1B /* CCSynchronize.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A321541E9E2A070069AD1B /* CCSynchronize.m */; };
 		F7A321651E9E37960069AD1B /* CCActivity.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A321641E9E37960069AD1B /* CCActivity.m */; };
 		F7A321791E9E3EAF0069AD1B /* CCTransfers.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A321751E9E3EAF0069AD1B /* CCTransfers.m */; };
 		F7A3217A1E9E3EAF0069AD1B /* CCTransfersCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A321771E9E3EAF0069AD1B /* CCTransfersCell.m */; };
@@ -557,6 +556,7 @@
 		F7A321AD1E9E6AD50069AD1B /* CCAdvanced.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A321AC1E9E6AD50069AD1B /* CCAdvanced.m */; };
 		F7A377161EB2364A002856D3 /* Crashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7A377141EB2364A002856D3 /* Crashlytics.framework */; };
 		F7A3771A1EB2364A002856D3 /* Fabric.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7A377151EB2364A002856D3 /* Fabric.framework */; };
+		F7B0C0CD1EE7E7750033AC24 /* CCSynchronize.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B0C0CC1EE7E7750033AC24 /* CCSynchronize.m */; };
 		F7B1FBC41E72E3D1001781FE /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7B1FBB11E72E3D1001781FE /* Media.xcassets */; };
 		F7B1FBC61E72E3D1001781FE /* SwiftModalWebVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B1FBBF1E72E3D1001781FE /* SwiftModalWebVC.swift */; };
 		F7B1FBC71E72E3D1001781FE /* SwiftWebVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B1FBC01E72E3D1001781FE /* SwiftWebVC.swift */; };
@@ -1576,8 +1576,6 @@
 		F7A321501E9E2A070069AD1B /* CCFavoritesCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCFavoritesCell.h; sourceTree = "<group>"; };
 		F7A321511E9E2A070069AD1B /* CCFavoritesCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCFavoritesCell.m; sourceTree = "<group>"; };
 		F7A321521E9E2A070069AD1B /* CCFavoritesCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CCFavoritesCell.xib; sourceTree = "<group>"; };
-		F7A321531E9E2A070069AD1B /* CCSynchronize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCSynchronize.h; sourceTree = "<group>"; };
-		F7A321541E9E2A070069AD1B /* CCSynchronize.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCSynchronize.m; sourceTree = "<group>"; };
 		F7A321631E9E37960069AD1B /* CCActivity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCActivity.h; sourceTree = "<group>"; };
 		F7A321641E9E37960069AD1B /* CCActivity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = CCActivity.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		F7A321741E9E3EAF0069AD1B /* CCTransfers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCTransfers.h; sourceTree = "<group>"; };
@@ -1604,6 +1602,8 @@
 		F7ACE42F1BAC0268006C0017 /* CCManageAutoUpload.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCManageAutoUpload.m; sourceTree = "<group>"; };
 		F7ACE4301BAC0268006C0017 /* CCSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCSettings.h; sourceTree = "<group>"; };
 		F7ACE4311BAC0268006C0017 /* CCSettings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCSettings.m; sourceTree = "<group>"; };
+		F7B0C0CB1EE7E7750033AC24 /* CCSynchronize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCSynchronize.h; sourceTree = "<group>"; };
+		F7B0C0CC1EE7E7750033AC24 /* CCSynchronize.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCSynchronize.m; sourceTree = "<group>"; };
 		F7B1A7731EBB3C8000BFB6D1 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/CTAssetsPicker.strings; sourceTree = "<group>"; };
 		F7B1A7741EBB3C8000BFB6D1 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/SwiftWebVC.strings; sourceTree = "<group>"; };
 		F7B1A7751EBB3C8000BFB6D1 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/BKPasscodeView.strings; sourceTree = "<group>"; };
@@ -3125,8 +3125,6 @@
 				F7A321501E9E2A070069AD1B /* CCFavoritesCell.h */,
 				F7A321511E9E2A070069AD1B /* CCFavoritesCell.m */,
 				F7A321521E9E2A070069AD1B /* CCFavoritesCell.xib */,
-				F7A321531E9E2A070069AD1B /* CCSynchronize.h */,
-				F7A321541E9E2A070069AD1B /* CCSynchronize.m */,
 			);
 			path = Favorites;
 			sourceTree = "<group>";
@@ -3191,6 +3189,15 @@
 				F7ACE4311BAC0268006C0017 /* CCSettings.m */,
 			);
 			path = Settings;
+			sourceTree = "<group>";
+		};
+		F7B0C0CA1EE7E7750033AC24 /* Synchronize */ = {
+			isa = PBXGroup;
+			children = (
+				F7B0C0CB1EE7E7750033AC24 /* CCSynchronize.h */,
+				F7B0C0CC1EE7E7750033AC24 /* CCSynchronize.m */,
+			);
+			path = Synchronize;
 			sourceTree = "<group>";
 		};
 		F7B1FBAF1E72E3D1001781FE /* SwiftWebVC */ = {
@@ -3603,6 +3610,7 @@
 				F7ACE4281BAC0268006C0017 /* Settings */,
 				F728CE741BF6322C00E69702 /* Share */,
 				F7169A161EE590930086BD69 /* Shares */,
+				F7B0C0CA1EE7E7750033AC24 /* Synchronize */,
 				F721371B1BAFF0920012B613 /* Templates */,
 				F7A321731E9E3EAF0069AD1B /* Transfers */,
 				F70784811A2C8A0D00AC9FFF /* UploadFromOtherUpp */,
@@ -4392,6 +4400,7 @@
 				F77B0DFB1D118A16002130FE /* NYXProgressiveImageView.m in Sources */,
 				F7F54D0E1E5B14C800E19C62 /* UIImage+MWPhotoBrowser.m in Sources */,
 				F7F54D091E5B14C800E19C62 /* MWPhoto.m in Sources */,
+				F7B0C0CD1EE7E7750033AC24 /* CCSynchronize.m in Sources */,
 				F77B0DFF1D118A16002130FE /* OCNetworking.m in Sources */,
 				F77B0E011D118A16002130FE /* RNCryptor.m in Sources */,
 				F70022DA1EC4C9100080073F /* OCHTTPRequestOperation.m in Sources */,
@@ -4454,7 +4463,6 @@
 				F77B0E241D118A16002130FE /* HRColorCursor.m in Sources */,
 				F78071211EDB135100EAFFF6 /* CCPhotos.m in Sources */,
 				F762CAF81EACB66200B38484 /* XLFormButtonCell.m in Sources */,
-				F7A321581E9E2A070069AD1B /* CCSynchronize.m in Sources */,
 				F75AE3C71E9D12900088BB09 /* SwiftyAvatar.swift in Sources */,
 				F77B0E261D118A16002130FE /* ZSSTextView.m in Sources */,
 				F762CAFC1EACB66200B38484 /* XLFormImageCell.m in Sources */,
