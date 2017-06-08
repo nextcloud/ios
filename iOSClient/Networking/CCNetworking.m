@@ -437,7 +437,7 @@
             if (fileName.length > 0 && serverUrl.length > 0)
                 [self downloadFileSuccessFailure:fileName fileID:metadata.fileID etag:etag date:date serverUrl:serverUrl selector:metadata.sessionSelector selectorPost:metadata.sessionSelectorPost errorCode:errorCode];
         } else {
-            NSLog(@"metadata not found");
+            NSLog(@"[LOG] Serius error internal download : metadata not found %@ ", url);
         }
     }
     
@@ -478,6 +478,8 @@
         
             if (fileName.length > 0 && fileID.length > 0 && etag.length > 0 && serverUrl.length > 0)
                 [self uploadFileSuccessFailure:metadata fileName:fileName fileID:fileID etag:etag date:date serverUrl:serverUrl errorCode:errorCode];
+        } else {
+            NSLog(@"[LOG] Serius error internal upload : metadata not found %@ ", url);
         }
     }
 }
