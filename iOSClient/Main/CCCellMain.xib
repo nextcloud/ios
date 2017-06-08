@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="12118" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="12120" systemVersion="16F73" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12086"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12088"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -16,7 +16,7 @@
             <rect key="frame" x="0.0" y="0.0" width="600" height="60"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxY="YES"/>
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="2" id="sQq-jC-UEV">
-                <rect key="frame" x="0.0" y="0.0" width="600" height="59.5"/>
+                <rect key="frame" x="0.0" y="0.0" width="600" height="60"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <label opaque="NO" userInteractionEnabled="NO" tag="101" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QNC-8X-DAC">
@@ -44,33 +44,34 @@
                             <constraint firstAttribute="width" constant="40" id="kM5-Uf-S8Z"/>
                         </constraints>
                     </imageView>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="DQR-yN-JaH">
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="DQR-yN-JaH" userLabel="Status">
                         <rect key="frame" x="39" y="40" width="15" height="15"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="15" id="bgo-QS-x7k"/>
                             <constraint firstAttribute="width" constant="15" id="g4P-aH-jOh"/>
                         </constraints>
                     </imageView>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="X2D-15-9A2" userLabel="Synchronized Image View">
-                        <rect key="frame" x="23" y="23" width="15" height="15"/>
-                        <constraints>
-                            <constraint firstAttribute="height" constant="15" id="bym-Ey-cZ0"/>
-                            <constraint firstAttribute="width" constant="15" id="kOT-hZ-NLn"/>
-                        </constraints>
-                    </imageView>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Fw2-NW-hsK" userLabel="Offline Image View">
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Fw2-NW-hsK" userLabel="Favorite">
                         <rect key="frame" x="4" y="40" width="15" height="15"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="15" id="EkP-Tz-P1M"/>
                             <constraint firstAttribute="height" constant="15" id="lkK-a4-Q2V"/>
                         </constraints>
                     </imageView>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="QQH-5M-Zyv">
+                        <rect key="frame" x="39" y="4" width="15" height="15"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="15" id="MT4-aL-Ops"/>
+                            <constraint firstAttribute="height" constant="15" id="Oxa-YI-vu7"/>
+                        </constraints>
+                    </imageView>
                 </subviews>
                 <color key="tintColor" red="1" green="0.5" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                 <constraints>
+                    <constraint firstItem="QQH-5M-Zyv" firstAttribute="leading" secondItem="5" secondAttribute="trailing" constant="-11" id="0oA-OR-crI"/>
                     <constraint firstItem="Fw2-NW-hsK" firstAttribute="bottom" secondItem="p7I-KN-FVZ" secondAttribute="bottom" constant="7.5" id="8pv-VG-6Jh"/>
-                    <constraint firstAttribute="topMargin" secondItem="X2D-15-9A2" secondAttribute="top" constant="-15" id="BTB-e6-eQo"/>
                     <constraint firstItem="DQR-yN-JaH" firstAttribute="top" secondItem="p7I-KN-FVZ" secondAttribute="top" constant="7" id="Bus-ts-kJv"/>
+                    <constraint firstItem="5" firstAttribute="top" secondItem="QQH-5M-Zyv" secondAttribute="bottom" constant="-9" id="IWF-4x-NTs"/>
                     <constraint firstItem="5" firstAttribute="top" secondItem="sQq-jC-UEV" secondAttribute="topMargin" constant="2" id="JnQ-te-G7i"/>
                     <constraint firstItem="5" firstAttribute="top" secondItem="QNC-8X-DAC" secondAttribute="top" constant="-3" id="L4F-9B-vke"/>
                     <constraint firstItem="5" firstAttribute="bottom" secondItem="p7I-KN-FVZ" secondAttribute="bottom" constant="2.5" id="N38-yB-Rf0"/>
@@ -81,7 +82,6 @@
                     <constraint firstItem="qhJ-el-R92" firstAttribute="centerY" secondItem="sQq-jC-UEV" secondAttribute="centerY" id="hza-t5-cJG"/>
                     <constraint firstItem="5" firstAttribute="leading" secondItem="sQq-jC-UEV" secondAttribute="leadingMargin" constant="2" id="jRD-Qd-3a9"/>
                     <constraint firstItem="p7I-KN-FVZ" firstAttribute="leading" secondItem="DQR-yN-JaH" secondAttribute="trailing" constant="6" id="mRY-av-dw7"/>
-                    <constraint firstItem="X2D-15-9A2" firstAttribute="leading" secondItem="sQq-jC-UEV" secondAttribute="leadingMargin" constant="15" id="qMP-N3-wcV"/>
                     <constraint firstItem="qhJ-el-R92" firstAttribute="trailing" secondItem="QNC-8X-DAC" secondAttribute="trailing" constant="50" id="rtM-Ct-ErW"/>
                     <constraint firstAttribute="trailingMargin" secondItem="p7I-KN-FVZ" secondAttribute="trailing" constant="42" id="vpn-rQ-Wr4"/>
                     <constraint firstItem="qhJ-el-R92" firstAttribute="trailing" secondItem="sQq-jC-UEV" secondAttribute="trailingMargin" constant="8" id="yYu-48-Zqf"/>
@@ -89,13 +89,13 @@
             </tableViewCellContentView>
             <gestureRecognizers/>
             <connections>
-                <outlet property="fileImageView" destination="5" id="6"/>
+                <outlet property="favorite" destination="Fw2-NW-hsK" id="YRw-hZ-kaI"/>
+                <outlet property="file" destination="5" id="Lfe-3W-yYr"/>
                 <outlet property="labelInfoFile" destination="p7I-KN-FVZ" id="5Yb-hH-k73"/>
                 <outlet property="labelTitle" destination="QNC-8X-DAC" id="dFX-Cb-8IE"/>
-                <outlet property="offlineImageView" destination="Fw2-NW-hsK" id="5K1-gW-R2J"/>
-                <outlet property="sharedImageView" destination="qhJ-el-R92" id="UfT-CJ-QTC"/>
-                <outlet property="statusImageView" destination="DQR-yN-JaH" id="UmC-pt-kjV"/>
-                <outlet property="synchronizedImageView" destination="X2D-15-9A2" id="ssy-oV-gLg"/>
+                <outlet property="local" destination="QQH-5M-Zyv" id="9bD-k7-sFk"/>
+                <outlet property="shared" destination="qhJ-el-R92" id="qXO-Vc-N0d"/>
+                <outlet property="status" destination="DQR-yN-JaH" id="W7R-GV-6wP"/>
             </connections>
             <point key="canvasLocation" x="415" y="169"/>
         </tableViewCell>

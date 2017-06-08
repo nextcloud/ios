@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="12118" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="12120" systemVersion="16F73" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12086"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12088"/>
         <capability name="Alignment constraints to the first baseline" minToolsVersion="6.0"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -32,13 +32,13 @@
                         <color key="textColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.63921568627450975" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="5">
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="5" userLabel="File">
                         <rect key="frame" x="10" y="10" width="40" height="40"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="40" id="kM5-Uf-S8Z"/>
                         </constraints>
                     </imageView>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="DQR-yN-JaH">
+                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="DQR-yN-JaH" userLabel="Image">
                         <rect key="frame" x="39" y="40" width="15" height="15"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="15" id="bgo-QS-x7k"/>
@@ -110,12 +110,12 @@
             </tableViewCellContentView>
             <connections>
                 <outlet property="cancelTaskButton" destination="eGg-ei-EiX" id="08u-FB-UcL"/>
-                <outlet property="fileImageView" destination="5" id="IKO-eX-pd2"/>
+                <outlet property="file" destination="5" id="h6v-aL-JbR"/>
                 <outlet property="labelInfoFile" destination="p7I-KN-FVZ" id="bIH-yL-aSv"/>
                 <outlet property="labelTitle" destination="QNC-8X-DAC" id="coV-Xj-n1Q"/>
                 <outlet property="progressView" destination="Q4M-4B-abs" id="Ouc-sW-VLX"/>
                 <outlet property="reloadTaskButton" destination="Kaz-0H-BSt" id="hOL-f8-R0r"/>
-                <outlet property="statusImageView" destination="DQR-yN-JaH" id="wGV-fc-S5H"/>
+                <outlet property="status" destination="DQR-yN-JaH" id="neR-jW-zwL"/>
                 <outlet property="stopTaskButton" destination="Dge-D1-XMk" id="UZF-RR-oCy"/>
             </connections>
             <point key="canvasLocation" x="414" y="244"/>

@@ -93,7 +93,6 @@
 - (void)requestServerCapabilities;
 
 - (void)openWindowShare:(tableMetadata *)metadata;
-- (void)synchronizeFolderGraphicsServerUrl:(NSString *)serverUrl animation:(BOOL)animation;
 - (void)clearDateReadDataSource:(NSNotification *)notification;
 - (void)cancelSearchBar;
 

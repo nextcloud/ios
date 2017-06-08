@@ -641,8 +641,8 @@
     cell.separatorInset = UIEdgeInsetsMake(0.f, 60.f, 0.f, 0.f);
     
     // Initialize
-    cell.statusImageView.image = nil;
-    cell.offlineImageView.image = nil;
+    cell.status.image = nil;
+    cell.favorite.image = nil;
         
     // change color selection
     UIView *selectionColor = [[UIView alloc] init];
@@ -651,12 +651,12 @@
     
     metadata = [_dataSource objectAtIndex:indexPath.row];
         
-    cell.fileImageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]];
+    cell.file.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]];
         
     if (_serverUrl == nil)
-        cell.offlineImageView.image = [UIImage imageNamed:@"favorite"];
+        cell.favorite.image = [UIImage imageNamed:@"favorite"];
     
-    if (cell.fileImageView.image == nil && metadata.thumbnailExists)
+    if (cell.file.image == nil && metadata.thumbnailExists)
         [[CCActions sharedInstance] downloadTumbnail:metadata delegate:self];
     
     // encrypted color
@@ -671,21 +671,21 @@
     cell.labelInfoFile.text = @"";
     
     // Immagine del file, se non c'è l'anteprima mettiamo quella standard
-    if (cell.fileImageView.image == nil) {
+    if (cell.file.image == nil) {
         
         if (metadata.directory) {
             
-            cell.fileImageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:metadata.iconName] color:[NCBrandColor sharedInstance].brand];
+            cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:metadata.iconName] color:[NCBrandColor sharedInstance].brand];
             
         } else {
             
-            cell.fileImageView.image = [UIImage imageNamed:metadata.iconName];
+            cell.file.image = [UIImage imageNamed:metadata.iconName];
         }
     }
     
     // it's encrypted ???
     if (metadata.cryptated && [metadata.type isEqualToString: k_metadataType_template] == NO)
-        cell.statusImageView.image = [UIImage imageNamed:@"lock"];
+        cell.status.image = [UIImage imageNamed:@"lock"];
     
     // text and length
     if (metadata.directory) {
