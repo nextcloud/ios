@@ -287,6 +287,23 @@
     return [UIImage imageWithCGImage:img.CGImage scale:2.0 orientation: UIImageOrientationDownMirrored];
 }
 
+// ------------------------------------------------------------------------------------------------------
+// MARK: Blur Image
+// ------------------------------------------------------------------------------------------------------
+
++ (UIImage *)blurryImage:(UIImage *)image withBlurLevel:(CGFloat)blur
+{
+    CIImage *inputImage = [CIImage imageWithCGImage:image.CGImage];
+    
+    CIFilter *filter = [CIFilter filterWithName:@"CIGaussianBlur" keysAndValues:kCIInputImageKey, inputImage, @"inputRadius", @(blur), nil];
+    
+    CIImage *outputImage = filter.outputImage;
+    CIContext *context = [CIContext contextWithOptions:nil];
+    CGImageRef outImage = [context createCGImage:outputImage fromRect:[outputImage extent]];
+    
+    return [UIImage imageWithCGImage:outImage];
+}
+
 @end
 
 // ------------------------------------------------------------------------------------------------------
@@ -308,23 +325,6 @@
     [layer setBorderColor:[borderColor CGColor]];
     
     return self;
-}
-
-// ------------------------------------------------------------------------------------------------------
-// MARK: Blur Image
-// ------------------------------------------------------------------------------------------------------
-
-+ (UIImage *)blurryImage:(UIImage *)image withBlurLevel:(CGFloat)blur
-{
-    CIImage *inputImage = [CIImage imageWithCGImage:image.CGImage];
-    
-    CIFilter *filter = [CIFilter filterWithName:@"CIGaussianBlur" keysAndValues:kCIInputImageKey, inputImage, @"inputRadius", @(blur), nil];
-    
-    CIImage *outputImage = filter.outputImage;
-    CIContext *context = [CIContext contextWithOptions:nil];
-    CGImageRef outImage = [context createCGImage:outputImage fromRect:[outputImage extent]];
-    
-    return [UIImage imageWithCGImage:outImage];
 }
 
 @end
