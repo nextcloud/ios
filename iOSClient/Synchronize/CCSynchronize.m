@@ -95,6 +95,7 @@
         tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
     
         NSMutableArray *metadatasForVerifyChange = [NSMutableArray new];
+        NSMutableArray *addMetadatas = [NSMutableArray new];
     
         if ([recordAccount.account isEqualToString:metadataNet.account] == NO)
             return;
@@ -205,10 +206,13 @@
                     tableMetadata *result = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadata.fileID]];
 
                     if (!result)
-                        (void)[[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:metadataNet.serverUrl serverUrl:metadataNet.serverUrl];
+                        [addMetadatas addObject:metadata];
                 }
             }
         }
+        
+        if ([addMetadatas count] > 0)
+            (void)[[NCManageDatabase sharedInstance] addMetadatas:addMetadatas activeUrl:metadataNet.serverUrl serverUrl:metadataNet.serverUrl];
         
         if ([metadatasForVerifyChange count] > 0)
             [self verifyChangeMedatas:metadatasForVerifyChange serverUrl:metadataNet.serverUrl account:metadataNet.account withDownload:YES];
