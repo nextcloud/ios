@@ -337,8 +337,8 @@
 //
 - (void)applicationInitialized
 {
-    // Test Upgrade
-    if (self.upgradeInProgress)
+    // Test Maintenance
+    if (self.maintenanceMode)
         return;
 
     // Execute : now
@@ -374,8 +374,8 @@
 
 - (void)process
 {
-    // Test Upgrade
-    if (self.upgradeInProgress)
+    // Test Maintenance
+    if (self.maintenanceMode)
         return;
     
     // BACKGROND & FOREGROUND
@@ -932,6 +932,10 @@
 
 - (void)handleTouchTabbarCenter:(id)sender
 {
+    // Test Maintenance
+    if (self.maintenanceMode)
+        return;
+    
     CreateMenuAdd *menuAdd = [[CreateMenuAdd alloc] initWithThemingColor:[NCBrandColor sharedInstance].brand];
     
     if ([CCUtility getCreateMenuEncrypted])
@@ -942,8 +946,8 @@
 
 - (void)updateApplicationIconBadgeNumber
 {
-    // Test Upgrade
-    if (self.upgradeInProgress)
+    // Test Maintenance
+    if (self.maintenanceMode)
         return;
 
     NSInteger queueDownload = [self getNumberDownloadInQueues] + [self getNumberDownloadInQueuesWWan];
@@ -1370,8 +1374,8 @@
 
 - (void)verifyDownloadUploadInProgress
 {
-    // Test Upgrade
-    if (self.upgradeInProgress)
+    // Test Maintenance
+    if (self.maintenanceMode)
         return;
 
     BOOL callVerifyDownload = NO;
@@ -1556,7 +1560,7 @@
 - (BOOL)upgrade
 {
 #ifdef DEBUG
-   
+    //self.maintenanceMode = YES;
 #endif
     
     NSString *actualVersion = [CCUtility getVersionCryptoCloud];
@@ -1575,7 +1579,7 @@
     
     if (([actualVersion compare:@"2.17.4" options:NSNumericSearch] == NSOrderedAscending)) {
         
-        self.upgradeInProgress = YES;
+        self.maintenanceMode = YES;
         
         // Migrate Account Table From CoreData to Realm
         
@@ -1591,7 +1595,7 @@
         for (TableLocalFile *localFile in listLocalFile)
             [[NCManageDatabase sharedInstance] addTableLocalFileFromCoredata:localFile];
         
-        self.upgradeInProgress = NO;
+        self.maintenanceMode = NO;
     }
     
     return YES;

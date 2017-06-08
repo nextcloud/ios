@@ -136,8 +136,8 @@
 // Is in Crypto Mode
 @property BOOL isCryptoCloudMode;
 
-// Is in Upgrade Mode
-@property BOOL upgradeInProgress;
+// Maintenance Mode
+@property BOOL maintenanceMode;
 
 // Setting Active Account
 - (void)settingActiveAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl activeUser:(NSString *)activeUser activePassword:(NSString *)activePassword;

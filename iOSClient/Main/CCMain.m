@@ -1959,8 +1959,13 @@
 - (void)readFolderWithForced:(BOOL)forced serverUrl:(NSString *)serverUrl
 {
     // init control
-    if (!serverUrl || !app.activeAccount)
+    if (!serverUrl || !app.activeAccount || app.maintenanceMode) {
+        
+        [_hud hideHud];
+        [_refreshControl endRefreshing];
+        
         return;
+    }
     
     // Search Mode
     if (_isSearchMode) {
