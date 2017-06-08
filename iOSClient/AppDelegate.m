@@ -337,6 +337,10 @@
 //
 - (void)applicationInitialized
 {
+    // Test Upgrade
+    if (self.upgradeInProgress)
+        return;
+
     // Execute : now
     
     NSLog(@"[LOG] Update Folder Photo");
@@ -370,6 +374,10 @@
 
 - (void)process
 {
+    // Test Upgrade
+    if (self.upgradeInProgress)
+        return;
+    
     // BACKGROND & FOREGROUND
 
     NSLog(@"-PROCESS-AUTO-UPLOAD-");
@@ -934,6 +942,10 @@
 
 - (void)updateApplicationIconBadgeNumber
 {
+    // Test Upgrade
+    if (self.upgradeInProgress)
+        return;
+
     NSInteger queueDownload = [self getNumberDownloadInQueues] + [self getNumberDownloadInQueuesWWan];
     NSInteger queueUpload = [self getNumberUploadInQueues] + [self getNumberUploadInQueuesWWan];
     
@@ -1358,6 +1370,10 @@
 
 - (void)verifyDownloadUploadInProgress
 {
+    // Test Upgrade
+    if (self.upgradeInProgress)
+        return;
+
     BOOL callVerifyDownload = NO;
     BOOL callVerifyUpload = NO;
     
@@ -1559,6 +1575,8 @@
     
     if (([actualVersion compare:@"2.17.4" options:NSNumericSearch] == NSOrderedAscending)) {
         
+        self.upgradeInProgress = YES;
+        
         // Migrate Account Table From CoreData to Realm
         
         NSArray *listAccount = [CCCoreData migrateAccount];
@@ -1572,6 +1590,8 @@
         NSArray *listLocalFile = [CCCoreData migrateLocalFile];
         for (TableLocalFile *localFile in listLocalFile)
             [[NCManageDatabase sharedInstance] addTableLocalFileFromCoredata:localFile];
+        
+        self.upgradeInProgress = NO;
     }
     
     return YES;
