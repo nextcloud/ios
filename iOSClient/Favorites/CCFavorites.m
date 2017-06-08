@@ -643,6 +643,7 @@
     // Initialize
     cell.status.image = nil;
     cell.favorite.image = nil;
+    cell.local.image = nil;
         
     // change color selection
     UIView *selectionColor = [[UIView alloc] init];
@@ -707,9 +708,13 @@
             BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID]];
             
             if (fileExists)
-                cell.labelInfoFile.text = [NSString stringWithFormat:@"%@ • %@", date, length];
+                cell.local.image = [UIImage imageNamed:@"local"];
             else
-                cell.labelInfoFile.text = [NSString stringWithFormat:@"%@ ◦ %@", date, length];
+                cell.local.image = nil;
+            
+            cell.labelInfoFile.text = [NSString stringWithFormat:@"%@ %@", date, length];
+            //cell.labelInfoFile.text = [NSString stringWithFormat:@"%@ • %@", date, length];
+            //cell.labelInfoFile.text = [NSString stringWithFormat:@"%@ ◦ %@", date, length];
         }
         
         cell.accessoryType = UITableViewCellAccessoryNone;

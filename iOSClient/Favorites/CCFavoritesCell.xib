@@ -32,6 +32,13 @@
                             <constraint firstAttribute="height" constant="40" id="cGI-9B-eWe"/>
                         </constraints>
                     </imageView>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="8I8-C4-IpX" userLabel="Local">
+                        <rect key="frame" x="39" y="4" width="15" height="15"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="15" id="Zqv-l0-LGD"/>
+                            <constraint firstAttribute="height" constant="15" id="gLU-er-iu6"/>
+                        </constraints>
+                    </imageView>
                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="DQR-yN-JaH">
                         <rect key="frame" x="40" y="40" width="15" height="15"/>
                         <constraints>
@@ -62,7 +69,9 @@
                     <constraint firstAttribute="centerY" secondItem="5" secondAttribute="centerY" id="FQP-wg-vPF"/>
                     <constraint firstItem="DQR-yN-JaH" firstAttribute="top" secondItem="p7I-KN-FVZ" secondAttribute="top" constant="6.5" id="K6B-gJ-8Fp"/>
                     <constraint firstItem="p7I-KN-FVZ" firstAttribute="leading" secondItem="5" secondAttribute="trailing" constant="10" id="K7G-0u-f8E"/>
+                    <constraint firstItem="8I8-C4-IpX" firstAttribute="leading" secondItem="5" secondAttribute="trailing" constant="-11" id="MeU-6N-LsY"/>
                     <constraint firstItem="QNC-8X-DAC" firstAttribute="leading" secondItem="5" secondAttribute="trailing" constant="10" id="UYc-Al-a4h"/>
+                    <constraint firstItem="5" firstAttribute="top" secondItem="8I8-C4-IpX" secondAttribute="bottom" constant="-9" id="c7V-hW-ut8"/>
                     <constraint firstItem="p7I-KN-FVZ" firstAttribute="top" secondItem="QNC-8X-DAC" secondAttribute="bottom" id="cJT-LE-kot"/>
                     <constraint firstItem="dhG-hb-z3n" firstAttribute="leading" secondItem="sQq-jC-UEV" secondAttribute="leadingMargin" constant="-4" id="dNM-6x-zkx"/>
                     <constraint firstItem="p7I-KN-FVZ" firstAttribute="trailing" secondItem="sQq-jC-UEV" secondAttribute="trailingMargin" constant="-59" id="kaB-WS-bDl"/>
@@ -73,6 +82,7 @@
                 <outlet property="file" destination="5" id="whc-SL-Hxm"/>
                 <outlet property="labelInfoFile" destination="p7I-KN-FVZ" id="5Yb-hH-k73"/>
                 <outlet property="labelTitle" destination="QNC-8X-DAC" id="dFX-Cb-8IE"/>
+                <outlet property="local" destination="8I8-C4-IpX" id="zk7-DD-WJB"/>
                 <outlet property="status" destination="DQR-yN-JaH" id="xh2-y1-GlP"/>
             </connections>
             <point key="canvasLocation" x="256" y="19"/>
