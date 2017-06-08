@@ -43,6 +43,8 @@
 + (UIColor *)colorFromHexString:(NSString *)hexString;
 + (UIImage *)changeThemingColorImage:(UIImage *)image color:(UIColor *)color;
 
++ (UIImage *)blurryImage:(UIImage *)image withBlurLevel:(CGFloat)blur;
+
 @end
 
 @interface CCAvatar : UIImageView
