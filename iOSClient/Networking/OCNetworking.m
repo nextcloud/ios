@@ -429,46 +429,52 @@
         NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:_activeUrl];
         NSString *directoryUser = [CCUtility getDirectoryActiveUser:_activeUser activeUrl:_activeUrl];
 
-        for(OCFileDto *itemDto in items) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        
+            for(OCFileDto *itemDto in items) {
             
-            itemDto.fileName = [itemDto.fileName stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+                itemDto.fileName = [itemDto.fileName stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
             
-            // Not in Crypto Cloud file
-            NSString *fileName = itemDto.fileName;
-            if (itemDto.isDirectory)
-                fileName = [fileName substringToIndex:[fileName length] - 1];
+                // Not in Crypto Cloud file
+                NSString *fileName = itemDto.fileName;
+                if (itemDto.isDirectory)
+                    fileName = [fileName substringToIndex:[fileName length] - 1];
                 
-            if ([CCUtility isFileCryptated:fileName])
-                continue;
+                if ([CCUtility isFileCryptated:fileName])
+                    continue;
             
-            // ----- BUG #942 ---------
-            if ([itemDto.etag length] == 0) {
+                // ----- BUG #942 ---------
+                if ([itemDto.etag length] == 0) {
 #ifndef EXTENSION
-                [app messageNotification:@"Server error" description:@"Metadata fileID absent, record excluded, please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
+                    [app messageNotification:@"Server error" description:@"Metadata fileID absent, record excluded, please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
 #endif
-                continue;
-            }
-            // ------------------------
+                    continue;
+                }
+                // ------------------------
             
-            NSString *serverUrl = [NSString stringWithFormat:@"%@/files/%@", dav, _activeUser];
-            serverUrl = [itemDto.filePath stringByReplacingOccurrencesOfString:serverUrl withString:@""];
+                NSString *serverUrl = [NSString stringWithFormat:@"%@/files/%@", dav, _activeUser];
+                serverUrl = [itemDto.filePath stringByReplacingOccurrencesOfString:serverUrl withString:@""];
             
-            /* TRIM */
-            if ([serverUrl hasPrefix:@"/"])
-                serverUrl = [serverUrl substringFromIndex:1];
-            if ([serverUrl hasSuffix:@"/"])
-                serverUrl = [serverUrl substringToIndex:[serverUrl length] - 1];
-            /*      */
+                /* TRIM */
+                if ([serverUrl hasPrefix:@"/"])
+                    serverUrl = [serverUrl substringFromIndex:1];
+                if ([serverUrl hasSuffix:@"/"])
+                    serverUrl = [serverUrl substringToIndex:[serverUrl length] - 1];
+                /*      */
             
-            serverUrl = [CCUtility stringAppendServerUrl:[_activeUrl stringByAppendingString:webDAV] addFileName:serverUrl];
+                serverUrl = [CCUtility stringAppendServerUrl:[_activeUrl stringByAppendingString:webDAV] addFileName:serverUrl];
             
-            NSString *directoryID = [[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:serverUrl permissions:itemDto.permissions];
+                NSString *directoryID = [[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:serverUrl permissions:itemDto.permissions];
 
-            [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileNamePrint:itemDto.fileName serverUrl:serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser]];
-        }
+                [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileNamePrint:itemDto.fileName serverUrl:serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser]];
+            }
     
-        if ([self.delegate respondsToSelector:@selector(searchSuccess:metadatas:)])
-            [self.delegate searchSuccess:_metadataNet metadatas:metadatas];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if ([self.delegate respondsToSelector:@selector(searchSuccess:metadatas:)])
+                    [self.delegate searchSuccess:_metadataNet metadatas:metadatas];
+            });
+        
+        });
         
         [self complete];
         
