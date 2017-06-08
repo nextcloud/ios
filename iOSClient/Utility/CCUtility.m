@@ -1248,28 +1248,6 @@
     return [emailTest evaluateWithObject:checkString];
 }
 
-+ (UIImage*)drawText:(NSString*)text inImage:(UIImage*)image colorText:(UIColor *)colorText sizeOfFont:(CGFloat)sizeOfFont
-{
-    NSDictionary* attributes = @{NSFontAttributeName: [UIFont systemFontOfSize:sizeOfFont], NSForegroundColorAttributeName:colorText};
-    NSAttributedString* attributedString = [[NSAttributedString alloc] initWithString:text attributes:attributes];
-    
-    int x = image.size.width/2 - attributedString.size.width/2;
-    int y = image.size.height/2 - attributedString.size.height/2;
-    
-    UIGraphicsBeginImageContext(image.size);
-    
-    [image drawInRect:CGRectMake(0,0,image.size.width,image.size.height)];
-    CGRect rect = CGRectMake(x, y, image.size.width, image.size.height);
-    [[UIColor whiteColor] set];
-    [text drawInRect:CGRectIntegral(rect) withAttributes:attributes];
-    UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
-    newImage = [UIImage imageWithCGImage:newImage.CGImage scale:2 orientation:UIImageOrientationUp];
-
-    UIGraphicsEndImageContext();
-    
-    return newImage;
-}
-
 + (NSString *)URLEncodeStringFromString:(NSString *)string
 {
     static CFStringRef charset = CFSTR("!@#$%&*()+'\";:=,/?[] ");

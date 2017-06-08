@@ -287,11 +287,33 @@
     return [UIImage imageWithCGImage:img.CGImage scale:2.0 orientation: UIImageOrientationDownMirrored];
 }
 
++ (UIImage*)drawText:(NSString*)text inImage:(UIImage*)image colorText:(UIColor *)colorText sizeOfFont:(CGFloat)sizeOfFont
+{
+    NSDictionary* attributes = @{NSFontAttributeName: [UIFont systemFontOfSize:sizeOfFont], NSForegroundColorAttributeName:colorText};
+    NSAttributedString* attributedString = [[NSAttributedString alloc] initWithString:text attributes:attributes];
+    
+    int x = image.size.width/2 - attributedString.size.width/2;
+    int y = image.size.height/2 - attributedString.size.height/2;
+    
+    UIGraphicsBeginImageContext(image.size);
+    
+    [image drawInRect:CGRectMake(0,0,image.size.width,image.size.height)];
+    CGRect rect = CGRectMake(x, y, image.size.width, image.size.height);
+    [[UIColor whiteColor] set];
+    [text drawInRect:CGRectIntegral(rect) withAttributes:attributes];
+    UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
+    newImage = [UIImage imageWithCGImage:newImage.CGImage scale:2 orientation:UIImageOrientationUp];
+    
+    UIGraphicsEndImageContext();
+    
+    return newImage;
+}
+
 // ------------------------------------------------------------------------------------------------------
 // MARK: Blur Image
 // ------------------------------------------------------------------------------------------------------
 
-+ (UIImage *)blurryImage:(UIImage *)image withBlurLevel:(CGFloat)blur
++ (UIImage *)blurryImage:(UIImage *)image withBlurLevel:(CGFloat)blur toSize:(CGSize)toSize
 {
     CIImage *inputImage = [CIImage imageWithCGImage:image.CGImage];
     
@@ -301,7 +323,9 @@
     CIContext *context = [CIContext contextWithOptions:nil];
     CGImageRef outImage = [context createCGImage:outputImage fromRect:[outputImage extent]];
     
-    return [UIImage imageWithCGImage:outImage];
+    UIImage *blurImage = [UIImage imageWithCGImage:outImage];
+    
+    return [CCGraphics scaleImage:blurImage toSize:toSize isAspectRation:YES];
 }
 
 @end

@@ -43,7 +43,9 @@
 + (UIColor *)colorFromHexString:(NSString *)hexString;
 + (UIImage *)changeThemingColorImage:(UIImage *)image color:(UIColor *)color;
 
-+ (UIImage *)blurryImage:(UIImage *)image withBlurLevel:(CGFloat)blur;
++ (UIImage*)drawText:(NSString*)text inImage:(UIImage*)image colorText:(UIColor *)colorText sizeOfFont:(CGFloat)sizeOfFont;
+
++ (UIImage *)blurryImage:(UIImage *)image withBlurLevel:(CGFloat)blur toSize:(CGSize)toSize;
 
 @end
 

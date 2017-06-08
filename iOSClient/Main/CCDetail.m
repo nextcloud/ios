@@ -549,8 +549,19 @@
                         [self.photos replaceObjectAtIndex:index withObject:[MWPhoto photoWithImage:[UIImage imageNamed:@"filePreviewError"]]];
                         
                     } else {
+                        /*
+                        UIImage *imageIcon = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]];
                         
-                        [self.photos replaceObjectAtIndex:index withObject:[MWPhoto photoWithImage:[CCUtility drawText:[NSLocalizedString(@"_loading_", nil) stringByAppendingString:@"..."] inImage:[UIImage imageNamed:@"button1000x200"] colorText:[UIColor darkGrayColor] sizeOfFont:50]]];
+                        if (imageIcon)
+                            image = [CCGraphics scaleImage:imageIcon toSize:self.view.bounds.size isAspectRation:YES];
+
+                            //image = [CCGraphics blurryImage:imageIcon withBlurLevel:2 toSize:self.view.bounds.size];
+                        else
+                        */ 
+                        
+                        image = [CCGraphics drawText:[NSLocalizedString(@"_loading_", nil) stringByAppendingString:@"..."] inImage:[UIImage imageNamed:@"button1000x200"] colorText:[UIColor darkGrayColor] sizeOfFont:50];
+                        
+                        [self.photos replaceObjectAtIndex:index withObject:[MWPhoto photoWithImage:image]];
                     }
                 }
             }
@@ -579,7 +590,7 @@
                         
                     } else {
                         
-                        [self.photos replaceObjectAtIndex:index withObject:[MWPhoto photoWithImage:[CCUtility drawText:[NSLocalizedString(@"_loading_", nil) stringByAppendingString:@"..."] inImage:[UIImage imageNamed:@"button1000x200"] colorText:[UIColor darkGrayColor] sizeOfFont:50]]];
+                        [self.photos replaceObjectAtIndex:index withObject:[MWPhoto photoWithImage:[CCGraphics drawText:[NSLocalizedString(@"_loading_", nil) stringByAppendingString:@"..."] inImage:[UIImage imageNamed:@"button1000x200"] colorText:[UIColor darkGrayColor] sizeOfFont:50]]];
                     }
                 }
             }
