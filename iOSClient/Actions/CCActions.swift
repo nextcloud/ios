@@ -348,6 +348,7 @@ class CCActions: NSObject {
         metadataNet.action = actionSearch
         metadataNet.date = date
         metadataNet.delegate = delegate
+        metadataNet.directoryID = NCManageDatabase.sharedInstance.getDirectoryID(serverUrl)
         metadataNet.fileName = fileName
         metadataNet.options = depth
         metadataNet.selector = selector
