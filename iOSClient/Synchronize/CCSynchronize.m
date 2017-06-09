@@ -212,7 +212,7 @@
         }
         
         if ([addMetadatas count] > 0)
-            (void)[[NCManageDatabase sharedInstance] addMetadatas:addMetadatas activeUrl:metadataNet.serverUrl serverUrl:metadataNet.serverUrl];
+            (void)[[NCManageDatabase sharedInstance] addMetadatas:addMetadatas activeUrl:app.activeUrl serverUrl:metadataNet.serverUrl];
         
         if ([metadatasForVerifyChange count] > 0)
             [self verifyChangeMedatas:metadatasForVerifyChange serverUrl:metadataNet.serverUrl account:metadataNet.account withDownload:YES];
@@ -264,7 +264,11 @@
         
         BOOL withDownload = [metadataNet.options boolValue];
         
-        [self verifyChangeMedatas:[[NSArray alloc] initWithObjects:metadata, nil] serverUrl:metadataNet.serverUrl account:app.activeAccount withDownload:withDownload];
+        //Add/Update Metadata
+        tableMetadata *addMetadata = [[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:app.activeUrl serverUrl:metadataNet.serverUrl];
+        
+        if (addMetadata)
+            [self verifyChangeMedatas:[[NSArray alloc] initWithObjects:addMetadata, nil] serverUrl:metadataNet.serverUrl account:app.activeAccount withDownload:withDownload];
     });
 }
 
@@ -353,7 +357,7 @@
         }
         
         fileID = metadata.fileID;
-        (void)[[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:serverUrl serverUrl:serverUrl];
+        (void)[[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:app.activeUrl serverUrl:serverUrl];
         
         CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
             
