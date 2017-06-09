@@ -71,6 +71,7 @@ class NCBrandOptions: NSObject {
     public let loginBaseUrlMultiDomains:        [String] = ["domain.com", "domain.it"]
     public let pushNotificationServer:          String = "https://push-notifications.nextcloud.com"
     public let loginButtonLabelLink:            String = "https://nextcloud.com/providers"
+    public let middlewarePingUrl:               String = ""
     public let webLoginAutenticationProtocol:   String = ""
     public let folderBrandAutoUpload:           String = ""
 
