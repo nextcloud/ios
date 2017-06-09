@@ -418,7 +418,8 @@
 {
     NSMutableArray *newItemsPHAssetToUpload = [[NSMutableArray alloc] init];
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
-    
+    NSMutableArray *metadatasNet = [NSMutableArray new];
+  
     NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:app.activeUrl];
     BOOL useSubFolder = tableAccount.autoUploadCreateSubfolder;
     
@@ -490,10 +491,20 @@
         metadataNet.session = session;
         metadataNet.taskStatus = k_taskStatusResume;
         
-        if (assetsFull)
-            [self addDatabaseAutoUpload:metadataNet assetDate:assetDate assetMediaType:assetMediaType];
-        else
+        if (assetsFull) {
+            [metadatasNet addObject:metadataNet];
+        } else {
             [self writeAssetToSandbox:metadataNet];
+        }
+    }
+    
+    // Insert all assets (Full) in TableAutoUpload
+    if (assetsFull && [metadatasNet count] > 0) {
+        
+        [[NCManageDatabase sharedInstance] addAutoUploadWithMetadatasNet:metadatasNet];
+          
+        // Update icon badge number
+        [app updateApplicationIconBadgeNumber];
     }
     
     // end loading
@@ -596,11 +607,11 @@
         [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionAutoUpload selector:metadataNet.selector note:[NSString stringWithFormat:@"Add Auto Upload [File already present in Table autoUpload], Asset Data: %@", [NSDateFormatter localizedStringFromDate:assetDate dateStyle:NSDateFormatterMediumStyle timeStyle:NSDateFormatterMediumStyle]] type:k_activityTypeInfo verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
     }
     
+    // Update Camera Auto Upload data
+    if ([metadataNet.selector isEqualToString:selectorUploadAutoUpload])
+        [[NCManageDatabase sharedInstance] setAccountAutoUploadDateAssetType:assetMediaType assetDate:assetDate];
+    
     dispatch_async(dispatch_get_main_queue(), ^{
-        
-        // Update Camera Auto Upload data
-        if ([metadataNet.selector isEqualToString:selectorUploadAutoUpload])
-            [[NCManageDatabase sharedInstance] setAccountAutoUploadDateAssetType:assetMediaType assetDate:assetDate];
         
         // Update icon badge number
         [app updateApplicationIconBadgeNumber];

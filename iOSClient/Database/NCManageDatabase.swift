@@ -516,11 +516,11 @@ class NCManageDatabase: NSObject {
         return true
     }
     
-    func addAutoUpload(metadatasNet: [CCMetadataNet]) -> Bool {
+    func addAutoUpload(metadatasNet: [CCMetadataNet]) {
         
         let tableAccount = self.getAccountActive()
         if tableAccount == nil {
-            return false
+            return
         }
         
         let realm = try! Realm()
@@ -549,11 +549,9 @@ class NCManageDatabase: NSObject {
                 addAutoUpload.session = metadataNet.session
                 addAutoUpload.priority = metadataNet.priority
             
-                realm.add(addAutoUpload, update: true)
+                realm.add(addAutoUpload)
             }
-        }
- 
-        return true
+        } 
     }
     
     func getAutoUpload(selector: String) -> CCMetadataNet? {
