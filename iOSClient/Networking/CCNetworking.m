@@ -830,10 +830,7 @@
                         
                             if (AVAssetExportSessionStatusCompleted == exportSession.status) {
                                 
-                                //dispatch_async(dispatch_get_main_queue(), ^{
-                            
                                     [self upload:fileName serverUrl:serverUrl cryptated:cryptated template:NO onlyPlist:NO fileNameTemplate:nil assetLocalIdentifier:assetLocalIdentifier session:session taskStatus:taskStatus selector:selector selectorPost:selectorPost errorCode:errorCode delegate:delegate];
-                                //});
                                 
                             } else if (AVAssetExportSessionStatusFailed == exportSession.status) {
                                 

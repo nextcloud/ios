@@ -516,6 +516,46 @@ class NCManageDatabase: NSObject {
         return true
     }
     
+    func addAutoUpload(metadatasNet: [CCMetadataNet]) -> Bool {
+        
+        let tableAccount = self.getAccountActive()
+        if tableAccount == nil {
+            return false
+        }
+        
+        let realm = try! Realm()
+        
+        try! realm.write {
+            
+            for metadataNet in metadatasNet {
+            
+                let result = realm.objects(tableAutoUpload.self).filter("account = %@ AND assetLocalIdentifier = %@", tableAccount!.account, metadataNet.assetLocalIdentifier).first
+            
+                if result != nil {
+                    continue
+                }
+            
+                // Add new Auto Upload
+                let addAutoUpload = tableAutoUpload()
+            
+                addAutoUpload.account = tableAccount!.account
+                addAutoUpload.assetLocalIdentifier = metadataNet.assetLocalIdentifier
+                addAutoUpload.fileName = metadataNet.fileName
+                addAutoUpload.selector = metadataNet.selector
+                if (metadataNet.selectorPost != nil) {
+                    addAutoUpload.selectorPost = metadataNet.selectorPost
+                }
+                addAutoUpload.serverUrl = metadataNet.serverUrl
+                addAutoUpload.session = metadataNet.session
+                addAutoUpload.priority = metadataNet.priority
+            
+                realm.add(addAutoUpload, update: true)
+            }
+        }
+ 
+        return true
+    }
+    
     func getAutoUpload(selector: String) -> CCMetadataNet? {
         
         let tableAccount = self.getAccountActive()
