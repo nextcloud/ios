@@ -612,7 +612,6 @@
         [[NCManageDatabase sharedInstance] setAccountAutoUploadDateAssetType:assetMediaType assetDate:assetDate];
     
     dispatch_async(dispatch_get_main_queue(), ^{
-        
         // Update icon badge number
         [app updateApplicationIconBadgeNumber];
     });
