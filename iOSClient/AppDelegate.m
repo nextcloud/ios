@@ -353,10 +353,13 @@
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         
         NSLog(@"[LOG] Request Server Capabilities");
-    
         if (_activeMain)
             [_activeMain requestServerCapabilities];
     
+        NSLog(@"[LOG] Middleware Ping");
+        if (_activeMain && [[NCBrandOptions sharedInstance] use_middlewarePing])
+            [_activeMain middlewarePing];
+        
         NSLog(@"[LOG] Initialize Auto upload");
         [[NCAutoUpload sharedInstance] initStateAutoUpload];
         

@@ -1306,6 +1306,24 @@
 
 #pragma mark -
 #pragma --------------------------------------------------------------------------------------------
+#pragma mark ==== Middleware Ping  ====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)middlewarePing
+{
+    // test
+    if (app.activeAccount.length == 0)
+        return;
+    
+    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
+    
+    metadataNet.action = actionMiddlewarePing;
+    metadataNet.serverUrl = [[NCBrandOptions sharedInstance] middlewarePingUrl];
+    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+}
+
+#pragma mark -
+#pragma --------------------------------------------------------------------------------------------
 #pragma mark ==== Download Thumbnail Delegate ====
 #pragma --------------------------------------------------------------------------------------------
 

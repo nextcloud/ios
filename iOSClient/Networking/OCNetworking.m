@@ -1317,7 +1317,7 @@
 #pragma --------------------------------------------------------------------------------------------
 
 /*
-- (void)getMiddlewarePing
+- (void)middlewarePing
 {
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     
