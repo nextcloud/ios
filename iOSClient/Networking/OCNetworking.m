@@ -1316,6 +1316,7 @@
 #pragma mark ===== Middleware Ping =====
 #pragma --------------------------------------------------------------------------------------------
 
+/*
 - (void)getMiddlewarePing
 {
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
@@ -1350,6 +1351,7 @@
     }];
     
 }
+*/
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Notification =====
