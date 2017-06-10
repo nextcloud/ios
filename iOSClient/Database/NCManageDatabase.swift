@@ -839,8 +839,6 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
         
-        realm.beginWrite()
-
         let results = realm.objects(tableDirectory.self).filter("account = %@ AND serverUrl BEGINSWITH %@", tableAccount!.account, serverUrl)
         
         for result in results {
@@ -865,9 +863,9 @@ class NCManageDatabase: NSObject {
         }
         
         // Delete table Dirrectory
-        realm.delete(results)
-        
-        try! realm.commitWrite()
+        try! realm.write {
+            realm.delete(results)
+        }
     }
     
     func setDirectory(serverUrl: String, serverUrlTo: String?, etag: String?) {
@@ -1362,7 +1360,6 @@ class NCManageDatabase: NSObject {
         return arrayMetadatas
     }
 
-    
     func deleteMetadata(predicate: NSPredicate, clearDateReadDirectoryID: String?) {
         
         let tableAccount = self.getAccountActive()
