@@ -563,9 +563,13 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
         
+        realm.beginWrite()
+        
         let result = realm.objects(tableAutoUpload.self).filter("account = %@ AND selector = %@ AND lock == false", tableAccount!.account, selector).first
         
         if result == nil {
+            
+            realm.cancelWrite()
             return nil
         }
 
@@ -582,9 +586,9 @@ class NCManageDatabase: NSObject {
         metadataNet.taskStatus = Int(k_taskStatusResume)
         
         // Lock
-        try! realm.write {
-            result?.lock = true
-        }
+        result?.lock = true
+        
+        try! realm.commitWrite()
         
         return metadataNet
     }
