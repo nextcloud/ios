@@ -521,60 +521,34 @@
         @autoreleasepool {
             
             PHVideoRequestOptions *options = [PHVideoRequestOptions new];
-            options.networkAccessAllowed = true;
+            options.version = PHVideoRequestOptionsVersionOriginal;
             
-            [[PHImageManager defaultManager] requestPlayerItemForVideo:asset options:options resultHandler:^(AVPlayerItem * _Nullable playerItem, NSDictionary * _Nullable info) {
+            [[PHImageManager defaultManager] requestAVAssetForVideo:asset options:options resultHandler:^(AVAsset *asset, AVAudioMix *audioMix, NSDictionary *info) {
                 
-                if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, metadataNet.fileName]])
-                    [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, metadataNet.fileName] error:nil];
-                
-                AVAssetExportSession *exportSession = [[AVAssetExportSession alloc] initWithAsset:playerItem.asset presetName:AVAssetExportPresetHighestQuality];
-                
-                if (exportSession) {
+                if ([asset isKindOfClass:[AVURLAsset class]]) {
                     
-                    exportSession.outputURL = [NSURL fileURLWithPath:[NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, metadataNet.fileName]];
-                    exportSession.outputFileType = AVFileTypeQuickTimeMovie;
+                    NSData *data = [[NSData alloc] initWithContentsOfURL:[(AVURLAsset *)asset URL] options:0 error:&error];
                     
-                    [exportSession exportAsynchronouslyWithCompletionHandler:^{
+                    if (!error || [data length] > 0) {
                         
-                        if (AVAssetExportSessionStatusCompleted == exportSession.status) {
-                            
-                            [self addDatabaseAutoUpload:metadataNet assetDate:assetDate assetMediaType:assetMediaType];
-                            
-                        } else if (AVAssetExportSessionStatusFailed == exportSession.status) {
-                            
-                            [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionUpload selector:metadataNet.selector note:[NSString stringWithFormat:@"%@ [%@]",NSLocalizedString(@"_read_file_error_", nil), error.description] type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:appDelegate.activeUrl];
-                            
-                        } else {
-                            NSLog(@"Export Session Status: %ld", (long)exportSession.status);
-                        }
-                    }];
+                        [data writeToFile:[NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, metadataNet.fileName] options:NSDataWritingAtomic error:&error];
+                        
+                    } else {
+                        
+                        if (!error)
+                            error = [NSError errorWithDomain:@"it.twsweb.cryptocloud" code:kCFURLErrorFileDoesNotExist userInfo:nil];
+                    }
                     
                 } else {
                     
-                    [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionUpload selector:metadataNet.selector note:[NSString stringWithFormat:@"%@ [%@]",NSLocalizedString(@"_read_file_error_", nil), error.description] type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:appDelegate.activeUrl];
+                    error = [NSError errorWithDomain:@"it.twsweb.cryptocloud" code:kCFURLErrorFileDoesNotExist userInfo:nil];
                 }
-            }];
-        }
-    }
-    
-    // IMAGE
-    if (assetMediaType == PHAssetMediaTypeImage) {
-        
-        @autoreleasepool {
-            
-            PHImageRequestOptions *options = [PHImageRequestOptions new];
-            options.synchronous = NO;
-            
-            [[PHImageManager defaultManager] requestImageDataForAsset:asset options:options resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
-                
-                [imageData writeToFile:[NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, metadataNet.fileName] options:NSDataWritingAtomic error:&error];
                 
                 if (error) {
                     
                     NSString *note = [NSString stringWithFormat:@"%@ [%@]",NSLocalizedString(@"_read_file_error_", nil), error.description];
                     
-                    [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionUpload selector:metadataNet.selector note:note type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:app.activeUrl];
+                    [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionUpload selector:metadataNet.selector note:note type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:appDelegate.activeUrl];
                     
                     [[NCManageDatabase sharedInstance] deleteAutoUploadWithAssetLocalIdentifier:metadataNet.assetLocalIdentifier];
                     
@@ -584,6 +558,37 @@
                 }
             }];
         }
+    }
+
+    // IMAGE
+    if (assetMediaType == PHAssetMediaTypeImage) {
+        
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
+            
+            @autoreleasepool {
+            
+                PHImageRequestOptions *options = [PHImageRequestOptions new];
+                options.synchronous = NO;
+            
+                [[PHImageManager defaultManager] requestImageDataForAsset:asset options:options resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
+                
+                    [imageData writeToFile:[NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, metadataNet.fileName] options:NSDataWritingAtomic error:&error];
+                
+                    if (error) {
+                    
+                        NSString *note = [NSString stringWithFormat:@"%@ [%@]",NSLocalizedString(@"_read_file_error_", nil), error.description];
+                    
+                        [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionUpload selector:metadataNet.selector note:note type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:app.activeUrl];
+                    
+                        [[NCManageDatabase sharedInstance] deleteAutoUploadWithAssetLocalIdentifier:metadataNet.assetLocalIdentifier];
+                    
+                    } else {
+                    
+                        [self addDatabaseAutoUpload:metadataNet assetDate:assetDate assetMediaType:assetMediaType];
+                    }
+                }];
+            }
+        });
     }
 }
 
