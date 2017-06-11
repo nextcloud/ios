@@ -282,11 +282,14 @@
             
         } else {
             
-            [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUploadFull" state:NO];
-
             [[NCManageDatabase sharedInstance] clearTable:[tableAutoUpload class] account:app.activeAccount];
             
+            [app.netQueueUpload cancelAllOperations];
+            [app.netQueueUploadWWan cancelAllOperations];
+            
             [[CCNetworking sharedNetworking] settingSessionsDownload:NO upload:YES taskStatus:k_taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
+            
+            [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUploadFull" state:NO];
         }
     }
 
