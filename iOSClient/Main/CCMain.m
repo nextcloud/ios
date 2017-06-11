@@ -308,7 +308,7 @@
     _refreshControl.tintColor = [NCBrandColor sharedInstance].brand;
     
     // Reload Table View
-    [self.tableView reloadData];
+    [self tableViewReload];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -4067,7 +4067,7 @@
                     [app messageNotification:@"_error_" description:@"_error_operation_canc_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
                 }
                 
-                [self.tableView reloadData];
+                [self tableViewReload];
             }
         }
             break;
