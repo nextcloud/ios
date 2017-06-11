@@ -482,8 +482,9 @@
             NSArray *object = [[NSArray alloc] initWithObjects:session, fileID, task, nil];
             [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_networkingSessionNotification object:object];
         
-            if (fileName.length > 0 && fileID.length > 0 && etag.length > 0 && serverUrl.length > 0)
+            if (fileName.length > 0 && fileID.length > 0 && serverUrl.length > 0)
                 [self uploadFileSuccessFailure:metadata fileName:fileName fileID:fileID etag:etag date:date serverUrl:serverUrl errorCode:errorCode];
+            
         } else {
             
             if (errorCode != kCFURLErrorCancelled) {
