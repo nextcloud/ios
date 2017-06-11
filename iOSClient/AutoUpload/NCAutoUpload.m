@@ -415,7 +415,7 @@
 {
     NSMutableArray *newItemsPHAssetToUpload = [[NSMutableArray alloc] init];
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
-    NSMutableArray *metadatasNet = [NSMutableArray new];
+    NSMutableArray *metadataNetFull = [NSMutableArray new];
   
     NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:app.activeUrl];
     BOOL useSubFolder = tableAccount.autoUploadCreateSubfolder;
@@ -486,23 +486,23 @@
         metadataNet.taskStatus = k_taskStatusResume;
         
         if (assetsFull) {
-            [metadatasNet addObject:metadataNet];
+            [metadataNetFull addObject:metadataNet];
         } else {
             [self writeAssetToSandbox:metadataNet];
         }
     }
     
     // Insert all assets (Full) in TableAutoUpload
-    if (assetsFull && [metadatasNet count] > 0) {
+    if (assetsFull && [metadataNetFull count] > 0) {
         
-        [[NCManageDatabase sharedInstance] addAutoUploadWithMetadatasNet:metadatasNet];
+        [[NCManageDatabase sharedInstance] addAutoUploadWithMetadatasNet:metadataNetFull];
           
         // Update icon badge number
         [app updateApplicationIconBadgeNumber];
     }
     
     // end loading
-    [_hud hideHud];    
+    [_hud hideHud];
 }
 
 - (void)writeAssetToSandbox:(CCMetadataNet *)metadataNet
