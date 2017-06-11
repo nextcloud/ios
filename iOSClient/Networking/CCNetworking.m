@@ -314,7 +314,6 @@
         }];
     }
     
-    /*
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         
         if (download && taskStatus == k_taskStatusCancel) {
@@ -332,7 +331,6 @@
             });
         }
     });
-    */ 
 }
 
 - (void)settingSession:(NSString *)sessionDescription sessionTaskIdentifier:(NSUInteger)sessionTaskIdentifier taskStatus:(NSInteger)taskStatus
