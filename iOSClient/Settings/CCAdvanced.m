@@ -345,7 +345,6 @@
                 [self.hud hideHud];
                 // Inizialized home
                 [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil];
-
             });
         });
     }]];
