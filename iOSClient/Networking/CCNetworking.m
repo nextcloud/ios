@@ -845,9 +845,13 @@
                     }
                     
                     if (error) {
-                            
+                        
+                        // Delete record on Table Auto Upload
+                        if ([selector isEqualToString:selectorUploadAutoUpload] || [selector isEqualToString:selectorUploadAutoUploadAll])
+                            [[NCManageDatabase sharedInstance] deleteAutoUploadWithAssetLocalIdentifier:assetLocalIdentifier];
+                        
                         // Activity
-                        [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:NSLocalizedString(@"_read_file_error_", nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:_activeUrl];
+                        [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:[NSString stringWithFormat:@"%@ [%@]",NSLocalizedString(@"_read_file_error_", nil), error.description] type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:_activeUrl];
                         
                         dispatch_async(dispatch_get_main_queue(), ^{
                             // Error for uploadFileFailure
@@ -879,8 +883,12 @@
                 
                         if (error) {
                     
+                            // Delete record on Table Auto Upload
+                            if ([selector isEqualToString:selectorUploadAutoUpload] || [selector isEqualToString:selectorUploadAutoUploadAll])
+                                [[NCManageDatabase sharedInstance] deleteAutoUploadWithAssetLocalIdentifier:assetLocalIdentifier];
+
                             // Activity
-                            [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:NSLocalizedString(@"_read_file_error_", nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:_activeUrl];
+                            [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:[NSString stringWithFormat:@"%@ [%@]",NSLocalizedString(@"_read_file_error_", nil), error.description] type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:_activeUrl];
                         
                             dispatch_async(dispatch_get_main_queue(), ^{
                                 // Error for uploadFileFailure

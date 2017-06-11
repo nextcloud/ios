@@ -546,11 +546,7 @@
                 
                 if (error) {
                     
-                    NSString *note = [NSString stringWithFormat:@"%@ [%@]",NSLocalizedString(@"_read_file_error_", nil), error.description];
-                    
-                    [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionUpload selector:metadataNet.selector note:note type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:appDelegate.activeUrl];
-                    
-                    [[NCManageDatabase sharedInstance] deleteAutoUploadWithAssetLocalIdentifier:metadataNet.assetLocalIdentifier];
+                    [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionUpload selector:metadataNet.selector note:[NSString stringWithFormat:@"%@ [%@]",NSLocalizedString(@"_read_file_error_", nil), error.description] type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:appDelegate.activeUrl];
                     
                 } else {
                     
@@ -575,13 +571,9 @@
                     [imageData writeToFile:[NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, metadataNet.fileName] options:NSDataWritingAtomic error:&error];
                 
                     if (error) {
-                    
-                        NSString *note = [NSString stringWithFormat:@"%@ [%@]",NSLocalizedString(@"_read_file_error_", nil), error.description];
-                    
-                        [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionUpload selector:metadataNet.selector note:note type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:app.activeUrl];
-                    
-                        [[NCManageDatabase sharedInstance] deleteAutoUploadWithAssetLocalIdentifier:metadataNet.assetLocalIdentifier];
-                    
+                                        
+                        [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionUpload selector:metadataNet.selector note:[NSString stringWithFormat:@"%@ [%@]",NSLocalizedString(@"_read_file_error_", nil), error.description] type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:app.activeUrl];
+                                        
                     } else {
                     
                         [self addDatabaseAutoUpload:metadataNet assetDate:assetDate assetMediaType:assetMediaType];
