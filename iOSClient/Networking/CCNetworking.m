@@ -438,9 +438,12 @@
                 [self downloadFileSuccessFailure:fileName fileID:metadata.fileID etag:etag date:date serverUrl:serverUrl selector:metadata.sessionSelector selectorPost:metadata.sessionSelectorPost errorCode:errorCode];
         } else {
             
-            [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:@"" action:k_activityDebugActionUpload selector:@"" note:[NSString stringWithFormat:@"Serius error internal download : metadata not found %@", url] type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:_activeUrl];
+            if (errorCode != kCFURLErrorCancelled) {
+                
+                [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:@"" action:k_activityDebugActionUpload selector:@"" note:[NSString stringWithFormat:@"Serius error internal download : metadata not found %@", url] type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:_activeUrl];
             
-            NSLog(@"[LOG] Serius error internal download : metadata not found %@ ", url);
+                NSLog(@"[LOG] Serius error internal download : metadata not found %@ ", url);
+            }
         }
     }
     
@@ -483,9 +486,12 @@
                 [self uploadFileSuccessFailure:metadata fileName:fileName fileID:fileID etag:etag date:date serverUrl:serverUrl errorCode:errorCode];
         } else {
             
-            [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:@"" action:k_activityDebugActionUpload selector:@"" note:[NSString stringWithFormat:@"Serius error internal upload : metadata not found %@", url] type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:_activeUrl];
+            if (errorCode != kCFURLErrorCancelled) {
             
-            NSLog(@"[LOG] Serius error internal upload : metadata not found %@", url);
+                [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:@"" action:k_activityDebugActionUpload selector:@"" note:[NSString stringWithFormat:@"Serius error internal upload : metadata not found %@", url] type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:_activeUrl];
+            
+                NSLog(@"[LOG] Serius error internal upload : metadata not found %@", url);
+            }
         }
     }
 }
