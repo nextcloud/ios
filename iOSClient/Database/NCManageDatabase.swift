@@ -1316,19 +1316,13 @@ class NCManageDatabase: NSObject {
             realm.add(metadata, update: true)
         }
         
+        let metadataCopy = tableMetadata.init(value: metadata)
+        
         try! realm.commitWrite()
         
-        if metadata.isInvalidated {
-            return nil
-        }
+        self.setDateReadDirectory(directoryID: metadataCopy.directoryID)
         
-        self.setDateReadDirectory(directoryID: metadata.directoryID)
-        
-        if metadata.isInvalidated {
-            return nil
-        } else {
-            return tableMetadata.init(value: metadata)
-        }
+        return metadataCopy
     }
     
     func addMetadatas(_ metadatas: [tableMetadata], activeUrl: String, serverUrl: String) -> [tableMetadata] {
