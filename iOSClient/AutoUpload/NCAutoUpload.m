@@ -384,9 +384,6 @@
     if ([newItemsToUpload count] == 0)
         return;
     
-    // Disable idle timer
-    [[UIApplication sharedApplication] setIdleTimerDisabled: YES];
-    
     if (assetsFull) {
         
         if (!_hud)
@@ -438,9 +435,6 @@
         
         // end loading
         [_hud hideHud];
-        
-        // Enable idle timer
-        [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
         
         return;
     }
@@ -508,10 +502,7 @@
     }
     
     // end loading
-    [_hud hideHud];
-    
-    // Enable idle timer
-    [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
+    [_hud hideHud];    
 }
 
 - (void)writeAssetToSandbox:(CCMetadataNet *)metadataNet
