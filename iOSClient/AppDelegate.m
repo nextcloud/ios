@@ -1592,6 +1592,10 @@
         for (TableAccount *account in listAccount)
             [[NCManageDatabase sharedInstance] addTableAccountFromCoredata:account];
         
+        // Most important is done
+        [CCUtility setVersionCryptoCloud];
+
+        // Directories + LocalFile
         NSArray *listDirectories = [CCCoreData migrateDirectories];
         for (TableDirectory *directory in listDirectories)
             [[NCManageDatabase sharedInstance] addTableDirectoryFromCoredata:directory];
