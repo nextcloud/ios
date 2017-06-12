@@ -35,9 +35,6 @@
 #import "NCAutoUpload.h"
 #import "NCBridgeSwift.h"
 
-#define alertCreateFolder 1
-#define alertCreateFolderCrypto 2
-
 @interface CCMain () <CCActionsDeleteDelegate, CCActionsRenameDelegate, CCActionsSearchDelegate, CCActionsDownloadThumbnailDelegate, CCActionsSettingFavoriteDelegate>
 {
     tableMetadata *_metadata;
@@ -463,40 +460,19 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== AlertView =====
+#pragma mark ===== minChar Text Field DidChange =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+- (void)minCharTextFieldDidChange:(UITextField *)sender
 {
-    [alertView dismissWithClickedButtonIndex:buttonIndex animated:YES];
-        
-    if (alertView.tag == alertCreateFolder && buttonIndex == 1) [self createFolder:[alertView textFieldAtIndex:0].text autoUploadDirectory:NO];
+    UIAlertController *alertController = (UIAlertController *)self.presentedViewController;
     
-    if (alertView.tag == alertCreateFolderCrypto && buttonIndex == 1) [self createFolderEncrypted:[alertView textFieldAtIndex:0].text];
-}
-
-// accept only number char > 0
-- (BOOL)alertViewShouldEnableFirstOtherButton:(UIAlertView *)alertView
-{
-    /* Retrieve a text field at an index -
-     raises NSRangeException when textFieldIndex is out-of-bounds.
-     
-     The field at index 0 will be the first text field
-     (the single field or the login field),
-     
-     The field at index 1 will be the password field. */
-    
-    /*
-     1> Get the Text Field in alertview
-     
-     2> Get the text of that Text Field
-     
-     3> Verify that text length
-     
-     4> return YES or NO Based on the length
-     */
-    
-    return ([[[alertView textFieldAtIndex:0] text] length]>0)?YES:NO;
+    if (alertController)
+    {
+        UITextField *fileName = alertController.textFields.firstObject;
+        UIAlertAction *okAction = alertController.actions.lastObject;
+        okAction.enabled = fileName.text.length > 0;
+    }
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -874,10 +850,29 @@
             
         /* PLAIN */
         case k_returnCreateFolderPlain: {
-            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_create_folder_",nil) message:nil delegate:self cancelButtonTitle:NSLocalizedString(@"_cancel_",nil) otherButtonTitles:NSLocalizedString(@"_save_", nil), nil];
-            [alertView setAlertViewStyle:UIAlertViewStylePlainTextInput];
-            alertView.tag = alertCreateFolder;
-            [alertView show];
+            
+            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_create_folder_",nil) message:nil preferredStyle:UIAlertControllerStyleAlert];
+            
+            [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+                [textField addTarget:self action:@selector(minCharTextFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
+            }];
+            
+            UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_",nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
+                NSLog(@"Cancel action");
+            }];
+            
+            UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+                
+                UITextField *fileName = alertController.textFields.firstObject;
+                [self createFolder:fileName.text autoUploadDirectory:NO];
+            }];
+            
+            okAction.enabled = NO;
+            
+            [alertController addAction:cancelAction];
+            [alertController addAction:okAction];
+            
+            [self presentViewController:alertController animated:YES completion:nil];
         }
             break;
         case k_returnCreateFotoVideoPlain: {
@@ -899,10 +894,29 @@
         /* ENCRYPTED */
         case k_returnCreateFolderEncrypted: {
             
-            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_create_folder_",nil) message:nil delegate:self cancelButtonTitle:NSLocalizedString(@"_cancel_",nil) otherButtonTitles:NSLocalizedString(@"_save_", nil), nil];
-            [alertView setAlertViewStyle:UIAlertViewStylePlainTextInput];
-            alertView.tag = alertCreateFolderCrypto;
-            [alertView show];
+            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_create_folder_",nil) message:nil preferredStyle:UIAlertControllerStyleAlert];
+            
+            [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+                [textField addTarget:self action:@selector(minCharTextFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
+            }];
+            
+            UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_",nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
+                NSLog(@"Cancel action");
+            }];
+            
+            UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+                
+                UITextField *fileName = alertController.textFields.firstObject;
+                
+                [self createFolderEncrypted:fileName.text];
+            }];
+            
+            okAction.enabled = NO;
+            
+            [alertController addAction:cancelAction];
+            [alertController addAction:okAction];
+            
+            [self presentViewController:alertController animated:YES completion:nil];
         }
             break;
         case k_returnCreateFotoVideoEncrypted: {
@@ -4132,23 +4146,6 @@
 
 #pragma mark -
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Text Field DidChange =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)renameFileNameTextFieldDidChange:(UITextField *)sender
-{
-    UIAlertController *alertController = (UIAlertController *)self.presentedViewController;
-    
-    if (alertController)
-    {
-        UITextField *fileName = alertController.textFields.firstObject;
-        UIAlertAction *okAction = alertController.actions.lastObject;
-        okAction.enabled = fileName.text.length > 0;
-    }
-}
-
-#pragma mark -
-#pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Swipe Tablet -> menu =====
 #pragma --------------------------------------------------------------------------------------------
 
@@ -4285,7 +4282,7 @@
                                         
                                         [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
                                             textField.placeholder = _metadata.fileNamePrint;
-                                            [textField addTarget:self action:@selector(renameFileNameTextFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
+                                            [textField addTarget:self action:@selector(minCharTextFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
                                         }];
                                         
                                         UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_",nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
@@ -4473,7 +4470,7 @@
                                     
                                     [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
                                         textField.placeholder = _metadata.fileNamePrint;
-                                        [textField addTarget:self action:@selector(renameFileNameTextFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
+                                        [textField addTarget:self action:@selector(minCharTextFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
                                     }];
                                     
                                     UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_",nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
@@ -4571,7 +4568,7 @@
                                         
                                         [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
                                             textField.placeholder = _metadata.fileNamePrint;
-                                            [textField addTarget:self action:@selector(renameFileNameTextFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
+                                            [textField addTarget:self action:@selector(minCharTextFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
                                         }];
                                         
                                         UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_",nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
