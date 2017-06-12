@@ -512,6 +512,18 @@
     return ([[[alertView textFieldAtIndex:0] text] length]>0)?YES:NO;
 }
 
+- (void)alertTextFieldDidChange:(UITextField *)sender
+{
+    UIAlertController *alertController = (UIAlertController *)self.presentedViewController;
+    
+    if (alertController)
+    {
+        UITextField *fileName = alertController.textFields.firstObject;
+        UIAlertAction *okAction = alertController.actions.lastObject;
+        okAction.enabled = fileName.text.length > 0;
+    }
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Graphic Window =====
 #pragma --------------------------------------------------------------------------------------------
@@ -4271,6 +4283,7 @@
                                         // close swipe
                                         [self setEditing:NO animated:YES];
                                         
+                                        /*
                                         //chiediamo il nome del file
                                         UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_rename_",nil) message:nil delegate:self cancelButtonTitle:NSLocalizedString(@"_cancel_",nil) otherButtonTitles:NSLocalizedString(@"_save_", nil), nil];
                                         [alertView setAlertViewStyle:UIAlertViewStylePlainTextInput];
@@ -4278,6 +4291,29 @@
                                         UITextField *textField = [alertView textFieldAtIndex:0];
                                         textField.text = _metadata.fileNamePrint;
                                         [alertView show];
+                                        */
+                                        
+                                        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_rename_",nil) message:nil preferredStyle:UIAlertControllerStyleAlert];
+                                        
+                                        [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+                                             textField.placeholder = _metadata.fileNamePrint;
+                                        }];
+                                        
+                                        UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_",nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
+                                            NSLog(@"Cancel action");
+                                        }];
+                                        
+                                        UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+                                            
+                                            UITextField *fileName = alertController.textFields.firstObject;
+                                            
+                                            [self renameFile:_metadata fileName:fileName.text];
+                                        }];
+                                        
+                                        okAction.enabled = NO;
+
+                                        [alertController addAction:cancelAction];
+                                        [alertController addAction:okAction];
                                     }];
         }
         
