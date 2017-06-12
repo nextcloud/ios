@@ -483,7 +483,7 @@
             
         } else {
             
-            [self renameFile:_metadata fileName:[alertView textFieldAtIndex:0].text];
+            //[self renameFile:_metadata fileName:[alertView textFieldAtIndex:0].text];
         }
     }
 }
@@ -2240,8 +2240,11 @@
     [self readFolderWithForced:YES serverUrl:metadataNet.serverUrl];
 }
 
-- (void)renameFile:(tableMetadata *)metadata fileName:(NSString *)fileName
+- (void)renameFile:(NSArray *)arguments
 {
+    tableMetadata* metadata = [arguments objectAtIndex:0];
+    NSString *fileName = [arguments objectAtIndex:1];
+    
     [[CCActions sharedInstance] renameFileOrFolder:metadata fileName:fileName delegate:self];
 }
 
@@ -4303,7 +4306,7 @@
                                             
                                             UITextField *fileName = alertController.textFields.firstObject;
                                             
-                                            [self renameFile:_metadata fileName:fileName.text];
+                                            [self performSelectorOnMainThread:@selector(renameFile:) withObject:[NSMutableArray arrayWithObjects:_metadata,fileName.text, nil] waitUntilDone:NO];
                                         }];
                                         
                                         okAction.enabled = NO;
