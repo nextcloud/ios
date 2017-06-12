@@ -4479,13 +4479,30 @@
                                     // close swipe
                                     [self setEditing:NO animated:YES];
                                     
-                                    //chiediamo il nome del file
-                                    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_rename_",nil) message:nil delegate:self cancelButtonTitle:NSLocalizedString(@"_cancel_",nil) otherButtonTitles:NSLocalizedString(@"_save_", nil), nil];
-                                    [alertView setAlertViewStyle:UIAlertViewStylePlainTextInput];
-                                    alertView.tag = alertRename;
-                                    UITextField *textField = [alertView textFieldAtIndex:0];
-                                    textField.text = _metadata.fileNamePrint;
-                                    [alertView show];
+                                    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_rename_",nil) message:nil preferredStyle:UIAlertControllerStyleAlert];
+                                    
+                                    [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+                                        textField.placeholder = _metadata.fileNamePrint;
+                                        [textField addTarget:self action:@selector(renameFileNameTextFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
+                                    }];
+                                    
+                                    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_",nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
+                                        NSLog(@"Cancel action");
+                                    }];
+                                    
+                                    UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+                                        
+                                        UITextField *fileName = alertController.textFields.firstObject;
+                                        
+                                        [self performSelectorOnMainThread:@selector(renameFile:) withObject:[NSMutableArray arrayWithObjects:_metadata,fileName.text, nil] waitUntilDone:NO];
+                                    }];
+                                    
+                                    okAction.enabled = NO;
+                                    
+                                    [alertController addAction:cancelAction];
+                                    [alertController addAction:okAction];
+                                    
+                                    [self presentViewController:alertController animated:YES completion:nil];
                                 }];
         
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_move_", nil)
