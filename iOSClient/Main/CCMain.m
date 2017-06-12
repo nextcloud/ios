@@ -37,7 +37,6 @@
 
 #define alertCreateFolder 1
 #define alertCreateFolderCrypto 2
-#define alertRename 3
 
 @interface CCMain () <CCActionsDeleteDelegate, CCActionsRenameDelegate, CCActionsSearchDelegate, CCActionsDownloadThumbnailDelegate, CCActionsSettingFavoriteDelegate>
 {
@@ -474,18 +473,6 @@
     if (alertView.tag == alertCreateFolder && buttonIndex == 1) [self createFolder:[alertView textFieldAtIndex:0].text autoUploadDirectory:NO];
     
     if (alertView.tag == alertCreateFolderCrypto && buttonIndex == 1) [self createFolderEncrypted:[alertView textFieldAtIndex:0].text];
-    
-    if (alertView.tag == alertRename && buttonIndex == 1) {
-     
-        if ([_metadata.model isEqualToString:@"note"]) {
-        
-            [self renameNote:_metadata fileName:[alertView textFieldAtIndex:0].text];
-            
-        } else {
-            
-            //[self renameFile:_metadata fileName:[alertView textFieldAtIndex:0].text];
-        }
-    }
 }
 
 // accept only number char > 0
@@ -2248,8 +2235,11 @@
     [[CCActions sharedInstance] renameFileOrFolder:metadata fileName:fileName delegate:self];
 }
 
-- (void)renameNote:(tableMetadata *)metadata fileName:(NSString *)fileName
+- (void)renameNote:(NSArray *)arguments
 {
+    tableMetadata* metadata = [arguments objectAtIndex:0];
+    NSString *fileName = [arguments objectAtIndex:1];
+    
     CCTemplates *templates = [[CCTemplates alloc] init];
     
     NSMutableDictionary *field = [[CCCrypto sharedManager] getDictionaryEncrypted:metadata.fileName uuid:metadata.uuid isLocal:NO directoryUser:app.directoryUser];
@@ -4577,13 +4567,30 @@
                                         // close swipe
                                         [self setEditing:NO animated:YES];
                                         
-                                        //chiediamo il nome del file
-                                        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_rename_",nil) message:nil delegate:self cancelButtonTitle:NSLocalizedString(@"_cancel_",nil) otherButtonTitles:NSLocalizedString(@"_save_", nil), nil];
-                                        [alertView setAlertViewStyle:UIAlertViewStylePlainTextInput];
-                                        alertView.tag = alertRename;
-                                        UITextField *textField = [alertView textFieldAtIndex:0];
-                                        textField.text = _metadata.fileNamePrint;
-                                        [alertView show];
+                                        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_rename_",nil) message:nil preferredStyle:UIAlertControllerStyleAlert];
+                                        
+                                        [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+                                            textField.placeholder = _metadata.fileNamePrint;
+                                            [textField addTarget:self action:@selector(renameFileNameTextFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
+                                        }];
+                                        
+                                        UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_",nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
+                                            NSLog(@"Cancel action");
+                                        }];
+                                        
+                                        UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+                                            
+                                            UITextField *fileName = alertController.textFields.firstObject;
+                                            
+                                            [self performSelectorOnMainThread:@selector(renameNote:) withObject:[NSMutableArray arrayWithObjects:_metadata,fileName.text, nil] waitUntilDone:NO];
+                                        }];
+                                        
+                                        okAction.enabled = NO;
+                                        
+                                        [alertController addAction:cancelAction];
+                                        [alertController addAction:okAction];
+                                        
+                                        [self presentViewController:alertController animated:YES completion:nil];
                                 }];
         }
         
