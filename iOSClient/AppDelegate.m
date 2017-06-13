@@ -1559,6 +1559,15 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== maintenance Mode =====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)maintenanceMode:(BOOL)mode
+{
+    self.maintenanceMode = mode;
+}
+
+#pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== UPGRADE =====
 #pragma --------------------------------------------------------------------------------------------
 
@@ -1584,7 +1593,7 @@
     
     if (([actualVersion compare:@"2.17.4" options:NSNumericSearch] == NSOrderedAscending)) {
         
-        self.maintenanceMode = YES;
+        [self maintenanceMode:YES];
         
         // Migrate Account Table From CoreData to Realm
         
@@ -1604,7 +1613,7 @@
         for (TableLocalFile *localFile in listLocalFile)
             [[NCManageDatabase sharedInstance] addTableLocalFileFromCoredata:localFile];
         
-        self.maintenanceMode = NO;
+        [self maintenanceMode:NO];
     }
     
     return YES;

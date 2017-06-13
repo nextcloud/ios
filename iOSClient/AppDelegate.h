@@ -145,6 +145,8 @@
 // initializations 
 - (void)applicationInitialized;
 
+- (void)maintenanceMode:(BOOL)mode;
+
 - (void)configDynamicShortcutItems;
 
 - (void)messageNotification:(NSString *)title description:(NSString *)description visible:(BOOL)visible delay:(NSTimeInterval)delay type:(TWMessageBarMessageType)type errorCode:(NSInteger)errorcode;

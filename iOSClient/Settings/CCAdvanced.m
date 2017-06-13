@@ -309,6 +309,8 @@
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
         
+        [app maintenanceMode:YES];
+
         [self.hud visibleHudTitle:NSLocalizedString(@"_remove_cache_", nil) mode:MBProgressHUDModeIndeterminate color:nil];
         
         [app cancelAllOperations];
@@ -340,6 +342,8 @@
             
             [self recalculateSize];
             
+            [app maintenanceMode:NO];
+
             dispatch_async(dispatch_get_main_queue(), ^{
                 // Close HUD
                 [self.hud hideHud];
