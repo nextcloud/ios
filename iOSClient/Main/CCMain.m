@@ -38,7 +38,7 @@
 @interface CCMain () <CCActionsDeleteDelegate, CCActionsRenameDelegate, CCActionsSearchDelegate, CCActionsDownloadThumbnailDelegate, CCActionsSettingFavoriteDelegate, UITextViewDelegate>
 {
     tableMetadata *_metadata;
-        
+    
     BOOL _isRoot;
     BOOL _isViewDidLoad;
     BOOL _isOfflineServerUrl;
@@ -83,8 +83,6 @@
     // Login
     CCLoginWeb *_loginWeb;
     CCLogin *_loginVC;
-    
-    
 }
 @end
 
@@ -180,8 +178,8 @@
         // Load Datasource
         [self reloadDatasource:_serverUrl selector:nil];
         
-        // Read Folder
-        [self readFolderWithForced:NO serverUrl:_serverUrl];
+        // Read (File) Folder
+        [self readFileReloadFolder];
     }
     
     // Title
@@ -259,8 +257,8 @@
             // Load Datasource
             [self reloadDatasource:_serverUrl selector:nil];
             
-            // Read Folder
-            [self readFolderWithForced:NO serverUrl:_serverUrl];
+            // Read (file) Folder
+            [self readFileReloadFolder];
         }
     }
 
@@ -368,8 +366,8 @@
         // Load Datasource
         [self reloadDatasource:_serverUrl selector:nil];
 
-        // Load Folder
-        [self readFolderWithForced:NO serverUrl:_serverUrl];
+        // Read (File) Folder
+        [self readFileReloadFolder];
         
         // Load photo datasorce
         if (app.activePhotos)
@@ -1805,6 +1803,11 @@
 
 - (void)readFileFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
+    // Read Folder
+    if ([metadataNet.selector isEqualToString:selectorReadFileReloadFolder]) {
+        [self readFolderWithForced:NO serverUrl:metadataNet.serverUrl];
+    }
+    
     // UploadFile
     if ([metadataNet.selector isEqualToString:selectorReadFileUploadFile]) {
         
@@ -1841,6 +1844,16 @@
 
 - (void)readFileSuccess:(CCMetadataNet *)metadataNet metadata:(tableMetadata *)metadata
 {
+    // Read Folder
+    if ([metadataNet.selector isEqualToString:selectorReadFileReloadFolder]) {
+        
+        tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", metadataNet.account, metadataNet.serverUrl]];
+        
+        if ([metadata.etag isEqualToString:directory.etag] == NO) {
+            [self readFolderWithForced:YES serverUrl:metadataNet.serverUrl];
+        }
+    }
+    
     // UploadFile
     if ([metadataNet.selector isEqualToString:selectorReadFileUploadFile]) {
         
@@ -1855,6 +1868,18 @@
         else
             [app addNetworkingOperationQueue:app.netQueueUpload delegate:self metadataNet:metadataNet];
     }
+}
+
+- (void)readFileReloadFolder
+{
+    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
+
+    metadataNet.action = actionReadFile;
+    metadataNet.priority = NSOperationQueuePriorityVeryHigh;
+    metadataNet.selector = selectorReadFileReloadFolder;
+    metadataNet.serverUrl = _serverUrl;
+
+    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -2047,7 +2072,6 @@
         metadataNet.serverUrl = serverUrl;
 
         [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
-        
     }
 }
 
