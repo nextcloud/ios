@@ -381,8 +381,11 @@
     }
     
     // News Assets ? if no verify if blocked Table Auto Upload -> Autostart
-    if ([newItemsToUpload count] == 0)
+    if ([newItemsToUpload count] == 0) {
+        
+        NSLog(@"[LOG] Auto upload, no new asset found for date image %@, date video %@", tableAccount.autoUploadDatePhoto, tableAccount.autoUploadDateVideo);
         return;
+    }
     
     if (assetsFull) {
         
