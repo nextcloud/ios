@@ -74,7 +74,7 @@
 
 @protocol CCNetworkingDelegate <NSObject>
 
-@optional - (void)reloadDatasource:(NSString *)serverUrl fileID:(NSString *)fileID selector:(NSString *)selector;
+@optional - (void)reloadDatasource:(NSString *)serverUrl selector:(NSString *)selector;
 
 @optional - (void)downloadFileSuccess:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost;
 @optional - (void)downloadFileFailure:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode;

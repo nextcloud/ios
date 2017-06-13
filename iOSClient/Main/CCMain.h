@@ -88,7 +88,7 @@
 - (void)stopTaskButton:(tableMetadata *)metadata;
 
 - (void)reloadDatasource;
-- (void)reloadDatasource:(NSString *)serverUrl fileID:(NSString *)fileID selector:(NSString *)selector;
+- (void)reloadDatasource:(NSString *)serverUrl selector:(NSString *)selector;
 
 - (void)requestServerCapabilities;
 - (void)middlewarePing;

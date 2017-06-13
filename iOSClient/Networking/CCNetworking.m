@@ -651,8 +651,8 @@
     
     dispatch_async(dispatch_get_main_queue(), ^{
         // Refresh datasource if is not a Plist
-        if ([_delegate respondsToSelector:@selector(reloadDatasource:fileID:selector:)] && [CCUtility isCryptoPlistString:fileName] == NO)
-            [_delegate reloadDatasource:serverUrl fileID:fileID selector:selector];
+        if ([_delegate respondsToSelector:@selector(reloadDatasource:selector:)] && [CCUtility isCryptoPlistString:fileName] == NO)
+            [_delegate reloadDatasource:serverUrl selector:selector];
         
 #ifndef EXTENSION
         [app updateApplicationIconBadgeNumber];
@@ -1356,8 +1356,8 @@
 
     dispatch_async(dispatch_get_main_queue(), ^{
         // refresh main
-        if ([self.delegate respondsToSelector:@selector(reloadDatasource:fileID:selector:)])
-            [self.delegate reloadDatasource:serverUrl fileID:nil selector:selector];
+        if ([self.delegate respondsToSelector:@selector(reloadDatasource:selector:)])
+            [self.delegate reloadDatasource:serverUrl selector:selector];
         
 #ifndef EXTENSION
         [app updateApplicationIconBadgeNumber];
@@ -1581,8 +1581,8 @@
                     [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:[NSString stringWithFormat:@"%@", @k_CCErrorTaskDownloadNotFound] sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:k_taskIdentifierError sessionTaskIdentifierPlist:k_taskIdentifierNULL predicate:[NSPredicate predicateWithFormat:@"fileID = %@ ", metadata.fileID]];
                 
                     dispatch_async(dispatch_get_main_queue(), ^{
-                        if ([self.delegate respondsToSelector:@selector(reloadDatasource:fileID:selector:)])
-                            [self.delegate reloadDatasource:[[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID] fileID:metadata.fileID selector:nil];
+                        if ([self.delegate respondsToSelector:@selector(reloadDatasource:selector:)])
+                            [self.delegate reloadDatasource:[[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID] selector:nil];
                     });
                 }
             
@@ -1594,8 +1594,8 @@
                     [[NCManageDatabase sharedInstance] setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier:k_taskIdentifierNULL sessionTaskIdentifierPlist:k_taskIdentifierDone predicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadata.fileID]];
                     
                     dispatch_async(dispatch_get_main_queue(), ^{
-                        if ([self.delegate respondsToSelector:@selector(reloadDatasource:fileID:selector:)])
-                            [self.delegate reloadDatasource:[[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID] fileID:metadata.fileID selector:nil];
+                        if ([self.delegate respondsToSelector:@selector(reloadDatasource:selector:)])
+                            [self.delegate reloadDatasource:[[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID] selector:nil];
                     });
                 }
             });
@@ -1630,8 +1630,8 @@
     
     dispatch_async(dispatch_get_main_queue(), ^{
         for (NSString *serverUrl in serversUrl)
-            if ([self.delegate respondsToSelector:@selector(reloadDatasource:fileID:selector:)])
-                [self.delegate reloadDatasource:serverUrl fileID:nil selector:nil];
+            if ([self.delegate respondsToSelector:@selector(reloadDatasource:selector:)])
+                [self.delegate reloadDatasource:serverUrl selector:nil];
     });
 }
 
@@ -1710,8 +1710,8 @@
     
     dispatch_async(dispatch_get_main_queue(), ^{
         for (NSString *directoryID in directoryIDs)
-            if ([self.delegate respondsToSelector:@selector(reloadDatasource:fileID:selector:)])
-                [self.delegate reloadDatasource:[[NCManageDatabase sharedInstance] getServerUrl:directoryID] fileID:nil selector:nil];
+            if ([self.delegate respondsToSelector:@selector(reloadDatasource:selector:)])
+                [self.delegate reloadDatasource:[[NCManageDatabase sharedInstance] getServerUrl:directoryID] selector:nil];
     });
 }
 
@@ -1756,8 +1756,8 @@
         NSLog(@"[LOG] Verify read file success, but files already processed");
         
         dispatch_async(dispatch_get_main_queue(), ^{
-            if ([self.delegate respondsToSelector:@selector(reloadDatasource:fileID:selector:)])
-                [self.delegate reloadDatasource:[[NCManageDatabase sharedInstance] getServerUrl:directoryID] fileID:metadataTemp.fileID selector:metadataNet.selector];
+            if ([self.delegate respondsToSelector:@selector(reloadDatasource:selector:)])
+                [self.delegate reloadDatasource:[[NCManageDatabase sharedInstance] getServerUrl:directoryID] selector:metadataNet.selector];
         });
         
     } else {

@@ -1516,7 +1516,7 @@
 
     // Refresh
     if (_activeMain && [_listChangeTask count] == 0) {
-        [_activeMain reloadDatasource:serverUrl fileID:nil selector:nil];
+        [_activeMain reloadDatasource:serverUrl selector:nil];
     }
 }
 

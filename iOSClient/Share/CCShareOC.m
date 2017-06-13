@@ -446,7 +446,7 @@
     [self.tableView endEditing:YES];
     
     // reload delegate
-    [self.delegate reloadDatasource:[[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID] fileID:nil selector:nil];
+    [self.delegate reloadDatasource:[[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID] selector:nil];
     
     [self dismissViewControllerAnimated:YES completion:nil];
 }

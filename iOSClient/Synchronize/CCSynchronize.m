@@ -83,7 +83,7 @@
     if (errorCode == 404 && [recordAccount.account isEqualToString:metadataNet.account]) {
         
         [[NCManageDatabase sharedInstance] deleteDirectoryAndSubDirectoryWithServerUrl:metadataNet.serverUrl];
-        [app.activeMain reloadDatasource:metadataNet.serverUrl fileID:nil selector:nil];
+        [app.activeMain reloadDatasource:metadataNet.serverUrl selector:nil];
     }
 }
 
@@ -147,7 +147,7 @@
         
         dispatch_async(dispatch_get_main_queue(), ^{
             if ([metadatasNotPresents count] > 0)
-                [app.activeMain reloadDatasource:metadataNet.serverUrl fileID:nil selector:nil];
+                [app.activeMain reloadDatasource:metadataNet.serverUrl selector:nil];
         });
         
         // ----- Test : (MODIFY) -----
@@ -253,7 +253,7 @@
         [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadataNet.account, metadataNet.fileID] clearDateReadDirectoryID:nil];
         
         NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadataNet.directoryID];
-        [app.activeMain reloadDatasource:serverUrl fileID:nil selector:nil];
+        [app.activeMain reloadDatasource:serverUrl selector:nil];
     }
 }
 
@@ -377,7 +377,7 @@
     }
     
     dispatch_async(dispatch_get_main_queue(), ^{
-        [app.activeMain reloadDatasource:serverUrl fileID:nil selector:nil];
+        [app.activeMain reloadDatasource:serverUrl selector:nil];
     });
 }
 
