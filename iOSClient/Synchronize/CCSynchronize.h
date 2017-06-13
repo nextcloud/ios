@@ -36,8 +36,8 @@
 
 @property (nonatomic, strong) NSMutableOrderedSet *foldersInSynchronized;
 
-- (void)readFolderServerUrl:(NSString *)serverUrl selector:(NSString *)selector;
-- (void)readFile:(tableMetadata *)metadata withDownload:(BOOL)withDownload;
+- (void)synchronizedFolder:(NSString *)serverUrl selector:(NSString *)selector;
+- (void)synchronizedFile:(tableMetadata *)metadata selector:(NSString *)selector;
 
 - (void)verifyChangeMedatas:(NSArray *)allRecordMetadatas serverUrl:(NSString *)serverUrl account:(NSString *)account withDownload:(BOOL)withDownload;
 

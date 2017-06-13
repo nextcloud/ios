@@ -273,14 +273,14 @@
                 else
                     selector = selectorReadFolder;
                 
-                [[CCSynchronize sharedSynchronize] readFolderServerUrl:serverUrl selector:selector];
+                [[CCSynchronize sharedSynchronize] synchronizedFolder:serverUrl selector:selector];
                 
             } else {
                 
                 if ([CCUtility getFavoriteOffline])
-                    [[CCSynchronize sharedSynchronize] readFile:metadata withDownload:YES];
+                    [[CCSynchronize sharedSynchronize] synchronizedFile:metadata selector:selectorReadFileWithDownload];
                 else
-                    [[CCSynchronize sharedSynchronize] readFile:metadata withDownload:NO];
+                    [[CCSynchronize sharedSynchronize] synchronizedFile:metadata selector:selectorReadFile];
             }
             
             father = serverUrl;

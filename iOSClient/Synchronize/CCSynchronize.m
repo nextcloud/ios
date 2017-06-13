@@ -59,7 +59,7 @@
 // selector     : selectorReadFolder, selectorReadFolderWithDownload
 //
 
-- (void)readFolderServerUrl:(NSString *)serverUrl selector:(NSString *)selector
+- (void)synchronizedFolder:(NSString *)serverUrl selector:(NSString *)selector
 {
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
     
@@ -177,7 +177,7 @@
                     
                     [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:serverUrl serverUrlTo:nil etag:etag];
                     
-                    [self readFolderServerUrl:serverUrl selector:metadataNet.selector];
+                    [self synchronizedFolder:serverUrl selector:metadataNet.selector];
                 }
                 
             } else {
@@ -223,7 +223,7 @@
 #pragma mark ===== Read File =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)readFile:(tableMetadata *)metadata withDownload:(BOOL)withDownload
+- (void)synchronizedFile:(tableMetadata *)metadata selector:(NSString *)selector
 {
     NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
     if (serverUrl == nil) return;
@@ -234,9 +234,8 @@
     metadataNet.fileID = metadata.fileID;
     metadataNet.fileName = metadata.fileName;
     metadataNet.fileNamePrint = metadata.fileNamePrint;
-    metadataNet.options = [NSNumber numberWithBool:withDownload] ;
     metadataNet.priority = NSOperationQueuePriorityLow;
-    metadataNet.selector = selectorReadFile;
+    metadataNet.selector = selector;
     metadataNet.serverUrl = serverUrl;
     
     [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
@@ -262,7 +261,10 @@
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
         
-        BOOL withDownload = [metadataNet.options boolValue];
+        BOOL withDownload = NO;
+        
+        if ([metadataNet.selector isEqualToString:selectorReadFileWithDownload])
+            withDownload = YES;
         
         //Add/Update Metadata
         tableMetadata *addMetadata = [[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:app.activeUrl serverUrl:metadataNet.serverUrl];

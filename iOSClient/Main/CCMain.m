@@ -1585,9 +1585,9 @@
         [self downloadFileSuccess:fileID serverUrl:serverUrl selector:selectorPost selectorPost:nil];
 }
 
-- (void)downloadSelectedFiles
+- (void)downloadSelectedFilesFolders
 {
-    NSLog(@"[LOG] Start download selected files ...");
+    NSLog(@"[LOG] Start download selected ...");
     
     [_hud visibleHudTitle:NSLocalizedString(@"_downloading_progress_", nil) mode:MBProgressHUDModeIndeterminate color:nil];
     
@@ -1597,11 +1597,18 @@
         
         for (tableMetadata *metadata in selectedMetadatas) {
             
-            if (metadata.directory == NO && [metadata.type isEqualToString: k_metadataType_file]) {
+            if ([metadata.type isEqualToString: k_metadataType_file]) {
                 
-                NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
-                
-                [[CCNetworking sharedNetworking] downloadFile:metadata.fileID serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorDownloadFile selectorPost:nil session:k_download_session taskStatus: k_taskStatusResume delegate:self];
+                if (metadata.directory) {
+                    
+                    NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
+                    serverUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName];
+                    [[CCSynchronize sharedSynchronize] synchronizedFolder:serverUrl selector:selectorReadFolderWithDownload];
+                    
+                } else {
+                    
+                    [[CCSynchronize sharedSynchronize] synchronizedFile:metadata selector:selectorReadFileWithDownload];
+                }
             }
         }
         
@@ -3655,8 +3662,8 @@
     
     // ITEM DOWNLOAD ----------------------------------------------------------------------------------------------------
     
-    app.downloadItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_download_selected_files_", nil) subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"downloadSelectedFiles"] color:[NCBrandColor sharedInstance].brand] highlightedImage:nil action:^(REMenuItem *item) {
-            [self downloadSelectedFiles];
+    app.downloadItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_download_selected_files_folders", nil) subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"downloadSelectedFiles"] color:[NCBrandColor sharedInstance].brand] highlightedImage:nil action:^(REMenuItem *item) {
+            [self downloadSelectedFilesFolders];
     }];
     
     // ITEM SAVE IMAGE & VIDEO -------------------------------------------------------------------------------------------
@@ -4355,7 +4362,7 @@
                                         NSLog(@"[LOG] Update Folder Photo");
                                         NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:app.activeUrl];
                                         if ([autoUploadPath length] > 0)
-                                            [[CCSynchronize sharedSynchronize] readFolderServerUrl:autoUploadPath selector:selectorReadFolder];
+                                            [[CCSynchronize sharedSynchronize] synchronizedFolder:autoUploadPath selector:selectorReadFolder];
                                     }];
         }
 

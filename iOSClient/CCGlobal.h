@@ -174,6 +174,7 @@ extern NSString *const urlBaseUploadDB;
 #define selectorReadFile                                @"readFile"
 #define selectorReadFileUploadFile                      @"readFileUploadFile"
 #define selectorReadFileVerifyUpload                    @"readFileVerifyUpload"
+#define selectorReadFileWithDownload                    @"readFileWithDownload"
 #define selectorReadFolder                              @"readFolder"
 #define selectorReadFolderForced                        @"readFolderForced"
 #define selectorReadFolderWithDownload                  @"readFolderWithDownload"
