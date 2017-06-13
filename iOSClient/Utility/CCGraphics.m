@@ -328,6 +328,37 @@
     return [CCGraphics scaleImage:blurImage toSize:toSize isAspectRation:YES];
 }
 
+// ------------------------------------------------------------------------------------------------------
+// MARK: Is Light Color
+// ------------------------------------------------------------------------------------------------------
+
+/*
+Color visibility can be determined according to the following algorithm:
+
+(This is a suggested algorithm that is still open to change.)
+
+Two colors provide good color visibility if the brightness difference and the color difference between the two colors are greater than a set range.
+
+Color brightness is determined by the following formula:
+((Red value X 299) + (Green value X 587) + (Blue value X 114)) / 1000
+Note: This algorithm is taken from a formula for converting RGB values to YIQ values. This brightness value gives a perceived brightness for a color.
+
+Color difference is determined by the following formula:
+(maximum (Red value 1, Red value 2) - minimum (Red value 1, Red value 2)) + (maximum (Green value 1, Green value 2) - minimum (Green value 1, Green value 2)) + (maximum (Blue value 1, Blue value 2) - minimum (Blue value 1, Blue value 2))
+*/
+
++ (BOOL)isLight:(UIColor *)color
+{
+    const CGFloat *componentColors = CGColorGetComponents(color.CGColor);
+    CGFloat colorBrightness = ((componentColors[0] * 299) + (componentColors[1] * 587) + (componentColors[2] * 114)) / 1000;
+    
+    if (colorBrightness < 0.8) { // STD 0.5
+        return false;
+    } else {
+        return true;
+    }
+}
+
 @end
 
 // ------------------------------------------------------------------------------------------------------

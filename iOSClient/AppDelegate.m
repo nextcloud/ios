@@ -1011,10 +1011,18 @@
     
         if ([NCBrandOptions sharedInstance].use_themingColor && capabilities.themingColor.length == 7) {
         
-            if ([[capabilities.themingColor substringWithRange:NSMakeRange(0, 6)] isEqualToString:@"#FFFFF"])
+            BOOL isLight = [CCGraphics isLight:[CCGraphics colorFromHexString:capabilities.themingColor]];
+            
+            if (isLight) {
+                
+                // Activity
+                [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionCapabilities selector:@"Server Theming" note:NSLocalizedString(@"_theming_is_light_", nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:_activeUrl];
+                
                 [NCBrandColor sharedInstance].brand = [NCBrandColor sharedInstance].customer;
-            else
+                
+            } else {
                 [NCBrandColor sharedInstance].brand = [CCGraphics colorFromHexString:capabilities.themingColor];
+            }
             
         } else {
             

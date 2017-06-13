@@ -47,6 +47,8 @@
 
 + (UIImage *)blurryImage:(UIImage *)image withBlurLevel:(CGFloat)blur toSize:(CGSize)toSize;
 
++ (BOOL)isLight:(UIColor *)color;
+
 @end
 
 @interface CCAvatar : UIImageView

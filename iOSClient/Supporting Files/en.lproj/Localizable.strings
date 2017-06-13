@@ -411,6 +411,8 @@
 "_search_all_folders_"          = "Search in all folders";
 "_search_sub_folder_"           = "Search here and in subfolders";
 
+"_theming_is_light_"            = "Server theming too light color, not applicable";
+
 // Security
 
 "_reload_folder_"               = "Please reload folder";
