@@ -611,11 +611,17 @@ class NCManageDatabase: NSObject {
             return nil
         }
         
+        var unmanageAutoUploads = [tableAutoUpload]()
+
         let realm = try! Realm()
         
         let results = realm.objects(tableAutoUpload.self).filter("account = %@ AND lock = true", tableAccount!.account)
         
-        return Array(results)
+        for autoUpload in results {
+            unmanageAutoUploads.append(tableAutoUpload.init(value: autoUpload))
+        }
+        
+        return unmanageAutoUploads
     }
 
     func unlockAutoUpload(assetLocalIdentifier: String) {
