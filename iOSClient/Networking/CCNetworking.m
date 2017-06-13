@@ -442,9 +442,14 @@
             
             if (errorCode != kCFURLErrorCancelled) {
                 
-                [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:@"" action:k_activityDebugActionUpload selector:@"" note:[NSString stringWithFormat:@"Serius error internal download : metadata not found %@", url] type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:_activeUrl];
-            
                 NSLog(@"[LOG] Serius error internal download : metadata not found %@ ", url);
+
+                [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:@"" action:k_activityDebugActionUpload selector:@"" note:[NSString stringWithFormat:@"Serius error internal download : metadata not found %@", url] type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:_activeUrl];
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if ([self.delegate respondsToSelector:@selector(downloadFileFailure:serverUrl:selector:message:errorCode:)])
+                        [self.delegate downloadFileFailure:@"" serverUrl:serverUrl selector:@"" message:[NSString stringWithFormat:@"Serius error internal download : metadata not found %@", fileName] errorCode:k_CCErrorInternalError];
+                });
             }
         }
     }
@@ -491,9 +496,15 @@
             
             if (errorCode != kCFURLErrorCancelled) {
             
+                NSLog(@"[LOG] Serius error internal upload : metadata not found %@", url);
+
                 [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:@"" action:k_activityDebugActionUpload selector:@"" note:[NSString stringWithFormat:@"Serius error internal upload : metadata not found %@", url] type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:_activeUrl];
             
-                NSLog(@"[LOG] Serius error internal upload : metadata not found %@", url);
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if ([self.delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
+                        [self.delegate uploadFileFailure:nil fileID:@"" serverUrl:serverUrl selector:@"" message:[NSString stringWithFormat:@"Serius error internal download : metadata not found %@", fileName] errorCode:k_CCErrorInternalError];
+                });
+
             }
         }
     }
@@ -509,16 +520,42 @@
     if (delegate)
         [_delegates setObject:delegate forKey:fileID];
     
-    if (fileID.length == 0)
+    if (fileID.length == 0) {
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if ([[self getDelegate:fileID] respondsToSelector:@selector(downloadFileFailure:serverUrl:selector:message:errorCode:)])
+                [[self getDelegate:fileID] downloadFileFailure:fileID serverUrl:serverUrl selector:selector message:NSLocalizedStringFromTable(@"_file_folder_not_exists_", @"Error", nil) errorCode:kOCErrorServerPathNotFound];
+        });
+        
         return;
+    }
     
     tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
+    
+    if (!metadata) {
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if ([[self getDelegate:fileID] respondsToSelector:@selector(downloadFileFailure:serverUrl:selector:message:errorCode:)])
+                [[self getDelegate:fileID] downloadFileFailure:fileID serverUrl:serverUrl selector:selector message:NSLocalizedStringFromTable(@"_file_folder_not_exists_", @"Error", nil) errorCode:kOCErrorServerPathNotFound];
+        });
+
+        return;
+    }
     
     if (downloadData) {
         
         // it's in download
         tableMetadata *result = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@ AND session CONTAINS 'download' AND sessionTaskIdentifier >= 0", _activeAccount, metadata.fileID]];
-        if (result) return;
+        
+        if (result) {
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if ([[self getDelegate:fileID] respondsToSelector:@selector(downloadFileFailure:serverUrl:selector:message:errorCode:)])
+                    [[self getDelegate:fileID] downloadFileFailure:fileID serverUrl:serverUrl selector:selector message:@"File already in download" errorCode:k_CCErrorFileAlreadyInDownload];
+            });
+
+            return;
+        }
         
         // File exists ?
         tableLocalFile *localfile = [[NCManageDatabase sharedInstance] getTableLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadata.fileID]];
@@ -547,7 +584,10 @@
         // it's in download
         if (result) {
             
-            NSLog(@"[LOG] Download file already in progress %@ - %@", metadata.fileName, metadata.fileNamePrint);
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if ([[self getDelegate:fileID] respondsToSelector:@selector(downloadFileFailure:serverUrl:selector:message:errorCode:)])
+                    [[self getDelegate:fileID] downloadFileFailure:fileID serverUrl:serverUrl selector:selector message:@"File already in download" errorCode:k_CCErrorFileAlreadyInDownload];
+            });
             
             return;
         }
@@ -647,24 +687,35 @@
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location
 {
     NSURLRequest *url = [downloadTask currentRequest];
-    NSString *filename = [[url.URL absoluteString] lastPathComponent];
+    NSString *fileName = [[url.URL absoluteString] lastPathComponent];
+    NSString *serverUrl = [self getServerUrlFromUrl:[url.URL absoluteString]];
     
     tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"session = %@ AND (sessionTaskIdentifier = %i OR sessionTaskIdentifierPlist = %i)",session.sessionDescription, downloadTask.taskIdentifier, downloadTask.taskIdentifier]];
     
     // If the record metadata do not exists, exit
     if (!metadata) {
-        NSLog(@"metadata not found");
+        
+        [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:@"" action:k_activityDebugActionUpload selector:@"" note:[NSString stringWithFormat:@"Serius error internal download : metadata not found %@", url] type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:_activeUrl];
+        
+        NSLog(@"[LOG] Serius error internal download : metadata not found %@ ", url);
+
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if ([self.delegate respondsToSelector:@selector(downloadFileFailure:serverUrl:selector:message:errorCode:)])
+                [self.delegate downloadFileFailure:@"" serverUrl:serverUrl selector:@"" message:@"" errorCode:k_CCErrorInternalError];
+        });
+        
         return;
     }
+    
     NSHTTPURLResponse* httpResponse = (NSHTTPURLResponse*)downloadTask.response;
     
     if (httpResponse.statusCode >= 200 && httpResponse.statusCode < 300) {
         
         NSString *destinationFilePath;
         
-        if ([CCUtility isCryptoPlistString:filename]) {
+        if ([CCUtility isCryptoPlistString:fileName]) {
             
-            destinationFilePath = [NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryActiveUser:_activeUser activeUrl:_activeUrl], filename];
+            destinationFilePath = [NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryActiveUser:_activeUser activeUrl:_activeUrl], fileName];
             
         } else {
             
@@ -712,7 +763,16 @@
         
         __block tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
         if (!metadata) {
-            NSLog(@"metadata not found");
+            
+            [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:fileID action:k_activityDebugActionUpload selector:@"" note:[NSString stringWithFormat:@"Serius error internal download : metadata not found %@", fileName] type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:_activeUrl];
+            
+            NSLog(@"[LOG] Serius error internal download : metadata not found %@ ", fileName);
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if ([self.delegate respondsToSelector:@selector(downloadFileFailure:serverUrl:selector:message:errorCode:)])
+                    [self.delegate downloadFileFailure:fileID serverUrl:serverUrl selector:selector message:[NSString stringWithFormat:@"Serius error internal download : metadata not found %@", fileName] errorCode:k_CCErrorInternalError];
+            });
+
             return;
         }
         
@@ -1391,8 +1451,15 @@
         
         metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:_activeUrl serverUrl:serverUrl];
         
-        if (!metadata)
+        if (!metadata) {
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if ([[self getDelegate:sessionID] respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
+                    [[self getDelegate:sessionID] uploadFileFailure:nil fileID:fileID serverUrl:serverUrl selector:@"" message:[NSString stringWithFormat:@"Serius error internal download : metadata not found %@", fileName] errorCode:k_CCErrorInternalError];
+            });
+
             return;
+        }
         
         [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", sessionID] clearDateReadDirectoryID:nil];
     }

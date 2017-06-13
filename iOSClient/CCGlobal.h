@@ -140,6 +140,7 @@ extern NSString *const urlBaseUploadDB;
 #define k_CCErrorFileUploadNotFound                     -9997
 #define k_CCErrorInternalError                          -9996
 #define k_CCErrorNetworkNowAvailable                    -9995
+#define k_CCErrorFileAlreadyInDownload                  -9994
 
 // Search
 #define k_minCharsSearch                                2
