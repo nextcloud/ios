@@ -321,6 +321,7 @@
 "_encrypted_selected_files_"    = "Encrypted files";
 "_decrypted_selected_files_"    = "Decrypted files";
 "_download_selected_files_"     = "Download files";
+"_download_selected_files_folders_" = "Download files e folders";
 "_error_passcode_"              = "Error: Wrong passcode for encryption key.";
 "_error_operation_canc_"        = "Error: Operation canceled.";
 "_only_lock_passcode_"          = "Available only with Lock password activated. Activate it in the \"Settings\".";

@@ -2782,7 +2782,7 @@
         [self.navigationController cancelCCProgress];
     else
         [self.navigationController setCCProgressPercentage:progress*100 andTintColor: [NCBrandColor sharedInstance].navigationBarProgress];
-}
+    }
 
 - (void)reloadTaskButton:(id)sender withEvent:(UIEvent *)event
 {
@@ -3662,7 +3662,7 @@
     
     // ITEM DOWNLOAD ----------------------------------------------------------------------------------------------------
     
-    app.downloadItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_download_selected_files_folders", nil) subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"downloadSelectedFiles"] color:[NCBrandColor sharedInstance].brand] highlightedImage:nil action:^(REMenuItem *item) {
+    app.downloadItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_download_selected_files_folders_", nil) subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"downloadSelectedFiles"] color:[NCBrandColor sharedInstance].brand] highlightedImage:nil action:^(REMenuItem *item) {
             [self downloadSelectedFilesFolders];
     }];
     
