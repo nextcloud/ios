@@ -35,7 +35,7 @@
 #import "NCAutoUpload.h"
 #import "NCBridgeSwift.h"
 
-@interface CCMain () <CCActionsDeleteDelegate, CCActionsRenameDelegate, CCActionsSearchDelegate, CCActionsDownloadThumbnailDelegate, CCActionsSettingFavoriteDelegate>
+@interface CCMain () <CCActionsDeleteDelegate, CCActionsRenameDelegate, CCActionsSearchDelegate, CCActionsDownloadThumbnailDelegate, CCActionsSettingFavoriteDelegate, UITextViewDelegate>
 {
     tableMetadata *_metadata;
         
@@ -460,7 +460,7 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== minChar Text Field DidChange =====
+#pragma mark ===== Text Field =====
 #pragma --------------------------------------------------------------------------------------------
 
 - (void)minCharTextFieldDidChange:(UITextField *)sender
@@ -473,6 +473,10 @@
         UIAlertAction *okAction = alertController.actions.lastObject;
         okAction.enabled = fileName.text.length > 0;
     }
+}
+
+- (void)textFieldDidBeginEditing:(UITextField *)textField{
+    [textField selectAll:textField];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -4281,7 +4285,9 @@
                                         UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_rename_",nil) message:nil preferredStyle:UIAlertControllerStyleAlert];
                                         
                                         [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-                                            textField.placeholder = _metadata.fileNamePrint;
+                                            textField.text = _metadata.fileNamePrint;
+                                            //textField.selectedTextRange = [textField textRangeFromPosition:textField.beginningOfDocument toPosition:textField.endOfDocument];
+                                            //textField.delegate = self;
                                             [textField addTarget:self action:@selector(minCharTextFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
                                         }];
                                         
@@ -4469,7 +4475,8 @@
                                     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_rename_",nil) message:nil preferredStyle:UIAlertControllerStyleAlert];
                                     
                                     [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-                                        textField.placeholder = _metadata.fileNamePrint;
+                                        //textField.placeholder = _metadata.fileNamePrint;
+                                        textField.text = _metadata.fileNamePrint;
                                         [textField addTarget:self action:@selector(minCharTextFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
                                     }];
                                     
