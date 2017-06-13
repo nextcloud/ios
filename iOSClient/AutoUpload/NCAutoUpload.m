@@ -385,6 +385,10 @@
         
         NSLog(@"[LOG] Auto upload, no new asset found for date image %@, date video %@", tableAccount.autoUploadDatePhoto, tableAccount.autoUploadDateVideo);
         return;
+        
+    } else {
+        
+        NSLog(@"[LOG] Auto upload, new %lu asset found for date image %@, date video %@", (unsigned long)[newItemsToUpload count], tableAccount.autoUploadDatePhoto, tableAccount.autoUploadDateVideo);
     }
     
     if (assetsFull) {
