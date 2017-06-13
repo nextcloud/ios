@@ -44,7 +44,7 @@
 @interface AppDelegate : UIResponder <UIApplicationDelegate, BKPasscodeLockScreenManagerDelegate, BKPasscodeViewControllerDelegate, LMMediaPlayerViewDelegate, TWMessageBarStyleSheet, CCNetworkingDelegate>
 
 // Timer Process
-@property (nonatomic, strong) NSTimer *timerProcess;
+@property (nonatomic, strong) NSTimer *timerProcessAutoUpload;
 @property (nonatomic, strong) NSTimer *timerUpdateApplicationIconBadgeNumber;
 @property (nonatomic, strong) NSTimer *timerVerifySessionInProgress;
 

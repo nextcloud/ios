@@ -252,7 +252,7 @@
     }
     
     // Start Timer
-    self.timerProcess = [NSTimer scheduledTimerWithTimeInterval:k_timerProcess target:self selector:@selector(process) userInfo:nil repeats:YES];
+    self.timerProcessAutoUpload = [NSTimer scheduledTimerWithTimeInterval:k_timerProcessAutoUpload target:self selector:@selector(processAutoUpload) userInfo:nil repeats:YES];
     self.timerVerifySessionInProgress = [NSTimer scheduledTimerWithTimeInterval:k_timerVerifySession target:self selector:@selector(verifyDownloadUploadInProgress) userInfo:nil repeats:YES];
     self.timerUpdateApplicationIconBadgeNumber = [NSTimer scheduledTimerWithTimeInterval:k_timerUpdateApplicationIconBadgeNumber target:self selector:@selector(updateApplicationIconBadgeNumber) userInfo:nil repeats:YES];
 
@@ -370,10 +370,10 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Process k_timerProcess seconds =====
+#pragma mark ===== Process Auto Upload k_timerProcess seconds =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)process
+- (void)processAutoUpload
 {
     // Test Maintenance
     if (self.maintenanceMode)
