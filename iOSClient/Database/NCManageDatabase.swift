@@ -410,7 +410,13 @@ class NCManageDatabase: NSObject {
         
         let results = realm.objects(tableActivity.self).filter(predicate).sorted(byKeyPath: "date", ascending: false)
         
-        return Array(results)
+        var unmanageActivities = [tableActivity]()
+        
+        for activity in results {
+            unmanageActivities.append(tableActivity.init(value: activity))
+        }
+        
+        return unmanageActivities
     }
 
     func addActivityServer(_ listOfActivity: [OCActivity]) {
@@ -945,7 +951,7 @@ class NCManageDatabase: NSObject {
         let result = realm.objects(tableDirectory.self).filter(predicate).first
         
         if result != nil {
-            return result
+            return tableDirectory.init(value: result!)
         } else {
             return nil
         }
@@ -972,7 +978,13 @@ class NCManageDatabase: NSObject {
         
         if (results.count > 0) {
             
-            return Array(results)
+            var unmanageDirectories = [tableDirectory]()
+            
+            for directory in results {
+                unmanageDirectories.append(tableDirectory.init(value: directory))
+            }
+            
+            return unmanageDirectories
             
         } else {
             
@@ -1295,7 +1307,13 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
         
-        return realm.objects(tableLocalFile.self).filter(predicate).first
+        let result = realm.objects(tableLocalFile.self).filter(predicate).first
+        
+        if result != nil {
+            return tableLocalFile.init(value: result!)
+        } else {
+            return nil
+        }
     }
 
     //MARK: -
@@ -1549,7 +1567,13 @@ class NCManageDatabase: NSObject {
         
         if (results.count > 0) {
             
-            return Array(convertMetadataToUnmanagedMetadata(results))
+            var unmanageMetadatas = [tableMetadata]()
+            
+            for metadata in results {
+                unmanageMetadatas.append(tableMetadata.init(value: metadata))
+            }
+            
+            return unmanageMetadatas
             
         } else {
             
@@ -1684,6 +1708,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
+    /*
     func convertMetadataToUnmanagedMetadata(_ metadatas: Results<tableMetadata>) -> [tableMetadata] {
         
         var unmanageMetadatas = [tableMetadata]()
@@ -1694,7 +1719,8 @@ class NCManageDatabase: NSObject {
         
         return unmanageMetadatas
     }
-
+     */
+    
     //MARK: -
     //MARK: Table Share
     
