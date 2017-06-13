@@ -1124,15 +1124,17 @@
     // se non c'è attivo un account esci con NON attivare la richiesta password
     if ([self.activeAccount length] == 0) return NO;
     // se non è attivo il OnlyLockDir esci con NON attivare la richiesta password
-    while (![serverUrl isEqualToString:[CCUtility getHomeServerUrlActiveUrl:_activeUrl]]) {
-        tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"serverUrl = %@", serverUrl]];
-        if (directory.lock) {
-            isBlockZone = true;
-            break;
-        } else {
-            serverUrl = [CCUtility deletingLastPathComponentFromServerUrl:serverUrl];
-            if (serverUrl == self.activeUrl)
+    if (serverUrl && _activeUrl) {
+        while (![serverUrl isEqualToString:[CCUtility getHomeServerUrlActiveUrl:_activeUrl]]) {
+            tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"serverUrl = %@", serverUrl]];
+            if (directory.lock) {
+                isBlockZone = true;
                 break;
+            } else {
+                serverUrl = [CCUtility deletingLastPathComponentFromServerUrl:serverUrl];
+                if (serverUrl == self.activeUrl)
+                    break;
+            }
         }
     }
     if ([CCUtility getOnlyLockDir] && !isBlockZone) return NO;
