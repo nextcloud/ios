@@ -1602,12 +1602,9 @@
         }];
     }
     
-    [self automaticDownloadInError];
-}
-
-- (void)automaticDownloadInError
-{
-    NSMutableSet *serversUrl = [[NSMutableSet alloc] init];
+    /* Verify Upload In Error */
+    
+    NSMutableSet *serversUrl = [NSMutableSet new];
     
     NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND session CONTAINS 'download' AND (sessionTaskIdentifier = %i OR sessionTaskIdentifierPlist = %i)", _activeAccount, k_taskIdentifierError, k_taskIdentifierError] sorted:nil ascending:NO];
     
@@ -1688,12 +1685,9 @@
         [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_networkingSessionNotification object:object];
     }
     
-    [self automaticUploadInError];
-}
-
-- (void)automaticUploadInError
-{
-    NSMutableSet *directoryIDs = [[NSMutableSet alloc] init];
+    /* Verify Upload In Error */
+    
+    NSMutableSet *directoryIDs = [NSMutableSet new];
     
     NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND session CONTAINS 'upload' AND (sessionTaskIdentifier = %i OR sessionTaskIdentifierPlist = %i)", _activeAccount, k_taskIdentifierError, k_taskIdentifierError] sorted:nil ascending:NO];
     

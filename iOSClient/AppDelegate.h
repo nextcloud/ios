@@ -76,8 +76,6 @@
 
 // Networking 
 @property (nonatomic, copy) void (^backgroundSessionCompletionHandler)(void);
-@property (nonatomic, strong) NSDate *sessionDateLastUploadTasks;
-@property (nonatomic, strong) NSDate *sessionDateLastDownloadTasks;
 
 // Network Share
 @property (nonatomic, strong) NSMutableDictionary *sharesID;

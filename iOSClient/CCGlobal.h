@@ -126,8 +126,8 @@ extern NSString *const urlBaseUploadDB;
 #define k_taskStatusResume                              -2
 #define k_taskStatusSuspend                             -3
 
-#define k_timerVerifySession                            15
-#define k_timerProcess                                  7
+#define k_timerVerifySession                            5
+#define k_timerProcess                                  4
 #define k_timerUpdateApplicationIconBadgeNumber         2
 
 #define k_maxConcurrentOperation                         10

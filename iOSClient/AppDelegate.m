@@ -192,10 +192,6 @@
     // Initialization Notification
     self.listOfNotifications = [NSMutableArray new];
     
-    // Verify Session in progress and Init date task
-    self.sessionDateLastDownloadTasks = [NSDate date];
-    self.sessionDateLastUploadTasks = [NSDate date];
-    
     // Background Fetch
     [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
 
@@ -1380,34 +1376,16 @@
 - (void)verifyDownloadUploadInProgress
 {
     // Test Maintenance
-    if (self.maintenanceMode)
+    if (self.maintenanceMode || self.activeAccount.length == 0)
         return;
 
-    BOOL callVerifyDownload = NO;
-    BOOL callVerifyUpload = NO;
-    
     if ([[UIApplication sharedApplication] applicationState] != UIApplicationStateBackground) {
         
-        NSLog(@"[LOG] Verify Download/Upload in progress now : %@ - Download %@ - Upload %@", [NSDate date], [self.sessionDateLastDownloadTasks dateByAddingTimeInterval:k_timerVerifySession], [self.sessionDateLastUploadTasks dateByAddingTimeInterval:k_timerVerifySession]);
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         
-        if ([[NSDate date] compare:[self.sessionDateLastDownloadTasks dateByAddingTimeInterval:k_timerVerifySession]] == NSOrderedDescending) {
-            
-            callVerifyDownload = YES;
             [[CCNetworking sharedNetworking] verifyDownloadInProgress];
-        }
-        
-        if ([[NSDate date] compare:[self.sessionDateLastUploadTasks dateByAddingTimeInterval:k_timerVerifySession]] == NSOrderedDescending) {
-            
-            callVerifyUpload = YES;
             [[CCNetworking sharedNetworking] verifyUploadInProgress];
-        }
-        
-        if (callVerifyDownload && callVerifyUpload) {
-            
-            NSLog(@"[LOG] Stop timer verify session");
-            
-            [self.timerVerifySessionInProgress invalidate];
-        }
+        });
     }
 }
 
@@ -1433,12 +1411,6 @@
     /*
     Task
     */
-    if ([task isKindOfClass:[NSURLSessionDownloadTask class]])
-        app.sessionDateLastDownloadTasks = [NSDate date];
-
-    if ([task isKindOfClass:[NSURLSessionUploadTask class]])
-        app.sessionDateLastUploadTasks = [NSDate date];
-    
     if (fileID && [_listChangeTask objectForKey:fileID])
         dispatch_async(dispatch_get_main_queue(), ^{
             [self changeTask:fileID];
