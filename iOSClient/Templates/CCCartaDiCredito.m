@@ -223,7 +223,7 @@
         // remove the file
         [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID] clearDateReadDirectoryID:nil];
         
-        [self.delegate readFolderWithForced:YES serverUrl:self.serverUrl];
+        [self.delegate readFolder:self.serverUrl];
     }
 }
 

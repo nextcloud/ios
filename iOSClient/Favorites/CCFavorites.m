@@ -585,7 +585,7 @@
     return metadata;
 }
 
-- (void)readFolderWithForced:(BOOL)forced serverUrl:(NSString *)serverUrl
+- (void)readFolder:(NSString *)serverUrl
 {
     [self reloadDatasource];
 }

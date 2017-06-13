@@ -79,7 +79,7 @@
 
 - (void)createFolderAutoUpload;
 - (void)createFolder:(NSString *)fileNameFolder autoUploadDirectory:(BOOL)autoUploadDirectory;
-- (void)readFolderWithForced:(BOOL)forced serverUrl:(NSString *)serverUrl;
+- (void)readFolder:(NSString *)serverUrl;
 
 - (void)uploadFileAsset:(NSMutableArray *)assets serverUrl:(NSString *)serverUrl cryptated:(BOOL)cryptated useSubFolder:(BOOL)useSubFolder session:(NSString *)session;
 
@@ -88,7 +88,7 @@
 - (void)stopTaskButton:(tableMetadata *)metadata;
 
 - (void)reloadDatasource;
-- (void)reloadDatasource:(NSString *)serverUrl selector:(NSString *)selector;
+- (void)reloadDatasource:(NSString *)serverUrl;
 
 - (void)requestServerCapabilities;
 - (void)middlewarePing;

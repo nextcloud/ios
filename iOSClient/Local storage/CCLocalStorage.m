@@ -268,7 +268,7 @@
     return [CCUtility insertFileSystemInMetadata:[dataSource objectAtIndex:indexPath.row] directory:_serverUrl activeAccount:app.activeAccount autoUploadFileName:autoUploadFileName autoUploadDirectory:AutoUploadDirectory];
 }
 
-- (void)readFolderWithForced:(BOOL)forced serverUrl:(NSString *)serverUrl
+- (void)readFolder:(NSString *)serverUrl
 {
     [self reloadDatasource];
 }
