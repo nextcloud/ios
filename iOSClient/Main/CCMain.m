@@ -2047,31 +2047,32 @@
         
         _searchFileName = fileName;
         
-        if ([[NCManageDatabase sharedInstance] getServerVersion] >= 12 && ![_depth isEqualToString:@"0"]) {
+        // First : filter
+            
+        NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:_serverUrl];
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"directoryID = %@ AND account = %@ AND fileNamePrint CONTAINS[cd] %@", directoryID, app.activeAccount, fileName];
+        NSArray *records = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:predicate sorted:nil ascending:NO];
+            
+        [_searchResultMetadatas removeAllObjects];
+        for (tableMetadata *record in records)
+            [_searchResultMetadatas addObject:record];
+            
+        CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
+            
+        metadataNet.account = app.activeAccount;
+        metadataNet.directoryID = directoryID;
+        metadataNet.priority = NSOperationQueuePriorityVeryHigh;
+        metadataNet.selector = selectorSearch;
+        metadataNet.serverUrl = _serverUrl;
+
+        [self readFolderSuccess:metadataNet permissions:@"" etag:@"" metadatas:_searchResultMetadatas];
+    
+        // Version >= 12
+        if ([[NCManageDatabase sharedInstance] getServerVersion] >= 12) {
             
             [_timerWaitInput invalidate];
             _timerWaitInput = [NSTimer scheduledTimerWithTimeInterval:1.5 target:self selector:@selector(searchStartTimer) userInfo:nil repeats:NO];
             
-        } else {
-            
-            NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:_serverUrl];
-            NSPredicate *predicate = [NSPredicate predicateWithFormat:@"directoryID = %@ AND account = %@ AND fileNamePrint CONTAINS[cd] %@", directoryID, app.activeAccount, fileName];
-            NSArray *records = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:predicate sorted:nil ascending:NO];
-            
-            [_searchResultMetadatas removeAllObjects];
-            for (tableMetadata *record in records)
-                [_searchResultMetadatas addObject:record];
-            
-            CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
-            
-            metadataNet.account = app.activeAccount;
-            metadataNet.action = actionUploadTemplate;
-            metadataNet.directoryID = directoryID;
-            metadataNet.priority = NSOperationQueuePriorityVeryHigh;
-            metadataNet.selector = selectorSearch;
-            metadataNet.serverUrl = _serverUrl;
-
-            [self readFolderSuccess:metadataNet permissions:@"" etag:@"" metadatas:_searchResultMetadatas];
         }
     }
     
