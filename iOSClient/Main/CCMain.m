@@ -2004,7 +2004,7 @@
         return;
     }
     
-    if (_refreshControl.isRefreshing == NO)
+    if (_refreshControl.isRefreshing == NO && [_sectionDataSource.allRecordsDataSource count] == 0)
         [_hud visibleIndeterminateHud];
     
     tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"serverUrl = %@", serverUrl]];
