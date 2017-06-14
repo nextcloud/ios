@@ -253,7 +253,7 @@
     
     // Start Timer
     self.timerProcessAutoUpload = [NSTimer scheduledTimerWithTimeInterval:k_timerProcessAutoUpload target:self selector:@selector(processAutoUpload) userInfo:nil repeats:YES];
-    self.timerVerifySessionInProgress = [NSTimer scheduledTimerWithTimeInterval:k_timerVerifySession target:self selector:@selector(verifyDownloadUploadInProgress) userInfo:nil repeats:YES];
+    self.timerVerifySessionInProgress = [NSTimer scheduledTimerWithTimeInterval:3.0 target:self selector:@selector(verifyDownloadUploadInProgress) userInfo:nil repeats:YES];
     self.timerUpdateApplicationIconBadgeNumber = [NSTimer scheduledTimerWithTimeInterval:k_timerUpdateApplicationIconBadgeNumber target:self selector:@selector(updateApplicationIconBadgeNumber) userInfo:nil repeats:YES];
 
     // Registration Push Notification
@@ -284,7 +284,7 @@
 {    
     // facciamo partire il timer per il controllo delle sessioni e dei Lock
     [self.timerVerifySessionInProgress invalidate];
-    self.timerVerifySessionInProgress = [NSTimer scheduledTimerWithTimeInterval:k_timerVerifySession target:self selector:@selector(verifyDownloadUploadInProgress) userInfo:nil repeats:YES];
+    self.timerVerifySessionInProgress = [NSTimer scheduledTimerWithTimeInterval:3.0 target:self selector:@selector(verifyDownloadUploadInProgress) userInfo:nil repeats:YES];
     
     // refresh active Main
     if (_activeMain)
@@ -1388,15 +1388,12 @@
     // Test Maintenance
     if (self.maintenanceMode || self.activeAccount.length == 0)
         return;
-
-    if ([[UIApplication sharedApplication] applicationState] != UIApplicationStateBackground) {
-        
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        
-            [[CCNetworking sharedNetworking] verifyDownloadInProgress];
-            [[CCNetworking sharedNetworking] verifyUploadInProgress];
-        });
-    }
+    
+    [[CCNetworking sharedNetworking] verifyDownloadInProgress];
+    [[CCNetworking sharedNetworking] verifyUploadInProgress];
+    
+    [self.timerVerifySessionInProgress invalidate];
+    self.timerVerifySessionInProgress = [NSTimer scheduledTimerWithTimeInterval:k_timerVerifySession target:self selector:@selector(verifyDownloadUploadInProgress) userInfo:nil repeats:YES];
 }
 
 // Notification change session
