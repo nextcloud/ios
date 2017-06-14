@@ -141,7 +141,11 @@ class NCManageDatabase: NSObject {
             
         realm.add(addAccount)
         
-        try! realm.commitWrite()
+        do {
+            try realm.commitWrite()
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+        }
     }
     
     func setAccountPassword(_ account: String, password: String) {
@@ -156,7 +160,11 @@ class NCManageDatabase: NSObject {
             result?.password = password
         }
         
-        try! realm.commitWrite()
+        do {
+            try realm.commitWrite()
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+        }
     }
     
     func deleteAccount(_ account: String) {
@@ -171,7 +179,11 @@ class NCManageDatabase: NSObject {
             realm.delete(result!)
         }
         
-        try! realm.commitWrite()
+        do {
+            try realm.commitWrite()
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+        }
     }
 
     func getAccountActive() -> tableAccount? {
@@ -311,7 +323,11 @@ class NCManageDatabase: NSObject {
             }
         }
         
-        try! realm.commitWrite()
+        do {
+            try realm.commitWrite()
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+        }
     }
     
     func setAccountAutoUploadDateAssetType(_ assetMediaType: PHAssetMediaType, assetDate: NSDate?) {
@@ -428,32 +444,36 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
         
-        try! realm.write {
+        do {
+            try realm.write {
             
-            for activity in listOfActivity {
+                for activity in listOfActivity {
                 
-                let result = realm.objects(tableActivity.self).filter("idActivity = %d", activity.idActivity).first
+                    let result = realm.objects(tableActivity.self).filter("idActivity = %d", activity.idActivity).first
                 
-                if result != nil {
-                    continue
-                }
+                    if result != nil {
+                        continue
+                    }
                 
-                // Add new Activity
-                let addActivity = tableActivity()
+                    // Add new Activity
+                    let addActivity = tableActivity()
                 
-                addActivity.account = tableAccount!.account
+                    addActivity.account = tableAccount!.account
                 
-                if activity.date != nil {
-                    addActivity.date = activity.date! as NSDate
-                }
+                    if activity.date != nil {
+                        addActivity.date = activity.date! as NSDate
+                    }
                 
-                addActivity.idActivity = Double(activity.idActivity)
-                addActivity.link = activity.link
-                addActivity.note = activity.subject
-                addActivity.type = k_activityTypeInfo
+                    addActivity.idActivity = Double(activity.idActivity)
+                    addActivity.link = activity.link
+                    addActivity.note = activity.subject
+                    addActivity.type = k_activityTypeInfo
 
-                realm.add(addActivity)
+                    realm.add(addActivity)
+                }
             }
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
         }
     }
     
@@ -473,21 +493,26 @@ class NCManageDatabase: NSObject {
 
         let realm = try! Realm()
         
-        try! realm.write {
-
-            // Add new Activity
-            let addActivity = tableActivity()
-
-            addActivity.account = tableAccount!.account
-            addActivity.action = action
-            addActivity.file = file
-            addActivity.fileID = fileID
-            addActivity.note = noteReplacing
-            addActivity.selector = selector
-            addActivity.type = type
-            addActivity.verbose = verbose
-
-            realm.add(addActivity)
+        
+        do {
+            try realm.write {
+                
+                // Add new Activity
+                let addActivity = tableActivity()
+                
+                addActivity.account = tableAccount!.account
+                addActivity.action = action
+                addActivity.file = file
+                addActivity.fileID = fileID
+                addActivity.note = noteReplacing
+                addActivity.selector = selector
+                addActivity.type = type
+                addActivity.verbose = verbose
+                
+                realm.add(addActivity)
+            }
+        } catch {
+            print("[LOG] Could not write to database: ", error)
         }
     }
     
@@ -542,33 +567,37 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
         
-        try! realm.write {
+        do {
+            try realm.write {
             
-            for metadataNet in metadatasNet {
+                for metadataNet in metadatasNet {
             
-                let result = realm.objects(tableAutoUpload.self).filter("account = %@ AND assetLocalIdentifier = %@", tableAccount!.account, metadataNet.assetLocalIdentifier).first
+                    let result = realm.objects(tableAutoUpload.self).filter("account = %@ AND assetLocalIdentifier = %@", tableAccount!.account, metadataNet.assetLocalIdentifier).first
             
-                if result != nil {
-                    continue
+                    if result != nil {
+                        continue
+                    }
+            
+                    // Add new Auto Upload
+                    let addAutoUpload = tableAutoUpload()
+            
+                    addAutoUpload.account = tableAccount!.account
+                    addAutoUpload.assetLocalIdentifier = metadataNet.assetLocalIdentifier
+                    addAutoUpload.fileName = metadataNet.fileName
+                    addAutoUpload.selector = metadataNet.selector
+                    if (metadataNet.selectorPost != nil) {
+                        addAutoUpload.selectorPost = metadataNet.selectorPost
+                    }
+                    addAutoUpload.serverUrl = metadataNet.serverUrl
+                    addAutoUpload.session = metadataNet.session
+                    addAutoUpload.priority = metadataNet.priority
+            
+                    realm.add(addAutoUpload)
                 }
-            
-                // Add new Auto Upload
-                let addAutoUpload = tableAutoUpload()
-            
-                addAutoUpload.account = tableAccount!.account
-                addAutoUpload.assetLocalIdentifier = metadataNet.assetLocalIdentifier
-                addAutoUpload.fileName = metadataNet.fileName
-                addAutoUpload.selector = metadataNet.selector
-                if (metadataNet.selectorPost != nil) {
-                    addAutoUpload.selectorPost = metadataNet.selectorPost
-                }
-                addAutoUpload.serverUrl = metadataNet.serverUrl
-                addAutoUpload.session = metadataNet.session
-                addAutoUpload.priority = metadataNet.priority
-            
-                realm.add(addAutoUpload)
             }
-        } 
+        } catch {
+            print("[LOG] Could not write to database: ", error)
+        }
     }
     
     func getAutoUpload(selector: String) -> CCMetadataNet? {
@@ -605,7 +634,11 @@ class NCManageDatabase: NSObject {
         // Lock
         result?.lock = true
         
-        try! realm.commitWrite()
+        do {
+            try realm.commitWrite()
+        }catch let error{
+            print("[LOG] Could not write to database: ", error)
+        }
         
         return metadataNet
     }
@@ -1357,19 +1390,23 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
         
-        try! realm.write {
-            
-            for metadata in metadatas {
-            
-                if metadata.realm == nil {
-                    let metadataWithIcon = CCUtility.insertTypeFileIconName(metadata, serverUrl: serverUrl, autoUploadFileName: autoUploadFileName, autoUploadDirectory: autoUploadDirectory)
-                    realm.add(metadataWithIcon!, update: true)
-                } else {
-                    realm.add(metadata, update: true)
-                }
+        do {
+            try realm.write {
                 
-                arrayMetadatas.append(tableMetadata.init(value: metadata))
+                for metadata in metadatas {
+                    
+                    if metadata.realm == nil {
+                        let metadataWithIcon = CCUtility.insertTypeFileIconName(metadata, serverUrl: serverUrl, autoUploadFileName: autoUploadFileName, autoUploadDirectory: autoUploadDirectory)
+                        realm.add(metadataWithIcon!, update: true)
+                    } else {
+                        realm.add(metadata, update: true)
+                    }
+                    
+                    arrayMetadatas.append(tableMetadata.init(value: metadata))
+                }
             }
+        } catch {
+            print("Could not write to database: ", error)
         }
         
         let directoryID = self.getDirectoryID(serverUrl)
