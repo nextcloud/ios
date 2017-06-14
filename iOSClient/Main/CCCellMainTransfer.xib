@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="12120" systemVersion="16F73" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="12121" systemVersion="16F73" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12088"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12089"/>
         <capability name="Alignment constraints to the first baseline" minToolsVersion="6.0"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -39,7 +39,7 @@
                         </constraints>
                     </imageView>
                     <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="DQR-yN-JaH" userLabel="Image">
-                        <rect key="frame" x="39" y="40" width="15" height="15"/>
+                        <rect key="frame" x="4" y="40" width="15" height="15"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="15" id="bgo-QS-x7k"/>
                             <constraint firstAttribute="width" constant="15" id="g4P-aH-jOh"/>
@@ -97,11 +97,11 @@
                     <constraint firstItem="Dge-D1-XMk" firstAttribute="baseline" secondItem="eGg-ei-EiX" secondAttribute="baseline" id="YY9-7o-8ag"/>
                     <constraint firstItem="Dge-D1-XMk" firstAttribute="firstBaseline" secondItem="eGg-ei-EiX" secondAttribute="firstBaseline" id="b1Y-qH-GES"/>
                     <constraint firstItem="Dge-D1-XMk" firstAttribute="firstBaseline" secondItem="Kaz-0H-BSt" secondAttribute="firstBaseline" constant="-1" id="eFj-cr-a0P"/>
-                    <constraint firstItem="DQR-yN-JaH" firstAttribute="leading" secondItem="sQq-jC-UEV" secondAttribute="leadingMargin" constant="31" id="hO0-iD-rKc"/>
+                    <constraint firstItem="DQR-yN-JaH" firstAttribute="leading" secondItem="sQq-jC-UEV" secondAttribute="leadingMargin" constant="-4" id="hO0-iD-rKc"/>
                     <constraint firstItem="DQR-yN-JaH" firstAttribute="top" secondItem="sQq-jC-UEV" secondAttribute="topMargin" constant="32" id="iWl-MU-FCz"/>
                     <constraint firstItem="eGg-ei-EiX" firstAttribute="leading" secondItem="Kaz-0H-BSt" secondAttribute="trailing" constant="-103" id="iuz-Vg-6UE"/>
                     <constraint firstItem="5" firstAttribute="leading" secondItem="sQq-jC-UEV" secondAttribute="leadingMargin" constant="2" id="jRD-Qd-3a9"/>
-                    <constraint firstItem="p7I-KN-FVZ" firstAttribute="leading" secondItem="DQR-yN-JaH" secondAttribute="trailing" constant="6" id="mRY-av-dw7"/>
+                    <constraint firstItem="p7I-KN-FVZ" firstAttribute="leading" secondItem="DQR-yN-JaH" secondAttribute="trailing" constant="41" id="mRY-av-dw7"/>
                     <constraint firstItem="Q4M-4B-abs" firstAttribute="trailing" secondItem="sQq-jC-UEV" secondAttribute="trailingMargin" constant="-94" id="nQL-7B-qXT"/>
                     <constraint firstItem="Q4M-4B-abs" firstAttribute="leading" secondItem="sQq-jC-UEV" secondAttribute="leadingMargin" constant="60" id="o1f-09-ZgZ"/>
                     <constraint firstItem="QNC-8X-DAC" firstAttribute="trailing" secondItem="p7I-KN-FVZ" secondAttribute="trailing" id="oZv-Y4-1iW"/>

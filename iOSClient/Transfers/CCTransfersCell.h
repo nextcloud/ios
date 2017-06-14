@@ -25,8 +25,8 @@
 
 @interface CCTransfersCell : UITableViewCell
 
-@property(nonatomic, weak) IBOutlet UIImageView *fileImageView;
-@property(nonatomic, weak) IBOutlet UIImageView *statusImageView;
+@property(nonatomic, weak) IBOutlet UIImageView *file;
+@property(nonatomic, weak) IBOutlet UIImageView *status;
 
 @property(nonatomic, weak) IBOutlet UILabel *labelTitle;
 @property(nonatomic, weak) IBOutlet UILabel *labelInfoFile;
