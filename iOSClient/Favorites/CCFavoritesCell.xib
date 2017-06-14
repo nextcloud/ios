@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="12120" systemVersion="16F73" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="12121" systemVersion="16F73" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12088"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12089"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -16,7 +16,7 @@
             <rect key="frame" x="0.0" y="0.0" width="600" height="60"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxY="YES"/>
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="2" id="sQq-jC-UEV">
-                <rect key="frame" x="0.0" y="0.0" width="600" height="60"/>
+                <rect key="frame" x="0.0" y="0.0" width="600" height="59.5"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <label opaque="NO" userInteractionEnabled="NO" tag="101" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QNC-8X-DAC">
@@ -32,14 +32,14 @@
                             <constraint firstAttribute="height" constant="40" id="cGI-9B-eWe"/>
                         </constraints>
                     </imageView>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="8I8-C4-IpX" userLabel="Local">
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="8I8-C4-IpX" userLabel="Favorite">
                         <rect key="frame" x="39" y="4" width="15" height="15"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="15" id="Zqv-l0-LGD"/>
                             <constraint firstAttribute="height" constant="15" id="gLU-er-iu6"/>
                         </constraints>
                     </imageView>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="DQR-yN-JaH">
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="DQR-yN-JaH" userLabel="Local">
                         <rect key="frame" x="40" y="40" width="15" height="15"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="15" id="O4C-De-dnI"/>
@@ -52,7 +52,7 @@
                         <color key="textColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.59999999999999998" alpha="1" colorSpace="calibratedRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="dhG-hb-z3n" userLabel="Favorite">
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="dhG-hb-z3n" userLabel="Status">
                         <rect key="frame" x="4" y="40" width="15" height="15"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="15" id="ZiA-bt-IkC"/>
@@ -78,12 +78,12 @@
                 </constraints>
             </tableViewCellContentView>
             <connections>
-                <outlet property="favorite" destination="dhG-hb-z3n" id="kJu-nV-Vcb"/>
+                <outlet property="favorite" destination="8I8-C4-IpX" id="pLt-ju-d8T"/>
                 <outlet property="file" destination="5" id="whc-SL-Hxm"/>
                 <outlet property="labelInfoFile" destination="p7I-KN-FVZ" id="5Yb-hH-k73"/>
                 <outlet property="labelTitle" destination="QNC-8X-DAC" id="dFX-Cb-8IE"/>
-                <outlet property="local" destination="8I8-C4-IpX" id="zk7-DD-WJB"/>
-                <outlet property="status" destination="DQR-yN-JaH" id="xh2-y1-GlP"/>
+                <outlet property="local" destination="DQR-yN-JaH" id="Gbe-QU-cMb"/>
+                <outlet property="status" destination="dhG-hb-z3n" id="Jxk-qM-eWu"/>
             </connections>
             <point key="canvasLocation" x="256" y="19"/>
         </tableViewCell>
