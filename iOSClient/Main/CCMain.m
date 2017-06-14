@@ -2061,7 +2061,6 @@
             
         metadataNet.account = app.activeAccount;
         metadataNet.directoryID = directoryID;
-        metadataNet.priority = NSOperationQueuePriorityVeryHigh;
         metadataNet.selector = selectorSearch;
         metadataNet.serverUrl = _serverUrl;
 
