@@ -2028,7 +2028,9 @@
 
 -(void)searchStartTimer
 {
-    [[CCActions sharedInstance] search:_serverUrl fileName:_searchFileName depth:_depth date:nil selector:selectorSearch delegate:self];
+    NSString *home = [CCUtility getHomeServerUrlActiveUrl:app.activeUrl];
+    
+    [[CCActions sharedInstance] search:home fileName:_searchFileName depth:_depth date:nil selector:selectorSearch delegate:self];
 
     _noFilesSearchTitle = @"";
     _noFilesSearchDescription = NSLocalizedString(@"_search_in_progress_", nil);
@@ -2071,7 +2073,6 @@
             
             [_timerWaitInput invalidate];
             _timerWaitInput = [NSTimer scheduledTimerWithTimeInterval:1.5 target:self selector:@selector(searchStartTimer) userInfo:nil repeats:NO];
-            
         }
     }
     
