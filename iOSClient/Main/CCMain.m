@@ -83,6 +83,8 @@
     // Login
     CCLoginWeb *_loginWeb;
     CCLogin *_loginVC;
+    
+    BOOL _loadingFolder;
 }
 @end
 
@@ -1862,7 +1864,8 @@
     // verify active user
     tableAccount *record = [[NCManageDatabase sharedInstance] getAccountActive];
     
-    [_hud hideHud];
+    //[_hud hideHud];
+    _loadingFolder = NO;
 
     [_refreshControl endRefreshing];
         
@@ -1977,7 +1980,8 @@
         // Enable change user
         [_ImageTitleHomeCryptoCloud setUserInteractionEnabled:YES];
                 
-        [_hud hideHud];
+        //[_hud hideHud];
+        _loadingFolder = NO;
     }
 }
 
@@ -2004,8 +2008,10 @@
         return;
     }
     
-    if (_refreshControl.isRefreshing == NO && [_sectionDataSource.allRecordsDataSource count] == 0)
-        [_hud visibleIndeterminateHud];
+    //if (_refreshControl.isRefreshing == NO && [_sectionDataSource.allRecordsDataSource count] == 0)
+    //    [_hud visibleIndeterminateHud];
+    
+    _loadingFolder = YES;
     
     tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"serverUrl = %@", serverUrl]];
     
