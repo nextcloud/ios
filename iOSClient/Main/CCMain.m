@@ -2003,7 +2003,7 @@
         
         return;
     }
-
+    
     if (_refreshControl.isRefreshing == NO)
         [_hud visibleIndeterminateHud];
     
@@ -2040,6 +2040,8 @@
 
 -(void)updateSearchResultsForSearchController:(UISearchController *)searchController
 {
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
+
     _isSearchMode = YES;
     [self deleteRefreshControl];
     
@@ -2118,6 +2120,8 @@
         
         [self reloadDatasource];
     }
+    
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
 }
 
 #pragma mark -
