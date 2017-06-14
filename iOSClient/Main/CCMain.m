@@ -415,6 +415,21 @@
         return [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"filesNoFiles"] color:[NCBrandColor sharedInstance].brand];
 }
 
+- (UIView *)customViewForEmptyDataSet:(UIScrollView *)scrollView
+{
+    if (_loadingFolder && _refreshControl.isRefreshing == NO) {
+    
+        UIActivityIndicatorView *activityView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+        activityView.transform = CGAffineTransformMakeScale(1.5f, 1.5f);
+        activityView.color = [NCBrandColor sharedInstance].brand;
+        [activityView startAnimating];
+        
+        return activityView;
+    }
+    
+    return nil;
+}
+
 - (NSAttributedString *)titleForEmptyDataSet:(UIScrollView *)scrollView
 {
     NSString *text;
@@ -425,11 +440,7 @@
         
     } else {
         
-        if (_loadingFolder)
-            text = [NSString stringWithFormat:@"%@", NSLocalizedString(@"_loading_with_points_", nil)];
-        else
-            text = [NSString stringWithFormat:@"%@", NSLocalizedString(@"_files_no_files_", nil)];
-
+        text = [NSString stringWithFormat:@"%@", NSLocalizedString(@"_files_no_files_", nil)];
     }
     
     NSDictionary *attributes = @{NSFontAttributeName:[UIFont boldSystemFontOfSize:20.0f], NSForegroundColorAttributeName:[UIColor lightGrayColor]};
@@ -447,10 +458,7 @@
         
     } else {
         
-        if (_loadingFolder)
-            text = @"";
-        else
-            text = [NSString stringWithFormat:@"\n%@", NSLocalizedString(@"_no_file_pull_down_", nil)];
+        text = [NSString stringWithFormat:@"\n%@", NSLocalizedString(@"_no_file_pull_down_", nil)];
     }
     
     NSMutableParagraphStyle *paragraph = [NSMutableParagraphStyle new];
