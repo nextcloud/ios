@@ -580,6 +580,7 @@ class NCManageDatabase: NSObject {
             try realm.commitWrite()
         } catch let error {
             print("[LOG] Could not write to database: ", error)
+            return false
         }
         
         return true
@@ -664,6 +665,7 @@ class NCManageDatabase: NSObject {
             try realm.commitWrite()
         } catch let error {
             print("[LOG] Could not write to database: ", error)
+            return nil
         }
         
         return metadataNet
@@ -1190,6 +1192,7 @@ class NCManageDatabase: NSObject {
             }
         } catch let error {
             print("Could not write to database: ", error)
+            return false
         }
         
         return update
@@ -1476,6 +1479,7 @@ class NCManageDatabase: NSObject {
             try realm.commitWrite()
         } catch let error {
             print("[LOG] Could not write to database: ", error)
+            return nil
         }
         
         self.setDateReadDirectory(directoryID: metadataCopy.directoryID)
@@ -1579,7 +1583,7 @@ class NCManageDatabase: NSObject {
         self.setDateReadDirectory(directoryID: directoryIDTo)
     }
     
-    func updateMetadata(_ metadata: tableMetadata, activeUrl: String) -> tableMetadata {
+    func updateMetadata(_ metadata: tableMetadata, activeUrl: String) -> tableMetadata? {
         
         let autoUploadFileName = self.getAccountAutoUploadFileName()
         let autoUploadDirectory = self.getAccountAutoUploadDirectory(activeUrl)
@@ -1596,6 +1600,7 @@ class NCManageDatabase: NSObject {
             }
         } catch let error {
             print("Could not write to database: ", error)
+            return nil
         }
         
         self.setDateReadDirectory(directoryID: directoryID)

@@ -462,14 +462,14 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
             
         case selectorLoadPlist :
             
-            var metadata = CCUtility.insertInformationPlist(self.metadata, directoryUser: directoryUser)!
+            var metadata : tableMetadata? = CCUtility.insertInformationPlist(self.metadata, directoryUser: directoryUser)!
+            metadata = NCManageDatabase.sharedInstance.updateMetadata(metadata!, activeUrl: activeUrl!)
             
-            metadata = NCManageDatabase.sharedInstance.updateMetadata(metadata, activeUrl: activeUrl!)
-            
-            if metadata.type == k_metadataType_template {
-                NCManageDatabase.sharedInstance.setLocalFile(fileID: metadata.fileID, date: metadata.date, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, fileNamePrint: metadata.fileNamePrint)
+            if metadata != nil {
+                if metadata!.type == k_metadataType_template {
+                    NCManageDatabase.sharedInstance.setLocalFile(fileID: metadata!.fileID, date: metadata!.date, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, fileNamePrint: metadata!.fileNamePrint)
+                }
             }
-            
             tableView.reloadData()
             
         default :
