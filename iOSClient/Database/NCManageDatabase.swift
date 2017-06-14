@@ -87,8 +87,8 @@ class NCManageDatabase: NSObject {
         for URL in realmURLs {
             do {
                 try FileManager.default.removeItem(at: URL)
-            } catch {
-                // handle error
+            } catch let error {
+                print("[LOG] Could not write to database: ", error)
             }
         }
     }
@@ -493,7 +493,6 @@ class NCManageDatabase: NSObject {
 
         let realm = try! Realm()
         
-        
         do {
             try realm.write {
                 
@@ -511,7 +510,7 @@ class NCManageDatabase: NSObject {
                 
                 realm.add(addActivity)
             }
-        } catch {
+        } catch let error {
             print("[LOG] Could not write to database: ", error)
         }
     }
@@ -553,8 +552,12 @@ class NCManageDatabase: NSObject {
             
         realm.add(addAutoUpload)
         
-        try! realm.commitWrite()
-
+        do {
+            try realm.commitWrite()
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+        }
+        
         return true
     }
     
@@ -595,7 +598,7 @@ class NCManageDatabase: NSObject {
                     realm.add(addAutoUpload)
                 }
             }
-        } catch {
+        } catch let error {
             print("[LOG] Could not write to database: ", error)
         }
     }
@@ -614,7 +617,6 @@ class NCManageDatabase: NSObject {
         let result = realm.objects(tableAutoUpload.self).filter("account = %@ AND selector = %@ AND lock == false", tableAccount!.account, selector).first
         
         if result == nil {
-            
             realm.cancelWrite()
             return nil
         }
@@ -636,7 +638,7 @@ class NCManageDatabase: NSObject {
         
         do {
             try realm.commitWrite()
-        }catch let error{
+        } catch let error {
             print("[LOG] Could not write to database: ", error)
         }
         
@@ -681,7 +683,11 @@ class NCManageDatabase: NSObject {
             result?.lock = false
         }
         
-        try! realm.commitWrite()
+        do {
+            try realm.commitWrite()
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+        }
     }
     
     func deleteAutoUpload(assetLocalIdentifier: String) {
@@ -1405,7 +1411,7 @@ class NCManageDatabase: NSObject {
                     arrayMetadatas.append(tableMetadata.init(value: metadata))
                 }
             }
-        } catch {
+        } catch let error {
             print("Could not write to database: ", error)
         }
         
