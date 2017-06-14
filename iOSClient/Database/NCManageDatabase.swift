@@ -1084,7 +1084,11 @@ class NCManageDatabase: NSObject {
             result?.dateReadDirectory = NSDate()
         }
         
-        try! realm.commitWrite()
+        do {
+            try realm.commitWrite()
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+        }
     }
     
     func setClearAllDateReadDirectory() {
@@ -1236,7 +1240,11 @@ class NCManageDatabase: NSObject {
             
         realm.add(addGPS)
         
-        try! realm.commitWrite()
+        do {
+            try realm.commitWrite()
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+        }
     }
     
     func getLocationFromGeoLatitude(_ latitude: String, longitude: String) -> String? {
@@ -1381,7 +1389,11 @@ class NCManageDatabase: NSObject {
         
         let metadataCopy = tableMetadata.init(value: metadata)
         
-        try! realm.commitWrite()
+        do {
+            try realm.commitWrite()
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+        }
         
         self.setDateReadDirectory(directoryID: metadataCopy.directoryID)
         
@@ -1447,7 +1459,11 @@ class NCManageDatabase: NSObject {
         
         realm.delete(results)
         
-        try! realm.commitWrite()
+        do {
+            try realm.commitWrite()
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+        }
         
         for directoryID in directoriesID {
             self.setDateReadDirectory(directoryID: directoryID)
@@ -1535,7 +1551,11 @@ class NCManageDatabase: NSObject {
             directoryID = (result?.directoryID)!
         }
         
-        try! realm.commitWrite()
+        do {
+            try realm.commitWrite()
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+        }
         
         if directoryID != nil {
             // Update Date Read Directory
@@ -1563,7 +1583,11 @@ class NCManageDatabase: NSObject {
             directoryID = result?.directoryID
         }
         
-        try! realm.commitWrite()
+        do {
+            try realm.commitWrite()
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+        }
         
         if directoryID != nil {
             // Update Date Read Directory
@@ -1798,7 +1822,11 @@ class NCManageDatabase: NSObject {
             realm.add(addShare)
         }
         
-        try! realm.commitWrite()
+        do {
+            try realm.commitWrite()
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+        }
 
         return ["\(serverUrl)\(fileName)" : share]
     }
@@ -1834,7 +1862,11 @@ class NCManageDatabase: NSObject {
             realm.add(addShare)
         }
         
-        try! realm.commitWrite()
+        do {
+            try realm.commitWrite()
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+        }
         
         return ["\(serverUrl)\(fileName)" : share]
     }
@@ -1889,7 +1921,11 @@ class NCManageDatabase: NSObject {
             }
         }
         
-        try! realm.commitWrite()
+        do {
+            try realm.commitWrite()
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+        }
 
         return [sharesLink, sharesUserAndGroup]
     }
@@ -2106,7 +2142,11 @@ class NCManageDatabase: NSObject {
             realm.add(addAccount)
         }
         
-        try! realm.commitWrite()
+        do {
+            try realm.commitWrite()
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+        }
     }
 
     func addTableDirectoryFromCoredata(_ table: TableDirectory) {
@@ -2136,7 +2176,11 @@ class NCManageDatabase: NSObject {
             realm.add(addDirectory)
         }
         
-        try! realm.commitWrite()
+        do {
+            try realm.commitWrite()
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+        }
     }
 
     func addTableLocalFileFromCoredata(_ table: TableLocalFile) {
@@ -2174,7 +2218,11 @@ class NCManageDatabase: NSObject {
             realm.add(addLocalFile)
         }
         
-        try! realm.commitWrite()
+        do {
+            try realm.commitWrite()
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+        }
     }
     
     //MARK: -
