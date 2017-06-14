@@ -72,7 +72,11 @@ class NCManageDatabase: NSObject {
     
         realm.delete(results)
 
-        try! realm.commitWrite()
+        do {
+            try realm.commitWrite()
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+        }
     }
     
     func removeDB() {
