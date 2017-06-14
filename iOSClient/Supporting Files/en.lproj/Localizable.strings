@@ -13,6 +13,7 @@
 "_download_file_"           = "Download file";
 "_upload_encrypted_file_"   = "Upload encrypted file";
 "_loading_"                 = "Loading";
+"_loading_with_points_"     = "Loading...";
 "_loading_num_"             = "Loading file %i";
 "_loading_autoupload_"      = "Auto uploading";
 "_uploading_"               = "Uploading";

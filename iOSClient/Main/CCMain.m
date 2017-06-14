@@ -419,10 +419,18 @@
 {
     NSString *text;
     
-    if (_isSearchMode)
+    if (_isSearchMode) {
+        
         text = _noFilesSearchTitle;
-    else
-        text = [NSString stringWithFormat:@"%@", NSLocalizedString(@"_files_no_files_", nil)];
+        
+    } else {
+        
+        if (_loadingFolder)
+            text = [NSString stringWithFormat:@"%@", NSLocalizedString(@"_loading_with_points_", nil)];
+        else
+            text = [NSString stringWithFormat:@"%@", NSLocalizedString(@"_files_no_files_", nil)];
+
+    }
     
     NSDictionary *attributes = @{NSFontAttributeName:[UIFont boldSystemFontOfSize:20.0f], NSForegroundColorAttributeName:[UIColor lightGrayColor]};
     
@@ -433,10 +441,17 @@
 {
     NSString *text;
     
-    if (_isSearchMode)
+    if (_isSearchMode) {
+        
         text = _noFilesSearchDescription;
-    else
-        text = [NSString stringWithFormat:@"\n%@", NSLocalizedString(@"_no_file_pull_down_", nil)];
+        
+    } else {
+        
+        if (_loadingFolder)
+            text = @"";
+        else
+            text = [NSString stringWithFormat:@"\n%@", NSLocalizedString(@"_no_file_pull_down_", nil)];
+    }
     
     NSMutableParagraphStyle *paragraph = [NSMutableParagraphStyle new];
     paragraph.lineBreakMode = NSLineBreakByWordWrapping;
@@ -1866,6 +1881,7 @@
     
     //[_hud hideHud];
     _loadingFolder = NO;
+    [self.tableView reloadData];
 
     [_refreshControl endRefreshing];
         
@@ -1982,6 +1998,7 @@
                 
         //[_hud hideHud];
         _loadingFolder = NO;
+        [self.tableView reloadData];
     }
 }
 
@@ -2012,6 +2029,7 @@
     //    [_hud visibleIndeterminateHud];
     
     _loadingFolder = YES;
+    [self.tableView reloadData];
     
     tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"serverUrl = %@", serverUrl]];
     
