@@ -129,7 +129,7 @@
     _searchController = [[UISearchController alloc] initWithSearchResultsController:nil];
     _searchResultMetadatas = [NSMutableArray new];
     _searchFileName = @"";
-    _depth = @"0";
+    _depth = @"infinity";
     _noFilesSearchTitle = @"";
     _noFilesSearchDescription = @"";
     
@@ -193,18 +193,6 @@
     self.searchController.searchBar.barTintColor = [NCBrandColor sharedInstance].seperator;
     [self.searchController.searchBar sizeToFit];
     self.searchController.searchBar.delegate = self;
-    self.searchController.searchBar.placeholder = NSLocalizedString(@"_search_this_folder_",nil);
-
-    if ([[NCManageDatabase sharedInstance] getServerVersion] >= 12) {
-        
-        if (_isRoot)
-            self.searchController.searchBar.scopeButtonTitles = [NSArray arrayWithObjects:NSLocalizedString(@"_search_this_folder_",nil),NSLocalizedString(@"_search_all_folders_",nil), nil];
-        else
-            self.searchController.searchBar.scopeButtonTitles = [NSArray arrayWithObjects:NSLocalizedString(@"_search_this_folder_",nil),NSLocalizedString(@"_search_sub_folder_",nil), nil];
-    } else {
-        
-        self.searchController.searchBar.scopeButtonTitles = nil;
-    }
     
     // Hide Search Filed on Load
     [self.tableView setContentOffset:CGPointMake(0, self.searchController.searchBar.frame.size.height - self.tableView.contentOffset.y)];
@@ -1239,23 +1227,6 @@
     if ([[NCManageDatabase sharedInstance] getServerVersion] != capabilities.versionMajor) {
     
         [self cancelSearchBar];
-        
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.01 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-
-            if (capabilities.versionMajor >= 12) {
-                if (_isRoot)
-                    self.searchController.searchBar.placeholder = NSLocalizedString(@"_search_all_folders_",nil);
-                else
-                    self.searchController.searchBar.placeholder = NSLocalizedString(@"_search_sub_folder_",nil);
-                
-                self.searchController.searchBar.scopeButtonTitles = [NSArray arrayWithObjects:NSLocalizedString(@"_search_this_folder_",nil),self.searchController.searchBar.placeholder, nil];
-                
-            } else {
-                self.searchController.searchBar.placeholder = NSLocalizedString(@"_search_this_folder_",nil);
-                self.searchController.searchBar.scopeButtonTitles = nil;
-            }
-            _depth = @"0";
-        });
     }
     
     // ------ GET SERVICE SERVER ------------------------------------------------------------
@@ -2096,6 +2067,7 @@
             metadataNet.account = app.activeAccount;
             metadataNet.action = actionUploadTemplate;
             metadataNet.directoryID = directoryID;
+            metadataNet.priority = NSOperationQueuePriorityVeryHigh;
             metadataNet.selector = selectorSearch;
             metadataNet.serverUrl = _serverUrl;
 
@@ -2145,24 +2117,6 @@
         
         [self reloadDatasource];
     }
-}
-
-- (void)searchBar:(UISearchBar *)searchBar selectedScopeButtonIndexDidChange:(NSInteger)selectedScope
-{
-    NSString *title = [self.searchController.searchBar.scopeButtonTitles objectAtIndex:selectedScope];
-    self.searchController.searchBar.placeholder = title;
-
-    if ([title isEqualToString:NSLocalizedString(@"_search_this_folder_",nil)])
-        _depth = @"0";
-    
-    if ([title isEqualToString:NSLocalizedString(@"_search_sub_folder_",nil)])
-        _depth = @"1";
-    
-    if ([title isEqualToString:NSLocalizedString(@"_search_all_folders_",nil)])
-        _depth = @"infinity";
-    
-    _searchFileName = @"";
-    [self updateSearchResultsForSearchController:self.searchController];
 }
 
 #pragma mark -

@@ -351,6 +351,7 @@ class CCActions: NSObject {
         metadataNet.directoryID = NCManageDatabase.sharedInstance.getDirectoryID(serverUrl)
         metadataNet.fileName = fileName
         metadataNet.options = depth
+        metadataNet.priority = Operation.QueuePriority.veryHigh.rawValue
         metadataNet.selector = selector
         metadataNet.serverUrl = serverUrl
 
