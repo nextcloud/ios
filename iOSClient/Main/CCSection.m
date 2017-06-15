@@ -77,8 +77,9 @@
         if (replaceDateToExifDate) {
             
             tableLocalFile *localFile = [[NCManageDatabase sharedInstance] getTableLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadata.fileID]];
-            if (localFile.exifDate)
-                metadata.date = localFile.exifDate;
+            if (localFile)
+                if (localFile.exifDate)
+                    metadata.date = localFile.exifDate;
         }
         
         if ([listProgressMetadata objectForKey:metadata.fileID] && [groupByField isEqualToString:@"session"]) {
