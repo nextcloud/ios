@@ -263,6 +263,7 @@
     
     // Fabric
     [Fabric with:@[[Crashlytics class]]];
+    [self logUser];
         
     return YES;
 }
@@ -1534,6 +1535,16 @@
     [[NSFileManager defaultManager] removeItemAtPath:[NSHomeDirectory() stringByAppendingPathComponent:@"Documents/Inbox"] error:nil];
     
     return YES;
+}
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Crashlytics =====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void) logUser
+{
+    if (self.activeAccount.length > 0)
+        [CrashlyticsKit setUserName:self.activeAccount];
 }
 
 #pragma --------------------------------------------------------------------------------------------
