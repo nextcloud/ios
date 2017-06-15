@@ -13,7 +13,7 @@
 "_download_file_"           = "Download file";
 "_upload_encrypted_file_"   = "Upload encrypted file";
 "_loading_"                 = "Loading";
-"_loading_with_points_"     = "Loading...";
+"_loading_with_points_"     = "Loading…";
 "_loading_num_"             = "Loading file %i";
 "_loading_autoupload_"      = "Auto uploading";
 "_uploading_"               = "Uploading";
@@ -103,7 +103,7 @@
 "_funct_not_enabled_"       = "Functionality not enabled";
 "_passcode_activate_"       = "Password Lock activated";
 "_disabling_passcode_"      = "Disabling Password Lock";
-"_want_exit_"               = "Attention!  Will be reset all to the initial state. Continue?";
+"_want_exit_"               = "Attention!  Will be reset to initial state. Continue?";
 "_proceed_"                 = "Proceed";
 "_delete_cache_"            = "Delete cache";
 "_want_delete_cache_"       = "Do you want to delete cache?";
@@ -163,8 +163,8 @@
 "_autoupload_location_default_"     = "Restore default folder";
 "_autoupload_change_location_footer_" = "Change Photos folder that is used for 'Automatic upload of camera photos' (if the option is enabled)";
 "_autoupload_not_select_home_"      = "Select a folder";
-"_autoupload_save_album_"           = "Copy photo or video in the photo album";
-"_autoupload_fullphotos_"           = "Upload all camera roll";
+"_autoupload_save_album_"           = "Copy photo or video into the photo album";
+"_autoupload_fullphotos_"           = "Upload the whole camera roll";
 "_autoupload_fullphotos_footer_"    = "Select the options above before uploading";
 "_autoupload_create_subfolder_"     = "Use subfolders";
 "_autoupload_create_subfolder_footer_" = "Store in subfolders based on year and month";
@@ -181,7 +181,7 @@
 // Manage Help
 
 "_help_tutorial_"               = "Tutorial";
-"_help_intro_"                  = "Introduction Nextcloud";
+"_help_intro_"                  = "Introduction to Nextcloud";
 "_help_activity_verbose_"       = "Detailed Activity feed";
 "_help_activity_mail_"          = "Send activity via email";
 "_help_activity_clear_"         = "Clear activity";
@@ -213,8 +213,8 @@
 
 "_favorites_"                   = "Favorites";
 "_no_files_uploaded_"           = "No files uploaded";
-"_tutorial_favorite_view_"      = "Files and folders you mark as favorite will show up here";
-"_tutorial_offline_view_"       = "Copy here the files that should be available offline.\n\nThey will be synchronized with your cloud.";
+"_tutorial_favorite_view_"      = "Files and folders you mark as favorites will show up here";
+"_tutorial_offline_view_"       = "Files copied here will be available offline.\n\nThey will be synchronized with your cloud.";
 "_tutorial_local_view_"         = "You'll find the unpacked files from your cloud.\n\nConnect to iTunes to share these files.";
 "_more_"                        = "More";
 "_favorite_no_files_"           = "No favorites yet";
@@ -235,7 +235,7 @@
 "_access_photo_location_not_enabled_"       = "Access to Photos and Location not enabled";
 "_access_photo_location_not_enabled_msg_"   = "Please go to \"Settings\" and turn on \"Photo Access\" and \"Location Services\" to allow automatic photo/video uploads.";
 "_tutorial_photo_view_"                     = "No photos or videos uploaded yet";
-"_create_full_upload_"                      = "Creating archive… May take a long time, please wait";
+"_create_full_upload_"                      = "Creating archive… May take a long time, please wait.";
 "_error_createsubfolders_upload_"           = "Error creating subfolders";
 "_activate_autoupload_"                     = "Enable auto upload";
 
@@ -375,8 +375,8 @@
 "_tite_footer_download_wwan_"   = "  Wi-Fi network required, %lu %@ to download";
 "_tite_footer_download_"        = "%lu %@ to download";
 "_limited_dimension_"           = "Maximum size reached";
-"_same_device_different_passcode_hint_" = "The file was encrypted by the same device but with different Passcode key encryption. Attention if the old Passcode is entered,files encrypted with the new Passcode will not be readable. \n\n Hint: %@";
-"_file_encrypted_another_device_hint_" = "The file was encrypted by another device [%@], enter the Passcode key encryption to read its contents. \n\n Hint: %@";
+"_same_device_different_passcode_hint_" = "The file was encrypted by the same device but with different passcode key encryption. Attention if the old passcode is entered, files encrypted with the new Passcode will not be readable. \n\n Hint: %@";
+"_file_encrypted_another_device_hint_" = "The file was encrypted by another device [%@], enter the passcode key encryption to read its contents. \n\n Hint: %@";
 "_save_selected_files_"         = "Save images and videos to Photo Album";
 "_file_not_saved_cameraroll_"   = "Error: File not saved in Photo Album";
 "_file_saved_cameraroll_"       = "File saved in Photo Album";
@@ -412,7 +412,7 @@
 "_search_all_folders_"          = "Search in all folders";
 "_search_sub_folder_"           = "Search here and in subfolders";
 
-"_theming_is_light_"            = "Server theming too light color, not applicable";
+"_theming_is_light_"            = "Server theming too brightly coloured, not applicable";
 
 // Security
 
@@ -527,8 +527,8 @@
 "_use_folder_photos_"               = "Use the folder Photos as destination";
 "_rename_filename_"                 = "Rename";
 "_filename_"                        = "File name";
-"_preview_filename_"                = "Example preview file name, you can use the mask MM,DD,YY for the date";
-"_forbidden_characters_"            = "Invalid character in the file name";
+"_preview_filename_"                = "Example preview of filename, you can use the mask MM,DD,YY for the date";
+"_forbidden_characters_"            = "Invalid character in the filename";
 
 // Notification
 
