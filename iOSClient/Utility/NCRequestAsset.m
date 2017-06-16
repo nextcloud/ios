@@ -37,9 +37,11 @@
     
     // VIDEO
     if (assetMediaType == PHAssetMediaTypeVideo) {
-        
+
         @autoreleasepool {
-                        
+            
+            dispatch_semaphore_t semaphoreGroup = dispatch_semaphore_create(0);
+
             PHVideoRequestOptions *options = [PHVideoRequestOptions new];
             options.networkAccessAllowed = true;
             
@@ -56,6 +58,8 @@
                     _exportSession.outputFileType = AVFileTypeQuickTimeMovie;
                     
                     [_exportSession exportAsynchronouslyWithCompletionHandler:^{
+                        
+                        dispatch_semaphore_signal(semaphoreGroup);
                         
                         if (AVAssetExportSessionStatusCompleted == _exportSession.status) {
                             
@@ -91,6 +95,8 @@
                     
                 } else {
                     
+                    dispatch_semaphore_signal(semaphoreGroup);
+                    
                     // Delete record on Table Auto Upload
                     if ([selector isEqualToString:selectorUploadAutoUpload] || [selector isEqualToString:selectorUploadAutoUploadAll])
                         [[NCManageDatabase sharedInstance] deleteAutoUploadWithAssetLocalIdentifier:assetLocalIdentifier];
@@ -106,6 +112,9 @@
                     });
                 }
             }];
+            
+            while (dispatch_semaphore_wait(semaphoreGroup, DISPATCH_TIME_NOW))
+                [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]];
         }
     }
     
