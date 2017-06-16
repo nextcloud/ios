@@ -847,7 +847,7 @@
         NCRequestAsset *requestAsset = [NCRequestAsset new];
         requestAsset.delegate = self;
         
-        
+        [requestAsset writeAssetToSandbox:fileName assetLocalIdentifier:assetLocalIdentifier selector:selector selectorPost:selectorPost errorCode:errorCode metadataNet:nil serverUrl:serverUrl activeUrl:_activeUrl directoryUser:_directoryUser cryptated:cryptated session:session taskStatus:taskStatus delegate:delegate];
         
         /*
         
