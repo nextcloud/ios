@@ -842,125 +842,15 @@
     if ([selector isEqualToString:selectorUploadAutoUpload]) {
         
         [self upload:fileName serverUrl:serverUrl cryptated:NO template:NO onlyPlist:NO fileNameTemplate:nil assetLocalIdentifier:assetLocalIdentifier session:session taskStatus:taskStatus selector:selector selectorPost:selectorPost errorCode:errorCode delegate:delegate];
+        
     } else {
+    
+    // *** Auto Upload Full + Manual Upload ***
     
         NCRequestAsset *requestAsset = [NCRequestAsset new];
         requestAsset.delegate = self;
         
-        [requestAsset writeAssetToSandbox:fileName assetLocalIdentifier:assetLocalIdentifier selector:selector selectorPost:selectorPost errorCode:errorCode metadataNet:nil serverUrl:serverUrl activeUrl:_activeUrl directoryUser:_directoryUser cryptated:cryptated session:session taskStatus:taskStatus delegate:delegate];
-        
-        /*
-        
-        // *** Manual Upload & Auto Upload All ***
-        
-        PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[assetLocalIdentifier] options:nil];
-        
-        if (!result.count) {
-            
-            [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:@"Internal error image/video not found" type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
-                    [delegate uploadFileFailure:nil fileID:nil serverUrl:serverUrl selector:selector message:@"Internal error image/video not found" errorCode: k_CCErrorInternalError];
-            });
-            
-            return;
-        }
-        
-        PHAsset *asset = result[0];
-        PHAssetMediaType assetMediaType = asset.mediaType;
-        __block NSError *error = nil;
-
-        // VIDEO
-        if (assetMediaType == PHAssetMediaTypeVideo) {
-            
-            @autoreleasepool {
-                
-                PHVideoRequestOptions *options = [PHVideoRequestOptions new];
-                options.version = PHVideoRequestOptionsVersionOriginal;
-                
-                [[PHImageManager defaultManager] requestAVAssetForVideo:asset options:options resultHandler:^(AVAsset *asset, AVAudioMix *audioMix, NSDictionary *info) {
-                    
-                    if ([asset isKindOfClass:[AVURLAsset class]]) {
-                        
-                        NSData *data = [[NSData alloc] initWithContentsOfURL:[(AVURLAsset *)asset URL] options:0 error:&error];
-                        
-                        if (!error || [data length] > 0) {
-                            
-                            [data writeToFile:[NSString stringWithFormat:@"%@/%@", _directoryUser, fileName] options:NSDataWritingAtomic error:&error];
-                            
-                        } else {
-                            
-                            if (!error)
-                                error = [NSError errorWithDomain:@"it.twsweb.cryptocloud" code:kCFURLErrorFileDoesNotExist userInfo:nil];
-                        }
-                        
-                    } else {
-                        
-                        error = [NSError errorWithDomain:@"it.twsweb.cryptocloud" code:kCFURLErrorFileDoesNotExist userInfo:nil];
-                    }
-                    
-                    if (error) {
-                        
-                        // Delete record on Table Auto Upload
-                        if ([selector isEqualToString:selectorUploadAutoUpload] || [selector isEqualToString:selectorUploadAutoUploadAll])
-                            [[NCManageDatabase sharedInstance] deleteAutoUploadWithAssetLocalIdentifier:assetLocalIdentifier];
-                        
-                        // Activity
-                        [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:[NSString stringWithFormat:@"%@ [%@]",NSLocalizedString(@"_read_file_error_", nil), error.description] type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:_activeUrl];
-                        
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            // Error for uploadFileFailure
-                            if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
-                                [delegate uploadFileFailure:nil fileID:nil serverUrl:serverUrl selector:selector message:@"_read_file_error_" errorCode:[NSError errorWithDomain:@"it.twsweb.cryptocloud" code:kCFURLErrorFileDoesNotExist userInfo:nil].code];
-                        });
-                            
-                    } else {
-                            
-                        [self upload:fileName serverUrl:serverUrl cryptated:cryptated template:NO onlyPlist:NO fileNameTemplate:nil assetLocalIdentifier:assetLocalIdentifier session:session taskStatus:taskStatus selector:selector selectorPost:selectorPost errorCode:errorCode delegate:delegate];
-                    }
-                }];
-            }
-        }
-
-        // IMAGE
-        if (assetMediaType == PHAssetMediaTypeImage) {
-    
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
-                
-                @autoreleasepool {
-            
-                    PHImageRequestOptions *options = [PHImageRequestOptions new];
-                    options.synchronous = NO;
-            
-                    [[PHImageManager defaultManager] requestImageDataForAsset:asset options:options resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
-            
-                        [imageData writeToFile:[NSString stringWithFormat:@"%@/%@", _directoryUser, fileName] options:NSDataWritingAtomic error:&error];
-                
-                        if (error) {
-                    
-                            // Delete record on Table Auto Upload
-                            if ([selector isEqualToString:selectorUploadAutoUpload] || [selector isEqualToString:selectorUploadAutoUploadAll])
-                                [[NCManageDatabase sharedInstance] deleteAutoUploadWithAssetLocalIdentifier:assetLocalIdentifier];
-
-                            // Activity
-                            [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:[NSString stringWithFormat:@"%@ [%@]",NSLocalizedString(@"_read_file_error_", nil), error.description] type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:_activeUrl];
-                        
-                            dispatch_async(dispatch_get_main_queue(), ^{
-                                // Error for uploadFileFailure
-                                if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
-                                    [delegate uploadFileFailure:nil fileID:nil serverUrl:serverUrl selector:selector message:@"_read_file_error_" errorCode:error.code];
-                            });
-                            
-                        } else {
-                        
-                            [self upload:fileName serverUrl:serverUrl cryptated:cryptated template:NO onlyPlist:NO fileNameTemplate:nil assetLocalIdentifier:assetLocalIdentifier session:session taskStatus:taskStatus selector:selector selectorPost:selectorPost errorCode:errorCode delegate:delegate];
-                        }
-                    }];
-                }
-            });
-        }
-        */
+        [requestAsset writeAssetToSandboxFileName:fileName assetLocalIdentifier:assetLocalIdentifier selector:selector selectorPost:selectorPost errorCode:errorCode metadataNet:nil serverUrl:serverUrl activeUrl:_activeUrl directoryUser:_directoryUser cryptated:cryptated session:session taskStatus:taskStatus delegate:delegate];
     }
 }
 

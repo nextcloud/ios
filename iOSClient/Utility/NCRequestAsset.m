@@ -13,7 +13,7 @@
 
 @implementation NCRequestAsset
 
-- (void)writeAssetToSandbox:(NSString *)fileName assetLocalIdentifier:(NSString *)assetLocalIdentifier selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorCode:(NSInteger)errorCode metadataNet:(CCMetadataNet *)metadataNet serverUrl:(NSString *)serverUrl activeUrl:(NSString *)activeUrl directoryUser:(NSString *)directoryUser cryptated:(BOOL)cryptated session:(NSString *)session taskStatus:(NSInteger)taskStatus delegate:(id)delegate
+- (void)writeAssetToSandboxFileName:(NSString *)fileName assetLocalIdentifier:(NSString *)assetLocalIdentifier selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorCode:(NSInteger)errorCode metadataNet:(CCMetadataNet *)metadataNet serverUrl:(NSString *)serverUrl activeUrl:(NSString *)activeUrl directoryUser:(NSString *)directoryUser cryptated:(BOOL)cryptated session:(NSString *)session taskStatus:(NSInteger)taskStatus delegate:(id)delegate
 {
     PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[assetLocalIdentifier] options:nil];
     
