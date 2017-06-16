@@ -123,6 +123,8 @@
         
         @autoreleasepool {
             
+            dispatch_semaphore_t semaphoreGroup = dispatch_semaphore_create(0);
+            
             PHImageRequestOptions *options = [PHImageRequestOptions new];
             options.synchronous = NO;
             
@@ -157,7 +159,12 @@
                             [self.delegate upload:fileName serverUrl:serverUrl cryptated:cryptated template:NO onlyPlist:NO fileNameTemplate:nil assetLocalIdentifier:assetLocalIdentifier session:session taskStatus:taskStatus selector:selector selectorPost:selectorPost errorCode:errorCode delegate:delegate];
                     }
                 }
+                
+                dispatch_semaphore_signal(semaphoreGroup);
             }];
+            
+            while (dispatch_semaphore_wait(semaphoreGroup, DISPATCH_TIME_NOW))
+                [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]];
         }
     }
 }
