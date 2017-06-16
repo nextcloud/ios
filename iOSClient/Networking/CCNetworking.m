@@ -28,9 +28,10 @@
 #import "TableAccount+CoreDataClass.h"
 #import "NSDate+ISO8601.h"
 #import "NSString+Encode.h"
+#import "NCRequestAsset.h"
 #import "NCBridgeSwift.h"
 
-@interface CCNetworking ()
+@interface CCNetworking () <NCRequestAssetDelegate>
 {
     NSManagedObjectContext *_context;
     NSMutableDictionary *_taskData;
@@ -843,6 +844,13 @@
         [self upload:fileName serverUrl:serverUrl cryptated:NO template:NO onlyPlist:NO fileNameTemplate:nil assetLocalIdentifier:assetLocalIdentifier session:session taskStatus:taskStatus selector:selector selectorPost:selectorPost errorCode:errorCode delegate:delegate];
     } else {
     
+        NCRequestAsset *requestAsset = [NCRequestAsset new];
+        requestAsset.delegate = self;
+        
+        
+        
+        /*
+        
         // *** Manual Upload & Auto Upload All ***
         
         PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[assetLocalIdentifier] options:nil];
@@ -952,6 +960,7 @@
                 }
             });
         }
+        */
     }
 }
 

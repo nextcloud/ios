@@ -25,8 +25,9 @@
 #import <Photos/Photos.h>
 #import "CCManageAsset.h"
 #import "CCManageAutoUpload.h"
+#import "NCRequestAsset.h"
 
-@interface NCAutoUpload : NSObject <PHPhotoLibraryChangeObserver, CCManageLocationDelegate>
+@interface NCAutoUpload : NSObject <PHPhotoLibraryChangeObserver, CCManageLocationDelegate, NCRequestAssetDelegate>
 
 + (NCAutoUpload *)sharedInstance;
 

@@ -145,6 +145,8 @@
 		F720E01F1E48C73E001A4B9E /* CCActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F720E01E1E48C73E001A4B9E /* CCActions.swift */; };
 		F7226EDC1EE4089300EBECB1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7226EDB1EE4089300EBECB1 /* Main.storyboard */; };
 		F723622C1EF3CD000012D1F9 /* NCRequestAsset.m in Sources */ = {isa = PBXBuildFile; fileRef = F723622B1EF3CD000012D1F9 /* NCRequestAsset.m */; };
+		F72362351EF3DCFC0012D1F9 /* NCRequestAsset.m in Sources */ = {isa = PBXBuildFile; fileRef = F723622B1EF3CD000012D1F9 /* NCRequestAsset.m */; };
+		F72362361EF3DCFC0012D1F9 /* NCRequestAsset.m in Sources */ = {isa = PBXBuildFile; fileRef = F723622B1EF3CD000012D1F9 /* NCRequestAsset.m */; };
 		F725437C1E12A44A009BF4C2 /* CCSection.m in Sources */ = {isa = PBXBuildFile; fileRef = F78F6FAF1CC8CCB700F4EA25 /* CCSection.m */; };
 		F72AAECA1E5C60C700BB17E1 /* AHKActionSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = F72AAEC31E5C60C700BB17E1 /* AHKActionSheet.m */; };
 		F72AAECB1E5C60C700BB17E1 /* AHKActionSheetViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F72AAEC51E5C60C700BB17E1 /* AHKActionSheetViewController.m */; };
@@ -4277,6 +4279,7 @@
 				F71459E91D12E3B700CAFEEC /* UIImage+Enhancing.m in Sources */,
 				F73CCE321DC13798007E38D8 /* UICKeyChainStore.m in Sources */,
 				F70022AE1EC4C9100080073F /* AFURLResponseSerialization.m in Sources */,
+				F72362351EF3DCFC0012D1F9 /* NCRequestAsset.m in Sources */,
 				F70022EA1EC4C9100080073F /* OCXMLShareByLinkParser.m in Sources */,
 				F71459ED1D12E3B700CAFEEC /* UIImage+Masking.m in Sources */,
 				F71459F01D12E3B700CAFEEC /* NSString+Base64.m in Sources */,
@@ -4379,6 +4382,7 @@
 				F70022D91EC4C9100080073F /* NSDate+RFC1123.m in Sources */,
 				F73CC06E1E813DFF006E3047 /* BKPasscodeField.m in Sources */,
 				F74344841E127F84001CC831 /* RNCryptorEngine.m in Sources */,
+				F72362361EF3DCFC0012D1F9 /* NCRequestAsset.m in Sources */,
 				F74344851E127F86001CC831 /* RNDecryptor.m in Sources */,
 				F74344881E127F9C001CC831 /* UIImage+animatedGIF.m in Sources */,
 				F73CC0771E813DFF006E3047 /* BKPasscodeViewController.m in Sources */,

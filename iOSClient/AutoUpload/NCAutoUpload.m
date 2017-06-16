@@ -495,7 +495,12 @@
         if (assetsFull) {
             [metadataNetFull addObject:metadataNet];
         } else {
-            [self writeAssetToSandbox:metadataNet];
+            //[self writeAssetToSandbox:metadataNet];
+            
+            NCRequestAsset *requestAsset = [NCRequestAsset new];
+            requestAsset.delegate = self;
+            
+            [requestAsset writeAssetToSandbox:metadataNet.fileName assetLocalIdentifier:metadataNet.assetLocalIdentifier selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:0 metadataNet:metadataNet serverUrl:serverUrl activeUrl:app.activeUrl directoryUser:app.directoryUser cryptated:NO session:metadataNet.session taskStatus:0 delegate:nil];
         }
     }
     
@@ -512,6 +517,7 @@
     [_hud hideHud];
 }
 
+/*
 - (void)writeAssetToSandbox:(CCMetadataNet *)metadataNet
 {
     AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
@@ -590,6 +596,7 @@
         });
     }
 }
+*/
 
 - (void)addDatabaseAutoUpload:(CCMetadataNet *)metadataNet assetDate:(NSDate *)assetDate assetMediaType:(PHAssetMediaType)assetMediaType
 {
