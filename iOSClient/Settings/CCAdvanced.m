@@ -312,7 +312,9 @@
         [app maintenanceMode:YES];
 
         [self.hud visibleHudTitle:NSLocalizedString(@"_remove_cache_", nil) mode:MBProgressHUDModeIndeterminate color:nil];
-        
+
+        [[NCManageDatabase sharedInstance] clearTable:[tableAutoUpload class] account:app.activeAccount];
+
         [app cancelAllOperations];
         
         [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:k_taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
@@ -323,7 +325,6 @@
             [[NSURLCache sharedURLCache] setDiskCapacity:0];
 
             [[NCManageDatabase sharedInstance] clearTable:[tableActivity class] account:app.activeAccount];
-            [[NCManageDatabase sharedInstance] clearTable:[tableAutoUpload class] account:app.activeAccount];
             [[NCManageDatabase sharedInstance] clearTable:[tableCapabilities class] account:app.activeAccount];
             [[NCManageDatabase sharedInstance] clearTable:[tableDirectory class] account:app.activeAccount];
             [[NCManageDatabase sharedInstance] clearTable:[tableExternalSites class] account:app.activeAccount];
