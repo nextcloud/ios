@@ -48,16 +48,16 @@
                 if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileName]])
                     [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileName] error:nil];
                 
-                AVAssetExportSession *exportSession = [[AVAssetExportSession alloc] initWithAsset:playerItem.asset presetName:AVAssetExportPresetHighestQuality];
+                _exportSession = [[AVAssetExportSession alloc] initWithAsset:playerItem.asset presetName:AVAssetExportPresetHighestQuality];
                 
-                if (exportSession) {
+                if (_exportSession) {
                     
-                    exportSession.outputURL = [NSURL fileURLWithPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileName]];
-                    exportSession.outputFileType = AVFileTypeQuickTimeMovie;
+                    _exportSession.outputURL = [NSURL fileURLWithPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileName]];
+                    _exportSession.outputFileType = AVFileTypeQuickTimeMovie;
                     
-                    [exportSession exportAsynchronouslyWithCompletionHandler:^{
+                    [_exportSession exportAsynchronouslyWithCompletionHandler:^{
                         
-                        if (AVAssetExportSessionStatusCompleted == exportSession.status) {
+                        if (AVAssetExportSessionStatusCompleted == _exportSession.status) {
                             
                             //OK selectorUploadAutoUpload
                             if ([selector isEqualToString:selectorUploadAutoUpload]) {
@@ -68,7 +68,7 @@
                                     [self.delegate upload:fileName serverUrl:serverUrl cryptated:cryptated template:NO onlyPlist:NO fileNameTemplate:nil assetLocalIdentifier:assetLocalIdentifier session:session taskStatus:taskStatus selector:selector selectorPost:selectorPost errorCode:errorCode delegate:delegate];
                             }
                             
-                        } else if (AVAssetExportSessionStatusFailed == exportSession.status) {
+                        } else if (AVAssetExportSessionStatusFailed == _exportSession.status) {
                             
                             // Delete record on Table Auto Upload
                             if ([selector isEqualToString:selectorUploadAutoUpload] || [selector isEqualToString:selectorUploadAutoUploadAll])
@@ -85,7 +85,7 @@
                             });
                             
                         } else {
-                            NSLog(@"Export Session Status: %ld", (long)exportSession.status);
+                            NSLog(@"Export Session Status: %ld", (long)_exportSession.status);
                         }
                     }];
                     
