@@ -543,36 +543,33 @@
 - (void)loadAutoUpload:(NSNumber *)maxConcurrent
 {
     CCMetadataNet *metadataNet;
-    NSInteger counterUpload = 0;
-    NSInteger maxConcurrentOperationDownloadUpload = [maxConcurrent integerValue];
+    PHFetchResult *result;
     
-    NSArray *uploadInQueue = [[NCManageDatabase sharedInstance] getTableMetadataUpload];
-    
-    NSArray *recordAutomaticUploadInLock =  [[NCManageDatabase sharedInstance] getLockAutoUpload];
-    
-    for (tableAutoUpload *tableAutoUpload in recordAutomaticUploadInLock) {
-        
-        BOOL recordFound = NO;
-        
-        for (CCMetadataNet *metadataNet in uploadInQueue) {
-            if (metadataNet.assetLocalIdentifier == tableAutoUpload.assetLocalIdentifier)
-                recordFound = YES;
-        }
-        
-        if (!recordFound)
-            [[NCManageDatabase sharedInstance] unlockAutoUploadWithAssetLocalIdentifier:tableAutoUpload.assetLocalIdentifier];
-    }
+    NSInteger maxConcurrentUpload = [maxConcurrent integerValue];
+    NSInteger counterUpload = [app getNumberUploadInQueues] + [app getNumberUploadInQueuesWWan] + [[[NCManageDatabase sharedInstance] getLockAutoUpload] count];
     
     // ------------------------- <selector Auto Upload> -------------------------
     
-    metadataNet = [[NCManageDatabase sharedInstance] getAutoUploadWithSelector:selectorUploadAutoUpload];
-    counterUpload = [app getNumberUploadInQueues] + [app getNumberUploadInQueuesWWan];
-    while (metadataNet && counterUpload < maxConcurrentOperationDownloadUpload) {
+    while (counterUpload < maxConcurrentUpload) {
         
-        [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet.assetLocalIdentifier fileName:metadataNet.fileName serverUrl:metadataNet.serverUrl cryptated:metadataNet.cryptated session:metadataNet.session taskStatus:metadataNet.taskStatus selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:metadataNet.errorCode delegate:app.activeMain];
+        metadataNet = [[NCManageDatabase sharedInstance] getAutoUploadWithSelector:selectorUploadAutoUpload];
+        if (metadataNet)
+            result = [PHAsset fetchAssetsWithLocalIdentifiers:@[metadataNet.assetLocalIdentifier] options:nil];
+        else
+            break;
         
-        metadataNet =  [[NCManageDatabase sharedInstance] getAutoUploadWithSelector:selectorUploadAutoUpload];
-        counterUpload++;
+        if (result.count > 0) {
+            
+            [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet.assetLocalIdentifier fileName:metadataNet.fileName serverUrl:metadataNet.serverUrl cryptated:metadataNet.cryptated session:metadataNet.session taskStatus:metadataNet.taskStatus selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:metadataNet.errorCode delegate:app.activeMain];
+            
+        } else {
+            
+            [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionUpload selector:selectorUploadAutoUploadAll note:@"Internal error image/video not found [0]" type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
+            
+            [[NCManageDatabase sharedInstance] deleteAutoUploadWithAssetLocalIdentifier:metadataNet.assetLocalIdentifier];
+        }
+        
+        counterUpload = [app getNumberUploadInQueues] + [app getNumberUploadInQueuesWWan] + [[[NCManageDatabase sharedInstance] getLockAutoUpload] count];
     }
     
     // ------------------------- <selector Auto Upload All> ----------------------
@@ -588,17 +585,17 @@
         return;
     }
     
-    metadataNet =  [[NCManageDatabase sharedInstance] getAutoUploadWithSelector:selectorUploadAutoUploadAll];
-    counterUpload = [app getNumberUploadInQueues] + [app getNumberUploadInQueuesWWan];
-    while (metadataNet && counterUpload < maxConcurrentOperationDownloadUpload) {
+    while (counterUpload < maxConcurrentUpload) {
         
-        PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[metadataNet.assetLocalIdentifier] options:nil];
-        
+        metadataNet =  [[NCManageDatabase sharedInstance] getAutoUploadWithSelector:selectorUploadAutoUploadAll];
+        if (metadataNet)
+            result = [PHAsset fetchAssetsWithLocalIdentifiers:@[metadataNet.assetLocalIdentifier] options:nil];
+        else
+            break;
+            
         if (result.count > 0) {
             
             [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet.assetLocalIdentifier fileName:metadataNet.fileName serverUrl:metadataNet.serverUrl cryptated:metadataNet.cryptated session:metadataNet.session taskStatus:metadataNet.taskStatus selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:metadataNet.errorCode delegate:app.activeMain];
-            
-            counterUpload++;
             
         } else {
             
@@ -607,7 +604,7 @@
             [[NCManageDatabase sharedInstance] deleteAutoUploadWithAssetLocalIdentifier:metadataNet.assetLocalIdentifier];
         }
         
-        metadataNet =  [[NCManageDatabase sharedInstance] getAutoUploadWithSelector:selectorUploadAutoUploadAll];
+        counterUpload = [app getNumberUploadInQueues] + [app getNumberUploadInQueuesWWan] + [[[NCManageDatabase sharedInstance] getLockAutoUpload] count];
     }
 }
 
