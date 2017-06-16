@@ -66,11 +66,11 @@
     if (height >= 1024) { titleIconPositionY = 100; titlePositionY = 290; descPositionY = 250; }
     
     EAIntroPage *page1 = [EAIntroPage page];
-    page1.title = NSLocalizedString(@"_intro_1_title_", @"Intro");
+    page1.title = NSLocalizedStringFromTable(@"_intro_1_title_", @"Intro", nil);
     page1.titlePositionY = titlePositionY;
     page1.titleColor = [UIColor blackColor];
     page1.titleFont = [UIFont systemFontOfSize:20];
-    page1.desc = NSLocalizedString(@"_intro_1_text_",  @"Intro");
+    page1.desc = NSLocalizedStringFromTable(@"_intro_1_text_",  @"Intro", nil);
     page1.descPositionY = descPositionY;
     page1.descColor = [UIColor blackColor];
     page1.descFont = [UIFont systemFontOfSize:14];
@@ -80,11 +80,11 @@
     page1.showTitleView = NO;
     
     EAIntroPage *page2 = [EAIntroPage page];
-    page2.title = NSLocalizedString(@"_intro_2_title_",  @"Intro");
+    page2.title = NSLocalizedStringFromTable(@"_intro_2_title_",  @"Intro", nil);
     page2.titlePositionY = titlePositionY;
     page2.titleColor = [UIColor blackColor];
     page2.titleFont = [UIFont systemFontOfSize:20];
-    page2.desc = NSLocalizedString(@"_intro_2_text_",  @"Intro");
+    page2.desc = NSLocalizedStringFromTable(@"_intro_2_text_",  @"Intro", nil);
     page2.descPositionY = descPositionY;
     page2.descColor = [UIColor blackColor];
     page2.descFont = [UIFont systemFontOfSize:14];
@@ -94,11 +94,11 @@
     page2.showTitleView = NO;
 
     EAIntroPage *page3 = [EAIntroPage page];
-    page3.title = NSLocalizedString(@"_intro_3_title_",  @"Intro");
+    page3.title = NSLocalizedStringFromTable(@"_intro_3_title_",  @"Intro", nil);
     page3.titlePositionY = titlePositionY;
     page3.titleColor = [UIColor blackColor];
     page3.titleFont = [UIFont systemFontOfSize:20];
-    page3.desc = NSLocalizedString(@"_intro_3_text_",  @"Intro");
+    page3.desc = NSLocalizedStringFromTable(@"_intro_3_text_",  @"Intro", nil);
     page3.descPositionY = descPositionY;
     page3.descColor = [UIColor blackColor];
     page3.descFont = [UIFont systemFontOfSize:14];

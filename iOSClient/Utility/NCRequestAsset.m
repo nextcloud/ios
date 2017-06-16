@@ -40,6 +40,8 @@
         
         @autoreleasepool {
             
+            dispatch_semaphore_t semaphoreGroup = dispatch_semaphore_create(0);
+            
             PHVideoRequestOptions *options = [PHVideoRequestOptions new];
             options.networkAccessAllowed = true;
             
@@ -87,6 +89,8 @@
                         } else {
                             NSLog(@"Export Session Status: %ld", (long)_exportSession.status);
                         }
+                        
+                        dispatch_semaphore_signal(semaphoreGroup);
                     }];
                     
                 } else {
@@ -104,8 +108,13 @@
                             if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
                                 [delegate uploadFileFailure:nil fileID:nil serverUrl:serverUrl selector:selector message:@"_read_file_error_" errorCode:[NSError errorWithDomain:@"it.twsweb.cryptocloud" code:kCFURLErrorFileDoesNotExist userInfo:nil].code];
                     });
+                    
+                    dispatch_semaphore_signal(semaphoreGroup);
                 }
             }];
+            
+            while (dispatch_semaphore_wait(semaphoreGroup, DISPATCH_TIME_NOW))
+                [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]];
         }
     }
     
