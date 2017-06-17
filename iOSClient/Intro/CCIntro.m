@@ -47,6 +47,8 @@
 
 - (void)introWillFinish:(EAIntroView *)introView wasSkipped:(BOOL)wasSkipped
 {
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+    
     if (self.delegate && [self.delegate respondsToSelector:@selector(introWillFinish:wasSkipped:)])
         [self.delegate introWillFinish:introView wasSkipped:wasSkipped];
 }
@@ -118,6 +120,8 @@
     
     [intro setDelegate:self];
     [intro showInView:self.rootView animateDuration:duration];
+    
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
 }
 
 @end
