@@ -442,7 +442,7 @@
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
                     if ([self.delegate respondsToSelector:@selector(downloadFileFailure:serverUrl:selector:message:errorCode:)])
-                        [self.delegate downloadFileFailure:@"" serverUrl:serverUrl selector:@"" message:[NSString stringWithFormat:@"Serius error internal download : metadata not found %@", fileName] errorCode:k_CCErrorInternalError];
+                        [self.delegate downloadFileFailure:@"" serverUrl:serverUrl selector:@"" message:@"" errorCode:k_CCErrorInternalError];
                 });
             }
         }
@@ -488,7 +488,7 @@
             
                 dispatch_async(dispatch_get_main_queue(), ^{
                     if ([self.delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
-                        [self.delegate uploadFileFailure:nil fileID:@"" serverUrl:serverUrl selector:@"" message:[NSString stringWithFormat:@"Serius error internal download : metadata not found %@", fileName] errorCode:k_CCErrorInternalError];
+                        [self.delegate uploadFileFailure:nil fileID:@"" serverUrl:serverUrl selector:@"" message:@"" errorCode:k_CCErrorInternalError];
                 });
 
             }

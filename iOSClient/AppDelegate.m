@@ -742,8 +742,11 @@
                 
             } else {
                 
-                [TWMessageBarManager sharedInstance].styleSheet = self;
-                [[TWMessageBarManager sharedInstance] showMessageWithTitle:[NSString stringWithFormat:@"%@\n", NSLocalizedString(title, nil)] description:NSLocalizedString(description, nil) type:type duration:delay];
+                if (description.length > 0) {
+                
+                    [TWMessageBarManager sharedInstance].styleSheet = self;
+                    [[TWMessageBarManager sharedInstance] showMessageWithTitle:[NSString stringWithFormat:@"%@\n", NSLocalizedString(title, nil)] description:NSLocalizedString(description, nil) type:type duration:delay];
+                }
             }
             
         } else {
