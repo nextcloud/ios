@@ -232,7 +232,7 @@
     metadataNet.selector = selector;
     metadataNet.serverUrl = serverUrl;
     
-    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+    [app addNetworkingOperationQueue:app.netQueue delegate:[CCSynchronize sharedSynchronize] metadataNet:metadataNet];
 }
 
 - (void)listingFavoritesSuccess:(CCMetadataNet *)metadataNet metadatas:(NSArray *)metadatas
