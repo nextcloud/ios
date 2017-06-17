@@ -331,12 +331,14 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
             if (self.splitViewController?.isCollapsed)! {
                 
                 let webVC = SwiftWebVC(urlString: item.url, hideToolbar: true)
+                webVC.delegate = self
                 self.navigationController?.pushViewController(webVC, animated: true)
                 self.navigationController?.navigationBar.isHidden = false
                 
             } else {
                 
                 let webVC = SwiftModalWebVC(urlString: item.url)
+                webVC.delegateWeb = self
                 self.present(webVC, animated: true, completion: nil)
             }
             
@@ -375,12 +377,14 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
             if (self.splitViewController?.isCollapsed)! {
                 
                 let webVC = SwiftWebVC(urlString: item.url, hideToolbar: true)
+                webVC.delegate = self
                 self.navigationController?.pushViewController(webVC, animated: true)
                 self.navigationController?.navigationBar.isHidden = false
                 
             } else {
                 
                 let webVC = SwiftModalWebVC(urlString: item.url)
+                webVC.delegateWeb = self
                 self.present(webVC, animated: true, completion: nil)
             }
         }
@@ -398,6 +402,36 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "initializeMain"), object: nil)
         
         appDelegate.selectedTabBarController(Int(k_tabBarApplicationIndexFile))
+    }
+}
+
+extension CCMore: SwiftModalWebVCDelegate, SwiftWebVCDelegate{
+    
+    public func didStartLoading() {
+        print("Started loading.")
+    }
+    
+    public func didReceiveServerRedirectForProvisionalNavigation(url: URL) {
+        
+        let urlString: String = url.absoluteString
+        
+        // Protocol close webVC
+        if (urlString.contains(NCBrandOptions.sharedInstance.webCloseViewProtocol) == true) {
+            
+            if (self.presentingViewController != nil) {
+                self.dismiss(animated: true, completion: nil)
+            } else {
+                self.navigationController?.popToRootViewController(animated: true)
+            }
+        }
+    }
+    
+    public func didFinishLoading(success: Bool) {
+        print("Finished loading. Success: \(success).")
+    }
+    
+    public func didFinishLoading(success: Bool, url: URL) {
+        print("Finished loading. Success: \(success).")
     }
 }
 

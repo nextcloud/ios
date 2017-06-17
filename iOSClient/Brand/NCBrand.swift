@@ -73,6 +73,7 @@ class NCBrandOptions: NSObject {
     public let loginButtonLabelLink:            String = "https://nextcloud.com/providers"
     public let middlewarePingUrl:               String = ""
     public let webLoginAutenticationProtocol:   String = ""
+    public let webCloseViewProtocol:            String = ""
     public let folderBrandAutoUpload:           String = ""
 
     // Auto Upload default folder
