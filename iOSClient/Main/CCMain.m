@@ -1907,7 +1907,7 @@
         [self changePasswordAccount];
 }
 
-- (void)readFolderSuccess:(CCMetadataNet *)metadataNet permissions:(NSString *)permissions etag:(NSString *)etag metadatas:(NSArray *)metadatas
+- (void)readFolderSuccess:(CCMetadataNet *)metadataNet metadataFolder:(tableMetadata *)metadataFolder metadatas:(NSArray *)metadatas
 {
     // verify active user
     tableAccount *record = [[NCManageDatabase sharedInstance] getAccountActive];
@@ -1916,8 +1916,8 @@
         return;
     
     // save father e update permission
-    if(!_isSearchMode)
-        _fatherPermission = permissions;
+    if(!_isSearchMode && metadataFolder)
+        _fatherPermission = metadataFolder.permissions;
     
     NSArray *recordsInSessions;
     NSMutableArray *metadatasToInsertInDB = [NSMutableArray new];
@@ -1928,7 +1928,7 @@
         
     } else {
         
-        [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:metadataNet.serverUrl serverUrlTo:nil etag:etag];
+        [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:metadataNet.serverUrl serverUrlTo:nil etag:metadataFolder.etag];
         
         [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND session = ''", metadataNet.account, metadataNet.directoryID] clearDateReadDirectoryID:metadataNet.directoryID];
         
@@ -2103,7 +2103,7 @@
         metadataNet.selector = selectorSearch;
         metadataNet.serverUrl = _serverUrl;
 
-        [self readFolderSuccess:metadataNet permissions:@"" etag:@"" metadatas:_searchResultMetadatas];
+        [self readFolderSuccess:metadataNet metadataFolder:nil metadatas:_searchResultMetadatas];
     
         // Version >= 12
         if ([[NCManageDatabase sharedInstance] getServerVersion] >= 12) {
@@ -2138,7 +2138,7 @@
 {
     _searchResultMetadatas = [[NSMutableArray alloc] initWithArray:metadatas];
     
-    [self readFolderSuccess:metadataNet permissions:nil etag:nil metadatas:metadatas];
+    [self readFolderSuccess:metadataNet metadataFolder:nil metadatas:metadatas];
 }
 
 - (void)cancelSearchBar

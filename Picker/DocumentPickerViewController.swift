@@ -283,7 +283,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         self.present(alert, animated: true, completion: nil)
     }
     
-    func readFolderSuccess(_ metadataNet: CCMetadataNet!, permissions: String!, etag: String!, metadatas: [Any]!) {
+    func readFolderSuccess(_ metadataNet: CCMetadataNet!, metadataFolder: tableMetadata?, metadatas: [Any]!) {
         
         // remove all record
         var predicate = NSPredicate(format: "account = %@ AND directoryID = %@ AND session = ''", activeAccount!, metadataNet.directoryID!)

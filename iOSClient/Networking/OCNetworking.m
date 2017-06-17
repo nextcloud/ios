@@ -289,6 +289,8 @@
     [communication readFolder:_metadataNet.serverUrl withUserSessionToken:nil onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token) {
         
         NSMutableArray *metadatas = [NSMutableArray new];
+        tableMetadata *metadataFolder;
+        NSString *directoryIDFolder;
         
         // Check items > 0
         if ([items count] == 0) {
@@ -299,8 +301,8 @@
 
             dispatch_async(dispatch_get_main_queue(), ^{
                 
-                if ([self.delegate respondsToSelector:@selector(readFolderSuccess:permissions:etag:metadatas:)])
-                    [self.delegate readFolderSuccess:_metadataNet permissions:@"" etag:@"" metadatas:metadatas];
+                if ([self.delegate respondsToSelector:@selector(readFolderSuccess:metadataFolder:metadatas:)])
+                    [self.delegate readFolderSuccess:_metadataNet metadataFolder:nil metadatas:metadatas];
             });
 
             [self complete];
@@ -309,12 +311,10 @@
         }
 
         // directory [0]
-        OCFileDto *itemDtoDirectory = [items objectAtIndex:0];
-        NSString *permissions = itemDtoDirectory.permissions;
-        NSString *etagDirectory = itemDtoDirectory.etag;
+        OCFileDto *itemDtoFolder = [items objectAtIndex:0];
         //NSDate *date = [NSDate dateWithTimeIntervalSince1970:itemDtoDirectory.date];
         
-        NSString *directoryID = [[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:_metadataNet.serverUrl permissions:permissions];
+        NSString *directoryID = [[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:_metadataNet.serverUrl permissions:itemDtoFolder.permissions];
         _metadataNet.directoryID = directoryID;
 
         NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
@@ -322,6 +322,19 @@
         
         NSString *directoryUser = [CCUtility getDirectoryActiveUser:_activeUser activeUrl:_activeUrl];
         
+        // Metadata . (Folder)
+        if ([_metadataNet.serverUrl isEqualToString:[CCUtility getHomeServerUrlActiveUrl:_activeUrl]]) {
+            
+            // root folder
+            directoryIDFolder = @"00000000-0000-0000-0000-000000000000";
+            itemDtoFolder.fileName = @".";
+            
+        } else {
+            
+            directoryIDFolder = [[NCManageDatabase sharedInstance] getDirectoryID:[CCUtility deletingLastPathComponentFromServerUrl:_metadataNet.serverUrl]];
+            itemDtoFolder.fileName = [_metadataNet.serverUrl lastPathComponent];
+        }
+        metadataFolder = [CCUtility trasformedOCFileToCCMetadata:itemDtoFolder fileNamePrint:itemDtoFolder.fileName serverUrl:_metadataNet.serverUrl directoryID:directoryIDFolder autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser];
         
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
 
@@ -347,7 +360,7 @@
                     fileName = [fileName substringToIndex:[fileName length] - 1];
                     NSString *serverUrl = [CCUtility stringAppendServerUrl:_metadataNet.serverUrl addFileName:fileName];
                         
-                    (void)[[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:serverUrl permissions:permissions];
+                    (void)[[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:serverUrl permissions:itemDtoFolder.permissions];
                 }
                 
                 // ----- BUG #942 ---------
@@ -364,8 +377,8 @@
             
             dispatch_async(dispatch_get_main_queue(), ^{
                 
-                if ([self.delegate respondsToSelector:@selector(readFolderSuccess:permissions:etag:metadatas:)])
-                    [self.delegate readFolderSuccess:_metadataNet permissions:permissions etag:etagDirectory metadatas:metadatas];
+                if ([self.delegate respondsToSelector:@selector(readFolderSuccess:metadataFolder:metadatas:)])
+                    [self.delegate readFolderSuccess:_metadataNet metadataFolder:metadataFolder metadatas:metadatas];
             });
         });
         
