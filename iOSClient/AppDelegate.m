@@ -288,8 +288,10 @@
     self.timerVerifySessionInProgress = [NSTimer scheduledTimerWithTimeInterval:3.0 target:self selector:@selector(verifyDownloadUploadInProgress) userInfo:nil repeats:YES];
     
     // refresh active Main
-    if (_activeMain)
+    if (_activeMain) {
         [_activeMain reloadDatasource];
+        [_activeMain readFileReloadFolder];
+    }
     
     // Initializations
     [self applicationInitialized];

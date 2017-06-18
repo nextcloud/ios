@@ -80,6 +80,7 @@
 - (void)createFolderAutoUpload;
 - (void)createFolder:(NSString *)fileNameFolder autoUploadDirectory:(BOOL)autoUploadDirectory;
 - (void)readFolder:(NSString *)serverUrl;
+- (void)readFileReloadFolder;
 
 - (void)uploadFileAsset:(NSMutableArray *)assets serverUrl:(NSString *)serverUrl cryptated:(BOOL)cryptated useSubFolder:(BOOL)useSubFolder session:(NSString *)session;
 
