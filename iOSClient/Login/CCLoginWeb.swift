@@ -50,7 +50,7 @@ extension CCLoginWeb: SwiftModalWebVCDelegate {
     
     public func didReceiveServerRedirectForProvisionalNavigation(url: URL) {
                 
-        let urlString: String = url.absoluteString
+        let urlString: String = url.absoluteString.lowercased()
         
         if (urlString.contains(NCBrandOptions.sharedInstance.webLoginAutenticationProtocol) == true && urlString.contains("login") == true && (loginType == loginAdd || loginType == loginAddForced)) {
             
