@@ -377,6 +377,8 @@
     NSString *url = [[[task currentRequest].URL absoluteString] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     NSString *fileName = [url lastPathComponent];
     NSString *serverUrl = [self getServerUrlFromUrl:url];
+    NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
+    tableMetadata *metadata;
     
     NSInteger errorCode;
     NSDate *date = [NSDate date];
@@ -407,8 +409,11 @@
     
     if ([task isKindOfClass:[NSURLSessionDownloadTask class]]) {
         
-        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"session = %@ AND (sessionTaskIdentifier == %i OR sessionTaskIdentifierPlist == %i)",session.sessionDescription, task.taskIdentifier, task.taskIdentifier]];
-            
+        metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"session = %@ AND (sessionTaskIdentifier = %i OR sessionTaskIdentifierPlist = %i)",session.sessionDescription, task.taskIdentifier, task.taskIdentifier]];
+        
+        if (!metadata)
+            metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"directoryID = %@ AND (fileName = %@ OR fileNameData = %@)", directoryID, fileName, fileName]];
+        
         if (metadata) {
             
             NSString *etag = metadata.etag;
@@ -452,7 +457,10 @@
     
     if ([task isKindOfClass:[NSURLSessionUploadTask class]]) {
         
-        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"session = %@ AND (sessionTaskIdentifier == %i OR sessionTaskIdentifierPlist == %i)",session.sessionDescription, task.taskIdentifier, task.taskIdentifier]];
+        metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"session = %@ AND (sessionTaskIdentifier = %i OR sessionTaskIdentifierPlist = %i)",session.sessionDescription, task.taskIdentifier, task.taskIdentifier]];
+        
+        if (!metadata)
+            metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"directoryID = %@ AND (fileName = %@ OR fileNameData = %@)", directoryID, fileName, fileName]];
 
         if (metadata) {
             
