@@ -230,12 +230,16 @@
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
 {
     tableMetadata *metadata;
-    tableShare *table = [_dataSource objectAtIndex:indexPath.row];
     
-    NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:table.serverUrl];
-    if (directoryID.length > 0)
-        metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND fileName = %@", appDelegate.activeAccount, directoryID, table.fileName]];
+    if (indexPath.row+1 <= _dataSource.count) {
     
+        tableShare *table = [_dataSource objectAtIndex:indexPath.row];
+    
+        NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:table.serverUrl];
+        if (directoryID.length > 0)
+            metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND fileName = %@", appDelegate.activeAccount, directoryID, table.fileName]];
+    }
+        
     if (metadata) return YES;
     else return NO;
 }
