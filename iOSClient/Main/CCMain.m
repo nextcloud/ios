@@ -47,6 +47,7 @@
     BOOL _isSelectedMode;
         
     NSMutableArray *_selectedMetadatas;
+    NSMutableSet *_selectedFileIDs;
     NSMutableArray *_queueSelector;
     NSUInteger _numSelectedMetadatas;
     UIImageView *_ImageTitleHomeCryptoCloud;
@@ -124,6 +125,7 @@
     _hud = [[CCHud alloc] initWithView:[[[UIApplication sharedApplication] delegate] window]];
     _hudDeterminate = [[CCHud alloc] initWithView:[[[UIApplication sharedApplication] delegate] window]];
     _selectedMetadatas = [NSMutableArray new];
+    _selectedFileIDs = [NSMutableSet new];
     _queueSelector = [NSMutableArray new];
     _sectionDataSource = [CCSectionDataSourceMetadata new];
     _isViewDidLoad = YES;
@@ -4866,6 +4868,8 @@
     else
         [self setUINavigationBarDefault];
     
+    [_selectedFileIDs removeAllObjects];
+    
     [self setTitle];
 }
 
@@ -5471,6 +5475,7 @@
     // se siamo in modalità editing impostiamo il titolo dei selezioati e usciamo subito
     if (self.tableView.editing) {
         
+        [_selectedFileIDs addObject:_metadata.fileID];
         [self setTitle];
         return;
     }
@@ -5570,6 +5575,9 @@
 
 - (void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(nonnull NSIndexPath *)indexPath
 {
+    tableMetadata *metadata = [self getMetadataFromSectionDataSource:indexPath];
+
+    [_selectedFileIDs removeObject:metadata.fileID];
     [self setTitle];
 }
 
