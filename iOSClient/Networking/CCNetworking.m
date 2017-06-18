@@ -772,7 +772,7 @@
         
         NSInteger sessionTaskIdentifier = metadata.sessionTaskIdentifier;
         NSInteger sessionTaskIdentifierPlist = metadata.sessionTaskIdentifierPlist;
-                
+        
         if ([CCUtility isCryptoString:fileName] || [CCUtility isFileNotCryptated:fileName]) sessionTaskIdentifier = k_taskIdentifierDone;
         if ([CCUtility isCryptoPlistString:fileName]) sessionTaskIdentifierPlist = k_taskIdentifierDone;
         
@@ -1347,6 +1347,7 @@
         if ([CCUtility isFileNotCryptated:fileName])
             metadata.sessionTaskIdentifier = k_taskIdentifierDone;
         
+        // Add new metadata
         metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:_activeUrl serverUrl:serverUrl];
         
         if (!metadata) {
@@ -1359,6 +1360,7 @@
             return;
         }
         
+        // Delete old ID_UPLOAD_XXXXX metadata
         [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", sessionID] clearDateReadDirectoryID:nil];
     }
     
