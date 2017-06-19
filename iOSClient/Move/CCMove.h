@@ -24,6 +24,7 @@
 #import <UIKit/UIKit.h>
 
 #import "TWMessageBarManager.h"
+#import "UIScrollView+EmptyDataSet.h"
 #import "CCBKPasscode.h"
 #import "CCUtility.h"
 #import "OCNetworking.h"
@@ -33,7 +34,7 @@
 
 @protocol CCMoveDelegate;
 
-@interface CCMove : UITableViewController <UIAlertViewDelegate, UITableViewDelegate, OCNetworkingDelegate, BKPasscodeViewControllerDelegate>
+@interface CCMove : UITableViewController <UIAlertViewDelegate, UITableViewDelegate, OCNetworkingDelegate, BKPasscodeViewControllerDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate>
 
 @property (nonatomic, weak) id <CCMoveDelegate> delegate;
 @property (nonatomic, strong) NSOperationQueue *networkingOperationQueue;

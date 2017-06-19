@@ -32,8 +32,9 @@
     NSString *activeUser;
     NSString *directoryUser;
     
-    CCHud *_hud;
     BOOL _isCryptoCloudMode;
+    
+    BOOL _loadingFolder;
 }
 @end
 
@@ -75,8 +76,6 @@
         [self presentViewController:alert animated:YES completion:nil];
     }
     
-    _hud = [[CCHud alloc] initWithView:self.view];
-
     [self.cancel setTitle:NSLocalizedString(@"_cancel_", nil)];
     [self.create setTitle:NSLocalizedString(@"_create_folder_", nil)];
 
@@ -103,9 +102,11 @@
     // TableView : at the end of rows nothing
     self.tableView.tableFooterView = [UIView new];
     self.tableView.separatorColor =  NCBrandColor.sharedInstance.seperator;
+    self.tableView.emptyDataSetDelegate = self;
+    self.tableView.emptyDataSetSource = self;
 
-    // read folder
-    [self readFolder];
+    // read file->folder
+    [self readFileReloadFolder];
 }
 
 // Apparirà
@@ -130,6 +131,52 @@
             nome = [NSString stringWithFormat:@"%@/%@", _serverUrl, [CCUtility removeForbiddenCharactersServer:nome]];
         }
     }
+}
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ==== DZNEmptyDataSetSource ====
+#pragma --------------------------------------------------------------------------------------------
+
+- (BOOL)emptyDataSetShouldAllowScroll:(UIScrollView *)scrollView
+{
+    if (_loadingFolder)
+        return NO;
+    else
+        return YES;
+}
+
+- (UIColor *)backgroundColorForEmptyDataSet:(UIScrollView *)scrollView
+{
+    return [UIColor whiteColor];
+}
+
+- (UIImage *)imageForEmptyDataSet:(UIScrollView *)scrollView
+{
+    return [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"filesNoFiles"] color:[NCBrandColor sharedInstance].brand];
+}
+
+- (UIView *)customViewForEmptyDataSet:(UIScrollView *)scrollView
+{
+    if (_loadingFolder) {
+        
+        UIActivityIndicatorView *activityView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+        activityView.transform = CGAffineTransformMakeScale(1.5f, 1.5f);
+        activityView.color = [NCBrandColor sharedInstance].brand;
+        [activityView startAnimating];
+        
+        return activityView;
+    }
+    
+    return nil;
+}
+
+- (NSAttributedString *)titleForEmptyDataSet:(UIScrollView *)scrollView
+{
+    NSString *text = [NSString stringWithFormat:@"%@", NSLocalizedString(@"_files_no_files_", nil)];
+    
+    NSDictionary *attributes = @{NSFontAttributeName:[UIFont boldSystemFontOfSize:20.0f], NSForegroundColorAttributeName:[UIColor lightGrayColor]};
+    
+    return [[NSAttributedString alloc] initWithString:text attributes:attributes];
 }
 
 // MARK: - IBAction
@@ -264,11 +311,43 @@
 
 // MARK: - Read Folder
 
+- (void)readFileFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+{
+    [self readFolder];
+}
+
+- (void)readFileSuccess:(CCMetadataNet *)metadataNet metadata:(tableMetadata *)metadata
+{
+    if ([metadataNet.selector isEqualToString:selectorReadFileReloadFolder]) {
+        
+        tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", metadataNet.account, metadataNet.serverUrl]];
+        
+        if ([metadata.etag isEqualToString:directory.etag] == NO) {
+            [self readFolder];
+        }
+    }
+}
+
+- (void)readFileReloadFolder
+{
+    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:activeAccount];
+    
+    metadataNet.action = actionReadFile;
+    metadataNet.priority = NSOperationQueuePriorityHigh;
+    metadataNet.selector = selectorReadFileReloadFolder;
+    metadataNet.serverUrl = _serverUrl;
+    
+    [self addNetworkingQueue:metadataNet];
+}
+
+// MARK: - Read Folder
+
 - (void)readFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    [_hud hideHud];
-
+    _loadingFolder = NO;
     self.move.enabled = NO;
+    
+    [self.tableView reloadData];
     
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_",nil) message:message preferredStyle:UIAlertControllerStyleAlert];
     
@@ -280,27 +359,36 @@
 
 - (void)readFolderSuccess:(CCMetadataNet *)metadataNet metadataFolder:(tableMetadata *)metadataFolder metadatas:(NSArray *)metadatas
 {
-    // remove all record
-    [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND session = ''", activeAccount, metadataNet.directoryID] clearDateReadDirectoryID: metadataNet.directoryID];
-    
     NSMutableArray *metadatasToInsertInDB = [NSMutableArray new];
+ 
+    // Update directory etag
+    [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:metadataNet.serverUrl serverUrlTo:nil etag:metadataFolder.etag];
     
     for (tableMetadata *metadata in metadatas) {
         
-        // do not insert crypto file
-        if ([CCUtility isCryptoString:metadata.fileName]) continue;
+        // type of file
+        NSInteger typeFilename = [CCUtility getTypeFileName:metadata.fileName];
         
-        // plist + crypto = completed ?
-        if ([CCUtility isCryptoPlistString:metadata.fileName] && metadata.directory == NO) {
+        // do not insert crypto file
+        if (typeFilename == k_metadataTypeFilenameCrypto) continue;
+        
+        // verify if the record encrypted has plist + crypto
+        if (typeFilename == k_metadataTypeFilenamePlist && metadata.directory == NO) {
             
             BOOL isCryptoComplete = NO;
+            NSString *fileNameCrypto = [CCUtility trasformedFileNamePlistInCrypto:metadata.fileName];
             
             for (tableMetadata *completeMetadata in metadatas) {
-                if ([completeMetadata.fileName isEqualToString:[CCUtility trasformedFileNamePlistInCrypto:metadata.fileName]]) isCryptoComplete = YES;
+                
+                if (completeMetadata.cryptated == NO) continue;
+                else  if ([completeMetadata.fileName isEqualToString:fileNameCrypto]) {
+                    isCryptoComplete = YES;
+                    break;
+                }
             }
             if (isCryptoComplete == NO) continue;
         }
-        
+    
         // Insert in Array
         [metadatasToInsertInDB addObject:metadata];
     }
@@ -331,16 +419,13 @@
         }
     });    
     
-    [self.tableView reloadData];
+    _loadingFolder = NO;
     
-    [_hud hideHud];
+    [self.tableView reloadData];
 }
 
 - (void)readFolder
 {
-    // read folder
-    [_hud visibleIndeterminateHud];
-    
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:activeAccount];
     
     metadataNet.action = actionReadFolder;
@@ -349,14 +434,14 @@
     metadataNet.date = nil;
     
     [self addNetworkingQueue:metadataNet];
+    
+    _loadingFolder = YES;
 }
 
 // MARK: - Create Folder
 
 - (void)createFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    [_hud hideHud];
-    
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_",nil) message:message preferredStyle:UIAlertControllerStyleAlert];
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
@@ -367,8 +452,6 @@
 
 - (void)createFolderSuccess:(CCMetadataNet *)metadataNet
 {
-    [_hud hideHud];
-    
     (void)[[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:[NSString stringWithFormat:@"%@/%@", metadataNet.serverUrl, metadataNet.fileName] permissions:@""];
     
     // Load Folder or the Datasource
@@ -389,8 +472,6 @@
     metadataNet.serverUrl = _serverUrl;
     
     [self addNetworkingQueue:metadataNet];
-    
-    [_hud visibleIndeterminateHud];
 }
 
 // MARK: - Table
@@ -418,9 +499,7 @@
     if (result)
         return [result count];
     else
-        return 0;
-    
-    //return [[CCCoreData getTableMetadataWithPredicate:predicate context:nil] count];
+        return 0;    
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
