@@ -48,11 +48,7 @@
         
     NSMutableDictionary *_selectedFileIDsMetadatas;
     NSUInteger _numSelectedFileIDsMetadatas;
-
     NSMutableArray *_queueSelector;
-    
-    NSMutableArray *_selectedMetadatas;
-    NSUInteger _numSelectedMetadatas;
     
     UIImageView *_ImageTitleHomeCryptoCloud;
     UIView *_reMenuBackgroundView;
@@ -128,7 +124,6 @@
     _metadata = [tableMetadata new];
     _hud = [[CCHud alloc] initWithView:[[[UIApplication sharedApplication] delegate] window]];
     _hudDeterminate = [[CCHud alloc] initWithView:[[[UIApplication sharedApplication] delegate] window]];
-    _selectedMetadatas = [NSMutableArray new];
     _selectedFileIDsMetadatas = [NSMutableDictionary new];
     _queueSelector = [NSMutableArray new];
     _sectionDataSource = [CCSectionDataSourceMetadata new];
@@ -2299,9 +2294,7 @@
     
         if (message)
             [app messageNotification:@"_move_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
-        
-        [_selectedMetadatas removeAllObjects];
-        
+                
         // End Select Table View
         [self tableViewSelect:NO];
         
