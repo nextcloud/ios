@@ -46,10 +46,14 @@
     BOOL _isPickerCriptate;              // if is cryptated image or video back from picker
     BOOL _isSelectedMode;
         
-    NSMutableArray *_selectedMetadatas;
-    NSMutableSet *_selectedFileIDs;
+    NSMutableDictionary *_selectedFileIDsMetadatas;
+    NSUInteger _numSelectedFileIDsMetadatas;
+
     NSMutableArray *_queueSelector;
+    
+    NSMutableArray *_selectedMetadatas;
     NSUInteger _numSelectedMetadatas;
+    
     UIImageView *_ImageTitleHomeCryptoCloud;
     UIView *_reMenuBackgroundView;
     UITapGestureRecognizer *_singleFingerTap;
@@ -125,7 +129,7 @@
     _hud = [[CCHud alloc] initWithView:[[[UIApplication sharedApplication] delegate] window]];
     _hudDeterminate = [[CCHud alloc] initWithView:[[[UIApplication sharedApplication] delegate] window]];
     _selectedMetadatas = [NSMutableArray new];
-    _selectedFileIDs = [NSMutableSet new];
+    _selectedFileIDsMetadatas = [NSMutableDictionary new];
     _queueSelector = [NSMutableArray new];
     _sectionDataSource = [CCSectionDataSourceMetadata new];
     _isViewDidLoad = YES;
@@ -224,6 +228,10 @@
         [self setUINavigationBarSelected];
     else
         [self setUINavigationBarDefault];
+    
+    // If not editing mode remove _selectedFileIDs
+    if (!self.tableView.editing)
+        [_selectedFileIDsMetadatas removeAllObjects];
     
     // Plus Button
     [app plusButtonVisibile:true];
@@ -2179,18 +2187,24 @@
         
         [_hud hideHud];
         
-        if (_isSearchMode)
-            [self readFolder:metadataNet.serverUrl];
-        else
-            [self reloadDatasource:metadataNet.serverUrl];
-        
         // next
-        if ([_selectedMetadatas count] > 0) {
+        [_selectedFileIDsMetadatas removeObjectForKey:metadataNet.fileID];
             
-            [_selectedMetadatas removeObjectAtIndex:0];
+        if ([_selectedFileIDsMetadatas count] > 0) {
             
-            if ([_selectedMetadatas count] > 0)
-                [self deleteFileOrFolder:[_selectedMetadatas objectAtIndex:0] numFile:[_selectedMetadatas count] ofFile:_numSelectedMetadatas];
+            NSArray *metadatas = [_selectedFileIDsMetadatas allValues];
+            [self deleteFileOrFolder:[metadatas objectAtIndex:0] numFile:[_selectedFileIDsMetadatas count] ofFile:_numSelectedFileIDsMetadatas];
+            
+        } else {
+            
+            // End Select Table View
+            [self tableViewSelect:NO];
+            
+            // Reload
+            if (_isSearchMode)
+                [self readFolder:metadataNet.serverUrl];
+            else
+                [self reloadDatasource:metadataNet.serverUrl];
         }
     }
 }
@@ -2211,30 +2225,24 @@
 
 - (void)deleteSelectionFile
 {
-    [_selectedMetadatas removeAllObjects];
     [_queueSelector removeAllObjects];
     
-    _selectedMetadatas = [[NSMutableArray alloc] initWithArray: [self getMetadatasFromSelectedRows:[self.tableView indexPathsForSelectedRows]]];
-    _numSelectedMetadatas = [_selectedMetadatas count];
+    _numSelectedFileIDsMetadatas = [_selectedFileIDsMetadatas count];
     
-    if ([_selectedMetadatas count] > 0)
-        [self deleteFileOrFolder:[_selectedMetadatas objectAtIndex:0] numFile:[_selectedMetadatas count] ofFile:_numSelectedMetadatas];
-    
-    [self tableViewSelect:NO];
+    if ([_selectedFileIDsMetadatas count] > 0) {
+        
+        NSArray *metadatas = [_selectedFileIDsMetadatas allValues];
+        [self deleteFileOrFolder:[metadatas objectAtIndex:0] numFile:[_selectedFileIDsMetadatas count] ofFile:_numSelectedFileIDsMetadatas];
+    }
 }
 
 - (void)deleteFile
 {
-    [_selectedMetadatas removeAllObjects];
     [_queueSelector removeAllObjects];
-    _numSelectedMetadatas = 1;
+    [_selectedFileIDsMetadatas removeAllObjects];
+    _numSelectedFileIDsMetadatas = 1;
     
-    [_selectedMetadatas addObject:_metadata];
-    
-    if ([_selectedMetadatas count] > 0)
-        [self deleteFileOrFolder:[_selectedMetadatas objectAtIndex:0] numFile:[_selectedMetadatas count] ofFile:_numSelectedMetadatas];
-    
-    [self tableViewSelect:NO];
+    [self deleteFileOrFolder:_metadata numFile:1 ofFile:_numSelectedFileIDsMetadatas];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -4857,7 +4865,8 @@
 - (void)tableViewSelect:(BOOL)edit
 {
     // chiudiamo eventuali swipe aperti
-    if (edit) [self.tableView setEditing:NO animated:NO];
+    if (edit)
+        [self.tableView setEditing:NO animated:NO];
     
     [self.tableView setAllowsMultipleSelectionDuringEditing:edit];
     [self.tableView setEditing:edit animated:YES];
@@ -4868,7 +4877,7 @@
     else
         [self setUINavigationBarDefault];
     
-    [_selectedFileIDs removeAllObjects];
+    [_selectedFileIDsMetadatas removeAllObjects];
     
     [self setTitle];
 }
@@ -5475,7 +5484,7 @@
     // se siamo in modalità editing impostiamo il titolo dei selezioati e usciamo subito
     if (self.tableView.editing) {
         
-        [_selectedFileIDs addObject:_metadata.fileID];
+        [_selectedFileIDsMetadatas setObject:_metadata forKey:_metadata.fileID];
         [self setTitle];
         return;
     }
@@ -5576,8 +5585,9 @@
 - (void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(nonnull NSIndexPath *)indexPath
 {
     tableMetadata *metadata = [self getMetadataFromSectionDataSource:indexPath];
-
-    [_selectedFileIDs removeObject:metadata.fileID];
+    
+    [_selectedFileIDsMetadatas removeObjectForKey:metadata.fileID];
+    
     [self setTitle];
 }
 
