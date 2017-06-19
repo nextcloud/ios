@@ -444,8 +444,8 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
 
     // MARK: - Action
 
-    func moveServerUrl(to serverUrlTo: String!, title: String!, selectedMetadatas: [Any]!) {
-        
+    func moveServerUrl(to serverUrlTo: String!, title: String!) {
+    
         self.serverUrl = serverUrlTo
         
         if title == nil {

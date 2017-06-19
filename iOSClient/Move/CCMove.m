@@ -143,7 +143,7 @@
 {
     [_networkingOperationQueue cancelAllOperations];
     
-    [self.delegate moveServerUrlTo:_serverUrl title:self.passMetadata.fileNamePrint selectedMetadatas:self.selectedMetadatas];
+    [self.delegate moveServerUrlTo:_serverUrl title:self.passMetadata.fileNamePrint];
         
     [self dismissViewControllerAnimated:YES completion:nil];
 }
@@ -523,11 +523,7 @@
     
         viewController.delegate = self.delegate;
         viewController.onlyClearDirectory = self.onlyClearDirectory;
-        viewController.selectedMetadatas = self.selectedMetadatas;
         viewController.move.title = self.move.title;
-        //viewController.barTintColor = self.barTintColor;
-        //viewController.tintColor = self.tintColor;
-        //viewController.tintColorTitle = self.tintColorTitle;
         viewController.networkingOperationQueue = _networkingOperationQueue;
 
         viewController.passMetadata = metadata;

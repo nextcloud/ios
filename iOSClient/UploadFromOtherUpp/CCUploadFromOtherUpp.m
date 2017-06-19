@@ -151,7 +151,7 @@
 #pragma mark == IBAction ==
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)moveServerUrlTo:(NSString *)serverUrlTo title:(NSString *)title selectedMetadatas:(NSArray *)selectedMetadatas
+- (void)moveServerUrlTo:(NSString *)serverUrlTo title:(NSString *)title
 {
     if (serverUrlTo) {
         serverUrlLocal = serverUrlTo;

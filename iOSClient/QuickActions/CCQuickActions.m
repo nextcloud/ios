@@ -174,7 +174,7 @@
 #pragma mark ===== Move =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)moveServerUrlTo:(NSString *)serverUrlTo title:(NSString *)title selectedMetadatas:(NSArray *)selectedMetadatas
+- (void)moveServerUrlTo:(NSString *)serverUrlTo title:(NSString *)title
 {    
     [_mainVC uploadFileAsset:_assets serverUrl:serverUrlTo cryptated:_cryptated useSubFolder:NO session:k_upload_session];
 }
@@ -191,7 +191,6 @@
         _move.move.title = NSLocalizedString(@"_upload_file_", nil);
 
     _move.delegate = self;
-    _move.selectedMetadatas = nil;
     _move.tintColor = [NCBrandColor sharedInstance].navigationBarText;
     _move.barTintColor = [NCBrandColor sharedInstance].brand;
     _move.tintColorTitle = [NCBrandColor sharedInstance].navigationBarText;

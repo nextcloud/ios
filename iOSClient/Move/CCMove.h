@@ -37,7 +37,6 @@
 
 @property (nonatomic, weak) id <CCMoveDelegate> delegate;
 @property (nonatomic, strong) NSOperationQueue *networkingOperationQueue;
-@property (nonatomic, strong) NSArray *selectedMetadatas;
 @property BOOL onlyClearDirectory;
 
 @property (nonatomic, strong) NSString *serverUrl;
@@ -60,6 +59,6 @@
 
 @protocol CCMoveDelegate <NSObject>
 
-- (void)moveServerUrlTo:(NSString *)serverUrlTo title:(NSString *)title selectedMetadatas:(NSArray *)selectedMetadatas;
+- (void)moveServerUrlTo:(NSString *)serverUrlTo title:(NSString *)title;
 
 @end
