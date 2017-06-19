@@ -351,7 +351,7 @@ class CCActions: NSObject {
         metadataNet.directoryID = NCManageDatabase.sharedInstance.getDirectoryID(serverUrl)
         metadataNet.fileName = fileName
         metadataNet.options = depth
-        metadataNet.priority = Operation.QueuePriority.veryHigh.rawValue
+        metadataNet.priority = Operation.QueuePriority.high.rawValue
         metadataNet.selector = selector
         metadataNet.serverUrl = serverUrl
 
@@ -415,7 +415,6 @@ class CCActions: NSObject {
         metadataNet.fileID = metadata.fileID
         metadataNet.fileName = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: serverUrl, activeUrl: appDelegate.activeUrl)
         metadataNet.options = "\(favorite)"
-        metadataNet.priority = Operation.QueuePriority.normal.rawValue
         metadataNet.selector = selectorAddFavorite
         metadataNet.serverUrl = serverUrl;
         
@@ -444,7 +443,6 @@ class CCActions: NSObject {
         
         metadataNet.action = actionListingFavorites
         metadataNet.delegate = delegate
-        metadataNet.priority = Operation.QueuePriority.normal.rawValue
         metadataNet.serverUrl = serverUrl
         
         appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)

@@ -65,7 +65,7 @@
     
     metadataNet.action = actionReadFolder;
     metadataNet.directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
-    metadataNet.priority = NSOperationQueuePriorityNormal;
+    metadataNet.priority = NSOperationQueuePriorityLow;
     metadataNet.selector = selector;
     metadataNet.serverUrl = serverUrl;
     
@@ -371,6 +371,7 @@
         metadataNet.downloadData = downloadData;
         metadataNet.downloadPlist = downloadPlist;
         metadataNet.fileID = fileID;
+        metadataNet.priority = NSOperationQueuePriorityLow;
         metadataNet.selector = selector;
         metadataNet.selectorPost = selectorPost;
         metadataNet.serverUrl = serverUrl;

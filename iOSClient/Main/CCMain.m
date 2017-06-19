@@ -1777,7 +1777,6 @@
                 metadataNet.assetLocalIdentifier = asset.localIdentifier;
                 metadataNet.cryptated = cryptated;
                 metadataNet.fileName = fileName;
-                metadataNet.priority = NSOperationQueuePriorityNormal;
                 metadataNet.session = session;
                 metadataNet.selector = selectorUploadFile;
                 metadataNet.selectorPost = nil;
@@ -1790,7 +1789,6 @@
                 metadataNet.assetLocalIdentifier = asset.localIdentifier;
                 metadataNet.cryptated = cryptated;
                 metadataNet.fileName = fileName;
-                metadataNet.priority = NSOperationQueuePriorityNormal;
                 metadataNet.session = session;
                 metadataNet.selector = selectorReadFileUploadFile;
                 metadataNet.serverUrl = serverUrl;
@@ -1879,7 +1877,7 @@
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
 
     metadataNet.action = actionReadFile;
-    metadataNet.priority = NSOperationQueuePriorityVeryHigh;
+    metadataNet.priority = NSOperationQueuePriorityHigh;
     metadataNet.selector = selectorReadFileReloadFolder;
     metadataNet.serverUrl = _serverUrl;
 

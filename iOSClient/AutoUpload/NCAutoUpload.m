@@ -485,7 +485,7 @@
         } else {
             metadataNet.selector = selectorUploadAutoUpload;
             metadataNet.selectorPost = nil;
-            metadataNet.priority = NSOperationQueuePriorityNormal;
+            metadataNet.priority = NSOperationQueuePriorityLow;
         }
         metadataNet.fileName = fileName;
         metadataNet.serverUrl = serverUrl;

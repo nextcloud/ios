@@ -222,7 +222,6 @@
     
     metadataNet.action = actionReadFolder;
     metadataNet.directoryID = directoryID;
-    metadataNet.priority = NSOperationQueuePriorityNormal;
     
     if ([CCUtility getFavoriteOffline])
         selector = selectorReadFolderWithDownload;
