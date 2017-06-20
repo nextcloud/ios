@@ -43,8 +43,13 @@
     self.login.backgroundColor = [NCBrandColor sharedInstance].customer;
     
     // Bottom label
-    self.bottomLabel.text = NSLocalizedString(@"_login_bottom_label_", nil);
+    self.bottomLabel.text = NSLocalizedString([NCBrandOptions sharedInstance].textLoginProvider, nil);
     self.bottomLabel.userInteractionEnabled = YES;
+    
+    if ([NCBrandOptions sharedInstance].disable_linkLoginProvider) {
+        self.bottomLabel.hidden = YES;
+    }
+
     UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tabBottomLabel)];
     [self.bottomLabel addGestureRecognizer:tapGesture];
     
@@ -58,10 +63,6 @@
         // Landscape
         self.bottomLabel.hidden = YES;
     }
-    
-#ifdef CUSTOM_BUILD
-    self.bottomLabel.hidden = YES;
-#endif
     
     self.annulla.tintColor = [NCBrandColor sharedInstance].customer;
     
@@ -354,7 +355,7 @@
 
 - (void)tabBottomLabel
 {
-    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NCBrandOptions sharedInstance].loginButtonLabelLink]];
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NCBrandOptions sharedInstance].linkLoginProvider]];
 }
 
 - (IBAction)handlebaseUrlchange:(id)sender

@@ -70,7 +70,8 @@ class NCBrandOptions: NSObject {
     public let loginBaseUrl:                    String = "https://cloud.twsweb.it"
     public let loginBaseUrlMultiDomains:        [String] = ["domain.com", "domain.it"]
     public let pushNotificationServer:          String = "https://push-notifications.nextcloud.com"
-    public let loginButtonLabelLink:            String = "https://nextcloud.com/providers"
+    public let linkLoginProvider:               String = "https://nextcloud.com/providers"
+    public let textLoginProvider:               String = "_login_bottom_label_"
     public let middlewarePingUrl:               String = ""
     public let webLoginAutenticationProtocol:   String = ""
     public let webCloseViewProtocol:            String = ""
@@ -93,6 +94,7 @@ class NCBrandOptions: NSObject {
     public let use_storeLocalAutoUploadAll:     Bool = false
     
     public let disable_intro:                   Bool = false
+    public let disable_linkLoginProvider:       Bool = false
     public let disable_request_login_url:       Bool = false
     public let disable_multiaccount:            Bool = false
     public let disable_cryptocloudsystem:       Bool = false

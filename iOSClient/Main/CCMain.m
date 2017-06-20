@@ -1879,6 +1879,9 @@
 
 - (void)readFileReloadFolder
 {
+    if (!_serverUrl || !app.activeAccount || app.maintenanceMode)
+        return;
+    
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
 
     metadataNet.action = actionReadFile;
