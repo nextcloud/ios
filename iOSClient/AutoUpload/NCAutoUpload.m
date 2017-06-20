@@ -480,7 +480,13 @@
         metadataNet.assetLocalIdentifier = asset.localIdentifier;
         if (assetsFull) {
             metadataNet.selector = selectorUploadAutoUploadAll;
-            metadataNet.selectorPost = selectorUploadRemovePhoto;
+            
+            // Option 
+            if ([[NCBrandOptions sharedInstance] use_storeLocalAutoUploadAll] == true)
+                metadataNet.selectorPost = nil;
+            else
+                metadataNet.selectorPost = selectorUploadRemovePhoto;
+            
             metadataNet.priority = NSOperationQueuePriorityLow;
         } else {
             metadataNet.selector = selectorUploadAutoUpload;

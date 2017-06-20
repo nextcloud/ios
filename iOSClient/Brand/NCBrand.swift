@@ -90,6 +90,7 @@ class NCBrandOptions: NSObject {
     public let use_themingBackground:           Bool = true
     public let use_multiDomains:                Bool = false
     public let use_middlewarePing:              Bool = false
+    public let use_storeLocalAutoUploadAll:     Bool = false
     
     public let disable_intro:                   Bool = false
     public let disable_request_login_url:       Bool = false
