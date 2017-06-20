@@ -208,6 +208,11 @@ class CreateMenuAdd: NSObject {
 
 // MARK: - CreateFormUploadAssets
 
+@objc protocol createFormUploadAssetsDelegate {
+    
+    func dismissFormUploadAssets()
+}
+
 class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
     
     var serverUrl : String = ""
@@ -215,10 +220,11 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
     var assets: NSMutableArray = []
     var cryptated : Bool = false
     var session : String = ""
+    weak var delegate: createFormUploadAssetsDelegate?
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
-    convenience init(_ titleServerUrl : String?, serverUrl : String, assets : NSMutableArray, cryptated : Bool, session : String) {
+    convenience init(_ titleServerUrl : String?, serverUrl : String, assets : NSMutableArray, cryptated : Bool, session : String, delegate: createFormUploadAssetsDelegate) {
         
         self.init()
         
@@ -232,6 +238,7 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         self.assets = assets
         self.cryptated = cryptated
         self.session = session
+        self.delegate = delegate
         
         self.initializeForm()
     }
@@ -384,6 +391,13 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         self.tableView.backgroundColor = NCBrandColor.sharedInstance.tableBackground
         
         self.reloadForm()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool)
+    {
+        self.delegate?.dismissFormUploadAssets()
+        
+        super.viewWillDisappear(animated)
     }
 
     func reloadForm() {

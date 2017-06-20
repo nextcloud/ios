@@ -35,7 +35,7 @@
 #import "NCAutoUpload.h"
 #import "NCBridgeSwift.h"
 
-@interface CCMain () <CCActionsDeleteDelegate, CCActionsRenameDelegate, CCActionsSearchDelegate, CCActionsDownloadThumbnailDelegate, CCActionsSettingFavoriteDelegate, UITextViewDelegate>
+@interface CCMain () <CCActionsDeleteDelegate, CCActionsRenameDelegate, CCActionsSearchDelegate, CCActionsDownloadThumbnailDelegate, CCActionsSettingFavoriteDelegate, UITextViewDelegate, createFormUploadAssetsDelegate>
 {
     tableMetadata *_metadata;
     
@@ -704,6 +704,11 @@
 #pragma mark ===== Assets Picker =====
 #pragma --------------------------------------------------------------------------------------------
 
+-(void)dismissFormUploadAssets
+{
+    [self reloadDatasource];
+}
+
 - (void)openAssetsPickerController
 {
     CTAssetCheckmark *checkmark = [CTAssetCheckmark appearance];
@@ -739,7 +744,7 @@
 {
     [picker dismissViewControllerAnimated:YES completion:^{
         
-        CreateFormUploadAssets *form = [[CreateFormUploadAssets alloc] init:_titleMain serverUrl:_serverUrl assets:assets cryptated:_isPickerCriptate session:k_upload_session];
+        CreateFormUploadAssets *form = [[CreateFormUploadAssets alloc] init:_titleMain serverUrl:_serverUrl assets:assets cryptated:_isPickerCriptate session:k_upload_session delegate:self];
         form.title = NSLocalizedString(@"_upload_photos_videos_", nil);
         
         UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:form];
