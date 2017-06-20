@@ -1995,9 +1995,14 @@
     });
     
     // Search Mode
-    if (_isSearchMode)
+    if (_isSearchMode) {
+        
+        // Fix managed -> Unmanaged _searchResultMetadatas
+        _searchResultMetadatas = [[NSMutableArray alloc] initWithArray:metadatasToInsertInDB];
+        
         [self reloadDatasource:metadataNet.serverUrl];
-
+    }
+    
     // this is the same directory
     if ([metadataNet.serverUrl isEqualToString:_serverUrl] && !_isSearchMode) {
         
