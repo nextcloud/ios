@@ -2460,7 +2460,6 @@
     } else {
         
         _numSelectedFileIDsMetadatas = 1;
-        
         [self performSelectorOnMainThread:@selector(moveFileOrFolderMetadata:) withObject:@[_metadata, serverUrlTo, [NSNumber numberWithInteger:1], [NSNumber numberWithInteger:_numSelectedFileIDsMetadatas]] waitUntilDone:NO];
     }
 }
