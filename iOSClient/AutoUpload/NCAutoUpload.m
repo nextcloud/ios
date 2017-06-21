@@ -77,21 +77,19 @@
 
 - (void)initStateAutoUpload
 {
-    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
+    tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
     
-    if (tableAccount.autoUpload) {
+    if (account.autoUpload) {
         
         [self setupAutoUpload];
         
-        if (tableAccount.autoUploadBackground) {
+        if (account.autoUploadBackground) {
          
             [self checkIfLocationIsEnabled];
         }
         
     } else {
-        
-        [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUpload" state:NO];
-        
+                
         [PHPhotoLibrary.sharedPhotoLibrary unregisterChangeObserver:self];
         
         [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
@@ -114,7 +112,10 @@
         
     } else {
         
-        [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUpload" state:NO];
+        tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
+
+        if (account.autoUpload == YES)
+            [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUpload" state:NO];
         
         [PHPhotoLibrary.sharedPhotoLibrary unregisterChangeObserver:self];
         
@@ -141,7 +142,10 @@
         
     } else {
         
-        [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUpload" state:NO];
+        tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
+
+        if (account.autoUpload == YES)
+            [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUpload" state:NO];
         
         [PHPhotoLibrary.sharedPhotoLibrary unregisterChangeObserver:self];
         
@@ -162,6 +166,8 @@
 
 - (BOOL)checkIfLocationIsEnabled
 {
+    tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
+    
     [CCManageLocation sharedInstance].delegate = self;
     
     if ([CLLocationManager locationServicesEnabled]) {
@@ -179,7 +185,8 @@
                 
                 if ([ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusAuthorized) {
                     
-                    [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUploadBackground" state:NO];
+                    if (account.autoUploadBackground == YES)
+                        [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUploadBackground" state:NO];
                     
                     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_location_not_enabled_", nil)
                                                                     message:NSLocalizedString(@"_location_not_enabled_msg_", nil)
@@ -203,12 +210,16 @@
             
             if ([ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusAuthorized) {
                 
-                [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUploadBackground" state:YES];
+                if (account.autoUploadBackground == NO)
+                    [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUploadBackground" state:YES];
+                
                 [[CCManageLocation sharedInstance] startSignificantChangeUpdates];
                 
             } else {
                 
-                [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUploadBackground" state:NO];
+                if (account.autoUploadBackground == YES)
+                    [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUploadBackground" state:NO];
+                
                 [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
                 
                 UIAlertView * alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_access_photo_not_enabled_", nil)
@@ -222,7 +233,9 @@
         
     } else {
         
-        [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUploadBackground" state:NO];
+        if (account.autoUploadBackground == YES)
+            [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUploadBackground" state:NO];
+        
         [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
         
         if ([ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusAuthorized) {
@@ -251,6 +264,8 @@
 
 - (void)statusAuthorizationLocationChanged
 {
+    tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
+    
     if ([CLLocationManager authorizationStatus] != kCLAuthorizationStatusNotDetermined){
         
         if (![CCManageLocation sharedInstance].firstChangeAuthorizationDone) {
@@ -271,7 +286,9 @@
                 
                 if ([CCManageLocation sharedInstance].firstChangeAuthorizationDone) {
                     
-                    [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUploadBackground" state:NO];
+                    if (account.autoUploadBackground == YES)
+                        [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUploadBackground" state:NO];
+                    
                     [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
                 }
                 
@@ -287,11 +304,10 @@
             
         } else if ([CLLocationManager authorizationStatus] != kCLAuthorizationStatusNotDetermined){
             
-            tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
-            
-            if (tableAccount.autoUploadBackground) {
+            if (account.autoUploadBackground == YES) {
                 
                 [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUploadBackground" state:NO];
+                
                 [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
                 
                 if ([ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusAuthorized) {
@@ -323,10 +339,9 @@
 - (void)changedLocation
 {
     // Only in background
-    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
+    tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
     
-    if (tableAccount.autoUpload && tableAccount.autoUploadBackground && [[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
-        
+    if (account.autoUpload && account.autoUploadBackground && [[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
         
         if ([ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusAuthorized) {
             
@@ -340,8 +355,11 @@
             
         } else {
             
-            [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUpload" state:NO];
-            [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUploadBackground" state:NO];
+            if (account.autoUpload == YES)
+                [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUpload" state:NO];
+            
+            if (account.autoUploadBackground == YES)
+                [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUploadBackground" state:NO];
             
             [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
             [PHPhotoLibrary.sharedPhotoLibrary unregisterChangeObserver:self];
