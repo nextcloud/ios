@@ -559,9 +559,14 @@
     while (counterUpload < maxConcurrentUpload) {
         
         metadataNet = [[NCManageDatabase sharedInstance] getAutoUploadWithSelector:selectorUploadAutoUpload];
-        if (metadataNet)
-            result = [PHAsset fetchAssetsWithLocalIdentifiers:@[metadataNet.assetLocalIdentifier] options:nil];
-        else
+        if (metadataNet) {
+            
+            PHFetchOptions *fetchOptions = [PHFetchOptions new];
+            fetchOptions.includeAssetSourceTypes = PHAssetSourceTypeNone | PHAssetSourceTypeUserLibrary | PHAssetSourceTypeCloudShared | PHAssetSourceTypeiTunesSynced;
+            
+            result = [PHAsset fetchAssetsWithLocalIdentifiers:@[metadataNet.assetLocalIdentifier] options:fetchOptions];
+            
+        } else
             break;
         
         if (result.count > 0) {
@@ -594,9 +599,14 @@
     while (counterUpload < maxConcurrentUpload) {
         
         metadataNet =  [[NCManageDatabase sharedInstance] getAutoUploadWithSelector:selectorUploadAutoUploadAll];
-        if (metadataNet)
-            result = [PHAsset fetchAssetsWithLocalIdentifiers:@[metadataNet.assetLocalIdentifier] options:nil];
-        else
+        if (metadataNet) {
+            
+            PHFetchOptions *fetchOptions = [PHFetchOptions new];
+            fetchOptions.includeAssetSourceTypes = PHAssetSourceTypeNone | PHAssetSourceTypeUserLibrary | PHAssetSourceTypeCloudShared | PHAssetSourceTypeiTunesSynced;
+            
+            result = [PHAsset fetchAssetsWithLocalIdentifiers:@[metadataNet.assetLocalIdentifier] options:fetchOptions];
+        
+        } else
             break;
             
         if (result.count > 0) {

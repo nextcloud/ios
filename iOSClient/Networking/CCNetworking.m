@@ -1407,7 +1407,10 @@
         if ([metadata.assetLocalIdentifier length] > 0 && [metadata.sessionSelector isEqualToString:selectorUploadAutoUpload]) {
             
             PHAsset *asset;
-            PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[metadata.assetLocalIdentifier] options:nil];
+            PHFetchOptions *fetchOptions = [PHFetchOptions new];
+            fetchOptions.includeAssetSourceTypes = PHAssetSourceTypeNone | PHAssetSourceTypeUserLibrary | PHAssetSourceTypeCloudShared | PHAssetSourceTypeiTunesSynced;
+            
+            PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[metadata.assetLocalIdentifier] options:fetchOptions];
             if(result.count){
                 asset = result[0];
                 
