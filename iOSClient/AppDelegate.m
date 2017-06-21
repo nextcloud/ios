@@ -252,8 +252,8 @@
     }
     
     // Start Timer
-    self.timerProcessAutoUpload = [NSTimer scheduledTimerWithTimeInterval:k_timerProcessAutoUpload target:self selector:@selector(processAutoUpload) userInfo:nil repeats:YES];
-    self.timerVerifySessionInProgress = [NSTimer scheduledTimerWithTimeInterval:3.0 target:self selector:@selector(verifyDownloadUploadInProgress) userInfo:nil repeats:YES];
+    self.timerProcessAutoUpload = [NSTimer scheduledTimerWithTimeInterval:2.0 target:self selector:@selector(processAutoUpload) userInfo:nil repeats:YES];
+    self.timerVerifySessionInProgress = [NSTimer scheduledTimerWithTimeInterval:2.0 target:self selector:@selector(verifyDownloadUploadInProgress) userInfo:nil repeats:YES];
     self.timerUpdateApplicationIconBadgeNumber = [NSTimer scheduledTimerWithTimeInterval:k_timerUpdateApplicationIconBadgeNumber target:self selector:@selector(updateApplicationIconBadgeNumber) userInfo:nil repeats:YES];
 
     // Registration Push Notification
@@ -1390,14 +1390,15 @@
 
 - (void)verifyDownloadUploadInProgress
 {
-    // Test Maintenance
-    if (self.maintenanceMode || self.activeAccount.length == 0)
-        return;
-    
-    [[CCNetworking sharedNetworking] verifyDownloadInProgress];
-    [[CCNetworking sharedNetworking] verifyUploadInProgress];
-    
     [self.timerVerifySessionInProgress invalidate];
+    
+    // Test Maintenance - Account
+    if (self.maintenanceMode == NO || self.activeAccount.length > 0) {
+    
+        [[CCNetworking sharedNetworking] verifyDownloadInProgress];
+        [[CCNetworking sharedNetworking] verifyUploadInProgress];
+    }
+    
     self.timerVerifySessionInProgress = [NSTimer scheduledTimerWithTimeInterval:k_timerVerifySession target:self selector:@selector(verifyDownloadUploadInProgress) userInfo:nil repeats:YES];
 }
 
