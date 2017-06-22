@@ -43,7 +43,7 @@
             dispatch_semaphore_t semaphoreGroup = dispatch_semaphore_create(0);
 
             PHVideoRequestOptions *options = [PHVideoRequestOptions new];
-            options.networkAccessAllowed = true;
+            options.networkAccessAllowed = YES; // iCloud
             
             [[PHImageManager defaultManager] requestPlayerItemForVideo:asset options:options resultHandler:^(AVPlayerItem * _Nullable playerItem, NSDictionary * _Nullable info) {
                 
@@ -126,7 +126,7 @@
             dispatch_semaphore_t semaphoreGroup = dispatch_semaphore_create(0);
             
             PHImageRequestOptions *options = [PHImageRequestOptions new];
-            options.synchronous = NO;
+            options.networkAccessAllowed = YES; // iCloud
             
             [[PHImageManager defaultManager] requestImageDataForAsset:asset options:options resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
                 
