@@ -128,10 +128,7 @@
         return nil;
     }
     
-    PHFetchOptions *fetchOptions = [PHFetchOptions new];
-    fetchOptions.includeAssetSourceTypes = PHAssetSourceTypeNone | PHAssetSourceTypeUserLibrary | PHAssetSourceTypeCloudShared | PHAssetSourceTypeiTunesSynced;
-    
-    PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[localIdentifier] options:fetchOptions];
+    PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[localIdentifier] options:nil];
     
     if(result.count){
         return result[0];

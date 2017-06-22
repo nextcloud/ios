@@ -447,7 +447,7 @@
     NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:app.activeUrl];
     BOOL useSubFolder = tableAccount.autoUploadCreateSubfolder;
     
-    // Conversion from ALAsset -to-> PHAsset
+    // Conversion from ALAsset [OLD < iOS 8] - to -> PHAsset
     for (ALAsset *asset in newItemsToUpload) {
         
         NSURL *url = [asset valueForProperty:@"ALAssetPropertyAssetURL"];
@@ -585,10 +585,7 @@
         metadataNet = [[NCManageDatabase sharedInstance] getAutoUploadWithSelector:selectorUploadAutoUpload];
         if (metadataNet) {
             
-            PHFetchOptions *fetchOptions = [PHFetchOptions new];
-            fetchOptions.includeAssetSourceTypes = PHAssetSourceTypeNone | PHAssetSourceTypeUserLibrary | PHAssetSourceTypeCloudShared | PHAssetSourceTypeiTunesSynced;
-            
-            result = [PHAsset fetchAssetsWithLocalIdentifiers:@[metadataNet.assetLocalIdentifier] options:fetchOptions];
+            result = [PHAsset fetchAssetsWithLocalIdentifiers:@[metadataNet.assetLocalIdentifier] options:nil];
             
         } else
             break;
@@ -626,11 +623,8 @@
         
             metadataNet =  [[NCManageDatabase sharedInstance] getAutoUploadWithSelector:selectorUploadAutoUploadAll];
             if (metadataNet) {
-            
-                PHFetchOptions *fetchOptions = [PHFetchOptions new];
-                fetchOptions.includeAssetSourceTypes = PHAssetSourceTypeNone | PHAssetSourceTypeUserLibrary | PHAssetSourceTypeCloudShared | PHAssetSourceTypeiTunesSynced;
-            
-                result = [PHAsset fetchAssetsWithLocalIdentifiers:@[metadataNet.assetLocalIdentifier] options:fetchOptions];
+                
+                result = [PHAsset fetchAssetsWithLocalIdentifiers:@[metadataNet.assetLocalIdentifier] options:nil];
         
             } else
                 break;

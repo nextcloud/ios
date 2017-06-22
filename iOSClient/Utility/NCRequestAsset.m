@@ -15,10 +15,7 @@
 
 - (void)writeAssetToSandboxFileName:(NSString *)fileName assetLocalIdentifier:(NSString *)assetLocalIdentifier selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorCode:(NSInteger)errorCode metadataNet:(CCMetadataNet *)metadataNet serverUrl:(NSString *)serverUrl activeUrl:(NSString *)activeUrl directoryUser:(NSString *)directoryUser cryptated:(BOOL)cryptated session:(NSString *)session taskStatus:(NSInteger)taskStatus delegate:(id)delegate
 {
-    PHFetchOptions *fetchOptions = [PHFetchOptions new];
-    fetchOptions.includeAssetSourceTypes = PHAssetSourceTypeNone | PHAssetSourceTypeUserLibrary | PHAssetSourceTypeCloudShared | PHAssetSourceTypeiTunesSynced;
-
-    PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[assetLocalIdentifier] options:fetchOptions];
+    PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[assetLocalIdentifier] options:nil];
     
     if (!result.count) {
         
