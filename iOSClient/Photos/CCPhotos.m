@@ -525,9 +525,7 @@
         
         _sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:results listProgressMetadata:nil groupByField:@"date" replaceDateToExifDate:YES activeAccount:app.activeAccount];
         [self reloadCollection];
-    }
-    
-    [self.collectionView reloadData];
+    }    
 }
 
 - (void)reloadCollection
