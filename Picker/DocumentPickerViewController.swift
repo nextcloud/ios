@@ -28,8 +28,6 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
     
     // MARK: - Properties
     
-    var providerDB : providerSessionDB?
-    
     lazy var fileCoordinator: NSFileCoordinator = {
     
         let fileCoordinator = NSFileCoordinator()
@@ -87,7 +85,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
     
     override func viewDidLoad() {
         
-        providerDB = providerSessionDB.sharedInstance
+        super.viewDidLoad()
         
         if let record = NCManageDatabase.sharedInstance.getAccountActive() {
             
@@ -884,8 +882,6 @@ extension DocumentPickerViewController: UITableViewDataSource {
 
 }
 
-
-
 // MARK: - Class UITableViewCell
 
 class recordMetadataCell: UITableViewCell {
@@ -893,28 +889,4 @@ class recordMetadataCell: UITableViewCell {
     @IBOutlet weak var fileImageView: UIImageView!
     @IBOutlet weak var StatusImageView: UIImageView!
     @IBOutlet weak var fileName : UILabel!
-}
-
-// MARK: - Class providerSession
-
-class providerSessionDB {
-    
-    class var sharedInstance : providerSessionDB {
-        
-        struct Static {
-            
-            static let instance = providerSessionDB()
-        }
-        
-        return Static.instance
-    }
-    
-    private init() {
-    
-        //let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.sharedInstance.capabilitiesGroups)
-        //let pathDB = dirGroup?.appendingPathComponent(appDatabase).appendingPathComponent("cryptocloud")
-        
-        //MagicalRecord.setupCoreDataStackWithAutoMigratingSqliteStore(at: pathDB!)
-        //MagicalRecord.setLoggingLevel(MagicalRecordLoggingLevel.off)
-    }
 }

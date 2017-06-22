@@ -1677,13 +1677,11 @@
 - (void)URLSession:(NSURLSession *)session didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential *credential))completionHandler
 {
     // The pinnning check
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if ([[CCCertificate sharedManager] checkTrustedChallenge:challenge]) {
-            completionHandler(NSURLSessionAuthChallengeUseCredential, [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust]);
-        } else {
-            completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, nil);
-        }
-    });
+    if ([[CCCertificate sharedManager] checkTrustedChallenge:challenge]) {
+        completionHandler(NSURLSessionAuthChallengeUseCredential, [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust]);
+    } else {
+        completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, nil);
+    }
 }
 
 @end

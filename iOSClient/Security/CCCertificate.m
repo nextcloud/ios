@@ -67,9 +67,7 @@ static SecCertificateRef SecTrustGetLeafCertificate(SecTrustRef trust)
     
     protectionSpace = [challenge protectionSpace];
     trust = [protectionSpace serverTrust];
-    
-    [CCUtility getDirectoryCerificates];
-    
+        
     if(trust != nil) {
         
         [self saveCertificate:trust withName:@"tmp.der"];
