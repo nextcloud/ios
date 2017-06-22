@@ -161,7 +161,7 @@
 
 + (void)sendMailEncryptPass:(NSString *)recipient validateEmail:(BOOL)validateEmail form:(id)form nameImage:(NSString *)nameImage;
 
-+ (NSArray *)createNameSubFolder:(NSArray *)assets;
++ (NSArray *)createNameSubFolder:(PHFetchResult *)assets;
 
 // ===== CCMetadata =====
 

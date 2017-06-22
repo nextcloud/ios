@@ -121,11 +121,7 @@
         
         [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
         
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_access_photo_not_enabled_", nil)
-                                                        message:NSLocalizedString(@"_access_photo_not_enabled_msg_", nil)
-                                                       delegate:nil
-                                              cancelButtonTitle:NSLocalizedString(@"_ok_", nil)
-                                              otherButtonTitles:nil];
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_access_photo_not_enabled_", nil) message:NSLocalizedString(@"_access_photo_not_enabled_msg_", nil) delegate:nil cancelButtonTitle:NSLocalizedString(@"_ok_", nil) otherButtonTitles:nil];
         [alert show];
     }
 }
@@ -151,11 +147,7 @@
         
         [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
         
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_access_photo_not_enabled_", nil)
-                                                        message:NSLocalizedString(@"_access_photo_not_enabled_msg_", nil)
-                                                       delegate:nil
-                                              cancelButtonTitle:NSLocalizedString(@"_ok_", nil)
-                                              otherButtonTitles:nil];
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_access_photo_not_enabled_", nil) message:NSLocalizedString(@"_access_photo_not_enabled_msg_", nil) delegate:nil cancelButtonTitle:NSLocalizedString(@"_ok_", nil) otherButtonTitles:nil];
         [alert show];
     }
 }
@@ -188,20 +180,12 @@
                     if (account.autoUploadBackground == YES)
                         [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUploadBackground" state:NO];
                     
-                    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_location_not_enabled_", nil)
-                                                                    message:NSLocalizedString(@"_location_not_enabled_msg_", nil)
-                                                                   delegate:nil
-                                                          cancelButtonTitle:NSLocalizedString(@"_ok_", nil)
-                                                          otherButtonTitles:nil];
+                    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_location_not_enabled_", nil) message:NSLocalizedString(@"_location_not_enabled_msg_", nil) delegate:nil cancelButtonTitle:NSLocalizedString(@"_ok_", nil) otherButtonTitles:nil];
                     [alert show];
                     
                 } else {
                     
-                    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_access_photo_not_enabled_", nil)
-                                                                    message:NSLocalizedString(@"_access_photo_not_enabled_msg_", nil)
-                                                                   delegate:nil
-                                                          cancelButtonTitle:NSLocalizedString(@"_ok_", nil)
-                                                          otherButtonTitles:nil];
+                    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_access_photo_not_enabled_", nil) message:NSLocalizedString(@"_access_photo_not_enabled_msg_", nil) delegate:nil cancelButtonTitle:NSLocalizedString(@"_ok_", nil) otherButtonTitles:nil];
                     [alert show];
                 }
             }
@@ -222,11 +206,7 @@
                 
                 [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
                 
-                UIAlertView * alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_access_photo_not_enabled_", nil)
-                                                                 message:NSLocalizedString(@"_access_photo_not_enabled_msg_", nil)
-                                                                delegate:nil
-                                                       cancelButtonTitle:NSLocalizedString(@"_ok_", nil)
-                                                       otherButtonTitles:nil];
+                UIAlertView * alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_access_photo_not_enabled_", nil) message:NSLocalizedString(@"_access_photo_not_enabled_msg_", nil) delegate:nil cancelButtonTitle:NSLocalizedString(@"_ok_", nil) otherButtonTitles:nil];
                 [alert show];
             }
         }
@@ -239,20 +219,12 @@
         [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
         
         if ([ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusAuthorized) {
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_location_not_enabled_", nil)
-                                                            message:NSLocalizedString(@"_location_not_enabled_msg_", nil)
-                                                           delegate:nil
-                                                  cancelButtonTitle:NSLocalizedString(@"_ok_", nil)
-                                                  otherButtonTitles:nil];
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_location_not_enabled_", nil) message:NSLocalizedString(@"_location_not_enabled_msg_", nil) delegate:nil cancelButtonTitle:NSLocalizedString(@"_ok_", nil) otherButtonTitles:nil];
             [alert show];
             
         } else {
             
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_access_photo_location_not_enabled_", nil)
-                                                            message:NSLocalizedString(@"_access_photo_location_not_enabled_msg_", nil)
-                                                           delegate:nil
-                                                  cancelButtonTitle:NSLocalizedString(@"_ok_", nil)
-                                                  otherButtonTitles:nil];
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_access_photo_location_not_enabled_", nil) message:NSLocalizedString(@"_access_photo_location_not_enabled_msg_", nil) delegate:nil cancelButtonTitle:NSLocalizedString(@"_ok_", nil) otherButtonTitles:nil];
             [alert show];
         }
     }
@@ -294,11 +266,7 @@
                 
             } else {
                 
-                UIAlertView * alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_access_photo_not_enabled_", nil)
-                                                                 message:NSLocalizedString(@"_access_photo_not_enabled_msg_", nil)
-                                                                delegate:nil
-                                                       cancelButtonTitle:NSLocalizedString(@"_ok_", nil)
-                                                       otherButtonTitles:nil];
+                UIAlertView * alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_access_photo_not_enabled_", nil) message:NSLocalizedString(@"_access_photo_not_enabled_msg_", nil) delegate:nil cancelButtonTitle:NSLocalizedString(@"_ok_", nil) otherButtonTitles:nil];
                 [alert show];
             }
             
@@ -311,19 +279,11 @@
                 [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
                 
                 if ([ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusAuthorized) {
-                    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_location_not_enabled_", nil)
-                                                                    message:NSLocalizedString(@"_location_not_enabled_msg_", nil)
-                                                                   delegate:nil
-                                                          cancelButtonTitle:NSLocalizedString(@"_ok_", nil)
-                                                          otherButtonTitles:nil];
+                    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_location_not_enabled_", nil) message:NSLocalizedString(@"_location_not_enabled_msg_", nil) delegate:nil cancelButtonTitle:NSLocalizedString(@"_ok_", nil) otherButtonTitles:nil];
                     [alert show];
                     
                 } else {
-                    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_access_photo_location_not_enabled_", nil)
-                                                                    message:NSLocalizedString(@"_access_photo_location_not_enabled_msg_", nil)
-                                                                   delegate:nil
-                                                          cancelButtonTitle:NSLocalizedString(@"_ok_", nil)
-                                                          otherButtonTitles:nil];
+                    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_access_photo_location_not_enabled_", nil) message:NSLocalizedString(@"_access_photo_location_not_enabled_msg_", nil) delegate:nil cancelButtonTitle:NSLocalizedString(@"_ok_", nil) otherButtonTitles:nil];
                     [alert show];
                 }
             }
@@ -383,32 +343,31 @@
 
 - (void)uploadAssetsNewAndFull:(BOOL)assetsFull
 {
-    CCManageAsset *manageAsset = [[CCManageAsset alloc] init];
-    NSMutableArray *newItemsToUpload;
-    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
+    PHFetchResult *newAssetToUpload;
+    tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
     
     // Check Asset : NEW or FULL
     if (assetsFull) {
         
-        newItemsToUpload = [manageAsset getCameraRollNewItemsWithDatePhoto:[NSDate distantPast] dateVideo:[NSDate distantPast]];
+        newAssetToUpload = [self getCameraRollNewItemsWithDatePhoto:[NSDate distantPast] dateVideo:[NSDate distantPast] account:account];
         
     } else {
         
-        NSDate *databaseDatePhoto = tableAccount.autoUploadDatePhoto;
-        NSDate *databaseDateVideo = tableAccount.autoUploadDateVideo;
+        NSDate *databaseDatePhoto = account.autoUploadDatePhoto;
+        NSDate *databaseDateVideo = account.autoUploadDateVideo;
         
-        newItemsToUpload = [manageAsset getCameraRollNewItemsWithDatePhoto:databaseDatePhoto dateVideo:databaseDateVideo];
+        newAssetToUpload = [self getCameraRollNewItemsWithDatePhoto:databaseDatePhoto dateVideo:databaseDateVideo account:account];
     }
     
     // News Assets ? if no verify if blocked Table Auto Upload -> Autostart
-    if ([newItemsToUpload count] == 0) {
+    if ([newAssetToUpload count] == 0) {
         
-        NSLog(@"[LOG] Auto upload, no new asset found for date image %@, date video %@", tableAccount.autoUploadDatePhoto, tableAccount.autoUploadDateVideo);
+        NSLog(@"[LOG] Auto upload, no new asset found for date image %@, date video %@", account.autoUploadDatePhoto, account.autoUploadDateVideo);
         return;
         
     } else {
         
-        NSLog(@"[LOG] Auto upload, new %lu asset found for date image %@, date video %@", (unsigned long)[newItemsToUpload count], tableAccount.autoUploadDatePhoto, tableAccount.autoUploadDateVideo);
+        NSLog(@"[LOG] Auto upload, new %lu asset found for date image %@, date video %@", (unsigned long)[newAssetToUpload count], account.autoUploadDatePhoto, account.autoUploadDateVideo);
     }
     
     if (assetsFull) {
@@ -422,43 +381,32 @@
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.01 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
         
         if (assetsFull)
-            [self performSelectorOnMainThread:@selector(uploadFullAssetsToNetwork:) withObject:newItemsToUpload waitUntilDone:NO];
+            [self performSelectorOnMainThread:@selector(uploadFullAssetsToNetwork:) withObject:newAssetToUpload waitUntilDone:NO];
         else
-            [self performSelectorOnMainThread:@selector(uploadNewAssetsToNetwork:) withObject:newItemsToUpload waitUntilDone:NO];
+            [self performSelectorOnMainThread:@selector(uploadNewAssetsToNetwork:) withObject:newAssetToUpload waitUntilDone:NO];
     });
 }
 
-- (void)uploadNewAssetsToNetwork:(NSMutableArray *)newItemsToUpload
+- (void)uploadNewAssetsToNetwork:(PHFetchResult *)newAssetToUpload
 {
-    [self uploadAssetsToNetwork:newItemsToUpload assetsFull:NO];
+    [self uploadAssetsToNetwork:newAssetToUpload assetsFull:NO];
 }
 
-- (void)uploadFullAssetsToNetwork:(NSMutableArray *)newItemsToUpload
+- (void)uploadFullAssetsToNetwork:(PHFetchResult *)newAssetToUpload
 {
-    [self uploadAssetsToNetwork:newItemsToUpload assetsFull:YES];
+    [self uploadAssetsToNetwork:newAssetToUpload assetsFull:YES];
 }
 
-- (void)uploadAssetsToNetwork:(NSMutableArray *)newItemsToUpload assetsFull:(BOOL)assetsFull
+- (void)uploadAssetsToNetwork:(PHFetchResult *)newAssetToUpload assetsFull:(BOOL)assetsFull
 {
-    NSMutableArray *newItemsPHAssetToUpload = [[NSMutableArray alloc] init];
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
     NSMutableArray *metadataNetFull = [NSMutableArray new];
   
     NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:app.activeUrl];
     BOOL useSubFolder = tableAccount.autoUploadCreateSubfolder;
     
-    // Conversion from ALAsset [OLD < iOS 8] - to -> PHAsset
-    for (ALAsset *asset in newItemsToUpload) {
-        
-        NSURL *url = [asset valueForProperty:@"ALAssetPropertyAssetURL"];
-        PHFetchResult *fetchResult = [PHAsset fetchAssetsWithALAssetURLs:@[url] options:nil];
-        PHAsset *asset = [fetchResult firstObject];
-        [newItemsPHAssetToUpload addObject:asset];
-        NSLog(@"Convert url %@", url);
-    }
-    
     // Create the folder for Photos & if request the subfolders
-    if(![[NCAutoUpload sharedInstance] createFolderSubFolderAutoUploadFolderPhotos:autoUploadPath useSubFolder:useSubFolder assets:newItemsPHAssetToUpload selector:selectorUploadAutoUploadAll]) {
+    if(![[NCAutoUpload sharedInstance] createFolderSubFolderAutoUploadFolderPhotos:autoUploadPath useSubFolder:useSubFolder assets:newAssetToUpload selector:selectorUploadAutoUploadAll]) {
         
         // end loading
         [_hud hideHud];
@@ -466,7 +414,7 @@
         return;
     }
     
-    for (PHAsset *asset in newItemsPHAssetToUpload) {
+    for (PHAsset *asset in newAssetToUpload) {
         
         NSString *serverUrl;
         NSDate *assetDate = asset.creationDate;
@@ -668,7 +616,7 @@
 #pragma mark ===== Create Folder SubFolder Auto Upload Folder Photos ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (BOOL)createFolderSubFolderAutoUploadFolderPhotos:(NSString *)folderPhotos useSubFolder:(BOOL)useSubFolder assets:(NSArray *)assets selector:(NSString *)selector
+- (BOOL)createFolderSubFolderAutoUploadFolderPhotos:(NSString *)folderPhotos useSubFolder:(BOOL)useSubFolder assets:(PHFetchResult *)assets selector:(NSString *)selector
 {
     OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:app.activeUser withPassword:app.activePassword withUrl:app.activeUrl isCryptoCloudMode:NO];
     
@@ -710,5 +658,53 @@
     return true;
 }
 
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== XXX ====
+#pragma --------------------------------------------------------------------------------------------
+
+- (PHFetchResult *)getCameraRollNewItemsWithDatePhoto:(NSDate *)datePhoto dateVideo:(NSDate *)dateVideo account:(tableAccount *)account
+{
+    @synchronized(self) {
+ 
+        if ([PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusAuthorized) {
+            
+            PHFetchResult *result = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeSmartAlbumUserLibrary options:nil];
+                    
+            NSPredicate *predicateImage = [NSCompoundPredicate andPredicateWithSubpredicates:@[[NSPredicate predicateWithFormat:@"mediaType = %i", PHAssetMediaTypeImage], [NSPredicate predicateWithFormat:@"creationDate > %@", datePhoto]]];
+            
+            NSPredicate *predicateVideo = [NSCompoundPredicate andPredicateWithSubpredicates:@[[NSPredicate predicateWithFormat:@"mediaType = %i", PHAssetMediaTypeVideo], [NSPredicate predicateWithFormat:@"creationDate > %@", dateVideo]]];
+                    
+            NSPredicate *predicate;
+            
+            if (account.autoUploadPhoto && account.autoUploadVideo) {
+                
+                predicate = [NSCompoundPredicate orPredicateWithSubpredicates:@[predicateImage, predicateVideo]];
+                
+            } else if (account.autoUploadPhoto) {
+                
+                predicate = predicateImage;
+                
+            } else if (account.autoUploadVideo) {
+                
+                predicate = predicateVideo;
+            }
+                    
+            PHFetchOptions *newInstantUploadAssetsFetchOptions = [PHFetchOptions new];
+            newInstantUploadAssetsFetchOptions.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:YES]];
+            newInstantUploadAssetsFetchOptions.predicate = predicate;
+                    
+            PHFetchResult *newAssetToUpload = [PHAsset fetchAssetsInAssetCollection:result[0] options:newInstantUploadAssetsFetchOptions];
+            
+            return newAssetToUpload;
+            
+        } else {
+            
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_access_photo_not_enabled_", nil) message:NSLocalizedString(@"_access_photo_not_enabled_msg_", nil) delegate:nil cancelButtonTitle:NSLocalizedString(@"_ok_", nil) otherButtonTitles:nil];
+            [alert show];
+        }
+    }
+    
+    return nil;
+}
 
 @end

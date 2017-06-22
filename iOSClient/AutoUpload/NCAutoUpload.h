@@ -23,7 +23,6 @@
 
 #import <Foundation/Foundation.h>
 #import <Photos/Photos.h>
-#import "CCManageAsset.h"
 #import "CCManageAutoUpload.h"
 #import "NCRequestAsset.h"
 
@@ -37,6 +36,6 @@
 
 - (void)loadAutoUpload:(NSNumber *)maxConcurrent;
 
-- (BOOL)createFolderSubFolderAutoUploadFolderPhotos:(NSString *)folderPhotos useSubFolder:(BOOL)useSubFolder assets:(NSArray *)assets selector:(NSString *)selector;
+- (BOOL)createFolderSubFolderAutoUploadFolderPhotos:(NSString *)folderPhotos useSubFolder:(BOOL)useSubFolder assets:(PHFetchResult *)assets selector:(NSString *)selector;
 
 @end

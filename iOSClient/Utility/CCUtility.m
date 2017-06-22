@@ -735,7 +735,7 @@
     }
 }
 
-+ (NSArray *)createNameSubFolder:(NSArray *)alassets
++ (NSArray *)createNameSubFolder:(PHFetchResult *)alassets
 {
     NSMutableOrderedSet *datesSubFolder = [NSMutableOrderedSet new];
     

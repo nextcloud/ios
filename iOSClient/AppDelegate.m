@@ -29,7 +29,6 @@
 #import "AFURLSessionManager.h"
 #import "CCNetworking.h"
 #import "CCCrypto.h"
-#import "CCManageAsset.h"
 #import "CCGraphics.h"
 #import "CCPhotos.h"
 #import "CCSynchronize.h"
