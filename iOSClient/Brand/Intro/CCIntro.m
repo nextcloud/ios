@@ -69,43 +69,49 @@
     if (height >= 1024) { titleIconPositionY = 100; titlePositionY = 290; descPositionY = 250; }
     
     EAIntroPage *page1 = [EAIntroPage page];
+
+    page1.titleIconView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"intro1"]];
     page1.title = NSLocalizedStringFromTable(@"_intro_1_title_", @"Intro", nil);
+    page1.desc = NSLocalizedStringFromTable(@"_intro_1_text_",  @"Intro", nil);
+
     page1.titlePositionY = titlePositionY;
     page1.titleColor = [UIColor blackColor];
     page1.titleFont = [UIFont systemFontOfSize:20];
-    page1.desc = NSLocalizedStringFromTable(@"_intro_1_text_",  @"Intro", nil);
     page1.descPositionY = descPositionY;
     page1.descColor = [UIColor blackColor];
     page1.descFont = [UIFont systemFontOfSize:14];
-    page1.titleIconView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"intro1"]];
     page1.bgImage = [UIImage imageNamed:@"bgbianco"];
     page1.titleIconPositionY = titleIconPositionY;
     page1.showTitleView = NO;
     
     EAIntroPage *page2 = [EAIntroPage page];
+
+    page2.titleIconView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"intro2"]];
     page2.title = NSLocalizedStringFromTable(@"_intro_2_title_",  @"Intro", nil);
+    page2.desc = NSLocalizedStringFromTable(@"_intro_2_text_",  @"Intro", nil);
+
     page2.titlePositionY = titlePositionY;
     page2.titleColor = [UIColor blackColor];
     page2.titleFont = [UIFont systemFontOfSize:20];
-    page2.desc = NSLocalizedStringFromTable(@"_intro_2_text_",  @"Intro", nil);
     page2.descPositionY = descPositionY;
     page2.descColor = [UIColor blackColor];
     page2.descFont = [UIFont systemFontOfSize:14];
-    page2.titleIconView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"intro2"]];
     page2.bgImage = [UIImage imageNamed:@"bgbianco"];
     page2.titleIconPositionY = titleIconPositionY;
     page2.showTitleView = NO;
 
     EAIntroPage *page3 = [EAIntroPage page];
+    
+    page3.titleIconView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"intro3"]];
     page3.title = NSLocalizedStringFromTable(@"_intro_3_title_",  @"Intro", nil);
+    page3.desc = NSLocalizedStringFromTable(@"_intro_3_text_",  @"Intro", nil);
+
     page3.titlePositionY = titlePositionY;
     page3.titleColor = [UIColor blackColor];
     page3.titleFont = [UIFont systemFontOfSize:20];
-    page3.desc = NSLocalizedStringFromTable(@"_intro_3_text_",  @"Intro", nil);
     page3.descPositionY = descPositionY;
     page3.descColor = [UIColor blackColor];
     page3.descFont = [UIFont systemFontOfSize:14];
-    page3.titleIconView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"intro3"]];
     page3.bgImage = [UIImage imageNamed:@"bgbianco"];
     page3.titleIconPositionY = titleIconPositionY;
     page3.showTitleView = NO;
