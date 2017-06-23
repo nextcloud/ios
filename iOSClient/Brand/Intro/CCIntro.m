@@ -61,6 +61,7 @@
 
 - (void)showIntroCryptoCloud:(CGFloat)duration
 {
+    //NSString *language = [[[NSBundle mainBundle] preferredLocalizations] objectAtIndex:0];
     CGFloat height = self.rootView.bounds.size.height;
     
     if (height <= 480) { titleIconPositionY = 20; titlePositionY = 260; descPositionY = 230; }
