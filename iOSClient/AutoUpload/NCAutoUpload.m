@@ -659,7 +659,7 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== XXX ====
+#pragma mark ===== get Camera Roll new Asset ====
 #pragma --------------------------------------------------------------------------------------------
 
 - (PHFetchResult *)getCameraRollNewItemsWithDatePhoto:(NSDate *)datePhoto dateVideo:(NSDate *)dateVideo account:(tableAccount *)account
@@ -692,8 +692,10 @@
             PHFetchOptions *newInstantUploadAssetsFetchOptions = [PHFetchOptions new];
             newInstantUploadAssetsFetchOptions.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:YES]];
             newInstantUploadAssetsFetchOptions.predicate = predicate;
-                    
-            PHFetchResult *newAssetToUpload = [PHAsset fetchAssetsInAssetCollection:result[0] options:newInstantUploadAssetsFetchOptions];
+            
+            PHAssetCollection *collection = result[0];
+            
+            PHFetchResult *newAssetToUpload = [PHAsset fetchAssetsInAssetCollection:collection options:newInstantUploadAssetsFetchOptions];
             
             return newAssetToUpload;
             
