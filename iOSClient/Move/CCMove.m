@@ -137,22 +137,22 @@
 #pragma mark ==== DZNEmptyDataSetSource ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (BOOL)emptyDataSetShouldAllowScroll:(UIScrollView *)scrollView
+- (BOOL)emptyDataSetShouldDisplay:(UIScrollView *)scrollView
 {
     if (_loadingFolder)
-        return NO;
-    else
         return YES;
+    else
+        return NO;
+}
+
+- (BOOL)emptyDataSetShouldAllowScroll:(UIScrollView *)scrollView
+{
+    return NO;
 }
 
 - (UIColor *)backgroundColorForEmptyDataSet:(UIScrollView *)scrollView
 {
     return [UIColor whiteColor];
-}
-
-- (UIImage *)imageForEmptyDataSet:(UIScrollView *)scrollView
-{
-    return [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"filesNoFiles"] color:[NCBrandColor sharedInstance].brand];
 }
 
 - (UIView *)customViewForEmptyDataSet:(UIScrollView *)scrollView
@@ -168,15 +168,6 @@
     }
     
     return nil;
-}
-
-- (NSAttributedString *)titleForEmptyDataSet:(UIScrollView *)scrollView
-{
-    NSString *text = [NSString stringWithFormat:@"%@", NSLocalizedString(@"_files_no_files_", nil)];
-    
-    NSDictionary *attributes = @{NSFontAttributeName:[UIFont boldSystemFontOfSize:20.0f], NSForegroundColorAttributeName:[UIColor lightGrayColor]};
-    
-    return [[NSAttributedString alloc] initWithString:text attributes:attributes];
 }
 
 // MARK: - IBAction
