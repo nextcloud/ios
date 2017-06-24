@@ -1764,6 +1764,13 @@
 		F7F06E6E1DBFACC600099AE9 /* CTAssetThumbnailStacks.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CTAssetThumbnailStacks.m; sourceTree = "<group>"; };
 		F7F06E6F1DBFACC600099AE9 /* CTAssetThumbnailView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CTAssetThumbnailView.h; sourceTree = "<group>"; };
 		F7F06E701DBFACC600099AE9 /* CTAssetThumbnailView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CTAssetThumbnailView.m; sourceTree = "<group>"; };
+		F7F4D61A1EFEA51E00F9B580 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/CTAssetsPicker.strings"; sourceTree = "<group>"; };
+		F7F4D61B1EFEA51E00F9B580 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/SwiftWebVC.strings"; sourceTree = "<group>"; };
+		F7F4D61C1EFEA51E00F9B580 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/BKPasscodeView.strings"; sourceTree = "<group>"; };
+		F7F4D61D1EFEA51E00F9B580 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		F7F4D61E1EFEA51E00F9B580 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		F7F4D61F1EFEA51E00F9B580 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Intro.strings"; sourceTree = "<group>"; };
+		F7F4D6201EFEA51E00F9B580 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Error.strings"; sourceTree = "<group>"; };
 		F7F54CAB1E5AFF1E00E19C62 /* PickerFileProvider-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "PickerFileProvider-Bridging-Header.h"; sourceTree = "<group>"; };
 		F7F54CAF1E5B14C700E19C62 /* ImageError.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ImageError.png; sourceTree = "<group>"; };
 		F7F54CB01E5B14C700E19C62 /* ImageError@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ImageError@2x.png"; sourceTree = "<group>"; };
@@ -3885,6 +3892,7 @@
 				es,
 				el,
 				"es-AR",
+				"zh-Hans",
 			);
 			mainGroup = F7F67B9F1A24D27800EE80DA;
 			productRefGroup = F7F67B9F1A24D27800EE80DA;
@@ -4765,6 +4773,7 @@
 				F772BEBA1EE699E5006A232B /* es */,
 				F71870611EE93904003A4DD8 /* el */,
 				F71870681EE93932003A4DD8 /* es-AR */,
+				F7F4D61C1EFEA51E00F9B580 /* zh-Hans */,
 			);
 			name = BKPasscodeView.strings;
 			path = "Supporting Files";
@@ -4789,6 +4798,7 @@
 				F772BEB91EE699E4006A232B /* es */,
 				F71870601EE93904003A4DD8 /* el */,
 				F71870671EE93932003A4DD8 /* es-AR */,
+				F7F4D61B1EFEA51E00F9B580 /* zh-Hans */,
 			);
 			name = SwiftWebVC.strings;
 			path = "Supporting Files";
@@ -4813,6 +4823,7 @@
 				F772BEBD1EE699E5006A232B /* es */,
 				F71870641EE93905003A4DD8 /* el */,
 				F718706B1EE93932003A4DD8 /* es-AR */,
+				F7F4D61F1EFEA51E00F9B580 /* zh-Hans */,
 			);
 			name = Intro.strings;
 			path = "Supporting Files";
@@ -4837,6 +4848,7 @@
 				F772BEB81EE699E4006A232B /* es */,
 				F718705F1EE93904003A4DD8 /* el */,
 				F71870661EE93932003A4DD8 /* es-AR */,
+				F7F4D61A1EFEA51E00F9B580 /* zh-Hans */,
 			);
 			name = CTAssetsPicker.strings;
 			path = "Supporting Files";
@@ -4861,6 +4873,7 @@
 				F772BEBE1EE699E5006A232B /* es */,
 				F71870651EE93905003A4DD8 /* el */,
 				F718706C1EE93932003A4DD8 /* es-AR */,
+				F7F4D6201EFEA51E00F9B580 /* zh-Hans */,
 			);
 			name = Error.strings;
 			path = "Supporting Files";
@@ -4885,6 +4898,7 @@
 				F772BEBC1EE699E5006A232B /* es */,
 				F71870631EE93905003A4DD8 /* el */,
 				F718706A1EE93932003A4DD8 /* es-AR */,
+				F7F4D61E1EFEA51E00F9B580 /* zh-Hans */,
 			);
 			name = InfoPlist.strings;
 			path = "Supporting Files";
@@ -4909,6 +4923,7 @@
 				F772BEBB1EE699E5006A232B /* es */,
 				F71870621EE93904003A4DD8 /* el */,
 				F71870691EE93932003A4DD8 /* es-AR */,
+				F7F4D61D1EFEA51E00F9B580 /* zh-Hans */,
 			);
 			name = Localizable.strings;
 			path = "Supporting Files";
