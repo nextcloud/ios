@@ -746,17 +746,11 @@
             
             PHFetchResult *newAssetToUpload = [PHAsset fetchAssetsInAssetCollection:collection options:newInstantUploadAssetsFetchOptions];
 
-            for (PHAsset *asset in newAssetToUpload) {
-                
-                NSLog(@"%@ - %@", asset.modificationDate, asset);
-            }
-            
-            PHFetchResult *allAssetToUpload = [PHAsset fetchAssetsInAssetCollection:collection options:nil];
-            for (PHAsset *asset in allAssetToUpload) {
-                
+#ifdef DEBUG
+            for (PHAsset *asset in newAssetToUpload)
                 NSLog(@"%@ > %@ - %@", asset.modificationDate, datePhoto, asset);
-            }
-
+#endif
+            
             return newAssetToUpload;
             
         } else {
