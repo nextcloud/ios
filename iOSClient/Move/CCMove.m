@@ -323,6 +323,7 @@
         tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", metadataNet.account, metadataNet.serverUrl]];
         
         if ([metadata.etag isEqualToString:directory.etag] == NO) {
+            
             [self readFolder];
         }
     }
@@ -420,7 +421,6 @@
     });    
     
     _loadingFolder = NO;
-    
     [self.tableView reloadData];
 }
 
@@ -435,7 +435,9 @@
     
     [self addNetworkingQueue:metadataNet];
     
+    //
     _loadingFolder = YES;
+    [self.tableView reloadData];
 }
 
 // MARK: - Create Folder
@@ -475,11 +477,6 @@
 }
 
 // MARK: - Table
-
-- (void)reloadTable
-{
-    [self.tableView reloadData];
-}
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
