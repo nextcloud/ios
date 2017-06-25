@@ -297,7 +297,7 @@
     _refreshControl.tintColor = [NCBrandColor sharedInstance].brand;
     
     // Reload Table View
-    [self tableViewReload];
+    [self tableViewReloadData];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1903,7 +1903,7 @@
     
     //[_hud hideHud];
     _loadingFolder = NO;
-    [self.tableView reloadData];
+    [self tableViewReloadData];
 
     [_refreshControl endRefreshing];
         
@@ -2025,7 +2025,7 @@
                 
         //[_hud hideHud];
         _loadingFolder = NO;
-        [self.tableView reloadData];
+        [self tableViewReloadData];
     }
 }
 
@@ -2056,7 +2056,7 @@
     //    [_hud visibleIndeterminateHud];
     
     _loadingFolder = YES;
-    [self.tableView reloadData];
+    [self tableViewReloadData];
     
     tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"serverUrl = %@", serverUrl]];
     
@@ -3045,7 +3045,7 @@
         }
     }
 
-    [self tableViewReload];
+    [self tableViewReloadData];
 }
 
 - (void)shareFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
@@ -3057,7 +3057,7 @@
     if (_shareOC)
         [_shareOC reloadData];
     
-    [self tableViewReload];
+    [self tableViewReloadData];
     
     if (errorCode == 401)
         [self changePasswordAccount];
@@ -3097,7 +3097,7 @@
     if (_shareOC)
         [_shareOC reloadData];
     
-    [self tableViewReload];
+    [self tableViewReloadData];
 }
 
 - (void)unShare:(NSString *)share metadata:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl
@@ -4117,7 +4117,7 @@
                     [app messageNotification:@"_error_" description:@"_error_operation_canc_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
                 }
                 
-                [self tableViewReload];
+                [self tableViewReloadData];
             }
         }
             break;
@@ -4749,7 +4749,7 @@
         
         _sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:_searchResultMetadatas listProgressMetadata:nil groupByField:_directoryGroupBy replaceDateToExifDate:NO activeAccount:app.activeAccount];
 
-        [self tableViewReload];
+        [self tableViewReloadData];
         
         if ([_sectionDataSource.allRecordsDataSource count] == 0 && [_searchFileName length] >= k_minCharsSearch) {
             
@@ -4775,7 +4775,7 @@
         if (main) {
             [main reloadDatasource];
         } else {
-            [self tableViewReload];
+            [self tableViewReloadData];
             [app.activeTransfers reloadDatasource];
         }
         
@@ -4810,7 +4810,7 @@
          NSLog(@"[LOG] [OPTIMIZATION] Rebuild Data Source File : %@ - %@", _serverUrl, _dateReadDataSource);
     }
     
-    [self tableViewReload];    
+    [self tableViewReloadData];
 }
 
 - (NSArray *)getMetadatasFromSelectedRows:(NSArray *)selectedRows
@@ -4912,12 +4912,25 @@
     [self setTitle];
 }
 
-- (void)tableViewReload
+- (void)tableViewReloadData
 {
-    // ricordiamoci le row selezionate
+    // store selected cells before relod
     NSArray *indexPaths = [self.tableView indexPathsForSelectedRows];
+    
+    // reload table view
     [self.tableView reloadData];
     
+    
+    //store swipeOffset before relod
+    /*
+    for (MGSwipeTableCell * cell in _tableView.visibleCells) {
+        NSIndexPath * path = [_tableView indexPathForCell:cell];
+        TestData * data = [tests objectAtIndex:path.row];
+        data.swipeOffset = cell.swipeOffset;
+    }
+    */
+    
+    // selected cells stored
     for (NSIndexPath *path in indexPaths)
         [self.tableView selectRowAtIndexPath:path animated:NO scrollPosition:UITableViewScrollPositionNone];
     
