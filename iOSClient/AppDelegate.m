@@ -1009,6 +1009,8 @@
 
 - (void)settingThemingColorBrand
 {
+    UIColor* newColor;
+    
     if (self.activeAccount.length > 0) {
     
         tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilites];
@@ -1025,20 +1027,25 @@
                 [NCBrandColor sharedInstance].brand = [NCBrandColor sharedInstance].customer;
                 
             } else {
-                [NCBrandColor sharedInstance].brand = [CCGraphics colorFromHexString:capabilities.themingColor];
+                
+                newColor = [CCGraphics colorFromHexString:capabilities.themingColor];
             }
             
         } else {
             
-            [NCBrandColor sharedInstance].brand = [NCBrandColor sharedInstance].customer;
+            newColor = [NCBrandColor sharedInstance].customer;
         }
         
     } else {
         
-        [NCBrandColor sharedInstance].brand = [NCBrandColor sharedInstance].customer;
+        newColor = [NCBrandColor sharedInstance].customer;
     }
     
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"changeTheming" object:nil];
+    if (self.activeAccount.length > 0 && ![newColor isEqual:[NCBrandColor sharedInstance].brand]) {
+        
+        [NCBrandColor sharedInstance].brand = newColor;
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"changeTheming" object:nil];
+    }
 }
 
 - (void)changeTheming:(UIViewController *)vc
