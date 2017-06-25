@@ -195,9 +195,9 @@
     self.searchController.searchBar.barTintColor = [NCBrandColor sharedInstance].seperator;
     [self.searchController.searchBar sizeToFit];
     self.searchController.searchBar.delegate = self;
-    self.tableView.tableHeaderView = self.searchController.searchBar;
-
+    
     // Hide Search Filed on Load
+    self.tableView.tableHeaderView = self.searchController.searchBar;
     [self.tableView setContentOffset:CGPointMake(0, self.searchController.searchBar.frame.size.height - self.tableView.contentOffset.y)];
 }
 
