@@ -4920,16 +4920,6 @@
     // reload table view
     [self.tableView reloadData];
     
-    
-    //store swipeOffset before relod
-    /*
-    for (MGSwipeTableCell * cell in _tableView.visibleCells) {
-        NSIndexPath * path = [_tableView indexPathForCell:cell];
-        TestData * data = [tests objectAtIndex:path.row];
-        data.swipeOffset = cell.swipeOffset;
-    }
-    */
-    
     // selected cells stored
     for (NSIndexPath *path in indexPaths)
         [self.tableView selectRowAtIndexPath:path animated:NO scrollPosition:UITableViewScrollPositionNone];
