@@ -4192,6 +4192,31 @@
 #pragma mark ===== Swipe Tablet -> menu =====
 #pragma --------------------------------------------------------------------------------------------
 
+/*
+ - (NSArray<UITableViewRowAction *> *)tableView:(UITableView *)tableView editActionsForRowAtIndexPath:(NSIndexPath *)indexPath
+ {
+ UITableViewRowAction *delete = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDefault title:@"Delete" handler:^(UITableViewRowAction *action, NSIndexPath *indexPath)
+ {
+ // Delete something here
+ }];
+ delete.backgroundColor = [UIColor redColor];
+ 
+ UITableViewRowAction *more = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDefault title:@" cazz " handler:^(UITableViewRowAction *action, NSIndexPath *indexPath)
+ {
+ //Just as an example :
+ }];
+ more.backgroundColor = [UIColor colorWithRed:0.188 green:0.514 blue:0.984 alpha:1];
+ 
+ UITableViewRowAction *mores = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDefault title:@" asx " handler:^(UITableViewRowAction *action, NSIndexPath *indexPath)
+ {
+ //Just as an example :
+ }];
+ more.backgroundColor = [UIColor colorWithRed:0.188 green:0.514 blue:0.984 alpha:1];
+ 
+ return @[delete, more, mores]; //array with all the buttons you want. 1,2,3, etc...}
+ }
+ */
+
 // more
 - (NSString *)tableView:(UITableView *)tableView titleForSwipeAccessoryButtonForRowAtIndexPath:(NSIndexPath *)indexPath {
     return NSLocalizedString(@"_more_", nil);
