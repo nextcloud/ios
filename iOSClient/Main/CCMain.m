@@ -1901,7 +1901,6 @@
     // verify active user
     tableAccount *record = [[NCManageDatabase sharedInstance] getAccountActive];
     
-    //[_hud hideHud];
     _loadingFolder = NO;
     [self tableViewReloadData];
 
@@ -2023,7 +2022,6 @@
         // Enable change user
         [_ImageTitleHomeCryptoCloud setUserInteractionEnabled:YES];
                 
-        //[_hud hideHud];
         _loadingFolder = NO;
         [self tableViewReloadData];
     }
@@ -2034,9 +2032,7 @@
     // init control
     if (!serverUrl || !app.activeAccount || app.maintenanceMode) {
         
-        [_hud hideHud];
         [_refreshControl endRefreshing];
-        
         return;
     }
     
@@ -2051,9 +2047,6 @@
         
         return;
     }
-    
-    //if (_refreshControl.isRefreshing == NO && [_sectionDataSource.allRecordsDataSource count] == 0)
-    //    [_hud visibleIndeterminateHud];
     
     _loadingFolder = YES;
     [self tableViewReloadData];
