@@ -901,7 +901,7 @@ class NCManageDatabase: NSObject {
                     let addDirectory = tableDirectory()
                     addDirectory.account = tableAccount!.account
                 
-                    directoryID =  NSUUID().uuidString
+                    directoryID = NSUUID().uuidString
                     addDirectory.directoryID = directoryID
                 
                     addDirectory.permissions = permissions
