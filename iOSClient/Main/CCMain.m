@@ -5456,17 +5456,15 @@
     // MGSwipe
 
     //configure left buttons
-    NSString *titleLeftButtonFavorite = [NSString stringWithFormat:@" %@ ", NSLocalizedString(@"_favorite_", nil)];
     if (metadata.favorite)
-        cell.leftButtons = @[[MGSwipeButton buttonWithTitle:titleLeftButtonFavorite icon:[UIImage imageNamed:@"favorite"] backgroundColor:[UIColor redColor]]];
+        cell.leftButtons = @[[MGSwipeButton buttonWithTitle:[NSString stringWithFormat:@" %@ ", NSLocalizedString(@"_unfavorite_", nil)] icon:[UIImage imageNamed:@"swipeFavorite"] backgroundColor:[UIColor redColor]]];
     else
-        cell.leftButtons = @[[MGSwipeButton buttonWithTitle:titleLeftButtonFavorite icon:[UIImage imageNamed:@"favorite"] backgroundColor:[UIColor greenColor]]];
+        cell.leftButtons = @[[MGSwipeButton buttonWithTitle:[NSString stringWithFormat:@" %@ ", NSLocalizedString(@"_favorite_", nil)] icon:[UIImage imageNamed:@"swipeFavorite"] backgroundColor:[UIColor colorWithRed:242.0/255.0 green:220.0/255.0 blue:132.0/255.0 alpha:1.000]]];
     cell.leftExpansion.buttonIndex = 0;
     cell.leftExpansion.fillOnTrigger = NO;
     
     //configure right buttons
-    cell.rightButtons = @[[MGSwipeButton buttonWithTitle:NSLocalizedString(@"_delete_", nil) backgroundColor:[UIColor redColor]],
-                          [MGSwipeButton buttonWithTitle:NSLocalizedString(@"_more_", nil) backgroundColor:[UIColor lightGrayColor]]];
+    cell.rightButtons = @[[MGSwipeButton buttonWithTitle:[NSString stringWithFormat:@" %@ ", NSLocalizedString(@"_delete_", nil)] icon:[UIImage imageNamed:@"swipeDelete"] backgroundColor:[UIColor redColor]], [MGSwipeButton buttonWithTitle:[NSString stringWithFormat:@" %@ ", NSLocalizedString(@"_more_", nil)] icon:[UIImage imageNamed:@"swipeMore"] backgroundColor:[UIColor lightGrayColor]]];
     cell.rightSwipeSettings.transition = MGSwipeTransitionBorder;
     
     //restore swipeOffset after relod
