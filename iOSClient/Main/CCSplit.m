@@ -41,9 +41,7 @@
 
 -  (id)initWithCoder:(NSCoder *)aDecoder
 {
-    if (self = [super initWithCoder:aDecoder])  {
-        
-        
+    if (self = [super initWithCoder:aDecoder])  {        
     }
     
     return self;
@@ -51,11 +49,9 @@
 
 - (void)viewDidLoad
 {
-    [super viewDidLoad];
-    
-    self.delegate = self;
-    
     [self inizialize];
+    
+    [super viewDidLoad];
 }
 
 // Apparirà

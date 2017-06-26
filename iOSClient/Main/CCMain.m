@@ -308,6 +308,8 @@
 
 - (void)initializeMain:(NSNotification *)notification
 {
+    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+
     _directoryGroupBy = nil;
     _directoryOrder = nil;
     _dateReadDataSource = nil;
@@ -318,8 +320,13 @@
     
     if ([app.listMainVC count] == 0 || _isRoot) {
         
-        // This is Root
+        // This is Root home main
+        appDelegate.homeMain = self;
         _isRoot = YES;
+        _serverUrl = [CCUtility getHomeServerUrlActiveUrl:app.activeUrl];
+        appDelegate.directoryUser = [CCUtility getDirectoryActiveUser:app.activeUser activeUrl:app.activeUrl];
+        // add list
+        [appDelegate.listMainVC setObject:self forKey:_serverUrl];
         
         // Crypto Mode
         if ([[CCUtility getKeyChainPasscodeForUUID:[CCUtility getUUID]] length] == 0) {
@@ -330,31 +337,23 @@
          
             app.isCryptoCloudMode = YES;
         }
-        
+        _isFolderEncrypted = NO;
+
         // go Home
         [self.navigationController popToRootViewControllerAnimated:NO];
         
-        // Remove search mode
-        [self cancelSearchBar];
-        
-        _serverUrl = [CCUtility getHomeServerUrlActiveUrl:app.activeUrl];
-        _isFolderEncrypted = NO;
-        
-        app.directoryUser = [CCUtility getDirectoryActiveUser:app.activeUser activeUrl:app.activeUrl];
-    
-        // add list
-        [app.listMainVC setObject:self forKey:_serverUrl];
-    
         // setting Networking
         [[CCNetworking sharedNetworking] settingDelegate:self];
         [[CCNetworking sharedNetworking] settingAccount];
         
-        // populate shared Link & User variable
+        // Remove search mode
+        [self cancelSearchBar];
         
+        // populate shared Link & User
         NSArray *results = [[NCManageDatabase sharedInstance] getShares];
         if (results) {
-            app.sharesLink = results[0];
-            app.sharesUserAndGroup = results[1];
+            appDelegate.sharesLink = results[0];
+            appDelegate.sharesUserAndGroup = results[1];
         }
         
         // Load Datasource
@@ -367,21 +366,18 @@
         [app settingThemingColorBrand];
         
         // Load photo datasorce
-        if (app.activePhotos)
-            [app.activePhotos reloadDatasourceForced];
+        if (appDelegate.activePhotos)
+            [appDelegate.activePhotos reloadDatasourceForced];
         
         // remove all of detail
-        if (app.activeDetail)
-            [app.activeDetail removeAllView];
+        if (appDelegate.activeDetail)
+            [appDelegate.activeDetail removeAllView];
         
         // remove all Notification Messages
-        [app.listOfNotifications removeAllObjects];
-        
-        // home main
-        app.homeMain = self;
+        [appDelegate.listOfNotifications removeAllObjects];
         
         // Initializations
-        [app applicationInitialized];
+        [appDelegate applicationInitialized];
                 
     } else {
         
@@ -5456,7 +5452,7 @@
 
     //configure left buttons
     if (metadata.favorite)
-        cell.leftButtons = @[[MGSwipeButton buttonWithTitle:[NSString stringWithFormat:@" %@ ", NSLocalizedString(@"_unfavorite_", nil)] icon:[UIImage imageNamed:@"swipeFavorite"] backgroundColor:[UIColor redColor]]];
+        cell.leftButtons = @[[MGSwipeButton buttonWithTitle:[NSString stringWithFormat:@" %@ ", NSLocalizedString(@"_unfavorite_", nil)] icon:[UIImage imageNamed:@"swipeUnfavorite"] backgroundColor:[UIColor colorWithRed:242.0/255.0 green:220.0/255.0 blue:132.0/255.0 alpha:1.000]]];
     else
         cell.leftButtons = @[[MGSwipeButton buttonWithTitle:[NSString stringWithFormat:@" %@ ", NSLocalizedString(@"_favorite_", nil)] icon:[UIImage imageNamed:@"swipeFavorite"] backgroundColor:[UIColor colorWithRed:242.0/255.0 green:220.0/255.0 blue:132.0/255.0 alpha:1.000]]];
     cell.leftExpansion.buttonIndex = 0;
