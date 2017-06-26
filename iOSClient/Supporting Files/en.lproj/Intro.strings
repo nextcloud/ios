@@ -11,6 +11,9 @@
 "_intro_1_title_"   = "A safe home for all your data";
 "_intro_1_text_"    = "Access, share and protect your files at home and in your enterprise";
 
+"_intro_11_title_"  = "Gesture on file";
+"_intro_11_text_"   = "Swipe on right or on left for options or a long touch for Copy Paste Open in…, or press for 3D Touch when available";
+
 "_intro_2_title_"   = "Multi account";
 "_intro_2_text_"    = "Connect to all your clouds and touch Nextcloud logo on Files tab to quickly switch";
 
