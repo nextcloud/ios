@@ -320,13 +320,15 @@
     
     if ([app.listMainVC count] == 0 || _isRoot) {
         
-        // This is Root home main
+        // This is Root home main add list
         appDelegate.homeMain = self;
         _isRoot = YES;
         _serverUrl = [CCUtility getHomeServerUrlActiveUrl:app.activeUrl];
         appDelegate.directoryUser = [CCUtility getDirectoryActiveUser:app.activeUser activeUrl:app.activeUrl];
-        // add list
         [appDelegate.listMainVC setObject:self forKey:_serverUrl];
+        
+        // go Home
+        [self.navigationController popToRootViewControllerAnimated:NO];
         
         // Crypto Mode
         if ([[CCUtility getKeyChainPasscodeForUUID:[CCUtility getUUID]] length] == 0) {
@@ -339,8 +341,7 @@
         }
         _isFolderEncrypted = NO;
 
-        // go Home
-        [self.navigationController popToRootViewControllerAnimated:NO];
+        
         
         // setting Networking
         [[CCNetworking sharedNetworking] settingDelegate:self];
