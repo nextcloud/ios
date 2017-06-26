@@ -5506,8 +5506,11 @@
     
     //restore swipeOffset after relod
     CGFloat swipeOffset = [[_statusSwipeCell objectForKey:[@(indexPath.row) stringValue]] doubleValue];
-    if (swipeOffset != 0) {
-        [cell setSwipeOffset:swipeOffset animated:NO completion:nil];
+    if (swipeOffset < 0) {
+        //[cell setSwipeOffset:swipeOffset animated:NO completion:nil];
+        [cell showSwipe:MGSwipeDirectionRightToLeft animated:NO];
+    } else if (swipeOffset > 0) {
+        [cell showSwipe:MGSwipeDirectionLeftToRight animated:NO];
     }
     
     return cell;
