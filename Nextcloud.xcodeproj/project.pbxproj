@@ -158,6 +158,8 @@
 		F732B3371E8045A1002B7D75 /* SwiftWebVC.strings in Resources */ = {isa = PBXBuildFile; fileRef = F732B3351E8045A1002B7D75 /* SwiftWebVC.strings */; };
 		F732BA061D76CE1500E9878B /* CCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F732BA041D76CE1500E9878B /* CCNetworking.m */; };
 		F732BA0B1D76DBA500E9878B /* CCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F732BA041D76CE1500E9878B /* CCNetworking.m */; };
+		F734E5891F019D860060CB77 /* UIScrollView+EmptyDataSet.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCE241DC13788007E38D8 /* UIScrollView+EmptyDataSet.m */; };
+		F734E5921F019D870060CB77 /* UIScrollView+EmptyDataSet.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCE241DC13788007E38D8 /* UIScrollView+EmptyDataSet.m */; };
 		F73B4F791E8D3BF800A97F07 /* CCMainTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73B4F781E8D3BF800A97F07 /* CCMainTabBarController.swift */; };
 		F73C002F1E55D7DF00EEEFA7 /* CCManageCryptoCloudSecurity.m in Sources */ = {isa = PBXBuildFile; fileRef = F73C002E1E55D7DF00EEEFA7 /* CCManageCryptoCloudSecurity.m */; };
 		F73CC0691E813DFF006E3047 /* BKPasscodeDummyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CC0591E813DFF006E3047 /* BKPasscodeDummyViewController.m */; };
@@ -4223,6 +4225,7 @@
 				F73CC06A1E813DFF006E3047 /* BKPasscodeDummyViewController.m in Sources */,
 				F73CC07C1E813DFF006E3047 /* BKTouchIDManager.m in Sources */,
 				F70022B71EC4C9100080073F /* OCCapabilities.m in Sources */,
+				F734E5891F019D860060CB77 /* UIScrollView+EmptyDataSet.m in Sources */,
 				F70022FF1EC4C9100080073F /* UtilsFramework.m in Sources */,
 				F71459C41D12E3B700CAFEEC /* UIImage+Saving.m in Sources */,
 				F71459C51D12E3B700CAFEEC /* UIImage+Rotating.m in Sources */,
@@ -4367,6 +4370,7 @@
 				F76607771ED7FFEC0073CEC2 /* TableLocalFile+CoreDataClass.m in Sources */,
 				F70022DF1EC4C9100080073F /* OCWebDAVClient.m in Sources */,
 				F743448A1E127FF2001CC831 /* CCHud.m in Sources */,
+				F734E5921F019D870060CB77 /* UIScrollView+EmptyDataSet.m in Sources */,
 				F74344861E127F89001CC831 /* RNEncryptor.m in Sources */,
 				F76607751ED7FF160073CEC2 /* TableDirectory+CoreDataClass.m in Sources */,
 				F73CC06B1E813DFF006E3047 /* BKPasscodeDummyViewController.m in Sources */,
