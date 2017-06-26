@@ -35,7 +35,7 @@
 #import "NCAutoUpload.h"
 #import "NCBridgeSwift.h"
 
-@interface CCMain () <CCActionsDeleteDelegate, CCActionsRenameDelegate, CCActionsSearchDelegate, CCActionsDownloadThumbnailDelegate, CCActionsSettingFavoriteDelegate, UITextViewDelegate, createFormUploadAssetsDelegate>
+@interface CCMain () <CCActionsDeleteDelegate, CCActionsRenameDelegate, CCActionsSearchDelegate, CCActionsDownloadThumbnailDelegate, CCActionsSettingFavoriteDelegate, UITextViewDelegate, createFormUploadAssetsDelegate, MGSwipeTableCellDelegate>
 {
     tableMetadata *_metadata;
     
@@ -49,6 +49,8 @@
     NSMutableDictionary *_selectedFileIDsMetadatas;
     NSUInteger _numSelectedFileIDsMetadatas;
     NSMutableArray *_queueSelector;
+    
+    NSMutableDictionary *_statusSwipeCell;
     
     UIImageView *_ImageTitleHomeCryptoCloud;
     UIView *_reMenuBackgroundView;
@@ -125,6 +127,7 @@
     _hud = [[CCHud alloc] initWithView:[[[UIApplication sharedApplication] delegate] window]];
     _hudDeterminate = [[CCHud alloc] initWithView:[[[UIApplication sharedApplication] delegate] window]];
     _selectedFileIDsMetadatas = [NSMutableDictionary new];
+    _statusSwipeCell = [NSMutableDictionary new];
     _queueSelector = [NSMutableArray new];
     _sectionDataSource = [CCSectionDataSourceMetadata new];
     _isViewDidLoad = YES;
@@ -4185,14 +4188,9 @@
 #pragma mark ===== Swipe Tablet -> menu =====
 #pragma --------------------------------------------------------------------------------------------
 
-//Nothing gets called here if you invoke `tableView:editActionsForRowAtIndexPath:` according to Apple docs so just leave this method blank
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
+- (BOOL)swipeTableCell:(MGSwipeTableCell *)cell canSwipe:(MGSwipeDirection)direction
 {
-}
-
-// the cells you would like the actions to appear needs to be editable
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
-{
+    NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
     tableMetadata *metadata = [self getMetadataFromSectionDataSource:indexPath];
     
     if (!metadata || [[NCManageDatabase sharedInstance] isTableInvalidated:metadata])
@@ -4204,514 +4202,554 @@
     return YES;
 }
 
-- (void)tableView:(UITableView *)tableView willBeginEditingRowAtIndexPath:(NSIndexPath *)indexPath
+- (BOOL)swipeTableCell:(MGSwipeTableCell *)cell tappedButtonAtIndex:(NSInteger)index direction:(MGSwipeDirection)direction fromExpansion:(BOOL)fromExpansion
 {
-    NSLog(@"Open");
+    NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
+   _metadata = [self getMetadataFromSectionDataSource:indexPath];
+    
+    if (direction == MGSwipeDirectionRightToLeft) {
+        
+        // Delete
+        if (index == 0)
+            [self swipeDelete:indexPath];
+        
+        // More
+        if (index == 1)
+            [self swipeMore:indexPath];
+            //dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+            //});
+    }
+    
+    if (direction == MGSwipeDirectionLeftToRight) {
+        if (_metadata.favorite)
+            [self  removeFavorite:_metadata];
+        else
+            [self addFavorite:_metadata];
+    }
+    
+    return YES;
 }
 
-- (void)tableView:(UITableView *)tableView didEndEditingRowAtIndexPath:(NSIndexPath *)indexPath
+- (void)swipeDelete:(NSIndexPath *)indexPath
 {
-    NSLog(@"Close");
+    // Directory locked ?
+    NSString *lockServerUrl = [CCUtility stringAppendServerUrl:[[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID] addFileName:_metadata.fileNameData];
+    tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"serverUrl = %@", lockServerUrl]];
+    
+    if (directory.lock && [[CCUtility getBlockCode] length] && app.sessionePasscodeLock == nil) {
+        
+        [app messageNotification:@"_error_" description:@"_folder_blocked_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
+        return;
+    }
+    
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+    
+    [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_delete_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
+        [self performSelector:@selector(deleteFile) withObject:nil];
+    }]];
+    
+    [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
+        [alertController dismissViewControllerAnimated:YES completion:nil];
+    }]];
+    
+    alertController.popoverPresentationController.sourceView = self.view;
+    alertController.popoverPresentationController.sourceRect = [self.tableView rectForRowAtIndexPath:indexPath];
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+        [alertController.view layoutIfNeeded];
+    
+    [self presentViewController:alertController animated:YES completion:nil];
+}
+
+- (void)swipeMore:(NSIndexPath *)indexPath
+{
+    NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID];
+    
+    NSString *titoloCriptaDecripta, *titoloLock, *titleFavorite;
+    
+    if (_metadata.cryptated) titoloCriptaDecripta = [NSString stringWithFormat:NSLocalizedString(@"_decrypt_", nil)];
+    else titoloCriptaDecripta = [NSString stringWithFormat:NSLocalizedString(@"_encrypt_", nil)];
+    
+    if (_metadata.favorite) {
+        
+        titleFavorite = [NSString stringWithFormat:NSLocalizedString(@"_remove_favorites_", nil)];
+    } else {
+        
+        titleFavorite = [NSString stringWithFormat:NSLocalizedString(@"_add_favorites_", nil)];
+    }
+    
+    if (_metadata.directory) {
+        // calcolo lockServerUrl
+        NSString *lockServerUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:_metadata.fileNameData];
+        tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"serverUrl = %@", lockServerUrl]];
+        
+        if (directory.lock)
+            titoloLock = [NSString stringWithFormat:NSLocalizedString(@"_remove_passcode_", nil)];
+        else
+            titoloLock = [NSString stringWithFormat:NSLocalizedString(@"_protect_passcode_", nil)];
+    }
+    
+    tableLocalFile *localFile = [[NCManageDatabase sharedInstance] getTableLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", _metadata.fileID]];
+    
+    // ******************************************* AHKActionSheet *******************************************
+    
+    AHKActionSheet *actionSheet = [[AHKActionSheet alloc] initWithView:self.view title:nil];
+    
+    actionSheet.animationDuration = 0.2;
+    
+    actionSheet.blurRadius = 0.0f;
+    actionSheet.blurTintColor = [UIColor colorWithWhite:0.0f alpha:0.50f];
+    
+    actionSheet.buttonHeight = 50.0;
+    actionSheet.cancelButtonHeight = 50.0f;
+    actionSheet.separatorHeight = 5.0f;
+    
+    actionSheet.automaticallyTintButtonImages = @(NO);
+    
+    actionSheet.encryptedButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:[NCBrandColor sharedInstance].cryptocloud };
+    actionSheet.buttonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:[UIColor blackColor] };
+    actionSheet.cancelButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:[NCBrandColor sharedInstance].brand };
+    actionSheet.disableButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:[UIColor blackColor] };
+    
+    actionSheet.separatorColor =  [NCBrandColor sharedInstance].seperator;
+    actionSheet.cancelButtonTitle = NSLocalizedString(@"_cancel_",nil);
+    
+    // ******************************************* DIRECTORY *******************************************
+    
+    if (_metadata.directory) {
+        
+        BOOL lockDirectory = NO;
+        NSString *dirServerUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:_metadata.fileNameData];
+        
+        // Directory bloccata ?
+        tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"serverUrl = %@", dirServerUrl]];
+        if (directory.lock && [[CCUtility getBlockCode] length] && app.sessionePasscodeLock == nil) lockDirectory = YES;
+        
+        NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
+        NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:app.activeUrl];
+        
+        [actionSheet addButtonWithTitle: _metadata.fileNamePrint
+                                  image: [CCGraphics changeThemingColorImage:[UIImage imageNamed:_metadata.iconName] color:[NCBrandColor sharedInstance].brand]
+                        backgroundColor: [NCBrandColor sharedInstance].tabBar
+                                 height: 50.0
+                                   type: AHKActionSheetButtonTypeDisabled
+                                handler: nil
+         ];
+        
+        /*
+        if (!lockDirectory && !_metadata.cryptated) {
+            
+            [actionSheet addButtonWithTitle:titleFavorite
+                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetFavorite"] color:[NCBrandColor sharedInstance].brand]
+                            backgroundColor:[UIColor whiteColor]
+                                     height: 50.0
+                                       type:AHKActionSheetButtonTypeDefault
+                                    handler:^(AHKActionSheet *as) {
+                                        
+                                        // close swipe
+                                        [self setEditing:NO animated:YES];
+                                        
+                                        if (_metadata.favorite)
+                                            [self removeFavorite:_metadata];
+                                        else
+                                            [self addFavorite:_metadata];
+                                    }];
+        }
+        */
+        
+        if (_metadata.cryptated == NO && !lockDirectory) {
+            
+            [actionSheet addButtonWithTitle:NSLocalizedString(@"_share_", nil)
+                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetShare"] color:[NCBrandColor sharedInstance].brand]
+                            backgroundColor:[UIColor whiteColor]
+                                     height: 50.0
+                                       type:AHKActionSheetButtonTypeDefault
+                                    handler:^(AHKActionSheet *as) {
+                                        
+                                        // close swipe
+                                        [self setEditing:NO animated:YES];
+                                        
+                                        [self openWindowShare:_metadata];
+                                    }];
+        }
+        
+        if (!([_metadata.fileName isEqualToString:autoUploadFileName] == YES && [serverUrl isEqualToString:autoUploadDirectory] == YES) && !lockDirectory) {
+            
+            [actionSheet addButtonWithTitle:NSLocalizedString(@"_rename_", nil)
+                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetRename"] color:[NCBrandColor sharedInstance].brand]
+                            backgroundColor:[UIColor whiteColor]
+                                     height: 50.0
+                                       type:AHKActionSheetButtonTypeDefault
+                                    handler:^(AHKActionSheet *as) {
+                                        
+                                        // close swipe
+                                        [self setEditing:NO animated:YES];
+                                        
+                                        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_rename_",nil) message:nil preferredStyle:UIAlertControllerStyleAlert];
+                                        
+                                        [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+                                            textField.text = _metadata.fileNamePrint;
+                                            //textField.selectedTextRange = [textField textRangeFromPosition:textField.beginningOfDocument toPosition:textField.endOfDocument];
+                                            //textField.delegate = self;
+                                            [textField addTarget:self action:@selector(minCharTextFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
+                                        }];
+                                        
+                                        UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_",nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
+                                            NSLog(@"Cancel action");
+                                        }];
+                                        
+                                        UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+                                            
+                                            UITextField *fileName = alertController.textFields.firstObject;
+                                            
+                                            [self performSelectorOnMainThread:@selector(renameFile:) withObject:[NSMutableArray arrayWithObjects:_metadata,fileName.text, nil] waitUntilDone:NO];
+                                        }];
+                                        
+                                        okAction.enabled = NO;
+                                        
+                                        [alertController addAction:cancelAction];
+                                        [alertController addAction:okAction];
+                                        
+                                        [self presentViewController:alertController animated:YES completion:nil];
+                                    }];
+        }
+        
+        if (!([_metadata.fileName isEqualToString:autoUploadFileName] == YES && [serverUrl isEqualToString:autoUploadDirectory] == YES) && !lockDirectory) {
+            
+            [actionSheet addButtonWithTitle:NSLocalizedString(@"_move_", nil)
+                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetMove"] color:[NCBrandColor sharedInstance].brand]
+                            backgroundColor:[UIColor whiteColor]
+                                     height: 50.0
+                                       type:AHKActionSheetButtonTypeDefault
+                                    handler:^(AHKActionSheet *as) {
+                                        
+                                        // close swipe
+                                        [self setEditing:NO animated:YES];
+                                        
+                                        [self moveOpenWindow:[[NSArray alloc] initWithObjects:indexPath, nil]];
+                                    }];
+        }
+        
+        if (!([_metadata.fileName isEqualToString:autoUploadFileName] == YES && [serverUrl isEqualToString:autoUploadDirectory] == YES) && _metadata.cryptated == NO) {
+            
+            [actionSheet addButtonWithTitle:NSLocalizedString(@"_folder_automatic_upload_", nil)
+                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderphotocamera"] color:[NCBrandColor sharedInstance].brand]
+                            backgroundColor:[UIColor whiteColor]
+                                     height: 50.0
+                                       type:AHKActionSheetButtonTypeDefault
+                                    handler:^(AHKActionSheet *as) {
+                                        
+                                        // close swipe
+                                        [self setEditing:NO animated:YES];
+                                        
+                                        // Settings new folder Automatatic upload
+                                        NSString *oldAutoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:app.activeUrl];
+                                        
+                                        [[NCManageDatabase sharedInstance] setAccountAutoUploadFileName:_metadata.fileName];
+                                        [[NCManageDatabase sharedInstance] setAccountAutoUploadDirectory:serverUrl activeUrl:app.activeUrl];
+                                        
+                                        [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:oldAutoUploadDirectory directoryID:nil];
+                                        
+                                        if (app.activeAccount.length > 0 && app.activePhotos)
+                                            [app.activePhotos reloadDatasourceForced];
+                                        
+                                        [self readFolder:serverUrl];
+                                        
+                                        NSLog(@"[LOG] Update Folder Photo");
+                                        NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:app.activeUrl];
+                                        if ([autoUploadPath length] > 0)
+                                            [[CCSynchronize sharedSynchronize] synchronizedFolder:autoUploadPath selector:selectorReadFolder];
+                                    }];
+        }
+        
+        if (!([_metadata.fileName isEqualToString:autoUploadFileName] == YES && [serverUrl isEqualToString:autoUploadDirectory] == YES)) {
+            
+            [actionSheet addButtonWithTitle:titoloLock
+                                      image:[UIImage imageNamed:@"actionSheetLock"]
+                            backgroundColor:[UIColor whiteColor]
+                                     height: 50.0
+                                       type:AHKActionSheetButtonTypeEncrypted
+                                    handler:^(AHKActionSheet *as) {
+                                        
+                                        // close swipe
+                                        [self setEditing:NO animated:YES];
+                                        
+                                        [self performSelector:@selector(comandoLockPassword) withObject:nil];
+                                    }];
+        }
+        
+        if (!([_metadata.fileName isEqualToString:autoUploadFileName] == YES && [serverUrl isEqualToString:autoUploadDirectory] == YES) && !lockDirectory && app.isCryptoCloudMode) {
+            
+            [actionSheet addButtonWithTitle:titoloCriptaDecripta
+                                      image:[UIImage imageNamed:@"actionSheetCrypto"]
+                            backgroundColor:[UIColor whiteColor]
+                                     height: 50.0
+                                       type:AHKActionSheetButtonTypeEncrypted
+                                    handler:^(AHKActionSheet *as) {
+                                        
+                                        // close swipe
+                                        [self setEditing:NO animated:YES];
+                                        
+                                        [self performSelector:@selector(encyptedDecryptedFolder) withObject:nil];
+                                    }];
+        }
+        
+        [actionSheet show];
+    }
+    
+    // ******************************************* FILE *******************************************
+    
+    if ([_metadata.type isEqualToString: k_metadataType_file] && !_metadata.directory) {
+        
+        UIImage *iconHeader;
+        
+        // assegnamo l'immagine anteprima se esiste, altrimenti metti quella standars
+        if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, _metadata.fileID]])
+            iconHeader = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, _metadata.fileID]];
+        else
+            iconHeader = [UIImage imageNamed:_metadata.iconName];
+        
+        [actionSheet addButtonWithTitle: _metadata.fileNamePrint
+                                  image: iconHeader
+                        backgroundColor: [NCBrandColor sharedInstance].tabBar
+                                 height: 50.0
+                                   type: AHKActionSheetButtonTypeDisabled
+                                handler: nil
+        ];
+        
+        /*
+        if (!_metadata.cryptated) {
+            
+            [actionSheet addButtonWithTitle:titleFavorite
+                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetFavorite"] color:[NCBrandColor sharedInstance].brand]
+                            backgroundColor:[UIColor whiteColor]
+                                     height: 50.0
+                                       type:AHKActionSheetButtonTypeDefault
+                                    handler:^(AHKActionSheet *as) {
+                                        
+                                        // close swipe
+                                        [self setEditing:NO animated:YES];
+                                        
+                                        if (_metadata.favorite)
+                                            [self  removeFavorite:_metadata];
+                                        else
+                                            [self addFavorite:_metadata];
+                                    }];
+        }
+        */
+        
+        if (_metadata.cryptated == NO) {
+            
+            [actionSheet addButtonWithTitle:NSLocalizedString(@"_share_", nil)
+                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetShare"] color:[NCBrandColor sharedInstance].brand]
+                            backgroundColor:[UIColor whiteColor]
+                                     height: 50.0
+                                       type:AHKActionSheetButtonTypeDefault
+                                    handler:^(AHKActionSheet *as) {
+                                        
+                                        // close swipe
+                                        [self setEditing:NO animated:YES];
+                                        
+                                        [self openWindowShare:_metadata];
+                                    }];
+        }
+        
+        [actionSheet addButtonWithTitle:NSLocalizedString(@"_open_in_", nil)
+                                  image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetOpenIn"] color:[NCBrandColor sharedInstance].brand]
+                        backgroundColor:[UIColor whiteColor]
+                                 height: 50.0
+                                   type:AHKActionSheetButtonTypeDefault
+                                handler:^(AHKActionSheet *as) {
+                                    
+                                    // close swipe
+                                    [self setEditing:NO animated:YES];
+                                    
+                                    [self performSelector:@selector(openIn:) withObject:_metadata];
+                                }];
+        
+        [actionSheet addButtonWithTitle:NSLocalizedString(@"_rename_", nil)
+                                  image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetRename"] color:[NCBrandColor sharedInstance].brand]
+                        backgroundColor:[UIColor whiteColor]
+                                 height: 50.0
+                                   type:AHKActionSheetButtonTypeDefault
+                                handler:^(AHKActionSheet *as) {
+                                    
+                                    // close swipe
+                                    [self setEditing:NO animated:YES];
+                                    
+                                    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_rename_",nil) message:nil preferredStyle:UIAlertControllerStyleAlert];
+                                    
+                                    [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+                                        //textField.placeholder = _metadata.fileNamePrint;
+                                        textField.text = _metadata.fileNamePrint;
+                                        [textField addTarget:self action:@selector(minCharTextFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
+                                    }];
+                                    
+                                    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_",nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
+                                        NSLog(@"Cancel action");
+                                    }];
+                                    
+                                    UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+                                        
+                                        UITextField *fileName = alertController.textFields.firstObject;
+                                        
+                                        [self performSelectorOnMainThread:@selector(renameFile:) withObject:[NSMutableArray arrayWithObjects:_metadata,fileName.text, nil] waitUntilDone:NO];
+                                    }];
+                                    
+                                    okAction.enabled = NO;
+                                    
+                                    [alertController addAction:cancelAction];
+                                    [alertController addAction:okAction];
+                                    
+                                    [self presentViewController:alertController animated:YES completion:nil];
+                                }];
+        
+        [actionSheet addButtonWithTitle:NSLocalizedString(@"_move_", nil)
+                                  image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetMove"] color:[NCBrandColor sharedInstance].brand]
+                        backgroundColor:[UIColor whiteColor]
+                                 height: 50.0
+                                   type:AHKActionSheetButtonTypeDefault
+                                handler:^(AHKActionSheet *as) {
+                                    
+                                    // close swipe
+                                    [self setEditing:NO animated:YES];
+                                    
+                                    [self moveOpenWindow:[[NSArray alloc] initWithObjects:indexPath, nil]];
+                                }];
+        
+        if (localFile || [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, _metadata.fileID]]) {
+            
+            [actionSheet addButtonWithTitle:NSLocalizedString(@"_remove_local_file_", nil)
+                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetRemoveLocal"] color:[NCBrandColor sharedInstance].brand]
+                            backgroundColor:[UIColor whiteColor]
+                                     height: 50.0
+                                       type:AHKActionSheetButtonTypeDefault
+                                    handler:^(AHKActionSheet *as) {
+                                        
+                                        // close swipe
+                                        [self setEditing:NO animated:YES];
+                                        
+                                        [self performSelector:@selector(removeLocalFile:) withObject:_metadata];
+                                    }];
+        }
+        
+        if (app.isCryptoCloudMode) {
+            
+            [actionSheet addButtonWithTitle:titoloCriptaDecripta
+                                      image:[UIImage imageNamed:@"actionSheetCrypto"]
+                            backgroundColor:[UIColor whiteColor]
+                                     height: 50.0
+                                       type:AHKActionSheetButtonTypeEncrypted
+                                    handler:^(AHKActionSheet *as) {
+                                        
+                                        // close swipe
+                                        [self setEditing:NO animated:YES];
+                                        
+                                        [self performSelector:@selector(cmdEncryptedDecryptedFile) withObject:nil];
+                                    }];
+        }
+        
+        [actionSheet show];
+    }
+    
+    // ******************************************* TEMPLATE *******************************************
+    
+    if ([_metadata.type isEqualToString: k_metadataType_template]) {
+        
+        [actionSheet addButtonWithTitle: _metadata.fileNamePrint
+                                  image: [UIImage imageNamed:_metadata.iconName]
+                        backgroundColor: [NCBrandColor sharedInstance].tabBar
+                                 height: 50.0
+                                   type: AHKActionSheetButtonTypeDisabled
+                                handler: nil
+         ];
+        
+        if ([_metadata.model isEqualToString:@"note"]) {
+            
+            [actionSheet addButtonWithTitle:NSLocalizedString(@"_rename_", nil)
+                                      image:[UIImage imageNamed:@"actionSheetRename"]
+                            backgroundColor:[UIColor whiteColor]
+                                     height: 50.0
+                                       type:AHKActionSheetButtonTypeDefault
+                                    handler:^(AHKActionSheet *as) {
+                                        
+                                        // close swipe
+                                        [self setEditing:NO animated:YES];
+                                        
+                                        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_rename_",nil) message:nil preferredStyle:UIAlertControllerStyleAlert];
+                                        
+                                        [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+                                            textField.placeholder = _metadata.fileNamePrint;
+                                            [textField addTarget:self action:@selector(minCharTextFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
+                                        }];
+                                        
+                                        UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_",nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
+                                            NSLog(@"Cancel action");
+                                        }];
+                                        
+                                        UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+                                            
+                                            UITextField *fileName = alertController.textFields.firstObject;
+                                            
+                                            [self performSelectorOnMainThread:@selector(renameNote:) withObject:[NSMutableArray arrayWithObjects:_metadata,fileName.text, nil] waitUntilDone:NO];
+                                        }];
+                                        
+                                        okAction.enabled = NO;
+                                        
+                                        [alertController addAction:cancelAction];
+                                        [alertController addAction:okAction];
+                                        
+                                        [self presentViewController:alertController animated:YES completion:nil];
+                                    }];
+        }
+        
+        [actionSheet addButtonWithTitle:NSLocalizedString(@"_move_", nil)
+                                  image:[UIImage imageNamed:@"actionSheetMove"]
+                        backgroundColor:[UIColor whiteColor]
+                                 height: 50.0
+                                   type:AHKActionSheetButtonTypeDefault
+                                handler:^(AHKActionSheet *as) {
+                                    
+                                    // close swipe
+                                    [self setEditing:NO animated:YES];
+                                    
+                                    [self moveOpenWindow:[[NSArray alloc] initWithObjects:indexPath, nil]];
+                                }];
+        
+        [actionSheet show];
+    }
+}
+
+/*
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    //Nothing gets called here if you invoke `tableView:editActionsForRowAtIndexPath:` according to Apple docs so just leave this method blank
+}
+
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    // the cells you would like the actions to appear needs to be editable
 }
 
 - (NSArray<UITableViewRowAction *> *)tableView:(UITableView *)tableView editActionsForRowAtIndexPath:(NSIndexPath *)indexPath
- {
-     _metadata = [self getMetadataFromSectionDataSource:indexPath];
+{
+    _metadata = [self getMetadataFromSectionDataSource:indexPath];
 
-     // ---- DELETE ----
-     
-     UITableViewRowAction *delete = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDestructive title:NSLocalizedString(@"_delete_", nil) handler:^(UITableViewRowAction *action, NSIndexPath *indexPath) {
-         
-         // Directory locked ?
-         NSString *lockServerUrl = [CCUtility stringAppendServerUrl:[[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID] addFileName:_metadata.fileNameData];
-         tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"serverUrl = %@", lockServerUrl]];
-     
-         if (directory.lock && [[CCUtility getBlockCode] length] && app.sessionePasscodeLock == nil) {
-         
-             [app messageNotification:@"_error_" description:@"_folder_blocked_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
-         
-             return;
-         }
-     
-         UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
-         
-         [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_delete_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
-             [self performSelector:@selector(deleteFile) withObject:nil];
-         }]];
-         
-         [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
-             [alertController dismissViewControllerAnimated:YES completion:nil];
-         }]];
-         
-         alertController.popoverPresentationController.sourceView = self.view;
-         alertController.popoverPresentationController.sourceRect = [self.tableView rectForRowAtIndexPath:indexPath];
-         
-         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
-             [alertController.view layoutIfNeeded];
-         
-         [self presentViewController:alertController animated:YES completion:nil];
-     }];
-     
-     // ---- MORE ----
-     
-     UITableViewRowAction *more = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDefault title:NSLocalizedString(@"_more_", nil) handler:^(UITableViewRowAction *action, NSIndexPath *indexPath) {
-
-         NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID];
-         
-         NSString *titoloCriptaDecripta, *titoloLock, *titleFavorite;
-         
-         if (_metadata.cryptated) titoloCriptaDecripta = [NSString stringWithFormat:NSLocalizedString(@"_decrypt_", nil)];
-         else titoloCriptaDecripta = [NSString stringWithFormat:NSLocalizedString(@"_encrypt_", nil)];
-         
-         if (_metadata.favorite) {
-             
-             titleFavorite = [NSString stringWithFormat:NSLocalizedString(@"_remove_favorites_", nil)];
-         } else {
-             
-             titleFavorite = [NSString stringWithFormat:NSLocalizedString(@"_add_favorites_", nil)];
-         }
-         
-         if (_metadata.directory) {
-             // calcolo lockServerUrl
-             NSString *lockServerUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:_metadata.fileNameData];
-             tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"serverUrl = %@", lockServerUrl]];
-             
-             if (directory.lock)
-                 titoloLock = [NSString stringWithFormat:NSLocalizedString(@"_remove_passcode_", nil)];
-             else
-                 titoloLock = [NSString stringWithFormat:NSLocalizedString(@"_protect_passcode_", nil)];
-         }
-         
-         tableLocalFile *localFile = [[NCManageDatabase sharedInstance] getTableLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", _metadata.fileID]];
-         
-         /******************************************* AHKActionSheet *******************************************/
-         
-         AHKActionSheet *actionSheet = [[AHKActionSheet alloc] initWithView:self.view title:nil];
-         
-         actionSheet.animationDuration = 0.2;
-         
-         actionSheet.blurRadius = 0.0f;
-         actionSheet.blurTintColor = [UIColor colorWithWhite:0.0f alpha:0.50f];
-         
-         actionSheet.buttonHeight = 50.0;
-         actionSheet.cancelButtonHeight = 50.0f;
-         actionSheet.separatorHeight = 5.0f;
-         
-         actionSheet.automaticallyTintButtonImages = @(NO);
-         
-         actionSheet.encryptedButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:[NCBrandColor sharedInstance].cryptocloud };
-         actionSheet.buttonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:[UIColor blackColor] };
-         actionSheet.cancelButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:[NCBrandColor sharedInstance].brand };
-         actionSheet.disableButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:[UIColor blackColor] };
-         
-         actionSheet.separatorColor =  [NCBrandColor sharedInstance].seperator;
-         actionSheet.cancelButtonTitle = NSLocalizedString(@"_cancel_",nil);
-         
-         /******************************************* DIRECTORY *******************************************/
-         
-         if (_metadata.directory) {
-             
-             BOOL lockDirectory = NO;
-             NSString *dirServerUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:_metadata.fileNameData];
-             
-             // Directory bloccata ?
-             tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"serverUrl = %@", dirServerUrl]];
-             if (directory.lock && [[CCUtility getBlockCode] length] && app.sessionePasscodeLock == nil) lockDirectory = YES;
-             
-             NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
-             NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:app.activeUrl];
-             
-             [actionSheet addButtonWithTitle: _metadata.fileNamePrint
-                                       image: [CCGraphics changeThemingColorImage:[UIImage imageNamed:_metadata.iconName] color:[NCBrandColor sharedInstance].brand]
-                             backgroundColor: [NCBrandColor sharedInstance].tabBar
-                                      height: 50.0
-                                        type: AHKActionSheetButtonTypeDisabled
-                                     handler: nil
-              ];
-             
-             if (!lockDirectory && !_metadata.cryptated) {
-                 
-                 [actionSheet addButtonWithTitle:titleFavorite
-                                           image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetFavorite"] color:[NCBrandColor sharedInstance].brand]
-                                 backgroundColor:[UIColor whiteColor]
-                                          height: 50.0
-                                            type:AHKActionSheetButtonTypeDefault
-                                         handler:^(AHKActionSheet *as) {
-                                             
-                                             // close swipe
-                                             [self setEditing:NO animated:YES];
-                                             
-                                             if (_metadata.favorite)
-                                                 [self removeFavorite:_metadata];
-                                             else
-                                                 [self addFavorite:_metadata];
-                                         }];
-             }
-             
-             if (_metadata.cryptated == NO && !lockDirectory) {
-                 
-                 [actionSheet addButtonWithTitle:NSLocalizedString(@"_share_", nil)
-                                           image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetShare"] color:[NCBrandColor sharedInstance].brand]
-                                 backgroundColor:[UIColor whiteColor]
-                                          height: 50.0
-                                            type:AHKActionSheetButtonTypeDefault
-                                         handler:^(AHKActionSheet *as) {
-                                             
-                                             // close swipe
-                                             [self setEditing:NO animated:YES];
-                                             
-                                             [self openWindowShare:_metadata];
-                                         }];
-             }
-             
-             if (!([_metadata.fileName isEqualToString:autoUploadFileName] == YES && [serverUrl isEqualToString:autoUploadDirectory] == YES) && !lockDirectory) {
-                 
-                 [actionSheet addButtonWithTitle:NSLocalizedString(@"_rename_", nil)
-                                           image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetRename"] color:[NCBrandColor sharedInstance].brand]
-                                 backgroundColor:[UIColor whiteColor]
-                                          height: 50.0
-                                            type:AHKActionSheetButtonTypeDefault
-                                         handler:^(AHKActionSheet *as) {
-                                             
-                                             // close swipe
-                                             [self setEditing:NO animated:YES];
-                                             
-                                             UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_rename_",nil) message:nil preferredStyle:UIAlertControllerStyleAlert];
-                                             
-                                             [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-                                                 textField.text = _metadata.fileNamePrint;
-                                                 //textField.selectedTextRange = [textField textRangeFromPosition:textField.beginningOfDocument toPosition:textField.endOfDocument];
-                                                 //textField.delegate = self;
-                                                 [textField addTarget:self action:@selector(minCharTextFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
-                                             }];
-                                             
-                                             UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_",nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
-                                                 NSLog(@"Cancel action");
-                                             }];
-                                             
-                                             UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-                                                 
-                                                 UITextField *fileName = alertController.textFields.firstObject;
-                                                 
-                                                 [self performSelectorOnMainThread:@selector(renameFile:) withObject:[NSMutableArray arrayWithObjects:_metadata,fileName.text, nil] waitUntilDone:NO];
-                                             }];
-                                             
-                                             okAction.enabled = NO;
-                                             
-                                             [alertController addAction:cancelAction];
-                                             [alertController addAction:okAction];
-                                             
-                                             [self presentViewController:alertController animated:YES completion:nil];
-                                         }];
-             }
-             
-             if (!([_metadata.fileName isEqualToString:autoUploadFileName] == YES && [serverUrl isEqualToString:autoUploadDirectory] == YES) && !lockDirectory) {
-                 
-                 [actionSheet addButtonWithTitle:NSLocalizedString(@"_move_", nil)
-                                           image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetMove"] color:[NCBrandColor sharedInstance].brand]
-                                 backgroundColor:[UIColor whiteColor]
-                                          height: 50.0
-                                            type:AHKActionSheetButtonTypeDefault
-                                         handler:^(AHKActionSheet *as) {
-                                             
-                                             // close swipe
-                                             [self setEditing:NO animated:YES];
-                                             
-                                             [self moveOpenWindow:[[NSArray alloc] initWithObjects:indexPath, nil]];
-                                         }];
-             }
-             
-             if (!([_metadata.fileName isEqualToString:autoUploadFileName] == YES && [serverUrl isEqualToString:autoUploadDirectory] == YES) && _metadata.cryptated == NO) {
-                 
-                 [actionSheet addButtonWithTitle:NSLocalizedString(@"_folder_automatic_upload_", nil)
-                                           image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderphotocamera"] color:[NCBrandColor sharedInstance].brand]
-                                 backgroundColor:[UIColor whiteColor]
-                                          height: 50.0
-                                            type:AHKActionSheetButtonTypeDefault
-                                         handler:^(AHKActionSheet *as) {
-                                             
-                                             // close swipe
-                                             [self setEditing:NO animated:YES];
-                                             
-                                             // Settings new folder Automatatic upload
-                                             NSString *oldAutoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:app.activeUrl];
-                                             
-                                             [[NCManageDatabase sharedInstance] setAccountAutoUploadFileName:_metadata.fileName];
-                                             [[NCManageDatabase sharedInstance] setAccountAutoUploadDirectory:serverUrl activeUrl:app.activeUrl];
-                                             
-                                             [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:oldAutoUploadDirectory directoryID:nil];
-                                             
-                                             if (app.activeAccount.length > 0 && app.activePhotos)
-                                                 [app.activePhotos reloadDatasourceForced];
-                                             
-                                             [self readFolder:serverUrl];
-                                             
-                                             NSLog(@"[LOG] Update Folder Photo");
-                                             NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:app.activeUrl];
-                                             if ([autoUploadPath length] > 0)
-                                                 [[CCSynchronize sharedSynchronize] synchronizedFolder:autoUploadPath selector:selectorReadFolder];
-                                         }];
-             }
-             
-             if (!([_metadata.fileName isEqualToString:autoUploadFileName] == YES && [serverUrl isEqualToString:autoUploadDirectory] == YES)) {
-                 
-                 [actionSheet addButtonWithTitle:titoloLock
-                                           image:[UIImage imageNamed:@"actionSheetLock"]
-                                 backgroundColor:[UIColor whiteColor]
-                                          height: 50.0
-                                            type:AHKActionSheetButtonTypeEncrypted
-                                         handler:^(AHKActionSheet *as) {
-                                             
-                                             // close swipe
-                                             [self setEditing:NO animated:YES];
-                                             
-                                             [self performSelector:@selector(comandoLockPassword) withObject:nil];
-                                         }];
-             }
-             
-             if (!([_metadata.fileName isEqualToString:autoUploadFileName] == YES && [serverUrl isEqualToString:autoUploadDirectory] == YES) && !lockDirectory && app.isCryptoCloudMode) {
-                 
-                 [actionSheet addButtonWithTitle:titoloCriptaDecripta
-                                           image:[UIImage imageNamed:@"actionSheetCrypto"]
-                                 backgroundColor:[UIColor whiteColor]
-                                          height: 50.0
-                                            type:AHKActionSheetButtonTypeEncrypted
-                                         handler:^(AHKActionSheet *as) {
-                                             
-                                             // close swipe
-                                             [self setEditing:NO animated:YES];
-                                             
-                                             [self performSelector:@selector(encyptedDecryptedFolder) withObject:nil];
-                                         }];
-             }
-             
-             [actionSheet show];
-         }
-         
-         /******************************************* FILE *******************************************/
-         
-         if ([_metadata.type isEqualToString: k_metadataType_file] && !_metadata.directory) {
-             
-             UIImage *iconHeader;
-             
-             // assegnamo l'immagine anteprima se esiste, altrimenti metti quella standars
-             if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, _metadata.fileID]])
-                 iconHeader = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, _metadata.fileID]];
-             else
-                 iconHeader = [UIImage imageNamed:_metadata.iconName];
-             
-             [actionSheet addButtonWithTitle: _metadata.fileNamePrint
-                                       image: iconHeader
-                             backgroundColor: [NCBrandColor sharedInstance].tabBar
-                                      height: 50.0
-                                        type: AHKActionSheetButtonTypeDisabled
-                                     handler: nil
-              ];
-             
-             if (!_metadata.cryptated) {
-                 
-                 [actionSheet addButtonWithTitle:titleFavorite
-                                           image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetFavorite"] color:[NCBrandColor sharedInstance].brand]
-                                 backgroundColor:[UIColor whiteColor]
-                                          height: 50.0
-                                            type:AHKActionSheetButtonTypeDefault
-                                         handler:^(AHKActionSheet *as) {
-                                             
-                                             // close swipe
-                                             [self setEditing:NO animated:YES];
-                                             
-                                             if (_metadata.favorite)
-                                                 [self  removeFavorite:_metadata];
-                                             else
-                                                 [self addFavorite:_metadata];
-                                         }];
-             }
-             
-             if (_metadata.cryptated == NO) {
-                 
-                 [actionSheet addButtonWithTitle:NSLocalizedString(@"_share_", nil)
-                                           image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetShare"] color:[NCBrandColor sharedInstance].brand]
-                                 backgroundColor:[UIColor whiteColor]
-                                          height: 50.0
-                                            type:AHKActionSheetButtonTypeDefault
-                                         handler:^(AHKActionSheet *as) {
-                                             
-                                             // close swipe
-                                             [self setEditing:NO animated:YES];
-                                             
-                                             [self openWindowShare:_metadata];
-                                         }];
-             }
-             
-             [actionSheet addButtonWithTitle:NSLocalizedString(@"_open_in_", nil)
-                                       image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetOpenIn"] color:[NCBrandColor sharedInstance].brand]
-                             backgroundColor:[UIColor whiteColor]
-                                      height: 50.0
-                                        type:AHKActionSheetButtonTypeDefault
-                                     handler:^(AHKActionSheet *as) {
-                                         
-                                         // close swipe
-                                         [self setEditing:NO animated:YES];
-                                         
-                                         [self performSelector:@selector(openIn:) withObject:_metadata];
-                                     }];
-             
-             [actionSheet addButtonWithTitle:NSLocalizedString(@"_rename_", nil)
-                                       image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetRename"] color:[NCBrandColor sharedInstance].brand]
-                             backgroundColor:[UIColor whiteColor]
-                                      height: 50.0
-                                        type:AHKActionSheetButtonTypeDefault
-                                     handler:^(AHKActionSheet *as) {
-                                         
-                                         // close swipe
-                                         [self setEditing:NO animated:YES];
-                                         
-                                         UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_rename_",nil) message:nil preferredStyle:UIAlertControllerStyleAlert];
-                                         
-                                         [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-                                             //textField.placeholder = _metadata.fileNamePrint;
-                                             textField.text = _metadata.fileNamePrint;
-                                             [textField addTarget:self action:@selector(minCharTextFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
-                                         }];
-                                         
-                                         UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_",nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
-                                             NSLog(@"Cancel action");
-                                         }];
-                                         
-                                         UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-                                             
-                                             UITextField *fileName = alertController.textFields.firstObject;
-                                             
-                                             [self performSelectorOnMainThread:@selector(renameFile:) withObject:[NSMutableArray arrayWithObjects:_metadata,fileName.text, nil] waitUntilDone:NO];
-                                         }];
-                                         
-                                         okAction.enabled = NO;
-                                         
-                                         [alertController addAction:cancelAction];
-                                         [alertController addAction:okAction];
-                                         
-                                         [self presentViewController:alertController animated:YES completion:nil];
-                                     }];
-             
-             [actionSheet addButtonWithTitle:NSLocalizedString(@"_move_", nil)
-                                       image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetMove"] color:[NCBrandColor sharedInstance].brand]
-                             backgroundColor:[UIColor whiteColor]
-                                      height: 50.0
-                                        type:AHKActionSheetButtonTypeDefault
-                                     handler:^(AHKActionSheet *as) {
-                                         
-                                         // close swipe
-                                         [self setEditing:NO animated:YES];
-                                         
-                                         [self moveOpenWindow:[[NSArray alloc] initWithObjects:indexPath, nil]];
-                                     }];
-             
-             if (localFile || [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, _metadata.fileID]]) {
-                 
-                 [actionSheet addButtonWithTitle:NSLocalizedString(@"_remove_local_file_", nil)
-                                           image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetRemoveLocal"] color:[NCBrandColor sharedInstance].brand]
-                                 backgroundColor:[UIColor whiteColor]
-                                          height: 50.0
-                                            type:AHKActionSheetButtonTypeDefault
-                                         handler:^(AHKActionSheet *as) {
-                                             
-                                             // close swipe
-                                             [self setEditing:NO animated:YES];
-                                             
-                                             [self performSelector:@selector(removeLocalFile:) withObject:_metadata];
-                                         }];
-             }
-             
-             if (app.isCryptoCloudMode) {
-                 
-                 [actionSheet addButtonWithTitle:titoloCriptaDecripta
-                                           image:[UIImage imageNamed:@"actionSheetCrypto"]
-                                 backgroundColor:[UIColor whiteColor]
-                                          height: 50.0
-                                            type:AHKActionSheetButtonTypeEncrypted
-                                         handler:^(AHKActionSheet *as) {
-                                             
-                                             // close swipe
-                                             [self setEditing:NO animated:YES];
-                                             
-                                             [self performSelector:@selector(cmdEncryptedDecryptedFile) withObject:nil];
-                                         }];
-             }
-             
-             [actionSheet show];
-         }
-         
-         /******************************************* TEMPLATE *******************************************/
-         
-         if ([_metadata.type isEqualToString: k_metadataType_template]) {
-             
-             [actionSheet addButtonWithTitle: _metadata.fileNamePrint
-                                       image: [UIImage imageNamed:_metadata.iconName]
-                             backgroundColor: [NCBrandColor sharedInstance].tabBar
-                                      height: 50.0
-                                        type: AHKActionSheetButtonTypeDisabled
-                                     handler: nil
-              ];
-             
-             if ([_metadata.model isEqualToString:@"note"]) {
-                 
-                 [actionSheet addButtonWithTitle:NSLocalizedString(@"_rename_", nil)
-                                           image:[UIImage imageNamed:@"actionSheetRename"]
-                                 backgroundColor:[UIColor whiteColor]
-                                          height: 50.0
-                                            type:AHKActionSheetButtonTypeDefault
-                                         handler:^(AHKActionSheet *as) {
-                                             
-                                             // close swipe
-                                             [self setEditing:NO animated:YES];
-                                             
-                                             UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_rename_",nil) message:nil preferredStyle:UIAlertControllerStyleAlert];
-                                             
-                                             [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-                                                 textField.placeholder = _metadata.fileNamePrint;
-                                                 [textField addTarget:self action:@selector(minCharTextFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
-                                             }];
-                                             
-                                             UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_",nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
-                                                 NSLog(@"Cancel action");
-                                             }];
-                                             
-                                             UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-                                                 
-                                                 UITextField *fileName = alertController.textFields.firstObject;
-                                                 
-                                                 [self performSelectorOnMainThread:@selector(renameNote:) withObject:[NSMutableArray arrayWithObjects:_metadata,fileName.text, nil] waitUntilDone:NO];
-                                             }];
-                                             
-                                             okAction.enabled = NO;
-                                             
-                                             [alertController addAction:cancelAction];
-                                             [alertController addAction:okAction];
-                                             
-                                             [self presentViewController:alertController animated:YES completion:nil];
-                                         }];
-             }
-             
-             [actionSheet addButtonWithTitle:NSLocalizedString(@"_move_", nil)
-                                       image:[UIImage imageNamed:@"actionSheetMove"]
-                             backgroundColor:[UIColor whiteColor]
-                                      height: 50.0
-                                        type:AHKActionSheetButtonTypeDefault
-                                     handler:^(AHKActionSheet *as) {
-                                         
-                                         // close swipe
-                                         [self setEditing:NO animated:YES];
-                                         
-                                         [self moveOpenWindow:[[NSArray alloc] initWithObjects:indexPath, nil]];
-                                     }];
-             
-             [actionSheet show];
-         }
-     }];
-     more.backgroundColor = [UIColor lightGrayColor];
+    // ---- DELETE ----
  
-     return @[delete, more];
+    UITableViewRowAction *delete = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDestructive title:NSLocalizedString(@"_delete_", nil) handler:^(UITableViewRowAction *action, NSIndexPath *indexPath) {
+    }];
+     
+    // ---- MORE ----
+     
+    UITableViewRowAction *more = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDefault title:NSLocalizedString(@"_more_", nil) handler:^(UITableViewRowAction *action, NSIndexPath *indexPath) {
+    }];
+ 
+    more.backgroundColor = [UIColor lightGrayColor];
+ 
+    return @[delete, more];
 }
+*/
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark - ==== Datasource ====
@@ -4907,6 +4945,13 @@
     // store selected cells before relod
     NSArray *indexPaths = [self.tableView indexPathsForSelectedRows];
     
+    //store swipeOffset before relod
+    [_statusSwipeCell removeAllObjects];
+    for (MGSwipeTableCell *cell in self.tableView.visibleCells) {
+        NSIndexPath *path = [self.tableView indexPathForCell:cell];
+        [_statusSwipeCell setObject:[NSNumber numberWithDouble:cell.swipeOffset] forKey:[@(path.row) stringValue]];
+    }
+    
     // reload table view
     [self.tableView reloadData];
     
@@ -5060,6 +5105,10 @@
     else typeCell = @"CellMainTransfer";
     
     CCCellMainTransfer *cell = (CCCellMainTransfer *)[tableView dequeueReusableCellWithIdentifier:typeCell forIndexPath:indexPath];
+    
+    // variable base
+    cell.delegate = self;
+    cell.indexPath = indexPath;
     
     // separator
     cell.separatorInset = UIEdgeInsetsMake(0.f, 60.f, 0.f, 0.f);
@@ -5439,6 +5488,28 @@
     [cell.cancelTaskButton addTarget:self action:@selector(cancelTaskButton:withEvent:) forControlEvents:UIControlEventTouchUpInside];
     [cell.stopTaskButton addTarget:self action:@selector(stopTaskButton:withEvent:) forControlEvents:UIControlEventTouchUpInside];
 
+    // MGSwipe
+
+    //configure left buttons
+    NSString *titleLeftButtonFavorite = [NSString stringWithFormat:@" %@ ", NSLocalizedString(@"_favorite_", nil)];
+    if (metadata.favorite)
+        cell.leftButtons = @[[MGSwipeButton buttonWithTitle:titleLeftButtonFavorite icon:[UIImage imageNamed:@"favorite"] backgroundColor:[UIColor redColor]]];
+    else
+        cell.leftButtons = @[[MGSwipeButton buttonWithTitle:titleLeftButtonFavorite icon:[UIImage imageNamed:@"favorite"] backgroundColor:[UIColor greenColor]]];
+    cell.leftExpansion.buttonIndex = 0;
+    cell.leftExpansion.fillOnTrigger = NO;
+    
+    //configure right buttons
+    cell.rightButtons = @[[MGSwipeButton buttonWithTitle:NSLocalizedString(@"_delete_", nil) backgroundColor:[UIColor redColor]],
+                          [MGSwipeButton buttonWithTitle:NSLocalizedString(@"_more_", nil) backgroundColor:[UIColor lightGrayColor]]];
+    cell.rightSwipeSettings.transition = MGSwipeTransitionBorder;
+    
+    //restore swipeOffset after relod
+    CGFloat swipeOffset = [[_statusSwipeCell objectForKey:[@(indexPath.row) stringValue]] doubleValue];
+    if (swipeOffset != 0) {
+        [cell setSwipeOffset:swipeOffset animated:NO completion:nil];
+    }
+    
     return cell;
 }
 

@@ -212,6 +212,7 @@
 // Favorite
 
 "_favorites_"                   = "Favorites";
+"_favorite_"                    = "Favorite";
 "_no_files_uploaded_"           = "No files uploaded";
 "_tutorial_favorite_view_"      = "Files and folders you mark as favorites will show up here";
 "_tutorial_offline_view_"       = "Files copied here will be available offline.\n\nThey will be synchronized with your cloud.";
