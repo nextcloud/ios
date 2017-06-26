@@ -1111,7 +1111,7 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
         
-        let result = realm.objects(tableDirectory.self).filter("account = %@ AND AND directoryID = %@", tableAccount!.account, directoryID).first
+        let result = realm.objects(tableDirectory.self).filter("account = %@ AND directoryID = %@", tableAccount!.account, directoryID).first
         
         if result != nil {
             return (result?.serverUrl)!
@@ -1882,7 +1882,7 @@ class NCManageDatabase: NSObject {
         
         return unmanageMetadatas
     }
-     */
+    */
     
     //MARK: -
     //MARK: Table Share
