@@ -121,18 +121,6 @@
     self.navigationController.toolbar.tintColor = NCBrandColor.sharedInstance.brand;
 }
 
-// MARK: - alertView
-
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
-{
-    if (buttonIndex == 1) {
-        NSString *nome = [alertView textFieldAtIndex:0].text;
-        if ([nome length]) {
-            nome = [NSString stringWithFormat:@"%@/%@", _serverUrl, [CCUtility removeForbiddenCharactersServer:nome]];
-        }
-    }
-}
-
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ==== DZNEmptyDataSetSource ====
 #pragma --------------------------------------------------------------------------------------------
@@ -192,6 +180,7 @@
     
     [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
         //textField.placeholder = NSLocalizedString(@"LoginPlaceholder", @"Login");
+        textField.autocapitalizationType = UITextAutocapitalizationTypeWords;
     }];
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_save_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
