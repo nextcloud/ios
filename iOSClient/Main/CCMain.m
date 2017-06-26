@@ -129,7 +129,6 @@
     _selectedFileIDsMetadatas = [NSMutableDictionary new];
     _statusSwipeCell = [NSMutableDictionary new];
     _queueSelector = [NSMutableArray new];
-    _sectionDataSource = [CCSectionDataSourceMetadata new];
     _isViewDidLoad = YES;
     _fatherPermission = @"";
     _searchController = [[UISearchController alloc] initWithSearchResultsController:nil];
@@ -358,14 +357,14 @@
             app.sharesUserAndGroup = results[1];
         }
         
-        // Setting Theming
-        [app settingThemingColorBrand];
-        
         // Load Datasource
         [self reloadDatasource:_serverUrl];
 
         // Read (File) Folder
         [self readFileReloadFolder];
+        
+        // Setting Theming
+        [app settingThemingColorBrand];
         
         // Load photo datasorce
         if (app.activePhotos)
