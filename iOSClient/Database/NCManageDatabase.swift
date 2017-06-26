@@ -894,7 +894,7 @@ class NCManageDatabase: NSObject {
         do {
             try realm.write {
             
-                let result = realm.objects(tableDirectory.self).filter("serverUrl = %@", serverUrl).first
+                let result = realm.objects(tableDirectory.self).filter("account = %@ AND serverUrl = %@", tableAccount!.account, serverUrl).first
             
                 if result == nil || (result?.isInvalidated)! {
                 

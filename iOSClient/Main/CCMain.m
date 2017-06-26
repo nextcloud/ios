@@ -333,15 +333,13 @@
         // Crypto Mode
         if ([[CCUtility getKeyChainPasscodeForUUID:[CCUtility getUUID]] length] == 0) {
            
-            app.isCryptoCloudMode = NO;
+            appDelegate.isCryptoCloudMode = NO;
             
         } else {
          
-            app.isCryptoCloudMode = YES;
+            appDelegate.isCryptoCloudMode = YES;
         }
         _isFolderEncrypted = NO;
-
-        
         
         // setting Networking
         [[CCNetworking sharedNetworking] settingDelegate:self];
