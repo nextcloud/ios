@@ -600,8 +600,8 @@
 		F7C525A21E3B6DA800FFE02C /* CCNotification.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7C525A11E3B6DA800FFE02C /* CCNotification.storyboard */; };
 		F7C742D81E7BD5C900D9C973 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7C742D71E7BD5C900D9C973 /* MainInterface.storyboard */; };
 		F7D2677C1E157053005ACB7E /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7F67BB81A24D27800EE80DA /* Images.xcassets */; };
-		F7DC5FD81F00F98B00A903C7 /* MGSwipeButton.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DC5FD51F00F98B00A903C7 /* MGSwipeButton.m */; };
-		F7DC5FDB1F00F98B00A903C7 /* MGSwipeTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DC5FD71F00F98B00A903C7 /* MGSwipeTableCell.m */; };
+		F7DC5FEC1F011EB700A903C7 /* MGSwipeButton.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DC5FE91F011EB700A903C7 /* MGSwipeButton.m */; };
+		F7DC5FED1F011EB700A903C7 /* MGSwipeTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DC5FEB1F011EB700A903C7 /* MGSwipeTableCell.m */; };
 		F7DFE2521EBDC3A400CF5202 /* Realm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7DFE24F1EBDC3A400CF5202 /* Realm.framework */; };
 		F7DFE2531EBDC3A400CF5202 /* Realm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7DFE24F1EBDC3A400CF5202 /* Realm.framework */; };
 		F7DFE2541EBDC3A400CF5202 /* RealmSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7DFE2501EBDC3A400CF5202 /* RealmSwift.framework */; };
@@ -1692,10 +1692,10 @@
 		F7D0E65E1BC5042E008D989A /* CCDetail.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = CCDetail.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		F7D0E65F1BC5042E008D989A /* CCDetail.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = CCDetail.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		F7D154271E2392A300202FD9 /* Nextcloud-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Nextcloud-Bridging-Header.h"; sourceTree = "<group>"; };
-		F7DC5FD41F00F98B00A903C7 /* MGSwipeButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSwipeButton.h; sourceTree = "<group>"; };
-		F7DC5FD51F00F98B00A903C7 /* MGSwipeButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSwipeButton.m; sourceTree = "<group>"; };
-		F7DC5FD61F00F98B00A903C7 /* MGSwipeTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSwipeTableCell.h; sourceTree = "<group>"; };
-		F7DC5FD71F00F98B00A903C7 /* MGSwipeTableCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSwipeTableCell.m; sourceTree = "<group>"; };
+		F7DC5FE81F011EB700A903C7 /* MGSwipeButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSwipeButton.h; sourceTree = "<group>"; };
+		F7DC5FE91F011EB700A903C7 /* MGSwipeButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSwipeButton.m; sourceTree = "<group>"; };
+		F7DC5FEA1F011EB700A903C7 /* MGSwipeTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSwipeTableCell.h; sourceTree = "<group>"; };
+		F7DC5FEB1F011EB700A903C7 /* MGSwipeTableCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSwipeTableCell.m; sourceTree = "<group>"; };
 		F7DFE24F1EBDC3A400CF5202 /* Realm.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Realm.framework; sourceTree = "<group>"; };
 		F7DFE2501EBDC3A400CF5202 /* RealmSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = RealmSwift.framework; sourceTree = "<group>"; };
 		F7ECBA6C1E239DCD003E6328 /* CCCreateCloud.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CCCreateCloud.swift; sourceTree = "<group>"; };
@@ -3417,10 +3417,10 @@
 		F7DC5FD31F00F98B00A903C7 /* MGSwipeTableCell */ = {
 			isa = PBXGroup;
 			children = (
-				F7DC5FD41F00F98B00A903C7 /* MGSwipeButton.h */,
-				F7DC5FD51F00F98B00A903C7 /* MGSwipeButton.m */,
-				F7DC5FD61F00F98B00A903C7 /* MGSwipeTableCell.h */,
-				F7DC5FD71F00F98B00A903C7 /* MGSwipeTableCell.m */,
+				F7DC5FE81F011EB700A903C7 /* MGSwipeButton.h */,
+				F7DC5FE91F011EB700A903C7 /* MGSwipeButton.m */,
+				F7DC5FEA1F011EB700A903C7 /* MGSwipeTableCell.h */,
+				F7DC5FEB1F011EB700A903C7 /* MGSwipeTableCell.m */,
 			);
 			path = MGSwipeTableCell;
 			sourceTree = "<group>";
@@ -4461,7 +4461,6 @@
 				F7F54D091E5B14C800E19C62 /* MWPhoto.m in Sources */,
 				F7B0C0CD1EE7E7750033AC24 /* CCSynchronize.m in Sources */,
 				F77B0DFF1D118A16002130FE /* OCNetworking.m in Sources */,
-				F7DC5FDB1F00F98B00A903C7 /* MGSwipeTableCell.m in Sources */,
 				F77B0E011D118A16002130FE /* RNCryptor.m in Sources */,
 				F70022DA1EC4C9100080073F /* OCHTTPRequestOperation.m in Sources */,
 				F70022A11EC4C9100080073F /* AFHTTPSessionManager.m in Sources */,
@@ -4481,6 +4480,7 @@
 				F7BAADDD1ED5A87C00B7EAD4 /* TableDirectory+CoreDataProperties.m in Sources */,
 				F70022B01EC4C9100080073F /* AFURLSessionManager.m in Sources */,
 				F7B1FBC71E72E3D1001781FE /* SwiftWebVC.swift in Sources */,
+				F7DC5FEC1F011EB700A903C7 /* MGSwipeButton.m in Sources */,
 				F77B0E111D118A16002130FE /* UIImage+Reflection.m in Sources */,
 				F762CB061EACB66200B38484 /* XLFormTextViewCell.m in Sources */,
 				F762CB881EACB81000B38484 /* REMenuContainerView.m in Sources */,
@@ -4682,7 +4682,6 @@
 				F762CB151EACB66200B38484 /* XLFormRowNavigationAccessoryView.m in Sources */,
 				F7F54D081E5B14C800E19C62 /* MWGridViewController.m in Sources */,
 				F7F06E971DBFACC600099AE9 /* PHAssetCollection+CTAssetsPickerController.m in Sources */,
-				F7DC5FD81F00F98B00A903C7 /* MGSwipeButton.m in Sources */,
 				F7F06E9D1DBFACC600099AE9 /* UIImage+CTAssetsPickerController.m in Sources */,
 				F762CB6C1EACB7D400B38484 /* ReaderDocument.m in Sources */,
 				F762CB721EACB7D400B38484 /* ReaderThumbQueue.m in Sources */,
@@ -4722,6 +4721,7 @@
 				F7659A701DC0B760004860C4 /* PSTGridLayoutSection.m in Sources */,
 				F77B0EC31D118A16002130FE /* UIImage+Enhancing.m in Sources */,
 				F77B0EC61D118A16002130FE /* CCCellMain.m in Sources */,
+				F7DC5FED1F011EB700A903C7 /* MGSwipeTableCell.m in Sources */,
 				F77B0EC71D118A16002130FE /* AESCrypt.m in Sources */,
 				F70022B61EC4C9100080073F /* OCCapabilities.m in Sources */,
 				F769D39A1E9E1506006DBBB4 /* CCLocalStorage.m in Sources */,
