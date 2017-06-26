@@ -1132,12 +1132,17 @@
     
     // se il block code è a zero esci con NON attivare la richiesta password
     if ([[CCUtility getBlockCode] length] == 0) return NO;
+    
     // se non c'è attivo un account esci con NON attivare la richiesta password
     if ([self.activeAccount length] == 0) return NO;
+    
     // se non è attivo il OnlyLockDir esci con NON attivare la richiesta password
     if (serverUrl && _activeUrl) {
+        
         while (![serverUrl isEqualToString:[CCUtility getHomeServerUrlActiveUrl:_activeUrl]]) {
-            tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"serverUrl = %@", serverUrl]];
+            
+            tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", self.activeAccount, serverUrl]];
+            
             if (directory.lock) {
                 isBlockZone = true;
                 break;
@@ -1148,6 +1153,7 @@
             }
         }
     }
+    
     if ([CCUtility getOnlyLockDir] && !isBlockZone) return NO;
     
     return YES;
@@ -1194,7 +1200,9 @@
         NSString *serverUrl = self.activeMain.serverUrl;
         
         while (![serverUrl isEqualToString:[CCUtility getHomeServerUrlActiveUrl:_activeUrl]]) {
-            tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"serverUrl = %@", serverUrl]];
+            
+            tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", self.activeAccount, serverUrl]];
+            
             if (directory.lock) {
                 isBlockZone = true;
                 break;

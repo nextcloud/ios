@@ -776,7 +776,7 @@ extension DocumentPickerViewController: UITableViewDataSource {
             passcode = ""
         }
         
-        let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate:NSPredicate(format: "serverUrl = %@", lockServerUrl!))
+        let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate:NSPredicate(format: "account = %@ AND serverUrl = %@", activeAccount!, lockServerUrl!))
         if tableDirectory != nil {
             if metadata!.directory &&  (tableDirectory?.lock)! && (passcode?.characters.count)! > 0 {
                 cell.StatusImageView.image = UIImage(named: "passcode")
@@ -844,7 +844,7 @@ extension DocumentPickerViewController: UITableViewDataSource {
                 passcode = ""
             }
             
-            let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate:NSPredicate(format: "serverUrl = %@", serverUrlPush!))
+            let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate:NSPredicate(format: "account = %@ AND serverUrl = %@", activeAccount!, serverUrlPush!))
 
             if tableDirectory != nil {
                 

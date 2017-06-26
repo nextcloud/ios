@@ -976,7 +976,7 @@ class NCManageDatabase: NSObject {
         do {
             try realm.write {
             
-                let result = realm.objects(tableDirectory.self).filter("serverUrl = %@", serverUrl).first
+                let result = realm.objects(tableDirectory.self).filter("account = %@ AND serverUrl = %@", tableAccount!.account, serverUrl).first
             
                 if result != nil {
                 
@@ -1009,11 +1009,11 @@ class NCManageDatabase: NSObject {
                 var results : Results<tableDirectory>?
             
                 if serverUrl != nil {
-                    results = realm.objects(tableDirectory.self).filter("serverUrl = %@", serverUrl!)
+                    results = realm.objects(tableDirectory.self).filter("account = %@ AND serverUrl = %@", tableAccount!.account, serverUrl!)
                 }
             
                 if directoryID != nil {
-                    results = realm.objects(tableDirectory.self).filter("directoryID = %@", directoryID!)
+                    results = realm.objects(tableDirectory.self).filter("account = %@ AND directoryID = %@", tableAccount!.account, directoryID!)
                 }
             
                 if results != nil {
@@ -1093,7 +1093,7 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
         
-        let result = realm.objects(tableDirectory.self).filter("serverUrl = %@", serverUrl).first
+        let result = realm.objects(tableDirectory.self).filter("account = %@ AND serverUrl = %@", tableAccount!.account,serverUrl).first
         
         if result != nil {
             return (result?.directoryID)!
@@ -1111,7 +1111,7 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
         
-        let result = realm.objects(tableDirectory.self).filter("directoryID = %@", directoryID).first
+        let result = realm.objects(tableDirectory.self).filter("account = %@ AND AND directoryID = %@", tableAccount!.account, directoryID).first
         
         if result != nil {
             return (result?.serverUrl)!
