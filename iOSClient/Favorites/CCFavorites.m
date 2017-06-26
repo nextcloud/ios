@@ -428,41 +428,6 @@
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
-/*
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== UnZipFile =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)unZipFile:(NSString *)fileID
-{
-    [_hudDeterminate visibleHudTitle:NSLocalizedString(@"_unzip_in_progress_", nil) mode:MBProgressHUDModeDeterminate color:nil];
-    
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        
-        NSString *fileZip = [NSString stringWithFormat:@"%@/%@", app.directoryUser, fileID];
-        
-        [SSZipArchive unzipFileAtPath:fileZip toDestination:[CCUtility getDirectoryLocal] overwrite:YES password:nil progressHandler:^(NSString *entry, unz_file_info zipInfo, long entryNumber, long total) {
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                float progress = (float) entryNumber / (float)total;
-                [_hudDeterminate progress:progress];
-            });
-            
-        } completionHandler:^(NSString *path, BOOL succeeded, NSError *error) {
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                
-                [_hudDeterminate hideHud];
-                
-                if (succeeded) [app messageNotification:@"_info_" description:@"_file_unpacked_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess errorCode:0];
-                else [app messageNotification:@"_error_" description:[NSString stringWithFormat:@"Error %ld", (long)error.code] visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
-            });
-            
-        }];
-    });
-}
-*/
-
 - (void)requestMoreMetadata:(tableMetadata *)metadata indexPath:(NSIndexPath *)indexPath
 {
     UIImage *iconHeader;

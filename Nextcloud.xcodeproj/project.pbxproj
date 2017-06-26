@@ -369,7 +369,6 @@
 		F77B0E011D118A16002130FE /* RNCryptor.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F05351C889184008DAB36 /* RNCryptor.m */; };
 		F77B0E031D118A16002130FE /* CCShareInfoCMOC.m in Sources */ = {isa = PBXBuildFile; fileRef = F743B2C41C95BBE8006F5B4A /* CCShareInfoCMOC.m */; };
 		F77B0E041D118A16002130FE /* UIImage+animatedGIF.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F05581C889184008DAB36 /* UIImage+animatedGIF.m */; };
-		F77B0E071D118A16002130FE /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = F70F0F951C889487008DAB36 /* ioapi.c */; };
 		F77B0E111D118A16002130FE /* UIImage+Reflection.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04C81C889184008DAB36 /* UIImage+Reflection.m */; };
 		F77B0E121D118A16002130FE /* CCPatenteGuida.m in Sources */ = {isa = PBXBuildFile; fileRef = F721372E1BAFF0920012B613 /* CCPatenteGuida.m */; };
 		F77B0E131D118A16002130FE /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A582D61A24DAB500E903D7 /* AppDelegate.m */; };
@@ -398,10 +397,8 @@
 		F77B0E4F1D118A16002130FE /* CCManageAutoUpload.m in Sources */ = {isa = PBXBuildFile; fileRef = F7ACE42F1BAC0268006C0017 /* CCManageAutoUpload.m */; };
 		F77B0E511D118A16002130FE /* UIImage+Filtering.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04C41C889184008DAB36 /* UIImage+Filtering.m */; };
 		F77B0E541D118A16002130FE /* CCMove.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D02A471C5F9E4400D6F972 /* CCMove.m */; };
-		F77B0E551D118A16002130FE /* SSZipArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0F9E1C889487008DAB36 /* SSZipArchive.m */; };
 		F77B0E5B1D118A16002130FE /* UIImage+Rotating.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04CC1C889184008DAB36 /* UIImage+Rotating.m */; };
 		F77B0E5D1D118A16002130FE /* UIImage+Blurring.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04C01C889184008DAB36 /* UIImage+Blurring.m */; };
-		F77B0E5E1D118A16002130FE /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = F70F0F991C889487008DAB36 /* unzip.c */; };
 		F77B0E5F1D118A16002130FE /* CCSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = F7ACE4311BAC0268006C0017 /* CCSettings.m */; };
 		F77B0E631D118A16002130FE /* CCShareOC.m in Sources */ = {isa = PBXBuildFile; fileRef = F768EAFC1BFB7CD800B6E341 /* CCShareOC.m */; };
 		F77B0E661D118A16002130FE /* NSString+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02B11C889183008DAB36 /* NSString+Base64.m */; };
@@ -421,9 +418,7 @@
 		F77B0E991D118A16002130FE /* PPCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F051F1C889184008DAB36 /* PPCollectionViewCell.m */; };
 		F77B0E9B1D118A16002130FE /* CCBKPasscode.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FE125D1BAC03FB0041924B /* CCBKPasscode.m */; };
 		F77B0E9D1D118A16002130FE /* HRColorPickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0DE81C889300008DAB36 /* HRColorPickerView.m */; };
-		F77B0E9F1D118A16002130FE /* mztools.c in Sources */ = {isa = PBXBuildFile; fileRef = F70F0F971C889487008DAB36 /* mztools.c */; };
 		F77B0EA61D118A16002130FE /* NSString+TruncateToWidth.m in Sources */ = {isa = PBXBuildFile; fileRef = F73049B91CB567F000C7C320 /* NSString+TruncateToWidth.m */; };
-		F77B0EAA1D118A16002130FE /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = F70F0F9B1C889487008DAB36 /* zip.c */; };
 		F77B0EAB1D118A16002130FE /* HRColorPickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F0DEA1C889300008DAB36 /* HRColorPickerViewController.m */; };
 		F77B0EAD1D118A16002130FE /* CCGlobal.m in Sources */ = {isa = PBXBuildFile; fileRef = F7C8C1911B482CEA0048180E /* CCGlobal.m */; };
 		F77B0EB61D118A16002130FE /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04841C889183008DAB36 /* MBProgressHUD.m */; };
@@ -1041,17 +1036,6 @@
 		F70F0DF11C889300008DAB36 /* ZSSRichTextEditor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZSSRichTextEditor.m; sourceTree = "<group>"; };
 		F70F0DF21C889300008DAB36 /* ZSSTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZSSTextView.h; sourceTree = "<group>"; };
 		F70F0DF31C889300008DAB36 /* ZSSTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZSSTextView.m; sourceTree = "<group>"; };
-		F70F0F941C889487008DAB36 /* crypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = crypt.h; sourceTree = "<group>"; };
-		F70F0F951C889487008DAB36 /* ioapi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ioapi.c; sourceTree = "<group>"; };
-		F70F0F961C889487008DAB36 /* ioapi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ioapi.h; sourceTree = "<group>"; };
-		F70F0F971C889487008DAB36 /* mztools.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mztools.c; sourceTree = "<group>"; };
-		F70F0F981C889487008DAB36 /* mztools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mztools.h; sourceTree = "<group>"; };
-		F70F0F991C889487008DAB36 /* unzip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = unzip.c; sourceTree = "<group>"; };
-		F70F0F9A1C889487008DAB36 /* unzip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unzip.h; sourceTree = "<group>"; };
-		F70F0F9B1C889487008DAB36 /* zip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zip.c; sourceTree = "<group>"; };
-		F70F0F9C1C889487008DAB36 /* zip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zip.h; sourceTree = "<group>"; };
-		F70F0F9D1C889487008DAB36 /* SSZipArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSZipArchive.h; sourceTree = "<group>"; };
-		F70F0F9E1C889487008DAB36 /* SSZipArchive.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSZipArchive.m; sourceTree = "<group>"; };
 		F710E80D1EF95C9C00DC2427 /* CCIntro.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCIntro.h; sourceTree = "<group>"; };
 		F710E80E1EF95C9C00DC2427 /* CCIntro.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCIntro.m; sourceTree = "<group>"; };
 		F710E80F1EF95C9C00DC2427 /* ImagesIntro.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = ImagesIntro.xcassets; sourceTree = "<group>"; };
@@ -2072,7 +2056,6 @@
 				F7DFE24E1EBDC3A400CF5202 /* Realm */,
 				F7659A3A1DC0B760004860C4 /* PSTCollectionView */,
 				F70F05321C889184008DAB36 /* RNCryptor */,
-				F70F0F921C889487008DAB36 /* SSZipArchive */,
 				F75AE3C51E9D12900088BB09 /* SwiftyAvatar */,
 				F73CCE271DC13798007E38D8 /* UICKeyChainStore */,
 				F70F05561C889184008DAB36 /* UIImage+animatedGIF */,
@@ -2335,32 +2318,6 @@
 				F70F0DEC1C889300008DAB36 /* HRColorUtil.m */,
 			);
 			path = "Third Party";
-			sourceTree = "<group>";
-		};
-		F70F0F921C889487008DAB36 /* SSZipArchive */ = {
-			isa = PBXGroup;
-			children = (
-				F70F0F931C889487008DAB36 /* minizip */,
-				F70F0F9D1C889487008DAB36 /* SSZipArchive.h */,
-				F70F0F9E1C889487008DAB36 /* SSZipArchive.m */,
-			);
-			path = SSZipArchive;
-			sourceTree = "<group>";
-		};
-		F70F0F931C889487008DAB36 /* minizip */ = {
-			isa = PBXGroup;
-			children = (
-				F70F0F941C889487008DAB36 /* crypt.h */,
-				F70F0F951C889487008DAB36 /* ioapi.c */,
-				F70F0F961C889487008DAB36 /* ioapi.h */,
-				F70F0F971C889487008DAB36 /* mztools.c */,
-				F70F0F981C889487008DAB36 /* mztools.h */,
-				F70F0F991C889487008DAB36 /* unzip.c */,
-				F70F0F9A1C889487008DAB36 /* unzip.h */,
-				F70F0F9B1C889487008DAB36 /* zip.c */,
-				F70F0F9C1C889487008DAB36 /* zip.h */,
-			);
-			path = minizip;
 			sourceTree = "<group>";
 		};
 		F710E80C1EF95C9C00DC2427 /* Intro */ = {
@@ -4474,7 +4431,6 @@
 				F7659A681DC0B760004860C4 /* PSTCollectionViewUpdateItem.m in Sources */,
 				F70022EC1EC4C9100080073F /* OCXMLSharedParser.m in Sources */,
 				F7F54D061E5B14C800E19C62 /* MWCaptionView.m in Sources */,
-				F77B0E071D118A16002130FE /* ioapi.c in Sources */,
 				F762CB001EACB66200B38484 /* XLFormSegmentedCell.m in Sources */,
 				F732BA061D76CE1500E9878B /* CCNetworking.m in Sources */,
 				F7BAADDD1ED5A87C00B7EAD4 /* TableDirectory+CoreDataProperties.m in Sources */,
@@ -4577,7 +4533,6 @@
 				F77B0E541D118A16002130FE /* CCMove.m in Sources */,
 				F70022E61EC4C9100080073F /* OCXMLServerErrorsParser.m in Sources */,
 				F762CB171EACB66200B38484 /* XLFormRegexValidator.m in Sources */,
-				F77B0E551D118A16002130FE /* SSZipArchive.m in Sources */,
 				F73CC0691E813DFF006E3047 /* BKPasscodeDummyViewController.m in Sources */,
 				F762CB1A1EACB66200B38484 /* XLForm.m in Sources */,
 				F762CB051EACB66200B38484 /* XLFormTextFieldCell.m in Sources */,
@@ -4589,7 +4544,6 @@
 				F7BE6E2F1D2D5C3B00106933 /* CCQuickActions.m in Sources */,
 				F762CB101EACB66200B38484 /* NSPredicate+XLFormAdditions.m in Sources */,
 				F762CBBC1EACB89C00B38484 /* LMMediaPlayerHelper.m in Sources */,
-				F77B0E5E1D118A16002130FE /* unzip.c in Sources */,
 				F762CB791EACB7D400B38484 /* ThumbsViewController.m in Sources */,
 				F7659A291DC0B726004860C4 /* EAIntroView.m in Sources */,
 				F73CC07E1E813DFF006E3047 /* BKTouchIDSwitchView.m in Sources */,
@@ -4649,14 +4603,12 @@
 				F70022AD1EC4C9100080073F /* AFURLResponseSerialization.m in Sources */,
 				F77B0E9B1D118A16002130FE /* CCBKPasscode.m in Sources */,
 				F77B0E9D1D118A16002130FE /* HRColorPickerView.m in Sources */,
-				F77B0E9F1D118A16002130FE /* mztools.c in Sources */,
 				F7F06EC71DBFACC600099AE9 /* CTAssetsPickerNoAssetsView.m in Sources */,
 				F7659A271DC0B726004860C4 /* EAIntroPage.m in Sources */,
 				F7169A1D1EE590930086BD69 /* NCSharesCell.m in Sources */,
 				F77B0EA61D118A16002130FE /* NSString+TruncateToWidth.m in Sources */,
 				F78088EA1DD3A1DB005C5A7C /* cryptocloud.xcdatamodeld in Sources */,
 				F7659A601DC0B760004860C4 /* PSTCollectionViewData.m in Sources */,
-				F77B0EAA1D118A16002130FE /* zip.c in Sources */,
 				F77B0EAB1D118A16002130FE /* HRColorPickerViewController.m in Sources */,
 				F70022C21EC4C9100080073F /* OCNotifications.m in Sources */,
 				F70022BF1EC4C9100080073F /* OCFileDto.m in Sources */,
