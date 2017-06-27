@@ -824,7 +824,6 @@
         
         CFStringRef fileExtension = (__bridge CFStringRef)[metadata.fileNamePrint pathExtension];
         CFStringRef fileUTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, fileExtension, NULL);
-        
         NSString *ext = (__bridge NSString *)fileExtension;
         ext = ext.uppercaseString;
         
@@ -895,7 +894,7 @@
             metadata.typeFile = k_metadataTypeFile_unknown;
             
             // icon uTorrent
-            if ([(__bridge NSString *)fileExtension isEqualToString:@"torrent"]) {
+            if ([ext isEqualToString:@"TORRENT"]) {
                 
                 metadata.iconName = @"utorrent";
                 
@@ -905,6 +904,9 @@
                 else metadata.iconName = @"file";
             }
         }
+        
+        if (fileUTI)
+            CFRelease(fileUTI);
         
     } else {
         // icon directory
