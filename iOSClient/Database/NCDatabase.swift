@@ -204,6 +204,16 @@ class tableMetadata: Object {
     }
 }
 
+class tablePhotoLibrary: Object {
+    
+    dynamic var account = ""
+    dynamic var assetLocalIdentifier = ""
+    
+    override static func primaryKey() -> String {
+        return "assetLocalIdentifier"
+    }
+}
+
 class tableShare: Object {
     
     dynamic var account = ""

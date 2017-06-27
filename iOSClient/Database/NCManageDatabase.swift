@@ -1884,6 +1884,40 @@ class NCManageDatabase: NSObject {
     }
     */
     
+    
+    //MARK: -
+    //MARK: Table Photo Library
+    
+    func addPhotoLibrary(_ photosVideos: [tablePhotoLibrary]) {
+        
+        let realm = try! Realm()
+        
+        do {
+            try realm.write {
+                
+                for tablePhotoLibrary in photosVideos {
+                    realm.add(tablePhotoLibrary, update: true)
+                }
+            }
+        } catch let error {
+            print("Could not write to database: ", error)
+        }
+    }
+    
+    func getPhotoLibrary() -> [tablePhotoLibrary]? {
+        
+        let tableAccount = self.getAccountActive()
+        if tableAccount == nil {
+            return nil
+        }
+        
+        let realm = try! Realm()
+        
+        let results = realm.objects(tablePhotoLibrary.self).filter("account = %@", tableAccount!.account)
+        
+        return Array(results)
+    }
+
     //MARK: -
     //MARK: Table Share
     
