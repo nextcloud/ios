@@ -2421,14 +2421,16 @@
     [_hud visibleHudTitle:[NSString stringWithFormat:NSLocalizedString(@"_move_file_n_", nil), ofFile - numFile + 1, ofFile] mode:MBProgressHUDModeIndeterminate color:nil];
 }
 
+// DELEGATE : Move
 - (void)dismissMove
 {
     [self reloadDatasource];
 
 }
 
+// DELEGATE : Move
 - (void)moveServerUrlTo:(NSString *)serverUrlTo title:(NSString *)title
-{    
+{
     [_queueSelector removeAllObjects];
     
     if ([_selectedFileIDsMetadatas count] > 0) {
@@ -2756,6 +2758,12 @@
     BOOL cryptated = [[dict valueForKey:@"cryptated"] boolValue];
     float progress = [[dict valueForKey:@"progress"] floatValue];
     
+    // CCProgress
+    if (progress == 0)
+        [self.navigationController cancelCCProgress];
+    else
+        [self.navigationController setCCProgressPercentage:progress*100 andTintColor: [NCBrandColor sharedInstance].navigationBarProgress];
+    
     // Check
     if (!fileID)
         return;
@@ -2777,12 +2785,7 @@
         cell.progressView.hidden = NO;
         [cell.progressView setProgress:progress];
     }
-        
-    if (progress == 0)
-        [self.navigationController cancelCCProgress];
-    else
-        [self.navigationController setCCProgressPercentage:progress*100 andTintColor: [NCBrandColor sharedInstance].navigationBarProgress];
-    }
+}
 
 - (void)reloadTaskButton:(id)sender withEvent:(UIEvent *)event
 {
