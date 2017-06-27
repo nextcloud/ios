@@ -100,8 +100,6 @@
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
-		<key>NSExceptionDomains</key>
-		<dict/>
 	</dict>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>The use of GPS is used to detect new photos from camera roll, continued use of GPS running in the background can dramatically decrease battery life.</string>
