@@ -847,11 +847,11 @@
             
             tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
             if (metadata) {
-                [CCExifGeo setExifLocalTableEtag:metadata directoryUser:app.directoryUser activeAccount:app.activeAccount];
+                [[CCExifGeo sharedInstance] setExifLocalTableEtag:metadata directoryUser:app.directoryUser activeAccount:app.activeAccount];
             }
         }
         
-        [CCExifGeo setGeocoderEtag:fileID exifDate:localFile.exifDate latitude:localFile.exifLatitude longitude:localFile.exifLongitude];
+        [[CCExifGeo sharedInstance] setGeocoderEtag:fileID exifDate:localFile.exifDate latitude:localFile.exifLatitude longitude:localFile.exifLongitude];
         
         localFile = [[NCManageDatabase sharedInstance] getTableLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
         

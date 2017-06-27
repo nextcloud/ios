@@ -803,7 +803,7 @@
                 [[NCManageDatabase sharedInstance] addLocalFileWithMetadata:metadata];
             
                 if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image])
-                    [CCExifGeo setExifLocalTableEtag:metadata directoryUser:_directoryUser activeAccount:_activeAccount];
+                    [[CCExifGeo sharedInstance] setExifLocalTableEtag:metadata directoryUser:_directoryUser activeAccount:_activeAccount];
 
                 // Icon
                 [CCGraphics createNewImageFrom:metadata.fileID directoryUser:_directoryUser fileNameTo:metadata.fileID fileNamePrint:metadata.fileNamePrint size:@"m" imageForUpload:NO typeFile:metadata.typeFile writePreview:YES optimizedFileName:[CCUtility getOptimizedPhoto]];
@@ -1391,7 +1391,7 @@
         
         // EXIF
         if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image])
-            [CCExifGeo setExifLocalTableEtag:metadata directoryUser:_directoryUser activeAccount:_activeAccount];
+            [[CCExifGeo sharedInstance] setExifLocalTableEtag:metadata directoryUser:_directoryUser activeAccount:_activeAccount];
         
         // Create ICON
         if (metadata.directory == NO)

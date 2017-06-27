@@ -26,61 +26,91 @@
 
 @implementation CCExifGeo
 
-+ (void)setExifLocalTableEtag:(tableMetadata *)metadata directoryUser:(NSString *)directoryUser activeAccount:(NSString *)activeAccount
++ (CCExifGeo *)sharedInstance {
+    
+    static CCExifGeo *sharedInstance;
+    
+    @synchronized(self)
+    {
+        if (!sharedInstance) {
+            
+            sharedInstance = [CCExifGeo new];
+        }
+        return sharedInstance;
+    }
+}
+
+- (void)setExifLocalTableEtag:(tableMetadata *)metadata directoryUser:(NSString *)directoryUser activeAccount:(NSString *)activeAccount
 {
-    NSString *stringLatitude;
-    NSString *stringLongitude;
+    NSString *dateTime;
+    NSString *latitudeRef;
+    NSString *longitudeRef;
+    NSString *stringLatitude = @"0";
+    NSString *stringLongitude = @"0";
+    
+    double latitude = 0;
+    double longitude = 0;
+    
+    NSDate *date = [NSDate new];
     
     NSURL *url = [NSURL fileURLWithPath:[NSString stringWithFormat:@"%@/%@", directoryUser, metadata.fileID]];
     
     CGImageSourceRef originalSource =  CGImageSourceCreateWithURL((CFURLRef) url, NULL);
+    CFDictionaryRef imageProperties = CGImageSourceCopyPropertiesAtIndex(originalSource, 0, NULL);
     
-    NSDictionary *structExif =(__bridge NSDictionary*) CGImageSourceCopyPropertiesAtIndex(originalSource, 0, NULL);
-    
-    NSDictionary *tiff = [structExif objectForKey:@"{TIFF}"];
-    NSString *dateTime = [tiff objectForKey:@"DateTime"];
-    
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    
-    [dateFormatter setDateFormat:@"yyyy:MM:dd HH:mm:ss"];
-    
-    NSDate *date = [[NSDate alloc] init];
-    date = [dateFormatter dateFromString:dateTime];
-    if (!date) date = metadata.date;
-    
-    NSDictionary *gps = [structExif objectForKey:@"{GPS}"];
-    double latitude = [[gps objectForKey:@"Latitude"] doubleValue];
-    double longitude = [[gps objectForKey:@"Longitude"] doubleValue];
-    
-    NSString *latitudeRef = [gps objectForKey:@"LatitudeRef"];
-    NSString *longitudeRef = [gps objectForKey:@"LongitudeRef"];
+    CFDictionaryRef tiff = CFDictionaryGetValue(imageProperties, kCGImagePropertyTIFFDictionary);
+    CFDictionaryRef gps = CFDictionaryGetValue(imageProperties, kCGImagePropertyGPSDictionary);
 
-    // conversion 4 decimal +N -S
-    // The latitude in degrees. Positive values indicate latitudes north of the equator. Negative values indicate latitudes south of the equator.
-    if ([latitudeRef isEqualToString:@"N"])
-        stringLatitude = [NSString stringWithFormat:@"+%.4f", latitude];
-    else
-        stringLatitude = [NSString stringWithFormat:@"-%.4f", latitude];
-    
-    // conversion 4 decimal +E -W
-    // The longitude in degrees. Measurements are relative to the zero meridian, with positive values extending east of the meridian
-    // and negative values extending west of the meridian.
-    if ([longitudeRef isEqualToString:@"E"])
-        stringLongitude = [NSString stringWithFormat:@"+%.4f", longitude];
-    else
-        stringLongitude = [NSString stringWithFormat:@"-%.4f", longitude];
-
-    if (latitude == 0 || longitude == 0){
+    if (tiff) {
         
-        stringLatitude = @"0";
-        stringLongitude = @"0";
+        dateTime = (NSString *)CFDictionaryGetValue(tiff, kCGImagePropertyTIFFDateTime);
+        
+        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+        [dateFormatter setDateFormat:@"yyyy:MM:dd HH:mm:ss"];
+    
+        date = [dateFormatter dateFromString:dateTime];
+        if (!date) date = metadata.date;
     }
     
+    if (gps) {
+        
+        latitude = [(NSString *)CFDictionaryGetValue(gps, kCGImagePropertyGPSLatitude) doubleValue];
+        longitude = [(NSString *)CFDictionaryGetValue(gps, kCGImagePropertyGPSLongitude) doubleValue];
+        
+        latitudeRef = (NSString *)CFDictionaryGetValue(gps, kCGImagePropertyGPSLatitudeRef);
+        longitudeRef = (NSString *)CFDictionaryGetValue(gps, kCGImagePropertyGPSLongitudeRef);
+        
+        // conversion 4 decimal +N -S
+        // The latitude in degrees. Positive values indicate latitudes north of the equator. Negative values indicate latitudes south of the equator.
+        if ([latitudeRef isEqualToString:@"N"])
+            stringLatitude = [NSString stringWithFormat:@"+%.4f", latitude];
+        else
+            stringLatitude = [NSString stringWithFormat:@"-%.4f", latitude];
+        
+        // conversion 4 decimal +E -W
+        // The longitude in degrees. Measurements are relative to the zero meridian, with positive values extending east of the meridian
+        // and negative values extending west of the meridian.
+        if ([longitudeRef isEqualToString:@"E"])
+            stringLongitude = [NSString stringWithFormat:@"+%.4f", longitude];
+        else
+            stringLongitude = [NSString stringWithFormat:@"-%.4f", longitude];
+        
+        if (latitude == 0 || longitude == 0){
+            
+            stringLatitude = @"0";
+            stringLongitude = @"0";
+        }
+    }
+
     // Wite data EXIF in TableLocalFile
-    [[NCManageDatabase sharedInstance] setLocalFileWithFileID:metadata.fileID date:nil exifDate:date exifLatitude:stringLatitude exifLongitude:stringLongitude fileName:nil fileNamePrint:nil];
+    if (tiff || gps)
+        [[NCManageDatabase sharedInstance] setLocalFileWithFileID:metadata.fileID date:nil exifDate:date exifLatitude:stringLatitude exifLongitude:stringLongitude fileName:nil fileNamePrint:nil];
+    
+    CFRelease(originalSource);
+    CFRelease(imageProperties);
 }
 
-+ (void)setGeocoderEtag:(NSString *)fileID exifDate:(NSDate *)exifDate latitude:(NSString*)latitude longitude:(NSString*)longitude
+- (void)setGeocoderEtag:(NSString *)fileID exifDate:(NSDate *)exifDate latitude:(NSString*)latitude longitude:(NSString*)longitude
 {
     // If exists already geocoder data in TableGPS exit
     if ([[NCManageDatabase sharedInstance] getLocationFromGeoLatitude:latitude longitude:longitude])
