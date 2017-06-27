@@ -1903,7 +1903,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func getPhotoLibrary() -> [tablePhotoLibrary]? {
+    func getPhotoLibrary(image: Bool, video: Bool) -> [tablePhotoLibrary]? {
         
         let tableAccount = self.getAccountActive()
         if tableAccount == nil {
@@ -1912,7 +1912,22 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
         
-        let results = realm.objects(tablePhotoLibrary.self).filter("account = %@", tableAccount!.account)
+        var predicate = NSPredicate()
+        
+        if (image && video) {
+         
+            predicate = NSPredicate(format: "account = %@ AND (mediaType = 0 || mediaType = 1)", tableAccount!.account)
+            
+        } else if (image) {
+            
+            predicate = NSPredicate(format: "account = %@ AND mediaType = 0", tableAccount!.account)
+
+        } else {
+            
+            predicate = NSPredicate(format: "account = %@ AND mediaType = 1", tableAccount!.account)
+        }
+        
+        let results = realm.objects(tablePhotoLibrary.self).filter(predicate)
         
         return Array(results)
     }

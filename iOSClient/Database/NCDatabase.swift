@@ -208,7 +208,8 @@ class tablePhotoLibrary: Object {
     
     dynamic var account = ""
     dynamic var assetLocalIdentifier = ""
-    
+    dynamic var mediaType : Int = 0
+
     override static func primaryKey() -> String {
         return "assetLocalIdentifier"
     }
