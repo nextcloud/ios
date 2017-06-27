@@ -350,17 +350,7 @@
     //[self getCameraRollNewItemsWithDatePhotoTEST:[NSDate distantPast] dateVideo:[NSDate distantPast] account:account];
     
     // Check Asset : NEW or FULL
-    if (assetsFull) {
-        
-        newAssetToUpload = [self getCameraRollNewItemsWithDatePhoto:[NSDate distantPast] dateVideo:[NSDate distantPast] account:account];
-        
-    } else {
-        
-        NSDate *databaseDatePhoto = account.autoUploadDatePhoto;
-        NSDate *databaseDateVideo = account.autoUploadDateVideo;
-        
-        newAssetToUpload = [self getCameraRollNewItemsWithDatePhoto:databaseDatePhoto dateVideo:databaseDateVideo account:account];
-    }
+    newAssetToUpload = [self getCameraRollAssets:account assetsFull:assetsFull];
     
     // News Assets ? if no verify if blocked Table Auto Upload -> Autostart
     if ([newAssetToUpload count] == 0) {
@@ -665,54 +655,7 @@
 #pragma mark ===== get Camera Roll new Asset ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (PHFetchResult *)getCameraRollNewItemsWithDatePhotoOLD:(NSDate *)datePhoto dateVideo:(NSDate *)dateVideo account:(tableAccount *)account
-{
-    @synchronized(self) {
- 
-        if ([PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusAuthorized) {
-            
-            PHFetchResult *result = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeSmartAlbumUserLibrary options:nil];
-                    
-            NSPredicate *predicateImage = [NSCompoundPredicate andPredicateWithSubpredicates:@[[NSPredicate predicateWithFormat:@"mediaType = %i", PHAssetMediaTypeImage], [NSPredicate predicateWithFormat:@"creationDate > %@", datePhoto]]];
-            
-            NSPredicate *predicateVideo = [NSCompoundPredicate andPredicateWithSubpredicates:@[[NSPredicate predicateWithFormat:@"mediaType = %i", PHAssetMediaTypeVideo], [NSPredicate predicateWithFormat:@"creationDate > %@", dateVideo]]];
-                    
-            NSPredicate *predicate;
-            
-            if (account.autoUploadPhoto && account.autoUploadVideo) {
-                
-                predicate = [NSCompoundPredicate orPredicateWithSubpredicates:@[predicateImage, predicateVideo]];
-                
-            } else if (account.autoUploadPhoto) {
-                
-                predicate = predicateImage;
-                
-            } else if (account.autoUploadVideo) {
-                
-                predicate = predicateVideo;
-            }
-                    
-            PHFetchOptions *newInstantUploadAssetsFetchOptions = [PHFetchOptions new];
-            newInstantUploadAssetsFetchOptions.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:YES]];
-            newInstantUploadAssetsFetchOptions.predicate = predicate;
-            
-            PHAssetCollection *collection = result[0];
-            
-            PHFetchResult *newAssetToUpload = [PHAsset fetchAssetsInAssetCollection:collection options:newInstantUploadAssetsFetchOptions];
-            
-            return newAssetToUpload;
-            
-        } else {
-            
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_access_photo_not_enabled_", nil) message:NSLocalizedString(@"_access_photo_not_enabled_msg_", nil) delegate:nil cancelButtonTitle:NSLocalizedString(@"_ok_", nil) otherButtonTitles:nil];
-            [alert show];
-        }
-    }
-    
-    return nil;
-}
-
-- (PHFetchResult *)getCameraRollNewItemsWithDatePhoto:(NSDate *)datePhoto dateVideo:(NSDate *)dateVideo account:(tableAccount *)account
+- (PHFetchResult *)getCameraRollAssets:(tableAccount *)account assetsFull:(BOOL)assetsFull
 {
     @synchronized(self) {
         
@@ -720,38 +663,54 @@
             
             PHFetchResult *result = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeSmartAlbumUserLibrary options:nil];
             
-            NSPredicate *predicateImage = [NSCompoundPredicate andPredicateWithSubpredicates:@[[NSPredicate predicateWithFormat:@"mediaType = %i", PHAssetMediaTypeImage], [NSPredicate predicateWithFormat:@"modificationDate > %@", datePhoto]]];
-            NSPredicate *predicateVideo = [NSCompoundPredicate andPredicateWithSubpredicates:@[[NSPredicate predicateWithFormat:@"mediaType = %i", PHAssetMediaTypeVideo], [NSPredicate predicateWithFormat:@"modificationDate > %@", dateVideo]]];
-            
+            NSPredicate *predicateImage = [NSPredicate predicateWithFormat:@"mediaType = %i", PHAssetMediaTypeImage];
+            NSPredicate *predicateVideo = [NSPredicate predicateWithFormat:@"mediaType = %i", PHAssetMediaTypeVideo];
             NSPredicate *predicate;
+
+            BOOL image = NO;
+            BOOL video = NO;
+            
+            NSMutableArray *newAssets =[NSMutableArray new];
             
             if (account.autoUploadPhoto && account.autoUploadVideo) {
                 
                 predicate = [NSCompoundPredicate orPredicateWithSubpredicates:@[predicateImage, predicateVideo]];
+                image = YES; video = YES;
                 
             } else if (account.autoUploadPhoto) {
                 
                 predicate = predicateImage;
+                image = YES;
                 
             } else if (account.autoUploadVideo) {
                 
                 predicate = predicateVideo;
+                video = YES;
             }
             
-            PHFetchOptions *newInstantUploadAssetsFetchOptions = [PHFetchOptions new];
-            newInstantUploadAssetsFetchOptions.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"modificationDate" ascending:YES]];
-            newInstantUploadAssetsFetchOptions.predicate = predicate;
+            PHFetchOptions *fetchOptions = [PHFetchOptions new];
+            fetchOptions.predicate = predicate;
             
             PHAssetCollection *collection = result[0];
             
-            PHFetchResult *newAssetToUpload = [PHAsset fetchAssetsInAssetCollection:collection options:newInstantUploadAssetsFetchOptions];
-
-#ifdef DEBUG
-            for (PHAsset *asset in newAssetToUpload)
-                NSLog(@"%@ > %@ - %@", asset.modificationDate, datePhoto, asset);
-#endif
+            PHFetchResult *assets = [PHAsset fetchAssetsInAssetCollection:collection options:fetchOptions];
             
-            return newAssetToUpload;
+            if (assetsFull == NO) {
+            
+                NSArray *assetsLocalIdentifier = [[NCManageDatabase sharedInstance] getPhotoLibraryWithImage:image video:video];
+                
+                for (PHAsset *asset in assets) {
+                    
+                    if (![assetsLocalIdentifier containsObject: asset.localIdentifier])
+                        [newAssets addObject:asset];
+                }
+                
+                return (PHFetchResult *)newAssets;
+                
+            } else {
+            
+                return assets;
+            }
             
         } else {
             

@@ -1903,7 +1903,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func getPhotoLibrary(image: Bool, video: Bool) -> [tablePhotoLibrary]? {
+    func getPhotoLibrary(image: Bool, video: Bool) -> [String]? {
         
         let tableAccount = self.getAccountActive()
         if tableAccount == nil {
@@ -1922,14 +1922,22 @@ class NCManageDatabase: NSObject {
             
             predicate = NSPredicate(format: "account = %@ AND mediaType = 0", tableAccount!.account)
 
-        } else {
+        } else if (video) {
             
             predicate = NSPredicate(format: "account = %@ AND mediaType = 1", tableAccount!.account)
         }
         
         let results = realm.objects(tablePhotoLibrary.self).filter(predicate)
         
-        return Array(results)
+        // Get all assetLocalIdentifier
+        var assetsLocalIdentifier = [String]()
+        
+        for table in results {
+            
+            assetsLocalIdentifier.append(table.assetLocalIdentifier)
+        }
+
+        return assetsLocalIdentifier
     }
 
     //MARK: -
