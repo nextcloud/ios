@@ -239,6 +239,9 @@
 {
     [super viewDidAppear:animated];
     
+    // Active Main
+    app.activeMain = self;
+    
     // Test viewDidLoad
     if (_isViewDidLoad) {
         
@@ -248,21 +251,13 @@
         
         if (app.activeAccount.length > 0) {
         
-            tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", app.activeAccount, _serverUrl]];
-        
-            if (app.activeMain != self || [directory.etag length] == 0) {
+            // Load Datasource
+            [self reloadDatasource:_serverUrl];
             
-                // Load Datasource
-                [self reloadDatasource:_serverUrl];
-            
-                // Read (file) Folder
-                [self readFileReloadFolder];
-            }
+            // Read (file) Folder
+            [self readFileReloadFolder];
         }
     }
-    
-    // Active Main
-    app.activeMain = self;
 
     // Title
     [self setTitle];
