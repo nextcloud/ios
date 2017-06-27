@@ -1884,7 +1884,6 @@ class NCManageDatabase: NSObject {
     }
     */
     
-    
     //MARK: -
     //MARK: Table Photo Library
     
@@ -1895,8 +1894,8 @@ class NCManageDatabase: NSObject {
         do {
             try realm.write {
                 
-                for tablePhotoLibrary in photosVideos {
-                    realm.add(tablePhotoLibrary, update: true)
+                for table in photosVideos {
+                    realm.add(table, update: true)
                 }
             }
         } catch let error {
