@@ -162,12 +162,18 @@
 
 - (IBAction)cancel:(UIBarButtonItem *)sender
 {
+    if ([self.delegate respondsToSelector:@selector(dismissMove)])
+        [self.delegate dismissMove];
+    
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (IBAction)move:(UIBarButtonItem *)sender
 {
     [_networkingOperationQueue cancelAllOperations];
+ 
+    if ([self.delegate respondsToSelector:@selector(dismissMove)])
+        [self.delegate dismissMove];
     
     [self.delegate moveServerUrlTo:_serverUrl title:self.passMetadata.fileNamePrint];
         

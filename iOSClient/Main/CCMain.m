@@ -2421,8 +2421,14 @@
     [_hud visibleHudTitle:[NSString stringWithFormat:NSLocalizedString(@"_move_file_n_", nil), ofFile - numFile + 1, ofFile] mode:MBProgressHUDModeIndeterminate color:nil];
 }
 
-- (void)moveServerUrlTo:(NSString *)serverUrlTo title:(NSString *)title
+- (void)dismissMove
 {
+    [self reloadDatasource];
+
+}
+
+- (void)moveServerUrlTo:(NSString *)serverUrlTo title:(NSString *)title
+{    
     [_queueSelector removeAllObjects];
     
     if ([_selectedFileIDsMetadatas count] > 0) {

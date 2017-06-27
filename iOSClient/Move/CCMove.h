@@ -62,4 +62,6 @@
 
 - (void)moveServerUrlTo:(NSString *)serverUrlTo title:(NSString *)title;
 
+@optional - (void)dismissMove;
+
 @end
