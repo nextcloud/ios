@@ -261,14 +261,6 @@
 #pragma mark ==== Table ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (tableMetadata *)setSelfMetadataFromIndexPath:(NSIndexPath *)indexPath
-{
-    NSManagedObject *record = [_dataSource objectAtIndex:indexPath.row];
-    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", [record valueForKey:@"fileID"]]];
-
-    return metadata;
-}
-
 - (void)readFolder:(NSString *)serverUrl
 {
     [self reloadDatasource];

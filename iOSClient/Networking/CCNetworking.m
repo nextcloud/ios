@@ -25,7 +25,6 @@
 
 #import "AppDelegate.h"
 #import "CCCertificate.h"
-#import "TableAccount+CoreDataClass.h"
 #import "NSDate+ISO8601.h"
 #import "NSString+Encode.h"
 #import "NCRequestAsset.h"
@@ -33,7 +32,6 @@
 
 @interface CCNetworking () <NCRequestAssetDelegate>
 {
-    NSManagedObjectContext *_context;
     NSMutableDictionary *_taskData;
     
     NSString *_activeAccount;

@@ -22,8 +22,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "MGSwipeTableCell.h"
 
-@interface CCFavoritesCell : UITableViewCell
+@interface CCFavoritesCell : MGSwipeTableCell
 
 @property(nonatomic, weak) IBOutlet UIImageView *file;
 @property(nonatomic, weak) IBOutlet UIImageView *status;

@@ -5469,7 +5469,7 @@
     [cell.cancelTaskButton addTarget:self action:@selector(cancelTaskButton:withEvent:) forControlEvents:UIControlEventTouchUpInside];
     [cell.stopTaskButton addTarget:self action:@selector(stopTaskButton:withEvent:) forControlEvents:UIControlEventTouchUpInside];
 
-    // MGSwipe
+    // ======== MGSwipe ========
 
     //configure left buttons
     if (metadata.favorite)
