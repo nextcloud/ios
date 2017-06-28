@@ -1633,7 +1633,7 @@
     
     if ([actualVersion isEqualToString:@"2.17.4"]) {
         
-        // Build 23 remove DB
+        // Build 23 All directory Group [crash]
         if (([actualBuild compare:@"23" options:NSNumericSearch] == NSOrderedAscending) || actualBuild == nil) {
             
             [CCUtility setBuild];
