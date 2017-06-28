@@ -453,14 +453,14 @@
 {
     if ([[NCManageDatabase sharedInstance] addAutoUploadWithMetadataNet:metadataNet]) {
         
-        [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionAutoUpload selector:metadataNet.selector note:[NSString stringWithFormat:@"Add Auto Upload, Asset : %@", asset.localIdentifier] type:k_activityTypeInfo verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
+        [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionAutoUpload selector:metadataNet.selector note:@"Add Auto Upload, add new asset" type:k_activityTypeInfo verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
         
     } else {
         
-        [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionAutoUpload selector:metadataNet.selector note:[NSString stringWithFormat:@"Add Auto Upload [File already present in Table autoUpload], Asset Data: %@", asset.localIdentifier] type:k_activityTypeInfo verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
+        [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionAutoUpload selector:metadataNet.selector note:@"Add Auto Upload, asset already present" type:k_activityTypeInfo verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
     }
     
-    // Update Camera Auto Upload data
+    // Add asset in table Photo Library
     if ([metadataNet.selector isEqualToString:selectorUploadAutoUpload])
         [[NCManageDatabase sharedInstance] addPhotoLibrary:@[asset]];
         
