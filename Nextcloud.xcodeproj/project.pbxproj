@@ -231,6 +231,8 @@
 		F75EDFBD1E8C112F00E6F369 /* libsqlite3.0.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = F75EDFBC1E8C112F00E6F369 /* libsqlite3.0.tbd */; };
 		F75EDFBF1E8C116D00E6F369 /* libstdc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = F75EDFBE1E8C116D00E6F369 /* libstdc++.tbd */; };
 		F761831F1F03B6C300D8D483 /* NCRequestAsset.m in Sources */ = {isa = PBXBuildFile; fileRef = F761831E1F03B6C300D8D483 /* NCRequestAsset.m */; };
+		F76183221F03B7BE00D8D483 /* NCRequestAsset.m in Sources */ = {isa = PBXBuildFile; fileRef = F761831E1F03B6C300D8D483 /* NCRequestAsset.m */; };
+		F761832B1F03B7BE00D8D483 /* NCRequestAsset.m in Sources */ = {isa = PBXBuildFile; fileRef = F761831E1F03B6C300D8D483 /* NCRequestAsset.m */; };
 		F762CAF61EACB66200B38484 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F762CAA01EACB66200B38484 /* Info.plist */; };
 		F762CAF71EACB66200B38484 /* XLFormBaseCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F762CAA41EACB66200B38484 /* XLFormBaseCell.m */; };
 		F762CAF81EACB66200B38484 /* XLFormButtonCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F762CAA61EACB66200B38484 /* XLFormButtonCell.m */; };
@@ -4260,6 +4262,7 @@
 				F71459F11D12E3B700CAFEEC /* CCMove.m in Sources */,
 				F70022C31EC4C9100080073F /* OCNotifications.m in Sources */,
 				F71459F31D12E3B700CAFEEC /* UIImage+Resizing.m in Sources */,
+				F76183221F03B7BE00D8D483 /* NCRequestAsset.m in Sources */,
 				F71459F71D12E3B700CAFEEC /* CCGraphics.m in Sources */,
 				F7BAADC91ED5A87C00B7EAD4 /* NCDatabase.swift in Sources */,
 				F70022BD1EC4C9100080073F /* OCExternalSites.m in Sources */,
@@ -4352,6 +4355,7 @@
 				F70022D91EC4C9100080073F /* NSDate+RFC1123.m in Sources */,
 				F73CC06E1E813DFF006E3047 /* BKPasscodeField.m in Sources */,
 				F74344841E127F84001CC831 /* RNCryptorEngine.m in Sources */,
+				F761832B1F03B7BE00D8D483 /* NCRequestAsset.m in Sources */,
 				F74344851E127F86001CC831 /* RNDecryptor.m in Sources */,
 				F74344881E127F9C001CC831 /* UIImage+animatedGIF.m in Sources */,
 				F73CC0771E813DFF006E3047 /* BKPasscodeViewController.m in Sources */,
