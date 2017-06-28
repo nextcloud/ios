@@ -639,12 +639,12 @@
             
             NSMutableArray *newAssets =[NSMutableArray new];
             
-            if (account.autoUploadPhoto && account.autoUploadVideo) {
+            if (account.autoUploadImage && account.autoUploadVideo) {
                 
                 predicate = [NSCompoundPredicate orPredicateWithSubpredicates:@[predicateImage, predicateVideo]];
                 image = YES; video = YES;
                 
-            } else if (account.autoUploadPhoto) {
+            } else if (account.autoUploadImage) {
                 
                 predicate = predicateImage;
                 image = YES;
@@ -710,10 +710,12 @@
         
         tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
 
-        PHFetchResult *assets = [self getCameraRollAssets:account assetsFull:YES];
-        [[NCManageDatabase sharedInstance] addPhotoLibrary:(NSArray *)assets];
-        
-        NSLog(@"Align Photo Library %lu", [assets count]);
+        if (account.autoUpload) {
+            PHFetchResult *assets = [self getCameraRollAssets:account assetsFull:YES];
+            [[NCManageDatabase sharedInstance] addPhotoLibrary:(NSArray *)assets];
+            
+            NSLog(@"Align Photo Library %lu", [assets count]);
+        }
     });
 }
 

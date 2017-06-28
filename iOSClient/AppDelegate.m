@@ -1607,6 +1607,9 @@
         for (TableAccount *account in listAccount)
             [[NCManageDatabase sharedInstance] addTableAccountFromCoredata:account];
         
+        // Align Photo Library
+        [[NCAutoUpload sharedInstance] alignPhotoLibrary];
+        
         // Most important is done
         [CCUtility setVersionCryptoCloud];
 

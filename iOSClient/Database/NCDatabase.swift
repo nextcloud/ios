@@ -34,7 +34,7 @@ class tableAccount: Object {
     dynamic var autoUploadFileName = ""
     dynamic var autoUploadDirectory = ""
     dynamic var autoUploadFull: Bool = false
-    dynamic var autoUploadPhoto: Bool = false
+    dynamic var autoUploadImage: Bool = false
     dynamic var autoUploadVideo: Bool = false
     dynamic var autoUploadWWAnPhoto: Bool = false
     dynamic var autoUploadWWAnVideo: Bool = false

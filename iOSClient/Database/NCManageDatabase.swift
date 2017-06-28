@@ -133,7 +133,7 @@ class NCManageDatabase: NSObject {
         if NCBrandOptions.sharedInstance.use_default_auto_upload {
                 
             addAccount.autoUpload = true
-            addAccount.autoUploadPhoto = true
+            addAccount.autoUploadImage = true
             addAccount.autoUploadVideo = true
 
             addAccount.autoUploadWWAnVideo = true
@@ -318,8 +318,8 @@ class NCManageDatabase: NSObject {
                 result?.autoUploadCreateSubfolder = state
             case "autoUploadFull":
                 result?.autoUploadFull = state
-            case "autoUploadPhoto":
-                result?.autoUploadPhoto = state
+            case "autoUploadImage":
+                result?.autoUploadImage = state
             case "autoUploadVideo":
                 result?.autoUploadVideo = state
             case "autoUploadWWAnPhoto":
@@ -2280,7 +2280,7 @@ class NCManageDatabase: NSObject {
                 addAccount.autoUploadFull = true
             }
             if table.cameraUploadPhoto == 1 {
-                addAccount.autoUploadPhoto = true
+                addAccount.autoUploadImage = true
             }
             if table.cameraUploadVideo == 1 {
                 addAccount.autoUploadVideo = true
