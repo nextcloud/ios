@@ -701,12 +701,25 @@
             
             if (assetsFull == NO) {
             
-                NSArray *assetsLocalIdentifier = [[NCManageDatabase sharedInstance] getPhotoLibraryWithImage:image video:video];
+                NSArray *idsAsset = [[NCManageDatabase sharedInstance] getPhotoLibraryIdAssetWithImage:image video:video];
                 
-                for (PHAsset *asset in assets)
-                    if (![assetsLocalIdentifier containsObject: asset.localIdentifier])
+                for (PHAsset *asset in assets) {
+                    
+                    NSString *creationDate = @"";
+                    NSString *modificationDate = @"";
+                    NSString *idAsset = @"";
+                    
+                    if (asset.creationDate != nil)
+                        creationDate = [NSString stringWithFormat:@"%@", asset.creationDate];
+                    
+                    if (asset.modificationDate != nil)
+                        modificationDate = [NSString stringWithFormat:@"%@", asset.modificationDate];
+                    
+                    idAsset = [NSString stringWithFormat:@"%@%@%@", asset.localIdentifier, creationDate, modificationDate];
+                    
+                    if (![idsAsset containsObject: idAsset])
                         [newAssets addObject:asset];
-                
+                }
                 return (PHFetchResult *)newAssets;
                 
             } else {

@@ -1884,10 +1884,23 @@ class NCManageDatabase: NSObject {
                     
                     addRecord.account = tableAccount!.account
                     addRecord.assetLocalIdentifier = asset.localIdentifier
-                    addRecord.creationDate = asset.creationDate! as NSDate
-                    addRecord.modificationDate = asset.modificationDate! as NSDate
                     addRecord.mediaType = asset.mediaType.rawValue
                     
+                    var creationDate = ""
+                    var modificationDate = ""
+                    
+                    if asset.creationDate != nil {
+                        addRecord.creationDate = asset.creationDate! as NSDate
+                        creationDate = String(describing: addRecord.creationDate!)
+                    }
+                    
+                    if asset.modificationDate != nil {
+                        addRecord.modificationDate = asset.modificationDate! as NSDate
+                        modificationDate = String(describing: addRecord.modificationDate!)
+                    }
+                    
+                    addRecord.idAsset = "\(asset.localIdentifier)\(creationDate)\(modificationDate)"
+
                     realm.add(addRecord, update: true)
                 }
             }
@@ -1896,7 +1909,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func getPhotoLibrary(image: Bool, video: Bool) -> [String]? {
+    func getPhotoLibraryIdAsset(image: Bool, video: Bool) -> [String]? {
         
         let tableAccount = self.getAccountActive()
         if tableAccount == nil {
@@ -1927,7 +1940,7 @@ class NCManageDatabase: NSObject {
         
         for table in results {
             
-            assetsLocalIdentifier.append(table.assetLocalIdentifier)
+            assetsLocalIdentifier.append(table.idAsset)
         }
 
         return assetsLocalIdentifier

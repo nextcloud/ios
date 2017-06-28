@@ -208,11 +208,12 @@ class tablePhotoLibrary: Object {
     dynamic var account = ""
     dynamic var assetLocalIdentifier = ""
     dynamic var creationDate: NSDate? = nil
+    dynamic var idAsset = ""
     dynamic var modificationDate: NSDate? = nil
     dynamic var mediaType: Int = 0
 
     override static func primaryKey() -> String {
-        return "assetLocalIdentifier"
+        return "idAsset"
     }
 }
 
