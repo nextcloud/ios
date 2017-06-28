@@ -1878,6 +1878,9 @@ class NCManageDatabase: NSObject {
         do {
             try realm.write {
                 
+                var creationDate = ""
+                var modificationDate = ""
+
                 for asset in assets {
                     
                     let addRecord = tablePhotoLibrary()
@@ -1886,17 +1889,18 @@ class NCManageDatabase: NSObject {
                     addRecord.assetLocalIdentifier = asset.localIdentifier
                     addRecord.mediaType = asset.mediaType.rawValue
                     
-                    var creationDate = ""
-                    var modificationDate = ""
-                    
                     if asset.creationDate != nil {
                         addRecord.creationDate = asset.creationDate! as NSDate
                         creationDate = String(describing: addRecord.creationDate!)
+                    } else {
+                        creationDate = ""
                     }
                     
                     if asset.modificationDate != nil {
                         addRecord.modificationDate = asset.modificationDate! as NSDate
                         modificationDate = String(describing: addRecord.modificationDate!)
+                    } else {
+                        modificationDate = ""
                     }
                     
                     addRecord.idAsset = "\(asset.localIdentifier)\(creationDate)\(modificationDate)"
