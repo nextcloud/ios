@@ -708,7 +708,7 @@
             PHFetchResult *assets = [self getCameraRollAssets:account assetsFull:YES];
             [[NCManageDatabase sharedInstance] addPhotoLibrary:(NSArray *)assets];
             
-            NSLog(@"Align Photo Library %lu", [assets count]);
+            NSLog(@"Align Photo Library %lu", (unsigned long)[assets count]);
         }
     });
 }
