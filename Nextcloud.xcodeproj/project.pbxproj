@@ -146,9 +146,6 @@
 		F7169A1E1EE590930086BD69 /* NCSharesCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7169A1B1EE590930086BD69 /* NCSharesCell.xib */; };
 		F720E01F1E48C73E001A4B9E /* CCActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F720E01E1E48C73E001A4B9E /* CCActions.swift */; };
 		F7226EDC1EE4089300EBECB1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7226EDB1EE4089300EBECB1 /* Main.storyboard */; };
-		F723622C1EF3CD000012D1F9 /* NCRequestAsset.m in Sources */ = {isa = PBXBuildFile; fileRef = F723622B1EF3CD000012D1F9 /* NCRequestAsset.m */; };
-		F72362351EF3DCFC0012D1F9 /* NCRequestAsset.m in Sources */ = {isa = PBXBuildFile; fileRef = F723622B1EF3CD000012D1F9 /* NCRequestAsset.m */; };
-		F72362361EF3DCFC0012D1F9 /* NCRequestAsset.m in Sources */ = {isa = PBXBuildFile; fileRef = F723622B1EF3CD000012D1F9 /* NCRequestAsset.m */; };
 		F725437C1E12A44A009BF4C2 /* CCSection.m in Sources */ = {isa = PBXBuildFile; fileRef = F78F6FAF1CC8CCB700F4EA25 /* CCSection.m */; };
 		F72AAECA1E5C60C700BB17E1 /* AHKActionSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = F72AAEC31E5C60C700BB17E1 /* AHKActionSheet.m */; };
 		F72AAECB1E5C60C700BB17E1 /* AHKActionSheetViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F72AAEC51E5C60C700BB17E1 /* AHKActionSheetViewController.m */; };
@@ -233,6 +230,7 @@
 		F75EDFB11E8C106900E6F369 /* Protobuf.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F75EDFAB1E8C106900E6F369 /* Protobuf.framework */; };
 		F75EDFBD1E8C112F00E6F369 /* libsqlite3.0.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = F75EDFBC1E8C112F00E6F369 /* libsqlite3.0.tbd */; };
 		F75EDFBF1E8C116D00E6F369 /* libstdc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = F75EDFBE1E8C116D00E6F369 /* libstdc++.tbd */; };
+		F761831F1F03B6C300D8D483 /* NCRequestAsset.m in Sources */ = {isa = PBXBuildFile; fileRef = F761831E1F03B6C300D8D483 /* NCRequestAsset.m */; };
 		F762CAF61EACB66200B38484 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F762CAA01EACB66200B38484 /* Info.plist */; };
 		F762CAF71EACB66200B38484 /* XLFormBaseCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F762CAA41EACB66200B38484 /* XLFormBaseCell.m */; };
 		F762CAF81EACB66200B38484 /* XLFormButtonCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F762CAA61EACB66200B38484 /* XLFormButtonCell.m */; };
@@ -1128,8 +1126,6 @@
 		F72137301BAFF0920012B613 /* CCTemplates.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCTemplates.m; sourceTree = "<group>"; };
 		F7226EDB1EE4089300EBECB1 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		F7229B491DF71BB300E8C4E7 /* AUTHORS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AUTHORS; sourceTree = SOURCE_ROOT; };
-		F723622A1EF3CD000012D1F9 /* NCRequestAsset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCRequestAsset.h; sourceTree = "<group>"; };
-		F723622B1EF3CD000012D1F9 /* NCRequestAsset.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCRequestAsset.m; sourceTree = "<group>"; };
 		F72651E61ED03F4B002231E0 /* cryptocloud 10.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "cryptocloud 10.xcdatamodel"; sourceTree = "<group>"; };
 		F7296A661C8880ED001A7809 /* CCloadItemData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CCloadItemData.swift; sourceTree = "<group>"; };
 		F72AAEC21E5C60C700BB17E1 /* AHKActionSheet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AHKActionSheet.h; sourceTree = "<group>"; };
@@ -1307,6 +1303,8 @@
 		F75EDFAB1E8C106900E6F369 /* Protobuf.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Protobuf.framework; sourceTree = "<group>"; };
 		F75EDFBC1E8C112F00E6F369 /* libsqlite3.0.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.0.tbd; path = usr/lib/libsqlite3.0.tbd; sourceTree = SDKROOT; };
 		F75EDFBE1E8C116D00E6F369 /* libstdc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libstdc++.tbd"; path = "usr/lib/libstdc++.tbd"; sourceTree = SDKROOT; };
+		F761831D1F03B6C300D8D483 /* NCRequestAsset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCRequestAsset.h; sourceTree = "<group>"; };
+		F761831E1F03B6C300D8D483 /* NCRequestAsset.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCRequestAsset.m; sourceTree = "<group>"; };
 		F762CAA01EACB66200B38484 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F762CAA31EACB66200B38484 /* XLFormBaseCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLFormBaseCell.h; sourceTree = "<group>"; };
 		F762CAA41EACB66200B38484 /* XLFormBaseCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLFormBaseCell.m; sourceTree = "<group>"; };
@@ -3279,6 +3277,8 @@
 			children = (
 				F7BFCCC01B68C21900548E76 /* CCManageLocation.h */,
 				F7BFCCC11B68C21900548E76 /* CCManageLocation.m */,
+				F761831D1F03B6C300D8D483 /* NCRequestAsset.h */,
+				F761831E1F03B6C300D8D483 /* NCRequestAsset.m */,
 				F777F0301C29717F00CE81CB /* PHAsset+Utility.h */,
 				F777F0311C29717F00CE81CB /* PHAsset+Utility.m */,
 			);
@@ -3313,8 +3313,6 @@
 				F73049B91CB567F000C7C320 /* NSString+TruncateToWidth.m */,
 				F78071071EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.h */,
 				F78071081EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m */,
-				F723622A1EF3CD000012D1F9 /* NCRequestAsset.h */,
-				F723622B1EF3CD000012D1F9 /* NCRequestAsset.m */,
 			);
 			path = Utility;
 			sourceTree = "<group>";
@@ -4252,7 +4250,6 @@
 				F71459E91D12E3B700CAFEEC /* UIImage+Enhancing.m in Sources */,
 				F73CCE321DC13798007E38D8 /* UICKeyChainStore.m in Sources */,
 				F70022AE1EC4C9100080073F /* AFURLResponseSerialization.m in Sources */,
-				F72362351EF3DCFC0012D1F9 /* NCRequestAsset.m in Sources */,
 				F70022EA1EC4C9100080073F /* OCXMLShareByLinkParser.m in Sources */,
 				F71459ED1D12E3B700CAFEEC /* UIImage+Masking.m in Sources */,
 				F71459F01D12E3B700CAFEEC /* NSString+Base64.m in Sources */,
@@ -4355,7 +4352,6 @@
 				F70022D91EC4C9100080073F /* NSDate+RFC1123.m in Sources */,
 				F73CC06E1E813DFF006E3047 /* BKPasscodeField.m in Sources */,
 				F74344841E127F84001CC831 /* RNCryptorEngine.m in Sources */,
-				F72362361EF3DCFC0012D1F9 /* NCRequestAsset.m in Sources */,
 				F74344851E127F86001CC831 /* RNDecryptor.m in Sources */,
 				F74344881E127F9C001CC831 /* UIImage+animatedGIF.m in Sources */,
 				F73CC0771E813DFF006E3047 /* BKPasscodeViewController.m in Sources */,
@@ -4658,7 +4654,6 @@
 				F7F06EBF1DBFACC600099AE9 /* CTAssetsPageViewController.m in Sources */,
 				F7F06EA11DBFACC600099AE9 /* CTAssetCollectionViewCell.m in Sources */,
 				F78964AF1EBB576C00403E13 /* JDStatusBarView.m in Sources */,
-				F723622C1EF3CD000012D1F9 /* NCRequestAsset.m in Sources */,
 				F7F54D0D1E5B14C800E19C62 /* MWZoomingScrollView.m in Sources */,
 				F762CB0B1EACB66200B38484 /* XLFormRowDescriptor.m in Sources */,
 				F762CB7A1EACB7D400B38484 /* UIXToolbarView.m in Sources */,
@@ -4678,6 +4673,7 @@
 				F762CB091EACB66200B38484 /* XLFormViewController.m in Sources */,
 				F762CB161EACB66200B38484 /* XLFormTextView.m in Sources */,
 				F7ECBA6D1E239DCD003E6328 /* CCCreateCloud.swift in Sources */,
+				F761831F1F03B6C300D8D483 /* NCRequestAsset.m in Sources */,
 				F70022FE1EC4C9100080073F /* UtilsFramework.m in Sources */,
 				F77B0ECB1D118A16002130FE /* HRBrightnessCursor.m in Sources */,
 				F762CB6E1EACB7D400B38484 /* ReaderMainPagebar.m in Sources */,
