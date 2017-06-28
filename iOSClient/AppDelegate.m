@@ -1633,7 +1633,7 @@
     
     if ([actualVersion isEqualToString:@"2.17.4"]) {
         
-        // Build 23 All directory Group [crash]
+        // Build 23 - remove all directory Group and exit
         if (([actualBuild compare:@"23" options:NSNumericSearch] == NSOrderedAscending) || actualBuild == nil) {
             
             [CCUtility setBuild];
@@ -1646,6 +1646,9 @@
             
             while (file = [enumerator nextObject])
                 [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", dirIniziale, file] error:nil];
+            
+            
+            exit(0);
         }
     }
     
