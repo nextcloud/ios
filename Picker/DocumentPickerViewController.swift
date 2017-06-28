@@ -176,6 +176,8 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
             encryptedButton.tintColor = UIColor.clear
         }
         
+        NotificationCenter.default.addObserver(self, selector: #selector(triggerProgressTask(_:)), name: NSNotification.Name(rawValue: "NotificationProgressTask"), object: nil)
+        
         readFolder()
     }
     
@@ -397,7 +399,10 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
 
     //  MARK: - Download / Upload
     
-    func progressTask(_ fileID: String!, serverUrl: String!, cryptated: Bool, progress: Float) {
+    func triggerProgressTask(_ notification: NSNotification) {
+        
+        let dict = notification.userInfo
+        let progress = dict?["progress"] as! Float
         
         hud.progress(progress)
     }
