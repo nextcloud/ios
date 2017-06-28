@@ -666,16 +666,10 @@
                 
                 for (PHAsset *asset in assets) {
                     
-                    if (asset.creationDate != nil)
-                        creationDate = [NSString stringWithFormat:@"%@", asset.creationDate];
-                    else
-                        creationDate = @"";
+                    (asset.creationDate != nil) ? (creationDate = [NSString stringWithFormat:@"%@", asset.creationDate]) : (creationDate = @"");
+
+                    (asset.modificationDate != nil) ? (modificationDate = [NSString stringWithFormat:@"%@", asset.modificationDate]) : (modificationDate = @"");
                     
-                    if (asset.modificationDate != nil)
-                        modificationDate = [NSString stringWithFormat:@"%@", asset.modificationDate];
-                    else
-                        modificationDate = @"";
-                        
                     idAsset = [NSString stringWithFormat:@"%@%@%@", asset.localIdentifier, creationDate, modificationDate];
                     
                     if (![idsAsset containsObject: idAsset])
