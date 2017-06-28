@@ -288,10 +288,10 @@
 
     if ([rowDescriptor.tag isEqualToString:@"autoUploadPhoto"]) {
         
+        [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUploadPhoto" state:[[rowDescriptor.value valueData] boolValue]];
+
         if ([[rowDescriptor.value valueData] boolValue] == YES)
             [[NCAutoUpload sharedInstance] alignPhotoLibrary];
-        
-        [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUploadPhoto" state:[[rowDescriptor.value valueData] boolValue]];
     }
     
     if ([rowDescriptor.tag isEqualToString:@"autoUploadWWAnPhoto"]) {
@@ -301,10 +301,10 @@
     
     if ([rowDescriptor.tag isEqualToString:@"autoUploadVideo"]) {
     
-        if ([[rowDescriptor.value valueData] boolValue] == YES)
-            [[NCAutoUpload sharedInstance] alignPhotoLibrary];
-            
         [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUploadVideo" state:[[rowDescriptor.value valueData] boolValue]];
+
+        if ([[rowDescriptor.value valueData] boolValue] == YES)
+            [[NCAutoUpload sharedInstance] alignPhotoLibrary];            
     }
     
     if ([rowDescriptor.tag isEqualToString:@"autoUploadWWAnVideo"]) {
