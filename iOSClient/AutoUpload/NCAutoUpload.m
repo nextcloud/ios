@@ -343,14 +343,13 @@
 
 - (void)uploadAssetsNewAndFull:(BOOL)assetsFull
 {
-    PHFetchResult *newAssetToUpload;
     tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
     
     // ONLY FOR TEST
     //[self getCameraRollNewItemsWithDatePhotoTEST:[NSDate distantPast] dateVideo:[NSDate distantPast] account:account];
     
     // Check Asset : NEW or FULL
-    newAssetToUpload = [self getCameraRollAssets:account assetsFull:assetsFull];
+    PHFetchResult *newAssetToUpload = [self getCameraRollAssets:account assetsFull:assetsFull];
     
     // News Assets ? if no verify if blocked Table Auto Upload -> Autostart
     if ([newAssetToUpload count] == 0) {
