@@ -1583,7 +1583,8 @@
     //self.maintenanceMode = YES;
 #endif
     
-    NSString *actualVersion = [CCUtility getVersionCryptoCloud];
+    NSString *actualVersion = [CCUtility getVersion];
+    NSString *actualBuild = [CCUtility getBuild];
     
     /* ---------------------- UPGRADE VERSION ----------------------- */
     
@@ -1596,6 +1597,8 @@
         for (NSString *certificateLocation in listCertificateLocation)
             [[NCManageDatabase sharedInstance] addCertificates:certificateLocation];
     }
+    
+    // VERSION < 2.17.4
     
     if (([actualVersion compare:@"2.17.4" options:NSNumericSearch] == NSOrderedAscending)) {
         
@@ -1611,7 +1614,8 @@
         [[NCAutoUpload sharedInstance] alignPhotoLibrary];
         
         // Most important is done
-        [CCUtility setVersionCryptoCloud];
+        [CCUtility setVersion];
+        [CCUtility setBuild];
 
         // Directories + LocalFile
         NSArray *listDirectories = [CCCoreData migrateDirectories];
@@ -1623,6 +1627,26 @@
             [[NCManageDatabase sharedInstance] addTableLocalFileFromCoredata:localFile];
         
         [self maintenanceMode:NO];
+    }
+    
+    // VERSION == 2.17.4 BUILD < 23
+    
+    if ([actualVersion isEqualToString:@"2.17.4"]) {
+        
+        // Build 23 remove DB
+        if (([actualBuild compare:@"23" options:NSNumericSearch] == NSOrderedAscending) || actualBuild == nil) {
+            
+            [CCUtility setBuild];
+            
+            NSString *file;
+            NSURL *dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:[NCBrandOptions sharedInstance].capabilitiesGroups];
+            NSString *dirIniziale = [[dirGroup URLByAppendingPathComponent:appApplicationSupport] path];
+            
+            NSDirectoryEnumerator *enumerator = [[NSFileManager defaultManager] enumeratorAtPath:dirIniziale];
+            
+            while (file = [enumerator nextObject])
+                [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", dirIniziale, file] error:nil];
+        }
     }
     
     return YES;

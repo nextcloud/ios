@@ -86,7 +86,8 @@
 - (void)inizialize
 {
     //  setting version
-    self.version = [CCUtility setVersionCryptoCloud];
+    self.version = [CCUtility setVersion];
+    self.build = [CCUtility setBuild];
     
     // init home
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil];

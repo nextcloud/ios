@@ -30,6 +30,8 @@
 @interface CCSplit : UISplitViewController <UISplitViewControllerDelegate, CCLoginDelegate, CCIntroDelegate>
 
 @property (nonatomic, strong) NSString *version;
+@property (nonatomic, strong) NSString *build;
+
 @property (nonatomic, strong) CCIntro *intro;
 
 @end

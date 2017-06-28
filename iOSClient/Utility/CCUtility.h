@@ -54,7 +54,8 @@
 
 + (void)setKeyChainPasscodeForUUID:(NSString *)uuid conPasscode:(NSString *)passcode;
 
-+ (NSString *)setVersionCryptoCloud;
++ (NSString *)setVersion;
++ (NSString *)setBuild;
 
 + (void)setBlockCode:(NSString *)blockcode;
 + (void)setSimplyBlockCode:(BOOL)simply;
@@ -94,7 +95,8 @@
 + (NSString *)getUUID;
 + (NSString *)getNameCurrentDevice;
 
-+ (NSString *)getVersionCryptoCloud;
++ (NSString *)getVersion;
++ (NSString *)getBuild;
 
 + (NSString *)getBlockCode;
 + (BOOL)getSimplyBlockCode;

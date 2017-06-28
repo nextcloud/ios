@@ -60,7 +60,7 @@
 
 + (void)adminRemoveIntro
 {
-    NSString *version = [self getVersionCryptoCloud];
+    NSString *version = [self getVersion];
     [UICKeyChainStore setString:nil forKey:version service:k_serviceShareKeyChain];
 }
 
@@ -82,13 +82,22 @@
     [UICKeyChainStore setString:passcode forKey:uuid service:k_serviceShareKeyChain];
 }
 
-+ (NSString *)setVersionCryptoCloud
++ (NSString *)setVersion
 {
     NSString *version = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
     
     [UICKeyChainStore setString:version forKey:@"version" service:k_serviceShareKeyChain];
     
     return version;
+}
+
++ (NSString *)setBuild
+{
+    NSString *build = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"];
+    
+    [UICKeyChainStore setString:build forKey:@"build" service:k_serviceShareKeyChain];
+    
+    return build;
 }
 
 + (void)setBlockCode:(NSString *)blockcode
@@ -231,9 +240,14 @@
     return [[UIDevice currentDevice] name];
 }
 
-+ (NSString *)getVersionCryptoCloud
++ (NSString *)getVersion
 {
     return [UICKeyChainStore stringForKey:@"version" service:k_serviceShareKeyChain];
+}
+
++ (NSString *)getBuild
+{
+    return [UICKeyChainStore stringForKey:@"build" service:k_serviceShareKeyChain];
 }
 
 + (NSString *)getBlockCode
