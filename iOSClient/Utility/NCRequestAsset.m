@@ -32,7 +32,6 @@
 
     PHAsset *asset = result[0];
     PHAssetMediaType assetMediaType = asset.mediaType;
-    NSDate *modificationDate = asset.modificationDate;
     __block NSError *error = nil;
     
     // VIDEO
@@ -65,8 +64,8 @@
                             
                             //OK selectorUploadAutoUpload
                             if ([selector isEqualToString:selectorUploadAutoUpload]) {
-                                if ([self.delegate respondsToSelector:@selector(addDatabaseAutoUpload:modificationDate:assetMediaType:)])
-                                    [self.delegate addDatabaseAutoUpload:metadataNet modificationDate:modificationDate assetMediaType:assetMediaType];
+                                if ([self.delegate respondsToSelector:@selector(addDatabaseAutoUpload:asset:)])
+                                    [self.delegate addDatabaseAutoUpload:metadataNet asset:asset];
                             } else {
                                 if ([self.delegate respondsToSelector:@selector(upload:serverUrl:cryptated:template:onlyPlist:fileNameTemplate:assetLocalIdentifier:session:taskStatus:selector:selectorPost:errorCode:delegate:)])
                                     [self.delegate upload:fileName serverUrl:serverUrl cryptated:cryptated template:NO onlyPlist:NO fileNameTemplate:nil assetLocalIdentifier:assetLocalIdentifier session:session taskStatus:taskStatus selector:selector selectorPost:selectorPost errorCode:errorCode delegate:delegate];
@@ -152,8 +151,8 @@
                     
                     //OK selectorUploadAutoUpload
                     if ([selector isEqualToString:selectorUploadAutoUpload]) {
-                        if ([self.delegate respondsToSelector:@selector(addDatabaseAutoUpload:modificationDate:assetMediaType:)])
-                            [self.delegate addDatabaseAutoUpload:metadataNet modificationDate:modificationDate assetMediaType:assetMediaType];
+                        if ([self.delegate respondsToSelector:@selector(addDatabaseAutoUpload:asset:)])
+                            [self.delegate addDatabaseAutoUpload:metadataNet asset:asset];
                     } else {
                         if ([self.delegate respondsToSelector:@selector(upload:serverUrl:cryptated:template:onlyPlist:fileNameTemplate:assetLocalIdentifier:session:taskStatus:selector:selectorPost:errorCode:delegate:)])
                             [self.delegate upload:fileName serverUrl:serverUrl cryptated:cryptated template:NO onlyPlist:NO fileNameTemplate:nil assetLocalIdentifier:assetLocalIdentifier session:session taskStatus:taskStatus selector:selector selectorPost:selectorPost errorCode:errorCode delegate:delegate];

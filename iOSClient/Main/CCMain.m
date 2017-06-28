@@ -753,21 +753,6 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== UIDocumentInteractionControllerDelegate =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)documentInteractionControllerDidDismissOptionsMenu:(UIDocumentInteractionController *)controller
-{
-    // evitiamo il rimando della eventuale photo e/o video
-    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
-    if (tableAccount.autoUpload) {
-        
-        [[NCManageDatabase sharedInstance] setAccountAutoUploadDateAssetType:PHAssetMediaTypeImage assetDate:[NSDate date]];
-        [[NCManageDatabase sharedInstance] setAccountAutoUploadDateAssetType:PHAssetMediaTypeVideo assetDate:[NSDate date]];
-    }
-}
-
-#pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Create New (OpenModel) =====
 #pragma --------------------------------------------------------------------------------------------
 
@@ -1464,9 +1449,6 @@
         
         if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image]) {
             
-            // evitiamo il rimando photo
-            [[NCManageDatabase sharedInstance] setAccountAutoUploadDateAssetType:PHAssetMediaTypeImage assetDate:[NSDate date]];
-
             UIImage *image = [UIImage imageWithContentsOfFile:file];
             
             if (image)
@@ -1476,10 +1458,7 @@
         }
         
         if ([metadata.typeFile isEqualToString: k_metadataTypeFile_video]) {
-            
-            // we avoid the cross-reference video
-            [[NCManageDatabase sharedInstance] setAccountAutoUploadDateAssetType:PHAssetMediaTypeVideo assetDate:[NSDate date]];
-            
+                        
             [[NSFileManager defaultManager] linkItemAtPath:file toPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileNamePrint] error:nil];
             
             if (UIVideoAtPathIsCompatibleWithSavedPhotosAlbum([NSTemporaryDirectory() stringByAppendingString:metadata.fileNamePrint])) {

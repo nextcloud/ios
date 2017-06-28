@@ -338,27 +338,6 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func setAccountAutoUploadDateAssetType(_ assetMediaType: PHAssetMediaType, assetDate: NSDate?) {
-
-        let realm = try! Realm()
-        
-        do {
-            try realm.write {
-            
-                let result = realm.objects(tableAccount.self).filter("active = true").first
-
-                if (assetMediaType == PHAssetMediaType.image && result != nil) {
-                result?.autoUploadDatePhoto = assetDate
-                }
-                if (assetMediaType == PHAssetMediaType.video && result != nil) {
-                    result?.autoUploadDateVideo = assetDate
-                }
-            }
-        } catch let error {
-            print("Could not write to database: ", error)
-        }
-    }
-    
     func setAccountAutoUploadFileName(_ fileName: String?) {
         
         let realm = try! Realm()
@@ -1887,15 +1866,29 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Photo Library
     
-    func addPhotoLibrary(_ photosVideos: [tablePhotoLibrary]) {
+    func addPhotoLibrary(_ assets: [PHAsset]) {
         
+        let tableAccount = self.getAccountActive()
+        if tableAccount == nil {
+            return
+        }
+
         let realm = try! Realm()
         
         do {
             try realm.write {
                 
-                for table in photosVideos {
-                    realm.add(table, update: true)
+                for asset in assets {
+                    
+                    let addRecord = tablePhotoLibrary()
+                    
+                    addRecord.account = tableAccount!.account
+                    addRecord.assetLocalIdentifier = asset.localIdentifier
+                    addRecord.creationDate = asset.creationDate! as NSDate
+                    addRecord.modificationDate = asset.modificationDate! as NSDate
+                    addRecord.mediaType = asset.mediaType.rawValue
+                    
+                    realm.add(addRecord, update: true)
                 }
             }
         } catch let error {
@@ -1916,15 +1909,15 @@ class NCManageDatabase: NSObject {
         
         if (image && video) {
          
-            predicate = NSPredicate(format: "account = %@ AND (mediaType = 0 || mediaType = 1)", tableAccount!.account)
+            predicate = NSPredicate(format: "account = %@ AND (mediaType = %i || mediaType = %i)", tableAccount!.account, PHAssetMediaType.image.rawValue, PHAssetMediaType.video.rawValue)
             
         } else if (image) {
             
-            predicate = NSPredicate(format: "account = %@ AND mediaType = 0", tableAccount!.account)
+            predicate = NSPredicate(format: "account = %@ AND mediaType = %i", tableAccount!.account, PHAssetMediaType.image.rawValue)
 
         } else if (video) {
             
-            predicate = NSPredicate(format: "account = %@ AND mediaType = 1", tableAccount!.account)
+            predicate = NSPredicate(format: "account = %@ AND mediaType = %i", tableAccount!.account, PHAssetMediaType.video.rawValue)
         }
         
         let results = realm.objects(tablePhotoLibrary.self).filter(predicate)
@@ -2263,12 +2256,6 @@ class NCManageDatabase: NSObject {
             }
             if table.cameraUploadCreateSubfolder == 1 {
                 addAccount.autoUploadCreateSubfolder = true
-            }
-            if table.cameraUploadDatePhoto != nil {
-                addAccount.autoUploadDatePhoto = table.cameraUploadDatePhoto! as NSDate
-            }
-            if table.cameraUploadDateVideo != nil {
-                addAccount.autoUploadDateVideo = table.cameraUploadDateVideo! as NSDate
             }
             if table.cameraUploadFolderName != nil {
                 addAccount.autoUploadFileName = table.cameraUploadFolderName!

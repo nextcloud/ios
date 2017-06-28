@@ -26,31 +26,29 @@ import RealmSwift
 class tableAccount: Object {
 
     dynamic var account = ""
-    dynamic var active : Bool = false
+    dynamic var active: Bool = false
     dynamic var address = ""
-    dynamic var autoUpload : Bool = false
-    dynamic var autoUploadBackground : Bool = false
-    dynamic var autoUploadCreateSubfolder : Bool = false
-    dynamic var autoUploadDatePhoto: NSDate? = nil
-    dynamic var autoUploadDateVideo: NSDate? = nil
+    dynamic var autoUpload: Bool = false
+    dynamic var autoUploadBackground: Bool = false
+    dynamic var autoUploadCreateSubfolder: Bool = false
     dynamic var autoUploadFileName = ""
     dynamic var autoUploadDirectory = ""
-    dynamic var autoUploadFull : Bool = false
-    dynamic var autoUploadPhoto : Bool = false
-    dynamic var autoUploadVideo : Bool = false
-    dynamic var autoUploadWWAnPhoto : Bool = false
-    dynamic var autoUploadWWAnVideo : Bool = false
+    dynamic var autoUploadFull: Bool = false
+    dynamic var autoUploadPhoto: Bool = false
+    dynamic var autoUploadVideo: Bool = false
+    dynamic var autoUploadWWAnPhoto: Bool = false
+    dynamic var autoUploadWWAnVideo: Bool = false
     dynamic var displayName = ""
     dynamic var email = ""
-    dynamic var enabled : Bool = false
+    dynamic var enabled: Bool = false
     dynamic var optimization = NSDate()
     dynamic var password = ""
     dynamic var phone = ""
-    dynamic var quota : Double = 0
-    dynamic var quotaFree : Double = 0
-    dynamic var quotaRelative : Double = 0
-    dynamic var quotaTotal : Double = 0
-    dynamic var quotaUsed : Double = 0
+    dynamic var quota: Double = 0
+    dynamic var quotaFree: Double = 0
+    dynamic var quotaRelative: Double = 0
+    dynamic var quotaTotal: Double = 0
+    dynamic var quotaUsed: Double = 0
     dynamic var twitter = ""
     dynamic var url = ""
     dynamic var user = ""
@@ -64,12 +62,12 @@ class tableActivity: Object {
     dynamic var date = NSDate()
     dynamic var file = ""
     dynamic var fileID = ""
-    dynamic var idActivity : Double = 0
+    dynamic var idActivity: Double = 0
     dynamic var link = ""
     dynamic var note = ""
     dynamic var selector = ""
     dynamic var type = ""
-    dynamic var verbose : Bool = false
+    dynamic var verbose: Bool = false
 }
 
 class tableAutoUpload: Object {
@@ -78,8 +76,8 @@ class tableAutoUpload: Object {
     dynamic var assetLocalIdentifier = ""
     dynamic var date = NSDate()
     dynamic var fileName = ""
-    dynamic var lock : Bool = false
-    dynamic var priority : Int = 0
+    dynamic var lock: Bool = false
+    dynamic var priority: Int = 0
     dynamic var selector = ""
     dynamic var selectorPost = ""
     dynamic var serverUrl = ""
@@ -95,9 +93,9 @@ class tableCapabilities: Object {
     dynamic var themingName = ""
     dynamic var themingSlogan = ""
     dynamic var themingUrl = ""
-    dynamic var versionMajor : Int = 0
-    dynamic var versionMicro : Int = 0
-    dynamic var versionMinor : Int = 0
+    dynamic var versionMajor: Int = 0
+    dynamic var versionMicro: Int = 0
+    dynamic var versionMinor: Int = 0
     dynamic var versionString = ""
 }
 
@@ -114,7 +112,7 @@ class tableDirectory: Object {
     dynamic var etag = ""
     dynamic var favorite: Bool = false
     dynamic var fileID = ""
-    dynamic var lock : Bool = false
+    dynamic var lock: Bool = false
     dynamic var permissions = ""
     dynamic var serverUrl = ""
     
@@ -127,7 +125,7 @@ class tableExternalSites: Object {
     
     dynamic var account = ""
     dynamic var icon = ""
-    dynamic var idExternalSite : Int = 0
+    dynamic var idExternalSite: Int = 0
     dynamic var lang = ""
     dynamic var name = ""
     dynamic var type = ""
@@ -158,7 +156,7 @@ class tableLocalFile: Object {
     dynamic var fileID = ""
     dynamic var fileName = ""
     dynamic var fileNamePrint = ""
-    dynamic var size : Double = 0
+    dynamic var size: Double = 0
     
     override static func primaryKey() -> String {
         return "fileID"
@@ -169,13 +167,13 @@ class tableMetadata: Object {
     
     dynamic var account = ""
     dynamic var assetLocalIdentifier = ""
-    dynamic var cryptated : Bool = false
+    dynamic var cryptated: Bool = false
     dynamic var date = NSDate()
-    dynamic var directory : Bool = false
+    dynamic var directory: Bool = false
     dynamic var directoryID = ""
-    dynamic var errorPasscode : Bool = false
+    dynamic var errorPasscode: Bool = false
     dynamic var etag = ""
-    dynamic var favorite : Bool = false
+    dynamic var favorite: Bool = false
     dynamic var fileID = ""
     dynamic var fileName = ""
     dynamic var fileNameData = ""
@@ -192,7 +190,8 @@ class tableMetadata: Object {
     dynamic var sessionSelectorPost = ""
     dynamic var sessionTaskIdentifier : Int = -1
     dynamic var sessionTaskIdentifierPlist : Int = -1
-    dynamic var size : Double = 0
+    dynamic var size: Double = 0
+    dynamic var status: Double = 0
     dynamic var thumbnailExists : Bool = false
     dynamic var title = ""
     dynamic var type = ""
@@ -208,7 +207,9 @@ class tablePhotoLibrary: Object {
     
     dynamic var account = ""
     dynamic var assetLocalIdentifier = ""
-    dynamic var mediaType : Int = 0
+    dynamic var creationDate: NSDate? = nil
+    dynamic var modificationDate: NSDate? = nil
+    dynamic var mediaType: Int = 0
 
     override static func primaryKey() -> String {
         return "assetLocalIdentifier"

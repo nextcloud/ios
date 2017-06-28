@@ -200,7 +200,7 @@
 {
     [super formRowDescriptorValueHasChanged:rowDescriptor oldValue:oldValue newValue:newValue];
     
-    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
+    tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
     
     if ([rowDescriptor.tag isEqualToString:@"autoUpload"]) {
         
@@ -217,24 +217,17 @@
             [[NCManageDatabase sharedInstance] setAccountAutoUploadDirectory:nil activeUrl:app.activeUrl];
             
             // verifichiamo che almeno uno dei servizi (foto video) siano attivi, in caso contrario attiviamo le foto
-            if (tableAccount.autoUploadPhoto == NO && tableAccount.autoUploadVideo == NO) {
+            if (account.autoUploadPhoto == NO && account.autoUploadVideo == NO) {
                 [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUploadPhoto" state:YES];
                 [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUploadVideo" state:YES];
             }
             
-            // Settings date
-            if (tableAccount.autoUploadPhoto)
-                [[NCManageDatabase sharedInstance] setAccountAutoUploadDateAssetType:PHAssetMediaTypeImage assetDate:[NSDate date]];
-            if (tableAccount.autoUploadVideo)
-                [[NCManageDatabase sharedInstance] setAccountAutoUploadDateAssetType:PHAssetMediaTypeVideo assetDate:[NSDate date]];
+            [[NCAutoUpload sharedInstance] alignPhotoLibrary];
             
         } else {
             
             [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUpload" state:NO];
             [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUploadFull" state:NO];
-            
-            [[NCManageDatabase sharedInstance] setAccountAutoUploadDateAssetType:PHAssetMediaTypeImage assetDate:nil];
-            [[NCManageDatabase sharedInstance] setAccountAutoUploadDateAssetType:PHAssetMediaTypeVideo assetDate:nil];
 
             // remove
             [[NCManageDatabase sharedInstance] clearTable:[tableAutoUpload class] account:app.activeAccount];
@@ -295,17 +288,10 @@
 
     if ([rowDescriptor.tag isEqualToString:@"autoUploadPhoto"]) {
         
-        if ([[rowDescriptor.value valueData] boolValue] == YES) {
-            
-            [[NCManageDatabase sharedInstance] setAccountAutoUploadDateAssetType:PHAssetMediaTypeImage assetDate:[NSDate date]];
-            
-        } else {
-            
-            [[NCManageDatabase sharedInstance] setAccountAutoUploadDateAssetType:PHAssetMediaTypeImage assetDate:nil];
-        }
-                
-        [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUploadPhoto" state:[[rowDescriptor.value valueData] boolValue]];
+        if ([[rowDescriptor.value valueData] boolValue] == YES)
+            [[NCAutoUpload sharedInstance] alignPhotoLibrary];
         
+        [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUploadPhoto" state:[[rowDescriptor.value valueData] boolValue]];
     }
     
     if ([rowDescriptor.tag isEqualToString:@"autoUploadWWAnPhoto"]) {
@@ -315,14 +301,8 @@
     
     if ([rowDescriptor.tag isEqualToString:@"autoUploadVideo"]) {
     
-        if ([[rowDescriptor.value valueData] boolValue] == YES) {
-                
-            [[NCManageDatabase sharedInstance] setAccountAutoUploadDateAssetType:PHAssetMediaTypeVideo assetDate:[NSDate date]];
-
-        } else {
-                
-            [[NCManageDatabase sharedInstance] setAccountAutoUploadDateAssetType:PHAssetMediaTypeVideo assetDate:nil];
-        }
+        if ([[rowDescriptor.value valueData] boolValue] == YES)
+            [[NCAutoUpload sharedInstance] alignPhotoLibrary];
             
         [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUploadVideo" state:[[rowDescriptor.value valueData] boolValue]];
     }

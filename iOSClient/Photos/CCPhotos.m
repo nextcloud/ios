@@ -329,15 +329,6 @@
                 
                 if (completed) {
                     
-                    [dataToShare enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-                        
-                        if ([obj isKindOfClass:[UIImage class]])
-                            [[NCManageDatabase sharedInstance] setAccountAutoUploadDateAssetType:PHAssetMediaTypeImage assetDate:[NSDate date]];
-                        
-                        if ([obj isKindOfClass:[NSURL class]])
-                            [[NCManageDatabase sharedInstance] setAccountAutoUploadDateAssetType:PHAssetMediaTypeVideo assetDate:[NSDate date]];
-                    }];
-                    
                     [self performSelector:@selector(reloadCollection) withObject:nil];
                 }
             }];

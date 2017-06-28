@@ -39,7 +39,7 @@
 
 @protocol NCRequestAssetDelegate <NSObject>
 
-@optional - (void)addDatabaseAutoUpload:(CCMetadataNet *)metadataNet modificationDate:(NSDate *)modificationDate assetMediaType:(PHAssetMediaType)assetMediaType;
+@optional - (void)addDatabaseAutoUpload:(CCMetadataNet *)metadataNet asset:(PHAsset *)asset;
 
 @optional - (void)upload:(NSString *)fileName serverUrl:(NSString *)serverUrl cryptated:(BOOL)cryptated template:(BOOL)template onlyPlist:(BOOL)onlyPlist fileNameTemplate:(NSString *)fileNameTemplate assetLocalIdentifier:(NSString *)assetLocalIdentifier session:(NSString *)session taskStatus:(NSInteger)taskStatus selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorCode:(NSInteger)errorCode delegate:(id)delegate;
 

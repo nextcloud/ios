@@ -333,20 +333,24 @@
 
 - (void)uploadNewAssets
 {
-    [self uploadAssetsNewAndFull:NO];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        [self uploadAssetsNewAndFull:NO];
+    });
 }
 
 - (void)uploadFullAssets
 {
-    [self uploadAssetsNewAndFull:YES];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        [self uploadAssetsNewAndFull:YES];
+    });
 }
 
 - (void)uploadAssetsNewAndFull:(BOOL)assetsFull
 {
-    tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
+     if (!app.activeAccount || app.maintenanceMode)
+         return;
     
-    // ONLY FOR TEST
-    //[self getCameraRollNewItemsWithDatePhotoTEST:[NSDate distantPast] dateVideo:[NSDate distantPast] account:account];
+    tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
     
     // Check Asset : NEW or FULL
     PHFetchResult *newAssetToUpload = [self getCameraRollAssets:account assetsFull:assetsFull];
@@ -354,24 +358,25 @@
     // News Assets ? if no verify if blocked Table Auto Upload -> Autostart
     if ([newAssetToUpload count] == 0) {
         
-        NSLog(@"[LOG] Auto upload, no new asset found for date image %@, date video %@", account.autoUploadDatePhoto, account.autoUploadDateVideo);
+        NSLog(@"[LOG] Auto upload, no new asset found");
         return;
         
     } else {
         
-        NSLog(@"[LOG] Auto upload, new %lu asset found for date image %@, date video %@", (unsigned long)[newAssetToUpload count], account.autoUploadDatePhoto, account.autoUploadDateVideo);
+        NSLog(@"[LOG] Auto upload, new %lu asset found", (unsigned long)[newAssetToUpload count]);
     }
     
-    if (assetsFull) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (assetsFull) {
         
-        if (!_hud)
-            _hud = [[CCHud alloc] initWithView:[[[UIApplication sharedApplication] delegate] window]];
+            if (!_hud)
+                _hud = [[CCHud alloc] initWithView:[[[UIApplication sharedApplication] delegate] window]];
         
-        [_hud visibleHudTitle:NSLocalizedString(@"_create_full_upload_", nil) mode:MBProgressHUDModeIndeterminate color:nil];
-    }
+            [_hud visibleHudTitle:NSLocalizedString(@"_create_full_upload_", nil) mode:MBProgressHUDModeIndeterminate color:nil];
+        }
+    });
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.01 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-        
         if (assetsFull)
             [self performSelectorOnMainThread:@selector(uploadFullAssetsToNetwork:) withObject:newAssetToUpload waitUntilDone:NO];
         else
@@ -481,21 +486,21 @@
     [_hud hideHud];
 }
 
-- (void)addDatabaseAutoUpload:(CCMetadataNet *)metadataNet modificationDate:(NSDate *)modificationDate assetMediaType:(PHAssetMediaType)assetMediaType
+- (void)addDatabaseAutoUpload:(CCMetadataNet *)metadataNet asset:(PHAsset *)asset
 {
     if ([[NCManageDatabase sharedInstance] addAutoUploadWithMetadataNet:metadataNet]) {
         
-        [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionAutoUpload selector:metadataNet.selector note:[NSString stringWithFormat:@"Add Auto Upload, Asset Data: %@", [NSDateFormatter localizedStringFromDate:modificationDate dateStyle:NSDateFormatterMediumStyle timeStyle:NSDateFormatterMediumStyle]] type:k_activityTypeInfo verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
+        [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionAutoUpload selector:metadataNet.selector note:[NSString stringWithFormat:@"Add Auto Upload, Asset : %@", asset.localIdentifier] type:k_activityTypeInfo verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
         
     } else {
         
-        [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionAutoUpload selector:metadataNet.selector note:[NSString stringWithFormat:@"Add Auto Upload [File already present in Table autoUpload], Asset Data: %@", [NSDateFormatter localizedStringFromDate:modificationDate dateStyle:NSDateFormatterMediumStyle timeStyle:NSDateFormatterMediumStyle]] type:k_activityTypeInfo verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
+        [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionAutoUpload selector:metadataNet.selector note:[NSString stringWithFormat:@"Add Auto Upload [File already present in Table autoUpload], Asset Data: %@", asset.localIdentifier] type:k_activityTypeInfo verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
     }
     
     // Update Camera Auto Upload data
     if ([metadataNet.selector isEqualToString:selectorUploadAutoUpload])
-        [[NCManageDatabase sharedInstance] setAccountAutoUploadDateAssetType:assetMediaType assetDate:modificationDate];
-    
+        [[NCManageDatabase sharedInstance] addPhotoLibrary:@[asset]];
+        
     dispatch_async(dispatch_get_main_queue(), ^{
         // Update icon badge number
         [app updateApplicationIconBadgeNumber];
@@ -698,11 +703,9 @@
             
                 NSArray *assetsLocalIdentifier = [[NCManageDatabase sharedInstance] getPhotoLibraryWithImage:image video:video];
                 
-                for (PHAsset *asset in assets) {
-                    
+                for (PHAsset *asset in assets)
                     if (![assetsLocalIdentifier containsObject: asset.localIdentifier])
                         [newAssets addObject:asset];
-                }
                 
                 return (PHFetchResult *)newAssets;
                 
@@ -719,6 +722,21 @@
     }
     
     return nil;
+}
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Align Photo Library ====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)alignPhotoLibrary
+{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        
+        tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
+
+        PHFetchResult *assets = [self getCameraRollAssets:account assetsFull:YES];
+        [[NCManageDatabase sharedInstance] addPhotoLibrary:(NSArray *)assets];
+    });
 }
 
 @end

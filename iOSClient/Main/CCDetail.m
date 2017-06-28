@@ -199,22 +199,6 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== UIDocumentInteractionControllerDelegate =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)documentInteractionControllerDidDismissOptionsMenu:(UIDocumentInteractionController *)controller
-{
-    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
-    
-    // evitiamo il rimando della eventuale photo e/o video        
-    if (tableAccount.autoUpload) {
-        
-        [[NCManageDatabase sharedInstance] setAccountAutoUploadDateAssetType:PHAssetMediaTypeImage assetDate:[NSDate date]];
-        [[NCManageDatabase sharedInstance] setAccountAutoUploadDateAssetType:PHAssetMediaTypeVideo assetDate:[NSDate date]];
-    }
-}
-
-#pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== View File  =====
 #pragma --------------------------------------------------------------------------------------------
 
