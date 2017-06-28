@@ -634,25 +634,19 @@
             NSPredicate *predicateVideo = [NSPredicate predicateWithFormat:@"mediaType = %i", PHAssetMediaTypeVideo];
             NSPredicate *predicate;
 
-            BOOL image = NO;
-            BOOL video = NO;
-            
             NSMutableArray *newAssets =[NSMutableArray new];
             
             if (account.autoUploadImage && account.autoUploadVideo) {
                 
                 predicate = [NSCompoundPredicate orPredicateWithSubpredicates:@[predicateImage, predicateVideo]];
-                image = YES; video = YES;
                 
             } else if (account.autoUploadImage) {
                 
                 predicate = predicateImage;
-                image = YES;
                 
             } else if (account.autoUploadVideo) {
                 
                 predicate = predicateVideo;
-                video = YES;
             }
             
             PHFetchOptions *fetchOptions = [PHFetchOptions new];
@@ -664,7 +658,7 @@
             
             if (assetsFull == NO) {
             
-                NSArray *idsAsset = [[NCManageDatabase sharedInstance] getPhotoLibraryIdAssetWithImage:image video:video];
+                NSArray *idsAsset = [[NCManageDatabase sharedInstance] getPhotoLibraryIdAssetWithImage:account.autoUploadImage video:account.autoUploadVideo];
                 
                 for (PHAsset *asset in assets) {
                     
