@@ -29,8 +29,6 @@
 
 @interface NCAutoUpload ()
 {
-    PHFetchResult *_assetsFetchResult;
-
     CCHud *_hud;
 }
 @end
@@ -52,26 +50,6 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ==== Photo Library Change Observer ====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)photoLibraryDidChange:(PHChange *)changeInfo
-{
-    /*
-     PHFetchResultChangeDetails *collectionChanges = [changeInfo changeDetailsForFetchResult:self.assetsFetchResult];
-     
-     if (collectionChanges) {
-     
-     self.assetsFetchResult = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum | PHAssetCollectionTypeAlbum subtype:PHAssetCollectionSubtypeAny options:nil];
-     
-     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
-     [self uploadNewAssets];
-     });
-     }
-     */
-}
-
-#pragma --------------------------------------------------------------------------------------------
 #pragma mark === initStateAutoUpload ===
 #pragma --------------------------------------------------------------------------------------------
 
@@ -89,8 +67,6 @@
         }
         
     } else {
-                
-        [PHPhotoLibrary.sharedPhotoLibrary unregisterChangeObserver:self];
         
         [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
     }
@@ -104,10 +80,6 @@
 {
     if ([ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusAuthorized) {
         
-        _assetsFetchResult = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum | PHAssetCollectionTypeAlbum subtype:PHAssetCollectionSubtypeAny options:nil];
-        
-        [PHPhotoLibrary.sharedPhotoLibrary registerChangeObserver:self];
-        
         [self performSelectorOnMainThread:@selector(uploadNewAssets) withObject:nil waitUntilDone:NO];
         
     } else {
@@ -116,8 +88,6 @@
 
         if (account.autoUpload == YES)
             [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUpload" state:NO];
-        
-        [PHPhotoLibrary.sharedPhotoLibrary unregisterChangeObserver:self];
         
         [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
         
@@ -130,10 +100,6 @@
 {
     if ([ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusAuthorized) {
         
-        _assetsFetchResult = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum | PHAssetCollectionTypeAlbum subtype:PHAssetCollectionSubtypeAny options:nil];
-        
-        [PHPhotoLibrary.sharedPhotoLibrary registerChangeObserver:self];
-        
         [self performSelectorOnMainThread:@selector(uploadFullAssets) withObject:nil waitUntilDone:NO];
         
     } else {
@@ -142,8 +108,6 @@
 
         if (account.autoUpload == YES)
             [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUpload" state:NO];
-        
-        [PHPhotoLibrary.sharedPhotoLibrary unregisterChangeObserver:self];
         
         [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
         
@@ -322,7 +286,6 @@
                 [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUploadBackground" state:NO];
             
             [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
-            [PHPhotoLibrary.sharedPhotoLibrary unregisterChangeObserver:self];
         }
     }
 }
@@ -749,6 +712,8 @@
 
         PHFetchResult *assets = [self getCameraRollAssets:account assetsFull:YES];
         [[NCManageDatabase sharedInstance] addPhotoLibrary:(NSArray *)assets];
+        
+        NSLog(@"Align Photo Library %lu", [assets count]);
     });
 }
 

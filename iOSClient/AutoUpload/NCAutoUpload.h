@@ -28,7 +28,7 @@
 
 @class tableAccount;
 
-@interface NCAutoUpload : NSObject <PHPhotoLibraryChangeObserver, CCManageLocationDelegate, NCRequestAssetDelegate>
+@interface NCAutoUpload : NSObject <CCManageLocationDelegate, NCRequestAssetDelegate>
 
 + (NCAutoUpload *)sharedInstance;
 

@@ -233,9 +233,6 @@
             [[NCManageDatabase sharedInstance] clearTable:[tableAutoUpload class] account:app.activeAccount];
         }
         
-        // Initialize Auto Upload
-        [[NCAutoUpload sharedInstance] initStateAutoUpload];
-        
         [self reloadForm];
     }
     

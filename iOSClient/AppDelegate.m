@@ -365,9 +365,6 @@
         NSLog(@"[LOG] Listning Favorites");
         [_activeFavorites readListingFavorites];
     });
-    
-    // Initialize Auto upload
-    //[[NSNotificationCenter defaultCenter] postNotificationName:@"initStateAutoUpload" object:@{@"afterDelay": @(2)}];
 }
 
 #pragma --------------------------------------------------------------------------------------------
