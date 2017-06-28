@@ -1647,7 +1647,6 @@
             while (file = [enumerator nextObject])
                 [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", dirIniziale, file] error:nil];
             
-            
             exit(0);
         }
     }
