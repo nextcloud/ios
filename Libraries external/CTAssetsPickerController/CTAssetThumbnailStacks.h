@@ -27,6 +27,8 @@
 #import <UIKit/UIKit.h>
 #import "CTAssetThumbnailView.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface CTAssetThumbnailStacks : UIView
 
 @property (nonatomic, assign) CGSize thumbnailSize;
@@ -37,3 +39,5 @@
 - (void)setHighlighted:(BOOL)highlighted;
 
 @end
+
+NS_ASSUME_NONNULL_END

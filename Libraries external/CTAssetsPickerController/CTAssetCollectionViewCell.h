@@ -28,7 +28,7 @@
 #import <Photos/Photos.h>
 #import "CTAssetThumbnailStacks.h"
 
-
+NS_ASSUME_NONNULL_BEGIN
 
 @interface CTAssetCollectionViewCell : UITableViewCell
 
@@ -52,3 +52,5 @@
 - (void)bind:(nonnull PHAssetCollection *)collection count:(NSUInteger)count;
 
 @end
+
+NS_ASSUME_NONNULL_END

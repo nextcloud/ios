@@ -42,7 +42,7 @@
 
 @interface CTAssetsGridViewController : UICollectionViewController
 
-@property (nonatomic, weak) id<CTAssetsGridViewControllerDelegate> delegate;
+@property (nonatomic, weak, nullable) id<CTAssetsGridViewControllerDelegate> delegate;
 @property (nonatomic, strong, nonnull) PHAssetCollection *assetCollection;
 
 @end
