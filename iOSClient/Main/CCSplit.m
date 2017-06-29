@@ -26,7 +26,7 @@
 #import "CCLogin.h"
 #import "NCBridgeSwift.h"
 
-@interface CCSplit ()
+@interface CCSplit () <CCLoginDelegate, CCLoginDelegateWeb>
 {
     CCLoginWeb *_loginWeb;
     CCLogin *_loginVC;

@@ -27,7 +27,7 @@
 #import "CCCoreData.h"
 
 
-@interface CCManageAccount : XLFormViewController <CCLoginDelegate>
+@interface CCManageAccount : XLFormViewController
 
 - (void)deleteAccount:(NSString *)account;
 

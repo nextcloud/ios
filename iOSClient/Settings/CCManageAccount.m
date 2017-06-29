@@ -28,7 +28,7 @@
 
 #define actionSheetCancellaAccount 1
 
-@interface CCManageAccount ()
+@interface CCManageAccount () <CCLoginDelegate, CCLoginDelegateWeb>
 {
     tableAccount *_tableAccount;
 

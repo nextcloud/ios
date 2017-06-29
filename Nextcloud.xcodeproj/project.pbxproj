@@ -297,19 +297,6 @@
 		F7659A2E1DC0B72F004860C4 /* EARestrictedScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7659A2C1DC0B72F004860C4 /* EARestrictedScrollView.m */; };
 		F7659A371DC0B737004860C4 /* iRate.bundle in Resources */ = {isa = PBXBuildFile; fileRef = F7659A311DC0B737004860C4 /* iRate.bundle */; };
 		F7659A391DC0B737004860C4 /* iRate.m in Sources */ = {isa = PBXBuildFile; fileRef = F7659A331DC0B737004860C4 /* iRate.m */; };
-		F7659A581DC0B760004860C4 /* NSIndexPath+PSTCollectionViewAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = F7659A3C1DC0B760004860C4 /* NSIndexPath+PSTCollectionViewAdditions.m */; };
-		F7659A5A1DC0B760004860C4 /* PSTCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7659A3E1DC0B760004860C4 /* PSTCollectionView.m */; };
-		F7659A5C1DC0B760004860C4 /* PSTCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F7659A401DC0B760004860C4 /* PSTCollectionViewCell.m */; };
-		F7659A5E1DC0B760004860C4 /* PSTCollectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F7659A431DC0B760004860C4 /* PSTCollectionViewController.m */; };
-		F7659A601DC0B760004860C4 /* PSTCollectionViewData.m in Sources */ = {isa = PBXBuildFile; fileRef = F7659A451DC0B760004860C4 /* PSTCollectionViewData.m */; };
-		F7659A621DC0B760004860C4 /* PSTCollectionViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F7659A471DC0B760004860C4 /* PSTCollectionViewFlowLayout.m */; };
-		F7659A641DC0B760004860C4 /* PSTCollectionViewItemKey.m in Sources */ = {isa = PBXBuildFile; fileRef = F7659A491DC0B760004860C4 /* PSTCollectionViewItemKey.m */; };
-		F7659A661DC0B760004860C4 /* PSTCollectionViewLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F7659A4C1DC0B760004860C4 /* PSTCollectionViewLayout.m */; };
-		F7659A681DC0B760004860C4 /* PSTCollectionViewUpdateItem.m in Sources */ = {isa = PBXBuildFile; fileRef = F7659A4E1DC0B760004860C4 /* PSTCollectionViewUpdateItem.m */; };
-		F7659A6A1DC0B760004860C4 /* PSTGridLayoutInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = F7659A501DC0B760004860C4 /* PSTGridLayoutInfo.m */; };
-		F7659A6C1DC0B760004860C4 /* PSTGridLayoutItem.m in Sources */ = {isa = PBXBuildFile; fileRef = F7659A521DC0B760004860C4 /* PSTGridLayoutItem.m */; };
-		F7659A6E1DC0B760004860C4 /* PSTGridLayoutRow.m in Sources */ = {isa = PBXBuildFile; fileRef = F7659A541DC0B760004860C4 /* PSTGridLayoutRow.m */; };
-		F7659A701DC0B760004860C4 /* PSTGridLayoutSection.m in Sources */ = {isa = PBXBuildFile; fileRef = F7659A561DC0B760004860C4 /* PSTGridLayoutSection.m */; };
 		F76607721ED7FF110073CEC2 /* TableDirectory+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADC11ED5A87C00B7EAD4 /* TableDirectory+CoreDataProperties.m */; };
 		F76607731ED7FF120073CEC2 /* TableDirectory+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADC11ED5A87C00B7EAD4 /* TableDirectory+CoreDataProperties.m */; };
 		F76607741ED7FF150073CEC2 /* TableDirectory+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADBF1ED5A87C00B7EAD4 /* TableDirectory+CoreDataClass.m */; };
@@ -1442,34 +1429,6 @@
 		F7659A311DC0B737004860C4 /* iRate.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = iRate.bundle; sourceTree = "<group>"; };
 		F7659A321DC0B737004860C4 /* iRate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iRate.h; sourceTree = "<group>"; };
 		F7659A331DC0B737004860C4 /* iRate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = iRate.m; sourceTree = "<group>"; };
-		F7659A3B1DC0B760004860C4 /* NSIndexPath+PSTCollectionViewAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSIndexPath+PSTCollectionViewAdditions.h"; sourceTree = "<group>"; };
-		F7659A3C1DC0B760004860C4 /* NSIndexPath+PSTCollectionViewAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSIndexPath+PSTCollectionViewAdditions.m"; sourceTree = "<group>"; };
-		F7659A3D1DC0B760004860C4 /* PSTCollectionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSTCollectionView.h; sourceTree = "<group>"; };
-		F7659A3E1DC0B760004860C4 /* PSTCollectionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSTCollectionView.m; sourceTree = "<group>"; };
-		F7659A3F1DC0B760004860C4 /* PSTCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSTCollectionViewCell.h; sourceTree = "<group>"; };
-		F7659A401DC0B760004860C4 /* PSTCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSTCollectionViewCell.m; sourceTree = "<group>"; };
-		F7659A411DC0B760004860C4 /* PSTCollectionViewCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSTCollectionViewCommon.h; sourceTree = "<group>"; };
-		F7659A421DC0B760004860C4 /* PSTCollectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSTCollectionViewController.h; sourceTree = "<group>"; };
-		F7659A431DC0B760004860C4 /* PSTCollectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSTCollectionViewController.m; sourceTree = "<group>"; };
-		F7659A441DC0B760004860C4 /* PSTCollectionViewData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSTCollectionViewData.h; sourceTree = "<group>"; };
-		F7659A451DC0B760004860C4 /* PSTCollectionViewData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSTCollectionViewData.m; sourceTree = "<group>"; };
-		F7659A461DC0B760004860C4 /* PSTCollectionViewFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSTCollectionViewFlowLayout.h; sourceTree = "<group>"; };
-		F7659A471DC0B760004860C4 /* PSTCollectionViewFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSTCollectionViewFlowLayout.m; sourceTree = "<group>"; };
-		F7659A481DC0B760004860C4 /* PSTCollectionViewItemKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSTCollectionViewItemKey.h; sourceTree = "<group>"; };
-		F7659A491DC0B760004860C4 /* PSTCollectionViewItemKey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSTCollectionViewItemKey.m; sourceTree = "<group>"; };
-		F7659A4A1DC0B760004860C4 /* PSTCollectionViewLayout+Internals.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "PSTCollectionViewLayout+Internals.h"; sourceTree = "<group>"; };
-		F7659A4B1DC0B760004860C4 /* PSTCollectionViewLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSTCollectionViewLayout.h; sourceTree = "<group>"; };
-		F7659A4C1DC0B760004860C4 /* PSTCollectionViewLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSTCollectionViewLayout.m; sourceTree = "<group>"; };
-		F7659A4D1DC0B760004860C4 /* PSTCollectionViewUpdateItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSTCollectionViewUpdateItem.h; sourceTree = "<group>"; };
-		F7659A4E1DC0B760004860C4 /* PSTCollectionViewUpdateItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSTCollectionViewUpdateItem.m; sourceTree = "<group>"; };
-		F7659A4F1DC0B760004860C4 /* PSTGridLayoutInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSTGridLayoutInfo.h; sourceTree = "<group>"; };
-		F7659A501DC0B760004860C4 /* PSTGridLayoutInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSTGridLayoutInfo.m; sourceTree = "<group>"; };
-		F7659A511DC0B760004860C4 /* PSTGridLayoutItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSTGridLayoutItem.h; sourceTree = "<group>"; };
-		F7659A521DC0B760004860C4 /* PSTGridLayoutItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSTGridLayoutItem.m; sourceTree = "<group>"; };
-		F7659A531DC0B760004860C4 /* PSTGridLayoutRow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSTGridLayoutRow.h; sourceTree = "<group>"; };
-		F7659A541DC0B760004860C4 /* PSTGridLayoutRow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSTGridLayoutRow.m; sourceTree = "<group>"; };
-		F7659A551DC0B760004860C4 /* PSTGridLayoutSection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSTGridLayoutSection.h; sourceTree = "<group>"; };
-		F7659A561DC0B760004860C4 /* PSTGridLayoutSection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSTGridLayoutSection.m; sourceTree = "<group>"; };
 		F768EAFB1BFB7CD800B6E341 /* CCShareOC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCShareOC.h; sourceTree = "<group>"; };
 		F768EAFC1BFB7CD800B6E341 /* CCShareOC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCShareOC.m; sourceTree = "<group>"; };
 		F768EB021BFB7EA900B6E341 /* CCShare.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = CCShare.storyboard; sourceTree = "<group>"; };
@@ -2067,7 +2026,6 @@
 				F75037421DBFA91A008FB480 /* PureLayout */,
 				F70F05241C889184008DAB36 /* Reachability */,
 				F7DFE24E1EBDC3A400CF5202 /* Realm */,
-				F7659A3A1DC0B760004860C4 /* PSTCollectionView */,
 				F70F05321C889184008DAB36 /* RNCryptor */,
 				F75AE3C51E9D12900088BB09 /* SwiftyAvatar */,
 				F73CCE271DC13798007E38D8 /* UICKeyChainStore */,
@@ -2968,41 +2926,6 @@
 				F7659A331DC0B737004860C4 /* iRate.m */,
 			);
 			path = iRate;
-			sourceTree = "<group>";
-		};
-		F7659A3A1DC0B760004860C4 /* PSTCollectionView */ = {
-			isa = PBXGroup;
-			children = (
-				F7659A3B1DC0B760004860C4 /* NSIndexPath+PSTCollectionViewAdditions.h */,
-				F7659A3C1DC0B760004860C4 /* NSIndexPath+PSTCollectionViewAdditions.m */,
-				F7659A3D1DC0B760004860C4 /* PSTCollectionView.h */,
-				F7659A3E1DC0B760004860C4 /* PSTCollectionView.m */,
-				F7659A3F1DC0B760004860C4 /* PSTCollectionViewCell.h */,
-				F7659A401DC0B760004860C4 /* PSTCollectionViewCell.m */,
-				F7659A411DC0B760004860C4 /* PSTCollectionViewCommon.h */,
-				F7659A421DC0B760004860C4 /* PSTCollectionViewController.h */,
-				F7659A431DC0B760004860C4 /* PSTCollectionViewController.m */,
-				F7659A441DC0B760004860C4 /* PSTCollectionViewData.h */,
-				F7659A451DC0B760004860C4 /* PSTCollectionViewData.m */,
-				F7659A461DC0B760004860C4 /* PSTCollectionViewFlowLayout.h */,
-				F7659A471DC0B760004860C4 /* PSTCollectionViewFlowLayout.m */,
-				F7659A481DC0B760004860C4 /* PSTCollectionViewItemKey.h */,
-				F7659A491DC0B760004860C4 /* PSTCollectionViewItemKey.m */,
-				F7659A4A1DC0B760004860C4 /* PSTCollectionViewLayout+Internals.h */,
-				F7659A4B1DC0B760004860C4 /* PSTCollectionViewLayout.h */,
-				F7659A4C1DC0B760004860C4 /* PSTCollectionViewLayout.m */,
-				F7659A4D1DC0B760004860C4 /* PSTCollectionViewUpdateItem.h */,
-				F7659A4E1DC0B760004860C4 /* PSTCollectionViewUpdateItem.m */,
-				F7659A4F1DC0B760004860C4 /* PSTGridLayoutInfo.h */,
-				F7659A501DC0B760004860C4 /* PSTGridLayoutInfo.m */,
-				F7659A511DC0B760004860C4 /* PSTGridLayoutItem.h */,
-				F7659A521DC0B760004860C4 /* PSTGridLayoutItem.m */,
-				F7659A531DC0B760004860C4 /* PSTGridLayoutRow.h */,
-				F7659A541DC0B760004860C4 /* PSTGridLayoutRow.m */,
-				F7659A551DC0B760004860C4 /* PSTGridLayoutSection.h */,
-				F7659A561DC0B760004860C4 /* PSTGridLayoutSection.m */,
-			);
-			path = PSTCollectionView;
 			sourceTree = "<group>";
 		};
 		F780711E1EDB135100EAFFF6 /* Photos */ = {
@@ -4452,9 +4375,7 @@
 				F73CCE301DC13798007E38D8 /* UICKeyChainStore.m in Sources */,
 				F762CBBF1EACB89C00B38484 /* LMMediaItemStreamingCache.m in Sources */,
 				F7F06ECD1DBFACC600099AE9 /* CTAssetThumbnailStacks.m in Sources */,
-				F7659A581DC0B760004860C4 /* NSIndexPath+PSTCollectionViewAdditions.m in Sources */,
 				F7D4238A1F0596C6009C9782 /* ThumbsMainToolbar.m in Sources */,
-				F7659A681DC0B760004860C4 /* PSTCollectionViewUpdateItem.m in Sources */,
 				F70022EC1EC4C9100080073F /* OCXMLSharedParser.m in Sources */,
 				F7F54D061E5B14C800E19C62 /* MWCaptionView.m in Sources */,
 				F762CB001EACB66200B38484 /* XLFormSegmentedCell.m in Sources */,
@@ -4485,7 +4406,6 @@
 				F77B0E161D118A16002130FE /* AFViewShaker.m in Sources */,
 				F762CB021EACB66200B38484 /* XLFormSliderCell.m in Sources */,
 				F77B0E1B1D118A16002130FE /* CCGraphics.m in Sources */,
-				F7659A6E1DC0B760004860C4 /* PSTGridLayoutRow.m in Sources */,
 				F70022CB1EC4C9100080073F /* OCSharedDto.m in Sources */,
 				F762CB111EACB66200B38484 /* NSString+XLFormAdditions.m in Sources */,
 				F762CB9B1EACB84400B38484 /* TWMessageBarManager.m in Sources */,
@@ -4530,7 +4450,6 @@
 				F77B0E3A1D118A16002130FE /* RNCryptorEngine.m in Sources */,
 				F77B0E3C1D118A16002130FE /* CCCartaIdentita.m in Sources */,
 				F7BAADD41ED5A87C00B7EAD4 /* TableCertificates+CoreDataClass.m in Sources */,
-				F7659A6C1DC0B760004860C4 /* PSTGridLayoutItem.m in Sources */,
 				F762CAFF1EACB66200B38484 /* XLFormPickerCell.m in Sources */,
 				F7A321AD1E9E6AD50069AD1B /* CCAdvanced.m in Sources */,
 				F7F06EA31DBFACC600099AE9 /* CTAssetCollectionViewController.m in Sources */,
@@ -4538,13 +4457,11 @@
 				F77B0E411D118A16002130FE /* CCSplit.m in Sources */,
 				F77B0E481D118A16002130FE /* CCCrypto.m in Sources */,
 				F73CC0781E813DFF006E3047 /* BKShiftingView.m in Sources */,
-				F7659A6A1DC0B760004860C4 /* PSTGridLayoutInfo.m in Sources */,
 				F77B0E491D118A16002130FE /* UIImage+Saving.m in Sources */,
 				F7A3218C1E9E42B30069AD1B /* CCMenuAccount.m in Sources */,
 				F77B0E4C1D118A16002130FE /* CCDetail.m in Sources */,
 				F762CB191EACB66200B38484 /* XLFormValidator.m in Sources */,
 				F762CB0D1EACB66200B38484 /* NSArray+XLFormAdditions.m in Sources */,
-				F7659A5E1DC0B760004860C4 /* PSTCollectionViewController.m in Sources */,
 				F7F801031D98205A007537BC /* CCCertificate.m in Sources */,
 				F77B0E4F1D118A16002130FE /* CCManageAutoUpload.m in Sources */,
 				F77B0E511D118A16002130FE /* UIImage+Filtering.m in Sources */,
@@ -4597,13 +4514,11 @@
 				F7B1FBC91E72E3D1001781FE /* SwiftWebVCActivityChrome.swift in Sources */,
 				F7F06EA51DBFACC600099AE9 /* CTAssetItemViewController.m in Sources */,
 				F762CB8A1EACB81000B38484 /* REMenuItemView.m in Sources */,
-				F7659A5A1DC0B760004860C4 /* PSTCollectionView.m in Sources */,
 				F7BF1B431D51E893000854F6 /* CCLogin.m in Sources */,
 				F77B0E7D1D118A16002130FE /* CYRTextStorage.m in Sources */,
 				F70022FB1EC4C9100080073F /* NSString+Encode.m in Sources */,
 				F77B0E801D118A16002130FE /* ZSSRichTextEditor.m in Sources */,
 				F7F06EC91DBFACC600099AE9 /* CTAssetsViewControllerTransition.m in Sources */,
-				F7659A661DC0B760004860C4 /* PSTCollectionViewLayout.m in Sources */,
 				F75037511DBFA91A008FB480 /* NSLayoutConstraint+PureLayout.m in Sources */,
 				F762CAFA1EACB66200B38484 /* XLFormDateCell.m in Sources */,
 				F77B0E871D118A16002130FE /* NSData+Base64.m in Sources */,
@@ -4615,7 +4530,6 @@
 				F77B0E911D118A16002130FE /* CCTemplates.m in Sources */,
 				F72AAECD1E5C60C700BB17E1 /* UIWindow+AHKAdditions.m in Sources */,
 				F77B0E921D118A16002130FE /* CCCellMainTransfer.m in Sources */,
-				F7659A5C1DC0B760004860C4 /* PSTCollectionViewCell.m in Sources */,
 				F7659A391DC0B737004860C4 /* iRate.m in Sources */,
 				F7B1FBC81E72E3D1001781FE /* SwiftWebVCActivity.swift in Sources */,
 				F77B0E981D118A16002130FE /* CCManageAccount.m in Sources */,
@@ -4632,18 +4546,15 @@
 				F7169A1D1EE590930086BD69 /* NCSharesCell.m in Sources */,
 				F77B0EA61D118A16002130FE /* NSString+TruncateToWidth.m in Sources */,
 				F78088EA1DD3A1DB005C5A7C /* cryptocloud.xcdatamodeld in Sources */,
-				F7659A601DC0B760004860C4 /* PSTCollectionViewData.m in Sources */,
 				F77B0EAB1D118A16002130FE /* HRColorPickerViewController.m in Sources */,
 				F70022C21EC4C9100080073F /* OCNotifications.m in Sources */,
 				F70022BF1EC4C9100080073F /* OCFileDto.m in Sources */,
 				F7A13A041E7F3D5D00016680 /* UINavigationController+CCProgress.m in Sources */,
 				F7F06EB51DBFACC600099AE9 /* CTAssetsGridViewController.m in Sources */,
 				F73C002F1E55D7DF00EEEFA7 /* CCManageCryptoCloudSecurity.m in Sources */,
-				F7659A621DC0B760004860C4 /* PSTCollectionViewFlowLayout.m in Sources */,
 				F7F06EBD1DBFACC600099AE9 /* CTAssetsPageView.m in Sources */,
 				F70022DD1EC4C9100080073F /* OCWebDAVClient.m in Sources */,
 				F77B0EAD1D118A16002130FE /* CCGlobal.m in Sources */,
-				F7659A641DC0B760004860C4 /* PSTCollectionViewItemKey.m in Sources */,
 				F70022BC1EC4C9100080073F /* OCExternalSites.m in Sources */,
 				F73CC07B1E813DFF006E3047 /* BKTouchIDManager.m in Sources */,
 				F762CB031EACB66200B38484 /* XLFormStepCounterCell.m in Sources */,
@@ -4691,7 +4602,6 @@
 				F7F06EAD1DBFACC600099AE9 /* CTAssetSelectionLabel.m in Sources */,
 				F7BAADD11ED5A87C00B7EAD4 /* TableAccount+CoreDataProperties.m in Sources */,
 				F7169A1C1EE590930086BD69 /* NCShares.m in Sources */,
-				F7659A701DC0B760004860C4 /* PSTGridLayoutSection.m in Sources */,
 				F77B0EC31D118A16002130FE /* UIImage+Enhancing.m in Sources */,
 				F77B0EC61D118A16002130FE /* CCCellMain.m in Sources */,
 				F7DC5FED1F011EB700A903C7 /* MGSwipeTableCell.m in Sources */,
