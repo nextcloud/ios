@@ -49,18 +49,18 @@
                 if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileName]])
                     [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileName] error:nil];
                 
-                _exportSession = [[AVAssetExportSession alloc] initWithAsset:playerItem.asset presetName:AVAssetExportPresetHighestQuality];
+                AVAssetExportSession *exportSession = [[AVAssetExportSession alloc] initWithAsset:playerItem.asset presetName:AVAssetExportPresetHighestQuality];
                 
-                if (_exportSession) {
+                if (exportSession) {
                     
-                    _exportSession.outputURL = [NSURL fileURLWithPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileName]];
-                    _exportSession.outputFileType = AVFileTypeQuickTimeMovie;
+                    exportSession.outputURL = [NSURL fileURLWithPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileName]];
+                    exportSession.outputFileType = AVFileTypeQuickTimeMovie;
                     
-                    [_exportSession exportAsynchronouslyWithCompletionHandler:^{
+                    [exportSession exportAsynchronouslyWithCompletionHandler:^{
                         
                         dispatch_semaphore_signal(semaphoreGroup);
                         
-                        if (AVAssetExportSessionStatusCompleted == _exportSession.status) {
+                        if (AVAssetExportSessionStatusCompleted == exportSession.status) {
                             
                             //OK selectorUploadAutoUpload
                             if ([selector isEqualToString:selectorUploadAutoUpload]) {
@@ -71,7 +71,7 @@
                                     [self.delegate upload:fileName serverUrl:serverUrl cryptated:cryptated template:NO onlyPlist:NO fileNameTemplate:nil assetLocalIdentifier:assetLocalIdentifier session:session taskStatus:taskStatus selector:selector selectorPost:selectorPost errorCode:errorCode delegate:delegate];
                             }
                             
-                        } else if (AVAssetExportSessionStatusFailed == _exportSession.status) {
+                        } else if (AVAssetExportSessionStatusFailed == exportSession.status) {
                             
                             // Delete record on Table Auto Upload
                             if ([selector isEqualToString:selectorUploadAutoUpload] || [selector isEqualToString:selectorUploadAutoUploadAll])
@@ -88,7 +88,7 @@
                             });
                             
                         } else {
-                            NSLog(@"Export Session Status: %ld", (long)_exportSession.status);
+                            NSLog(@"Export Session Status: %ld", (long)exportSession.status);
                         }
                     }];
                     
@@ -109,7 +109,7 @@
                             if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
                                 [delegate uploadFileFailure:nil fileID:nil serverUrl:serverUrl selector:selector message:@"_read_file_error_" errorCode:[NSError errorWithDomain:@"it.twsweb.cryptocloud" code:kCFURLErrorFileDoesNotExist userInfo:nil].code];
                     });
-                }
+                }                
             }];
             
             while (dispatch_semaphore_wait(semaphoreGroup, DISPATCH_TIME_NOW))
