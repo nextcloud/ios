@@ -264,7 +264,7 @@
 
 - (BOOL)canExport
 {
-	return NO;
+	return YES;
 }
 
 - (BOOL)canPrint
