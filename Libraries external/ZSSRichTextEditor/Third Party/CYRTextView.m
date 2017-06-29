@@ -235,7 +235,7 @@ static const float kCursorVelocity = 1.0f/8.0f;
     if (gestureRecognizer == _singleFingerPanRecognizer || gestureRecognizer == _doubleFingerPanRecognizer)
     {
         CGPoint translation = [gestureRecognizer translationInView:self];
-        return fabsf(translation.x) > fabsf(translation.y);
+        return fabs(translation.x) > fabs(translation.y);
     }
     
     return YES;
@@ -267,11 +267,11 @@ static const float kCursorVelocity = 1.0f/8.0f;
     
     if (cursorLocation > startRange.location)
     {
-        self.selectedRange = NSMakeRange(startRange.location, fabsf(startRange.location - cursorLocation));
+        self.selectedRange = NSMakeRange(startRange.location, fabs(startRange.location - cursorLocation));
     }
     else
     {
-        self.selectedRange = NSMakeRange(cursorLocation, fabsf(startRange.location - cursorLocation));
+        self.selectedRange = NSMakeRange(cursorLocation, fabs(startRange.location - cursorLocation));
     }
 }
 
