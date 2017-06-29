@@ -667,7 +667,6 @@
                 for (PHAsset *asset in assets) {
                     
                     (asset.creationDate != nil) ? (creationDate = [NSString stringWithFormat:@"%@", asset.creationDate]) : (creationDate = @"");
-
                     (asset.modificationDate != nil) ? (modificationDate = [NSString stringWithFormat:@"%@", asset.modificationDate]) : (modificationDate = @"");
                     
                     idAsset = [NSString stringWithFormat:@"%@%@%@", asset.localIdentifier, creationDate, modificationDate];

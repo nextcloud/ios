@@ -1939,15 +1939,9 @@ class NCManageDatabase: NSObject {
         
         let results = realm.objects(tablePhotoLibrary.self).filter(predicate)
         
-        // Get all assetLocalIdentifier
-        var assetsLocalIdentifier = [String]()
+        let idsAsset = results.map { $0.idAsset }
         
-        for table in results {
-            
-            assetsLocalIdentifier.append(table.idAsset)
-        }
-
-        return assetsLocalIdentifier
+        return Array(idsAsset)
     }
 
     //MARK: -
