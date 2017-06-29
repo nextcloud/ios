@@ -420,9 +420,7 @@
     NSDate *todayDate = [NSDate date];
     double ti = [convertedDate timeIntervalSinceDate:todayDate];
     ti = ti * -1;
-    if(ti < 1) {
-        return NSLocalizedString(@"_never_", nil);
-    } else 	if (ti < 60) {
+    if (ti < 60) {
         return NSLocalizedString(@"_less_a_minute_", nil);
     } else if (ti < 3600) {
         int diff = round(ti / 60);
