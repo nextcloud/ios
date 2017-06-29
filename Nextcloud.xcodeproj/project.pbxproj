@@ -354,9 +354,6 @@
 		F76607771ED7FFEC0073CEC2 /* TableLocalFile+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADFE1ED5B2A500B7EAD4 /* TableLocalFile+CoreDataClass.m */; };
 		F76607781ED7FFF20073CEC2 /* TableLocalFile+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADC41ED5A87C00B7EAD4 /* TableLocalFile+CoreDataProperties.m */; };
 		F76607791ED7FFF20073CEC2 /* TableLocalFile+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADC41ED5A87C00B7EAD4 /* TableLocalFile+CoreDataProperties.m */; };
-		F769D39A1E9E1506006DBBB4 /* CCLocalStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = F769D3961E9E1506006DBBB4 /* CCLocalStorage.m */; };
-		F769D39B1E9E1506006DBBB4 /* CCLocalStorageCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F769D3981E9E1506006DBBB4 /* CCLocalStorageCell.m */; };
-		F769D39C1E9E1506006DBBB4 /* CCLocalStorageCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F769D3991E9E1506006DBBB4 /* CCLocalStorageCell.xib */; };
 		F76B3CCE1EAE01BD00921AC9 /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
 		F76B3CCF1EAE01BD00921AC9 /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
 		F76B3CD01EAE01BD00921AC9 /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
@@ -1519,11 +1516,6 @@
 		F768EAFB1BFB7CD800B6E341 /* CCShareOC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCShareOC.h; sourceTree = "<group>"; };
 		F768EAFC1BFB7CD800B6E341 /* CCShareOC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCShareOC.m; sourceTree = "<group>"; };
 		F768EB021BFB7EA900B6E341 /* CCShare.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = CCShare.storyboard; sourceTree = "<group>"; };
-		F769D3951E9E1506006DBBB4 /* CCLocalStorage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCLocalStorage.h; sourceTree = "<group>"; };
-		F769D3961E9E1506006DBBB4 /* CCLocalStorage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = CCLocalStorage.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		F769D3971E9E1506006DBBB4 /* CCLocalStorageCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCLocalStorageCell.h; sourceTree = "<group>"; };
-		F769D3981E9E1506006DBBB4 /* CCLocalStorageCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCLocalStorageCell.m; sourceTree = "<group>"; };
-		F769D3991E9E1506006DBBB4 /* CCLocalStorageCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CCLocalStorageCell.xib; sourceTree = "<group>"; };
 		F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCBrand.swift; sourceTree = "<group>"; };
 		F76B3CDC1EAE4D9100921AC9 /* cryptocloud 8.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "cryptocloud 8.xcdatamodel"; sourceTree = "<group>"; };
 		F76C3B831C6388BC00DC4301 /* CCGraphics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCGraphics.h; sourceTree = "<group>"; };
@@ -3057,18 +3049,6 @@
 			path = PSTCollectionView;
 			sourceTree = "<group>";
 		};
-		F769D3941E9E1506006DBBB4 /* Local storage */ = {
-			isa = PBXGroup;
-			children = (
-				F769D3951E9E1506006DBBB4 /* CCLocalStorage.h */,
-				F769D3961E9E1506006DBBB4 /* CCLocalStorage.m */,
-				F769D3971E9E1506006DBBB4 /* CCLocalStorageCell.h */,
-				F769D3981E9E1506006DBBB4 /* CCLocalStorageCell.m */,
-				F769D3991E9E1506006DBBB4 /* CCLocalStorageCell.xib */,
-			);
-			path = "Local storage";
-			sourceTree = "<group>";
-		};
 		F780711E1EDB135100EAFFF6 /* Photos */ = {
 			isa = PBXGroup;
 			children = (
@@ -3603,7 +3583,6 @@
 				F7A3214D1E9E2A070069AD1B /* Favorites */,
 				F780711E1EDB135100EAFFF6 /* Photos */,
 				F7F54CAC1E5B143100E19C62 /* Library */,
-				F769D3941E9E1506006DBBB4 /* Local storage */,
 				F7BFFA621A24D7300044ED85 /* Login */,
 				F7BFCCBD1B68C21900548E76 /* ManageLocation+ManageAsset */,
 				F7A321891E9E42B20069AD1B /* MenuAccount */,
@@ -4030,7 +4009,6 @@
 				F77B0F211D118A16002130FE /* ZSSh6.png in Resources */,
 				F762CB5D1EACB7D400B38484 /* Reader-Export.png in Resources */,
 				F77B0F231D118A16002130FE /* ZSSh3.png in Resources */,
-				F769D39C1E9E1506006DBBB4 /* CCLocalStorageCell.xib in Resources */,
 				F77B0F251D118A16002130FE /* ZSSh1.png in Resources */,
 				F762CB621EACB7D400B38484 /* Reader-Mark-Y@2x.png in Resources */,
 				F762CB571EACB7D400B38484 /* Reader-Button-H.png in Resources */,
@@ -4457,7 +4435,6 @@
 				F762CB021EACB66200B38484 /* XLFormSliderCell.m in Sources */,
 				F77B0E1B1D118A16002130FE /* CCGraphics.m in Sources */,
 				F7659A6E1DC0B760004860C4 /* PSTGridLayoutRow.m in Sources */,
-				F769D39B1E9E1506006DBBB4 /* CCLocalStorageCell.m in Sources */,
 				F70022CB1EC4C9100080073F /* OCSharedDto.m in Sources */,
 				F762CB701EACB7D400B38484 /* ReaderThumbCache.m in Sources */,
 				F762CB111EACB66200B38484 /* NSString+XLFormAdditions.m in Sources */,
@@ -4671,7 +4648,6 @@
 				F7DC5FED1F011EB700A903C7 /* MGSwipeTableCell.m in Sources */,
 				F77B0EC71D118A16002130FE /* AESCrypt.m in Sources */,
 				F70022B61EC4C9100080073F /* OCCapabilities.m in Sources */,
-				F769D39A1E9E1506006DBBB4 /* CCLocalStorage.m in Sources */,
 				F762CB131EACB66200B38484 /* XLFormRightDetailCell.m in Sources */,
 				F762CB871EACB81000B38484 /* REMenu.m in Sources */,
 				F762CB091EACB66200B38484 /* XLFormViewController.m in Sources */,
