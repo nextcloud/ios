@@ -1,0 +1,49 @@
+/* Navigation bar buttons */
+"Cancel" = "Vazgeç";
+"Done" = "Bitti";
+
+/* Default title */
+"Photos" = "Fotoğraflar";
+
+/* No. of selected */
+"%@ Photo Selected" = "%@ Fotoğraf seçildi";
+"%@ Photos Selected" = "%@ Fotoğraf seçildi";
+"%@ Video Selected" = "%@ Vidyo seçildi";
+"%@ Videos Selected" = "%@ Vidyo seçildi";
+"%@ Items Selected" = "%@ Öğe seçildi";
+
+/* Grid view footer */
+"%@ Photos" = "%@ Fotoğraf";
+"%@ Videos" = "%@ Vidyo";
+"%@ Photos, %@ Videos" = "%1$@ Fotoğraf, %2$@ Vidyo";
+
+/* Assets index */
+"%@ of %@" = "%2$@ içerisinden %1$@";
+
+/* Messages if privacy is not granted */
+"This app does not have access to your photos or videos." = "Bu uygulamanın fotoğraflarınıza ya da vidyolarınıza erişim hakkı bulunmuyor.";
+"You can enable access in Privacy Settings." = "Gizlilik Ayarlarından uygulamaya izin verebilirsiniz.";
+
+/* Messages if no assets */
+"No Photos or Videos" = "Hiç fotoğraf ya da vidyo bulunamadı";
+
+/* The parameter will be replaced by the device model name */
+"You can take photos and videos using the camera, or sync photos and videos onto your %@\nusing iTunes." = "Kamerayı kullanarak fotoğraf ve vidyo çekebilirsiniz ya da fotoğraf ve vidyolarınızı %@\n hesabınıza iTunes kullanarak eşleyebilirsiniz.";
+"You can sync photos and videos onto your %@ using iTunes." = "Fotoğraf ve vidyoları iTunes kullanarak %@ hesabınıza eşleyebilirsiniz.";
+
+/* Accessibility labels */
+"Play" = "Oynat";
+"Select" = "Seç";
+"Deselect" = "Seçimi bırak";
+
+/* Video duration spell out */
+"hours" = "saat";
+"hour" = "saat";
+"minutes" = "dakika";
+"minute" = "dakika";
+"seconds" = "saniye";
+"second" = "saniye";
+
+/* Error message of playing stream video */
+"Cannot Play Stream Video" = "Vidyo oynatılamıyor";
+"OK" = "Tamam";
