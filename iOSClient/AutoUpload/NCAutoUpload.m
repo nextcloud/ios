@@ -647,6 +647,10 @@
             } else if (account.autoUploadVideo) {
                 
                 predicate = predicateVideo;
+                
+            } else {
+                
+                return nil;
             }
             
             PHFetchOptions *fetchOptions = [PHFetchOptions new];
