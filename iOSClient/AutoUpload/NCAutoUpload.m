@@ -316,7 +316,7 @@
     tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
     
     // Check Asset : NEW or FULL
-    PHFetchResult *newAssetToUpload = [self getCameraRollAssets:account assetsFull:assetsFull];
+    PHFetchResult *newAssetToUpload = [self getCameraRollAssets:account assetsFull:assetsFull alignPhotoLibrary:NO];
     
     // News Assets ? if no verify if blocked Table Auto Upload -> Autostart
     if ([newAssetToUpload count] == 0) {
@@ -622,7 +622,7 @@
 #pragma mark ===== get Camera Roll new Asset ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (PHFetchResult *)getCameraRollAssets:(tableAccount *)account assetsFull:(BOOL)assetsFull
+- (PHFetchResult *)getCameraRollAssets:(tableAccount *)account assetsFull:(BOOL)assetsFull alignPhotoLibrary:(BOOL)alignPhotoLibrary
 {
     @synchronized(self) {
         
@@ -636,7 +636,7 @@
 
             NSMutableArray *newAssets =[NSMutableArray new];
             
-            if (account.autoUploadImage && account.autoUploadVideo) {
+            if (alignPhotoLibrary || (account.autoUploadImage && account.autoUploadVideo)) {
                 
                 predicate = [NSCompoundPredicate orPredicateWithSubpredicates:@[predicateImage, predicateVideo]];
                 
@@ -686,10 +686,6 @@
                 return assets;
             }
             
-        } else {
-            
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_access_photo_not_enabled_", nil) message:NSLocalizedString(@"_access_photo_not_enabled_msg_", nil) delegate:nil cancelButtonTitle:NSLocalizedString(@"_ok_", nil) otherButtonTitles:nil];
-            [alert show];
         }
     }
     
@@ -706,12 +702,10 @@
         
         tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
 
-        if (account.autoUpload) {
-            PHFetchResult *assets = [self getCameraRollAssets:account assetsFull:YES];
-            [[NCManageDatabase sharedInstance] addPhotoLibrary:(NSArray *)assets];
+        PHFetchResult *assets = [self getCameraRollAssets:account assetsFull:YES alignPhotoLibrary:YES];
+        [[NCManageDatabase sharedInstance] addPhotoLibrary:(NSArray *)assets];
             
-            NSLog(@"Align Photo Library %lu", (unsigned long)[assets count]);
-        }
+        NSLog(@"Align Photo Library %lu", (unsigned long)[assets count]);
     });
 }
 

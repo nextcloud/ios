@@ -399,6 +399,10 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
 
     func loginSuccess(_ loginType: NSInteger) {
         
+        if (UInt32(loginType) != loginModifyPasswordUser.rawValue) {
+            NCAutoUpload.sharedInstance().alignPhotoLibrary()
+        }
+        
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "initializeMain"), object: nil)
         
         appDelegate.selectedTabBarController(Int(k_tabBarApplicationIndexFile))

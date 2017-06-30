@@ -24,6 +24,7 @@
 #import "CCSplit.h"
 #import "AppDelegate.h"
 #import "CCLogin.h"
+#import "NCAutoUpload.h"
 #import "NCBridgeSwift.h"
 
 @interface CCSplit () <CCLoginDelegate, CCLoginDelegateWeb>
@@ -132,6 +133,10 @@
 
 - (void)loginSuccess:(NSInteger)loginType
 {
+    // Align Photo Library
+    if (loginType != loginModifyPasswordUser)
+        [[NCAutoUpload sharedInstance] alignPhotoLibrary];
+    
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil];
 }
 

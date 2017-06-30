@@ -8,6 +8,7 @@
 #import "TWMessageBarManager.h"
 #import "CCManageAccount.h"
 #import "CCGraphics.h"
+#import "NCAutoUpload.h"
 
 #import "OCActivity.h"
 #import "OCUserProfile.h"

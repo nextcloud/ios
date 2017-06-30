@@ -24,6 +24,7 @@
 #import "CCManageAccount.h"
 #import "AppDelegate.h"
 #import "CCLogin.h"
+#import "NCAutoUpload.h"
 #import "NCBridgeSwift.h"
 
 #define actionSheetCancellaAccount 1
@@ -188,6 +189,10 @@
 
 - (void)loginSuccess:(NSInteger)loginType
 {
+    // Align Photo Library
+    if (loginType != loginModifyPasswordUser)
+        [[NCAutoUpload sharedInstance] alignPhotoLibrary];
+
     if (loginType == loginAddForced)
         [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil];
 }
