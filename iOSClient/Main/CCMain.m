@@ -5163,20 +5163,7 @@
     // assegnamo l'immagine anteprima se esiste, altrimenti metti quella standars
     if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]]) {
         
-        NSString *fileID = metadata.fileID;
-            
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-                
-            UIImage *image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, fileID]];
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                    
-                CCCellMainTransfer *cell = [tableView cellForRowAtIndexPath:indexPath];
-                    
-                if (cell)
-                    cell.file.image = image;
-            });
-        });
+        cell.file.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]];
         
     } else {
         

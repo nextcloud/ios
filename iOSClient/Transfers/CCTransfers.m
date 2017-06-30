@@ -89,7 +89,6 @@
     [app aspectTabBar:self.tabBarController.tabBar hidden:NO];
     
     [self reloadDatasource];
-
 }
 
 - (void)changeTheming
