@@ -686,7 +686,9 @@
     
     self.docController.delegate = self;
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) [self.docController presentOptionsMenuFromRect:photoBrowser.view.frame inView:photoBrowser.view animated:YES];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
+        [self.docController presentOptionsMenuFromRect:photoBrowser.view.frame inView:photoBrowser.view animated:YES];
+    
     [self.docController presentOptionsMenuFromBarButtonItem:photoBrowser.actionButton animated:YES];
 }
 
@@ -1071,7 +1073,9 @@
 
     self.docController.delegate = self;
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) [self.docController presentOptionsMenuFromRect:self.view.frame inView:self.view animated:YES];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
+        [self.docController presentOptionsMenuFromRect:self.view.frame inView:self.view animated:YES];
+    
     [self.docController presentOptionsMenuFromBarButtonItem:sender animated:YES];
 }
 

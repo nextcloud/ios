@@ -366,9 +366,7 @@
             
             imageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]];
             effect.hidden = YES;
-            checked.hidden = YES;
-            
-            [app.icoImagesCache setObject:imageView.image forKey:metadata.fileID];
+            checked.hidden = YES;            
         }
     }
 }
@@ -602,15 +600,8 @@
     // Image
     if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]]) {
         
-        imageView.image = [app.icoImagesCache objectForKey:metadata.fileID];
-        
-        if (imageView.image == nil) {
-            
-                // insert Image
-                UIImage *image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]];
-                imageView.image = image;
-                [app.icoImagesCache setObject:image forKey:metadata.fileID];
-        }
+        // insert Image
+        imageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]];
         
     } else {
         

@@ -298,27 +298,12 @@
 
 - (void)downloadThumbnailSuccess:(CCMetadataNet *)metadataNet
 {
-    __block CCTransfersCell *cell;
-
     NSIndexPath *indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:metadataNet.fileID];
     
     if (indexPath && [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadataNet.fileID]]) {
         
-        cell = [self.tableView cellForRowAtIndexPath:indexPath];
-        
-        cell.file.image = [app.icoImagesCache objectForKey:metadataNet.fileID];
-        
-        if (cell.file.image == nil) {
-            
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-                
-                UIImage *image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadataNet.fileID]];
-                
-                [app.icoImagesCache setObject:image forKey:metadataNet.fileID];
-            });
-        }
+        [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
     }
-
 }
 
 #pragma --------------------------------------------------------------------------------------------

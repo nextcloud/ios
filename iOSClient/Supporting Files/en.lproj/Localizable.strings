@@ -107,6 +107,7 @@
 "_proceed_"                 = "Proceed";
 "_delete_cache_"            = "Delete cache";
 "_want_delete_cache_"       = "Do you want to delete cache?";
+"_want_delete_thumbnails_"  = "Do you want to delete all thumbnails too ?";
 "_mail_deleted_"            = "Email deleted";
 "_mail_saved_"              = "Email saved";
 "_mail_sent_"               = "Email sent";

@@ -128,9 +128,6 @@
 @property (nonatomic, strong) NSMutableDictionary *listMainVC;
 @property (nonatomic, strong) NSMutableDictionary *listProgressMetadata;
 
-// ico Image Cache
-@property (nonatomic, strong) NSMutableDictionary *icoImagesCache;
-
 // Is in Crypto Mode
 @property BOOL isCryptoCloudMode;
 

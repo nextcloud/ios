@@ -1290,26 +1290,12 @@
 
 - (void)downloadThumbnailSuccess:(CCMetadataNet *)metadataNet
 {
-    __block CCCellMain *cell;
-    
     NSIndexPath *indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:metadataNet.fileID];
     
     if (indexPath && [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadataNet.fileID]]) {
         
-        cell = [self.tableView cellForRowAtIndexPath:indexPath];
-        
-        cell.file.image = [app.icoImagesCache objectForKey:metadataNet.fileID];
-        
-        if (cell.file.image == nil) {
-            
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-                
-                UIImage *image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadataNet.fileID]];
-                
-                [app.icoImagesCache setObject:image forKey:metadataNet.fileID];
-            });
-        }
-     }
+        [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
+    }
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -4983,8 +4969,10 @@
     
     if ([_directoryGroupBy isEqualToString:@"alphabetic"]) {
         
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) shift = - 35;
-        else shift =  - 20;
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+            shift = - 35;
+        else
+            shift =  - 20;
         
     } else shift = - 10;
     
@@ -5175,28 +5163,21 @@
     // assegnamo l'immagine anteprima se esiste, altrimenti metti quella standars
     if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]]) {
         
-        cell.file.image = [app.icoImagesCache objectForKey:metadata.fileID];
-        
-        if (cell.file.image == nil) {
+        NSString *fileID = metadata.fileID;
             
-            NSString *fileID = metadata.fileID;
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+                
+            UIImage *image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, fileID]];
             
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-                
-                UIImage *image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, fileID]];
-                
-                [app.icoImagesCache setObject:image forKey:fileID];
-                
-                dispatch_async(dispatch_get_main_queue(), ^{
+            dispatch_async(dispatch_get_main_queue(), ^{
                     
-                    CCCellMainTransfer *cell = [tableView cellForRowAtIndexPath:indexPath];
+                CCCellMainTransfer *cell = [tableView cellForRowAtIndexPath:indexPath];
                     
-                    if (cell)
-                        cell.file.image = image;
-                });
+                if (cell)
+                    cell.file.image = image;
             });
-        }
-
+        });
+        
     } else {
         
         if (metadata.directory)

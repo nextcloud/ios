@@ -301,70 +301,96 @@
 #pragma mark === Clear Cache ===
 #pragma --------------------------------------------------------------------------------------------
 
+- (void)removeAllFiles:(BOOL)removeIco
+{
+    [app maintenanceMode:YES];
+    
+    [self.hud visibleHudTitle:NSLocalizedString(@"_remove_cache_", nil) mode:MBProgressHUDModeIndeterminate color:nil];
+    
+    [[NCManageDatabase sharedInstance] clearTable:[tableAutoUpload class] account:app.activeAccount];
+    
+    [app cancelAllOperations];
+    
+    [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:k_taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 3 * NSEC_PER_SEC),dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        
+        [[NSURLCache sharedURLCache] setMemoryCapacity:0];
+        [[NSURLCache sharedURLCache] setDiskCapacity:0];
+        
+        [[NCManageDatabase sharedInstance] clearTable:[tableActivity class] account:app.activeAccount];
+        [[NCManageDatabase sharedInstance] clearTable:[tableCapabilities class] account:app.activeAccount];
+        [[NCManageDatabase sharedInstance] clearTable:[tableDirectory class] account:app.activeAccount];
+        [[NCManageDatabase sharedInstance] clearTable:[tableExternalSites class] account:app.activeAccount];
+        [[NCManageDatabase sharedInstance] clearTable:[tableGPS class] account:nil];
+        [[NCManageDatabase sharedInstance] clearTable:[tableLocalFile class] account:app.activeAccount];
+        [[NCManageDatabase sharedInstance] clearTable:[tableMetadata class] account:app.activeAccount];
+        [[NCManageDatabase sharedInstance] clearTable:[tableShare class] account:app.activeAccount];
+        
+        [self emptyUserDirectoryUser:app.activeUser url:app.activeUrl removeIco:removeIco];
+        
+        [self emptyLocalDirectory];
+        
+        NSArray* tmpDirectory = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:NSTemporaryDirectory() error:NULL];
+        for (NSString *file in tmpDirectory)
+            [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@%@", NSTemporaryDirectory(), file] error:NULL];
+        
+        [self recalculateSize];
+        
+        [app maintenanceMode:NO];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            // Close HUD
+            [self.hud hideHud];
+            // Inizialized home
+            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil];
+        });
+    });
+}
+
 - (void)clearCache:(XLFormRowDescriptor *)sender
 {
     [self deselectFormRow:sender];
     
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"" message:NSLocalizedString(@"_want_delete_cache_", nil) preferredStyle:UIAlertControllerStyleActionSheet];
     
-    [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
+    [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
         
-        [app maintenanceMode:YES];
-
-        [self.hud visibleHudTitle:NSLocalizedString(@"_remove_cache_", nil) mode:MBProgressHUDModeIndeterminate color:nil];
-
-        [[NCManageDatabase sharedInstance] clearTable:[tableAutoUpload class] account:app.activeAccount];
-
-        [app cancelAllOperations];
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"" message:NSLocalizedString(@"_want_delete_thumbnails_", nil) preferredStyle:UIAlertControllerStyleActionSheet];
         
-        [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:k_taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
-
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 3 * NSEC_PER_SEC),dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            
-            [[NSURLCache sharedURLCache] setMemoryCapacity:0];
-            [[NSURLCache sharedURLCache] setDiskCapacity:0];
-
-            [[NCManageDatabase sharedInstance] clearTable:[tableActivity class] account:app.activeAccount];
-            [[NCManageDatabase sharedInstance] clearTable:[tableCapabilities class] account:app.activeAccount];
-            [[NCManageDatabase sharedInstance] clearTable:[tableDirectory class] account:app.activeAccount];
-            [[NCManageDatabase sharedInstance] clearTable:[tableExternalSites class] account:app.activeAccount];
-            [[NCManageDatabase sharedInstance] clearTable:[tableGPS class] account:nil];
-            [[NCManageDatabase sharedInstance] clearTable:[tableLocalFile class] account:app.activeAccount];
-            [[NCManageDatabase sharedInstance] clearTable:[tableMetadata class] account:app.activeAccount];
-            [[NCManageDatabase sharedInstance] clearTable:[tableShare class] account:app.activeAccount];
-            
-            [self emptyUserDirectoryUser:app.activeUser url:app.activeUrl];
-            
-            [self emptyLocalDirectory];
-            
-            NSArray* tmpDirectory = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:NSTemporaryDirectory() error:NULL];
-            for (NSString *file in tmpDirectory)
-                [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@%@", NSTemporaryDirectory(), file] error:NULL];
-            
-            [self recalculateSize];
-            
-            [app maintenanceMode:NO];
-
-            dispatch_async(dispatch_get_main_queue(), ^{
-                // Close HUD
-                [self.hud hideHud];
-                // Inizialized home
-                [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil];
-            });
-        });
+        [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_yes_", nil)
+                                                             style:UIAlertActionStyleDefault                                                         handler:^(UIAlertAction *action) {
+                                                               [self removeAllFiles:YES];
+                                                           }]];
+        
+        [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_no_", nil)
+                                                             style:UIAlertActionStyleDefault
+                                                           handler:^(UIAlertAction *action) {
+                                                               [self removeAllFiles:NO];
+                                                           }]];
+        
+        [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
+        }]];
+        
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+            // iPhone
+            [self presentViewController:alertController animated:YES completion:nil];
+        } else {
+            // iPad
+            // Change Rect to position Popover
+            UIPopoverController *popup = [[UIPopoverController alloc] initWithContentViewController:alertController];
+            [popup presentPopoverFromRect:[self.tableView rectForRowAtIndexPath:[self.form indexPathOfFormRow:sender]] inView:self.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+        }
     }]];
 
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
     }]];
     
-    //if iPhone
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        
+        // iPhone
         [self presentViewController:alertController animated:YES completion:nil];
-    }
-    //if iPad
-    else {
-        
+    } else {
+        // iPad
         // Change Rect to position Popover
         UIPopoverController *popup = [[UIPopoverController alloc] initWithContentViewController:alertController];
         [popup presentPopoverFromRect:[self.tableView rectForRowAtIndexPath:[self.form indexPathOfFormRow:sender]] inView:self.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
@@ -436,14 +462,11 @@
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
     }]];
     
-    //if iPhone
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        
+        // iPhone
         [self presentViewController:alertController animated:YES completion:nil];
-    }
-    //if iPad
-    else {
-        
+    } else {
+        // iPad
         // Change Rect to position Popover
         UIPopoverController *popup = [[UIPopoverController alloc] initWithContentViewController:alertController];
         [popup presentPopoverFromRect:[self.tableView rectForRowAtIndexPath:[self.form indexPathOfFormRow:sender]] inView:self.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
@@ -494,7 +517,7 @@
         [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", dirIniziale, file] error:nil];
 }
 
-- (void)emptyUserDirectoryUser:(NSString *)user url:(NSString *)url
+- (void)emptyUserDirectoryUser:(NSString *)user url:(NSString *)url removeIco:(BOOL)removeIco
 {
     NSString *file;
     NSString *dirIniziale;
@@ -508,7 +531,7 @@
         NSString *ext = [[file pathExtension] lowercaseString];
         
         // Do not remove ICO
-        if ([ext isEqualToString:@"ico"])
+        if ([ext isEqualToString:@"ico"] && !removeIco)
             continue;
         
         [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", dirIniziale, file] error:nil];

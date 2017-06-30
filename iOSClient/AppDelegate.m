@@ -202,10 +202,7 @@
     // Player audio
     self.player = [LMMediaPlayerView sharedPlayerView];
     self.player.delegate = self;
-        
-    // ico Image Cache
-    self.icoImagesCache = [[NSMutableDictionary alloc] init];
-    
+            
     // setting Reachable in back
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 
