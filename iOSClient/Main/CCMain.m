@@ -5404,10 +5404,20 @@
     cell.leftExpansion.buttonIndex = 0;
     cell.leftExpansion.fillOnTrigger = NO;
     
+    //centerIconOverText
+    MGSwipeButton *favoriteButton = (MGSwipeButton *)[cell.leftButtons objectAtIndex:0];
+    [favoriteButton centerIconOverText];
+    
     //configure right buttons
     cell.rightButtons = @[[MGSwipeButton buttonWithTitle:[NSString stringWithFormat:@" %@ ", NSLocalizedString(@"_delete_", nil)] icon:[UIImage imageNamed:@"swipeDelete"] backgroundColor:[UIColor redColor]], [MGSwipeButton buttonWithTitle:[NSString stringWithFormat:@" %@ ", NSLocalizedString(@"_more_", nil)] icon:[UIImage imageNamed:@"swipeMore"] backgroundColor:[UIColor lightGrayColor]]];
     cell.rightSwipeSettings.transition = MGSwipeTransitionBorder;
     
+    //centerIconOverText
+    MGSwipeButton *deleteButton = (MGSwipeButton *)[cell.rightButtons objectAtIndex:0];
+    MGSwipeButton *moreButton = (MGSwipeButton *)[cell.rightButtons objectAtIndex:1];
+    [deleteButton centerIconOverText];
+    [moreButton centerIconOverText];
+
     //restore swipeOffset after relod
     CGFloat swipeOffset = [[_statusSwipeCell objectForKey:[@(indexPath.row) stringValue]] doubleValue];
     if (swipeOffset < 0) {
