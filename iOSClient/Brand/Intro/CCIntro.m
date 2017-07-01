@@ -134,7 +134,8 @@
 
     
     EAIntroView *intro = [[EAIntroView alloc] initWithFrame:self.rootView.bounds andPages:@[page1, page11, page2, page3]];
-    //intro.backgroundColor = [UIColor whiteColor];
+
+    intro.skipButton = nil;    
     intro.tapToNext = YES;
     intro.pageControl.pageIndicatorTintColor = [UIColor lightGrayColor];
     intro.pageControl.currentPageIndicatorTintColor = [UIColor blackColor];
