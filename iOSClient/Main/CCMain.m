@@ -249,7 +249,7 @@
         
     } else {
         
-        if (app.activeAccount.length > 0) {
+        if (app.activeAccount.length > 0 && [_selectedFileIDsMetadatas count] == 0) {
         
             // Load Datasource
             [self reloadDatasource:_serverUrl];
@@ -2228,7 +2228,6 @@
             [self readFolder:metadataNet.serverUrl];
         else
             [self reloadDatasource];
-
     }
 }
 
@@ -2246,13 +2245,8 @@
         NSString *serverUrlTo = [[NCManageDatabase sharedInstance] getServerUrl:directoryIDTo];
 
         // FILE -> Metadata
-        if (metadataNet.directory == NO) {
-            
-            // move metadata
-            //[CCCoreData moveMetadata:fileName directoryID:directoryID directoryIDTo:directoryIDTo activeAccount:app.activeAccount];
-            
+        if (metadataNet.directory == NO)
             [[NCManageDatabase sharedInstance] moveMetadataWithFileName:fileName directoryID:directoryID directoryIDTo:directoryIDTo];
-        }
     
         // DIRECTORY ->  Directory - CCMetadata
         if (metadataNet.directory == YES) {
@@ -2261,7 +2255,6 @@
             [[NCManageDatabase sharedInstance] deleteDirectoryAndSubDirectoryWithServerUrl:[CCUtility stringAppendServerUrl:metadataNet.serverUrl addFileName:fileName]];
             
             // move metadata
-            //[CCCoreData moveMetadata:fileName directoryID:directoryID directoryIDTo:directoryIDTo activeAccount:app.activeAccount];
             [[NCManageDatabase sharedInstance] moveMetadataWithFileName:fileName directoryID:directoryID directoryIDTo:directoryIDTo];
             
             // Add new directory
