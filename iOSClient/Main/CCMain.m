@@ -389,16 +389,6 @@
 #pragma mark ==== DZNEmptyDataSetSource ====
 #pragma --------------------------------------------------------------------------------------------
 
-/*
-- (BOOL)emptyDataSetShouldDisplay:(UIScrollView *)scrollView
-{
-    if(_isSearchMode)
-        return NO;
-    else
-        return YES;
-}
-*/
-
 - (BOOL)emptyDataSetShouldAllowScroll:(UIScrollView *)scrollView
 {
     if (_loadingFolder)
