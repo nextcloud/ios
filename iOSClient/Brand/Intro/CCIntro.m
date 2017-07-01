@@ -133,16 +133,30 @@
     page3.showTitleView = NO;
 
     
-    EAIntroView *intro = [[EAIntroView alloc] initWithFrame:self.rootView.bounds andPages:@[page1, page11, page2, page3]];
+    EAIntroView *intro = [[EAIntroView alloc] initWithFrame:self.rootView.bounds];
 
-    intro.skipButton = nil;    
     intro.tapToNext = YES;
     intro.pageControl.pageIndicatorTintColor = [UIColor lightGrayColor];
     intro.pageControl.currentPageIndicatorTintColor = [UIColor blackColor];
     intro.pageControl.backgroundColor = [UIColor clearColor];
     [intro.skipButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    intro.skipButton.enabled = NO;
     
+    page1.onPageDidAppear = ^{
+        intro.skipButton.enabled = YES;
+        [UIView animateWithDuration:0.3f animations:^{
+            intro.skipButton.alpha = 1.f;
+        }];
+    };
+    page2.onPageDidDisappear = ^{
+        intro.skipButton.enabled = NO;
+        [UIView animateWithDuration:0.3f animations:^{
+            intro.skipButton.alpha = 0.f;
+        }];
+    };
+
     [intro setDelegate:self];
+    [intro setPages:@[page1,page11,page2,page3]];
     [intro showInView:self.rootView animateDuration:duration];
     
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
