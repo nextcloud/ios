@@ -574,7 +574,6 @@
     
     UIApplicationShortcutItem *shortcutUploadEncrypted = [[UIApplicationShortcutItem alloc] initWithType:[NSString stringWithFormat:@"%@.uploadEncrypted", bundleId] localizedTitle:NSLocalizedString(@"_upload_encrypted_file_", nil) localizedSubtitle:nil icon:shortcutUploadEncryptedIcon userInfo:nil];
     
-    
     if (app.isCryptoCloudMode) {
         
         // add the array to our app
@@ -584,7 +583,6 @@
 
         // add the array to our app
         [UIApplication sharedApplication].shortcutItems = @[shortcutUpload, shortcutPhotos];
-
     }
 }
 

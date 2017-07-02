@@ -52,8 +52,6 @@ extern NSString *const urlBaseUploadDB;
 
 #define k_dismissAfterSecond                            4
 
-#define k_dayForceReadFolder                            3
-
 #define k_daysOfActivity                                7
 
 #define k_returnCreateFolderPlain                       0

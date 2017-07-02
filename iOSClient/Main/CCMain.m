@@ -857,7 +857,6 @@
         }
             break;
             
-            
         /* ENCRYPTED */
         case k_returnCreateFolderEncrypted: {
             
