@@ -629,9 +629,11 @@
             }
             // ------------------------
             
-            NSString *serverUrl = [NSString stringWithFormat:@"%@/files/%@", dav, _activeUser];
-            serverUrl = [itemDto.filePath stringByReplacingOccurrencesOfString:serverUrl withString:@""];
-            
+            NSRange firstInstance = [itemDto.filePath rangeOfString:[NSString stringWithFormat:@"%@/files/%@", dav, _activeUser]];
+            NSRange finalRange = NSMakeRange(firstInstance.location + firstInstance.length, itemDto.filePath.length-(firstInstance.location + firstInstance.length));
+
+            NSString *serverUrl = [itemDto.filePath substringWithRange:finalRange];
+
             /* TRIM */
             if ([serverUrl hasPrefix:@"/"])
                 serverUrl = [serverUrl substringFromIndex:1];
