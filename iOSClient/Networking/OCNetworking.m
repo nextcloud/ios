@@ -479,9 +479,16 @@
                 }
                 // ------------------------
             
+                /*
                 NSString *serverUrl = [NSString stringWithFormat:@"%@/files/%@", dav, _activeUser];
                 serverUrl = [itemDto.filePath stringByReplacingOccurrencesOfString:serverUrl withString:@""];
-            
+                */
+                
+                NSRange firstInstance = [itemDto.filePath rangeOfString:[NSString stringWithFormat:@"%@/files/%@", dav, _activeUser]];
+                NSRange finalRange = NSMakeRange(firstInstance.location + firstInstance.length, itemDto.filePath.length-(firstInstance.location + firstInstance.length));
+                NSString *serverUrl = [itemDto.filePath substringWithRange:finalRange];
+                
+                
                 /* TRIM */
                 if ([serverUrl hasPrefix:@"/"])
                     serverUrl = [serverUrl substringFromIndex:1];
@@ -490,7 +497,8 @@
                 /*      */
             
                 serverUrl = [CCUtility stringAppendServerUrl:[_activeUrl stringByAppendingString:webDAV] addFileName:serverUrl];
-            
+                serverUrl = [serverUrl stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+
                 NSString *directoryID = [[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:serverUrl permissions:itemDto.permissions];
 
                 [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileNamePrint:itemDto.fileName serverUrl:serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser]];
@@ -631,7 +639,6 @@
             
             NSRange firstInstance = [itemDto.filePath rangeOfString:[NSString stringWithFormat:@"%@/files/%@", dav, _activeUser]];
             NSRange finalRange = NSMakeRange(firstInstance.location + firstInstance.length, itemDto.filePath.length-(firstInstance.location + firstInstance.length));
-
             NSString *serverUrl = [itemDto.filePath substringWithRange:finalRange];
 
             /* TRIM */
@@ -642,7 +649,8 @@
             /*      */
             
             serverUrl = [CCUtility stringAppendServerUrl:[_activeUrl stringByAppendingString:webDAV] addFileName:serverUrl];
-            
+            serverUrl = [serverUrl stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+
             NSString *directoryID = [[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:serverUrl permissions:itemDto.permissions];
             
             [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileNamePrint:itemDto.fileName serverUrl:serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser]];
