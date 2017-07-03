@@ -395,9 +395,9 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
     
     override func viewWillDisappear(_ animated: Bool)
     {
-        self.delegate?.dismissFormUploadAssets()
-        
         super.viewWillDisappear(animated)
+
+        self.delegate?.dismissFormUploadAssets()        
     }
 
     func reloadForm() {
