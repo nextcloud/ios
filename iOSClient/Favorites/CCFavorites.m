@@ -459,8 +459,6 @@
     if (_metadata.cryptated == NO) {
         
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_share_", nil) image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetShare"] color:[NCBrandColor sharedInstance].brand] backgroundColor:[UIColor whiteColor] height: 50.0 type:AHKActionSheetButtonTypeDefault handler:^(AHKActionSheet *as) {
-                // close swipe
-                [self setEditing:NO animated:YES];
                                     
                 [app.activeMain openWindowShare:metadata];
             }];
