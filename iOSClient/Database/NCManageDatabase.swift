@@ -1670,6 +1670,39 @@ class NCManageDatabase: NSObject {
         }
     }
     
+    func setMetadataStatus(fileID: String, status: Double) {
+        
+        let tableAccount = self.getAccountActive()
+        if tableAccount == nil {
+            return
+        }
+        
+        var directoryID: String? = nil
+        
+        let realm = try! Realm()
+        
+        realm.beginWrite()
+        
+        let result = realm.objects(tableMetadata.self).filter("account = %@ AND fileID = %@", tableAccount!.account, fileID).first
+        
+        if result != nil {
+            result?.status = status
+            directoryID = result?.directoryID
+        }
+        
+        do {
+            try realm.commitWrite()
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+        }
+        
+        if directoryID != nil {
+            // Update Date Read Directory
+            self.setDateReadDirectory(directoryID: directoryID!)
+        }
+    }
+
+    
     func getMetadata(predicate: NSPredicate) -> tableMetadata? {
         
         let tableAccount = self.getAccountActive()

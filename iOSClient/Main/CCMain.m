@@ -4570,6 +4570,22 @@
                                     }];
         }
         
+#ifdef DEBUG
+        
+        [actionSheet addButtonWithTitle:@"Hide file"
+                                  image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"admin"] color:[NCBrandColor sharedInstance].brand]
+                        backgroundColor:[UIColor whiteColor]
+                                 height: 50.0
+                                   type:AHKActionSheetButtonTypeDefault
+                                handler:^(AHKActionSheet *as) {
+                                    
+                                    [[NCManageDatabase sharedInstance] setMetadataStatusWithFileID:_metadata.fileID status:k_metadataStatusHide];
+                                    
+                                    [self reloadDatasource];
+                                }];
+        
+#endif
+
         [actionSheet show];
     }
     
