@@ -77,7 +77,6 @@
 - (void)closeAllMenu;
 - (void)returnCreate:(NSInteger)type;
 
-- (void)createFolderAutoUpload;
 - (void)createFolder:(NSString *)fileNameFolder autoUploadDirectory:(BOOL)autoUploadDirectory;
 - (void)readFolder:(NSString *)serverUrl;
 - (void)readFileReloadFolder;

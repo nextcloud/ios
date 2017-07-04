@@ -206,10 +206,6 @@
         
         if ([[rowDescriptor.value valueData] boolValue] == YES) {
                         
-            // Create Folder
-            if (app.activeMain)
-                [app.activeMain createFolderAutoUpload];
-            
             [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUpload" state:YES];
             
             // Default

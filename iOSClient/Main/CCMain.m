@@ -2515,13 +2515,6 @@
     [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
 }
 
-- (void)createFolderAutoUpload
-{
-    NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
-
-    [self createFolder:autoUploadFileName autoUploadDirectory:YES];
-}
-
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark =====  Encrypted / Decrypted Folder =====
 #pragma --------------------------------------------------------------------------------------------
