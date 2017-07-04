@@ -2416,20 +2416,16 @@
         
         [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadataNet.fileID] clearDateReadDirectoryID:nil];
         
-        NSString *serverUrlError = [CCUtility stringAppendServerUrl:_serverUrl addFileName:metadataNet.fileName];
+        [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:metadataNet.serverUrl directoryID:nil];
+        [self reloadDatasource:metadataNet.serverUrl];
         
+        NSString *serverUrlCreate = [CCUtility stringAppendServerUrl:_serverUrl addFileName:metadataNet.fileName];
         
-        if ([_serverUrl isEqualToString:serverUrlError]) {
-            
-            [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:metadataNet.serverUrl directoryID:nil];
-            [self reloadDatasource:metadataNet.serverUrl];
-            
-            [self.navigationController popViewControllerAnimated:YES];
-        }
-    
+        CCMain *vc = [app.listMainVC objectForKey:serverUrlCreate];
+
+        if (vc)
+            [vc.navigationController popViewControllerAnimated:YES];
     }
-    
-    // se sei dentro la direcroy fai un passo indietro
     
     if (message)
         [app messageNotification:@"_create_folder_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
@@ -2454,9 +2450,8 @@
     }
     
     // Load Folder or the Datasource
-    if ([metadataNet.selectorPost isEqualToString:selectorReadFolderForced]) {
+    if ([metadataNet.selectorPost isEqualToString:selectorReadFolderForced]) 
         [self readFolder:metadataNet.serverUrl];
-    } 
 }
 
 - (void)createFolder:(NSString *)fileNameFolder autoUploadDirectory:(BOOL)autoUploadDirectory
@@ -2479,14 +2474,13 @@
     metadataNet.serverUrl = _serverUrl;
     
     [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
-
+        
     // Create Temp record
-    tableMetadata *metadata = [CCUtility createMetadataWithAccount:app.activeAccount date:[NSDate date] directory:YES fileID:metadataNet.fileID directoryID:metadataNet.directoryID fileName:metadataNet.fileName etag:@"" size:0 status:k_metadataStatusTemp];
+    tableMetadata *metadata = [CCUtility createMetadataWithAccount:app.activeAccount date:[NSDate date] directory:YES fileID:metadataNet.fileID directoryID:metadataNet.directoryID fileName:metadataNet.fileName etag:@"" size:0 status:k_metadataStatusNormal];
     (void)[[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:app.activeUrl serverUrl:_serverUrl];
     
     [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:_serverUrl directoryID:nil];
     [self reloadDatasource];
-    
 }
 
 - (void)createFolderEncrypted:(NSString *)fileNameFolder
