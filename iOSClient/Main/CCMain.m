@@ -4132,10 +4132,11 @@
             [self swipeDelete:indexPath];
         
         // More
-        if (index == 1)
-            [self swipeMore:indexPath];
-            //dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-            //});
+        if (index == 1) {
+            
+            [cell hideSwipeAnimated:NO];
+            [self performSelector:@selector(swipeMore:) withObject:indexPath afterDelay:0.1];
+        }
     }
     
     if (direction == MGSwipeDirectionLeftToRight) {
