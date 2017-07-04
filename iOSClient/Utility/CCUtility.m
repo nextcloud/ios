@@ -791,6 +791,28 @@
 #pragma mark ===== CCMetadata =====
 #pragma --------------------------------------------------------------------------------------------
 
++ (tableMetadata *)createMetadataWithAccount:(NSString *)account date:(NSDate *)date directory:(BOOL)directory fileID:(NSString *)fileID directoryID:(NSString *)directoryID fileName:(NSString *)fileName etag:(NSString *)etag size:(double)size status:(double)status
+{
+    tableMetadata *metadata = [tableMetadata new];
+    
+    metadata.account = account;
+    metadata.date = date;
+    metadata.directory = directory;
+    metadata.directoryID = directoryID;
+    metadata.etag = etag;
+    metadata.fileID = fileID;
+    metadata.fileName = fileName;
+    metadata.fileNameData = fileName;
+    metadata.fileNamePrint = fileName;
+    metadata.nameCurrentDevice = [CCUtility getNameCurrentDevice];
+    metadata.size = size;
+    metadata.status = status;
+    metadata.type = k_metadataType_file;
+    metadata.uuid = [CCUtility getUUID];
+    
+    return metadata;
+}
+
 + (tableMetadata *)trasformedOCFileToCCMetadata:(OCFileDto *)itemDto fileNamePrint:(NSString *)fileNamePrint serverUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID autoUploadFileName:(NSString *)autoUploadFileName autoUploadDirectory:(NSString *)autoUploadDirectory activeAccount:(NSString *)activeAccount directoryUser:(NSString *)directoryUser
 {
     tableMetadata *metadata = [tableMetadata new];

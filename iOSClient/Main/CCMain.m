@@ -2412,6 +2412,25 @@
 
 - (void)createFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
+    if (metadataNet.cryptated == NO) {
+        
+        [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadataNet.fileID] clearDateReadDirectoryID:nil];
+        
+        NSString *serverUrlError = [CCUtility stringAppendServerUrl:_serverUrl addFileName:metadataNet.fileName];
+        
+        
+        if ([_serverUrl isEqualToString:serverUrlError]) {
+            
+            [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:metadataNet.serverUrl directoryID:nil];
+            [self reloadDatasource:metadataNet.serverUrl];
+            
+            [self.navigationController popViewControllerAnimated:YES];
+        }
+    
+    }
+    
+    // se sei dentro la direcroy fai un passo indietro
+    
     if (message)
         [app messageNotification:@"_create_folder_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
 }
@@ -2421,12 +2440,23 @@
     NSString *newDirectory = [NSString stringWithFormat:@"%@/%@", metadataNet.serverUrl, metadataNet.fileName];    
     (void)[[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:newDirectory permissions:@""];
     
+    if (metadataNet.cryptated == NO) {
+    
+        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileName = %@ AND directoryID = %@", metadataNet.fileName, metadataNet.directoryID]];
+        [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileName = %@ AND directoryID = %@", metadataNet.fileName, metadataNet.directoryID] clearDateReadDirectoryID:nil];
+
+        metadata.fileID = metadataNet.fileID;
+        metadata.date = metadataNet.date;
+        metadata.permissions = @"RDNVCK";
+        metadata.status = k_metadataStatusNormal;
+
+        (void)[[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:app.activeUrl serverUrl:_serverUrl];
+    }
+    
     // Load Folder or the Datasource
     if ([metadataNet.selectorPost isEqualToString:selectorReadFolderForced]) {
         [self readFolder:metadataNet.serverUrl];
-    } else {
-        [self reloadDatasource:metadataNet.serverUrl];
-    }
+    } 
 }
 
 - (void)createFolder:(NSString *)fileNameFolder autoUploadDirectory:(BOOL)autoUploadDirectory
@@ -2440,13 +2470,23 @@
     else  metadataNet.serverUrl = _serverUrl;
     
     metadataNet.action = actionCreateFolder;
+    metadataNet.directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:_serverUrl];
     if (autoUploadDirectory)
         metadataNet.options = @"folderAutoUpload";
+    metadataNet.fileID = [[NSUUID UUID] UUIDString];
     metadataNet.fileName = fileNameFolder;
     metadataNet.selector = selectorCreateFolder;
-    metadataNet.selectorPost = selectorReadFolderForced;
+    metadataNet.serverUrl = _serverUrl;
     
     [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+
+    // Create Temp record
+    tableMetadata *metadata = [CCUtility createMetadataWithAccount:app.activeAccount date:[NSDate date] directory:YES fileID:metadataNet.fileID directoryID:metadataNet.directoryID fileName:metadataNet.fileName etag:@"" size:0 status:k_metadataStatusTemp];
+    (void)[[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:app.activeUrl serverUrl:_serverUrl];
+    
+    [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:_serverUrl directoryID:nil];
+    [self reloadDatasource];
+    
 }
 
 - (void)createFolderEncrypted:(NSString *)fileNameFolder
@@ -2465,6 +2505,7 @@
     
     // Create folder
     metadataNet.action = actionCreateFolder;
+    metadataNet.fileID = [[NSUUID UUID] UUIDString];
     metadataNet.fileName = fileNamePlist;
     metadataNet.priority = NSOperationQueuePriorityVeryHigh;
     metadataNet.selector = selectorCreateFolder;
@@ -2474,6 +2515,7 @@
     
     // upload plist file
     metadataNet.action = actionUploadOnlyPlist;
+    metadataNet.fileID = [[NSUUID UUID] UUIDString];
     metadataNet.fileName = [fileNamePlist stringByAppendingString:@".plist"];
     metadataNet.priority = NSOperationQueuePriorityVeryLow;
     metadataNet.selectorPost = selectorReadFolderForced;
