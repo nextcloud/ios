@@ -2415,14 +2415,10 @@
     if (metadataNet.cryptated == NO) {
         
         [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadataNet.fileID] clearDateReadDirectoryID:nil];
+        [self reloadDatasource];
         
-        [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:metadataNet.serverUrl directoryID:nil];
-        [self reloadDatasource:metadataNet.serverUrl];
-        
-        NSString *serverUrlCreate = [CCUtility stringAppendServerUrl:_serverUrl addFileName:metadataNet.fileName];
-        
-        CCMain *vc = [app.listMainVC objectForKey:serverUrlCreate];
-
+        // We are in directory fail ?
+        CCMain *vc = [app.listMainVC objectForKey:[CCUtility stringAppendServerUrl:_serverUrl addFileName:metadataNet.fileName]];
         if (vc)
             [vc.navigationController popViewControllerAnimated:YES];
     }
@@ -2444,14 +2440,11 @@
         metadata.fileID = metadataNet.fileID;
         metadata.date = metadataNet.date;
         metadata.permissions = @"RDNVCK";
-        metadata.status = k_metadataStatusNormal;
 
         (void)[[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:app.activeUrl serverUrl:_serverUrl];
+        
+        [self reloadDatasource];
     }
-    
-    // Load Folder or the Datasource
-    if ([metadataNet.selectorPost isEqualToString:selectorReadFolderForced]) 
-        [self readFolder:metadataNet.serverUrl];
 }
 
 - (void)createFolder:(NSString *)fileNameFolder autoUploadDirectory:(BOOL)autoUploadDirectory
@@ -2475,7 +2468,7 @@
     
     [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
         
-    // Create Temp record
+    // Create Directory on metadata
     tableMetadata *metadata = [CCUtility createMetadataWithAccount:app.activeAccount date:[NSDate date] directory:YES fileID:metadataNet.fileID directoryID:metadataNet.directoryID fileName:metadataNet.fileName etag:@"" size:0 status:k_metadataStatusNormal];
     (void)[[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:app.activeUrl serverUrl:_serverUrl];
     
@@ -2499,6 +2492,7 @@
     
     // Create folder
     metadataNet.action = actionCreateFolder;
+    metadataNet.cryptated = YES;
     metadataNet.fileID = [[NSUUID UUID] UUIDString];
     metadataNet.fileName = fileNamePlist;
     metadataNet.priority = NSOperationQueuePriorityVeryHigh;
@@ -2509,6 +2503,7 @@
     
     // upload plist file
     metadataNet.action = actionUploadOnlyPlist;
+    metadataNet.cryptated = YES;
     metadataNet.fileID = [[NSUUID UUID] UUIDString];
     metadataNet.fileName = [fileNamePlist stringByAppendingString:@".plist"];
     metadataNet.priority = NSOperationQueuePriorityVeryLow;
