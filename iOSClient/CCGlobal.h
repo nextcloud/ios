@@ -245,7 +245,6 @@ extern NSString *const urlBaseUploadDB;
 
 #define k_metadataStatusNormal                          0
 #define k_metadataStatusHide                            1
-#define k_metadataStatusTemp                            2
 
 #define k_tabBarApplicationIndexFile                    0
 #define k_tabBarApplicationIndexOffline                 1
