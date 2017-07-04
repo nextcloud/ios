@@ -2142,10 +2142,13 @@
 
 - (void)deleteFile
 {
+    if (_isSelectedMode && [_selectedFileIDsMetadatas count] == 0)
+        return;
+    
     [_queueSelector removeAllObjects];
     
     if ([_selectedFileIDsMetadatas count] > 0) {
-        
+            
         _numSelectedFileIDsMetadatas = [_selectedFileIDsMetadatas count];
         NSArray *metadatas = [_selectedFileIDsMetadatas allValues];
         [self deleteFileOrFolder:[metadatas objectAtIndex:0] numFile:[_selectedFileIDsMetadatas count] ofFile:_numSelectedFileIDsMetadatas];
@@ -2376,12 +2379,12 @@
     [_queueSelector removeAllObjects];
     
     if ([_selectedFileIDsMetadatas count] > 0) {
-        
+            
         _numSelectedFileIDsMetadatas = [_selectedFileIDsMetadatas count];
         NSArray *metadatas = [_selectedFileIDsMetadatas allValues];
             
         [self performSelectorOnMainThread:@selector(moveFileOrFolderMetadata:) withObject:@[[metadatas objectAtIndex:0], serverUrlTo, [NSNumber numberWithInteger:[_selectedFileIDsMetadatas count]], [NSNumber numberWithInteger:_numSelectedFileIDsMetadatas]] waitUntilDone:NO];
-        
+            
     } else {
         
         _numSelectedFileIDsMetadatas = 1;
@@ -2391,6 +2394,9 @@
 
 - (void)moveOpenWindow:(NSArray *)indexPaths
 {
+    if (_isSelectedMode && [_selectedFileIDsMetadatas count] == 0)
+        return;
+    
     UINavigationController* navigationController = [[UIStoryboard storyboardWithName:@"CCMove" bundle:nil] instantiateViewControllerWithIdentifier:@"CCMove"];
     
     CCMove *viewController = (CCMove *)navigationController.topViewController;
@@ -4129,10 +4135,10 @@
     if (!metadata || [[NCManageDatabase sharedInstance] isTableInvalidated:metadata])
         return NO;
     
-    if (metadata == nil || metadata.errorPasscode || (metadata.cryptated && [metadata.title length] == 0) || metadata.sessionTaskIdentifier  >= 0 || metadata.sessionTaskIdentifier >= 0)
+    if (metadata == nil || metadata.errorPasscode || (metadata.cryptated && [metadata.title length] == 0) || metadata.sessionTaskIdentifier  != k_taskIdentifierDone || metadata.sessionTaskIdentifier != k_taskIdentifierDone)
         return NO;
-    
-    return YES;
+    else
+        return YES;
 }
 
 - (BOOL)swipeTableCell:(MGSwipeTableCell *)cell tappedButtonAtIndex:(NSInteger)index direction:(MGSwipeDirection)direction fromExpansion:(BOOL)fromExpansion
@@ -4804,6 +4810,19 @@
     
     if (self.tableView.editing)
         [self setTitle];
+}
+
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    tableMetadata *metadata = [self getMetadataFromSectionDataSource:indexPath];
+    
+    if (!metadata || [[NCManageDatabase sharedInstance] isTableInvalidated:metadata])
+        return NO;
+    
+    if (metadata == nil || metadata.errorPasscode || (metadata.cryptated && [metadata.title length] == 0) || metadata.sessionTaskIdentifier  != k_taskIdentifierDone || metadata.sessionTaskIdentifier != k_taskIdentifierDone)
+        return NO;
+    else
+        return YES;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
