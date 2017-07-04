@@ -2411,17 +2411,13 @@
 #pragma --------------------------------------------------------------------------------------------
 
 - (void)createFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
-{
-    [_hud hideHud];
-    
+{    
     if (message)
         [app messageNotification:@"_create_folder_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
 }
 
 - (void)createFolderSuccess:(CCMetadataNet *)metadataNet
 {
-    [_hud hideHud];
-    
     NSString *newDirectory = [NSString stringWithFormat:@"%@/%@", metadataNet.serverUrl, metadataNet.fileName];    
     (void)[[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:newDirectory permissions:@""];
     
@@ -2451,9 +2447,6 @@
     metadataNet.selectorPost = selectorReadFolderForced;
     
     [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
-    
-    if (!autoUploadDirectory)
-        [_hud visibleHudTitle:NSLocalizedString(@"_create_folder_", nil) mode:MBProgressHUDModeIndeterminate color:nil];
 }
 
 - (void)createFolderEncrypted:(NSString *)fileNameFolder
@@ -2489,8 +2482,6 @@
     metadataNet.taskStatus = k_taskStatusResume;
     
     [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
-    
-    [_hud visibleHudTitle:NSLocalizedString(@"_create_folder_", nil) mode:MBProgressHUDModeIndeterminate color:nil];
 }
 
 - (void)createFolderAutoUpload
@@ -4141,7 +4132,7 @@
     
     if (direction == MGSwipeDirectionLeftToRight) {
         if (_metadata.favorite)
-            [self  removeFavorite:_metadata];
+            [self removeFavorite:_metadata];
         else
             [self addFavorite:_metadata];
     }

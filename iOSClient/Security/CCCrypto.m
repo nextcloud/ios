@@ -274,8 +274,8 @@
 - (NSString *)createFilenameEncryptor:(NSString *)fileName uuid:(NSString *)uuid
 {
     NSMutableString *cryptoString = [NSMutableString stringWithCapacity: 64];
-    NSString *letters = @"0J7pfXHaCPTasxQDFsUDcSDiHJmVjgzsqDUUQU75IPYrT13YKNJpvvEq0hH2uDD06mhNxvb8";
     
+    NSString *letters = [NSString stringWithFormat:@"%@-%@", [[NSUUID UUID] UUIDString], [[NSUUID UUID] UUIDString]];
     NSString *temp = [NSString stringWithFormat:@"%@|%@|%@", fileName, uuid, uuid];
     
     temp = [temp substringToIndex:64];
