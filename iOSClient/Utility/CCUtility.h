@@ -136,6 +136,7 @@
 + (NSString *)getUserAgent;
 
 + (NSString *)dateDiff:(NSDate *) convertedDate;
++ (NSDate *)dateEnUsPosixFromCloud:(NSString *)dateString;
 + (NSString *)transformedSize:(double)value;
 
 + (NSString *)removeForbiddenCharactersServer:(NSString *)fileName;

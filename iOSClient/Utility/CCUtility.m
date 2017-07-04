@@ -436,6 +436,24 @@
     }
 }
 
+
++ (NSDate *)dateEnUsPosixFromCloud:(NSString *)dateString
+{
+    NSDate *date = [NSDate date];
+    NSError *error;
+    NSDateFormatter *dateFormatter = [NSDateFormatter new];
+    NSLocale *enUSPOSIXLocale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
+    [dateFormatter setLocale:enUSPOSIXLocale];
+    [dateFormatter setDateFormat:@"EEE, dd MMM y HH:mm:ss zzz"];
+
+    if (![dateFormatter getObjectValue:&date forString:dateString range:nil error:&error]) {
+        NSLog(@"Date '%@' could not be parsed: %@", dateString, error);
+        date = [NSDate date];
+    }
+
+    return date;
+}
+
 + (NSString *)transformedSize:(double)value
 {
     int multiplyFactor = 0;

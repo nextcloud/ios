@@ -701,6 +701,11 @@
     
     [communication createFolder:nameFolderURL onCommunication:communication withForbiddenCharactersSupported:YES successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
+        NSDictionary *fields = [response allHeaderFields];
+
+        _metadataNet.fileID = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-FileId"]];
+        _metadataNet.date = [CCUtility dateEnUsPosixFromCloud:[fields objectForKey:@"Date"]];
+        
         if ([self.delegate respondsToSelector:@selector(createFolderSuccess:)])
             [self.delegate createFolderSuccess:_metadataNet];
        
