@@ -4255,25 +4255,7 @@
                                  height: 50.0
                                    type: AHKActionSheetButtonTypeDisabled
                                 handler: nil
-         ];
-        
-        /*
-        if (!lockDirectory && !_metadata.cryptated) {
-            
-            [actionSheet addButtonWithTitle:titleFavorite
-                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetFavorite"] color:[NCBrandColor sharedInstance].brand]
-                            backgroundColor:[UIColor whiteColor]
-                                     height: 50.0
-                                       type:AHKActionSheetButtonTypeDefault
-                                    handler:^(AHKActionSheet *as) {
-         
-                                        if (_metadata.favorite)
-                                            [self removeFavorite:_metadata];
-                                        else
-                                            [self addFavorite:_metadata];
-                                    }];
-        }
-        */
+        ];
         
         if (_metadata.cryptated == NO && !lockDirectory) {
             
@@ -4417,24 +4399,6 @@
                                 handler: nil
         ];
         
-        /*
-        if (!_metadata.cryptated) {
-            
-            [actionSheet addButtonWithTitle:titleFavorite
-                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetFavorite"] color:[NCBrandColor sharedInstance].brand]
-                            backgroundColor:[UIColor whiteColor]
-                                     height: 50.0
-                                       type:AHKActionSheetButtonTypeDefault
-                                    handler:^(AHKActionSheet *as) {
-         
-                                        if (_metadata.favorite)
-                                            [self  removeFavorite:_metadata];
-                                        else
-                                            [self addFavorite:_metadata];
-                                    }];
-        }
-        */
-        
         if (_metadata.cryptated == NO) {
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_share_", nil)
@@ -4530,6 +4494,7 @@
         
 #ifdef DEBUG
         
+        /*
         [actionSheet addButtonWithTitle:@"Hide file"
                                   image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"admin"] color:[NCBrandColor sharedInstance].brand]
                         backgroundColor:[UIColor whiteColor]
@@ -4541,6 +4506,7 @@
                                     
                                     [self reloadDatasource];
                                 }];
+        */ 
         
 #endif
 
@@ -4608,37 +4574,6 @@
         [actionSheet show];
     }
 }
-
-/*
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    //Nothing gets called here if you invoke `tableView:editActionsForRowAtIndexPath:` according to Apple docs so just leave this method blank
-}
-
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // the cells you would like the actions to appear needs to be editable
-}
-
-- (NSArray<UITableViewRowAction *> *)tableView:(UITableView *)tableView editActionsForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    _metadata = [self getMetadataFromSectionDataSource:indexPath];
-
-    // ---- DELETE ----
- 
-    UITableViewRowAction *delete = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDestructive title:NSLocalizedString(@"_delete_", nil) handler:^(UITableViewRowAction *action, NSIndexPath *indexPath) {
-    }];
-     
-    // ---- MORE ----
-     
-    UITableViewRowAction *more = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDefault title:NSLocalizedString(@"_more_", nil) handler:^(UITableViewRowAction *action, NSIndexPath *indexPath) {
-    }];
- 
-    more.backgroundColor = [UIColor lightGrayColor];
- 
-    return @[delete, more];
-}
-*/
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark - ==== Datasource ====
