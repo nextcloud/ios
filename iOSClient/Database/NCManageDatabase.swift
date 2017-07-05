@@ -1776,10 +1776,12 @@ class NCManageDatabase: NSObject {
         }
         
         let realm = try! Realm()
+        
         let sorted = CCUtility.getOrderSettings()
         let ascending = CCUtility.getAscendingSettings()
         
         var recordsPhotosAutoUpload = [tableMetadata]()
+        
         let results = self.getTablesDirectory(predicate: NSPredicate(format: "account = %@ AND serverUrl BEGINSWITH %@", tableAccount.account, serverUrl), sorted: "serverUrl", ascending: true)
         
         if results != nil {
@@ -1808,8 +1810,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    /*
-    func convertMetadataToUnmanagedMetadata(_ metadatas: Results<tableMetadata>) -> [tableMetadata] {
+    func convertMetadataToUnmanagedMetadata(_ metadatas: Results<tableMetadata>) -> [tableMetadata]? {
         
         var unmanageMetadatas = [tableMetadata]()
         
@@ -1819,7 +1820,6 @@ class NCManageDatabase: NSObject {
         
         return unmanageMetadatas
     }
-    */
     
     //MARK: -
     //MARK: Table Photo Library
