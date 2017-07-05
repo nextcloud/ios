@@ -4722,7 +4722,7 @@
     NSInteger section = indexPath.section + 1;
     NSInteger row = indexPath.row + 1;
     
-    NSInteger totSections =[_sectionDataSource.sections count] ;
+    NSInteger totSections = [_sectionDataSource.sections count] ;
     
     if ((totSections < section) || (section > totSections)) {
       
@@ -4749,7 +4749,7 @@
         NSLog(@"[LOG] DEBUG [2] : fileIDs is NIL");
         return nil;
     }
-    
+        
     NSString *fileID = [fileIDs objectAtIndex:indexPath.row];
     tableMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:fileID];
     
@@ -4877,22 +4877,23 @@
     float shift;
     UIVisualEffectView *visualEffectView;
     
-    // Titolo
     NSString *titleSection;
     
-    // Controllo
-    if ([_sectionDataSource.sections count] == 0)
+    if (![self indexPathIsValid:[NSIndexPath indexPathForRow:0 inSection:section]])
         return nil;
     
-    if ([[_sectionDataSource.sections objectAtIndex:section] isKindOfClass:[NSString class]]) titleSection = [_sectionDataSource.sections objectAtIndex:section];
-    if ([[_sectionDataSource.sections objectAtIndex:section] isKindOfClass:[NSDate class]]) titleSection = [CCUtility getTitleSectionDate:[_sectionDataSource.sections objectAtIndex:section]];
+    if ([[_sectionDataSource.sections objectAtIndex:section] isKindOfClass:[NSString class]])
+        titleSection = [_sectionDataSource.sections objectAtIndex:section];
+    
+    if ([[_sectionDataSource.sections objectAtIndex:section] isKindOfClass:[NSDate class]])
+        titleSection = [CCUtility getTitleSectionDate:[_sectionDataSource.sections objectAtIndex:section]];
     
     if ([titleSection isEqualToString:@"_none_"]) titleSection = @"";
     else if ([titleSection rangeOfString:@"download"].location != NSNotFound) titleSection = NSLocalizedString(@"_title_section_download_",nil);
     else if ([titleSection rangeOfString:@"upload"].location != NSNotFound) titleSection = NSLocalizedString(@"_title_section_upload_",nil);
     else titleSection = NSLocalizedString(titleSection,nil);
     
-    // Formato titolo
+    // Format title
     NSString *currentDevice = [CCUtility currentDevice];
     if ([currentDevice rangeOfString:@"iPad3"].location != NSNotFound) {
         
