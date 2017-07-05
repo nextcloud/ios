@@ -751,7 +751,7 @@
     UIViewController *viewController;
     NSString *fileName, *uuid, *fileID, *serverUrl;
     
-    NSIndexPath * index = [self.tableView indexPathForSelectedRow];
+    NSIndexPath *index = [self.tableView indexPathForSelectedRow];
     [self.tableView deselectRowAtIndexPath:index animated:NO];
     
     if (isnew) {
@@ -1281,9 +1281,10 @@
 {
     NSIndexPath *indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:metadataNet.fileID];
     
-    if (indexPath && [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadataNet.fileID]]) {
-        
-        [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
+    if ([self indexPathIsValid:indexPath]) {
+    
+        if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadataNet.fileID]])
+            [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
     }
 }
 
@@ -2738,7 +2739,7 @@
     
     NSIndexPath *indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:fileID];
     
-    if (indexPath) {
+    if ([self indexPathIsValid:indexPath]) {
         
         CCTransfersCell *cell = (CCTransfersCell *)[self.tableView cellForRowAtIndexPath:indexPath];
         
@@ -2754,9 +2755,9 @@
 {
     UITouch * touch = [[event allTouches] anyObject];
     CGPoint location = [touch locationInView:self.tableView];
-    NSIndexPath * indexPath = [self.tableView indexPathForRowAtPoint:location];
+    NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:location];
     
-    if (indexPath) {
+    if ([self indexPathIsValid:indexPath]) {
         
         tableMetadata *metadata = [self getMetadataFromSectionDataSource:indexPath];
         
@@ -2821,9 +2822,9 @@
 {
     UITouch * touch = [[event allTouches] anyObject];
     CGPoint location = [touch locationInView:self.tableView];
-    NSIndexPath * indexPath = [self.tableView indexPathForRowAtPoint:location];
+    NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:location];
     
-    if (indexPath) {
+    if ([self indexPathIsValid:indexPath]) {
         
         tableMetadata *metadata = [self getMetadataFromSectionDataSource:indexPath];
         
@@ -2888,9 +2889,9 @@
 {
     UITouch * touch = [[event allTouches] anyObject];
     CGPoint location = [touch locationInView:self.tableView];
-    NSIndexPath * indexPath = [self.tableView indexPathForRowAtPoint:location];
+    NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:location];
     
-    if (indexPath) {
+    if ([self indexPathIsValid:indexPath]) {
         
         tableMetadata *metadata = [self getMetadataFromSectionDataSource:indexPath];
         
@@ -3136,7 +3137,7 @@
 - (void)tapActionShared:(UITapGestureRecognizer *)tapGesture
 {
     CGPoint location = [tapGesture locationInView:self.tableView];
-    NSIndexPath * indexPath = [self.tableView indexPathForRowAtPoint:location];
+    NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:location];
     
     tableMetadata *metadata = [self getMetadataFromSectionDataSource:indexPath];
     
@@ -3147,7 +3148,7 @@
 - (void)tapActionConnectionMounted:(UITapGestureRecognizer *)tapGesture
 {
     CGPoint location = [tapGesture locationInView:self.tableView];
-    NSIndexPath * indexPath = [self.tableView indexPathForRowAtPoint:location];
+    NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:location];
     
     tableMetadata *metadata = [self getMetadataFromSectionDataSource:indexPath];
     
@@ -3232,7 +3233,9 @@
     }
     
     NSIndexPath *indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:metadata.fileID];
-    if (indexPath) [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObjects:indexPath, nil] withRowAnimation:UITableViewRowAnimationAutomatic];
+    
+    if ([self indexPathIsValid:indexPath])
+        [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObjects:indexPath, nil] withRowAnimation:UITableViewRowAnimationAutomatic];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -3246,7 +3249,8 @@
     [[CCNetworking sharedNetworking] downloadFile:metadata.fileID serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorOpenIn selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
     
     NSIndexPath *indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:metadata.fileID];
-    if (indexPath) [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObjects:indexPath, nil] withRowAnimation:UITableViewRowAnimationAutomatic];
+    if ([self indexPathIsValid:indexPath])
+        [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObjects:indexPath, nil] withRowAnimation:UITableViewRowAnimationAutomatic];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -3725,7 +3729,7 @@
         CGPoint touchPoint = [recognizer locationInView:self.view];
         NSIndexPath *indexPath = [tableView indexPathForRowAtPoint:touchPoint];
         
-        if (indexPath)
+        if ([self indexPathIsValid:indexPath])
             _metadata = [self getMetadataFromSectionDataSource:indexPath];
         else
             _metadata = nil;
@@ -4114,7 +4118,8 @@
     if ([[NCManageDatabase sharedInstance] setDirectoryLockWithServerUrl:lockServerUrl lock:YES]) {
         
         NSIndexPath *indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:_metadata.fileID];
-        if (indexPath) [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObjects:indexPath, nil] withRowAnimation:UITableViewRowAnimationAutomatic];
+        if ([self indexPathIsValid:indexPath])
+            [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObjects:indexPath, nil] withRowAnimation:UITableViewRowAnimationAutomatic];
         
     } else {
         
@@ -5537,6 +5542,25 @@
     [_selectedFileIDsMetadatas removeObjectForKey:metadata.fileID];
     
     [self setTitle];
+}
+
+- (BOOL)indexPathIsValid:(NSIndexPath *)indexPath
+{
+    if (!indexPath)
+        return NO;
+    
+    NSInteger section = indexPath.section;
+    NSInteger row = indexPath.row;
+    
+    NSInteger lastSectionIndex = [self numberOfSectionsInTableView:self.tableView] - 1;
+    
+    //Make sure the specified section exists
+    if (section > lastSectionIndex)
+        return NO;
+    
+    NSInteger rowCount = [self.tableView numberOfRowsInSection:indexPath.section] - 1;
+    
+    return row <= rowCount;
 }
 
 #pragma --------------------------------------------------------------------------------------------

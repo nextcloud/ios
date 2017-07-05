@@ -355,7 +355,7 @@
         indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:metadata.fileID];
     }
     
-    if (indexPath && existsIcon) {
+    if ([self indexPathIsValid:indexPath] && existsIcon) {
         
         UICollectionViewCell *cell = [self.collectionView cellForItemAtIndexPath:indexPath];
         
@@ -462,8 +462,11 @@
 {
     NSIndexPath *indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:metadataNet.fileID];
     
-    if (indexPath && [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadataNet.fileID]])
-        [self.collectionView reloadItemsAtIndexPaths:@[indexPath]];
+    if ([self indexPathIsValid:indexPath]) {
+    
+        if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadataNet.fileID]])
+            [self.collectionView reloadItemsAtIndexPaths:@[indexPath]];
+    }
 }
 
 - (void)triggerProgressTask:(NSNotification *)notification
@@ -656,6 +659,25 @@
     _metadata = [_sectionDataSource.allRecordsDataSource objectForKey:fileID];
     
     [self cellSelect:NO indexPath:indexPath metadata:_metadata];
+}
+
+- (BOOL)indexPathIsValid:(NSIndexPath *)indexPath
+{
+    if (!indexPath)
+        return NO;
+    
+    NSInteger section = indexPath.section;
+    NSInteger row = indexPath.row;
+    
+    NSInteger lastSectionIndex = [self numberOfSectionsInCollectionView:self.collectionView] - 1;
+    
+    //Make sure the specified section exists
+    if (section > lastSectionIndex)
+        return NO;
+    
+    NSInteger rowCount = [self.collectionView numberOfItemsInSection:indexPath.section] - 1;
+    
+    return row <= rowCount;
 }
 
 #pragma --------------------------------------------------------------------------------------------
