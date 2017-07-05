@@ -946,6 +946,9 @@
 
 - (void)saveSelectedFiles
 {
+    if (_isSelectedMode && [_selectedFileIDsMetadatas count] == 0)
+        return;
+
     NSLog(@"[LOG] Start download selected files ...");
     
     [_hud visibleHudTitle:@"" mode:MBProgressHUDModeIndeterminate color:nil];
@@ -1512,6 +1515,9 @@
 
 - (void)downloadSelectedFilesFolders
 {
+    if (_isSelectedMode && [_selectedFileIDsMetadatas count] == 0)
+        return;
+
     NSLog(@"[LOG] Start download selected ...");
     
     [_hud visibleHudTitle:NSLocalizedString(@"_downloading_progress_", nil) mode:MBProgressHUDModeIndeterminate color:nil];
