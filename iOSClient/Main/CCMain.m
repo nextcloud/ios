@@ -4811,8 +4811,8 @@
     //store swipeOffset before relod
     [_statusSwipeCell removeAllObjects];
     for (MGSwipeTableCell *cell in self.tableView.visibleCells) {
-        NSIndexPath *path = [self.tableView indexPathForCell:cell];
-        [_statusSwipeCell setObject:[NSNumber numberWithDouble:cell.swipeOffset] forKey:[@(path.row) stringValue]];
+        NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
+        [_statusSwipeCell setObject:[NSNumber numberWithDouble:cell.swipeOffset] forKey:indexPath];
     }
     
     // reload table view
@@ -5382,9 +5382,8 @@
     [moreButton centerIconOverText];
 
     //restore swipeOffset after relod
-    CGFloat swipeOffset = [[_statusSwipeCell objectForKey:[@(indexPath.row) stringValue]] doubleValue];
+    CGFloat swipeOffset = [[_statusSwipeCell objectForKey:indexPath] doubleValue];
     if (swipeOffset < 0) {
-        //[cell setSwipeOffset:swipeOffset animated:NO completion:nil];
         [cell showSwipe:MGSwipeDirectionRightToLeft animated:NO];
     } else if (swipeOffset > 0) {
         [cell showSwipe:MGSwipeDirectionLeftToRight animated:NO];
