@@ -429,13 +429,7 @@ class NCManageDatabase: NSObject {
         
         let results = realm.objects(tableActivity.self).filter(predicate).sorted(byKeyPath: "date", ascending: false)
         
-        var unmanageActivities = [tableActivity]()
-        
-        for activity in results {
-            unmanageActivities.append(tableActivity.init(value: activity))
-        }
-        
-        return unmanageActivities
+        return results.map { $0 }
     }
 
     func addActivityServer(_ listOfActivity: [OCActivity]) {
@@ -657,17 +651,11 @@ class NCManageDatabase: NSObject {
             return nil
         }
         
-        var unmanageAutoUploads = [tableAutoUpload]()
-
         let realm = try! Realm()
         
         let results = realm.objects(tableAutoUpload.self).filter("account = %@ AND lock = true", tableAccount!.account)
         
-        for autoUpload in results {
-            unmanageAutoUploads.append(tableAutoUpload.init(value: autoUpload))
-        }
-        
-        return unmanageAutoUploads
+        return results.map { $0 }
     }
 
     func unlockAutoUpload(assetLocalIdentifier: String) {
@@ -1049,13 +1037,7 @@ class NCManageDatabase: NSObject {
         
         if (results.count > 0) {
             
-            var unmanageDirectories = [tableDirectory]()
-            
-            for directory in results {
-                unmanageDirectories.append(tableDirectory.init(value: directory))
-            }
-            
-            return unmanageDirectories
+            return results.map { $0 }
             
         } else {
             
@@ -1742,13 +1724,7 @@ class NCManageDatabase: NSObject {
         
         if (results.count > 0) {
             
-            var unmanageMetadatas = [tableMetadata]()
-            
-            for metadata in results {
-                unmanageMetadatas.append(tableMetadata.init(value: metadata))
-            }
-            
-            return unmanageMetadatas
+            return results.map { $0 }
             
         } else {
             
