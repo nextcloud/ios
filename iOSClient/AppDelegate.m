@@ -1628,8 +1628,11 @@
 
     if ([actualVersion isEqualToString:@"2.17.4"]) {
         
-        // Build < 23
-        if (([actualBuild compare:@"23" options:NSNumericSearch] == NSOrderedAscending) || actualBuild == nil) {
+        // Build < 28
+        if (([actualBuild compare:@"28" options:NSNumericSearch] == NSOrderedAscending) || actualBuild == nil) {
+            
+            // Align Photo Library
+            [[NCAutoUpload sharedInstance] alignPhotoLibrary];
             
             [CCUtility setBuild];
         }
