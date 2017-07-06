@@ -4154,7 +4154,9 @@
 
 -(void)swipeTableCell:(nonnull MGSwipeTableCell *)cell didChangeSwipeState:(MGSwipeState)state gestureIsActive:(BOOL)gestureIsActive
 {
-    //
+    if (state == MGSwipeStateNone) {
+        NSLog(@"done");
+    }
 }
 
 - (BOOL)swipeTableCell:(MGSwipeTableCell *)cell tappedButtonAtIndex:(NSInteger)index direction:(MGSwipeDirection)direction fromExpansion:(BOOL)fromExpansion
@@ -5393,8 +5395,10 @@
     CGFloat swipeOffset = [[_statusSwipeCell objectForKey:indexPath] doubleValue];
     if (swipeOffset < 0) {
         [cell showSwipe:MGSwipeDirectionRightToLeft animated:NO];
+        [_statusSwipeCell removeObjectForKey:indexPath];
     } else if (swipeOffset > 0) {
         [cell showSwipe:MGSwipeDirectionLeftToRight animated:NO];
+        [_statusSwipeCell removeObjectForKey:indexPath];
     }
     
     return cell;
