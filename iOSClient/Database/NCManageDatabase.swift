@@ -1777,37 +1777,35 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
         
-        let sorted = CCUtility.getOrderSettings()
-        let ascending = CCUtility.getAscendingSettings()
-        
         var recordsPhotosAutoUpload = [tableMetadata]()
         
         let results = self.getTablesDirectory(predicate: NSPredicate(format: "account = %@ AND serverUrl BEGINSWITH %@", tableAccount.account, serverUrl), sorted: "serverUrl", ascending: true)
         
         if results != nil {
             
+            // Prepare Predicate
+            var directoriesID: String = ""
             for directory in results! {
-            
-                let predicate = NSPredicate(format: "account = %@ AND directoryID = %@ AND session = '' AND type = 'file' AND (typeFile = %@ OR typeFile = %@)", tableAccount.account, directory.directoryID, k_metadataTypeFile_image, k_metadataTypeFile_video)
-                let metadatas = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: sorted!, ascending: ascending)
                 
-                if metadatas.count > 0 {
-                    
-                    for metadata in metadatas {
-                        recordsPhotosAutoUpload.append(tableMetadata.init(value: metadata))
-                    }
+                if directoriesID.characters.count > 0 {
+                    directoriesID = directoriesID + " OR "
                 }
+                directoriesID = directoriesID + "directoryID = '\(directory.directoryID)'"
             }
-        }
-        
-        if recordsPhotosAutoUpload.count > 0 {
+            let predicateStr = String(format: "account = '%@' AND (%@) AND session = '' AND type = 'file' AND (typeFile = '%@' OR typeFile = '%@')", tableAccount.account, directoriesID, k_metadataTypeFile_image, k_metadataTypeFile_video)
+            
+            // Query
+            let metadatas = realm.objects(tableMetadata.self).filter(NSPredicate(format: predicateStr)).sorted(byKeyPath: "date", ascending: false)
+
+            // Convert results in unmanaged
+            for metadata in metadatas {
+                recordsPhotosAutoUpload.append(tableMetadata.init(value: metadata))
+            }
             
             return Array(recordsPhotosAutoUpload)
-            
-        } else {
-            
-            return nil
         }
+        
+        return nil
     }
     
     func convertMetadataToUnmanagedMetadata(_ metadatas: Results<tableMetadata>) -> [tableMetadata]? {
@@ -1860,7 +1858,7 @@ class NCManageDatabase: NSObject {
                         modificationDate = ""
                     }
                     
-                    addRecord.idAsset = "\(asset.localIdentifier)\(creationDate)\(modificationDate)"
+                    addRecord.idAsset = "\(tableAccount.account)\(asset.localIdentifier)\(creationDate)\(modificationDate)"
 
                     realm.add(addRecord, update: true)
                 }
@@ -2155,7 +2153,6 @@ class NCManageDatabase: NSObject {
             return nil
         }
 
-        
         var sharesLink = [String:String]()
         var sharesUserAndGroup = [String:String]()
         
