@@ -464,9 +464,14 @@
     else
         directory = app.directoryUser;
     
-    // Download
-    if (metadata && [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", directory, metadata.fileID]] == NO && [metadata.session length] == 0)
-        [self performSelector:@selector(downloadPhotoBrowser:) withObject:metadata];
+    // Download image ?
+    if (metadata) {
+        
+        tableMetadata *metadataDB = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadata.fileID]];
+
+        if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", directory, metadata.fileID]] == NO && [metadataDB.session length] == 0)
+            [self downloadPhotoBrowser:metadata];
+    }
     
     // Title
     if (metadata && !photoBrowser.isGridController)
@@ -748,8 +753,6 @@
     
     // do not reload is Video on air
     if (_photoBrowser.currentVideoPlayerViewController.isViewLoaded && _photoBrowser.currentVideoPlayerViewController.view.window) return;
-    
-    //NSLog(@"[LOG] Add Download Photo Browser");
     
     if ([metadataVar.fileID isEqualToString:_fileIDNowVisible] || [self.photoBrowser isGridReload:index]) {
         
