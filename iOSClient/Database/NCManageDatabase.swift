@@ -36,11 +36,11 @@ class NCManageDatabase: NSObject {
         let config = Realm.Configuration(
         
             fileURL: dirGroup?.appendingPathComponent("\(appDatabaseNextcloud)/\(k_databaseDefault)"),
-            schemaVersion: 2,
+            schemaVersion: 3,
             
             migrationBlock: { migration, oldSchemaVersion in
                 // We haven’t migrated anything yet, so oldSchemaVersion == 0
-                if (oldSchemaVersion < 2) {
+                if (oldSchemaVersion < 3) {
                     // Nothing to do!
                     // Realm will automatically detect new properties and removed properties
                     // And will update the schema on disk automatically
@@ -1786,32 +1786,19 @@ class NCManageDatabase: NSObject {
         
         var recordsPhotosAutoUpload = [tableMetadata]()
         
-        let results = self.getTablesDirectory(predicate: NSPredicate(format: "account = %@ AND serverUrl BEGINSWITH %@", tableAccount.account, serverUrl), sorted: "serverUrl", ascending: true)
-        
-        if results != nil {
-            
-            // Prepare Predicate
-            var directoriesID: String = "IN {"
-            for directory in results! {
-                directoriesID = directoriesID + "'\(directory.directoryID)',"
-            }
-            directoriesID = String(directoriesID.characters.dropLast(1))
-            directoriesID = directoriesID + "}"
-            
-            let predicateStr = String(format: "account = '%@' AND session = '' AND type = 'file' AND (typeFile = '%@' OR typeFile = '%@') AND directoryID %@", tableAccount.account, k_metadataTypeFile_image, k_metadataTypeFile_video, directoriesID)
-            
-            // Query
-            let metadatas = realm.objects(tableMetadata.self).filter(NSPredicate(format: predicateStr)).sorted(byKeyPath: "date", ascending: false)
+        let results = realm.objects(tableDirectory.self).filter(NSPredicate(format: "account = %@ AND serverUrl BEGINSWITH %@", tableAccount.account, serverUrl)).sorted(byKeyPath: "serverUrl", ascending: true)
+        let directoriesID = Array(results.map { $0.directoryID })
 
-            // Convert results in unmanaged
-            for metadata in metadatas {
-                recordsPhotosAutoUpload.append(tableMetadata.init(value: metadata))
-            }
+        let predicate = NSPredicate(format: "account = %@ AND session = '' AND type = 'file' AND (typeFile = %@ OR typeFile = %@) AND directoryID IN %@", tableAccount.account, k_metadataTypeFile_image, k_metadataTypeFile_video, directoriesID)
             
-            return Array(recordsPhotosAutoUpload)
+        let metadatas = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: "date", ascending: false)
+            
+        // Convert results in unmanaged
+        for metadata in metadatas {
+            recordsPhotosAutoUpload.append(tableMetadata.init(value: metadata))
         }
-        
-        return nil
+            
+        return Array(recordsPhotosAutoUpload)
     }
     
     func convertMetadataToUnmanagedMetadata(_ metadatas: Results<tableMetadata>) -> [tableMetadata]? {
