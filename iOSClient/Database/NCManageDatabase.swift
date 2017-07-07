@@ -1791,15 +1791,14 @@ class NCManageDatabase: NSObject {
         if results != nil {
             
             // Prepare Predicate
-            var directoriesID: String = ""
+            var directoriesID: String = "IN {"
             for directory in results! {
-                
-                if directoriesID.characters.count > 0 {
-                    directoriesID = directoriesID + " OR "
-                }
-                directoriesID = directoriesID + "directoryID = '\(directory.directoryID)'"
+                directoriesID = directoriesID + "'\(directory.directoryID)',"
             }
-            let predicateStr = String(format: "account = '%@' AND (%@) AND session = '' AND type = 'file' AND (typeFile = '%@' OR typeFile = '%@')", tableAccount.account, directoriesID, k_metadataTypeFile_image, k_metadataTypeFile_video)
+            directoriesID = String(directoriesID.characters.dropLast(1))
+            directoriesID = directoriesID + "}"
+            
+            let predicateStr = String(format: "account = '%@' AND session = '' AND type = 'file' AND (typeFile = '%@' OR typeFile = '%@') AND directoryID %@", tableAccount.account, k_metadataTypeFile_image, k_metadataTypeFile_video, directoriesID)
             
             // Query
             let metadatas = realm.objects(tableMetadata.self).filter(NSPredicate(format: predicateStr)).sorted(byKeyPath: "date", ascending: false)
