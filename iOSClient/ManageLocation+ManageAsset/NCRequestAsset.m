@@ -30,15 +30,17 @@
         return;
     }
 
-    PHAsset *asset = result[0];
-    PHAssetMediaType assetMediaType = asset.mediaType;
-    __block NSError *error = nil;
+    PHAsset *assetResult = result[0];
+    PHAssetMediaType assetMediaType = assetResult.mediaType;
     
     // VIDEO
     if (assetMediaType == PHAssetMediaTypeVideo) {
 
         @autoreleasepool {
-            
+        
+            __block PHAsset *asset = result[0];
+            __block NSError *error = nil;
+
             dispatch_semaphore_t semaphoreGroup = dispatch_semaphore_create(0);
 
             PHVideoRequestOptions *options = [PHVideoRequestOptions new];
@@ -122,6 +124,9 @@
         
         @autoreleasepool {
             
+            __block PHAsset *asset = result[0];
+            __block NSError *error = nil;
+        
             dispatch_semaphore_t semaphoreGroup = dispatch_semaphore_create(0);
             
             PHImageRequestOptions *options = [PHImageRequestOptions new];
