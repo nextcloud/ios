@@ -487,25 +487,32 @@ class NCManageDatabase: NSObject {
 
         let realm = try! Realm()
         
-        do {
-            try realm.write {
+        if realm.isInWriteTransaction {
+        
+            print("[LOG] Could not write to database, addActivityClient is already in write transaction")
+            
+        } else {
+            
+            do {
+                try realm.write {
                 
-                // Add new Activity
-                let addActivity = tableActivity()
+                    // Add new Activity
+                    let addActivity = tableActivity()
                 
-                addActivity.account = tableAccount.account
-                addActivity.action = action
-                addActivity.file = file
-                addActivity.fileID = fileID
-                addActivity.note = noteReplacing
-                addActivity.selector = selector
-                addActivity.type = type
-                addActivity.verbose = verbose
+                    addActivity.account = tableAccount.account
+                    addActivity.action = action
+                    addActivity.file = file
+                    addActivity.fileID = fileID
+                    addActivity.note = noteReplacing
+                    addActivity.selector = selector
+                    addActivity.type = type
+                    addActivity.verbose = verbose
                 
-                realm.add(addActivity)
+                    realm.add(addActivity)
+                }
+            } catch let error {
+                print("[LOG] Could not write to database: ", error)
             }
-        } catch let error {
-            print("[LOG] Could not write to database: ", error)
         }
     }
     

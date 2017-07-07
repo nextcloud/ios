@@ -482,29 +482,33 @@
 
 - (void)sendMail:(XLFormRowDescriptor *)sender
 {
-    // Email Subject
-    NSString *emailTitle = NSLocalizedString(@"_information_req_", nil);
-    // Email Content
-    NSString *messageBody;
-    // Email Recipents
-    NSArray *toRecipents;
+    if ([MFMailComposeViewController canSendMail]) {
+
+        // Email Subject
+        NSString *emailTitle = NSLocalizedString(@"_information_req_", nil);
+        // Email Content
+        NSString *messageBody;
+        // Email Recipents
+        NSArray *toRecipents;
     
-    messageBody = [NSString stringWithFormat:@"\n\n\n%@ Version %@ (%@)", [NCBrandOptions sharedInstance].brand, [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"], [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
-    toRecipents = [NSArray arrayWithObject:[NCBrandOptions sharedInstance].mailMe];
+        messageBody = [NSString stringWithFormat:@"\n\n\n%@ Version %@ (%@)", [NCBrandOptions sharedInstance].brand, [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"], [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
+        toRecipents = [NSArray arrayWithObject:[NCBrandOptions sharedInstance].mailMe];
     
-    MFMailComposeViewController *mc = [[MFMailComposeViewController alloc] init];
-    mc.mailComposeDelegate = self;
-    [mc setSubject:emailTitle];
-    [mc setMessageBody:messageBody isHTML:NO];
-    [mc setToRecipients:toRecipents];
+        MFMailComposeViewController *mc = [[MFMailComposeViewController alloc] init];
+        mc.mailComposeDelegate = self;
+        [mc setSubject:emailTitle];
+        [mc setMessageBody:messageBody isHTML:NO];
+        [mc setToRecipients:toRecipents];
     
-    // Present mail view controller on screen
+        // Present mail view controller on screen
     [self presentViewController:mc animated:YES completion:NULL];
+    }
 }
 
 - (void)sendMailEncryptPass
 {
-    [CCUtility sendMailEncryptPass:[CCUtility getEmail] validateEmail:NO form:self nameImage:@"backgroundDetail"];
+    if ([MFMailComposeViewController canSendMail])
+        [CCUtility sendMailEncryptPass:[CCUtility getEmail] validateEmail:NO form:self nameImage:@"backgroundDetail"];
 }
 
 #pragma --------------------------------------------------------------------------------------------
