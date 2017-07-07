@@ -425,13 +425,7 @@ class NCManageDatabase: NSObject {
         
         let results = realm.objects(tableActivity.self).filter(predicate).sorted(byKeyPath: "date", ascending: false)
         
-        var unmanageActivities = [tableActivity]()
-        
-        for activity in results {
-            unmanageActivities.append(tableActivity.init(value: activity))
-        }
-        
-        return unmanageActivities
+        return Array(results.map { tableActivity.init(value:$0) })
     }
 
     func addActivityServer(_ listOfActivity: [OCActivity]) {
@@ -642,17 +636,11 @@ class NCManageDatabase: NSObject {
             return nil
         }
     
-        var unmanageAutoUploads = [tableAutoUpload]()
-
         let realm = try! Realm()
         
         let results = realm.objects(tableAutoUpload.self).filter("account = %@ AND lock = true", tableAccount.account)
         
-        for autoUpload in results {
-            unmanageAutoUploads.append(tableAutoUpload.init(value: autoUpload))
-        }
-        
-        return unmanageAutoUploads
+        return Array(results.map { tableAutoUpload.init(value:$0) })
     }
 
     func unlockAutoUpload(assetLocalIdentifier: String) {
@@ -1008,17 +996,8 @@ class NCManageDatabase: NSObject {
         }
         
         if (results.count > 0) {
-            
-            var unmanageDirectories = [tableDirectory]()
-            
-            for directory in results {
-                unmanageDirectories.append(tableDirectory.init(value: directory))
-            }
-            
-            return unmanageDirectories
-            
+            return Array(results.map { tableDirectory.init(value:$0) })
         } else {
-            
             return nil
         }
     }
@@ -1682,17 +1661,8 @@ class NCManageDatabase: NSObject {
         }
         
         if (results.count > 0) {
-            
-            var unmanageMetadatas = [tableMetadata]()
-            
-            for metadata in results {
-                unmanageMetadatas.append(tableMetadata.init(value: metadata))
-            }
-            
-            return unmanageMetadatas
-            
+            return Array(results.map { tableMetadata.init(value:$0) })
         } else {
-            
             return nil
         }
     }
@@ -1708,11 +1678,8 @@ class NCManageDatabase: NSObject {
         let results = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: sorted!, ascending: ascending)
         
         if (results.count > 0  && results.count > index) {
-            
             return tableMetadata.init(value: results[index])
-            
         } else {
-            
             return nil
         }
     }
@@ -1784,30 +1751,12 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
         
-        var recordsPhotosAutoUpload = [tableMetadata]()
-        
         let directories = realm.objects(tableDirectory.self).filter(NSPredicate(format: "account = %@ AND serverUrl BEGINSWITH %@", tableAccount.account, serverUrl)).sorted(byKeyPath: "serverUrl", ascending: true)
         let directoriesID = Array(directories.map { $0.directoryID })
         
         let metadatas = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account = %@ AND session = '' AND type = 'file' AND (typeFile = %@ OR typeFile = %@) AND directoryID IN %@", tableAccount.account, k_metadataTypeFile_image, k_metadataTypeFile_video, directoriesID)).sorted(byKeyPath: "date", ascending: false)
             
-        // Convert results in unmanaged
-        for metadata in metadatas {
-            recordsPhotosAutoUpload.append(tableMetadata.init(value: metadata))
-        }
-            
-        return Array(recordsPhotosAutoUpload)
-    }
-    
-    func convertMetadataToUnmanagedMetadata(_ metadatas: Results<tableMetadata>) -> [tableMetadata]? {
-        
-        var unmanageMetadatas = [tableMetadata]()
-        
-        for metadata in metadatas {
-            unmanageMetadatas.append(tableMetadata.init(value: metadata))
-        }
-        
-        return unmanageMetadatas
+        return Array(metadatas.map { tableMetadata.init(value:$0) })
     }
     
     //MARK: -
