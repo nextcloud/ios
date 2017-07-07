@@ -593,13 +593,9 @@
     
     metadata = [_dataSource objectAtIndex:indexPath.row];
         
-    cell.file.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]];
-        
+    // favorite
     if (_serverUrl == nil)
         cell.favorite.image = [UIImage imageNamed:@"favorite"];
-    
-    if (cell.file.image == nil && metadata.thumbnailExists)
-        [[CCActions sharedInstance] downloadTumbnail:metadata delegate:self];
     
     // encrypted color
     if (metadata.cryptated) {
@@ -608,20 +604,42 @@
         cell.labelTitle.textColor = [UIColor blackColor];
     }
     
-    // File name
+    // filename
     cell.labelTitle.text = metadata.fileNamePrint;
     cell.labelInfoFile.text = @"";
     
-    // Immagine del file, se non c'è l'anteprima mettiamo quella standard
-    if (cell.file.image == nil) {
-        
-        if (metadata.directory) {
+    // Shared
+    NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
+    NSString *shareLink = [app.sharesLink objectForKey:[serverUrl stringByAppendingString:metadata.fileName]];
+    NSString *shareUserAndGroup = [app.sharesUserAndGroup objectForKey:[serverUrl stringByAppendingString:metadata.fileName]];
+
+    // Immage
+    if (metadata.directory) {
             
-            cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:metadata.iconName] color:[NCBrandColor sharedInstance].brand];
-            
+        if ([shareLink length] > 0) {
+            cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder_public"] color:[NCBrandColor sharedInstance].brand];
+        } else if ([shareUserAndGroup length] > 0) {
+            cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder_shared_with_me"] color:[NCBrandColor sharedInstance].brand];
         } else {
+            cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:metadata.iconName] color:[NCBrandColor sharedInstance].brand];
+        }
+            
+    } else {
+            
+        if ([shareLink length] > 0) {
+            cell.shared.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"shareLink"] color:[NCBrandColor sharedInstance].brand];
+        } else if ([shareUserAndGroup length] > 0) {
+            cell.shared.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetShare"] color:[NCBrandColor sharedInstance].brand];
+        }
+        
+        cell.file.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]];
+        
+        if (cell.file.image == nil) {
             
             cell.file.image = [UIImage imageNamed:metadata.iconName];
+            
+            if (metadata.thumbnailExists)
+                [[CCActions sharedInstance] downloadTumbnail:metadata delegate:self];
         }
     }
     

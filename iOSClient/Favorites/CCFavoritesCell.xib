@@ -16,7 +16,7 @@
             <rect key="frame" x="0.0" y="0.0" width="600" height="60"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxY="YES"/>
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="2" id="sQq-jC-UEV">
-                <rect key="frame" x="0.0" y="0.0" width="600" height="59.5"/>
+                <rect key="frame" x="0.0" y="0.0" width="600" height="60"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <label opaque="NO" userInteractionEnabled="NO" tag="101" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QNC-8X-DAC">
@@ -59,6 +59,13 @@
                             <constraint firstAttribute="height" constant="15" id="aQq-XY-pNM"/>
                         </constraints>
                     </imageView>
+                    <imageView userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="XQL-3O-oXy" userLabel="Shared Image View">
+                        <rect key="frame" x="558" y="0.0" width="42" height="60"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="60" id="7E9-W6-BKh"/>
+                            <constraint firstAttribute="width" constant="42" id="JBh-wn-m3z"/>
+                        </constraints>
+                    </imageView>
                 </subviews>
                 <constraints>
                     <constraint firstItem="DQR-yN-JaH" firstAttribute="top" secondItem="dhG-hb-z3n" secondAttribute="top" id="0XU-Ho-ald"/>
@@ -71,10 +78,12 @@
                     <constraint firstItem="p7I-KN-FVZ" firstAttribute="leading" secondItem="5" secondAttribute="trailing" constant="10" id="K7G-0u-f8E"/>
                     <constraint firstItem="8I8-C4-IpX" firstAttribute="leading" secondItem="5" secondAttribute="trailing" constant="-11" id="MeU-6N-LsY"/>
                     <constraint firstItem="QNC-8X-DAC" firstAttribute="leading" secondItem="5" secondAttribute="trailing" constant="10" id="UYc-Al-a4h"/>
+                    <constraint firstAttribute="trailingMargin" secondItem="XQL-3O-oXy" secondAttribute="trailing" constant="-8" id="XoZ-u4-Bb4"/>
                     <constraint firstItem="5" firstAttribute="top" secondItem="8I8-C4-IpX" secondAttribute="bottom" constant="-9" id="c7V-hW-ut8"/>
                     <constraint firstItem="p7I-KN-FVZ" firstAttribute="top" secondItem="QNC-8X-DAC" secondAttribute="bottom" id="cJT-LE-kot"/>
                     <constraint firstItem="dhG-hb-z3n" firstAttribute="leading" secondItem="sQq-jC-UEV" secondAttribute="leadingMargin" constant="-4" id="dNM-6x-zkx"/>
                     <constraint firstItem="p7I-KN-FVZ" firstAttribute="trailing" secondItem="sQq-jC-UEV" secondAttribute="trailingMargin" constant="-59" id="kaB-WS-bDl"/>
+                    <constraint firstItem="XQL-3O-oXy" firstAttribute="centerY" secondItem="sQq-jC-UEV" secondAttribute="centerY" id="nbe-Zs-K8w"/>
                 </constraints>
             </tableViewCellContentView>
             <connections>
@@ -83,6 +92,7 @@
                 <outlet property="labelInfoFile" destination="p7I-KN-FVZ" id="5Yb-hH-k73"/>
                 <outlet property="labelTitle" destination="QNC-8X-DAC" id="dFX-Cb-8IE"/>
                 <outlet property="local" destination="DQR-yN-JaH" id="Gbe-QU-cMb"/>
+                <outlet property="shared" destination="XQL-3O-oXy" id="TpF-AH-duD"/>
                 <outlet property="status" destination="dhG-hb-z3n" id="Jxk-qM-eWu"/>
             </connections>
             <point key="canvasLocation" x="256" y="19"/>
