@@ -476,6 +476,18 @@
     [actionSheet show];
 }
 
+- (void)tapActionConnectionMounted:(UITapGestureRecognizer *)tapGesture
+{
+    CGPoint location = [tapGesture locationInView:self.tableView];
+    NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:location];
+    
+    tableMetadata *metadata = [_dataSource objectAtIndex:indexPath.row];
+
+    if (metadata)
+        [app.activeMain openWindowShare:metadata];
+}
+
+
 #pragma mark -
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Swipe Tablet -> menu =====
@@ -585,6 +597,7 @@
     cell.status.image = nil;
     cell.favorite.image = nil;
     cell.local.image = nil;
+    cell.shared.image = nil;
         
     // change color selection
     UIView *selectionColor = [[UIView alloc] init];
@@ -626,10 +639,17 @@
             
     } else {
             
-        if ([shareLink length] > 0) {
-            cell.shared.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"shareLink"] color:[NCBrandColor sharedInstance].brand];
-        } else if ([shareUserAndGroup length] > 0) {
-            cell.shared.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetShare"] color:[NCBrandColor sharedInstance].brand];
+        if ([shareLink length] > 0 || [shareUserAndGroup length] > 0) {
+            
+            if ([shareLink length] > 0)
+                cell.shared.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"shareLink"] color:[NCBrandColor sharedInstance].brand];
+            else
+                cell.shared.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetShare"] color:[NCBrandColor sharedInstance].brand];
+                
+            UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapActionConnectionMounted:)];
+            [tap setNumberOfTapsRequired:1];
+            cell.shared.userInteractionEnabled = YES;
+            [cell.shared addGestureRecognizer:tap];
         }
         
         cell.file.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]];
@@ -651,8 +671,8 @@
     if (metadata.directory) {
         
         cell.labelInfoFile.text = [CCUtility dateDiff:metadata.date];
-        cell.accessoryType = UITableViewCellAccessoryNone;
-        //cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        //cell.accessoryType = UITableViewCellAccessoryNone;
+        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
           
     } else {
         
