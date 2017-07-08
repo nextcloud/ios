@@ -426,19 +426,31 @@
         metadataNet.session = session;
         metadataNet.taskStatus = k_taskStatusResume;
         
+        // +++ NEW
+        [metadataNetFull addObject:metadataNet];
+        
+        // Update database
+        if (!assetsFull)
+            [self addDatabaseAutoUploadAndPhotoLibrary:metadataNet asset:asset];
+        // +++ NEW
+        
+        /* +++ OLD
         if (assetsFull) {
             [metadataNetFull addObject:metadataNet];
-        } else {            
+        } else {
             NCRequestAsset *requestAsset = [NCRequestAsset new];
             requestAsset.delegate = self;
             
             [requestAsset writeAssetToSandboxFileName:metadataNet.fileName assetLocalIdentifier:metadataNet.assetLocalIdentifier selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:0 metadataNet:metadataNet serverUrl:serverUrl activeUrl:app.activeUrl directoryUser:app.directoryUser cryptated:NO session:metadataNet.session taskStatus:0 delegate:nil];
         }
+        */
+        // +++ OLD
+
     }
     
     // Insert all assets (Full) in TableAutoUpload
     if (assetsFull && [metadataNetFull count] > 0) {
-        
+    
         [[NCManageDatabase sharedInstance] addAutoUploadWithMetadatasNet:metadataNetFull];
           
         // Update icon badge number
@@ -449,7 +461,7 @@
     [_hud hideHud];
 }
 
-- (void)addDatabaseAutoUpload:(CCMetadataNet *)metadataNet asset:(PHAsset *)asset
+- (void)addDatabaseAutoUploadAndPhotoLibrary:(CCMetadataNet *)metadataNet asset:(PHAsset *)asset
 {
     if ([[NCManageDatabase sharedInstance] addAutoUploadWithMetadataNet:metadataNet]) {
         

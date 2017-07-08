@@ -830,20 +830,151 @@
     if (delegate == nil)
         delegate = self.delegate;
     
+    /* +++ OLD
+     
     // *** Auto Upload ***
-    
+     
     if ([selector isEqualToString:selectorUploadAutoUpload]) {
-        
-        [self upload:fileName serverUrl:serverUrl cryptated:NO template:NO onlyPlist:NO fileNameTemplate:nil assetLocalIdentifier:assetLocalIdentifier session:session taskStatus:taskStatus selector:selector selectorPost:selectorPost errorCode:errorCode delegate:delegate];
-        
+     
+    [self upload:fileName serverUrl:serverUrl cryptated:NO template:NO onlyPlist:NO fileNameTemplate:nil assetLocalIdentifier:assetLocalIdentifier session:session taskStatus:taskStatus selector:selector selectorPost:selectorPost errorCode:errorCode delegate:delegate];
+     
     } else {
-    
+     
     // *** Auto Upload Full + Manual Upload ***
+     
+    NCRequestAsset *requestAsset = [NCRequestAsset new];
+    requestAsset.delegate = self;
     
-        NCRequestAsset *requestAsset = [NCRequestAsset new];
-        requestAsset.delegate = self;
+    [requestAsset writeAssetToSandboxFileName:fileName assetLocalIdentifier:assetLocalIdentifier selector:selector selectorPost:selectorPost errorCode:errorCode metadataNet:nil serverUrl:serverUrl activeUrl:_activeUrl directoryUser:_directoryUser cryptated:cryptated session:session taskStatus:taskStatus delegate:delegate];
+    }
+    */
+    // +++ OLD
+    
+    PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[assetLocalIdentifier] options:nil];
+    
+    if (!result.count) {
         
-        [requestAsset writeAssetToSandboxFileName:fileName assetLocalIdentifier:assetLocalIdentifier selector:selector selectorPost:selectorPost errorCode:errorCode metadataNet:nil serverUrl:serverUrl activeUrl:_activeUrl directoryUser:_directoryUser cryptated:cryptated session:session taskStatus:taskStatus delegate:delegate];
+        [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:@"Internal error image/video not found" type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
+        
+        if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
+            [delegate uploadFileFailure:nil fileID:nil serverUrl:serverUrl selector:selector message:@"Internal error image/video not found" errorCode: k_CCErrorInternalError];
+        
+        return;
+    }
+    
+    PHAsset *assetResult = result[0];
+    PHAssetMediaType assetMediaType = assetResult.mediaType;
+    
+    // IMAGE
+    if (assetMediaType == PHAssetMediaTypeImage) {
+        
+        @autoreleasepool {
+            
+            __block PHAsset *asset = result[0];
+            __block NSError *error = nil;
+            
+            PHImageRequestOptions *options = [PHImageRequestOptions new];
+            options.networkAccessAllowed = YES; // iCloud
+            
+            [[PHImageManager defaultManager] requestImageDataForAsset:asset options:options resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
+                
+                [imageData writeToFile:[NSString stringWithFormat:@"%@/%@", _directoryUser, fileName] options:NSDataWritingAtomic error:&error];
+                
+                if (error) {
+                    
+                    // Delete record on Table Auto Upload
+                    if ([selector isEqualToString:selectorUploadAutoUpload] || [selector isEqualToString:selectorUploadAutoUploadAll])
+                        [[NCManageDatabase sharedInstance] deleteAutoUploadWithAssetLocalIdentifier:assetLocalIdentifier];
+                    
+                    // Activity
+                    [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:[NSString stringWithFormat:@"%@ [%@]",NSLocalizedString(@"_read_file_error_", nil), error.description] type:k_activityTypeFailure verbose:k_activityVerboseDefault  activeUrl:_activeUrl];
+                    
+                    // Error for uploadFileFailure
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
+                            [delegate uploadFileFailure:nil fileID:nil serverUrl:serverUrl selector:selector message:[NSString stringWithFormat:@"%@ [%@]",NSLocalizedString(@"_read_file_error_", nil), error.description] errorCode:error.code];
+                    });
+                    
+                } else {
+                    
+                    //OK
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [self upload:fileName serverUrl:serverUrl cryptated:cryptated template:NO onlyPlist:NO fileNameTemplate:nil assetLocalIdentifier:assetLocalIdentifier session:session taskStatus:taskStatus selector:selector selectorPost:selectorPost errorCode:errorCode delegate:delegate];
+                    });
+                }
+            }];
+        }
+    }
+    
+    // VIDEO
+    if (assetMediaType == PHAssetMediaTypeVideo) {
+        
+        @autoreleasepool {
+            
+            __block PHAsset *asset = result[0];
+            __block NSError *error = nil;
+            
+            PHVideoRequestOptions *options = [PHVideoRequestOptions new];
+            options.networkAccessAllowed = YES; // iCloud
+            
+            [[PHImageManager defaultManager] requestPlayerItemForVideo:asset options:options resultHandler:^(AVPlayerItem * _Nullable playerItem, NSDictionary * _Nullable info) {
+                
+                if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, fileName]])
+                    [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, fileName] error:nil];
+                
+                AVAssetExportSession *exportSession = [[AVAssetExportSession alloc] initWithAsset:playerItem.asset presetName:AVAssetExportPresetHighestQuality];
+                
+                if (exportSession) {
+                    
+                    exportSession.outputURL = [NSURL fileURLWithPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, fileName]];
+                    exportSession.outputFileType = AVFileTypeQuickTimeMovie;
+                    
+                    [exportSession exportAsynchronouslyWithCompletionHandler:^{
+                        
+                        if (AVAssetExportSessionStatusCompleted == exportSession.status) {
+                            
+                            // OK
+                            dispatch_async(dispatch_get_main_queue(), ^{
+                                [self upload:fileName serverUrl:serverUrl cryptated:cryptated template:NO onlyPlist:NO fileNameTemplate:nil assetLocalIdentifier:assetLocalIdentifier session:session taskStatus:taskStatus selector:selector selectorPost:selectorPost errorCode:errorCode delegate:delegate];
+                            });
+                            
+                        } else if (AVAssetExportSessionStatusFailed == exportSession.status) {
+                            
+                            // Delete record on Table Auto Upload
+                            if ([selector isEqualToString:selectorUploadAutoUpload] || [selector isEqualToString:selectorUploadAutoUploadAll])
+                                [[NCManageDatabase sharedInstance] deleteAutoUploadWithAssetLocalIdentifier:assetLocalIdentifier];
+                            
+                            // Activity
+                            [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:[NSString stringWithFormat:@"%@ [%@]",NSLocalizedString(@"_read_file_error_", nil), error.description] type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:_activeUrl];
+                            
+                            // Error for uploadFileFailure
+                            dispatch_async(dispatch_get_main_queue(), ^{
+                                if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
+                                    [delegate uploadFileFailure:nil fileID:nil serverUrl:serverUrl selector:selector message:[NSString stringWithFormat:@"%@ [%@]",NSLocalizedString(@"_read_file_error_", nil), exportSession.error.description] errorCode:exportSession.error.code];
+                            });
+
+                        } else {
+                            NSLog(@"Export Session Status: %ld", (long)exportSession.status);
+                        }
+                    }];
+                    
+                } else {
+                    
+                    // Delete record on Table Auto Upload
+                    if ([selector isEqualToString:selectorUploadAutoUpload] || [selector isEqualToString:selectorUploadAutoUploadAll])
+                        [[NCManageDatabase sharedInstance] deleteAutoUploadWithAssetLocalIdentifier:assetLocalIdentifier];
+                    
+                    // Activity
+                    [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:[NSString stringWithFormat:@"%@ [%@]",NSLocalizedString(@"_read_file_error_", nil), error.description] type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:_activeUrl];
+                    
+                    // Error for uploadFileFailure
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
+                            [delegate uploadFileFailure:nil fileID:nil serverUrl:serverUrl selector:selector message:[NSString stringWithFormat:@"%@ [%@]",NSLocalizedString(@"_read_file_error_", nil), exportSession.error.description] errorCode:exportSession.error.code];
+                    });
+                }
+            }];
+        }
     }
 }
 
