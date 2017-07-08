@@ -203,6 +203,7 @@
 "_connection_error_"            = "Connection error";
 "_add_your_nextcloud_"          = "Add your Nextcloud account";
 "_key_aes_256_"                 = "Encryption key passcode";
+"_login_url_"                   = "Server address https://…";
 
 "_security_init_required_hint_" = "Hint for encryption key passcode (Recommended)";
 "_hint_"                        = "Hint";

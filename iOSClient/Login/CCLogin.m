@@ -108,6 +108,10 @@
         _user.textColor = [UIColor lightGrayColor];
     }
     
+    self.baseUrl.placeholder = NSLocalizedString(@"_login_url_", nil);
+    self.user.placeholder = NSLocalizedString(@"_username_", nil);
+    self.password.placeholder = NSLocalizedString(@"_password_", nil);
+    
     [self.annulla setTitle:NSLocalizedString(@"_cancel_", nil) forState:UIControlStateNormal];
     [self.login setTitle:NSLocalizedString(@"_login_", nil) forState:UIControlStateNormal];    
 }
