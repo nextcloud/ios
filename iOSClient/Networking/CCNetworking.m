@@ -27,10 +27,9 @@
 #import "CCCertificate.h"
 #import "NSDate+ISO8601.h"
 #import "NSString+Encode.h"
-#import "NCRequestAsset.h"
 #import "NCBridgeSwift.h"
 
-@interface CCNetworking () <NCRequestAssetDelegate>
+@interface CCNetworking ()
 {
     NSMutableDictionary *_taskData;
     

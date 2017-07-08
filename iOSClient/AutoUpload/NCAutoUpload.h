@@ -24,11 +24,9 @@
 #import <Foundation/Foundation.h>
 #import <Photos/Photos.h>
 #import "CCManageAutoUpload.h"
-// #import "NCRequestAsset.h" +++ OLD
 
 @class tableAccount;
 
-//@interface NCAutoUpload : NSObject <CCManageLocationDelegate, NCRequestAssetDelegate> +++ OLD
 @interface NCAutoUpload : NSObject <CCManageLocationDelegate>
 
 + (NCAutoUpload *)sharedInstance;

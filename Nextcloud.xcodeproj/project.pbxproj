@@ -230,9 +230,6 @@
 		F75EDFB11E8C106900E6F369 /* Protobuf.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F75EDFAB1E8C106900E6F369 /* Protobuf.framework */; };
 		F75EDFBD1E8C112F00E6F369 /* libsqlite3.0.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = F75EDFBC1E8C112F00E6F369 /* libsqlite3.0.tbd */; };
 		F75EDFBF1E8C116D00E6F369 /* libstdc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = F75EDFBE1E8C116D00E6F369 /* libstdc++.tbd */; };
-		F761831F1F03B6C300D8D483 /* NCRequestAsset.m in Sources */ = {isa = PBXBuildFile; fileRef = F761831E1F03B6C300D8D483 /* NCRequestAsset.m */; };
-		F76183221F03B7BE00D8D483 /* NCRequestAsset.m in Sources */ = {isa = PBXBuildFile; fileRef = F761831E1F03B6C300D8D483 /* NCRequestAsset.m */; };
-		F761832B1F03B7BE00D8D483 /* NCRequestAsset.m in Sources */ = {isa = PBXBuildFile; fileRef = F761831E1F03B6C300D8D483 /* NCRequestAsset.m */; };
 		F762CAF61EACB66200B38484 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F762CAA01EACB66200B38484 /* Info.plist */; };
 		F762CAF71EACB66200B38484 /* XLFormBaseCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F762CAA41EACB66200B38484 /* XLFormBaseCell.m */; };
 		F762CAF81EACB66200B38484 /* XLFormButtonCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F762CAA61EACB66200B38484 /* XLFormButtonCell.m */; };
@@ -1152,8 +1149,6 @@
 		F75EDFAB1E8C106900E6F369 /* Protobuf.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Protobuf.framework; sourceTree = "<group>"; };
 		F75EDFBC1E8C112F00E6F369 /* libsqlite3.0.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.0.tbd; path = usr/lib/libsqlite3.0.tbd; sourceTree = SDKROOT; };
 		F75EDFBE1E8C116D00E6F369 /* libstdc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libstdc++.tbd"; path = "usr/lib/libstdc++.tbd"; sourceTree = SDKROOT; };
-		F761831D1F03B6C300D8D483 /* NCRequestAsset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCRequestAsset.h; sourceTree = "<group>"; };
-		F761831E1F03B6C300D8D483 /* NCRequestAsset.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCRequestAsset.m; sourceTree = "<group>"; };
 		F762CAA01EACB66200B38484 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F762CAA31EACB66200B38484 /* XLFormBaseCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLFormBaseCell.h; sourceTree = "<group>"; };
 		F762CAA41EACB66200B38484 /* XLFormBaseCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLFormBaseCell.m; sourceTree = "<group>"; };
@@ -3026,8 +3021,6 @@
 			children = (
 				F7BFCCC01B68C21900548E76 /* CCManageLocation.h */,
 				F7BFCCC11B68C21900548E76 /* CCManageLocation.m */,
-				F761831D1F03B6C300D8D483 /* NCRequestAsset.h */,
-				F761831E1F03B6C300D8D483 /* NCRequestAsset.m */,
 				F777F0301C29717F00CE81CB /* PHAsset+Utility.h */,
 				F777F0311C29717F00CE81CB /* PHAsset+Utility.m */,
 			);
@@ -4231,7 +4224,6 @@
 				F71459F11D12E3B700CAFEEC /* CCMove.m in Sources */,
 				F70022C31EC4C9100080073F /* OCNotifications.m in Sources */,
 				F71459F31D12E3B700CAFEEC /* UIImage+Resizing.m in Sources */,
-				F76183221F03B7BE00D8D483 /* NCRequestAsset.m in Sources */,
 				F71459F71D12E3B700CAFEEC /* CCGraphics.m in Sources */,
 				F7BAADC91ED5A87C00B7EAD4 /* NCDatabase.swift in Sources */,
 				F70022BD1EC4C9100080073F /* OCExternalSites.m in Sources */,
@@ -4324,7 +4316,6 @@
 				F70022D91EC4C9100080073F /* NSDate+RFC1123.m in Sources */,
 				F73CC06E1E813DFF006E3047 /* BKPasscodeField.m in Sources */,
 				F74344841E127F84001CC831 /* RNCryptorEngine.m in Sources */,
-				F761832B1F03B7BE00D8D483 /* NCRequestAsset.m in Sources */,
 				F74344851E127F86001CC831 /* RNDecryptor.m in Sources */,
 				F74344881E127F9C001CC831 /* UIImage+animatedGIF.m in Sources */,
 				F73CC0771E813DFF006E3047 /* BKPasscodeViewController.m in Sources */,
@@ -4632,7 +4623,6 @@
 				F7D424701F063B82009C9782 /* CTAssetsPickerNoAssetsView.m in Sources */,
 				F7D424591F063B82009C9782 /* PHImageManager+CTAssetsPickerController.m in Sources */,
 				F7ECBA6D1E239DCD003E6328 /* CCCreateCloud.swift in Sources */,
-				F761831F1F03B6C300D8D483 /* NCRequestAsset.m in Sources */,
 				F70022FE1EC4C9100080073F /* UtilsFramework.m in Sources */,
 				F77B0ECC1D118A16002130FE /* UIImage+Masking.m in Sources */,
 				F77B0ECE1D118A16002130FE /* NSData+CommonCrypto.m in Sources */,
