@@ -1770,41 +1770,48 @@ class NCManageDatabase: NSObject {
 
         let realm = try! Realm()
         
-        do {
-            try realm.write {
+        if realm.isInWriteTransaction {
+            
+            print("[LOG] Could not write to database, addPhotoLibrary is already in write transaction")
+            
+        } else {
+        
+            do {
+                try realm.write {
                 
-                var creationDate = ""
-                var modificationDate = ""
+                    var creationDate = ""
+                    var modificationDate = ""
 
-                for asset in assets {
+                    for asset in assets {
                     
-                    let addRecord = tablePhotoLibrary()
+                        let addRecord = tablePhotoLibrary()
                     
-                    addRecord.account = tableAccount.account
-                    addRecord.assetLocalIdentifier = asset.localIdentifier
-                    addRecord.mediaType = asset.mediaType.rawValue
+                        addRecord.account = tableAccount.account
+                        addRecord.assetLocalIdentifier = asset.localIdentifier
+                        addRecord.mediaType = asset.mediaType.rawValue
                     
-                    if asset.creationDate != nil {
-                        addRecord.creationDate = asset.creationDate! as NSDate
-                        creationDate = String(describing: addRecord.creationDate!)
-                    } else {
-                        creationDate = ""
-                    }
+                        if asset.creationDate != nil {
+                            addRecord.creationDate = asset.creationDate! as NSDate
+                            creationDate = String(describing: addRecord.creationDate!)
+                        } else {
+                            creationDate = ""
+                        }
                     
-                    if asset.modificationDate != nil {
-                        addRecord.modificationDate = asset.modificationDate! as NSDate
-                        modificationDate = String(describing: addRecord.modificationDate!)
-                    } else {
-                        modificationDate = ""
-                    }
+                        if asset.modificationDate != nil {
+                            addRecord.modificationDate = asset.modificationDate! as NSDate
+                            modificationDate = String(describing: addRecord.modificationDate!)
+                        } else {
+                            modificationDate = ""
+                        }
                     
-                    addRecord.idAsset = "\(tableAccount.account)\(asset.localIdentifier)\(creationDate)\(modificationDate)"
+                        addRecord.idAsset = "\(tableAccount.account)\(asset.localIdentifier)\(creationDate)\(modificationDate)"
 
-                    realm.add(addRecord, update: true)
+                        realm.add(addRecord, update: true)
+                    }
                 }
+            } catch let error {
+                print("Could not write to database: ", error)
             }
-        } catch let error {
-            print("Could not write to database: ", error)
         }
     }
     
