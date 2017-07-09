@@ -858,25 +858,12 @@ class NCManageDatabase: NSObject {
         
         let results = realm.objects(tableDirectory.self).filter("account = %@ AND serverUrl BEGINSWITH %@", tableAccount.account, serverUrl)
         
+        // Delete table Metadata & LocalFile
         for result in results {
             
-            // delete metadata
             self.deleteMetadata(predicate: NSPredicate(format: "directoryID = %@", result.directoryID), clearDateReadDirectoryID: result.directoryID)
             
-            // delete local file
             self.deleteLocalFile(predicate: NSPredicate(format: "fileID = %@", result.fileID))
-            
-            /*
-             // remove if in session
-             if ([recordMetadata.session length] >0) {
-             if (recordMetadata.sessionTaskIdentifier >= 0)
-             [[CCNetworking sharedNetworking] settingSession:recordMetadata.session sessionTaskIdentifier:[recordMetadata.sessionTaskIdentifier integerValue] taskStatus: k_taskStatusCancel];
-             
-             if (recordMetadata.sessionTaskIdentifierPlist >= 0)
-             [[CCNetworking sharedNetworking] settingSession:recordMetadata.session sessionTaskIdentifier:[recordMetadata.sessionTaskIdentifierPlist integerValue] taskStatus: k_taskStatusCancel];
-             
-             }
-             */
         }
         
         // Delete table Dirrectory
