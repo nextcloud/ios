@@ -206,16 +206,10 @@ class NCManageDatabase: NSObject {
     func getAccounts() -> [String] {
         
         let realm = try! Realm()
-        let results : Results<tableAccount>
-        var accounts = [String]()
         
-        results = realm.objects(tableAccount.self).sorted(byKeyPath: "account", ascending: true)
-            
-        for result in results {
-            accounts.append(result.account)
-        }
-
-        return Array(accounts)
+        let results = realm.objects(tableAccount.self).sorted(byKeyPath: "account", ascending: true)
+        
+        return Array(results.map { $0.account })
     }
     
     func getAccountAutoUploadFileName() -> String {
@@ -807,13 +801,7 @@ class NCManageDatabase: NSObject {
         
         let results = realm.objects(tableCertificates.self)
     
-        var arraycertificatePath = [String]()
-    
-        for result in results {
-            arraycertificatePath.append("\(localCertificatesFolder)\(result.certificateLocation)")
-        }
-        
-        return arraycertificatePath
+        return Array(results.map { "\(localCertificatesFolder)\($0.certificateLocation)" })
     }
     
     //MARK: -
