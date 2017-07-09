@@ -821,6 +821,12 @@
     metadata.type = k_metadataType_file;
     metadata.uuid = [CCUtility getUUID];
     
+    NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:directoryID];
+    NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
+    NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:serverUrl];
+    
+    [self insertTypeFileIconName:metadata serverUrl:serverUrl autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory];
+    
     return metadata;
 }
 
