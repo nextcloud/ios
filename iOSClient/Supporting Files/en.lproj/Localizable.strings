@@ -63,6 +63,8 @@
 "_auto_upload_folder_"      = "Auto upload";
 "_gallery_"                 = "Gallery";
 "_photo_"                   = "Photo";
+"_audio_"                   = "Audio";
+"_unknown_"                 = "Unknown";
 
 // App
 

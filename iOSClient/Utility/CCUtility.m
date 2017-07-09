@@ -527,9 +527,20 @@
     else numberFileName = [CCUtility getIncrementalNumber];
     
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-    [formatter setDateFormat:@"yyyy-MM-dd HH-mm-ss"];
+    [formatter setDateFormat:@"yy-MM-dd HH-mm-ss"];
     NSString *fileNameDate = [formatter stringFromDate:assetDate];
     
+    PHAssetMediaType assetMediaType = asset.mediaType;
+    NSString *fileNameType = @"";
+    if (assetMediaType == PHAssetMediaTypeImage)
+        fileNameType = NSLocalizedString(@"_photo_", nil);
+    if (assetMediaType == PHAssetMediaTypeVideo)
+        fileNameType = NSLocalizedString(@"_video_", nil);
+    if (assetMediaType == PHAssetMediaTypeAudio)
+        fileNameType = NSLocalizedString(@"_audio_", nil);
+    if (assetMediaType == PHAssetMediaTypeUnknown)
+        fileNameType = NSLocalizedString(@"_unknown_", nil);
+
     NSString *fileNameExt = [[assetFileName pathExtension] lowercaseString];
     
     if (key) {
@@ -542,7 +553,7 @@
             NSString *day = [formatter stringFromDate:assetDate];
             [formatter setDateFormat:@"MMM"];
             NSString *month = [formatter stringFromDate:assetDate];
-            [formatter setDateFormat:@"yyyy"];
+            [formatter setDateFormat:@"yy"];
             NSString *year = [formatter stringFromDate:assetDate];
             
             // Replace string with date
@@ -555,12 +566,12 @@
             
         } else {
             
-            fileName = [NSString stringWithFormat:@"%@ %@.%@", fileNameDate, numberFileName, fileNameExt];
+            fileName = [NSString stringWithFormat:@"%@ %@ %@.%@", fileNameType, fileNameDate, numberFileName, fileNameExt];
         }
         
     } else {
         
-        fileName = [NSString stringWithFormat:@"%@ %@.%@", fileNameDate, numberFileName, fileNameExt];
+        fileName = [NSString stringWithFormat:@"%@ %@ %@.%@", fileNameType, fileNameDate, numberFileName, fileNameExt];
     }
     
     return fileName;

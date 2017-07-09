@@ -829,26 +829,6 @@
     if (delegate == nil)
         delegate = self.delegate;
     
-    /* +++ OLD
-     
-    // *** Auto Upload ***
-     
-    if ([selector isEqualToString:selectorUploadAutoUpload]) {
-     
-    [self upload:fileName serverUrl:serverUrl cryptated:NO template:NO onlyPlist:NO fileNameTemplate:nil assetLocalIdentifier:assetLocalIdentifier session:session taskStatus:taskStatus selector:selector selectorPost:selectorPost errorCode:errorCode delegate:delegate];
-     
-    } else {
-     
-    // *** Auto Upload Full + Manual Upload ***
-     
-    NCRequestAsset *requestAsset = [NCRequestAsset new];
-    requestAsset.delegate = self;
-    
-    [requestAsset writeAssetToSandboxFileName:fileName assetLocalIdentifier:assetLocalIdentifier selector:selector selectorPost:selectorPost errorCode:errorCode metadataNet:nil serverUrl:serverUrl activeUrl:_activeUrl directoryUser:_directoryUser cryptated:cryptated session:session taskStatus:taskStatus delegate:delegate];
-    }
-    */
-    // +++ OLD
-    
     PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[assetLocalIdentifier] options:nil];
     
     if (!result.count) {
