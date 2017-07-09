@@ -1358,32 +1358,19 @@ class NCManageDatabase: NSObject {
             return nil
         }
         
-        let autoUploadFileName = self.getAccountAutoUploadFileName()
-        let autoUploadDirectory = self.getAccountAutoUploadDirectory(activeUrl)
-        
         let realm = try! Realm()
         
-        realm.beginWrite()
-        
-        if (metadata.realm == nil) {
-            let metadataWithIcon = CCUtility.insertTypeFileIconName(metadata, serverUrl: serverUrl, autoUploadFileName: autoUploadFileName, autoUploadDirectory: autoUploadDirectory)
-            realm.add(metadataWithIcon!, update: true)
-        } else {
-            realm.add(metadata, update: true)
-        }
-        
-        let metadataCopy = tableMetadata.init(value: metadata)
-        
         do {
-            try realm.commitWrite()
+            try realm.write {
+                realm.add(metadata, update: true)
+            }
         } catch let error {
-            print("[LOG] Could not write to database: ", error)
-            return nil
+            print("Could not write to database: ", error)
         }
         
-        self.setDateReadDirectory(directoryID: metadataCopy.directoryID)
+        self.setDateReadDirectory(directoryID: metadata.directoryID)
         
-        return metadataCopy
+        return tableMetadata.init(value: metadata)
     }
     
     func addMetadatas(_ metadatas: [tableMetadata], activeUrl: String, serverUrl: String) -> [tableMetadata] {
