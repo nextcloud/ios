@@ -1510,10 +1510,10 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Photo Library
     
-    func addPhotoLibrary(_ assets: [PHAsset]) {
+    func addPhotoLibrary(_ assets: [PHAsset]) -> Bool {
         
         guard let tableAccount = self.getAccountActive() else {
-            return
+            return false
         }
 
         let realm = try! Realm()
@@ -1521,6 +1521,7 @@ class NCManageDatabase: NSObject {
         if realm.isInWriteTransaction {
             
             print("[LOG] Could not write to database, addPhotoLibrary is already in write transaction")
+            return false
             
         } else {
         
@@ -1559,8 +1560,11 @@ class NCManageDatabase: NSObject {
                 }
             } catch let error {
                 print("Could not write to database: ", error)
+                return false
             }
         }
+        
+        return true
     }
     
     func getPhotoLibraryIdAsset(image: Bool, video: Bool) -> [String]? {

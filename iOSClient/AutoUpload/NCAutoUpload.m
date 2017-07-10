@@ -433,14 +433,14 @@
             [self addQueueUploadAndPhotoLibrary:metadataNet asset:asset];
     }
     
-        // Insert all assets (Full) in tableQueueUpload
-        if (assetsFull && [metadataNetFull count] > 0) {
+    // Insert all assets (Full) in tableQueueUpload
+    if (assetsFull && [metadataNetFull count] > 0) {
     
-            [[NCManageDatabase sharedInstance] addQueueUploadWithMetadatasNet:metadataNetFull];
+        [[NCManageDatabase sharedInstance] addQueueUploadWithMetadatasNet:metadataNetFull];
         
-            // Update icon badge number
-            [app updateApplicationIconBadgeNumber];
-        }
+        // Update icon badge number
+        [app updateApplicationIconBadgeNumber];
+    }
     
     // end loading
     [_hud hideHud];
@@ -456,12 +456,15 @@
         
         } else {
     
-            [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionAutoUpload selector:metadataNet.selector note:@"Add Auto Upload, asset already present" type:k_activityTypeInfo verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
+            [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionAutoUpload selector:metadataNet.selector note:@"Add Auto Upload, asset already present or db in write transaction" type:k_activityTypeInfo verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
         }
     
         // Add asset in table Photo Library
-        if ([metadataNet.selector isEqualToString:selectorUploadAutoUpload])
-            [[NCManageDatabase sharedInstance] addPhotoLibrary:@[asset]];
+        if ([metadataNet.selector isEqualToString:selectorUploadAutoUpload]) {
+            if (![[NCManageDatabase sharedInstance] addPhotoLibrary:@[asset]]) {
+                [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionAutoUpload selector:metadataNet.selector note:@"Add Photo Library, db in write transaction" type:k_activityTypeInfo verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
+            }
+        }
         
         dispatch_async(dispatch_get_main_queue(), ^{
             // Update icon badge number
@@ -702,8 +705,8 @@
         tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
 
         PHFetchResult *assets = [self getCameraRollAssets:account assetsFull:YES alignPhotoLibrary:YES];
-        [[NCManageDatabase sharedInstance] addPhotoLibrary:(NSArray *)assets];
-            
+        (void)[[NCManageDatabase sharedInstance] addPhotoLibrary:(NSArray *)assets];
+
         NSLog(@"Align Photo Library %lu", (unsigned long)[assets count]);
     });
 }
