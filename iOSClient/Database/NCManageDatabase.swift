@@ -515,31 +515,37 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
         
-        realm.beginWrite()
-
-        if realm.objects(tableAutoUpload.self).filter("account = %@ AND assetLocalIdentifier = %@", tableAccount.account, metadataNet.assetLocalIdentifier).first == nil {
-        
-            // Add new Auto Upload
-            let addAutoUpload = tableAutoUpload()
+        if realm.isInWriteTransaction {
             
-            addAutoUpload.account = tableAccount.account
-            addAutoUpload.assetLocalIdentifier = metadataNet.assetLocalIdentifier
-            addAutoUpload.fileName = metadataNet.fileName
-            addAutoUpload.selector = metadataNet.selector
-            if (metadataNet.selectorPost != nil) {
-                addAutoUpload.selectorPost = metadataNet.selectorPost
-            }
-            addAutoUpload.serverUrl = metadataNet.serverUrl
-            addAutoUpload.session = metadataNet.session
-            addAutoUpload.priority = metadataNet.priority
+            print("[LOG] Could not write to database, addAutoUpload is already in write transaction")
+            return false
             
-            realm.add(addAutoUpload)
+        } else {
         
             do {
-                try realm.commitWrite()
+                try realm.write {
+
+                    if realm.objects(tableAutoUpload.self).filter("account = %@ AND assetLocalIdentifier = %@", tableAccount.account, metadataNet.assetLocalIdentifier).first == nil {
+        
+                        // Add new Auto Upload
+                        let addAutoUpload = tableAutoUpload()
+            
+                        addAutoUpload.account = tableAccount.account
+                        addAutoUpload.assetLocalIdentifier = metadataNet.assetLocalIdentifier
+                        addAutoUpload.fileName = metadataNet.fileName
+                        addAutoUpload.selector = metadataNet.selector
+                        if (metadataNet.selectorPost != nil) {
+                            addAutoUpload.selectorPost = metadataNet.selectorPost
+                        }
+                        addAutoUpload.serverUrl = metadataNet.serverUrl
+                        addAutoUpload.session = metadataNet.session
+                        addAutoUpload.priority = metadataNet.priority
+                        
+                        realm.add(addAutoUpload)
+                    }
+                }
             } catch let error {
                 print("[LOG] Could not write to database: ", error)
-                return false
             }
         }
         
