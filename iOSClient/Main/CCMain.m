@@ -708,8 +708,11 @@
     [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status){
         dispatch_async(dispatch_get_main_queue(), ^{
             
+            CTAssetCheckmark *checkmark = [CTAssetCheckmark appearance];
+            [checkmark setMargin:0.0 forVerticalEdge:NSLayoutAttributeRight horizontalEdge:NSLayoutAttributeBottom];
+            
             // init picker
-            CTAssetsPickerController *picker = [[CTAssetsPickerController alloc] init];
+            CTAssetsPickerController *picker = [CTAssetsPickerController new];
             
             // set delegate
             picker.delegate = self;
