@@ -1614,23 +1614,23 @@ class NCManageDatabase: NSObject {
             do {
                 try realm.write {
                     
-                    if realm.objects(tableQueueUpload.self).filter("account = %@ AND assetLocalIdentifier = %@", tableAccount.account, metadataNet.assetLocalIdentifier).first == nil {
+                    if realm.objects(tableQueueUpload.self).filter("account = %@ AND assetLocalIdentifier = %@ AND selector = %@", tableAccount.account, metadataNet.assetLocalIdentifier, metadataNet.selector).first == nil {
                         
                         // Add new
-                        let addobject = tableQueueUpload()
+                        let addObject = tableQueueUpload()
                         
-                        addobject.account = tableAccount.account
-                        addobject.assetLocalIdentifier = metadataNet.assetLocalIdentifier
-                        addobject.fileName = metadataNet.fileName
-                        addobject.selector = metadataNet.selector
+                        addObject.account = tableAccount.account
+                        addObject.assetLocalIdentifier = metadataNet.assetLocalIdentifier
+                        addObject.fileName = metadataNet.fileName
+                        addObject.selector = metadataNet.selector
                         if (metadataNet.selectorPost != nil) {
-                            addobject.selectorPost = metadataNet.selectorPost
+                            addObject.selectorPost = metadataNet.selectorPost
                         }
-                        addobject.serverUrl = metadataNet.serverUrl
-                        addobject.session = metadataNet.session
-                        addobject.priority = metadataNet.priority
+                        addObject.serverUrl = metadataNet.serverUrl
+                        addObject.session = metadataNet.session
+                        addObject.priority = metadataNet.priority
                         
-                        realm.add(addobject)
+                        realm.add(addObject)
                     }
                 }
             } catch let error {
@@ -1654,23 +1654,23 @@ class NCManageDatabase: NSObject {
                 
                 for metadataNet in metadatasNet {
                     
-                    if realm.objects(tableQueueUpload.self).filter("account = %@ AND assetLocalIdentifier = %@", tableAccount.account, metadataNet.assetLocalIdentifier).first == nil {
+                    if realm.objects(tableQueueUpload.self).filter("account = %@ AND assetLocalIdentifier = %@ AND selector = %@", tableAccount.account, metadataNet.assetLocalIdentifier, metadataNet.selector).first == nil {
                         
                         // Add new
-                        let addobject = tableQueueUpload()
+                        let addObject = tableQueueUpload()
                         
-                        addobject.account = tableAccount.account
-                        addobject.assetLocalIdentifier = metadataNet.assetLocalIdentifier
-                        addobject.fileName = metadataNet.fileName
-                        addobject.selector = metadataNet.selector
+                        addObject.account = tableAccount.account
+                        addObject.assetLocalIdentifier = metadataNet.assetLocalIdentifier
+                        addObject.fileName = metadataNet.fileName
+                        addObject.selector = metadataNet.selector
                         if (metadataNet.selectorPost != nil) {
-                            addobject.selectorPost = metadataNet.selectorPost
+                            addObject.selectorPost = metadataNet.selectorPost
                         }
-                        addobject.serverUrl = metadataNet.serverUrl
-                        addobject.session = metadataNet.session
-                        addobject.priority = metadataNet.priority
+                        addObject.serverUrl = metadataNet.serverUrl
+                        addObject.session = metadataNet.session
+                        addObject.priority = metadataNet.priority
                         
-                        realm.add(addobject)
+                        realm.add(addObject)
                     }
                 }
             }
@@ -1757,7 +1757,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func deleteQueueUpload(assetLocalIdentifier: String) {
+    func deleteQueueUpload(assetLocalIdentifier: String, selector: String) {
         
         guard let tableAccount = self.getAccountActive() else {
             return
@@ -1768,7 +1768,7 @@ class NCManageDatabase: NSObject {
         do {
             try realm.write {
                 
-                let result = realm.objects(tableQueueUpload.self).filter("account = %@ AND assetLocalIdentifier = %@", tableAccount.account, assetLocalIdentifier).first
+                let result = realm.objects(tableQueueUpload.self).filter("account = %@ AND assetLocalIdentifier = %@ AND selector = %@", tableAccount.account, assetLocalIdentifier, selector).first
                 
                 if result != nil {
                     realm.delete(result!)

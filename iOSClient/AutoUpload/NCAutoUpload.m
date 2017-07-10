@@ -508,7 +508,7 @@
             
             [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionUpload selector:selectorUploadAutoUploadAll note:@"Internal error image/video not found [0]" type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
             
-            [[NCManageDatabase sharedInstance] deleteQueueUploadWithAssetLocalIdentifier:metadataNet.assetLocalIdentifier];
+            [[NCManageDatabase sharedInstance] deleteQueueUploadWithAssetLocalIdentifier:metadataNet.assetLocalIdentifier selector:selectorUploadAutoUpload];
         }
         
         counterUploadInQueueAndInLock = [app getNumberUploadInQueues] + [app getNumberUploadInQueuesWWan] + [[[NCManageDatabase sharedInstance] getLockQueueUpload] count];
@@ -547,7 +547,7 @@
             
                 [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionUpload selector:selectorUploadAutoUploadAll note:@"Internal error image/video not found [0]" type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
             
-                [[NCManageDatabase sharedInstance] deleteQueueUploadWithAssetLocalIdentifier:metadataNet.assetLocalIdentifier];
+                [[NCManageDatabase sharedInstance] deleteQueueUploadWithAssetLocalIdentifier:metadataNet.assetLocalIdentifier selector:selectorUploadAutoUploadAll];
             }
         
             counterUploadInQueueAndInLock = [app getNumberUploadInQueues] + [app getNumberUploadInQueuesWWan] + [[[NCManageDatabase sharedInstance] getLockQueueUpload] count];
