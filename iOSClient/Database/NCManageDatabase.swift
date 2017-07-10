@@ -36,11 +36,11 @@ class NCManageDatabase: NSObject {
         let config = Realm.Configuration(
         
             fileURL: dirGroup?.appendingPathComponent("\(appDatabaseNextcloud)/\(k_databaseDefault)"),
-            schemaVersion: 3,
+            schemaVersion: 4,
             
             migrationBlock: { migration, oldSchemaVersion in
                 // We haven’t migrated anything yet, so oldSchemaVersion == 0
-                if (oldSchemaVersion < 3) {
+                if (oldSchemaVersion < 4) {
                     // Nothing to do!
                     // Realm will automatically detect new properties and removed properties
                     // And will update the schema on disk automatically
@@ -502,213 +502,6 @@ class NCManageDatabase: NSObject {
                 print("[LOG] Could not write to database: ", error)
             }
         }
-    }
-    
-    //MARK: -
-    //MARK: Table Auto Upload
-    
-    func addAutoUpload(metadataNet: CCMetadataNet) -> Bool {
-        
-        guard let tableAccount = self.getAccountActive() else {
-            return false
-        }
-        
-        let realm = try! Realm()
-        
-        if realm.isInWriteTransaction {
-            
-            print("[LOG] Could not write to database, addAutoUpload is already in write transaction")
-            return false
-            
-        } else {
-        
-            do {
-                try realm.write {
-
-                    if realm.objects(tableAutoUpload.self).filter("account = %@ AND assetLocalIdentifier = %@", tableAccount.account, metadataNet.assetLocalIdentifier).first == nil {
-        
-                        // Add new Auto Upload
-                        let addAutoUpload = tableAutoUpload()
-            
-                        addAutoUpload.account = tableAccount.account
-                        addAutoUpload.assetLocalIdentifier = metadataNet.assetLocalIdentifier
-                        addAutoUpload.fileName = metadataNet.fileName
-                        addAutoUpload.selector = metadataNet.selector
-                        if (metadataNet.selectorPost != nil) {
-                            addAutoUpload.selectorPost = metadataNet.selectorPost
-                        }
-                        addAutoUpload.serverUrl = metadataNet.serverUrl
-                        addAutoUpload.session = metadataNet.session
-                        addAutoUpload.priority = metadataNet.priority
-                        
-                        realm.add(addAutoUpload)
-                    }
-                }
-            } catch let error {
-                print("[LOG] Could not write to database: ", error)
-            }
-        }
-        
-        return true
-    }
-    
-    func addAutoUpload(metadatasNet: [CCMetadataNet]) {
-        
-        guard let tableAccount = self.getAccountActive() else {
-            return
-        }
-        
-        let realm = try! Realm()
-        
-        do {
-            try realm.write {
-            
-                for metadataNet in metadatasNet {
-            
-                    if realm.objects(tableAutoUpload.self).filter("account = %@ AND assetLocalIdentifier = %@", tableAccount.account, metadataNet.assetLocalIdentifier).first == nil {
-                        
-                        // Add new Auto Upload
-                        let addAutoUpload = tableAutoUpload()
-                        
-                        addAutoUpload.account = tableAccount.account
-                        addAutoUpload.assetLocalIdentifier = metadataNet.assetLocalIdentifier
-                        addAutoUpload.fileName = metadataNet.fileName
-                        addAutoUpload.selector = metadataNet.selector
-                        if (metadataNet.selectorPost != nil) {
-                            addAutoUpload.selectorPost = metadataNet.selectorPost
-                        }
-                        addAutoUpload.serverUrl = metadataNet.serverUrl
-                        addAutoUpload.session = metadataNet.session
-                        addAutoUpload.priority = metadataNet.priority
-                        
-                        realm.add(addAutoUpload)
-                    }
-                }
-            }
-        } catch let error {
-            print("[LOG] Could not write to database: ", error)
-        }
-    }
-    
-    func getAutoUpload(selector: String) -> CCMetadataNet? {
-        
-        guard let tableAccount = self.getAccountActive() else {
-            return nil
-        }
-        
-        let realm = try! Realm()
-        
-        realm.beginWrite()
-        
-        guard let result = realm.objects(tableAutoUpload.self).filter("account = %@ AND selector = %@ AND lock == false", tableAccount.account, selector).first else {
-            realm.cancelWrite()
-            return nil
-        }
-        
-        let metadataNet = CCMetadataNet()
-        
-        metadataNet.action = actionUploadAsset
-        metadataNet.assetLocalIdentifier = result.assetLocalIdentifier
-        metadataNet.fileName = result.fileName
-        metadataNet.priority = result.priority
-        metadataNet.selector = result.selector
-        metadataNet.selectorPost = result.selectorPost
-        metadataNet.serverUrl = result.serverUrl
-        metadataNet.session = result.session
-        metadataNet.taskStatus = Int(k_taskStatusResume)
-        
-        // Lock
-        result.lock = true
-        
-        do {
-            try realm.commitWrite()
-        } catch let error {
-            print("[LOG] Could not write to database: ", error)
-            return nil
-        }
-        
-        return metadataNet
-    }
-    
-    func getLockAutoUpload() -> [tableAutoUpload]? {
-        
-        guard let tableAccount = self.getAccountActive() else {
-            return nil
-        }
-    
-        let realm = try! Realm()
-        
-        let results = realm.objects(tableAutoUpload.self).filter("account = %@ AND lock = true", tableAccount.account)
-        
-        return Array(results.map { tableAutoUpload.init(value:$0) })
-    }
-
-    func unlockAutoUpload(assetLocalIdentifier: String) {
-        
-        guard let tableAccount = self.getAccountActive() else {
-            return
-        }
-        
-        let realm = try! Realm()
-        
-        realm.beginWrite()
-
-        guard let result = realm.objects(tableAutoUpload.self).filter("account = %@ AND assetLocalIdentifier = %@", tableAccount.account, assetLocalIdentifier).first else {
-            realm.cancelWrite()
-            return
-        }
-        
-        // UnLock
-        result.lock = false
-        
-        do {
-            try realm.commitWrite()
-        } catch let error {
-            print("[LOG] Could not write to database: ", error)
-        }
-    }
-    
-    func deleteAutoUpload(assetLocalIdentifier: String) {
-        
-        guard let tableAccount = self.getAccountActive() else {
-            return
-        }
-
-        let realm = try! Realm()
-        
-        do {
-            try realm.write {
-                
-                let result = realm.objects(tableAutoUpload.self).filter("account = %@ AND assetLocalIdentifier = %@", tableAccount.account, assetLocalIdentifier).first
-                
-                if result != nil {
-                    realm.delete(result!)
-                }
-            }
-        } catch let error {
-            print("Could not write to database: ", error)
-        }
-    }
-    
-    func countAutoUpload(session: String?) -> Int {
-        
-        guard let tableAccount = self.getAccountActive() else {
-            return 0
-        }
-
-        let realm = try! Realm()
-        let results : Results<tableAutoUpload>
-        
-        if (session == nil) {
-            
-            results = realm.objects(tableAutoUpload.self).filter("account = %@", tableAccount.account)
-            
-        } else {
-            
-            results = realm.objects(tableAutoUpload.self).filter("account = %@ AND session = %@", tableAccount.account, session!)
-        }
-        
-        return results.count
     }
     
     //MARK: -
@@ -1798,6 +1591,213 @@ class NCManageDatabase: NSObject {
         let idsAsset = results.map { $0.idAsset }
         
         return Array(idsAsset)
+    }
+
+    //MARK: -
+    //MARK: Table Queue Upload
+    
+    func addQueueUpload(metadataNet: CCMetadataNet) -> Bool {
+        
+        guard let tableAccount = self.getAccountActive() else {
+            return false
+        }
+        
+        let realm = try! Realm()
+        
+        if realm.isInWriteTransaction {
+            
+            print("[LOG] Could not write to database, addQueueUpload is already in write transaction")
+            return false
+            
+        } else {
+            
+            do {
+                try realm.write {
+                    
+                    if realm.objects(tableQueueUpload.self).filter("account = %@ AND assetLocalIdentifier = %@", tableAccount.account, metadataNet.assetLocalIdentifier).first == nil {
+                        
+                        // Add new
+                        let addobject = tableQueueUpload()
+                        
+                        addobject.account = tableAccount.account
+                        addobject.assetLocalIdentifier = metadataNet.assetLocalIdentifier
+                        addobject.fileName = metadataNet.fileName
+                        addobject.selector = metadataNet.selector
+                        if (metadataNet.selectorPost != nil) {
+                            addobject.selectorPost = metadataNet.selectorPost
+                        }
+                        addobject.serverUrl = metadataNet.serverUrl
+                        addobject.session = metadataNet.session
+                        addobject.priority = metadataNet.priority
+                        
+                        realm.add(addobject)
+                    }
+                }
+            } catch let error {
+                print("[LOG] Could not write to database: ", error)
+            }
+        }
+        
+        return true
+    }
+    
+    func addQueueUpload(metadatasNet: [CCMetadataNet]) {
+        
+        guard let tableAccount = self.getAccountActive() else {
+            return
+        }
+        
+        let realm = try! Realm()
+        
+        do {
+            try realm.write {
+                
+                for metadataNet in metadatasNet {
+                    
+                    if realm.objects(tableQueueUpload.self).filter("account = %@ AND assetLocalIdentifier = %@", tableAccount.account, metadataNet.assetLocalIdentifier).first == nil {
+                        
+                        // Add new
+                        let addobject = tableQueueUpload()
+                        
+                        addobject.account = tableAccount.account
+                        addobject.assetLocalIdentifier = metadataNet.assetLocalIdentifier
+                        addobject.fileName = metadataNet.fileName
+                        addobject.selector = metadataNet.selector
+                        if (metadataNet.selectorPost != nil) {
+                            addobject.selectorPost = metadataNet.selectorPost
+                        }
+                        addobject.serverUrl = metadataNet.serverUrl
+                        addobject.session = metadataNet.session
+                        addobject.priority = metadataNet.priority
+                        
+                        realm.add(addobject)
+                    }
+                }
+            }
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+        }
+    }
+    
+    func getQueueUpload(selector: String) -> CCMetadataNet? {
+        
+        guard let tableAccount = self.getAccountActive() else {
+            return nil
+        }
+        
+        let realm = try! Realm()
+        
+        realm.beginWrite()
+        
+        guard let result = realm.objects(tableQueueUpload.self).filter("account = %@ AND selector = %@ AND lock == false", tableAccount.account, selector).first else {
+            realm.cancelWrite()
+            return nil
+        }
+        
+        let metadataNet = CCMetadataNet()
+        
+        metadataNet.action = actionUploadAsset
+        metadataNet.assetLocalIdentifier = result.assetLocalIdentifier
+        metadataNet.fileName = result.fileName
+        metadataNet.priority = result.priority
+        metadataNet.selector = result.selector
+        metadataNet.selectorPost = result.selectorPost
+        metadataNet.serverUrl = result.serverUrl
+        metadataNet.session = result.session
+        metadataNet.taskStatus = Int(k_taskStatusResume)
+        
+        // Lock
+        result.lock = true
+        
+        do {
+            try realm.commitWrite()
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+            return nil
+        }
+        
+        return metadataNet
+    }
+    
+    func getLockQueueUpload() -> [tableQueueUpload]? {
+        
+        guard let tableAccount = self.getAccountActive() else {
+            return nil
+        }
+        
+        let realm = try! Realm()
+        
+        let results = realm.objects(tableQueueUpload.self).filter("account = %@ AND lock = true", tableAccount.account)
+        
+        return Array(results.map { tableQueueUpload.init(value:$0) })
+    }
+    
+    func unlockQueueUpload(assetLocalIdentifier: String) {
+        
+        guard let tableAccount = self.getAccountActive() else {
+            return
+        }
+        
+        let realm = try! Realm()
+        
+        realm.beginWrite()
+        
+        guard let result = realm.objects(tableQueueUpload.self).filter("account = %@ AND assetLocalIdentifier = %@", tableAccount.account, assetLocalIdentifier).first else {
+            realm.cancelWrite()
+            return
+        }
+        
+        // UnLock
+        result.lock = false
+        
+        do {
+            try realm.commitWrite()
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+        }
+    }
+    
+    func deleteQueueUpload(assetLocalIdentifier: String) {
+        
+        guard let tableAccount = self.getAccountActive() else {
+            return
+        }
+        
+        let realm = try! Realm()
+        
+        do {
+            try realm.write {
+                
+                let result = realm.objects(tableQueueUpload.self).filter("account = %@ AND assetLocalIdentifier = %@", tableAccount.account, assetLocalIdentifier).first
+                
+                if result != nil {
+                    realm.delete(result!)
+                }
+            }
+        } catch let error {
+            print("Could not write to database: ", error)
+        }
+    }
+    
+    func countQueueUpload(session: String?) -> Int {
+        
+        guard let tableAccount = self.getAccountActive() else {
+            return 0
+        }
+        
+        let realm = try! Realm()
+        let results : Results<tableQueueUpload>
+        
+        if (session == nil) {
+            
+            results = realm.objects(tableQueueUpload.self).filter("account = %@", tableAccount.account)
+            
+        } else {
+            
+            results = realm.objects(tableQueueUpload.self).filter("account = %@ AND session = %@", tableAccount.account, session!)
+        }
+        
+        return results.count
     }
 
     //MARK: -

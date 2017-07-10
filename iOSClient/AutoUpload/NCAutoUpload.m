@@ -430,13 +430,13 @@
         
         // Update database
         if (!assetsFull)
-            [self addDatabaseAutoUploadAndPhotoLibrary:metadataNet asset:asset];
+            [self addQueueUploadAndPhotoLibrary:metadataNet asset:asset];
     }
     
-        // Insert all assets (Full) in TableAutoUpload
+        // Insert all assets (Full) in tableQueueUpload
         if (assetsFull && [metadataNetFull count] > 0) {
     
-            [[NCManageDatabase sharedInstance] addAutoUploadWithMetadatasNet:metadataNetFull];
+            [[NCManageDatabase sharedInstance] addQueueUploadWithMetadatasNet:metadataNetFull];
         
             // Update icon badge number
             [app updateApplicationIconBadgeNumber];
@@ -446,11 +446,11 @@
     [_hud hideHud];
 }
 
-- (void)addDatabaseAutoUploadAndPhotoLibrary:(CCMetadataNet *)metadataNet asset:(PHAsset *)asset
+- (void)addQueueUploadAndPhotoLibrary:(CCMetadataNet *)metadataNet asset:(PHAsset *)asset
 {
     @synchronized(self) {
         
-        if ([[NCManageDatabase sharedInstance] addAutoUploadWithMetadataNet:metadataNet]) {
+        if ([[NCManageDatabase sharedInstance] addQueueUploadWithMetadataNet:metadataNet]) {
         
             [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionAutoUpload selector:metadataNet.selector note:@"Add Auto Upload, add new asset" type:k_activityTypeInfo verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
         
@@ -483,14 +483,14 @@
     [app.timerProcessAutoUpload invalidate];
     
     NSInteger maxConcurrentUpload = [maxConcurrent integerValue];
-    NSInteger counterUploadInQueueAndInLock = [app getNumberUploadInQueues] + [app getNumberUploadInQueuesWWan] + [[[NCManageDatabase sharedInstance] getLockAutoUpload] count];
+    NSInteger counterUploadInQueueAndInLock = [app getNumberUploadInQueues] + [app getNumberUploadInQueuesWWan] + [[[NCManageDatabase sharedInstance] getLockQueueUpload] count];
     NSInteger counterNewUpload = 0;
  
     // ------------------------- <selector Auto Upload> -------------------------
     
     while (counterUploadInQueueAndInLock < maxConcurrentUpload) {
         
-        metadataNet = [[NCManageDatabase sharedInstance] getAutoUploadWithSelector:selectorUploadAutoUpload];
+        metadataNet = [[NCManageDatabase sharedInstance] getQueueUploadWithSelector:selectorUploadAutoUpload];
         if (metadataNet) {
             
             result = [PHAsset fetchAssetsWithLocalIdentifiers:@[metadataNet.assetLocalIdentifier] options:nil];
@@ -508,10 +508,10 @@
             
             [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionUpload selector:selectorUploadAutoUploadAll note:@"Internal error image/video not found [0]" type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
             
-            [[NCManageDatabase sharedInstance] deleteAutoUploadWithAssetLocalIdentifier:metadataNet.assetLocalIdentifier];
+            [[NCManageDatabase sharedInstance] deleteQueueUploadWithAssetLocalIdentifier:metadataNet.assetLocalIdentifier];
         }
         
-        counterUploadInQueueAndInLock = [app getNumberUploadInQueues] + [app getNumberUploadInQueuesWWan] + [[[NCManageDatabase sharedInstance] getLockAutoUpload] count];
+        counterUploadInQueueAndInLock = [app getNumberUploadInQueues] + [app getNumberUploadInQueuesWWan] + [[[NCManageDatabase sharedInstance] getLockQueueUpload] count];
     }
     
     // ------------------------- <selector Auto Upload All> ----------------------
@@ -529,7 +529,7 @@
     
         while (counterUploadInQueueAndInLock < maxConcurrentUpload) {
         
-            metadataNet =  [[NCManageDatabase sharedInstance] getAutoUploadWithSelector:selectorUploadAutoUploadAll];
+            metadataNet =  [[NCManageDatabase sharedInstance] getQueueUploadWithSelector:selectorUploadAutoUploadAll];
             if (metadataNet) {
                 
                 result = [PHAsset fetchAssetsWithLocalIdentifiers:@[metadataNet.assetLocalIdentifier] options:nil];
@@ -547,16 +547,16 @@
             
                 [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionUpload selector:selectorUploadAutoUploadAll note:@"Internal error image/video not found [0]" type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
             
-                [[NCManageDatabase sharedInstance] deleteAutoUploadWithAssetLocalIdentifier:metadataNet.assetLocalIdentifier];
+                [[NCManageDatabase sharedInstance] deleteQueueUploadWithAssetLocalIdentifier:metadataNet.assetLocalIdentifier];
             }
         
-            counterUploadInQueueAndInLock = [app getNumberUploadInQueues] + [app getNumberUploadInQueuesWWan] + [[[NCManageDatabase sharedInstance] getLockAutoUpload] count];
+            counterUploadInQueueAndInLock = [app getNumberUploadInQueues] + [app getNumberUploadInQueuesWWan] + [[[NCManageDatabase sharedInstance] getLockQueueUpload] count];
         }
     }
     
     // Verify Lock
     NSInteger counterUploadInQueue = [app getNumberUploadInQueues] + [app getNumberUploadInQueuesWWan];
-    NSArray *tableMetadatasInLock = [[NCManageDatabase sharedInstance] getLockAutoUpload];
+    NSArray *tableMetadatasInLock = [[NCManageDatabase sharedInstance] getLockQueueUpload];
 
     if (counterNewUpload == 0 && counterUploadInQueue == 0 && [tableMetadatasInLock count] > 0) {
         
@@ -564,7 +564,7 @@
         for (tableMetadata *metadata in tableMetadatasInLock) {
             
             if ([[NCManageDatabase sharedInstance] isTableInvalidated:metadata] == NO)
-                [[NCManageDatabase sharedInstance] unlockAutoUploadWithAssetLocalIdentifier:metadata.assetLocalIdentifier];
+                [[NCManageDatabase sharedInstance] unlockQueueUploadWithAssetLocalIdentifier:metadata.assetLocalIdentifier];
         }
     }
     

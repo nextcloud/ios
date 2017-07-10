@@ -226,7 +226,7 @@
             [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUploadFull" state:NO];
 
             // remove
-            [[NCManageDatabase sharedInstance] clearTable:[tableAutoUpload class] account:app.activeAccount];
+            [[NCManageDatabase sharedInstance] clearTable:[tableQueueUpload class] account:app.activeAccount];
         }
         
         [self reloadForm];
@@ -268,7 +268,7 @@
             
         } else {
             
-            [[NCManageDatabase sharedInstance] clearTable:[tableAutoUpload class] account:app.activeAccount];
+            [[NCManageDatabase sharedInstance] clearTable:[tableQueueUpload class] account:app.activeAccount];
             
             [app.netQueueUpload cancelAllOperations];
             [app.netQueueUploadWWan cancelAllOperations];

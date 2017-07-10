@@ -307,7 +307,7 @@
     
     [self.hud visibleHudTitle:NSLocalizedString(@"_remove_cache_", nil) mode:MBProgressHUDModeIndeterminate color:nil];
     
-    [[NCManageDatabase sharedInstance] clearTable:[tableAutoUpload class] account:app.activeAccount];
+    [[NCManageDatabase sharedInstance] clearTable:[tableQueueUpload class] account:app.activeAccount];
     
     [app cancelAllOperations];
     
