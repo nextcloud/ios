@@ -32,7 +32,6 @@
 {
     BOOL _cryptated;
     
-    long _numTaskUploadInProgress;
     CTAssetsPickerController *_picker;
     CCMove *_move;
     CCMain *_mainVC;
@@ -59,7 +58,6 @@
     if (self = [super init]) {
         
         _cryptated = NO;
-        _numTaskUploadInProgress = 0;
     }
     
     return self;
@@ -67,10 +65,6 @@
 
 - (void)startQuickActionsEncrypted:(BOOL)cryptated viewController:(UITableViewController *)viewController
 {
-    NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND session CONTAINS 'upload' AND (sessionTaskIdentifier >= 0 OR sessionTaskIdentifierPlist >= 0)", app.activeAccount] sorted:nil ascending:NO];
-    
-    _numTaskUploadInProgress = [metadatas count];
-    
     _cryptated = cryptated;
     _mainVC = (CCMain *)viewController;
     
@@ -86,8 +80,6 @@
         [_move dismissViewControllerAnimated:NO completion:nil];
     
     _cryptated = NO;
-    _numTaskUploadInProgress = 0;
-    
     _picker = nil;
     _move = nil;
     _assets = nil;
@@ -127,24 +119,7 @@
 
 - (BOOL)assetsPickerController:(CTAssetsPickerController *)picker shouldSelectAsset:(PHAsset *)asset
 {
-    __block float imageSize;
-    
-    PHImageRequestOptions *option = [PHImageRequestOptions new];
-    option.synchronous = YES;
-    
-    // self Asset
-    [[PHImageManager defaultManager] requestImageDataForAsset:asset options:option resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
-        imageSize = imageData.length;
-    }];
-    
-    // Add selected Asset
-    for (PHAsset *asset in picker.selectedAssets) {
-        [[PHImageManager defaultManager] requestImageDataForAsset:asset options:option resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
-            imageSize = imageData.length + imageSize;
-        }];
-    }
-    
-    if (picker.selectedAssets.count >= (k_pickerControllerMax - _numTaskUploadInProgress)) {
+    if (picker.selectedAssets.count > k_pickerControllerMax) {
         
         [app messageNotification:@"_info_" description:@"_limited_dimension_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
         

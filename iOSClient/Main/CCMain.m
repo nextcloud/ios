@@ -727,6 +727,18 @@
     }];
 }
 
+- (BOOL)assetsPickerController:(CTAssetsPickerController *)picker shouldSelectAsset:(PHAsset *)asset
+{
+    if (picker.selectedAssets.count > k_pickerControllerMax) {
+        
+        [app messageNotification:@"_info_" description:@"_limited_dimension_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
+        
+        return NO;
+    }
+    
+    return YES;
+}
+
 - (void)assetsPickerController:(CTAssetsPickerController *)picker didFinishPickingAssets:(NSMutableArray *)assets
 {
     [picker dismissViewControllerAnimated:YES completion:^{
