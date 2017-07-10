@@ -433,14 +433,14 @@
             [self addDatabaseAutoUploadAndPhotoLibrary:metadataNet asset:asset];
     }
     
-    // Insert all assets (Full) in TableAutoUpload
-    if (assetsFull && [metadataNetFull count] > 0) {
+        // Insert all assets (Full) in TableAutoUpload
+        if (assetsFull && [metadataNetFull count] > 0) {
     
-        [[NCManageDatabase sharedInstance] addAutoUploadWithMetadatasNet:metadataNetFull];
-          
-        // Update icon badge number
-        [app updateApplicationIconBadgeNumber];
-    }
+            [[NCManageDatabase sharedInstance] addAutoUploadWithMetadatasNet:metadataNetFull];
+        
+            // Update icon badge number
+            [app updateApplicationIconBadgeNumber];
+        }
     
     // end loading
     [_hud hideHud];
@@ -448,23 +448,26 @@
 
 - (void)addDatabaseAutoUploadAndPhotoLibrary:(CCMetadataNet *)metadataNet asset:(PHAsset *)asset
 {
-    if ([[NCManageDatabase sharedInstance] addAutoUploadWithMetadataNet:metadataNet]) {
+    @synchronized(self) {
         
-        [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionAutoUpload selector:metadataNet.selector note:@"Add Auto Upload, add new asset" type:k_activityTypeInfo verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
+        if ([[NCManageDatabase sharedInstance] addAutoUploadWithMetadataNet:metadataNet]) {
         
-    } else {
+            [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionAutoUpload selector:metadataNet.selector note:@"Add Auto Upload, add new asset" type:k_activityTypeInfo verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
         
-        [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionAutoUpload selector:metadataNet.selector note:@"Add Auto Upload, asset already present" type:k_activityTypeInfo verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
-    }
+        } else {
     
-    // Add asset in table Photo Library
-    if ([metadataNet.selector isEqualToString:selectorUploadAutoUpload])
-        [[NCManageDatabase sharedInstance] addPhotoLibrary:@[asset]];
+            [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionAutoUpload selector:metadataNet.selector note:@"Add Auto Upload, asset already present" type:k_activityTypeInfo verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
+        }
+    
+        // Add asset in table Photo Library
+        if ([metadataNet.selector isEqualToString:selectorUploadAutoUpload])
+            [[NCManageDatabase sharedInstance] addPhotoLibrary:@[asset]];
         
-    dispatch_async(dispatch_get_main_queue(), ^{
-        // Update icon badge number
-        [app updateApplicationIconBadgeNumber];
-    });
+        dispatch_async(dispatch_get_main_queue(), ^{
+            // Update icon badge number
+            [app updateApplicationIconBadgeNumber];
+        });
+    }
 }
 
 #pragma --------------------------------------------------------------------------------------------
