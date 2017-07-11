@@ -4004,6 +4004,8 @@
 
 - (void)uploadFilePasteArray:(NSArray *)items cryptated:(BOOL)cryptated
 {
+    NSInteger timer = 0;
+    
     for (NSDictionary *dic in items) {
         
         // Value : (NSData) fileID
@@ -4027,7 +4029,11 @@
                         
                         [CCUtility copyFileAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, metadata.fileID] toPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileNamePrint]];
                         
-                        [[CCNetworking sharedNetworking] uploadFile:metadata.fileNamePrint serverUrl:_serverUrl cryptated:cryptated onlyPlist:NO session:k_upload_session taskStatus:k_taskStatusResume selector:nil selectorPost:nil errorCode:0 delegate:nil];
+                        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, timer * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+                            [[CCNetworking sharedNetworking] uploadFile:metadata.fileNamePrint serverUrl:_serverUrl cryptated:cryptated onlyPlist:NO session:k_upload_session taskStatus:k_taskStatusResume selector:nil selectorPost:nil errorCode:0 delegate:nil];
+                        });
+                        
+                        timer = timer + 0.5;
                     }
                 }
             }
