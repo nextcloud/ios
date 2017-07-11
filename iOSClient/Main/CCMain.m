@@ -4004,7 +4004,7 @@
 
 - (void)uploadFilePasteArray:(NSArray *)items cryptated:(BOOL)cryptated
 {
-    NSInteger timer = 0;
+    float timer = 0;
     
     for (NSDictionary *dic in items) {
         
@@ -4033,7 +4033,7 @@
                             [[CCNetworking sharedNetworking] uploadFile:metadata.fileNamePrint serverUrl:_serverUrl cryptated:cryptated onlyPlist:NO session:k_upload_session taskStatus:k_taskStatusResume selector:nil selectorPost:nil errorCode:0 delegate:nil];
                         });
                         
-                        timer = timer + 0.5;
+                        timer += 0.1;
                     }
                 }
             }
