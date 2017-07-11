@@ -3837,18 +3837,25 @@
             
             NSData *dataFileID = [dic objectForKey: k_metadataKeyedUnarchiver];
             NSString *fileID = [NSKeyedUnarchiver unarchiveObjectWithData:dataFileID];
-                        
-            tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
-            NSString *directoryUser = [CCUtility getDirectoryActiveUser:account.user activeUrl:account.url];
             
-            if (directoryUser) {
-                if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileID]])
-                    return YES;
+            tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
+            
+            if (metadata) {
+            
+                tableAccount *account = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account = %@", metadata.account]];
+                
+                if (account) {
+                
+                    NSString *directoryUser = [CCUtility getDirectoryActiveUser:account.user activeUrl:account.url];
+            
+                    if (directoryUser)
+                        if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileID]])
+                            return YES;
+                }
             }
+        }
             
-            return NO;
-
-        } else return NO;
+        return NO;
     }
     
     if (@selector(pasteFiles:) == action || @selector(pasteFilesEncrypted:) == action) {
@@ -3866,13 +3873,35 @@
             
             NSData *dataFileID = [dic objectForKey: k_metadataKeyedUnarchiver];
             NSString *fileID = [NSKeyedUnarchiver unarchiveObjectWithData:dataFileID];
-            tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
+
+            tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
             
-            NSString *directoryUser = [CCUtility getDirectoryActiveUser:account.user activeUrl:account.url];
+            if (metadata) {
             
-            if (directoryUser) {
-                if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileID]])
-                    isValid = YES;
+                tableAccount *account = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account = %@", metadata.account]];
+
+                if (account) {
+                
+                    NSString *directoryUser = [CCUtility getDirectoryActiveUser:account.user activeUrl:account.url];
+            
+                    if (directoryUser) {
+                        if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileID]]) {
+                            isValid = YES;
+                        } else {
+                            isValid = NO;
+                            break;
+                        }
+                    } else {
+                        isValid = NO;
+                        break;
+                    }
+                } else {
+                    isValid = NO;
+                    break;
+                }
+            } else {
+                isValid = NO;
+                break;
             }
         }
         
@@ -3982,20 +4011,25 @@
         NSData *dataFileID = [dic objectForKey: k_metadataKeyedUnarchiver];
         NSString *fileID = [NSKeyedUnarchiver unarchiveObjectWithData:dataFileID];
         
-        tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
         tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
         
-        if (!metadata || !account) return;
-        
-        NSString *directoryUser = [CCUtility getDirectoryActiveUser:account.user activeUrl:account.url];
+        if (metadata) {
             
-        if (directoryUser) {
+            tableAccount *account = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account = %@", metadata.account]];
             
-            if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileID]]) {
+            if (account) {
                 
-                [CCUtility copyFileAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, metadata.fileID] toPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileNamePrint]];
-            
-                [[CCNetworking sharedNetworking] uploadFile:metadata.fileNamePrint serverUrl:_serverUrl cryptated:cryptated onlyPlist:NO session:k_upload_session taskStatus:k_taskStatusResume selector:nil selectorPost:nil errorCode:0 delegate:nil];
+                NSString *directoryUser = [CCUtility getDirectoryActiveUser:account.user activeUrl:account.url];
+                
+                if (directoryUser) {
+                    
+                    if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileID]]) {
+                        
+                        [CCUtility copyFileAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, metadata.fileID] toPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileNamePrint]];
+                        
+                        [[CCNetworking sharedNetworking] uploadFile:metadata.fileNamePrint serverUrl:_serverUrl cryptated:cryptated onlyPlist:NO session:k_upload_session taskStatus:k_taskStatusResume selector:nil selectorPost:nil errorCode:0 delegate:nil];
+                    }
+                }
             }
         }
     }

@@ -212,6 +212,19 @@ class NCManageDatabase: NSObject {
         return Array(results.map { $0.account })
     }
     
+    func getAccount(predicate: NSPredicate) -> tableAccount? {
+        
+        let realm = try! Realm()
+        
+        let result = realm.objects(tableAccount.self).filter(predicate).first
+        
+        if result != nil {
+            return tableAccount.init(value: result!)
+        } else {
+            return nil
+        }
+    }
+    
     func getAccountAutoUploadFileName() -> String {
         
         let realm = try! Realm()

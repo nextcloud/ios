@@ -110,7 +110,7 @@ extern NSString *const urlBaseUploadDB;
 
 // Service Key Share
 #define k_serviceShareKeyChain                          @"Crypto Cloud"
-#define k_metadataKeyedUnarchiver                       @"it.twsweb.Crypto-Cloud.metadata"
+#define k_metadataKeyedUnarchiver                       @"it.twsweb.nextcloud.metadata"
 
 // TaskIdentifier
 #define k_taskIdentifierDone                            -1
