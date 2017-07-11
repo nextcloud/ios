@@ -3838,19 +3838,22 @@
             NSData *dataFileID = [dic objectForKey: k_metadataKeyedUnarchiver];
             NSString *fileID = [NSKeyedUnarchiver unarchiveObjectWithData:dataFileID];
             
-            tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
-            
-            if (metadata) {
-            
-                tableAccount *account = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account = %@", metadata.account]];
+            if (fileID) {
                 
-                if (account) {
-                
-                    NSString *directoryUser = [CCUtility getDirectoryActiveUser:account.user activeUrl:account.url];
+                tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
             
-                    if (directoryUser)
-                        if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileID]])
-                            return YES;
+                if (metadata) {
+            
+                    tableAccount *account = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account = %@", metadata.account]];
+                
+                    if (account) {
+                
+                        NSString *directoryUser = [CCUtility getDirectoryActiveUser:account.user activeUrl:account.url];
+            
+                        if (directoryUser)
+                            if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileID]])
+                                return YES;
+                    }
                 }
             }
         }
