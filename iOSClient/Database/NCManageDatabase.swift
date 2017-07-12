@@ -315,27 +315,8 @@ class NCManageDatabase: NSObject {
         
         if (tableAccount().objectSchema.properties.contains { $0.name == property }) {
             
-            switch property {
-            case "autoUpload":
-                result.autoUpload = state
-            case "autoUploadBackground":
-                result.autoUploadBackground = state
-            case "autoUploadCreateSubfolder":
-                result.autoUploadCreateSubfolder = state
-            case "autoUploadFull":
-                result.autoUploadFull = state
-            case "autoUploadImage":
-                result.autoUploadImage = state
-            case "autoUploadVideo":
-                result.autoUploadVideo = state
-            case "autoUploadWWAnPhoto":
-                result.autoUploadWWAnPhoto = state
-            case "autoUploadWWAnVideo":
-                result.autoUploadWWAnVideo = state
-            default:
-                print("property not found")
-            }
-        
+            result[property] = state
+            
             do {
                 try realm.commitWrite()
             } catch let error {
