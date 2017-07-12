@@ -1397,7 +1397,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func getMetadatas(predicate: NSPredicate, sorted: String?, ascending: Bool) -> [tableMetadata]? {
+    func getMetadatas(predicate: NSPredicate, sortedOptional: String?, ascending: Bool) -> [tableMetadata]? {
         
         guard self.getAccountActive() != nil else {
             return nil
@@ -1406,19 +1406,17 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         let results : Results<tableMetadata>
         
-        if sorted == nil {
+        if let sorted = sortedOptional {
             
-            results = realm.objects(tableMetadata.self).filter(predicate)
+            if (tableMetadata().objectSchema.properties.contains { $0.name == sorted }) {
+                results = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending)
+            } else {
+                results = realm.objects(tableMetadata.self).filter(predicate)
+            }
             
         } else {
             
-            var sorted: String = sorted!
-            
-            if sorted == "fileName" {
-                sorted = "fileNamePrint"
-            }
-            
-            results = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending)
+            results = realm.objects(tableMetadata.self).filter(predicate)
         }
         
         if (results.count > 0) {
@@ -1468,7 +1466,7 @@ class NCManageDatabase: NSObject {
         
         let predicate = NSPredicate(format: "account = %@ AND (session = %@ OR session = %@) AND (sessionTaskIdentifier != %i OR sessionTaskIdentifierPlist != %i)", tableAccount.account, k_download_session, k_download_session_foreground, k_taskIdentifierDone, k_taskIdentifierDone)
         
-        return self.getMetadatas(predicate: predicate, sorted: nil, ascending: false)
+        return self.getMetadatas(predicate: predicate, sortedOptional: nil, ascending: false)
     }
     
     func getTableMetadataDownloadWWan() -> [tableMetadata]? {
@@ -1479,7 +1477,7 @@ class NCManageDatabase: NSObject {
 
         let predicate = NSPredicate(format: "account = %@ AND session = %@ AND (sessionTaskIdentifier != %i OR sessionTaskIdentifierPlist != %i)", tableAccount.account, k_download_session_wwan, k_taskIdentifierDone, k_taskIdentifierDone)
         
-        return self.getMetadatas(predicate: predicate, sorted: nil, ascending: false)
+        return self.getMetadatas(predicate: predicate, sortedOptional: nil, ascending: false)
     }
     
     func getTableMetadataUpload() -> [tableMetadata]? {
@@ -1490,7 +1488,7 @@ class NCManageDatabase: NSObject {
 
         let predicate = NSPredicate(format: "account = %@ AND (session = %@ OR session = %@) AND (sessionTaskIdentifier != %i OR sessionTaskIdentifierPlist != %i)", tableAccount.account, k_upload_session, k_upload_session_foreground, k_taskIdentifierDone, k_taskIdentifierDone)
         
-        return self.getMetadatas(predicate: predicate, sorted: nil, ascending: false)
+        return self.getMetadatas(predicate: predicate, sortedOptional: nil, ascending: false)
     }
     
     func getTableMetadataUploadWWan() -> [tableMetadata]? {
@@ -1501,7 +1499,7 @@ class NCManageDatabase: NSObject {
         
         let predicate = NSPredicate(format: "account = %@ AND session = %@ AND (sessionTaskIdentifier != %i OR sessionTaskIdentifierPlist != %i)", tableAccount.account, k_upload_session_wwan, k_taskIdentifierDone, k_taskIdentifierDone)
         
-        return self.getMetadatas(predicate: predicate, sorted: nil, ascending: false)
+        return self.getMetadatas(predicate: predicate, sortedOptional: nil, ascending: false)
     }
     
     func getTableMetadatasPhotos(serverUrl: String) -> [tableMetadata]? {

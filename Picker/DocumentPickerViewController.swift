@@ -346,11 +346,8 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
             }
         }
         
-        // Get Datasource
-        //recordsTableMetadata = CCCoreData.getTableMetadata(with: NSPredicate(format: "(account == '\(activeAccount!)') AND (directoryID == '\(metadataNet.directoryID!)')"), fieldOrder: "fileName", ascending: true) as? [TableMetadata]
-        
-        predicate = NSPredicate(format: "account = %@ AND directoryID == %@", activeAccount!, metadataNet.directoryID!)
-        recordsTableMetadata = NCManageDatabase.sharedInstance.getMetadatas(predicate: predicate, sorted: "fileName", ascending: true)
+        predicate = NSPredicate(format: "account = %@ AND directoryID = %@", activeAccount!, metadataNet.directoryID!)
+        recordsTableMetadata = NCManageDatabase.sharedInstance.getMetadatas(predicate: predicate, sortedOptional: "fileNamePrint", ascending: true)
         
         tableView.reloadData()
         

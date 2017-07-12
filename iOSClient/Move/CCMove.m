@@ -477,7 +477,7 @@
     if (self.onlyClearDirectory) predicate = [NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND directory = true AND cryptated = false", activeAccount, directoryID];
     else predicate = [NSPredicate predicateWithFormat:@"account == %@ AND directoryID = %@ AND directory = true", activeAccount, directoryID];
     
-    NSArray *result = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:predicate sorted:nil ascending:NO];
+    NSArray *result = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:predicate sortedOptional:nil ascending:NO];
     
     if (result)
         return [result count];
