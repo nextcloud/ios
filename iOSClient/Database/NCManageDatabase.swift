@@ -343,7 +343,7 @@ class NCManageDatabase: NSObject {
                 let result = realm.objects(tableAccount.self).filter("active = true").first
                 
                 if result != nil {
-                result?.autoUploadFileName = fileName!
+                    result?.autoUploadFileName = fileName!
                 }
             }
         } catch let error {
