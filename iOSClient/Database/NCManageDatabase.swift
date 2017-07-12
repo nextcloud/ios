@@ -764,23 +764,14 @@ class NCManageDatabase: NSObject {
         return tableDirectory.init(value: result)
     }
     
-    func getTablesDirectory(predicate: NSPredicate, sorted: String?, ascending: Bool) -> [tableDirectory]? {
+    func getTablesDirectory(predicate: NSPredicate, sorted: String, ascending: Bool) -> [tableDirectory]? {
         
         guard self.getAccountActive() != nil else {
             return nil
         }
         
         let realm = try! Realm()
-        let results : Results<tableDirectory>
-        
-        if sorted == nil {
-            
-            results = realm.objects(tableDirectory.self).filter(predicate)
-            
-        } else {
-            
-            results = realm.objects(tableDirectory.self).filter(predicate).sorted(byKeyPath: sorted!, ascending: ascending)
-        }
+        let results = realm.objects(tableDirectory.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending)
         
         if (results.count > 0) {
             return Array(results.map { tableDirectory.init(value:$0) })
@@ -1426,7 +1417,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func getMetadataAtIndex(predicate: NSPredicate, sorted: String?, ascending: Bool, index: Int) -> tableMetadata? {
+    func getMetadataAtIndex(predicate: NSPredicate, sorted: String, ascending: Bool, index: Int) -> tableMetadata? {
         
         guard self.getAccountActive() != nil else {
             return nil
@@ -1434,7 +1425,7 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
         
-        let results = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: sorted!, ascending: ascending)
+        let results = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending)
         
         if (results.count > 0  && results.count > index) {
             return tableMetadata.init(value: results[index])
