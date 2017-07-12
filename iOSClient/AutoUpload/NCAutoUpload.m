@@ -87,7 +87,7 @@
         tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
 
         if (account.autoUpload == YES)
-            [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUpload" state:NO];
+            [[NCManageDatabase sharedInstance] setAccountAutoUploadProperty:@"autoUpload" state:NO];
         
         [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
         
@@ -107,7 +107,7 @@
         tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
 
         if (account.autoUpload == YES)
-            [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUpload" state:NO];
+            [[NCManageDatabase sharedInstance] setAccountAutoUploadProperty:@"autoUpload" state:NO];
         
         [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
         
@@ -142,7 +142,7 @@
                 if ([ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusAuthorized) {
                     
                     if (account.autoUploadBackground == YES)
-                        [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUploadBackground" state:NO];
+                        [[NCManageDatabase sharedInstance] setAccountAutoUploadProperty:@"autoUploadBackground" state:NO];
                     
                     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_location_not_enabled_", nil) message:NSLocalizedString(@"_location_not_enabled_msg_", nil) delegate:nil cancelButtonTitle:NSLocalizedString(@"_ok_", nil) otherButtonTitles:nil];
                     [alert show];
@@ -159,14 +159,14 @@
             if ([ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusAuthorized) {
                 
                 if (account.autoUploadBackground == NO)
-                    [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUploadBackground" state:YES];
+                    [[NCManageDatabase sharedInstance] setAccountAutoUploadProperty:@"autoUploadBackground" state:YES];
                 
                 [[CCManageLocation sharedInstance] startSignificantChangeUpdates];
                 
             } else {
                 
                 if (account.autoUploadBackground == YES)
-                    [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUploadBackground" state:NO];
+                    [[NCManageDatabase sharedInstance] setAccountAutoUploadProperty:@"autoUploadBackground" state:NO];
                 
                 [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
                 
@@ -178,7 +178,7 @@
     } else {
         
         if (account.autoUploadBackground == YES)
-            [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUploadBackground" state:NO];
+            [[NCManageDatabase sharedInstance] setAccountAutoUploadProperty:@"autoUploadBackground" state:NO];
         
         [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
         
@@ -223,7 +223,7 @@
                 if ([CCManageLocation sharedInstance].firstChangeAuthorizationDone) {
                     
                     if (account.autoUploadBackground == YES)
-                        [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUploadBackground" state:NO];
+                        [[NCManageDatabase sharedInstance] setAccountAutoUploadProperty:@"autoUploadBackground" state:NO];
                     
                     [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
                 }
@@ -238,7 +238,7 @@
             
             if (account.autoUploadBackground == YES) {
                 
-                [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUploadBackground" state:NO];
+                [[NCManageDatabase sharedInstance] setAccountAutoUploadProperty:@"autoUploadBackground" state:NO];
                 
                 [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
                 
@@ -280,10 +280,10 @@
         } else {
             
             if (account.autoUpload == YES)
-                [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUpload" state:NO];
+                [[NCManageDatabase sharedInstance] setAccountAutoUploadProperty:@"autoUpload" state:NO];
             
             if (account.autoUploadBackground == YES)
-                [[NCManageDatabase sharedInstance] setAccountAutoUploadFiled:@"autoUploadBackground" state:NO];
+                [[NCManageDatabase sharedInstance] setAccountAutoUploadProperty:@"autoUploadBackground" state:NO];
             
             [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
         }

@@ -302,7 +302,7 @@ class NCManageDatabase: NSObject {
         return activeAccount
     }
 
-    func setAccountAutoUploadFiled(_ field: String, state: Bool) {
+    func setAccountAutoUploadProperty(_ property: String, state: Bool) {
         
         let realm = try! Realm()
         
@@ -313,31 +313,36 @@ class NCManageDatabase: NSObject {
             return
         }
         
-        switch field {
-        case "autoUpload":
-            result.autoUpload = state
-        case "autoUploadBackground":
-            result.autoUploadBackground = state
-        case "autoUploadCreateSubfolder":
-            result.autoUploadCreateSubfolder = state
-        case "autoUploadFull":
-            result.autoUploadFull = state
-        case "autoUploadImage":
-            result.autoUploadImage = state
-        case "autoUploadVideo":
-            result.autoUploadVideo = state
-        case "autoUploadWWAnPhoto":
-            result.autoUploadWWAnPhoto = state
-        case "autoUploadWWAnVideo":
-            result.autoUploadWWAnVideo = state
-        default:
-            print("No founfd field")
-        }
+        if (tableAccount().objectSchema.properties.contains { $0.name == property }) {
+            
+            switch property {
+            case "autoUpload":
+                result.autoUpload = state
+            case "autoUploadBackground":
+                result.autoUploadBackground = state
+            case "autoUploadCreateSubfolder":
+                result.autoUploadCreateSubfolder = state
+            case "autoUploadFull":
+                result.autoUploadFull = state
+            case "autoUploadImage":
+                result.autoUploadImage = state
+            case "autoUploadVideo":
+                result.autoUploadVideo = state
+            case "autoUploadWWAnPhoto":
+                result.autoUploadWWAnPhoto = state
+            case "autoUploadWWAnVideo":
+                result.autoUploadWWAnVideo = state
+            default:
+                print("property not found")
+            }
         
-        do {
-            try realm.commitWrite()
-        } catch let error {
-            print("[LOG] Could not write to database: ", error)
+            do {
+                try realm.commitWrite()
+            } catch let error {
+                print("[LOG] Could not write to database: ", error)
+            }
+        } else {
+            print("property not found")
         }
     }
     
