@@ -471,11 +471,6 @@
                 }
                 // ------------------------
             
-                /*
-                NSString *serverUrl = [NSString stringWithFormat:@"%@/files/%@", dav, _activeUser];
-                serverUrl = [itemDto.filePath stringByReplacingOccurrencesOfString:serverUrl withString:@""];
-                */
-                
                 NSRange firstInstance = [itemDto.filePath rangeOfString:[NSString stringWithFormat:@"%@/files/%@", dav, _activeUser]];
                 NSRange finalRange = NSMakeRange(firstInstance.location + firstInstance.length, itemDto.filePath.length-(firstInstance.location + firstInstance.length));
                 NSString *serverUrl = [itemDto.filePath substringWithRange:finalRange];
@@ -486,7 +481,7 @@
                     serverUrl = [serverUrl substringFromIndex:1];
                 if ([serverUrl hasSuffix:@"/"])
                     serverUrl = [serverUrl substringToIndex:[serverUrl length] - 1];
-                /*      */
+                /* ---- */
             
                 serverUrl = [CCUtility stringAppendServerUrl:[_activeUrl stringByAppendingString:webDAV] addFileName:serverUrl];
                 serverUrl = [serverUrl stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
@@ -569,7 +564,6 @@
         
         [self complete];
     }];
-
 }
 
 #pragma --------------------------------------------------------------------------------------------
