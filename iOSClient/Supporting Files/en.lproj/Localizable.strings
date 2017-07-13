@@ -236,7 +236,7 @@
 "_tutorial_autoupload_view_"                = "You can enable auto uploads from the \"Settings\"";
 "_no_date_"                                 = "No date";
 "_today_"                                   = "Today";
-"_time_"                                    = "Time : %@\n\n%@";
+"_time_"                                    = "Time: %@\n\n%@";
 "_location_not_enabled_"                    = "Location Services not enabled";
 "_location_not_enabled_msg_"                = "Please go to \"Settings\" and turn on \"Location Services\" to allow automatic photo/video uploads.";
 "_access_photo_not_enabled_"                = "Access to Photos not enabled";
@@ -254,7 +254,7 @@
 "_web_account_data_"            = "Web account data";
 "_url:_"                        = "URL:";
 "_login:_"                      = "Login:";
-"_password:_"                   = "Password :";
+"_password:_"                   = "Password:";
 "_notes_"                       = "Notes";
 "_web_account_"                 = "Web account";
 "_enter_title_"                 = "Enter title";
@@ -496,7 +496,7 @@
 
 // Share Ext
 
-"_destiny_folder_"                  = "Folder : %@";
+"_destiny_folder_"                  = "Folder: %@";
 
 "_no_transfer_"                     = "No transfers yet";
 "_no_transfer_sub_"                 = "Uploads and downloads from this device will show up here";
