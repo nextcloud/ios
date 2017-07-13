@@ -1508,29 +1508,29 @@ class NCManageDatabase: NSObject {
 
                     for asset in assets {
                     
-                        let addRecord = tablePhotoLibrary()
+                        let addObject = tablePhotoLibrary()
                     
-                        addRecord.account = tableAccount.account
-                        addRecord.assetLocalIdentifier = asset.localIdentifier
-                        addRecord.mediaType = asset.mediaType.rawValue
+                        addObject.account = tableAccount.account
+                        addObject.assetLocalIdentifier = asset.localIdentifier
+                        addObject.mediaType = asset.mediaType.rawValue
                     
                         if let creationDate = asset.creationDate {
-                            addRecord.creationDate = creationDate as NSDate
+                            addObject.creationDate = creationDate as NSDate
                             creationDateString = String(describing: creationDate)
                         } else {
                             creationDateString = ""
                         }
                         
                         if let modificationDate = asset.modificationDate {
-                            addRecord.modificationDate = modificationDate as NSDate
+                            addObject.modificationDate = modificationDate as NSDate
                             modificationDateString = String(describing: modificationDate)
                         } else {
                             modificationDateString = ""
                         }
                         
-                        addRecord.idAsset = "\(tableAccount.account)\(asset.localIdentifier)\(creationDateString)\(modificationDateString)"
+                        addObject.idAsset = "\(tableAccount.account)\(asset.localIdentifier)\(creationDateString)\(modificationDateString)"
 
-                        realm.add(addRecord, update: true)
+                        realm.add(addObject, update: true)
                     }
                 }
             } catch let error {
@@ -1800,15 +1800,15 @@ class NCManageDatabase: NSObject {
             
         } else {
         
-            // Add new record
-            let addShare = tableShare()
+            // Add new
+            let addObject = tableShare()
             
-            addShare.account = tableAccount.account
-            addShare.fileName = fileName
-            addShare.serverUrl = serverUrl
-            addShare.shareLink = share
+            addObject.account = tableAccount.account
+            addObject.fileName = fileName
+            addObject.serverUrl = serverUrl
+            addObject.shareLink = share
             
-            realm.add(addShare)
+            realm.add(addObject)
         }
         
         do {
@@ -1839,15 +1839,15 @@ class NCManageDatabase: NSObject {
             
         } else {
             
-            // Add new record
-            let addShare = tableShare()
+            // Add new
+            let addObject = tableShare()
                 
-            addShare.account = tableAccount.account
-            addShare.fileName = fileName
-            addShare.serverUrl = serverUrl
-            addShare.shareUserAndGroup = share
+            addObject.account = tableAccount.account
+            addObject.fileName = fileName
+            addObject.serverUrl = serverUrl
+            addObject.shareUserAndGroup = share
                 
-            realm.add(addShare)
+            realm.add(addObject)
         }
         
         do {
