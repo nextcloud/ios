@@ -438,10 +438,10 @@ class NCManageDatabase: NSObject {
                 
                         addActivity.account = tableAccount.account
                 
-                        if activity.date != nil {
-                            addActivity.date = activity.date! as NSDate
+                        if let date = activity.date {
+                            addActivity.date = date as NSDate
                         }
-                
+                        
                         addActivity.idActivity = Double(activity.idActivity)
                         addActivity.link = activity.link
                         addActivity.note = activity.subject
@@ -464,9 +464,10 @@ class NCManageDatabase: NSObject {
         
         var noteReplacing : String = ""
         
-        if (activeUrl != nil) {
-            noteReplacing = note.replacingOccurrences(of: "\(activeUrl!)\(webDAV)", with: "")
+        if let activeUrl = activeUrl {
+            noteReplacing = note.replacingOccurrences(of: "\(activeUrl)\(webDAV)", with: "")
         }
+        
         noteReplacing = note.replacingOccurrences(of: "\(k_domain_session_queue).", with: "")
 
         let realm = try! Realm()
@@ -518,10 +519,10 @@ class NCManageDatabase: NSObject {
 
                 var resultCapabilities = tableCapabilities()
             
-                if result != nil {
-                    resultCapabilities = result!
+                if let result = result {
+                    resultCapabilities = result
                 }
-            
+                
                 resultCapabilities.account = tableAccount.account
                 resultCapabilities.themingBackground = capabilities.themingBackground
                 resultCapabilities.themingColor = capabilities.themingColor
@@ -686,11 +687,12 @@ class NCManageDatabase: NSObject {
                     return
                 }
                 
-                if serverUrlTo != nil {
-                    result.serverUrl = serverUrlTo!
+                if let serverUrlTo = serverUrlTo {
+                    result.serverUrl = serverUrlTo
+
                 }
-                if etag != nil {
-                    result.etag = etag!
+                if let etag = etag {
+                    result.etag = etag
                 }
             }
         } catch let error {
@@ -711,12 +713,12 @@ class NCManageDatabase: NSObject {
 
                 var predicate = NSPredicate()
             
-                if serverUrl != nil {
-                    predicate = NSPredicate(format: "account = %@ AND serverUrl = %@", tableAccount.account, serverUrl!)
+                if let serverUrl = serverUrl {
+                    predicate = NSPredicate(format: "account = %@ AND serverUrl = %@", tableAccount.account, serverUrl)
                 }
-            
-                if directoryID != nil {
-                    predicate = NSPredicate(format: "account = %@ AND directoryID = %@", tableAccount.account, directoryID!)
+                
+                if let directoryID = directoryID {
+                    predicate = NSPredicate(format: "account = %@ AND directoryID = %@", tableAccount.account, directoryID)
                 }
             
                 guard let result = realm.objects(tableDirectory.self).filter(predicate).first else {
@@ -1163,13 +1165,12 @@ class NCManageDatabase: NSObject {
 
         let results = realm.objects(tableMetadata.self).filter(predicate)
         
-        if clearDateReadDirectoryID == nil {
+        if let clearDateReadDirectoryID = clearDateReadDirectoryID {
+            directoriesID.append(clearDateReadDirectoryID)
+        } else {
             for result in results {
                 directoriesID.append(result.directoryID)
             }
-        
-        } else {
-            directoriesID.append(clearDateReadDirectoryID!)
         }
         
         realm.delete(results)
@@ -1241,8 +1242,6 @@ class NCManageDatabase: NSObject {
             return
         }
         
-        var directoryID : String? = nil
-        
         let realm = try! Realm()
         
         realm.beginWrite()
@@ -1271,7 +1270,7 @@ class NCManageDatabase: NSObject {
             result.sessionTaskIdentifierPlist = sessionTaskIdentifierPlist
         }
         
-        directoryID = result.directoryID
+        let directoryID : String? = result.directoryID
         
         do {
             try realm.commitWrite()
@@ -1279,9 +1278,9 @@ class NCManageDatabase: NSObject {
             print("[LOG] Could not write to database: ", error)
         }
         
-        if directoryID != nil {
+        if let directoryID = directoryID {
             // Update Date Read Directory
-            self.setDateReadDirectory(directoryID: directoryID!)
+            self.setDateReadDirectory(directoryID: directoryID)
         }
     }
     
@@ -1290,8 +1289,6 @@ class NCManageDatabase: NSObject {
         guard let tableAccount = self.getAccountActive() else {
             return
         }
-        
-        var directoryID: String? = nil
         
         let realm = try! Realm()
         
@@ -1303,7 +1300,8 @@ class NCManageDatabase: NSObject {
         }
         
         result.favorite = favorite
-        directoryID = result.directoryID
+        
+        let directoryID : String? = result.directoryID
         
         do {
             try realm.commitWrite()
@@ -1311,9 +1309,9 @@ class NCManageDatabase: NSObject {
             print("[LOG] Could not write to database: ", error)
         }
         
-        if directoryID != nil {
+        if let directoryID = directoryID {
             // Update Date Read Directory
-            self.setDateReadDirectory(directoryID: directoryID!)
+            self.setDateReadDirectory(directoryID: directoryID)
         }
     }
     
@@ -1322,9 +1320,7 @@ class NCManageDatabase: NSObject {
         guard let tableAccount = self.getAccountActive() else {
             return
         }
-        
-        var directoryID: String? = nil
-        
+                
         let realm = try! Realm()
         
         realm.beginWrite()
@@ -1335,7 +1331,8 @@ class NCManageDatabase: NSObject {
         }
         
         result.status = status
-        directoryID = result.directoryID
+        
+        let directoryID : String? = result.directoryID
         
         do {
             try realm.commitWrite()
@@ -1343,9 +1340,9 @@ class NCManageDatabase: NSObject {
             print("[LOG] Could not write to database: ", error)
         }
         
-        if directoryID != nil {
+        if let directoryID = directoryID {
             // Update Date Read Directory
-            self.setDateReadDirectory(directoryID: directoryID!)
+            self.setDateReadDirectory(directoryID: directoryID)
         }
     }
 
@@ -1506,8 +1503,8 @@ class NCManageDatabase: NSObject {
             do {
                 try realm.write {
                 
-                    var creationDate = ""
-                    var modificationDate = ""
+                    var creationDateString = ""
+                    var modificationDateString = ""
 
                     for asset in assets {
                     
@@ -1517,21 +1514,21 @@ class NCManageDatabase: NSObject {
                         addRecord.assetLocalIdentifier = asset.localIdentifier
                         addRecord.mediaType = asset.mediaType.rawValue
                     
-                        if asset.creationDate != nil {
-                            addRecord.creationDate = asset.creationDate! as NSDate
-                            creationDate = String(describing: addRecord.creationDate!)
+                        if let creationDate = asset.creationDate {
+                            addRecord.creationDate = creationDate as NSDate
+                            creationDateString = String(describing: creationDate)
                         } else {
-                            creationDate = ""
+                            creationDateString = ""
                         }
-                    
-                        if asset.modificationDate != nil {
-                            addRecord.modificationDate = asset.modificationDate! as NSDate
-                            modificationDate = String(describing: addRecord.modificationDate!)
+                        
+                        if let modificationDate = asset.modificationDate {
+                            addRecord.modificationDate = modificationDate as NSDate
+                            modificationDateString = String(describing: modificationDate)
                         } else {
-                            modificationDate = ""
+                            modificationDateString = ""
                         }
-                    
-                        addRecord.idAsset = "\(tableAccount.account)\(asset.localIdentifier)\(creationDate)\(modificationDate)"
+                        
+                        addRecord.idAsset = "\(tableAccount.account)\(asset.localIdentifier)\(creationDateString)\(modificationDateString)"
 
                         realm.add(addRecord, update: true)
                     }
@@ -1605,9 +1602,11 @@ class NCManageDatabase: NSObject {
                         addObject.assetLocalIdentifier = metadataNet.assetLocalIdentifier
                         addObject.fileName = metadataNet.fileName
                         addObject.selector = metadataNet.selector
-                        if (metadataNet.selectorPost != nil) {
-                            addObject.selectorPost = metadataNet.selectorPost
+                        
+                        if let selectorPost = metadataNet.selectorPost {
+                            addObject.selectorPost = selectorPost
                         }
+                        
                         addObject.serverUrl = metadataNet.serverUrl
                         addObject.session = metadataNet.session
                         addObject.priority = metadataNet.priority
@@ -1645,9 +1644,11 @@ class NCManageDatabase: NSObject {
                         addObject.assetLocalIdentifier = metadataNet.assetLocalIdentifier
                         addObject.fileName = metadataNet.fileName
                         addObject.selector = metadataNet.selector
-                        if (metadataNet.selectorPost != nil) {
-                            addObject.selectorPost = metadataNet.selectorPost
+                        
+                        if let selectorPost = metadataNet.selectorPost {
+                            addObject.selectorPost = selectorPost
                         }
+                        
                         addObject.serverUrl = metadataNet.serverUrl
                         addObject.session = metadataNet.session
                         addObject.priority = metadataNet.priority
