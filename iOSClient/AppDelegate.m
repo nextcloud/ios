@@ -1599,6 +1599,9 @@
         
         [self maintenanceMode:YES];
         
+        // Change type order
+        [CCUtility setOrderSettings:@"fileName"];
+        
         // Migrate Account Table From CoreData to Realm
         
         NSArray *listAccount = [CCCoreData migrateAccount];
@@ -1628,9 +1631,10 @@
 
     if ([actualVersion isEqualToString:@"2.17.4"]) {
         
-        // Build < 28 (example)
-        if (([actualBuild compare:@"28" options:NSNumericSearch] == NSOrderedAscending) || actualBuild == nil) {
+        // Build < 37 (example)
+        if (([actualBuild compare:@"37" options:NSNumericSearch] == NSOrderedAscending) || actualBuild == nil) {
             
+            [CCUtility setOrderSettings:@"fileName"];
             [CCUtility setBuild];
         }
     }
