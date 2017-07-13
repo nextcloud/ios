@@ -830,9 +830,12 @@
     return metadata;
 }
 
-+ (tableMetadata *)trasformedOCFileToCCMetadata:(OCFileDto *)itemDto fileNamePrint:(NSString *)fileNamePrint serverUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID autoUploadFileName:(NSString *)autoUploadFileName autoUploadDirectory:(NSString *)autoUploadDirectory activeAccount:(NSString *)activeAccount directoryUser:(NSString *)directoryUser
++ (tableMetadata *)trasformedOCFileToCCMetadata:(OCFileDto *)itemDto fileName:(NSString *)fileName fileNamePrint:(NSString *)fileNamePrint serverUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID autoUploadFileName:(NSString *)autoUploadFileName autoUploadDirectory:(NSString *)autoUploadDirectory activeAccount:(NSString *)activeAccount directoryUser:(NSString *)directoryUser
 {
     tableMetadata *metadata = [tableMetadata new];
+    
+    fileName = [CCUtility removeForbiddenCharactersServer:fileName];
+    fileNamePrint = [CCUtility removeForbiddenCharactersServer:fileNamePrint];
     
     metadata.account = activeAccount;
     metadata.cryptated = NO;
@@ -842,9 +845,9 @@
     metadata.favorite = itemDto.isFavorite;
     metadata.fileID = itemDto.ocId;
     metadata.directoryID = directoryID;
-    metadata.fileName = [CCUtility removeForbiddenCharactersServer:itemDto.fileName];
-    metadata.fileNameData = [CCUtility trasformedFileNamePlistInCrypto:metadata.fileName];
-    metadata.fileNamePrint = [CCUtility removeForbiddenCharactersServer:fileNamePrint];
+    metadata.fileName = fileName;
+    metadata.fileNameData = [CCUtility trasformedFileNamePlistInCrypto:fileName];
+    metadata.fileNamePrint = fileNamePrint;
     metadata.iconName = @"";
     metadata.model = @"";
     metadata.nameCurrentDevice = [CCUtility getNameCurrentDevice];

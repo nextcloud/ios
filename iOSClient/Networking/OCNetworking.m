@@ -334,22 +334,14 @@
                 serverUrlFolder = @"..";
                 directoryIDFolder = @"00000000-0000-0000-0000-000000000000";
             
-                metadataFolder = [CCUtility trasformedOCFileToCCMetadata:itemDtoFolder fileNamePrint:@"" serverUrl:serverUrlFolder directoryID:directoryIDFolder autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser];
-                
-                metadataFolder.fileName = @".";
-                metadataFolder.fileNameData = @".";
-                metadataFolder.fileNamePrint = @".";
+                metadataFolder = [CCUtility trasformedOCFileToCCMetadata:itemDtoFolder fileName:@"." fileNamePrint:@"." serverUrl:serverUrlFolder directoryID:directoryIDFolder autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser];
                 
             } else {
             
                 serverUrlFolder = [CCUtility deletingLastPathComponentFromServerUrl:_metadataNet.serverUrl];
                 directoryIDFolder = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrlFolder];
                 
-                metadataFolder = [CCUtility trasformedOCFileToCCMetadata:itemDtoFolder fileNamePrint:@"" serverUrl:serverUrlFolder directoryID:directoryIDFolder autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser];
-                
-                metadataFolder.fileName = [_metadataNet.serverUrl lastPathComponent];
-                metadataFolder.fileNameData = [_metadataNet.serverUrl lastPathComponent];
-                metadataFolder.fileNamePrint = [_metadataNet.serverUrl lastPathComponent];
+                metadataFolder = [CCUtility trasformedOCFileToCCMetadata:itemDtoFolder fileName:[_metadataNet.serverUrl lastPathComponent] fileNamePrint:[_metadataNet.serverUrl lastPathComponent] serverUrl:serverUrlFolder directoryID:directoryIDFolder autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser];
             }
         
             NSArray *itemsSortedArray = [items sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
@@ -386,7 +378,7 @@
                 }
                 // ------------------------
                 
-                [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileNamePrint:itemDto.fileName serverUrl:_metadataNet.serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser]];
+                [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileName:itemDto.fileName fileNamePrint:itemDto.fileName serverUrl:_metadataNet.serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser]];
             }
             
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -501,7 +493,7 @@
 
                 NSString *directoryID = [[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:serverUrl permissions:itemDto.permissions];
 
-                [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileNamePrint:itemDto.fileName serverUrl:serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser]];
+                [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileName:itemDto.fileName fileNamePrint:itemDto.fileName serverUrl:serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser]];
             }
     
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -653,7 +645,7 @@
 
             NSString *directoryID = [[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:serverUrl permissions:itemDto.permissions];
             
-            [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileNamePrint:itemDto.fileName serverUrl:serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser]];
+            [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileName:itemDto.fileName fileNamePrint:itemDto.fileName serverUrl:serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser]];
         }
         
         if ([self.delegate respondsToSelector:@selector(listingFavoritesSuccess:metadatas:)])
@@ -937,7 +929,6 @@
             tableMetadata *metadata = [tableMetadata new];
             
             OCFileDto *itemDto = [items objectAtIndex:0];
-            itemDto.fileName = _metadataNet.fileName;
             
             NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:_metadataNet.serverUrl];
             NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
@@ -945,7 +936,7 @@
 
             NSString *directoryUser = [CCUtility getDirectoryActiveUser:_activeUser activeUrl:_activeUrl];
         
-            metadata = [CCUtility trasformedOCFileToCCMetadata:itemDto fileNamePrint:_metadataNet.fileNamePrint serverUrl:_metadataNet.serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser];
+            metadata = [CCUtility trasformedOCFileToCCMetadata:itemDto fileName:_metadataNet.fileName fileNamePrint:_metadataNet.fileNamePrint serverUrl:_metadataNet.serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser];
                         
             if([self.delegate respondsToSelector:@selector(readFileSuccess:metadata:)])
                 [self.delegate readFileSuccess:_metadataNet metadata:metadata];
