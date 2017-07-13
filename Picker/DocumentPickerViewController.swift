@@ -467,7 +467,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
             
             if metadata != nil {
                 if metadata!.type == k_metadataType_template {
-                    NCManageDatabase.sharedInstance.setLocalFile(fileID: metadata!.fileID, date: metadata!.date, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, fileNamePrint: metadata!.fileNamePrint)
+                    NCManageDatabase.sharedInstance.setLocalFile(fileID: metadata!.fileID, dateOptional: metadata!.date, exifDateOptional: nil, exifLatitudeOptional: nil, exifLongitudeOptional: nil, fileNameOptional: nil, fileNamePrintOptional: metadata!.fileNamePrint)
                 }
             }
             tableView.reloadData()

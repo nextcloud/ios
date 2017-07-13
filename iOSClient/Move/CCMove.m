@@ -283,7 +283,7 @@
         
         // se è un template aggiorniamo anche nel FileSystem
         if ([metadata.type isEqualToString: k_metadataType_template]) {
-            [[NCManageDatabase sharedInstance] setLocalFileWithFileID:metadata.fileID date:metadata.date exifDate:nil exifLatitude:nil exifLongitude:nil fileName:nil fileNamePrint:metadata.fileNamePrint];
+            [[NCManageDatabase sharedInstance] setLocalFileWithFileID:metadata.fileID dateOptional:metadata.date exifDateOptional:nil exifLatitudeOptional:nil exifLongitudeOptional:nil fileNameOptional:nil fileNamePrintOptional:metadata.fileNamePrint];
         }
 
         [self.tableView reloadData];

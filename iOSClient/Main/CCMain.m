@@ -1479,7 +1479,7 @@
         
         // se è un template aggiorniamo anche nel FileSystem
         if ([metadata.type isEqualToString: k_metadataType_template]) {
-            [[NCManageDatabase sharedInstance] setLocalFileWithFileID:metadata.fileID date:metadata.date exifDate:nil exifLatitude:nil exifLongitude:nil fileName:nil fileNamePrint:metadata.fileNamePrint];
+            [[NCManageDatabase sharedInstance] setLocalFileWithFileID:metadata.fileID dateOptional:metadata.date exifDateOptional:nil exifLatitudeOptional:nil exifLongitudeOptional:nil fileNameOptional:nil fileNamePrintOptional:metadata.fileNamePrint];
         }
         
         [self openModel:metadata.model isNew:false];
@@ -3338,7 +3338,7 @@
     if ([NCBrandOptions sharedInstance].disable_multiaccount)
         return;
     
-    if ([app.netQueue operationCount] > 0 || [app.netQueueDownload operationCount] > 0 || [app.netQueueDownloadWWan operationCount] > 0 || [app.netQueueUpload operationCount] > 0 || [app.netQueueUploadWWan operationCount] > 0 || [[NCManageDatabase sharedInstance] countQueueUploadWithSession:nil] > 0) {
+    if ([app.netQueue operationCount] > 0 || [app.netQueueDownload operationCount] > 0 || [app.netQueueDownloadWWan operationCount] > 0 || [app.netQueueUpload operationCount] > 0 || [app.netQueueUploadWWan operationCount] > 0 || [[NCManageDatabase sharedInstance] countQueueUploadWithSessionOptional:nil] > 0) {
         
         [app messageNotification:@"_transfers_in_queue_" description:nil visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
         return;

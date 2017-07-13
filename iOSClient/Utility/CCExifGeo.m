@@ -112,7 +112,7 @@
 
     // Wite data EXIF in TableLocalFile
     if (tiff || gps)
-        [[NCManageDatabase sharedInstance] setLocalFileWithFileID:metadata.fileID date:nil exifDate:date exifLatitude:stringLatitude exifLongitude:stringLongitude fileName:nil fileNamePrint:nil];
+        [[NCManageDatabase sharedInstance] setLocalFileWithFileID:metadata.fileID dateOptional:nil exifDateOptional:date exifLatitudeOptional:stringLatitude exifLongitudeOptional:stringLongitude fileNameOptional:nil fileNamePrintOptional:nil];
     
     CFRelease(originalSource);
     CFRelease(imageProperties);

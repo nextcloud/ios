@@ -327,23 +327,23 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func setAccountAutoUploadFileName(_ fileName: String?) {
+    func setAccountAutoUploadFileName(_ fileNameOptional: String?) {
         
         let realm = try! Realm()
-        
-        var fileName : String? = fileName
-        
-        if fileName == nil {
-            fileName = self.getAccountAutoUploadFileName()
-        }
         
         do {
             try realm.write {
                 
-                let result = realm.objects(tableAccount.self).filter("active = true").first
-                
-                if result != nil {
-                    result?.autoUploadFileName = fileName!
+                if let result = realm.objects(tableAccount.self).filter("active = true").first {
+                    
+                    if let fileName = fileNameOptional {
+                        
+                        result.autoUploadFileName = fileName
+                        
+                    } else {
+                        
+                        result.autoUploadFileName = self.getAccountAutoUploadFileName()
+                    }
                 }
             }
         } catch let error {
@@ -351,23 +351,23 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    func setAccountAutoUploadDirectory(_ serverUrl: String?, activeUrl: String) {
+    func setAccountAutoUploadDirectory(_ serverUrlOptional: String?, activeUrl: String) {
         
         let realm = try! Realm()
-        
-        var serverUrl : String? = serverUrl
-        
-        if serverUrl == nil {
-            serverUrl = self.getAccountAutoUploadDirectory(activeUrl)
-        }
         
         do {
             try realm.write {
                 
-                let result = realm.objects(tableAccount.self).filter("active = true").first
-
-                if result != nil {
-                    result?.autoUploadDirectory = serverUrl!
+                if let result = realm.objects(tableAccount.self).filter("active = true").first {
+                    
+                    if let serverUrl = serverUrlOptional {
+                        
+                        result.autoUploadDirectory = serverUrl
+                        
+                    } else {
+                        
+                        result.autoUploadDirectory = self.getAccountAutoUploadDirectory(activeUrl)
+                    }
                 }
             }
         } catch let error {
@@ -993,13 +993,11 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
         
-        let result = realm.objects(tableGPS.self).filter("latitude = %@ AND longitude = %@", latitude, longitude).first
-        
-        if result == nil {
+        guard let result = realm.objects(tableGPS.self).filter("latitude = %@ AND longitude = %@", latitude, longitude).first else {
             return nil
-        } else {
-            return result!.location
         }
+        
+        return result.location
     }
 
     //MARK: -
@@ -1056,7 +1054,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func setLocalFile(fileID: String, date: NSDate?, exifDate: NSDate?, exifLatitude: String?, exifLongitude: String?, fileName: String?, fileNamePrint: String?) {
+    func setLocalFile(fileID: String, dateOptional: NSDate?, exifDateOptional: NSDate?, exifLatitudeOptional: String?, exifLongitudeOptional: String?, fileNameOptional: String?, fileNamePrintOptional: String?) {
         
         guard self.getAccountActive() != nil else {
             return
@@ -1067,28 +1065,27 @@ class NCManageDatabase: NSObject {
         do {
             try realm.write {
                 
-                let result = realm.objects(tableLocalFile.self).filter("fileID = %@", fileID).first
-
-                if result != nil {
+                guard let result = realm.objects(tableLocalFile.self).filter("fileID = %@", fileID).first else {
+                    return
+                }
                 
-                    if date != nil {
-                        result?.date = date!
-                    }
-                    if exifDate != nil {
-                        result?.exifDate = exifDate!
-                    }
-                    if exifLatitude != nil {
-                        result?.exifLatitude = exifLatitude!
-                    }
-                    if exifLongitude != nil {
-                        result?.exifLongitude = exifLongitude!
-                    }
-                    if fileName != nil {
-                        result?.fileName = fileName!
-                    }
-                    if fileNamePrint != nil {
-                        result?.fileNamePrint = fileNamePrint!
-                    }
+                if let date = dateOptional {
+                    result.date = date
+                }
+                if let exifDate = exifDateOptional {
+                    result.exifDate = exifDate
+                }
+                if let exifLatitude = exifLatitudeOptional {
+                    result.exifLatitude = exifLatitude
+                }
+                if let exifLongitude = exifLongitudeOptional {
+                    result.exifLongitude = exifLongitude
+                }
+                if let fileName = fileNameOptional {
+                    result.fileName = fileName
+                }
+                if let fileNamePrint = fileNamePrintOptional {
+                    result.fileNamePrint = fileNamePrint
                 }
             }
         } catch let error {
@@ -1104,13 +1101,11 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
         
-        let result = realm.objects(tableLocalFile.self).filter(predicate).first
-        
-        if result != nil {
-            return tableLocalFile.init(value: result!)
-        } else {
+        guard let result = realm.objects(tableLocalFile.self).filter(predicate).first else {
             return nil
         }
+
+        return tableLocalFile.init(value: result)
     }
 
     //MARK: -
@@ -1243,7 +1238,7 @@ class NCManageDatabase: NSObject {
         return tableMetadata.init(value: metadata)
     }
     
-    func setMetadataSession(_ session: String?, sessionError: String?, sessionSelector: String?, sessionSelectorPost: String?, sessionTaskIdentifier: Int, sessionTaskIdentifierPlist: Int, predicate: NSPredicate) {
+    func setMetadataSession(_ sessionOptional: String?, sessionErrorOptional: String?, sessionSelectorOptional: String?, sessionSelectorPostOptional: String?, sessionTaskIdentifier: Int, sessionTaskIdentifierPlist: Int, predicate: NSPredicate) {
         
         guard self.getAccountActive() != nil else {
             return
@@ -1260,17 +1255,17 @@ class NCManageDatabase: NSObject {
             return
         }
         
-        if session != nil {
-            result.session = session!
+        if let session = sessionOptional {
+            result.session = session
         }
-        if sessionError != nil {
-            result.sessionError = sessionError!
+        if let sessionError = sessionErrorOptional {
+            result.sessionError = sessionError
         }
-        if sessionSelector != nil {
-            result.sessionSelector = sessionSelector!
+        if let sessionSelector = sessionSelectorOptional {
+            result.sessionSelector = sessionSelector
         }
-        if sessionSelectorPost != nil {
-            result.sessionSelectorPost = sessionSelectorPost!
+        if let sessionSelectorPost = sessionSelectorPostOptional {
+            result.sessionSelectorPost = sessionSelectorPost
         }
         if sessionTaskIdentifier != Int(k_taskIdentifierNULL) {
             result.sessionTaskIdentifier = sessionTaskIdentifier
@@ -1365,13 +1360,11 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
         
-        let result = realm.objects(tableMetadata.self).filter(predicate).first
-        
-        if result != nil {
-            return tableMetadata.init(value: result!)
-        } else {
+        guard let result = realm.objects(tableMetadata.self).filter(predicate).first else {
             return nil
         }
+        
+        return tableMetadata.init(value: result)
     }
     
     func getMetadatas(predicate: NSPredicate, sortedOptional: String?, ascending: Bool) -> [tableMetadata]? {
@@ -1760,10 +1753,8 @@ class NCManageDatabase: NSObject {
         do {
             try realm.write {
                 
-                let result = realm.objects(tableQueueUpload.self).filter("account = %@ AND assetLocalIdentifier = %@ AND selector = %@", tableAccount.account, assetLocalIdentifier, selector).first
-                
-                if result != nil {
-                    realm.delete(result!)
+                if let result = realm.objects(tableQueueUpload.self).filter("account = %@ AND assetLocalIdentifier = %@ AND selector = %@", tableAccount.account, assetLocalIdentifier, selector).first {
+                    realm.delete(result)
                 }
             }
         } catch let error {
@@ -1771,7 +1762,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func countQueueUpload(session: String?) -> Int {
+    func countQueueUpload(sessionOptional: String?) -> Int {
         
         guard let tableAccount = self.getAccountActive() else {
             return 0
@@ -1780,13 +1771,10 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         let results : Results<tableQueueUpload>
         
-        if (session == nil) {
-            
-            results = realm.objects(tableQueueUpload.self).filter("account = %@", tableAccount.account)
-            
+        if let session = sessionOptional {
+            results = realm.objects(tableQueueUpload.self).filter("account = %@ AND session = %@", tableAccount.account, session)
         } else {
-            
-            results = realm.objects(tableQueueUpload.self).filter("account = %@ AND session = %@", tableAccount.account, session!)
+            results = realm.objects(tableQueueUpload.self).filter("account = %@", tableAccount.account)
         }
         
         return results.count
