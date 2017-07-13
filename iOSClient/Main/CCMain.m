@@ -1479,7 +1479,7 @@
         
         // se è un template aggiorniamo anche nel FileSystem
         if ([metadata.type isEqualToString: k_metadataType_template]) {
-            [[NCManageDatabase sharedInstance] setLocalFileWithFileID:metadata.fileID dateOptional:metadata.date exifDateOptional:nil exifLatitudeOptional:nil exifLongitudeOptional:nil fileNameOptional:nil fileNamePrintOptional:metadata.fileNamePrint];
+            [[NCManageDatabase sharedInstance] setLocalFileWithFileID:metadata.fileID date:metadata.date exifDate:nil exifLatitude:nil exifLongitude:nil fileName:nil fileNamePrint:metadata.fileNamePrint];
         }
         
         [self openModel:metadata.model isNew:false];
@@ -1566,7 +1566,7 @@
 
 - (void)downloadPlist:(NSString *)directoryID serverUrl:(NSString *)serverUrl
 {
-    NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND session = ''", app.activeAccount, directoryID] sortedOptional:nil ascending:NO];
+    NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND session = ''", app.activeAccount, directoryID] sorted:nil ascending:NO];
     
     for (tableMetadata *metadata in metadatas) {
             
@@ -1705,7 +1705,7 @@
         
         // Check if is in upload 
         NSPredicate *predicate = [NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND fileName = %@ AND session != ''", app.activeAccount, directoryID, fileName];
-        NSArray *isRecordInSessions = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:predicate sortedOptional:nil ascending:NO];
+        NSArray *isRecordInSessions = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:predicate sorted:nil ascending:NO];
 
         if ([isRecordInSessions count] > 0) {
             
@@ -1874,7 +1874,7 @@
     
     if (_isSearchMode) {
         
-        recordsInSessions = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND session != ''", metadataNet.account] sortedOptional:nil ascending:NO];
+        recordsInSessions = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND session != ''", metadataNet.account] sorted:nil ascending:NO];
         
     } else {
         
@@ -1882,7 +1882,7 @@
         
         [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND session = ''", metadataNet.account, metadataNet.directoryID] clearDateReadDirectoryID:metadataNet.directoryID];
         
-        recordsInSessions = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND session != ''", metadataNet.account, metadataNet.directoryID] sortedOptional:nil ascending:NO];
+        recordsInSessions = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND session != ''", metadataNet.account, metadataNet.directoryID] sorted:nil ascending:NO];
 
         [[NCManageDatabase sharedInstance] setDateReadDirectoryWithDirectoryID:metadataNet.directoryID];
     }
@@ -2039,7 +2039,7 @@
             
         NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:_serverUrl];
         NSPredicate *predicate = [NSPredicate predicateWithFormat:@"directoryID = %@ AND account = %@ AND fileNamePrint CONTAINS[cd] %@", directoryID, app.activeAccount, fileName];
-        NSArray *records = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:predicate sortedOptional:nil ascending:NO];
+        NSArray *records = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:predicate sorted:nil ascending:NO];
             
         [_searchResultMetadatas removeAllObjects];
         for (tableMetadata *record in records)
@@ -3338,7 +3338,7 @@
     if ([NCBrandOptions sharedInstance].disable_multiaccount)
         return;
     
-    if ([app.netQueue operationCount] > 0 || [app.netQueueDownload operationCount] > 0 || [app.netQueueDownloadWWan operationCount] > 0 || [app.netQueueUpload operationCount] > 0 || [app.netQueueUploadWWan operationCount] > 0 || [[NCManageDatabase sharedInstance] countQueueUploadWithSessionOptional:nil] > 0) {
+    if ([app.netQueue operationCount] > 0 || [app.netQueueDownload operationCount] > 0 || [app.netQueueDownloadWWan operationCount] > 0 || [app.netQueueUpload operationCount] > 0 || [app.netQueueUploadWWan operationCount] > 0 || [[NCManageDatabase sharedInstance] countQueueUploadWithSession:nil] > 0) {
         
         [app messageNotification:@"_transfers_in_queue_" description:nil visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
         return;
@@ -4752,7 +4752,7 @@
         if ([sorted isEqualToString:@"fileName"])
             sorted = @"fileNamePrint";
     
-        NSArray *recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND status = %i", app.activeAccount, [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl], k_metadataStatusNormal] sortedOptional:sorted ascending:[CCUtility getAscendingSettings]];
+        NSArray *recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND status = %i", app.activeAccount, [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl], k_metadataStatusNormal] sorted:sorted ascending:[CCUtility getAscendingSettings]];
         
         _sectionDataSource = [CCSectionDataSourceMetadata new];
         _sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:_directoryGroupBy replaceDateToExifDate:NO activeAccount:app.activeAccount];

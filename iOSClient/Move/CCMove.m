@@ -283,7 +283,7 @@
         
         // se è un template aggiorniamo anche nel FileSystem
         if ([metadata.type isEqualToString: k_metadataType_template]) {
-            [[NCManageDatabase sharedInstance] setLocalFileWithFileID:metadata.fileID dateOptional:metadata.date exifDateOptional:nil exifLatitudeOptional:nil exifLongitudeOptional:nil fileNameOptional:nil fileNamePrintOptional:metadata.fileNamePrint];
+            [[NCManageDatabase sharedInstance] setLocalFileWithFileID:metadata.fileID date:metadata.date exifDate:nil exifLatitude:nil exifLongitude:nil fileName:nil fileNamePrint:metadata.fileNamePrint];
         }
 
         [self.tableView reloadData];
@@ -477,7 +477,7 @@
     if (self.onlyClearDirectory) predicate = [NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND directory = true AND cryptated = false", activeAccount, directoryID];
     else predicate = [NSPredicate predicateWithFormat:@"account == %@ AND directoryID = %@ AND directory = true", activeAccount, directoryID];
     
-    NSArray *result = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:predicate sortedOptional:nil ascending:NO];
+    NSArray *result = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:predicate sorted:nil ascending:NO];
     
     if (result)
         return [result count];

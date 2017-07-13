@@ -61,15 +61,12 @@ class NCManageDatabase: NSObject {
         
         realm.beginWrite()
         
-        if account != nil {
-            
-            results = realm.objects(table).filter("account = %@", account!)
-
+        if let account = account {
+            results = realm.objects(table).filter("account = %@", account)
         } else {
-         
             results = realm.objects(table)
         }
-    
+        
         realm.delete(results)
 
         do {
@@ -327,7 +324,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func setAccountAutoUploadFileName(_ fileNameOptional: String?) {
+    func setAccountAutoUploadFileName(_ fileName: String?) {
         
         let realm = try! Realm()
         
@@ -336,7 +333,7 @@ class NCManageDatabase: NSObject {
                 
                 if let result = realm.objects(tableAccount.self).filter("active = true").first {
                     
-                    if let fileName = fileNameOptional {
+                    if let fileName = fileName {
                         
                         result.autoUploadFileName = fileName
                         
@@ -351,7 +348,7 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    func setAccountAutoUploadDirectory(_ serverUrlOptional: String?, activeUrl: String) {
+    func setAccountAutoUploadDirectory(_ serverUrl: String?, activeUrl: String) {
         
         let realm = try! Realm()
         
@@ -360,7 +357,7 @@ class NCManageDatabase: NSObject {
                 
                 if let result = realm.objects(tableAccount.self).filter("active = true").first {
                     
-                    if let serverUrl = serverUrlOptional {
+                    if let serverUrl = serverUrl {
                         
                         result.autoUploadDirectory = serverUrl
                         
@@ -1054,7 +1051,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func setLocalFile(fileID: String, dateOptional: NSDate?, exifDateOptional: NSDate?, exifLatitudeOptional: String?, exifLongitudeOptional: String?, fileNameOptional: String?, fileNamePrintOptional: String?) {
+    func setLocalFile(fileID: String, date: NSDate?, exifDate: NSDate?, exifLatitude: String?, exifLongitude: String?, fileName: String?, fileNamePrint: String?) {
         
         guard self.getAccountActive() != nil else {
             return
@@ -1069,22 +1066,22 @@ class NCManageDatabase: NSObject {
                     return
                 }
                 
-                if let date = dateOptional {
+                if let date = date {
                     result.date = date
                 }
-                if let exifDate = exifDateOptional {
+                if let exifDate = exifDate {
                     result.exifDate = exifDate
                 }
-                if let exifLatitude = exifLatitudeOptional {
+                if let exifLatitude = exifLatitude {
                     result.exifLatitude = exifLatitude
                 }
-                if let exifLongitude = exifLongitudeOptional {
+                if let exifLongitude = exifLongitude {
                     result.exifLongitude = exifLongitude
                 }
-                if let fileName = fileNameOptional {
+                if let fileName = fileName {
                     result.fileName = fileName
                 }
-                if let fileNamePrint = fileNamePrintOptional {
+                if let fileNamePrint = fileNamePrint {
                     result.fileNamePrint = fileNamePrint
                 }
             }
@@ -1238,7 +1235,7 @@ class NCManageDatabase: NSObject {
         return tableMetadata.init(value: metadata)
     }
     
-    func setMetadataSession(_ sessionOptional: String?, sessionErrorOptional: String?, sessionSelectorOptional: String?, sessionSelectorPostOptional: String?, sessionTaskIdentifier: Int, sessionTaskIdentifierPlist: Int, predicate: NSPredicate) {
+    func setMetadataSession(_ session: String?, sessionError: String?, sessionSelector: String?, sessionSelectorPost: String?, sessionTaskIdentifier: Int, sessionTaskIdentifierPlist: Int, predicate: NSPredicate) {
         
         guard self.getAccountActive() != nil else {
             return
@@ -1255,16 +1252,16 @@ class NCManageDatabase: NSObject {
             return
         }
         
-        if let session = sessionOptional {
+        if let session = session {
             result.session = session
         }
-        if let sessionError = sessionErrorOptional {
+        if let sessionError = sessionError {
             result.sessionError = sessionError
         }
-        if let sessionSelector = sessionSelectorOptional {
+        if let sessionSelector = sessionSelector {
             result.sessionSelector = sessionSelector
         }
-        if let sessionSelectorPost = sessionSelectorPostOptional {
+        if let sessionSelectorPost = sessionSelectorPost {
             result.sessionSelectorPost = sessionSelectorPost
         }
         if sessionTaskIdentifier != Int(k_taskIdentifierNULL) {
@@ -1367,7 +1364,7 @@ class NCManageDatabase: NSObject {
         return tableMetadata.init(value: result)
     }
     
-    func getMetadatas(predicate: NSPredicate, sortedOptional: String?, ascending: Bool) -> [tableMetadata]? {
+    func getMetadatas(predicate: NSPredicate, sorted: String?, ascending: Bool) -> [tableMetadata]? {
         
         guard self.getAccountActive() != nil else {
             return nil
@@ -1376,7 +1373,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         let results : Results<tableMetadata>
         
-        if let sorted = sortedOptional {
+        if let sorted = sorted {
             
             if (tableMetadata().objectSchema.properties.contains { $0.name == sorted }) {
                 results = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending)
@@ -1436,7 +1433,7 @@ class NCManageDatabase: NSObject {
         
         let predicate = NSPredicate(format: "account = %@ AND (session = %@ OR session = %@) AND (sessionTaskIdentifier != %i OR sessionTaskIdentifierPlist != %i)", tableAccount.account, k_download_session, k_download_session_foreground, k_taskIdentifierDone, k_taskIdentifierDone)
         
-        return self.getMetadatas(predicate: predicate, sortedOptional: nil, ascending: false)
+        return self.getMetadatas(predicate: predicate, sorted: nil, ascending: false)
     }
     
     func getTableMetadataDownloadWWan() -> [tableMetadata]? {
@@ -1447,7 +1444,7 @@ class NCManageDatabase: NSObject {
 
         let predicate = NSPredicate(format: "account = %@ AND session = %@ AND (sessionTaskIdentifier != %i OR sessionTaskIdentifierPlist != %i)", tableAccount.account, k_download_session_wwan, k_taskIdentifierDone, k_taskIdentifierDone)
         
-        return self.getMetadatas(predicate: predicate, sortedOptional: nil, ascending: false)
+        return self.getMetadatas(predicate: predicate, sorted: nil, ascending: false)
     }
     
     func getTableMetadataUpload() -> [tableMetadata]? {
@@ -1458,7 +1455,7 @@ class NCManageDatabase: NSObject {
 
         let predicate = NSPredicate(format: "account = %@ AND (session = %@ OR session = %@) AND (sessionTaskIdentifier != %i OR sessionTaskIdentifierPlist != %i)", tableAccount.account, k_upload_session, k_upload_session_foreground, k_taskIdentifierDone, k_taskIdentifierDone)
         
-        return self.getMetadatas(predicate: predicate, sortedOptional: nil, ascending: false)
+        return self.getMetadatas(predicate: predicate, sorted: nil, ascending: false)
     }
     
     func getTableMetadataUploadWWan() -> [tableMetadata]? {
@@ -1469,7 +1466,7 @@ class NCManageDatabase: NSObject {
         
         let predicate = NSPredicate(format: "account = %@ AND session = %@ AND (sessionTaskIdentifier != %i OR sessionTaskIdentifierPlist != %i)", tableAccount.account, k_upload_session_wwan, k_taskIdentifierDone, k_taskIdentifierDone)
         
-        return self.getMetadatas(predicate: predicate, sortedOptional: nil, ascending: false)
+        return self.getMetadatas(predicate: predicate, sorted: nil, ascending: false)
     }
     
     func getTableMetadatasPhotos(serverUrl: String) -> [tableMetadata]? {
@@ -1762,7 +1759,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func countQueueUpload(sessionOptional: String?) -> Int {
+    func countQueueUpload(session: String?) -> Int {
         
         guard let tableAccount = self.getAccountActive() else {
             return 0
@@ -1771,7 +1768,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         let results : Results<tableQueueUpload>
         
-        if let session = sessionOptional {
+        if let session = session {
             results = realm.objects(tableQueueUpload.self).filter("account = %@ AND session = %@", tableAccount.account, session)
         } else {
             results = realm.objects(tableQueueUpload.self).filter("account = %@", tableAccount.account)

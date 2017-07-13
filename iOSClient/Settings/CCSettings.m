@@ -394,7 +394,7 @@
 
 - (void)synchronizeFavorites
 {    
-    NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND favorite = true", app.activeAccount]  sortedOptional:nil ascending:NO];
+    NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND favorite = true", app.activeAccount]  sorted:nil ascending:NO];
     
     for (tableMetadata *metadata in metadatas) {
         

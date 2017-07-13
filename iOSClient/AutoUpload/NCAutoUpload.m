@@ -520,7 +520,7 @@
     // ------------------------- <selector Auto Upload All> ----------------------
     
     // Verify num error MAX 10 after STOP
-    NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND sessionSelector = %@ AND (sessionTaskIdentifier = %i OR sessionTaskIdentifierPlist = %i)", app.activeAccount, selectorUploadAutoUploadAll, k_taskIdentifierError, k_taskIdentifierError] sortedOptional:nil ascending:NO];
+    NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND sessionSelector = %@ AND (sessionTaskIdentifier = %i OR sessionTaskIdentifierPlist = %i)", app.activeAccount, selectorUploadAutoUploadAll, k_taskIdentifierError, k_taskIdentifierError] sorted:nil ascending:NO];
     
     NSInteger errorCount = [metadatas count];
     

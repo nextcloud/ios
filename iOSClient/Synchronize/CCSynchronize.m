@@ -104,13 +104,13 @@
         if ([recordAccount.account isEqualToString:metadataNet.account] == NO)
             return;
 
-        NSArray *recordsInSessions = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND session != ''", app.activeAccount, metadataNet.directoryID] sortedOptional:nil ascending:NO];
+        NSArray *recordsInSessions = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND session != ''", app.activeAccount, metadataNet.directoryID] sorted:nil ascending:NO];
         
         // ----- Test : (DELETE) -----
         
         NSMutableArray *metadatasNotPresents = [[NSMutableArray alloc] init];
         
-        NSArray *tableMetadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND session = ''", app.activeAccount, metadataNet.directoryID] sortedOptional:nil ascending:NO];
+        NSArray *tableMetadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND session = ''", app.activeAccount, metadataNet.directoryID] sorted:nil ascending:NO];
         
         for (tableMetadata *record in tableMetadatas) {
             

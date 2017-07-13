@@ -951,7 +951,7 @@
     NSInteger queueUpload = [self getNumberUploadInQueues] + [self getNumberUploadInQueuesWWan];
     
     // Total
-    NSInteger total = queueDownload + queueUpload + [[NCManageDatabase sharedInstance] countQueueUploadWithSessionOptional:nil];
+    NSInteger total = queueDownload + queueUpload + [[NCManageDatabase sharedInstance] countQueueUploadWithSession:nil];
     
     [UIApplication sharedApplication].applicationIconBadgeNumber = total;
     
@@ -1271,7 +1271,7 @@
     // after 20 sec
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 20 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         
-        NSArray *records = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND session != ''", self.activeAccount] sortedOptional:nil ascending:NO];
+        NSArray *records = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND session != ''", self.activeAccount] sorted:nil ascending:NO];
         
         if ([records count] > 0) {
             completionHandler(UIBackgroundFetchResultNewData);
@@ -1458,7 +1458,7 @@
     
     if ([[_listChangeTask objectForKey:fileID] isEqualToString:@"stopUpload"]) {
         
-        [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionErrorOptional:@"" sessionSelectorOptional:nil sessionSelectorPostOptional:nil sessionTaskIdentifier:k_taskIdentifierStop sessionTaskIdentifierPlist:k_taskIdentifierDone predicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
+        [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:@"" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:k_taskIdentifierStop sessionTaskIdentifierPlist:k_taskIdentifierDone predicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
         
     }
     else if ([[_listChangeTask objectForKey:fileID] isEqualToString:@"reloadUpload"]) {
@@ -1491,7 +1491,7 @@
     }
     else if ([[_listChangeTask objectForKey:fileID] isEqualToString:@"cancelDownload"]) {
         
-        [[NCManageDatabase sharedInstance] setMetadataSession:@"" sessionErrorOptional:@"" sessionSelectorOptional:@"" sessionSelectorPostOptional:@"" sessionTaskIdentifier:k_taskIdentifierDone sessionTaskIdentifierPlist:k_taskIdentifierDone predicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
+        [[NCManageDatabase sharedInstance] setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier:k_taskIdentifierDone sessionTaskIdentifierPlist:k_taskIdentifierDone predicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
     }
     
     // remove ChangeTask (fileID) from the list

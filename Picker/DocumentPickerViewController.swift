@@ -347,7 +347,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         }
         
         predicate = NSPredicate(format: "account = %@ AND directoryID = %@", activeAccount!, metadataNet.directoryID!)
-        recordsTableMetadata = NCManageDatabase.sharedInstance.getMetadatas(predicate: predicate, sortedOptional: "fileNamePrint", ascending: true)
+        recordsTableMetadata = NCManageDatabase.sharedInstance.getMetadatas(predicate: predicate, sorted: "fileNamePrint", ascending: true)
         
         tableView.reloadData()
         
@@ -467,7 +467,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
             
             if metadata != nil {
                 if metadata!.type == k_metadataType_template {
-                    NCManageDatabase.sharedInstance.setLocalFile(fileID: metadata!.fileID, dateOptional: metadata!.date, exifDateOptional: nil, exifLatitudeOptional: nil, exifLongitudeOptional: nil, fileNameOptional: nil, fileNamePrintOptional: metadata!.fileNamePrint)
+                    NCManageDatabase.sharedInstance.setLocalFile(fileID: metadata!.fileID, date: metadata!.date, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, fileNamePrint: metadata!.fileNamePrint)
                 }
             }
             tableView.reloadData()

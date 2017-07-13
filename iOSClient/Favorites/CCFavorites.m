@@ -271,7 +271,7 @@
     }
     
     // Verify remove favorite
-    NSArray *allRecordFavorite = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND favorite = true", app.activeAccount] sortedOptional:nil ascending:NO];
+    NSArray *allRecordFavorite = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND favorite = true", app.activeAccount] sorted:nil ascending:NO];
     
     for (tableMetadata *metadata in allRecordFavorite)
         if (![filesEtag containsObject:metadata.fileID])
@@ -550,13 +550,13 @@
         
     if (!_serverUrl) {
         
-        recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND favorite = true", app.activeAccount] sortedOptional:sorted ascending:[CCUtility getAscendingSettings]];
+        recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND favorite = true", app.activeAccount] sorted:sorted ascending:[CCUtility getAscendingSettings]];
             
     } else {
         
         NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:_serverUrl];        
         
-        recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@", app.activeAccount, directoryID] sortedOptional:sorted ascending:[CCUtility getAscendingSettings]];
+        recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@", app.activeAccount, directoryID] sorted:sorted ascending:[CCUtility getAscendingSettings]];
     }
         
     CCSectionDataSourceMetadata *sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:nil replaceDateToExifDate:NO activeAccount:app.activeAccount];
