@@ -31,15 +31,14 @@
 #import "MWPhotoBrowser.h"
 #import "ReaderViewController.h"
 #import "UINavigationController+CCProgress.h"
-#import "CCMetadata.h"
 #import "CCGraphics.h"
-#import "CCCoreData.h"
+
+@class tableMetadata;
 
 @interface CCDetail : UIViewController <UIDocumentInteractionControllerDelegate, MWPhotoBrowserDelegate, ReaderViewControllerDelegate>
 
-@property (nonatomic, strong) CCMetadata *metadataDetail;
+@property (nonatomic, strong) tableMetadata *metadataDetail;
 @property BOOL sourceDirectoryLocal;
-@property BOOL isCameraUpload;
 @property (nonatomic, strong) NSDate *dateFilterQuery;
 
 // Document
@@ -51,8 +50,6 @@
 @property (nonatomic, strong) MWPhotoBrowser *photoBrowser;
 @property (nonatomic, strong) NSMutableArray *photos;
 @property (nonatomic, strong) NSMutableArray *thumbs;
-@property (nonatomic, strong) NSString *fileIDNowVisible;
-@property (nonatomic) NSUInteger indexNowVisible;
 
 // PDF
 @property (nonatomic, strong) ReaderViewController *readerPDFViewController;
@@ -68,7 +65,7 @@
 - (void)changeToDisplayMode;
 
 - (void)downloadPhotoBrowserFailure:(NSInteger)errorCode;
-- (void)downloadPhotoBrowserSuccess:(CCMetadata *)metadataVar selector:(NSString *)selector;
+- (void)downloadPhotoBrowserSuccess:(tableMetadata *)metadataVar selector:(NSString *)selector;
 
 @end
 

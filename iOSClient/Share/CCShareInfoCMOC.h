@@ -25,13 +25,14 @@
 
 #import "XLFormViewController.h"
 #import "UtilsFramework.h"
-#import "CCMetadata.h"
+
+@class tableMetadata;
 
 @interface CCShareInfoCMOC : XLFormViewController
 
 @property (nonatomic, weak) IBOutlet UIButton *endButton;
 
-@property (nonatomic, strong) CCMetadata *metadata;
+@property (nonatomic, strong) tableMetadata *metadata;
 
 - (IBAction)endButtonAction:(id)sender;
 

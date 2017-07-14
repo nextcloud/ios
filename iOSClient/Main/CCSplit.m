@@ -24,9 +24,10 @@
 #import "CCSplit.h"
 #import "AppDelegate.h"
 #import "CCLogin.h"
+#import "NCAutoUpload.h"
 #import "NCBridgeSwift.h"
 
-@interface CCSplit ()
+@interface CCSplit () <CCLoginDelegate, CCLoginDelegateWeb>
 {
     CCLoginWeb *_loginWeb;
     CCLogin *_loginVC;
@@ -41,9 +42,7 @@
 
 -  (id)initWithCoder:(NSCoder *)aDecoder
 {
-    if (self = [super initWithCoder:aDecoder])  {
-        
-        
+    if (self = [super initWithCoder:aDecoder])  {        
     }
     
     return self;
@@ -51,11 +50,9 @@
 
 - (void)viewDidLoad
 {
-    [super viewDidLoad];
-    
-    self.delegate = self;
-    
     [self inizialize];
+    
+    [super viewDidLoad];
 }
 
 // Apparirà
@@ -90,10 +87,11 @@
 - (void)inizialize
 {
     //  setting version
-    self.version = [CCUtility setVersionCryptoCloud];
+    self.version = [CCUtility setVersion];
+    self.build = [CCUtility setBuild];
     
     // init home
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"initializeMain" object:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -135,7 +133,11 @@
 
 - (void)loginSuccess:(NSInteger)loginType
 {
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"initializeMain" object:nil];
+    // Align Photo Library
+    if (loginType != loginModifyPasswordUser)
+        [[NCAutoUpload sharedInstance] alignPhotoLibrary];
+    
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil];
 }
 
 - (void)newAccount

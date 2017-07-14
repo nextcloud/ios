@@ -272,8 +272,6 @@
 
 - (void)tappedInToolbar:(ThumbsMainToolbar *)toolbar doneButton:(UIButton *)button
 {
-    [[UIApplication sharedApplication] setStatusBarHidden:NO];
-    
 	[delegate dismissThumbsViewController:self]; // Dismiss thumbs display
 }
 
@@ -317,8 +315,6 @@
 
 - (void)thumbsView:(ReaderThumbsView *)thumbsView didSelectThumbWithIndex:(NSInteger)index
 {
-    [[UIApplication sharedApplication] setStatusBarHidden:NO];
-    
 	NSInteger page = (showBookmarked ? [[bookmarked objectAtIndex:index] integerValue] : (index + 1));
 
 	[delegate thumbsViewController:self gotoPage:page]; // Show the selected page

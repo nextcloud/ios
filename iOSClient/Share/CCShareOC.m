@@ -150,10 +150,12 @@
 
 - (void)reloadData
 {
-    self.shareLink = [app.sharesLink objectForKey:[self.serverUrl stringByAppendingString:self.metadata.fileName]];
-    self.shareUserAndGroup = [app.sharesUserAndGroup objectForKey:[self.serverUrl stringByAppendingString:self.metadata.fileName]];
+    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    
+    self.shareLink = [appDelegate.sharesLink objectForKey:[self.serverUrl stringByAppendingString:self.metadata.fileName]];
+    self.shareUserAndGroup = [appDelegate.sharesUserAndGroup objectForKey:[self.serverUrl stringByAppendingString:self.metadata.fileName]];
 
-    self.itemShareLink = [app.sharesID objectForKey:self.shareLink];
+    self.itemShareLink = [appDelegate.sharesID objectForKey:self.shareLink];
     if ([self.shareUserAndGroup length] > 0) self.itemsUserAndGroupLink = [self.shareUserAndGroup componentsSeparatedByString:@","];
     else self.itemsUserAndGroupLink = nil;
 
@@ -278,7 +280,9 @@
     
     UIActivityViewController *activityController = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:applicationActivities];
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) [self presentViewController:activityController animated:YES completion:nil];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
+        [self presentViewController:activityController animated:YES completion:nil];
+    
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         
         UIPopoverController *popup;
@@ -444,7 +448,7 @@
     [self.tableView endEditing:YES];
     
     // reload delegate
-    [self.delegate reloadDatasource:[CCCoreData getServerUrlFromDirectoryID:self.metadata.directoryID activeAccount:self.metadata.account] fileID:nil selector:nil];
+    [self.delegate reloadDatasource:[[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID]];
     
     [self dismissViewControllerAnimated:YES completion:nil];
 }
@@ -469,7 +473,7 @@
     [self.delegate shareUserAndGroup:user shareeType:shareeType permission:permission metadata:self.metadata directoryID:self.metadata.directoryID serverUrl:self.serverUrl];
 }
 
-- (void)updateShare:(NSString *)share metadata:(CCMetadata *)metadata serverUrl:(NSString *)serverUrl password:(NSString *)password expirationTime:(NSString *)expirationTime permission:(NSInteger)permission
+- (void)updateShare:(NSString *)share metadata:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl password:(NSString *)password expirationTime:(NSString *)expirationTime permission:(NSInteger)permission
 {
     [self.delegate updateShare:share metadata:metadata serverUrl:serverUrl password:password expirationTime:expirationTime permission:permission];
 }

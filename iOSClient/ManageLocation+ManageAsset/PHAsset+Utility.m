@@ -127,7 +127,9 @@
         NSLog(@"[LOG] Cannot get asset from localID because it is nil");
         return nil;
     }
+    
     PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[localIdentifier] options:nil];
+    
     if(result.count){
         return result[0];
     }

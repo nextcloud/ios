@@ -145,15 +145,7 @@
 
 - (void)downloadFile
 {
-    [[CCNetworking sharedNetworking] downloadFile:_metadataNet.metadata serverUrl:_metadataNet.serverUrl downloadData:_metadataNet.downloadData downloadPlist:_metadataNet.downloadPlist selector:_metadataNet.selector selectorPost:_metadataNet.selectorPost session:_metadataNet.session taskStatus:_metadataNet.taskStatus delegate:self];
-}
-
-- (void)downloadTaskSave:(NSURLSessionDownloadTask *)downloadTask
-{
-    _downloadTask= downloadTask;
-    
-    if ([self.delegate respondsToSelector:@selector(downloadTaskSave:)])
-        [self.delegate downloadTaskSave:downloadTask];
+    [[CCNetworking sharedNetworking] downloadFile:_metadataNet.fileID serverUrl:_metadataNet.serverUrl downloadData:_metadataNet.downloadData downloadPlist:_metadataNet.downloadPlist selector:_metadataNet.selector selectorPost:_metadataNet.selectorPost session:_metadataNet.session taskStatus:_metadataNet.taskStatus delegate:self];
 }
 
 - (void)downloadFileSuccess:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost
@@ -194,14 +186,6 @@
 - (void)uploadTemplate
 {
     [[CCNetworking sharedNetworking] uploadTemplate:_metadataNet.fileNamePrint fileNameCrypto:_metadataNet.fileName serverUrl:_metadataNet.serverUrl session:_metadataNet.session taskStatus:_metadataNet.taskStatus selector:_metadataNet.selector selectorPost:_metadataNet.selectorPost errorCode:_metadataNet.errorCode delegate:self];
-}
-
-- (void)uploadTaskSave:(NSURLSessionUploadTask *)uploadTask
-{
-    _uploadTask = uploadTask;
-    
-    if ([self.delegate respondsToSelector:@selector(uploadTaskSave:)])
-        [self.delegate uploadTaskSave:uploadTask];
 }
 
 - (void)uploadFileSuccess:(CCMetadataNet *)metadataNet fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost
@@ -253,14 +237,14 @@
     
     [communication getRemoteThumbnailByServer:[_activeUrl stringByAppendingString:@"/"] ofFilePath:_metadataNet.fileName withWidth:width andHeight:height onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSData *thumbnail, NSString *redirectedServer) {
         
-        TableAccount *recordAccount = [CCCoreData getActiveAccount];
+        tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
         
         if ([recordAccount.account isEqualToString:_metadataNet.account] && [thumbnail length] > 0) {
         
             UIImage *thumbnailImage = [UIImage imageWithData:thumbnail];
             NSString *directoryUser = [CCUtility getDirectoryActiveUser:_activeUser activeUrl:_activeUrl];
             
-            [CCGraphics saveIcoWithFileID:_metadataNet.fileNameLocal image:thumbnailImage writeToFile:[NSString stringWithFormat:@"%@/%@.%@", directoryUser, _metadataNet.fileNameLocal, ext] copy:NO move:NO fromPath:nil toPath:nil];
+            [CCGraphics saveIcoWithEtag:_metadataNet.fileNameLocal image:thumbnailImage writeToFile:[NSString stringWithFormat:@"%@/%@.%@", directoryUser, _metadataNet.fileNameLocal, ext] copy:NO move:NO fromPath:nil toPath:nil];
 
             if ([self.delegate respondsToSelector:@selector(downloadThumbnailSuccess:)] && [_metadataNet.action isEqualToString:actionDownloadThumbnail])
                 [self.delegate downloadThumbnailSuccess:_metadataNet];
@@ -315,8 +299,8 @@
 
             dispatch_async(dispatch_get_main_queue(), ^{
                 
-                if ([self.delegate respondsToSelector:@selector(readFolderSuccess:permissions:etag:metadatas:)])
-                    [self.delegate readFolderSuccess:_metadataNet permissions:@"" etag:@"" metadatas:metadatas];
+                if ([self.delegate respondsToSelector:@selector(readFolderSuccess:metadataFolder:metadatas:)])
+                    [self.delegate readFolderSuccess:_metadataNet metadataFolder:nil metadatas:metadatas];
             });
 
             [self complete];
@@ -324,23 +308,42 @@
             return;
         }
 
-        // directory [0]
-        OCFileDto *itemDtoDirectory = [items objectAtIndex:0];
-        NSString *permissions = itemDtoDirectory.permissions;
-        NSString *etagDirectory = itemDtoDirectory.etag;
-        //NSDate *date = [NSDate dateWithTimeIntervalSince1970:itemDtoDirectory.date];
-        
-        NSString *directoryID = [CCCoreData addDirectory:_metadataNet.serverUrl permissions:permissions activeAccount:_metadataNet.account];
-        
-        NSString *cameraFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:_metadataNet.account];
-        NSString *cameraFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:_metadataNet.account activeUrl:_activeUrl];
-        NSString *directoryUser = [CCUtility getDirectoryActiveUser:_activeUser activeUrl:_activeUrl];
-        
-        // Update metadataNet.directoryID
-        _metadataNet.directoryID = directoryID;
-        
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+            
+            // directory [0]
+            OCFileDto *itemDtoFolder = [items objectAtIndex:0];
+            //NSDate *date = [NSDate dateWithTimeIntervalSince1970:itemDtoDirectory.date];
+        
+            NSString *directoryID = [[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:_metadataNet.serverUrl permissions:itemDtoFolder.permissions];
+            _metadataNet.directoryID = directoryID;
 
+            NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
+            NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:_activeUrl];
+        
+            NSString *directoryUser = [CCUtility getDirectoryActiveUser:_activeUser activeUrl:_activeUrl];
+        
+            tableMetadata *metadataFolder;
+            NSString *directoryIDFolder;
+            NSString *serverUrlFolder;
+            NSString *serverUrl;
+            
+            // Metadata . (self Folder)
+            if ([_metadataNet.serverUrl isEqualToString:[CCUtility getHomeServerUrlActiveUrl:_activeUrl]]) {
+            
+                // root folder
+                serverUrlFolder = @"..";
+                directoryIDFolder = @"00000000-0000-0000-0000-000000000000";
+            
+                metadataFolder = [CCUtility trasformedOCFileToCCMetadata:itemDtoFolder fileName:@"." fileNamePrint:@"." serverUrl:serverUrlFolder directoryID:directoryIDFolder autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser];
+                
+            } else {
+            
+                serverUrlFolder = [CCUtility deletingLastPathComponentFromServerUrl:_metadataNet.serverUrl];
+                directoryIDFolder = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrlFolder];
+                
+                metadataFolder = [CCUtility trasformedOCFileToCCMetadata:itemDtoFolder fileName:[_metadataNet.serverUrl lastPathComponent] fileNamePrint:[_metadataNet.serverUrl lastPathComponent] serverUrl:serverUrlFolder directoryID:directoryIDFolder autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser];
+            }
+        
             NSArray *itemsSortedArray = [items sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
                 
                 NSString *first = [(OCFileDto*)a fileName];
@@ -352,42 +355,36 @@
                 
                 OCFileDto *itemDto = [itemsSortedArray objectAtIndex:i];
                 itemDto.fileName = [itemDto.fileName stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+                NSString *fileName = itemDto.fileName;
                 
-                // Not in Crypto Cloud Mode skip File Crypto
-                if (_isCryptoCloudMode == NO) {
-                    
-                    NSString *fileName = itemDto.fileName;
-                    
-                    if (itemDto.isDirectory) {
+                // Skip if not CryptoMode
+                if (_isCryptoCloudMode == NO && [CCUtility isFileCryptated:fileName])
+                    continue;
+                
+                if (itemDto.isDirectory) {
                         
-                        fileName = [fileName substringToIndex:[fileName length] - 1];
-                        NSString *serverUrl = [CCUtility stringAppendServerUrl:_metadataNet.serverUrl addFileName:fileName];
+                    fileName = [fileName substringToIndex:[fileName length] - 1];
+                    serverUrl = [CCUtility stringAppendServerUrl:_metadataNet.serverUrl addFileName:fileName];
                         
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            [CCCoreData addDirectory:serverUrl permissions:nil activeAccount:_metadataNet.account];
-                        });
-                    }
-                    
-                    if ([CCUtility isFileCryptated:fileName])
-                        continue;
+                    (void)[[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:serverUrl permissions:itemDtoFolder.permissions];
                 }
                 
                 // ----- BUG #942 ---------
                 if ([itemDto.etag length] == 0) {
 #ifndef EXTENSION
-                    [app messageNotification:@"Server error" description:@"Metadata etag absent, record excluded, please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
+                    [app messageNotification:@"Server error" description:@"Metadata fileID absent, record excluded, please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
 #endif
                     continue;
                 }
                 // ------------------------
                 
-                [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileNamePrint:itemDto.fileName serverUrl:_metadataNet.serverUrl directoryID:directoryID cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath activeAccount:_metadataNet.account directoryUser:directoryUser]];
+                [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileName:itemDto.fileName fileNamePrint:itemDto.fileName serverUrl:_metadataNet.serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser]];
             }
             
             dispatch_async(dispatch_get_main_queue(), ^{
                 
-                if ([self.delegate respondsToSelector:@selector(readFolderSuccess:permissions:etag:metadatas:)])
-                    [self.delegate readFolderSuccess:_metadataNet permissions:permissions etag:etagDirectory metadatas:metadatas];
+                if ([self.delegate respondsToSelector:@selector(readFolderSuccess:metadataFolder:metadatas:)])
+                    [self.delegate readFolderSuccess:_metadataNet metadataFolder:metadataFolder metadatas:metadatas];
             });
         });
         
@@ -413,7 +410,7 @@
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
         
         // Activity
-        [[NCManageDatabase sharedInstance] addActivityClient:_metadataNet.serverUrl fileID:@"" action:k_activityDebugActionReadFolder selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh account:_metadataNet.account activeUrl:_activeUrl];
+        [[NCManageDatabase sharedInstance] addActivityClient:_metadataNet.serverUrl fileID:@"" action:k_activityDebugActionReadFolder selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
         
         [self complete];
     }];
@@ -432,55 +429,74 @@
     
     NSString *path = [_activeUrl stringByAppendingString:dav];
     NSString *folder = [_metadataNet.serverUrl stringByReplacingOccurrencesOfString:[CCUtility getHomeServerUrlActiveUrl:_activeUrl] withString:@""];
-
-    [communication search:path folder:folder fileName:_metadataNet.fileName depth:_metadataNet.options withUserSessionToken:nil onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token) {
+    NSString *dateLastModified;
+    
+    if (_metadataNet.date) {
+        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+        NSLocale *enUSPOSIXLocale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
+        [dateFormatter setLocale:enUSPOSIXLocale];
+        [dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ssZZZZZ"];
+    
+        dateLastModified = [dateFormatter stringFromDate:_metadataNet.date];
+    }
+    
+    [communication search:path folder:folder fileName: [NSString stringWithFormat:@"%%%@%%", _metadataNet.fileName] depth:_metadataNet.options dateLastModified:dateLastModified withUserSessionToken:nil onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token) {
         
         NSMutableArray *metadatas = [NSMutableArray new];
         
-        NSString *cameraFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:_metadataNet.account];
-        NSString *cameraFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:_metadataNet.account activeUrl:_activeUrl];
+        NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
+        NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:_activeUrl];
         NSString *directoryUser = [CCUtility getDirectoryActiveUser:_activeUser activeUrl:_activeUrl];
 
-        for(OCFileDto *itemDto in items) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        
+            for(OCFileDto *itemDto in items) {
             
-            itemDto.fileName = [itemDto.fileName stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+                itemDto.fileName = [itemDto.fileName stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
             
-            // Not in Crypto Cloud file
-            NSString *fileName = itemDto.fileName;
-            if (itemDto.isDirectory)
-                fileName = [fileName substringToIndex:[fileName length] - 1];
+                // Not in Crypto Cloud file
+                NSString *fileName = itemDto.fileName;
+                if (itemDto.isDirectory)
+                    fileName = [fileName substringToIndex:[fileName length] - 1];
                 
-            if ([CCUtility isFileCryptated:fileName])
-                continue;
+                if ([CCUtility isFileCryptated:fileName])
+                    continue;
             
-            // ----- BUG #942 ---------
-            if ([itemDto.etag length] == 0) {
+                // ----- BUG #942 ---------
+                if ([itemDto.etag length] == 0) {
 #ifndef EXTENSION
-                [app messageNotification:@"Server error" description:@"Metadata etag absent, record excluded, please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
+                    [app messageNotification:@"Server error" description:@"Metadata fileID absent, record excluded, please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
 #endif
-                continue;
-            }
-            // ------------------------
+                    continue;
+                }
+                // ------------------------
             
-            NSString *serverUrl = [NSString stringWithFormat:@"%@/files/%@", dav, _activeUser];
-            serverUrl = [itemDto.filePath stringByReplacingOccurrencesOfString:serverUrl withString:@""];
+                NSRange firstInstance = [itemDto.filePath rangeOfString:[NSString stringWithFormat:@"%@/files/%@", dav, _activeUser]];
+                NSRange finalRange = NSMakeRange(firstInstance.location + firstInstance.length, itemDto.filePath.length-(firstInstance.location + firstInstance.length));
+                NSString *serverUrl = [itemDto.filePath substringWithRange:finalRange];
+                
+                
+                /* TRIM */
+                if ([serverUrl hasPrefix:@"/"])
+                    serverUrl = [serverUrl substringFromIndex:1];
+                if ([serverUrl hasSuffix:@"/"])
+                    serverUrl = [serverUrl substringToIndex:[serverUrl length] - 1];
+                /* ---- */
             
-            /* TRIM */
-            if ([serverUrl hasPrefix:@"/"])
-                serverUrl = [serverUrl substringFromIndex:1];
-            if ([serverUrl hasSuffix:@"/"])
-                serverUrl = [serverUrl substringToIndex:[serverUrl length] - 1];
-            /*      */
-            
-            serverUrl = [CCUtility stringAppendServerUrl:[_activeUrl stringByAppendingString:webDAV] addFileName:serverUrl];
-            
-            NSString *directoryID = [CCCoreData addDirectory:serverUrl permissions:itemDto.permissions activeAccount:_metadataNet.account];
+                serverUrl = [CCUtility stringAppendServerUrl:[_activeUrl stringByAppendingString:webDAV] addFileName:serverUrl];
+                serverUrl = [serverUrl stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
 
-            [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileNamePrint:itemDto.fileName serverUrl:serverUrl directoryID:directoryID cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath activeAccount:_metadataNet.account directoryUser:directoryUser]];
-        }
+                NSString *directoryID = [[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:serverUrl permissions:itemDto.permissions];
+
+                [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileName:itemDto.fileName fileNamePrint:itemDto.fileName serverUrl:serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser]];
+            }
     
-        if ([self.delegate respondsToSelector:@selector(searchSuccess:metadatas:)])
-            [self.delegate searchSuccess:_metadataNet metadatas:metadatas];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if ([self.delegate respondsToSelector:@selector(searchSuccess:metadatas:)])
+                    [self.delegate searchSuccess:_metadataNet metadatas:metadatas];
+            });
+        
+        });
         
         [self complete];
         
@@ -548,7 +564,6 @@
         
         [self complete];
     }];
-
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -569,8 +584,9 @@
         
         NSMutableArray *metadatas = [NSMutableArray new];
         
-        NSString *cameraFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:_metadataNet.account];
-        NSString *cameraFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:_metadataNet.account activeUrl:_activeUrl];
+        NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
+        NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:_activeUrl];
+
         NSString *directoryUser = [CCUtility getDirectoryActiveUser:_activeUser activeUrl:_activeUrl];
         
         // Order by fileNamePath
@@ -601,15 +617,16 @@
             // ----- BUG #942 ---------
             if ([itemDto.etag length] == 0) {
 #ifndef EXTENSION
-                [app messageNotification:@"Server error" description:@"Metadata etag absent, record excluded, please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
+                [app messageNotification:@"Server error" description:@"Metadata fileID absent, record excluded, please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
 #endif
                 continue;
             }
             // ------------------------
             
-            NSString *serverUrl = [NSString stringWithFormat:@"%@/files/%@", dav, _activeUser];
-            serverUrl = [itemDto.filePath stringByReplacingOccurrencesOfString:serverUrl withString:@""];
-            
+            NSRange firstInstance = [itemDto.filePath rangeOfString:[NSString stringWithFormat:@"%@/files/%@", dav, _activeUser]];
+            NSRange finalRange = NSMakeRange(firstInstance.location + firstInstance.length, itemDto.filePath.length-(firstInstance.location + firstInstance.length));
+            NSString *serverUrl = [itemDto.filePath substringWithRange:finalRange];
+
             /* TRIM */
             if ([serverUrl hasPrefix:@"/"])
                 serverUrl = [serverUrl substringFromIndex:1];
@@ -618,10 +635,11 @@
             /*      */
             
             serverUrl = [CCUtility stringAppendServerUrl:[_activeUrl stringByAppendingString:webDAV] addFileName:serverUrl];
+            serverUrl = [serverUrl stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+
+            NSString *directoryID = [[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:serverUrl permissions:itemDto.permissions];
             
-            NSString *directoryID = [CCCoreData addDirectory:serverUrl permissions:itemDto.permissions activeAccount:_metadataNet.account];
-            
-            [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileNamePrint:itemDto.fileName serverUrl:serverUrl directoryID:directoryID cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath activeAccount:_metadataNet.account directoryUser:directoryUser]];
+            [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileName:itemDto.fileName fileNamePrint:itemDto.fileName serverUrl:serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser]];
         }
         
         if ([self.delegate respondsToSelector:@selector(listingFavoritesSuccess:metadatas:)])
@@ -661,11 +679,18 @@
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     
     NSString *nameFolderURL = [NSString stringWithFormat:@"%@/%@", _metadataNet.serverUrl, _metadataNet.fileName];
+    NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
+    NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:_activeUrl];
     
     [communication setCredentialsWithUser:_activeUser andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
     [communication createFolder:nameFolderURL onCommunication:communication withForbiddenCharactersSupported:YES successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+        
+        NSDictionary *fields = [response allHeaderFields];
+
+        _metadataNet.fileID = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-FileId"]];
+        _metadataNet.date = [CCUtility dateEnUsPosixFromCloud:[fields objectForKey:@"Date"]];
         
         if ([self.delegate respondsToSelector:@selector(createFolderSuccess:)])
             [self.delegate createFolderSuccess:_metadataNet];
@@ -676,7 +701,7 @@
         
         NSString *message;
         
-        if (([_metadataNet.fileName isEqualToString:[CCCoreData getCameraUploadFolderNameActiveAccount:_metadataNet.account]] == YES && [_metadataNet.serverUrl isEqualToString:[CCCoreData getCameraUploadFolderPathActiveAccount:_metadataNet.account activeUrl:_activeUrl]] == YES))
+        if (([_metadataNet.fileName isEqualToString:autoUploadFileName] == YES && [_metadataNet.serverUrl isEqualToString:autoUploadDirectory] == YES))
             message = nil;
         else
             message = [CCError manageErrorOC:response.statusCode error:error];
@@ -698,7 +723,7 @@
         
          NSString *message;
         
-        if (([_metadataNet.fileName isEqualToString:[CCCoreData getCameraUploadFolderNameActiveAccount:_metadataNet.account]] == YES && [_metadataNet.serverUrl isEqualToString:[CCCoreData getCameraUploadFolderPathActiveAccount:_metadataNet.account activeUrl:_activeUrl]] == YES))
+        if (([_metadataNet.fileName isEqualToString:autoUploadFileName] == YES && [_metadataNet.serverUrl isEqualToString:autoUploadDirectory] == YES))
             message = nil;
         else {
             
@@ -737,11 +762,9 @@
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
-        TableAccount *recordAccount = [CCCoreData getActiveAccount];
-
         [communication createFolder:folderPathName onCommunication:communication withForbiddenCharactersSupported:YES successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
             
-            [CCCoreData clearDateReadAccount:recordAccount.account serverUrl:[CCUtility deletingLastPathComponentFromServerUrl:folderPathName] directoryID:nil];
+            [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:[CCUtility deletingLastPathComponentFromServerUrl:folderPathName] directoryID:nil];
             
             dispatch_semaphore_signal(semaphore);
             
@@ -826,8 +849,8 @@
         if ([_metadataNet.selector isEqualToString:selectorRename] && [self.delegate respondsToSelector:@selector(renameSuccess:)])
             [self.delegate renameSuccess:_metadataNet];
         
-        if ([_metadataNet.selector rangeOfString:selectorMove].location != NSNotFound && [self.delegate respondsToSelector:@selector(moveSuccess:revTo:)])
-            [self.delegate moveSuccess:_metadataNet revTo:nil];
+        if ([_metadataNet.selector rangeOfString:selectorMove].location != NSNotFound && [self.delegate respondsToSelector:@selector(moveSuccess:)])
+            [self.delegate moveSuccess:_metadataNet];
         
         [self complete];
         
@@ -893,21 +916,21 @@
     
     [communication readFile:fileName onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer) {
         
-        TableAccount *recordAccount = [CCCoreData getActiveAccount];
+        tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
         
         if ([recordAccount.account isEqualToString:_metadataNet.account] && [items count] > 0) {
             
-            CCMetadata *metadata = [[CCMetadata alloc] init];
+            tableMetadata *metadata = [tableMetadata new];
             
             OCFileDto *itemDto = [items objectAtIndex:0];
-            itemDto.fileName = _metadataNet.fileName;
             
-            NSString *directoryID = [CCCoreData getDirectoryIDFromServerUrl:_metadataNet.serverUrl activeAccount:_metadataNet.account];
-            NSString *cameraFolderName = [CCCoreData getCameraUploadFolderNameActiveAccount:_metadataNet.account];
-            NSString *cameraFolderPath = [CCCoreData getCameraUploadFolderPathActiveAccount:_metadataNet.account activeUrl:_activeUrl];
+            NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:_metadataNet.serverUrl];
+            NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
+            NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:_activeUrl];
+
             NSString *directoryUser = [CCUtility getDirectoryActiveUser:_activeUser activeUrl:_activeUrl];
         
-            metadata = [CCUtility trasformedOCFileToCCMetadata:itemDto fileNamePrint:_metadataNet.fileNamePrint serverUrl:_metadataNet.serverUrl directoryID:directoryID cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath activeAccount:_metadataNet.account directoryUser:directoryUser];
+            metadata = [CCUtility trasformedOCFileToCCMetadata:itemDto fileName:_metadataNet.fileName fileNamePrint:_metadataNet.fileNamePrint serverUrl:_metadataNet.serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser];
                         
             if([self.delegate respondsToSelector:@selector(readFileSuccess:metadata:)])
                 [self.delegate readFileSuccess:_metadataNet metadata:metadata];
@@ -925,7 +948,7 @@
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
-        TableAccount *recordAccount = [CCCoreData getActiveAccount];
+        tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
         
         _metadataNet.errorRetry++;
         
@@ -1006,7 +1029,7 @@
         
         [[self getShareID] removeAllObjects];
         
-        TableAccount *recordAccount = [CCCoreData getActiveAccount];
+        tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
         
         if ([recordAccount.account isEqualToString:_metadataNet.account]) {
         
@@ -1316,6 +1339,46 @@
     }];
 
 }
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Middleware Ping =====
+#pragma --------------------------------------------------------------------------------------------
+
+/*
+- (void)middlewarePing
+{
+    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+    
+    [communication setCredentialsWithUser:_activeUser andPassword:_activePassword];
+    [communication setUserAgent:[CCUtility getUserAgent]];
+    
+    [communication getMiddlewarePing:_metadataNet.serverUrl onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *listOfExternalSites, NSString *redirectedServer) {
+        
+        [self complete];
+        
+    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+        
+        NSInteger errorCode = response.statusCode;
+        if (errorCode == 0)
+            errorCode = error.code;
+        
+        // Error
+        if ([self.delegate respondsToSelector:@selector(getExternalSitesServerFailure:message:errorCode:)]) {
+            
+            if (errorCode == 503)
+                [self.delegate getExternalSitesServerFailure:_metadataNet message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
+            else
+                [self.delegate getExternalSitesServerFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        }
+        
+        // Request trusted certificated
+        if ([error code] == NSURLErrorServerCertificateUntrusted)
+            [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
+        
+        [self complete];
+    }];
+    
+}
+*/
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Notification =====
@@ -1355,7 +1418,7 @@
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
         
         // Activity
-        [[NCManageDatabase sharedInstance] addActivityClient:_activeUrl fileID:@"" action:k_activityDebugActionGetNotification selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh account:_metadataNet.account activeUrl:_activeUrl];
+        [[NCManageDatabase sharedInstance] addActivityClient:_activeUrl fileID:@"" action:k_activityDebugActionGetNotification selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
         
         [self complete];
     }];
@@ -1425,7 +1488,7 @@
         [communication subscribingPushProxy:[NCBrandOptions sharedInstance].pushNotificationServer pushToken:pushToken deviceIdentifier:deviceIdentifier deviceIdentifierSignature:signature userPublicKey:[CCUtility URLEncodeStringFromString:publicKey] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
             
             // Activity
-            [[NCManageDatabase sharedInstance] addActivityClient:[NCBrandOptions sharedInstance].pushNotificationServer fileID:@"" action:k_activityDebugActionPushProxy selector:@"" note:@"Service registered." type:k_activityTypeSuccess verbose:k_activityVerboseHigh account:_metadataNet.account activeUrl:_activeUrl];
+            [[NCManageDatabase sharedInstance] addActivityClient:[NCBrandOptions sharedInstance].pushNotificationServer fileID:@"" action:k_activityDebugActionPushProxy selector:@"" note:@"Service registered." type:k_activityTypeSuccess verbose:k_activityVerboseHigh activeUrl:_activeUrl];
             
             [self complete];
             
@@ -1449,7 +1512,7 @@
                 [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
 
             // Activity
-            [[NCManageDatabase sharedInstance] addActivityClient:[NCBrandOptions sharedInstance].pushNotificationServer fileID:@"" action:k_activityDebugActionPushProxy selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh account:_metadataNet.account activeUrl:_activeUrl];
+            [[NCManageDatabase sharedInstance] addActivityClient:[NCBrandOptions sharedInstance].pushNotificationServer fileID:@"" action:k_activityDebugActionPushProxy selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
             
             [self complete];
         }];
@@ -1474,7 +1537,7 @@
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
         
         // Activity
-        [[NCManageDatabase sharedInstance] addActivityClient:_activeUrl fileID:@"" action:k_activityDebugActionServerPush selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh account:_metadataNet.account activeUrl:_activeUrl];
+        [[NCManageDatabase sharedInstance] addActivityClient:_activeUrl fileID:@"" action:k_activityDebugActionServerPush selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
         
         [self complete];
     }];
@@ -1570,7 +1633,7 @@
     
     [communication getCapabilitiesOfServer:[_activeUrl stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, OCCapabilities *capabilities, NSString *redirectedServer) {
         
-        TableAccount *recordAccount = [CCCoreData getActiveAccount];
+        tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
         
         if ([self.delegate respondsToSelector:@selector(getCapabilitiesOfServerSuccess:)] && [recordAccount.account isEqualToString:_metadataNet.account])
             [self.delegate getCapabilitiesOfServerSuccess:capabilities];
@@ -1597,7 +1660,7 @@
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
 
         // Activity
-        [[NCManageDatabase sharedInstance] addActivityClient:_activeUrl fileID:@"" action:k_activityDebugActionCapabilities selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh account:_metadataNet.account activeUrl:_activeUrl];
+        [[NCManageDatabase sharedInstance] addActivityClient:_activeUrl fileID:@"" action:k_activityDebugActionCapabilities selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
         
         [self complete];
     }];
@@ -1614,13 +1677,11 @@
 - (void)URLSession:(NSURLSession *)session didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential *credential))completionHandler
 {
     // The pinnning check
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if ([[CCCertificate sharedManager] checkTrustedChallenge:challenge]) {
-            completionHandler(NSURLSessionAuthChallengeUseCredential, [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust]);
-        } else {
-            completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, nil);
-        }
-    });
+    if ([[CCCertificate sharedManager] checkTrustedChallenge:challenge]) {
+        completionHandler(NSURLSessionAuthChallengeUseCredential, [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust]);
+    } else {
+        completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, nil);
+    }
 }
 
 @end

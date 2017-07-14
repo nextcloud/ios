@@ -1,4 +1,12 @@
-	* Version 2.17 (xx.xx.2017)
+	* Version 2.17.4 (xx.xx.2017)
+		See x
+	* Version 2.17.3 (23.05.2017)
+		See https://github.com/nextcloud/ios/milestone/7?closed=1
+	* Version 2.17.2 (05.05.2017)
+		See https://github.com/nextcloud/ios/milestone/6?closed=1
+	* Version 2.17.1 (26.04.2017)
+		See https://github.com/nextcloud/ios/milestone/5?closed=1
+	* Version 2.17 (21.04.2017)
 		* Improvement:
 			* Use milestone information
 		* Bug fixes:

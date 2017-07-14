@@ -22,14 +22,15 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "MGSwipeTableCell.h"
 
-@interface CCCellMainTransfer : UITableViewCell
+@interface CCCellMainTransfer : MGSwipeTableCell
 
-@property(nonatomic, weak) IBOutlet UIImageView *fileImageView;
-@property(nonatomic, weak) IBOutlet UIImageView *statusImageView;
-@property(nonatomic, weak) IBOutlet UIImageView *offlineImageView;
-@property(nonatomic, weak) IBOutlet UIImageView *synchronizedImageView;
-@property(nonatomic, weak) IBOutlet UIImageView *sharedImageView;
+@property(nonatomic, weak) IBOutlet UIImageView *file;
+@property(nonatomic, weak) IBOutlet UIImageView *status;
+@property(nonatomic, weak) IBOutlet UIImageView *favorite;
+@property(nonatomic, weak) IBOutlet UIImageView *local;
+@property(nonatomic, weak) IBOutlet UIImageView *shared;
 
 @property(nonatomic, weak) IBOutlet UILabel *labelTitle;
 @property(nonatomic, weak) IBOutlet UILabel *labelInfoFile;

@@ -60,7 +60,7 @@
 
 + (void)adminRemoveIntro
 {
-    NSString *version = [self getVersionCryptoCloud];
+    NSString *version = [self getVersion];
     [UICKeyChainStore setString:nil forKey:version service:k_serviceShareKeyChain];
 }
 
@@ -82,13 +82,22 @@
     [UICKeyChainStore setString:passcode forKey:uuid service:k_serviceShareKeyChain];
 }
 
-+ (NSString *)setVersionCryptoCloud
++ (NSString *)setVersion
 {
     NSString *version = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
     
     [UICKeyChainStore setString:version forKey:@"version" service:k_serviceShareKeyChain];
     
     return version;
+}
+
++ (NSString *)setBuild
+{
+    NSString *build = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"];
+    
+    [UICKeyChainStore setString:build forKey:@"build" service:k_serviceShareKeyChain];
+    
+    return build;
 }
 
 + (void)setBlockCode:(NSString *)blockcode
@@ -231,9 +240,14 @@
     return [[UIDevice currentDevice] name];
 }
 
-+ (NSString *)getVersionCryptoCloud
++ (NSString *)getVersion
 {
     return [UICKeyChainStore stringForKey:@"version" service:k_serviceShareKeyChain];
+}
+
++ (NSString *)getBuild
+{
+    return [UICKeyChainStore stringForKey:@"build" service:k_serviceShareKeyChain];
 }
 
 + (NSString *)getBlockCode
@@ -406,9 +420,7 @@
     NSDate *todayDate = [NSDate date];
     double ti = [convertedDate timeIntervalSinceDate:todayDate];
     ti = ti * -1;
-    if(ti < 1) {
-        return NSLocalizedString(@"_never_", nil);
-    } else 	if (ti < 60) {
+    if (ti < 60) {
         return NSLocalizedString(@"_less_a_minute_", nil);
     } else if (ti < 3600) {
         int diff = round(ti / 60);
@@ -422,6 +434,24 @@
     } else {
         return NSLocalizedString(@"_over_30_days_", nil);
     }
+}
+
+
++ (NSDate *)dateEnUsPosixFromCloud:(NSString *)dateString
+{
+    NSDate *date = [NSDate date];
+    NSError *error;
+    NSDateFormatter *dateFormatter = [NSDateFormatter new];
+    NSLocale *enUSPOSIXLocale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
+    [dateFormatter setLocale:enUSPOSIXLocale];
+    [dateFormatter setDateFormat:@"EEE, dd MMM y HH:mm:ss zzz"];
+
+    if (![dateFormatter getObjectValue:&date forString:dateString range:nil error:&error]) {
+        NSLog(@"Date '%@' could not be parsed: %@", dateString, error);
+        date = [NSDate date];
+    }
+
+    return date;
 }
 
 + (NSString *)transformedSize:(double)value
@@ -497,9 +527,20 @@
     else numberFileName = [CCUtility getIncrementalNumber];
     
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-    [formatter setDateFormat:@"yyyy-MM-dd HH-mm-ss"];
+    [formatter setDateFormat:@"yy-MM-dd HH-mm-ss"];
     NSString *fileNameDate = [formatter stringFromDate:assetDate];
     
+    PHAssetMediaType assetMediaType = asset.mediaType;
+    NSString *fileNameType = @"";
+    if (assetMediaType == PHAssetMediaTypeImage)
+        fileNameType = NSLocalizedString(@"_photo_", nil);
+    if (assetMediaType == PHAssetMediaTypeVideo)
+        fileNameType = NSLocalizedString(@"_video_", nil);
+    if (assetMediaType == PHAssetMediaTypeAudio)
+        fileNameType = NSLocalizedString(@"_audio_", nil);
+    if (assetMediaType == PHAssetMediaTypeUnknown)
+        fileNameType = NSLocalizedString(@"_unknown_", nil);
+
     NSString *fileNameExt = [[assetFileName pathExtension] lowercaseString];
     
     if (key) {
@@ -512,7 +553,7 @@
             NSString *day = [formatter stringFromDate:assetDate];
             [formatter setDateFormat:@"MMM"];
             NSString *month = [formatter stringFromDate:assetDate];
-            [formatter setDateFormat:@"yyyy"];
+            [formatter setDateFormat:@"yy"];
             NSString *year = [formatter stringFromDate:assetDate];
             
             // Replace string with date
@@ -525,12 +566,12 @@
             
         } else {
             
-            fileName = [NSString stringWithFormat:@"%@ %@.%@", fileNameDate, numberFileName, fileNameExt];
+            fileName = [NSString stringWithFormat:@"%@ %@ %@.%@", fileNameType, fileNameDate, numberFileName, fileNameExt];
         }
         
     } else {
         
-        fileName = [NSString stringWithFormat:@"%@ %@.%@", fileNameDate, numberFileName, fileNameExt];
+        fileName = [NSString stringWithFormat:@"%@ %@ %@.%@", fileNameType, fileNameDate, numberFileName, fileNameExt];
     }
     
     return fileName;
@@ -709,7 +750,7 @@
         MFMailComposeViewController *mc = [[MFMailComposeViewController alloc] init];
         mc.mailComposeDelegate = form;
         
-        [mc setSubject:[self localizableBrand:@"_title_mail_encryptpass_" table:nil]];
+        [mc setSubject:NSLocalizedString(@"_title_mail_encryptpass_", nil)];
         
         NSString *htmlMsg =[NSString stringWithFormat:@"<html><body><p>%@ : %@ , %@</p></body></html>", NSLocalizedString(@"_text1_mail_encryptpass_", nil), key, NSLocalizedString(@"_text2_mail_encryptpass_", nil)];
         
@@ -735,22 +776,7 @@
     }
 }
 
-+ (NSString *)localizableBrand:(NSString *)localize table:(NSString *)table
-{
-    NSString *translate;
-    
-    if (table)
-        translate = NSLocalizedStringFromTable(localize, table, nil);
-    else
-        translate = NSLocalizedString(localize, nil);
-    
-    translate = [translate stringByReplacingOccurrencesOfString:@"_brand_" withString:[NCBrandOptions sharedInstance].brand];
-    translate = [translate stringByReplacingOccurrencesOfString:@"_mail_me_" withString:[NCBrandOptions sharedInstance].mailMe];
-    
-    return translate;
-}
-
-+ (NSArray *)createNameSubFolder:(NSArray *)alassets
++ (NSArray *)createNameSubFolder:(PHFetchResult *)alassets
 {
     NSMutableOrderedSet *datesSubFolder = [NSMutableOrderedSet new];
     
@@ -776,9 +802,40 @@
 #pragma mark ===== CCMetadata =====
 #pragma --------------------------------------------------------------------------------------------
 
-+ (CCMetadata *)trasformedOCFileToCCMetadata:(OCFileDto *)itemDto fileNamePrint:(NSString *)fileNamePrint serverUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID cameraFolderName:(NSString *)cameraFolderName cameraFolderPath:(NSString *)cameraFolderPath activeAccount:(NSString *)activeAccount directoryUser:(NSString *)directoryUser
++ (tableMetadata *)createMetadataWithAccount:(NSString *)account date:(NSDate *)date directory:(BOOL)directory fileID:(NSString *)fileID directoryID:(NSString *)directoryID fileName:(NSString *)fileName etag:(NSString *)etag size:(double)size status:(double)status
 {
-    CCMetadata *metadata = [CCMetadata new];
+    tableMetadata *metadata = [tableMetadata new];
+    
+    metadata.account = account;
+    metadata.date = date;
+    metadata.directory = directory;
+    metadata.directoryID = directoryID;
+    metadata.etag = etag;
+    metadata.fileID = fileID;
+    metadata.fileName = fileName;
+    metadata.fileNameData = fileName;
+    metadata.fileNamePrint = fileName;
+    metadata.nameCurrentDevice = [CCUtility getNameCurrentDevice];
+    metadata.size = size;
+    metadata.status = status;
+    metadata.type = k_metadataType_file;
+    metadata.uuid = [CCUtility getUUID];
+    
+    NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:directoryID];
+    NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
+    NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:serverUrl];
+    
+    [self insertTypeFileIconName:metadata serverUrl:serverUrl autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory];
+    
+    return metadata;
+}
+
++ (tableMetadata *)trasformedOCFileToCCMetadata:(OCFileDto *)itemDto fileName:(NSString *)fileName fileNamePrint:(NSString *)fileNamePrint serverUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID autoUploadFileName:(NSString *)autoUploadFileName autoUploadDirectory:(NSString *)autoUploadDirectory activeAccount:(NSString *)activeAccount directoryUser:(NSString *)directoryUser
+{
+    tableMetadata *metadata = [tableMetadata new];
+    
+    fileName = [CCUtility removeForbiddenCharactersServer:fileName];
+    fileNamePrint = [CCUtility removeForbiddenCharactersServer:fileNamePrint];
     
     metadata.account = activeAccount;
     metadata.cryptated = NO;
@@ -788,15 +845,15 @@
     metadata.favorite = itemDto.isFavorite;
     metadata.fileID = itemDto.ocId;
     metadata.directoryID = directoryID;
-    metadata.fileName = [CCUtility removeForbiddenCharactersServer:itemDto.fileName];
-    metadata.fileNameData = [CCUtility trasformedFileNamePlistInCrypto:metadata.fileName];
-    metadata.fileNamePrint = [CCUtility removeForbiddenCharactersServer:fileNamePrint];
+    metadata.fileName = fileName;
+    metadata.fileNameData = [CCUtility trasformedFileNamePlistInCrypto:fileName];
+    metadata.fileNamePrint = fileNamePrint;
     metadata.iconName = @"";
     metadata.model = @"";
     metadata.nameCurrentDevice = [CCUtility getNameCurrentDevice];
     metadata.permissions = itemDto.permissions;
-    metadata.protocol = @"";
-    metadata.rev = itemDto.etag;
+    metadata.protocolCrypto = @"";
+    metadata.etag = itemDto.etag;
     metadata.size = itemDto.size;
     metadata.sessionTaskIdentifier = k_taskIdentifierDone;
     metadata.sessionTaskIdentifierPlist = k_taskIdentifierDone;
@@ -810,7 +867,7 @@
         case k_metadataTypeFilenamePlist:
             
             metadata.cryptated = YES;            
-            metadata.fileNamePrint = NSLocalizedString(@"_download_plist_", nil);
+            metadata.fileNamePrint = @" ";
             
             [self insertInformationPlist:metadata directoryUser:directoryUser];
             
@@ -824,12 +881,12 @@
             break;
     }
     
-    [self insertTypeFileIconName:metadata directory:serverUrl cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath];
+    [self insertTypeFileIconName:metadata serverUrl:serverUrl autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory];
     
     return metadata;
 }
 
-+ (void)insertTypeFileIconName:(CCMetadata *)metadata directory:(NSString *)directory cameraFolderName:(NSString *)cameraFolderName cameraFolderPath:(NSString *)cameraFolderPath
++ (tableMetadata *)insertTypeFileIconName:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl autoUploadFileName:(NSString *)autoUploadFileName autoUploadDirectory:(NSString *)autoUploadDirectory
 {
     if ([metadata.type isEqualToString: k_metadataType_template]) {
         
@@ -839,7 +896,6 @@
         
         CFStringRef fileExtension = (__bridge CFStringRef)[metadata.fileNamePrint pathExtension];
         CFStringRef fileUTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, fileExtension, NULL);
-        
         NSString *ext = (__bridge NSString *)fileExtension;
         ext = ext.uppercaseString;
         
@@ -854,7 +910,7 @@
         if (metadata.errorPasscode) {
             metadata.typeFile = k_metadataTypeFile_unknown;
             metadata.iconName = @"plist";
-            return;
+            return metadata;
         }
         // Type compress
         if (UTTypeConformsTo(fileUTI, kUTTypeZipArchive) && [(__bridge NSString *)fileUTI containsString:@"org.openxmlformats"] == NO && [(__bridge NSString *)fileUTI containsString:@"oasis"] == NO) {
@@ -910,7 +966,7 @@
             metadata.typeFile = k_metadataTypeFile_unknown;
             
             // icon uTorrent
-            if ([(__bridge NSString *)fileExtension isEqualToString:@"torrent"]) {
+            if ([ext isEqualToString:@"TORRENT"]) {
                 
                 metadata.iconName = @"utorrent";
                 
@@ -921,6 +977,9 @@
             }
         }
         
+        if (fileUTI)
+            CFRelease(fileUTI);
+        
     } else {
         // icon directory
         metadata.typeFile = k_metadataTypeFile_directory;
@@ -928,12 +987,14 @@
         if (metadata.cryptated) metadata.iconName = @"foldercrypto";
         else metadata.iconName = @"folder";
         
-        if([metadata.fileName isEqualToString:cameraFolderName] && [directory isEqualToString:cameraFolderPath])
+        if([metadata.fileName isEqualToString:autoUploadFileName] && [serverUrl isEqualToString:autoUploadDirectory])
             metadata.iconName = @"folderphotocamera";
     }
+    
+    return metadata;
 }
 
-+ (void)insertInformationPlist:(CCMetadata *)metadata directoryUser:(NSString *)directoryUser
++ (tableMetadata *)insertInformationPlist:(tableMetadata *)metadata directoryUser:(NSString *)directoryUser
 {
     NSString *fileNamePlist, *temp, *passcode;
     NSError *error;
@@ -949,7 +1010,8 @@
         if ([[NSFileManager defaultManager] fileExistsAtPath:temp]) fileNamePlist = temp;
     }
     
-    if (!fileNamePlist) return;
+    if (!fileNamePlist)
+        return nil;
     
     NSMutableDictionary *data = [[NSMutableDictionary alloc] initWithContentsOfFile:fileNamePlist];
     NSString *title =  [data objectForKey:@"title"];
@@ -966,7 +1028,7 @@
     metadata.iconName = [data objectForKey:@"icon"];
     metadata.model = [data objectForKey:@"model"];
     metadata.nameCurrentDevice = [data objectForKey:@"namecurrentdevice"];
-    metadata.protocol = [data objectForKey:@"protocol"];
+    metadata.protocolCrypto = [data objectForKey:@"protocol"];
     metadata.size = (long) [len longLongValue];
     if ([data objectForKey:@"image"] == nil)
         metadata.thumbnailExists = NO;
@@ -992,9 +1054,9 @@
                 if (image) {
                 
                     if (image.size.width == 128 && image.size.height == 128)
-                        [CCGraphics saveIcoWithFileID:metadata.fileID image:image writeToFile:[NSString stringWithFormat:@"%@/%@.ico", directoryUser, metadata.fileID] copy:NO move:NO fromPath:nil toPath:nil];
+                        [CCGraphics saveIcoWithEtag:metadata.fileID image:image writeToFile:[NSString stringWithFormat:@"%@/%@.ico", directoryUser, metadata.fileID] copy:NO move:NO fromPath:nil toPath:nil];
                     else
-                        [CCGraphics saveIcoWithFileID:metadata.fileID image:[CCGraphics scaleImage:image toSize:CGSizeMake(128, 128)] writeToFile:[NSString stringWithFormat:@"%@/%@.ico", directoryUser, metadata.fileID] copy:NO move:NO fromPath:nil toPath:nil];
+                        [CCGraphics saveIcoWithEtag:metadata.fileID image:[CCGraphics scaleImage:image toSize:CGSizeMake(128, 128)] writeToFile:[NSString stringWithFormat:@"%@/%@.ico", directoryUser, metadata.fileID] copy:NO move:NO fromPath:nil toPath:nil];
                 }
             }
         }
@@ -1018,14 +1080,16 @@
     } else {
         
         metadata.errorPasscode = true;
-        if (!metadata.uuid) metadata.fileNamePrint = NSLocalizedString(@"_download_plist_", nil);
+        if (!metadata.uuid) metadata.fileNamePrint = @" ";
         else metadata.fileNamePrint = NSLocalizedString(@"_insert_password_", nil);
     }
+    
+    return metadata;
 }
 
-+ (CCMetadata *)insertFileSystemInMetadata:(NSString *)fileName directory:(NSString *)directory activeAccount:(NSString *)activeAccount cameraFolderName:(NSString *)cameraFolderName cameraFolderPath:(NSString *)cameraFolderPath
++ (tableMetadata *)insertFileSystemInMetadata:(NSString *)fileName directory:(NSString *)directory activeAccount:(NSString *)activeAccount autoUploadFileName:(NSString *)autoUploadFileName autoUploadDirectory:(NSString *)autoUploadDirectory
 {
-    CCMetadata *metadata = [[CCMetadata alloc] init];
+    tableMetadata *metadata = [[tableMetadata alloc] init];
     
     NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", directory, fileName];
     
@@ -1045,7 +1109,7 @@
     metadata.fileNameData = fileName;
     metadata.fileNamePrint = fileName;
     metadata.nameCurrentDevice = [CCUtility getNameCurrentDevice];
-    metadata.protocol = k_versionProtocolPlist;
+    metadata.protocolCrypto = k_versionProtocolPlist;
     metadata.size = [attributes[NSFileSize] longValue];
     metadata.thumbnailExists = false;
     metadata.type = k_metadataType_local;
@@ -1053,9 +1117,9 @@
     metadata.uuid = [CCUtility getUUID];
     
     if ([CCUtility isCryptoPlistString:fileName])
-        [CCUtility insertInformationPlist:metadata directoryUser:directory];
+        metadata = [CCUtility insertInformationPlist:metadata directoryUser:directory];
     
-    [self insertTypeFileIconName:metadata directory:directory cameraFolderName:cameraFolderName cameraFolderPath:cameraFolderPath];
+    [self insertTypeFileIconName:metadata serverUrl:directory autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory];
     
     return metadata;
 }
@@ -1256,28 +1320,6 @@
     NSPredicate *emailTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", emailRegex];
     
     return [emailTest evaluateWithObject:checkString];
-}
-
-+ (UIImage*)drawText:(NSString*)text inImage:(UIImage*)image colorText:(UIColor *)colorText
-{
-    NSDictionary* attributes = @{NSFontAttributeName: [UIFont systemFontOfSize:26], NSForegroundColorAttributeName:colorText};
-    NSAttributedString* attributedString = [[NSAttributedString alloc] initWithString:text attributes:attributes];
-    
-    int x = image.size.width/2 - attributedString.size.width/2;
-    int y = image.size.height/2 - attributedString.size.height/2;
-    
-    UIGraphicsBeginImageContext(image.size);
-    
-    [image drawInRect:CGRectMake(0,0,image.size.width,image.size.height)];
-    CGRect rect = CGRectMake(x, y, image.size.width, image.size.height);
-    [[UIColor whiteColor] set];
-    [text drawInRect:CGRectIntegral(rect) withAttributes:attributes];
-    UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
-    newImage = [UIImage imageWithCGImage:newImage.CGImage scale:2 orientation:UIImageOrientationUp];
-
-    UIGraphicsEndImageContext();
-    
-    return newImage;
 }
 
 + (NSString *)URLEncodeStringFromString:(NSString *)string

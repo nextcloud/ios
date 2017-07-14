@@ -188,16 +188,16 @@
         if (imageForUpload) {
             
             // write image preview in tmp for plist
-            [self saveIcoWithFileID:fileNameTo image:scaleImage writeToFile:[NSTemporaryDirectory() stringByAppendingString:fileNameTo] copy:NO move:NO fromPath:nil toPath:nil];
+            [self saveIcoWithEtag:fileNameTo image:scaleImage writeToFile:[NSTemporaryDirectory() stringByAppendingString:fileNameTo] copy:NO move:NO fromPath:nil toPath:nil];
             
             // if it is preview for Upload then trasform it in gray scale
             //TODO: Crash with swift
             scaleImage = [scaleImage grayscale];
-            [self saveIcoWithFileID:fileNameTo image:scaleImage writeToFile:[NSString stringWithFormat:@"%@/%@.ico", directoryUser, fileNameTo] copy:NO move:NO fromPath:nil toPath:nil];
+            [self saveIcoWithEtag:fileNameTo image:scaleImage writeToFile:[NSString stringWithFormat:@"%@/%@.ico", directoryUser, fileNameTo] copy:NO move:NO fromPath:nil toPath:nil];
             
         } else {
             
-            [self saveIcoWithFileID:fileNameTo image:scaleImage writeToFile:[NSString stringWithFormat:@"%@/%@.ico", directoryUser, fileNameTo] copy:NO move:NO fromPath:nil toPath:nil];
+            [self saveIcoWithEtag:fileNameTo image:scaleImage writeToFile:[NSString stringWithFormat:@"%@/%@.ico", directoryUser, fileNameTo] copy:NO move:NO fromPath:nil toPath:nil];
         }
     }
     
@@ -247,7 +247,7 @@
     return scaleImage;
 }
 
-+ (void)saveIcoWithFileID:(NSString *)fileID image:(UIImage *)image writeToFile:(NSString *)writeToFile copy:(BOOL)copy move:(BOOL)move fromPath:(NSString *)fromPath toPath:(NSString *)toPath
++ (void)saveIcoWithEtag:(NSString *)fileID image:(UIImage *)image writeToFile:(NSString *)writeToFile copy:(BOOL)copy move:(BOOL)move fromPath:(NSString *)fromPath toPath:(NSString *)toPath
 {
     if (writeToFile)
         [UIImagePNGRepresentation(image) writeToFile:writeToFile atomically: YES];
@@ -257,11 +257,6 @@
 
     if (move)
         [[NSFileManager defaultManager] moveItemAtPath:fromPath toPath:toPath error:nil];
-
-#ifndef EXTENSION
-    if (image && fileID)
-        [app.icoImagesCache setObject:image forKey:fileID];
-#endif
 }
 
 + (UIColor *)colorFromHexString:(NSString *)hexString
@@ -285,6 +280,78 @@
     UIGraphicsEndImageContext();
     
     return [UIImage imageWithCGImage:img.CGImage scale:2.0 orientation: UIImageOrientationDownMirrored];
+}
+
++ (UIImage*)drawText:(NSString*)text inImage:(UIImage*)image colorText:(UIColor *)colorText sizeOfFont:(CGFloat)sizeOfFont
+{
+    NSDictionary* attributes = @{NSFontAttributeName: [UIFont systemFontOfSize:sizeOfFont], NSForegroundColorAttributeName:colorText};
+    NSAttributedString* attributedString = [[NSAttributedString alloc] initWithString:text attributes:attributes];
+    
+    int x = image.size.width/2 - attributedString.size.width/2;
+    int y = image.size.height/2 - attributedString.size.height/2;
+    
+    UIGraphicsBeginImageContext(image.size);
+    
+    [image drawInRect:CGRectMake(0,0,image.size.width,image.size.height)];
+    CGRect rect = CGRectMake(x, y, image.size.width, image.size.height);
+    [[UIColor whiteColor] set];
+    [text drawInRect:CGRectIntegral(rect) withAttributes:attributes];
+    UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
+    newImage = [UIImage imageWithCGImage:newImage.CGImage scale:2 orientation:UIImageOrientationUp];
+    
+    UIGraphicsEndImageContext();
+    
+    return newImage;
+}
+
+// ------------------------------------------------------------------------------------------------------
+// MARK: Blur Image
+// ------------------------------------------------------------------------------------------------------
+
++ (UIImage *)blurryImage:(UIImage *)image withBlurLevel:(CGFloat)blur toSize:(CGSize)toSize
+{
+    CIImage *inputImage = [CIImage imageWithCGImage:image.CGImage];
+    
+    CIFilter *filter = [CIFilter filterWithName:@"CIGaussianBlur" keysAndValues:kCIInputImageKey, inputImage, @"inputRadius", @(blur), nil];
+    
+    CIImage *outputImage = filter.outputImage;
+    CIContext *context = [CIContext contextWithOptions:nil];
+    CGImageRef outImage = [context createCGImage:outputImage fromRect:[outputImage extent]];
+    
+    UIImage *blurImage = [UIImage imageWithCGImage:outImage];
+    
+    return [CCGraphics scaleImage:blurImage toSize:toSize isAspectRation:YES];
+}
+
+// ------------------------------------------------------------------------------------------------------
+// MARK: Is Light Color
+// ------------------------------------------------------------------------------------------------------
+
+/*
+Color visibility can be determined according to the following algorithm:
+
+(This is a suggested algorithm that is still open to change.)
+
+Two colors provide good color visibility if the brightness difference and the color difference between the two colors are greater than a set range.
+
+Color brightness is determined by the following formula:
+((Red value X 299) + (Green value X 587) + (Blue value X 114)) / 1000
+Note: This algorithm is taken from a formula for converting RGB values to YIQ values. This brightness value gives a perceived brightness for a color.
+
+Color difference is determined by the following formula:
+(maximum (Red value 1, Red value 2) - minimum (Red value 1, Red value 2)) + (maximum (Green value 1, Green value 2) - minimum (Green value 1, Green value 2)) + (maximum (Blue value 1, Blue value 2) - minimum (Blue value 1, Blue value 2))
+*/
+
++ (BOOL)isLight:(UIColor *)color
+{
+    const CGFloat *componentColors = CGColorGetComponents(color.CGColor);
+    CGFloat colorBrightness = ((componentColors[0] * 299) + (componentColors[1] * 587) + (componentColors[2] * 114)) / 1000;
+    
+    if (colorBrightness < 0.8) { // STD 0.5
+        return false;
+    } else {
+        return true;
+    }
 }
 
 @end

@@ -68,12 +68,8 @@
     
     _sectionDataSource = [NSArray new];
     
-    if ([NCBrandOptions sharedInstance].use_recent_activity_title == true)
-        self.title = NSLocalizedString(@"_recent_activity_", nil);
-    else
-        self.title = NSLocalizedString(@"_activity_", nil);
+    self.title = NSLocalizedString(@"_activity_", nil);
 
-    
     [self reloadDatasource];
 }
 
@@ -130,7 +126,7 @@
 
 - (UIImage *)imageForEmptyDataSet:(UIScrollView *)scrollView
 {
-    return [UIImage imageNamed:@"activityNoRecord"];
+    return [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"activityNoRecord"] color:[NCBrandColor sharedInstance].brand];
 }
 
 - (NSAttributedString *)titleForEmptyDataSet:(UIScrollView *)scrollView
@@ -157,9 +153,9 @@
     NSDate *sixDaysAgo = [[NSCalendar currentCalendar] dateByAddingUnit:NSCalendarUnitDay value:-k_daysOfActivity toDate:[NSDate date] options:0];
         
     if (_verbose)
-        predicate = [NSPredicate predicateWithFormat:@"((account == %@) || (account == '')) AND (date > %@)", app.activeAccount, sixDaysAgo];
+        predicate = [NSPredicate predicateWithFormat:@"account = %@ AND date > %@", app.activeAccount, sixDaysAgo];
     else
-        predicate = [NSPredicate predicateWithFormat:@"(account == %@) AND (verbose == %lu) AND (date > %@)", app.activeAccount, k_activityVerboseDefault, sixDaysAgo];
+        predicate = [NSPredicate predicateWithFormat:@"account = %@ AND verbose = %lu AND date > %@", app.activeAccount, k_activityVerboseDefault, sixDaysAgo];
 
     _sectionDataSource = [[NCManageDatabase sharedInstance] getActivityWithPredicate:predicate];
         
@@ -191,13 +187,23 @@
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
     tableActivity *activity = [_sectionDataSource objectAtIndex:section];
+    
+    if (activity.fileID.length > 0) {
+     
+        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", activity.fileID]];
         
-    if ([activity.action isEqual: k_activityDebugActionDownload] || [activity.action isEqual: k_activityDebugActionUpload]) {
-        
-        if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, activity.fileID]])
+        if (metadata && ([activity.action isEqual: k_activityDebugActionDownload] || [activity.action isEqual: k_activityDebugActionUpload])) {
+            
+            /*
+            if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, activity.fileID]]) {
+                return 1;
+            } else {
+                return 0;
+            }
+            */
+            
             return 1;
-        else
-            return 0;
+        }
     }
     
     return 0;
@@ -314,7 +320,25 @@
 
     tableActivity *activity = [_sectionDataSource objectAtIndex:indexPath.section];
     
-    imageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, activity.fileID]];
+    if (activity.fileID.length > 0) {
+        
+        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", activity.fileID]];
+        
+        if (metadata && ([activity.action isEqual: k_activityDebugActionDownload] || [activity.action isEqual: k_activityDebugActionUpload])) {
+            
+             if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, activity.fileID]]) {
+             
+                 imageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, activity.fileID]];
+                 
+             } else {
+                 
+                 imageView.image = [UIImage imageNamed:metadata.iconName];
+             }
+        }
+    } else {
+        
+        imageView.image = [UIImage imageNamed:@"file"];
+    }
     
     return cell;
 }
@@ -322,10 +346,11 @@
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
     tableActivity *activity = [_sectionDataSource objectAtIndex:indexPath.section];
+    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", activity.fileID]];
     
-    CCMetadata *metadata = [CCCoreData getMetadataWithPreficate:[NSPredicate predicateWithFormat:@"(account == %@) AND (fileID == %@)", activity.account, activity.fileID] context:nil];
+    BOOL existsFile = [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, activity.fileID]];
     
-    if (metadata) {
+    if (metadata && existsFile) {
         
         if (!self.splitViewController.isCollapsed && app.activeMain.detailViewController.isViewLoaded && app.activeMain.detailViewController.view.window)
             [app.activeMain.navigationController popToRootViewControllerAnimated:NO];

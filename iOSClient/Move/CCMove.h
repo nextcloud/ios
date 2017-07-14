@@ -24,23 +24,24 @@
 #import <UIKit/UIKit.h>
 
 #import "TWMessageBarManager.h"
+#import "UIScrollView+EmptyDataSet.h"
 #import "CCBKPasscode.h"
 #import "CCUtility.h"
-#import "CCCoreData.h"
 #import "OCNetworking.h"
 #import "CCHud.h"
 
+@class tableMetadata;
+
 @protocol CCMoveDelegate;
 
-@interface CCMove : UITableViewController <UIAlertViewDelegate, UITableViewDelegate, OCNetworkingDelegate, BKPasscodeViewControllerDelegate>
+@interface CCMove : UITableViewController <UIAlertViewDelegate, UITableViewDelegate, OCNetworkingDelegate, BKPasscodeViewControllerDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate>
 
 @property (nonatomic, weak) id <CCMoveDelegate> delegate;
 @property (nonatomic, strong) NSOperationQueue *networkingOperationQueue;
-@property (nonatomic, strong) NSArray *selectedMetadatas;
 @property BOOL onlyClearDirectory;
 
 @property (nonatomic, strong) NSString *serverUrl;
-@property (nonatomic, strong) CCMetadata *passMetadata;
+@property (nonatomic, strong) tableMetadata *passMetadata;
 
 //BKPasscodeViewController
 @property (nonatomic) NSUInteger failedAttempts;
@@ -59,6 +60,8 @@
 
 @protocol CCMoveDelegate <NSObject>
 
-- (void)moveServerUrlTo:(NSString *)serverUrlTo title:(NSString *)title selectedMetadatas:(NSArray *)selectedMetadatas;
+- (void)moveServerUrlTo:(NSString *)serverUrlTo title:(NSString *)title;
+
+@optional - (void)dismissMove;
 
 @end

@@ -83,13 +83,13 @@ class CCActions: NSObject {
     // MARK: Delete File or Folder
     // --------------------------------------------------------------------------------------------
 
-    func deleteFileOrFolder(_ metadata: CCMetadata, delegate: AnyObject) {
+    func deleteFileOrFolder(_ metadata: tableMetadata, delegate: AnyObject) {
         
-        let serverUrl = CCCoreData.getServerUrl(fromDirectoryID: metadata.directoryID, activeAccount: appDelegate.activeAccount)
+        let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID)
         let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
 
         // fix CCActions.swift line 88 2.17.2 (00005)
-        if (serverUrl == nil) {
+        if (serverUrl == "") {
             
             print("[LOG] Server URL not found \(metadata.directoryID)")
             
@@ -102,9 +102,9 @@ class CCActions: NSObject {
             
             metadataNet.action = actionDeleteFileDirectory
             metadataNet.delegate = delegate
+            metadataNet.directoryID = metadata.directoryID
             metadataNet.fileID = metadata.fileID
             metadataNet.fileNamePrint = metadata.fileNamePrint
-            metadataNet.metadata = metadata
             metadataNet.serverUrl = serverUrl
             
             // data crypto
@@ -123,10 +123,10 @@ class CCActions: NSObject {
             
             metadataNet.action = actionDeleteFileDirectory
             metadataNet.delegate = delegate
+            metadataNet.directoryID = metadata.directoryID
             metadataNet.fileID = metadata.fileID
             metadataNet.fileName = metadata.fileName
             metadataNet.fileNamePrint = metadata.fileNamePrint
-            metadataNet.metadata = metadata
             metadataNet.selector = selectorDelete
             metadataNet.serverUrl = serverUrl
 
@@ -136,7 +136,11 @@ class CCActions: NSObject {
     
     func deleteFileOrFolderSuccess(_ metadataNet: CCMetadataNet) {
         
-        CCCoreData.deleteFile(metadataNet.metadata, serverUrl: metadataNet.serverUrl, directoryUser: appDelegate.directoryUser, activeAccount: appDelegate.activeAccount)
+        let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID == %@", metadataNet.fileID))
+        
+        if metadata != nil {
+            self.deleteFile(metadata: metadata!, serverUrl: metadataNet.serverUrl)
+        }
         
         metadataNet.delegate?.deleteFileOrFolderSuccess(metadataNet)
     }
@@ -145,7 +149,11 @@ class CCActions: NSObject {
         
         if errorCode == 404 {
             
-            CCCoreData.deleteFile(metadataNet.metadata, serverUrl: metadataNet.serverUrl, directoryUser: appDelegate.directoryUser, activeAccount: appDelegate.activeAccount)
+            let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID == %@", metadataNet.fileID))
+            
+            if metadata != nil {
+                self.deleteFile(metadata: metadata!, serverUrl: metadataNet.serverUrl)
+            }
         }
 
         if message.length > 0 {
@@ -160,13 +168,13 @@ class CCActions: NSObject {
     // MARK: Rename File or Folder
     // --------------------------------------------------------------------------------------------
     
-    func renameFileOrFolder(_ metadata: CCMetadata, fileName: String, delegate: AnyObject) {
+    func renameFileOrFolder(_ metadata: tableMetadata, fileName: String, delegate: AnyObject) {
 
         let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
         
         let fileName = CCUtility.removeForbiddenCharactersServer(fileName)!
         
-        let serverUrl = CCCoreData.getServerUrl(fromDirectoryID: metadata.directoryID, activeAccount: appDelegate.activeAccount)!
+        let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID)
         
         if fileName.characters.count == 0 {
             return
@@ -197,7 +205,7 @@ class CCActions: NSObject {
                 
                 do {
                     
-                    let file = "\(appDelegate.directoryUser!)/\(metadata.fileID!)"
+                    let file = "\(appDelegate.directoryUser!)/\(metadata.fileID)"
                     let dataFile = try NSData.init(contentsOfFile: file, options:[])
                     
                     do {
@@ -206,7 +214,7 @@ class CCActions: NSObject {
                         
                         do {
                             
-                            let fileUrl = URL(fileURLWithPath: "\(NSTemporaryDirectory())\(metadata.fileNameData!)")
+                            let fileUrl = URL(fileURLWithPath: "\(NSTemporaryDirectory())\(metadata.fileNameData)")
                             try dataFileEncrypted.write(to: fileUrl, options: [])
                             
                         } catch let error {
@@ -227,21 +235,17 @@ class CCActions: NSObject {
             
             metadataNet.action = actionUploadOnlyPlist
             metadataNet.delegate = delegate
+            metadataNet.fileID = metadata.fileID
             metadataNet.fileName = metadata.fileName
-            metadataNet.metadata = metadata
             metadataNet.selectorPost = selectorReadFolderForced
             metadataNet.serverUrl = serverUrl
             metadataNet.session = k_upload_session_foreground
             metadataNet.taskStatus = Int(k_taskStatusResume)
             
-            if CCCoreData.isOfflineLocalFileID(metadata.fileID, activeAccount: appDelegate.activeAccount) {
-                metadataNet.selectorPost = selectorAddOffline
-            }
-            
             appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
             
             // delete file in filesystem
-            CCCoreData.deleteFile(metadata, serverUrl: serverUrl, directoryUser: appDelegate.directoryUser, activeAccount: appDelegate.activeAccount)
+            self.deleteFile(metadata: metadata, serverUrl: serverUrl)
  
         } else {
  
@@ -272,7 +276,6 @@ class CCActions: NSObject {
             metadataNet.fileName = metadata.fileName
             metadataNet.fileNamePrint = metadata.fileNamePrint
             metadataNet.fileNameTo = fileName
-            metadataNet.metadata = metadata
             metadataNet.selector = selectorRename
             metadataNet.serverUrl = serverUrl
             metadataNet.serverUrlTo = serverUrl
@@ -283,16 +286,18 @@ class CCActions: NSObject {
     
     func renameSuccess(_ metadataNet: CCMetadataNet) {
         
-        if metadataNet.metadata.directory {
+        let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID = %@", metadataNet.fileID))
+        
+        if metadata?.directory == true {
             
             let directory = CCUtility.stringAppendServerUrl(metadataNet.serverUrl, addFileName: metadataNet.fileName)
             let directoryTo = CCUtility.stringAppendServerUrl(metadataNet.serverUrl, addFileName: metadataNet.fileNameTo)
 
-            CCCoreData.renameDirectory(directory, serverUrlTo: directoryTo, activeAccount: appDelegate.activeAccount)
+            NCManageDatabase.sharedInstance.setDirectory(serverUrl: directory!, serverUrlTo: directoryTo!, etag: nil)
             
         } else {
             
-            CCCoreData.renameLocalFile(withFileID: metadataNet.metadata.fileID, fileNameTo: metadataNet.fileNameTo, fileNamePrintTo: metadataNet.fileNameTo, activeAccount: appDelegate.activeAccount)
+            NCManageDatabase.sharedInstance.setLocalFile(fileID: metadataNet.fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: metadataNet.fileNameTo, fileNamePrint:  metadataNet.fileNameTo)            
         }
         
         metadataNet.delegate?.renameSuccess(metadataNet)
@@ -334,23 +339,26 @@ class CCActions: NSObject {
     // MARK: Search
     // --------------------------------------------------------------------------------------------
     
-    func search(_ serverUrl : String, fileName : String, depth : String, delegate: AnyObject) {
+    func search(_ serverUrl: String, fileName: String, depth: String, date: Date?, selector: String, delegate: AnyObject) {
         
         // Search DAV API
             
         let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
             
         metadataNet.action = actionSearch
+        metadataNet.date = date
         metadataNet.delegate = delegate
+        metadataNet.directoryID = NCManageDatabase.sharedInstance.getDirectoryID(serverUrl)
         metadataNet.fileName = fileName
         metadataNet.options = depth
-        metadataNet.selector = selectorSearch
+        metadataNet.priority = Operation.QueuePriority.high.rawValue
+        metadataNet.selector = selector
         metadataNet.serverUrl = serverUrl
 
         appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
     }
     
-    func searchSuccess(_ metadataNet: CCMetadataNet, metadatas: [CCMetadata]) {
+    func searchSuccess(_ metadataNet: CCMetadataNet, metadatas: [tableMetadata]) {
         
         metadataNet.delegate?.searchSuccess(metadataNet, metadatas: metadatas)
     }
@@ -364,10 +372,10 @@ class CCActions: NSObject {
     // MARK: Download Tumbnail
     // --------------------------------------------------------------------------------------------
 
-    func downloadTumbnail(_ metadata: CCMetadata, delegate: AnyObject) {
+    func downloadTumbnail(_ metadata: tableMetadata, delegate: AnyObject) {
         
         let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
-        let serverUrl = CCCoreData.getServerUrl(fromDirectoryID: metadata.directoryID, activeAccount: appDelegate.activeAccount)
+        let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID)
         
         metadataNet.action = actionDownloadThumbnail
         metadataNet.delegate = delegate
@@ -375,7 +383,6 @@ class CCActions: NSObject {
         metadataNet.fileName = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: serverUrl, activeUrl: appDelegate.activeUrl)
         metadataNet.fileNameLocal = metadata.fileID
         metadataNet.fileNamePrint = metadata.fileNamePrint
-        metadataNet.metadata = metadata
         metadataNet.options = "m"
         metadataNet.priority = Operation.QueuePriority.low.rawValue
         metadataNet.selector = selectorDownloadThumbnail;
@@ -398,18 +405,16 @@ class CCActions: NSObject {
     // MARK: Setting Favorite
     // --------------------------------------------------------------------------------------------
     
-    func settingFavorite(_ metadata: CCMetadata, favorite: Bool, delegate: AnyObject) {
+    func settingFavorite(_ metadata: tableMetadata, favorite: Bool, delegate: AnyObject) {
         
         let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
-        let serverUrl = CCCoreData.getServerUrl(fromDirectoryID: metadata.directoryID, activeAccount: appDelegate.activeAccount)
+        let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID)
         
         metadataNet.action = actionSettingFavorite
         metadataNet.delegate = delegate
         metadataNet.fileID = metadata.fileID
         metadataNet.fileName = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: serverUrl, activeUrl: appDelegate.activeUrl)
-        metadataNet.metadata = metadata
         metadataNet.options = "\(favorite)"
-        metadataNet.priority = Operation.QueuePriority.normal.rawValue
         metadataNet.selector = selectorAddFavorite
         metadataNet.serverUrl = serverUrl;
         
@@ -438,13 +443,12 @@ class CCActions: NSObject {
         
         metadataNet.action = actionListingFavorites
         metadataNet.delegate = delegate
-        metadataNet.priority = Operation.QueuePriority.normal.rawValue
         metadataNet.serverUrl = serverUrl
         
         appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
     }
     
-    func listingFavoritesSuccess(_ metadataNet: CCMetadataNet, metadatas: [CCMetadata]) {
+    func listingFavoritesSuccess(_ metadataNet: CCMetadataNet, metadatas: [tableMetadata]) {
         
         metadataNet.delegate?.listingFavoritesSuccess(metadataNet, metadatas: metadatas)
     }
@@ -453,10 +457,33 @@ class CCActions: NSObject {
         
         metadataNet.delegate?.listingFavoritesFailure(metadataNet, message: message, errorCode: errorCode)
     }
-
+    
+    // --------------------------------------------------------------------------------------------
+    // MARK: Utility
+    // --------------------------------------------------------------------------------------------
+    
+    func deleteFile(metadata: tableMetadata, serverUrl: String) {
+        
+        do {
+            try FileManager.default.removeItem(atPath: "\(appDelegate.directoryUser)/\(metadata.fileID)")
+        } catch {
+            // handle error
+        }
+        do {
+            try FileManager.default.removeItem(atPath: "\(appDelegate.directoryUser)/\(metadata.fileID).ico")
+        } catch {
+            // handle error
+        }
+        
+        if metadata.directory {
+            let dirForDelete = CCUtility.stringAppendServerUrl(serverUrl, addFileName: metadata.fileNameData)
+            NCManageDatabase.sharedInstance.deleteDirectoryAndSubDirectory(serverUrl: dirForDelete!)
+        }
+        
+        NCManageDatabase.sharedInstance.deleteLocalFile(predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
+        NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "fileID == %@", metadata.fileID), clearDateReadDirectoryID: nil)
+    }
 }
-
-
 
 
 

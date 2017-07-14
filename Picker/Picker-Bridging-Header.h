@@ -1,13 +1,25 @@
 //
-//  Use this file to import your target's public headers that you would like to expose to Swift.
+//  Picker-Bridging-Header.h
+//  Nextcloud
+//
+//  Created by Marino Faggiana on 24/05/17.
+//  Copyright © 2017 TWS. All rights reserved.
 //
 
-#import <MagicalRecord/MagicalRecord.h>
-#import "TableAccount+CoreDataClass.h"
 #import "CCNetworking.h"
 #import "OCNetworking.h"
-#import "CCCoreData.h"
 #import "CCGlobal.h"
 #import "CCHud.h"
 #import "BKPasscodeViewController.h"
 #import "CCBKPasscode.h"
+
+#import "OCActivity.h"
+#import "OCUserProfile.h"
+#import "OCCapabilities.h"
+#import "OCExternalSites.h"
+#import "OCSharedDto.h"
+
+#import "TableAccount+CoreDataClass.h"
+#import "TableCertificates+CoreDataClass.h"
+#import "TableDirectory+CoreDataClass.h"
+#import "TableLocalFile+CoreDataClass.h"

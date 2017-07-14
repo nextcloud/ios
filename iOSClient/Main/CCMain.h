@@ -27,7 +27,7 @@
 #import <AudioToolbox/AudioToolbox.h>
 
 #import "TWMessageBarManager.h"
-#import "SSZipArchive.h"
+#import "MGSwipeTableCell.h"
 #import "AHKActionSheet.h"
 #import "CTAssetSelectionLabel.h"
 #import "BKPasscodeViewController.h"
@@ -44,7 +44,6 @@
 #import "CCShareOC.h"
 #import "CCShareInfoCMOC.h"
 #import "CCNetworking.h"
-#import "CCCoreData.h"
 #import "CCMove.h"
 #import "CCGraphics.h"
 #import "CCSection.h"
@@ -61,7 +60,9 @@
 #import "CCPassaporto.h"
 #import "CCPatenteGuida.h"
 
-@interface CCMain : UITableViewController <UITableViewDataSource, UITableViewDelegate, UIActionSheetDelegate, UIGestureRecognizerDelegate, UIDocumentInteractionControllerDelegate, UIViewControllerPreviewingDelegate, CCMoveDelegate, CTAssetsPickerControllerDelegate, BKPasscodeViewControllerDelegate, UISplitViewControllerDelegate, UIPopoverControllerDelegate, CCNetworkingDelegate, CCShareOCDelegate, CCAccountWebDelegate, CCBancomatDelegate, CCCartaDiCreditoDelegate, CCCartaIdentitaDelegate, CCContoCorrenteDelegate, CCNoteDelegate, CCPassaportoDelegate, CCPatenteGuidaDelegate, CCPeekPopDelegate, UIDocumentMenuDelegate, UIDocumentPickerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, UIScrollViewDelegate, CCLoginDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate>
+@class tableMetadata;
+
+@interface CCMain : UITableViewController <UITableViewDataSource, UITableViewDelegate, UIActionSheetDelegate, UIGestureRecognizerDelegate, UIDocumentInteractionControllerDelegate, UIViewControllerPreviewingDelegate, CCMoveDelegate, CTAssetsPickerControllerDelegate, BKPasscodeViewControllerDelegate, UISplitViewControllerDelegate, UIPopoverControllerDelegate, CCNetworkingDelegate, CCShareOCDelegate, CCAccountWebDelegate, CCBancomatDelegate, CCCartaDiCreditoDelegate, CCCartaIdentitaDelegate, CCContoCorrenteDelegate, CCNoteDelegate, CCPassaportoDelegate, CCPatenteGuidaDelegate, CCPeekPopDelegate, UIDocumentMenuDelegate, UIDocumentPickerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, UIScrollViewDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate>
 
 @property BOOL isFolderEncrypted;
 
@@ -76,26 +77,25 @@
 - (void)closeAllMenu;
 - (void)returnCreate:(NSInteger)type;
 
-- (void)createFolderCameraUpload;
-- (void)createFolder:(NSString *)fileNameFolder folderCameraUpload:(BOOL)folderCameraUpload;
-- (void)readFolderWithForced:(BOOL)forced serverUrl:(NSString *)serverUrl;
+- (void)createFolder:(NSString *)fileNameFolder autoUploadDirectory:(BOOL)autoUploadDirectory;
+- (void)readFolder:(NSString *)serverUrl;
+- (void)readFileReloadFolder;
 
 - (void)uploadFileAsset:(NSMutableArray *)assets serverUrl:(NSString *)serverUrl cryptated:(BOOL)cryptated useSubFolder:(BOOL)useSubFolder session:(NSString *)session;
 
-- (void)reloadTaskButton:(CCMetadata *)metadata;
-- (void)cancelTaskButton:(CCMetadata *)metadata reloadTable:(BOOL)reloadTable;
-- (void)stopTaskButton:(CCMetadata *)metadata;
+- (void)reloadTaskButton:(tableMetadata *)metadata;
+- (void)cancelTaskButton:(tableMetadata *)metadata reloadTable:(BOOL)reloadTable;
+- (void)stopTaskButton:(tableMetadata *)metadata;
 
 - (void)reloadDatasource;
-- (void)reloadDatasource:(NSString *)serverUrl fileID:(NSString *)fileID selector:(NSString *)selector;
+- (void)reloadDatasource:(NSString *)serverUrl;
 
 - (void)requestServerCapabilities;
+- (void)middlewarePing;
 
-- (void)openWindowShare:(CCMetadata *)metadata;
-- (void)synchronizeFolderGraphicsServerUrl:(NSString *)serverUrl animation:(BOOL)animation;
+- (void)openWindowShare:(tableMetadata *)metadata;
 - (void)clearDateReadDataSource:(NSNotification *)notification;
 - (void)cancelSearchBar;
-- (BOOL)shouldPerformSegue;
 
 @end
 

@@ -67,9 +67,7 @@ static SecCertificateRef SecTrustGetLeafCertificate(SecTrustRef trust)
     
     protectionSpace = [challenge protectionSpace];
     trust = [protectionSpace serverTrust];
-    
-    [CCUtility getDirectoryCerificates];
-    
+        
     if(trust != nil) {
         
         [self saveCertificate:trust withName:@"tmp.der"];
@@ -145,7 +143,6 @@ static SecCertificateRef SecTrustGetLeafCertificate(SecTrustRef trust)
 {    
     if (![viewController isKindOfClass:[UIViewController class]])
         return;
-        //viewController = [[UIApplication sharedApplication] keyWindow].rootViewController;
     
     _delegate = delegate;
     

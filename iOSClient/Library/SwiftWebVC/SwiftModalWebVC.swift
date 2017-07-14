@@ -32,21 +32,21 @@ public class SwiftModalWebVC: UINavigationController {
         self.init(pageURL: URL(string: urlString)!, theme: theme)
     }
     
-    public convenience init(urlString: String, theme: SwiftModalWebVCTheme, color: UIColor, colorText: UIColor, doneButtonVisible: Bool) {
-        self.init(pageURL: URL(string: urlString)!, theme: theme, color: color, colorText: colorText, doneButtonVisible: doneButtonVisible)
+    public convenience init(urlString: String, theme: SwiftModalWebVCTheme, color: UIColor, colorText: UIColor, doneButtonVisible: Bool, hideToolbar: Bool = false) {
+        self.init(pageURL: URL(string: urlString)!, theme: theme, color: color, colorText: colorText, doneButtonVisible: doneButtonVisible, hideToolbar: hideToolbar)
     }
     
     public convenience init(pageURL: URL) {
         self.init(request: URLRequest(url: pageURL))
     }
     
-    public convenience init(pageURL: URL, theme: SwiftModalWebVCTheme, color : UIColor = UIColor.clear, colorText: UIColor = UIColor.black, doneButtonVisible: Bool = false) {
-        self.init(request: URLRequest(url: pageURL), theme: theme, color: color, colorText: colorText, doneButtonVisible: doneButtonVisible)
+    public convenience init(pageURL: URL, theme: SwiftModalWebVCTheme, color : UIColor = UIColor.clear, colorText: UIColor = UIColor.black, doneButtonVisible: Bool = false, hideToolbar: Bool = false) {
+        self.init(request: URLRequest(url: pageURL), theme: theme, color: color, colorText: colorText, doneButtonVisible: doneButtonVisible, hideToolbar: hideToolbar)
     }
    
-    public init(request: URLRequest, theme: SwiftModalWebVCTheme = .dark, color: UIColor = UIColor.clear, colorText: UIColor = UIColor.black, doneButtonVisible: Bool = false) {
+    public init(request: URLRequest, theme: SwiftModalWebVCTheme = .dark, color: UIColor = UIColor.clear, colorText: UIColor = UIColor.black, doneButtonVisible: Bool = false, hideToolbar: Bool = false) {
         
-        let webViewController = SwiftWebVC(aRequest: request)
+        let webViewController = SwiftWebVC(aRequest: request, hideToolbar: hideToolbar)
         webViewController.storedStatusColor = UINavigationBar.appearance().barStyle
         
         super.init(rootViewController: webViewController)
@@ -93,6 +93,8 @@ public class SwiftModalWebVC: UINavigationController {
             }
         }
         webViewController.delegate = self
+        
+        
     }
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {

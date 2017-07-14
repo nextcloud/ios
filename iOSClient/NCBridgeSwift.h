@@ -33,23 +33,15 @@
 #endif
 
 // Nextcloud Extension Share
-#if defined(EXTENSION_SHARE) 
+#if defined(EXTENSION_SHARE)
 
-    #if defined(CUSTOM_BUILD)
-        #import "CustomSwiftShare.h"
-    #else
-        #import "Share-Swift.h"
-    #endif
+    #import "Share-Swift.h"
 
 #endif
 
 // Nextcloud Extension Document Provider Picker
 #if defined(EXTENSION_PICKER)
 
-    #if defined(CUSTOM_BUILD)
-        #import "CustomSwiftPick.h"
-    #else
-        #import "Picker-Swift.h"
-    #endif
+    #import "Picker-Swift.h"
 
 #endif

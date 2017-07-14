@@ -46,7 +46,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>2.17.3</string>
+	<string>2.17.4</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleURLTypes</key>
@@ -69,7 +69,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>00009</string>
+	<string>00038</string>
 	<key>Fabric</key>
 	<dict>
 		<key>APIKey</key>
@@ -100,8 +100,6 @@
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
-		<key>NSExceptionDomains</key>
-		<dict/>
 	</dict>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>The use of GPS is used to detect new photos from camera roll, continued use of GPS running in the background can dramatically decrease battery life.</string>
@@ -116,7 +114,7 @@
 	<key>UIFileSharingEnabled</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
-	<string>LaunchScreenNextcloud</string>
+	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
 	<key>UIRequiredDeviceCapabilities</key>

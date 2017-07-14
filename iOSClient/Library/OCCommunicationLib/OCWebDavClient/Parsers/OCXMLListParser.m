@@ -210,7 +210,7 @@
 
 // Decode a percent escape encoded string.
 - (NSString*) decodeFromPercentEscapeString:(NSString *) string {
-    return (__bridge NSString *) CFURLCreateStringByReplacingPercentEscapesUsingEncoding(NULL,
+    return (__bridge_transfer NSString *) CFURLCreateStringByReplacingPercentEscapesUsingEncoding(NULL,
                                                                                          (__bridge CFStringRef) string,
                                                                                          CFSTR(""),
                                                                                          kCFStringEncodingUTF8);

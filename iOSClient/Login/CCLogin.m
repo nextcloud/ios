@@ -24,7 +24,6 @@
 #import "CCLogin.h"
 #import "AppDelegate.h"
 #import "CCUtility.h"
-#import "CCCoreData.h"
 #import "NCBridgeSwift.h"
 
 @interface CCLogin ()
@@ -44,8 +43,13 @@
     self.login.backgroundColor = [NCBrandColor sharedInstance].customer;
     
     // Bottom label
-    self.bottomLabel.text = NSLocalizedString(@"_login_bottom_label_", nil);
+    self.bottomLabel.text = NSLocalizedString([NCBrandOptions sharedInstance].textLoginProvider, nil);
     self.bottomLabel.userInteractionEnabled = YES;
+    
+    if ([NCBrandOptions sharedInstance].disable_linkLoginProvider) {
+        self.bottomLabel.hidden = YES;
+    }
+
     UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tabBottomLabel)];
     [self.bottomLabel addGestureRecognizer:tapGesture];
     
@@ -59,10 +63,6 @@
         // Landscape
         self.bottomLabel.hidden = YES;
     }
-    
-#ifdef CUSTOM_BUILD
-    self.bottomLabel.hidden = YES;
-#endif
     
     self.annulla.tintColor = [NCBrandColor sharedInstance].customer;
     
@@ -107,6 +107,10 @@
         _user.userInteractionEnabled = NO;
         _user.textColor = [UIColor lightGrayColor];
     }
+    
+    self.baseUrl.placeholder = NSLocalizedString(@"_login_url_", nil);
+    self.user.placeholder = NSLocalizedString(@"_username_", nil);
+    self.password.placeholder = NSLocalizedString(@"_password_", nil);
     
     [self.annulla setTitle:NSLocalizedString(@"_cancel_", nil) forState:UIControlStateNormal];
     [self.login setTitle:NSLocalizedString(@"_login_", nil) forState:UIControlStateNormal];    
@@ -279,17 +283,18 @@
         
         if (_loginType == loginModifyPasswordUser) {
             
-            [CCCoreData updateAccount:account withPassword:self.password.text];
+            [[NCManageDatabase sharedInstance] setAccountPassword:account password:self.password.text];
             
         } else {
 
-            [CCCoreData deleteAccount:account];
+            [[NCManageDatabase sharedInstance] deleteAccount:account];
         
-            // Add default account
-            [CCCoreData addAccount:account url:self.baseUrl.text user:self.user.text password:self.password.text];
+            // Add account
+            [[NCManageDatabase sharedInstance] addAccount:account url:self.baseUrl.text user:self.user.text password:self.password.text];
         }
         
-        TableAccount *tableAccount = [CCCoreData setActiveAccount:account];
+        // Set this account as default
+        tableAccount *tableAccount = [[NCManageDatabase sharedInstance] setAccountActive:account];
         
         // verifica
         if ([tableAccount.account isEqualToString:account]) {
@@ -306,7 +311,7 @@
         } else {
             
             if (_loginType != loginModifyPasswordUser)
-                [CCCoreData deleteAccount:account];
+                [[NCManageDatabase sharedInstance] deleteAccount:account];
             
             alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_error_", nil) message:@"Fatal error writing database" delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
             [alertView show];
@@ -354,7 +359,7 @@
 
 - (void)tabBottomLabel
 {
-    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NCBrandOptions sharedInstance].loginButtonLabelLink]];
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NCBrandOptions sharedInstance].linkLoginProvider]];
 }
 
 - (IBAction)handlebaseUrlchange:(id)sender

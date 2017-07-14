@@ -8,7 +8,17 @@
 #import "TWMessageBarManager.h"
 #import "CCManageAccount.h"
 #import "CCGraphics.h"
+#import "NCAutoUpload.h"
 
+#import "OCActivity.h"
+#import "OCUserProfile.h"
+#import "OCCapabilities.h"
+#import "OCExternalSites.h"
+#import "OCSharedDto.h"
 #import "OCNotifications.h"
 #import "OCNotificationsAction.h"
-#import "OCFrameworkConstants.h"
+
+#import "TableAccount+CoreDataClass.h"
+#import "TableCertificates+CoreDataClass.h"
+#import "TableDirectory+CoreDataClass.h"
+#import "TableLocalFile+CoreDataClass.h"

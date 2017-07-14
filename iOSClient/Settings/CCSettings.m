@@ -61,15 +61,15 @@
     form = [XLFormDescriptor formDescriptorWithTitle:NSLocalizedString(@"_settings_", nil)];
     form.rowNavigationOptions = XLFormRowNavigationOptionNone;
     
-    // Section AUTOMATIC UPLOAD OF CAMERA IMAGES ----------------------------
+    // Section AUTO UPLOAD OF CAMERA IMAGES ----------------------------
     
     section = [XLFormSectionDescriptor formSection];
     [form addFormSection:section];
     
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"cameraupload" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_uploading_from_camera_", nil)];
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"autoUpload" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_settings_autoupload_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:[UIImage imageNamed:@"settingsCameraUpload"] forKey:@"imageView.image"];
-    row.action.formSegueIdentifier = @"CCManageCameraUploadSegue";
+    row.action.formSegueIdentifier = @"CCManageAutoUploadSegue";
     [section addFormRow:row];
 
     // Section FOLDERS FAVORITES OFFLINE ------------------------------------
@@ -256,14 +256,11 @@
                 [self reloadForm];
             }]];
             
-            //if iPhone
             if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-                
+                // iPhone
                 [self presentViewController:alertController animated:YES completion:nil];
-            }
-            //if iPad
-            else {
-                
+            }else {
+                // iPad
                 // Change Rect to position Popover
                 UIPopoverController *popup = [[UIPopoverController alloc] initWithContentViewController:alertController];
                 [popup presentPopoverFromRect:[self.tableView rectForRowAtIndexPath:[self.form indexPathOfFormRow:rowDescriptor]] inView:self.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
@@ -396,25 +393,29 @@
 }
 
 - (void)synchronizeFavorites
-{
-    NSArray *recordsTableMetadata = [CCCoreData  getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (favorite == 1)", app.activeAccount] context:nil];
+{    
+    NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND favorite = true", app.activeAccount]  sorted:nil ascending:NO];
     
-    for (TableMetadata *tableMetadata in recordsTableMetadata) {
+    for (tableMetadata *metadata in metadatas) {
         
-        if ([tableMetadata.directory boolValue]) {
+        if (metadata.directory) {
         
-            NSString *serverUrl = [CCCoreData getServerUrlFromDirectoryID:tableMetadata.directoryID activeAccount:app.activeAccount];
-            serverUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:tableMetadata.fileNamePrint];
-        
-            NSArray *TableDirectories = [CCCoreData getDirectoryIDsFromBeginsWithServerUrl:serverUrl activeAccount:app.activeAccount];
-        
-            for (TableDirectory *tableDirecory in TableDirectories)
-                [CCCoreData clearDateReadAccount:app.activeAccount serverUrl:nil directoryID:tableDirecory.directoryID];
+            NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
+            serverUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileNamePrint];
+
+            NSString *serverUrlBeginWith = serverUrl;
             
+            if (![serverUrl hasSuffix:@"/"])
+                serverUrlBeginWith = [serverUrl stringByAppendingString:@"/"];
+
+            NSArray *directories = [[NCManageDatabase sharedInstance] getTablesDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND (serverUrl = %@ OR serverUrl BEGINSWITH %@)", app.activeAccount, serverUrl, serverUrlBeginWith] sorted:@"serverUrl" ascending:true];
+            
+            for (tableDirectory *directory in directories)
+                [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:nil directoryID:directory.directoryID];
         } 
     }
     
-    [[CCSynchronize sharedSynchronize] readListingFavorites];
+    [app.activeFavorites readListingFavorites];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -433,7 +434,7 @@
         break;
         case 5: {
             
-            tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesForAccount:app.activeAccount];
+            tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilites];
             
             NSString *versionServer = capabilities.versionString;
             
@@ -481,29 +482,33 @@
 
 - (void)sendMail:(XLFormRowDescriptor *)sender
 {
-    // Email Subject
-    NSString *emailTitle = NSLocalizedString(@"_information_req_", nil);
-    // Email Content
-    NSString *messageBody;
-    // Email Recipents
-    NSArray *toRecipents;
+    if ([MFMailComposeViewController canSendMail]) {
+
+        // Email Subject
+        NSString *emailTitle = NSLocalizedString(@"_information_req_", nil);
+        // Email Content
+        NSString *messageBody;
+        // Email Recipents
+        NSArray *toRecipents;
     
-    messageBody = [NSString stringWithFormat:@"\n\n\n%@ Version %@ (%@)", [NCBrandOptions sharedInstance].brand, [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"], [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
-    toRecipents = [NSArray arrayWithObject:[NCBrandOptions sharedInstance].mailMe];
+        messageBody = [NSString stringWithFormat:@"\n\n\n%@ Version %@ (%@)", [NCBrandOptions sharedInstance].brand, [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"], [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
+        toRecipents = [NSArray arrayWithObject:[NCBrandOptions sharedInstance].mailMe];
     
-    MFMailComposeViewController *mc = [[MFMailComposeViewController alloc] init];
-    mc.mailComposeDelegate = self;
-    [mc setSubject:emailTitle];
-    [mc setMessageBody:messageBody isHTML:NO];
-    [mc setToRecipients:toRecipents];
+        MFMailComposeViewController *mc = [[MFMailComposeViewController alloc] init];
+        mc.mailComposeDelegate = self;
+        [mc setSubject:emailTitle];
+        [mc setMessageBody:messageBody isHTML:NO];
+        [mc setToRecipients:toRecipents];
     
-    // Present mail view controller on screen
+        // Present mail view controller on screen
     [self presentViewController:mc animated:YES completion:NULL];
+    }
 }
 
 - (void)sendMailEncryptPass
 {
-    [CCUtility sendMailEncryptPass:[CCUtility getEmail] validateEmail:NO form:self nameImage:@"backgroundDetail"];
+    if ([MFMailComposeViewController canSendMail])
+        [CCUtility sendMailEncryptPass:[CCUtility getEmail] validateEmail:NO form:self nameImage:@"backgroundDetail"];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -529,7 +534,7 @@
             if (aViewController.fromType == CCBKPasscodeFromSettingsPasscode) {
                 
                 [CCUtility setBlockCode:@""];
-                [CCCoreData setAllDirectoryUnLockForAccount:app.activeAccount];
+                [[NCManageDatabase sharedInstance] setAllDirectoryUnLock];
                 [app.activeMain.tableView reloadData];
             }
             
@@ -542,7 +547,7 @@
                 
                 // disable passcode
                 [CCUtility setBlockCode:@""];
-                [CCCoreData setAllDirectoryUnLockForAccount:app.activeAccount];
+                [[NCManageDatabase sharedInstance] setAllDirectoryUnLock];
                 [app.activeMain.tableView reloadData];
                 
                 [CCUtility setSimplyBlockCode:![CCUtility getSimplyBlockCode]];

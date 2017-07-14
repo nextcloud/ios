@@ -79,6 +79,8 @@ public class SwiftWebVC: UIViewController {
     
     var navBarTitle: UILabel!
     
+    var hideToolbar = false
+    
     ////////////////////////////////////////////////
     
     deinit {
@@ -88,17 +90,18 @@ public class SwiftWebVC: UIViewController {
         webView.navigationDelegate = nil;
     }
     
-    public convenience init(urlString: String) {
-        self.init(pageURL: URL(string: urlString)!)
+    public convenience init(urlString: String, hideToolbar: Bool) {
+        self.init(pageURL: URL(string: urlString)!, hideToolbar: hideToolbar)
     }
     
-    public convenience init(pageURL: URL) {
-        self.init(aRequest: URLRequest(url: pageURL))
+    public convenience init(pageURL: URL, hideToolbar: Bool) {
+        self.init(aRequest: URLRequest(url: pageURL), hideToolbar: hideToolbar)
     }
     
-    public convenience init(aRequest: URLRequest) {
+    public convenience init(aRequest: URLRequest, hideToolbar: Bool) {
         self.init()
         self.request = aRequest
+        self.hideToolbar = hideToolbar
     }
     
     func loadRequest(_ request: URLRequest) {
@@ -152,7 +155,9 @@ public class SwiftWebVC: UIViewController {
         }
         else if (UIDevice.current.userInterfaceIdiom == UIUserInterfaceIdiom.pad) {
             self.navigationController?.setToolbarHidden(true, animated: true)
-        }        
+        }
+        
+        self.navigationController?.setToolbarHidden(hideToolbar, animated: false)
     }
     
     override public func viewWillDisappear(_ animated: Bool) {
@@ -316,6 +321,25 @@ extension SwiftWebVC: WKNavigationDelegate {
             self.updateToolbarItems()
         })
         
+    }
+    
+    public func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+        
+        if #available(iOS 9.0, *) {
+            decisionHandler(.allow)
+        } else {
+            
+            let userAgent : String = CCUtility.getUserAgent()
+
+            if (navigationAction.request.value(forHTTPHeaderField: "User-Agent") == userAgent) {
+                decisionHandler(.allow)
+            } else {
+                let newRequest : NSMutableURLRequest = navigationAction.request as! NSMutableURLRequest
+                newRequest.setValue(userAgent, forHTTPHeaderField: "User-Agent")
+                decisionHandler(.cancel)
+                webView.load(newRequest as URLRequest)
+            }
+        }
     }
     
     public func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {

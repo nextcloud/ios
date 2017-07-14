@@ -31,9 +31,9 @@ class NCBrandColor: NSObject {
     }()
 
     // Color
-    public var brand:                   UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)    // BLU NC : #0082c9
     public let customer:                UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)    // BLU NC : #0082c9
 
+    public var brand:                   UIColor
     public var connectionNo:            UIColor = UIColor(red: 204.0/255.0, green: 204.0/255.0, blue: 204.0/255.0, alpha: 1.0)
     public var cryptocloud:             UIColor = UIColor(red: 241.0/255.0, green: 90.0/255.0, blue: 34.0/255.0, alpha: 1.0)
     public var navigationBarProgress:   UIColor = .white
@@ -45,6 +45,10 @@ class NCBrandColor: NSObject {
     public var tabBar:                  UIColor = .white
     public var tableBackground:         UIColor = .white
     public var transferBackground:      UIColor = UIColor(red: 178.0/255.0, green: 244.0/255.0, blue: 258.0/255.0, alpha: 0.1)
+    
+    override init() {
+        self.brand = self.customer
+    }
     
     // Color modify
     public func getColorSelectBackgrond() -> UIColor {
@@ -66,8 +70,15 @@ class NCBrandOptions: NSObject {
     public let loginBaseUrl:                    String = "https://cloud.twsweb.it"
     public let loginBaseUrlMultiDomains:        [String] = ["domain.com", "domain.it"]
     public let pushNotificationServer:          String = "https://push-notifications.nextcloud.com"
-    public let loginButtonLabelLink:            String = "https://nextcloud.com/providers"
+    public let linkLoginProvider:               String = "https://nextcloud.com/providers"
+    public let textLoginProvider:               String = "_login_bottom_label_"
+    public let middlewarePingUrl:               String = ""
     public let webLoginAutenticationProtocol:   String = ""
+    public let webCloseViewProtocol:            String = ""
+    public let folderBrandAutoUpload:           String = ""
+
+    // Auto Upload default folder
+    public var folderDefaultAutoUpload:         String = "Photos"
     
     // Capabilities Group
     public let capabilitiesGroups:              String = "group.it.twsweb.Crypto-Cloud"
@@ -75,18 +86,26 @@ class NCBrandOptions: NSObject {
     // Options
     public let use_login_web:                   Bool = false
     public let use_firebase:                    Bool = false
-    public let use_default_automatic_upload:    Bool = false
+    public let use_default_auto_upload:         Bool = false
     public let use_themingColor:                Bool = true
     public let use_themingBackground:           Bool = true
     public let use_multiDomains:                Bool = false
-    public let use_recent_activity_title:       Bool = false
-    public let use_more_gear_icon_right:        Bool = false
-    public let use_more_quotabar_on_top:        Bool = false
+    public let use_middlewarePing:              Bool = false
+    public let use_storeLocalAutoUploadAll:     Bool = false
     
     public let disable_intro:                   Bool = false
+    public let disable_linkLoginProvider:       Bool = false
     public let disable_request_login_url:       Bool = false
     public let disable_multiaccount:            Bool = false
     public let disable_cryptocloudsystem:       Bool = false
     public let disable_manage_account:          Bool = false
+    
+    override init() {
+        
+        if folderBrandAutoUpload != "" {
+            
+            self.folderDefaultAutoUpload = self.folderBrandAutoUpload
+        }
+    }
 }
 

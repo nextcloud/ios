@@ -22,9 +22,9 @@
 //
 
 #import <UIKit/UIKit.h>
-
-#import "CCMetadata.h"
 #import "OCNetworking.h"
+
+@class tableMetadata;
 
 @protocol CCPeekPopDelegate;
 
@@ -32,7 +32,7 @@
 
 @property (nonatomic, weak) id <CCPeekPopDelegate> delegate;
 
-@property (nonatomic, weak) CCMetadata *metadata;
+@property (nonatomic, strong) tableMetadata *metadata;
 
 @property (nonatomic, weak) IBOutlet UIImageView *imagePreview;
 

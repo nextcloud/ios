@@ -32,7 +32,6 @@
 {
     BOOL _cryptated;
     
-    long _numTaskUploadInProgress;
     CTAssetsPickerController *_picker;
     CCMove *_move;
     CCMain *_mainVC;
@@ -59,7 +58,6 @@
     if (self = [super init]) {
         
         _cryptated = NO;
-        _numTaskUploadInProgress = 0;
     }
     
     return self;
@@ -67,7 +65,6 @@
 
 - (void)startQuickActionsEncrypted:(BOOL)cryptated viewController:(UITableViewController *)viewController
 {
-    _numTaskUploadInProgress =  [[CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND (session CONTAINS 'upload') AND ((sessionTaskIdentifier >= 0) OR (sessionTaskIdentifierPlist >= 0))", app.activeAccount] context:nil] count];
     _cryptated = cryptated;
     _mainVC = (CCMain *)viewController;
     
@@ -83,8 +80,6 @@
         [_move dismissViewControllerAnimated:NO completion:nil];
     
     _cryptated = NO;
-    _numTaskUploadInProgress = 0;
-    
     _picker = nil;
     _move = nil;
     _assets = nil;
@@ -106,8 +101,11 @@
     [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
         dispatch_async(dispatch_get_main_queue(), ^{
             
+            CTAssetCheckmark *checkmark = [CTAssetCheckmark appearance];
+            [checkmark setMargin:0.0 forVerticalEdge:NSLayoutAttributeRight horizontalEdge:NSLayoutAttributeBottom];
+            
             // init picker
-            _picker = [[CTAssetsPickerController alloc] init];
+            _picker = [CTAssetsPickerController new];
             
             // set delegate
             _picker.delegate = self;
@@ -124,24 +122,7 @@
 
 - (BOOL)assetsPickerController:(CTAssetsPickerController *)picker shouldSelectAsset:(PHAsset *)asset
 {
-    __block float imageSize;
-    
-    PHImageRequestOptions *option = [PHImageRequestOptions new];
-    option.synchronous = YES;
-    
-    // self Asset
-    [[PHImageManager defaultManager] requestImageDataForAsset:asset options:option resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
-        imageSize = imageData.length;
-    }];
-    
-    // Add selected Asset
-    for (PHAsset *asset in picker.selectedAssets) {
-        [[PHImageManager defaultManager] requestImageDataForAsset:asset options:option resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
-            imageSize = imageData.length + imageSize;
-        }];
-    }
-    
-    if (imageSize > k_MaxDimensionUpload || (picker.selectedAssets.count >= (k_pickerControllerMax - _numTaskUploadInProgress))) {
+    if (picker.selectedAssets.count > k_pickerControllerMax) {
         
         [app messageNotification:@"_info_" description:@"_limited_dimension_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
         
@@ -171,7 +152,7 @@
 #pragma mark ===== Move =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)moveServerUrlTo:(NSString *)serverUrlTo title:(NSString *)title selectedMetadatas:(NSArray *)selectedMetadatas
+- (void)moveServerUrlTo:(NSString *)serverUrlTo title:(NSString *)title
 {    
     [_mainVC uploadFileAsset:_assets serverUrl:serverUrlTo cryptated:_cryptated useSubFolder:NO session:k_upload_session];
 }
@@ -188,7 +169,6 @@
         _move.move.title = NSLocalizedString(@"_upload_file_", nil);
 
     _move.delegate = self;
-    _move.selectedMetadatas = nil;
     _move.tintColor = [NCBrandColor sharedInstance].navigationBarText;
     _move.barTintColor = [NCBrandColor sharedInstance].brand;
     _move.tintColorTitle = [NCBrandColor sharedInstance].navigationBarText;

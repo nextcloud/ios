@@ -26,13 +26,13 @@
 #import <ImageIO/ImageIO.h>
 #import <UIKit/UIKit.h>
 
-#import "CCMetadata.h"
-#import "CCCoreData.h"
+@class tableMetadata;
 
 @interface CCExifGeo : NSObject
 
-+ (void)setExifLocalTableFileID:(CCMetadata *)metadata directoryUser:(NSString *)directoryUser activeAccount:(NSString *)activeAccount;
++ (CCExifGeo *)sharedInstance;
 
-+ (void)setGeocoderFileID:(NSString *)fileID exifDate:(NSDate *)exifDate latitude:(NSString*)latitude longitude:(NSString*)longitude;
+- (void)setExifLocalTableEtag:(tableMetadata *)metadata directoryUser:(NSString *)directoryUser activeAccount:(NSString *)activeAccount;
+- (void)setGeocoderEtag:(NSString *)fileID exifDate:(NSDate *)exifDate latitude:(NSString*)latitude longitude:(NSString*)longitude;
 
 @end

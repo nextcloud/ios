@@ -26,7 +26,6 @@
 #import "CCMain.h"
 #import "CCDetail.h"
 #import "CCSection.h"
-#import "CCMetadata.h"
 #import "CCTransfersCell.h"
 #import "NCBridgeSwift.h"
 
@@ -90,7 +89,6 @@
     [app aspectTabBar:self.tabBarController.tabBar hidden:NO];
     
     [self reloadDatasource];
-
 }
 
 - (void)changeTheming
@@ -115,7 +113,7 @@
 
 - (UIImage *)imageForEmptyDataSet:(UIScrollView *)scrollView
 {
-    return [UIImage imageNamed:@"transfersNoRecord"];
+    return [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"transfersNoRecord"] color:[NCBrandColor sharedInstance].brand];
 }
 
 - (NSAttributedString *)titleForEmptyDataSet:(UIScrollView *)scrollView
@@ -187,7 +185,7 @@
     if (indexPath) {
         
         NSString *fileID = [[_sectionDataSource.sectionArrayRow objectForKey:[_sectionDataSource.sections objectAtIndex:indexPath.section]] objectAtIndex:indexPath.row];
-        CCMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:fileID];
+        tableMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:fileID];
         
         if (metadata)
             [app.activeMain reloadTaskButton:metadata];
@@ -201,7 +199,7 @@
     
     for (NSString *key in _sectionDataSource.allRecordsDataSource.allKeys) {
         
-        CCMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:key];
+        tableMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:key];
         
         if ([metadata.session containsString:@"download"] && (metadata.sessionTaskIdentifierPlist != k_taskIdentifierDone))
             continue;
@@ -225,7 +223,7 @@
     if (indexPath) {
         
         NSString *fileID = [[_sectionDataSource.sectionArrayRow objectForKey:[_sectionDataSource.sections objectAtIndex:indexPath.section]] objectAtIndex:indexPath.row];
-        CCMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:fileID];
+        tableMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:fileID];
         
         if (metadata)
             [app.activeMain cancelTaskButton:metadata reloadTable:YES];
@@ -244,7 +242,7 @@
         if ([key isEqualToString:[_sectionDataSource.allRecordsDataSource.allKeys lastObject]])
             lastAndRefresh = YES;
         
-        CCMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:key];
+        tableMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:key];
         
         if ([metadata.session containsString:@"upload"] && metadata.cryptated && ((metadata.sessionTaskIdentifier == k_taskIdentifierDone && metadata.sessionTaskIdentifierPlist >= 0) || (metadata.sessionTaskIdentifier >= 0 && metadata.sessionTaskIdentifierPlist == k_taskIdentifierDone)))
             continue;
@@ -265,7 +263,7 @@
     if (indexPath) {
         
         NSString *fileID = [[_sectionDataSource.sectionArrayRow objectForKey:[_sectionDataSource.sections objectAtIndex:indexPath.section]] objectAtIndex:indexPath.row];
-        CCMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:fileID];
+        tableMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:fileID];
         
         if (metadata)
             [app.activeMain stopTaskButton:metadata];
@@ -279,7 +277,7 @@
     
     for (NSString *key in _sectionDataSource.allRecordsDataSource.allKeys) {
         
-        CCMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:key];
+        tableMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:key];
         
         if ([metadata.session containsString:@"download"]) {
             [app.activeMain cancelTaskButton:metadata reloadTable:YES];
@@ -294,6 +292,20 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
+#pragma mark - ==== download Thumbnail ====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)downloadThumbnailSuccess:(CCMetadataNet *)metadataNet
+{
+    NSIndexPath *indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:metadataNet.fileID];
+    
+    if (indexPath && [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadataNet.fileID]]) {
+        
+        [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
+    }
+}
+
+#pragma --------------------------------------------------------------------------------------------
 #pragma mark - ==== Datasource ====
 #pragma --------------------------------------------------------------------------------------------
 
@@ -303,8 +315,8 @@
     if (app.activeAccount.length == 0)
         return;
     
-    NSArray *recordsTableMetadata = [CCCoreData getTableMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(account == %@) AND ((session CONTAINS 'upload') OR (session CONTAINS 'download' AND (sessionSelector != 'loadPlist')))", app.activeAccount] fieldOrder:@"sessionTaskIdentifier" ascending:YES];
-        
+    NSArray *recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND ((session CONTAINS 'upload') OR (session CONTAINS 'download' AND (sessionSelector != 'loadPlist')))", app.activeAccount] sorted:@"sessionTaskIdentifier" ascending:YES];
+    
     _sectionDataSource  = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:app.listProgressMetadata groupByField:@"session" replaceDateToExifDate:NO activeAccount:app.activeAccount];
         
     [_tableView reloadData];    
@@ -341,10 +353,10 @@
     NSString *titleSection, *numberTitle;
     NSInteger typeOfSession = 0;
     
-    NSInteger queueDownload = [app getNumberDownloadInQueues] + [[NCManageDatabase sharedInstance] countAutomaticUploadForAccount:app.activeAccount session:k_download_session];
-    NSInteger queueDownloadWWan = [app getNumberDownloadInQueuesWWan] + [[NCManageDatabase sharedInstance] countAutomaticUploadForAccount:app.activeAccount session:k_download_session_wwan];
-    NSInteger queueUpload = [app getNumberUploadInQueues] + [[NCManageDatabase sharedInstance] countAutomaticUploadForAccount:app.activeAccount session:k_upload_session];
-    NSInteger queueUploadWWan = [app getNumberUploadInQueuesWWan] + [[NCManageDatabase sharedInstance] countAutomaticUploadForAccount:app.activeAccount session:k_upload_session_wwan];
+    NSInteger queueDownload = [app getNumberDownloadInQueues] + [[NCManageDatabase sharedInstance] countQueueUploadWithSession:k_download_session];
+    NSInteger queueDownloadWWan = [app getNumberDownloadInQueuesWWan] + [[NCManageDatabase sharedInstance] countQueueUploadWithSession:k_download_session_wwan];
+    NSInteger queueUpload = [app getNumberUploadInQueues] + [[NCManageDatabase sharedInstance] countQueueUploadWithSession:k_upload_session];
+    NSInteger queueUploadWWan = [app getNumberUploadInQueuesWWan] + [[NCManageDatabase sharedInstance] countQueueUploadWithSession:k_upload_session_wwan];
     
     if ([[_sectionDataSource.sections objectAtIndex:section] isKindOfClass:[NSString class]]) titleSection = [_sectionDataSource.sections objectAtIndex:section];
     if ([[_sectionDataSource.sections objectAtIndex:section] isKindOfClass:[NSDate class]]) titleSection = [CCUtility getTitleSectionDate:[_sectionDataSource.sections objectAtIndex:section]];
@@ -426,7 +438,7 @@
     // Footer Download
     if ([titleSection containsString:@"download"] && ![titleSection containsString:@"wwan"] && titleSection != nil) {
         
-        NSInteger queueDownload = [app getNumberDownloadInQueues] + [[NCManageDatabase sharedInstance] countAutomaticUploadForAccount:app.activeAccount session:k_download_session];
+        NSInteger queueDownload = [app getNumberDownloadInQueues] + [[NCManageDatabase sharedInstance] countQueueUploadWithSession:k_download_session];
         
         // element or elements ?
         if (queueDownload > 1) element_s = NSLocalizedString(@"_elements_",nil);
@@ -443,7 +455,7 @@
     // Footer Download WWAN
     if ([titleSection containsString:@"download"] && [titleSection containsString:@"wwan"] && titleSection != nil) {
         
-        NSInteger queueDownloadWWan = [app getNumberDownloadInQueuesWWan] + [[NCManageDatabase sharedInstance] countAutomaticUploadForAccount:app.activeAccount session:k_download_session_wwan];
+        NSInteger queueDownloadWWan = [app getNumberDownloadInQueuesWWan] + [[NCManageDatabase sharedInstance] countQueueUploadWithSession:k_download_session_wwan];
         
         // element or elements ?
         if (queueDownloadWWan > 1) element_s = NSLocalizedString(@"_elements_",nil);
@@ -464,7 +476,7 @@
     // Footer Upload
     if ([titleSection containsString:@"upload"] && ![titleSection containsString:@"wwan"] && titleSection != nil) {
         
-        NSInteger queueUpload = [app getNumberUploadInQueues] + [[NCManageDatabase sharedInstance] countAutomaticUploadForAccount:app.activeAccount session:k_upload_session];
+        NSInteger queueUpload = [app getNumberUploadInQueues] + [[NCManageDatabase sharedInstance] countQueueUploadWithSession:k_upload_session];
         
         // element or elements ?
         if (queueUpload > 1) element_s = NSLocalizedString(@"_elements_",nil);
@@ -481,7 +493,7 @@
     // Footer Upload WWAN
     if ([titleSection containsString:@"upload"] && [titleSection containsString:@"wwan"] && titleSection != nil) {
         
-        NSInteger queueUploadWWan = [app getNumberUploadInQueuesWWan] + [[NCManageDatabase sharedInstance] countAutomaticUploadForAccount:app.activeAccount session:k_upload_session_wwan];
+        NSInteger queueUploadWWan = [app getNumberUploadInQueuesWWan] + [[NCManageDatabase sharedInstance] countQueueUploadWithSession:k_upload_session_wwan];
         
         // element or elements ?
         if (queueUploadWWan > 1) element_s = NSLocalizedString(@"_elements_",nil);
@@ -526,7 +538,7 @@
     NSString *lunghezzaFile;
     
     NSString *fileID = [[_sectionDataSource.sectionArrayRow objectForKey:[_sectionDataSource.sections objectAtIndex:indexPath.section]] objectAtIndex:indexPath.row];
-    CCMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:fileID];
+    tableMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:fileID];
     
     CCTransfersCell *cell = (CCTransfersCell *)[tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
     cell.backgroundColor = [UIColor clearColor];
@@ -536,8 +548,8 @@
     // DEFAULT
     // ----------------------------------------------------------------------------------------------------------
     
-    cell.fileImageView.image = nil;
-    cell.statusImageView.image = nil;
+    cell.file.image = nil;
+    cell.status.image = nil;
     
     cell.labelTitle.enabled = YES;
     cell.labelTitle.text = @"";
@@ -603,11 +615,14 @@
     // assegnamo l'immagine anteprima se esiste, altrimenti metti quella standars
     if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]]) {
         
-        cell.fileImageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]];
+        cell.file.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]];
         
     } else {
         
-        cell.fileImageView.image = [UIImage imageNamed:metadata.iconName];
+        cell.file.image = [UIImage imageNamed:metadata.iconName];
+        
+        if (metadata.thumbnailExists)
+            [[CCActions sharedInstance] downloadTumbnail:metadata delegate:self];
     }
     
     // ----------------------------------------------------------------------------------------------------------
@@ -617,7 +632,7 @@
     // File Cyptated
     if (metadata.cryptated && metadata.directory == NO && [metadata.type isEqualToString: k_metadataType_template] == NO) {
         
-        cell.statusImageView.image = [UIImage imageNamed:@"lock"];
+        cell.status.image = [UIImage imageNamed:@"lock"];
     }
     
     // ----------------------------------------------------------------------------------------------------------
@@ -626,8 +641,8 @@
     
     if ([metadata.session length] > 0 && [metadata.session rangeOfString:@"download"].location != NSNotFound) {
         
-        if (metadata.cryptated) cell.statusImageView.image = [UIImage imageNamed:@"statusdownloadcrypto"];
-        else cell.statusImageView.image = [UIImage imageNamed:@"statusdownload"];
+        if (metadata.cryptated) cell.status.image = [UIImage imageNamed:@"statusdownloadcrypto"];
+        else cell.status.image = [UIImage imageNamed:@"statusdownload"];
         
         // Fai comparire il RELOAD e lo STOP solo se non è un Task Plist
         if (metadata.sessionTaskIdentifierPlist == k_taskIdentifierDone) {
@@ -661,7 +676,7 @@
         
         if (metadata.sessionTaskIdentifier == k_taskIdentifierError || metadata.sessionTaskIdentifierPlist == k_taskIdentifierError) {
             
-            cell.statusImageView.image = [UIImage imageNamed:@"statuserror"];
+            cell.status.image = [UIImage imageNamed:@"statuserror"];
             
             if ([metadata.sessionError length] == 0)
                 cell.labelInfoFile.text = [NSString stringWithFormat:@"%@, %@", NSLocalizedString(@"_error_",nil), NSLocalizedString(@"_file_not_downloaded_",nil)];
@@ -676,8 +691,8 @@
     
     if ([metadata.session length] > 0 && [metadata.session rangeOfString:@"upload"].location != NSNotFound) {
         
-        if (metadata.cryptated) cell.statusImageView.image = [UIImage imageNamed:@"statusuploadcrypto"];
-        else cell.statusImageView.image = [UIImage imageNamed:@"statusupload"];
+        if (metadata.cryptated) cell.status.image = [UIImage imageNamed:@"statusuploadcrypto"];
+        else cell.status.image = [UIImage imageNamed:@"statusupload"];
         
         if (metadata.cryptated)[cell.cancelTaskButton setBackgroundImage:[UIImage imageNamed:@"removetaskcrypto"] forState:UIControlStateNormal];
         else [cell.cancelTaskButton setBackgroundImage:[UIImage imageNamed:@"removetask"] forState:UIControlStateNormal];
@@ -688,8 +703,8 @@
             if (metadata.cryptated)[cell.reloadTaskButton setBackgroundImage:[UIImage imageNamed:@"reloadtaskcrypto"] forState:UIControlStateNormal];
             else [cell.reloadTaskButton setBackgroundImage:[UIImage imageNamed:@"reloadtask"] forState:UIControlStateNormal];
             
-            if (metadata.cryptated) cell.statusImageView.image = [UIImage imageNamed:@"statusstopcrypto"];
-            else cell.statusImageView.image = [UIImage imageNamed:@"statusstop"];
+            if (metadata.cryptated) cell.status.image = [UIImage imageNamed:@"statusstopcrypto"];
+            else cell.status.image = [UIImage imageNamed:@"statusstop"];
             
             cell.reloadTaskButton.hidden = NO;
             cell.stopTaskButton.hidden = YES;
@@ -705,7 +720,7 @@
         
         // se non c'è una preview in bianconero metti l'immagine di default
         if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]] == NO)
-            cell.fileImageView.image = [UIImage imageNamed:@"uploaddisable"];
+            cell.file.image = [UIImage imageNamed:@"uploaddisable"];
         
         cell.labelTitle.enabled = NO;
         cell.labelInfoFile.text = [NSString stringWithFormat:@"%@", lunghezzaFile];
@@ -727,7 +742,7 @@
         if (metadata.sessionTaskIdentifier == k_taskIdentifierError || metadata.sessionTaskIdentifierPlist == k_taskIdentifierError) {
             
             cell.labelTitle.enabled = NO;
-            cell.statusImageView.image = [UIImage imageNamed:@"statuserror"];
+            cell.status.image = [UIImage imageNamed:@"statuserror"];
             
             if ([metadata.sessionError length] == 0)
                 cell.labelInfoFile.text = [NSString stringWithFormat:@"%@, %@", NSLocalizedString(@"_error_",nil), NSLocalizedString(@"_file_not_uploaded_",nil)];

@@ -30,9 +30,11 @@
 #import <UICKeyChainStore/UICKeyChainStore.h>
 
 #import "OCFileDto.h"
-#import "CCMetadata.h"
 #import "CCCrypto.h"
 #import "CCGlobal.h"
+#import "CCNetworking.h"
+
+@class tableMetadata;
 
 @interface CCUtility : NSObject
 
@@ -52,7 +54,8 @@
 
 + (void)setKeyChainPasscodeForUUID:(NSString *)uuid conPasscode:(NSString *)passcode;
 
-+ (NSString *)setVersionCryptoCloud;
++ (NSString *)setVersion;
++ (NSString *)setBuild;
 
 + (void)setBlockCode:(NSString *)blockcode;
 + (void)setSimplyBlockCode:(BOOL)simply;
@@ -92,7 +95,8 @@
 + (NSString *)getUUID;
 + (NSString *)getNameCurrentDevice;
 
-+ (NSString *)getVersionCryptoCloud;
++ (NSString *)getVersion;
++ (NSString *)getBuild;
 
 + (NSString *)getBlockCode;
 + (BOOL)getSimplyBlockCode;
@@ -132,6 +136,7 @@
 + (NSString *)getUserAgent;
 
 + (NSString *)dateDiff:(NSDate *) convertedDate;
++ (NSDate *)dateEnUsPosixFromCloud:(NSString *)dateString;
 + (NSString *)transformedSize:(double)value;
 
 + (NSString *)removeForbiddenCharactersServer:(NSString *)fileName;
@@ -159,17 +164,19 @@
 
 + (void)sendMailEncryptPass:(NSString *)recipient validateEmail:(BOOL)validateEmail form:(id)form nameImage:(NSString *)nameImage;
 
-+ (NSString *)localizableBrand:(NSString *)localize table:(NSString *)table;
-
-+ (NSArray *)createNameSubFolder:(NSArray *)assets;
++ (NSArray *)createNameSubFolder:(PHFetchResult *)assets;
 
 // ===== CCMetadata =====
 
-+ (CCMetadata *)trasformedOCFileToCCMetadata:(OCFileDto *)itemDto fileNamePrint:(NSString *)fileNamePrint serverUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID cameraFolderName:(NSString *)cameraFolderName cameraFolderPath:(NSString *)cameraFolderPath activeAccount:(NSString *)activeAccount directoryUser:(NSString *)directoryUser;
++ (tableMetadata *)createMetadataWithAccount:(NSString *)account date:(NSDate *)date directory:(BOOL)directory fileID:(NSString *)fileID directoryID:(NSString *)directoryID fileName:(NSString *)fileName etag:(NSString *)etag size:(double)size status:(double)status;
 
-+ (void)insertTypeFileIconName:(CCMetadata *)metadata directory:(NSString *)directory cameraFolderName:(NSString *)cameraFolderName cameraFolderPath:(NSString *)cameraFolderPath;
-+ (void)insertInformationPlist:(CCMetadata *)metadata directoryUser:(NSString *)directoryUser;
-+ (CCMetadata *)insertFileSystemInMetadata:(NSString *)fileName directory:(NSString *)directory activeAccount:(NSString *)activeAccount cameraFolderName:(NSString *)cameraFolderName cameraFolderPath:(NSString *)cameraFolderPath;
++ (tableMetadata *)trasformedOCFileToCCMetadata:(OCFileDto *)itemDto fileName:(NSString *)fileName fileNamePrint:(NSString *)fileNamePrint serverUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID autoUploadFileName:(NSString *)autoUploadFileName autoUploadDirectory:(NSString *)autoUploadDirectory activeAccount:(NSString *)activeAccount directoryUser:(NSString *)directoryUser;
+
++ (tableMetadata *)insertInformationPlist:(tableMetadata *)metadata directoryUser:(NSString *)directoryUser;
+
++ (tableMetadata *)insertFileSystemInMetadata:(NSString *)fileName directory:(NSString *)directory activeAccount:(NSString *)activeAccount autoUploadFileName:(NSString *)autoUploadFileName autoUploadDirectory:(NSString *)autoUploadDirectory;
+
++ (tableMetadata *)insertTypeFileIconName:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl autoUploadFileName:(NSString *)autoUploadFileName autoUploadDirectory:(NSString *)autoUploadDirectory;
 
 + (NSString *)trasformedFileNamePlistInCrypto:(NSString *)fileName;
 + (NSString *)trasformedFileNameCryptoInPlist:(NSString *)fileName;
@@ -190,7 +197,6 @@
 + (NSDate *)datetimeWithOutTime:(NSDate *)datDate;
 + (NSDate *)datetimeWithOutDate:(NSDate *)datDate;
 + (BOOL)isValidEmail:(NSString *)checkString;
-+ (UIImage*)drawText:(NSString*)text inImage:(UIImage*)image colorText:(UIColor *)colorText;
 + (NSString *)URLEncodeStringFromString:(NSString *)string;
 
 @end

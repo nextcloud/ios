@@ -29,12 +29,13 @@
 #import "AFURLSessionManager.h"
 #import "TWMessageBarManager.h"
 #import "PHAsset+Utility.h"
-#import "CCCoreData.h"
 #import "CCCrypto.h"
-#import "CCMetadata.h"
 #import "CCExifGeo.h"
 #import "CCGraphics.h"
 #import "CCError.h"
+
+@class tableMetadata;
+@class CCMetadataNet;
 
 @protocol CCNetworkingDelegate;
 
@@ -57,34 +58,79 @@
 - (void)settingSession:(NSString *)sessionDescription sessionTaskIdentifier:(NSUInteger)sessionTaskIdentifier taskStatus:(NSInteger)taskStatus;
 
 // Download
-- (void)downloadFile:(CCMetadata *)metadata serverUrl:(NSString *)serverUrl downloadData:(BOOL)downloadData downloadPlist:(BOOL)downloadPlist selector:(NSString *)selector selectorPost:(NSString *)selectorPost session:(NSString *)session taskStatus:(NSInteger)taskStatus delegate:(id)delegate;
+- (void)downloadFile:(NSString *)fileID serverUrl:(NSString *)serverUrl downloadData:(BOOL)downloadData downloadPlist:(BOOL)downloadPlist selector:(NSString *)selector selectorPost:(NSString *)selectorPost session:(NSString *)session taskStatus:(NSInteger)taskStatus delegate:(id)delegate;
 
 // Upload
 - (void)uploadFileFromAssetLocalIdentifier:(NSString *)assetLocalIdentifier fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl cryptated:(BOOL)cryptated session:(NSString *)session taskStatus:(NSInteger)taskStatus selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorCode:(NSInteger)errorCode delegate:(id)delegate;
 - (void)uploadFile:(NSString *)fileName serverUrl:(NSString *)serverUrl cryptated:(BOOL)cryptated onlyPlist:(BOOL)onlyPlist session:(NSString *)session taskStatus:(NSInteger)taskStatus selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorCode:(NSInteger)errorCode delegate:(id)delegate;
 - (void)uploadTemplate:(NSString *)fileNamePrint fileNameCrypto:(NSString *)fileNameCrypto serverUrl:(NSString *)serverUrl session:(NSString *)session taskStatus:(NSInteger)taskStatus selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorCode:(NSInteger)errorCode delegate:(id)delegate;
-- (void)uploadFileMetadata:(CCMetadata *)metadata taskStatus:(NSInteger)taskStatus;
+- (void)uploadFileMetadata:(tableMetadata *)metadata taskStatus:(NSInteger)taskStatus;
 
 // Verify
 - (void)verifyDownloadInProgress;
-- (void)automaticDownloadInError;
-
 - (void)verifyUploadInProgress;
-- (void)automaticUploadInError;
 
 @end
 
 @protocol CCNetworkingDelegate <NSObject>
 
-@optional - (void)reloadDatasource:(NSString *)serverUrl fileID:(NSString *)fileID selector:(NSString *)selector;
-@optional - (void)comandoCreaCartella:(NSString *)fileNameFolder cameraUpload:(BOOL)cameraUpload;
+@optional - (void)reloadDatasource:(NSString *)serverUrl;
 
-@optional - (void)downloadTaskSave:(NSURLSessionDownloadTask *)downloadTask;
 @optional - (void)downloadFileSuccess:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost;
 @optional - (void)downloadFileFailure:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode;
 
-@optional - (void)uploadTaskSave:(NSURLSessionUploadTask *)uploadTask;
 @optional - (void)uploadFileSuccess:(CCMetadataNet *)metadataNet fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost;
 @optional - (void)uploadFileFailure:(CCMetadataNet *)metadataNet fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode;
 
 @end
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark =====  CCMetadataNet =====
+#pragma --------------------------------------------------------------------------------------------
+
+
+@interface CCMetadataNet : NSObject <NSCopying>
+
+@property (nonatomic, strong) NSString *account;
+@property (nonatomic, strong) NSString *action;
+@property BOOL cryptated;
+@property (nonatomic, strong) NSDate *date;
+@property (nonatomic, weak) id delegate;
+@property BOOL directory;
+@property (nonatomic, strong) NSString *directoryID;
+@property (nonatomic, strong) NSString *directoryIDTo;
+@property BOOL downloadData;
+@property BOOL downloadPlist;
+@property NSInteger errorCode;
+@property NSInteger errorRetry;
+@property (nonatomic, strong) NSString *etag;
+@property (nonatomic, strong) NSString *expirationTime;
+@property (nonatomic, strong) NSString *fileID;
+@property (nonatomic, strong) NSString *fileName;
+@property (nonatomic, strong) NSString *fileNameTo;
+@property (nonatomic, strong) NSString *fileNameLocal;
+@property (nonatomic, strong) NSString *fileNamePrint;
+@property (nonatomic, strong) NSString *assetLocalIdentifier;
+@property (nonatomic, strong) id options;
+@property (nonatomic, strong) NSString *password;
+@property (nonatomic, strong) NSString *pathFolder;
+@property NSInteger priority;
+@property (nonatomic, strong) NSOperationQueue *queue;
+@property (nonatomic, strong) NSString *serverUrl;
+@property (nonatomic, strong) NSString *serverUrlTo;
+@property (nonatomic, strong) NSString *selector;
+@property (nonatomic, strong) NSString *selectorPost;
+@property (nonatomic, strong) NSString *session;
+@property (nonatomic, strong) NSString *sessionID;
+@property (nonatomic, strong) NSString *share;
+@property NSInteger shareeType;
+@property NSInteger sharePermission;
+@property long size;
+@property NSInteger taskStatus;
+
+- (id)initWithAccount:(NSString *)withAccount;
+- (id)copyWithZone:(NSZone *)zone;
+
+@end
+
+

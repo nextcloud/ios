@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="12118" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="12121" systemVersion="16F73" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12086"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12089"/>
         <capability name="Alignment constraints to the first baseline" minToolsVersion="6.0"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -32,14 +32,14 @@
                         <color key="textColor" red="0.33333333333333331" green="0.33333333333333331" blue="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="5">
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="5" userLabel="File">
                         <rect key="frame" x="8" y="5" width="40" height="40"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="40" id="kM5-Uf-S8Z"/>
                         </constraints>
                     </imageView>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="DQR-yN-JaH">
-                        <rect key="frame" x="35" y="32" width="15" height="15"/>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="DQR-yN-JaH" userLabel="Status">
+                        <rect key="frame" x="4" y="32" width="15" height="15"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="15" id="bgo-QS-x7k"/>
                             <constraint firstAttribute="width" constant="15" id="g4P-aH-jOh"/>
@@ -87,7 +87,7 @@
                     <constraint firstItem="5" firstAttribute="top" secondItem="sQq-jC-UEV" secondAttribute="topMargin" constant="-3" id="JnQ-te-G7i"/>
                     <constraint firstItem="Dge-D1-XMk" firstAttribute="baseline" secondItem="eGg-ei-EiX" secondAttribute="baseline" id="Jwx-Fi-xLe"/>
                     <constraint firstItem="eGg-ei-EiX" firstAttribute="baseline" secondItem="Kaz-0H-BSt" secondAttribute="baseline" id="KXA-uT-AxN"/>
-                    <constraint firstItem="DQR-yN-JaH" firstAttribute="leading" secondItem="sQq-jC-UEV" secondAttribute="leadingMargin" constant="27" id="Kgr-l9-ZUm"/>
+                    <constraint firstItem="DQR-yN-JaH" firstAttribute="leading" secondItem="sQq-jC-UEV" secondAttribute="leadingMargin" constant="-4" id="Kgr-l9-ZUm"/>
                     <constraint firstItem="Kaz-0H-BSt" firstAttribute="top" secondItem="eGg-ei-EiX" secondAttribute="top" id="LDS-P0-NC6"/>
                     <constraint firstItem="Q4M-4B-abs" firstAttribute="top" secondItem="QNC-8X-DAC" secondAttribute="bottom" constant="4" id="M1C-9H-wNb"/>
                     <constraint firstAttribute="trailingMargin" secondItem="Kaz-0H-BSt" secondAttribute="trailing" constant="-9" id="Mfy-V9-Ezo"/>
@@ -107,7 +107,7 @@
                     <constraint firstItem="Kaz-0H-BSt" firstAttribute="firstBaseline" secondItem="eGg-ei-EiX" secondAttribute="firstBaseline" id="i7M-qf-7pH"/>
                     <constraint firstItem="eGg-ei-EiX" firstAttribute="leading" secondItem="Kaz-0H-BSt" secondAttribute="trailing" constant="-99" id="iuz-Vg-6UE"/>
                     <constraint firstItem="5" firstAttribute="leading" secondItem="sQq-jC-UEV" secondAttribute="leadingMargin" id="jRD-Qd-3a9"/>
-                    <constraint firstItem="p7I-KN-FVZ" firstAttribute="leading" secondItem="DQR-yN-JaH" secondAttribute="trailing" constant="6" id="mRY-av-dw7"/>
+                    <constraint firstItem="p7I-KN-FVZ" firstAttribute="leading" secondItem="DQR-yN-JaH" secondAttribute="trailing" constant="37" id="mRY-av-dw7"/>
                     <constraint firstItem="Q4M-4B-abs" firstAttribute="trailing" secondItem="sQq-jC-UEV" secondAttribute="trailingMargin" constant="-98" id="nQL-7B-qXT"/>
                     <constraint firstItem="Q4M-4B-abs" firstAttribute="leading" secondItem="sQq-jC-UEV" secondAttribute="leadingMargin" constant="48" id="o1f-09-ZgZ"/>
                     <constraint firstItem="QNC-8X-DAC" firstAttribute="trailing" secondItem="p7I-KN-FVZ" secondAttribute="trailing" id="oZv-Y4-1iW"/>
@@ -116,12 +116,12 @@
             </tableViewCellContentView>
             <connections>
                 <outlet property="cancelTaskButton" destination="eGg-ei-EiX" id="08u-FB-UcL"/>
-                <outlet property="fileImageView" destination="5" id="IKO-eX-pd2"/>
+                <outlet property="file" destination="5" id="RKx-tb-r9J"/>
                 <outlet property="labelInfoFile" destination="p7I-KN-FVZ" id="bIH-yL-aSv"/>
                 <outlet property="labelTitle" destination="QNC-8X-DAC" id="coV-Xj-n1Q"/>
                 <outlet property="progressView" destination="Q4M-4B-abs" id="Ouc-sW-VLX"/>
                 <outlet property="reloadTaskButton" destination="Kaz-0H-BSt" id="hOL-f8-R0r"/>
-                <outlet property="statusImageView" destination="DQR-yN-JaH" id="wGV-fc-S5H"/>
+                <outlet property="status" destination="DQR-yN-JaH" id="lGt-Sf-mgC"/>
                 <outlet property="stopTaskButton" destination="Dge-D1-XMk" id="UZF-RR-oCy"/>
             </connections>
             <point key="canvasLocation" x="414" y="297.5"/>

@@ -27,8 +27,9 @@
 #import "AESCrypt.h"
 #import "RNEncryptor.h"
 #import "RNDecryptor.h"
-#import "CCMetadata.h"
 #import "CCUtility.h"
+
+@class tableMetadata;
 
 @interface CCCrypto : NSObject
 
@@ -46,7 +47,7 @@
 
 - (BOOL)updateTitleFilePlist:(NSString *)fileName title:(NSString *)title directoryUser:(NSString *)directoryUser;
 
-- (NSString *)createFileDirectoryPlist:(CCMetadata *)metadata;
+- (NSString *)createFileDirectoryPlist:(tableMetadata *)metadata;
 
 - (BOOL)createTemplatesPlist:(NSString *)nameFile title:(NSString *)title uuid:(NSString *)uuid icon:(NSString *)icon model:(NSString *)model dictionary:(NSMutableDictionary*)dictionary;
 

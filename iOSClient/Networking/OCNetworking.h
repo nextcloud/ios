@@ -26,10 +26,9 @@
 #import "AFURLSessionManager.h"
 #import "TWMessageBarManager.h"
 #import "CCNetworking.h"
-#import "CCMetadata.h"
 #import "CCError.h"
-#import "CCCoreData.h"
 
+@class tableMetadata;
 
 @protocol OCNetworkingDelegate;
 
@@ -53,18 +52,16 @@
 
 @optional
 
-- (void)downloadTaskSave:(NSURLSessionDownloadTask *)downloadTask;
 - (void)downloadFileSuccess:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost;
 - (void)downloadFileFailure:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode;
 
 - (void)downloadThumbnailSuccess:(CCMetadataNet *)metadataNet;
 - (void)downloadThumbnailFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
 
-- (void)uploadTaskSave:(NSURLSessionUploadTask *)uploadTask;
 - (void)uploadFileSuccess:(CCMetadataNet *)metadataNet fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost;
 - (void)uploadFileFailure:(CCMetadataNet *)metadataNet fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode;
 
-- (void)readFolderSuccess:(CCMetadataNet *)metadataNet permissions:(NSString *)permissions etag:(NSString *)etag metadatas:(NSArray *)metadatas;
+- (void)readFolderSuccess:(CCMetadataNet *)metadataNet metadataFolder:(tableMetadata *)metadataFolder metadatas:(NSArray *)metadatas;
 - (void)readFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
 
 - (void)createFolderSuccess:(CCMetadataNet *)metadataNet;
@@ -73,11 +70,11 @@
 - (void)deleteFileOrFolderSuccess:(CCMetadataNet *)metadataNet;
 - (void)deleteFileOrFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
 
-- (void)moveSuccess:(CCMetadataNet *)metadataNet revTo:(NSString *)revTo;
+- (void)moveSuccess:(CCMetadataNet *)metadataNet;
 - (void)renameSuccess:(CCMetadataNet *)metadataNet;
 - (void)renameMoveFileOrFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
 
-- (void)readFileSuccess:(CCMetadataNet *)metadataNet metadata:(CCMetadata *)metadata;
+- (void)readFileSuccess:(CCMetadataNet *)metadataNet metadata:(tableMetadata *)metadata;
 - (void)readFileFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
 
 - (void)readSharedSuccess:(CCMetadataNet *)metadataNet items:(NSDictionary *)items openWindow:(BOOL)openWindow;

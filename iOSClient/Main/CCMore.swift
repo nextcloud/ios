@@ -24,7 +24,7 @@
 
 import UIKit
 
-class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLoginDelegate, CCLoginDelegateWeb {
 
     @IBOutlet weak var themingBackground: UIImageView!
     @IBOutlet weak var themingAvatar: UIImageView!
@@ -41,8 +41,10 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
     var menuExternalSite: [tableExternalSites]?
-    var tableAccont : TableAccount?
+    var tabAccount : tableAccount?
     
+    var loginWeb : CCLoginWeb!
+
     override func viewDidLoad() {
         
         super.viewDidLoad()
@@ -79,38 +81,38 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         quotaMenu.removeAll()
         labelQuotaExternalSite.text = ""
         
-        // Internal
+        // ITEM : Transfer
         var item = OCExternalSites.init()
         item.name = "_transfers_"
         item.icon = "moreTransfers"
         item.url = "segueTransfers"
         functionMenu.append(item)
         
+        // ITEM : Activity
         item = OCExternalSites.init()
-        if NCBrandOptions.sharedInstance.use_recent_activity_title == true {
-            item.name = "_recent_activity_"
-        } else {
-            item.name = "_activity_"
-        }
-        
+        item.name = "_activity_"
         item.icon = "moreActivity"
         item.url = "segueActivity"
         functionMenu.append(item)
         
+        // ITEM : Shares
+        item = OCExternalSites.init()
+        item.name = "_list_shares_"
+        item.icon = "moreShares"
+        item.url = "segueShares"
+        functionMenu.append(item)
+        
+        /*
+        // ITEM : Local storage
         item = OCExternalSites.init()
         item.name = "_local_storage_"
         item.icon = "moreLocalStorage"
         item.url = "segueLocalStorage"
         functionMenu.append(item)
+        */
         
-        item = OCExternalSites.init()
-        item.name = "_settings_"
-        item.icon = "moreSettings"
-        item.url = "segueSettings"
-        settingsMenu.append(item)
-
-        // External 
-        menuExternalSite = NCManageDatabase.sharedInstance.getAllExternalSitesWithPredicate(NSPredicate(format: "(account == '\(appDelegate.activeAccount!)')"))
+        // ITEM : External
+        menuExternalSite = NCManageDatabase.sharedInstance.getAllExternalSites(predicate: NSPredicate(format: "(account == '\(appDelegate.activeAccount!)')"))
         
         for table in menuExternalSite! {
             
@@ -132,6 +134,13 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
                 quotaMenu.append(item)
             }
         }
+        
+        // ITEM : Settings
+        item = OCExternalSites.init()
+        item.name = "_settings_"
+        item.icon = "moreSettings"
+        item.url = "segueSettings"
+        settingsMenu.append(item)
         
         if (quotaMenu.count > 0) {
             
@@ -193,29 +202,29 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         }
         
         // Display Name user & Quota
-        tableAccont = CCCoreData.getActiveAccount()
-        if (tableAccont != nil) {
+        tabAccount = NCManageDatabase.sharedInstance.getAccountActive()
+        if (tabAccount != nil) {
             
-            if let displayName = self.tableAccont!.displayName {
+            if let displayName = tabAccount?.displayName {
                 if displayName.isEmpty {
-                    labelUsername.text = self.tableAccont!.user
+                    labelUsername.text = tabAccount!.user
                 }
                 else{
-                    labelUsername.text = self.tableAccont!.displayName
+                    labelUsername.text = tabAccount!.displayName
                 }
             }
             else{
-                labelUsername.text = self.tableAccont!.user
+                labelUsername.text = tabAccount!.user
             }
             
             // fix CCMore.swift line 208 Version 2.17.2 (00005)
-            if (self.tableAccont?.quotaRelative != nil && self.tableAccont?.quotaTotal != nil && self.tableAccont?.quotaUsed != nil) {
+            if (tabAccount?.quotaRelative != nil && tabAccount?.quotaTotal != nil && tabAccount?.quotaUsed != nil) {
                 
-                progressQuota.progress = Float((self.tableAccont?.quotaRelative)!) / 100
+                progressQuota.progress = Float((tabAccount?.quotaRelative)!) / 100
                 progressQuota.progressTintColor = NCBrandColor.sharedInstance.brand
                 
-                let quota : String = CCUtility.transformedSize(Double((self.tableAccont?.quotaTotal)!))
-                let quotaUsed : String = CCUtility.transformedSize(Double((self.tableAccont?.quotaUsed)!))
+                let quota : String = CCUtility.transformedSize(Double((tabAccount?.quotaTotal)!))
+                let quotaUsed : String = CCUtility.transformedSize(Double((tabAccount?.quotaUsed)!))
                 
                 labelQuota.text = String.localizedStringWithFormat(NSLocalizedString("_quota_using_", comment: ""), quotaUsed, quota)
             }
@@ -293,35 +302,69 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         var item: OCExternalSites = OCExternalSites.init()
         
         // Menu Function
-        if (indexPath.section == 0) {
+        if indexPath.section == 0 {
             
             item = functionMenu[indexPath.row]
         }
         
         // Menu Settings
-        if (indexPath.section == 1) {
+        if indexPath.section == 1 {
             
             item = settingsMenu[indexPath.row]
         }
         
-        if (item.url.contains("segue") && !item.url.contains("//")) {
+        // Action
+        if item.url.contains("segue") && !item.url.contains("//") {
             
             self.navigationController?.performSegue(withIdentifier: item.url, sender: self)
-        }
         
-        if (item.url.contains("//")) {
+        } else if item.url.contains("open") && !item.url.contains("//") {
+            
+            let nameStoryboard = item.url.substring(from: item.url.index(item.url.startIndex, offsetBy: 4))
+            
+            let storyboard = UIStoryboard(name: nameStoryboard, bundle: nil)
+            let controller = storyboard.instantiateViewController(withIdentifier: nameStoryboard)
+            self.present(controller, animated: true, completion: nil)
+            
+        } else if item.url.contains("//") {
             
             if (self.splitViewController?.isCollapsed)! {
                 
-                let webVC = SwiftWebVC(urlString: item.url)
+                let webVC = SwiftWebVC(urlString: item.url, hideToolbar: true)
+                webVC.delegate = self
                 self.navigationController?.pushViewController(webVC, animated: true)
                 self.navigationController?.navigationBar.isHidden = false
                 
             } else {
                 
                 let webVC = SwiftModalWebVC(urlString: item.url)
+                webVC.delegateWeb = self
                 self.present(webVC, animated: true, completion: nil)
             }
+            
+        } else if item.url == "logout" {
+            
+            let alertController = UIAlertController(title: "", message: NSLocalizedString("_want_delete_", comment: ""), preferredStyle: .alert)
+            
+            let actionYes = UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (action:UIAlertAction) in
+                
+                let manageAccount = CCManageAccount()
+                manageAccount.delete(self.appDelegate.activeAccount)
+                
+                self.loginWeb = CCLoginWeb()
+                self.loginWeb.delegate = self
+                self.loginWeb.loginType = loginAddForced
+                
+                self.loginWeb.presentModalWithDefaultTheme(self)
+            }
+            
+            let actionNo = UIAlertAction(title: NSLocalizedString("_no_delete_", comment: ""), style: .default) { (action:UIAlertAction) in
+                print("You've pressed No button");
+            }
+            
+            alertController.addAction(actionYes)
+            alertController.addAction(actionNo)
+            self.present(alertController, animated: true, completion:nil)
         }
     }
     
@@ -333,13 +376,15 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             
             if (self.splitViewController?.isCollapsed)! {
                 
-                let webVC = SwiftWebVC(urlString: item.url)
+                let webVC = SwiftWebVC(urlString: item.url, hideToolbar: true)
+                webVC.delegate = self
                 self.navigationController?.pushViewController(webVC, animated: true)
                 self.navigationController?.navigationBar.isHidden = false
                 
             } else {
                 
                 let webVC = SwiftModalWebVC(urlString: item.url)
+                webVC.delegateWeb = self
                 self.present(webVC, animated: true, completion: nil)
             }
         }
@@ -352,6 +397,46 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         self.navigationController?.pushViewController(controller, animated: true)
     }
 
+    func loginSuccess(_ loginType: NSInteger) {
+        
+        if (UInt32(loginType) != loginModifyPasswordUser.rawValue) {
+            NCAutoUpload.sharedInstance().alignPhotoLibrary()
+        }
+        
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "initializeMain"), object: nil)
+        
+        appDelegate.selectedTabBarController(Int(k_tabBarApplicationIndexFile))
+    }
+}
+
+extension CCMore: SwiftModalWebVCDelegate, SwiftWebVCDelegate{
+    
+    public func didStartLoading() {
+        print("Started loading.")
+    }
+    
+    public func didReceiveServerRedirectForProvisionalNavigation(url: URL) {
+        
+        let urlString: String = url.absoluteString.lowercased()
+        
+        // Protocol close webVC
+        if (urlString.contains(NCBrandOptions.sharedInstance.webCloseViewProtocol) == true) {
+            
+            if (self.presentingViewController != nil) {
+                self.dismiss(animated: true, completion: nil)
+            } else {
+                self.navigationController?.popToRootViewController(animated: true)
+            }
+        }
+    }
+    
+    public func didFinishLoading(success: Bool) {
+        print("Finished loading. Success: \(success).")
+    }
+    
+    public func didFinishLoading(success: Bool, url: URL) {
+        print("Finished loading. Success: \(success).")
+    }
 }
 
 class CCCellMore: UITableViewCell {

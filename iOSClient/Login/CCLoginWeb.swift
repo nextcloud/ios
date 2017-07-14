@@ -8,7 +8,7 @@
 
 import UIKit
 
-@objc protocol CCLoginDelegate: class {
+@objc protocol CCLoginDelegateWeb: class {
     func loginSuccess(_: NSInteger)
 }
 
@@ -20,7 +20,7 @@ public class CCLoginWeb: UIViewController {
         case loginModifyPasswordUser = 2
     }
     
-    weak var delegate: CCLoginDelegate?
+    weak var delegate: CCLoginDelegateWeb?
     
     var viewController : UIViewController?
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -35,7 +35,7 @@ public class CCLoginWeb: UIViewController {
             doneButtonVisible = true
         }
         
-        let webVC = SwiftModalWebVC(urlString: NCBrandOptions.sharedInstance.loginBaseUrl, theme: .custom, color: NCBrandColor.sharedInstance.brand, colorText: NCBrandColor.sharedInstance.navigationBarText, doneButtonVisible: doneButtonVisible)
+        let webVC = SwiftModalWebVC(urlString: NCBrandOptions.sharedInstance.loginBaseUrl, theme: .custom, color: NCBrandColor.sharedInstance.brand, colorText: NCBrandColor.sharedInstance.navigationBarText, doneButtonVisible: doneButtonVisible, hideToolbar: true)
         webVC.delegateWeb = self
 
         vc.present(webVC, animated: false, completion: nil)
@@ -50,7 +50,7 @@ extension CCLoginWeb: SwiftModalWebVCDelegate {
     
     public func didReceiveServerRedirectForProvisionalNavigation(url: URL) {
                 
-        let urlString: String = url.absoluteString
+        let urlString: String = url.absoluteString.lowercased()
         
         if (urlString.contains(NCBrandOptions.sharedInstance.webLoginAutenticationProtocol) == true && urlString.contains("login") == true && (loginType == loginAdd || loginType == loginAddForced)) {
             
@@ -70,10 +70,10 @@ extension CCLoginWeb: SwiftModalWebVCDelegate {
                 
                     let account : String = "\(username) \(serverUrl)"
                 
-                    CCCoreData.deleteAccount(account)
-                    CCCoreData.addAccount(account, url: serverUrl, user: username, password: password)
-                
-                    let tableAccount : TableAccount = CCCoreData.setActiveAccount(account)
+                    NCManageDatabase.sharedInstance.deleteAccount(account)
+                    NCManageDatabase.sharedInstance.addAccount(account, url: serverUrl, user: username, password: password)
+                                    
+                    let tableAccount : tableAccount = NCManageDatabase.sharedInstance.setAccountActive(account)
                 
                     if (tableAccount.account == account) {
                     

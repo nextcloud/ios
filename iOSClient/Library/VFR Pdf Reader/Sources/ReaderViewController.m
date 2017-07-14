@@ -358,7 +358,7 @@
 	mainToolbar = [[ReaderMainToolbar alloc] initWithFrame:toolbarRect document:document]; // ReaderMainToolbar
 	mainToolbar.delegate = self; // ReaderMainToolbarDelegate
 	//TWS [self.view addSubview:mainToolbar];
-    
+
 	CGRect pagebarRect = self.view.bounds; pagebarRect.size.height = PAGEBAR_HEIGHT;
 	pagebarRect.origin.y = (self.view.bounds.size.height - pagebarRect.size.height);
 	mainPagebar = [[ReaderMainPagebar alloc] initWithFrame:pagebarRect document:document]; // ReaderMainPagebar
@@ -487,6 +487,7 @@
 	ignoreDidScroll = NO;
 }
 
+//TWS
 - (void)updateContentViews
 {
     if (currentPage > 0) {
@@ -734,6 +735,7 @@
 {
 #if (READER_ENABLE_THUMBS == TRUE) // Option
 
+    //TWS
     [[UIApplication sharedApplication] setStatusBarHidden:YES];
     
 	if (printInteraction != nil) [printInteraction dismissAnimated:NO];

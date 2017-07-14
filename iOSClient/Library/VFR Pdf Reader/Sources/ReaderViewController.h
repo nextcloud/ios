@@ -46,6 +46,7 @@
 
 - (instancetype)initWithReaderDocument:(ReaderDocument *)object;
 
+//TWS
 - (void)updateContentViews;
 
 @end

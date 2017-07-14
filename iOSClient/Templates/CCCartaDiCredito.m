@@ -31,7 +31,7 @@
     NSTimer* myTimer;
     NSMutableDictionary *field;
     CCTemplates *templates;
-    NSString *_saveFileID;
+    NSString *_saveEtag;
 
 }
 @end
@@ -214,16 +214,16 @@
 
 - (void)uploadFileFailure:(CCMetadataNet *)metadataNet fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    if (![_saveFileID isEqualToString:fileID]) {
+    if (![_saveEtag isEqualToString:fileID]) {
         
-        _saveFileID = fileID;
+        _saveEtag = fileID;
         
         [app messageNotification:@"_upload_file_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
         
         // remove the file
-        [CCCoreData deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"(fileID == %@) AND (account == %@)", fileID, app.activeAccount]];
+        [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID] clearDateReadDirectoryID:nil];
         
-        [self.delegate readFolderWithForced:YES serverUrl:self.serverUrl];
+        [self.delegate readFolder:self.serverUrl];
     }
 }
 

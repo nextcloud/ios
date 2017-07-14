@@ -22,8 +22,6 @@
 //
 
 #import "CCSection.h"
-#import "CCMetadata.h"
-#import "CCCoreData.h"
 #import "CCExifGeo.h"
 #import "NCBridgeSwift.h"
 
@@ -34,7 +32,7 @@
     self = [super init];
     
     _allRecordsDataSource = [[NSMutableDictionary alloc] init];
-    _allFileID  = [[NSMutableArray alloc] init];
+    _allEtag  = [[NSMutableArray alloc] init];
     _sections = [[NSMutableArray alloc] init];
     _sectionArrayRow = [[NSMutableDictionary alloc] init];
     _fileIDIndexPath = [[NSMutableDictionary alloc] init];
@@ -61,8 +59,8 @@
     id dataSection;
     long counterSessionDownload = 0;
     long counterSessionUpload = 0;
-    NSMutableArray *copyRecords = [[NSMutableArray alloc] init];
-    NSMutableDictionary *dictionaryFileIDMetadataForIndexPath = [[NSMutableDictionary alloc] init];
+    NSMutableArray *copyRecords = [NSMutableArray new];
+    NSMutableDictionary *dictionaryEtagMetadataForIndexPath = [NSMutableDictionary new];
     
     CCSectionDataSourceMetadata *sectionDataSource = [CCSectionDataSourceMetadata new];
     
@@ -73,23 +71,17 @@
     NSInteger numDirectory = 0;
     BOOL directoryOnTop = [CCUtility getDirectoryOnTop];
     
-    for (id record in records) {
-        
-        CCMetadata *metadata;
-        
-        // verify type of class
-        if ([record isKindOfClass:[TableMetadata class]])
-            metadata = [CCCoreData insertEntityInMetadata:record];
-        else
-            metadata = (CCMetadata *)record;
+    for (tableMetadata* metadata in records) {
         
         // if exists replace date with exif date
         if (replaceDateToExifDate) {
-            TableLocalFile *localFile = [CCCoreData getLocalFileWithFileID:metadata.fileID activeAccount:activeAccount];
-            if (localFile.exifDate)
-                metadata.date = localFile.exifDate;
+            
+            tableLocalFile *localFile = [[NCManageDatabase sharedInstance] getTableLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadata.fileID]];
+            if (localFile)
+                if (localFile.exifDate)
+                    metadata.date = localFile.exifDate;
         }
-
+        
         if ([listProgressMetadata objectForKey:metadata.fileID] && [groupByField isEqualToString:@"session"]) {
             [copyRecords insertObject:metadata atIndex:0];
         } else {
@@ -106,7 +98,7 @@
      sectionArrayRow
     */
     
-    for (CCMetadata *metadata in copyRecords) {
+    for (tableMetadata *metadata in copyRecords) {
         
         // how many download underway (only for groupSession)
         if ([metadata.session containsString:@"download"] && [groupByField isEqualToString:@"session"]) {
@@ -150,7 +142,7 @@
         }
 
         if (metadata && [metadata.fileID length] > 0)
-            [dictionaryFileIDMetadataForIndexPath setObject:metadata forKey:metadata.fileID];
+            [dictionaryEtagMetadataForIndexPath setObject:metadata forKey:metadata.fileID];
     }
     
     /*
@@ -182,7 +174,7 @@
     }];
     
     /*
-    create allFileID, allRecordsDataSource, fileIDIndexPath, section
+    create allEtag, allRecordsDataSource, fileIDIndexPath, section
     */
     
     NSInteger indexSection = 0;
@@ -196,11 +188,11 @@
         
         for (NSString *fileID in rows) {
             
-            CCMetadata *metadata = [dictionaryFileIDMetadataForIndexPath objectForKey:fileID];
+            tableMetadata *metadata = [dictionaryEtagMetadataForIndexPath objectForKey:fileID];
             
             if (metadata.fileID) {
                 
-                [sectionDataSource.allFileID addObject:metadata.fileID];
+                [sectionDataSource.allEtag addObject:metadata.fileID];
                 [sectionDataSource.allRecordsDataSource setObject:metadata forKey:metadata.fileID];
                 [sectionDataSource.fileIDIndexPath setObject:[NSIndexPath indexPathForRow:indexRow inSection:indexSection] forKey:metadata.fileID];
                 
@@ -232,7 +224,7 @@
 + (void)removeAllObjectsSectionDataSource:(CCSectionDataSourceMetadata *)sectionDataSource
 {
     [sectionDataSource.allRecordsDataSource removeAllObjects];
-    [sectionDataSource.allFileID removeAllObjects];
+    [sectionDataSource.allEtag removeAllObjects];
     [sectionDataSource.sections removeAllObjects];
     [sectionDataSource.sectionArrayRow removeAllObjects];
     [sectionDataSource.fileIDIndexPath removeAllObjects];
