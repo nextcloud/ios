@@ -26,8 +26,8 @@ import MobileCoreServices
 
 class CCloadItemData: NSObject {
     
-    func loadFiles(_ directoryUser: String, extensionContext: NSExtensionContext, vc: ShareViewController)
-    {
+    func loadFiles(_ directoryUser: String, extensionContext: NSExtensionContext, vc: ShareViewController) {
+        
         var filesName: [String] = []
         var conuter = 0
         let hud = CCHud(view: vc.view)!
