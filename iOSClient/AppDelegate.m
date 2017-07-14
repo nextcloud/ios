@@ -1632,11 +1632,13 @@
     if ([actualVersion isEqualToString:@"2.17.4"]) {
         
         // Build < 37 (example)
+        /*
         if (([actualBuild compare:@"37" options:NSNumericSearch] == NSOrderedAscending) || actualBuild == nil) {
             
             [CCUtility setOrderSettings:@"fileName"];
             [CCUtility setBuild];
         }
+        */ 
     }
     
     return YES;
