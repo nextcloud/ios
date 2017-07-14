@@ -60,6 +60,11 @@
 "_remove_"                  = "Remove";
 "_file_not_found_"          = "File not found";
 "_continue_"                = "Do you want to continue?";
+"_auto_upload_folder_"      = "Auto upload";
+"_gallery_"                 = "Gallery";
+"_photo_"                   = "Photo";
+"_audio_"                   = "Audio";
+"_unknown_"                 = "Unknown";
 
 // App
 
@@ -150,44 +155,38 @@
 "_favorite_offline_"        = "Favorites available offline";
 "_favorite_offline_footer_" = "Making all favorites available offline may take a long time with a high memory occupation.";
 "_advanced_"                = "Advanced";
+"Skip"                      = "Skip";
+"Start"                     = "Start";
 
-// Manage Camera Upload
+// Manage AutoUpload
 
-"_upload_camera_"           = "Upload camera photos/videos";
-"_upload_camera_background_"= "Upload images in the background";
-"_upload_foto_camera_"      = "Upload camera photos";
-"_upload_encry_camup_"      = "Upload encrypted files";
-"_upload_video_camera_"     = "Upload camera videos";
-"_upload_automatic_photos_" = "Upload camera photos automatically";
-"_upload_automatic_videos_" = "Upload camera videos automatically";
-"_photo_folder_photocamera_"= "The photos will be uploaded to the folder 'photos' in your Cloud";
-"_photo_folder_background_"         = "This option requires the use of GPS to trigger the detection of new photos in the camera roll once the location changes significantly";
-"_cameraupload_background_title_"   = "Limitations";
-"_cameraupload_background_msg_"     = "Due to iOS restrictions, it is not yet possible to perform background processes, unless GPS services are activated. Once the cell in the cellular network is changed, the system wakes up _brand_ for a short time and checks for new photos to upload to the cloud.";
-"_upload_camera_change_location_"   = "Change folder";
-"_upload_camera_location_now_"      = "Folder";
-"_upload_camera_location_default_"  = "Restore default folder";
-"_upload_camera_change_location_footer_" = "Change Photos folder that is used for 'Automatic upload of camera photos' (if the option is enabled)";
-"_camera_upload_not_select_home_"   = "Select a folder";
-"_upload_camera_save_album_"        = "Copy photo or video in the photo album";
-"_upload_camera_save_album_footer_" = "After the automatic sending of the photo or video, a copy is saved in the photo album : _brand_ (does not require more space in the camera roll)";
-"_upload_camera_fullphotos_"        = "Upload all camera photos/videos";
-"_upload_camera_fullphotos_footer_" = "Select the options above before uploading";
-"_upload_camera_create_subfolder_" = "Use subfolders";
-"_upload_camera_create_subfolder_footer_" = "Store in subfolders based on year and month";
+"_autoupload_"                      = "Auto upload photos/videos";
+"_autoupload_background_"           = "Auto upload in the background";
+"_autoupload_photos_"               = "Auto upload photos";
+"_autoupload_videos_"               = "Auto upload videos";
+"_autoupload_description_"          = "The new photos/videos will be uploaded in your Cloud";
+"_autoupload_description_background_"  = "This option requires the use of GPS to trigger the detection of new photos/videos in the camera roll once the location changes significantly";
+"_autoupload_background_title_"     = "Limitations";
+"_autoupload_background_msg_"       = "Due to iOS restrictions, it is not yet possible to perform background processes, unless GPS services are activated. Once the cell in the cellular network is changed, the system wakes up for a short time and checks for new photos to upload to the cloud.";
+"_autoupload_change_location_"      = "Change folder";
+"_autoupload_location_now_"         = "Folder";
+"_autoupload_location_default_"     = "Restore default folder";
+"_autoupload_change_location_footer_" = "Change Photos folder that is used for 'Automatic upload of camera photos' (if the option is enabled)";
+"_autoupload_not_select_home_"      = "Select a folder";
+"_autoupload_save_album_"           = "Copy photo or video into the photo album";
+"_autoupload_fullphotos_"           = "Upload the whole camera roll";
+"_autoupload_fullphotos_footer_"    = "Select the options above before uploading";
+"_autoupload_create_subfolder_"     = "Use subfolders";
+"_autoupload_create_subfolder_footer_" = "Store in subfolders based on year and month";
 
 // Manage Crypto Cloud
 
 "_crypto_cloud_system_"             = "Crypto Cloud System";
 "_alert_activation_crypto_cloud_"   = "Crypto Cloud System activated";
 "_alert_deactivation_crypto_cloud_" = "Crypto Cloud System deactivated";
-"_activation_crypto_cloud_"         = "Activation Crypto Cloud System";
-"_deactivation_crypto_cloud_"       = "Deactivation Crypto Cloud System";
+"_activation_crypto_cloud_"         = "Activation of Crypto Cloud System";
+"_deactivation_crypto_cloud_"       = "Deactivation of Crypto Cloud System";
 "_footer_crypto_cloud_"             = "Based on the encryption AES-256, Crypto Cloud System will enable you to store all your private data (documents, templates, photos, videos, etc…) in your Cloud, thus keeping them safe from possible 'prying eyes'.\n\nYou will be asked to enter a encryption key (minimum 4 characters, maximum 64 characters). You will never be able to retrieve it and your files will remain encrypted. Should you re-install Nextcloud or access to your data from another iOS system, use the same combination.\n\nAny file can be encrypted or decrypted. The name of folders containing your files can be encrypted as well (so as to hide any possible hint at their contents).\n\nAny kind of document, either in standard or in encrypted format, can be uploaded from Nextcloud onto your Cloud. All encrypted files and folders will be marked in orange colour. If they are in preview mode, they will be identified by a 3 bullets orange label instead.\n\nTemplates for recording your confidential data (note, payment card, ATM card, bank accounts, passwords to websites, etc…) are available and they can be saved in your Cloud in encrypted mode as well.\n\nActive/Disactive whenever you want, but remember to always use the same encryption key.\n\nAt the moment the encrypted files with Crypto Cloud System can be viewed only with iOS system.";
-
-// Manage Photos
-
-"_change_folder_photos_"        = "Change folder Photos";
 
 // Manage Help
 
@@ -238,19 +237,18 @@
 
 "_pull_down_"                               = "Pull down to refresh";
 "_no_photo_load_"                           = "No Photo or Video";
-"_tutorial_camera_upload_view_"             = "You can enable camera uploads from \"Settings\"";
+"_tutorial_autoupload_view_"                = "You can enable auto uploads from the \"Settings\"";
 "_no_date_"                                 = "No date";
 "_today_"                                   = "Today";
 "_time_"                                    = "Time: %@\n\n%@";
 "_location_not_enabled_"                    = "Location Services not enabled";
-"_location_not_enabled_msg_"                = "Please go to \"Settings\" and turn on \"Location Services\" to allow automatic camera photo/video uploads.";
+"_location_not_enabled_msg_"                = "Please go to \"Settings\" and turn on \"Location Services\" to allow automatic photo/video uploads.";
 "_access_photo_not_enabled_"                = "Access to Photos not enabled";
-"_access_photo_not_enabled_msg_"            = "Please go to \"Settings\" and turn on \"Photo Access\" to allow automatic camera photo/video uploads.";
+"_access_photo_not_enabled_msg_"            = "Please go to \"Settings\" and turn on \"Photo Access\" to allow automatic photo/video uploads.";
 "_access_photo_location_not_enabled_"       = "Access to Photos and Location not enabled";
-"_access_photo_location_not_enabled_msg_"   = "Please go to \"Settings\" and turn on Photo Access and Location Services to allow automatic camera photo/video uploads.";
-"_processing_send_camera_upload_"           = "Uploading camera photo…";
+"_access_photo_location_not_enabled_msg_"   = "Please go to \"Settings\" and turn on \"Photo Access\" and \"Location Services\" to allow automatic photo/video uploads.";
 "_tutorial_photo_view_"                     = "No photos or videos uploaded yet";
-"_create_full_upload_"                      = "Creating archive… May take a long time, please wait";
+"_create_full_upload_"                      = "Creating archive… May take a long time, please wait.";
 "_error_createsubfolders_upload_"           = "Error creating subfolders";
 "_activate_autoupload_"                     = "Enable auto upload";
 
@@ -260,7 +258,7 @@
 "_web_account_data_"            = "Web account data";
 "_url:_"                        = "URL:";
 "_login:_"                      = "Login:";
-"_password:_"                   = "Password :";
+"_password:_"                   = "Password:";
 "_notes_"                       = "Notes";
 "_web_account_"                 = "Web account";
 "_enter_title_"                 = "Enter title";
@@ -285,7 +283,7 @@
 "_credi_card_data_"             = "Payment card data";
 "_name_surname:_"               = "Name Surname:";
 "_expiry_date:_"                = "Expiry date:";
-"_credit_card_"                 = "Payment Card";
+"_credit_card_"                 = "Payment card";
 "_id_card_"                     = "ID Card";
 "_number:_"                     = "Number:";
 "_place_of_birth:_"             = "Place of birth:";
@@ -323,7 +321,7 @@
 "_unzip_in_progress_"           = "Extraction in progress on local storage…";
 "_file_unpacked_"               = "File unpacked on local storage";
 "_file_saved_local_"            = "File saved on local storage.";
-"_file_not_present_"            = "Error, file not present, please reload.";
+"_file_not_present_"            = "Error: File not present, please reload.";
 "_order_by_date_"               = "Sort by date";
 "_current_order_name_"          = "(currently sorted by name)";
 "_order_by_name_"               = "Sort by name";
@@ -339,8 +337,8 @@
 "_download_selected_files_"     = "Download files";
 "_download_selected_files_folders_" = "Download files and folders";
 "_error_passcode_"              = "Error: Wrong passcode for encryption key.";
-"_error_operation_canc_"        = "Error, operation canceled.";
-"_only_lock_passcode_"          = "Available only with Lock password activated. Activate it in \"Settings\".";
+"_error_operation_canc_"        = "Error: Operation canceled.";
+"_only_lock_passcode_"          = "Available only with Lock password activated. Activate it in the \"Settings\".";
 "_passcode_protection_"         = "Password protection";
 "_encrypt_"                     = "Encrypt";
 "_decrypt_"                     = "Decrypt";
@@ -390,8 +388,8 @@
 "_tite_footer_download_wwan_"   = "  Wi-Fi network required, %lu %@ to download";
 "_tite_footer_download_"        = "%lu %@ to download";
 "_limited_dimension_"           = "Maximum size reached";
-"_same_device_different_passcode_hint_" = "The file was encrypted by the same device but with different password key encryption. If the old password is entered, files encrypted with the new Passcode will not be readable. \n\n Hint: %@";
-"_file_encrypted_another_device_hint_" = "The file was encrypted by another device [%@], enter the password key encryption to read its contents. \n\n Hint: %@";
+"_same_device_different_passcode_hint_" = "The file was encrypted by the same device but with different passcode key encryption. Attention if the old passcode is entered, files encrypted with the new Passcode will not be readable. \n\n Hint: %@";
+"_file_encrypted_another_device_hint_" = "The file was encrypted by another device [%@], enter the passcode key encryption to read its contents. \n\n Hint: %@";
 "_save_selected_files_"         = "Save images and videos to Photo Album";
 "_file_not_saved_cameraroll_"   = "Error: File not saved in Photo Album";
 "_file_saved_cameraroll_"       = "File saved in Photo Album";
@@ -400,7 +398,7 @@
 "_folder_automatic_upload_"     = "Folder for Automatic upload";
 "_search_no_record_found_"      = "No result";
 "_search_in_progress_"          = "Search in progress…";
-"_search_instruction_"          = "Search a file (minimum 2 characters)";
+"_search_instruction_"          = "Search for file (minimum 2 characters)";
 "_files_no_files_"              = "No files in here";
 
 "audio"                         = "AUDIO";
