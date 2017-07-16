@@ -1928,7 +1928,7 @@
     }
     
     // insert in Database
-    metadatasToInsertInDB = (NSMutableArray *)[[NCManageDatabase sharedInstance] addMetadatas:metadatasToInsertInDB activeUrl:app.activeUrl serverUrl:metadataNet.serverUrl];
+    metadatasToInsertInDB = (NSMutableArray *)[[NCManageDatabase sharedInstance] addMetadatas:metadatasToInsertInDB serverUrl:metadataNet.serverUrl];
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
         
@@ -1945,7 +1945,8 @@
     if (_isSearchMode) {
         
         // Fix managed -> Unmanaged _searchResultMetadatas
-        _searchResultMetadatas = [[NSMutableArray alloc] initWithArray:metadatasToInsertInDB];
+        if (metadatasToInsertInDB)
+            _searchResultMetadatas = [[NSMutableArray alloc] initWithArray:metadatasToInsertInDB];
         
         [self reloadDatasource:metadataNet.serverUrl];
     }
@@ -2469,7 +2470,7 @@
         metadata.date = metadataNet.date;
         metadata.permissions = @"RDNVCK";
 
-        (void)[[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:app.activeUrl serverUrl:_serverUrl];
+        (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
         
         [self reloadDatasource];
     }
@@ -2498,7 +2499,7 @@
         
     // Create Directory on metadata
     tableMetadata *metadata = [CCUtility createMetadataWithAccount:app.activeAccount date:[NSDate date] directory:YES fileID:metadataNet.fileID directoryID:metadataNet.directoryID fileName:metadataNet.fileName etag:@"" size:0 status:k_metadataStatusNormal];
-    (void)[[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:app.activeUrl serverUrl:_serverUrl];
+    (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
     
     [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:_serverUrl directoryID:nil];
     [self reloadDatasource];

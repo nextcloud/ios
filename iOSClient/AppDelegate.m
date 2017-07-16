@@ -1579,7 +1579,7 @@
 #endif
     
     NSString *actualVersion = [CCUtility getVersion];
-    NSString *actualBuild = [CCUtility getBuild];
+    //NSString *actualBuild = [CCUtility getBuild];
     
     /* ---------------------- UPGRADE VERSION ----------------------- */
     

@@ -381,7 +381,7 @@
     }
 
     // insert in Database
-    metadatas = [[NCManageDatabase sharedInstance] addMetadatas:metadatasToInsertInDB activeUrl:activeUrl serverUrl:metadataNet.serverUrl];
+    metadatas = [[NCManageDatabase sharedInstance] addMetadatas:metadatasToInsertInDB serverUrl:metadataNet.serverUrl];
 
     // Plist MULTI THREAD
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{

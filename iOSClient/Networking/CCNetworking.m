@@ -996,7 +996,7 @@
         metadata.sessionSelectorPost = selectorPost;
         metadata.typeFile = k_metadataTypeFile_unknown;
         
-        metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:_activeUrl serverUrl:serverUrl];
+        metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata];
         
         if (metadata)
             [self uploadURLSession:fileName fileNamePrint:metadata.fileNamePrint serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetLocalIdentifier:assetLocalIdentifier cryptated:cryptated onlyPlist:onlyPlist selector:selector];
@@ -1027,7 +1027,7 @@
             metadata.sessionSelectorPost = selectorPost;
             metadata.typeFile = k_metadataTypeFile_template;
             
-            metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:_activeUrl serverUrl:serverUrl];
+            metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata];
             
             if (metadata) {
             
@@ -1098,7 +1098,7 @@
             if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image] || [metadata.typeFile isEqualToString: k_metadataTypeFile_video])
                 [[CCCrypto sharedManager] addPlistImage:[NSString stringWithFormat:@"%@/%@", _directoryUser, [fileNameCrypto stringByAppendingString:@".plist"]] fileNamePathImage:[NSTemporaryDirectory() stringByAppendingString:uploadID]];
                 
-            metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:_activeUrl serverUrl:serverUrl];
+            metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata];
             
             if (metadata) {
                 
@@ -1167,7 +1167,7 @@
                     // -- Go to Upload --
                     [CCGraphics createNewImageFrom:metadata.fileNamePrint directoryUser:_directoryUser fileNameTo:metadata.fileID fileNamePrint:metadata.fileNamePrint size:@"m" imageForUpload:YES typeFile:metadata.typeFile writePreview:YES optimizedFileName:NO];
                 
-                    metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:_activeUrl serverUrl:serverUrl];
+                    metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata];
                 
                     if (metadata) {
                         
@@ -1194,7 +1194,7 @@
 #ifndef EXTENSION
             [CCGraphics createNewImageFrom:metadata.fileNamePrint directoryUser:_directoryUser fileNameTo:metadata.fileID fileNamePrint:metadata.fileNamePrint size:@"m" imageForUpload:YES typeFile:metadata.typeFile writePreview:YES optimizedFileName:NO];
 #endif
-            metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:_activeUrl serverUrl:serverUrl];
+            metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata];
             
             if (metadata) {
                 
@@ -1439,7 +1439,7 @@
             metadata.sessionTaskIdentifier = k_taskIdentifierDone;
         
         // Add new metadata
-        metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:_activeUrl serverUrl:serverUrl];
+        metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata];
         
         if (!metadata) {
             

@@ -166,7 +166,7 @@
 
 - (void)readFileSuccess:(CCMetadataNet *)metadataNet metadata:(tableMetadata *)metadata
 {
-    (void)[[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:appDelegate.activeUrl serverUrl:metadataNet.serverUrl];
+    (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
     
     [self reloadDatasource];
 }

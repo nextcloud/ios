@@ -1110,7 +1110,7 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Metadata
     
-    func addMetadata(_ metadata: tableMetadata, activeUrl: String, serverUrl: String) -> tableMetadata? {
+    func addMetadata(_ metadata: tableMetadata) -> tableMetadata? {
         
         guard self.getAccountActive() != nil else {
             return nil
@@ -1131,7 +1131,11 @@ class NCManageDatabase: NSObject {
         return tableMetadata.init(value: metadata)
     }
     
-    func addMetadatas(_ metadatas: [tableMetadata], activeUrl: String, serverUrl: String) -> [tableMetadata] {
+    func addMetadatas(_ metadatas: [tableMetadata], serverUrl: String) -> [tableMetadata]? {
+        
+        guard self.getAccountActive() != nil else {
+            return nil
+        }
         
         let realm = try! Realm()
         
