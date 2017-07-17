@@ -175,14 +175,12 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
     
     func changeTheming() {
         
-        // Theming Background
-        let theminBackgroundFile = UIImage.init(contentsOfFile: "\(appDelegate.directoryUser!)/themingBackground.png")
-        if (theminBackgroundFile != nil) {
+        if let theminBackgroundFile = UIImage.init(contentsOfFile: "\(appDelegate.directoryUser!)/themingBackground.png") {
             themingBackground.image = theminBackgroundFile
         } else {
             themingBackground.image = UIImage.init(named: "themingBackground")
         }
-
+        
         if (self.isViewLoaded && (self.view.window != nil)) {
             appDelegate.changeTheming(self)
         }
@@ -190,14 +188,9 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
     
     func changeUserProfile() {
      
-        let themingAvatarFile : UIImage? = UIImage.init(contentsOfFile: "\(appDelegate.directoryUser!)/avatar.png")
-        
-        if (themingAvatarFile != nil) {
-            
+        if let themingAvatarFile = UIImage.init(contentsOfFile: "\(appDelegate.directoryUser!)/avatar.png") {
             themingAvatar.image = themingAvatarFile
-            
         } else {
-            
             themingAvatar.image = UIImage.init(named: "moreAvatar")
         }
         
