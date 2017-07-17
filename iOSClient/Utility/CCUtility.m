@@ -891,6 +891,11 @@
     if ([metadata.type isEqualToString: k_metadataType_template]) {
         
         metadata.typeFile = k_metadataTypeFile_template;
+    
+    } else if ([metadata.fileName isEqualToString:@"."]) {
+        
+        metadata.typeFile = k_metadataTypeFile_unknown;
+        metadata.iconName = @"file";
         
     } else if (!metadata.directory) {
         
