@@ -2186,7 +2186,14 @@ class NCManageDatabase: NSObject {
             } else {
                 addLocalFile.date = NSDate()
             }
-            addLocalFile.etag = table.rev!
+            
+            if (table.rev != nil) {
+                addLocalFile.etag = table.rev!
+            } else {
+                realm.cancelWrite()
+                return
+            }
+            
             if table.exifDate != nil {
                 addLocalFile.exifDate = table.exifDate! as NSDate
             }
