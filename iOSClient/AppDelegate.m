@@ -1033,7 +1033,7 @@
         newColor = [NCBrandColor sharedInstance].customer;
     }
     
-    if (self.activeAccount.length > 0 && ![newColor isEqual:[NCBrandColor sharedInstance].brand]) {
+    if (self.activeAccount.length > 0 && ![newColor isEqual:[NCBrandColor sharedInstance].brand] && newColor) {
         
         [NCBrandColor sharedInstance].brand = newColor;
         [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"changeTheming" object:nil];

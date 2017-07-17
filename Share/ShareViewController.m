@@ -165,9 +165,11 @@
 
     // Theming
     tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilites];
-    if ([NCBrandOptions sharedInstance].use_themingColor && capabilities.themingColor.length > 0)
-        [NCBrandColor sharedInstance].brand = [CCGraphics colorFromHexString:capabilities.themingColor];
-
+    if ([NCBrandOptions sharedInstance].use_themingColor && capabilities.themingColor.length > 0) {
+        UIColor *newColor = [CCGraphics colorFromHexString:capabilities.themingColor];
+        if (newColor)
+            [NCBrandColor sharedInstance].brand = newColor;
+    }
     self.navigationController.navigationBar.barTintColor = [NCBrandColor sharedInstance].brand;
     self.navigationController.navigationBar.tintColor = [NCBrandColor sharedInstance].navigationBarText;
     
