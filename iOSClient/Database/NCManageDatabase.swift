@@ -1218,22 +1218,13 @@ class NCManageDatabase: NSObject {
     
     func updateMetadata(_ metadata: tableMetadata, activeUrl: String) -> tableMetadata? {
         
-        let autoUploadFileName = self.getAccountAutoUploadFileName()
-        let autoUploadDirectory = self.getAccountAutoUploadDirectory(activeUrl)
-        
-        guard let serverUrl = self.getServerUrl(metadata.directoryID) else {
-            return nil
-        }
-        
         let directoryID = metadata.directoryID
-        
-        let metadataWithIcon = CCUtility.insertTypeFileIconName(metadata, serverUrl: serverUrl, autoUploadFileName: autoUploadFileName, autoUploadDirectory: autoUploadDirectory)
         
         let realm = try! Realm()
         
         do {
             try realm.write {
-                realm.add(metadataWithIcon!, update: true)
+                realm.add(metadata, update: true)
             }
         } catch let error {
             print("Could not write to database: ", error)

@@ -784,8 +784,15 @@
             // Fix Main Thread for insertInformationPlist
             if([selector isEqualToString:selectorLoadPlist] || [selector isEqualToString:selectorLoadModelView]) {
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    if([selector isEqualToString:selectorLoadPlist] || [selector isEqualToString:selectorLoadModelView])
+                    if([selector isEqualToString:selectorLoadPlist] || [selector isEqualToString:selectorLoadModelView]) {
+                        
+                        NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
+                        NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:_activeUrl];
+                        
                         metadata = [CCUtility insertInformationPlist:metadata directoryUser:_directoryUser];
+                        metadata = [CCUtility insertTypeFileIconName:metadata serverUrl:serverUrl autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory];
+
+                    }
                     metadata = [[NCManageDatabase sharedInstance] updateMetadata:metadata activeUrl:_activeUrl];
                 });
             } else {

@@ -462,7 +462,11 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
             
         case selectorLoadPlist :
             
+            let autoUploadFileName = NCManageDatabase.sharedInstance.getAccountAutoUploadFileName()
+            let autoUploadDirectory = NCManageDatabase.sharedInstance.getAccountAutoUploadDirectory(activeUrl!)
+            
             var metadata : tableMetadata? = CCUtility.insertInformationPlist(self.metadata, directoryUser: directoryUser)!
+            metadata = CCUtility.insertTypeFileIconName(metadata, serverUrl: serverUrl, autoUploadFileName: autoUploadFileName, autoUploadDirectory: autoUploadDirectory)
             metadata = NCManageDatabase.sharedInstance.updateMetadata(metadata!, activeUrl: activeUrl!)
             
             if metadata != nil {

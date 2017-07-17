@@ -276,9 +276,13 @@
 {
     if ([selector isEqualToString:selectorLoadPlist]) {
 
+        NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
+        NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:activeUrl];
+        
         tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
         
         metadata = [CCUtility insertInformationPlist:metadata directoryUser:directoryUser];
+        metadata = [CCUtility insertTypeFileIconName:metadata serverUrl:serverUrl autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory];
         metadata = [[NCManageDatabase sharedInstance] updateMetadata:metadata activeUrl:activeUrl];
         
         // se è un template aggiorniamo anche nel FileSystem
