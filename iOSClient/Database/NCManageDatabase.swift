@@ -213,13 +213,11 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
         
-        let result = realm.objects(tableAccount.self).filter(predicate).first
-        
-        if result != nil {
-            return tableAccount.init(value: result!)
-        } else {
-            return nil
+        if let result = realm.objects(tableAccount.self).filter(predicate).first {
+            return tableAccount.init(value: result)
         }
+        
+        return nil
     }
     
     func getAccountAutoUploadFileName() -> String {
