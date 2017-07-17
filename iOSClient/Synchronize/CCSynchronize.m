@@ -94,6 +94,9 @@
 - (void)readFolderSuccess:(CCMetadataNet *)metadataNet metadataFolder:(tableMetadata *)metadataFolder metadatas:(NSArray *)metadatas
 {
     // Add/update self Folder
+    if (!metadataFolder || !metadatas || [metadatas count] == 0)
+        return;
+    
     (void)[[NCManageDatabase sharedInstance] addMetadata:metadataFolder];
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
