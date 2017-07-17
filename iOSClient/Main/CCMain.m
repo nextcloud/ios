@@ -4732,7 +4732,7 @@
 - (void)reloadDatasource:(NSString *)serverUrl
 {
     // test
-    if (app.activeAccount.length == 0 || serverUrl.length == 0)
+    if (app.activeAccount.length == 0 || serverUrl.length == 0 || serverUrl == nil)
         return;
     
     // Search Mode
