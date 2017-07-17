@@ -472,8 +472,7 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:_serverUrl];
-    if (!directoryID)
-        return 0;
+    if (!directoryID) return 0;
     NSPredicate *predicate;
     
     if (self.onlyClearDirectory) predicate = [NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND directory = true AND cryptated = false", activeAccount, directoryID];
@@ -535,8 +534,7 @@
 
     NSIndexPath *index = [self.tableView indexPathForSelectedRow];
     NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:_serverUrl];
-    if (!directoryID)
-        return;
+    if (!directoryID) return;
     
     if (self.onlyClearDirectory) predicate = [NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND directory = true AND cryptated = false", activeAccount, directoryID];
     else predicate = [NSPredicate predicateWithFormat:@"account = %@ AND directoryID == %@ AND directory = true", activeAccount, directoryID];

@@ -65,8 +65,7 @@
     
     metadataNet.action = actionReadFolder;
     NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
-    if (!directoryID)
-        return;
+    if (!directoryID) return;
     
     metadataNet.directoryID = directoryID;
     metadataNet.priority = NSOperationQueuePriorityLow;
@@ -233,7 +232,7 @@
 - (void)synchronizedFile:(tableMetadata *)metadata selector:(NSString *)selector
 {
     NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
-    if (serverUrl == nil) return;
+    if (!serverUrl) return;
         
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
         
@@ -260,7 +259,8 @@
         [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadataNet.account, metadataNet.fileID] clearDateReadDirectoryID:nil];
         
         NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadataNet.directoryID];
-        [app.activeMain reloadDatasource:serverUrl];
+        if (serverUrl)
+            [app.activeMain reloadDatasource:serverUrl];
     }
 }
 
@@ -361,6 +361,7 @@
         // Clear date for dorce refresh view
         if (![oldDirectoryID isEqualToString:metadata.directoryID]) {
             serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
+            if (!serverUrl) return;
             oldDirectoryID = metadata.directoryID;
             [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:serverUrl directoryID:nil];
         }

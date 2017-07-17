@@ -401,6 +401,8 @@
         if (metadata.directory) {
         
             NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
+            if (!serverUrl) continue;
+            
             serverUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileNamePrint];
 
             NSString *serverUrlBeginWith = serverUrl;

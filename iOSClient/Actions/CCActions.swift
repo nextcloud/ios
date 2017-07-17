@@ -85,7 +85,10 @@ class CCActions: NSObject {
 
     func deleteFileOrFolder(_ metadata: tableMetadata, delegate: AnyObject) {
         
-        let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID)
+        guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
+            return
+        }
+        
         let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
 
         // fix CCActions.swift line 88 2.17.2 (00005)
@@ -174,7 +177,9 @@ class CCActions: NSObject {
         
         let fileName = CCUtility.removeForbiddenCharactersServer(fileName)!
         
-        let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID)
+        guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
+            return
+        }
         
         if fileName.characters.count == 0 {
             return
@@ -250,7 +255,7 @@ class CCActions: NSObject {
         } else {
  
             let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: appDelegate.activeUser, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl, isCryptoCloudMode: false);
-            let error = ocNetworking?.readFileSync("\(serverUrl)/\(fileName)");
+            let error = ocNetworking?.readFileSync("\(String(describing: serverUrl))/\(fileName)");
             
             // Verify if exists the fileName TO
             if error == nil {
@@ -379,7 +384,10 @@ class CCActions: NSObject {
     func downloadTumbnail(_ metadata: tableMetadata, delegate: AnyObject) {
         
         let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
-        let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID)
+        
+        guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
+            return
+        }
         
         metadataNet.action = actionDownloadThumbnail
         metadataNet.delegate = delegate
@@ -412,8 +420,11 @@ class CCActions: NSObject {
     func settingFavorite(_ metadata: tableMetadata, favorite: Bool, delegate: AnyObject) {
         
         let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
-        let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID)
         
+        guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
+            return
+        }
+                
         metadataNet.action = actionSettingFavorite
         metadataNet.delegate = delegate
         metadataNet.fileID = metadata.fileID

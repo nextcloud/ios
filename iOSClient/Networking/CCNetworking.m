@@ -374,9 +374,9 @@
     NSString *url = [[[task currentRequest].URL absoluteString] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     NSString *fileName = [url lastPathComponent];
     NSString *serverUrl = [self getServerUrlFromUrl:url];
+    if (!serverUrl) return;
     NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
-    if (!directoryID)
-        return;
+    if (!directoryID) return;
     tableMetadata *metadata;
     
     NSInteger errorCode;
@@ -651,9 +651,9 @@
     NSString *url = [[[downloadTask currentRequest].URL absoluteString] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     NSString *fileName = [url lastPathComponent];
     NSString *serverUrl = [self getServerUrlFromUrl:url];
+    if (!serverUrl) return;
     NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
-    if (!directoryID)
-        return;
+    if (!directoryID) return;
     
     // if plist return
     if ([CCUtility getTypeFileName:fileName] == k_metadataTypeFilenamePlist)
@@ -678,6 +678,7 @@
     NSURLRequest *url = [downloadTask currentRequest];
     NSString *fileName = [[url.URL absoluteString] lastPathComponent];
     NSString *serverUrl = [self getServerUrlFromUrl:[url.URL absoluteString]];
+    if (!serverUrl) return;
     
     tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"session = %@ AND (sessionTaskIdentifier = %i OR sessionTaskIdentifierPlist = %i)",session.sessionDescription, downloadTask.taskIdentifier, downloadTask.taskIdentifier]];
     
@@ -973,8 +974,7 @@
 - (void)upload:(NSString *)fileName serverUrl:(NSString *)serverUrl cryptated:(BOOL)cryptated template:(BOOL)template onlyPlist:(BOOL)onlyPlist fileNameTemplate:(NSString *)fileNameTemplate assetLocalIdentifier:(NSString *)assetLocalIdentifier session:(NSString *)session taskStatus:(NSInteger)taskStatus selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorCode:(NSInteger)errorCode delegate:(id)delegate
 {
     NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
-    if (!directoryID)
-        return;
+    if (!directoryID) return;
     NSString *fileNameCrypto;
     
     // create Metadata
@@ -1220,6 +1220,7 @@
     BOOL send = NO;
     
     NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
+    if (!serverUrl) return;
     
     if (metadata.cryptated) {
         
@@ -1383,9 +1384,9 @@
     NSString *url = [[[task currentRequest].URL absoluteString] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     NSString *fileName = [url lastPathComponent];
     NSString *serverUrl = [self getServerUrlFromUrl:url];
+    if (!serverUrl) return;
     NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
-    if (!directoryID)
-        return;
+    if (!directoryID) return;
     
     // if plist return
     if ([CCUtility getTypeFileName:fileName] == k_metadataTypeFilenamePlist)
@@ -1622,7 +1623,8 @@
     for (tableMetadata *metadata in metadatas) {
         
         NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
-            
+        if (!serverUrl) continue;
+        
         if (metadata.sessionTaskIdentifier == k_taskIdentifierError)
             [self downloadFile:metadata.fileID serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:metadata.sessionSelector selectorPost:nil session:k_download_session taskStatus: k_taskStatusResume delegate:nil];
             
@@ -1660,6 +1662,7 @@
     for (tableMetadata *metadata in dataSource) {
         
         __block NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
+        if (!serverUrl) continue;
         
         NSURLSession *session = [self getSessionfromSessionDescription:metadata.session];
                 
@@ -1784,8 +1787,7 @@
         fileName = metadataNet.fileName;
     
     NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:metadataNet.serverUrl];
-    if (!directoryID)
-        return;
+    if (!directoryID) return;
     
     tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileName = %@ AND directoryID = %@ AND account = %@",fileName , directoryID, _activeAccount]];
     

@@ -780,16 +780,16 @@ class NCManageDatabase: NSObject {
         return result.directoryID
     }
     
-    func getServerUrl(_ directoryID: String) -> String {
+    func getServerUrl(_ directoryID: String) -> String? {
         
         guard let tableAccount = self.getAccountActive() else {
-            return ""
+            return nil
         }
         
         let realm = try! Realm()
         
         guard let result = realm.objects(tableDirectory.self).filter("account = %@ AND directoryID = %@", tableAccount.account, directoryID).first else {
-            return ""
+            return nil
         }
         
         return result.serverUrl
@@ -1220,7 +1220,11 @@ class NCManageDatabase: NSObject {
         
         let autoUploadFileName = self.getAccountAutoUploadFileName()
         let autoUploadDirectory = self.getAccountAutoUploadDirectory(activeUrl)
-        let serverUrl = self.getServerUrl(metadata.directoryID)
+        
+        guard let serverUrl = self.getServerUrl(metadata.directoryID) else {
+            return nil
+        }
+        
         let directoryID = metadata.directoryID
         
         let metadataWithIcon = CCUtility.insertTypeFileIconName(metadata, serverUrl: serverUrl, autoUploadFileName: autoUploadFileName, autoUploadDirectory: autoUploadDirectory)
