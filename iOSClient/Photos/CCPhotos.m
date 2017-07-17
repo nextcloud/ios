@@ -597,32 +597,36 @@
     checked.image = [UIImage imageNamed:@"checked"];
 
     NSArray *metadatasForKey = [_sectionDataSource.sectionArrayRow objectForKey:[_sectionDataSource.sections objectAtIndex:indexPath.section]];
-    NSString *fileID = [metadatasForKey objectAtIndex:indexPath.row];
-    tableMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:fileID];
     
-    // Image
-    if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]]) {
+    if ([metadatasForKey count] > indexPath.row) {
         
-        // insert Image
-        imageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]];
-        
-    } else {
-        
-        // Thumbnail not present
-        imageView.image = [UIImage imageNamed:@"file_photo"];
-        
-        if (metadata.thumbnailExists)
-            [[CCActions sharedInstance] downloadTumbnail:metadata delegate:self];
-    }
+        NSString *fileID = [metadatasForKey objectAtIndex:indexPath.row];
+        tableMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:fileID];
     
-    // Cheched
-    if (cell.selected) {
-        checked.hidden = NO;
-        effect.hidden = NO;
-        effect.alpha = 0.4;
-    } else {
-        checked.hidden = YES;
-        effect.hidden = YES;
+        // Image
+        if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]]) {
+        
+            // insert Image
+            imageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]];
+        
+        } else {
+        
+            // Thumbnail not present
+            imageView.image = [UIImage imageNamed:@"file_photo"];
+        
+            if (metadata.thumbnailExists)
+                [[CCActions sharedInstance] downloadTumbnail:metadata delegate:self];
+        }
+    
+        // Cheched
+        if (cell.selected) {
+            checked.hidden = NO;
+            effect.hidden = NO;
+            effect.alpha = 0.4;
+        } else {
+            checked.hidden = YES;
+            effect.hidden = YES;
+        }
     }
     
     return cell;
@@ -631,34 +635,38 @@
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
     NSArray *metadatasForKey = [_sectionDataSource.sectionArrayRow objectForKey:[_sectionDataSource.sections objectAtIndex:indexPath.section]];
-    NSString *fileID = [metadatasForKey objectAtIndex:indexPath.row];
-    _metadata = [_sectionDataSource.allRecordsDataSource objectForKey:fileID];
     
-    //UICollectionViewCell *cell =[collectionView cellForItemAtIndexPath:indexPath];
-    
-    if (_cellEditing) {
+    if ([metadatasForKey count] > indexPath.row) {
         
-        [self cellSelect:YES indexPath:indexPath metadata:_metadata];
+        NSString *fileID = [metadatasForKey objectAtIndex:indexPath.row];
+        _metadata = [_sectionDataSource.allRecordsDataSource objectForKey:fileID];
         
-    } else {
+        if (_cellEditing) {
         
-        if ([self shouldPerformSegue])
-            [self performSegueWithIdentifier:@"segueDetail" sender:self];
-    }    
+            [self cellSelect:YES indexPath:indexPath metadata:_metadata];
+        
+        } else {
+        
+            if ([self shouldPerformSegue])
+                [self performSegueWithIdentifier:@"segueDetail" sender:self];
+        }
+    }
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didDeselectItemAtIndexPath:(NSIndexPath *)indexPath
 {
     if (_cellEditing == NO)
         return;
- 
-    //UICollectionViewCell *cell =[collectionView cellForItemAtIndexPath:indexPath];
     
     NSArray *metadatasForKey = [_sectionDataSource.sectionArrayRow objectForKey:[_sectionDataSource.sections objectAtIndex:indexPath.section]];
-    NSString *fileID = [metadatasForKey objectAtIndex:indexPath.row];
-    _metadata = [_sectionDataSource.allRecordsDataSource objectForKey:fileID];
     
-    [self cellSelect:NO indexPath:indexPath metadata:_metadata];
+    if ([metadatasForKey count] > indexPath.row) {
+        
+        NSString *fileID = [metadatasForKey objectAtIndex:indexPath.row];
+        _metadata = [_sectionDataSource.allRecordsDataSource objectForKey:fileID];
+        
+        [self cellSelect:NO indexPath:indexPath metadata:_metadata];
+    }
 }
 
 - (BOOL)indexPathIsValid:(NSIndexPath *)indexPath
