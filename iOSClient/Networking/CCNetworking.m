@@ -375,6 +375,8 @@
     NSString *fileName = [url lastPathComponent];
     NSString *serverUrl = [self getServerUrlFromUrl:url];
     NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
+    if (!directoryID)
+        return;
     tableMetadata *metadata;
     
     NSInteger errorCode;
@@ -649,6 +651,9 @@
     NSString *url = [[[downloadTask currentRequest].URL absoluteString] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     NSString *fileName = [url lastPathComponent];
     NSString *serverUrl = [self getServerUrlFromUrl:url];
+    NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
+    if (!directoryID)
+        return;
     
     // if plist return
     if ([CCUtility getTypeFileName:fileName] == k_metadataTypeFilenamePlist)
@@ -656,7 +661,7 @@
 
     float progress = (float) totalBytesWritten / (float)totalBytesExpectedToWrite;
     
-    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataFromFileName:fileName directoryID:[[NCManageDatabase sharedInstance] getDirectoryID:serverUrl]];
+    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataFromFileName:fileName directoryID:directoryID];
     
     if (metadata) {
         
@@ -968,6 +973,8 @@
 - (void)upload:(NSString *)fileName serverUrl:(NSString *)serverUrl cryptated:(BOOL)cryptated template:(BOOL)template onlyPlist:(BOOL)onlyPlist fileNameTemplate:(NSString *)fileNameTemplate assetLocalIdentifier:(NSString *)assetLocalIdentifier session:(NSString *)session taskStatus:(NSInteger)taskStatus selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorCode:(NSInteger)errorCode delegate:(id)delegate
 {
     NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
+    if (!directoryID)
+        return;
     NSString *fileNameCrypto;
     
     // create Metadata
@@ -1376,6 +1383,9 @@
     NSString *url = [[[task currentRequest].URL absoluteString] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     NSString *fileName = [url lastPathComponent];
     NSString *serverUrl = [self getServerUrlFromUrl:url];
+    NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
+    if (!directoryID)
+        return;
     
     // if plist return
     if ([CCUtility getTypeFileName:fileName] == k_metadataTypeFilenamePlist)
@@ -1383,7 +1393,7 @@
     
     float progress = (float) totalBytesSent / (float)totalBytesExpectedToSend;
 
-    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataFromFileName:fileName directoryID:[[NCManageDatabase sharedInstance] getDirectoryID:serverUrl]];
+    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataFromFileName:fileName directoryID:directoryID];
     
     if (metadata) {
             
@@ -1738,6 +1748,8 @@
         fileName = metadataNet.fileName;
     
     NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:metadataNet.serverUrl];
+    if (!directoryID)
+        [self uploadFileSuccessFailure:metadata fileName:metadataNet.fileName fileID:metadata.fileID etag:metadata.etag date:metadata.date serverUrl:metadataNet.serverUrl errorCode:k_CCErrorFileUploadNotFound];
     
     tableMetadata *metadataTemp = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileName = %@ AND directoryID = %@ AND account = %@", fileName , directoryID, _activeAccount]];
     
@@ -1772,6 +1784,9 @@
         fileName = metadataNet.fileName;
     
     NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:metadataNet.serverUrl];
+    if (!directoryID)
+        return;
+    
     tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileName = %@ AND directoryID = %@ AND account = %@",fileName , directoryID, _activeAccount]];
     
     NSInteger error;

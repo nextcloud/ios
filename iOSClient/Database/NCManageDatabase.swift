@@ -765,10 +765,10 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func getDirectoryID(_ serverUrl: String) -> String {
+    func getDirectoryID(_ serverUrl: String) -> String? {
         
         guard let tableAccount = self.getAccountActive() else {
-            return ""
+            return nil
         }
         
         let realm = try! Realm()
@@ -1149,8 +1149,9 @@ class NCManageDatabase: NSObject {
             print("Could not write to database: ", error)
         }
         
-        let directoryID = self.getDirectoryID(serverUrl)
-        self.setDateReadDirectory(directoryID: directoryID)
+        if let directoryID = self.getDirectoryID(serverUrl) {
+            self.setDateReadDirectory(directoryID: directoryID)
+        }
         
         return Array(metadatas.map { tableMetadata.init(value:$0) })
     }

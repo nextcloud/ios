@@ -341,14 +341,18 @@ class CCActions: NSObject {
     
     func search(_ serverUrl: String, fileName: String, depth: String, date: Date?, selector: String, delegate: AnyObject) {
         
+        guard let directoryID = NCManageDatabase.sharedInstance.getDirectoryID(serverUrl) else {
+            return
+        }
+        
         // Search DAV API
             
         let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
-            
+        
         metadataNet.action = actionSearch
         metadataNet.date = date
         metadataNet.delegate = delegate
-        metadataNet.directoryID = NCManageDatabase.sharedInstance.getDirectoryID(serverUrl)
+        metadataNet.directoryID = directoryID
         metadataNet.fileName = fileName
         metadataNet.options = depth
         metadataNet.priority = Operation.QueuePriority.high.rawValue

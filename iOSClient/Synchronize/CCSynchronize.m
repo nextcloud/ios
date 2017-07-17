@@ -64,7 +64,11 @@
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
     
     metadataNet.action = actionReadFolder;
-    metadataNet.directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
+    NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
+    if (!directoryID)
+        return;
+    
+    metadataNet.directoryID = directoryID;
     metadataNet.priority = NSOperationQueuePriorityLow;
     metadataNet.selector = selector;
     metadataNet.serverUrl = serverUrl;

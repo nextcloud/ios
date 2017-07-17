@@ -1500,7 +1500,9 @@
                     countSelectorLoadPlist++;
             }
             
-            if ((countSelectorLoadPlist == 0 || countSelectorLoadPlist % k_maxConcurrentOperation == 0) && [metadata.directoryID isEqualToString:[[NCManageDatabase sharedInstance] getDirectoryID:_serverUrl]]) {
+            NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:_serverUrl];
+            
+            if ((countSelectorLoadPlist == 0 || countSelectorLoadPlist % k_maxConcurrentOperation == 0) && [metadata.directoryID isEqualToString:directoryID] && directoryID) {
             
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [self reloadDatasource:serverUrl];
@@ -1677,6 +1679,8 @@
     
     NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:app.activeUrl];
     NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
+    if (!directoryID)
+        return;
     
     // Create the folder for Photos & if request the subfolders
     if (![[NCAutoUpload sharedInstance] createFolderSubFolderAutoUploadFolderPhotos:autoUploadPath useSubFolder:useSubFolder assets:(PHFetchResult *)assets selector:selectorUploadFile])
@@ -2039,6 +2043,9 @@
         // First : filter
             
         NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:_serverUrl];
+        if (!directoryID)
+            return;
+        
         NSPredicate *predicate = [NSPredicate predicateWithFormat:@"directoryID = %@ AND account = %@ AND fileNamePrint CONTAINS[cd] %@", directoryID, app.activeAccount, fileName];
         NSArray *records = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:predicate sorted:nil ascending:NO];
             
@@ -2307,6 +2314,10 @@
     NSInteger numFile = [[arguments objectAtIndex:2] integerValue];
     NSInteger ofFile = [[arguments objectAtIndex:3] integerValue];
     
+    NSString *directoryIDTo = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrlTo];
+    if (!directoryIDTo)
+        return;
+    
     // Plain
     if (metadata.cryptated == NO) {
             
@@ -2340,7 +2351,7 @@
         metadataNet.directory = metadata.directory;
         metadataNet.fileID = metadata.fileID;
         metadataNet.directoryID = metadata.directoryID;
-        metadataNet.directoryIDTo = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrlTo];
+        metadataNet.directoryIDTo = directoryIDTo;
         metadataNet.fileName = metadata.fileName;
         metadataNet.fileNamePrint = metadataNet.fileNamePrint;
         metadataNet.fileNameTo = metadata.fileName;
@@ -2363,7 +2374,7 @@
         metadataNet.directory = metadata.directory;
         metadataNet.fileID = metadata.fileID;
         metadataNet.directoryID = metadata.directoryID;
-        metadataNet.directoryIDTo = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrlTo];
+        metadataNet.directoryIDTo = directoryIDTo;
         metadataNet.fileNamePrint = metadata.fileNamePrint;
         metadataNet.etag = metadata.etag;
         metadataNet.serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
@@ -2486,8 +2497,12 @@
     if (autoUploadDirectory) metadataNet.serverUrl = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:app.activeUrl];
     else  metadataNet.serverUrl = _serverUrl;
     
+    NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:_serverUrl];
+    if (!directoryID)
+        return;
+    
     metadataNet.action = actionCreateFolder;
-    metadataNet.directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:_serverUrl];
+    metadataNet.directoryID = directoryID;
     if (autoUploadDirectory)
         metadataNet.options = @"folderAutoUpload";
     metadataNet.fileID = [[NSUUID UUID] UUIDString];
@@ -4759,10 +4774,15 @@
         if ([sorted isEqualToString:@"fileName"])
             sorted = @"fileNamePrint";
     
-        NSArray *recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND status = %i", app.activeAccount, [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl], k_metadataStatusNormal] sorted:sorted ascending:[CCUtility getAscendingSettings]];
+        NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
         
-        _sectionDataSource = [CCSectionDataSourceMetadata new];
-        _sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:_directoryGroupBy replaceDateToExifDate:NO activeAccount:app.activeAccount];
+        if (directoryID) {
+        
+            NSArray *recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND status = %i", app.activeAccount, directoryID, k_metadataStatusNormal] sorted:sorted ascending:[CCUtility getAscendingSettings]];
+        
+            _sectionDataSource = [CCSectionDataSourceMetadata new];
+            _sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:_directoryGroupBy replaceDateToExifDate:NO activeAccount:app.activeAccount];
+        }
         
     } else {
         
