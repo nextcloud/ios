@@ -765,9 +765,13 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func getDirectoryID(_ serverUrl: String) -> String? {
+    func getDirectoryID(_ serverUrl: String?) -> String? {
         
         guard let tableAccount = self.getAccountActive() else {
+            return nil
+        }
+        
+        guard let serverUrl = serverUrl else {
             return nil
         }
         
@@ -780,9 +784,13 @@ class NCManageDatabase: NSObject {
         return result.directoryID
     }
     
-    func getServerUrl(_ directoryID: String) -> String? {
+    func getServerUrl(_ directoryID: String?) -> String? {
         
         guard let tableAccount = self.getAccountActive() else {
+            return nil
+        }
+        
+        guard let directoryID = directoryID else {
             return nil
         }
         
