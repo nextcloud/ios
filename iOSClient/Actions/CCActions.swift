@@ -141,8 +141,8 @@ class CCActions: NSObject {
         
         let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID == %@", metadataNet.fileID))
         
-        if metadata != nil {
-            self.deleteFile(metadata: metadata!, serverUrl: metadataNet.serverUrl)
+        if let metadata = metadata {
+            self.deleteFile(metadata: metadata, serverUrl: metadataNet.serverUrl)
         }
         
         metadataNet.delegate?.deleteFileOrFolderSuccess(metadataNet)
@@ -255,10 +255,9 @@ class CCActions: NSObject {
         } else {
  
             let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: appDelegate.activeUser, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl, isCryptoCloudMode: false);
-            let error = ocNetworking?.readFileSync("\(String(describing: serverUrl))/\(fileName)");
-            
+
             // Verify if exists the fileName TO
-            if error == nil {
+            guard (ocNetworking?.readFileSync("\(String(describing: serverUrl))/\(fileName)")) != nil else {
                 
                 let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: NSLocalizedString("_file_already_exists_", comment: ""), preferredStyle: UIAlertControllerStyle.alert)
                 
@@ -272,7 +271,7 @@ class CCActions: NSObject {
                 
                 return;
             }
-            
+
             // Plain
             
             metadataNet.action = actionMoveFileOrFolder
