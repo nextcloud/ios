@@ -466,8 +466,12 @@
                 etag = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-ETag"]];
             
                 NSString *dateString = [fields objectForKey:@"Date"];
-                if (![dateFormatter getObjectValue:&date forString:dateString range:nil error:&error]) {
-                    NSLog(@"Date '%@' could not be parsed: %@", dateString, error);
+                if (dateString) {
+                    if (![dateFormatter getObjectValue:&date forString:dateString range:nil error:&error]) {
+                        NSLog(@"Date '%@' could not be parsed: %@", dateString, error);
+                        date = [NSDate date];
+                    }
+                } else {
                     date = [NSDate date];
                 }
             }
