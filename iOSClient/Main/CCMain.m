@@ -3878,19 +3878,25 @@
             NSData *dataFileID = [dic objectForKey: k_metadataKeyedUnarchiver];
             NSString *fileID = [NSKeyedUnarchiver unarchiveObjectWithData:dataFileID];
 
-            tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
+            if (fileID) {
             
-            if (metadata) {
+                tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
             
-                tableAccount *account = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account = %@", metadata.account]];
+                if (metadata) {
+            
+                    tableAccount *account = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account = %@", metadata.account]];
 
-                if (account) {
+                    if (account) {
                 
-                    NSString *directoryUser = [CCUtility getDirectoryActiveUser:account.user activeUrl:account.url];
+                        NSString *directoryUser = [CCUtility getDirectoryActiveUser:account.user activeUrl:account.url];
             
-                    if (directoryUser) {
-                        if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileID]]) {
-                            isValid = YES;
+                        if (directoryUser) {
+                            if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileID]]) {
+                                isValid = YES;
+                            } else {
+                                isValid = NO;
+                                break;
+                            }
                         } else {
                             isValid = NO;
                             break;
