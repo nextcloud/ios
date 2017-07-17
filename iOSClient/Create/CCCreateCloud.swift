@@ -341,11 +341,11 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         }
         else if formRow.tag == "maskFileName" {
             
-            let fileName : String? = formRow.value as? String
+            let fileName = formRow.value as? String
             
             self.form.delegate = nil
             
-            if fileName != nil {
+            if let fileName = fileName {
                 formRow.value = CCUtility.removeForbiddenCharactersServer(fileName)
             }
             
@@ -462,13 +462,13 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
     
         self.serverUrl = serverUrlTo
         
-        if title == nil {
+        if let title = title {
             
-            self.titleServerUrl = "/"
+            self.titleServerUrl = title
             
         } else {
             
-            self.titleServerUrl = title
+            self.titleServerUrl = "/"
         }
         
         self.reloadForm()
@@ -503,9 +503,9 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         
         var returnString : String = ""
         
-        if valueRename != nil {
+        if let valueRename = valueRename {
             
-            let valueRenameTrimming = valueRename!.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
+            let valueRenameTrimming = valueRename.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
             
             if valueRenameTrimming.characters.count > 0 {
                 
