@@ -200,13 +200,17 @@ class NCManageDatabase: NSObject {
         return result
     }
 
-    func getAccounts() -> [String] {
+    func getAccounts() -> [String]? {
         
         let realm = try! Realm()
         
         let results = realm.objects(tableAccount.self).sorted(byKeyPath: "account", ascending: true)
         
-        return Array(results.map { $0.account })
+        if results.count > 0 {
+            return Array(results.map { $0.account })
+        }
+        
+        return nil
     }
     
     func getAccount(predicate: NSPredicate) -> tableAccount? {
