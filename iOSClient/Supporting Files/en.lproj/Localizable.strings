@@ -212,7 +212,7 @@
 "_key_aes_256_"                 = "Encryption key passcode";
 "_login_url_"                   = "Server address https://…";
 
-"_security_init_required_hint_" = "Hint for encryption key passcode (Recommended)";
+"_security_init_required_hint_" = "Hint for encryption key passcode (recommended)";
 "_hint_"                        = "Hint";
 "_security_init_required_mail_" = "Enter your email address to receive the encryption key passcode (recommended).";
 "_email_"                       = "Email";
