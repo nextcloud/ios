@@ -886,6 +886,7 @@ class NCManageDatabase: NSObject {
             try realm.write {
             
                 guard let result = realm.objects(tableDirectory.self).filter("account = %@ AND serverUrl = %@", tableAccount.account, serverUrl).first else {
+                    realm.cancelWrite()
                     return
                 }
                 
@@ -1095,6 +1096,7 @@ class NCManageDatabase: NSObject {
             try realm.write {
                 
                 guard let result = realm.objects(tableLocalFile.self).filter("fileID = %@", fileID).first else {
+                    realm.cancelWrite()
                     return
                 }
                 
