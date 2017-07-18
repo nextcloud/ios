@@ -149,8 +149,8 @@ typedef unsigned int swift_uint4  __attribute__((__ext_vector_type__(4)));
 /// You then instantiate and use your custom subclasses instead of using the <code>Object</code> class directly.
 /// \code
 /// class Dog: Object {
-///     dynamic var name: String = ""
-///     dynamic var adopted: Bool = false
+///     @objc dynamic var name: String = ""
+///     @objc dynamic var adopted: Bool = false
 ///     let siblings = List<Dog>()
 /// }
 ///
@@ -194,7 +194,7 @@ typedef unsigned int swift_uint4  __attribute__((__ext_vector_type__(4)));
 /// <code>Int</code>, <code>Int8</code>, <code>Int16</code>, <code>Int32</code>, <code>Int64</code>, <code>Float</code>, <code>Double</code>, <code>Bool</code>, and <code>List</code> properties cannot. To store an optional
 /// number, use <code>RealmOptional<Int></code>, <code>RealmOptional<Float></code>, <code>RealmOptional<Double></code>, or <code>RealmOptional<Bool></code> instead,
 /// which wraps an optional numeric value.
-/// All property types except for <code>List</code> and <code>RealmOptional</code> <em>must</em> be declared as <code>dynamic var</code>. <code>List</code> and
+/// All property types except for <code>List</code> and <code>RealmOptional</code> <em>must</em> be declared as <code>@objc dynamic var</code>. <code>List</code> and
 /// <code>RealmOptional</code> properties must be declared as non-dynamic <code>let</code> properties. Swift <code>lazy</code> properties are not allowed.
 /// Note that none of the restrictions listed above apply to properties that are configured to be ignored by Realm.
 /// <h3>Querying</h3>
@@ -297,7 +297,7 @@ SWIFT_CLASS("_TtC10RealmSwift18LinkingObjectsBase")
 @property (nonatomic, readonly, copy) NSString * _Nonnull propertyName;
 @property (nonatomic, readonly, strong) RLMResults<RLMObject *> * _Nonnull rlmResults;
 - (nonnull instancetype)initFromClassName:(NSString * _Nonnull)objectClassName property:(NSString * _Nonnull)propertyName OBJC_DESIGNATED_INITIALIZER;
-- (NSInteger)countByEnumeratingWithState:(NSFastEnumerationState * _Nonnull)state objects:(id _Nullable * _Null_unspecified)buffer count:(NSInteger)len SWIFT_WARN_UNUSED_RESULT;
+- (NSInteger)countByEnumeratingWithState:(NSFastEnumerationState * _Nonnull)state objects:(id _Nullable * _Nonnull)buffer count:(NSInteger)len SWIFT_WARN_UNUSED_RESULT;
 - (nonnull instancetype)init SWIFT_UNAVAILABLE;
 @end
 

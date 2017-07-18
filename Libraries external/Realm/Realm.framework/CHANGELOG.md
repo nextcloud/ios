@@ -1,3 +1,62 @@
+2.8.3 Release notes (2017-06-20)
+=============================================================
+
+### Bugfixes
+
+* Properly update RealmOptional properties when adding an object with `add(update: true)`.
+* Add some missing quotes in error messages.
+* Fix a performance regression when creating objects with primary keys.
+
+2.8.2 Release notes (2017-06-16)
+=============================================================
+
+### Bugfixes
+
+* Fix an issue where synchronized Realms would eventually disconnect from the
+  remote server if the user object used to define their sync configuration
+  was destroyed.
+* Restore support for changing primary keys in migrations (broken in 2.8.0).
+* Revert handling of adding objects with nil properties to a Realm to the
+  pre-2.8.0 behavior.
+
+2.8.1 Release notes (2017-06-12)
+=============================================================
+
+Add support for building with Xcode 9 Beta 1.
+
+### Bugfixes
+
+* Fix setting a float property to NaN.
+* Fix a crash when using compact on launch in combination with collection
+  notifications.
+
+2.8.0 Release notes (2017-06-02)
+=============================================================
+
+### API Breaking Changes
+
+* None.
+
+### Enhancements
+
+* Enable encryption on watchOS.
+* Add `-[RLMSyncUser changePassword:forUserID:completion:]` API to change an
+  arbitrary user's password if the current user has administrative privileges
+  and using Realm's 'password' authentication provider.
+  Requires any edition of the Realm Object Server 1.6.0 or later.
+
+### Bugfixes
+
+* Suppress `-Wdocumentation` warnings in Realm C++ headers when using CocoaPods
+  with Xcode 8.3.2.
+* Throw an appropriate error rather than crashing when an RLMArray is assigned
+  to an RLMArray property of a different type.
+* Fix crash in large (>4GB) encrypted Realm files.
+* Improve accuracy of sync progress notifications.
+* Fix an issue where synchronized Realms did not connect to the remote server
+  in certain situations, such as when an application was offline when the Realms
+  were opened but later regained network connectivity.
+
 2.7.0 Release notes (2017-05-03)
 =============================================================
 
