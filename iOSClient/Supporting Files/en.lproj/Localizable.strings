@@ -116,7 +116,7 @@
 "_mail_sent_"               = "Email sent";
 "_mail_failure_"            = "Failed to send email: %@";
 "_information_req_"         = "Information request";
-"_in_english_"              = "Please, write us in English";
+"_write_in_english_"        = "Please, write us in English";
 "_credentials_"             = "Credentials";
 "_manage_account_"          = "Manage account";
 "_change_password_"         = "Change password";
