@@ -493,7 +493,7 @@
         // Email Recipents
         NSArray *toRecipents;
     
-        messageBody = [NSString stringWithFormat:@"\n\n\n%@ Version %@ (%@)", [NCBrandOptions sharedInstance].brand, [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"], [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
+        messageBody = [NSString stringWithFormat:@"%@\n\n\n\n%@ Version %@ (%@) - iOS %@",NSLocalizedString(@"_in_english_", nil), [NCBrandOptions sharedInstance].brand, [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"], [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"], [[UIDevice currentDevice] systemVersion]];
         toRecipents = [NSArray arrayWithObject:[NCBrandOptions sharedInstance].mailMe];
     
         MFMailComposeViewController *mc = [[MFMailComposeViewController alloc] init];
