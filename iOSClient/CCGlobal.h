@@ -258,14 +258,6 @@ extern NSString *const urlBaseUploadDB;
 #define k_keyFileNameAutoUploadMask                     @"fileNameAutoUploadMask"
 #define k_keyFileNameAutoUploadType                     @"fileNameAutoUploadType"
 
-// Type of page Offline
-#define k_pageOfflineFavorites                          @"Favorites"
-#define k_pageOfflineOffline                            @"Offline"
-#define k_pageOfflineLocal                              @"Local"
-
-#define k_pageControlCenterTransfer                     @"Transfer"
-#define k_pageControlCenterActivity                     @"Activity"
-
 // Activity
 #define k_activityVerboseDefault                        0
 #define k_activityVerboseHigh                           1

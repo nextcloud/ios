@@ -41,7 +41,6 @@
     
     BOOL _isRoot;
     BOOL _isViewDidLoad;
-    BOOL _isOfflineServerUrl;
     
     BOOL _isPickerCriptate;              // if is cryptated image or video back from picker
     BOOL _isSelectedMode;

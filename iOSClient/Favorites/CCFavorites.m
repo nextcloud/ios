@@ -191,7 +191,7 @@
     if (app.activeAccount.length == 0)
         return;
     
-    // verify is offline procedure is in progress selectorDownloadSynchronize
+    // verify if is already in progress selectorDownloadSynchronize
     if ([[app verifyExistsInQueuesDownloadSelector:selectorDownloadSynchronize] count] > 0)
         return;
     
