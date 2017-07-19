@@ -569,15 +569,28 @@
             NSString *day = [formatter stringFromDate:assetDate];
             [formatter setDateFormat:@"MMM"];
             NSString *month = [formatter stringFromDate:assetDate];
+            [formatter setDateFormat:@"MM"];
+            NSString *monthNumber = [formatter stringFromDate:assetDate];
             [formatter setDateFormat:@"yy"];
             NSString *year = [formatter stringFromDate:assetDate];
+            [formatter setDateFormat:@"HH"];
+            NSString *hour = [formatter stringFromDate:assetDate];
+            [formatter setDateFormat:@"mm"];
+            NSString *minute = [formatter stringFromDate:assetDate];
+            [formatter setDateFormat:@"ss"];
+            NSString *second = [formatter stringFromDate:assetDate];
             
             // Replace string with date
 
             fileName = [fileName stringByReplacingOccurrencesOfString:@"DD" withString:day];
-            fileName = [fileName stringByReplacingOccurrencesOfString:@"MM" withString:month];
+            fileName = [fileName stringByReplacingOccurrencesOfString:@"MMM" withString:month];
+            fileName = [fileName stringByReplacingOccurrencesOfString:@"MM" withString:monthNumber];
             fileName = [fileName stringByReplacingOccurrencesOfString:@"YY" withString:year];
 
+            fileName = [fileName stringByReplacingOccurrencesOfString:@"hh" withString:hour];
+            fileName = [fileName stringByReplacingOccurrencesOfString:@"mm" withString:minute];
+            fileName = [fileName stringByReplacingOccurrencesOfString:@"ss" withString:second];
+            
             if (addFileNameType)
                 fileName = [NSString stringWithFormat:@"%@ %@-%@.%@", fileNameType, fileName, numberFileName, fileNameExt];
             else
