@@ -278,6 +278,12 @@ extern NSString *const urlBaseUploadDB;
 #define k_activityDebugActionFeatures                   @"Features Supported By Server"
 #define k_activityDebugActionCapabilities               @"Capabilities Of Server"
 
+// Priority Auto Upload
+#define k_priorityAutoUploadImage                       0
+#define k_priorityAutoUploadVideo                       -1
+#define k_priorityAutoUploadErrorImage                  -2
+#define k_priorityAutoUploadErrorVideo                  -3
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
