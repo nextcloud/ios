@@ -880,6 +880,10 @@
                 
             if (error) {
                 
+                // Unlock record on Table Auto Upload
+                if ([selector isEqualToString:selectorUploadAutoUpload] || [selector isEqualToString:selectorUploadAutoUploadAll])
+                    [[NCManageDatabase sharedInstance] unlockQueueUploadWithAssetLocalIdentifier:assetLocalIdentifier];
+                    
                 // Activity
                 [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:[NSString stringWithFormat:@"Image request failed [%@]", error.description] type:k_activityTypeFailure verbose:k_activityVerboseDefault  activeUrl:_activeUrl];
                     
@@ -930,6 +934,10 @@
                             
                     } else if (AVAssetExportSessionStatusFailed == exportSession.status) {
                         
+                        // Unlock record on Table Auto Upload
+                        if ([selector isEqualToString:selectorUploadAutoUpload] || [selector isEqualToString:selectorUploadAutoUploadAll])
+                           [[NCManageDatabase sharedInstance] unlockQueueUploadWithAssetLocalIdentifier:assetLocalIdentifier];
+                        
                         // Activity
                         [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:[NSString stringWithFormat:@"Video export failed [%@]", exportSession.error.description] type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:_activeUrl];
                             
@@ -946,6 +954,10 @@
                     
             } else {
                 
+                // Unlock record on Table Auto Upload
+                if ([selector isEqualToString:selectorUploadAutoUpload] || [selector isEqualToString:selectorUploadAutoUploadAll])
+                    [[NCManageDatabase sharedInstance] unlockQueueUploadWithAssetLocalIdentifier:assetLocalIdentifier];
+                    
                 // Activity
                 [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:@"Create Video session failed" type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:_activeUrl];
                     
