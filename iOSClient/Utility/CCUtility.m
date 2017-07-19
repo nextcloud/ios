@@ -1160,7 +1160,7 @@
     metadata.protocolCrypto = k_versionProtocolPlist;
     metadata.size = [attributes[NSFileSize] longValue];
     metadata.thumbnailExists = false;
-    metadata.type = k_metadataType_local;
+    metadata.type = k_metadataType_file;
     metadata.title = @"";
     metadata.uuid = [CCUtility getUUID];
     

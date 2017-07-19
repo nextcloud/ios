@@ -234,7 +234,6 @@ extern NSString *const urlBaseUploadDB;
 // Metadata : Type
 #define k_metadataType_file                             @"file"
 #define k_metadataType_template                         @"model"
-#define k_metadataType_local                            @"local"
 
 // Metadata : Filename Type
 #define k_metadataTypeFilenamePlain                     0

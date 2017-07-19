@@ -694,7 +694,7 @@
         if ([metadata.type isEqualToString: k_metadataType_template])
             cell.labelInfoFile.text = [NSString stringWithFormat:@"%@", date];
         
-        if ([metadata.type isEqualToString: k_metadataType_file] || [metadata.type isEqualToString: k_metadataType_local]) {
+        if ([metadata.type isEqualToString: k_metadataType_file]) {
             
             BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID]];
             
