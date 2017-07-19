@@ -380,7 +380,7 @@
         NSDate *assetDate = asset.creationDate;
         PHAssetMediaType assetMediaType = asset.mediaType;
         NSString *session;
-        NSString *fileName = [CCUtility createFileNameFromAsset:asset key:nil];
+        NSString *fileName = [CCUtility createFileNameFromAsset:asset keyFileName:nil keyFileNameType:nil];
         
         // Select type of session
         

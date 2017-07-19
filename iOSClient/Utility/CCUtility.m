@@ -192,6 +192,12 @@
     [UICKeyChainStore setString:mask forKey:key service:k_serviceShareKeyChain];
 }
 
++ (void)setFileNameType:(BOOL)prefix key:(NSString *)key
+{
+    NSString *sPrefix = (prefix) ? @"true" : @"false";
+    [UICKeyChainStore setString:sPrefix forKey:key service:k_serviceShareKeyChain];
+}
+
 + (void)setCreateMenuEncrypted:(BOOL)encrypted
 {
     NSString *sEncrypted = (encrypted) ? @"true" : @"false";
@@ -384,6 +390,11 @@
     return mask;
 }
 
++ (BOOL)getFileNameType:(NSString *)key
+{
+    return [[UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain] boolValue];
+}
+
 + (BOOL)getCreateMenuEncrypted
 {
     return [[UICKeyChainStore stringForKey:@"createMenuEncrypted" service:k_serviceShareKeyChain] boolValue];
@@ -515,10 +526,11 @@
     return [NSString stringWithFormat:@"%@", randomString];
 }
 
-+ (NSString *)createFileNameFromAsset:(PHAsset *)asset key:(NSString *)key
++ (NSString *)createFileNameFromAsset:(PHAsset *)asset keyFileName:(NSString *)keyFileName keyFileNameType:(NSString *)keyFileNameType
 {
     NSDate *assetDate = asset.creationDate;
     NSString *fileName;
+    BOOL addFileNameType = NO;
     
     NSString *assetFileName = [asset valueForKey:@"filename"];
     
@@ -541,11 +553,15 @@
     if (assetMediaType == PHAssetMediaTypeUnknown)
         fileNameType = NSLocalizedString(@"_unknown_", nil);
 
+    // Use File Name Type
+    if (keyFileNameType)
+        addFileNameType = [CCUtility getFileNameType:keyFileNameType];
+    
     NSString *fileNameExt = [[assetFileName pathExtension] lowercaseString];
     
-    if (key) {
+    if (keyFileName) {
         
-        fileName = [CCUtility getFileNameMask:key];
+        fileName = [CCUtility getFileNameMask:keyFileName];
         
         if ([fileName length] > 0) {
             
@@ -562,16 +578,26 @@
             fileName = [fileName stringByReplacingOccurrencesOfString:@"MM" withString:month];
             fileName = [fileName stringByReplacingOccurrencesOfString:@"YY" withString:year];
 
-            fileName = [NSString stringWithFormat:@"%@-%@.%@", fileName, numberFileName, fileNameExt];
+            if (addFileNameType)
+                fileName = [NSString stringWithFormat:@"%@ %@-%@.%@", fileNameType, fileName, numberFileName, fileNameExt];
+            else
+                fileName = [NSString stringWithFormat:@"%@-%@.%@", fileName, numberFileName, fileNameExt];
             
         } else {
             
-            fileName = [NSString stringWithFormat:@"%@ %@ %@.%@", fileNameType, fileNameDate, numberFileName, fileNameExt];
+            if (addFileNameType)
+                fileName = [NSString stringWithFormat:@"%@ %@ %@.%@", fileNameType, fileNameDate, numberFileName, fileNameExt];
+            else
+                fileName = [NSString stringWithFormat:@"%@ %@.%@", fileNameDate, numberFileName, fileNameExt];
         }
         
     } else {
         
-        fileName = [NSString stringWithFormat:@"%@ %@ %@.%@", fileNameType, fileNameDate, numberFileName, fileNameExt];
+        if (addFileNameType)
+            fileName = [NSString stringWithFormat:@"%@ %@ %@.%@", fileNameType, fileNameDate, numberFileName, fileNameExt];
+        else
+            fileName = [NSString stringWithFormat:@"%@ %@.%@", fileNameDate, numberFileName, fileNameExt];
+
     }
     
     return fileName;

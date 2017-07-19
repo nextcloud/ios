@@ -1699,7 +1699,7 @@
     
     for (PHAsset *asset in assets) {
         
-        NSString *fileName = [CCUtility createFileNameFromAsset:asset key: k_keyFileNameMask];
+        NSString *fileName = [CCUtility createFileNameFromAsset:asset keyFileName: k_keyFileNameMask keyFileNameType:k_keyFileNameType];
         
         NSDate *assetDate = asset.creationDate;
         NSDateFormatter *formatter = [[NSDateFormatter alloc] init];

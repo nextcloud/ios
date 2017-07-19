@@ -539,6 +539,8 @@
 "_filename_"                        = "File name";
 "_preview_filename_"                = "Example preview of filename, you can use the mask MM,DD,YY for the date";
 "_forbidden_characters_"            = "Invalid character in the filename";
+"_add_filenametype_"                = "Add type in filename";
+"_filenametype_photo_video_"        = "Photo/Video";
 
 // Notification
 
