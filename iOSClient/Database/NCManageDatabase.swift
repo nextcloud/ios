@@ -1704,7 +1704,7 @@ class NCManageDatabase: NSObject {
         
         realm.beginWrite()
         
-        guard let result = realm.objects(tableQueueUpload.self).filter("account = %@ AND selector = %@ AND lock == false", tableAccount.account, selector).first else {
+        guard let result = realm.objects(tableQueueUpload.self).filter("account = %@ AND selector = %@ AND lock == false", tableAccount.account, selector).sorted(byKeyPath: "priority", ascending: true).first else {
             realm.cancelWrite()
             return nil
         }
