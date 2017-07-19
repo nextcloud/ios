@@ -503,6 +503,9 @@
             
             counterNewUpload++;
             
+            if (metadataNet.priority == k_priorityAutoUploadErrorImage || metadataNet.priority == k_priorityAutoUploadErrorVideo)
+                break;
+            
         } else
             break;
         
@@ -531,6 +534,9 @@
                 
                 counterNewUpload++;
         
+                if (metadataNet.priority == k_priorityAutoUploadErrorImage || metadataNet.priority == k_priorityAutoUploadErrorVideo)
+                    break;
+                
             } else
                 break;
             
