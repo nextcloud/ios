@@ -830,13 +830,13 @@
     item.selectedImage = [UIImage imageNamed:@"tabBarFiles"];
     
     // Favorites
-    item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexOffline];
+    item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexFavorite];
     [item setTitle:NSLocalizedString(@"_favorites_", nil)];
     item.image = [UIImage imageNamed:@"tabBarFavorite"];
     item.selectedImage = [UIImage imageNamed:@"tabBarFavorite"];
     
-    // Hide (PLUS)
-    item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexHide];
+    // (PLUS)
+    item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexPlusHide];
     item.title = nil;
     item.image = nil;
     item.enabled = false;

@@ -242,16 +242,17 @@ extern NSString *const urlBaseUploadDB;
 #define k_metadataTypeFilenameCrypto                    2
 
 // Metadata : Status
-
 #define k_metadataStatusNormal                          0
 #define k_metadataStatusHide                            1
 
+// TabBar button
 #define k_tabBarApplicationIndexFile                    0
-#define k_tabBarApplicationIndexOffline                 1
-#define k_tabBarApplicationIndexHide                    2
+#define k_tabBarApplicationIndexFavorite                1
+#define k_tabBarApplicationIndexPlusHide                2
 #define k_tabBarApplicationIndexPhotos                  3
 #define k_tabBarApplicationIndexMore                    4
 
+// Filename Mask and Type
 #define k_keyFileNameMask                               @"fileNameMask"
 #define k_keyFileNameType                               @"fileNameType"
 #define k_keyFileNameAutoUploadMask                     @"fileNameAutoUploadMask"
