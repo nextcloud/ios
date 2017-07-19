@@ -1772,6 +1772,31 @@ class NCManageDatabase: NSObject {
         }
     }
     
+    func setPriorityQueueUpload(assetLocalIdentifier: String, priority: NSInteger) {
+        
+        guard let tableAccount = self.getAccountActive() else {
+            return
+        }
+        
+        let realm = try! Realm()
+        
+        realm.beginWrite()
+        
+        guard let result = realm.objects(tableQueueUpload.self).filter("account = %@ AND assetLocalIdentifier = %@", tableAccount.account, assetLocalIdentifier).first else {
+            realm.cancelWrite()
+            return
+        }
+        
+        // priority
+        result.priority = priority
+        
+        do {
+            try realm.commitWrite()
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+        }
+    }
+    
     func deleteQueueUpload(assetLocalIdentifier: String, selector: String) {
         
         guard let tableAccount = self.getAccountActive() else {
