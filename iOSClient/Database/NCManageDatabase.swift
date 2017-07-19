@@ -1772,6 +1772,21 @@ class NCManageDatabase: NSObject {
         }
     }
     
+    func getPriorityQueueUpload(assetLocalIdentifier: String) -> NSInteger {
+        
+        guard let tableAccount = self.getAccountActive() else {
+            return 0
+        }
+        
+        let realm = try! Realm()
+        
+        guard let result = realm.objects(tableQueueUpload.self).filter("account = %@ AND assetLocalIdentifier = %@", tableAccount.account, assetLocalIdentifier).first else {
+            return 0
+        }
+        
+        return result.priority
+    }
+
     func setPriorityQueueUpload(assetLocalIdentifier: String, priority: NSInteger) {
         
         guard let tableAccount = self.getAccountActive() else {
@@ -1789,11 +1804,7 @@ class NCManageDatabase: NSObject {
         
         // priority
         if (result.priority <= Int(k_priorityAutoUploadErrorImage) || result.priority <= Int(k_priorityAutoUploadErrorVideo)) {
-            result.priority = result.priority - 1
-            if result.priority == -10 {
-                result.priority = priority
-            }
-            
+            result.priority = result.priority - 1            
         } else {
             result.priority = priority
         }

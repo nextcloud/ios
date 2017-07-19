@@ -885,8 +885,22 @@
                 
                 if ([selector isEqualToString:selectorUploadAutoUpload] || [selector isEqualToString:selectorUploadAutoUploadAll]) {
                     
-                    // Change priority Auto Upload
-                    [[NCManageDatabase sharedInstance] setPriorityQueueUploadWithAssetLocalIdentifier:assetLocalIdentifier priority:k_priorityAutoUploadErrorImage];
+                    //
+                    if ([[NCManageDatabase sharedInstance] getPriorityQueueUploadWithAssetLocalIdentifier:assetLocalIdentifier] <= -10) {
+                        
+                        // Delete record on Table Auto Upload
+                        if ([selector isEqualToString:selectorUploadAutoUpload] || [selector isEqualToString:selectorUploadAutoUploadAll])
+                            [[NCManageDatabase sharedInstance] deleteQueueUploadWithAssetLocalIdentifier:assetLocalIdentifier selector:selector];
+                        
+                        // Activity
+                        [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:[NSString stringWithFormat:@"%@ [%@]",NSLocalizedString(@"_read_file_error_", nil), error.description] type:k_activityTypeFailure verbose:k_activityVerboseDefault  activeUrl:_activeUrl];                        
+                        
+                    } else {
+                    
+                        // Change priority Auto Upload
+                        [[NCManageDatabase sharedInstance] setPriorityQueueUploadWithAssetLocalIdentifier:assetLocalIdentifier priority:k_priorityAutoUploadErrorImage];
+                    }
+                    
                 } else {
                     
                     // Error for uploadFileFailure
