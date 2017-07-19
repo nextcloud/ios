@@ -415,12 +415,16 @@
             else
                 metadataNet.selectorPost = selectorUploadRemovePhoto;
             
-            metadataNet.priority = NSOperationQueuePriorityLow;
         } else {
             metadataNet.selector = selectorUploadAutoUpload;
             metadataNet.selectorPost = nil;
-            metadataNet.priority = NSOperationQueuePriorityLow;
         }
+        
+        if (assetMediaType == PHAssetMediaTypeImage)
+            metadataNet.priority = k_priorityAutoUploadImage;
+        else
+            metadataNet.priority = k_priorityAutoUploadVideo;
+
         metadataNet.fileName = fileName;
         metadataNet.serverUrl = serverUrl;
         metadataNet.session = session;
