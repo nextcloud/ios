@@ -503,7 +503,7 @@
             
             counterNewUpload++;
             
-            if (metadataNet.priority == k_priorityAutoUploadErrorImage || metadataNet.priority == k_priorityAutoUploadErrorVideo)
+            if (metadataNet.priority <= k_priorityAutoUploadErrorImage || metadataNet.priority <= k_priorityAutoUploadErrorVideo)
                 break;
             
         } else
@@ -534,7 +534,7 @@
                 
                 counterNewUpload++;
         
-                if (metadataNet.priority == k_priorityAutoUploadErrorImage || metadataNet.priority == k_priorityAutoUploadErrorVideo)
+                if (metadataNet.priority <= k_priorityAutoUploadErrorImage || metadataNet.priority <= k_priorityAutoUploadErrorVideo)
                     break;
                 
             } else

@@ -880,19 +880,22 @@
                 
             if (error) {
                 
-                // Change priority Auto Upload
-                if ([selector isEqualToString:selectorUploadAutoUpload] || [selector isEqualToString:selectorUploadAutoUploadAll])
-                    [[NCManageDatabase sharedInstance] setPriorityQueueUploadWithAssetLocalIdentifier:assetLocalIdentifier priority:k_priorityAutoUploadErrorImage];
-                
                 // Activity
                 [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:[NSString stringWithFormat:@"Image request failed [%@]", error.description] type:k_activityTypeFailure verbose:k_activityVerboseDefault  activeUrl:_activeUrl];
+                
+                if ([selector isEqualToString:selectorUploadAutoUpload] || [selector isEqualToString:selectorUploadAutoUploadAll]) {
                     
-                // Error for uploadFileFailure
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
-                        [delegate uploadFileFailure:nil fileID:nil serverUrl:serverUrl selector:selector message:[NSString stringWithFormat:@"Image request failed [%@]", error.description] errorCode:error.code];
-                });
+                    // Change priority Auto Upload
+                    [[NCManageDatabase sharedInstance] setPriorityQueueUploadWithAssetLocalIdentifier:assetLocalIdentifier priority:k_priorityAutoUploadErrorImage];
+                } else {
                     
+                    // Error for uploadFileFailure
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
+                            [delegate uploadFileFailure:nil fileID:nil serverUrl:serverUrl selector:selector message:[NSString stringWithFormat:@"Image request failed [%@]", error.description] errorCode:error.code];
+                    });
+                }
+                
             } else {
                     
                 //OK
@@ -934,19 +937,21 @@
                             
                     } else if (AVAssetExportSessionStatusFailed == exportSession.status) {
                         
-                        // Change priority Auto Upload
-                        if ([selector isEqualToString:selectorUploadAutoUpload] || [selector isEqualToString:selectorUploadAutoUploadAll])
-                            [[NCManageDatabase sharedInstance] setPriorityQueueUploadWithAssetLocalIdentifier:assetLocalIdentifier priority:k_priorityAutoUploadErrorVideo];
-                        
                         // Activity
                         [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:[NSString stringWithFormat:@"Video export failed [%@]", exportSession.error.description] type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:_activeUrl];
+                        
+                        if ([selector isEqualToString:selectorUploadAutoUpload] || [selector isEqualToString:selectorUploadAutoUploadAll]) {
                             
-                        // Error for uploadFileFailure
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
-                                [delegate uploadFileFailure:nil fileID:nil serverUrl:serverUrl selector:selector message:[NSString stringWithFormat:@"Video export failed [%@]", exportSession.error.description] errorCode:exportSession.error.code];
-                        });
-
+                            // Change priority Auto Upload
+                            [[NCManageDatabase sharedInstance] setPriorityQueueUploadWithAssetLocalIdentifier:assetLocalIdentifier priority:k_priorityAutoUploadErrorVideo];
+                        } else {
+                            
+                            // Error for uploadFileFailure
+                            dispatch_async(dispatch_get_main_queue(), ^{
+                                if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
+                                    [delegate uploadFileFailure:nil fileID:nil serverUrl:serverUrl selector:selector message:[NSString stringWithFormat:@"Video export failed [%@]", exportSession.error.description] errorCode:exportSession.error.code];
+                            });
+                        }
                     } else {
                         NSLog(@"Export Session Status: %ld", (long)exportSession.status);
                     }
@@ -954,18 +959,22 @@
                     
             } else {
                 
-                // Change priority Auto Upload
-                if ([selector isEqualToString:selectorUploadAutoUpload] || [selector isEqualToString:selectorUploadAutoUploadAll])
-                    [[NCManageDatabase sharedInstance] setPriorityQueueUploadWithAssetLocalIdentifier:assetLocalIdentifier priority:k_priorityAutoUploadErrorVideo];
-                
                 // Activity
                 [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:@"Create Video session failed" type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:_activeUrl];
+
+                if ([selector isEqualToString:selectorUploadAutoUpload] || [selector isEqualToString:selectorUploadAutoUploadAll]) {
                     
-                // Error for uploadFileFailure
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
-                        [delegate uploadFileFailure:nil fileID:nil serverUrl:serverUrl selector:selector message:@"Create Video session failed" errorCode:0];
-                });
+                    // Change priority Auto Upload
+                    [[NCManageDatabase sharedInstance] setPriorityQueueUploadWithAssetLocalIdentifier:assetLocalIdentifier priority:k_priorityAutoUploadErrorVideo];
+                
+                } else {
+                    
+                    // Error for uploadFileFailure
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
+                            [delegate uploadFileFailure:nil fileID:nil serverUrl:serverUrl selector:selector message:@"Create Video session failed" errorCode:0];
+                    });
+                }
             }
         }];
     }

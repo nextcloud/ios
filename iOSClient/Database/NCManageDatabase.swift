@@ -1788,7 +1788,15 @@ class NCManageDatabase: NSObject {
         }
         
         // priority
-        result.priority = priority
+        if (result.priority <= Int(k_priorityAutoUploadErrorImage) || result.priority <= Int(k_priorityAutoUploadErrorVideo)) {
+            result.priority = result.priority - 1
+            if result.priority == -999 {
+                result.priority = priority
+            }
+            
+        } else {
+            result.priority = priority
+        }
         
         do {
             try realm.commitWrite()
