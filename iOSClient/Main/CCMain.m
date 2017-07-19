@@ -1656,14 +1656,16 @@
         }
     }
     
-    if ([selectorPost isEqualToString:selectorReadFolderForced] ) {
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+        if ([selectorPost isEqualToString:selectorReadFolderForced] ) {
             
-        [self readFolder:serverUrl];
+            [self readFolder:serverUrl];
             
-    } else {
+        } else {
     
-        [self reloadDatasource:serverUrl];
-    }
+            [self reloadDatasource:serverUrl];
+        }
+    });
 }
 
 //
