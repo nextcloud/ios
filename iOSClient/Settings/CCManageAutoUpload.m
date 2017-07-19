@@ -160,7 +160,7 @@
     section = [XLFormSectionDescriptor formSection];
     [form addFormSection:section];
     
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"filename" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_autoupload_filenamemask_", nil)];
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"autoUploadFileName" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_autoupload_filenamemask_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     row.action.viewControllerClass = [NCManageAutoUploadFileName class];
     [section addFormRow:row];
@@ -344,6 +344,8 @@
     
     XLFormRowDescriptor *rowAutoUploadCreateSubfolder = [self.form formRowWithTag:@"autoUploadCreateSubfolder"];
 
+    XLFormRowDescriptor *rowAutoUploadFileName = [self.form formRowWithTag:@"autoUploadFileName"];
+
     
     // - STATUS ---------------------
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
@@ -385,46 +387,14 @@
     rowAutoUploadFull.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
     
     rowAutoUploadCreateSubfolder.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
+    
+    rowAutoUploadFileName.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
 
     // ----------------------
     
     [self.tableView reloadData];
     
     self.form.delegate = self;
-}
-
-- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
-{
-    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
-    NSString *sectionName;
-    
-    switch (section)
-    {
-        case 0:
-            sectionName = NSLocalizedString(@"_settings_autoupload_", nil);
-            break;
-        case 1:
-            if (tableAccount.autoUpload) sectionName = NSLocalizedString(@"_autoupload_photos_", nil);
-            else sectionName = @"";
-            break;
-        case 2:
-            if (tableAccount.autoUpload) sectionName = NSLocalizedString(@"_autoupload_videos_", nil);
-            else sectionName = @"";
-            break;
-        case 3:
-            if (tableAccount.autoUpload) sectionName = NSLocalizedString(@"_autoupload_background_", nil);
-            else sectionName = @"";
-            break;
-        case 4:
-            if (tableAccount.autoUpload) sectionName = NSLocalizedString(@"_autoupload_fullphotos_", nil);
-            else sectionName = @"";
-            break;
-        case 5:
-            if (tableAccount.autoUpload) sectionName = NSLocalizedString(@"_autoupload_create_subfolder_", nil);
-            else sectionName = @"";
-            break;
-    }
-    return sectionName;
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section
@@ -447,6 +417,10 @@
             break;
         case 5:
             if (tableAccount.autoUpload) sectionName =  NSLocalizedString(@"_autoupload_create_subfolder_footer_", nil);
+            else sectionName = @"";
+            break;
+        case 6:
+            if (tableAccount.autoUpload) sectionName =  NSLocalizedString(@"_autoupload_filenamemask_footer_", nil);
             else sectionName = @"";
             break;
     }

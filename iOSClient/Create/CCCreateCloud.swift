@@ -517,6 +517,7 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
     func previewFileName(valueRename : String?) -> String {
         
         var returnString : String = ""
+        let asset = assets[0] as! PHAsset
         
         if let valueRename = valueRename {
             
@@ -528,18 +529,17 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
                 CCUtility.setFileNameMask(valueRenameTrimming, key: k_keyFileNameMask)
                 self.form.delegate = self
                 
-                returnString = CCUtility.createFileName(from: assets[0] as! PHAsset, keyFileName: k_keyFileNameMask, keyFileNameType: k_keyFileNameType)
-                
+                returnString = CCUtility.createFileName(asset.value(forKey: "filename"), fileDate: asset.creationDate, fileType: asset.mediaType, keyFileName: k_keyFileNameMask, keyFileNameType: k_keyFileNameType)
             } else {
                 
                 CCUtility.setFileNameMask("", key: k_keyFileNameMask)
-                returnString = CCUtility.createFileName(from: assets[0] as! PHAsset, keyFileName: nil, keyFileNameType: k_keyFileNameType)
+                returnString = CCUtility.createFileName(asset.value(forKey: "filename"), fileDate: asset.creationDate, fileType: asset.mediaType, keyFileName: nil, keyFileNameType: k_keyFileNameType)
             }
             
         } else {
             
             CCUtility.setFileNameMask("", key: k_keyFileNameMask)
-            returnString = CCUtility.createFileName(from: assets[0] as! PHAsset, keyFileName: nil, keyFileNameType: k_keyFileNameType)
+            returnString = CCUtility.createFileName(asset.value(forKey: "filename"), fileDate: asset.creationDate, fileType: asset.mediaType, keyFileName: nil, keyFileNameType: k_keyFileNameType)
         }
         
         return NSLocalizedString("_preview_filename_", comment: "") + ":" + "\n\n" + returnString

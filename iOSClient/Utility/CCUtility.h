@@ -147,7 +147,7 @@
 + (NSString *)stringAppendServerUrl:(NSString *)serverUrl addFileName:(NSString *)addFileName;
 
 + (NSString *)createRandomString:(int)numChars;
-+ (NSString *)createFileNameFromAsset:(PHAsset *)asset keyFileName:(NSString *)keyFileName keyFileNameType:(NSString *)keyFileNameType;
++ (NSString *)createFileName:fileName fileDate:(NSDate *)fileDate fileType:(PHAssetMediaType)fileType keyFileName:(NSString *)keyFileName keyFileNameType:(NSString *)keyFileNameType;
 
 + (NSString *)getHomeServerUrlActiveUrl:(NSString *)activeUrl;
 + (NSString *)getDirectoryActiveUser:(NSString *)activeUser activeUrl:(NSString *)activeUrl;

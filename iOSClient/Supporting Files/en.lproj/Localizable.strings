@@ -175,6 +175,8 @@
 "_autoupload_fullphotos_footer_"    = "Select the options above before uploading";
 "_autoupload_create_subfolder_"     = "Use subfolders";
 "_autoupload_create_subfolder_footer_" = "Store in subfolders based on year and month";
+"_autoupload_filenamemask_"         = "Change filename mask";
+"_autoupload_filenamemask_footer_"  = "Change the automatic filename mask";
 
 // Manage Crypto Cloud
 
@@ -248,7 +250,6 @@
 "_create_full_upload_"                      = "Creating archive… May take a long time, please wait.";
 "_error_createsubfolders_upload_"           = "Error creating subfolders";
 "_activate_autoupload_"                     = "Enable auto upload";
-"_autoupload_filenamemask_"                 = "Change filename mask";
 
 // Template
 
@@ -538,7 +539,7 @@
 "_use_folder_photos_"               = "Use the folder Photos as destination";
 "_rename_filename_"                 = "Rename";
 "_filename_"                        = "File name";
-"_preview_filename_"                = "Example preview of filename, you can use the mask MM,DD,YY for the date";
+"_preview_filename_"                = "Example preview of filename, you can use the mask MM,MMM,DD,YY,YYYY and HH,hh,mm,ss,ampm for the date/time";
 "_forbidden_characters_"            = "Invalid character in the filename";
 "_add_filenametype_"                = "Add type in filename";
 "_filenametype_photo_video_"        = "Photo/Video";

@@ -36,7 +36,7 @@ class NCManageAutoUploadFileName: XLFormViewController {
         form.addFormSection(section)
         
         row = XLFormRowDescriptor(tag: "addFileNameType", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_filenametype_photo_video_", comment: ""))
-        row.value = CCUtility.getFileNameType(k_keyFileNameType)
+        row.value = CCUtility.getFileNameType(k_keyFileNameAutoUploadType)
         section.addFormRow(row)
         
         // Section: Rename File Name
@@ -46,7 +46,7 @@ class NCManageAutoUploadFileName: XLFormViewController {
         
         row = XLFormRowDescriptor(tag: "maskFileName", rowType: XLFormRowDescriptorTypeAccount, title: NSLocalizedString("_filename_", comment: ""))
         
-        let fileNameMask : String = CCUtility.getFileNameMask(k_keyFileNameMask)
+        let fileNameMask : String = CCUtility.getFileNameMask(k_keyFileNameAutoUploadMask)
         if fileNameMask.characters.count > 0 {
             row.value = fileNameMask
         }
@@ -70,7 +70,7 @@ class NCManageAutoUploadFileName: XLFormViewController {
         super.formRowDescriptorValueHasChanged(formRow, oldValue: oldValue, newValue: newValue)
         
         if formRow.tag == "addFileNameType" {
-            CCUtility.setFileNameType((formRow.value! as AnyObject).boolValue, key: k_keyFileNameType)
+            CCUtility.setFileNameType((formRow.value! as AnyObject).boolValue, key: k_keyFileNameAutoUploadType)
             self.reloadForm()
         }
         else if formRow.tag == "maskFileName" {
@@ -184,21 +184,21 @@ class NCManageAutoUploadFileName: XLFormViewController {
             if valueRenameTrimming.characters.count > 0 {
                 
                 self.form.delegate = nil
-                CCUtility.setFileNameMask(valueRenameTrimming, key: k_keyFileNameMask)
+                CCUtility.setFileNameMask(valueRenameTrimming, key: k_keyFileNameAutoUploadMask)
                 self.form.delegate = self
                 
-                //returnString = CCUtility.createFileName(from: assets[0] as! PHAsset, keyFileName: k_keyFileNameMask, keyFileNameType: k_keyFileNameType)
-                
+                returnString = CCUtility.createFileName("IMG_0001.JPG", fileDate: Date(), fileType: PHAssetMediaType.image, keyFileName: k_keyFileNameAutoUploadMask, keyFileNameType: k_keyFileNameAutoUploadType)
+
             } else {
                 
-                CCUtility.setFileNameMask("", key: k_keyFileNameMask)
-                //returnString = CCUtility.createFileName(from: assets[0] as! PHAsset, keyFileName: nil, keyFileNameType: k_keyFileNameType)
+                CCUtility.setFileNameMask("", key: k_keyFileNameAutoUploadMask)
+                returnString = CCUtility.createFileName("IMG_0001.JPG", fileDate: Date(), fileType: PHAssetMediaType.image, keyFileName: nil, keyFileNameType: k_keyFileNameAutoUploadType)
             }
             
         } else {
             
-            CCUtility.setFileNameMask("", key: k_keyFileNameMask)
-            //returnString = CCUtility.createFileName(from: assets[0] as! PHAsset, keyFileName: nil, keyFileNameType: k_keyFileNameType)
+            CCUtility.setFileNameMask("", key: k_keyFileNameAutoUploadMask)
+            returnString = CCUtility.createFileName("IMG_0001.JPG", fileDate: Date(), fileType: PHAssetMediaType.image, keyFileName: nil, keyFileNameType: k_keyFileNameAutoUploadType)
         }
         
         return NSLocalizedString("_preview_filename_", comment: "") + ":" + "\n\n" + returnString

@@ -254,6 +254,8 @@ extern NSString *const urlBaseUploadDB;
 
 #define k_keyFileNameMask                               @"fileNameMask"
 #define k_keyFileNameType                               @"fileNameType"
+#define k_keyFileNameAutoUploadMask                     @"fileNameAutoUploadMask"
+#define k_keyFileNameAutoUploadType                     @"fileNameAutoUploadType"
 
 // Type of page Offline
 #define k_pageOfflineFavorites                          @"Favorites"
