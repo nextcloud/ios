@@ -258,7 +258,7 @@
         
         [self addNetworkingQueue:metadataNet];
         
-        [self.hud visibleHudTitle:NSLocalizedString(@"_uploading_", nil) mode:MBProgressHUDModeDeterminate color:self.view.tintColor];
+        [self.hud visibleHudTitle:NSLocalizedString(@"_uploading_", nil) mode:MBProgressHUDModeDeterminate color:[NCBrandColor sharedInstance].brand];
     }
     else
         [self closeShareViewController];
