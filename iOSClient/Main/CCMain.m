@@ -2777,7 +2777,7 @@
         [self.navigationController setCCProgressPercentage:progress*100 andTintColor: [NCBrandColor sharedInstance].navigationBarProgress];
     
     // Check
-    if (!fileID)
+    if (!fileID || [fileID isEqualToString: @""])
         return;
     
     [app.listProgressMetadata setObject:[NSNumber numberWithFloat:progress] forKey:fileID];

@@ -963,10 +963,14 @@
         
         UITabBarItem *tbItem = [tbc.tabBar.items objectAtIndex:0];
         
-        if (total > 0)
+        if (total > 0) {
             [tbItem setBadgeValue:[NSString stringWithFormat:@"%li", (unsigned long)total]];
-        else
+        } else {
             [tbItem setBadgeValue:nil];
+            
+            NSDictionary* userInfo = @{@"fileID": @"", @"serverUrl": @"", @"cryptated": [NSNumber numberWithFloat:0], @"progress": [NSNumber numberWithFloat:0]};
+            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"NotificationProgressTask" object:nil userInfo:userInfo];
+        }
     }
 }
 
