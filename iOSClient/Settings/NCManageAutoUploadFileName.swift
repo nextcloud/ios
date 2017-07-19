@@ -12,17 +12,19 @@ class NCManageAutoUploadFileName: XLFormViewController {
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
-    convenience init() {
-        
-        self.init()
+    required init(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
         self.initializeForm()
     }
     
-    //MARK: XLFormDescriptorDelegate
-    
+    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+        self.initializeForm()
+    }
+        
     func initializeForm() {
         
-        let form : XLFormDescriptor = XLFormDescriptor() as XLFormDescriptor
+        let form : XLFormDescriptor = XLFormDescriptor(title: NSLocalizedString("_autoupload_filename_title_", comment: "")) as XLFormDescriptor
         form.rowNavigationOptions = XLFormRowNavigationOptions.stopDisableRow
         
         var section : XLFormSectionDescriptor

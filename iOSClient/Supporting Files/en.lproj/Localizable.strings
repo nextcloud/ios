@@ -248,6 +248,7 @@
 "_create_full_upload_"                      = "Creating archive… May take a long time, please wait.";
 "_error_createsubfolders_upload_"           = "Error creating subfolders";
 "_activate_autoupload_"                     = "Enable auto upload";
+"_autoupload_filenamemask_"                 = "Change filename mask";
 
 // Template
 
@@ -554,3 +555,8 @@
 "photos"                            = "photos";
 "of"                                = "of";
 "%i of %i"                          = "%1$i of %2$i";
+
+// Manage Auto Upload FileName
+
+"_autoupload_filename_title_"       = "Auto upload filename";
+

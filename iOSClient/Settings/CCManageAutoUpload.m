@@ -157,6 +157,14 @@
 
     // Auto Upload file name
     
+    section = [XLFormSectionDescriptor formSection];
+    [form addFormSection:section];
+    
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"filename" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_autoupload_filenamemask_", nil)];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    row.action.viewControllerClass = [NCManageAutoUploadFileName class];
+    [section addFormRow:row];
+    
     // end
     
     section = [XLFormSectionDescriptor formSection];
