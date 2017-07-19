@@ -258,9 +258,7 @@
         
         [self addNetworkingQueue:metadataNet];
         
-        [self.hud visibleHudTitle:NSLocalizedString(@"_uploading_", nil) mode:MBProgressHUDModeDeterminateHorizontalBar color:self.view.tintColor];
-       
-        [self.hud AddButtonCancelWithTarget:self selector:@"cancelTransfer"];
+        [self.hud visibleHudTitle:NSLocalizedString(@"_uploading_", nil) mode:MBProgressHUDModeDeterminate color:self.view.tintColor];
     }
     else
         [self closeShareViewController];
@@ -286,11 +284,6 @@
     [CCUtility setCryptatedShareExt:self.localCryptated];
 
     [self navigationBarToolBar];
-}
-
-- (void)cancelTransfer
-{
-    [_networkingOperationQueue cancelAllOperations];
 }
 
 #pragma --------------------------------------------------------------------------------------------
