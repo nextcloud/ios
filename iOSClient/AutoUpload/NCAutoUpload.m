@@ -560,6 +560,13 @@
         }
     }
     
+    // verify Download/Upload 
+    if (counterNewUpload == 0) {
+        
+        [[CCNetworking sharedNetworking] verifyDownloadInProgress];
+        [[CCNetworking sharedNetworking] verifyUploadInProgress];
+    }
+
     // Start Timer
     app.timerProcessAutoUpload = [NSTimer scheduledTimerWithTimeInterval:k_timerProcessAutoUpload target:app selector:@selector(processAutoUpload) userInfo:nil repeats:YES];
 }

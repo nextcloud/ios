@@ -46,7 +46,6 @@
 // Timer Process
 @property (nonatomic, strong) NSTimer *timerProcessAutoUpload;
 @property (nonatomic, strong) NSTimer *timerUpdateApplicationIconBadgeNumber;
-@property (nonatomic, strong) NSTimer *timerVerifySessionInProgress;
 
 // For LMMediaPlayerView
 @property (strong, nonatomic) UIWindow *window;

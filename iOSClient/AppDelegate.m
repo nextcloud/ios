@@ -249,7 +249,7 @@
     
     // Start Timer
     self.timerProcessAutoUpload = [NSTimer scheduledTimerWithTimeInterval:2.0 target:self selector:@selector(processAutoUpload) userInfo:nil repeats:YES];
-    self.timerVerifySessionInProgress = [NSTimer scheduledTimerWithTimeInterval:2.0 target:self selector:@selector(verifyDownloadUploadInProgress) userInfo:nil repeats:YES];
+    
     self.timerUpdateApplicationIconBadgeNumber = [NSTimer scheduledTimerWithTimeInterval:k_timerUpdateApplicationIconBadgeNumber target:self selector:@selector(updateApplicationIconBadgeNumber) userInfo:nil repeats:YES];
 
     // Registration Push Notification
@@ -279,10 +279,6 @@
 //
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {    
-    // facciamo partire il timer per il controllo delle sessioni e dei Lock
-    [self.timerVerifySessionInProgress invalidate];
-    self.timerVerifySessionInProgress = [NSTimer scheduledTimerWithTimeInterval:3.0 target:self selector:@selector(verifyDownloadUploadInProgress) userInfo:nil repeats:YES];
-    
     // refresh active Main
     if (_activeMain) {
         [_activeMain reloadDatasource];
@@ -1396,20 +1392,6 @@
         if (((OCnetworking *)operation).isExecuting == NO) queueNumUploadWWan++;
     
     return queueNumUploadWWan;
-}
-
-- (void)verifyDownloadUploadInProgress
-{
-    [self.timerVerifySessionInProgress invalidate];
-    
-    // Test Maintenance - Account
-    if (self.maintenanceMode == NO || self.activeAccount.length > 0) {
-    
-        [[CCNetworking sharedNetworking] verifyDownloadInProgress];
-        [[CCNetworking sharedNetworking] verifyUploadInProgress];
-    }
-    
-    self.timerVerifySessionInProgress = [NSTimer scheduledTimerWithTimeInterval:k_timerVerifySession target:self selector:@selector(verifyDownloadUploadInProgress) userInfo:nil repeats:YES];
 }
 
 // Notification change session
