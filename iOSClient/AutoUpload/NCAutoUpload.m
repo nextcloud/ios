@@ -507,10 +507,6 @@
             
             counterNewUpload++;
             
-            // Priority Error 1 file only
-            if (metadataNet.priority <= k_priorityAutoUploadError)
-                break;
-            
         } else
             break;
         
