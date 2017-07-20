@@ -501,12 +501,13 @@
             
             // Priority Error only in Foreground
             if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground && metadataNet.priority <= k_priorityAutoUploadError)
-                break;
+                continue;
             
             [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet.assetLocalIdentifier fileName:metadataNet.fileName serverUrl:metadataNet.serverUrl cryptated:metadataNet.cryptated session:metadataNet.session taskStatus:metadataNet.taskStatus selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:metadataNet.errorCode delegate:app.activeMain];
             
             counterNewUpload++;
             
+            // Priority Error 1 file only
             if (metadataNet.priority <= k_priorityAutoUploadError)
                 break;
             
@@ -536,15 +537,12 @@
                 
                 // Priority Error only in Foreground
                 if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground && metadataNet.priority <= k_priorityAutoUploadError)
-                    break;
+                    continue;
 
                 [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet.assetLocalIdentifier fileName:metadataNet.fileName serverUrl:metadataNet.serverUrl cryptated:metadataNet.cryptated session:metadataNet.session taskStatus:metadataNet.taskStatus selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:metadataNet.errorCode delegate:app.activeMain];
                 
                 counterNewUpload++;
         
-                if (metadataNet.priority <= k_priorityAutoUploadError)
-                    break;
-                
             } else
                 break;
             
