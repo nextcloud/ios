@@ -5588,6 +5588,9 @@
     // settiamo il record file.
     _metadata = [self getMetadataFromSectionDataSource:indexPath];
     
+    if (!_metadata)
+        return;
+    
     // se non può essere selezionata deseleziona
     if ([cell isEditing] == NO)
         [tableView deselectRowAtIndexPath:indexPath animated:YES];
@@ -5599,10 +5602,6 @@
         [self setTitle];
         return;
     }
-    
-    // test crash
-    NSArray *metadatas = [_sectionDataSource.sectionArrayRow objectForKey:[_sectionDataSource.sections objectAtIndex:indexPath.section]];
-    if (indexPath.row >= [metadatas count]) return;
     
     NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID];
     if (!serverUrl) return;
