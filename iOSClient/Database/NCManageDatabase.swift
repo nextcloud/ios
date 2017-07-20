@@ -1803,7 +1803,7 @@ class NCManageDatabase: NSObject {
         }
         
         // priority
-        if (result.priority <= Int(k_priorityAutoUploadErrorImage) || result.priority <= Int(k_priorityAutoUploadErrorVideo)) {
+        if (result.priority <= Int(k_priorityAutoUploadError)) {
             result.priority = result.priority - 1            
         } else {
             result.priority = priority

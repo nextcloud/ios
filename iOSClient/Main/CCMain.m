@@ -1606,16 +1606,25 @@
 {
     // Auto Upload
     if([selector isEqualToString:selectorUploadAutoUpload] || [selector isEqualToString:selectorUploadAutoUploadAll]) {
+                
+        if ([[NCManageDatabase sharedInstance] getPriorityQueueUploadWithAssetLocalIdentifier:metadataNet.assetLocalIdentifier] > k_priorityAutoUploadStop) {
         
-        if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
+            // Activity
+            [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:message type:k_activityTypeFailure verbose:k_activityVerboseDefault  activeUrl:app.activeUrl];
             
-            // ONLY BACKGROUND
-            [[NCAutoUpload sharedInstance] performSelectorOnMainThread:@selector(loadAutoUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUploadBackground] waitUntilDone:NO];
+            // Change priority Auto Upload
+            [[NCManageDatabase sharedInstance] setPriorityQueueUploadWithAssetLocalIdentifier:metadataNet.assetLocalIdentifier priority:k_priorityAutoUploadError];
             
         } else {
             
-            // ONLY FOREFROUND
-            [[NCAutoUpload sharedInstance] performSelectorOnMainThread:@selector(loadAutoUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUpload] waitUntilDone:NO];
+            // Delete record on Table Auto Upload
+            if ([selector isEqualToString:selectorUploadAutoUpload] || [selector isEqualToString:selectorUploadAutoUploadAll])
+                [[NCManageDatabase sharedInstance] deleteQueueUploadWithAssetLocalIdentifier:metadataNet.assetLocalIdentifier selector:selector];
+            
+            // Activity
+            [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:@"Delete too many retry" type:k_activityTypeFailure verbose:k_activityVerboseDefault  activeUrl:app.activeUrl];
+            
+            [app messageNotification:@"_upload_file_" description:@"Delete too many retry, see Activity for more info" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
         }
     }
     

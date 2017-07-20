@@ -281,8 +281,8 @@ extern NSString *const urlBaseUploadDB;
 // Priority Auto Upload
 #define k_priorityAutoUploadImage                       0
 #define k_priorityAutoUploadVideo                       -1
-#define k_priorityAutoUploadErrorImage                  -2
-#define k_priorityAutoUploadErrorVideo                  -3
+#define k_priorityAutoUploadError                       -2
+#define k_priorityAutoUploadStop                        -4
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

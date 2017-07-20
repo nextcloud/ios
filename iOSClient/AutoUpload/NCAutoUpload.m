@@ -499,14 +499,14 @@
         metadataNet = [[NCManageDatabase sharedInstance] getQueueUploadWithSelector:selectorUploadAutoUpload];
         if (metadataNet) {
             
-            if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground && (metadataNet.priority <= k_priorityAutoUploadErrorImage || metadataNet.priority <= k_priorityAutoUploadErrorVideo))
+            if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground && metadataNet.priority <= k_priorityAutoUploadError)
                 break;
             
             [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet.assetLocalIdentifier fileName:metadataNet.fileName serverUrl:metadataNet.serverUrl cryptated:metadataNet.cryptated session:metadataNet.session taskStatus:metadataNet.taskStatus selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:metadataNet.errorCode delegate:app.activeMain];
             
             counterNewUpload++;
             
-            if (metadataNet.priority <= k_priorityAutoUploadErrorImage || metadataNet.priority <= k_priorityAutoUploadErrorVideo)
+            if (metadataNet.priority <= k_priorityAutoUploadError)
                 break;
             
         } else
@@ -533,14 +533,14 @@
             metadataNet =  [[NCManageDatabase sharedInstance] getQueueUploadWithSelector:selectorUploadAutoUploadAll];
             if (metadataNet) {
                 
-                if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground && (metadataNet.priority <= k_priorityAutoUploadErrorImage || metadataNet.priority <= k_priorityAutoUploadErrorVideo))
+                if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground && metadataNet.priority <= k_priorityAutoUploadError)
                     break;
 
                 [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet.assetLocalIdentifier fileName:metadataNet.fileName serverUrl:metadataNet.serverUrl cryptated:metadataNet.cryptated session:metadataNet.session taskStatus:metadataNet.taskStatus selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:metadataNet.errorCode delegate:app.activeMain];
                 
                 counterNewUpload++;
         
-                if (metadataNet.priority <= k_priorityAutoUploadErrorImage || metadataNet.priority <= k_priorityAutoUploadErrorVideo)
+                if (metadataNet.priority <= k_priorityAutoUploadError)
                     break;
                 
             } else
