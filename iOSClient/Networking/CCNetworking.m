@@ -866,85 +866,88 @@
         return;
     }
     
-    PHAsset *assetResult = result[0];
-    PHAssetMediaType assetMediaType = assetResult.mediaType;
+    @synchronized (self) {
     
-    // IMAGE
-    if (assetMediaType == PHAssetMediaTypeImage) {
-        
-        __block PHAsset *asset = result[0];
-        __block NSError *error = nil;
-            
-        PHImageRequestOptions *options = [PHImageRequestOptions new];
-        options.networkAccessAllowed = YES; // iCloud
-            
-        [[PHImageManager defaultManager] requestImageDataForAsset:asset options:options resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
-                
-            [imageData writeToFile:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadataNet.fileName] options:NSDataWritingAtomic error:&error];
-                
-            if (error) {
-                
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
-                    [delegate uploadFileFailure:metadataNet fileID:nil serverUrl:metadataNet.serverUrl selector:metadataNet.selector message:[NSString stringWithFormat:@"Image request failed [%@]", error.description] errorCode:error.code];
-                });
-                
-            } else {
-                    
-                // OOOOOK
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [self upload:metadataNet.fileName serverUrl:metadataNet.serverUrl cryptated:metadataNet.cryptated template:NO onlyPlist:NO fileNameTemplate:nil assetLocalIdentifier:metadataNet.assetLocalIdentifier session:metadataNet.session taskStatus:metadataNet.taskStatus selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:metadataNet.errorCode delegate:delegate];
-                });
-            }
-        }];
-    }
+        PHAsset *assetResult = result[0];
+        PHAssetMediaType assetMediaType = assetResult.mediaType;
     
-    // VIDEO
-    if (assetMediaType == PHAssetMediaTypeVideo) {
+        // IMAGE
+        if (assetMediaType == PHAssetMediaTypeImage) {
         
-        __block PHAsset *asset = result[0];
-        
-        PHVideoRequestOptions *options = [PHVideoRequestOptions new];
-        options.networkAccessAllowed = YES; // iCloud
+            __block PHAsset *asset = result[0];
+            __block NSError *error = nil;
             
-        [[PHImageManager defaultManager] requestPlayerItemForVideo:asset options:options resultHandler:^(AVPlayerItem * _Nullable playerItem, NSDictionary * _Nullable info) {
+            PHImageRequestOptions *options = [PHImageRequestOptions new];
+            options.networkAccessAllowed = YES; // iCloud
+            
+            [[PHImageManager defaultManager] requestImageDataForAsset:asset options:options resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
                 
-            if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadataNet.fileName]])
-                [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadataNet.fileName] error:nil];
+                [imageData writeToFile:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadataNet.fileName] options:NSDataWritingAtomic error:&error];
                 
-            AVAssetExportSession *exportSession = [[AVAssetExportSession alloc] initWithAsset:playerItem.asset presetName:AVAssetExportPresetHighestQuality];
+                if (error) {
                 
-            if (exportSession) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
+                            [delegate uploadFileFailure:metadataNet fileID:nil serverUrl:metadataNet.serverUrl selector:metadataNet.selector message:[NSString stringWithFormat:@"Image request failed [%@]", error.description] errorCode:error.code];
+                    });
+                
+                } else {
                     
-                exportSession.outputURL = [NSURL fileURLWithPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadataNet.fileName]];
-                exportSession.outputFileType = AVFileTypeQuickTimeMovie;
+                    // OOOOOK
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [self upload:metadataNet.fileName serverUrl:metadataNet.serverUrl cryptated:metadataNet.cryptated template:NO onlyPlist:NO fileNameTemplate:nil assetLocalIdentifier:metadataNet.assetLocalIdentifier session:metadataNet.session taskStatus:metadataNet.taskStatus selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:metadataNet.errorCode delegate:delegate];
+                    });
+                }
+            }];
+        }
+    
+        // VIDEO
+        if (assetMediaType == PHAssetMediaTypeVideo) {
+        
+            __block PHAsset *asset = result[0];
+        
+            PHVideoRequestOptions *options = [PHVideoRequestOptions new];
+            options.networkAccessAllowed = YES; // iCloud
+            
+            [[PHImageManager defaultManager] requestPlayerItemForVideo:asset options:options resultHandler:^(AVPlayerItem * _Nullable playerItem, NSDictionary * _Nullable info) {
+                
+                if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadataNet.fileName]])
+                    [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadataNet.fileName] error:nil];
+                
+                AVAssetExportSession *exportSession = [[AVAssetExportSession alloc] initWithAsset:playerItem.asset presetName:AVAssetExportPresetHighestQuality];
+                
+                if (exportSession) {
                     
-                [exportSession exportAsynchronouslyWithCompletionHandler:^{
+                    exportSession.outputURL = [NSURL fileURLWithPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadataNet.fileName]];
+                    exportSession.outputFileType = AVFileTypeQuickTimeMovie;
+                    
+                    [exportSession exportAsynchronouslyWithCompletionHandler:^{
                         
-                    if (AVAssetExportSessionStatusCompleted == exportSession.status) {
+                        if (AVAssetExportSessionStatusCompleted == exportSession.status) {
                             
-                        // OOOOOOK
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            [self upload:metadataNet.fileName serverUrl:metadataNet.serverUrl cryptated:metadataNet.cryptated template:NO onlyPlist:NO fileNameTemplate:nil assetLocalIdentifier:metadataNet.assetLocalIdentifier session:metadataNet.session taskStatus:metadataNet.taskStatus selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:metadataNet.errorCode delegate:delegate];
-                        });
+                            // OOOOOOK
+                            dispatch_async(dispatch_get_main_queue(), ^{
+                                [self upload:metadataNet.fileName serverUrl:metadataNet.serverUrl cryptated:metadataNet.cryptated template:NO onlyPlist:NO fileNameTemplate:nil assetLocalIdentifier:metadataNet.assetLocalIdentifier session:metadataNet.session taskStatus:metadataNet.taskStatus selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:metadataNet.errorCode delegate:delegate];
+                            });
                             
-                    } else  {
+                        } else  {
                         
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
-                                [delegate uploadFileFailure:metadataNet fileID:nil serverUrl:metadataNet.serverUrl selector:metadataNet.selector message:[NSString stringWithFormat:@"Video export failed [%@]", exportSession.error.description] errorCode:exportSession.error.code];
-                        });
-                    }
-                }];
+                            dispatch_async(dispatch_get_main_queue(), ^{
+                                if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
+                                    [delegate uploadFileFailure:metadataNet fileID:nil serverUrl:metadataNet.serverUrl selector:metadataNet.selector message:[NSString stringWithFormat:@"Video export failed [%@]", exportSession.error.description] errorCode:exportSession.error.code];
+                            });
+                        }
+                    }];
                     
-            } else {
+                } else {
                 
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
-                    [delegate uploadFileFailure:metadataNet fileID:nil serverUrl:metadataNet.serverUrl selector:metadataNet.selector message:@"Create Video session failed [Internal error]" errorCode:k_CCErrorInternalError];
-                });
-            }
-        }];
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
+                            [delegate uploadFileFailure:metadataNet fileID:nil serverUrl:metadataNet.serverUrl selector:metadataNet.selector message:@"Create Video session failed [Internal error]" errorCode:k_CCErrorInternalError];
+                    });
+                }
+            }];
+        }
     }
 }
 

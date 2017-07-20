@@ -5786,75 +5786,78 @@
 // can i go to next viewcontroller
 - (void)performSegueDirectoryWithControlPasscode:(BOOL)controlPasscode
 {
-    NSString *nomeDir;
+    @synchronized (self) {
+        
+        NSString *nomeDir;
 
-    if(self.tableView.editing == NO && _metadata.errorPasscode == NO){
+        if(self.tableView.editing == NO && _metadata.errorPasscode == NO){
         
-        NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID];
-        if (!serverUrl) return;
+            NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID];
+            if (!serverUrl) return;
         
-        NSString *lockServerUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:_metadata.fileNameData];
+            NSString *lockServerUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:_metadata.fileNameData];
         
-        tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", app.activeAccount, lockServerUrl]];
+            tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", app.activeAccount, lockServerUrl]];
         
-        // SE siamo in presenza di una directory bloccata E è attivo il block E la sessione password Lock è senza data ALLORA chiediamo la password per procedere
-        if (directory.lock && [[CCUtility getBlockCode] length] && app.sessionePasscodeLock == nil && controlPasscode) {
+            // SE siamo in presenza di una directory bloccata E è attivo il block E la sessione password Lock è senza data ALLORA chiediamo la password per procedere
+            if (directory.lock && [[CCUtility getBlockCode] length] && app.sessionePasscodeLock == nil && controlPasscode) {
             
-            CCBKPasscode *viewController = [[CCBKPasscode alloc] initWithNibName:nil bundle:nil];
-            viewController.delegate = self;
-            viewController.fromType = CCBKPasscodeFromLockDirectory;
-            viewController.type = BKPasscodeViewControllerCheckPasscodeType;
-            viewController.inputViewTitlePassword = YES;
+                CCBKPasscode *viewController = [[CCBKPasscode alloc] initWithNibName:nil bundle:nil];
+                viewController.delegate = self;
+                viewController.fromType = CCBKPasscodeFromLockDirectory;
+                viewController.type = BKPasscodeViewControllerCheckPasscodeType;
+                viewController.inputViewTitlePassword = YES;
             
-            if ([CCUtility getSimplyBlockCode]) {
+                if ([CCUtility getSimplyBlockCode]) {
                 
-                viewController.passcodeStyle = BKPasscodeInputViewNumericPasscodeStyle;
-                viewController.passcodeInputView.maximumLength = 6;
+                    viewController.passcodeStyle = BKPasscodeInputViewNumericPasscodeStyle;
+                    viewController.passcodeInputView.maximumLength = 6;
                 
-            } else {
+                } else {
                 
-                viewController.passcodeStyle = BKPasscodeInputViewNormalPasscodeStyle;
-                viewController.passcodeInputView.maximumLength = 64;
+                    viewController.passcodeStyle = BKPasscodeInputViewNormalPasscodeStyle;
+                    viewController.passcodeInputView.maximumLength = 64;
+                }
+
+                BKTouchIDManager *touchIDManager = [[BKTouchIDManager alloc] initWithKeychainServiceName:k_serviceShareKeyChain];
+                touchIDManager.promptText = NSLocalizedString(@"_scan_fingerprint_", nil);
+                viewController.touchIDManager = touchIDManager;
+            
+                viewController.title = NSLocalizedString(@"_folder_blocked_", nil);
+                viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
+                viewController.navigationItem.leftBarButtonItem.tintColor = [NCBrandColor sharedInstance].cryptocloud;
+            
+                UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:viewController];
+                [self presentViewController:navController animated:YES completion:nil];
+            
+                return;
             }
-
-            BKTouchIDManager *touchIDManager = [[BKTouchIDManager alloc] initWithKeychainServiceName:k_serviceShareKeyChain];
-            touchIDManager.promptText = NSLocalizedString(@"_scan_fingerprint_", nil);
-            viewController.touchIDManager = touchIDManager;
+        
+            if (_metadata.cryptated) nomeDir = [_metadata.fileName substringToIndex:[_metadata.fileName length]-6];
+            else nomeDir = _metadata.fileName;
+        
+            NSString *serverUrlPush = [CCUtility stringAppendServerUrl:serverUrl addFileName:nomeDir];
+        
+            CCMain *viewController = [app.listMainVC objectForKey:serverUrlPush];
+        
+            if (viewController.isViewLoaded == false || viewController == nil) {
             
-            viewController.title = NSLocalizedString(@"_folder_blocked_", nil); 
-            viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
-            viewController.navigationItem.leftBarButtonItem.tintColor = [NCBrandColor sharedInstance].cryptocloud;
+                viewController = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"CCMainVC"];
             
-            UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:viewController];
-            [self presentViewController:navController animated:YES completion:nil];
+                viewController.isFolderEncrypted = _metadata.cryptated;
+                viewController.serverUrl = serverUrlPush;
+                viewController.titleMain = _metadata.fileNamePrint;
+                viewController.textBackButton = _titleMain;
             
-            return;
+                // save self
+                [app.listMainVC setObject:viewController forKey:serverUrlPush];
+            }
+        
+            // OFF SearchBar
+            [viewController cancelSearchBar];
+        
+            [self.navigationController pushViewController:viewController animated:YES];
         }
-        
-        if (_metadata.cryptated) nomeDir = [_metadata.fileName substringToIndex:[_metadata.fileName length]-6];
-        else nomeDir = _metadata.fileName;
-        
-        NSString *serverUrlPush = [CCUtility stringAppendServerUrl:serverUrl addFileName:nomeDir];
-        
-        CCMain *viewController = [app.listMainVC objectForKey:serverUrlPush];
-        
-        if (viewController.isViewLoaded == false || viewController == nil) {
-            
-            viewController = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"CCMainVC"];
-            
-            viewController.isFolderEncrypted = _metadata.cryptated;
-            viewController.serverUrl = serverUrlPush;
-            viewController.titleMain = _metadata.fileNamePrint;
-            viewController.textBackButton = _titleMain;
-            
-            // save self
-            [app.listMainVC setObject:viewController forKey:serverUrlPush];
-        }
-        
-        // OFF SearchBar
-        [viewController cancelSearchBar];
-        
-        [self.navigationController pushViewController:viewController animated:YES];
     }
 }
 
