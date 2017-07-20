@@ -458,6 +458,8 @@
         
             for(OCFileDto *itemDto in items) {
             
+                NSString *serverUrl;
+
                 itemDto.fileName = [itemDto.fileName stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
             
                 // Not in Crypto Cloud file
@@ -479,8 +481,12 @@
             
                 NSRange firstInstance = [itemDto.filePath rangeOfString:[NSString stringWithFormat:@"%@/files/%@", dav, _activeUser]];
                 NSRange finalRange = NSMakeRange(firstInstance.location + firstInstance.length, itemDto.filePath.length-(firstInstance.location + firstInstance.length));
-                NSString *serverUrl = [itemDto.filePath substringWithRange:finalRange];
-                
+                if (finalRange.location != NSNotFound && finalRange.location + finalRange.length <= itemDto.filePath.length) {
+                    // It's safe to use range on str
+                    serverUrl = [itemDto.filePath substringWithRange:finalRange];
+                } else {
+                    continue;
+                }
                 
                 /* TRIM */
                 if ([serverUrl hasPrefix:@"/"])
@@ -609,6 +615,8 @@
         
         for(OCFileDto *itemDto in items) {
             
+            NSString *serverUrl;
+            
             itemDto.fileName = [itemDto.fileName stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
             itemDto.filePath = [itemDto.filePath stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
 
@@ -631,7 +639,13 @@
             
             NSRange firstInstance = [itemDto.filePath rangeOfString:[NSString stringWithFormat:@"%@/files/%@", dav, _activeUser]];
             NSRange finalRange = NSMakeRange(firstInstance.location + firstInstance.length, itemDto.filePath.length-(firstInstance.location + firstInstance.length));
-            NSString *serverUrl = [itemDto.filePath substringWithRange:finalRange];
+            
+            if (finalRange.location != NSNotFound && finalRange.location + finalRange.length <= itemDto.filePath.length) {
+                // It's safe to use range on str
+                serverUrl = [itemDto.filePath substringWithRange:finalRange];
+            } else {
+                continue;
+            }
 
             /* TRIM */
             if ([serverUrl hasPrefix:@"/"])
