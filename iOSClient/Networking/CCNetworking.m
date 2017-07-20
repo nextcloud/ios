@@ -840,34 +840,24 @@
 #pragma mark =====  Upload =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)uploadFileFromAssetLocalIdentifier:(NSString *)assetLocalIdentifier fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl cryptated:(BOOL)cryptated session:(NSString *)session taskStatus:(NSInteger)taskStatus selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorCode:(NSInteger)errorCode delegate:(id)delegate
+- (void)uploadFileFromAssetLocalIdentifier:(CCMetadataNet *)metadataNet delegate:(id)delegate
 {
     //delegate
     if (delegate == nil)
         delegate = self.delegate;
     
-    // for fatal error
-    CCMetadataNet *metadataNet = [CCMetadataNet new];
-    metadataNet.assetLocalIdentifier = assetLocalIdentifier;
-    metadataNet.cryptated = cryptated;
-    metadataNet.fileName = fileName;
-    metadataNet.selector = selector;
-    metadataNet.selectorPost = selectorPost;
-    metadataNet.serverUrl = serverUrl;
-    metadataNet.session = session;
-    
-    PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[assetLocalIdentifier] options:nil];
+    PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[metadataNet.assetLocalIdentifier] options:nil];
     
     if (!result.count) {
         
         // Delete record on Table Auto Upload
-        if ([selector isEqualToString:selectorUploadAutoUpload] || [selector isEqualToString:selectorUploadAutoUploadAll])
-            [[NCManageDatabase sharedInstance] deleteQueueUploadWithAssetLocalIdentifier:assetLocalIdentifier selector:selector];
+        if ([metadataNet.selector isEqualToString:selectorUploadAutoUpload] || [metadataNet.selector isEqualToString:selectorUploadAutoUploadAll])
+            [[NCManageDatabase sharedInstance] deleteQueueUploadWithAssetLocalIdentifier:metadataNet.assetLocalIdentifier selector:metadataNet.selector];
 
-        [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:@"Error photo/video not found, remove from upload" type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
+        [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionUpload selector:metadataNet.selector note:@"Error photo/video not found, remove from upload" type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
         
         if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
-            [delegate uploadFileFailure:metadataNet fileID:nil serverUrl:serverUrl selector:selector message:@"Error photo/video not found, remove from upload" errorCode: k_CCErrorInternalError];
+            [delegate uploadFileFailure:metadataNet fileID:nil serverUrl:metadataNet.serverUrl selector:metadataNet.selector message:@"Error photo/video not found, remove from upload" errorCode: k_CCErrorInternalError];
         
         return;
     }
@@ -886,20 +876,20 @@
             
         [[PHImageManager defaultManager] requestImageDataForAsset:asset options:options resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
                 
-            [imageData writeToFile:[NSString stringWithFormat:@"%@/%@", _directoryUser, fileName] options:NSDataWritingAtomic error:&error];
+            [imageData writeToFile:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadataNet.fileName] options:NSDataWritingAtomic error:&error];
                 
             if (error) {
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
                     if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
-                    [delegate uploadFileFailure:metadataNet fileID:nil serverUrl:serverUrl selector:selector message:[NSString stringWithFormat:@"Image request failed [%@]", error.description] errorCode:error.code];
+                    [delegate uploadFileFailure:metadataNet fileID:nil serverUrl:metadataNet.serverUrl selector:metadataNet.selector message:[NSString stringWithFormat:@"Image request failed [%@]", error.description] errorCode:error.code];
                 });
                 
             } else {
                     
                 // OOOOOK
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    [self upload:fileName serverUrl:serverUrl cryptated:cryptated template:NO onlyPlist:NO fileNameTemplate:nil assetLocalIdentifier:assetLocalIdentifier session:session taskStatus:taskStatus selector:selector selectorPost:selectorPost errorCode:errorCode delegate:delegate];
+                    [self upload:metadataNet.fileName serverUrl:metadataNet.serverUrl cryptated:metadataNet.cryptated template:NO onlyPlist:NO fileNameTemplate:nil assetLocalIdentifier:metadataNet.assetLocalIdentifier session:metadataNet.session taskStatus:metadataNet.taskStatus selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:metadataNet.errorCode delegate:delegate];
                 });
             }
         }];
@@ -915,14 +905,14 @@
             
         [[PHImageManager defaultManager] requestPlayerItemForVideo:asset options:options resultHandler:^(AVPlayerItem * _Nullable playerItem, NSDictionary * _Nullable info) {
                 
-            if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, fileName]])
-                [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, fileName] error:nil];
+            if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadataNet.fileName]])
+                [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadataNet.fileName] error:nil];
                 
             AVAssetExportSession *exportSession = [[AVAssetExportSession alloc] initWithAsset:playerItem.asset presetName:AVAssetExportPresetHighestQuality];
                 
             if (exportSession) {
                     
-                exportSession.outputURL = [NSURL fileURLWithPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, fileName]];
+                exportSession.outputURL = [NSURL fileURLWithPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadataNet.fileName]];
                 exportSession.outputFileType = AVFileTypeQuickTimeMovie;
                     
                 [exportSession exportAsynchronouslyWithCompletionHandler:^{
@@ -931,14 +921,14 @@
                             
                         // OOOOOOK
                         dispatch_async(dispatch_get_main_queue(), ^{
-                            [self upload:fileName serverUrl:serverUrl cryptated:cryptated template:NO onlyPlist:NO fileNameTemplate:nil assetLocalIdentifier:assetLocalIdentifier session:session taskStatus:taskStatus selector:selector selectorPost:selectorPost errorCode:errorCode delegate:delegate];
+                            [self upload:metadataNet.fileName serverUrl:metadataNet.serverUrl cryptated:metadataNet.cryptated template:NO onlyPlist:NO fileNameTemplate:nil assetLocalIdentifier:metadataNet.assetLocalIdentifier session:metadataNet.session taskStatus:metadataNet.taskStatus selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:metadataNet.errorCode delegate:delegate];
                         });
                             
                     } else  {
                         
                         dispatch_async(dispatch_get_main_queue(), ^{
                             if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
-                                [delegate uploadFileFailure:metadataNet fileID:nil serverUrl:serverUrl selector:selector message:[NSString stringWithFormat:@"Video export failed [%@]", exportSession.error.description] errorCode:exportSession.error.code];
+                                [delegate uploadFileFailure:metadataNet fileID:nil serverUrl:metadataNet.serverUrl selector:metadataNet.selector message:[NSString stringWithFormat:@"Video export failed [%@]", exportSession.error.description] errorCode:exportSession.error.code];
                         });
                     }
                 }];
@@ -947,7 +937,7 @@
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
                     if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
-                    [delegate uploadFileFailure:metadataNet fileID:nil serverUrl:serverUrl selector:selector message:@"Create Video session failed [Internal error]" errorCode:k_CCErrorInternalError];
+                    [delegate uploadFileFailure:metadataNet fileID:nil serverUrl:metadataNet.serverUrl selector:metadataNet.selector message:@"Create Video session failed [Internal error]" errorCode:k_CCErrorInternalError];
                 });
             }
         }];
@@ -1314,6 +1304,7 @@
 
     NSURLSessionUploadTask *uploadTask = [sessionUpload uploadTaskWithRequest:request fromFile:[NSURL fileURLWithPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, fileNameForUpload]]];
     
+    // Error
     if (uploadTask == nil) {
         
         [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:@"Upload task not available" type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];

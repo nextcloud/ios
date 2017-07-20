@@ -180,7 +180,7 @@
 
 - (void)uploadAsset
 {
-    [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:_metadataNet.assetLocalIdentifier fileName:_metadataNet.fileName serverUrl:_metadataNet.serverUrl cryptated:_metadataNet.cryptated session:_metadataNet.session taskStatus:_metadataNet.taskStatus selector:_metadataNet.selector selectorPost:_metadataNet.selectorPost errorCode:_metadataNet.errorCode delegate:self];
+    [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:_metadataNet delegate:self];
 }
 
 - (void)uploadTemplate
