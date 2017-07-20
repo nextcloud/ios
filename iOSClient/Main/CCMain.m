@@ -1609,11 +1609,14 @@
                 
         if ([[NCManageDatabase sharedInstance] getPriorityQueueUploadWithAssetLocalIdentifier:metadataNet.assetLocalIdentifier] > k_priorityAutoUploadStop) {
         
-            // Activity
-            [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:message type:k_activityTypeFailure verbose:k_activityVerboseDefault  activeUrl:app.activeUrl];
-            
             // Change priority Auto Upload
-            [[NCManageDatabase sharedInstance] setPriorityQueueUploadWithAssetLocalIdentifier:metadataNet.assetLocalIdentifier priority:k_priorityAutoUploadError];
+            if ([[NCManageDatabase sharedInstance] setPriorityQueueUploadWithAssetLocalIdentifier:metadataNet.assetLocalIdentifier priority:k_priorityAutoUploadError]) {
+            
+                // Activity
+                [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:message type:k_activityTypeFailure verbose:k_activityVerboseDefault  activeUrl:app.activeUrl];
+            }
+            
+            [app messageNotification:@"_upload_file_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
             
         } else {
             
@@ -1626,22 +1629,24 @@
             
             [app messageNotification:@"_upload_file_" description:@"Too many error, delete file, see Activity for more info" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
         }
-    }
+        
+    } else {
     
-    // Read File test do not exists
-    if (errorCode == k_CCErrorFileUploadNotFound && fileID) {
+        // Read File test do not exists
+        if (errorCode == k_CCErrorFileUploadNotFound && fileID) {
        
-        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
+            tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
         
-        // reUpload
-        if (metadata)
-            [[CCNetworking sharedNetworking] uploadFileMetadata:metadata taskStatus:k_taskStatusResume];
-    }
+            // reUpload
+            if (metadata)
+                [[CCNetworking sharedNetworking] uploadFileMetadata:metadata taskStatus:k_taskStatusResume];
+        }
     
-    // Print error
-    else if (errorCode != kCFURLErrorCancelled && errorCode != 403) {
+        // Print error
+        else if (errorCode != kCFURLErrorCancelled && errorCode != 403) {
         
-        [app messageNotification:@"_upload_file_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+            [app messageNotification:@"_upload_file_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+        }
     }
     
     [self reloadDatasource:serverUrl];

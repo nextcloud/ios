@@ -846,6 +846,16 @@
     if (delegate == nil)
         delegate = self.delegate;
     
+    // for fatal error
+    CCMetadataNet *metadataNet = [CCMetadataNet new];
+    metadataNet.assetLocalIdentifier = assetLocalIdentifier;
+    metadataNet.cryptated = cryptated;
+    metadataNet.fileName = fileName;
+    metadataNet.selector = selector;
+    metadataNet.selectorPost = selectorPost;
+    metadataNet.serverUrl = serverUrl;
+    metadataNet.session = session;
+    
     PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[assetLocalIdentifier] options:nil];
     
     if (!result.count) {
@@ -854,10 +864,10 @@
         if ([selector isEqualToString:selectorUploadAutoUpload] || [selector isEqualToString:selectorUploadAutoUploadAll])
             [[NCManageDatabase sharedInstance] deleteQueueUploadWithAssetLocalIdentifier:assetLocalIdentifier selector:selector];
 
-        [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:@"Internal error asset not found, remove from Upload" type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
+        [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:@"Error photo/video not found, remove from upload" type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
         
         if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
-            [delegate uploadFileFailure:nil fileID:nil serverUrl:serverUrl selector:selector message:@"Internal error image/video not found" errorCode: k_CCErrorInternalError];
+            [delegate uploadFileFailure:metadataNet fileID:nil serverUrl:serverUrl selector:selector message:@"Error photo/video not found, remove from upload" errorCode: k_CCErrorInternalError];
         
         return;
     }
@@ -882,7 +892,7 @@
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
                     if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
-                    [delegate uploadFileFailure:nil fileID:nil serverUrl:serverUrl selector:selector message:[NSString stringWithFormat:@"Image request failed [%@]", error.description] errorCode:error.code];
+                    [delegate uploadFileFailure:metadataNet fileID:nil serverUrl:serverUrl selector:selector message:[NSString stringWithFormat:@"Image request failed [%@]", error.description] errorCode:error.code];
                 });
                 
             } else {
@@ -928,7 +938,7 @@
                         
                         dispatch_async(dispatch_get_main_queue(), ^{
                             if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
-                                [delegate uploadFileFailure:nil fileID:nil serverUrl:serverUrl selector:selector message:[NSString stringWithFormat:@"Video export failed [%@]", exportSession.error.description] errorCode:exportSession.error.code];
+                                [delegate uploadFileFailure:metadataNet fileID:nil serverUrl:serverUrl selector:selector message:[NSString stringWithFormat:@"Video export failed [%@]", exportSession.error.description] errorCode:exportSession.error.code];
                         });
                     }
                 }];
@@ -937,7 +947,7 @@
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
                     if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
-                    [delegate uploadFileFailure:nil fileID:nil serverUrl:serverUrl selector:selector message:@"Create Video session failed [Internal error]" errorCode:k_CCErrorInternalError];
+                    [delegate uploadFileFailure:metadataNet fileID:nil serverUrl:serverUrl selector:selector message:@"Create Video session failed [Internal error]" errorCode:k_CCErrorInternalError];
                 });
             }
         }];
