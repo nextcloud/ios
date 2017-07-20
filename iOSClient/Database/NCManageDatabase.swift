@@ -46,6 +46,7 @@ class NCManageDatabase: NSObject {
             let oneHundredMB = 100 * 1024 * 1024
             return (totalBytes > oneHundredMB) && (Double(usedBytes) / Double(totalBytes)) < 0.5
         })
+        
         do {
             // Realm is compacted on the first open if the configuration block conditions were met.
             _ = try Realm(configuration: configCompact)
