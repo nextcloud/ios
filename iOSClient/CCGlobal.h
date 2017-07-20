@@ -148,7 +148,6 @@ extern NSString *const urlBaseUploadDB;
 
 // Metadata.Net SELECTOR
 #define selectorAddFavorite                             @"addFavorite"
-#define selectorAddLocal                                @"addLocal"
 #define selectorCreateFolder                            @"createFolder"
 #define selectorDecryptFile                             @"decryptFile"
 #define selectorDelete                                  @"delete"
