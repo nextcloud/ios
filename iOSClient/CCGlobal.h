@@ -130,7 +130,7 @@ extern NSString *const urlBaseUploadDB;
 
 #define k_maxConcurrentOperation                         10
 #define k_maxConcurrentOperationDownloadUpload           10
-#define k_maxConcurrentOperationDownloadUploadBackground 2
+#define k_maxConcurrentOperationDownloadUploadBackground 1
 
 // Error
 #define k_CCErrorTaskNil                                -9999
@@ -148,7 +148,6 @@ extern NSString *const urlBaseUploadDB;
 
 // Metadata.Net SELECTOR
 #define selectorAddFavorite                             @"addFavorite"
-#define selectorAddLocal                                @"addLocal"
 #define selectorCreateFolder                            @"createFolder"
 #define selectorDecryptFile                             @"decryptFile"
 #define selectorDelete                                  @"delete"
@@ -234,7 +233,6 @@ extern NSString *const urlBaseUploadDB;
 // Metadata : Type
 #define k_metadataType_file                             @"file"
 #define k_metadataType_template                         @"model"
-#define k_metadataType_local                            @"local"
 
 // Metadata : Filename Type
 #define k_metadataTypeFilenamePlain                     0
@@ -242,25 +240,21 @@ extern NSString *const urlBaseUploadDB;
 #define k_metadataTypeFilenameCrypto                    2
 
 // Metadata : Status
-
 #define k_metadataStatusNormal                          0
 #define k_metadataStatusHide                            1
 
+// TabBar button
 #define k_tabBarApplicationIndexFile                    0
-#define k_tabBarApplicationIndexOffline                 1
-#define k_tabBarApplicationIndexHide                    2
+#define k_tabBarApplicationIndexFavorite                1
+#define k_tabBarApplicationIndexPlusHide                2
 #define k_tabBarApplicationIndexPhotos                  3
 #define k_tabBarApplicationIndexMore                    4
 
+// Filename Mask and Type
 #define k_keyFileNameMask                               @"fileNameMask"
-
-// Type of page Offline
-#define k_pageOfflineFavorites                          @"Favorites"
-#define k_pageOfflineOffline                            @"Offline"
-#define k_pageOfflineLocal                              @"Local"
-
-#define k_pageControlCenterTransfer                     @"Transfer"
-#define k_pageControlCenterActivity                     @"Activity"
+#define k_keyFileNameType                               @"fileNameType"
+#define k_keyFileNameAutoUploadMask                     @"fileNameAutoUploadMask"
+#define k_keyFileNameAutoUploadType                     @"fileNameAutoUploadType"
 
 // Activity
 #define k_activityVerboseDefault                        0
@@ -282,6 +276,12 @@ extern NSString *const urlBaseUploadDB;
 #define k_activityDebugActionServerPush                 @"Subscribing Server Push"
 #define k_activityDebugActionFeatures                   @"Features Supported By Server"
 #define k_activityDebugActionCapabilities               @"Capabilities Of Server"
+
+// Priority Auto Upload
+#define k_priorityAutoUploadImage                       0
+#define k_priorityAutoUploadVideo                       -1
+#define k_priorityAutoUploadError                       -2
+#define k_priorityAutoUploadStop                        -4
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

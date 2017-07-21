@@ -276,9 +276,13 @@
 {
     if ([selector isEqualToString:selectorLoadPlist]) {
 
+        NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
+        NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:activeUrl];
+        
         tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
         
         metadata = [CCUtility insertInformationPlist:metadata directoryUser:directoryUser];
+        metadata = [CCUtility insertTypeFileIconName:metadata serverUrl:serverUrl autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory];
         metadata = [[NCManageDatabase sharedInstance] updateMetadata:metadata activeUrl:activeUrl];
         
         // se è un template aggiorniamo anche nel FileSystem
@@ -381,7 +385,7 @@
     }
 
     // insert in Database
-    metadatas = [[NCManageDatabase sharedInstance] addMetadatas:metadatasToInsertInDB activeUrl:activeUrl serverUrl:metadataNet.serverUrl];
+    metadatas = [[NCManageDatabase sharedInstance] addMetadatas:metadatasToInsertInDB serverUrl:metadataNet.serverUrl];
 
     // Plist MULTI THREAD
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
@@ -472,6 +476,7 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:_serverUrl];
+    if (!directoryID) return 0;
     NSPredicate *predicate;
     
     if (self.onlyClearDirectory) predicate = [NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND directory = true AND cryptated = false", activeAccount, directoryID];
@@ -497,6 +502,8 @@
     }
     
     NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:_serverUrl];
+    if (!directoryID)
+        return cell;
     
     if (self.onlyClearDirectory) predicate = [NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND directory = true AND cryptated = false", activeAccount, directoryID];
     else predicate = [NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND directory = true", activeAccount, directoryID];
@@ -531,6 +538,7 @@
 
     NSIndexPath *index = [self.tableView indexPathForSelectedRow];
     NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:_serverUrl];
+    if (!directoryID) return;
     
     if (self.onlyClearDirectory) predicate = [NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND directory = true AND cryptated = false", activeAccount, directoryID];
     else predicate = [NSPredicate predicateWithFormat:@"account = %@ AND directoryID == %@ AND directory = true", activeAccount, directoryID];

@@ -33,6 +33,27 @@ class NCManageDatabase: NSObject {
     override init() {
         
         let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.sharedInstance.capabilitiesGroups)
+        
+        let configCompact = Realm.Configuration(
+            
+            fileURL: dirGroup?.appendingPathComponent("\(appDatabaseNextcloud)/\(k_databaseDefault)"),
+            
+            shouldCompactOnLaunch: { totalBytes, usedBytes in
+            // totalBytes refers to the size of the file on disk in bytes (data + free space)
+            // usedBytes refers to the number of bytes used by data in the file
+            
+            // Compact if the file is over 100MB in size and less than 50% 'used'
+            let oneHundredMB = 100 * 1024 * 1024
+            return (totalBytes > oneHundredMB) && (Double(usedBytes) / Double(totalBytes)) < 0.5
+        })
+        
+        do {
+            // Realm is compacted on the first open if the configuration block conditions were met.
+            _ = try Realm(configuration: configCompact)
+        } catch {
+            // handle error compacting or opening Realm
+        }
+        
         let config = Realm.Configuration(
         
             fileURL: dirGroup?.appendingPathComponent("\(appDatabaseNextcloud)/\(k_databaseDefault)"),
@@ -200,26 +221,28 @@ class NCManageDatabase: NSObject {
         return result
     }
 
-    func getAccounts() -> [String] {
+    func getAccounts() -> [String]? {
         
         let realm = try! Realm()
         
         let results = realm.objects(tableAccount.self).sorted(byKeyPath: "account", ascending: true)
         
-        return Array(results.map { $0.account })
+        if results.count > 0 {
+            return Array(results.map { $0.account })
+        }
+        
+        return nil
     }
     
     func getAccount(predicate: NSPredicate) -> tableAccount? {
         
         let realm = try! Realm()
         
-        let result = realm.objects(tableAccount.self).filter(predicate).first
-        
-        if result != nil {
-            return tableAccount.init(value: result!)
-        } else {
-            return nil
+        if let result = realm.objects(tableAccount.self).filter(predicate).first {
+            return tableAccount.init(value: result)
         }
+        
+        return nil
     }
     
     func getAccountAutoUploadFileName() -> String {
@@ -765,10 +788,14 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func getDirectoryID(_ serverUrl: String) -> String {
+    func getDirectoryID(_ serverUrl: String?) -> String? {
         
         guard let tableAccount = self.getAccountActive() else {
-            return ""
+            return nil
+        }
+        
+        guard let serverUrl = serverUrl else {
+            return nil
         }
         
         let realm = try! Realm()
@@ -780,16 +807,20 @@ class NCManageDatabase: NSObject {
         return result.directoryID
     }
     
-    func getServerUrl(_ directoryID: String) -> String {
+    func getServerUrl(_ directoryID: String?) -> String? {
         
         guard let tableAccount = self.getAccountActive() else {
-            return ""
+            return nil
+        }
+        
+        guard let directoryID = directoryID else {
+            return nil
         }
         
         let realm = try! Realm()
         
         guard let result = realm.objects(tableDirectory.self).filter("account = %@ AND directoryID = %@", tableAccount.account, directoryID).first else {
-            return ""
+            return nil
         }
         
         return result.serverUrl
@@ -856,6 +887,7 @@ class NCManageDatabase: NSObject {
             try realm.write {
             
                 guard let result = realm.objects(tableDirectory.self).filter("account = %@ AND serverUrl = %@", tableAccount.account, serverUrl).first else {
+                    realm.cancelWrite()
                     return
                 }
                 
@@ -1065,6 +1097,7 @@ class NCManageDatabase: NSObject {
             try realm.write {
                 
                 guard let result = realm.objects(tableLocalFile.self).filter("fileID = %@", fileID).first else {
+                    realm.cancelWrite()
                     return
                 }
                 
@@ -1110,7 +1143,7 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Metadata
     
-    func addMetadata(_ metadata: tableMetadata, activeUrl: String, serverUrl: String) -> tableMetadata? {
+    func addMetadata(_ metadata: tableMetadata) -> tableMetadata? {
         
         guard self.getAccountActive() != nil else {
             return nil
@@ -1131,7 +1164,11 @@ class NCManageDatabase: NSObject {
         return tableMetadata.init(value: metadata)
     }
     
-    func addMetadatas(_ metadatas: [tableMetadata], activeUrl: String, serverUrl: String) -> [tableMetadata] {
+    func addMetadatas(_ metadatas: [tableMetadata], serverUrl: String) -> [tableMetadata]? {
+        
+        guard self.getAccountActive() != nil else {
+            return nil
+        }
         
         let realm = try! Realm()
         
@@ -1145,8 +1182,9 @@ class NCManageDatabase: NSObject {
             print("Could not write to database: ", error)
         }
         
-        let directoryID = self.getDirectoryID(serverUrl)
-        self.setDateReadDirectory(directoryID: directoryID)
+        if let directoryID = self.getDirectoryID(serverUrl) {
+            self.setDateReadDirectory(directoryID: directoryID)
+        }
         
         return Array(metadatas.map { tableMetadata.init(value:$0) })
     }
@@ -1213,18 +1251,13 @@ class NCManageDatabase: NSObject {
     
     func updateMetadata(_ metadata: tableMetadata, activeUrl: String) -> tableMetadata? {
         
-        let autoUploadFileName = self.getAccountAutoUploadFileName()
-        let autoUploadDirectory = self.getAccountAutoUploadDirectory(activeUrl)
-        let serverUrl = self.getServerUrl(metadata.directoryID)
         let directoryID = metadata.directoryID
-        
-        let metadataWithIcon = CCUtility.insertTypeFileIconName(metadata, serverUrl: serverUrl, autoUploadFileName: autoUploadFileName, autoUploadDirectory: autoUploadDirectory)
         
         let realm = try! Realm()
         
         do {
             try realm.write {
-                realm.add(metadataWithIcon!, update: true)
+                realm.add(metadata, update: true)
             }
         } catch let error {
             print("Could not write to database: ", error)
@@ -1672,7 +1705,7 @@ class NCManageDatabase: NSObject {
         
         realm.beginWrite()
         
-        guard let result = realm.objects(tableQueueUpload.self).filter("account = %@ AND selector = %@ AND lock == false", tableAccount.account, selector).first else {
+        guard let result = realm.objects(tableQueueUpload.self).filter("account = %@ AND selector = %@ AND lock == false", tableAccount.account, selector).sorted(byKeyPath: "priority", ascending: false).first else {
             realm.cancelWrite()
             return nil
         }
@@ -1738,6 +1771,53 @@ class NCManageDatabase: NSObject {
         } catch let error {
             print("[LOG] Could not write to database: ", error)
         }
+    }
+    
+    func getPriorityQueueUpload(assetLocalIdentifier: String) -> NSInteger {
+        
+        guard let tableAccount = self.getAccountActive() else {
+            return 0
+        }
+        
+        let realm = try! Realm()
+        
+        guard let result = realm.objects(tableQueueUpload.self).filter("account = %@ AND assetLocalIdentifier = %@", tableAccount.account, assetLocalIdentifier).first else {
+            return 0
+        }
+        
+        return result.priority
+    }
+
+    func setPriorityQueueUpload(assetLocalIdentifier: String, priority: NSInteger) -> Bool {
+        
+        guard let tableAccount = self.getAccountActive() else {
+            return false
+        }
+        
+        let realm = try! Realm()
+        
+        realm.beginWrite()
+        
+        guard let result = realm.objects(tableQueueUpload.self).filter("account = %@ AND assetLocalIdentifier = %@", tableAccount.account, assetLocalIdentifier).first else {
+            realm.cancelWrite()
+            return false
+        }
+        
+        // priority
+        if (result.priority <= Int(k_priorityAutoUploadError)) {
+            result.priority = result.priority - 1            
+        } else {
+            result.priority = priority
+        }
+        
+        do {
+            try realm.commitWrite()
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+            return false
+        }
+        
+        return true
     }
     
     func deleteQueueUpload(assetLocalIdentifier: String, selector: String) {
@@ -2182,7 +2262,14 @@ class NCManageDatabase: NSObject {
             } else {
                 addLocalFile.date = NSDate()
             }
-            addLocalFile.etag = table.rev!
+            
+            if (table.rev != nil) {
+                addLocalFile.etag = table.rev!
+            } else {
+                realm.cancelWrite()
+                return
+            }
+            
             if table.exifDate != nil {
                 addLocalFile.exifDate = table.exifDate! as NSDate
             }

@@ -166,7 +166,7 @@
 
 - (void)readFileSuccess:(CCMetadataNet *)metadataNet metadata:(tableMetadata *)metadata
 {
-    (void)[[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:appDelegate.activeUrl serverUrl:metadataNet.serverUrl];
+    (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
     
     [self reloadDatasource];
 }
@@ -236,7 +236,7 @@
         tableShare *table = [_dataSource objectAtIndex:indexPath.row];
     
         NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:table.serverUrl];
-        if (directoryID.length > 0)
+        if (directoryID)
             metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND fileName = %@", appDelegate.activeAccount, directoryID, table.fileName]];
     }
         
@@ -251,9 +251,11 @@
         tableShare *table = [_dataSource objectAtIndex:indexPath.row];
         
         NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:table.serverUrl];
-        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND fileName = %@", appDelegate.activeAccount, directoryID, table.fileName]];
+        if (directoryID) {
+            tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND fileName = %@", appDelegate.activeAccount, directoryID, table.fileName]];
         
-        [self removeShares:metadata tableShare:table];
+            [self removeShares:metadata tableShare:table];
+        }
     }
 }
 
@@ -308,6 +310,8 @@
     tableShare *table = [_dataSource objectAtIndex:indexPath.row];
     
     NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:table.serverUrl];
+    if (!directoryID)
+        return cell;
     
     if (directoryID.length > 0)
          metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND fileName = %@", appDelegate.activeAccount, directoryID, table.fileName]];
@@ -363,13 +367,16 @@
     tableMetadata *metadata;
     tableShare *table = [_dataSource objectAtIndex:indexPath.row];
 
-    NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:table.serverUrl];
-    if (directoryID.length > 0)
-        metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND fileName = %@", appDelegate.activeAccount, directoryID, table.fileName]];
-
-    if (metadata) {
+    if (table.serverUrl) {
         
-        [appDelegate.activeMain openWindowShare:metadata];
+        NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:table.serverUrl];
+        if (directoryID)
+            metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND fileName = %@", appDelegate.activeAccount, directoryID, table.fileName]];
+
+        if (metadata) {
+        
+            [appDelegate.activeMain openWindowShare:metadata];
+        }
     }
 }
 

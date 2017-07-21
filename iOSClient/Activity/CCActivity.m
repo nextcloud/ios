@@ -272,7 +272,7 @@
 
         if ([activity.type isEqualToString:k_activityTypeInfo]) {
         
-            actionLabel.textColor = [NCBrandColor sharedInstance].brand;
+            actionLabel.textColor = [NCBrandColor sharedInstance].nextcloud;
         
             if (activity.idActivity == 0)
                 typeImage.image = [UIImage imageNamed:@"activityTypeInfo"];

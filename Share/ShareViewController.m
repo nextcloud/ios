@@ -165,9 +165,11 @@
 
     // Theming
     tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilites];
-    if ([NCBrandOptions sharedInstance].use_themingColor && capabilities.themingColor.length > 0)
-        [NCBrandColor sharedInstance].brand = [CCGraphics colorFromHexString:capabilities.themingColor];
-
+    if ([NCBrandOptions sharedInstance].use_themingColor && capabilities.themingColor.length > 0) {
+        UIColor *newColor = [CCGraphics colorFromHexString:capabilities.themingColor];
+        if (newColor)
+            [NCBrandColor sharedInstance].brand = newColor;
+    }
     self.navigationController.navigationBar.barTintColor = [NCBrandColor sharedInstance].brand;
     self.navigationController.navigationBar.tintColor = [NCBrandColor sharedInstance].navigationBarText;
     
@@ -256,9 +258,7 @@
         
         [self addNetworkingQueue:metadataNet];
         
-        [self.hud visibleHudTitle:NSLocalizedString(@"_uploading_", nil) mode:MBProgressHUDModeDeterminateHorizontalBar color:self.view.tintColor];
-       
-        [self.hud AddButtonCancelWithTarget:self selector:@"cancelTransfer"];
+        [self.hud visibleHudTitle:NSLocalizedString(@"_uploading_", nil) mode:MBProgressHUDModeDeterminate color:[NCBrandColor sharedInstance].brand];
     }
     else
         [self closeShareViewController];
@@ -284,11 +284,6 @@
     [CCUtility setCryptatedShareExt:self.localCryptated];
 
     [self navigationBarToolBar];
-}
-
-- (void)cancelTransfer
-{
-    [_networkingOperationQueue cancelAllOperations];
 }
 
 #pragma --------------------------------------------------------------------------------------------

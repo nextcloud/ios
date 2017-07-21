@@ -180,7 +180,7 @@
 
 - (void)uploadAsset
 {
-    [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:_metadataNet.assetLocalIdentifier fileName:_metadataNet.fileName serverUrl:_metadataNet.serverUrl cryptated:_metadataNet.cryptated session:_metadataNet.session taskStatus:_metadataNet.taskStatus selector:_metadataNet.selector selectorPost:_metadataNet.selectorPost errorCode:_metadataNet.errorCode delegate:self];
+    [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:_metadataNet delegate:self];
 }
 
 - (void)uploadTemplate
@@ -340,7 +340,13 @@
             
                 serverUrlFolder = [CCUtility deletingLastPathComponentFromServerUrl:_metadataNet.serverUrl];
                 directoryIDFolder = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrlFolder];
-                
+                if (!directoryIDFolder) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        
+                        if ([self.delegate respondsToSelector:@selector(readFolderSuccess:metadataFolder:metadatas:)])
+                            [self.delegate readFolderSuccess:_metadataNet metadataFolder:metadataFolder metadatas:metadatas];
+                    });
+                }
                 metadataFolder = [CCUtility trasformedOCFileToCCMetadata:itemDtoFolder fileName:[_metadataNet.serverUrl lastPathComponent] fileNamePrint:[_metadataNet.serverUrl lastPathComponent] serverUrl:serverUrlFolder directoryID:directoryIDFolder autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser];
             }
         
@@ -452,6 +458,8 @@
         
             for(OCFileDto *itemDto in items) {
             
+                NSString *serverUrl;
+
                 itemDto.fileName = [itemDto.fileName stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
             
                 // Not in Crypto Cloud file
@@ -473,8 +481,12 @@
             
                 NSRange firstInstance = [itemDto.filePath rangeOfString:[NSString stringWithFormat:@"%@/files/%@", dav, _activeUser]];
                 NSRange finalRange = NSMakeRange(firstInstance.location + firstInstance.length, itemDto.filePath.length-(firstInstance.location + firstInstance.length));
-                NSString *serverUrl = [itemDto.filePath substringWithRange:finalRange];
-                
+                if (finalRange.location != NSNotFound && finalRange.location + finalRange.length <= itemDto.filePath.length) {
+                    // It's safe to use range on str
+                    serverUrl = [itemDto.filePath substringWithRange:finalRange];
+                } else {
+                    continue;
+                }
                 
                 /* TRIM */
                 if ([serverUrl hasPrefix:@"/"])
@@ -603,6 +615,8 @@
         
         for(OCFileDto *itemDto in items) {
             
+            NSString *serverUrl;
+            
             itemDto.fileName = [itemDto.fileName stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
             itemDto.filePath = [itemDto.filePath stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
 
@@ -625,7 +639,13 @@
             
             NSRange firstInstance = [itemDto.filePath rangeOfString:[NSString stringWithFormat:@"%@/files/%@", dav, _activeUser]];
             NSRange finalRange = NSMakeRange(firstInstance.location + firstInstance.length, itemDto.filePath.length-(firstInstance.location + firstInstance.length));
-            NSString *serverUrl = [itemDto.filePath substringWithRange:finalRange];
+            
+            if (finalRange.location != NSNotFound && finalRange.location + finalRange.length <= itemDto.filePath.length) {
+                // It's safe to use range on str
+                serverUrl = [itemDto.filePath substringWithRange:finalRange];
+            } else {
+                continue;
+            }
 
             /* TRIM */
             if ([serverUrl hasPrefix:@"/"])
@@ -925,15 +945,23 @@
             OCFileDto *itemDto = [items objectAtIndex:0];
             
             NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:_metadataNet.serverUrl];
-            NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
-            NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:_activeUrl];
+            if (directoryID) {
+            
+                NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
+                NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:_activeUrl];
 
-            NSString *directoryUser = [CCUtility getDirectoryActiveUser:_activeUser activeUrl:_activeUrl];
+                NSString *directoryUser = [CCUtility getDirectoryActiveUser:_activeUser activeUrl:_activeUrl];
         
-            metadata = [CCUtility trasformedOCFileToCCMetadata:itemDto fileName:_metadataNet.fileName fileNamePrint:_metadataNet.fileNamePrint serverUrl:_metadataNet.serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser];
+                metadata = [CCUtility trasformedOCFileToCCMetadata:itemDto fileName:_metadataNet.fileName fileNamePrint:_metadataNet.fileNamePrint serverUrl:_metadataNet.serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser];
                         
-            if([self.delegate respondsToSelector:@selector(readFileSuccess:metadata:)])
-                [self.delegate readFileSuccess:_metadataNet metadata:metadata];
+                if([self.delegate respondsToSelector:@selector(readFileSuccess:metadata:)])
+                    [self.delegate readFileSuccess:_metadataNet metadata:metadata];
+                
+            } else {
+                
+                if([self.delegate respondsToSelector:@selector(readFileFailure:message:errorCode:)])
+                    [self.delegate readFileFailure:_metadataNet message:@"Directory not found" errorCode:0];
+            }
         }
         
         // BUG 1038
@@ -942,6 +970,8 @@
 #ifndef EXTENSION
             [app messageNotification:@"Server error" description:@"Read File WebDAV : [items NULL] please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
 #endif
+            if([self.delegate respondsToSelector:@selector(readFileFailure:message:errorCode:)])
+                [self.delegate readFileFailure:_metadataNet message:@"Read File WebDAV : [items NULL] please fix" errorCode:0];
         }
         
         [self complete];

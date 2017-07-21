@@ -249,7 +249,7 @@
     
     // Start Timer
     self.timerProcessAutoUpload = [NSTimer scheduledTimerWithTimeInterval:2.0 target:self selector:@selector(processAutoUpload) userInfo:nil repeats:YES];
-    self.timerVerifySessionInProgress = [NSTimer scheduledTimerWithTimeInterval:2.0 target:self selector:@selector(verifyDownloadUploadInProgress) userInfo:nil repeats:YES];
+    
     self.timerUpdateApplicationIconBadgeNumber = [NSTimer scheduledTimerWithTimeInterval:k_timerUpdateApplicationIconBadgeNumber target:self selector:@selector(updateApplicationIconBadgeNumber) userInfo:nil repeats:YES];
 
     // Registration Push Notification
@@ -279,10 +279,6 @@
 //
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {    
-    // facciamo partire il timer per il controllo delle sessioni e dei Lock
-    [self.timerVerifySessionInProgress invalidate];
-    self.timerVerifySessionInProgress = [NSTimer scheduledTimerWithTimeInterval:3.0 target:self selector:@selector(verifyDownloadUploadInProgress) userInfo:nil repeats:YES];
-    
     // refresh active Main
     if (_activeMain) {
         [_activeMain reloadDatasource];
@@ -830,13 +826,13 @@
     item.selectedImage = [UIImage imageNamed:@"tabBarFiles"];
     
     // Favorites
-    item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexOffline];
+    item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexFavorite];
     [item setTitle:NSLocalizedString(@"_favorites_", nil)];
     item.image = [UIImage imageNamed:@"tabBarFavorite"];
     item.selectedImage = [UIImage imageNamed:@"tabBarFavorite"];
     
-    // Hide (PLUS)
-    item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexHide];
+    // (PLUS)
+    item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexPlusHide];
     item.title = nil;
     item.image = nil;
     item.enabled = false;
@@ -963,10 +959,14 @@
         
         UITabBarItem *tbItem = [tbc.tabBar.items objectAtIndex:0];
         
-        if (total > 0)
+        if (total > 0) {
             [tbItem setBadgeValue:[NSString stringWithFormat:@"%li", (unsigned long)total]];
-        else
+        } else {
             [tbItem setBadgeValue:nil];
+            
+            NSDictionary* userInfo = @{@"fileID": @"", @"serverUrl": @"", @"cryptated": [NSNumber numberWithFloat:0], @"progress": [NSNumber numberWithFloat:0]};
+            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"NotificationProgressTask" object:nil userInfo:userInfo];
+        }
     }
 }
 
@@ -1033,7 +1033,7 @@
         newColor = [NCBrandColor sharedInstance].customer;
     }
     
-    if (self.activeAccount.length > 0 && ![newColor isEqual:[NCBrandColor sharedInstance].brand]) {
+    if (self.activeAccount.length > 0 && ![newColor isEqual:[NCBrandColor sharedInstance].brand] && newColor) {
         
         [NCBrandColor sharedInstance].brand = newColor;
         [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"changeTheming" object:nil];
@@ -1394,20 +1394,6 @@
     return queueNumUploadWWan;
 }
 
-- (void)verifyDownloadUploadInProgress
-{
-    [self.timerVerifySessionInProgress invalidate];
-    
-    // Test Maintenance - Account
-    if (self.maintenanceMode == NO || self.activeAccount.length > 0) {
-    
-        [[CCNetworking sharedNetworking] verifyDownloadInProgress];
-        [[CCNetworking sharedNetworking] verifyUploadInProgress];
-    }
-    
-    self.timerVerifySessionInProgress = [NSTimer scheduledTimerWithTimeInterval:k_timerVerifySession target:self selector:@selector(verifyDownloadUploadInProgress) userInfo:nil repeats:YES];
-}
-
 // Notification change session
 - (void)sessionChanged:(NSNotification *)notification
 {
@@ -1455,6 +1441,7 @@
     tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
     if (!metadata) return;
     NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
+    if (!serverUrl) return;
     
     if ([[_listChangeTask objectForKey:fileID] isEqualToString:@"stopUpload"]) {
         
@@ -1579,7 +1566,7 @@
 #endif
     
     NSString *actualVersion = [CCUtility getVersion];
-    NSString *actualBuild = [CCUtility getBuild];
+    //NSString *actualBuild = [CCUtility getBuild];
     
     /* ---------------------- UPGRADE VERSION ----------------------- */
     

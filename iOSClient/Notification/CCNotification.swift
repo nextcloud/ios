@@ -170,19 +170,15 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
             let urlIcon = URL(string: notification.icon)
             var image : UIImage?
             
-            if urlIcon != nil {
-                let pathFileName = (appDelegate.directoryUser) + "/" + (urlIcon?.lastPathComponent)!
+            if let urlIcon = urlIcon {
+                let pathFileName = (appDelegate.directoryUser) + "/" + (urlIcon.lastPathComponent)
                 image = UIImage(contentsOfFile: pathFileName)
             }
             
-            if image == nil {
-                
-                cell.icon.image = CCGraphics.changeThemingColorImage(#imageLiteral(resourceName: "notification"), color: NCBrandColor.sharedInstance.brand)
-                //downloadImage(url: urlIcon)
-                
-            } else {
-                
+            if let image = image {
                 cell.icon.image = image
+            } else {
+                cell.icon.image = CCGraphics.changeThemingColorImage(#imageLiteral(resourceName: "notification"), color: NCBrandColor.sharedInstance.brand)
             }
             
             //

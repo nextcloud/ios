@@ -64,7 +64,10 @@
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
     
     metadataNet.action = actionReadFolder;
-    metadataNet.directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
+    NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
+    if (!directoryID) return;
+    
+    metadataNet.directoryID = directoryID;
     metadataNet.priority = NSOperationQueuePriorityLow;
     metadataNet.selector = selector;
     metadataNet.serverUrl = serverUrl;
@@ -91,8 +94,10 @@
 - (void)readFolderSuccess:(CCMetadataNet *)metadataNet metadataFolder:(tableMetadata *)metadataFolder metadatas:(NSArray *)metadatas
 {
     // Add/update self Folder
-    NSString *serverUrlFolded = [[NCManageDatabase sharedInstance] getServerUrl:metadataFolder.directoryID];
-    (void)[[NCManageDatabase sharedInstance] addMetadata:metadataFolder activeUrl:app.activeUrl serverUrl:serverUrlFolded];
+    if (!metadataFolder || !metadatas || [metadatas count] == 0)
+        return;
+    
+    (void)[[NCManageDatabase sharedInstance] addMetadata:metadataFolder];
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         
@@ -172,7 +177,7 @@
                 tableMetadata *result = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadata.fileID]];
 
                 if (!result)
-                    (void)[[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:app.activeUrl serverUrl:metadataNet.serverUrl];
+                    (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
               
                 // Load if different etag
                 tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", metadataNet.account, serverUrl]];
@@ -216,7 +221,7 @@
         }
         
         if ([addMetadatas count] > 0)
-            (void)[[NCManageDatabase sharedInstance] addMetadatas:addMetadatas activeUrl:app.activeUrl serverUrl:metadataNet.serverUrl];
+            (void)[[NCManageDatabase sharedInstance] addMetadatas:addMetadatas serverUrl:metadataNet.serverUrl];
         
         if ([metadatasForVerifyChange count] > 0)
             [self verifyChangeMedatas:metadatasForVerifyChange serverUrl:metadataNet.serverUrl account:metadataNet.account withDownload:YES];
@@ -230,7 +235,7 @@
 - (void)synchronizedFile:(tableMetadata *)metadata selector:(NSString *)selector
 {
     NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
-    if (serverUrl == nil) return;
+    if (!serverUrl) return;
         
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
         
@@ -257,7 +262,8 @@
         [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadataNet.account, metadataNet.fileID] clearDateReadDirectoryID:nil];
         
         NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadataNet.directoryID];
-        [app.activeMain reloadDatasource:serverUrl];
+        if (serverUrl)
+            [app.activeMain reloadDatasource:serverUrl];
     }
 }
 
@@ -271,7 +277,7 @@
             withDownload = YES;
         
         //Add/Update Metadata
-        tableMetadata *addMetadata = [[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:app.activeUrl serverUrl:metadataNet.serverUrl];
+        tableMetadata *addMetadata = [[NCManageDatabase sharedInstance] addMetadata:metadata];
         
         if (addMetadata)
             [self verifyChangeMedatas:[[NSArray alloc] initWithObjects:addMetadata, nil] serverUrl:metadataNet.serverUrl account:app.activeAccount withDownload:withDownload];
@@ -358,12 +364,13 @@
         // Clear date for dorce refresh view
         if (![oldDirectoryID isEqualToString:metadata.directoryID]) {
             serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
+            if (!serverUrl) return;
             oldDirectoryID = metadata.directoryID;
             [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:serverUrl directoryID:nil];
         }
         
         fileID = metadata.fileID;
-        (void)[[NCManageDatabase sharedInstance] addMetadata:metadata activeUrl:app.activeUrl serverUrl:serverUrl];
+        (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
         
         CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
             

@@ -120,6 +120,7 @@
 "_mail_sent_"               = "Email sent";
 "_mail_failure_"            = "Failed to send email: %@";
 "_information_req_"         = "Information request";
+"_write_in_english_"        = "Please, write us in English";
 "_credentials_"             = "Credentials";
 "_manage_account_"          = "Manage account";
 "_change_password_"         = "Change password";
@@ -178,6 +179,8 @@
 "_autoupload_fullphotos_footer_"    = "Select the options above before uploading";
 "_autoupload_create_subfolder_"     = "Use subfolders";
 "_autoupload_create_subfolder_footer_" = "Store in subfolders based on year and month";
+"_autoupload_filenamemask_"         = "Change filename mask";
+"_autoupload_filenamemask_footer_"  = "Change the automatic filename mask";
 
 // Manage Crypto Cloud
 
@@ -540,8 +543,10 @@
 "_use_folder_photos_"               = "Use the folder Photos as destination";
 "_rename_filename_"                 = "Rename";
 "_filename_"                        = "File name";
-"_preview_filename_"                = "Example preview of filename, you can use the mask MM,DD,YY for the date";
+"_preview_filename_"                = "Example preview of filename, you can use the mask MM,MMM,DD,YY,YYYY and HH,hh,mm,ss,ampm for the date/time";
 "_forbidden_characters_"            = "Invalid character in the filename";
+"_add_filenametype_"                = "Add type in filename";
+"_filenametype_photo_video_"        = "Photo/Video";
 
 // Notification
 
@@ -555,3 +560,8 @@
 "photos"                            = "photos";
 "of"                                = "of";
 "%i of %i"                          = "%1$i of %2$i";
+
+// Manage Auto Upload FileName
+
+"_autoupload_filename_title_"       = "Auto upload filename";
+
