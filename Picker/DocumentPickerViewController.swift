@@ -742,11 +742,11 @@ extension DocumentPickerViewController: UITableViewDataSource {
         //let metadata = CCCoreData.insertEntity(in: recordTableMetadata)!
         
         // File Image View
-        let filePath = "\(directoryUser!)/\(metadata!.fileID)).ico"
+        let fileNamePath = "\(directoryUser!)/\(metadata!.fileID)).ico"
         
-        if FileManager.default.fileExists(atPath: filePath) {
+        if FileManager.default.fileExists(atPath: fileNamePath) {
             
-            cell.fileImageView.image = UIImage(contentsOfFile: filePath)
+            cell.fileImageView.image = UIImage(contentsOfFile: fileNamePath)
             
         } else {
             
@@ -803,7 +803,9 @@ extension DocumentPickerViewController: UITableViewDataSource {
 
         if metadata!.directory == false {
             
-            if FileManager.default.fileExists(atPath: "\(directoryUser!)/\(String(describing: self.metadata?.fileID))") {
+            let fileNamePath = "\(directoryUser!)/\(metadata!.fileID)"
+            
+            if FileManager.default.fileExists(atPath: fileNamePath) {
                 
                 downloadFileSuccess(self.metadata?.fileID, serverUrl: self.serverUrl!, selector: selectorLoadFileView, selectorPost: nil)
                 

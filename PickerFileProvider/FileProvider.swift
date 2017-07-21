@@ -118,6 +118,11 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             return
         }
 
+        //TODO: verifica se esiste già in coda
+        
+        
+        
+        
         CCNetworking.shared().settingDelegate(self)
         CCNetworking.shared().uploadFile(fileName, serverUrl: serverUrl, cryptated: false, onlyPlist: false, session: k_upload_session_foreground, taskStatus: Int(k_taskStatusSuspend), selector: nil, selectorPost: nil, errorCode: 0, delegate: self)
         
@@ -138,7 +143,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         })
     }
     
-    // //
+    // UTILITY //
     
     func appGroupContainerURL() -> URL? {
         
