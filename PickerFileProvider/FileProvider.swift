@@ -85,6 +85,14 @@ class FileProvider: NSFileProviderExtension {
         
         // TODO: mark file at <url> as needing an update in the model; kick off update process
         NSLog("Item changed at URL %@", url as NSURL)
+        
+        let fileName = url.lastPathComponent
+        
+        guard let record = NCManageDatabase.sharedInstance.getAccountActive() else {
+            return
+        }
+
+        
     }
     
     override func stopProvidingItem(at url: URL) {

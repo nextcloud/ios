@@ -587,7 +587,7 @@ extension DocumentPickerViewController {
                     let ocNetworking : OCnetworking = OCnetworking.init(delegate: self!, metadataNet: metadataNet, withUser: self!.activeUser, withPassword: self!.activePassword, withUrl: self!.activeUrl, isCryptoCloudMode: self!.isCryptoCloudMode!)
                     self!.networkingOperationQueue.addOperation(ocNetworking)
                     
-                    self!.hud.visibleHudTitle(NSLocalizedString("_uploading_", comment: ""), mode: MBProgressHUDMode.determinateHorizontalBar, color: self!.navigationController?.view.tintColor)
+                    self!.hud.visibleHudTitle(NSLocalizedString("_uploading_", comment: ""), mode: MBProgressHUDMode.determinate, color: NCBrandColor.sharedInstance.brand)
                     self!.hud.addButtonCancel(withTarget: self, selector: "cancelTransfer")
                     
                 } catch _ {
