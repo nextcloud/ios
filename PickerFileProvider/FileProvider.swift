@@ -23,7 +23,16 @@
 
 import UIKit
 
-class FileProvider: NSFileProviderExtension {
+class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
+
+    lazy var networkingOperationQueue: OperationQueue = {
+        
+        var queue = OperationQueue()
+        queue.name = k_queue
+        queue.maxConcurrentOperationCount = 10
+        
+        return queue
+    }()
 
     var fileCoordinator: NSFileCoordinator {
         let fileCoordinator = NSFileCoordinator()
@@ -86,13 +95,33 @@ class FileProvider: NSFileProviderExtension {
         // TODO: mark file at <url> as needing an update in the model; kick off update process
         NSLog("Item changed at URL %@", url as NSURL)
         
-        let fileName = url.lastPathComponent
+        guard let result = NCManageDatabase.sharedInstance.getAccountActive() else {
+            return
+        }
         
-        guard let record = NCManageDatabase.sharedInstance.getAccountActive() else {
+        let fileName = url.lastPathComponent
+        let directoryUser = CCUtility.getDirectoryActiveUser(result.user, activeUrl: result.url)
+        let destinationURLDirectoryUser = URL(string: "file://\(directoryUser!)/\(fileName)".addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!)!
+        let serverUrl = CCUtility.getHomeServerUrlActiveUrl(result.url)
+
+        // copy sourceURL on directoryUser
+        do {
+            try FileManager.default.removeItem(at: destinationURLDirectoryUser)
+        } catch _ {
+            print("file do not exists")
+        }
+        
+        do {
+            try FileManager.default.copyItem(at: url, to: destinationURLDirectoryUser)
+        } catch _ {
+            print("file do not exists")
             return
         }
 
+        CCNetworking.shared().settingDelegate(self)
+        CCNetworking.shared().uploadFile(fileName, serverUrl: serverUrl, cryptated: false, onlyPlist: false, session: k_upload_session_foreground, taskStatus: Int(k_taskStatusSuspend), selector: nil, selectorPost: nil, errorCode: 0, delegate: self)
         
+        self.stopProvidingItem(at: url)
     }
     
     override func stopProvidingItem(at url: URL) {
@@ -108,5 +137,30 @@ class FileProvider: NSFileProviderExtension {
             // TODO: handle any error, do any necessary cleanup
         })
     }
+    
+    // //
+    
+    func appGroupContainerURL() -> URL? {
+        
+        guard let groupURL = FileManager.default
+            .containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.sharedInstance.capabilitiesGroups) else {
+                return nil
+        }
+        
+        let storagePathUrl = groupURL.appendingPathComponent("File Provider Storage")
+        let storagePath = storagePathUrl.path
+        
+        if !FileManager.default.fileExists(atPath: storagePath) {
+            do {
+                try FileManager.default.createDirectory(atPath: storagePath, withIntermediateDirectories: false, attributes: nil)
+            } catch let error {
+                print("error creating filepath: \(error)")
+                return nil
+            }
+        }
+        
+        return storagePathUrl
+    }
+
 
 }

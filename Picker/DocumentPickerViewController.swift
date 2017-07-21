@@ -404,11 +404,6 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         hud.progress(progress)
     }
     
-    func cancelTransfer() {
-        
-        networkingOperationQueue.cancelAllOperations()
-    }
-
     //  MARK: - Download
 
     func downloadFileFailure(_ fileID: String!, serverUrl: String!, selector: String!, message: String!, errorCode: Int) {
@@ -588,7 +583,6 @@ extension DocumentPickerViewController {
                     self!.networkingOperationQueue.addOperation(ocNetworking)
                     
                     self!.hud.visibleHudTitle(NSLocalizedString("_uploading_", comment: ""), mode: MBProgressHUDMode.determinate, color: NCBrandColor.sharedInstance.brand)
-                    self!.hud.addButtonCancel(withTarget: self, selector: "cancelTransfer")
                     
                 } catch _ {
                     
@@ -830,8 +824,7 @@ extension DocumentPickerViewController: UITableViewDataSource {
                 let ocNetworking : OCnetworking = OCnetworking.init(delegate: self, metadataNet: metadataNet, withUser: activeUser, withPassword: activePassword, withUrl: activeUrl, isCryptoCloudMode: self.isCryptoCloudMode!)
                 networkingOperationQueue.addOperation(ocNetworking)
                 
-                hud.visibleHudTitle(NSLocalizedString("_loading_", comment: ""), mode: MBProgressHUDMode.determinateHorizontalBar, color: self.navigationController?.view.tintColor)
-                hud.addButtonCancel(withTarget: self, selector: "cancelTransfer")
+                hud.visibleHudTitle(NSLocalizedString("_loading_", comment: ""), mode: MBProgressHUDMode.determinate, color: NCBrandColor.sharedInstance.brand)
             }
             
         } else {
