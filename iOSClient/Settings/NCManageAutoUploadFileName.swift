@@ -11,6 +11,7 @@ import Foundation
 class NCManageAutoUploadFileName: XLFormViewController {
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    let dateExample = Date()
     
     required init(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -182,18 +183,18 @@ class NCManageAutoUploadFileName: XLFormViewController {
                 CCUtility.setFileNameMask(valueRenameTrimming, key: k_keyFileNameAutoUploadMask)
                 self.form.delegate = self
                 
-                returnString = CCUtility.createFileName("IMG_0001.JPG", fileDate: Date(), fileType: PHAssetMediaType.image, keyFileName: k_keyFileNameAutoUploadMask, keyFileNameType: k_keyFileNameAutoUploadType)
+                returnString = CCUtility.createFileName("IMG_0001.JPG", fileDate: dateExample, fileType: PHAssetMediaType.image, keyFileName: k_keyFileNameAutoUploadMask, keyFileNameType: k_keyFileNameAutoUploadType)
 
             } else {
                 
                 CCUtility.setFileNameMask("", key: k_keyFileNameAutoUploadMask)
-                returnString = CCUtility.createFileName("IMG_0001.JPG", fileDate: Date(), fileType: PHAssetMediaType.image, keyFileName: nil, keyFileNameType: k_keyFileNameAutoUploadType)
+                returnString = CCUtility.createFileName("IMG_0001.JPG", fileDate: dateExample, fileType: PHAssetMediaType.image, keyFileName: nil, keyFileNameType: k_keyFileNameAutoUploadType)
             }
             
         } else {
             
             CCUtility.setFileNameMask("", key: k_keyFileNameAutoUploadMask)
-            returnString = CCUtility.createFileName("IMG_0001.JPG", fileDate: Date(), fileType: PHAssetMediaType.image, keyFileName: nil, keyFileNameType: k_keyFileNameAutoUploadType)
+            returnString = CCUtility.createFileName("IMG_0001.JPG", fileDate: dateExample, fileType: PHAssetMediaType.image, keyFileName: nil, keyFileNameType: k_keyFileNameAutoUploadType)
         }
         
         return NSLocalizedString("_preview_filename_", comment: "") + ":" + "\n\n" + returnString
