@@ -1249,7 +1249,7 @@ class NCManageDatabase: NSObject {
         self.setDateReadDirectory(directoryID: directoryIDTo)
     }
     
-    func updateMetadata(_ metadata: tableMetadata, activeUrl: String) -> tableMetadata? {
+    func updateMetadata(_ metadata: tableMetadata) -> tableMetadata? {
         
         let directoryID = metadata.directoryID
         

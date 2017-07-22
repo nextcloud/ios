@@ -454,7 +454,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
             
             var metadata : tableMetadata? = CCUtility.insertInformationPlist(recordMetadata, directoryUser: directoryUser)!
             metadata = CCUtility.insertTypeFileIconName(metadata, serverUrl: serverUrl, autoUploadFileName: autoUploadFileName, autoUploadDirectory: autoUploadDirectory)
-            metadata = NCManageDatabase.sharedInstance.updateMetadata(metadata!, activeUrl: activeUrl)
+            metadata = NCManageDatabase.sharedInstance.updateMetadata(metadata!)
             
             if metadata != nil {
                 if metadata!.type == k_metadataType_template {

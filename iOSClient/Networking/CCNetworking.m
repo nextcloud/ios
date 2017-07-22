@@ -797,10 +797,10 @@
                         metadata = [CCUtility insertTypeFileIconName:metadata serverUrl:serverUrl autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory];
 
                     }
-                    metadata = [[NCManageDatabase sharedInstance] updateMetadata:metadata activeUrl:_activeUrl];
+                    metadata = [[NCManageDatabase sharedInstance] updateMetadata:metadata];
                 });
             } else {
-                metadata = [[NCManageDatabase sharedInstance] updateMetadata:metadata activeUrl:_activeUrl];
+                metadata = [[NCManageDatabase sharedInstance] updateMetadata:metadata];
             }
             
         } else {
@@ -1468,7 +1468,7 @@
         
         metadata.sessionTaskIdentifier = k_taskIdentifierDone;
         
-        metadata = [[NCManageDatabase sharedInstance] updateMetadata:metadata activeUrl:_activeUrl];
+        metadata = [[NCManageDatabase sharedInstance] updateMetadata:metadata];
     }
     
     // ALL TASK DONE (PLAIN/CRYPTO)
@@ -1484,7 +1484,7 @@
         metadata.sessionError = @"";
         metadata.sessionID = @"";
         
-        metadata = [[NCManageDatabase sharedInstance] updateMetadata:metadata activeUrl:_activeUrl];
+        metadata = [[NCManageDatabase sharedInstance] updateMetadata:metadata];
         
         // rename file sessionID -> fileID
         [CCUtility moveFileAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, sessionID]  toPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadata.fileID]];

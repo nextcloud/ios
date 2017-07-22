@@ -283,7 +283,7 @@
         
         metadata = [CCUtility insertInformationPlist:metadata directoryUser:directoryUser];
         metadata = [CCUtility insertTypeFileIconName:metadata serverUrl:serverUrl autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory];
-        metadata = [[NCManageDatabase sharedInstance] updateMetadata:metadata activeUrl:activeUrl];
+        metadata = [[NCManageDatabase sharedInstance] updateMetadata:metadata];
         
         // se è un template aggiorniamo anche nel FileSystem
         if ([metadata.type isEqualToString: k_metadataType_template]) {

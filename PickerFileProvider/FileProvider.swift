@@ -134,7 +134,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         }
         
         // Verify if already exists in tableMetadata (session)
-        if  NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileName == %@ AND directoryID == %@ AND session == %@", fileName, directoryID!, k_upload_session_foreground)) == nil {
+        if  NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileName == %@ AND directoryID == %@ AND session = ''", fileName, directoryID!)) == nil {
             
             CCNetworking.shared().settingDelegate(self)
             CCNetworking.shared().uploadFile(fileName, serverUrl: serverUrl, cryptated: false, onlyPlist: false, session: k_upload_session_foreground, taskStatus: Int(k_taskStatusResume), selector: nil, selectorPost: nil, errorCode: 0, delegate: self)
