@@ -103,6 +103,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         let directoryUser = CCUtility.getDirectoryActiveUser(result.user, activeUrl: result.url)
         let destinationURLDirectoryUser = URL(string: "file://\(directoryUser!)/\(fileName)".addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!)!
         var serverUrl : String?
+        var directoryID : String?
 
         // copy sourceURL on directoryUser
         do {
@@ -123,18 +124,20 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID == %@", fileID)) {
                 if metadata.fileName == fileName {
                     serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID)
+                    directoryID = metadata.directoryID
                 }
             }
         }
         if serverUrl == nil {
             serverUrl = CCUtility.getHomeServerUrlActiveUrl(result.url)
+            directoryID = NCManageDatabase.sharedInstance.getDirectoryID(serverUrl)
         }
         
         // Verify if already exists in tableMetadata (session)
-        if NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileName == %@ AND serverUrl == %@ AND session == %@", fileName, serverUrl!, k_upload_session_foreground)) == nil {
+        if  NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileName == %@ AND directoryID == %@ AND session == %@", fileName, directoryID!, k_upload_session_foreground)) == nil {
             
             CCNetworking.shared().settingDelegate(self)
-            CCNetworking.shared().uploadFile(fileName, serverUrl: serverUrl, cryptated: false, onlyPlist: false, session: k_upload_session_foreground, taskStatus: Int(k_taskStatusSuspend), selector: nil, selectorPost: nil, errorCode: 0, delegate: self)
+            CCNetworking.shared().uploadFile(fileName, serverUrl: serverUrl, cryptated: false, onlyPlist: false, session: k_upload_session_foreground, taskStatus: Int(k_taskStatusResume), selector: nil, selectorPost: nil, errorCode: 0, delegate: self)
         }
         
         self.stopProvidingItem(at: url)
