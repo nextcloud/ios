@@ -134,7 +134,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             directoryID = NCManageDatabase.sharedInstance.getDirectoryID(serverUrl)
         }
         
-        // Verify if already exists in tableMetadata (session)
+        // Prepare for send Metadata
         if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileName == %@ AND directoryID == %@", fileName, directoryID!)) {
         
             metadata.fileID = uploadID
@@ -143,10 +143,6 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             metadata.sessionTaskIdentifier = Int(k_taskIdentifierWaitStart)
             _ = NCManageDatabase.sharedInstance.updateMetadata(metadata)
         }
-        
-        //CCNetworking.shared().settingDelegate(self)
-        //CCNetworking.shared().uploadFile(fileName, serverUrl: serverUrl, cryptated: false, onlyPlist: false, session: k_upload_session_foreground, taskStatus: Int(k_taskStatusNone), selector: nil, selectorPost: nil, errorCode: 0, delegate: self)
-        
         
         self.stopProvidingItem(at: url)
     }
