@@ -95,17 +95,27 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         // TODO: mark file at <url> as needing an update in the model; kick off update process
         NSLog("Item changed at URL %@", url as NSURL)
         
-        guard let result = NCManageDatabase.sharedInstance.getAccountActive() else {
+        guard let fileID = CCUtility.getFileIDPicker() else {
+            self.stopProvidingItem(at: url)
+            return
+        }
+        
+        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID == %@", fileID)) else {
+            self.stopProvidingItem(at: url)
             return
         }
         
         let fileName = url.lastPathComponent
+        
+        if (fileName != metadata.fileName) {
+            self.stopProvidingItem(at: url)
+            return
+        }
+        
         let directoryUser = CCUtility.getDirectoryActiveUser(result.user, activeUrl: result.url)
         let uploadID = k_uploadSessionID + CCUtility.createRandomString(16)
         let destinationURLDirectoryUser = URL(string: "file://\(directoryUser!)/\(uploadID)".addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!)!
-        var serverUrl : String?
-        var directoryID : String?
-
+        
         // copy sourceURL on directoryUser
         do {
             try FileManager.default.removeItem(at: destinationURLDirectoryUser)
@@ -120,29 +130,12 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             return
         }
 
-        // Get serverUrl
-        if let fileID = CCUtility.getFileIDPicker() {
-            if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID == %@", fileID)) {
-                if metadata.fileName == fileName {
-                    serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID)
-                    directoryID = metadata.directoryID
-                }
-            }
-        }
-        if serverUrl == nil {
-            serverUrl = CCUtility.getHomeServerUrlActiveUrl(result.url)
-            directoryID = NCManageDatabase.sharedInstance.getDirectoryID(serverUrl)
-        }
-        
         // Prepare for send Metadata
-        if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileName == %@ AND directoryID == %@", fileName, directoryID!)) {
-        
-            metadata.fileID = uploadID
-            metadata.sessionID = uploadID
-            metadata.session = k_upload_session
-            metadata.sessionTaskIdentifier = Int(k_taskIdentifierWaitStart)
-            _ = NCManageDatabase.sharedInstance.updateMetadata(metadata)
-        }
+        metadata.fileID = uploadID
+        metadata.sessionID = uploadID
+        metadata.session = k_upload_session
+        metadata.sessionTaskIdentifier = Int(k_taskIdentifierWaitStart)
+        _ = NCManageDatabase.sharedInstance.updateMetadata(metadata)
         
         self.stopProvidingItem(at: url)
     }
