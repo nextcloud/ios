@@ -95,6 +95,13 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         // TODO: mark file at <url> as needing an update in the model; kick off update process
         NSLog("Item changed at URL %@", url as NSURL)
         
+        guard let account = NCManageDatabase.sharedInstance.getAccountActive() else {
+            self.stopProvidingItem(at: url)
+            return
+        }
+        
+        let directoryUser = CCUtility.getDirectoryActiveUser(account.user, activeUrl: account.url)
+        
         guard let fileID = CCUtility.getFileIDPicker() else {
             self.stopProvidingItem(at: url)
             return
@@ -112,7 +119,6 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             return
         }
         
-        let directoryUser = CCUtility.getDirectoryActiveUser(result.user, activeUrl: result.url)
         let uploadID = k_uploadSessionID + CCUtility.createRandomString(16)
         let destinationURLDirectoryUser = URL(string: "file://\(directoryUser!)/\(uploadID)".addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!)!
         
