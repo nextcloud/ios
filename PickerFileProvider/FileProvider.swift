@@ -102,7 +102,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         let fileName = url.lastPathComponent
         let directoryUser = CCUtility.getDirectoryActiveUser(result.user, activeUrl: result.url)
         let destinationURLDirectoryUser = URL(string: "file://\(directoryUser!)/\(fileName)".addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!)!
-        var serverUrl = CCUtility.getHomeServerUrlActiveUrl(result.url)
+        var serverUrl : String?
 
         // copy sourceURL on directoryUser
         do {
@@ -126,9 +126,11 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                 }
             }
         }
+        if serverUrl == nil {
+            serverUrl = CCUtility.getHomeServerUrlActiveUrl(result.url)
+        }
         
-        // verifica se esiste già in coda
-        
+        // Verify if already exists in tableMetadata (session)
         if NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileName == %@ AND serverUrl == %@ AND session == %@", fileName, serverUrl!, k_upload_session_foreground)) == nil {
             
             CCNetworking.shared().settingDelegate(self)
