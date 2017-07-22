@@ -92,7 +92,6 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
     override func itemChanged(at url: URL) {
         // Called at some point after the file has changed; the provider may then trigger an upload
         
-        // TODO: mark file at <url> as needing an update in the model; kick off update process
         NSLog("Item changed at URL %@", url as NSURL)
         
         guard let account = NCManageDatabase.sharedInstance.getAccountActive() else {
