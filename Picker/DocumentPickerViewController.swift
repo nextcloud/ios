@@ -95,15 +95,12 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
             activeUser = record.user
             directoryUser = CCUtility.getDirectoryActiveUser(activeUser, activeUrl: activeUrl)
             
-            if (self.serverUrl == nil) {
-            
-                self.serverUrl = CCUtility.getHomeServerUrlActiveUrl(activeUrl)
-                                
+            if serverUrl == nil {
+                serverUrl = CCUtility.getHomeServerUrlActiveUrl(activeUrl)
             } else {
-                
                 self.navigationItem.title = titleFolder
             }
-            
+        
         } else {
             
             // Close error no account return nil
@@ -146,26 +143,22 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         let password = CCUtility.getKeyChainPasscode(forUUID: CCUtility.getUUID())
         
         if password?.characters.count == 0 {
-            
             isCryptoCloudMode = false
-            
         } else {
-            
             isCryptoCloudMode = true
         }
         
         // Managed Crypto Cloud Mode
-        if isCryptoCloudMode == true {
+        if isCryptoCloudMode {
             
             // Encrypted mode
             encryptedButton.image = UIImage(named:"shareExtEncrypt")?.withRenderingMode(.automatic)
             
             // Color Button
-            if parameterEncrypted == true {
+            if parameterEncrypted {
                 encryptedButton.tintColor = NCBrandColor.sharedInstance.cryptocloud
             } else {
                 encryptedButton.tintColor = self.view.tintColor
-                
             }
             
             saveButton.tintColor = encryptedButton.tintColor
@@ -293,13 +286,11 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
             
             // do not insert crypto file
             if CCUtility.isCryptoString(metadata.fileName) {
-                
                 continue
             }
             
             // Only Directory ?
             if (parameterMode == .moveToService || parameterMode == .exportToService) && metadata.directory == false {
-                
                 continue
             }
             
@@ -311,13 +302,11 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
                 for completeMetadata in metadatas as! [tableMetadata] {
                     
                     if completeMetadata.fileName == CCUtility.trasformedFileNamePlist(inCrypto: metadata.fileName) {
-                        
                         isCryptoComplete = true
                     }
                 }
 
                 if isCryptoComplete == false {
-                    
                     continue
                 }
             }
@@ -357,7 +346,6 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
     //  MARK: - Download Thumbnail
     
     func downloadThumbnailFailure(_ metadataNet: CCMetadataNet!, message: String!, errorCode: Int) {
-        
         NSLog("[LOG] Thumbnail Error \(metadataNet.fileName) \(message) (error \(errorCode))");
     }
     
@@ -370,7 +358,6 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
             if FileManager.default.fileExists(atPath: path) {
                 
                 if let cell = tableView.cellForRow(at: indexPath) as? recordMetadataCell {
-                    
                     cell.fileImageView.image = UIImage(contentsOfFile: path)
                 }
             }
@@ -431,6 +418,9 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         }
         
         recordMetadata = metadata
+        
+        // Save fileID for PickerFileProvide
+        CCUtility.setFileIDPicker(metadata.fileID)
         
         switch selector {
             
@@ -730,7 +720,6 @@ extension DocumentPickerViewController: UITableViewDelegate {
 extension DocumentPickerViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        
        return recordsTableMetadata?.count ?? 0
     }
         
@@ -772,15 +761,10 @@ extension DocumentPickerViewController: UITableViewDataSource {
         
         // Status Image View
         let lockServerUrl = CCUtility.stringAppendServerUrl(self.serverUrl!, addFileName: metadata!.fileNameData)
-        
-        var passcode: String? = CCUtility.getBlockCode()
-        if passcode == nil {
-            passcode = ""
-        }
-        
+                
         let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate:NSPredicate(format: "account = %@ AND serverUrl = %@", activeAccount, lockServerUrl!))
         if tableDirectory != nil {
-            if metadata!.directory &&  (tableDirectory?.lock)! && (passcode?.characters.count)! > 0 {
+            if metadata!.directory &&  (tableDirectory?.lock)! && (CCUtility.getBlockCode() != nil) {
                 cell.StatusImageView.image = UIImage(named: "passcode")
             } else {
                 cell.StatusImageView.image = nil
@@ -836,7 +820,6 @@ extension DocumentPickerViewController: UITableViewDataSource {
             var dir = recordMetadata.fileName
             
             if recordMetadata.cryptated {
-                
                 dir = CCUtility.trasformedFileNamePlist(inCrypto: recordMetadata.fileName)
             }
             
@@ -857,12 +840,10 @@ extension DocumentPickerViewController: UITableViewDataSource {
                     openBKPasscode(recordMetadata.fileNamePrint)
                     
                 } else {
-                    
                     performSegue()
                 }
                 
             } else {
-                
                 performSegue()
             }
         }

@@ -171,6 +171,11 @@
     [UICKeyChainStore setString:titleServerUrl forKey:@"titleServerUrlShareExt" service:k_serviceShareKeyChain];
 }
 
++ (void)setFileIDPicker:(NSString *)fileID
+{
+    [UICKeyChainStore setString:fileID forKey:@"fileIDPicker" service:k_serviceShareKeyChain];
+}
+
 + (void)setEmail:(NSString *)email
 {
     [UICKeyChainStore setString:email forKey:@"email" service:k_serviceShareKeyChain];
@@ -363,6 +368,11 @@
 + (NSString *)getTitleServerUrlShareExt
 {
     return [UICKeyChainStore stringForKey:@"titleServerUrlShareExt" service:k_serviceShareKeyChain];
+}
+
++ (NSString *)getFileIDPicker
+{
+    return [UICKeyChainStore stringForKey:@"fileIDPicker" service:k_serviceShareKeyChain];
 }
 
 + (NSString *)getEmail

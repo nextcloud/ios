@@ -75,6 +75,8 @@
 + (void)setServerUrlShareExt:(NSString *)serverUrl;
 + (void)setTitleServerUrlShareExt:(NSString *)titleServerUrl;
 
++ (void)setFileIDPicker:(NSString *)fileID;
+
 + (void)setEmail:(NSString *)email;
 
 + (void)setHint:(NSString *)hint;
@@ -117,6 +119,8 @@
 + (BOOL)getCryptatedShareExt;
 + (NSString *)getServerUrlShareExt;
 + (NSString *)getTitleServerUrlShareExt;
+
++ (NSString *)getFileIDPicker;
 
 + (NSString *)getEmail;
 
