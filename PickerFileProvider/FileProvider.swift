@@ -102,7 +102,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         let fileName = url.lastPathComponent
         let directoryUser = CCUtility.getDirectoryActiveUser(result.user, activeUrl: result.url)
         let destinationURLDirectoryUser = URL(string: "file://\(directoryUser!)/\(fileName)".addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!)!
-        let serverUrl = CCUtility.getHomeServerUrlActiveUrl(result.url)
+        var serverUrl = CCUtility.getHomeServerUrlActiveUrl(result.url)
 
         // copy sourceURL on directoryUser
         do {
@@ -118,9 +118,13 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             return
         }
 
-        
+        // Get serverUrl
         if let fileID = CCUtility.getFileIDPicker() {
-            
+            if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID == %@", fileID)) {
+                if metadata.fileName == fileName {
+                    serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID)
+                }
+            }
         }
         
         //TODO: verifica se esiste già in coda
