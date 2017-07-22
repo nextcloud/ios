@@ -115,6 +115,7 @@ extern NSString *const urlBaseUploadDB;
 // TaskIdentifier
 #define k_taskIdentifierDone                            -1
 #define k_taskIdentifierStop                            -2
+#define k_taskIdentifierWaitStart                       -3
 #define k_taskIdentifierError                           -99999
 #define k_taskIdentifierNULL                            99999
 

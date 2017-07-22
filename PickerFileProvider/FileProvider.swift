@@ -101,7 +101,8 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         
         let fileName = url.lastPathComponent
         let directoryUser = CCUtility.getDirectoryActiveUser(result.user, activeUrl: result.url)
-        let destinationURLDirectoryUser = URL(string: "file://\(directoryUser!)/\(fileName)".addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!)!
+        let uploadID = k_uploadSessionID + CCUtility.createRandomString(16)
+        let destinationURLDirectoryUser = URL(string: "file://\(directoryUser!)/\(uploadID)".addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!)!
         var serverUrl : String?
         var directoryID : String?
 
@@ -134,11 +135,18 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         }
         
         // Verify if already exists in tableMetadata (session)
-        if NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileName == %@ AND directoryID == %@ AND session != ''", fileName, directoryID!)) == nil {
+        if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileName == %@ AND directoryID == %@", fileName, directoryID!)) {
         
-            CCNetworking.shared().settingDelegate(self)
-            CCNetworking.shared().uploadFile(fileName, serverUrl: serverUrl, cryptated: false, onlyPlist: false, session: k_upload_session_foreground, taskStatus: Int(k_taskStatusNone), selector: nil, selectorPost: nil, errorCode: 0, delegate: self)
+            metadata.fileID = uploadID
+            metadata.sessionID = uploadID
+            metadata.session = k_upload_session
+            metadata.sessionTaskIdentifier = Int(k_taskIdentifierWaitStart)
+            _ = NCManageDatabase.sharedInstance.updateMetadata(metadata)
         }
+        
+        //CCNetworking.shared().settingDelegate(self)
+        //CCNetworking.shared().uploadFile(fileName, serverUrl: serverUrl, cryptated: false, onlyPlist: false, session: k_upload_session_foreground, taskStatus: Int(k_taskStatusNone), selector: nil, selectorPost: nil, errorCode: 0, delegate: self)
+        
         
         self.stopProvidingItem(at: url)
     }
