@@ -118,10 +118,12 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             return
         }
 
+        
+        if let fileID = CCUtility.getFileIDPicker() {
+            
+        }
+        
         //TODO: verifica se esiste già in coda
-        
-        
-        
         
         CCNetworking.shared().settingDelegate(self)
         CCNetworking.shared().uploadFile(fileName, serverUrl: serverUrl, cryptated: false, onlyPlist: false, session: k_upload_session_foreground, taskStatus: Int(k_taskStatusSuspend), selector: nil, selectorPost: nil, errorCode: 0, delegate: self)
