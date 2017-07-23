@@ -530,7 +530,11 @@ extension DocumentPickerViewController {
             let fileName = sourceURL.lastPathComponent
             let destinationURLDirectoryUser = URL(string: "file://\(directoryUser)/\(fileName)".addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!)!
             
-            //let fileSize = (try! FileManager.default.attributesOfItem(atPath: sourceURL.path)[FileAttributeKey.size] as! NSNumber).uint64Value
+            let fileSize = (try! FileManager.default.attributesOfItem(atPath: sourceURL.path)[FileAttributeKey.size] as! NSNumber).uint64Value
+            if fileSize == 0 {
+                print("file 0 length")
+                return
+            }
             
             self.destinationURL = appGroupContainerURL()?.appendingPathComponent(fileName)
             
@@ -577,7 +581,6 @@ extension DocumentPickerViewController {
                     self!.hud.visibleHudTitle(NSLocalizedString("_uploading_", comment: ""), mode: MBProgressHUDMode.determinate, color: NCBrandColor.sharedInstance.brand)
                     
                 } catch _ {
-                    
                     print("error copying file")
                 }
             })
