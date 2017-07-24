@@ -530,11 +530,13 @@ extension DocumentPickerViewController {
             let fileName = sourceURL.lastPathComponent
             let destinationURLDirectoryUser = URL(string: "file://\(directoryUser)/\(fileName)".addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!)!
             
+            /*
             let fileSize = (try! FileManager.default.attributesOfItem(atPath: sourceURL.path)[FileAttributeKey.size] as! NSNumber).uint64Value
             if fileSize == 0 {
                 print("file 0 length")
                 return
             }
+            */
             
             self.destinationURL = appGroupContainerURL()?.appendingPathComponent(fileName)
             
