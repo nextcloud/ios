@@ -566,18 +566,20 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
     
 }
 
+@objc protocol createFormUploadFileDelegate {
+    
+    func dismissFormUploadAssets()
+}
+
 class CreateFormUploadFile: XLFormViewController, CCMoveDelegate {
     
     var serverUrl : String = ""
     var titleServerUrl : String?
-    var assets: NSMutableArray = []
-    var cryptated : Bool = false
-    var session : String = ""
-    weak var delegate: createFormUploadAssetsDelegate?
+    weak var delegate: createFormUploadFileDelegate?
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
-    convenience init(_ titleServerUrl : String?, serverUrl : String, assets : NSMutableArray, cryptated : Bool, session : String, delegate: createFormUploadAssetsDelegate) {
+    convenience init(_ titleServerUrl : String?, serverUrl : String, assets : NSMutableArray, cryptated : Bool, session : String, delegate: createFormUploadFileDelegate) {
         
         self.init()
         
@@ -588,7 +590,6 @@ class CreateFormUploadFile: XLFormViewController, CCMoveDelegate {
         }
         
         self.serverUrl = serverUrl
-        self.session = session
         self.delegate = delegate
         
         self.initializeForm()
@@ -628,16 +629,6 @@ class CreateFormUploadFile: XLFormViewController, CCMoveDelegate {
         }
         section.addFormRow(row)
         
-        // Section: Preview File Name
-        
-        row = XLFormRowDescriptor(tag: "previewFileName", rowType: XLFormRowDescriptorTypeTextView, title: "")
-        row.height = 180
-        row.cellConfig.setObject(NCBrandColor.sharedInstance.tableBackground, forKey: "backgroundColor" as NSCopying)
-        row.cellConfig.setObject(NCBrandColor.sharedInstance.tableBackground, forKey: "textView.backgroundColor" as NSCopying)
-        
-        row.disabled = true
-        section.addFormRow(row)
-        
         self.form = form
     }
     
@@ -656,10 +647,7 @@ class CreateFormUploadFile: XLFormViewController, CCMoveDelegate {
             }
             
             self.form.delegate = self
-            
-            let previewFileName : XLFormRowDescriptor  = self.form.formRow(withTag: "previewFileName")!
-            previewFileName.value = self.previewFileName(valueRename: formRow.value as? String)
-            
+                        
             // reload cell
             if fileName != nil {
                 
@@ -671,7 +659,6 @@ class CreateFormUploadFile: XLFormViewController, CCMoveDelegate {
                 }
             }
             
-            self.reloadFormRow(previewFileName)
         }
     }
     
@@ -712,10 +699,6 @@ class CreateFormUploadFile: XLFormViewController, CCMoveDelegate {
         
         let buttonDestinationFolder : XLFormRowDescriptor  = self.form.formRow(withTag: "ButtonDestinationFolder")!
         buttonDestinationFolder.title = self.titleServerUrl
-        
-        let maskFileName : XLFormRowDescriptor = self.form.formRow(withTag: "maskFileName")!
-        let previewFileName : XLFormRowDescriptor  = self.form.formRow(withTag: "previewFileName")!
-        previewFileName.value = self.previewFileName(valueRename: maskFileName.value as? String)
         
         self.tableView.reloadData()
         self.form.delegate = self
@@ -796,46 +779,13 @@ class CreateFormUploadFile: XLFormViewController, CCMoveDelegate {
                 useSubFolder = (useSubFolderRow.value! as AnyObject).boolValue
             }
             
-            self.appDelegate.activeMain.uploadFileAsset(self.assets, serverUrl: self.serverUrl, cryptated: self.cryptated, useSubFolder: useSubFolder, session: self.session)
+            //self.appDelegate.activeMain.uploadFileAsset(self.assets, serverUrl: self.serverUrl, cryptated: self.cryptated, useSubFolder: useSubFolder, session: self.session)
         })
     }
     
     func cancel() {
         
         self.dismiss(animated: true, completion: nil)
-    }
-    
-    // MARK: - Utility
-    
-    func previewFileName(valueRename : String?) -> String {
-        
-        var returnString : String = ""
-        let asset = assets[0] as! PHAsset
-        
-        if let valueRename = valueRename {
-            
-            let valueRenameTrimming = valueRename.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
-            
-            if valueRenameTrimming.characters.count > 0 {
-                
-                self.form.delegate = nil
-                CCUtility.setFileNameMask(valueRenameTrimming, key: k_keyFileNameMask)
-                self.form.delegate = self
-                
-                returnString = CCUtility.createFileName(asset.value(forKey: "filename"), fileDate: asset.creationDate, fileType: asset.mediaType, keyFileName: k_keyFileNameMask, keyFileNameType: k_keyFileNameType)
-            } else {
-                
-                CCUtility.setFileNameMask("", key: k_keyFileNameMask)
-                returnString = CCUtility.createFileName(asset.value(forKey: "filename"), fileDate: asset.creationDate, fileType: asset.mediaType, keyFileName: nil, keyFileNameType: k_keyFileNameType)
-            }
-            
-        } else {
-            
-            CCUtility.setFileNameMask("", key: k_keyFileNameMask)
-            returnString = CCUtility.createFileName(asset.value(forKey: "filename"), fileDate: asset.creationDate, fileType: asset.mediaType, keyFileName: nil, keyFileNameType: k_keyFileNameType)
-        }
-        
-        return NSLocalizedString("_preview_filename_", comment: "") + ":" + "\n\n" + returnString
     }
     
     func changeDestinationFolder(_ sender: XLFormRowDescriptor) {

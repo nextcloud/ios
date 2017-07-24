@@ -1123,7 +1123,7 @@
     self.sessionePasscodeLock = nil;
     
     // se il block code è a zero esci con NON attivare la richiesta password
-    if ([CCUtility getBlockCode] != nil) return NO;
+    if ([[CCUtility getBlockCode] length] == 0) return NO;
     
     // se non c'è attivo un account esci con NON attivare la richiesta password
     if ([self.activeAccount length] == 0) return NO;
