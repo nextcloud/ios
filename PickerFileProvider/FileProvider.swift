@@ -101,7 +101,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         
         let directoryUser = CCUtility.getDirectoryActiveUser(account.user, activeUrl: account.url)
         
-        guard let fileID = CCUtility.getFileIDPicker() else {
+        guard let fileID = CCUtility.getFileIDExt() else {
             self.stopProvidingItem(at: url)
             return
         }
@@ -135,12 +135,22 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             return
         }
 
-        // Prepare for send Metadata
-        metadata.fileID = uploadID
-        metadata.sessionID = uploadID
-        metadata.session = k_upload_session
-        metadata.sessionTaskIdentifier = Int(k_taskIdentifierWaitStart)
-        _ = NCManageDatabase.sharedInstance.updateMetadata(metadata)
+        if fileID == "NULL" {
+            
+            let serverUrl = CCUtility.getServerUrlExt()
+                
+            CCNetworking.shared().settingDelegate(self)
+            CCNetworking.shared().uploadFile(fileName, serverUrl: serverUrl, cryptated: false, onlyPlist: false, session: k_upload_session, taskStatus: Int(k_taskStatusResume), selector: nil, selectorPost: nil, errorCode: 0, delegate: self)
+            
+        } else {
+        
+            // Prepare for send Metadata
+            metadata.fileID = uploadID
+            metadata.sessionID = uploadID
+            metadata.session = k_upload_session
+            metadata.sessionTaskIdentifier = Int(k_taskIdentifierWaitStart)
+            _ = NCManageDatabase.sharedInstance.updateMetadata(metadata)
+        }
         
         self.stopProvidingItem(at: url)
     }

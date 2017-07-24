@@ -70,12 +70,11 @@
 
 + (void)setIntro:(NSString *)version;
 
-+ (void)setActiveAccountShareExt:(NSString *)activeAccount;
-+ (void)setCryptatedShareExt:(BOOL)cryptated;
-+ (void)setServerUrlShareExt:(NSString *)serverUrl;
-+ (void)setTitleServerUrlShareExt:(NSString *)titleServerUrl;
-
-+ (void)setFileIDPicker:(NSString *)fileID;
++ (void)setActiveAccountExt:(NSString *)activeAccount;
++ (void)setCryptatedExt:(BOOL)cryptated;
++ (void)setServerUrlExt:(NSString *)serverUrl;
++ (void)setTitleServerUrlExt:(NSString *)titleServerUrl;
++ (void)setFileIDExt:(NSString *)fileID;
 
 + (void)setEmail:(NSString *)email;
 
@@ -115,12 +114,11 @@
 + (BOOL)getIntro:(NSString *)version;
 + (NSString *)getIncrementalNumber;
 
-+ (NSString *)getActiveAccountShareExt;
-+ (BOOL)getCryptatedShareExt;
-+ (NSString *)getServerUrlShareExt;
-+ (NSString *)getTitleServerUrlShareExt;
-
-+ (NSString *)getFileIDPicker;
++ (NSString *)getActiveAccountExt;
++ (BOOL)getCryptatedExt;
++ (NSString *)getServerUrlExt;
++ (NSString *)getTitleServerUrlExt;
++ (NSString *)getFileIDExt;
 
 + (NSString *)getEmail;
 

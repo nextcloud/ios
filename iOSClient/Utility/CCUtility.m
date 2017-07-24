@@ -150,30 +150,30 @@
     [UICKeyChainStore setString:@"true" forKey:version service:k_serviceShareKeyChain];
 }
 
-+ (void)setActiveAccountShareExt:(NSString *)activeAccount
++ (void)setActiveAccountExt:(NSString *)activeAccount
 {
-    [UICKeyChainStore setString:activeAccount forKey:@"activeAccountShareExt" service:k_serviceShareKeyChain];
+    [UICKeyChainStore setString:activeAccount forKey:@"activeAccountExt" service:k_serviceShareKeyChain];
 }
 
-+ (void)setCryptatedShareExt:(BOOL)cryptated
++ (void)setCryptatedExt:(BOOL)cryptated
 {
     NSString *sCryptated = (cryptated) ? @"true" : @"false";
-    [UICKeyChainStore setString:sCryptated forKey:@"cryptatedShareExt" service:k_serviceShareKeyChain];
+    [UICKeyChainStore setString:sCryptated forKey:@"cryptatedExt" service:k_serviceShareKeyChain];
 }
 
-+ (void)setServerUrlShareExt:(NSString *)serverUrl
++ (void)setServerUrlExt:(NSString *)serverUrl
 {
-    [UICKeyChainStore setString:serverUrl forKey:@"serverUrlShareExt" service:k_serviceShareKeyChain];
+    [UICKeyChainStore setString:serverUrl forKey:@"serverUrlExt" service:k_serviceShareKeyChain];
 }
 
-+ (void)setTitleServerUrlShareExt:(NSString *)titleServerUrl
++ (void)setTitleServerUrlExt:(NSString *)titleServerUrl
 {
-    [UICKeyChainStore setString:titleServerUrl forKey:@"titleServerUrlShareExt" service:k_serviceShareKeyChain];
+    [UICKeyChainStore setString:titleServerUrl forKey:@"titleServerUrlExt" service:k_serviceShareKeyChain];
 }
 
-+ (void)setFileIDPicker:(NSString *)fileID
++ (void)setFileIDExt:(NSString *)fileID
 {
-    [UICKeyChainStore setString:fileID forKey:@"fileIDPicker" service:k_serviceShareKeyChain];
+    [UICKeyChainStore setString:fileID forKey:@"fileIDExt" service:k_serviceShareKeyChain];
 }
 
 + (void)setEmail:(NSString *)email
@@ -350,29 +350,29 @@
     return [NSString stringWithFormat:@"%04ld", number];
 }
 
-+ (NSString *)getActiveAccountShareExt
++ (NSString *)getActiveAccountExt
 {
-    return [UICKeyChainStore stringForKey:@"activeAccountShareExt" service:k_serviceShareKeyChain];
+    return [UICKeyChainStore stringForKey:@"activeAccountExt" service:k_serviceShareKeyChain];
 }
 
-+ (BOOL)getCryptatedShareExt
++ (BOOL)getCryptatedExt
 {
-    return [[UICKeyChainStore stringForKey:@"cryptatedShareExt" service:k_serviceShareKeyChain] boolValue];
+    return [[UICKeyChainStore stringForKey:@"cryptatedExt" service:k_serviceShareKeyChain] boolValue];
 }
 
-+ (NSString *)getServerUrlShareExt
++ (NSString *)getServerUrlExt
 {
-    return [UICKeyChainStore stringForKey:@"serverUrlShareExt" service:k_serviceShareKeyChain];
+    return [UICKeyChainStore stringForKey:@"serverUrlExt" service:k_serviceShareKeyChain];
 }
 
-+ (NSString *)getTitleServerUrlShareExt
++ (NSString *)getTitleServerUrlExt
 {
-    return [UICKeyChainStore stringForKey:@"titleServerUrlShareExt" service:k_serviceShareKeyChain];
+    return [UICKeyChainStore stringForKey:@"titleServerUrlExt" service:k_serviceShareKeyChain];
 }
 
-+ (NSString *)getFileIDPicker
++ (NSString *)getFileIDExt
 {
-    return [UICKeyChainStore stringForKey:@"fileIDPicker" service:k_serviceShareKeyChain];
+    return [UICKeyChainStore stringForKey:@"fileIDExt" service:k_serviceShareKeyChain];
 }
 
 + (NSString *)getEmail
