@@ -566,6 +566,7 @@ extension DocumentPickerViewController {
                         CCUtility.setServerUrlExt(self!.serverUrl)
 
                         self?.dismissGrantingAccess(to: self?.destinationURL)
+                        
                     } else {
                     
                         // Upload fileName to Cloud

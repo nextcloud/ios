@@ -106,17 +106,9 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             return
         }
         
-        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID == %@", fileID)) else {
-            self.stopProvidingItem(at: url)
-            return
-        }
-        
         let fileName = url.lastPathComponent
         
-        if (fileName != metadata.fileName) {
-            self.stopProvidingItem(at: url)
-            return
-        }
+        
         
         let uploadID = k_uploadSessionID + CCUtility.createRandomString(16)
         let destinationURLDirectoryUser = URL(string: "file://\(directoryUser!)/\(uploadID)".addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!)!
@@ -144,6 +136,16 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             
         } else {
         
+            guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID == %@", fileID)) else {
+                self.stopProvidingItem(at: url)
+                return
+            }
+            
+            if (fileName != metadata.fileName) {
+                self.stopProvidingItem(at: url)
+                return
+            }
+            
             // Prepare for send Metadata
             metadata.fileID = uploadID
             metadata.sessionID = uploadID
