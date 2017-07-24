@@ -186,6 +186,8 @@
 		F73CCE261DC13788007E38D8 /* UIScrollView+EmptyDataSet.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCE241DC13788007E38D8 /* UIScrollView+EmptyDataSet.m */; };
 		F73CCE301DC13798007E38D8 /* UICKeyChainStore.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCE2A1DC13798007E38D8 /* UICKeyChainStore.m */; };
 		F73CCE321DC13798007E38D8 /* UICKeyChainStore.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCE2A1DC13798007E38D8 /* UICKeyChainStore.m */; };
+		F73D71581F26739100E233EB /* tes in Resources */ = {isa = PBXBuildFile; fileRef = F73D71571F26739100E233EB /* tes */; };
+		F73D71621F2673C200E233EB /* NCText.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73D71611F2673C200E233EB /* NCText.swift */; };
 		F73F537F1E929C8500F8678D /* CCMore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73F537E1E929C8500F8678D /* CCMore.swift */; };
 		F74344171E1264EE001CC831 /* DocumentPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74344161E1264EE001CC831 /* DocumentPickerViewController.swift */; };
 		F74344251E1264EE001CC831 /* FileProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74344241E1264EE001CC831 /* FileProvider.swift */; };
@@ -1105,6 +1107,8 @@
 		F73CCE281DC13798007E38D8 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F73CCE291DC13798007E38D8 /* UICKeyChainStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICKeyChainStore.h; sourceTree = "<group>"; };
 		F73CCE2A1DC13798007E38D8 /* UICKeyChainStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UICKeyChainStore.m; sourceTree = "<group>"; };
+		F73D71571F26739100E233EB /* tes */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = tes; sourceTree = "<group>"; };
+		F73D71611F2673C200E233EB /* NCText.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCText.swift; sourceTree = "<group>"; };
 		F73F537E1E929C8500F8678D /* CCMore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CCMore.swift; sourceTree = "<group>"; };
 		F74344161E1264EE001CC831 /* DocumentPickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentPickerViewController.swift; sourceTree = "<group>"; };
 		F74344241E1264EE001CC831 /* FileProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileProvider.swift; sourceTree = "<group>"; };
@@ -2408,6 +2412,15 @@
 			path = UICKeyChainStore;
 			sourceTree = "<group>";
 		};
+		F73D71561F26739100E233EB /* Text */ = {
+			isa = PBXGroup;
+			children = (
+				F73D71571F26739100E233EB /* tes */,
+				F73D71611F2673C200E233EB /* NCText.swift */,
+			);
+			path = Text;
+			sourceTree = "<group>";
+		};
 		F74344131E1264EE001CC831 /* Picker */ = {
 			isa = PBXGroup;
 			children = (
@@ -3658,6 +3671,7 @@
 				F7169A161EE590930086BD69 /* Shares */,
 				F7B0C0CA1EE7E7750033AC24 /* Synchronize */,
 				F721371B1BAFF0920012B613 /* Templates */,
+				F73D71561F26739100E233EB /* Text */,
 				F7A321731E9E3EAF0069AD1B /* Transfers */,
 				F70784811A2C8A0D00AC9FFF /* UploadFromOtherUpp */,
 				F7BFFA991A24D7BB0044ED85 /* Utility */,
@@ -4124,6 +4138,7 @@
 				F7D4248C1F063B82009C9782 /* ZSShorizontalrule.png in Resources */,
 				F7D424901F063B82009C9782 /* ZSSindent.png in Resources */,
 				F762CB1B1EACB66200B38484 /* XLForm.bundle in Resources */,
+				F73D71581F26739100E233EB /* tes in Resources */,
 				F762CB9A1EACB84400B38484 /* icon-success@2x.png in Resources */,
 				F77B0F551D118A16002130FE /* Error.strings in Resources */,
 				F7D424971F063B82009C9782 /* ZSSkeyboard@2x.png in Resources */,
@@ -4676,6 +4691,7 @@
 				F7D424611F063B82009C9782 /* CTAssetScrollView.m in Sources */,
 				F762CB141EACB66200B38484 /* XLFormRightImageButton.m in Sources */,
 				F7B3A4EE1E97818A000DACE8 /* CCLoginWeb.swift in Sources */,
+				F73D71621F2673C200E233EB /* NCText.swift in Sources */,
 				F77B0E631D118A16002130FE /* CCShareOC.m in Sources */,
 				F73CCE261DC13788007E38D8 /* UIScrollView+EmptyDataSet.m in Sources */,
 				F7D4246F1F063B82009C9782 /* CTAssetsPickerController.m in Sources */,
