@@ -419,8 +419,9 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         
         recordMetadata = metadata
         
-        // Save fileID for PickerFileProvide
-        CCUtility.setFileIDExt(metadata.fileID)
+        // Save for PickerFileProvide
+        CCUtility.setFileNameExt(metadata.fileName)
+        CCUtility.setServerUrlExt(serverUrl)
         
         switch selector {
             
@@ -562,7 +563,7 @@ extension DocumentPickerViewController {
                     
                     if fileSize == 0 {
                         
-                        CCUtility.setFileIDExt("NEW")
+                        CCUtility.setFileNameExt(fileName)
                         CCUtility.setServerUrlExt(self!.serverUrl)
                         self?.dismissGrantingAccess(to: self?.destinationURL)
                         

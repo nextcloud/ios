@@ -74,7 +74,7 @@
 + (void)setCryptatedExt:(BOOL)cryptated;
 + (void)setServerUrlExt:(NSString *)serverUrl;
 + (void)setTitleServerUrlExt:(NSString *)titleServerUrl;
-+ (void)setFileIDExt:(NSString *)fileID;
++ (void)setFileNameExt:(NSString *)fileName;
 
 + (void)setEmail:(NSString *)email;
 
@@ -118,7 +118,7 @@
 + (BOOL)getCryptatedExt;
 + (NSString *)getServerUrlExt;
 + (NSString *)getTitleServerUrlExt;
-+ (NSString *)getFileIDExt;
++ (NSString *)getFileNameExt;
 
 + (NSString *)getEmail;
 

@@ -171,9 +171,9 @@
     [UICKeyChainStore setString:titleServerUrl forKey:@"titleServerUrlExt" service:k_serviceShareKeyChain];
 }
 
-+ (void)setFileIDExt:(NSString *)fileID
++ (void)setFileNameExt:(NSString *)fileName
 {
-    [UICKeyChainStore setString:fileID forKey:@"fileIDExt" service:k_serviceShareKeyChain];
+    [UICKeyChainStore setString:fileName forKey:@"fileNameExt" service:k_serviceShareKeyChain];
 }
 
 + (void)setEmail:(NSString *)email
@@ -370,9 +370,9 @@
     return [UICKeyChainStore stringForKey:@"titleServerUrlExt" service:k_serviceShareKeyChain];
 }
 
-+ (NSString *)getFileIDExt
++ (NSString *)getFileNameExt
 {
-    return [UICKeyChainStore stringForKey:@"fileIDExt" service:k_serviceShareKeyChain];
+    return [UICKeyChainStore stringForKey:@"fileNameExt" service:k_serviceShareKeyChain];
 }
 
 + (NSString *)getEmail
