@@ -530,15 +530,7 @@ extension DocumentPickerViewController {
             let fileName = sourceURL.lastPathComponent
             let destinationURLDirectoryUser = URL(string: "file://\(directoryUser)/\(fileName)".addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!)!
             
-            /*
-            let fileSize = (try! FileManager.default.attributesOfItem(atPath: sourceURL.path)[FileAttributeKey.size] as! NSNumber).uint64Value
-            if fileSize == 0 {
-                print("file 0 length")
-                return
-            }
-            */
-            
-            self.destinationURL = appGroupContainerURL()?.appendingPathComponent(fileName)
+            destinationURL = appGroupContainerURL()?.appendingPathComponent(fileName)
             
             // copy sourceURL on directoryUser
             do {
@@ -565,30 +557,36 @@ extension DocumentPickerViewController {
                 do {
                     try FileManager.default.copyItem(at: sourceURL, to: (self?.destinationURL)!)
                     
-                    // Upload fileName to Cloud
+                    let fileSize = (try! FileManager.default.attributesOfItem(atPath: sourceURL.path)[FileAttributeKey.size] as! NSNumber).uint64Value
                     
-                    let metadataNet = CCMetadataNet.init(account: self!.activeAccount)!
+                    if fileSize == 0 {
+                        self?.dismissGrantingAccess(to: self?.destinationURL)
+                    } else {
                     
-                    metadataNet.action = actionUploadFile
-                    metadataNet.cryptated = self!.parameterEncrypted
-                    metadataNet.fileName = fileName
-                    metadataNet.fileNamePrint = fileName
-                    metadataNet.serverUrl = self!.serverUrl
-                    metadataNet.session = k_upload_session_foreground
-                    metadataNet.taskStatus = Int(k_taskStatusResume)
+                        // Upload fileName to Cloud
                     
-                    let ocNetworking : OCnetworking = OCnetworking.init(delegate: self!, metadataNet: metadataNet, withUser: self!.activeUser, withPassword: self!.activePassword, withUrl: self!.activeUrl, isCryptoCloudMode: self!.isCryptoCloudMode)
-                    self!.networkingOperationQueue.addOperation(ocNetworking)
+                        let metadataNet = CCMetadataNet.init(account: self!.activeAccount)!
                     
-                    self!.hud.visibleHudTitle(NSLocalizedString("_uploading_", comment: ""), mode: MBProgressHUDMode.determinate, color: NCBrandColor.sharedInstance.brand)
+                        metadataNet.action = actionUploadFile
+                        metadataNet.cryptated = self!.parameterEncrypted
+                        metadataNet.fileName = fileName
+                        metadataNet.fileNamePrint = fileName
+                        metadataNet.serverUrl = self!.serverUrl
+                        metadataNet.session = k_upload_session_foreground
+                        metadataNet.taskStatus = Int(k_taskStatusResume)
                     
+                        let ocNetworking : OCnetworking = OCnetworking.init(delegate: self!, metadataNet: metadataNet, withUser: self!.activeUser, withPassword: self!.activePassword, withUrl: self!.activeUrl, isCryptoCloudMode: self!.isCryptoCloudMode)
+                        self!.networkingOperationQueue.addOperation(ocNetworking)
+                    
+                        self!.hud.visibleHudTitle(NSLocalizedString("_uploading_", comment: ""), mode: MBProgressHUDMode.determinate, color: NCBrandColor.sharedInstance.brand)
+                    }
                 } catch _ {
                     print("error copying file")
                 }
             })
         
         default:
-            dismiss(animated: true, completion: nil)
+            dismissGrantingAccess(to: self.destinationURL)
         }
     }
     
