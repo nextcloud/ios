@@ -92,8 +92,9 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
     override func itemChanged(at url: URL) {
         // Called at some point after the file has changed; the provider may then trigger an upload
         
-        NSLog("Item changed at URL %@", url as NSURL)
-        
+        let fileSize = (try! FileManager.default.attributesOfItem(atPath: url.path)[FileAttributeKey.size] as! NSNumber).uint64Value
+        NSLog("Item changed at URL %@ %lu", url as NSURL, fileSize)
+
         guard let account = NCManageDatabase.sharedInstance.getAccountActive() else {
             self.stopProvidingItem(at: url)
             return
@@ -108,29 +109,28 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         
         let fileName = url.lastPathComponent
         
-        
-        
-        let uploadID = k_uploadSessionID + CCUtility.createRandomString(16)
-        let destinationURLDirectoryUser = URL(string: "file://\(directoryUser!)/\(uploadID)".addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!)!
-        
-        // copy sourceURL on directoryUser
-        do {
-            try FileManager.default.removeItem(at: destinationURLDirectoryUser)
-        } catch _ {
-            print("file do not exists")
-        }
-        
-        do {
-            try FileManager.default.copyItem(at: url, to: destinationURLDirectoryUser)
-        } catch _ {
-            print("file do not exists")
-            return
-        }
-
-        if fileID == "NULL" {
+        if fileID == "NEW" {
             
-            let serverUrl = CCUtility.getServerUrlExt()
-                
+            let destinationURLDirectoryUser = URL(string: "file://\(directoryUser!)/\(fileName)".addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!)!
+            guard let serverUrl = CCUtility.getServerUrlExt() else {
+                self.stopProvidingItem(at: url)
+                return
+            }
+            
+            // copy sourceURL on directoryUser
+            do {
+                try FileManager.default.removeItem(at: destinationURLDirectoryUser)
+            } catch _ {
+                print("file do not exists")
+            }
+            
+            do {
+                try FileManager.default.copyItem(at: url, to: destinationURLDirectoryUser)
+            } catch _ {
+                print("file do not exists")
+                return
+            }
+
             CCNetworking.shared().settingDelegate(self)
             CCNetworking.shared().uploadFile(fileName, serverUrl: serverUrl, cryptated: false, onlyPlist: false, session: k_upload_session, taskStatus: Int(k_taskStatusResume), selector: nil, selectorPost: nil, errorCode: 0, delegate: self)
             
@@ -146,6 +146,23 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                 return
             }
             
+            let uploadID = k_uploadSessionID + CCUtility.createRandomString(16)
+            let destinationURLDirectoryUser = URL(string: "file://\(directoryUser!)/\(uploadID)".addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!)!
+            
+            // copy sourceURL on directoryUser
+            do {
+                try FileManager.default.removeItem(at: destinationURLDirectoryUser)
+            } catch _ {
+                print("file do not exists")
+            }
+            
+            do {
+                try FileManager.default.copyItem(at: url, to: destinationURLDirectoryUser)
+            } catch _ {
+                print("file do not exists")
+                return
+            }
+
             // Prepare for send Metadata
             metadata.fileID = uploadID
             metadata.sessionID = uploadID

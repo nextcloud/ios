@@ -562,9 +562,8 @@ extension DocumentPickerViewController {
                     
                     if fileSize == 0 {
                         
-                        CCUtility.setFileIDExt("NULL")
+                        CCUtility.setFileIDExt("NEW")
                         CCUtility.setServerUrlExt(self!.serverUrl)
-
                         self?.dismissGrantingAccess(to: self?.destinationURL)
                         
                     } else {
