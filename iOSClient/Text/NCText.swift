@@ -7,3 +7,8 @@
 //
 
 import Foundation
+
+class NCText: UIViewController, UITextViewDelegate {
+
+
+}
