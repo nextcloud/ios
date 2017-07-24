@@ -532,21 +532,22 @@ extension DocumentPickerViewController {
             
             destinationURL = appGroupContainerURL()?.appendingPathComponent(fileName)
             
-            // copy sourceURL on directoryUser
-            do {
-                try FileManager.default.removeItem(at: destinationURLDirectoryUser)
-            } catch _ {
-                print("file do not exists")
-            }
-            
-            do {
-                try FileManager.default.copyItem(at: sourceURL, to: destinationURLDirectoryUser)
-            } catch _ {
-                print("file do not exists")
-                return
-            }
-            
             fileCoordinator.coordinate(readingItemAt: sourceURL, options: .withoutChanges, error: nil, byAccessor: { [weak self] newURL in
+                
+                // copy sourceURL on directoryUser
+                do {
+                    try FileManager.default.removeItem(at: destinationURLDirectoryUser)
+                } catch _ {
+                    print("file do not exists")
+                }
+                
+                do {
+                    try FileManager.default.copyItem(at: sourceURL, to: destinationURLDirectoryUser)
+                } catch _ {
+                    print("file do not exists")
+                    self?.dismissGrantingAccess(to: self?.destinationURL)
+                    return
+                }
                 
                 do {
                     try FileManager.default.removeItem(at: (self?.destinationURL)!)
@@ -581,6 +582,7 @@ extension DocumentPickerViewController {
                         self!.hud.visibleHudTitle(NSLocalizedString("_uploading_", comment: ""), mode: MBProgressHUDMode.determinate, color: NCBrandColor.sharedInstance.brand)
                     }
                 } catch _ {
+                    self?.dismissGrantingAccess(to: self?.destinationURL)
                     print("error copying file")
                 }
             })
