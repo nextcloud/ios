@@ -92,7 +92,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
     override func itemChanged(at url: URL) {
         
         // Called at some point after the file has changed; the provider may then trigger an upload
-        
+                
         let fileSize = (try! FileManager.default.attributesOfItem(atPath: url.path)[FileAttributeKey.size] as! NSNumber).uint64Value
         NSLog("Item changed at URL %@ %lu", url as NSURL, fileSize)
 
@@ -104,6 +104,9 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             self.stopProvidingItem(at: url)
             return
         }
+        // -------> Fix : Clear FileName for twice Office 365
+        CCUtility.setFileNameExt("")
+        // --------------------------------------------------
         if (fileName != url.lastPathComponent) {
             self.stopProvidingItem(at: url)
             return
@@ -117,7 +120,8 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             return
         }
         
-        if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileName == %@ AND directoryID == %@", fileName, directoryID)) {
+        let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileName == %@ AND directoryID == %@", fileName, directoryID))
+        if metadata != nil {
             
             // Update
             let uploadID = k_uploadSessionID + CCUtility.createRandomString(16)
@@ -139,18 +143,12 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                 return
             }
 
-            if NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileName == %@ AND directoryID == %@ AND session == ''", fileName, directoryID)) != nil {
-                print("already exist in upload queue")
-                self.stopProvidingItem(at: url)
-                return
-            }
-
             // Prepare for send Metadata
-            metadata.fileID = uploadID
-            metadata.sessionID = uploadID
-            metadata.session = k_upload_session
-            metadata.sessionTaskIdentifier = Int(k_taskIdentifierWaitStart)
-            _ = NCManageDatabase.sharedInstance.updateMetadata(metadata)
+            metadata!.fileID = uploadID
+            metadata!.sessionID = uploadID
+            metadata!.session = k_upload_session
+            metadata!.sessionTaskIdentifier = Int(k_taskIdentifierWaitStart)
+            _ = NCManageDatabase.sharedInstance.updateMetadata(metadata!)
             
         } else {
             
