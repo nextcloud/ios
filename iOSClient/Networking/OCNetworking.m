@@ -289,6 +289,7 @@
     [communication readFolder:_metadataNet.serverUrl withUserSessionToken:nil onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token) {
         
         NSMutableArray *metadatas = [NSMutableArray new];
+        BOOL showHiddenFiles = [CCUtility getShowHiddenFiles];
         
         // Check items > 0
         if ([items count] == 0) {
@@ -365,6 +366,10 @@
                 
                 // Skip if not CryptoMode
                 if (_isCryptoCloudMode == NO && [CCUtility isFileCryptated:fileName])
+                    continue;
+                
+                // Skip hidden files
+                if (!showHiddenFiles && [[fileName substringToIndex:1] isEqualToString:@"."])
                     continue;
                 
                 if (itemDto.isDirectory) {
@@ -449,6 +454,7 @@
     [communication search:path folder:folder fileName: [NSString stringWithFormat:@"%%%@%%", _metadataNet.fileName] depth:_metadataNet.options dateLastModified:dateLastModified withUserSessionToken:nil onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token) {
         
         NSMutableArray *metadatas = [NSMutableArray new];
+        BOOL showHiddenFiles = [CCUtility getShowHiddenFiles];
         
         NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
         NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:_activeUrl];
@@ -468,6 +474,10 @@
                     fileName = [fileName substringToIndex:[fileName length] - 1];
                 
                 if ([CCUtility isFileCryptated:fileName])
+                    continue;
+                
+                // Skip hidden files
+                if (!showHiddenFiles && [[fileName substringToIndex:1] isEqualToString:@"."])
                     continue;
             
                 // ----- BUG #942 ---------
@@ -595,6 +605,7 @@
     [communication listingFavorites:path folder:folder withUserSessionToken:nil onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token) {
         
         NSMutableArray *metadatas = [NSMutableArray new];
+        BOOL showHiddenFiles = [CCUtility getShowHiddenFiles];
         
         NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
         NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:_activeUrl];
@@ -626,6 +637,10 @@
                 fileName = [fileName substringToIndex:[fileName length] - 1];
             
             if ([CCUtility isFileCryptated:fileName])
+                continue;
+            
+            // Skip hidden files
+            if (!showHiddenFiles && [[fileName substringToIndex:1] isEqualToString:@"."])
                 continue;
             
             // ----- BUG #942 ---------

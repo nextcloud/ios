@@ -72,7 +72,7 @@
     
     // Section OTTIMIZATIONS -------------------------------------------------
     
-    section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_optimized_photos_", nil)];
+    section = [XLFormSectionDescriptor formSection];
     [form addFormSection:section];
     section.footerTitle = NSLocalizedString(@"_optimized_photos_how_", nil);
     
@@ -82,7 +82,7 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
     
-    section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_upload_del_photos_", nil)];
+    section = [XLFormSectionDescriptor formSection];
     [form addFormSection:section];
     section.footerTitle = NSLocalizedString(@"_upload_del_photos_how_", nil);
     
@@ -92,6 +92,17 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
 
+    // Section HIDDEN FILES -------------------------------------------------
+
+    section = [XLFormSectionDescriptor formSection];
+    [form addFormSection:section];
+    
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"showHiddenFiles" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_show_hidden_files_", nil)];
+    if ([CCUtility getShowHiddenFiles]) row.value = @"1";
+    else row.value = @"0";
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [section addFormRow:row];
+    
     // Section CLEAR CACHE -------------------------------------------------
     
     section = [XLFormSectionDescriptor formSection];
@@ -156,11 +167,7 @@
     
     if ([rowDescriptor.tag isEqualToString:@"activityVerboseHigh"]) {
         
-        if ([[rowDescriptor.value valueData] boolValue] == YES) {
-            [CCUtility setActivityVerboseHigh:true];
-        } else {
-            [CCUtility setActivityVerboseHigh:false];
-        }
+        [CCUtility setActivityVerboseHigh:[[rowDescriptor.value valueData] boolValue]];
         
         // Clear Date read Activity for force reload datasource
         app.activeActivity.storeDateFirstActivity = nil;
@@ -168,20 +175,20 @@
     
     if ([rowDescriptor.tag isEqualToString:@"optimizedphoto"]) {
         
-        if ([[rowDescriptor.value valueData] boolValue] == YES) {
-            [CCUtility setOptimizedPhoto:YES];
-        } else {
-            [CCUtility setOptimizedPhoto:NO];
-        }
+        [CCUtility setOptimizedPhoto:[[rowDescriptor.value valueData] boolValue]];
     }
     
     if ([rowDescriptor.tag isEqualToString:@"uploadremovephoto"]) {
         
-        if ([[rowDescriptor.value valueData] boolValue] == YES) {
-            [CCUtility setUploadAndRemovePhoto:YES];
-        } else {
-            [CCUtility setUploadAndRemovePhoto:NO];
-        }
+        [CCUtility setUploadAndRemovePhoto:[[rowDescriptor.value valueData] boolValue]];
+    }
+    
+    if ([rowDescriptor.tag isEqualToString:@"showHiddenFiles"]) {
+        
+        [CCUtility setShowHiddenFiles:[[rowDescriptor.value valueData] boolValue]];
+        
+        // force reload
+        [[NCManageDatabase sharedInstance] setClearAllDateReadDirectory];
     }
 }
 
