@@ -635,27 +635,13 @@ class CreateFormUploadFile: XLFormViewController, CCMoveDelegate {
         
         if formRow.tag == "fileName" {
             
-            let fileName = formRow.value as? String
-            
             self.form.delegate = nil
             
-            if let fileName = fileName {
-                formRow.value = CCUtility.removeForbiddenCharactersServer(fileName)
+            if let fileNameNew = formRow.value {
+                 self.fileName = CCUtility.removeForbiddenCharactersServer(fileNameNew as! String)
             }
-            
+        
             self.form.delegate = self
-                        
-            // reload cell
-            if fileName != nil {
-                
-                if newValue as! String != formRow.value as! String {
-                    
-                    self.reloadFormRow(formRow)
-                    
-                    appDelegate.messageNotification("_info_", description: "_forbidden_characters_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: 0)
-                }
-            }
-            
         }
     }
     
@@ -677,7 +663,6 @@ class CreateFormUploadFile: XLFormViewController, CCMoveDelegate {
         self.navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: NCBrandColor.sharedInstance.navigationBarText]
         
         self.tableView.separatorStyle = UITableViewCellSeparatorStyle.none
-        
         self.tableView.backgroundColor = NCBrandColor.sharedInstance.tableBackground
         
         self.reloadForm()
@@ -686,8 +671,6 @@ class CreateFormUploadFile: XLFormViewController, CCMoveDelegate {
     override func viewWillDisappear(_ animated: Bool)
     {
         super.viewWillDisappear(animated)
-        
-        //self.delegate?.dismissFormUploadAssets()
     }
     
     func reloadForm() {
@@ -699,49 +682,6 @@ class CreateFormUploadFile: XLFormViewController, CCMoveDelegate {
         
         self.tableView.reloadData()
         self.form.delegate = self
-    }
-    
-    //MARK: TableView
-    
-    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        
-        switch section {
-            
-        case 0:
-            let buttonDestinationFolder : XLFormRowDescriptor  = self.form.formRow(withTag: "ButtonDestinationFolder")!
-            
-            if buttonDestinationFolder.isHidden() {
-                return ""
-            } else {
-                return "    " + NSLocalizedString("_destination_folder_", comment: "")
-            }
-        case 1:
-            return "    " + NSLocalizedString("_use_folder_photos_", comment: "")
-        case 2:
-            return "    " + NSLocalizedString("_add_filenametype_", comment: "")
-        case 3:
-            return "    " + NSLocalizedString("_rename_filename_", comment: "")
-        case 4:
-            return NSLocalizedString("_preview_filename_", comment: "")
-        default:
-            return ""
-        }
-    }
-    
-    override func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
-        
-        switch section {
-            
-            /*
-             case 2:
-             let buttonDestinationFolder : XLFormRowDescriptor  = self.form.formRow(withTag: "maskFileName")!
-             let text = self.writePreviewFileName(buttonDestinationFolder)
-             return text
-             */
-            
-        default:
-            return ""
-        }
     }
     
     // MARK: - Action
@@ -766,17 +706,14 @@ class CreateFormUploadFile: XLFormViewController, CCMoveDelegate {
         
         self.dismiss(animated: true, completion: {
             
-            let useFolderPhotoRow : XLFormRowDescriptor  = self.form.formRow(withTag: "useFolderPhoto")!
-            let useSubFolderRow : XLFormRowDescriptor  = self.form.formRow(withTag: "useSubFolder")!
-            var useSubFolder : Bool = false
+            let data = self.text.data(using: .utf8)
+            let success = FileManager.default.createFile(atPath: "\(self.appDelegate.directoryUser!)/\(self.fileName)", contents: data, attributes: nil)
             
-            if (useFolderPhotoRow.value! as AnyObject).boolValue == true {
-                
-                self.serverUrl = NCManageDatabase.sharedInstance.getAccountAutoUploadPath(self.appDelegate.activeUrl)
-                useSubFolder = (useSubFolderRow.value! as AnyObject).boolValue
-            }
-            
-            //self.appDelegate.activeMain.uploadFileAsset(self.assets, serverUrl: self.serverUrl, cryptated: self.cryptated, useSubFolder: useSubFolder, session: self.session)
+            if success {
+                CCNetworking.shared().uploadFile(self.fileName, serverUrl: self.serverUrl, cryptated: false, onlyPlist: false, session: k_upload_session, taskStatus: Int(k_taskStatusResume), selector: nil, selectorPost: nil, errorCode: 0, delegate: self)
+            } else {
+                self.appDelegate.messageNotification("_error_", description: "_error_creation_file_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: 0)
+            }            
         })
     }
     
@@ -803,7 +740,6 @@ class CreateFormUploadFile: XLFormViewController, CCMoveDelegate {
         navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
         self.present(navigationController, animated: true, completion: nil)
     }
-    
 }
 
 
