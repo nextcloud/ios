@@ -54,6 +54,14 @@ class NCText: UIViewController, UITextViewDelegate {
             if loadText == nil {
                 loadText = ""
             }
+        } else {
+            self.fileName =  NSLocalizedString("_untitled_txt_", comment: "")
+            openInButton.tintColor = UIColor.clear
+            openInButton = nil
+            shareButton.tintColor = UIColor.clear
+            shareButton = nil
+            deleteButton.tintColor = UIColor.clear
+            deleteButton = nil
         }
     }
     
@@ -92,5 +100,17 @@ class NCText: UIViewController, UITextViewDelegate {
         
             self.delegate?.present(navigationController, animated: true, completion: nil)
         })
+    }
+    
+    @IBAction func openInButtonTapped(_ sender: AnyObject) {
+        
+    }
+    
+    @IBAction func shareButtonTapped(_ sender: AnyObject) {
+        
+    }
+    
+    @IBAction func deleteButtonTapped(_ sender: AnyObject) {
+        
     }
 }

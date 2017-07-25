@@ -38,11 +38,23 @@
                     </view>
                     <toolbarItems>
                         <barButtonItem style="plain" systemItem="flexibleSpace" id="7D3-Jp-G8Q"/>
-                        <barButtonItem image="actionSheetDelete" id="40X-Vo-Hy2"/>
+                        <barButtonItem image="actionSheetDelete" id="40X-Vo-Hy2">
+                            <connections>
+                                <action selector="deleteButtonTapped:" destination="oRF-nm-GrS" id="U2y-hT-dOQ"/>
+                            </connections>
+                        </barButtonItem>
                         <barButtonItem width="25" style="plain" systemItem="fixedSpace" id="l83-dY-K62"/>
-                        <barButtonItem image="actionSheetShare" id="6og-yq-pNL"/>
+                        <barButtonItem image="actionSheetShare" id="6og-yq-pNL">
+                            <connections>
+                                <action selector="shareButtonTapped:" destination="oRF-nm-GrS" id="qaW-VY-Ziw"/>
+                            </connections>
+                        </barButtonItem>
                         <barButtonItem width="25" style="plain" systemItem="fixedSpace" id="Mgf-az-QKC"/>
-                        <barButtonItem image="actionSheetOpenIn" id="2Kw-LQ-ehq"/>
+                        <barButtonItem image="actionSheetOpenIn" id="2Kw-LQ-ehq">
+                            <connections>
+                                <action selector="openInButtonTapped:" destination="oRF-nm-GrS" id="74a-js-ncE"/>
+                            </connections>
+                        </barButtonItem>
                     </toolbarItems>
                     <navigationItem key="navigationItem" id="LYL-SD-Ayv">
                         <barButtonItem key="leftBarButtonItem" title="Item" id="brk-EO-iNZ">

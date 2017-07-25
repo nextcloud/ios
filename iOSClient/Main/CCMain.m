@@ -920,14 +920,13 @@
         case k_returnCreateFileText: {
             
             // remove file Untitled.txt
-            [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, NSLocalizedString(@"_untitled_txt_", nil)] error:nil];
+            //[[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, NSLocalizedString(@"_untitled_txt_", nil)] error:nil];
             
             UINavigationController* navigationController = [[UIStoryboard storyboardWithName:@"NCText" bundle:nil] instantiateViewControllerWithIdentifier:@"NCText"];
             
             NCText *viewController = (NCText *)navigationController.topViewController;
             
             viewController.delegate = self;
-            viewController.fileName = NSLocalizedString(@"_untitled_txt_", nil);
             viewController.serverUrl = _serverUrl;
             viewController.titleMain = _titleMain;
             
