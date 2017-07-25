@@ -22,7 +22,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="pmg-g2-Fbs">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="623"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
@@ -36,6 +36,14 @@
                             <constraint firstItem="pmg-g2-Fbs" firstAttribute="leading" secondItem="skk-fU-Vk6" secondAttribute="leading" id="jcN-jR-tMp"/>
                         </constraints>
                     </view>
+                    <toolbarItems>
+                        <barButtonItem style="plain" systemItem="flexibleSpace" id="7D3-Jp-G8Q"/>
+                        <barButtonItem image="actionSheetDelete" id="40X-Vo-Hy2"/>
+                        <barButtonItem width="25" style="plain" systemItem="fixedSpace" id="l83-dY-K62"/>
+                        <barButtonItem image="actionSheetShare" id="6og-yq-pNL"/>
+                        <barButtonItem width="25" style="plain" systemItem="fixedSpace" id="Mgf-az-QKC"/>
+                        <barButtonItem image="actionSheetOpenIn" id="2Kw-LQ-ehq"/>
+                    </toolbarItems>
                     <navigationItem key="navigationItem" id="LYL-SD-Ayv">
                         <barButtonItem key="leftBarButtonItem" title="Item" id="brk-EO-iNZ">
                             <connections>
@@ -50,7 +58,10 @@
                     </navigationItem>
                     <connections>
                         <outlet property="cancelButton" destination="brk-EO-iNZ" id="8gM-f2-AtV"/>
+                        <outlet property="deleteButton" destination="40X-Vo-Hy2" id="0ru-ri-tqi"/>
                         <outlet property="nextButton" destination="Hyb-2c-5Hb" id="Zmo-Th-UUq"/>
+                        <outlet property="openInButton" destination="2Kw-LQ-ehq" id="aS5-0P-URL"/>
+                        <outlet property="shareButton" destination="6og-yq-pNL" id="s0f-fp-NLP"/>
                         <outlet property="textView" destination="pmg-g2-Fbs" id="T5E-gh-UZ6"/>
                     </connections>
                 </viewController>
@@ -61,7 +72,7 @@
         <!--Navigation Controller-->
         <scene sceneID="lyP-Qo-Lgl">
             <objects>
-                <navigationController storyboardIdentifier="NCText" automaticallyAdjustsScrollViewInsets="NO" id="zKl-U9-avf" sceneMemberID="viewController">
+                <navigationController storyboardIdentifier="NCText" automaticallyAdjustsScrollViewInsets="NO" toolbarHidden="NO" id="zKl-U9-avf" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="UIP-td-6cq">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
@@ -81,4 +92,9 @@
             <point key="canvasLocation" x="5" y="-67"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="actionSheetDelete" width="25" height="25"/>
+        <image name="actionSheetOpenIn" width="25" height="25"/>
+        <image name="actionSheetShare" width="25" height="25"/>
+    </resources>
 </document>

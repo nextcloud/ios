@@ -13,6 +13,10 @@ class NCText: UIViewController, UITextViewDelegate {
     @IBOutlet weak var cancelButton: UIBarButtonItem!
     @IBOutlet weak var nextButton: UIBarButtonItem!
     @IBOutlet weak var textView: UITextView!
+    
+    @IBOutlet weak var openInButton: UIBarButtonItem!
+    @IBOutlet weak var shareButton: UIBarButtonItem!
+    @IBOutlet weak var deleteButton: UIBarButtonItem!
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
@@ -31,9 +35,11 @@ class NCText: UIViewController, UITextViewDelegate {
         self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.navigationBarText
         self.navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: NCBrandColor.sharedInstance.navigationBarText]
         
+        self.navigationController?.toolbar.barTintColor = NCBrandColor.sharedInstance.navigationBarText
+        self.navigationController?.toolbar.tintColor = NCBrandColor.sharedInstance.brand
+        
         cancelButton.title = NSLocalizedString("_cancel_", comment: "")
         nextButton.title = NSLocalizedString("_next_", comment: "")
-        
     }
 
     override func viewWillAppear(_ animated: Bool) {
