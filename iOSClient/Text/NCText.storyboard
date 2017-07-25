@@ -12,7 +12,7 @@
         <!--Text-->
         <scene sceneID="l1e-ys-YzZ">
             <objects>
-                <viewController id="oRF-nm-GrS" customClass="NCText" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController extendedLayoutIncludesOpaqueBars="YES" id="oRF-nm-GrS" customClass="NCText" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="Uyq-V3-KbV"/>
                         <viewControllerLayoutGuide type="bottom" id="5fD-Qb-N57"/>
@@ -21,7 +21,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="pmg-g2-Fbs">
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" keyboardDismissMode="onDrag" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="pmg-g2-Fbs">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="623"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -85,7 +85,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="r2i-QZ-Y8W" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1042" y="-197"/>
+            <point key="canvasLocation" x="1040.8" y="-197.45127436281859"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="lyP-Qo-Lgl">

@@ -41,11 +41,6 @@ class NCText: UIViewController, UITextViewDelegate {
         
         cancelButton.title = NSLocalizedString("_cancel_", comment: "")
         nextButton.title = NSLocalizedString("_next_", comment: "")
-    }
-
-    override func viewWillAppear(_ animated: Bool) {
-
-        super.viewWillAppear(animated)
         
         if let fileName = fileName {
             
@@ -55,7 +50,7 @@ class NCText: UIViewController, UITextViewDelegate {
                 loadText = ""
             }
             textView.isUserInteractionEnabled = false
-
+            
         } else {
             
             self.fileName =  NSLocalizedString("_untitled_txt_", comment: "")
@@ -71,6 +66,11 @@ class NCText: UIViewController, UITextViewDelegate {
             textView.isUserInteractionEnabled = true
             textView.becomeFirstResponder()
         }
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+
+        super.viewWillAppear(animated)
     }
     
     @IBAction func cancelButtonTapped(_ sender: AnyObject) {
@@ -100,14 +100,8 @@ class NCText: UIViewController, UITextViewDelegate {
     
     @IBAction func nextButtonTapped(_ sender: AnyObject) {
         
-        self.dismiss(animated: false, completion: {
-        
-            let form = CreateFormUploadFile.init(self.titleMain, serverUrl: self.serverUrl, text: self.textView.text, fileName: self.fileName!)
-            let navigationController = UINavigationController.init(rootViewController: form)
-            navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
-        
-            self.delegate?.present(navigationController, animated: true, completion: nil)
-        })
+        let formViewController = CreateFormUploadFile.init(self.titleMain, serverUrl: self.serverUrl, text: self.textView.text, fileName: self.fileName!)
+        self.navigationController?.pushViewController(formViewController, animated: true)
     }
     
     @IBAction func modifyButtonTapped(_ sender: AnyObject) {
