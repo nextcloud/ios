@@ -919,6 +919,23 @@
     
         case k_returnCreateFileText: {
             
+            UINavigationController* navigationController = [[UIStoryboard storyboardWithName:@"NCText" bundle:nil] instantiateViewControllerWithIdentifier:@"NCText"];
+            
+            NCText *viewController = (NCText *)navigationController.topViewController;
+            
+            /*
+            viewController.delegate = self;
+            viewController.move.title = NSLocalizedString(@"_move_", nil);
+            viewController.tintColor = [NCBrandColor sharedInstance].navigationBarText;
+            viewController.barTintColor = [NCBrandColor sharedInstance].brand;
+            viewController.tintColorTitle = [NCBrandColor sharedInstance].navigationBarText;
+            viewController.networkingOperationQueue = app.netQueue;
+            */
+            
+            [navigationController setModalPresentationStyle:UIModalPresentationFormSheet];
+            [self presentViewController:navigationController animated:YES completion:nil];
+
+            
         }
             break;
             

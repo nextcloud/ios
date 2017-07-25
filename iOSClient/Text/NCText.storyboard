@@ -22,9 +22,8 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="pmg-g2-Fbs">
-                                <rect key="frame" x="0.0" y="64" width="375" height="603"/>
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             </textView>
@@ -32,12 +31,20 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="5fD-Qb-N57" firstAttribute="top" secondItem="pmg-g2-Fbs" secondAttribute="bottom" id="KKy-aG-Q0G"/>
-                            <constraint firstItem="pmg-g2-Fbs" firstAttribute="top" secondItem="Uyq-V3-KbV" secondAttribute="bottom" id="MOE-fS-vSb"/>
+                            <constraint firstItem="pmg-g2-Fbs" firstAttribute="top" secondItem="Uyq-V3-KbV" secondAttribute="bottom" constant="-64" id="MOE-fS-vSb"/>
                             <constraint firstAttribute="trailing" secondItem="pmg-g2-Fbs" secondAttribute="trailing" id="dYU-vc-Fz6"/>
                             <constraint firstItem="pmg-g2-Fbs" firstAttribute="leading" secondItem="skk-fU-Vk6" secondAttribute="leading" id="jcN-jR-tMp"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" id="LYL-SD-Ayv"/>
+                    <navigationItem key="navigationItem" id="LYL-SD-Ayv">
+                        <barButtonItem key="leftBarButtonItem" title="Item" id="brk-EO-iNZ"/>
+                        <barButtonItem key="rightBarButtonItem" title="Item" id="Hyb-2c-5Hb"/>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="cancelButton" destination="brk-EO-iNZ" id="8gM-f2-AtV"/>
+                        <outlet property="nextButton" destination="Hyb-2c-5Hb" id="Zmo-Th-UUq"/>
+                        <outlet property="textView" destination="pmg-g2-Fbs" id="T5E-gh-UZ6"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="r2i-QZ-Y8W" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -46,7 +53,7 @@
         <!--Navigation Controller-->
         <scene sceneID="lyP-Qo-Lgl">
             <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="zKl-U9-avf" sceneMemberID="viewController">
+                <navigationController storyboardIdentifier="NCText" automaticallyAdjustsScrollViewInsets="NO" id="zKl-U9-avf" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="UIP-td-6cq">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>

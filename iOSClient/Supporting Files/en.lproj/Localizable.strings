@@ -65,6 +65,7 @@
 "_photo_"                   = "Photo";
 "_audio_"                   = "Audio";
 "_unknown_"                 = "Unknown";
+"_next_"                    = "Next";
 
 // App
 
@@ -562,4 +563,8 @@
 // Manage Auto Upload FileName
 
 "_autoupload_filename_title_"       = "Auto upload filename";
+
+// Text File
+
+"_title_new_text_file_"             = "New text file";
 
