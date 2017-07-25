@@ -14,6 +14,9 @@ class NCText: UIViewController, UITextViewDelegate {
     @IBOutlet weak var nextButton: UIBarButtonItem!
     @IBOutlet weak var textView: UITextView!
 
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    var fileName : String?
+    var loadText : String? = ""
     
     override func viewDidLoad() {
         
@@ -30,9 +33,49 @@ class NCText: UIViewController, UITextViewDelegate {
     }
 
     override func viewWillAppear(_ animated: Bool) {
+
         super.viewWillAppear(animated)
+        
+        textView.becomeFirstResponder()
+        
+        if let fileName = fileName {
+            let path = "\(appDelegate.directoryUser!)/\(fileName)"
+            loadText = try? String(contentsOfFile: path, encoding: String.Encoding.utf8)
+            if loadText == nil {
+                loadText = ""
+            }
+        }
+    }
+    
+    @IBAction func cancelButtonTapped(_ sender: AnyObject) {
+        
+        let currentText = textView.text
+        
+        if currentText != loadText {
+            
+            let alertController = UIAlertController(title: NSLocalizedString("_info_", comment: ""), message: NSLocalizedString("_save_exit_", comment: ""), preferredStyle: .alert)
+            
+            let actionYes = UIAlertAction(title: "_yes_", style: .default) { (action:UIAlertAction) in
+                self.dismiss(animated: true, completion: nil)
+            }
+            
+            let actionNo = UIAlertAction(title: "_no_", style: .cancel) { (action:UIAlertAction) in
+                print("You've pressed No button")
+            }
+            
+            alertController.addAction(actionYes)
+            alertController.addAction(actionNo)
+            
+            self.present(alertController, animated: true, completion:nil)
+            
+        } else {
+            
+            self.dismiss(animated: true, completion: nil)
+        }
+    }
+    
+    @IBAction func nextButtonTapped(_ sender: AnyObject) {
         
         
     }
-    
 }

@@ -37,8 +37,16 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="LYL-SD-Ayv">
-                        <barButtonItem key="leftBarButtonItem" title="Item" id="brk-EO-iNZ"/>
-                        <barButtonItem key="rightBarButtonItem" title="Item" id="Hyb-2c-5Hb"/>
+                        <barButtonItem key="leftBarButtonItem" title="Item" id="brk-EO-iNZ">
+                            <connections>
+                                <action selector="cancelButtonTapped:" destination="oRF-nm-GrS" id="bZ7-ow-Bbq"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" title="Item" id="Hyb-2c-5Hb">
+                            <connections>
+                                <action selector="nextButtonTapped:" destination="oRF-nm-GrS" id="tzB-m8-8BJ"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                     <connections>
                         <outlet property="cancelButton" destination="brk-EO-iNZ" id="8gM-f2-AtV"/>
@@ -48,7 +56,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="r2i-QZ-Y8W" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="592.79999999999995" y="-39.130434782608695"/>
+            <point key="canvasLocation" x="785" y="-68"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="lyP-Qo-Lgl">
@@ -60,13 +68,17 @@
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
+                    <toolbar key="toolbar" opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="d3Q-mu-6g7">
+                        <rect key="frame" x="0.0" y="623" width="375" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </toolbar>
                     <connections>
                         <segue destination="oRF-nm-GrS" kind="relationship" relationship="rootViewController" id="gPZ-9Y-e4E"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jdZ-ZN-JEs" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-346.39999999999998" y="-39.130434782608695"/>
+            <point key="canvasLocation" x="5" y="-67"/>
         </scene>
     </scenes>
 </document>
