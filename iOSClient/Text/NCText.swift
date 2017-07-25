@@ -105,6 +105,7 @@ class NCText: UIViewController, UITextViewDelegate {
     }
     
     @IBAction func modifyButtonTapped(_ sender: AnyObject) {
+        
         textView.isUserInteractionEnabled = true
         textView.becomeFirstResponder()
     }

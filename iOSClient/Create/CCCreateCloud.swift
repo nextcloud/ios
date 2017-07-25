@@ -641,6 +641,8 @@ class CreateFormUploadFile: XLFormViewController, CCMoveDelegate {
                  self.fileName = CCUtility.removeForbiddenCharactersServer(fileNameNew as! String)
             }
         
+            self.title = fileName
+
             self.form.delegate = self
         }
     }
@@ -666,11 +668,6 @@ class CreateFormUploadFile: XLFormViewController, CCMoveDelegate {
         self.reloadForm()
     }
     
-    override func viewWillDisappear(_ animated: Bool)
-    {
-        super.viewWillDisappear(animated)
-    }
-    
     func reloadForm() {
         
         self.form.delegate = nil
@@ -678,7 +675,10 @@ class CreateFormUploadFile: XLFormViewController, CCMoveDelegate {
         let buttonDestinationFolder : XLFormRowDescriptor  = self.form.formRow(withTag: "ButtonDestinationFolder")!
         buttonDestinationFolder.title = self.titleServerUrl
         
+        self.title = fileName
+        
         self.tableView.reloadData()
+        
         self.form.delegate = self
     }
     
