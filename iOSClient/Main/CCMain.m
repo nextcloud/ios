@@ -923,19 +923,13 @@
             
             NCText *viewController = (NCText *)navigationController.topViewController;
             
-            /*
             viewController.delegate = self;
-            viewController.move.title = NSLocalizedString(@"_move_", nil);
-            viewController.tintColor = [NCBrandColor sharedInstance].navigationBarText;
-            viewController.barTintColor = [NCBrandColor sharedInstance].brand;
-            viewController.tintColorTitle = [NCBrandColor sharedInstance].navigationBarText;
-            viewController.networkingOperationQueue = app.netQueue;
-            */
+            viewController.fileName = NSLocalizedString(@"_untitled_txt_", nil);
+            viewController.serverUrl = _serverUrl;
+            viewController.titleMain = _titleMain;
             
             [navigationController setModalPresentationStyle:UIModalPresentationFormSheet];
             [self presentViewController:navigationController animated:YES completion:nil];
-
-            
         }
             break;
             

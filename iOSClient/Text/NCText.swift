@@ -15,8 +15,12 @@ class NCText: UIViewController, UITextViewDelegate {
     @IBOutlet weak var textView: UITextView!
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    var fileName : String?
-    var loadText : String? = ""
+    
+    weak var delegate: CCMain?
+    var fileName: String?
+    var loadText: String? = ""
+    var serverUrl: String = ""
+    var titleMain: String = ""
     
     override func viewDidLoad() {
         
@@ -49,17 +53,15 @@ class NCText: UIViewController, UITextViewDelegate {
     
     @IBAction func cancelButtonTapped(_ sender: AnyObject) {
         
-        let currentText = textView.text
-        
-        if currentText != loadText {
+        if textView.text != loadText {
             
             let alertController = UIAlertController(title: NSLocalizedString("_info_", comment: ""), message: NSLocalizedString("_save_exit_", comment: ""), preferredStyle: .alert)
             
-            let actionYes = UIAlertAction(title: "_yes_", style: .default) { (action:UIAlertAction) in
+            let actionYes = UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .default) { (action:UIAlertAction) in
                 self.dismiss(animated: true, completion: nil)
             }
             
-            let actionNo = UIAlertAction(title: "_no_", style: .cancel) { (action:UIAlertAction) in
+            let actionNo = UIAlertAction(title: NSLocalizedString("_no_", comment: ""), style: .cancel) { (action:UIAlertAction) in
                 print("You've pressed No button")
             }
             
@@ -76,6 +78,13 @@ class NCText: UIViewController, UITextViewDelegate {
     
     @IBAction func nextButtonTapped(_ sender: AnyObject) {
         
+        self.dismiss(animated: false, completion: {
         
+            let form = CreateFormUploadFile.init(self.titleMain, serverUrl: self.serverUrl, text: self.textView.text, fileName: self.fileName!)
+            let navigationController = UINavigationController.init(rootViewController: form)
+            navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
+        
+            self.delegate?.present(navigationController, animated: true, completion: nil)
+        })
     }
 }

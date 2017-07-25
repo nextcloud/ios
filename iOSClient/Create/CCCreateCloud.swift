@@ -570,31 +570,28 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
     
 }
 
-@objc protocol createFormUploadFileDelegate {
-    
-    func dismissFormUploadAssets()
-}
-
 class CreateFormUploadFile: XLFormViewController, CCMoveDelegate {
     
-    var serverUrl : String = ""
-    var titleServerUrl : String?
-    weak var delegate: createFormUploadFileDelegate?
+    var serverUrl = ""
+    var titleServerUrl = ""
+    var fileName = ""
+    var text = ""
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
-    convenience init(_ titleServerUrl : String?, serverUrl : String, assets : NSMutableArray, cryptated : Bool, session : String, delegate: createFormUploadFileDelegate) {
+    convenience init(_ titleServerUrl: String, serverUrl: String, text: String, fileName: String) {
         
         self.init()
         
-        if titleServerUrl == nil || titleServerUrl?.isEmpty == true {
+        if titleServerUrl.isEmpty == true {
             self.titleServerUrl = "/"
         } else {
             self.titleServerUrl = titleServerUrl
         }
         
+        self.fileName = fileName
         self.serverUrl = serverUrl
-        self.delegate = delegate
+        self.text = text
         
         self.initializeForm()
     }
@@ -620,17 +617,13 @@ class CreateFormUploadFile: XLFormViewController, CCMoveDelegate {
         row.action.formSelector = #selector(changeDestinationFolder(_:))
         section.addFormRow(row)
         
-        // Section: Rename File Name
+        // Section: File Name
         
         section = XLFormSectionDescriptor.formSection()
         form.addFormSection(section)
         
         row = XLFormRowDescriptor(tag: "fileName", rowType: XLFormRowDescriptorTypeAccount, title: NSLocalizedString("_filename_", comment: ""))
-        
-        let fileNameMask : String = CCUtility.getFileNameMask(k_keyFileNameMask)
-        if fileNameMask.characters.count > 0 {
-            row.value = fileNameMask
-        }
+        row.value = fileName
         section.addFormRow(row)
         
         self.form = form
