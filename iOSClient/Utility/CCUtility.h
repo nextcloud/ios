@@ -91,6 +91,9 @@
 
 + (void)setActivityVerboseHigh:(BOOL)debug;
 
++ (void)setShowHiddenFiles:(BOOL)show;
+
+
 // GET
 
 + (NSString *)getKeyChainPasscodeForUUID:(NSString *)uuid;
@@ -134,6 +137,8 @@
 + (BOOL)getFavoriteOffline;
 
 + (BOOL)getActivityVerboseHigh;
+
++ (BOOL)getShowHiddenFiles;
 
 // ===== Varius =====
 

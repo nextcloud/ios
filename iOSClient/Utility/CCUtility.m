@@ -221,6 +221,12 @@
     [UICKeyChainStore setString:sHigh forKey:@"activityVerboseHigh" service:k_serviceShareKeyChain];
 }
 
++ (void)setShowHiddenFiles:(BOOL)show
+{
+    NSString *sShow = (show) ? @"true" : @"false";
+    [UICKeyChainStore setString:sShow forKey:@"showHiddenFiles" service:k_serviceShareKeyChain];
+}
+
 #pragma ------------------------------ GET
 
 + (NSString *)getKeyChainPasscodeForUUID:(NSString *)uuid
@@ -418,6 +424,11 @@
 + (BOOL)getActivityVerboseHigh
 {
     return [[UICKeyChainStore stringForKey:@"activityVerboseHigh" service:k_serviceShareKeyChain] boolValue];
+}
+
++ (BOOL)getShowHiddenFiles
+{
+    return [[UICKeyChainStore stringForKey:@"showHiddenFiles" service:k_serviceShareKeyChain] boolValue];
 }
 
 #pragma --------------------------------------------------------------------------------------------
