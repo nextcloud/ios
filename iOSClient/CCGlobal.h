@@ -60,14 +60,15 @@ extern NSString *const urlBaseUploadDB;
 #define k_returnCreateFolderEncrypted                   3
 #define k_returnCreateFotoVideoEncrypted                4
 #define k_returnCreateFileEncrypted                     5
-#define k_returnCartaDiCredito                          6
-#define k_returnBancomat                                7
-#define k_returnContoCorrente                           8
-#define k_returnAccountWeb                              9
-#define k_returnNote                                    10
-#define k_returnPatenteGuida                            11
-#define k_returnCartaIdentita                           12
-#define k_returnPassaporto                              13
+#define k_returnCreateFileText                          6
+#define k_returnCartaDiCredito                          7
+#define k_returnBancomat                                8
+#define k_returnContoCorrente                           9
+#define k_returnAccountWeb                              10
+#define k_returnNote                                    11
+#define k_returnPatenteGuida                            12
+#define k_returnCartaIdentita                           13
+#define k_returnPassaporto                              14
 
 // Name Default DB
 #define k_databaseDefault                               @"nextcloud.realm"

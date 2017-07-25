@@ -917,6 +917,11 @@
         }
             break;
     
+        case k_returnCreateFileText: {
+            
+        }
+            break;
+            
         /* UTILITY */
         case k_returnNote:
             [self openModel:@"note" isNew:true];

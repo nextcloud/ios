@@ -529,6 +529,7 @@
 "_upload_encrypted_mode"            = "Upload in encrypted mode";
 "_upload_template_"                 = "Upload a template";
 "_upload_plain_mode"                = "Upload in plain mode";
+"_upload_file_text_"                = "Create a text file";
 
 // Document Picker
 
