@@ -37,6 +37,11 @@
                         </constraints>
                     </view>
                     <toolbarItems>
+                        <barButtonItem image="actionSheetModify" id="EDN-Il-Q37">
+                            <connections>
+                                <action selector="modifyButtonTapped:" destination="oRF-nm-GrS" id="Vh4-tN-fXC"/>
+                            </connections>
+                        </barButtonItem>
                         <barButtonItem style="plain" systemItem="flexibleSpace" id="7D3-Jp-G8Q"/>
                         <barButtonItem image="actionSheetDelete" id="40X-Vo-Hy2">
                             <connections>
@@ -71,6 +76,7 @@
                     <connections>
                         <outlet property="cancelButton" destination="brk-EO-iNZ" id="8gM-f2-AtV"/>
                         <outlet property="deleteButton" destination="40X-Vo-Hy2" id="0ru-ri-tqi"/>
+                        <outlet property="modifyButton" destination="EDN-Il-Q37" id="0yP-N0-ObG"/>
                         <outlet property="nextButton" destination="Hyb-2c-5Hb" id="Zmo-Th-UUq"/>
                         <outlet property="openInButton" destination="2Kw-LQ-ehq" id="aS5-0P-URL"/>
                         <outlet property="shareButton" destination="6og-yq-pNL" id="s0f-fp-NLP"/>
@@ -79,7 +85,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="r2i-QZ-Y8W" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="785" y="-68"/>
+            <point key="canvasLocation" x="1042" y="-197"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="lyP-Qo-Lgl">
@@ -101,11 +107,12 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jdZ-ZN-JEs" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="5" y="-67"/>
+            <point key="canvasLocation" x="10" y="-197"/>
         </scene>
     </scenes>
     <resources>
         <image name="actionSheetDelete" width="25" height="25"/>
+        <image name="actionSheetModify" width="25" height="25"/>
         <image name="actionSheetOpenIn" width="25" height="25"/>
         <image name="actionSheetShare" width="25" height="25"/>
     </resources>

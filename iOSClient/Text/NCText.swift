@@ -14,6 +14,7 @@ class NCText: UIViewController, UITextViewDelegate {
     @IBOutlet weak var nextButton: UIBarButtonItem!
     @IBOutlet weak var textView: UITextView!
     
+    @IBOutlet weak var modifyButton: UIBarButtonItem!
     @IBOutlet weak var openInButton: UIBarButtonItem!
     @IBOutlet weak var shareButton: UIBarButtonItem!
     @IBOutlet weak var deleteButton: UIBarButtonItem!
@@ -46,22 +47,29 @@ class NCText: UIViewController, UITextViewDelegate {
 
         super.viewWillAppear(animated)
         
-        textView.becomeFirstResponder()
-        
         if let fileName = fileName {
+            
             let path = "\(appDelegate.directoryUser!)/\(fileName)"
             loadText = try? String(contentsOfFile: path, encoding: String.Encoding.utf8)
             if loadText == nil {
                 loadText = ""
             }
+            textView.isUserInteractionEnabled = false
+
         } else {
+            
             self.fileName =  NSLocalizedString("_untitled_txt_", comment: "")
+            modifyButton.tintColor = UIColor.clear
+            modifyButton = nil
             openInButton.tintColor = UIColor.clear
             openInButton = nil
             shareButton.tintColor = UIColor.clear
             shareButton = nil
             deleteButton.tintColor = UIColor.clear
             deleteButton = nil
+            
+            textView.isUserInteractionEnabled = true
+            textView.becomeFirstResponder()
         }
     }
     
@@ -100,6 +108,11 @@ class NCText: UIViewController, UITextViewDelegate {
         
             self.delegate?.present(navigationController, animated: true, completion: nil)
         })
+    }
+    
+    @IBAction func modifyButtonTapped(_ sender: AnyObject) {
+        textView.isUserInteractionEnabled = true
+        textView.becomeFirstResponder()
     }
     
     @IBAction func openInButtonTapped(_ sender: AnyObject) {
