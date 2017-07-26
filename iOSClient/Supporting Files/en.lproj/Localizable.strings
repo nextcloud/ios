@@ -525,12 +525,12 @@
 
 // Create Cloud
 
-"_upload_photos_videos_"            = "Upload photos and videos";
-"_upload_file_"                     = "Upload a file";
-"_upload_encrypted_mode"            = "Upload in encrypted mode";
-"_upload_template_"                 = "Upload a template";
-"_upload_plain_mode"                = "Upload in plain mode";
-"_upload_file_text_"                = "Create a text file";
+"_upload_photos_videos_"            = "Upload photos or videos";
+"_upload_file_"                     = "Upload file";
+"_upload_encrypted_mode"            = "Switch to encrypted mode";
+"_upload_template_"                 = "Upload template";
+"_upload_plain_mode"                = "Switch to plain mode";
+"_upload_file_text_"                = "Create text file";
 
 // Document Picker
 
