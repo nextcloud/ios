@@ -34,21 +34,36 @@ class NCText: UIViewController, UITextViewDelegate {
         cancelButton.title = NSLocalizedString("_cancel_", comment: "")
         nextButton.title = NSLocalizedString("_next_", comment: "")
         
+        // Modify
         if let metadata = metadata {
             
             let path = "\(appDelegate.directoryUser!)/\(metadata.fileID)"
             
             loadText = try? String(contentsOfFile: path, encoding: String.Encoding.utf8)
             textView.text = loadText
+            nextButton.title = NSLocalizedString("_save_", comment: "")
+            self.navigationController?.navigationBar.topItem?.title = NSLocalizedString(metadata.fileNamePrint, comment: "")
         }
         
         textView.isUserInteractionEnabled = true
         textView.becomeFirstResponder()
+        textView.delegate = self
+        
+        textViewDidChange(textView)
     }
 
     override func viewWillAppear(_ animated: Bool) {
 
         super.viewWillAppear(animated)
+    }
+    
+    func textViewDidChange(_ textView: UITextView) {
+        
+        if textView.text.characters.count == 0 {
+            nextButton.isEnabled = false
+        } else {
+            nextButton.isEnabled = true
+        }
     }
     
     @IBAction func cancelButtonTapped(_ sender: AnyObject) {
@@ -80,8 +95,15 @@ class NCText: UIViewController, UITextViewDelegate {
         
         if let metadata = metadata {
             
-            //let formViewController = CreateFormUploadFile.init(self.titleMain, serverUrl: self.serverUrl, text: self.textView.text, fileName: self.fileName!)
-            //self.navigationController?.pushViewController(formViewController, animated: true)
+            let data = textView.text.data(using: .utf8)
+            let success = FileManager.default.createFile(atPath: "\(self.appDelegate.directoryUser!)/\(metadata.fileName)", contents: data, attributes: nil)
+            
+            if success {
+                
+            } else {
+                self.appDelegate.messageNotification("_error_", description: "_error_creation_file_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: 0)
+            }
+            
             
         } else {
             
