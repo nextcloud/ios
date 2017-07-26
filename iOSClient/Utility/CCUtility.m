@@ -851,12 +851,14 @@
         NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
         [formatter setDateFormat:@"yyyy"];
         NSString *yearString = [formatter stringFromDate:assetDate];
-        [datesSubFolder addObject:yearString];
+        if (yearString)
+            [datesSubFolder addObject:yearString];
         
         [formatter setDateFormat:@"MM"];
         NSString *monthString = [formatter stringFromDate:assetDate];
         monthString = [NSString stringWithFormat:@"%@/%@", yearString, monthString];
-        [datesSubFolder addObject:monthString];
+        if (monthString)
+            [datesSubFolder addObject:monthString];
     }
     
     return (NSArray *)datesSubFolder;

@@ -1149,6 +1149,7 @@ class NCManageDatabase: NSObject {
             return nil
         }
         
+        let directoryID = metadata.directoryID
         let realm = try! Realm()
         
         do {
@@ -1159,7 +1160,7 @@ class NCManageDatabase: NSObject {
             print("Could not write to database: ", error)
         }
         
-        self.setDateReadDirectory(directoryID: metadata.directoryID)
+        self.setDateReadDirectory(directoryID: directoryID)
         
         return tableMetadata.init(value: metadata)
     }
