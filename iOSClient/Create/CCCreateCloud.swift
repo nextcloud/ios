@@ -702,16 +702,35 @@ class CreateFormUploadFile: XLFormViewController, CCMoveDelegate {
     
     func save() {
         
+        let rowFileName : XLFormRowDescriptor  = self.form.formRow(withTag: "fileName")!
+        guard let name = rowFileName.value else {
+            return
+        }
+        let ext = (name as! NSString).pathExtension.uppercased()
+        var fileNameSave = ""
+        
+        switch ext
+        {
+            case "":
+                fileNameSave = name as! String + ".txt"
+            
+            case "TXT":
+                fileNameSave = name as! String
+            
+            default:
+                fileNameSave = (name as! NSString).deletingPathExtension + ".txt"
+        }
+        
         self.dismiss(animated: true, completion: {
             
             let data = self.text.data(using: .utf8)
-            let success = FileManager.default.createFile(atPath: "\(self.appDelegate.directoryUser!)/\(self.fileName)", contents: data, attributes: nil)
+            let success = FileManager.default.createFile(atPath: "\(self.appDelegate.directoryUser!)/\(fileNameSave)", contents: data, attributes: nil)
             
             if success {
-                CCNetworking.shared().uploadFile(self.fileName, serverUrl: self.serverUrl, cryptated: false, onlyPlist: false, session: k_upload_session, taskStatus: Int(k_taskStatusResume), selector: nil, selectorPost: nil, errorCode: 0, delegate: self)
+                CCNetworking.shared().uploadFile(fileNameSave, serverUrl: self.serverUrl, cryptated: false, onlyPlist: false, session: k_upload_session, taskStatus: Int(k_taskStatusResume), selector: nil, selectorPost: nil, errorCode: 0, delegate: self)
             } else {
                 self.appDelegate.messageNotification("_error_", description: "_error_creation_file_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: 0)
-            }            
+            }
         })
     }
     
