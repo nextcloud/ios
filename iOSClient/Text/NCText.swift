@@ -28,7 +28,7 @@ class NCText: UIViewController, UITextViewDelegate {
         NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillShowHandle(info:)), name: .UIKeyboardWillShow, object: nil)
         NotificationCenter.default.addObserver(self, selector:#selector(self.keyboardWillHideHandle), name: .UIKeyboardWillHide, object: nil)
 
-        self.navigationController?.navigationBar.topItem?.title = NSLocalizedString("_title_new_text_file_", comment: "")
+        self.navigationController?.navigationBar.topItem?.title = NSLocalizedString("_untitled_txt_", comment: "")
         self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand
         self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.navigationBarText
         self.navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: NCBrandColor.sharedInstance.navigationBarText]
@@ -57,7 +57,8 @@ class NCText: UIViewController, UITextViewDelegate {
         textView.isUserInteractionEnabled = true
         textView.becomeFirstResponder()
         textView.delegate = self
-        
+        textView.selectedTextRange = textView.textRange(from: textView.beginningOfDocument, to: textView.beginningOfDocument)
+
         textViewDidChange(textView)
     }
 
