@@ -119,28 +119,31 @@ class NCText: UIViewController, UITextViewDelegate {
         
         if let metadata = metadata {
             
-            let uploadID = k_uploadSessionID + CCUtility.createRandomString(16)
-            let data = textView.text.data(using: .utf8)
-            let success = FileManager.default.createFile(atPath: "\(self.appDelegate.directoryUser!)/\(uploadID)", contents: data, attributes: nil)
+            if textView.text != loadText {
             
-            if success {
+                let uploadID = k_uploadSessionID + CCUtility.createRandomString(16)
+                let data = textView.text.data(using: .utf8)
+                let success = FileManager.default.createFile(atPath: "\(self.appDelegate.directoryUser!)/\(uploadID)", contents: data, attributes: nil)
+            
+                if success {
                 
-                // Prepare for send Metadata
-                metadata.fileID = uploadID
-                metadata.sessionID = uploadID
-                metadata.session = k_upload_session
-                metadata.sessionTaskIdentifier = Int(k_taskIdentifierWaitStart)
-                _ = NCManageDatabase.sharedInstance.updateMetadata(metadata)
+                    // Prepare for send Metadata
+                    metadata.sessionID = uploadID
+                    metadata.session = k_upload_session
+                    metadata.sessionTaskIdentifier = Int(k_taskIdentifierWaitStart)
+                    _ = NCManageDatabase.sharedInstance.updateMetadata(metadata)
+                    appDelegate.activeMain.clearDateReadDataSource(nil)
                 
-                self.dismiss(animated: true, completion: {
-                    
-                    CCNetworking.shared().uploadFileMetadata(metadata, taskStatus: Int(k_taskStatusResume))
-                    CCNetworking.shared().delegate = self.appDelegate.activeMain
-                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "detailBack"), object: nil)
-                })
+                    self.dismiss(animated: true, completion: {
+                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "detailBack"), object: nil)
+                    })
 
+                } else {
+                    self.appDelegate.messageNotification("_error_", description: "_error_creation_file_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: 0)
+                }
+                
             } else {
-                self.appDelegate.messageNotification("_error_", description: "_error_creation_file_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: 0)
+                self.dismiss(animated: true, completion: nil)
             }
             
         } else {

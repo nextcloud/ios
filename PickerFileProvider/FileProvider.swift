@@ -144,7 +144,6 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             }
 
             // Prepare for send Metadata
-            metadata!.fileID = uploadID
             metadata!.sessionID = uploadID
             metadata!.session = k_upload_session
             metadata!.sessionTaskIdentifier = Int(k_taskIdentifierWaitStart)
