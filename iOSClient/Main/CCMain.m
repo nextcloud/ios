@@ -919,16 +919,9 @@
     
         case k_returnCreateFileText: {
             
-            // remove file Untitled.txt
-            //[[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, NSLocalizedString(@"_untitled_txt_", nil)] error:nil];
-            
             UINavigationController* navigationController = [[UIStoryboard storyboardWithName:@"NCText" bundle:nil] instantiateViewControllerWithIdentifier:@"NCText"];
             
-            NCText *viewController = (NCText *)navigationController.topViewController;
-            
-            viewController.delegate = self;
-            viewController.serverUrl = _serverUrl;
-            viewController.titleMain = _titleMain;
+            //NCText *viewController = (NCText *)navigationController.topViewController;
             
             [navigationController setModalPresentationStyle:UIModalPresentationFormSheet];
             [self presentViewController:navigationController animated:YES completion:nil];

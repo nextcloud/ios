@@ -14,18 +14,10 @@ class NCText: UIViewController, UITextViewDelegate {
     @IBOutlet weak var nextButton: UIBarButtonItem!
     @IBOutlet weak var textView: UITextView!
     
-    @IBOutlet weak var modifyButton: UIBarButtonItem!
-    @IBOutlet weak var openInButton: UIBarButtonItem!
-    @IBOutlet weak var shareButton: UIBarButtonItem!
-    @IBOutlet weak var deleteButton: UIBarButtonItem!
-
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
-    weak var delegate: CCMain?
-    var fileName: String?
-    var loadText: String? = ""
-    var serverUrl: String = ""
-    var titleMain: String = ""
+    var metadata: tableMetadata?
+    var loadText: String?
     
     override func viewDidLoad() {
         
@@ -42,30 +34,16 @@ class NCText: UIViewController, UITextViewDelegate {
         cancelButton.title = NSLocalizedString("_cancel_", comment: "")
         nextButton.title = NSLocalizedString("_next_", comment: "")
         
-        if let fileName = fileName {
+        if let metadata = metadata {
             
-            let path = "\(appDelegate.directoryUser!)/\(fileName)"
+            let path = "\(appDelegate.directoryUser!)/\(metadata.fileID)"
+            
             loadText = try? String(contentsOfFile: path, encoding: String.Encoding.utf8)
-            if loadText == nil {
-                loadText = ""
-            }
-            textView.isUserInteractionEnabled = false
-            
-        } else {
-            
-            self.fileName =  NSLocalizedString("_untitled_txt_", comment: "")
-            modifyButton.tintColor = UIColor.clear
-            modifyButton = nil
-            openInButton.tintColor = UIColor.clear
-            openInButton = nil
-            shareButton.tintColor = UIColor.clear
-            shareButton = nil
-            deleteButton.tintColor = UIColor.clear
-            deleteButton = nil
-            
-            textView.isUserInteractionEnabled = true
-            textView.becomeFirstResponder()
+            textView.text = loadText
         }
+        
+        textView.isUserInteractionEnabled = true
+        textView.becomeFirstResponder()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -100,25 +78,19 @@ class NCText: UIViewController, UITextViewDelegate {
     
     @IBAction func nextButtonTapped(_ sender: AnyObject) {
         
-        let formViewController = CreateFormUploadFile.init(self.titleMain, serverUrl: self.serverUrl, text: self.textView.text, fileName: self.fileName!)
-        self.navigationController?.pushViewController(formViewController, animated: true)
-    }
-    
-    @IBAction func modifyButtonTapped(_ sender: AnyObject) {
+        if let metadata = metadata {
+            
+            //let formViewController = CreateFormUploadFile.init(self.titleMain, serverUrl: self.serverUrl, text: self.textView.text, fileName: self.fileName!)
+            //self.navigationController?.pushViewController(formViewController, animated: true)
+            
+        } else {
+            
+            let formViewController = CreateFormUploadFile.init(NSLocalizedString("_untitled_txt_", comment: ""), serverUrl: appDelegate.activeMain.serverUrl, text: self.textView.text, fileName: NSLocalizedString("_untitled_txt_", comment: ""))
+            self.navigationController?.pushViewController(formViewController, animated: true)
+        }
         
-        textView.isUserInteractionEnabled = true
-        textView.becomeFirstResponder()
-    }
-    
-    @IBAction func openInButtonTapped(_ sender: AnyObject) {
         
-    }
-    
-    @IBAction func shareButtonTapped(_ sender: AnyObject) {
         
-    }
-    
-    @IBAction func deleteButtonTapped(_ sender: AnyObject) {
         
     }
 }

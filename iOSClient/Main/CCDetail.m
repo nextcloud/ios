@@ -37,6 +37,7 @@
     
     UIToolbar *_toolbar;
     
+    UIBarButtonItem *_buttonModifyTxt;
     UIBarButtonItem *_buttonAction;
     UIBarButtonItem *_buttonShare;
     UIBarButtonItem *_buttonDelete;
@@ -47,6 +48,7 @@
     BOOL _reload;
     
     NSMutableOrderedSet *_dataSourceDirectoryID;
+    NSString *_fileNameExtension;
 }
 @end
 
@@ -180,11 +182,16 @@
     UIBarButtonItem *fixedSpaceMini = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:self action:nil];
     fixedSpaceMini.width = 25;
     
+    _buttonModifyTxt = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"actionSheetModify"] style:UIBarButtonItemStylePlain target:self action:@selector(modifyTxtButtonPressed:)];
     _buttonAction = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"actionSheetOpenIn"] style:UIBarButtonItemStylePlain target:self action:@selector(actionButtonPressed:)];
     _buttonShare  = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"actionSheetShare"] style:UIBarButtonItemStylePlain target:self action:@selector(shareButtonPressed:)];
     _buttonDelete = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(deleteButtonPressed:)];
     
-    [_toolbar setItems:[NSArray arrayWithObjects: flexible, _buttonDelete, fixedSpaceMini, _buttonShare, fixedSpaceMini, _buttonAction,  nil]];
+    if ([_fileNameExtension isEqualToString:@"TXT"])
+        [_toolbar setItems:[NSArray arrayWithObjects: _buttonModifyTxt, flexible, _buttonDelete, fixedSpaceMini, _buttonShare, fixedSpaceMini, _buttonAction,  nil]];
+    else
+        [_toolbar setItems:[NSArray arrayWithObjects: flexible, _buttonDelete, fixedSpaceMini, _buttonShare, fixedSpaceMini, _buttonAction,  nil]];
+    
     [_toolbar setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin];
     
     _toolbar.barTintColor = [NCBrandColor sharedInstance].tabBar;
@@ -230,9 +237,9 @@
     
     if ([self.metadataDetail.typeFile isEqualToString: k_metadataTypeFile_document]) {
         
-        NSString *ext = [[self.metadataDetail.fileNamePrint pathExtension] lowercaseString];
+        _fileNameExtension = [[self.metadataDetail.fileNamePrint pathExtension] uppercaseString];
         
-        if ([ext isEqualToString:@"pdf"]) {
+        if ([_fileNameExtension isEqualToString:@"PDF"]) {
             
             self.edgesForExtendedLayout = UIRectEdgeBottom;
             [self viewPDF:@""];
@@ -313,7 +320,6 @@
         [[NSFileManager defaultManager] linkItemAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, self.metadataDetail.fileID] toPath:fileName error:nil];
     }
     
-    NSString *ext = [CCUtility getExtension:self.metadataDetail.fileNamePrint];
     NSURL *url = [NSURL fileURLWithPath:fileName];
 
     WKPreferences *wkPreferences = [[WKPreferences alloc] init];
@@ -327,7 +333,7 @@
     [self.webView setBackgroundColor:[UIColor whiteColor]];
     [self.webView setOpaque:NO];
     
-    if ( [ext isEqualToString:@"CSS"] || [ext isEqualToString:@"PY"] || [ext isEqualToString:@"XML"] || [ext isEqualToString:@"JS"] ) {
+    if ( [_fileNameExtension isEqualToString:@"CSS"] || [_fileNameExtension isEqualToString:@"PY"] || [_fileNameExtension isEqualToString:@"XML"] || [_fileNameExtension isEqualToString:@"JS"] ) {
         
         NSMutableURLRequest *headRequest = [NSMutableURLRequest requestWithURL:[NSURL fileURLWithPath:fileName]];
         [headRequest setHTTPMethod:@"HEAD"];
@@ -346,7 +352,7 @@
             [self.webView  loadHTMLString:[NSString stringWithFormat:@"<div style='font-size:%@;font-family:%@;'><pre>%@",@"20",@"Sans-Serif",dataFile] baseURL:nil];
         }
         
-    } else if ([ext isEqualToString:@"TXT"] ) {
+    } else if ([_fileNameExtension isEqualToString:@"TXT"]) {
         
         NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
         NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration delegate:nil delegateQueue:nil];
@@ -1037,8 +1043,20 @@
 #pragma mark ===== ButtonPressed =====
 #pragma --------------------------------------------------------------------------------------------
 
+- (void)modifyTxtButtonPressed:(UIBarButtonItem *)sender
+{
+    UINavigationController* navigationController = [[UIStoryboard storyboardWithName:@"NCText" bundle:nil] instantiateViewControllerWithIdentifier:@"NCText"];
+    
+    NCText *viewController = (NCText *)navigationController.topViewController;
+    
+    viewController.metadata = self.metadataDetail;
+    
+    [navigationController setModalPresentationStyle:UIModalPresentationFormSheet];
+    [self presentViewController:navigationController animated:YES completion:nil];
+}
+
 - (void)actionButtonPressed:(UIBarButtonItem *)sender
-{    
+{
     NSString *filePath;
     
     if ([self.metadataDetail.fileNamePrint length] == 0) return;

@@ -18,11 +18,11 @@
                         <viewControllerLayoutGuide type="bottom" id="5fD-Qb-N57"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="skk-fU-Vk6">
-                        <rect key="frame" x="0.0" y="64" width="375" height="559"/>
+                        <rect key="frame" x="0.0" y="64" width="375" height="603"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" keyboardDismissMode="interactive" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="pmg-g2-Fbs">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="559"/>
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="603"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
@@ -37,31 +37,7 @@
                         </constraints>
                     </view>
                     <extendedEdge key="edgesForExtendedLayout"/>
-                    <toolbarItems>
-                        <barButtonItem image="actionSheetModify" id="EDN-Il-Q37">
-                            <connections>
-                                <action selector="modifyButtonTapped:" destination="oRF-nm-GrS" id="Vh4-tN-fXC"/>
-                            </connections>
-                        </barButtonItem>
-                        <barButtonItem style="plain" systemItem="flexibleSpace" id="7D3-Jp-G8Q"/>
-                        <barButtonItem image="actionSheetDelete" id="40X-Vo-Hy2">
-                            <connections>
-                                <action selector="deleteButtonTapped:" destination="oRF-nm-GrS" id="U2y-hT-dOQ"/>
-                            </connections>
-                        </barButtonItem>
-                        <barButtonItem width="25" style="plain" systemItem="fixedSpace" id="l83-dY-K62"/>
-                        <barButtonItem image="actionSheetShare" id="6og-yq-pNL">
-                            <connections>
-                                <action selector="shareButtonTapped:" destination="oRF-nm-GrS" id="qaW-VY-Ziw"/>
-                            </connections>
-                        </barButtonItem>
-                        <barButtonItem width="25" style="plain" systemItem="fixedSpace" id="Mgf-az-QKC"/>
-                        <barButtonItem image="actionSheetOpenIn" id="2Kw-LQ-ehq">
-                            <connections>
-                                <action selector="openInButtonTapped:" destination="oRF-nm-GrS" id="74a-js-ncE"/>
-                            </connections>
-                        </barButtonItem>
-                    </toolbarItems>
+                    <toolbarItems/>
                     <navigationItem key="navigationItem" id="LYL-SD-Ayv">
                         <barButtonItem key="leftBarButtonItem" title="Item" id="brk-EO-iNZ">
                             <connections>
@@ -76,11 +52,7 @@
                     </navigationItem>
                     <connections>
                         <outlet property="cancelButton" destination="brk-EO-iNZ" id="8gM-f2-AtV"/>
-                        <outlet property="deleteButton" destination="40X-Vo-Hy2" id="0ru-ri-tqi"/>
-                        <outlet property="modifyButton" destination="EDN-Il-Q37" id="0yP-N0-ObG"/>
                         <outlet property="nextButton" destination="Hyb-2c-5Hb" id="Zmo-Th-UUq"/>
-                        <outlet property="openInButton" destination="2Kw-LQ-ehq" id="aS5-0P-URL"/>
-                        <outlet property="shareButton" destination="6og-yq-pNL" id="s0f-fp-NLP"/>
                         <outlet property="textView" destination="pmg-g2-Fbs" id="T5E-gh-UZ6"/>
                     </connections>
                 </viewController>
@@ -91,7 +63,7 @@
         <!--Navigation Controller-->
         <scene sceneID="lyP-Qo-Lgl">
             <objects>
-                <navigationController storyboardIdentifier="NCText" automaticallyAdjustsScrollViewInsets="NO" toolbarHidden="NO" id="zKl-U9-avf" sceneMemberID="viewController">
+                <navigationController storyboardIdentifier="NCText" automaticallyAdjustsScrollViewInsets="NO" id="zKl-U9-avf" sceneMemberID="viewController">
                     <extendedEdge key="edgesForExtendedLayout"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="UIP-td-6cq">
@@ -99,10 +71,6 @@
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
-                    <toolbar key="toolbar" opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="d3Q-mu-6g7">
-                        <rect key="frame" x="0.0" y="623" width="375" height="44"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                    </toolbar>
                     <connections>
                         <segue destination="oRF-nm-GrS" kind="relationship" relationship="rootViewController" id="gPZ-9Y-e4E"/>
                     </connections>
@@ -112,10 +80,4 @@
             <point key="canvasLocation" x="10" y="-197"/>
         </scene>
     </scenes>
-    <resources>
-        <image name="actionSheetDelete" width="25" height="25"/>
-        <image name="actionSheetModify" width="25" height="25"/>
-        <image name="actionSheetOpenIn" width="25" height="25"/>
-        <image name="actionSheetShare" width="25" height="25"/>
-    </resources>
 </document>
