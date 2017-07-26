@@ -679,11 +679,13 @@
     
     NSInteger lastSectionIndex = [self numberOfSectionsInCollectionView:self.collectionView] - 1;
     
-    //Make sure the specified section exists
-    if (section > lastSectionIndex)
+    if (section > lastSectionIndex || lastSectionIndex < 0)
         return NO;
     
     NSInteger rowCount = [self.collectionView numberOfItemsInSection:indexPath.section] - 1;
+    
+    if (rowCount < 0)
+        return NO;
     
     return row <= rowCount;
 }
