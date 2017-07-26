@@ -14,6 +14,8 @@ class NCText: UIViewController, UITextViewDelegate {
     @IBOutlet weak var nextButton: UIBarButtonItem!
     @IBOutlet weak var textView: UITextView!
     
+    @IBOutlet weak var bottomConstraint: NSLayoutConstraint!
+    
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
     var metadata: tableMetadata?
@@ -23,6 +25,9 @@ class NCText: UIViewController, UITextViewDelegate {
         
         super.viewDidLoad()
         
+        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillShowHandle(info:)), name: .UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.addObserver(self, selector:#selector(self.keyboardWillHideHandle), name: .UIKeyboardWillHide, object: nil)
+
         self.navigationController?.navigationBar.topItem?.title = NSLocalizedString("_title_new_text_file_", comment: "")
         self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand
         self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.navigationBarText
@@ -43,6 +48,10 @@ class NCText: UIViewController, UITextViewDelegate {
             textView.text = loadText
             nextButton.title = NSLocalizedString("_save_", comment: "")
             self.navigationController?.navigationBar.topItem?.title = NSLocalizedString(metadata.fileNamePrint, comment: "")
+            
+        } else {
+            
+            loadText = ""
         }
         
         textView.isUserInteractionEnabled = true
@@ -52,9 +61,23 @@ class NCText: UIViewController, UITextViewDelegate {
         textViewDidChange(textView)
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-
-        super.viewWillAppear(animated)
+    func keyboardWillShowHandle(info:NSNotification) {
+        
+        let frameView = self.view.convert(self.view.bounds, to: self.view.window)
+        let endView = frameView.origin.y + frameView.size.height
+        
+        if let keyboardSize = (info.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue, let _ = self.view.window?.frame {
+            
+            if endView - keyboardSize.origin.y > 0 {
+                bottomConstraint.constant = endView - keyboardSize.origin.y
+            } else {
+                bottomConstraint.constant = 0
+            }
+        }
+    }
+    
+    func keyboardWillHideHandle() {
+        bottomConstraint.constant = 0
     }
     
     func textViewDidChange(_ textView: UITextView) {

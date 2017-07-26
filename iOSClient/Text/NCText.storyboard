@@ -51,6 +51,7 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="bottomConstraint" destination="KKy-aG-Q0G" id="Vl0-1L-h0O"/>
                         <outlet property="cancelButton" destination="brk-EO-iNZ" id="8gM-f2-AtV"/>
                         <outlet property="nextButton" destination="Hyb-2c-5Hb" id="Zmo-Th-UUq"/>
                         <outlet property="textView" destination="pmg-g2-Fbs" id="T5E-gh-UZ6"/>
