@@ -54,7 +54,7 @@
 //
 // orderByField : nil, date, typeFile
 //
-+ (CCSectionDataSourceMetadata *)creataDataSourseSectionMetadata:(NSArray *)records listProgressMetadata:(NSMutableDictionary *)listProgressMetadata groupByField:(NSString *)groupByField replaceDateToExifDate:(BOOL)replaceDateToExifDate activeAccount:(NSString *)activeAccount
++ (CCSectionDataSourceMetadata *)creataDataSourseSectionMetadata:(NSArray *)records listProgressMetadata:(NSMutableDictionary *)listProgressMetadata groupByField:(NSString *)groupByField activeAccount:(NSString *)activeAccount
 {
     id dataSection;
     long counterSessionDownload = 0;
@@ -72,15 +72,6 @@
     BOOL directoryOnTop = [CCUtility getDirectoryOnTop];
     
     for (tableMetadata* metadata in records) {
-        
-        // if exists replace date with exif date
-        if (replaceDateToExifDate) {
-            
-            tableLocalFile *localFile = [[NCManageDatabase sharedInstance] getTableLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadata.fileID]];
-            if (localFile)
-                if (localFile.exifDate)
-                    metadata.date = localFile.exifDate;
-        }
         
         if ([listProgressMetadata objectForKey:metadata.fileID] && [groupByField isEqualToString:@"session"]) {
             [copyRecords insertObject:metadata atIndex:0];
@@ -151,7 +142,7 @@
     
     BOOL ascending;
     
-    if (replaceDateToExifDate || [groupByField isEqualToString:@"date"]) ascending = NO;
+    if ([groupByField isEqualToString:@"date"]) ascending = NO;
     else ascending = YES;
     
     NSArray *sortSections = [[sectionDataSource.sectionArrayRow allKeys] sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
