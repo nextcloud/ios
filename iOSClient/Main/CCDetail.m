@@ -166,6 +166,9 @@
         _photoBrowser = nil;
     }
     
+    // ToolBar
+    _toolbar = nil;
+    
     [self.navigationController popToRootViewControllerAnimated:NO];
     self.navigationController.navigationBarHidden = YES;
 }
@@ -202,6 +205,7 @@
     [_toolbar setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin];
     
     _toolbar.barTintColor = [NCBrandColor sharedInstance].tabBar;
+    _toolbar.tintColor = [NCBrandColor sharedInstance].brand;
 
     [self.view addSubview:_toolbar];
 }
@@ -210,6 +214,9 @@
 {
     if (self.isViewLoaded && self.view.window)
         [app changeTheming:self];
+    
+    if (_toolbar)
+        [self createToolbar];
 }
 
 #pragma --------------------------------------------------------------------------------------------
