@@ -95,24 +95,29 @@ class NCText: UIViewController, UITextViewDelegate {
         
         if let metadata = metadata {
             
+            let uploadID = k_uploadSessionID + CCUtility.createRandomString(16)
             let data = textView.text.data(using: .utf8)
-            let success = FileManager.default.createFile(atPath: "\(self.appDelegate.directoryUser!)/\(metadata.fileName)", contents: data, attributes: nil)
+            let success = FileManager.default.createFile(atPath: "\(self.appDelegate.directoryUser!)/\(uploadID)", contents: data, attributes: nil)
             
             if success {
+                
+                // Prepare for send Metadata
+                metadata.fileID = uploadID
+                metadata.sessionID = uploadID
+                metadata.session = k_upload_session
+                metadata.sessionTaskIdentifier = Int(k_taskIdentifierWaitStart)
+                _ = NCManageDatabase.sharedInstance.updateMetadata(metadata)
+                
+                self.dismiss(animated: true, completion: nil)
                 
             } else {
                 self.appDelegate.messageNotification("_error_", description: "_error_creation_file_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: 0)
             }
-            
             
         } else {
             
             let formViewController = CreateFormUploadFile.init(NSLocalizedString("_untitled_txt_", comment: ""), serverUrl: appDelegate.activeMain.serverUrl, text: self.textView.text, fileName: NSLocalizedString("_untitled_txt_", comment: ""))
             self.navigationController?.pushViewController(formViewController, animated: true)
         }
-        
-        
-        
-        
     }
 }

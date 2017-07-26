@@ -920,9 +920,7 @@
         case k_returnCreateFileText: {
             
             UINavigationController* navigationController = [[UIStoryboard storyboardWithName:@"NCText" bundle:nil] instantiateViewControllerWithIdentifier:@"NCText"];
-            
-            //NCText *viewController = (NCText *)navigationController.topViewController;
-            
+                        
             [navigationController setModalPresentationStyle:UIModalPresentationFormSheet];
             [self presentViewController:navigationController animated:YES completion:nil];
         }
