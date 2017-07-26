@@ -134,6 +134,7 @@ class NCText: UIViewController, UITextViewDelegate {
                 self.dismiss(animated: true, completion: {
                     
                     CCNetworking.shared().uploadFileMetadata(metadata, taskStatus: Int(k_taskStatusResume))
+                    CCNetworking.shared().delegate = self.appDelegate.activeMain
                     NotificationCenter.default.post(name: NSNotification.Name(rawValue: "detailBack"), object: nil)
                 })
 
