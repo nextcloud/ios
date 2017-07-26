@@ -120,7 +120,7 @@ class NCText: UIViewController, UITextViewDelegate {
             
         } else {
             
-            let formViewController = CreateFormUploadFile.init(NSLocalizedString("_untitled_txt_", comment: ""), serverUrl: appDelegate.activeMain.serverUrl, text: self.textView.text, fileName: NSLocalizedString("_untitled_txt_", comment: ""))
+            let formViewController = CreateFormUploadFile.init(serverUrl: appDelegate.activeMain.serverUrl, text: self.textView.text, fileName: NSLocalizedString("_untitled_txt_", comment: ""))            
             self.navigationController?.pushViewController(formViewController, animated: true)
         }
     }

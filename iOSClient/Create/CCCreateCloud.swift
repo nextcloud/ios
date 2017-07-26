@@ -228,14 +228,14 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
-    convenience init(_ titleServerUrl : String?, serverUrl : String, assets : NSMutableArray, cryptated : Bool, session : String, delegate: createFormUploadAssetsDelegate) {
+    convenience init(serverUrl : String, assets : NSMutableArray, cryptated : Bool, session : String, delegate: createFormUploadAssetsDelegate) {
         
         self.init()
         
-        if titleServerUrl == nil || titleServerUrl?.isEmpty == true {
-            self.titleServerUrl = "/"
+        if serverUrl == CCUtility.getHomeServerUrlActiveUrl(appDelegate.activeUrl) {
+            titleServerUrl = "/"
         } else {
-            self.titleServerUrl = titleServerUrl
+            titleServerUrl = (serverUrl as NSString).lastPathComponent
         }
         
         self.serverUrl = serverUrl
@@ -579,21 +579,21 @@ class CreateFormUploadFile: XLFormViewController, CCMoveDelegate {
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
-    convenience init(_ titleServerUrl: String, serverUrl: String, text: String, fileName: String) {
+    convenience init(serverUrl: String, text: String, fileName: String) {
         
         self.init()
         
-        if titleServerUrl.isEmpty == true {
-            self.titleServerUrl = "/"
+        if serverUrl == CCUtility.getHomeServerUrlActiveUrl(appDelegate.activeUrl) {
+            titleServerUrl = "/"
         } else {
-            self.titleServerUrl = titleServerUrl
+            titleServerUrl = (serverUrl as NSString).lastPathComponent
         }
         
         self.fileName = fileName
         self.serverUrl = serverUrl
         self.text = text
         
-        self.initializeForm()
+        initializeForm()
     }
     
     //MARK: XLFormDescriptorDelegate
