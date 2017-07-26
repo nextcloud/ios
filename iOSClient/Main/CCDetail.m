@@ -64,6 +64,8 @@
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(triggerProgressTask:) name:@"NotificationProgressTask" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(backNavigationController) name:@"detailBack" object:nil];
+
 
         self.metadataDetail = [[tableMetadata alloc] init];
         self.photos = [[NSMutableArray alloc] init];
@@ -166,6 +168,11 @@
     
     [self.navigationController popToRootViewControllerAnimated:NO];
     self.navigationController.navigationBarHidden = YES;
+}
+
+- (void)backNavigationController
+{
+    [self.navigationController popViewControllerAnimated:NO];
 }
 
 - (void)changeToDisplayMode

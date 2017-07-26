@@ -108,8 +108,12 @@ class NCText: UIViewController, UITextViewDelegate {
                 metadata.sessionTaskIdentifier = Int(k_taskIdentifierWaitStart)
                 _ = NCManageDatabase.sharedInstance.updateMetadata(metadata)
                 
-                self.dismiss(animated: true, completion: nil)
-                
+                self.dismiss(animated: true, completion: {
+                    
+                    CCNetworking.shared().uploadFileMetadata(metadata, taskStatus: Int(k_taskStatusResume))
+                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "detailBack"), object: nil)
+                })
+
             } else {
                 self.appDelegate.messageNotification("_error_", description: "_error_creation_file_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: 0)
             }
