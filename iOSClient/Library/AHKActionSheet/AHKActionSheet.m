@@ -170,13 +170,13 @@ static const CGFloat maxWidth = 414.0f;
     
     if (item.type == AHKActionSheetButtonTypeDisabled) {
         
-        imageView = [[UIImageView alloc]initWithFrame:CGRectMake(15, _buttonHeight/2 - (30/2), 30, 30)];
+        imageView = [[UIImageView alloc]initWithFrame:CGRectMake(20, _buttonHeight/2 - (30/2), 30, 30)];
         imageView.backgroundColor = [UIColor clearColor];
         [imageView setImage:item.image];
         
     } else {
         
-        imageView = [[UIImageView alloc]initWithFrame:CGRectMake(15, _buttonHeight/2 - (25/2), 25, 25)];
+        imageView = [[UIImageView alloc]initWithFrame:CGRectMake(20, _buttonHeight/2 - (25/2), 25, 25)];
         
         BOOL useTemplateMode = [UIImage instancesRespondToSelector:@selector(imageWithRenderingMode:)] && [self.automaticallyTintButtonImages boolValue];
 
