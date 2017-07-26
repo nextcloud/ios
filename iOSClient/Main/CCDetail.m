@@ -144,14 +144,12 @@
         
     // Document
     if (_webView) {
-            
         [_webView removeFromSuperview];
         _webView = nil;
     }
         
     // PDF
     if (_readerPDFViewController) {
-            
         [_readerPDFViewController.view removeFromSuperview];
         _readerPDFViewController.delegate = nil;
         _readerPDFViewController = nil;
@@ -159,7 +157,6 @@
         
     // Photo-Video
     if (_photoBrowser) {
-            
         [_photos removeAllObjects];
         [_thumbs removeAllObjects];
         _photoBrowser.delegate = nil;
@@ -167,14 +164,18 @@
     }
     
     // ToolBar
-    _toolbar = nil;
+    if (_toolbar) {
+        [_toolbar removeFromSuperview];
+        _toolbar = nil;
+    }
     
-    [self.navigationController popToRootViewControllerAnimated:NO];
-    self.navigationController.navigationBarHidden = YES;
+    // Title
+    self.title = nil;
 }
 
 - (void)backNavigationController
 {
+    [self removeAllView];
     [self.navigationController popViewControllerAnimated:NO];
 }
 
@@ -215,8 +216,10 @@
     if (self.isViewLoaded && self.view.window)
         [app changeTheming:self];
     
-    if (_toolbar)
-        [self createToolbar];
+    if (_toolbar) {
+        _toolbar.barTintColor = [NCBrandColor sharedInstance].tabBar;
+        _toolbar.tintColor = [NCBrandColor sharedInstance].brand;
+    }
 }
 
 #pragma --------------------------------------------------------------------------------------------
