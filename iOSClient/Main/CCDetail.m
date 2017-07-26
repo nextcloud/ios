@@ -313,9 +313,9 @@
         [[NSFileManager defaultManager] linkItemAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, self.metadataDetail.fileID] toPath:fileName error:nil];
     }
     
-    NSString *ext=@"";
-    ext = [CCUtility getExtension:self.metadataDetail.fileNamePrint];
-    
+    NSString *ext = [CCUtility getExtension:self.metadataDetail.fileNamePrint];
+    NSURL *url = [NSURL fileURLWithPath:fileName];
+
     WKPreferences *wkPreferences = [[WKPreferences alloc] init];
     wkPreferences.javaScriptEnabled = false;
     WKWebViewConfiguration *wkConfig = [[WKWebViewConfiguration alloc] init];
@@ -338,7 +338,7 @@
             NSLog(@"[LOG] loadURLWithString %@",[error localizedDescription]);
         }
         
-        NSString *dataFile = [[NSString alloc] initWithData:[NSData dataWithContentsOfURL:[NSURL fileURLWithPath:fileName]] encoding:NSASCIIStringEncoding];
+        NSString *dataFile = [[NSString alloc] initWithData:[NSData dataWithContentsOfURL:url] encoding:NSASCIIStringEncoding];
         
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
             [self.webView  loadHTMLString:[NSString stringWithFormat:@"<div style='font-size:%@;font-family:%@;'><pre>%@",@"40",@"Sans-Serif",dataFile] baseURL:nil];
@@ -348,19 +348,21 @@
         
     } else if ([ext isEqualToString:@"TXT"] ) {
         
-        NSMutableURLRequest *headRequest = [NSMutableURLRequest requestWithURL:[NSURL fileURLWithPath:fileName]];
-        [headRequest setHTTPMethod:@"HEAD"];
-        NSHTTPURLResponse *headResponse;
-        NSError *error = nil;
-        [NSURLConnection sendSynchronousRequest:headRequest returningResponse:&headResponse error:&error];
-        if (error != nil) {
-            NSLog(@"[LOG] loadURLWithString %@",[error localizedDescription]);
-        }
+        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+        NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration delegate:nil delegateQueue:nil];
         
-        [self.webView loadRequest:[NSMutableURLRequest requestWithURL:[NSURL fileURLWithPath:fileName]]];
+        NSMutableURLRequest *headRequest = [NSMutableURLRequest requestWithURL:url];
+        [headRequest setHTTPMethod:@"HEAD"];
+        
+        NSURLSessionDataTask *task = [session dataTaskWithRequest:headRequest completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+            [self.webView loadData:[NSData dataWithContentsOfURL: url] MIMEType:response.MIMEType characterEncodingName:@"utf-8" baseURL:url];
+        }];
+        
+        [task resume];
+        
     } else {
         
-        [self.webView loadRequest:[NSMutableURLRequest requestWithURL:[NSURL fileURLWithPath:fileName]]];
+        [self.webView loadRequest:[NSMutableURLRequest requestWithURL:url]];
     }
     
     [self.view addSubview:self.webView];

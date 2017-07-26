@@ -1452,13 +1452,6 @@
 		F78D6F631F0B7DDF002F9619 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		F78D6F641F0B7DDF002F9619 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Intro.strings; sourceTree = "<group>"; };
 		F78D6F651F0B7DDF002F9619 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Error.strings; sourceTree = "<group>"; };
-		F78D6F661F0B7E1E002F9619 /* el */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el; path = el.lproj/CTAssetsPicker.strings; sourceTree = "<group>"; };
-		F78D6F671F0B7E1F002F9619 /* el */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el; path = el.lproj/SwiftWebVC.strings; sourceTree = "<group>"; };
-		F78D6F681F0B7E1F002F9619 /* el */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el; path = el.lproj/BKPasscodeView.strings; sourceTree = "<group>"; };
-		F78D6F691F0B7E1F002F9619 /* el */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el; path = el.lproj/Localizable.strings; sourceTree = "<group>"; };
-		F78D6F6A1F0B7E1F002F9619 /* el */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el; path = el.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		F78D6F6B1F0B7E1F002F9619 /* el */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el; path = el.lproj/Intro.strings; sourceTree = "<group>"; };
-		F78D6F6C1F0B7E1F002F9619 /* el */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el; path = el.lproj/Error.strings; sourceTree = "<group>"; };
 		F78F6FAE1CC8CCB700F4EA25 /* CCSection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCSection.h; sourceTree = "<group>"; };
 		F78F6FAF1CC8CCB700F4EA25 /* CCSection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCSection.m; sourceTree = "<group>"; };
 		F792A77B1BC7C45400C9388E /* CCSplit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCSplit.h; sourceTree = "<group>"; };
@@ -3915,7 +3908,6 @@
 				pl,
 				nl,
 				es,
-				el,
 				"zh-Hans",
 				is,
 			);
@@ -4872,7 +4864,6 @@
 				F78D6F531F0B7D47002F9619 /* pl */,
 				F78D6F5A1F0B7D9B002F9619 /* nl */,
 				F78D6F611F0B7DDF002F9619 /* es */,
-				F78D6F681F0B7E1F002F9619 /* el */,
 				F7D046B11F0E1E1F00A3F350 /* zh-Hans */,
 				F7D046B81F0E1EA000A3F350 /* is */,
 			);
@@ -4898,7 +4889,6 @@
 				F78D6F521F0B7D47002F9619 /* pl */,
 				F78D6F591F0B7D9A002F9619 /* nl */,
 				F78D6F601F0B7DDF002F9619 /* es */,
-				F78D6F671F0B7E1F002F9619 /* el */,
 				F7D046B01F0E1E1F00A3F350 /* zh-Hans */,
 				F7D046B71F0E1EA000A3F350 /* is */,
 			);
@@ -4924,7 +4914,6 @@
 				F78D6F561F0B7D47002F9619 /* pl */,
 				F78D6F5D1F0B7D9B002F9619 /* nl */,
 				F78D6F641F0B7DDF002F9619 /* es */,
-				F78D6F6B1F0B7E1F002F9619 /* el */,
 				F7D046B41F0E1E2000A3F350 /* zh-Hans */,
 				F7D046BB1F0E1EA100A3F350 /* is */,
 			);
@@ -4950,7 +4939,6 @@
 				F78D6F511F0B7D47002F9619 /* pl */,
 				F78D6F581F0B7D9A002F9619 /* nl */,
 				F78D6F5F1F0B7DDE002F9619 /* es */,
-				F78D6F661F0B7E1E002F9619 /* el */,
 				F7D046AF1F0E1E1F00A3F350 /* zh-Hans */,
 				F7D046B61F0E1EA000A3F350 /* is */,
 			);
@@ -4976,7 +4964,6 @@
 				F78D6F571F0B7D48002F9619 /* pl */,
 				F78D6F5E1F0B7D9B002F9619 /* nl */,
 				F78D6F651F0B7DDF002F9619 /* es */,
-				F78D6F6C1F0B7E1F002F9619 /* el */,
 				F7D046B51F0E1E2000A3F350 /* zh-Hans */,
 				F7D046BC1F0E1EA100A3F350 /* is */,
 			);
@@ -5002,7 +4989,6 @@
 				F78D6F551F0B7D47002F9619 /* pl */,
 				F78D6F5C1F0B7D9B002F9619 /* nl */,
 				F78D6F631F0B7DDF002F9619 /* es */,
-				F78D6F6A1F0B7E1F002F9619 /* el */,
 				F7D046B31F0E1E1F00A3F350 /* zh-Hans */,
 				F7D046BA1F0E1EA100A3F350 /* is */,
 			);
@@ -5028,7 +5014,6 @@
 				F78D6F541F0B7D47002F9619 /* pl */,
 				F78D6F5B1F0B7D9B002F9619 /* nl */,
 				F78D6F621F0B7DDF002F9619 /* es */,
-				F78D6F691F0B7E1F002F9619 /* el */,
 				F7D046B21F0E1E1F00A3F350 /* zh-Hans */,
 				F7D046B91F0E1EA100A3F350 /* is */,
 			);
