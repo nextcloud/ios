@@ -1016,7 +1016,7 @@
                 // Activity
                 [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionCapabilities selector:@"Server Theming" note:NSLocalizedString(@"_theming_is_light_", nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:_activeUrl];
                 
-                [NCBrandColor sharedInstance].brand = [NCBrandColor sharedInstance].customer;
+                newColor = [NCBrandColor sharedInstance].customer;
                 
             } else {
                 

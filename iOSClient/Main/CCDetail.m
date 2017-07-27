@@ -213,8 +213,7 @@
 
 - (void)changeTheming
 {
-    if (self.isViewLoaded && self.view.window)
-        [app changeTheming:self];
+    [app changeTheming:self];
     
     if (_toolbar) {
         _toolbar.barTintColor = [NCBrandColor sharedInstance].tabBar;
