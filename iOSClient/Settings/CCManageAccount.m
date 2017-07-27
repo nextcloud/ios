@@ -358,10 +358,8 @@
         return;
     }
 
-    // removed  this -> ?????
     [app cancelAllOperations];
     [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:k_taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
-    // removed  this -> ?????
     
     // change account
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] setAccountActive:account];
