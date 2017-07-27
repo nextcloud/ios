@@ -176,7 +176,7 @@
 {
     [super formRowDescriptorValueHasChanged:rowDescriptor oldValue:oldValue newValue:newValue];
     
-    if ([rowDescriptor.tag isEqualToString:@"pickerAccount"]){
+    if ([rowDescriptor.tag isEqualToString:@"pickerAccount"] && oldValue && newValue){
         
         // cambiamo default account se oldvalue != newValue
         if (![newValue isEqualToString:oldValue]) [self ChangeDefaultAccount:newValue];
