@@ -1455,7 +1455,7 @@
             
             dispatch_async(dispatch_get_main_queue(), ^{
                 if ([[self getDelegate:sessionID] respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
-                    [[self getDelegate:sessionID] uploadFileFailure:nil fileID:fileID serverUrl:serverUrl selector:@"" message:[NSString stringWithFormat:@"Serius error internal download : metadata not found %@", fileName] errorCode:k_CCErrorInternalError];
+                    [[self getDelegate:sessionID] uploadFileFailure:nil fileID:fileID serverUrl:serverUrl selector:@"" message:[NSString stringWithFormat:@"Serius error internal upload : metadata not found %@", fileName] errorCode:k_CCErrorInternalError];
             });
 
             return;
