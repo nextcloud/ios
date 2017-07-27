@@ -565,20 +565,20 @@
     UIApplicationShortcutIcon *shortcutUploadEncryptedIcon = [UIApplicationShortcutIcon iconWithTemplateImageName:@"quickActionUploadEncrypted"];
     
     UIApplicationShortcutItem *shortcutPhotos = [[UIApplicationShortcutItem alloc] initWithType:[NSString stringWithFormat:@"%@.photos", bundleId] localizedTitle:NSLocalizedString(@"_photo_camera_", nil) localizedSubtitle:nil icon:shortcutPhotosIcon userInfo:nil];
-
     UIApplicationShortcutItem *shortcutUpload = [[UIApplicationShortcutItem alloc] initWithType:[NSString stringWithFormat:@"%@.upload", bundleId] localizedTitle:NSLocalizedString(@"_upload_file_", nil) localizedSubtitle:nil icon:shortcutUploadIcon userInfo:nil];
-    
     UIApplicationShortcutItem *shortcutUploadEncrypted = [[UIApplicationShortcutItem alloc] initWithType:[NSString stringWithFormat:@"%@.uploadEncrypted", bundleId] localizedTitle:NSLocalizedString(@"_upload_encrypted_file_", nil) localizedSubtitle:nil icon:shortcutUploadEncryptedIcon userInfo:nil];
     
     if (app.isCryptoCloudMode) {
         
         // add the array to our app
-        [UIApplication sharedApplication].shortcutItems = @[shortcutUploadEncrypted, shortcutUpload, shortcutPhotos];
+        if (shortcutUploadEncrypted && shortcutUpload && shortcutPhotos)
+            [UIApplication sharedApplication].shortcutItems = @[shortcutUploadEncrypted, shortcutUpload, shortcutPhotos];
 
     } else {
 
         // add the array to our app
-        [UIApplication sharedApplication].shortcutItems = @[shortcutUpload, shortcutPhotos];
+        if (shortcutUpload && shortcutPhotos)
+            [UIApplication sharedApplication].shortcutItems = @[shortcutUpload, shortcutPhotos];
     }
 }
 
