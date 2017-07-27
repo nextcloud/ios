@@ -1448,7 +1448,8 @@
             metadata.sessionTaskIdentifier = k_taskIdentifierDone;
         
         // Add new metadata
-        metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata];
+        if (metadata)
+            metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata];
         
         if (!metadata) {
             
