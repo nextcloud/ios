@@ -921,7 +921,8 @@
             
             UINavigationController* navigationController = [[UIStoryboard storyboardWithName:@"NCText" bundle:nil] instantiateViewControllerWithIdentifier:@"NCText"];
                         
-            [navigationController setModalPresentationStyle:UIModalPresentationFormSheet];
+            navigationController.modalPresentationStyle = UIModalPresentationPageSheet;
+
             [self presentViewController:navigationController animated:YES completion:nil];
         }
             break;

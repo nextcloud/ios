@@ -1068,7 +1068,30 @@
     
     viewController.metadata = self.metadataDetail;
     
-    [navigationController setModalPresentationStyle:UIModalPresentationFormSheet];
+    /*
+     typedef NS_ENUM(NSInteger, UIModalTransitionStyle) {
+     UIModalTransitionStyleCoverVertical = 0,
+     UIModalTransitionStyleFlipHorizontal __TVOS_PROHIBITED,
+     UIModalTransitionStyleCrossDissolve,
+     UIModalTransitionStylePartialCurl NS_ENUM_AVAILABLE_IOS(3_2) __TVOS_PROHIBITED,
+     };
+     
+     typedef NS_ENUM(NSInteger, UIModalPresentationStyle) {
+     UIModalPresentationFullScreen = 0,
+     UIModalPresentationPageSheet NS_ENUM_AVAILABLE_IOS(3_2) __TVOS_PROHIBITED,
+     UIModalPresentationFormSheet NS_ENUM_AVAILABLE_IOS(3_2) __TVOS_PROHIBITED,
+     UIModalPresentationCurrentContext NS_ENUM_AVAILABLE_IOS(3_2),
+     UIModalPresentationCustom NS_ENUM_AVAILABLE_IOS(7_0),
+     UIModalPresentationOverFullScreen NS_ENUM_AVAILABLE_IOS(8_0),
+     UIModalPresentationOverCurrentContext NS_ENUM_AVAILABLE_IOS(8_0),
+     UIModalPresentationPopover NS_ENUM_AVAILABLE_IOS(8_0) __TVOS_PROHIBITED,
+     UIModalPresentationNone NS_ENUM_AVAILABLE_IOS(7_0) = -1,
+     };
+     */
+    
+    navigationController.modalPresentationStyle = UIModalPresentationPageSheet;
+    navigationController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+    
     [self presentViewController:navigationController animated:YES completion:nil];
 }
 
