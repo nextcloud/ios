@@ -118,9 +118,12 @@
     // start share of select users
     for (NSString *num in self.selectedItems) {
         
-        OCShareUser *item = [self.users objectAtIndex:[num integerValue]];
-        
-        [self.delegate shareUserAndGroup:item.name shareeType:item.shareeType permission:permission];
+        // fix #166 Crashlytics
+        if (self.users.count > 0 && [num integerValue] < self.users.count) {
+            
+            OCShareUser *item = [self.users objectAtIndex:[num integerValue]];
+            [self.delegate shareUserAndGroup:item.name shareeType:item.shareeType permission:permission];
+        }
     }
     
     // start share with a user if not be i 
