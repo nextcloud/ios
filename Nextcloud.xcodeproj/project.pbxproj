@@ -1823,6 +1823,13 @@
 		F7DC5FEB1F011EB700A903C7 /* MGSwipeTableCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSwipeTableCell.m; sourceTree = "<group>"; };
 		F7DFE24F1EBDC3A400CF5202 /* Realm.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Realm.framework; sourceTree = "<group>"; };
 		F7DFE2501EBDC3A400CF5202 /* RealmSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = RealmSwift.framework; sourceTree = "<group>"; };
+		F7E394951F2A1CC600A94CAC /* sq */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sq; path = sq.lproj/CTAssetsPicker.strings; sourceTree = "<group>"; };
+		F7E394961F2A1CC600A94CAC /* sq */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sq; path = sq.lproj/SwiftWebVC.strings; sourceTree = "<group>"; };
+		F7E394971F2A1CC600A94CAC /* sq */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sq; path = sq.lproj/BKPasscodeView.strings; sourceTree = "<group>"; };
+		F7E394981F2A1CC600A94CAC /* sq */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sq; path = sq.lproj/Localizable.strings; sourceTree = "<group>"; };
+		F7E394991F2A1CC700A94CAC /* sq */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sq; path = sq.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		F7E3949A1F2A1CC700A94CAC /* sq */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sq; path = sq.lproj/Intro.strings; sourceTree = "<group>"; };
+		F7E3949B1F2A1CC700A94CAC /* sq */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sq; path = sq.lproj/Error.strings; sourceTree = "<group>"; };
 		F7ECBA6C1E239DCD003E6328 /* CCCreateCloud.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CCCreateCloud.swift; sourceTree = "<group>"; };
 		F7F0617A1BAACDD300846525 /* CryptoCloud.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CryptoCloud.pch; sourceTree = "<group>"; };
 		F7F54CAB1E5AFF1E00E19C62 /* PickerFileProvider-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "PickerFileProvider-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -3910,6 +3917,7 @@
 				es,
 				"zh-Hans",
 				is,
+				sq,
 			);
 			mainGroup = F7F67B9F1A24D27800EE80DA;
 			productRefGroup = F7F67B9F1A24D27800EE80DA;
@@ -4866,6 +4874,7 @@
 				F78D6F611F0B7DDF002F9619 /* es */,
 				F7D046B11F0E1E1F00A3F350 /* zh-Hans */,
 				F7D046B81F0E1EA000A3F350 /* is */,
+				F7E394971F2A1CC600A94CAC /* sq */,
 			);
 			name = BKPasscodeView.strings;
 			path = "Supporting Files";
@@ -4891,6 +4900,7 @@
 				F78D6F601F0B7DDF002F9619 /* es */,
 				F7D046B01F0E1E1F00A3F350 /* zh-Hans */,
 				F7D046B71F0E1EA000A3F350 /* is */,
+				F7E394961F2A1CC600A94CAC /* sq */,
 			);
 			name = SwiftWebVC.strings;
 			path = "Supporting Files";
@@ -4916,6 +4926,7 @@
 				F78D6F641F0B7DDF002F9619 /* es */,
 				F7D046B41F0E1E2000A3F350 /* zh-Hans */,
 				F7D046BB1F0E1EA100A3F350 /* is */,
+				F7E3949A1F2A1CC700A94CAC /* sq */,
 			);
 			name = Intro.strings;
 			path = "Supporting Files";
@@ -4941,6 +4952,7 @@
 				F78D6F5F1F0B7DDE002F9619 /* es */,
 				F7D046AF1F0E1E1F00A3F350 /* zh-Hans */,
 				F7D046B61F0E1EA000A3F350 /* is */,
+				F7E394951F2A1CC600A94CAC /* sq */,
 			);
 			name = CTAssetsPicker.strings;
 			path = "Supporting Files";
@@ -4966,6 +4978,7 @@
 				F78D6F651F0B7DDF002F9619 /* es */,
 				F7D046B51F0E1E2000A3F350 /* zh-Hans */,
 				F7D046BC1F0E1EA100A3F350 /* is */,
+				F7E3949B1F2A1CC700A94CAC /* sq */,
 			);
 			name = Error.strings;
 			path = "Supporting Files";
@@ -4991,6 +5004,7 @@
 				F78D6F631F0B7DDF002F9619 /* es */,
 				F7D046B31F0E1E1F00A3F350 /* zh-Hans */,
 				F7D046BA1F0E1EA100A3F350 /* is */,
+				F7E394991F2A1CC700A94CAC /* sq */,
 			);
 			name = InfoPlist.strings;
 			path = "Supporting Files";
@@ -5016,6 +5030,7 @@
 				F78D6F621F0B7DDF002F9619 /* es */,
 				F7D046B21F0E1E1F00A3F350 /* zh-Hans */,
 				F7D046B91F0E1EA100A3F350 /* is */,
+				F7E394981F2A1CC600A94CAC /* sq */,
 			);
 			name = Localizable.strings;
 			path = "Supporting Files";
