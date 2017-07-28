@@ -8,7 +8,6 @@
 
 #import "AHKActionSheetViewController.h"
 #import "AHKActionSheet.h"
-#import "UIWindow+AHKAdditions.h"
 
 @interface AHKActionSheetViewController ()
 @property (nonatomic) BOOL viewAlreadyAppear;
@@ -60,24 +59,6 @@
 -(void)didRotateDeviceChangeNotification:(NSNotification *)notification
 {
     [self.actionSheet dismissAnimated:NO];
-}
-
-- (UIStatusBarStyle)preferredStatusBarStyle
-{
-    UIWindow *window = self.actionSheet.previousKeyWindow;
-    if (!window) {
-        window = [[UIApplication sharedApplication].windows firstObject];
-    }
-    return [[window ahk_viewControllerForStatusBarStyle] preferredStatusBarStyle];
-}
-
-- (BOOL)prefersStatusBarHidden
-{
-    UIWindow *window = self.actionSheet.previousKeyWindow;
-    if (!window) {
-        window = [[UIApplication sharedApplication].windows firstObject];
-    }
-    return [[window ahk_viewControllerForStatusBarHidden] prefersStatusBarHidden];
 }
 
 @end
