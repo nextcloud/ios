@@ -334,6 +334,7 @@ static const CGFloat maxWidth = 414.0f;
     
     if (self.cancelOnTapEmptyAreaEnabled.boolValue) {
         [self setUpCancelTapGestureForView:self.tableView];
+        [self setUpCancelTapGestureForView:self.blurredBackgroundView];
     }
     
     CGFloat slideDownMinOffset = (CGFloat)fmin(CGRectGetHeight(self.frame) + self.tableView.contentOffset.y, CGRectGetHeight(self.frame));
