@@ -2497,15 +2497,23 @@
     if (metadataNet.cryptated == NO) {
     
         tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileName = %@ AND directoryID = %@", metadataNet.fileName, metadataNet.directoryID]];
-        [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileName = %@ AND directoryID = %@", metadataNet.fileName, metadataNet.directoryID] clearDateReadDirectoryID:nil];
-
-        metadata.fileID = metadataNet.fileID;
-        metadata.date = metadataNet.date;
-        metadata.permissions = @"RDNVCK";
-
-        (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
         
-        [self reloadDatasource];
+        if (metadata) {
+        
+            [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileName = %@ AND directoryID = %@", metadataNet.fileName, metadataNet.directoryID] clearDateReadDirectoryID:nil];
+
+            metadata.fileID = metadataNet.fileID;
+            metadata.date = metadataNet.date;
+            metadata.permissions = @"RDNVCK";
+
+            (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
+        
+            [self reloadDatasource];
+            
+        } else {
+            
+            [self readFileReloadFolder];
+        }
     }
 }
 
